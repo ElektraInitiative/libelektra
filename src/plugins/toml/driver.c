@@ -144,24 +144,11 @@ void driverExitKey (Driver * driver)
 		return;
 	}
 	Key * existing = ksLookup (driver->keys, driver->currKey, 0);
-	if (existing != NULL)
+	if (existing != NULL && !isTableArray (existing))
 	{
-		keyRewindMeta (existing);
-		bool isTableArrayList = false;
-		for (const Key * meta = keyNextMeta (existing); meta != NULL; meta = keyNextMeta (existing))
-		{
-			if (strcmp (keyName (meta), "tomltype") == 0 && strcmp (keyString (meta), "tablearray") == 0)
-			{
-				isTableArrayList = true;
-				break;
-			}
-		}
-		if (!isTableArrayList)
-		{
-			// Only allow table array keys to be read multiple times
-			driverError (driver, ERROR_SEMANTIC, driver->currLine, "Malformed input: Multiple occurences of keyname: '%s'",
-				     keyName (existing));
-		}
+		// Only allow table array keys to be read multiple times
+		driverError (driver, ERROR_SEMANTIC, driver->currLine, "Malformed input: Multiple occurences of keyname: '%s'",
+			     keyName (existing));
 	}
 
 	pushCurrKey (driver);
@@ -169,6 +156,7 @@ void driverExitKey (Driver * driver)
 	{
 		driverDrainCommentsToKey (driver->parentStack->key, driver);
 	}
+
 	setOrderForKey (driver->parentStack->key, driver->order++);
 }
 
@@ -256,7 +244,6 @@ void driverExitOptCommentTable (Driver * driver)
 			// Otherwise, the inline comment we just added will be ignored, if the table array is empty
 			if (ksLookup (driver->keys, driver->parentStack->key, 0) == NULL)
 			{
-				setOrderForKey (driver->parentStack->key, driver->order++);
 				ksAppendKey (driver->keys, driver->parentStack->key);
 			}
 		}
@@ -469,12 +456,10 @@ void driverExitTableArray (Driver * driver)
 		keyUpdateArrayMetakey (existingRoot, driver->tableArrayStack->currIndex);
 	}
 
-	// setOrderForKey (key, driver->order++);
 	driver->parentStack = pushParent (driver->parentStack, key);
 
 	if (driverDrainCommentsToKey (driver->parentStack->key, driver))
 	{ // we have to emit the array index key, because it has comments in previous lines
-		setOrderForKey (driver->parentStack->key, driver->order++);
 		ksAppendKey (driver->keys, driver->parentStack->key);
 	}
 	driver->drainCommentsOnKeyExit = true; // only set to false while table array unindexed key is generated
@@ -543,7 +528,7 @@ void driverEnterArrayElement (Driver * driver)
 	}
 
 	Key * key = keyAppendIndex (driver->indexStack->value, driver->parentStack->key);
-	setOrderForKey (key, driver->order++);
+	// setOrderForKey (key, driver->order++); // TODO: no order for array elements
 
 	keySetMeta (driver->parentStack->key, "array", keyBaseName (key));
 	driver->parentStack = pushParent (driver->parentStack, key);

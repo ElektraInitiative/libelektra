@@ -19,32 +19,81 @@
 #define PREFIX "user/tests/toml"
 
 #define TEST_RW_HEAD                                                                                                                       \
-	size_t order = 0;                                                                                                                  \
+	Key * lastKey = NULL;                                                                                                              \
 	KeySet * writeKs = ksNew (0, KS_END);                                                                                              \
 	KeySet * expectedKs = ksNew (0, KS_END)
 #define TEST_RW_FOOT                                                                                                                       \
-	testWriteRead (writeKs, expectedKs);                                                                                               \
+	testWriteReadCompare (writeKs, expectedKs);                                                                                        \
 	ksDel (expectedKs);                                                                                                                \
 	ksDel (writeKs)
-#define ADD_KEY_PAIR(name, value) addKeyPair (writeKs, expectedKs, name, value, NULL, NULL, order++)
-#define ADD_KEY_PAIR_EXPECT_ORIG(name, value, orig) addKeyPair (writeKs, expectedKs, name, value, orig, NULL, order++)
-#define ADD_KEY_PAIR_EXPECT_TYPED(name, value, type) addKeyPair (writeKs, expectedKs, name, value, NULL, type, order++)
-#define ADD_KEY_PAIR_EXPECT_ORIG_TYPED(name, value, orig, type) addKeyPair (writeKs, expectedKs, name, value, orig, type, order++)
-#define SET_META_WRITE_KS(name, metaName, metaValue)                                                                                       \
+// Macros to be used in TEST_RW environments
+#define WRITE_KV(name, value)                                                                                                              \
 	{                                                                                                                                  \
-		Key * k = ksLookupByName (writeKs, PREFIX "/" name, 0);                                                                    \
-		if (k != NULL)                                                                                                             \
+		lastKey = addKey (writeKs, name, value, NULL, NULL, NULL, NULL, -1);                                                       \
+	}
+#define WRITE_KEY(name)                                                                                                                    \
+	{                                                                                                                                  \
+		lastKey = addKey (writeKs, name, NULL, NULL, NULL, NULL, NULL, -1);                                                        \
+	}
+#define EXPECTED_KV(name, value)                                                                                                           \
+	{                                                                                                                                  \
+		lastKey = addKey (expectedKs, name, value, NULL, NULL, NULL, NULL, -1);                                                    \
+	}
+#define EXPECTED_KEY(name)                                                                                                                 \
+	{                                                                                                                                  \
+		lastKey = addKey (expectedKs, name, NULL, NULL, NULL, NULL, NULL, -1);                                                     \
+	}
+#define DUP_EXPECTED                                                                                                                       \
+	{                                                                                                                                  \
+		if (lastKey != NULL)                                                                                                       \
 		{                                                                                                                          \
-			keySetMeta (k, metaName, metaValue);                                                                               \
+			lastKey = keyDup (lastKey);                                                                                        \
+			ksAppendKey (expectedKs, lastKey);                                                                                 \
 		}                                                                                                                          \
 	}
+#define SET_VALUE(value)                                                                                                                   \
+	{                                                                                                                                  \
+		if (lastKey != NULL) keySetString (lastKey, value);                                                                        \
+	}
+#define VALUE_TO_ORIG_NEW_VALUE(value)                                                                                                     \
+	{                                                                                                                                  \
+		if (lastKey != NULL)                                                                                                       \
+		{                                                                                                                          \
+			char * oldVal = elektraStrDup (keyString (lastKey));                                                               \
+			keySetString (lastKey, value);                                                                                     \
+			keySetMeta (lastKey, "origvalue", oldVal);                                                                         \
+			elektraFree (oldVal);                                                                                              \
+		}                                                                                                                          \
+	}
+#define SET_TYPE(type)                                                                                                                     \
+	{                                                                                                                                  \
+		if (lastKey != NULL) keySetMeta (lastKey, "type", type);                                                                   \
+	}
+#define SET_ORIG_VALUE(orig)                                                                                                               \
+	{                                                                                                                                  \
+		if (lastKey != NULL) keySetMeta (lastKey, "origvalue", orig);                                                              \
+	}
+#define SET_ARRAY(array)                                                                                                                   \
+	{                                                                                                                                  \
+		if (lastKey != NULL) keySetMeta (lastKey, "array", array);                                                                 \
+	}
+#define SET_TOML_TYPE(type)                                                                                                                \
+	{                                                                                                                                  \
+		if (lastKey != NULL) keySetMeta (lastKey, "tomltype", type);                                                               \
+	}
+#define SET_ORDER(order)                                                                                                                   \
+	{                                                                                                                                  \
+		if (lastKey != NULL) setOrderForKey (lastKey, order);                                                                      \
+	}
 
-
-static void testPositiveCompareKeySets (void);
-static void testNegativeCompareErrors (void);
+static void testRead (void);
+static void testWriteRead (void);
 static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadMustError (const char * filename);
-static void testWriteRead (KeySet * ksWrite, KeySet * expected);
+static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected);
+static void testWriteReadArray (void);
+static void testWriteReadArrayNested (void);
+static void testWriteReadTableArray (void);
 static void testWriteReadString (void);
 static void testWriteReadInteger (void);
 static void testWriteReadIntegerOtherBase (void);
@@ -52,32 +101,21 @@ static void testWriteReadFloat (void);
 static void testWriteReadDate (void);
 static void testWriteReadBoolean (void);
 static void testWriteReadCheckSparseHierarchy (void);
-static Key * buildFullKey (const char * name, const char * value, const char * origValue, const char * type, size_t order);
-static Key * buildSimpleKey (const char * name, const char * value);
-static void addKeyPair (KeySet * writeKs, KeySet * expectedKs, const char * name, const char * value, const char * origValue,
-			const char * type, size_t order);
+static Key * addKey (KeySet * ks, const char * name, const char * value, const char * orig, const char * type, const char * array,
+		     const char * tomltype, int order);
 
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
 
-	testPositiveCompareKeySets ();
-	testNegativeCompareErrors ();
-
-	testWriteReadString ();
-	testWriteReadInteger ();
-	testWriteReadIntegerOtherBase ();
-	testWriteReadFloat ();
-	testWriteReadDate ();
-	testWriteReadBoolean ();
-
-	testWriteReadCheckSparseHierarchy ();
+	testRead ();
+	testWriteRead ();
 
 	print_result ("testmod_toml");
 	return nbError;
 }
 
-static void testPositiveCompareKeySets (void)
+static void testRead (void)
 {
 	testReadCompare ("toml/basic.toml",
 #include "toml/basic.h"
@@ -121,10 +159,7 @@ static void testPositiveCompareKeySets (void)
 	testReadCompare ("toml/comment.toml",
 #include "toml/comment.h"
 	);
-}
 
-static void testNegativeCompareErrors (void)
-{
 	testReadMustError ("toml/bad_duplicate_key_01.toml");
 	testReadMustError ("toml/bad_duplicate_key_02.toml");
 	testReadMustError ("toml/bad_duplicate_key_03.toml");
@@ -139,74 +174,253 @@ static void testNegativeCompareErrors (void)
 	testReadMustError ("toml/bad_string_single_with_nl_basic.toml");
 }
 
+static void testWriteRead (void)
+{
+	testWriteReadArray ();
+	testWriteReadArrayNested ();
+	testWriteReadTableArray ();
+	testWriteReadString ();
+	testWriteReadInteger ();
+	testWriteReadIntegerOtherBase ();
+	testWriteReadFloat ();
+	testWriteReadDate ();
+	testWriteReadBoolean ();
+	testWriteReadCheckSparseHierarchy ();
+}
+
 static void testWriteReadString (void)
 {
 	TEST_RW_HEAD;
-	ADD_KEY_PAIR_EXPECT_TYPED("a/multiline1", "first line\nsecond line", "string");
-	ADD_KEY_PAIR_EXPECT_ORIG_TYPED("b/withescapechars", "first line\nsecond line\r", "first line\\nsecond line\\r", "string");
+	WRITE_KV ("multiline1", "first line\nsecond line");
+	SET_ORDER (0);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
 
-	ADD_KEY_PAIR_EXPECT_TYPED("c/numberstring01", "1337", "string");
-	SET_META_WRITE_KS("c/numberstring01", "type", "string");
-	
-	ADD_KEY_PAIR_EXPECT_TYPED("c/numberstring02", "13_37", "string");
-	SET_META_WRITE_KS("c/numberstring02", "type", "string");
-	
-	ADD_KEY_PAIR_EXPECT_TYPED("c/numberstring03", "+3e-7", "string");
-	SET_META_WRITE_KS("c/numberstring03", "type", "string");
+	WRITE_KV ("withescapechars", "first line\\nsecond line\\r");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("first line\nsecond line\r");
+	SET_TYPE ("string");
 
-	ADD_KEY_PAIR_EXPECT_TYPED("d/datestring", "2000-01-01", "string");
-	SET_META_WRITE_KS("d/datestring", "type", "string");
+	WRITE_KV ("numberstring01", "1337");
+	SET_ORDER (2);
+	SET_TYPE ("string");
+	DUP_EXPECTED;
+
+	WRITE_KV ("numberstring02", "13_37");
+	SET_ORDER (3);
+	SET_TYPE ("string");
+	DUP_EXPECTED;
+
+	WRITE_KV ("numberstring03", "+3e-7");
+	SET_ORDER (4);
+	SET_TYPE ("string");
+	DUP_EXPECTED;
+
+	WRITE_KV ("datestring", "2000-01-01");
+	SET_ORDER (5);
+	SET_TYPE ("string");
+	DUP_EXPECTED;
 
 	TEST_RW_FOOT;
+}
+
+
+static void testWriteReadArray (void)
+{
+	TEST_RW_HEAD;
+	WRITE_KV ("b/alphabetically/after/array/but/zero/order", "0");
+	SET_ORDER (0);
+	DUP_EXPECTED;
+
+	WRITE_KV ("aa/alphabetically/before/array/but/no/order", "0");
+	DUP_EXPECTED;
+	SET_ORDER (1);
+
+	WRITE_KV ("array/#3", "1337");
+	DUP_EXPECTED;
+	WRITE_KV ("array/#0", "666");
+	DUP_EXPECTED;
+	WRITE_KV ("array/#2", "1000");
+	DUP_EXPECTED;
+	WRITE_KV ("array/#1", "3");
+	DUP_EXPECTED;
+
+	EXPECTED_KEY ("array");
+	SET_ORDER (2);
+	SET_ARRAY ("#3");
+
+	WRITE_KV ("b/alphabeticall/after/no/order", "0");
+	DUP_EXPECTED;
+	SET_ORDER (3);
+
+	TEST_RW_FOOT;
+}
+
+static void testWriteReadArrayNested (void)
+{
+	TEST_RW_HEAD;
+
+	WRITE_KV ("b/alphabetically/after/array/but/zero/order", "0");
+	SET_ORDER (0);
+	DUP_EXPECTED;
+
+	WRITE_KV ("array/#0/#0/#0", "0");
+	DUP_EXPECTED;
+	WRITE_KV ("array/#0/#0/#1", "1");
+	DUP_EXPECTED;
+	WRITE_KV ("array/#0/#1/#0", "2");
+	DUP_EXPECTED;
+	WRITE_KV ("array/#0/#1/#1", "3");
+	DUP_EXPECTED;
+	WRITE_KV ("array/#0/#1/#2", "4");
+	DUP_EXPECTED;
+
+	EXPECTED_KEY ("array");
+	SET_ARRAY ("#0");
+	SET_ORDER (1);
+	EXPECTED_KEY ("array/#0");
+	SET_ARRAY ("#1");
+	EXPECTED_KEY ("array/#0/#0");
+	SET_ARRAY ("#1");
+	EXPECTED_KEY ("array/#0/#1");
+	SET_ARRAY ("#2");
+
+	TEST_RW_FOOT;
+}
+
+static void testWriteReadTableArray (void)
+{
+	// TODO: tests for writeread table arrays
+	/*TEST_RW_HEAD;
+	WRITE_KEY("ta");			ADD_ORDER(0);	ADD_TOML_TYPE("tablearray"); DUP_EXPECTED; ADD_ARRAY("#0");
+	WRITE_KV("ta/#0/b", "0");	ADD_ORDER(1);	DUP_EXPECTED;
+	WRITE_KV("ta/#0/a", "1");	ADD_ORDER(2);	DUP_EXPECTED;
+
+	TEST_RW_FOOT;*/
 }
 
 static void testWriteReadInteger (void)
 {
 	TEST_RW_HEAD;
-	ADD_KEY_PAIR ("int1", "+1337");
-	ADD_KEY_PAIR ("int2", "-666");
-	ADD_KEY_PAIR ("int3", "0");
-	ADD_KEY_PAIR ("int4", "3000");
-	ADD_KEY_PAIR_EXPECT_ORIG ("int5", "+1999000", "+1_999_000");
+
+	WRITE_KV ("int1", "+1337");
+	DUP_EXPECTED;
+	SET_ORDER (0);
+	WRITE_KV ("int2", "-666");
+	DUP_EXPECTED;
+	SET_ORDER (1);
+	WRITE_KV ("int3", "0");
+	DUP_EXPECTED;
+	SET_ORDER (2);
+	WRITE_KV ("int4", "3000");
+	DUP_EXPECTED;
+	SET_ORDER (3);
+	WRITE_KV ("int5", "+1_999_000");
+	DUP_EXPECTED;
+	SET_ORDER (4);
+	VALUE_TO_ORIG_NEW_VALUE ("+1999000");
+
 	TEST_RW_FOOT;
 }
 
 static void testWriteReadIntegerOtherBase (void)
 {
 	TEST_RW_HEAD;
-	ADD_KEY_PAIR_EXPECT_ORIG ("a/hex1", "11251456", "0xA_Baf00");
-	ADD_KEY_PAIR_EXPECT_ORIG ("a/hex2", "1", "0x00_1");
-	ADD_KEY_PAIR_EXPECT_ORIG ("a/hex3", "0", "0x0_0");
-	ADD_KEY_PAIR_EXPECT_ORIG ("b/oct1", "735", "0o13_37");
-	ADD_KEY_PAIR_EXPECT_ORIG ("b/oct2", "0", "0o0_000");
-	ADD_KEY_PAIR_EXPECT_ORIG ("b/oct3", "735", "0o1_3_3_7");
-	ADD_KEY_PAIR_EXPECT_ORIG ("c/bin1", "0", "0b0_0_0_0");
-	ADD_KEY_PAIR_EXPECT_ORIG ("c/bin2", "8", "0b100_0");
-	ADD_KEY_PAIR_EXPECT_ORIG ("c/bin3", "0", "0b000");
+
+	WRITE_KV ("hex1", "0xA_Baf00");
+	SET_ORDER (0);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("11251456");
+	WRITE_KV ("hex2", "0x00_1");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("1");
+	WRITE_KV ("hex3", "0x0_0");
+	SET_ORDER (2);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("0");
+	WRITE_KV ("oct1", "0o13_37");
+	SET_ORDER (3);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("735");
+	WRITE_KV ("oct2", "0o0_000");
+	SET_ORDER (4);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("0");
+	WRITE_KV ("oct3", "0o1_3_3_7");
+	SET_ORDER (5);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("735");
+	WRITE_KV ("bin1", "0b0_0_0_0");
+	SET_ORDER (6);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("0");
+	WRITE_KV ("bin2", "0b100_0");
+	SET_ORDER (7);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("8");
+	WRITE_KV ("bin3", "0b000");
+	SET_ORDER (8);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("0");
+
 	TEST_RW_FOOT;
 }
 
 static void testWriteReadFloat (void)
 {
 	TEST_RW_HEAD;
-	ADD_KEY_PAIR ("float1", "+0.3");
-	ADD_KEY_PAIR_EXPECT_ORIG ("float2", "-7.1313E+10", "-7.1_313E+1_0");
-	ADD_KEY_PAIR ("float3", "+2e-3");
-	ADD_KEY_PAIR_EXPECT_ORIG ("float4", "+200.003", "+20_0.003");
-	ADD_KEY_PAIR ("float5", "nan");
-	ADD_KEY_PAIR ("float6", "+nan");
-	ADD_KEY_PAIR ("float7", "-inf");
+
+	WRITE_KV ("float1", "+0.3");
+	DUP_EXPECTED;
+	SET_ORDER (0);
+	WRITE_KV ("float2", "-7.1_313E+1_0");
+	DUP_EXPECTED;
+	SET_ORDER (1);
+	VALUE_TO_ORIG_NEW_VALUE ("-7.1313E+10");
+	WRITE_KV ("float3", "+2e-3");
+	DUP_EXPECTED;
+	SET_ORDER (2);
+	WRITE_KV ("float4", "+20_0.003");
+	DUP_EXPECTED;
+	SET_ORDER (3);
+	VALUE_TO_ORIG_NEW_VALUE ("+200.003");
+	WRITE_KV ("float5", "+2e-3");
+	DUP_EXPECTED;
+	SET_ORDER (4);
+	WRITE_KV ("float6", "+2e-3");
+	DUP_EXPECTED;
+	SET_ORDER (5);
+	WRITE_KV ("float7", "nan");
+	DUP_EXPECTED;
+	SET_ORDER (6);
+	WRITE_KV ("float8", "+nan");
+	DUP_EXPECTED;
+	SET_ORDER (7);
+	WRITE_KV ("float9", "-inf");
+	DUP_EXPECTED;
+	SET_ORDER (8);
 	TEST_RW_FOOT;
 }
 
 static void testWriteReadDate (void)
 {
 	TEST_RW_HEAD;
-	ADD_KEY_PAIR ("date1", "2000-12-31T10:00:00Z");
-	ADD_KEY_PAIR ("date2", "1990-12-31T23:59:60Z");
-	ADD_KEY_PAIR ("date3", "1937-01-01T12:00:27.87+00:20");
-	ADD_KEY_PAIR ("date4", "23:59:59.99999");
-	ADD_KEY_PAIR ("date5", "00:00:00");
+	WRITE_KV ("date1", "2000-12-31T10:00:00Z");
+	DUP_EXPECTED;
+	SET_ORDER (0);
+	WRITE_KV ("date2", "1990-12-31T23:59:60Z") DUP_EXPECTED;
+	SET_ORDER (1);
+	WRITE_KV ("date3", "1937-01-01T12:00:27.87+00:20");
+	DUP_EXPECTED;
+	SET_ORDER (2);
+	WRITE_KV ("date4", "23:59:59.99999");
+	DUP_EXPECTED;
+	SET_ORDER (3);
+	WRITE_KV ("date5", "00:00:00");
+	DUP_EXPECTED;
+	SET_ORDER (4);
 	TEST_RW_FOOT;
 }
 
@@ -214,19 +428,30 @@ static void testWriteReadBoolean (void)
 {
 	TEST_RW_HEAD;
 
-	// only written as boolean, if has metakey boolean
-	ADD_KEY_PAIR_EXPECT_TYPED ("bool1", "1", "boolean");
-	SET_META_WRITE_KS ("bool1", "type", "boolean");
-	ADD_KEY_PAIR_EXPECT_TYPED ("bool2", "0", "boolean");
-	SET_META_WRITE_KS ("bool2", "type", "boolean");
+	WRITE_KV ("bool1", "1");
+	SET_ORDER (0);
+	SET_TYPE ("boolean");
+	DUP_EXPECTED;
+	WRITE_KV ("bool2", "0");
+	SET_ORDER (1);
+	SET_TYPE ("boolean");
+	DUP_EXPECTED;
 
-	// if have to write true/false without boolean metakey, it's written (and then read) as string
-	ADD_KEY_PAIR_EXPECT_TYPED ("bool3", "true", "string");
-	ADD_KEY_PAIR_EXPECT_TYPED ("bool4", "false", "string");
+	WRITE_KV ("bool3", "true");
+	SET_ORDER (2);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
+	WRITE_KV ("bool4", "false");
+	SET_ORDER (3);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
 
-	// if have to write 0/1 without boolean metakey, it's written (and then read) as number
-	ADD_KEY_PAIR ("bool5", "0");
-	ADD_KEY_PAIR ("bool6", "1");
+	WRITE_KV ("bool5", "0");
+	SET_ORDER (4);
+	DUP_EXPECTED;
+	WRITE_KV ("bool6", "1");
+	SET_ORDER (5);
+	DUP_EXPECTED;
 
 	TEST_RW_FOOT;
 }
@@ -234,12 +459,18 @@ static void testWriteReadBoolean (void)
 static void testWriteReadCheckSparseHierarchy (void)
 {
 	TEST_RW_HEAD;
-	ADD_KEY_PAIR_EXPECT_TYPED ("a", "hello", "string");
-	ADD_KEY_PAIR_EXPECT_TYPED ("a/b/c/d", "hello", "string");
+
+	WRITE_KV ("a", "0");
+	SET_ORDER (0);
+	DUP_EXPECTED;
+	WRITE_KV ("a/b/c/d", "1");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+
 	TEST_RW_FOOT;
 }
 
-static void testWriteRead (KeySet * ksWrite, KeySet * expected)
+static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 {
 	const char * filename = "test_write_read.toml";
 	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
@@ -256,7 +487,7 @@ static void testWriteRead (KeySet * ksWrite, KeySet * expected)
 
 	PLUGIN_CLOSE ();
 	ksDel (ksRead);
-	remove(filename);
+	remove (filename);
 }
 
 static void testReadCompare (const char * filename, KeySet * expected)
@@ -289,42 +520,38 @@ static void testReadMustError (const char * filename)
 	PLUGIN_CLOSE ();
 }
 
-static Key * buildFullKey (const char * name, const char * value, const char * origValue, const char * type, size_t order)
+static Key * addKey (KeySet * ks, const char * name, const char * value, const char * orig, const char * type, const char * array,
+		     const char * tomltype, int order)
 {
-	char orderStr[64];
-	snprintf (orderStr, 64, "%lu", order);
-	Key * key = keyNew (PREFIX, KEY_VALUE, value, KEY_META, "order", orderStr, KEY_END);
-	keyAddName (key, "/");
-	keyAddName (key, name);
-	if (origValue != NULL)
+	Key * key = keyNew (PREFIX "/", KEY_END);
+	if (name != NULL)
 	{
-		keySetMeta (key, "origvalue", origValue);
+		keyAddName (key, name);
+	}
+	if (value != NULL)
+	{
+		keySetString (key, value);
+	}
+	if (orig != NULL)
+	{
+		keySetMeta (key, "origvalue", orig);
 	}
 	if (type != NULL)
 	{
 		keySetMeta (key, "type", type);
 	}
-	return key;
-}
-
-static Key * buildSimpleKey (const char * name, const char * value)
-{
-	Key * key = keyNew (PREFIX, KEY_VALUE, value, KEY_END);
-	keyAddName (key, "/");
-	keyAddName (key, name);
-	return key;
-}
-
-static void addKeyPair (KeySet * writeKs, KeySet * expectedKs, const char * name, const char * value, const char * origValue,
-			const char * type, size_t order)
-{
-	if (origValue != NULL)
+	if (array != NULL)
 	{
-		ksAppendKey (writeKs, buildSimpleKey (name, origValue));
+		keySetMeta (key, "array", array);
 	}
-	else
+	if (tomltype != NULL)
 	{
-		ksAppendKey (writeKs, buildSimpleKey (name, value));
+		keySetMeta (key, "tomltype", tomltype);
 	}
-	ksAppendKey (expectedKs, buildFullKey (name, value, origValue, type, order));
+	if (order != -1)
+	{
+		setOrderForKey (key, order);
+	}
+	ksAppendKey (ks, key);
+	return key;
 }

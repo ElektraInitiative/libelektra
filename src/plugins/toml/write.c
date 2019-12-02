@@ -14,6 +14,7 @@
 #include "type.h"
 #include "utility.h"
 #include "write.h"
+#include "sort.h"
 
 typedef enum
 {
@@ -83,7 +84,6 @@ static int keyCmpOrderWrapper (const void * a, const void * b);
 static Key * getCurrentKey (Writer * writer);
 static Key * getNextKey (Writer * writer);
 static void writerError (Writer * writer, int err, const char * format, ...);
-// static int keyCmpCustom (const Key * a, const Key * b);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
@@ -91,22 +91,12 @@ int tomlWrite (KeySet * keys, Key * parent)
 	pruneInvalidArrayKeys (keys);
 	ksRewind (keys);
 
-	size_t arraySize = ksGetSize (keys);
-	Key ** keyArray = elektraCalloc (arraySize * sizeof (Key *));
-	if (keyArray == NULL)
-	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent);
+	size_t arraySize = ksGetSize(keys);
+	Key ** keyArray = sortKeySet(keys);
+	if (keyArray == NULL) {
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR(parent);
 		return 1;
 	}
-
-	if (elektraKsToMemArray (keys, keyArray) < 0)
-	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent);
-		return 1;
-	}
-	qsort (keyArray, arraySize, sizeof (Key *), keyCmpOrderWrapper);
-	//size_t arraySize = ksGetSize(keys);
-	// Key ** keyArray = sortKeySet(keys);
 
 	Writer * w = createWriter (parent, keyArray, arraySize);
 	if (w == NULL)
@@ -723,8 +713,9 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 				size_t index = arrayStringToIndex (keyBaseName (name));
 				keyAddName (name, "..");
 				arrays = updateArrayInfo (arrays, name, index);
+			} else {
+				keyAddName (name, "..");
 			}
-			keyAddName (name, "..");
 		} while (keyCmp (parent, name) != 0);
 		keyDel (name);
 	}
@@ -814,37 +805,6 @@ static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index)
 	return element;
 }
 
-
-/*
-TODO: proper extraction of array elements
-idea:
-extract array roots + it's elements into a struct (Root Key + KeySet of direct elements?)
-Sort other keys into mem array, afterwards make sorted merge of mem array + Arrays in another memarray
-static KeySet * extractArrayElements (KeySet * keys)
-{
-	KeySet * elements = ksNew (0, KS_END);
-	if (elements == NULL)
-	{
-		return NULL;
-	}
-	ksRewind (keys);
-	Key * key;
-	while ((key = ksNext (keys)) != NULL)
-	{
-		const char * part = (const char *) keyUnescapedName (key);
-		const char * stop = ((const char *) part) + keyGetUnescapedNameSize (key);
-		while (part < stop)
-		{
-			if (isArrayIndex(part) ||
-				findMetaKey(key, "array") != NULL) {
-				ksAppendKey(array, key);
-				break;
-			}
-			part += elektraStrLen (part);
-		}
-	}
-}*/
-
 static void writerError (Writer * writer, int err, const char * format, ...)
 {
 	if (format != NULL)
@@ -882,9 +842,4 @@ static void writerError (Writer * writer, int err, const char * format, ...)
 			emitElektraError (writer->rootKey, err, NULL);
 		}
 	}
-}
-
-static int keyCmpOrderWrapper (const void * va, const void * vb)
-{
-	return elektraKeyCmpOrder (*((const Key **) va), *((const Key **) vb));
 }

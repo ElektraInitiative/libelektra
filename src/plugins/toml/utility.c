@@ -7,6 +7,7 @@
 
 void dumpKS (KeySet * keys)
 {
+	printf ("DUMPING KS, size = %lu\n", ksGetSize (keys));
 	FILE * f = stdout; // fopen ("keys.txt", "w");
 	ksRewind (keys);
 	for (Key * key = ksNext (keys); key != NULL; key = ksNext (keys))
@@ -23,17 +24,16 @@ void dumpKS (KeySet * keys)
 
 void dumpMemKS (Key ** keys, size_t size)
 {
-	FILE * f = fopen ("keys_mem.txt", "w");
+	printf ("DUMPING KS, size = %lu\n", size);
+	FILE * f = stdout; // fopen ("keys_mem.txt", "w");
 	for (size_t i = 0; i < size; i++)
 	{
+		Key * key = keys[i];
+		fprintf (f, "KEY = %s, VALUE = %s\n", keyName (key), keyString (key));
+		keyRewindMeta (key);
+		for (const Key * meta = keyNextMeta (key); meta != NULL; meta = keyNextMeta (key))
 		{
-			Key * key = keys[i];
-			fprintf (f, "KEY = %s, VALUE = %s\n", keyName (key), keyString (key));
-			keyRewindMeta (key);
-			for (const Key * meta = keyNextMeta (key); meta != NULL; meta = keyNextMeta (key))
-			{
-				fprintf (f, "\tMETA KEY = %s, VALUE = %s\n", keyName (meta), keyString (meta));
-			}
+			fprintf (f, "\tMETA KEY = %s, VALUE = %s\n", keyName (meta), keyString (meta));
 		}
 	}
 }
@@ -115,7 +115,8 @@ bool isArrayElement (const Key * key)
 {
 	const char * part = (const char *) keyUnescapedName (key);
 	const char * stop = part + keyGetUnescapedNameSize (key);
-	while (part < stop) {
+	while (part < stop)
+	{
 		if (isArrayIndex (part))
 		{
 			return true;
@@ -236,7 +237,8 @@ char * getDirectSubKeyName (const Key * parent, const Key * key)
 
 void keySetDiff (KeySet * whole, KeySet * part)
 {
-	if (whole == NULL || part == NULL) {
+	if (whole == NULL || part == NULL)
+	{
 		return;
 	}
 	ksRewind (part);
@@ -266,13 +268,16 @@ KeySet * keysByPredicate (KeySet * ks, bool (*pred) (Key *))
 	return predicateKeys;
 }
 
-KeySet * collectSubKeys(KeySet * ks, Key * parent) {
-	KeySet * subKeys = ksNew(0, KS_END);
-	ksRewind(ks);
+KeySet * collectSubKeys (KeySet * ks, Key * parent)
+{
+	KeySet * subKeys = ksNew (0, KS_END);
+	ksRewind (ks);
 	Key * key;
-	while((key = ksNext(ks)) != NULL) {
-		if (keyIsBelow(parent, key) == 1) {
-			ksAppendKey(subKeys, key);
+	while ((key = ksNext (ks)) != NULL)
+	{
+		if (keyIsBelow (parent, key) == 1)
+		{
+			ksAppendKey (subKeys, key);
 		}
 	}
 	return subKeys;
