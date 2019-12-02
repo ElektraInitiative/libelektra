@@ -9,6 +9,7 @@ usr/lib/*/elektra4/libelektra-glob.so*
 usr/lib/*/elektra4/libelektra-hosts.so*
 usr/lib/*/elektra4/libelektra-ini.so*
 usr/lib/*/elektra4/libelektra-internalnotification.so
+usr/lib/*/elektra4/libelektra-kconfig.so*
 usr/lib/*/elektra4/libelektra-line.so*
 usr/lib/*/elektra4/libelektra-list.so*
 usr/lib/*/elektra4/libelektra-mini.so*
