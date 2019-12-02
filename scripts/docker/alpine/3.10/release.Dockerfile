@@ -2,14 +2,15 @@ FROM alpine:3.10.3
 
 RUN apk update \
     && apk add --no-cache --upgrade\
+        augeas \
         augeas-dev \
         bash \
         bison \
-        boost \
-        boost-dev \
         build-base \
         cmake \
         curl \
+        fts \
+        fts-dev \
         git \
         libgit2 \
         libgit2-dev \
@@ -76,12 +77,15 @@ RUN cd build \
     && rm -Rf ${GTEST_ROOT}
 
 RUN apk del \
+        augeas-dev \
         bison \
-        boost-dev\
         build-base \
         cmake \
+        fts-dev \
         git \
         libgit2-dev \
+        yajl-dev \
+        yaml-cpp-dev \
         && rm -rf /var/cache/apk/*
 
 RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
