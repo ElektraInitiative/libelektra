@@ -60,7 +60,7 @@ RUN mkdir build \
              .. \
     && make -j ${PARALLEL} \
     && ctest -T Test --output-on-failure -j ${PARALLEL} \
-    && kdb cache clear \
+    && ./bin/kdb cache clear \
     && rm -Rf '/home/elektra/.config' '/home/elektra/.cache' \
     && cmake -DBUILD_TESTING=OFF -UKDB_DB_SYSTEM -UKDB_DB_SPEC -UKDB_DB_HOME . \
     && make -j ${PARALLEL} \
