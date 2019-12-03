@@ -3,8 +3,7 @@
 The version of Elektra is handled with the kdb.h macros
 `KDB_VERSION` which is a string and `KDB_VERSION_MAJOR`,
 `KDB_VERSION_MINOR` and `KDB_VERSION_PATCH` which are
-numbers. They represent the publicly announced version
-information.
+numbers for the publicly announced versions.
 
 The version can also be retrieved at run-time from KDB:
 
@@ -53,9 +52,8 @@ Any inconsistency within this artifacts constitutes a bug.
 ## Compatibility
 
 This section describes under which circumstances API
-and ABI incompatibilities may occur. As developer from
-Elektra your mission is to avoid any unwanted
-incompatibilities.
+and ABI incompatibilities may occur. As Elektra developer
+your mission is to avoid any unwanted incompatibilities.
 The tool icheck which checks the interfaces mentioned
 in the Scope may help you.
 
@@ -75,8 +73,8 @@ That means that a program written and compiled against 1.0.0
 compiles and links against 1.1.0. But because it is
 not necessarily backwards-compatible a program written
 for 1.1.0 may not link or compile against Elektra 1.0.0
-(but it may do when you use the compatible subset, maybe
-with #ifdefs).
+(but it compiles if you use the compatible subset, maybe
+by using #ifdefs).
 
 Following points are allowed:
 When you add a new function you break ABI and API backward-
@@ -98,14 +96,15 @@ a complex topic, so better don't underestimate it, but
 generally said the methods should behave on the same data
 the same way.
 
-As we use symbol versioning, the SO_VERSION of Elektra
-always remains the same, even with `*` version changes.
-That means, if we rename a function in the `2.0` release,
-applications that linked against Elektra `1.0` can still
-link against Elektra `2.0` but they do not compile with
-Elektra `2.0` anymore.
-Once the code is adapted to use `2.0`, it cannot
-link against `1.0` anymore.
+As we use [symbol versioning](dev/symbol-versioning.md), the SO_VERSION
+of Elektra always remains the same, even if the major version changes.
+That means, if we rename or remove a function in the `2.0` release,
+applications that linked against Elektra `1.0` can still link against
+Elektra `2.0` but they do not necessarily compile with Elektra `2.0`
+anymore.  Once the code is adapted to use `2.0`, it cannot link against
+`1.0` anymore.  Note that this feature is only available on platforms
+that support symbol versioning. For other platforms, all applications
+need to be recompiled for every major version.
 
 References:
 http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
@@ -117,7 +116,7 @@ Bindings are in general tied to Elektra's version number except
 for the patch level. So bindings can only add or change
 functionality when Elektra's core does.
 This is a quite severe restriction but makes the version
-understanding for users much easier. It serves the goal
+much easier to understand for users. It serves the goal
 that Elektra does not prefer any programming languages,
 instead people expect from Elektra version `x.y.*`
 identical functionality.
