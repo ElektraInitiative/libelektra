@@ -75,10 +75,11 @@ not necessarily backwards-compatible a program written
 for 1.1.0 may not link or compile against Elektra 1.0.0
 (but it compiles if you use the compatible subset, maybe
 by using #ifdefs).
+Also here applications must continue to work as originally
+intended.
 
-Following points are allowed:
 When you add a new function you break ABI and API backward-
-compatibility, but not forward, so you are only allowed to
+compatibility (but not forward). You are only allowed to
 do so in a `1.*` change.
 
 In the signature you are only allowed to add const to
@@ -106,6 +107,12 @@ anymore. Once the code is adapted to use `2.0`, it cannot link against
 that support symbol versioning. For other platforms, all applications
 need to be recompiled for every major version.
 
+In major upgrades, changes of behavior is possible even if it might
+break some use cases of some applications. Furthermore, symbols
+that already have been deprecated before, might be removed.
+For example, in `1.0` there is a deprecated method `ksNext` (not
+available in `kdb.h`). Thus in `2.0` it is subject to be removed.
+
 References:
 http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
 http://packages.debian.org/de/sid/icheck
@@ -120,6 +127,12 @@ much easier to understand for users. It serves the goal
 that Elektra does not prefer any programming languages,
 instead people expect from Elektra version `x.y.*`
 identical functionality.
+
+The patch level can be chosen by bindings as wanted.
+Using the binding `x.y.z` does not mean that
+Elektra `x.y.z` will be used on the target system.
+Please read the changelog of the binding maintainers to
+know about which bug fixes are included.
 
 The patch level might also be used to fix bugs within bindings.
 This means that applications can only introspect the patch
