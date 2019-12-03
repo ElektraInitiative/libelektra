@@ -28,6 +28,7 @@ static bool predNeedsOrder (Key * key);
 static bool predIsArray (Key * key);
 static bool predIsArrayElement (Key * key);
 
+
 Key ** sortKeySet (KeySet * ks)
 {
 	KeySet * unordered = collectUnorderedKeys (ks);

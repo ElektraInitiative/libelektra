@@ -11,10 +11,10 @@
 #include <string.h>
 
 #include "error.h"
+#include "sort.h"
 #include "type.h"
 #include "utility.h"
 #include "write.h"
-#include "sort.h"
 
 typedef enum
 {
@@ -91,12 +91,16 @@ int tomlWrite (KeySet * keys, Key * parent)
 	pruneInvalidArrayKeys (keys);
 	ksRewind (keys);
 
-	size_t arraySize = ksGetSize(keys);
-	Key ** keyArray = sortKeySet(keys);
-	if (keyArray == NULL) {
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR(parent);
+	size_t arraySize = ksGetSize (keys);
+	Key ** keyArray = sortKeySet (keys);
+	if (keyArray == NULL)
+	{
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parent);
 		return 1;
 	}
+
+	printf ("+++ DUMP BEFORE WRITE +++\n");
+	dumpMemKS (keyArray, arraySize);
 
 	Writer * w = createWriter (parent, keyArray, arraySize);
 	if (w == NULL)
@@ -366,23 +370,26 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 	const char * keyStop = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (key);
 	while (keyPart < keyStop)
 	{
-		if (placeDot)
+		if (!isArrayIndex (keyPart))
 		{
-			result |= fputc ('.', writer->f) == EOF;
-		}
-		else
-		{
-			placeDot = true;
-		}
-		bool bare = isBareString (writer->checker, keyPart);
-		if (!bare)
-		{
-			result |= fputc ('"', writer->f) == EOF;
-		}
-		result |= fputs (keyPart, writer->f) == EOF;
-		if (!bare)
-		{
-			result |= fputc ('"', writer->f) == EOF;
+			if (placeDot)
+			{
+				result |= fputc ('.', writer->f) == EOF;
+			}
+			else
+			{
+				placeDot = true;
+			}
+			bool bare = isBareString (writer->checker, keyPart);
+			if (!bare)
+			{
+				result |= fputc ('"', writer->f) == EOF;
+			}
+			result |= fputs (keyPart, writer->f) == EOF;
+			if (!bare)
+			{
+				result |= fputc ('"', writer->f) == EOF;
+			}
 		}
 		keyPart += elektraStrLen (keyPart);
 	}
@@ -392,7 +399,7 @@ static int writeRelativeKeyName (Key * parent, Key * key, Writer * writer)
 static int writeScalar (Key * key, Writer * writer)
 {
 	int result = 0;
-	ELEKTRA_ASSERT(keyGetUnescapedNameSize(key) != 0, "NULL keys should have been handled by null plugin");
+	ELEKTRA_ASSERT (keyGetUnescapedNameSize (key) != 0, "NULL keys should have been handled by null plugin");
 
 	keyRewindMeta (key);
 	const Key * origValue = findMetaKey (key, "origvalue");
@@ -402,7 +409,7 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		valueStr = keyString (origValue);
 	}
-	ELEKTRA_ASSERT(elektraStrLen(valueStr) > 1, "Empty strings should have been handled by null plugin");
+	ELEKTRA_ASSERT (elektraStrLen (valueStr) > 1, "Empty strings should have been handled by null plugin");
 	if (type != NULL)
 	{
 		if (elektraStrCmp (keyString (type), "boolean") == 0)
@@ -701,6 +708,10 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 	Key * key;
 	while ((key = ksNext (keys)) != NULL)
 	{
+		if (isTableArray (key) && !isArray (key))
+		{
+			arrays = updateArrayInfo (arrays, key, 0);
+		}
 		Key * name = keyNew (keyName (key), KEY_END);
 		if (name == NULL)
 		{
@@ -713,7 +724,9 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 				size_t index = arrayStringToIndex (keyBaseName (name));
 				keyAddName (name, "..");
 				arrays = updateArrayInfo (arrays, name, index);
-			} else {
+			}
+			else
+			{
 				keyAddName (name, "..");
 			}
 		} while (keyCmp (parent, name) != 0);
@@ -842,4 +855,16 @@ static void writerError (Writer * writer, int err, const char * format, ...)
 			emitElektraError (writer->rootKey, err, NULL);
 		}
 	}
+}
+
+static KeySet * collectSubKeys(Key * parent, KeySet * ks) {
+	KeySet * subs = ksNew(0, KS_END);
+	ksRewind(ks);
+	Key * key;
+	while ((key = ksNext(ks)) != NULL) {
+		if (keyIsBelow(parent, key) == 1) {
+			ksAppendKey(subs, key);
+		}
+	}
+	return subs;
 }

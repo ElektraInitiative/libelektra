@@ -176,16 +176,16 @@ static void testRead (void)
 
 static void testWriteRead (void)
 {
-	testWriteReadArray ();
-	testWriteReadArrayNested ();
-	testWriteReadTableArray ();
-	testWriteReadString ();
+	// testWriteReadArray ();
+	// testWriteReadArrayNested ();
+	 testWriteReadTableArray ();
+	/* testWriteReadString ();
 	testWriteReadInteger ();
 	testWriteReadIntegerOtherBase ();
 	testWriteReadFloat ();
 	testWriteReadDate ();
 	testWriteReadBoolean ();
-	testWriteReadCheckSparseHierarchy ();
+	testWriteReadCheckSparseHierarchy (); */
 }
 
 static void testWriteReadString (void)
@@ -315,6 +315,45 @@ static void testWriteReadTableArray (void)
 	WRITE_KV ("ta/#0/a", "1");
 	SET_ORDER (2);
 	DUP_EXPECTED;
+
+	WRITE_KEY("ta_nest");
+	SET_ORDER(3);
+	SET_TOML_TYPE("tablearray");
+	DUP_EXPECTED;
+	SET_ARRAY("#1");
+
+	WRITE_KEY("ta_nest/#0/nested");
+	SET_ORDER(4);
+	SET_TOML_TYPE("tablearray");
+	DUP_EXPECTED;
+	SET_ARRAY("#1");
+
+	WRITE_KV("ta_nest/#0/nested/#0/a", "0");
+	SET_ORDER(5);
+	DUP_EXPECTED;
+
+	WRITE_KV("ta_nest/#0/nested/#1/a", "1");
+	SET_ORDER(6);
+	DUP_EXPECTED;
+	
+	WRITE_KEY("ta_nest/#1/nested");
+	SET_ORDER(7);
+	SET_TOML_TYPE("tablearray");
+	DUP_EXPECTED;
+	SET_ARRAY("#2");
+
+	WRITE_KV("ta_nest/#1/nested/#0/a", "2");
+	SET_ORDER(8);
+	DUP_EXPECTED;
+
+	WRITE_KV("ta_nest/#1/nested/#1/a", "3");
+	SET_ORDER(9);
+	DUP_EXPECTED;
+
+	WRITE_KV("ta_nest/#1/nested/#2/a", "4");
+	SET_ORDER(10);
+	DUP_EXPECTED;
+
 
 	TEST_RW_FOOT;
 }
@@ -538,7 +577,7 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 
 	PLUGIN_CLOSE ();
 	ksDel (ksRead);
-	remove (filename);
+	// remove (filename);
 }
 
 static void testReadCompare (const char * filename, KeySet * expected)
