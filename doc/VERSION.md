@@ -45,9 +45,9 @@ The following order defines the behavior of Elektra:
 4. The [man pages](/doc/help)
 5. Tutorials (excluding Shell Recorder)
 6. Examples
-7. Implementation
 
-Any inconsistency within this artifacts constitutes a bug.
+Any inconsistency within this artifacts within each other
+or with the implementation constitutes a bug.
 
 ## Compatibility
 
