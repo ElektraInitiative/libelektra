@@ -2,47 +2,68 @@
 
 The version of Elektra is handled with the kdb.h macros
 `KDB_VERSION` which is a string and `KDB_VERSION_MAJOR`,
-`KDB_VERSION_MINOR` and `KDB_VERSION_MICRO` which are
+`KDB_VERSION_MINOR` and `KDB_VERSION_PATCH` which are
 numbers. They represent the public announced version
 information.
 
-The same information can be retrieved at run-time using
+The same information can be retrieved at run-time from KDB:
 
 ```
 system/elektra/version/constants/KDB_VERSION
 system/elektra/version/constants/KDB_VERSION_MAJOR
-system/elektra/version/constants/KDB_VERSION_MICRO
 system/elektra/version/constants/KDB_VERSION_MINOR
+system/elektra/version/constants/KDB_VERSION_PATCH
 ```
 
-This is the API to programs using Elektra. Its interface
-is defined in [src/include/kdb.h](/src/include/kdb.h.in).
-Both applications and plugins use this API.
+## Scope
 
-Additionally there is also a very small API
-to plugins. It consists of only 5 functions
-and is described in [src/plugins/doc/doc.c](/src/plugins/doc/doc.c).
+The version applies to following parts of Elektra:
+
+- the API for programs using Elektra. Its interface
+  is defined in [src/include/kdb.h](/src/include/kdb.h.in).
+  Both applications and plugins use this API.
+- the high-level API as defined in
+  [src/include/elektra.h](src/include/elektra.h).
+- the API to plugins as described in
+  [src/plugins/doc/doc.c](/src/plugins/doc/doc.c).
+- the behavior of plugins that have `infos/status`
+  `compatible`.
+- the CLI tool `kdb` with its behavior on command-line
+  arguments, KDB access and its return values as
+  documented in the man pages.
 
 ## Compatibility
 
 This section describes under which circumstances API
 and ABI incompatibilities may occur. As developer from
-Elektra your mission is to avoid that.
+Elektra your mission is to avoid any unwanted
+incompatibilities.
 The tool icheck against the interfaces mentioned
 above may help you too.
 
-In `0.8.*` the API and ABI must be always forward-compatible,
+Elektra uses a stricter version of
+[Semantic Versioning 2.0.0](https://semver.org/),
+with the extensions explained here.
+
+In `1.0.*` the API and ABI must be always forward-compatible
+and backwards-compatible.
+That means that Elektra's libraries may be upgraded and downgraded
+without any effect on applications, only bug or docu fixes
+are allowed.
+
+In `1.*` the API and ABI must be always forward-compatible,
 but not backwards-compatible.
-That means that a program written and compiled against 0.8.0
-compiles and links against 0.8.1. But because it is
+That means that a program written and compiled against 1.0.0
+compiles and links against 1.1.0. But because it is
 not necessarily backwards-compatible a program written
-for 0.8.1 may not link or compile against elektra 0.8.0
+for 1.1.0 may not link or compile against Elektra 1.0.0
 (but it may do when you use the compatible subset, maybe
 with #ifdefs).
 
 Following points are allowed:
 When you add a new function you break ABI and API backward-
-compatibility, but not forward, so you are allowed to do so.
+compatibility, but not forward, so you are only allowed to
+do so in a `1.*` change.
 
 In the signature you are only allowed to add const to
 any parameter. You are _not_ allowed to use subtypes to
@@ -59,24 +80,34 @@ a complex topic, so better don't underestimate it, but
 generally said the methods should behave on the same data
 the same way.
 
+As we use symbol versioning, the SO_VERSION of Elektra
+always remains the same, even with `*` version changes.
+That means, if we rename a function in the `2.0` release,
+applications that linked against Elektra `1.0` can still
+link against Elektra `2.0` but they do not compile with
+Elektra `2.0` anymore.
+Once the code is adapted to use `2.0`, it cannot
+link against `1.0` anymore.
+
 References:
 http://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html
 http://packages.debian.org/de/sid/icheck
 
-## Increment
+## Bindings
 
-This section describes how to increment the `KDB_VERSION`.
-It consists of a triplet integer `current:revision:age`.
+Bindings are in general tied to Elektra's version number except
+for the patch level. So bindings can only add or change
+functionality when Elektra's core does.
+This is a quite severe restriction but makes the version
+understanding for users much easier. It serves the goal
+that Elektra does not prefer any programming languages,
+instead people expect from Elektra version `x.y.*`
+identical functionality.
 
-`revision` is something which will always incremented when there
-is a new bug fix release.
+The patch level might also be used to fix bugs within bindings.
+This means that applications can only introspect the patch
+level of Elektra by getting `system/elektra/version/constants/KDB_VERSION_PATCH`
+but not by static patch levels the binding might provide.
+This should be no problem, as the patch level is supposed
+to not change the behavior.
 
-`current` and `age` will be incremented by one when you release
-a compatible but changed API. The revision is set back to zero then.
-
-Note: All 3 versioning infos are handled separately!
-
-http://www.gnu.org/software/libtool/manual/libtool.html#Versioning
-http://semver.org/
-
-> TODO write about SO_VERSION and rest version
