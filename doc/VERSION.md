@@ -101,8 +101,8 @@ of Elektra always remains the same, even if the major version changes.
 That means, if we rename or remove a function in the `2.0` release,
 applications that linked against Elektra `1.0` can still link against
 Elektra `2.0` but they do not necessarily compile with Elektra `2.0`
-anymore.  Once the code is adapted to use `2.0`, it cannot link against
-`1.0` anymore.  Note that this feature is only available on platforms
+anymore. Once the code is adapted to use `2.0`, it cannot link against
+`1.0` anymore. Note that this feature is only available on platforms
 that support symbol versioning. For other platforms, all applications
 need to be recompiled for every major version.
 
