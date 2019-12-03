@@ -88,7 +88,7 @@ kdb ls user/tests/constants
 #> user/tests/constants/package/tool_execdir
 #> user/tests/constants/version
 #> user/tests/constants/version/KDB_VERSION_MAJOR
-#> user/tests/constants/version/KDB_VERSION_MICRO
+#> user/tests/constants/version/KDB_VERSION_PATCH
 #> user/tests/constants/version/KDB_VERSION_MINOR
 #> user/tests/constants/version/SO_VERSION
 #> user/tests/constants/version/SO_VERSION_GETENV
