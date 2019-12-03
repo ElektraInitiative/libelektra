@@ -2,7 +2,7 @@
 - infos/author = Jakob Fischer <jakobfischer93@gmail.com>
 - infos/licence = BSD
 - infos/provides = storage/toml
-- infos/needs = directoryvalue base64 null
+- infos/needs = null base64 directoryvalue
 - infos/recommends = type
 - infos/placements = getstorage setstorage
 - infos/status = experimental unfinished nodoc
@@ -56,7 +56,7 @@ sudo kdb umount user/tests/storage
 ## TODOs:
 
 	- Write documentation
-	- Don't depend on order metakey when comparing array elements.
+	- Correct interaction with other plugins, especially directory value
 	- Check, how used plugins are chained (I heard something about wrapper plugin?). Order of filter plugins may be relevant in writeScalar()
 	- Error checks in write.c
 	- Handle writing of sparse arrays somehow (maybe there is a plugin), otherwise create special meaning string to write in TOML file (eg '!ELEKTRA_NO_ELEMENT!')?
