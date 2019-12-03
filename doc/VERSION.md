@@ -128,4 +128,3 @@ level of Elektra by getting `system/elektra/version/constants/KDB_VERSION_PATCH`
 but not by static patch levels the binding might provide.
 This should be no problem, as the patch level is supposed
 to not change the behavior.
-
