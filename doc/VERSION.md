@@ -67,7 +67,7 @@ That means that Elektra's libraries may be upgraded and downgraded
 without any effect on applications, only bug or docu fixes
 are allowed.
 
-In `1.*` the API and ABI must be always forward-compatible,
+In minor or patch version updates the API and ABI must be always forward-compatible,
 but not backwards-compatible.
 That means that a program written and compiled against 1.0.0
 compiles and links against 1.1.0. But because it is
