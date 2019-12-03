@@ -23,7 +23,7 @@ The version applies to following parts of Elektra:
   is declared in [src/include/kdb.h](/src/include/kdb.h.in).
   Both applications and plugins use this API.
 - the high-level API as declared in
-  [src/include/elektra.h](src/include/elektra.h).
+  [src/include/elektra.h](/src/include/elektra.h).
 - the API to plugins as declared in
   [src/plugins/doc/doc.h](/src/plugins/doc/doc.h).
 - the API to [libease](/src/include/kdbease.h)
