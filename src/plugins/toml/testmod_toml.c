@@ -191,6 +191,7 @@ static void testWriteRead (void)
 static void testWriteReadString (void)
 {
 	TEST_RW_HEAD;
+
 	WRITE_KV ("multiline1", "first line\nsecond line");
 	SET_ORDER (0);
 	DUP_EXPECTED;
@@ -229,6 +230,7 @@ static void testWriteReadString (void)
 static void testWriteReadArray (void)
 {
 	TEST_RW_HEAD;
+
 	WRITE_KV ("b/alphabetically/after/array/but/zero/order", "0");
 	SET_ORDER (0);
 	DUP_EXPECTED;
@@ -239,10 +241,13 @@ static void testWriteReadArray (void)
 
 	WRITE_KV ("array/#3", "1337");
 	DUP_EXPECTED;
+
 	WRITE_KV ("array/#0", "666");
 	DUP_EXPECTED;
+
 	WRITE_KV ("array/#2", "1000");
 	DUP_EXPECTED;
+
 	WRITE_KV ("array/#1", "3");
 	DUP_EXPECTED;
 
@@ -250,7 +255,7 @@ static void testWriteReadArray (void)
 	SET_ORDER (2);
 	SET_ARRAY ("#3");
 
-	WRITE_KV ("b/alphabeticall/after/no/order", "0");
+	WRITE_KV ("b/alphabetically/after/no/order", "0");
 	DUP_EXPECTED;
 	SET_ORDER (3);
 
@@ -267,12 +272,16 @@ static void testWriteReadArrayNested (void)
 
 	WRITE_KV ("array/#0/#0/#0", "0");
 	DUP_EXPECTED;
+
 	WRITE_KV ("array/#0/#0/#1", "1");
 	DUP_EXPECTED;
+
 	WRITE_KV ("array/#0/#1/#0", "2");
 	DUP_EXPECTED;
+
 	WRITE_KV ("array/#0/#1/#1", "3");
 	DUP_EXPECTED;
+
 	WRITE_KV ("array/#0/#1/#2", "4");
 	DUP_EXPECTED;
 
@@ -291,13 +300,23 @@ static void testWriteReadArrayNested (void)
 
 static void testWriteReadTableArray (void)
 {
-	// TODO: tests for writeread table arrays
-	/*TEST_RW_HEAD;
-	WRITE_KEY("ta");			ADD_ORDER(0);	ADD_TOML_TYPE("tablearray"); DUP_EXPECTED; ADD_ARRAY("#0");
-	WRITE_KV("ta/#0/b", "0");	ADD_ORDER(1);	DUP_EXPECTED;
-	WRITE_KV("ta/#0/a", "1");	ADD_ORDER(2);	DUP_EXPECTED;
+	TEST_RW_HEAD;
 
-	TEST_RW_FOOT;*/
+	WRITE_KEY ("ta");
+	SET_ORDER (0);
+	SET_TOML_TYPE ("tablearray");
+	DUP_EXPECTED;
+	SET_ARRAY ("#0");
+
+	WRITE_KV ("ta/#0/b", "0");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+
+	WRITE_KV ("ta/#0/a", "1");
+	SET_ORDER (2);
+	DUP_EXPECTED;
+
+	TEST_RW_FOOT;
 }
 
 static void testWriteReadInteger (void)
@@ -307,15 +326,19 @@ static void testWriteReadInteger (void)
 	WRITE_KV ("int1", "+1337");
 	DUP_EXPECTED;
 	SET_ORDER (0);
+
 	WRITE_KV ("int2", "-666");
 	DUP_EXPECTED;
 	SET_ORDER (1);
+
 	WRITE_KV ("int3", "0");
 	DUP_EXPECTED;
 	SET_ORDER (2);
+
 	WRITE_KV ("int4", "3000");
 	DUP_EXPECTED;
 	SET_ORDER (3);
+
 	WRITE_KV ("int5", "+1_999_000");
 	DUP_EXPECTED;
 	SET_ORDER (4);
@@ -332,34 +355,42 @@ static void testWriteReadIntegerOtherBase (void)
 	SET_ORDER (0);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("11251456");
+
 	WRITE_KV ("hex2", "0x00_1");
 	SET_ORDER (1);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("1");
+
 	WRITE_KV ("hex3", "0x0_0");
 	SET_ORDER (2);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("0");
+
 	WRITE_KV ("oct1", "0o13_37");
 	SET_ORDER (3);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("735");
+
 	WRITE_KV ("oct2", "0o0_000");
 	SET_ORDER (4);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("0");
+
 	WRITE_KV ("oct3", "0o1_3_3_7");
 	SET_ORDER (5);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("735");
+
 	WRITE_KV ("bin1", "0b0_0_0_0");
 	SET_ORDER (6);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("0");
+
 	WRITE_KV ("bin2", "0b100_0");
 	SET_ORDER (7);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("8");
+
 	WRITE_KV ("bin3", "0b000");
 	SET_ORDER (8);
 	DUP_EXPECTED;
@@ -375,52 +406,68 @@ static void testWriteReadFloat (void)
 	WRITE_KV ("float1", "+0.3");
 	DUP_EXPECTED;
 	SET_ORDER (0);
+
 	WRITE_KV ("float2", "-7.1_313E+1_0");
 	DUP_EXPECTED;
 	SET_ORDER (1);
 	VALUE_TO_ORIG_NEW_VALUE ("-7.1313E+10");
+
 	WRITE_KV ("float3", "+2e-3");
 	DUP_EXPECTED;
 	SET_ORDER (2);
 	WRITE_KV ("float4", "+20_0.003");
+
 	DUP_EXPECTED;
 	SET_ORDER (3);
 	VALUE_TO_ORIG_NEW_VALUE ("+200.003");
+
 	WRITE_KV ("float5", "+2e-3");
 	DUP_EXPECTED;
 	SET_ORDER (4);
 	WRITE_KV ("float6", "+2e-3");
+
 	DUP_EXPECTED;
 	SET_ORDER (5);
+
 	WRITE_KV ("float7", "nan");
 	DUP_EXPECTED;
 	SET_ORDER (6);
+
 	WRITE_KV ("float8", "+nan");
 	DUP_EXPECTED;
 	SET_ORDER (7);
+
 	WRITE_KV ("float9", "-inf");
 	DUP_EXPECTED;
 	SET_ORDER (8);
+
 	TEST_RW_FOOT;
 }
 
 static void testWriteReadDate (void)
 {
 	TEST_RW_HEAD;
+
 	WRITE_KV ("date1", "2000-12-31T10:00:00Z");
 	DUP_EXPECTED;
 	SET_ORDER (0);
-	WRITE_KV ("date2", "1990-12-31T23:59:60Z") DUP_EXPECTED;
+
+	WRITE_KV ("date2", "1990-12-31T23:59:60Z");
+	DUP_EXPECTED;
 	SET_ORDER (1);
+
 	WRITE_KV ("date3", "1937-01-01T12:00:27.87+00:20");
 	DUP_EXPECTED;
 	SET_ORDER (2);
+
 	WRITE_KV ("date4", "23:59:59.99999");
 	DUP_EXPECTED;
 	SET_ORDER (3);
+
 	WRITE_KV ("date5", "00:00:00");
 	DUP_EXPECTED;
 	SET_ORDER (4);
+
 	TEST_RW_FOOT;
 }
 
@@ -432,6 +479,7 @@ static void testWriteReadBoolean (void)
 	SET_ORDER (0);
 	SET_TYPE ("boolean");
 	DUP_EXPECTED;
+
 	WRITE_KV ("bool2", "0");
 	SET_ORDER (1);
 	SET_TYPE ("boolean");
@@ -441,6 +489,7 @@ static void testWriteReadBoolean (void)
 	SET_ORDER (2);
 	DUP_EXPECTED;
 	SET_TYPE ("string");
+
 	WRITE_KV ("bool4", "false");
 	SET_ORDER (3);
 	DUP_EXPECTED;
@@ -449,6 +498,7 @@ static void testWriteReadBoolean (void)
 	WRITE_KV ("bool5", "0");
 	SET_ORDER (4);
 	DUP_EXPECTED;
+
 	WRITE_KV ("bool6", "1");
 	SET_ORDER (5);
 	DUP_EXPECTED;
@@ -463,6 +513,7 @@ static void testWriteReadCheckSparseHierarchy (void)
 	WRITE_KV ("a", "0");
 	SET_ORDER (0);
 	DUP_EXPECTED;
+
 	WRITE_KV ("a/b/c/d", "1");
 	SET_ORDER (1);
 	DUP_EXPECTED;

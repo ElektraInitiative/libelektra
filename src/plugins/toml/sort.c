@@ -19,9 +19,10 @@ static void assignContinuousOrder (KeySet * ksUnordered, int startOrder);
 static KeySet * extractArrayElements (KeySet * ks);
 static int getMaxOrder (KeySet * ks);
 static ArrayElement * buildArrayElementList (KeySet * ks, KeySet * elements);
-static ArrayElement * appendArrayElement(Key * parent, Key * element, ArrayElement * back);
-static void freeArrayElementList(ArrayElement * root);
+static ArrayElement * appendArrayElement (Key * parent, Key * element, ArrayElement * back);
+static void freeArrayElementList (ArrayElement * root);
 static Key * getArrayElementParent (KeySet * ks, Key * element);
+static Key ** elementListToSortedMemArray (ArrayElement * root, Key * parent, size_t * size);
 static int keyCmpOrderWrapper (const void * va, const void * vb);
 static bool predNeedsOrder (Key * key);
 static bool predIsArray (Key * key);
@@ -39,7 +40,7 @@ Key ** sortKeySet (KeySet * ks)
 	ksDel (unordered);
 
 	KeySet * arrayElements = extractArrayElements (ks);
-	ArrayElement * elementList = buildArrayElementList(ks, arrayElements);
+	ArrayElement * elementList = buildArrayElementList (ks, arrayElements);
 
 	size_t ksSize = ksGetSize (ks);
 	Key ** ksArray = elektraCalloc (sizeof (Key *) * ksSize);
@@ -55,12 +56,12 @@ Key ** sortKeySet (KeySet * ks)
 		return NULL;
 	}
 	qsort (ksArray, ksSize, sizeof (Key *), keyCmpOrderWrapper);
-	size_t elementSize = ksGetSize(arrayElements);
+	size_t elementSize = ksGetSize (arrayElements);
 	Key ** fullKsArray = mergeWithArrayElements (ksArray, ksSize, elementList, elementSize);
 	elektraFree (ksArray);
-	ksAppend(ks, arrayElements);
+	ksAppend (ks, arrayElements);
 	ksDel (arrayElements);
-	freeArrayElementList(elementList);
+	freeArrayElementList (elementList);
 	return fullKsArray;
 }
 
@@ -81,54 +82,98 @@ Key ** mergeWithArrayElements (Key ** ksArray, size_t ksSize, ArrayElement * ele
 		else
 		{
 			fullArray[j] = ksArray[i];
-			for (ArrayElement * ptr = elementList; ptr != NULL; ptr = ptr->next) {
-				if (keyCmp(ksArray[i], ptr->parent) == 0) {
-					fullArray[++j] = ptr->element;
-					// TODO unlink used elements from list
-				}
+			size_t elementCount = 0;
+			Key ** elements = elementListToSortedMemArray (elementList, fullArray[j], &elementCount);
+			if (elements == NULL)
+			{
+				elektraFree (fullArray);
+				return NULL;
+			}
+			for (size_t k = 0; k < elementCount; k++)
+			{
+				fullArray[++j] = elements[k];
 			}
 		}
 	}
 	return fullArray;
 }
 
+static Key ** elementListToSortedMemArray (ArrayElement * root, Key * parent, size_t * size)
+{
+	size_t pos = 0;
+	*size = 16;
+	Key ** keys = (Key **) elektraCalloc (sizeof (Key *) * *size);
+	if (keys == NULL)
+	{
+		return NULL;
+	}
+	for (ArrayElement * ptr = root; ptr != NULL; ptr = ptr->next)
+	{
+		if (keyCmp (parent, ptr->parent) == 0)
+		{
+			// TODO unlink used elements from list
+			keys[pos++] = ptr->element;
+			if (pos == *size)
+			{
+				*size *= 2;
+				if (elektraRealloc ((void **) &keys, *size) < 0)
+				{
+					elektraFree (keys);
+					return NULL;
+				}
+			}
+		}
+	}
+	*size = pos;
+	qsort (keys, *size, sizeof (Key *), keyCmpOrderWrapper);
+	return keys;
+}
+
 static ArrayElement * buildArrayElementList (KeySet * ks, KeySet * elements)
 {
 	ArrayElement * root = NULL;
 	ArrayElement * back = NULL;
-	
+
 	ksRewind (elements);
 	Key * key;
 	while ((key = ksNext (elements)) != NULL)
 	{
-		Key * parent = getArrayElementParent(ks, key);
-		back = appendArrayElement(parent, key, back);
-		if (back == NULL) {
-			freeArrayElementList(root);
-		} else if (root == NULL) {
+		Key * parent = getArrayElementParent (ks, key);
+		back = appendArrayElement (parent, key, back);
+		if (back == NULL)
+		{
+			freeArrayElementList (root);
+		}
+		else if (root == NULL)
+		{
 			root = back;
 		}
 	}
 	return root;
 }
 
-static ArrayElement * appendArrayElement(Key * parent, Key * element, ArrayElement * back) {
+static ArrayElement * appendArrayElement (Key * parent, Key * element, ArrayElement * back)
+{
 	ArrayElement * listElement = elektraCalloc (sizeof (ArrayElement));
-	if (listElement == NULL) {
+	if (listElement == NULL)
+	{
 		return NULL;
 	}
 	listElement->element = element;
 	listElement->parent = parent;
-	if (back != NULL) {
+	if (back != NULL)
+	{
 		back->next = listElement;
 	}
 	return listElement;
 }
 
-static void freeArrayElementList(ArrayElement * root) {
-	while (root != NULL) {
+static void freeArrayElementList (ArrayElement * root)
+{
+	while (root != NULL)
+	{
 		ArrayElement * next = root->next;
-		elektraFree(root);
+		elektraFree (root);
 		root = next;
 	}
 }
@@ -141,8 +186,8 @@ static Key * getArrayElementParent (KeySet * ks, Key * element)
 	{
 		keyAddName (parentName, "..");
 		parent = ksLookup (ks, parentName, 0);
-	} while(parent == NULL || !isArray(parent));
-	keyDel(parentName);
+	} while (parent == NULL || !isArray (parent));
+	keyDel (parentName);
 	return parent;
 }
 static KeySet * extractArrayKeys (KeySet * ks)
