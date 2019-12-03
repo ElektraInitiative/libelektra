@@ -3,10 +3,10 @@
 The version of Elektra is handled with the kdb.h macros
 `KDB_VERSION` which is a string and `KDB_VERSION_MAJOR`,
 `KDB_VERSION_MINOR` and `KDB_VERSION_PATCH` which are
-numbers. They represent the public announced version
+numbers. They represent the publicly announced version
 information.
 
-The same information can be retrieved at run-time from KDB:
+The version can also be retrieved at run-time from KDB:
 
 ```
 system/elektra/version/constants/KDB_VERSION
@@ -20,17 +20,35 @@ system/elektra/version/constants/KDB_VERSION_PATCH
 The version applies to following parts of Elektra:
 
 - the API for programs using Elektra. Its interface
-  is defined in [src/include/kdb.h](/src/include/kdb.h.in).
+  is declared in [src/include/kdb.h](/src/include/kdb.h.in).
   Both applications and plugins use this API.
-- the high-level API as defined in
+- the high-level API as declared in
   [src/include/elektra.h](src/include/elektra.h).
-- the API to plugins as described in
-  [src/plugins/doc/doc.c](/src/plugins/doc/doc.c).
-- the behavior of plugins that have `infos/status`
-  `compatible`.
-- the CLI tool `kdb` with its behavior on command-line
-  arguments, KDB access and its return values as
-  documented in the man pages.
+- the API to plugins as declared in
+  [src/plugins/doc/doc.h](/src/plugins/doc/doc.h).
+- the API to [libease](/src/include/kdbease.h)
+- the API to [libmeta](/src/include/kdbmeta.h)
+- the API to [libmerge](/src/include/kdbmerge.h)
+- the API to [module loading](/src/include/kdbmodule.h)
+- the API to [libnotification](/src/include/kdbnotification.h)
+- the API to [libopts](/src/include/kdbopts.h)
+- plugins that have `infos/status` of `compatible`.
+- the CLI tool `kdb` with its command-line
+  arguments, KDB access and its return values.
+
+## Behavior
+
+The following order defines the behavior of Elektra:
+
+1. [ABI](/tests/abi) test cases
+2. Non-ABI test cases (including Shell Recorder)
+3. The [API documentation](https://doc.libelektra.org/api/latest/html/)
+4. The [man pages](/doc/help)
+5. Tutorials (excluding Shell Recorder)
+6. Examples
+7. Implementation
+
+Any inconsistency within this artifacts constitutes a bug.
 
 ## Compatibility
 
@@ -38,8 +56,8 @@ This section describes under which circumstances API
 and ABI incompatibilities may occur. As developer from
 Elektra your mission is to avoid any unwanted
 incompatibilities.
-The tool icheck against the interfaces mentioned
-above may help you too.
+The tool icheck which checks the interfaces mentioned
+in the Scope may help you.
 
 Elektra uses a stricter version of
 [Semantic Versioning 2.0.0](https://semver.org/),
