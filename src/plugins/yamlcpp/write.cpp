@@ -533,5 +533,5 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 #endif
 
 	ofstream output (parent.getString ());
-	output << data;
+	output << data << endl;
 }

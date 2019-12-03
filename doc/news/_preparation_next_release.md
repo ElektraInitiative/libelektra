@@ -55,11 +55,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Removed. _(Manuel Mausz)_
 
-### <<Plugin2>>
+### YAML CPP
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The plugin now always prints a newline at the end of the YAML output. _(René Schwaiger)_
 
 ### <<Plugin3>>
 
