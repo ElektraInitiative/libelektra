@@ -52,18 +52,11 @@ Every category comes with its own special method of handling the errors.
 Error messages which are emitted from Elektra's C/C++ code have the same message format for all errors
 (See [design decision](../decisions/error_message_format.md)).
 
-The design looks like this with an example reason given:
+The design looks like:
 
 ```
 Sorry, module `MODULE` issued [error|warning] `NR`:
 `ERROR_CODE_DESCRIPTION`: Validation of key "<key>" with string "<value>" failed.
-```
-
-If you need more information you can pass the debug argument `-d` to the command which also shows at which line in the source code
-the error was emitted:
-
-```
-At: <path>/src/plugins/network/network.c:184
 ```
 
 If you want additional information about the mountpoint or the configfile which
@@ -74,7 +67,14 @@ Mountpoint: system/tests/hosts
 Configfile: /etc/hosts.13163:1575216150.11522.tmp
 ```
 
-Error messages from tools (`mount`, `set`, `get`, etc.) may yield different messages such as when providing false command line arguments
+If you need more information you can pass the debug argument `-d` to the command which also shows at which line in the source code
+the error was emitted:
+
+```
+At: <path>/src/plugins/network/network.c:184
+```
+
+Error messages from tools (see [kdb.md](/doc/help/kdb.md)) may yield different messages such as when providing false command line arguments
 or mounting without incorrect permissions.
 
 ## Error handling for developers
@@ -83,8 +83,10 @@ If you want to contribute to Elektra or write your own specific plugin you can u
 eases the error handling. In general the [plugins README](plugins.md) is a good way to start you journey through writing your own plugin.
 All macros can be used by including `kdberrors.h` into the source file.
 For more information about the macros please read through [this](plugins.md#elektra_set_concrete_type_error) section.
-Internally when Elektra emits an error it sets a metadata to a Key which then is later on parsed into the error message.
-All associated metadata as well as a deeper introduction to error handling is given in our [error-handling tutorial](../dev/error-handling.md)
+Internally when Elektra emits an error it sets a [metadata](/doc/dev/metadata.md) to a Key which then is later on parsed into the error message.
+The key name of the error key is the mountpoint of the configuration. If an error occurs, 7 metadata are set which can be seen in our
+[error-handling tutorial](../dev/error-handling.md). Later on those metadata are passed into a message template which renders the message
+as seen above. The same goes for warnings except that there can be up to 100 warnings but only a single error.
 
 ### Catching errors in language bindings
 
@@ -93,9 +95,10 @@ Since errors are built up hierarchically you can catch either general errors (e.
 and react appropriate. For Java for example you can catch errors in the following form:
 
 ```java
-		try
+		try (final KDB kdb = KDB.open (parentKey))
 		{
-			// your Elektra code
+			final KeySet ks = KeySet.create (10, KeySet.KS_END);
+            kdb.get (ks, parentKey);
 		}
 		catch (PermanentException e)
 		{
