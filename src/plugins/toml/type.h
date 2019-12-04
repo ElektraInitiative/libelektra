@@ -11,7 +11,7 @@ typedef struct {
 	regex_t regexHex;
 	regex_t regexFloat;
 	regex_t regexFloatSpecial;
-	regex_t regexBare;
+	// regex_t regexBare;
 	regex_t regexOffsetDt;
 	regex_t regexLocalDt;
 	regex_t regexLocalDate;
@@ -29,7 +29,7 @@ bool isHexadecimal(TypeChecker * checker, const char * str);
 
 bool isFloat(TypeChecker * checker, const char * str);
 
-bool isBareString(TypeChecker * checker, const char * str);
+// bool isBareString(TypeChecker * checker, const char * str);
 
 bool isDateTime(TypeChecker * checker, const char * str);
 bool isOffsetDatetime(TypeChecker * checker, const char * str);
