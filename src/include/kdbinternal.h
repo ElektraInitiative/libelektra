@@ -26,7 +26,7 @@ namespace ckdb
 extern "C" {
 #endif
 
-// can be made simply without elektra's internals, so better keep it as
+// can be made simply without Elektra's internals, so better keep it as
 // extension.
 ssize_t keySetStringF (Key * key, const char * format, ...);
 

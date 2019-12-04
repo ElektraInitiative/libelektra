@@ -126,7 +126,7 @@ const version = () =>
         version: fullVersion,
         major: Number(splitVersions[0]),
         minor: Number(splitVersions[1]),
-        micro: Number(splitVersions[2])
+        patch: Number(splitVersions[2])
       };
     });
 

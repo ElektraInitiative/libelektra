@@ -71,6 +71,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
+- We clarified compatibility requirements for Elektra and its plugins and bindings.
+  Furthermore, we renamed `system/elektra/version/constants/KDB_VERSION_MICRO`
+  to `system/elektra/version/constants/KDB_VERSION_PATCH` to be compatible
+  with [Semantic Versioning 2.0.0](https://semver.org/). _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

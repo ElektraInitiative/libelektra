@@ -16,7 +16,7 @@ class Constants(unittest.TestCase):
 		self.assertIsInstance(kdb.VERSION,       str)
 		self.assertIsInstance(kdb.VERSION_MAJOR, int)
 		self.assertIsInstance(kdb.VERSION_MINOR, int)
-		self.assertIsInstance(kdb.VERSION_MICRO, int)
+		self.assertIsInstance(kdb.VERSION_PATCH, int)
 		self.assertIsNone(kdb.KS_END)
 
 class KDB(unittest.TestCase):
