@@ -36,9 +36,9 @@ public:
 	virtual std::string getLongHelpText () override
 	{
 		return "This command is used to enable or disable the cache and to revert\n"
-			"to the default settings. The default settings will let the system\n"
-			"decide whether to use the cache or not. The clear command will\n"
-			"remove the generated cache files in a safe way.\n";
+		       "to the default settings. The default settings will let the system\n"
+		       "decide whether to use the cache or not. The clear command will\n"
+		       "remove the generated cache files in a safe way.\n";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;
