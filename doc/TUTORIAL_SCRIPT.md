@@ -5,7 +5,7 @@ docker run -it elektra/elektra                                      > NEW LINE
 
 sudo kdb mount hello.js /hello json
 kdb set user/hello/hello/world "Hello World"
-kdb get user/hello/hello/world  
+kdb get user/hello/hello/world
 kdb file user/hello/hello/world
 vi /home/elektra/.config/hello.js
 # Edit file to say "Hello World from File!"
@@ -19,7 +19,7 @@ kdb export user/hello tcl
 kdb export user/hello yaml                                      > NEW LINE
 echo "Remove entries and file"
 kdb rm user/hello/hello/world
-cat /home/elektra/.config/hello.ini     
+cat /home/elektra/.config/hello.ini
 sudo kdb umount /hello
 echo "Now let us change something.. With validation"
 vi specification.ini                                       > NEW START
@@ -38,7 +38,7 @@ kdb editor spec/validation ni
 #edit range to 1000
 echo "Edit specification to fit needs"
 kdb set /validation/timeout 500
-sudo kdb umount spec/validation                                      
+sudo kdb umount spec/validation
 kdb rm -r /validation                                           > NEW END
 echo "What to do next???"
 kdb
