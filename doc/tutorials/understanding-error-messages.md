@@ -49,7 +49,7 @@ Every category comes with its own special method of handling the errors.
 
 ## Error message format
 
-Error messages which are emitted from Elektra's C/C++ code have the same message format for all errors
+Error messages which are emitted from Elektra have the same message format for all errors
 (See [design decision](../decisions/error_message_format.md)).
 
 The design looks like:
