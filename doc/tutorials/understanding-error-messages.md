@@ -82,7 +82,7 @@ or mounting without incorrect permissions.
 If you want to contribute to Elektra or write your own specific plugin you can use the integrated error macros which
 eases the error handling. In general the [plugins README](plugins.md) is a good way to start you journey through writing your own plugin.
 All macros can be used by including `kdberrors.h` into the source file.
-For more information about the macros please read through [this](plugins.md#elektra_set_concrete_type_error) section.
+For more information about the macros please read through `elektra_set_concrete_type_error` section in the [plugins.md](plugins.md#elektra_set_concrete_type_error) tutorial.
 Internally when Elektra emits an error it sets a [metadata](/doc/dev/metadata.md) to a Key which then is later on parsed into the error message.
 The key name of the error key is the mountpoint of the configuration. If an error occurs, 7 metadata are set which can be seen in our
 [error-handling tutorial](../dev/error-handling.md). Later on those metadata are passed into a message template which renders the message
