@@ -114,7 +114,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- <<TODO>>
+- Update `kdb cache` tool synopsis to reflect man page. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
