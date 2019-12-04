@@ -96,7 +96,7 @@ RUN echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 RUN echo "alias sudo='sudo -i' # in this image we do not need to be root" >> /etc/profile
 RUN echo "export PS1='\u $ '" >> /etc/profile
 RUN echo "export LD_LIBRARY_PATH=/usr/local/lib/elektra/" >> /etc/profile
-RUN echo "export ALLUSERSPROFILE=/" >> /etc/profile
+RUN echo "export ALLUSERSPROFILE=''" >> /etc/profile
 
 USER ${USERID}
 WORKDIR /home/elektra
