@@ -57,9 +57,6 @@ int tomlRead (KeySet * keys, Key * parent)
 	}
 
 	ksRewind (keys);
-	printf("+++ DUMP AFTER READ +++\n");
-	dumpKS(keys);
-	ksRewind (keys);
 	return status;
 }
 

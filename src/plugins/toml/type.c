@@ -25,7 +25,7 @@ const char * floatStr = "^[+-]?(0|" SEP_NUM_NZERO_START ")"			// PRE-DOT DIGITS
 						"(\\." SEPARATED_DIGITS("[0-9]") ")?"		// OPTIONAL AFTER-DOT DIGITS
 						"([eE][+-]?" SEP_NUM_NZERO_START ")?$";		// OPTIONAL EXPONENT DIGITS
 const char * floatSpecialStr = "^[+-]?(nan|inf)$";
-const char * bareStr = "^[a-zA-Z0-9_-]+$";
+// const char * bareStr = "^[a-zA-Z0-9_-]+$";
 
 
 const char * offsetDateTimeStr = "^" FULL_DATE TIME_SEPARATOR PARTIAL_TIME TIME_OFFSET "$";
@@ -63,8 +63,8 @@ TypeChecker * createTypeChecker (void)
 	result |= regcomp (&typeChecker->regexFloatSpecial, floatSpecialStr, REG_EXTENDED);
 	ELEKTRA_ASSERT (result == 0, "Special Floats regex could not be compiled: '%s'", floatSpecialStr);
 
-	result |= regcomp (&typeChecker->regexBare, bareStr, REG_EXTENDED);
-	ELEKTRA_ASSERT (result == 0, "Bare regex could not be compiled: '%s'", bareStr);
+	// result |= regcomp (&typeChecker->regexBare, bareStr, REG_EXTENDED);
+	// ELEKTRA_ASSERT (result == 0, "Bare regex could not be compiled: '%s'", bareStr);
 
 	result |= regcomp (&typeChecker->regexOffsetDt, offsetDateTimeStr, REG_EXTENDED);
 	ELEKTRA_ASSERT (result == 0, "Offset datetime regex could not be compiled: '%s'", offsetDateTimeStr);
@@ -89,7 +89,7 @@ void destroyTypeChecker (TypeChecker * checker)
 		regfree (&checker->regexHex);
 		regfree (&checker->regexFloat);
 		regfree (&checker->regexFloatSpecial);
-		regfree (&checker->regexBare);
+		// regfree (&checker->regexBare);
 		regfree (&checker->regexOffsetDt);
 		regfree (&checker->regexLocalDt);
 		regfree (&checker->regexLocalDate);
@@ -130,10 +130,10 @@ bool isFloat (TypeChecker * checker, const char * str)
 		   regexec (&checker->regexFloatSpecial, str, 0, NULL, 0) == 0;
 }
 
-bool isBareString (TypeChecker * checker, const char * str)
+/* bool isBareString (TypeChecker * checker, const char * str)
 {
 	return regexec (&checker->regexBare, str, 0, NULL, 0) == 0;
-}
+}*/
 
 bool isDateTime (TypeChecker * checker, const char * str)
 {

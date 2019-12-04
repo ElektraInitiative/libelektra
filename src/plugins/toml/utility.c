@@ -184,6 +184,11 @@ bool isInlineTable (Key * key)
 	return isTomlType (key, "inlinetable");
 }
 
+bool isSimpleTable (Key * key)
+{
+	return isTomlType (key, "simpletable");
+}
+
 bool isTableArray (Key * key)
 {
 	return isTomlType (key, "tablearray");
@@ -197,6 +202,20 @@ bool isTomlType (Key * key, const char * type)
 		return false;
 	}
 	return elektraStrCmp (keyString (meta), type) == 0;
+}
+
+bool isBareString (const char * str)
+{
+	while (*str != 0)
+	{
+		if (!((*str >= '0' && *str <= '9') || (*str >= 'a' && *str <= 'z') || (*str >= 'A' && *str <= 'Z') || *str == '-' ||
+		      *str == '_'))
+		{
+			return false;
+		}
+		str++;
+	}
+	return true;
 }
 
 char * getRelativeKeyName (const Key * parent, const Key * key)
@@ -282,3 +301,27 @@ KeySet * collectSubKeys (KeySet * ks, Key * parent)
 	}
 	return subKeys;
 }
+
+KeySet * extractSubKeys (KeySet * ks, Key * parent)
+{
+	KeySet * sub = collectSubKeys (ks, parent);
+	keySetDiff (ks, sub);
+	return sub;
+}
+
+/*bool isLeaf (Key * leafCandidate, KeySet * ks)
+{
+	cursor_t cursor = ksGetCursor (ks);
+	ksRewind (ks);
+	Key * key;
+	while ((key = ksNext (ks)) != NULL)
+	{
+		if (keyIsBelow (leafCandidate, key) == 1)
+		{
+			ksSetCursor (ks, cursor);
+			return false;
+		}
+	}
+	ksSetCursor (ks, cursor);
+	return true;
+}*/

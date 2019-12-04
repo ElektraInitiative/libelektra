@@ -91,8 +91,13 @@ static void testWriteRead (void);
 static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadMustError (const char * filename);
 static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected);
+static void testWriteReadAssignments (void);
 static void testWriteReadArray (void);
 static void testWriteReadArrayNested (void);
+static void testWriteReadInlineTable (void);
+static void testWriteReadInlineTableNested (void);
+static void testWriteReadTable (void);
+static void testWriteReadTableNested (void);
 static void testWriteReadTableArray (void);
 static void testWriteReadString (void);
 static void testWriteReadInteger (void);
@@ -101,6 +106,7 @@ static void testWriteReadFloat (void);
 static void testWriteReadDate (void);
 static void testWriteReadBoolean (void);
 static void testWriteReadCheckSparseHierarchy (void);
+static void printError (Key * parent);
 static Key * addKey (KeySet * ks, const char * name, const char * value, const char * orig, const char * type, const char * array,
 		     const char * tomltype, int order);
 
@@ -176,16 +182,47 @@ static void testRead (void)
 
 static void testWriteRead (void)
 {
-	// testWriteReadArray ();
-	// testWriteReadArrayNested ();
-	 testWriteReadTableArray ();
-	/* testWriteReadString ();
+
+	testWriteReadAssignments ();
+	testWriteReadArray ();
+	testWriteReadArrayNested ();
+	testWriteReadTableArray ();
+	testWriteReadTable ();
+	testWriteReadTableNested ();
+	testWriteReadInlineTable ();
+	testWriteReadInlineTableNested ();
+	testWriteReadString ();
 	testWriteReadInteger ();
 	testWriteReadIntegerOtherBase ();
 	testWriteReadFloat ();
 	testWriteReadDate ();
 	testWriteReadBoolean ();
-	testWriteReadCheckSparseHierarchy (); */
+	testWriteReadCheckSparseHierarchy ();
+}
+
+static void testWriteReadAssignments (void)
+{
+	TEST_RW_HEAD;
+
+	WRITE_KV ("a", "0");
+	SET_ORDER (0);
+	DUP_EXPECTED;
+
+	WRITE_KV ("b", "hello");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
+
+	WRITE_KV ("c", "3.1415");
+	SET_ORDER (2);
+	DUP_EXPECTED;
+
+	WRITE_KV ("3/14", "PI");
+	SET_ORDER (3);
+	DUP_EXPECTED
+	SET_TYPE ("string");
+
+	TEST_RW_FOOT;
 }
 
 static void testWriteReadString (void)
@@ -231,11 +268,11 @@ static void testWriteReadArray (void)
 {
 	TEST_RW_HEAD;
 
-	WRITE_KV ("b/alphabetically/after/array/but/zero/order", "0");
+	WRITE_KV ("b/alphabetically/after/array/but/with/zero/order", "0");
 	SET_ORDER (0);
 	DUP_EXPECTED;
 
-	WRITE_KV ("aa/alphabetically/before/array/but/no/order", "0");
+	WRITE_KV ("aa/alphabetically/before/array/and/no/order", "0");
 	DUP_EXPECTED;
 	SET_ORDER (1);
 
@@ -298,6 +335,140 @@ static void testWriteReadArrayNested (void)
 	TEST_RW_FOOT;
 }
 
+static void testWriteReadInlineTable (void)
+{
+	TEST_RW_HEAD;
+
+	WRITE_KEY ("inl_table");
+	SET_ORDER (0);
+	SET_TOML_TYPE ("inlinetable");
+	DUP_EXPECTED;
+
+	WRITE_KV ("inl_table/b", "0");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+
+	WRITE_KV ("inl_table/a", "1");
+	SET_ORDER (2);
+	DUP_EXPECTED;
+
+	WRITE_KV ("inl_table/c", "2");
+	SET_ORDER (3);
+	DUP_EXPECTED;
+
+	TEST_RW_FOOT;
+}
+
+static void testWriteReadInlineTableNested (void)
+{
+	TEST_RW_HEAD;
+
+	WRITE_KEY ("inl_table");
+	SET_ORDER (0);
+	SET_TOML_TYPE ("inlinetable");
+	DUP_EXPECTED;
+
+	WRITE_KV ("inl_table/value0", "0");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+
+	WRITE_KEY ("inl_table/nest");
+	SET_TOML_TYPE ("inlinetable");
+	SET_ORDER (2);
+	DUP_EXPECTED;
+
+	WRITE_KV ("inl_table/nest/value1", "1");
+	SET_ORDER (3);
+	DUP_EXPECTED;
+
+	WRITE_KEY ("inl_table/nest/another/nest");
+	SET_TOML_TYPE ("inlinetable");
+	SET_ORDER (4);
+	DUP_EXPECTED;
+
+	WRITE_KV ("inl_table/nest/another/nest/value2", "2");
+	SET_ORDER (5);
+	DUP_EXPECTED;
+
+	TEST_RW_FOOT;
+}
+
+static void testWriteReadTable (void)
+{
+	TEST_RW_HEAD;
+
+	WRITE_KEY ("table");
+	SET_ORDER (0);
+	SET_TOML_TYPE ("simpletable");
+	DUP_EXPECTED;
+
+	WRITE_KV ("table/b", "0");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+
+	WRITE_KV ("table/a", "1");
+	SET_ORDER (2);
+	DUP_EXPECTED;
+
+	WRITE_KEY ("another/table");
+	SET_ORDER (3);
+	SET_TOML_TYPE ("simpletable");
+	DUP_EXPECTED;
+
+	WRITE_KV ("another/table/b", "0");
+	SET_ORDER (4);
+	DUP_EXPECTED;
+
+	WRITE_KV ("another/table/a", "1");
+	SET_ORDER (5);
+	DUP_EXPECTED;
+
+	TEST_RW_FOOT;
+}
+
+static void testWriteReadTableNested (void)
+{
+	TEST_RW_HEAD;
+
+	WRITE_KEY ("table");
+	SET_ORDER (0);
+	SET_TOML_TYPE ("simpletable");
+	DUP_EXPECTED;
+
+	WRITE_KV ("table/y", "0");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+
+	WRITE_KEY ("table/nested");
+	SET_ORDER (2);
+	SET_TOML_TYPE ("simpletable");
+	DUP_EXPECTED;
+
+	WRITE_KV ("table/nested/a", "1");
+	SET_ORDER (3);
+	DUP_EXPECTED;
+
+	WRITE_KEY ("table/nested/another/three/levels");
+	SET_ORDER (4);
+	SET_TOML_TYPE ("simpletable");
+	DUP_EXPECTED;
+
+	WRITE_KV ("table/nested/another/three/levels/b", "2");
+	SET_ORDER (5);
+	DUP_EXPECTED;
+
+	WRITE_KEY ("unrelated/table");
+	SET_ORDER (6);
+	SET_TOML_TYPE ("simpletable");
+	DUP_EXPECTED;
+
+	WRITE_KV ("unrelated/table/c", "3");
+	SET_ORDER (7);
+	DUP_EXPECTED;
+
+	TEST_RW_FOOT;
+}
+
 static void testWriteReadTableArray (void)
 {
 	TEST_RW_HEAD;
@@ -316,42 +487,42 @@ static void testWriteReadTableArray (void)
 	SET_ORDER (2);
 	DUP_EXPECTED;
 
-	WRITE_KEY("ta_nest");
-	SET_ORDER(3);
-	SET_TOML_TYPE("tablearray");
+	WRITE_KEY ("ta_nest");
+	SET_ORDER (3);
+	SET_TOML_TYPE ("tablearray");
 	DUP_EXPECTED;
-	SET_ARRAY("#1");
+	SET_ARRAY ("#1");
 
-	WRITE_KEY("ta_nest/#0/nested");
-	SET_ORDER(4);
-	SET_TOML_TYPE("tablearray");
+	WRITE_KEY ("ta_nest/#0/nested");
+	SET_ORDER (4);
+	SET_TOML_TYPE ("tablearray");
 	DUP_EXPECTED;
-	SET_ARRAY("#1");
+	SET_ARRAY ("#1");
 
-	WRITE_KV("ta_nest/#0/nested/#0/a", "0");
-	SET_ORDER(5);
-	DUP_EXPECTED;
-
-	WRITE_KV("ta_nest/#0/nested/#1/a", "1");
-	SET_ORDER(6);
-	DUP_EXPECTED;
-	
-	WRITE_KEY("ta_nest/#1/nested");
-	SET_ORDER(7);
-	SET_TOML_TYPE("tablearray");
-	DUP_EXPECTED;
-	SET_ARRAY("#2");
-
-	WRITE_KV("ta_nest/#1/nested/#0/a", "2");
-	SET_ORDER(8);
+	WRITE_KV ("ta_nest/#0/nested/#0/a", "0");
+	SET_ORDER (5);
 	DUP_EXPECTED;
 
-	WRITE_KV("ta_nest/#1/nested/#1/a", "3");
-	SET_ORDER(9);
+	WRITE_KV ("ta_nest/#0/nested/#1/a", "1");
+	SET_ORDER (6);
 	DUP_EXPECTED;
 
-	WRITE_KV("ta_nest/#1/nested/#2/a", "4");
-	SET_ORDER(10);
+	WRITE_KEY ("ta_nest/#1/nested");
+	SET_ORDER (7);
+	SET_TOML_TYPE ("tablearray");
+	DUP_EXPECTED;
+	SET_ARRAY ("#2");
+
+	WRITE_KV ("ta_nest/#1/nested/#0/a", "2");
+	SET_ORDER (8);
+	DUP_EXPECTED;
+
+	WRITE_KV ("ta_nest/#1/nested/#1/a", "3");
+	SET_ORDER (9);
+	DUP_EXPECTED;
+
+	WRITE_KV ("ta_nest/#1/nested/#2/a", "4");
+	SET_ORDER (10);
 	DUP_EXPECTED;
 
 
@@ -568,15 +739,30 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
 
-	succeed_if (plugin->kdbSet (plugin, ksWrite, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not write keys");
+	int setStatus = plugin->kdbSet (plugin, ksWrite, parentKey);
+	succeed_if (setStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not write keys");
+	if (setStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	{
+		printError (parentKey);
+	}
+	else
+	{
+		KeySet * ksRead = ksNew (0, KS_END);
+		int getStatus = plugin->kdbGet (plugin, ksRead, parentKey);
+		succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read written keys");
+		if (getStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+		{
+			printError (parentKey);
+		}
+		else
+		{
+			compare_keyset (expected, ksRead);
+		}
+		ksDel (ksRead);
+	}
 
-	KeySet * ksRead = ksNew (0, KS_END);
-	succeed_if (plugin->kdbGet (plugin, ksRead, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read written keys");
-
-	compare_keyset (expected, ksRead);
 
 	PLUGIN_CLOSE ();
-	ksDel (ksRead);
 	// remove (filename);
 }
 
@@ -587,10 +773,18 @@ static void testReadCompare (const char * filename, KeySet * expected)
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
 	KeySet * ks = ksNew (0, KS_END);
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
-		    "Expected kdbGet to succeed, but got failure.");
 
-	compare_keyset (expected, ks);
+	int getStatus = plugin->kdbGet (plugin, ks, parentKey);
+	succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read keys");
+
+	if (getStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	{
+		printError (parentKey);
+	}
+	else
+	{
+		compare_keyset (expected, ks);
+	}
 
 	ksDel (ks);
 	PLUGIN_CLOSE ();
@@ -608,6 +802,15 @@ static void testReadMustError (const char * filename)
 
 	ksDel (ks);
 	PLUGIN_CLOSE ();
+}
+
+static void printError (Key * parent)
+{
+	const Key * meta = findMetaKey (parent, "error/reason");
+	if (meta != NULL)
+	{
+		printf ("ERROR: %s\n", keyString (meta));
+	}
 }
 
 static Key * addKey (KeySet * ks, const char * name, const char * value, const char * orig, const char * type, const char * array,
