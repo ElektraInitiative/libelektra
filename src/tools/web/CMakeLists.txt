@@ -39,37 +39,23 @@ else ()
 				  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 		if (BUILD_SHARED)
-			set (ELEKTRA_LIBS_ELEKTRAD
-			     elektra-core
-			     elektra-kdb
-			     elektra-plugin
-			     elektra-ease
-			     elektra-meta)
+			set (ELEKTRA_LIBS_ELEKTRAD elektra-core elektra-kdb elektra-plugin elektra-ease elektra-meta)
 		elseif (BUILD_FULL)
 			set (ELEKTRA_LIBS_ELEKTRAD elektra-full)
 		elseif (BUILD_STATIC)
 			set (ELEKTRA_LIBS_ELEKTRAD elektra-static)
 		endif (BUILD_SHARED)
-		add_custom_command (OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
-				    COMMAND ${CMAKE_COMMAND}
-					    ARGS
-					    -E
-					    env
-					    GO111MODULE=on
-					    PKG_CONFIG_PATH=${CMAKE_CURRENT_BINARY_DIR}/elektrad
-					    ${GO_EXECUTABLE}
-					    build
-					    -o
-					    "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
-				    VERBATIM
-				    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/elektrad"
-				    DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go" ${ELEKTRA_LIBS_ELEKTRAD})
+		add_custom_command (
+			OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
+			COMMAND
+				${CMAKE_COMMAND} ARGS -E env GO111MODULE=on PKG_CONFIG_PATH=${CMAKE_CURRENT_BINARY_DIR}/elektrad
+				${GO_EXECUTABLE} build -o "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
+			VERBATIM
+			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/elektrad"
+			DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/elektrad/main.go" ${ELEKTRA_LIBS_ELEKTRAD})
 		add_custom_target (elektrad ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad")
 
-		execute_process (COMMAND ${CMAKE_COMMAND}
-					 -E
-					 create_symlink
-					 "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
+		execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
 					 "${CMAKE_BINARY_DIR}/bin/elektrad")
 
 		# build elektra-web
@@ -104,10 +90,12 @@ else ()
 		find_program (DREDD_EXECUTABLE "dredd")
 		if (DREDD_EXECUTABLE)
 			# testing is possible
-			add_test (NAME test_elektra_web COMMAND test.sh WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-			set_property (TEST test_elektra_web
-				      PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
-					       "PKG_CONFIG_PATH=${CMAKE_CURRENT_BINARY_DIR}/elektrad")
+			add_test (
+				NAME test_elektra_web
+				COMMAND test.sh
+				WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+			set_property (TEST test_elektra_web PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+								     "PKG_CONFIG_PATH=${CMAKE_CURRENT_BINARY_DIR}/elektrad")
 		else (DREDD_EXECUTABLE)
 			message (WARNING "Exclude tests for `elektrad`, since `dredd` was not found.")
 		endif (DREDD_EXECUTABLE)
