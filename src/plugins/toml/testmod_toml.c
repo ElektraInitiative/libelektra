@@ -85,6 +85,18 @@
 	{                                                                                                                                  \
 		if (lastKey != NULL) setOrderForKey (lastKey, order);                                                                      \
 	}
+#define SET_COMMENT(index, text, spaces)                                                                                                   \
+	{                                                                                                                                  \
+		if (lastKey != NULL) setComment (lastKey, text, "#", spaces, index);                                                       \
+	}
+#define SET_INLINE_COMMENT(text, spaces)                                                                                                   \
+	{                                                                                                                                  \
+		if (lastKey != NULL) setComment (lastKey, text, "#", spaces, 0);                                                           \
+	}
+#define SET_EMPTY_LINE(index)                                                                                                              \
+	{                                                                                                                                  \
+		if (lastKey != NULL) setComment (lastKey, NULL, "", 0, index);                                                             \
+	}
 
 static void testRead (void);
 static void testWriteRead (void);
@@ -106,9 +118,12 @@ static void testWriteReadFloat (void);
 static void testWriteReadDate (void);
 static void testWriteReadBoolean (void);
 static void testWriteReadCheckSparseHierarchy (void);
+static void testWriteReadComments (void);
+static void testWriteReadCommentsArray (void);
 static void printError (Key * parent);
 static Key * addKey (KeySet * ks, const char * name, const char * value, const char * orig, const char * type, const char * array,
 		     const char * tomltype, int order);
+static void setComment (Key * key, const char * comment, const char * start, size_t spaces, size_t index);
 
 int main (int argc, char ** argv)
 {
@@ -182,7 +197,6 @@ static void testRead (void)
 
 static void testWriteRead (void)
 {
-
 	testWriteReadAssignments ();
 	testWriteReadArray ();
 	testWriteReadArrayNested ();
@@ -198,7 +212,11 @@ static void testWriteRead (void)
 	testWriteReadDate ();
 	testWriteReadBoolean ();
 	testWriteReadCheckSparseHierarchy ();
+	testWriteReadComments ();
+	testWriteReadCommentsArray();
 }
+
+
 
 static void testWriteReadAssignments (void)
 {
@@ -731,6 +749,71 @@ static void testWriteReadCheckSparseHierarchy (void)
 	TEST_RW_FOOT;
 }
 
+static void testWriteReadComments (void)
+{
+	TEST_RW_HEAD;
+
+	WRITE_KV ("a", "0");
+	SET_ORDER (0);
+	SET_EMPTY_LINE (1);
+	SET_EMPTY_LINE (2);
+	SET_COMMENT (3, "test comment 1", 4);
+	SET_COMMENT (4, "test comment 2", 0);
+	SET_INLINE_COMMENT ("inline test", 4);
+	DUP_EXPECTED;
+
+	WRITE_KV ("b", "1");
+	SET_ORDER (1);
+	SET_EMPTY_LINE (1);
+	SET_COMMENT (2, "test comment 3", 4);
+	SET_EMPTY_LINE (3);
+	SET_COMMENT (4, "test comment 4", 0);
+	SET_EMPTY_LINE (5);
+	SET_INLINE_COMMENT ("inline test 1", 4);
+	DUP_EXPECTED;
+
+	WRITE_KEY ("table");
+	SET_TOML_TYPE("simpletable");
+	SET_ORDER (2);
+	SET_EMPTY_LINE (1);
+	SET_COMMENT (2, "test comment 5", 4);
+	SET_EMPTY_LINE (3);
+	SET_COMMENT (4, "test comment 6", 0);
+	SET_INLINE_COMMENT ("inline test 3", 4);
+	DUP_EXPECTED;
+
+
+	TEST_RW_FOOT;
+}
+
+static void testWriteReadCommentsArray (void)
+{
+	TEST_RW_HEAD;
+
+	WRITE_KEY ("array");
+	SET_ORDER (0);
+	SET_ARRAY("#2");
+	SET_INLINE_COMMENT("array inline comment", 1);
+	DUP_EXPECTED;
+
+	WRITE_KV("array/#0", "0");
+	SET_COMMENT(1, "element 1 comment", 4);
+	SET_INLINE_COMMENT("element 1 inline", 4);
+	DUP_EXPECTED;
+
+	WRITE_KV("array/#1", "1");
+	SET_COMMENT(1, "element 2 comment", 4);
+	SET_INLINE_COMMENT("element 2 inline", 4);
+	DUP_EXPECTED;
+
+	WRITE_KV("array/#2", "2");
+	SET_COMMENT(1, "element 3 comment", 4);
+	SET_INLINE_COMMENT("element 3 inline", 4);
+	DUP_EXPECTED;
+
+	TEST_RW_FOOT;
+}
+
 static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 {
 	const char * filename = "test_write_read.toml";
@@ -757,6 +840,8 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 		else
 		{
 			compare_keyset (expected, ksRead);
+			dumpKS(ksWrite);
+			dumpKS(ksRead);
 		}
 		ksDel (ksRead);
 	}
@@ -847,4 +932,22 @@ static Key * addKey (KeySet * ks, const char * name, const char * value, const c
 	}
 	ksAppendKey (ks, key);
 	return key;
+}
+
+static void setComment (Key * key, const char * comment, const char * start, size_t spaces, size_t index)
+{
+	char commentBase[64];
+	char commentKey[128];
+	char * indexStr = indexToArrayString (index);
+	snprintf (commentBase, 64, "comment/%s", indexStr);
+	elektraFree (indexStr);
+	if (comment != NULL)
+	{
+		keySetMeta (key, commentBase, comment);
+	}
+	snprintf (commentKey, 128, "%s/start", commentBase);
+	keySetMeta (key, commentKey, start);
+
+	snprintf (commentKey, 128, "%s/space", commentBase);
+	setPlainIntMeta (key, commentKey, spaces);
 }
