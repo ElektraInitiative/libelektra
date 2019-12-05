@@ -144,7 +144,7 @@ you up to date with the multi-language support provided by Elektra.
 ### CMake
 
 - We fixed warnings about CMake policy [CMP0078](https://cmake.org/cmake/help/latest/policy/CMP0078.html) and [CMP0086](https://cmake.org/cmake/help/latest/policy/CMP0086.html). _(René Schwaiger)_
-- <<TODO>>
+- The CMake functions `add_msr_test` and `add_msr_test_plugin` do not export the list of required plugins as environment variable any more. _(René Schwaiger)_
 - The CMake code of the code generation does not print warnings about unknown regex operators any more. _(René Schwaiger)_
 - <<TODO>>
 

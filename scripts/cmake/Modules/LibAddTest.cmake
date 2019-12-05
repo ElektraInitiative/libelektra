@@ -87,7 +87,7 @@ endmacro (add_gtest)
 # ~~~
 function (add_msr_test NAME FILE)
 	set (TEST_NAME testshell_markdown_${NAME})
-	set (multiValueArgs REQUIRED_PLUGINS ENVIRONMENT)
+	set (multiValueArgs ENVIRONMENT REQUIRED_PLUGINS REQUIRED_TOOLS)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	foreach (plugin ${ARG_REQUIRED_PLUGINS})
@@ -97,8 +97,6 @@ function (add_msr_test NAME FILE)
 		endif (plugin_index GREATER -1)
 	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
 
-	set (multiValueArgs REQUIRED_TOOLS ENVIRONMENT)
-	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	foreach (tool ${ARG_REQUIRED_TOOLS})
 		list (FIND REMOVED_TOOLS ${tool} tool_index)
 		if (tool_index GREATER -1)
@@ -135,12 +133,9 @@ endfunction ()
 # 	This optional argument specifies environment variables defined while CTest executes the MSR test.
 # ~~~
 function (add_msr_test_plugin PLUGIN)
-	set (multiValueArgs REQUIRED_PLUGINS)
+	set (multiValueArgs REQUIRED_PLUGINS REQUIRED_TOOLS)
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	list (APPEND ARG_REQUIRED_PLUGINS ${PLUGIN})
-
-	set (multiValueArgs REQUIRED_TOOLS)
-	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	list (APPEND ARG_REQUIRED_TOOLS ${TOOL})
 
 	add_msr_test (
