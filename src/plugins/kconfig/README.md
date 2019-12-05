@@ -7,11 +7,11 @@
 - infos/placements = getstorage setstorage
 - infos/status = recommended maintained compatible specific experimental unfinished nodoc concept
 - infos/metadata =
-- infos/description = Reads the KConfig INI format
+- infos/description = Reads and writes the KConfig INI format
 
 ## Introduction
 
-This plugin can be used to parse a [KConfig](https://cgit.kde.org/kconfig.git) INI file into a KeySet.
+This plugin can be used to parse and serialize a [KConfig](https://cgit.kde.org/kconfig.git) INI file.
 
 Information about the syntax:
 
@@ -73,6 +73,13 @@ echo 'key=Value' > `kdb file /tests/kconfig`
 kdb get /tests/kconfig/key
 #> Value
 
+# Set the value to Example
+kdb set /tests/kconfig/key Example
+
+# Verify that the value has changed in the file too
+cat `kdb file /tests/kconfig`
+#> key=Example
+
 # Manually add a gorup to the database
 echo '[group][subgroup]' >> `kdb file /tests/kconfig`
 
@@ -86,6 +93,19 @@ kdb get /tests/kconfig/group/subgroup/key.name
 # Retrieve the meta values
 kdb meta-get /tests/kconfig/group/subgroup/key.name kconfig
 #> ai
+
+# Manually add a group and a localized key
+echo '[localized keys]' >> `kdb file /tests/kconfig`
+echo 'greeting[en]=Hello' >> `kdb file /tests/kconfig`
+echo 'greeting[de]=Hallo' >> `kdb file /tests/kconfig`
+
+# Retrieve the english greeting
+kdb get '/tests/kconfig/localized keys/greeting[en]'
+#> Hello
+
+# Retrieve the german greeting
+kdb get '/tests/kconfig/localized keys/greeting[de]'
+#> Hallo
 
 # Undo modifications to the database
 sudo kdb umount /tests/kconfig

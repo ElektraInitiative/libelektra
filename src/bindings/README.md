@@ -14,10 +14,9 @@ List of currently supported bindings (use `ALL;-EXPERIMENTAL;-DEPRECATED`):
 - [cpp](cpp/) C++11 bindings (included per default)
 - [glib](glib/) GLib bindings
 - [intercept_env](intercept/env/) Intercepts calls to environment (e.g. getenv())
-- [swig_lua](swig/lua/) Lua SWIG bindings
-- [swig_python](swig/python/) Python 3 SWIG bindings
-- [swig_python2](swig/python2/) Python 2 SWIG bindings
-- [swig_ruby](swig/ruby/) Ruby bindings
+- [lua](swig/lua/) Lua SWIG bindings
+- [python](swig/python/) Python 3 SWIG bindings
+- [ruby](swig/ruby/) Ruby bindings
 - [jna](jna/) A full java binding using JNA
 - [rust](rust/) Bindings for the low-level API in Rust
 

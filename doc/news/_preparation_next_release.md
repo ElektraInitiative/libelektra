@@ -39,17 +39,25 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### Augeas
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Improved error message for augeas to show lensPath. _(Michael Zronek)_
 
-### <<Plugin2>>
+### KConfig
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- We implemented the methods that save a KeySet into a file with the KConfig Ini format. _(Dardan Haxhimustafa)_
+
+### SWIG
+
+- Configure line (-DBINDINGS="..") for SWIG based bindings have been changed from `swig_foo` to `foo`. _(Manuel Mausz)_
+
+### SWIG/python2
+
+- Removed. _(Manuel Mausz)_
+
+### YAML CPP
+
+- The plugin now always prints a newline at the end of the YAML output. _(René Schwaiger)_
 
 ### <<Plugin3>>
 
@@ -63,6 +71,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
+- We clarified compatibility requirements for Elektra and its plugins and bindings.
+  Furthermore, we renamed `system/elektra/version/constants/KDB_VERSION_MICRO`
+  to `system/elektra/version/constants/KDB_VERSION_PATCH` to be compatible
+  with [Semantic Versioning 2.0.0](https://semver.org/). _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -96,11 +108,13 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up to date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
+### python2
 
-### <<Binding2>>
+- Removed. _(Manuel Mausz)_
 
-### <<Binding3>>
+### Rust
+
+- Published `elektra` and `elektra-sys` versions `0.9.1` to crates.io. _(Philipp Gackstatter)_
 
 ## Tools
 
@@ -135,12 +149,13 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- <<TODO>>
+- improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
 - <<TODO>>
 - <<TODO>>
 
 ## Tests
 
+- We now use [Google Test](https://github.com/google/googletest) `1.10` to test Elektra. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -169,7 +184,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- <<TODO>>
+- Fixed [coveralls](https://coveralls.io/github/ElektraInitiative/libelektra) coverage report. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -184,8 +199,8 @@ you up to date with the multi-language support provided by Elektra.
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- <<TODO>>
-- <<TODO>>
+- Re-enable website auto-deployment. _(Mihael Pranjić)_
+- Update docker images for website frontend and backend to debian buster. Update dependencies to newer versions. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Outlook

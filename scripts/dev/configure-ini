@@ -15,6 +15,6 @@ cmake -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DKDB_DEFAULT_STORAGE="ini" \
 	-DPLUGINS="ALL" \
 	-DTOOLS="ALL" \
-	-DBINDINGS="ALL;-swig_ruby" \
+	-DBINDINGS="ALL;-ruby" \
 	-DGTEST_ROOT="/usr/src/googletest/googletest" \
 	$*

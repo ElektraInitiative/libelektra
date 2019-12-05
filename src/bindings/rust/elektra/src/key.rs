@@ -1,3 +1,35 @@
+//! `StringKey` and `BinaryKey` are the essential structs that encapsulate name, value and metainfo.
+//!
+//! They are equivalent, except for the values that they hold.
+//! Their common functionality is split into two traits, [`ReadableKey`](../readable/trait.ReadableKey.html)
+//! and [`WriteableKey`](../writeable/trait.WriteableKey.html). Usually, you
+//! will have to import both to make use of the methods they provide.
+//! # Example
+//! ```
+//! # use elektra::{KeyBuilder,StringKey,WriteableKey,ReadableKey};
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! let mut key = StringKey::new("user/test/language")?;
+//! key.set_value("rust");
+//!
+//! assert_eq!(key.value(), "rust");
+//! assert_eq!(key.name(), "user/test/language");
+//!
+//! # Ok(())
+//! # }
+//! ```
+//! # Example
+//! The key can also hold an arbitrary number of metakeys, that are always `StringKey`s.
+//! ```
+//! # use elektra::{KeyBuilder,StringKey,WriteableKey,ReadableKey};
+//! # fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! let mut key = StringKey::new("user/test/meta")?;
+//! key.set_meta("rust", "😃");
+//!
+//! assert_eq!(key.meta("rust")?.value(), "😃");
+//! # Ok(())
+//! # }
+//! ```
+
 use crate::{ReadOnly, ReadableKey, WriteableKey};
 use elektra_sys;
 use std::borrow::Cow;

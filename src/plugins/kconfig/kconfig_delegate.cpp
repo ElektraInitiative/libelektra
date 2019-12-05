@@ -43,12 +43,15 @@ kdb::KeySet KconfigDelegate::getConfig (Key const & parent)
 
 	ELEKTRA_LOG_DEBUG ("Parse `%s` using the kconfig plugin", parent.getString ().c_str ());
 	auto filePtr = new std::ifstream{ parent.getString () };
-	if (!filePtr->is_open ())
+	bool isFileOpen = filePtr->is_open ();
+	std::unique_ptr<std::istream> file{ filePtr };
+
+	if (!isFileOpen)
 	{
+		delete filePtr;
 		throw std::runtime_error ("Could not open the file.");
 	}
 
-	std::unique_ptr<std::istream> file{ filePtr };
 
 	ELEKTRA_LOG_DEBUG ("The file opened successfully. Start parsing");
 	try

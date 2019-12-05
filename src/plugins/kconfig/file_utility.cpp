@@ -11,7 +11,7 @@ FileUtility::FileUtility (std::string filenameParam, std::unique_ptr<std::istrea
 
 char FileUtility::peekNextChar ()
 {
-	return this->file->peek ();
+	return static_cast<char> (this->file->peek ());
 }
 
 bool FileUtility::isNextCharEOF ()
@@ -66,7 +66,7 @@ void FileUtility::skipLine ()
 	++currentLine;
 	while (true)
 	{
-		switch (this->file->get ())
+		switch (static_cast<char> (this->file->get ()))
 		{
 		case character_newline:
 			return;
@@ -101,7 +101,7 @@ void FileUtility::skipLineIfEmptyOrComment ()
 
 inline void FileUtility::readEscapedChar (std::ostream & str)
 {
-	switch (this->file->get ())
+	switch (static_cast<char> (this->file->get ()))
 	{
 	case 'n':
 		str << '\n';
@@ -125,7 +125,7 @@ void FileUtility::readUntilChar (std::ostream & str, const char & delimiter)
 	char c;
 	while (true)
 	{
-		c = this->file->get ();
+		c = static_cast<char> (this->file->get ());
 
 		if (c == EOF && isNextCharEOF ())
 		{
@@ -152,7 +152,7 @@ void FileUtility::readUntilChar (std::ostream & str, const char & delimiterA, co
 	char c;
 	while (true)
 	{
-		c = this->file->get ();
+		c = static_cast<char> (this->file->get ());
 		if (c == EOF && isNextCharEOF ())
 		{
 			break;

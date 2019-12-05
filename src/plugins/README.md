@@ -243,7 +243,6 @@ binding during run-time.
 - [jni](jni/) java plugins started by jni, works with jna plugins
 - [lua](lua/) Lua plugins
 - [python](python/) Python 3 plugins
-- [python2](python2/) Python 2 plugins (deprecated)
 - [ruby](ruby/) Ruby plugins
 - [shell](shell/) executes shell commandos
 

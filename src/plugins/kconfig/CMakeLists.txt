@@ -6,4 +6,5 @@ add_plugin (
 		kconfig_delegate.cpp
 		kconfig_parser.cpp
 		kconfig_parser_exception.cpp
+		kconfig_serializer.cpp
 		file_utility.cpp)

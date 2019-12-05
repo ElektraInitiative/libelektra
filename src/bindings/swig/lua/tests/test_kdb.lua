@@ -12,7 +12,7 @@ assert(type(kdb.DEBUG)     == "number")
 assert(type(kdb.VERSION) == "string")
 assert(type(kdb.VERSION_MAJOR) == "number")
 assert(type(kdb.VERSION_MINOR) == "number")
-assert(type(kdb.VERSION_MICRO) == "number")
+assert(type(kdb.VERSION_PATCH) == "number")
 assert(kdb.KS_END == nil)
 
 -- ctor
