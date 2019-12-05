@@ -17,8 +17,19 @@ sudo kdb set system/tests/hosts/ipv4/my 88.198.134.1777
 sudo kdb umount system/tests/hosts
 ```
 
+In this example we mount the hosts file under `/etc/hosts` into Elektra. The `hosts` plugin will also validate
+our input which is shown in the next line where we tried to set an invalid IP address. With this we can add or edit entries
+by using the tools of Elektra and do not need to edit the file directly.
+
 Note that you can always pass the **command line arguments -v (verbose) and -d (debug)** to the command line to get
-extra information. Especially if you want to locate the configuration file which caused the error.
+extra information. Especially if you want to locate the configuration file which caused the error. Providing both parameter would
+yield this additional message:
+
+```
+Mountpoint: system/tests/hosts
+Configfile: /etc/hosts.13163:1575216150.11522.tmp
+At: <path>/src/plugins/network/network.c:184
+```
 
 You can see that every message comes with an error code which is `C03200` in the upper example which is a semantic validation error.
 Since v0.9 Elektra has hierarchically structured error codes that are leaned on to [SQL States](https://en.wikipedia.org/wiki/SQLSTATE).
