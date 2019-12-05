@@ -70,12 +70,12 @@ YY_DECL;
 
 %%
 
-Toml	:	AnyNewlines Nodes AnyNewlines { driverExitToml(driver); }
+Toml	:	NewlinesLeading Nodes NewlinesTrailing { driverExitToml(driver); }
 		|	%empty
 		;
 
 Nodes	:	Node
-		|	Nodes Newlines Node
+		|	Nodes NewlinesBetweenNodes Node
 		;
 
 Node	:	COMMENT { driverExitComment (driver, $1); }
@@ -87,14 +87,17 @@ OptComment	:	COMMENT { driverExitComment (driver, $1); }
 			|	%empty
 			;
 
+NewlinesBetweenNodes	:	NEWLINE	/* Not counted because it's the normal line ending newline between nodes, not one indicating an empty line.*/
+					|	NewlinesBetweenNodes NEWLINE { driverExitNewline (driver); }
+					;	
 
-Newlines	:	NEWLINE
-			|	Newlines NEWLINE { driverExitNewline (driver); }
-			;	
+NewlinesLeading	:	%empty
+				|	NewlinesLeading NEWLINE { driverExitNewline(driver); }
+				;
 
-AnyNewlines	:	Newlines
-			|	%empty
-			;
+NewlinesTrailing	:	NewlinesBetweenNodes
+					|	%empty
+					;
 
 Table		:	TableSimple
 			|	TableArray

@@ -64,6 +64,7 @@ static bool shouldWriteValue(Node * node);
 static bool needsKeyAssignment (Node * node);
 static bool isListElement (Node * node);
 static bool isLastChild (Node * node);
+static bool hasInlineComment(Node * node);
 static bool isMultilineString (const char * str);
 static bool isTrue (const char * boolStr);
 
@@ -222,7 +223,10 @@ static int writeTree (Node * node, Writer * writer)
 	{
 		if (!isLastChild(node))
 		{
-			result |= fputs (", ", writer->f) == EOF;
+			result |= fputc (',', writer->f) == EOF;
+			if (!hasInlineComment(node)) {
+				result |= fputc (' ', writer->f) == EOF;
+			}
 		}
 		ELEKTRA_ASSERT(node->type == NT_LEAF || node->type == NT_ARRAY || NT_INLINE_TABLE, "Invalid type of list element, only NT_LEAF, NT_ARRAY or NT_INLINE_TABLE expected, but found other");
 		result |= writeInlineComment(comments, true, writer);
@@ -233,7 +237,7 @@ static int writeTree (Node * node, Writer * writer)
 		case NT_ARRAY:
 		case NT_INLINE_TABLE:
 			result |= writeInlineComment (comments, false, writer);
-			if (!listElement) {	// TODO: prevent trailing newline, somehow with lastChild/parent is root
+			if (!listElement) {
 				result |= writeNewline (writer);
 			}
 		default:
@@ -277,6 +281,10 @@ static bool isListElement (Node * node)
 	}
 }
 
+static bool hasInlineComment(Node * node) {
+	return findMetaKey(node->key, "comment/#0/space") != NULL;
+}
+
 static bool isLastChild (Node * node)
 {
 	if (node->parent == NULL) {
@@ -314,9 +322,9 @@ static int writeOpeningSequence (Node * node, Writer * writer)
 	switch (node->type)
 	{
 	case NT_ARRAY:
-		return fputs ("[ ", writer->f) == EOF;
+		return fputs ("[", writer->f) == EOF;
 	case NT_INLINE_TABLE:
-		return fputs ("{ ", writer->f) == EOF;
+		return fputs ("{", writer->f) == EOF;
 	default:
 		return 0;
 	}
@@ -327,9 +335,9 @@ static int writeClosingSequence (Node * node, Writer * writer)
 	switch (node->type)
 	{
 	case NT_ARRAY:
-		return fputs (" ]", writer->f) == EOF;
+		return fputs ("]", writer->f) == EOF;
 	case NT_INLINE_TABLE:
-		return fputs (" }", writer->f) == EOF;
+		return fputs ("}", writer->f) == EOF;
 	default:
 		return 0;
 	}
