@@ -111,6 +111,8 @@ static void testWriteReadInlineTableNested (void);
 static void testWriteReadTable (void);
 static void testWriteReadTableNested (void);
 static void testWriteReadTableArray (void);
+static void testWriteReadSimpleTableInTableArray (void);
+static void testWriteReadSimpleTableBeforeTableArray (void);
 static void testWriteReadString (void);
 static void testWriteReadInteger (void);
 static void testWriteReadIntegerOtherBase (void);
@@ -214,9 +216,73 @@ static void testWriteRead (void)
 	testWriteReadCheckSparseHierarchy ();
 	testWriteReadComments ();
 	testWriteReadCommentsArray();
+	testWriteReadSimpleTableInTableArray();
+	testWriteReadSimpleTableBeforeTableArray ();
 }
 
+static void testWriteReadSimpleTableInTableArray (void) {
+	TEST_RW_HEAD;
 
+	WRITE_KEY("ta");
+	SET_ORDER(0);
+	SET_TOML_TYPE("tablearray");
+	DUP_EXPECTED;
+	SET_ARRAY("#1");
+
+	WRITE_KV("ta/#0/a", "1337");
+	SET_ORDER(1);
+	DUP_EXPECTED;
+
+	WRITE_KEY("ta/#0/table");
+	SET_ORDER(2);
+	SET_TOML_TYPE("simpletable");
+	DUP_EXPECTED;
+
+	WRITE_KV("/ta/#0/table/b", "666");
+	SET_ORDER(3);
+	DUP_EXPECTED;
+
+	WRITE_KV("ta/#1/a", "111");
+	SET_ORDER(4);
+	DUP_EXPECTED;
+
+	WRITE_KEY("ta/#1/table");
+	SET_ORDER(5);
+	SET_TOML_TYPE("simpletable");
+	DUP_EXPECTED;
+
+	WRITE_KV("/ta/#1/table/b", "222");
+	SET_ORDER(6);
+	DUP_EXPECTED;
+
+	TEST_RW_FOOT;
+}
+
+static void testWriteReadSimpleTableBeforeTableArray (void) {
+	TEST_RW_HEAD;
+
+	WRITE_KEY("table");
+	SET_ORDER(0);
+	SET_TOML_TYPE("simpletable");
+	DUP_EXPECTED;
+
+
+	WRITE_KV("table/b", "123");
+	SET_ORDER(1);
+	DUP_EXPECTED;
+
+	WRITE_KEY("ta");
+	SET_ORDER(2);
+	SET_TOML_TYPE("tablearray");
+	DUP_EXPECTED;
+	SET_ARRAY("#0");
+
+	WRITE_KV("ta/#0/a", "1337");
+	SET_ORDER(3);
+	DUP_EXPECTED;
+
+	TEST_RW_FOOT;
+}
 
 static void testWriteReadAssignments (void)
 {
