@@ -17,7 +17,7 @@ sudo kdb set system/tests/hosts/ipv4/my 88.198.134.1777
 sudo kdb umount system/tests/hosts
 ```
 
-In this example we mount the hosts file under `/etc/hosts` into Elektra. The `hosts` plugin will also validate
+In this example we mount the hosts file under `/etc/hosts` into Elektra. Elektra also validates
 our input which is shown in the next line where we tried to set an invalid IP address. With this we can add or edit entries
 by using the tools of Elektra and do not need to edit the file directly.
 
