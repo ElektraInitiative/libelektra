@@ -150,20 +150,23 @@ static Node * createNode (Key * key, Node * parent)
 			{
 				if (tableAncestor->type == NT_SIMPLE_TABLE || tableAncestor->type == NT_TABLE_ARRAY)
 				{
-					size_t split = elektraStrLen (tableAncestor->relativeName) - 1;
-					size_t len = split + elektraStrLen (node->relativeName) + 1;
-					char * concatName = (char *) elektraCalloc (len);
-					if (concatName == NULL)
+					if (!(node->type == NT_SIMPLE_TABLE && tableAncestor->type == NT_TABLE_ARRAY))
 					{
-						destroyTree (node);
-						return NULL;
+						size_t split = elektraStrLen (tableAncestor->relativeName) - 1;
+						size_t len = split + elektraStrLen (node->relativeName) + 1;
+						char * concatName = (char *) elektraCalloc (len);
+						if (concatName == NULL)
+						{
+							destroyTree (node);
+							return NULL;
+						}
+						strncpy (concatName, tableAncestor->relativeName, len);
+						concatName[split] = '.';
+						strncat (&concatName[split + 1], node->relativeName, len - split - 1);
+						elektraFree (node->relativeName);
+						node->relativeName = concatName;
+						break;
 					}
-					strncpy (concatName, tableAncestor->relativeName, len);
-					concatName[split] = '.';
-					strncat (&concatName[split + 1], node->relativeName, len - split - 1);
-					elektraFree (node->relativeName);
-					node->relativeName = concatName;
-					break;
 				}
 			}
 		}
