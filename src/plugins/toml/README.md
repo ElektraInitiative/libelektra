@@ -46,14 +46,22 @@ kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
 ```
 
-## Limitations:
+## Simple Tables
+
+## Table Arrays
+
+## Inline Tables
+
+## Arrays
+
+## Limitations
 
 	- Comments and newlines between the last array element and closing brackets are discarded.
 	- Trailing commas in arrays and inline tables are discarded
 	- Only spaces in front of comments are preserved.
 	- Currently, Elektra's sparse arrays are not preserved on writing (they get a continuous array without index holes).
 
-## TODOs:
+## TODOs
 
 	- Write documentation
 	- Correct interaction with other plugins, especially directory value

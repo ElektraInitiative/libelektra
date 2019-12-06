@@ -84,7 +84,6 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 	{
 		Key * elementName = keyAppendIndex (i, root);
 		Key * elementKey = ksLookup (keys, elementName, 0);
-		printf ("Look %s, subs? %d\n", keyName (elementName), !isLeaf (elementName, keys));
 		if (elementKey != NULL)
 		{
 			if (!isLeaf(elementKey, keys)) {	// true for array that contains inline tables
@@ -174,8 +173,8 @@ static Node * createNode (Key * key, Node * parent)
 			}
 		}
 
-		printf (">> CREATE NODE\nparent =\t%s\nkey =\t\t%s\nrelative =\t%s\ntype =\t\t%d\n",
-			parent != NULL ? keyName (parent->key) : "<NONE>", keyName (key), node->relativeName, node->type);
+		/*printf (">> CREATE NODE\nparent =\t%s\nkey =\t\t%s\nrelative =\t%s\ntype =\t\t%d\n",
+			parent != NULL ? keyName (parent->key) : "<NONE>", keyName (key), node->relativeName, node->type);*/
 	}
 	return node;
 }
