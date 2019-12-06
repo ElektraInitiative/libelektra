@@ -73,7 +73,7 @@ int tomlWrite (KeySet * keys, Key * parent)
 	cursor_t cursor = ksGetCursor (keys);
 	prepareKeySet (keys, parent);
 
-	dumpKS(keys);
+	// dumpKS(keys);
 
 	ksRewind (keys);
 	ksNext (keys);
