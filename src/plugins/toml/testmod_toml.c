@@ -109,6 +109,7 @@ static void testWriteReadArrayNested (void);
 static void testWriteReadInlineTable (void);
 static void testWriteReadInlineTableNested (void);
 static void testWriteReadInlineTableInArray (void);
+static void testWriteReadArrayInlineTableAlternating (void);
 static void testWriteReadTable (void);
 static void testWriteReadTableNested (void);
 static void testWriteReadTableArray (void);
@@ -216,114 +217,159 @@ static void testWriteRead (void)
 	testWriteReadBoolean ();
 	testWriteReadCheckSparseHierarchy ();
 	testWriteReadComments ();
-	testWriteReadCommentsArray();
-	testWriteReadSimpleTableInTableArray();
+	testWriteReadCommentsArray ();
+	testWriteReadSimpleTableInTableArray ();
 	testWriteReadSimpleTableBeforeTableArray ();
 	testWriteReadInlineTableInArray ();
+	testWriteReadArrayInlineTableAlternating ();
 }
 
-static void testWriteReadInlineTableInArray (void) {
+static void testWriteReadInlineTableInArray (void)
+{
 	TEST_RW_HEAD;
 
-	WRITE_KEY("array");
-	SET_ORDER(0);
+	WRITE_KEY ("array");
+	SET_ORDER (0);
 	DUP_EXPECTED;
-	SET_ARRAY("#1");
+	SET_ARRAY ("#1");
 
-	WRITE_KEY("array/#0");
-	SET_TOML_TYPE("inlinetable");
-	DUP_EXPECTED;
-
-	WRITE_KV("array/#0/c", "0");
-	SET_ORDER(1);
+	WRITE_KEY ("array/#0");
+	SET_TOML_TYPE ("inlinetable");
 	DUP_EXPECTED;
 
-	WRITE_KV("array/#0/b", "1");
-	SET_ORDER(2);
-	DUP_EXPECTED;
-	
-	WRITE_KV("array/#0/a", "2");
-	SET_ORDER(3);
+	WRITE_KV ("array/#0/c", "0");
+	SET_ORDER (1);
 	DUP_EXPECTED;
 
-	WRITE_KEY("array/#1");
-	SET_TOML_TYPE("inlinetable");
+	WRITE_KV ("array/#0/b", "1");
+	SET_ORDER (2);
 	DUP_EXPECTED;
 
-	WRITE_KV("array/#1/c", "3");
-	SET_ORDER(4);
+	WRITE_KV ("array/#0/a", "2");
+	SET_ORDER (3);
 	DUP_EXPECTED;
 
-	WRITE_KV("array/#1/b", "4");
-	SET_ORDER(5);
+	WRITE_KEY ("array/#1");
+	SET_TOML_TYPE ("inlinetable");
 	DUP_EXPECTED;
-	
-	WRITE_KV("array/#1/a", "5");
-	SET_ORDER(6);
+
+	WRITE_KV ("array/#1/c", "3");
+	SET_ORDER (4);
+	DUP_EXPECTED;
+
+	WRITE_KV ("array/#1/b", "4");
+	SET_ORDER (5);
+	DUP_EXPECTED;
+
+	WRITE_KV ("array/#1/a", "5");
+	SET_ORDER (6);
 	DUP_EXPECTED;
 
 	TEST_RW_FOOT;
 }
 
-static void testWriteReadSimpleTableInTableArray (void) {
+static void testWriteReadArrayInlineTableAlternating (void)
+{
 	TEST_RW_HEAD;
 
-	WRITE_KEY("ta");
-	SET_ORDER(0);
-	SET_TOML_TYPE("tablearray");
-	DUP_EXPECTED;
-	SET_ARRAY("#1");
-
-	WRITE_KV("ta/#0/a", "1337");
-	SET_ORDER(1);
+	WRITE_KEY ("inline");
+	SET_ORDER (0);
+	SET_TOML_TYPE ("inlinetable");
 	DUP_EXPECTED;
 
-	WRITE_KEY("ta/#0/table");
-	SET_ORDER(2);
-	SET_TOML_TYPE("simpletable");
+	WRITE_KEY ("inline/array");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+	SET_ARRAY ("#1");
+
+	WRITE_KEY ("inline/array/#0");
+	SET_TOML_TYPE ("inlinetable");
 	DUP_EXPECTED;
 
-	WRITE_KV("/ta/#0/table/b", "666");
-	SET_ORDER(3);
+	WRITE_KEY ("inline/array/#0/array2");
+	SET_ORDER (2);
+	DUP_EXPECTED;
+	SET_ARRAY ("#0");
+
+	WRITE_KV ("inline/array/#0/array2/#0", "0");
 	DUP_EXPECTED;
 
-	WRITE_KV("ta/#1/a", "111");
-	SET_ORDER(4);
+	WRITE_KEY ("inline/array/#1");
+	SET_TOML_TYPE ("inlinetable");
 	DUP_EXPECTED;
 
-	WRITE_KEY("ta/#1/table");
-	SET_ORDER(5);
-	SET_TOML_TYPE("simpletable");
+	WRITE_KEY ("inline/array/#1/array2");
+	SET_ORDER (3);
 	DUP_EXPECTED;
+	SET_ARRAY ("#0");
 
-	WRITE_KV("/ta/#1/table/b", "222");
-	SET_ORDER(6);
+	WRITE_KV ("inline/array/#1/array2/#0", "1");
 	DUP_EXPECTED;
 
 	TEST_RW_FOOT;
 }
 
-static void testWriteReadSimpleTableBeforeTableArray (void) {
+static void testWriteReadSimpleTableInTableArray (void)
+{
 	TEST_RW_HEAD;
 
-	WRITE_KEY("table");
-	SET_ORDER(0);
-	SET_TOML_TYPE("simpletable");
+	WRITE_KEY ("ta");
+	SET_ORDER (0);
+	SET_TOML_TYPE ("tablearray");
+	DUP_EXPECTED;
+	SET_ARRAY ("#1");
+
+	WRITE_KV ("ta/#0/a", "1337");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+
+	WRITE_KEY ("ta/#0/table");
+	SET_ORDER (2);
+	SET_TOML_TYPE ("simpletable");
+	DUP_EXPECTED;
+
+	WRITE_KV ("/ta/#0/table/b", "666");
+	SET_ORDER (3);
+	DUP_EXPECTED;
+
+	WRITE_KV ("ta/#1/a", "111");
+	SET_ORDER (4);
+	DUP_EXPECTED;
+
+	WRITE_KEY ("ta/#1/table");
+	SET_ORDER (5);
+	SET_TOML_TYPE ("simpletable");
+	DUP_EXPECTED;
+
+	WRITE_KV ("/ta/#1/table/b", "222");
+	SET_ORDER (6);
+	DUP_EXPECTED;
+
+	TEST_RW_FOOT;
+}
+
+static void testWriteReadSimpleTableBeforeTableArray (void)
+{
+	TEST_RW_HEAD;
+
+	WRITE_KEY ("table");
+	SET_ORDER (0);
+	SET_TOML_TYPE ("simpletable");
 	DUP_EXPECTED;
 
 
-	WRITE_KV("table/b", "123");
-	SET_ORDER(1);
+	WRITE_KV ("table/b", "123");
+	SET_ORDER (1);
 	DUP_EXPECTED;
 
-	WRITE_KEY("ta");
-	SET_ORDER(2);
-	SET_TOML_TYPE("tablearray");
+	WRITE_KEY ("ta");
+	SET_ORDER (2);
+	SET_TOML_TYPE ("tablearray");
 	DUP_EXPECTED;
-	SET_ARRAY("#0");
+	SET_ARRAY ("#0");
 
-	WRITE_KV("ta/#0/a", "1337");
-	SET_ORDER(3);
+	WRITE_KV ("ta/#0/a", "1337");
+	SET_ORDER (3);
 	DUP_EXPECTED;
 
 	TEST_RW_FOOT;
@@ -884,7 +930,7 @@ static void testWriteReadComments (void)
 	DUP_EXPECTED;
 
 	WRITE_KEY ("table");
-	SET_TOML_TYPE("simpletable");
+	SET_TOML_TYPE ("simpletable");
 	SET_ORDER (2);
 	SET_EMPTY_LINE (1);
 	SET_COMMENT (2, "test comment 5", 4);
@@ -903,23 +949,23 @@ static void testWriteReadCommentsArray (void)
 
 	WRITE_KEY ("array");
 	SET_ORDER (0);
-	SET_ARRAY("#2");
-	SET_INLINE_COMMENT("array inline comment", 1);
+	SET_ARRAY ("#2");
+	SET_INLINE_COMMENT ("array inline comment", 1);
 	DUP_EXPECTED;
 
-	WRITE_KV("array/#0", "0");
-	SET_COMMENT(1, "element 1 comment", 4);
-	SET_INLINE_COMMENT("element 1 inline", 4);
+	WRITE_KV ("array/#0", "0");
+	SET_COMMENT (1, "element 1 comment", 4);
+	SET_INLINE_COMMENT ("element 1 inline", 4);
 	DUP_EXPECTED;
 
-	WRITE_KV("array/#1", "1");
-	SET_COMMENT(1, "element 2 comment", 4);
-	SET_INLINE_COMMENT("element 2 inline", 4);
+	WRITE_KV ("array/#1", "1");
+	SET_COMMENT (1, "element 2 comment", 4);
+	SET_INLINE_COMMENT ("element 2 inline", 4);
 	DUP_EXPECTED;
 
-	WRITE_KV("array/#2", "2");
-	SET_COMMENT(1, "element 3 comment", 4);
-	SET_INLINE_COMMENT("element 3 inline", 4);
+	WRITE_KV ("array/#2", "2");
+	SET_COMMENT (1, "element 3 comment", 4);
+	SET_INLINE_COMMENT ("element 3 inline", 4);
 	DUP_EXPECTED;
 
 	TEST_RW_FOOT;
@@ -951,8 +997,8 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 		else
 		{
 			compare_keyset (expected, ksRead);
-			dumpKS(ksWrite);
-			dumpKS(ksRead);
+			dumpKS (ksWrite);
+			dumpKS (ksRead);
 		}
 		ksDel (ksRead);
 	}
