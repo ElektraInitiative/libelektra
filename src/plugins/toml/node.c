@@ -217,8 +217,6 @@ static int nodeCmpWrapper (const void * a, const void * b)
 {
 	const Node * na = *((const Node**) a);
 	const Node * nb = *((const Node**) b);
-	printf("%s -> %d\n%s -> %d\n", keyName(na->key), isTable(na), keyName(nb->key), isTable(nb));
-	printf("type = %d, %d, vs %d/%d\n", na->type, nb->type, NT_SIMPLE_TABLE, NT_TABLE_ARRAY);
 	if (!isTable(na) && isTable(nb)) {
 		return -1;
 	} else if (!isTable(nb) && isTable(na)) {
