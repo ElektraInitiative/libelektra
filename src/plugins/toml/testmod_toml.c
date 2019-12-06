@@ -18,15 +18,15 @@
 
 #define PREFIX "user/tests/toml"
 
-#define TEST_RW_HEAD                                                                                                                       \
+#define TEST_WR_HEAD                                                                                                                       \
 	Key * lastKey = NULL;                                                                                                              \
 	KeySet * writeKs = ksNew (0, KS_END);                                                                                              \
 	KeySet * expectedKs = ksNew (0, KS_END)
-#define TEST_RW_FOOT                                                                                                                       \
+#define TEST_WR_FOOT                                                                                                                       \
 	testWriteReadCompare (writeKs, expectedKs);                                                                                        \
 	ksDel (expectedKs);                                                                                                                \
 	ksDel (writeKs)
-// Macros to be used in TEST_RW environments
+// Macros to be used in TEST_WR environments
 #define WRITE_KV(name, value)                                                                                                              \
 	{                                                                                                                                  \
 		lastKey = addKey (writeKs, name, value, NULL, NULL, NULL, NULL, -1);                                                       \
@@ -124,6 +124,7 @@ static void testWriteReadBoolean (void);
 static void testWriteReadCheckSparseHierarchy (void);
 static void testWriteReadComments (void);
 static void testWriteReadCommentsArray (void);
+static void testWriteReadOrderTableNonTable (void);
 static void printError (Key * parent);
 static Key * addKey (KeySet * ks, const char * name, const char * value, const char * orig, const char * type, const char * array,
 		     const char * tomltype, int order);
@@ -222,11 +223,40 @@ static void testWriteRead (void)
 	testWriteReadSimpleTableBeforeTableArray ();
 	testWriteReadInlineTableInArray ();
 	testWriteReadArrayInlineTableAlternating ();
+	testWriteReadOrderTableNonTable ();
+}
+
+static void testWriteReadOrderTableNonTable (void) {
+	TEST_WR_HEAD;
+
+	WRITE_KEY("table");
+	SET_ORDER(0);
+	SET_TOML_TYPE("simpletable");
+
+	WRITE_KV("table/a", "0");
+	SET_ORDER(1);
+
+	WRITE_KV("b", "1");
+	SET_ORDER(2);
+
+	// b is expected to get ordered before the table on writing,
+	// otherwise it would get a member of the table on subsequent readings
+	EXPECTED_KEY("table");
+	SET_ORDER(1);
+	SET_TOML_TYPE("simpletable");
+
+	EXPECTED_KV("table/a", "0");
+	SET_ORDER(2);
+
+	EXPECTED_KV("b", "1");
+	SET_ORDER(0);
+
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadInlineTableInArray (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KEY ("array");
 	SET_ORDER (0);
@@ -265,12 +295,12 @@ static void testWriteReadInlineTableInArray (void)
 	SET_ORDER (6);
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadArrayInlineTableAlternating (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KEY ("inline");
 	SET_ORDER (0);
@@ -306,12 +336,12 @@ static void testWriteReadArrayInlineTableAlternating (void)
 	WRITE_KV ("inline/array/#1/array2/#0", "1");
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadSimpleTableInTableArray (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KEY ("ta");
 	SET_ORDER (0);
@@ -345,12 +375,12 @@ static void testWriteReadSimpleTableInTableArray (void)
 	SET_ORDER (6);
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadSimpleTableBeforeTableArray (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KEY ("table");
 	SET_ORDER (0);
@@ -372,12 +402,12 @@ static void testWriteReadSimpleTableBeforeTableArray (void)
 	SET_ORDER (3);
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadAssignments (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("a", "0");
 	SET_ORDER (0);
@@ -397,12 +427,12 @@ static void testWriteReadAssignments (void)
 	DUP_EXPECTED
 	SET_TYPE ("string");
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadString (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("multiline1", "first line\nsecond line");
 	SET_ORDER (0);
@@ -435,13 +465,13 @@ static void testWriteReadString (void)
 	SET_TYPE ("string");
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 
 static void testWriteReadArray (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("b/alphabetically/after/array/but/with/zero/order", "0");
 	SET_ORDER (0);
@@ -471,12 +501,12 @@ static void testWriteReadArray (void)
 	DUP_EXPECTED;
 	SET_ORDER (3);
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadArrayNested (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("b/alphabetically/after/array/but/zero/order", "0");
 	SET_ORDER (0);
@@ -507,12 +537,12 @@ static void testWriteReadArrayNested (void)
 	EXPECTED_KEY ("array/#0/#1");
 	SET_ARRAY ("#2");
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadInlineTable (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KEY ("inl_table");
 	SET_ORDER (0);
@@ -531,12 +561,12 @@ static void testWriteReadInlineTable (void)
 	SET_ORDER (3);
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadInlineTableNested (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KEY ("inl_table");
 	SET_ORDER (0);
@@ -565,12 +595,12 @@ static void testWriteReadInlineTableNested (void)
 	SET_ORDER (5);
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadTable (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KEY ("table");
 	SET_ORDER (0);
@@ -598,12 +628,12 @@ static void testWriteReadTable (void)
 	SET_ORDER (5);
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadTableNested (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KEY ("table");
 	SET_ORDER (0);
@@ -641,12 +671,12 @@ static void testWriteReadTableNested (void)
 	SET_ORDER (7);
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadTableArray (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KEY ("ta");
 	SET_ORDER (0);
@@ -701,12 +731,12 @@ static void testWriteReadTableArray (void)
 	DUP_EXPECTED;
 
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadInteger (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("int1", "+1337");
 	DUP_EXPECTED;
@@ -729,12 +759,12 @@ static void testWriteReadInteger (void)
 	SET_ORDER (4);
 	VALUE_TO_ORIG_NEW_VALUE ("+1999000");
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadIntegerOtherBase (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("hex1", "0xA_Baf00");
 	SET_ORDER (0);
@@ -781,12 +811,12 @@ static void testWriteReadIntegerOtherBase (void)
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("0");
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadFloat (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("float1", "+0.3");
 	DUP_EXPECTED;
@@ -826,12 +856,12 @@ static void testWriteReadFloat (void)
 	DUP_EXPECTED;
 	SET_ORDER (8);
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadDate (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("date1", "2000-12-31T10:00:00Z");
 	DUP_EXPECTED;
@@ -853,12 +883,12 @@ static void testWriteReadDate (void)
 	DUP_EXPECTED;
 	SET_ORDER (4);
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadBoolean (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("bool1", "1");
 	SET_ORDER (0);
@@ -888,12 +918,12 @@ static void testWriteReadBoolean (void)
 	SET_ORDER (5);
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadCheckSparseHierarchy (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("a", "0");
 	SET_ORDER (0);
@@ -903,12 +933,12 @@ static void testWriteReadCheckSparseHierarchy (void)
 	SET_ORDER (1);
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadComments (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KV ("a", "0");
 	SET_ORDER (0);
@@ -940,12 +970,12 @@ static void testWriteReadComments (void)
 	DUP_EXPECTED;
 
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadCommentsArray (void)
 {
-	TEST_RW_HEAD;
+	TEST_WR_HEAD;
 
 	WRITE_KEY ("array");
 	SET_ORDER (0);
@@ -968,7 +998,7 @@ static void testWriteReadCommentsArray (void)
 	SET_INLINE_COMMENT ("element 3 inline", 4);
 	DUP_EXPECTED;
 
-	TEST_RW_FOOT;
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)

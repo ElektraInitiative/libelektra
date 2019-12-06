@@ -15,6 +15,7 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys);
 static void sortChildren (Node * node);
 static int nodeCmpWrapper (const void * a, const void * b);
 static NodeType getNodeType (Key * key);
+static bool isTable(const Node * node);
 
 Node * buildTree (Node * parent, Key * root, KeySet * keys)
 {
@@ -214,7 +215,20 @@ static void sortChildren (Node * node)
 
 static int nodeCmpWrapper (const void * a, const void * b)
 {
-	return elektraKeyCmpOrder (*(const Key **) ((const Node *) a)->key, *(const Key **) ((const Node *) b)->key);
+	const Node * na = *((const Node**) a);
+	const Node * nb = *((const Node**) b);
+	printf("%s -> %d\n%s -> %d\n", keyName(na->key), isTable(na), keyName(nb->key), isTable(nb));
+	printf("type = %d, %d, vs %d/%d\n", na->type, nb->type, NT_SIMPLE_TABLE, NT_TABLE_ARRAY);
+	if (!isTable(na) && isTable(nb)) {
+		return -1;
+	} else if (!isTable(nb) && isTable(na)) {
+		return 1;
+	}
+	return elektraKeyCmpOrder (na->key, nb->key);
+}
+
+static bool isTable(const Node * node) {
+	return node->type == NT_SIMPLE_TABLE || node->type == NT_TABLE_ARRAY;
 }
 
 static NodeType getNodeType (Key * key)
