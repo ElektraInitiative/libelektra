@@ -108,6 +108,7 @@ static void testWriteReadArray (void);
 static void testWriteReadArrayNested (void);
 static void testWriteReadInlineTable (void);
 static void testWriteReadInlineTableNested (void);
+static void testWriteReadInlineTableInArray (void);
 static void testWriteReadTable (void);
 static void testWriteReadTableNested (void);
 static void testWriteReadTableArray (void);
@@ -218,6 +219,50 @@ static void testWriteRead (void)
 	testWriteReadCommentsArray();
 	testWriteReadSimpleTableInTableArray();
 	testWriteReadSimpleTableBeforeTableArray ();
+	testWriteReadInlineTableInArray ();
+}
+
+static void testWriteReadInlineTableInArray (void) {
+	TEST_RW_HEAD;
+
+	WRITE_KEY("array");
+	SET_ORDER(0);
+	DUP_EXPECTED;
+	SET_ARRAY("#1");
+
+	WRITE_KEY("array/#0");
+	SET_TOML_TYPE("inlinetable");
+	DUP_EXPECTED;
+
+	WRITE_KV("array/#0/c", "0");
+	SET_ORDER(1);
+	DUP_EXPECTED;
+
+	WRITE_KV("array/#0/b", "1");
+	SET_ORDER(2);
+	DUP_EXPECTED;
+	
+	WRITE_KV("array/#0/a", "2");
+	SET_ORDER(3);
+	DUP_EXPECTED;
+
+	WRITE_KEY("array/#1");
+	SET_TOML_TYPE("inlinetable");
+	DUP_EXPECTED;
+
+	WRITE_KV("array/#1/c", "3");
+	SET_ORDER(4);
+	DUP_EXPECTED;
+
+	WRITE_KV("array/#1/b", "4");
+	SET_ORDER(5);
+	DUP_EXPECTED;
+	
+	WRITE_KV("array/#1/a", "5");
+	SET_ORDER(6);
+	DUP_EXPECTED;
+
+	TEST_RW_FOOT;
 }
 
 static void testWriteReadSimpleTableInTableArray (void) {

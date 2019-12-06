@@ -32,6 +32,6 @@ void keySetDiff(KeySet * whole, KeySet * part);
 KeySet * keysByPredicate(KeySet * ks, bool (*pred)(Key *));
 KeySet * collectSubKeys(KeySet * ks, Key * parent);
 KeySet * extractSubKeys (KeySet * ks, Key * parent);
-//bool isLeaf(Key * leafCandidate, KeySet * ks);
+bool isLeaf(Key * leafCandidate, KeySet * ks);
 
 #endif // ELEKTRA_PLUGIN_TOML_UTILITY_H
