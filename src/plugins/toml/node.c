@@ -15,7 +15,6 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys);
 static void sortChildren (Node * node);
 static int nodeCmpWrapper (const void * a, const void * b);
 static NodeType getNodeType (Key * key);
-static char * getRelativeName (Key * parent, Key * key);
 
 Node * buildTree (Node * parent, Key * root, KeySet * keys)
 {
@@ -31,8 +30,6 @@ Node * buildTree (Node * parent, Key * root, KeySet * keys)
 	{
 		Node * node = createNode (root, parent);
 		Key * key;
-
-		printf ("HANDLE %s, curr = %s\n", keyName (root), keyName (ksCurrent (keys)));
 
 		if (node->type != NT_LEAF)
 		{
@@ -83,7 +80,6 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 	Node * node = createNode (root, parent);
 
 	size_t max = getArrayMax (root);
-	printf ("GOT ARRAY, check subs\n");
 	for (size_t i = 0; i <= max; i++)
 	{
 		Key * elementName = keyAppendIndex (i, root);
@@ -93,7 +89,7 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 		{
 			if (!isLeaf(elementKey, keys)) {	// true for array that contains inline tables
 				ksNext(keys);					// we need to go to the first sub key of the element, since buildTree
-			}									// loops while ksCurrent is below root key (and root != below root, but check
+			}									// loops while ksCurrent is below root key (and root != below root)
 												// TODO: maybe make a cheaper check for leaf, eg. test if element has a value?
 			if (!addChild (node, buildTree (node, elementKey, keys)))
 			{
@@ -251,80 +247,4 @@ static NodeType getNodeType (Key * key)
 	{
 		return NT_LEAF;
 	}
-}
-
-static char * getRelativeName (Key * parent, Key * key)
-{
-	size_t nameSize = 64;
-	size_t pos = 0;
-	char * name = (char *) elektraCalloc (sizeof (char) * nameSize);
-	bool placeDot = false;
-	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
-	const char * keyStop = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (key);
-
-	if (isTableArray (parent))
-	{ // skip array index
-		keyPart += elektraStrLen (keyPart);
-	}
-	while (keyPart < keyStop)
-	{
-		if (placeDot)
-		{
-			if (pos == nameSize)
-			{
-				nameSize *= 2;
-				if (elektraRealloc ((void **) &name, nameSize) < 0)
-				{
-					elektraFree (name);
-					return NULL;
-				}
-			}
-			name[pos++] = '.';
-		}
-		else
-		{
-			placeDot = true;
-		}
-		bool bare = isBareString (keyPart);
-		if (!bare)
-		{
-			if (pos == nameSize)
-			{
-				nameSize *= 2;
-				if (elektraRealloc ((void **) &name, nameSize) < 0)
-				{
-					elektraFree (name);
-					return NULL;
-				}
-			}
-			name[pos++] = '"';
-		}
-		if (pos + elektraStrLen (keyPart) >= nameSize)
-		{
-			nameSize *= 2;
-			if (elektraRealloc ((void **) &name, nameSize) < 0)
-			{
-				elektraFree (name);
-				return NULL;
-			}
-		}
-		strncat (&name[pos], keyPart, nameSize - pos);
-		pos += elektraStrLen (keyPart) - 1;
-		if (!bare)
-		{
-			if (pos == nameSize)
-			{
-				nameSize *= 2;
-				if (elektraRealloc ((void **) &name, nameSize) < 0)
-				{
-					elektraFree (name);
-					return NULL;
-				}
-			}
-			name[pos++] = '"';
-		}
-		keyPart += elektraStrLen (keyPart);
-	}
-	name[pos] = 0;
-	return name;
 }

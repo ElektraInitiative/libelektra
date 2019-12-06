@@ -3,6 +3,7 @@
 #include <kdbassert.h>
 #include <kdbhelper.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 void dumpKS (KeySet * keys)
@@ -218,29 +219,79 @@ bool isBareString (const char * str)
 	return true;
 }
 
-char * getRelativeKeyName (const Key * parent, const Key * key)
+char * getRelativeName (Key * parent, Key * key)
 {
-	if (keyIsBelow (parent, key) <= 0)
-	{
-		return NULL;
-	}
-	size_t len = keyGetUnescapedNameSize (key) - keyGetUnescapedNameSize (parent);
+	size_t nameSize = 64;
 	size_t pos = 0;
-	char * name = elektraCalloc (sizeof (char) * len);
+	char * name = (char *) elektraCalloc (sizeof (char) * nameSize);
+	bool placeDot = false;
 	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
 	const char * keyStop = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (key);
-	while (keyPart < keyStop)
-	{
-		strncat (name + pos, keyPart, len);
-		pos += elektraStrLen (keyPart) - 1;
-		name[pos++] = '.';
+
+	if (isTableArray (parent))
+	{ // skip array index
 		keyPart += elektraStrLen (keyPart);
 	}
-	if (pos > 0)
+	while (keyPart < keyStop)
 	{
-		name[pos - 1] = '\0';
+		if (placeDot)
+		{
+			if (pos == nameSize)
+			{
+				nameSize *= 2;
+				if (elektraRealloc ((void **) &name, nameSize) < 0)
+				{
+					elektraFree (name);
+					return NULL;
+				}
+			}
+			name[pos++] = '.';
+		}
+		else
+		{
+			placeDot = true;
+		}
+		bool bare = isBareString (keyPart);
+		if (!bare)
+		{
+			if (pos == nameSize)
+			{
+				nameSize *= 2;
+				if (elektraRealloc ((void **) &name, nameSize) < 0)
+				{
+					elektraFree (name);
+					return NULL;
+				}
+			}
+			name[pos++] = '"';
+		}
+		if (pos + elektraStrLen (keyPart) >= nameSize)
+		{
+			nameSize *= 2;
+			if (elektraRealloc ((void **) &name, nameSize) < 0)
+			{
+				elektraFree (name);
+				return NULL;
+			}
+		}
+		strncat (&name[pos], keyPart, nameSize - pos);
+		pos += elektraStrLen (keyPart) - 1;
+		if (!bare)
+		{
+			if (pos == nameSize)
+			{
+				nameSize *= 2;
+				if (elektraRealloc ((void **) &name, nameSize) < 0)
+				{
+					elektraFree (name);
+					return NULL;
+				}
+			}
+			name[pos++] = '"';
+		}
+		keyPart += elektraStrLen (keyPart);
 	}
-
+	name[pos] = 0;
 	return name;
 }
 
