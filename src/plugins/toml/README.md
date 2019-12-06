@@ -52,7 +52,7 @@ It will be set, when the TOML plugin reads a TOML structure from a file. Additio
 No inference of this metakey is done on writing, it must either be read from a file or be set explicitly by the user.
 
 ## Simple Tables
-TOML's simple tables are representened with a `tomltype` metakey of value `simpletable`.
+TOML's simple tables are represented with a `tomltype` metakey of value `simpletable`.
 Example
 ```
 # Mount TOML file
@@ -85,7 +85,6 @@ kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
 ```
 
-
 ## Table Arrays
 
 ## Inline Tables
@@ -95,12 +94,10 @@ sudo kdb umount user/tests/storage
 # Order
 The plugin preserves the file order by the usage of the metakey `order`. When reading a file, the order metakey will be set according to the order as read in the file.
 If you add new keys by eg. `kdb set` the order of the set key will be set to the next-to-highest order value present in the existing key set.
-However, the order is only relevent between elements within the same hierarchial level, e.g. keys of a simple table are only sorted with each other, not any keys outside that table.
+However, the order is only relevant between elements with the same TOML-parent. For example keys of a simple table are only sorted with each other, not with any keys outside that table. If that table has it's order changed and moves to another position in the file, so will it's subkeys.
 
-This also means, that keys can change their file position, if they get a new parent key which has a different order.
-
-There is an additional limitation on ordering for prevention of messing up resulting TOML-file semantics.
-Table arrays and simple tables within the same hierarchy are always written after any non table array/simple table keys.
+There is an additional limitation on ordering for prevention of messing up resulting TOML-file semantics on writing.
+When sorting elements under the same TOML-parent, tables (simple and array) will always be sorted after non-table elements, regardless of their order.
 With this limitation, we prevent that a newly set key, that is not part of a certain table array/simple table, would be placed after the table declaration, making it a member of that table on a subsequent read.
 
 Example
