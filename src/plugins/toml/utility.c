@@ -309,7 +309,7 @@ KeySet * extractSubKeys (KeySet * ks, Key * parent)
 	return sub;
 }
 
-/*bool isLeaf (Key * leafCandidate, KeySet * ks)
+bool isLeaf (Key * leafCandidate, KeySet * ks)
 {
 	cursor_t cursor = ksGetCursor (ks);
 	ksRewind (ks);
@@ -324,4 +324,4 @@ KeySet * extractSubKeys (KeySet * ks, Key * parent)
 	}
 	ksSetCursor (ks, cursor);
 	return true;
-}*/
+}

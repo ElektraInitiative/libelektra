@@ -32,6 +32,8 @@ Node * buildTree (Node * parent, Key * root, KeySet * keys)
 		Node * node = createNode (root, parent);
 		Key * key;
 
+		printf ("HANDLE %s, curr = %s\n", keyName (root), keyName (ksCurrent (keys)));
+
 		if (node->type != NT_LEAF)
 		{
 			while ((key = ksCurrent (keys)) != NULL && keyIsBelow (root, key) == 1)
@@ -81,19 +83,24 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 	Node * node = createNode (root, parent);
 
 	size_t max = getArrayMax (root);
+	printf ("GOT ARRAY, check subs\n");
 	for (size_t i = 0; i <= max; i++)
 	{
 		Key * elementName = keyAppendIndex (i, root);
 		Key * elementKey = ksLookup (keys, elementName, 0);
-		// TODO: handle array holes
+		printf ("Look %s, subs? %d\n", keyName (elementName), !isLeaf (elementName, keys));
 		if (elementKey != NULL)
 		{
+			if (!isLeaf(elementKey, keys)) {	// true for array that contains inline tables
+				ksNext(keys);					// we need to go to the first sub key of the element, since buildTree
+			}									// loops while ksCurrent is below root key (and root != below root, but check
+												// TODO: maybe make a cheaper check for leaf, eg. test if element has a value?
 			if (!addChild (node, buildTree (node, elementKey, keys)))
 			{
 				destroyTree (node);
 				return NULL;
 			}
-		}
+		} // else { TODO: Handle array holes }
 	}
 	Key * key;
 	while ((key = ksCurrent (keys)) != NULL && keyIsBelow (root, key) == 1)
@@ -171,8 +178,8 @@ static Node * createNode (Key * key, Node * parent)
 			}
 		}
 
-		/*printf (">> CREATE NODE\nparent =\t%s\nkey =\t\t%s\nrelative =\t%s\ntype =\t\t%d\n",
-			parent != NULL ? keyName (parent->key) : "<NONE>", keyName (key), node->relativeName, node->type);*/
+		printf (">> CREATE NODE\nparent =\t%s\nkey =\t\t%s\nrelative =\t%s\ntype =\t\t%d\n",
+			parent != NULL ? keyName (parent->key) : "<NONE>", keyName (key), node->relativeName, node->type);
 	}
 	return node;
 }
