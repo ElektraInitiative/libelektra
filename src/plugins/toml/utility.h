@@ -26,7 +26,7 @@ bool isSimpleTable (Key * key);
 bool isTableArray (Key * key);
 bool isInlineTable (Key * key);
 bool isTomlType (Key * key, const char * type);
-char * getRelativeKeyName (const Key * parent, const Key * key);
+char * getRelativeName (Key * parent, Key * key);
 char * getDirectSubKeyName (const Key * parent, const Key * key);
 void keySetDiff(KeySet * whole, KeySet * part);
 KeySet * keysByPredicate(KeySet * ks, bool (*pred)(Key *));
