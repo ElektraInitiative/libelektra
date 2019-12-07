@@ -22,10 +22,9 @@ kdb-merge - Join three key sets together
 
 ## DESCRIPTION
 
-`kdb merge` can incorporate changes from two modified versions (our and their) into a common preceding version (base) of a key set. This lets you merge the sets of changes represented by the two newer key sets. This is called a three-way merge between key sets.<br>
+`kdb merge` can incorporate changes from two modified versions (`our` and `their`) into a common preceding version (base) of a key set. This lets you merge the sets of changes represented by the two newer key sets. This is called a three-way merge between key sets.<br>
 On success the resulting keyset will be saved to mergepath.<br>
 On unresolved conflicts nothing will be changed.<br>
-This tool currently exists alongside `kdb merge` until it is completely ready to supersede it. At this moment, merge will be renamed to merge.
 
 ## OPTIONS
 
@@ -55,7 +54,7 @@ The result of the merge is stored in `result`.
 
 ## THREE-WAY MERGE
 
-You can think of the three-way merge as subtracting base from their and adding the result to our, or as merging into our the changes that would turn base into their. Thus, it behaves exactly as the GNU diff3 tool.
+You can think of the three-way merge as subtracting base from `their` and adding the result to `our`, or as merging into `our` the changes that would turn base into `their`. Thus, it behaves exactly as the GNU diff3 tool.
 These three versions of the KeySet are:<br>
 
 - `base`:
