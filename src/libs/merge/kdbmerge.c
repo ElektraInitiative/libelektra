@@ -1020,31 +1020,29 @@ KeySet * elektraMerge (KeySet * our, Key * ourRoot, KeySet * their, Key * theirR
 		ksDel (ourCropped);
 		return NULL;
 	}
-	KeySet * baseCropped = removeRoot (base, baseRoot, informationKey);
-	if (baseCropped == NULL)
-	{
-		ksDel (ourCropped);
-		ksDel (theirCropped);
-		return NULL;
-	}
 	if (strategy == MERGE_STRATEGY_EQUAL)
 	{
-		if (keySetsAreEqual (ourCropped, theirCropped) && keySetsAreEqual (theirCropped, baseCropped))
+		if (keySetsAreEqual (ourCropped, theirCropped))
 		{
 			KeySet * resultWithRoot = ksNew (0, KS_END);
 			prependStringToAllKeyNames (resultWithRoot, ourCropped, keyName (resultRoot), informationKey);
 			ksDel (ourCropped);
 			ksDel (theirCropped);
-			ksDel (baseCropped);
 			return resultWithRoot;
 		}
 		else
 		{
 			ksDel (ourCropped);
 			ksDel (theirCropped);
-			ksDel (baseCropped);
 			return NULL;
 		}
+	}
+	KeySet * baseCropped = removeRoot (base, baseRoot, informationKey);
+	if (baseCropped == NULL)
+	{
+		ksDel (ourCropped);
+		ksDel (theirCropped);
+		return NULL;
 	}
 
 	KeySet * result = ksNew (0, KS_END);
