@@ -226,7 +226,7 @@ void TreeViewModel::importConfiguration (const QString & name, const QString & f
 		ckdb::Key * informationKey = ckdb::keyNew (0, KEY_END);
 		ckdb::KeySet * c_merge_result = ckdb::elektraMerge (c_base, root.getKey (), c_theirs, root.getKey (), c_base,
 								    root.getKey (), root.getKey (), strategy, informationKey);
-		int numberOfConflicts = ckdb::getConflicts (informationKey);
+		int numberOfConflicts = ckdb::elektraMergeGetConflicts (informationKey);
 		ckdb::keyDel (informationKey);
 		if (c_merge_result != NULL)
 		{
@@ -640,7 +640,7 @@ void TreeViewModel::synchronize ()
 			ckdb::KeySet * c_merge_result = ckdb::elektraMerge (ours.getKeySet (), m_root.getKey (), theirs.getKeySet (),
 									    m_root.getKey (), modelBase.getKeySet (), m_root.getKey (),
 									    m_root.getKey (), ckdb::MERGE_STRATEGY_OUR, informationKey);
-			int numberOfConflicts = ckdb::getConflicts (informationKey);
+			int numberOfConflicts = ckdb::elektraMergeGetConflicts (informationKey);
 			ckdb::keyDel (informationKey);
 			if (c_merge_result != NULL)
 			{

@@ -108,7 +108,7 @@ int ImportCommand::execute (Cmdline const & cl)
 	ckdb::Key * informationKey = ckdb::keyNew (0, KEY_END);
 	ckdb::KeySet * resultNew = elektraMerge (base.getKeySet (), root.getKey (), importedKeys.getKeySet (), root.getKey (),
 						 base.getKeySet (), root.getKey (), root.getKey (), 1, informationKey);
-	int numberOfConflicts = getConflicts (informationKey);
+	int numberOfConflicts = elektraMergeGetConflicts (informationKey);
 	keyDel (informationKey);
 	int retVal;
 	if (resultNew != NULL)

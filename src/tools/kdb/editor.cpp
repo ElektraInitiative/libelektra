@@ -179,7 +179,7 @@ int EditorCommand::execute (Cmdline const & cl)
 	ckdb::Key * informationKey = ckdb::keyNew (0, KEY_END);
 	ckdb::KeySet * resultKs = elektraMerge (oursToEdit.getKeySet (), root.getKey (), importedKeys.getKeySet (), root.getKey (),
 						oursToEdit.getKeySet (), root.getKey (), root.getKey (), 1, informationKey);
-	int numberOfConflicts = getConflicts (informationKey);
+	int numberOfConflicts = elektraMergeGetConflicts (informationKey);
 	keyDel (informationKey);
 
 	int ret = 13;
