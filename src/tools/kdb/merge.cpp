@@ -36,7 +36,7 @@ int MergeCommand::execute (Cmdline const & cl ELEKTRA_UNUSED)
 	kdb::Key baseRoot = cl.createKey (2);
 	kdb::Key resultRoot = cl.createKey (3);
 	int strategy = ckdb::MERGE_STRATEGY_ABORT;
-	else if (cl.strategy == "abort")
+	if (cl.strategy == "abort")
 	{
 		strategy = ckdb::MERGE_STRATEGY_ABORT;
 	}
