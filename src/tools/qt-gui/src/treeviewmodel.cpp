@@ -659,7 +659,7 @@ void TreeViewModel::synchronize ()
 				{
 					emit showMessage (tr ("Internal error"), tr ("Could not merge keys."), "");
 				}
-				throw "Could not synchronize";
+				throw CommandAbortException("Could not synchronize");
 			}
 		}
 
