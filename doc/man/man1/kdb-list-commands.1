@@ -1,16 +1,16 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-LIST\-COMMANDS" "1" "June 2019" "" ""
+.TH "KDB\-LIST\-COMMANDS" "1" "December 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-list\-commands\fR \- List commands available to Elektra
 .
 .SH "SYNOPSIS"
-\fBkdb list\-commands\fR
+\fBkdb list\-commands [OPTION]\.\.\.\fR
 .
 .SH "DESCRIPTION"
-This command will list all internal kdb commands\. The output is suitable to be processed from other tools as long as \fB\-v\fR is not used\.
+This command will list all internal kdb commands\. The output is suitable to be processed from other tools unless \fB\-\-verbose\fR is specified\.
 .
 .SH "OPTIONS"
 .
@@ -32,14 +32,17 @@ Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Also output some explanation for every command\. The command names are bold if color is turned on\. In the first line it will add how many commands exist\.
+Print number of commands in the first line\. Add a description to each command\. Print command names bold unless \fB\-\-color never\fR is specified\.
 .
 .TP
 \fB\-0\fR, \fB\-\-null\fR
 Use binary 0 termination
 .
 .SH "EXAMPLES"
-To get a list of all available commands with their help text: \fBkdb list\-commands \-v\fR
+To print a list of all internal kdb commands with their description:
+.
+.P
+\fBkdb list\-commands \-v\fR
 .
 .SH "SEE ALSO"
 .
