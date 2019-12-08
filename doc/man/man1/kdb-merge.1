@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-MERGE" "1" "November 2019" "" ""
+.TH "KDB\-MERGE" "1" "December 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-merge\fR \- Three\-way merge of KeySets
@@ -41,7 +41,7 @@ path without keys where the merged keyset will be saved
 
 .
 .SH "DESCRIPTION"
-\fBkdb merge\fR can incorporate changes from two modified versions (our and their) into a common preceding version (base) of a key set\. This lets you merge the sets of changes represented by the two newer key sets\. This is called a three\-way merge between key sets\.
+\fBkdb merge\fR can incorporate changes from two modified versions (\fBour\fR and \fBtheir\fR) into a common preceding version (base) of a key set\. This lets you merge the sets of changes represented by the two newer key sets\. This is called a three\-way merge between key sets\.
 .
 .br
 On success the resulting keyset will be saved to mergepath\.
@@ -50,7 +50,6 @@ On success the resulting keyset will be saved to mergepath\.
 On unresolved conflicts nothing will be changed\.
 .
 .br
-This tool currently exists alongside \fBkdb merge\fR until it is completely ready to supersede it\. At this moment, merge will be renamed to merge\.
 .
 .SH "OPTIONS"
 The options of \fBkdb merge\fR are:
@@ -92,7 +91,7 @@ A merge conflict occurred and merge strategy abort was set\.
 The result of the merge is stored in \fBresult\fR\.
 .
 .SH "THREE\-WAY MERGE"
-You can think of the three\-way merge as subtracting base from their and adding the result to our, or as merging into our the changes that would turn base into their\. Thus, it behaves exactly as the GNU diff3 tool\. These three versions of the KeySet are:
+You can think of the three\-way merge as subtracting base from \fBtheir\fR and adding the result to \fBour\fR, or as merging into \fBour\fR the changes that would turn base into \fBtheir\fR\. Thus, it behaves exactly as the GNU diff3 tool\. These three versions of the KeySet are:
 .
 .br
 .
