@@ -22,8 +22,14 @@ else
 	export PATH="$BUILD/bin:$SCRIPTS_DIR:$PATH"
 fi
 
-# TODO: split up
-export KDB_EXEC_PATH="$BUILD/bin"
+COMMON_PATH="$SOURCE/scripts/kdb:$BUILD/scripts/kdb:$BUILD/scripts/dev:$BUILD/bin"
+
+if [ -z "$KDB_EXEC_PATH" ]
+then
+	export KDB_EXEC_PATH="$COMMON_PATH"
+else
+	export KDB_EXEC_PATH="$COMMON_PATH:$KDB_EXEC_PATH"
+fi
 
 if [ -z "$LD_LIBRARY_PATH" ]
 then

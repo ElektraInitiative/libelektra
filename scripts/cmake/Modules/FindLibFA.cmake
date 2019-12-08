@@ -12,10 +12,7 @@ find_path (LIBFA_INCLUDE_DIR fa.h)
 include (FindPackageHandleStandardArgs)
 
 # handles the REQUIRED, QUIET and version-related arguments to find_package(). It also sets the LIBFA_FOUND variable.
-find_package_handle_standard_args (LibFA
-				   DEFAULT_MSG
-				   LIBFA_LIBRARY
-				   LIBFA_INCLUDE_DIR)
+find_package_handle_standard_args (LibFA DEFAULT_MSG LIBFA_LIBRARY LIBFA_INCLUDE_DIR)
 
 set (LIBFA_LIBRARIES ${LIBFA_LIBRARY})
 set (LIBFA_INCLUDE_DIRS ${LIBFA_INCLUDE_DIR})

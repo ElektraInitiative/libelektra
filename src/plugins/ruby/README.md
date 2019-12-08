@@ -11,7 +11,7 @@
 ## Introduction
 
 This plugin is an Elektra to Ruby bridge and makes is possible to implement Elektra plugins with Ruby.
-This plugin requires the `swig_ruby` binding.
+This plugin requires the `ruby` binding.
 
 ## Configuration Options
 

@@ -24,32 +24,21 @@ endif (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 
 add_msr_test (tutorial_arrays "${CMAKE_SOURCE_DIR}/doc/tutorials/arrays.md")
 add_msr_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
-add_msr_test (tutorial_install_config "${CMAKE_SOURCE_DIR}/doc/tutorials/install-config-files.md"
-	      REQUIRED_PLUGINS ini
-			       resolver
-			       ENVIRONMENT
-			       KDB_EXEC_PATH=${CMAKE_SOURCE_DIR}/scripts/kdb)
-if (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
-	message (STATUS "Excluding storage tutorial MSR test, since it currently fails for ASan macOS builds in Cirrus CI")
-else (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
-	add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
-endif (ENABLE_ASAN AND APPLE AND DEFINED ENV{CIRRUS_CI})
-add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md"
-	      REQUIRED_PLUGINS hosts
-			       line
-			       PROPERTY
-			       LABELS
-			       memleak)
+add_msr_test (
+	tutorial_install_config "${CMAKE_SOURCE_DIR}/doc/tutorials/install-config-files.md"
+	REQUIRED_PLUGINS ini resolver
+	ENVIRONMENT KDB_EXEC_PATH=${CMAKE_SOURCE_DIR}/scripts/kdb)
+add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
+add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md" REQUIRED_PLUGINS hosts line PROPERTY LABELS memleak)
 
 if (ENABLE_ASAN)
 	message (STATUS "Excluding Markdown Shell Recorder test for `validation`, as it leaks memory and fails with ASAN enabled")
 else (ENABLE_ASAN)
 	add_msr_test (tutorial_validation "${CMAKE_SOURCE_DIR}/doc/tutorials/validation.md" REQUIRED_PLUGINS ni validation)
-	add_msr_test (tutorial_crypto "${CMAKE_SOURCE_DIR}/doc/tutorials/crypto.md"
-		      REQUIRED_PLUGINS crypto_gcrypt
-				       fcrypt
-				       REQUIRED_TOOLS
-				       gen-gpg-testkey)
+	add_msr_test (
+		tutorial_crypto "${CMAKE_SOURCE_DIR}/doc/tutorials/crypto.md"
+		REQUIRED_PLUGINS crypto_gcrypt fcrypt
+		REQUIRED_TOOLS gen-gpg-testkey)
 endif (ENABLE_ASAN)
 
 # ========
@@ -61,12 +50,8 @@ add_msr_test (readme_msr "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutoria
 add_msr_test (issue_template "${CMAKE_SOURCE_DIR}/.github/ISSUE_TEMPLATE.md")
 add_msr_test (ini_crash_test "${CMAKE_SOURCE_DIR}/src/plugins/ini/crash_test/crash_test.md" REQUIRED_PLUGINS ini)
 add_msr_test (mmapstorage_shelltests "${CMAKE_SOURCE_DIR}/src/plugins/mmapstorage/shelltests.md" REQUIRED_PLUGINS mmapstorage)
-add_msr_test (cache_shelltests "${CMAKE_SOURCE_DIR}/src/plugins/cache/shelltests.md"
-	      REQUIRED_PLUGINS cache
-			       mmapstorage
-			       dump
-			       resolver
-			       multifile)
+add_msr_test (cache_shelltests "${CMAKE_SOURCE_DIR}/src/plugins/cache/shelltests.md" REQUIRED_PLUGINS cache mmapstorage dump resolver
+												      multifile)
 
 # ~~~
 # Only works with super user privileges, since it writes to `/etc/hosts`:

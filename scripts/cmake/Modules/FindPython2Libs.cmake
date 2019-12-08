@@ -41,33 +41,22 @@ include (CMakeFindFrameworks)
 cmake_find_frameworks (Python)
 
 set (_PYTHON21_VERSIONS 1.6 1.5)
-set (_PYTHON22_VERSIONS
-     2.7
-     2.6
-     2.5
-     2.4
-     2.3
-     2.2
-     2.1
-     2.0)
-set (_PYTHON23_VERSIONS
-     3.3
-     3.2
-     3.1
-     3.0)
+set (
+	_PYTHON22_VERSIONS
+	2.7
+	2.6
+	2.5
+	2.4
+	2.3
+	2.2
+	2.1
+	2.0)
+set (_PYTHON23_VERSIONS 3.3 3.2 3.1 3.0)
 
 if (Python2Libs_FIND_VERSION)
 	if (Python2Libs_FIND_VERSION MATCHES "^[0-9]+\\.[0-9]+(\\.[0-9]+.*)?$")
-		string (REGEX
-			REPLACE "^([0-9]+\\.[0-9]+).*"
-				"\\1"
-				_PYTHON2_FIND_MAJ_MIN
-				"${Python2Libs_FIND_VERSION}")
-		string (REGEX
-			REPLACE "^([0-9]+).*"
-				"\\1"
-				_PYTHON2_FIND_MAJ
-				"${_PYTHON2_FIND_MAJ_MIN}")
+		string (REGEX REPLACE "^([0-9]+\\.[0-9]+).*" "\\1" _PYTHON2_FIND_MAJ_MIN "${Python2Libs_FIND_VERSION}")
+		string (REGEX REPLACE "^([0-9]+).*" "\\1" _PYTHON2_FIND_MAJ "${_PYTHON2_FIND_MAJ_MIN}")
 		unset (_PYTHON2_FIND_OTHER_VERSIONS)
 		if (Python2Libs_FIND_VERSION_EXACT)
 			if (_PYTHON2_FIND_MAJ_MIN STREQUAL Python2Libs_FIND_VERSION)
@@ -100,40 +89,40 @@ unset (_PYTHON22_VERSIONS)
 unset (_PYTHON23_VERSIONS)
 
 foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
-	string (REPLACE "."
-			""
-			_CURRENT_VERSION_NO_DOTS
-			${_CURRENT_VERSION})
+	string (REPLACE "." "" _CURRENT_VERSION_NO_DOTS ${_CURRENT_VERSION})
 	if (WIN32)
-		find_library (PYTHON2_DEBUG_LIBRARY
-			      NAMES python${_CURRENT_VERSION_NO_DOTS}_d python
-			      PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs/Debug
-				    [HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs/Debug
-				    [HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs
-				    [HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs)
+		find_library (
+			PYTHON2_DEBUG_LIBRARY
+			NAMES python${_CURRENT_VERSION_NO_DOTS}_d python
+			PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs/Debug
+			      [HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs/Debug
+			      [HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs
+			      [HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs)
 	endif (WIN32)
 
-	find_library (PYTHON2_LIBRARY
-		      NAMES python${_CURRENT_VERSION_NO_DOTS}
-			    python${_CURRENT_VERSION}mu
-			    python${_CURRENT_VERSION}m
-			    python${_CURRENT_VERSION}u
-			    python${_CURRENT_VERSION}
-		      PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs
-			    [HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs
-		      NO_SYSTEM_ENVIRONMENT_PATH # Avoid finding the .dll in the PATH.  We want the .lib.
-		      )
+	find_library (
+		PYTHON2_LIBRARY
+		NAMES python${_CURRENT_VERSION_NO_DOTS} python${_CURRENT_VERSION}mu python${_CURRENT_VERSION}m python${_CURRENT_VERSION}u
+		      python${_CURRENT_VERSION}
+		PATHS [HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs
+		      [HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/libs
+		NO_SYSTEM_ENVIRONMENT_PATH # Avoid finding the .dll in the PATH.  We want the .lib.
+	)
 
 	# Look for the static library in the Python config directory
-	find_library (PYTHON2_LIBRARY
-		      NAMES python${_CURRENT_VERSION_NO_DOTS} python${_CURRENT_VERSION}
-		      NO_SYSTEM_ENVIRONMENT_PATH # Avoid finding the .dll in the PATH.  We want the .lib.
-		      PATH_SUFFIXES python${_CURRENT_VERSION}/config # This is where the static library is usually located
-		      )
+	find_library (
+		PYTHON2_LIBRARY
+		NAMES python${_CURRENT_VERSION_NO_DOTS} python${_CURRENT_VERSION}
+		NO_SYSTEM_ENVIRONMENT_PATH # Avoid finding the .dll in the PATH.  We want the .lib.
+		PATH_SUFFIXES python${_CURRENT_VERSION}/config # This is where the static library is usually located
+	)
 
 	# For backward compatibility, honour value of PYTHON2_INCLUDE_PATH, if PYTHON2_INCLUDE_DIR is not set.
 	if (DEFINED PYTHON2_INCLUDE_PATH AND NOT DEFINED PYTHON2_INCLUDE_DIR)
-		set (PYTHON2_INCLUDE_DIR "${PYTHON2_INCLUDE_PATH}" CACHE PATH "Path to where Python.h is found" FORCE)
+		set (
+			PYTHON2_INCLUDE_DIR
+			"${PYTHON2_INCLUDE_PATH}"
+			CACHE PATH "Path to where Python.h is found" FORCE)
 	endif (DEFINED PYTHON2_INCLUDE_PATH AND NOT DEFINED PYTHON2_INCLUDE_DIR)
 
 	set (PYTHON2_FRAMEWORK_INCLUDES)
@@ -144,26 +133,21 @@ foreach (_CURRENT_VERSION ${_Python2_VERSIONS})
 		endforeach (dir)
 	endif (Python_FRAMEWORKS AND NOT PYTHON2_INCLUDE_DIR)
 
-	find_path (PYTHON2_INCLUDE_DIR
-		   NAMES Python.h
-		   PATHS ${PYTHON2_FRAMEWORK_INCLUDES}
-			 [HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/include
-			 [HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/include
-		   PATH_SUFFIXES python${_CURRENT_VERSION}mu
-				 python${_CURRENT_VERSION}m
-				 python${_CURRENT_VERSION}u
-				 python${_CURRENT_VERSION})
+	find_path (
+		PYTHON2_INCLUDE_DIR
+		NAMES Python.h
+		PATHS ${PYTHON2_FRAMEWORK_INCLUDES}
+		      [HKEY_LOCAL_MACHINE\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/include
+		      [HKEY_CURRENT_USER\\SOFTWARE\\Python\\PythonCore\\${_CURRENT_VERSION}\\InstallPath]/include
+		PATH_SUFFIXES python${_CURRENT_VERSION}mu python${_CURRENT_VERSION}m python${_CURRENT_VERSION}u python${_CURRENT_VERSION})
 
 	# For backward compatibility, set PYTHON2_INCLUDE_PATH.
 	set (PYTHON2_INCLUDE_PATH "${PYTHON2_INCLUDE_DIR}")
 
 	if (PYTHON2_INCLUDE_DIR AND EXISTS "${PYTHON2_INCLUDE_DIR}/patchlevel.h")
 		file (STRINGS "${PYTHON2_INCLUDE_DIR}/patchlevel.h" python_version_str REGEX "^#define[ \t]+PY_VERSION[ \t]+\"[^\"]+\"")
-		string (REGEX
-			REPLACE "^#define[ \t]+PY_VERSION[ \t]+\"([^\"]+)\".*"
-				"\\1"
-				PYTHON2LIBS_VERSION_STRING
-				"${python_version_str}")
+		string (REGEX REPLACE "^#define[ \t]+PY_VERSION[ \t]+\"([^\"]+)\".*" "\\1" PYTHON2LIBS_VERSION_STRING
+				      "${python_version_str}")
 		unset (python_version_str)
 	endif (PYTHON2_INCLUDE_DIR AND EXISTS "${PYTHON2_INCLUDE_DIR}/patchlevel.h")
 
@@ -190,12 +174,7 @@ select_library_configurations (PYTHON2)
 unset (PYTHON2_FOUND)
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (Python2Libs
-				   REQUIRED_VARS
-				   PYTHON2_LIBRARIES
-				   PYTHON2_INCLUDE_DIRS
-				   VERSION_VAR
-				   PYTHON2LIBS_VERSION_STRING)
+find_package_handle_standard_args (Python2Libs REQUIRED_VARS PYTHON2_LIBRARIES PYTHON2_INCLUDE_DIRS VERSION_VAR PYTHON2LIBS_VERSION_STRING)
 
 # PYTHON2_ADD_MODULE(<name> src1 src2 ... srcN) is used to build modules for python. PYTHON2_WRITE_MODULES_HEADER(<filename>) writes a
 # header file you can include in your sources to initialize the static python modules
@@ -233,16 +212,15 @@ function (PYTHON2_WRITE_MODULES_HEADER _filename)
 	get_property (PY_STATIC_MODULES_LIST GLOBAL PROPERTY PY_STATIC_MODULES_LIST)
 
 	get_filename_component (_name "${_filename}" NAME)
-	string (REPLACE "."
-			"_"
-			_name
-			"${_name}")
+	string (REPLACE "." "_" _name "${_name}")
 	string (TOUPPER ${_name} _nameUpper)
 	set (_filename ${CMAKE_CURRENT_BINARY_DIR}/${_filename})
 
 	set (_filenameTmp "${_filename}.in")
 	file (WRITE ${_filenameTmp} "/*Created by cmake, do not edit, changes will be lost*/\n")
-	file (APPEND ${_filenameTmp} "#ifndef ${_nameUpper}
+	file (
+		APPEND ${_filenameTmp}
+		"#ifndef ${_nameUpper}
 #define ${_nameUpper}
 
 #include <Python.h>
@@ -257,7 +235,9 @@ extern \"C\" {
 		file (APPEND ${_filenameTmp} "extern void init${PYTHON2_MODULE_PREFIX}${_currentModule}(void);\n\n")
 	endforeach (_currentModule ${PY_STATIC_MODULES_LIST})
 
-	file (APPEND ${_filenameTmp} "#ifdef __cplusplus
+	file (
+		APPEND ${_filenameTmp}
+		"#ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
@@ -267,7 +247,7 @@ extern \"C\" {
 		file (
 			APPEND ${_filenameTmp}
 			"int ${_name}_${_currentModule}(void) \n{\n  static char name[]=\"${PYTHON2_MODULE_PREFIX}${_currentModule}\"; return PyImport_AppendInittab(name, init${PYTHON2_MODULE_PREFIX}${_currentModule});\n}\n\n"
-			)
+		)
 	endforeach (_currentModule ${PY_STATIC_MODULES_LIST})
 
 	file (APPEND ${_filenameTmp} "void ${_name}_LoadAllPythonModules(void)\n{\n")
@@ -278,14 +258,9 @@ extern \"C\" {
 	file (
 		APPEND ${_filenameTmp}
 		"#ifndef EXCLUDE_LOAD_ALL_FUNCTION\nvoid CMakeLoadAllPythonModules(void)\n{\n  ${_name}_LoadAllPythonModules();\n}\n#endif\n\n#endif\n"
-		)
+	)
 
 	# with CONFIGURE_FILE() cmake complains that you may not use a file created using FILE(WRITE) as input file for CONFIGURE_FILE()
-	execute_process (COMMAND ${CMAKE_COMMAND}
-				 -E
-				 copy_if_different
-				 "${_filenameTmp}"
-				 "${_filename}"
-			 OUTPUT_QUIET ERROR_QUIET)
+	execute_process (COMMAND ${CMAKE_COMMAND} -E copy_if_different "${_filenameTmp}" "${_filename}" OUTPUT_QUIET ERROR_QUIET)
 
 endfunction (PYTHON2_WRITE_MODULES_HEADER)

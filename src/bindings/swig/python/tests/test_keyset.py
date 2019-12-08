@@ -27,6 +27,8 @@ class KeySet(unittest.TestCase):
 		self.assertEqual(len(ks), len(self.ks) - 1)
 
 	def test_operator(self):
+		self.assertFalse(self.ks == kdb.KeySet(0))
+
 		self.assertEqual(len(self.ks),       4)
 		self.assertEqual(len(kdb.KeySet(0)), 0)
 
@@ -50,6 +52,14 @@ class KeySet(unittest.TestCase):
 		with self.assertRaises(KeyError):
 			self.ks[kdb.Key("user/doesnt_exist")]
 
+		self.assertEqual(str(self.ks), "['system/key1', 'system/key2', 'user/key3', 'user/key4']")
+		self.assertEqual(repr(self.ks), "kdb.KeySet(4, kdb.Key('system/key1'), kdb.Key('system/key2'), kdb.Key('user/key3'), kdb.Key('user/key4'))")
+
+		self.assertIsInstance(hash(self.ks[0]), int)
+		self.assertTrue(self.ks[0].isNameLocked())
+		self.assertFalse(self.ks[0].isValueLocked())
+		self.assertFalse(self.ks[0].isMetaLocked())
+
 	def test_functions(self):
 		self.assertEqual(self.ks.lookup("user/key3"), kdb.Key("user/key3"))
 		self.assertEqual(self.ks.lookup(kdb.Key("system/key2")), kdb.Key("system/key2"))
@@ -58,8 +68,10 @@ class KeySet(unittest.TestCase):
 
 		ks = kdb.KeySet(0)
 		ks.append(kdb.Key("user/foo"))
-		ks.append(kdb.Key("user/bar"))
-		self.assertEqual(len(ks), 2)
+		ks.append(kdb.Key("user/bar"), kdb.Key("user/bar2"))
+		ks.append("user/nice")
+		ks.extend([ kdb.Key("user/baz"), kdb.Key("user/baz2") ])
+		self.assertEqual(len(ks), 6)
 
 		' test clear '
 		ks = kdb.KeySet(0)
@@ -113,11 +125,18 @@ class KeySet(unittest.TestCase):
 		ks = copy.copy(self.ks)
 		self.assertEqual(len(ks), len(self.ks))
 		self.assertEqual(ks[0].getKey(), self.ks[0].getKey())
+		self.assertTrue(ks == self.ks)
 
 		# deep copy
 		ks = copy.deepcopy(self.ks)
 		self.assertEqual(len(ks), len(self.ks))
 		self.assertNotEqual(ks[0].getKey(), self.ks[0].getKey())
+		self.assertTrue(ks == self.ks)
+
+	def test_helpers(self):
+		self.assertEqual(self.ks.unpack_names(), set([ 'system/key1', 'system/key2', 'user/key3', 'user/key4' ]))
+		self.assertEqual(self.ks.unpack_basenames(), set([ 'key1', 'key2', 'key3', 'key4' ]))
+		self.assertEqual(self.ks.filter_below(kdb.Key('user')), kdb.KeySet(2, self.ks[2], self.ks[3]))
 
 if __name__ == '__main__':
 	unittest.main()

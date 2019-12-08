@@ -47,8 +47,8 @@ The option `-f` can be used to override. **Attention!** This deletes existing ke
 
 ```sh
 kdb cmerge user/tests/our user/tests/their user/tests/base user/tests/result
-# RET: 1
-# STDERR: ERROR: 1 keys exist in resultpath. Use -f to override the keys there.
+# RET: 3
+# There are keys in the result path. Use -f to override them.
 kdb cmerge -f user/tests/our user/tests/their user/tests/base user/tests/result
 kdb get user/tests/result
 #> b
@@ -216,3 +216,8 @@ There are two tools of which cmerge is the central tool:
 1. [`kdb install-config-file`](/doc/help/kdb-install-config-file.md) installs or merges configuration files from the file system into
    Elektra. There is [a tutorial](/doc/tutorials/install-config-files.md) for this tool, too.
 2. [`kdb cmerge-config-files`](/doc/help/kdb-cmerge-config-files) performs a three-way merge on three files using Elektra
+
+## Calling the API
+
+All the tools that use the merge library rely on the same API.
+An exemplary call to this API can be found in the [examples folder](/examples/kdbset.c).

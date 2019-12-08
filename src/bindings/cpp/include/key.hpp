@@ -233,6 +233,10 @@ public:
 	inline bool isBelowOrSame (const Key & k) const;
 	inline bool isDirectBelow (const Key & k) const;
 
+	inline bool isNameLocked () const;
+	inline bool isValueLocked () const;
+	inline bool isMetaLocked () const;
+
 private:
 	inline int del ();
 
@@ -952,8 +956,8 @@ inline std::string Key::getFullName () const
 		return "";
 	}
 
-	std::string str (csize - 1, '\0');
-	ckdb::keyGetFullName (getKey (), &str[0], csize);
+	std::string str (static_cast<size_t> (csize - 1), '\0');
+	ckdb::keyGetFullName (getKey (), &str[0], static_cast<size_t> (csize));
 	return str;
 }
 
@@ -1149,8 +1153,8 @@ inline std::string Key::getString () const
 		return "";
 	}
 
-	std::string str (csize - 1, '\0');
-	if (ckdb::keyGetString (getKey (), &str[0], csize) == -1)
+	std::string str (static_cast<size_t> (csize - 1), '\0');
+	if (ckdb::keyGetString (getKey (), &str[0], static_cast<size_t> (csize)) == -1)
 	{
 		throw KeyTypeMismatch ();
 	}
@@ -1255,8 +1259,8 @@ inline std::string Key::getBinary () const
 		return "";
 	}
 
-	std::string str (csize, '\0');
-	if (ckdb::keyGetBinary (getKey (), &str[0], csize) == -1)
+	std::string str (static_cast<size_t> (csize), '\0');
+	if (ckdb::keyGetBinary (getKey (), &str[0], static_cast<size_t> (csize)) == -1)
 	{
 		throw KeyTypeMismatch ();
 	}
@@ -1627,6 +1631,30 @@ inline bool Key::isDirectBelow (const Key & k) const
 	int ret = ckdb::keyIsDirectlyBelow (k.getKey (), key);
 	if (ret == -1) return false;
 	return ret;
+}
+
+/**
+ * @return true if the name of our key has been locked
+ */
+inline bool Key::isNameLocked () const
+{
+	return ckdb::keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME;
+}
+
+/**
+ * @return true if the value of our key has been locked
+ */
+inline bool Key::isValueLocked () const
+{
+	return ckdb::keyIsLocked (key, KEY_LOCK_VALUE) == KEY_LOCK_VALUE;
+}
+
+/**
+ * @return true if the metadata of our key has been locked
+ */
+inline bool Key::isMetaLocked () const
+{
+	return ckdb::keyIsLocked (key, KEY_LOCK_META) == KEY_LOCK_META;
 }
 
 /**

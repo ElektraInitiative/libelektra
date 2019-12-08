@@ -801,7 +801,7 @@ int keyLock (Key * key, option_t what)
  * @brief Tests if a part of a key is locked
  *
  * @see keyLock() for more details
- * @retval >0 the bits are locked
+ * @retval >0 the bits that are locked
  * @retval 0 if everything is unlocked
  * @retval -1 on error (nullpointer)
  * @ingroup key

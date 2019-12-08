@@ -87,6 +87,7 @@ Read (and write) standard config files:
 - [augeas](augeas/) reads/writes many different configuration
   files using the augeas library
 - [hosts](hosts/) reads/writes hosts files
+- [kconfig](kconfig/) reads/writes KConfig ini files
 - [line](line/) reads/writes any file line by line
 - [yajl](yajl/) reads/writes JSON.
 
@@ -242,7 +243,6 @@ binding during run-time.
 - [jni](jni/) java plugins started by jni, works with jna plugins
 - [lua](lua/) Lua plugins
 - [python](python/) Python 3 plugins
-- [python2](python2/) Python 2 plugins (deprecated)
 - [ruby](ruby/) Ruby plugins
 - [shell](shell/) executes shell commandos
 

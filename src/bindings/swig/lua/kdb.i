@@ -358,10 +358,6 @@
  */
 %ignore kdb::KeySet::size;
 
-%rename("_%s") kdb::KeySet::rewind;
-%rename("_%s") kdb::KeySet::next;
-%rename("_%s") kdb::KeySet::current;
-
 %rename("_%s") kdb::KeySet::lookup;
 %rename("_lookup") kdb::KeySet::at;
 

@@ -29,7 +29,7 @@ _kdb() {
 	fi
 
 	# commands which expects a path as next parameter
-	local pathcommands="export file get getmeta cp ls lsmeta mv rm set setmeta sget vset"
+	local pathcommands="export file get getmeta cp ls lsmeta mv rm set setmeta sget"
 	if [[ $pathcommands =~ $prev ]]; then
 		local IFS=$'\n'
 		local paths=($( (${kdbpath} ls system && ${kdbpath} ls user) 2> /dev/null))

@@ -47,14 +47,10 @@ add_executable (${testexename} ${TEST_SOURCES})
 
 target_include_directories (${testexename} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework")
 
-target_link_elektra (${testexename}
-		     elektra-kdb
-		     elektra-plugin
-		     elektra-io
-		     ${IO_VARIANT_LIBRARY}
-		     ${ADDITIONAL_TEST_LIBRARIES})
+target_link_elektra (${testexename} elektra-kdb elektra-plugin elektra-io ${IO_VARIANT_LIBRARY} ${ADDITIONAL_TEST_LIBRARIES})
 
-add_test (NAME ${testexename}
-	  COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
-	  WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+add_test (
+	NAME ${testexename}
+	COMMAND "${CMAKE_BINARY_DIR}/bin/${testexename}" "${CMAKE_CURRENT_SOURCE_DIR}"
+	WORKING_DIRECTORY "${WORKING_DIRECTORY}")
 set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")

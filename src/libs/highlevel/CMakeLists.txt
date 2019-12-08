@@ -1,11 +1,6 @@
 file (GLOB SOURCES *.c)
 
-add_lib (highlevel
-	 SOURCES
-	 ${SOURCES}
-	 LINK_ELEKTRA
-	 elektra-kdb
-	 elektra-ease)
+add_lib (highlevel SOURCES ${SOURCES} LINK_ELEKTRA elektra-kdb elektra-ease)
 
 if (BUILD_SHARED)
 	set (LIBRARIES "-lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core")

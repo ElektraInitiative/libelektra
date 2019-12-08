@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-IMPORT" "1" "October 2019" "" ""
+.TH "KDB\-IMPORT" "1" "November 2019" "" ""
 .
 .SH "NAME"
 \fBkdb\-import\fR \- Import an existing configuration into the key database
@@ -105,6 +105,49 @@ To restore a backup (stored as \fBsw\.ecf\fR) of a user\'s configuration below \
 .
 .br
 \fBcat sw\.ecf | kdb import system/sw\fR
+.
+.P
+To import a sample \fBxml\fR content with the \fBxerces\fR plugin:
+.
+.IP "" 4
+.
+.nf
+
+# import two keys from a xml string
+kdb import user/tests/kdb\-import/ xerces <<< "<?xml version=\e"1\.0\e" encoding=\e"UTF\-8\e" standalone=\e"no\e" ?><kdb\-import><one>one</one><two>two</two></kdb\-import>"
+
+# get the values and verify they got imported correctly
+kdb get user/tests/kdb\-import/one
+#> one
+kdb get user/tests/kdb\-import/two
+#> two
+kdb rm \-r user/tests/kdb\-import
+.
+.fi
+.
+.IP "" 0
+.
+.P
+To import a sample \fBxml\fR content via specifying the file format directly:
+.
+.IP "" 4
+.
+.nf
+
+# import two keys from a xml string
+kdb import user/tests/kdb\-import/ xml <<< "<?xml version=\e"1\.0\e" encoding=\e"UTF\-8\e" standalone=\e"no\e" ?><kdb\-import><one>one</one><two>two</two></kdb\-import>"
+
+# get the values and verify they got imported correctly
+kdb get user/tests/kdb\-import/one
+#> one
+kdb get user/tests/kdb\-import/two
+#> two
+
+kdb rm \-r user/tests/kdb\-import
+.
+.fi
+.
+.IP "" 0
 .
 .SH "SEE ALSO"
 .

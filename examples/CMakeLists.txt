@@ -28,14 +28,11 @@ target_link_elektra (kdbget elektra-kdb)
 target_link_elektra (kdbget_error elektra-kdb)
 target_link_elektra (kdbintro elektra-kdb)
 target_link_elektra (kdbopen elektra-kdb)
-target_link_elektra (kdbset elektra-kdb)
+target_link_elektra (kdbset elektra-kdb elektra-merge)
 target_link_elektra (set_key elektra-kdb)
 target_link_elektra (opts elektra-ease elektra-opts)
 target_link_elektra (optsSnippets elektra-opts)
-target_link_elektra (gopts
-		     elektra-ease
-		     elektra-opts
-		     elektra-kdb)
+target_link_elektra (gopts elektra-ease elektra-opts elektra-kdb)
 
 # Notification examples
 
@@ -63,16 +60,12 @@ if (FOUND_NAME GREATER -1)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
 		if (BUILD_FULL OR BUILD_STATIC)
 			list (APPEND SOURCES $<TARGET_OBJECTS:elektra-io-uv-objects>) # add sources for elektra-io-uv for static and full
-										      # builds
+			# builds
 		endif ()
 
 		add_executable (${EXAMPLE} ${SOURCES})
 
-		target_link_elektra (${EXAMPLE}
-				     elektra-kdb
-				     elektra-notification
-				     elektra-io
-				     elektra-io-uv)
+		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-uv)
 		if (BUILD_FULL OR BUILD_STATIC)
 			target_link_libraries (${EXAMPLE} ${PC_libuv_LDFLAGS})
 		endif ()
@@ -103,11 +96,7 @@ if (FOUND_NAME GREATER -1)
 
 		add_executable (${EXAMPLE} ${SOURCES})
 
-		target_link_elektra (${EXAMPLE}
-				     elektra-kdb
-				     elektra-notification
-				     elektra-io
-				     elektra-io-glib)
+		target_link_elektra (${EXAMPLE} elektra-kdb elektra-notification elektra-io elektra-io-glib)
 		if (BUILD_FULL OR BUILD_STATIC)
 			target_link_libraries (${EXAMPLE} ${GLib_LIBRARY})
 		endif ()

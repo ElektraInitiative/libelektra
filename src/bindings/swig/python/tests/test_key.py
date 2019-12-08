@@ -85,6 +85,15 @@ class Key(unittest.TestCase):
 		self.assertEqual(str(self.key),  "user/foo/bar")
 		self.assertEqual(str(self.bkey), "system/bkey")
 
+		self.assertEqual(len(self.key),  3)
+		self.assertEqual(len(self.bkey), 2)
+
+		self.assertEqual(repr(self.key),  "kdb.Key('user/foo/bar')")
+		self.assertEqual(repr(self.bkey), "kdb.Key('system/bkey')")
+
+		with self.assertRaises(TypeError):
+                    hash(kdb.Key("user/not_name_locked"))
+
 	def test_properties(self):
 		self.assertEqual(self.key.name,      "user/foo/bar")
 		self.assertEqual(self.key.value,     "value")
@@ -108,6 +117,9 @@ class Key(unittest.TestCase):
 		self.assertTrue(k.isBinary())
 		self.assertIsInstance(self.bkey.getMeta("binary"), kdb.Key)
 
+		self.assertEqual(kdb.Key("user/key1", "value").value, "value")
+		self.assertEqual(kdb.Key("user/key1", b"bvalue\0\0").value, b"bvalue\0\0")
+
 		k = kdb.Key("user/key2")
 		with self.assertRaises(kdb.KeyInvalidName):
 			k.name = "foo"
@@ -118,6 +130,9 @@ class Key(unittest.TestCase):
 		self.assertTrue(self.key.isString())
 		self.assertTrue(self.bkey.isBinary())
 		self.assertTrue(self.key.isBelow(kdb.Key("user/foo")))
+		self.assertFalse(self.key.isNameLocked())
+		self.assertFalse(self.key.isValueLocked())
+		self.assertFalse(self.key.isMetaLocked())
 
 		k = kdb.Key("user/key1", kdb.KEY_VALUE, "value")
 		self.assertEqual(k.get(), "value")
@@ -129,6 +144,9 @@ class Key(unittest.TestCase):
 		self.assertEqual(self.key.getMeta("owner").name,  "owner")
 		self.assertEqual(self.key.getMeta("owner").value, "myowner")
 		self.assertEqual(self.key.getMeta("by").value,    "manuel")
+		self.assertTrue(self.key.getMeta("by").isNameLocked())
+		self.assertTrue(self.key.getMeta("by").isValueLocked())
+		self.assertTrue(self.key.getMeta("by").isMetaLocked())
 
 		self.assertFalse(self.key.hasMeta("doesnt_exist"))
 		self.assertIsNone(self.key.getMeta("doesnt_exist"))
@@ -138,6 +156,10 @@ class Key(unittest.TestCase):
 		k = kdb.Key("user/key1")
 		k.setMeta("foo", "bar")
 		self.assertEqual(k.getMeta("foo").value, "bar")
+
+		k = kdb.Key("user/key1", { "foo2": "bar2", "foo3": "bar3" })
+		self.assertEqual(k.getMeta("foo2").value, "bar2")
+		self.assertEqual(k.getMeta("foo3").value, "bar3")
 
 		self.assertEqual(sum(1 for _ in self.key.getMeta()),  2)
 		self.assertEqual(sum(1 for _ in self.bkey.getMeta()), 1)
@@ -155,6 +177,14 @@ class Key(unittest.TestCase):
 		self.assertEqual(sum(1 for _ in reversed(k)), 3)
 		self.assertEqual(iter(k).value(),     "user")
 		self.assertEqual(reversed(k).value(), "c")
+
+	def test_helpers(self):
+		with self.assertRaises(ValueError):
+			kdb.Key("user/noarray").array_elements()
+		parts = kdb.Key("user/some/array/#_12").array_elements()
+		self.assertEqual(parts.index,    12)
+		self.assertEqual(parts.name,     "user/some/array")
+		self.assertEqual(parts.basename, "array")
 
 if __name__ == '__main__':
 	unittest.main()

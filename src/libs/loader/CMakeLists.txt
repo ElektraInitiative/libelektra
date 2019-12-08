@@ -15,11 +15,12 @@ if (BUILD_SHARED)
 		endif ()
 
 		include (ExternalProject)
-		externalproject_add (dlfcn-win32
-				     PREFIX "dlfcn-win32"
-				     GIT_REPOSITORY "https://github.com/dlfcn-win32/dlfcn-win32.git"
-				     CMAKE_ARGS ${BUILD_ARGS}
-				     BUILD_IN_SOURCE 1)
+		externalproject_add (
+			dlfcn-win32
+			PREFIX "dlfcn-win32"
+			GIT_REPOSITORY "https://github.com/dlfcn-win32/dlfcn-win32.git"
+			CMAKE_ARGS ${BUILD_ARGS}
+			BUILD_IN_SOURCE 1)
 
 		add_includes (elektra-shared "${CMAKE_CURRENT_BINARY_DIR}/dlfcn-win32/include")
 		set (CMAKE_DL_LIBS "${CMAKE_CURRENT_BINARY_DIR}/dlfcn-win32/lib/libdl.dll.a")

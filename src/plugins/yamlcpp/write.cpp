@@ -254,7 +254,7 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
 	string const name = *nameIterator;
 	auto const offsetIndex = ckdb::elektraArrayValidateBaseNameString (name.c_str ());
 	auto const isArrayElement = offsetIndex >= 1;
-	return { isArrayElement, isArrayElement ? stoull (name.substr (offsetIndex)) : 0 };
+	return { isArrayElement, isArrayElement ? stoull (name.substr (static_cast<size_t> (offsetIndex))) : 0 };
 }
 
 /**
@@ -533,5 +533,5 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 #endif
 
 	ofstream output (parent.getString ());
-	output << data;
+	output << data << endl;
 }

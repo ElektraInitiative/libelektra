@@ -1,7 +1,7 @@
 # Elektra
 
 [![Release](https://img.shields.io/github/release/ElektraInitiative/libelektra.svg)](https://github.com/ElektraInitiative/libelektra/releases/latest)
-[![Jenkins Build Status](https://img.shields.io/jenkins/t/https/build.libelektra.org/jenkins/job/libelektra/job/master.svg)](https://build.libelektra.org/jenkins/job/libelektra/job/master/lastBuild)
+[![Jenkins Build Status](https://img.shields.io/jenkins/t/https/build.libelektra.org/job/libelektra/job/master.svg)](https://build.libelektra.org/job/libelektra/job/master/lastBuild)
 [![Travis Build Status](https://travis-ci.org/ElektraInitiative/libelektra.svg?branch=master)](https://travis-ci.org/ElektraInitiative/libelektra)
 [![Cirrus Build Status](https://api.cirrus-ci.com/github/ElektraInitiative/libelektra.svg)](https://cirrus-ci.com/github/ElektraInitiative/libelektra)
 [![Coverage Status](https://img.shields.io/coveralls/github/ElektraInitiative/libelektra.svg)](https://coveralls.io/github/ElektraInitiative/libelektra)

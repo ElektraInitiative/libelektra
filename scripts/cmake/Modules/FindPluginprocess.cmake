@@ -27,7 +27,4 @@ else (HAVE_MKFIFO)
 	set (PLUGINPROCESS_NOTFOUND_INFO "mkfifo does not exist on the target platform, excluding pluginprocess library")
 endif (HAVE_MKFIFO)
 
-mark_as_advanced (HAVE_MKFIFO
-		  HAVE_FORK
-		  PLUGINPROCESS_FOUND
-		  PLUGINPROCESS_NOTFOUND_INFO)
+mark_as_advanced (HAVE_MKFIFO HAVE_FORK PLUGINPROCESS_FOUND PLUGINPROCESS_NOTFOUND_INFO)

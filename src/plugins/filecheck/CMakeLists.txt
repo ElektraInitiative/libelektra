@@ -12,8 +12,9 @@ if (DEPENDENCY_PHASE)
 	endif (ENABLE_ASAN AND CMAKE_SYSTEM_NAME MATCHES FreeBSD)
 endif ()
 
-add_plugin (filecheck
-	    SOURCES filecheck.h filecheck.c
-	    INCLUDE_DIRECTORIES ${Iconv_INCLUDE_DIRS}
-	    LINK_LIBRARIES ${Iconv_LIBRARIES}
-	    ADD_TEST INSTALL_TEST_DATA)
+add_plugin (
+	filecheck
+	SOURCES filecheck.h filecheck.c
+	INCLUDE_DIRECTORIES ${Iconv_INCLUDE_DIRS}
+	LINK_LIBRARIES ${Iconv_LIBRARIES}
+	ADD_TEST INSTALL_TEST_DATA)

@@ -4,13 +4,28 @@
 - infos/provides =
 - infos/description =
 
-# Rust Bindings
+# Rust Bindings for Elektra
 
-Rust bindings for libelektra.
+<div align="center">
+  <!-- Crates version -->
+  <a href="https://crates.io/crates/elektra">
+    <img src="https://img.shields.io/crates/v/elektra.svg"
+    alt="Crates.io version" />
+  </a>
+  <!-- docs.rs docs -->
+  <a href="https://docs.rs/elektra">
+    <img src="https://img.shields.io/badge/docs-latest-blue.svg"
+      alt="docs.rs docs" />
+  </a>
+</div>
+
+_Elektra serves as a universal and secure framework to access configuration parameters in a global, hierarchical key database._
+
+For more information about Elektra itself, visit the [website](https://libelektra.org).
 
 ## Build
 
-Depending on how you installed libelektra, you should use different ways to get the bindings. If you installed it with a package manager, you should use the crates from [crates.io](https://crates.io/). If built libelektra locally, you should use the bindings that are built in the `build` directory.
+Depending on how you installed libelektra, you should use different ways to get the bindings. If you installed it with a package manager, you should use the crates from [crates.io](https://crates.io/). If you built libelektra locally, you should use the bindings that are built in the `build` directory.
 
 ### Package Manager
 
@@ -30,7 +45,7 @@ With this in place, the bindings should be built when you run `cargo build`.
 
 ### Local Build
 
-To build the bindings explicitly as part of the elektra build process, we add the option `rust` to `-DBINDINGS`. Now [build libelektra](../../../doc/COMPILE.md) and the bindings will be built as part of this process.
+To build the bindings explicitly as part of the Elektra build process, we add the option `rust` to `-DBINDINGS`. Now [build libelektra](https://master.libelektra.org/doc/COMPILE.md) and the bindings will be built as part of this process.
 
 Your Cargo.toml dependencies might then look like this
 
@@ -60,7 +75,7 @@ If you run `cargo run` and everything builds correctly and prints `Hello, world!
 
 ### Key
 
-An example for using a `StringKey`. Run it from the `example` directory using `cargo run --bin key`. See the [full example](example/src/bin/key.rs) for more.
+An example for using a `StringKey`. Run it from the `example` directory using `cargo run --bin key`. See the [full example](https://master.libelektra.org/src/bindings/rust/example/src/bin/key.rs) for more.
 
 ```rust
 extern crate elektra;
@@ -110,7 +125,7 @@ A KeySet is a set of StringKeys.
 - You can create an empty keyset with `new` or preallocate space for a number of keys with `with_capacity`.
 - It has two implementations of the `Iterator` trait, so you can iterate immutably or mutably.
 
-See the [full example](example/src/bin/keyset.rs) for more. Run it from the `example` directory using `cargo run --bin keyset`.
+See the [full example](https://master.libelektra.org/src/bindings/rust/example/src/bin/keyset.rs) for more. Run it from the `example` directory using `cargo run --bin keyset`.
 
 ```rust
 extern crate elektra;
@@ -151,7 +166,7 @@ let string_key = StringKey::from(binary_key);
 ### KDB
 
 With the `KDB` struct you can access the key database.
-See the [full example](example/src/bin/kdb.rs) for more. Run it from the `example` directory using `cargo run --bin kdb`.
+See the [full example](https://master.libelektra.org/src/bindings/rust/example/src/bin/kdb.rs) for more. Run it from the `example` directory using `cargo run --bin kdb`.
 
 The KDB error types are nested, so you can match on a high-level or a specific one. You might want to match all validation errors using `kdb_error.is_validation()` which would include both syntactic and semantic validation errors.
 For an in-depth explanation of the error types, see the [error guideline](https://master.libelektra.org/doc/dev/error-categorization.md).
@@ -209,7 +224,7 @@ fn main() {
 
 ## Documentation
 
-Can be accessed for [elektra](https://docs.rs/elektra/0.9.0/elektra/) and [elektra-sys](https://docs.rs/elektra/0.9.0/elektra-sys/). Note that since `elektra-sys` is a one-to-one translation of the C API, it doesn't have documentation and you should instead use the [C docs](https://doc.libelektra.org/api/current/html/index.html) directly.
+Is automatically built on `docs.rs` for [elektra](https://docs.rs/elektra) and [elektra-sys](https://docs.rs/elektra-sys/). Note that since `elektra-sys` is a one-to-one translation of the C API, it doesn't have documentation and you should instead use the [C docs](https://doc.libelektra.org/api/current/html/index.html) directly.
 
 Documentation can also be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
 

@@ -164,33 +164,34 @@ configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbconfig.h.in" "${CMAKE_CURRENT_BI
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/kdbversion.h.in" "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h")
 
 # DO NOT install kdbconfig.h it may cause conflicts with applications own config.h files
-install (FILES kdbextension.h
-	       kdbmeta.h
-	       kdbease.h
-	       "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h"
-	       kdbhelper.h
-	       "${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
-	       kdbmodule.h
-	       kdbos.h
-	       kdbopts.h
-	       kdbplugin.h
-	       kdbpluginprocess.h
-	       kdbprivate.h
-	       kdbproposal.h
-	       kdbinvoke.h
-	       kdbutility.h
-	       kdbio.h
-	       kdbnotification.h
-	       kdbglobbing.h
-	       "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
-	       elektra.h
-	       kdbendian.h
-	       kdbmacros.h
-	 DESTINATION include/${TARGET_INCLUDE_FOLDER})
+install (
+	FILES kdbextension.h
+	      kdbmeta.h
+	      kdbease.h
+	      "${CMAKE_CURRENT_BINARY_DIR}/kdbtypes.h"
+	      kdbhelper.h
+	      "${CMAKE_CURRENT_BINARY_DIR}/kdb.h"
+	      kdbmodule.h
+	      kdbos.h
+	      kdbopts.h
+	      kdbplugin.h
+	      kdbpluginprocess.h
+	      kdbprivate.h
+	      kdbproposal.h
+	      kdbinvoke.h
+	      kdbutility.h
+	      kdbio.h
+	      kdbnotification.h
+	      kdbglobbing.h
+	      "${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h"
+	      elektra.h
+	      kdbendian.h
+	      kdbmacros.h
+	      kdbmerge.h
+	DESTINATION include/${TARGET_INCLUDE_FOLDER})
 
-add_custom_target (elektra_config_headers ALL
-		   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
-			   ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
+add_custom_target (elektra_config_headers ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
+						      ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)
 
 add_subdirectory (kdbio)
 add_subdirectory (elektra)

@@ -17,10 +17,7 @@ add_executable (${EXAMPLE} ${SOURCES})
 
 target_include_directories (${EXAMPLE} SYSTEM PUBLIC ${libuv_INCLUDE_DIRS})
 
-target_link_elektra (${EXAMPLE}
-		     elektra-kdb
-		     elektra-io
-		     elektra-io-uv)
+target_link_elektra (${EXAMPLE} elektra-kdb elektra-io elektra-io-uv)
 if (BUILD_FULL OR BUILD_STATIC)
 	target_link_libraries (${EXAMPLE} ${PC_libuv_LDFLAGS})
 endif ()

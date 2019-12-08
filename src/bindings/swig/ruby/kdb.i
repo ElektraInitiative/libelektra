@@ -70,7 +70,7 @@ namespace std {
 %constant const char *VERSION = KDB_VERSION;
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;
 %constant const short VERSION_MINOR = KDB_VERSION_MINOR;
-%constant const short VERSION_MICRO = KDB_VERSION_MICRO;
+%constant const short VERSION_PATCH = KDB_VERSION_PATCH;
 /* we only care about the enums. ignore the c functions */
 %ignore ckdb;
 %include "kdb.h"

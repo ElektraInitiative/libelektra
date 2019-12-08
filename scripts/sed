@@ -9,6 +9,7 @@ s/build-in/built-in/g
 # = British → American English =
 # ==============================
 
+s/categorised/categorized/g
 s/([Bb])ehaviour/\1ehavior/g
 s/f(l?)avour/f\1avor/g
 s/generalises/generalizes/g

@@ -55,8 +55,8 @@ static void elektraAddConstants (KeySet * ks, Key * parentKey)
 
 
 	key = keyDup (parentKey);
-	keyAddName (key, "version/KDB_VERSION_MICRO");
-	keySetString (key, "@KDB_VERSION_MICRO@");
+	keyAddName (key, "version/KDB_VERSION_PATCH");
+	keySetString (key, "@KDB_VERSION_PATCH@");
 	ksAppendKey (ks, key);
 
 

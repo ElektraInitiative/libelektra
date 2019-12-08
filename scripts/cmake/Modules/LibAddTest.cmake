@@ -17,11 +17,12 @@ find_package (Threads QUIET)
 # 	This optional variable specifies a list of include paths for the test.
 # ~~~
 macro (add_gtest source)
-	cmake_parse_arguments (ARG
-			       "MEMLEAK;KDBTESTS;NO_MAIN;LINK_TOOLS" # optional keywords
-			       "" # one value keywords
-			       "INCLUDE_DIRECTORIES;LINK_LIBRARIES;LINK_ELEKTRA;SOURCES" # multi value keywords
-			       ${ARGN})
+	cmake_parse_arguments (
+		ARG
+		"MEMLEAK;KDBTESTS;NO_MAIN;LINK_TOOLS" # optional keywords
+		"" # one value keywords
+		"INCLUDE_DIRECTORIES;LINK_LIBRARIES;LINK_ELEKTRA;SOURCES" # multi value keywords
+		${ARGN})
 
 	if (BUILD_TESTING)
 		set (SOURCES ${HDR_FILES} ${source}.cpp ${ARG_SOURCES})
@@ -51,7 +52,10 @@ macro (add_gtest source)
 		endif (INSTALL_TESTING)
 
 		set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
-		set_property (TARGET ${source} APPEND PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
+		set_property (
+			TARGET ${source}
+			APPEND
+			PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
 
 		add_test (${source} "${CMAKE_BINARY_DIR}/bin/${source}" "${CMAKE_CURRENT_BINARY_DIR}/")
 		set_property (TEST ${source} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
@@ -84,11 +88,7 @@ endmacro (add_gtest)
 function (add_msr_test NAME FILE)
 	set (TEST_NAME testshell_markdown_${NAME})
 	set (multiValueArgs REQUIRED_PLUGINS ENVIRONMENT)
-	cmake_parse_arguments (ARG
-			       "${options}"
-			       "${oneValueArgs}"
-			       "${multiValueArgs}"
-			       ${ARGN})
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
 	foreach (plugin ${ARG_REQUIRED_PLUGINS})
 		list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
@@ -98,11 +98,7 @@ function (add_msr_test NAME FILE)
 	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
 
 	set (multiValueArgs REQUIRED_TOOLS ENVIRONMENT)
-	cmake_parse_arguments (ARG
-			       "${options}"
-			       "${oneValueArgs}"
-			       "${multiValueArgs}"
-			       ${ARGN})
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	foreach (tool ${ARG_REQUIRED_TOOLS})
 		list (FIND REMOVED_TOOLS ${tool} tool_index)
 		if (tool_index GREATER -1)
@@ -115,9 +111,10 @@ function (add_msr_test NAME FILE)
 		endif ()
 	endforeach ()
 
-	add_test (NAME testshell_markdown_${NAME}
-		  COMMAND "${CMAKE_BINARY_DIR}/tests/shell/shell_recorder/tutorial_wrapper/markdown_shell_recorder.sh" "${FILE}"
-		  WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+	add_test (
+		NAME testshell_markdown_${NAME}
+		COMMAND "${CMAKE_BINARY_DIR}/tests/shell/shell_recorder/tutorial_wrapper/markdown_shell_recorder.sh" "${FILE}"
+		WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 	set_property (TEST ${TEST_NAME} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib" "${ARG_ENVIRONMENT}")
 	set_property (TEST ${TEST_NAME} PROPERTY LABELS memleak kdbtests)
 	set_property (TEST ${TEST_NAME} PROPERTY RUN_SERIAL TRUE)
@@ -139,21 +136,15 @@ endfunction ()
 # ~~~
 function (add_msr_test_plugin PLUGIN)
 	set (multiValueArgs REQUIRED_PLUGINS)
-	cmake_parse_arguments (ARG
-			       "${options}"
-			       "${oneValueArgs}"
-			       "${multiValueArgs}"
-			       ${ARGN})
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	list (APPEND ARG_REQUIRED_PLUGINS ${PLUGIN})
 
 	set (multiValueArgs REQUIRED_TOOLS)
-	cmake_parse_arguments (ARG
-			       "${options}"
-			       "${oneValueArgs}"
-			       "${multiValueArgs}"
-			       ${ARGN})
+	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 	list (APPEND ARG_REQUIRED_TOOLS ${TOOL})
 
-	add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN}
-		      REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS} REQUIRED_TOOLS ${ARG_REQUIRED_TOOLS})
+	add_msr_test (
+		${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md" ${ARGN}
+		REQUIRED_PLUGINS ${ARG_REQUIRED_PLUGINS}
+		REQUIRED_TOOLS ${ARG_REQUIRED_TOOLS})
 endfunction ()

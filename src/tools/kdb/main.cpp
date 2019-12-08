@@ -230,6 +230,11 @@ int main (int argc, char ** argv)
 		displayHelp (argv[0], f);
 		return 4;
 	}
+	catch (kdb::KDBMountException const & ce)
+	{
+		std::cerr << ce.what () << std::endl;
+		return 5;
+	}
 	catch (kdb::KDBException const & ce)
 	{
 		std::cerr << ce.whatWithArguments (printVerbose, printDebug) << std::endl;

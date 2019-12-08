@@ -23,7 +23,8 @@ if (DEPENDENCY_PHASE)
 	endif (TEST_PUTPWENT)
 endif ()
 
-add_plugin (passwd
-	    SOURCES passwd.h passwd.c
-	    COMPILE_DEFINITIONS ${PASSWD_COMPILE_DEFS}
-	    ADD_TEST INSTALL_TEST_DATA)
+add_plugin (
+	passwd
+	SOURCES passwd.h passwd.c
+	COMPILE_DEFINITIONS ${PASSWD_COMPILE_DEFS}
+	ADD_TEST INSTALL_TEST_DATA)

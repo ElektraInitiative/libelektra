@@ -19,7 +19,7 @@ and yajl version 2.0.4-2 from Debian 7.
 Examples of files which are used for testing can be found
 below the folder in "src/plugins/yajl/yajl".
 
-The JSON grammar can be found [here](http://www.ietf.org/rfc/rfc4627.txt).
+The JSON grammar can be found [here](http://www.json.org).
 
 A validator can be found [here](http://jsonlint.com/).
 

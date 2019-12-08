@@ -43,7 +43,7 @@
 %constant const char *VERSION = KDB_VERSION;
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;
 %constant const short VERSION_MINOR = KDB_VERSION_MINOR;
-%constant const short VERSION_MICRO = KDB_VERSION_MICRO;
+%constant const short VERSION_PATCH = KDB_VERSION_PATCH;
 // we only care about the enums. ignore the c functions
 %ignore ckdb;
 %include "kdb.h"
@@ -52,9 +52,10 @@
 /* handle exceptions */
 %{
   #define KEY_EXCEPTIONS \
+    KDB_CATCH_EX(kdb, KeyNotFoundException) \
     KDB_CATCH_EX(kdb, KeyTypeMismatch) \
-    KDB_CATCH_EX(kdb, KeyInvalidName) \
     KDB_CATCH_EX(kdb, KeyTypeConversion) \
+    KDB_CATCH_EX(kdb, KeyInvalidName) \
     KDB_CATCH_EX(kdb, KeyException) \
     KDB_CATCH_EX(kdb, Exception)
 
@@ -135,6 +136,13 @@
 %ignore kdb::KeySet::KeySet (size_t alloc, ...);
 %ignore kdb::KeySet::KeySet (Key, ...);
 %ignore kdb::KeySet::operator=;
+
+// deprecated. ignores can be removed after function removal
+%ignore kdb::KeySet::rewind;
+%ignore kdb::KeySet::next;
+%ignore kdb::KeySet::current;
+%ignore kdb::KeySet::getCursor;
+%ignore kdb::KeySet::setCursor;
 
 // iterators
 // we hide all iterator classes. users should use pairs/ipairs

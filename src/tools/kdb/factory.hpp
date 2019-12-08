@@ -59,7 +59,6 @@
 #include <specmount.hpp>
 #include <test.hpp>
 #include <umount.hpp>
-#include <validation.hpp>
 
 class Instancer
 {
@@ -107,7 +106,6 @@ public:
 		m_factory.insert (std::make_pair ("plugin-info", std::make_shared<Cnstancer<PluginInfoCommand>> ()));
 		m_factory.insert (std::make_pair ("test", std::make_shared<Cnstancer<TestCommand>> ()));
 		m_factory.insert (std::make_pair ("plugin-check", std::make_shared<Cnstancer<PluginCheckCommand>> ()));
-		m_factory.insert (std::make_pair ("vset", std::make_shared<Cnstancer<ValidationCommand>> ()));
 		m_factory.insert (std::make_pair ("export", std::make_shared<Cnstancer<ExportCommand>> ()));
 		m_factory.insert (std::make_pair ("import", std::make_shared<Cnstancer<ImportCommand>> ()));
 		m_factory.insert (std::make_pair ("convert", std::make_shared<Cnstancer<ConvertCommand>> ()));

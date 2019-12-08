@@ -9,6 +9,7 @@ RUN apt-get update && apt-get -y install \
         curl \
         ed \
         git \
+        googletest \
         libantlr4-runtime-dev \
         libyajl-dev \
         libyaml-cpp-dev \
@@ -24,14 +25,7 @@ RUN apt-get update && apt-get -y install \
     && rm -rf /var/lib/apt/lists/*
 
 # Google Test
-ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.8.1
-RUN mkdir -p ${GTEST_ROOT} \
-    && cd /tmp \
-    && curl -o gtest.tar.gz \
-      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
-    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
-    && rm gtest.tar.gz
+ENV GTEST_ROOT=/usr/src/googletest
 
 # Update cache for shared libraries
 RUN ldconfig

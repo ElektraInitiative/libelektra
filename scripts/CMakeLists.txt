@@ -6,11 +6,7 @@ if (PROCESSOR_COUNT EQUAL 0)
 endif (PROCESSOR_COUNT EQUAL 0)
 
 set (CMAKE_MAKE_PROGRAM_BASENAME ${CMAKE_MAKE_PROGRAM})
-string (REGEX
-	REPLACE ".*/([^/]+)$"
-		"\\1"
-		CMAKE_MAKE_PROGRAM_BASENAME
-		${CMAKE_MAKE_PROGRAM_BASENAME})
+string (REGEX REPLACE ".*/([^/]+)$" "\\1" CMAKE_MAKE_PROGRAM_BASENAME ${CMAKE_MAKE_PROGRAM_BASENAME})
 
 install (PROGRAMS benchmark-createtree DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
@@ -18,12 +14,6 @@ install (PROGRAMS upgrade-bootstrap DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 install (PROGRAMS kdb/mountpoint-info DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS check-env-dep DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
-
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_all.in" "${CMAKE_CURRENT_BINARY_DIR}/run_all" @ONLY)
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_memcheck.in" "${CMAKE_CURRENT_BINARY_DIR}/run_memcheck" @ONLY)
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_nokdbtests.in" "${CMAKE_CURRENT_BINARY_DIR}/run_nokdbtests" @ONLY)
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_checkshell.in" "${CMAKE_CURRENT_BINARY_DIR}/run_checkshell" @ONLY)
-configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run_nocheckshell.in" "${CMAKE_CURRENT_BINARY_DIR}/run_nocheckshell" @ONLY)
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/make-source-package.in" "${CMAKE_CURRENT_BINARY_DIR}/make-source-package" @ONLY)
 
@@ -44,15 +34,17 @@ install (PROGRAMS reset DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS reset-elektra DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 install (PROGRAMS umount-all DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
-add_custom_target (source-package
-		   COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"
-		   COMMENT "Make a elektra source package by using git"
-		   VERBATIM
-		   WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+add_custom_target (
+	source-package
+	COMMAND "${CMAKE_CURRENT_BINARY_DIR}/make-source-package"
+	COMMENT "Make a elektra source package by using git"
+	VERBATIM
+	WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoop.in" "${CMAKE_CURRENT_BINARY_DIR}/randoop/randoop" @ONLY)
 file (COPY "${CMAKE_CURRENT_SOURCE_DIR}/randoop/randoopClasses.txt" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/randoop/")
 
+add_subdirectory (dev)
 add_subdirectory (kdb)
 add_subdirectory (admin)
 add_subdirectory (completion)

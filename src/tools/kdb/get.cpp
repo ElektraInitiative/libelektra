@@ -11,8 +11,8 @@
 #include <cmdline.hpp>
 #include <kdb.hpp>
 
+#include <kdbhelper.h>
 #include <kdbmacros.h>
-#include <kdbprivate.h>
 
 #include <iostream>
 

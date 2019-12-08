@@ -16,16 +16,16 @@ endif ()
 find_package (Ruby QUIET)
 
 if (NOT RUBY_FOUND)
-	exclude_binding (swig_ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
+	exclude_binding (ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
 elseif (SWIG_VERSION MATCHES "^([12]\\.)|(3\\.0\\.[01234567])$")
-	exclude_binding (swig_ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
+	exclude_binding (ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
 else ()
 	if (NOT BUILD_SHARED)
-		exclude_binding (swig_ruby "it can only be built if `BUILD_SHARED` is enabled")
+		exclude_binding (ruby "it can only be built if `BUILD_SHARED` is enabled")
 		return ()
 	endif (NOT BUILD_SHARED)
 
-	add_binding (swig_ruby)
+	add_binding (ruby)
 
 	add_headers (HDR_FILES)
 	add_cppheaders (HDR_FILES)
@@ -34,31 +34,13 @@ else ()
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
 	# minimal replacement for Ruby's mkmf.create_makefile
-	execute_process (COMMAND ${RUBY_EXECUTABLE}
-				 -r
-				 rbconfig
-				 -e
-				 "print RbConfig::CONFIG['vendorarchdir']"
+	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['vendorarchdir']"
 			 OUTPUT_VARIABLE RUBY_VENDOR_ARCH_DIR)
-	execute_process (COMMAND ${RUBY_EXECUTABLE}
-				 -r
-				 rbconfig
-				 -e
-				 "print RbConfig::CONFIG['vendordir']"
-			 OUTPUT_VARIABLE RUBY_VENDOR_DIR)
+	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['vendordir']" OUTPUT_VARIABLE RUBY_VENDOR_DIR)
 
-	execute_process (COMMAND ${RUBY_EXECUTABLE}
-				 -r
-				 rbconfig
-				 -e
-				 "print RbConfig::CONFIG['sitearchdir']"
+	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['sitearchdir']"
 			 OUTPUT_VARIABLE RUBY_SITE_ARCH_DIR)
-	execute_process (COMMAND ${RUBY_EXECUTABLE}
-				 -r
-				 rbconfig
-				 -e
-				 "print RbConfig::CONFIG['sitedir']"
-			 OUTPUT_VARIABLE RUBY_SITE_DIR)
+	execute_process (COMMAND ${RUBY_EXECUTABLE} -r rbconfig -e "print RbConfig::CONFIG['sitedir']" OUTPUT_VARIABLE RUBY_SITE_DIR)
 
 	include_directories (SYSTEM ${RUBY_VENDOR_ARCH_DIR})
 	include_directories (SYSTEM ${RUBY_INCLUDE_DIRS})
@@ -70,20 +52,10 @@ else ()
 	# to print RUBY_* variables for debugging build run cmake with -D_RUBY_DEBUG_OUTPUT=1
 	# ~~~
 
-	set_source_files_properties (kdb.i
-				     kdbtools.i
-				     PROPERTIES
-				     CPLUSPLUS
-				     ON)
+	set_source_files_properties (kdb.i kdbtools.i PROPERTIES CPLUSPLUS ON)
 
-	set_source_files_properties (kdb.i
-				     PROPERTIES
-				     SWIG_FLAGS
-				     "-initname;_kdb")
-	set_source_files_properties (kdbtools.i
-				     PROPERTIES
-				     SWIG_FLAGS
-				     "-initname;_kdbtools;-minherit")
+	set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-initname;_kdb")
+	set_source_files_properties (kdbtools.i PROPERTIES SWIG_FLAGS "-initname;_kdbtools;-minherit")
 
 	set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
@@ -123,57 +95,38 @@ else ()
 	if (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_module (swig-ruby ruby kdb.i)
 	else (CMAKE_VERSION VERSION_LESS 3.8)
-		swig_add_library (swig-ruby
-				  LANGUAGE
-				  ruby
-				  SOURCES
-				  kdb.i
-				  TYPE
-				  MODULE)
+		swig_add_library (
+			swig-ruby
+			LANGUAGE
+			ruby
+			SOURCES
+			kdb.i
+			TYPE
+			MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8) # set the compiler settings for the generated file  (has to be done for each module
-					       # separately)
-	set_source_files_properties (${swig_generated_file_fullname}
-				     PROPERTIES
-				     COMPILE_FLAGS
-				     "${SWIG_COMPILE_FLAGS}")
+	# separately)
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
 	# add the 'kdbtools' module
 	if (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_module (swig-ruby-tools ruby kdbtools.i)
 	else (CMAKE_VERSION VERSION_LESS 3.8)
-		swig_add_library (swig-ruby-tools
-				  LANGUAGE
-				  ruby
-				  SOURCES
-				  kdbtools.i
-				  TYPE
-				  MODULE)
+		swig_add_library (
+			swig-ruby-tools
+			LANGUAGE
+			ruby
+			SOURCES
+			kdbtools.i
+			TYPE
+			MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
-	set_source_files_properties (${swig_generated_file_fullname}
-				     PROPERTIES
-				     COMPILE_FLAGS
-				     "${SWIG_COMPILE_FLAGS}")
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
-	swig_link_libraries (swig-ruby
-			     ${RUBY_LIBRARY}
-			     elektra-core
-			     elektra-kdb)
-	set_target_properties (swig-ruby
-			       PROPERTIES OUTPUT_NAME
-					  _kdb
-					  PREFIX
-					  "")
+	swig_link_libraries (swig-ruby ${RUBY_LIBRARY} elektra-core elektra-kdb)
+	set_target_properties (swig-ruby PROPERTIES OUTPUT_NAME _kdb PREFIX "")
 
-	swig_link_libraries (swig-ruby-tools
-			     ${RUBY_LIBRARY}
-			     elektra-core
-			     elektra-kdb
-			     elektratools)
-	set_target_properties (swig-ruby-tools
-			       PROPERTIES OUTPUT_NAME
-					  _kdbtools
-					  PREFIX
-					  "")
+	swig_link_libraries (swig-ruby-tools ${RUBY_LIBRARY} elektra-core elektra-kdb elektratools)
+	set_target_properties (swig-ruby-tools PROPERTIES OUTPUT_NAME _kdbtools PREFIX "")
 
 	# ~~~
 	# CMAKE_INSTALL_PREFIX dependent install location

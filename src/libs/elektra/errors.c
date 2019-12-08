@@ -190,7 +190,7 @@ void elektraTriggerWarnings (const char * nr, Key * parentKey, const char * mess
 	}
 	if (strcmp (nr, ELEKTRA_WARNING_OUT_OF_MEMORY) == 0)
 	{
-		ELEKTRA_ADD_OUT_OF_MEMORY_WARNING (parentKey, message);
+		ELEKTRA_ADD_OUT_OF_MEMORY_WARNING (parentKey);
 		return;
 	}
 	if (strcmp (nr, ELEKTRA_WARNING_INSTALLATION) == 0)
@@ -240,7 +240,7 @@ void elektraTriggerError (const char * nr, Key * parentKey, const char * message
 	}
 	if (strcmp (nr, ELEKTRA_ERROR_OUT_OF_MEMORY) == 0)
 	{
-		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey, message);
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (parentKey);
 		return;
 	}
 	if (strcmp (nr, ELEKTRA_ERROR_INSTALLATION) == 0)

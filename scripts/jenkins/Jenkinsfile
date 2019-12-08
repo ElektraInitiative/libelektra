@@ -1,5 +1,5 @@
 // vim: ts=2:sw=2:expandtab:syntax=groovy
-/* https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/
+/* https://build.libelektra.org/job/elektra-jenkinsfile/
  * This file describes how the elektra-jenkinsfile buildjob should be
  * executed.
  *
@@ -14,7 +14,7 @@
  * A Snippet generator is available to the public at
  * https://qa.nuxeo.org/jenkins/pipeline-syntax/.
  * A list of available commands on the build server can be found after a login at
- * https://build.libelektra.org/jenkins/job/elektra-jenkinsfile/pipeline-syntax/.
+ * https://build.libelektra.org/job/elektra-jenkinsfile/pipeline-syntax/.
  */
 
 // TODO have a per plugin/binding deps in Dockerfile for easier maintenance
@@ -160,13 +160,13 @@ def main() {
     parallel generateArtifactStages()
   }
 
-  stage("Deploy Website") {
-    deployWebsite()
-  }
+  // maybeStage("Deploy Website", isMaster()) {
+  //   deployWebsite()
+  // }
 
-  maybeStage("Deploy Web UI", isMaster()) {
-    deployWebUI()
-  }
+  // maybeStage("Deploy Web UI", isMaster()) {
+  //   deployWebUI()
+  // }
 }
 
 try {
@@ -328,8 +328,8 @@ def dockerInit() {
      */
     DOCKER_IMAGES.alpine = createDockerImageDesc(
       "alpine", this.&idTesting,
-      "./scripts/docker/alpine/3.9",
-      "./scripts/docker/alpine/3.9/Dockerfile"
+      "./scripts/docker/alpine/3.10",
+      "./scripts/docker/alpine/3.10/Dockerfile"
     )
 
     /* Ubuntu bionic image*/
@@ -918,7 +918,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
   def testCoverage = cmakeFlags.intersect(CMAKE_FLAGS_COVERAGE)
                                 .equals(CMAKE_FLAGS_COVERAGE)
-  def updateCoveralls = testName == 'debian-full'
+  def updateCoveralls = testName == 'debian-buster-full'
   def testMem = tests.contains(TEST.MEM)
   def testNokdb = tests.contains(TEST.NOKDB)
   def testAll = tests.contains(TEST.ALL)
@@ -1030,7 +1030,7 @@ def generateArtifactStages() {
   tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
   // tasks << buildDebianPackage("buildPackage/debian/bionic", DOCKER_IMAGES.bionic)
   tasks << buildWebsite()
-  tasks << buildWebUI()
+  // tasks << buildWebUI()
   return tasks
 }
 
@@ -1335,7 +1335,7 @@ def cnokdbtest() {
  * @param p Pattern to scan for
  */
 def xunitUpload(p = 'build/Testing/**/*.xml') {
-  step([$class: 'XUnitBuilder',
+  step([$class: 'XUnitPublisher',
     thresholds: [
       [$class: 'SkippedThreshold', failureThreshold: '0'],
       [$class: 'FailedThreshold', failureThreshold: '0']

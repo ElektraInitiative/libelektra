@@ -187,7 +187,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 			if (lastIndex == UINTMAX_MAX)
 			{
 				Key key = newArrayKey (parent, lastIndex);
-				throw std::overflow_error ("Unable to add element after “" + key.getName () + "”" + "in array “" +
+				throw std::overflow_error ("Unable to add element after “" + key.getName () + "” in array “" +
 							   parent.getName () + "”");
 			}
 			Key key = newArrayKey (parent, index);

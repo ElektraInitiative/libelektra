@@ -11,7 +11,7 @@ if (ZeroMQ_FOUND)
 		message (
 			WARNING
 				"ZeroMQ I/O adapter disabled since linking against ZeroMQ failed. Targets that depend on this adapter will fail to compile."
-			)
+		)
 	else ()
 		set (ADAPTER_OBJECT io-adapter-zeromq)
 
