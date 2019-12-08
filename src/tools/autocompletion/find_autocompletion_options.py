@@ -61,8 +61,6 @@ def get_command_line_arguments():
 	ks = kdb.KeySet()
 	k.get(ks, mount_point) 
 	for i in ks:
-		len_path_mount_point = len(mount_point.split('/'))
-		len_path_key = len(str(i))
 		if str(i) == mount_point:
 			get_complete = i.getMeta(name='complete')
 			if get_complete and get_complete.value == 'command':
@@ -96,7 +94,7 @@ def get_command_line_arguments():
 				elif opt and opt.value.startswith('#'):
 					try:
 						len_opts = int((opt.value)[1:])
-					except:
+					except ValueError:
 						continue
 					for l in range(len_opts+1):
 						opt_loop = None
@@ -287,7 +285,7 @@ def complete_short_options():
 		if opt and opt.value.startswith('#'):
 			try:
 				len_opts = int((opt.value)[1:])
-			except:
+			except ValueError:
 				continue
 			for i in range(len_opts+1):
 				opt = key.getMeta(name='opt/#{}'.format(i))	
@@ -324,7 +322,7 @@ def complete_long_options():
 		elif opt and opt.value.startswith('#'):
 			try:
 				len_opts = int((opt.value)[1:])
-			except:
+			except ValueError:
 				continue
 			for i in range(len_opts+1):
 				long_opt = None
