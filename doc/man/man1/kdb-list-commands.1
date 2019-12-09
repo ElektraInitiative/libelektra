@@ -10,7 +10,7 @@
 \fBkdb list\-commands [OPTION]\.\.\.\fR
 .
 .SH "DESCRIPTION"
-This command will list all internal kdb commands\. The output is suitable to be processed from other tools unless \fB\-\-verbose\fR is specified\.
+This command will list all internal kdb commands\. The output is suitable to be processed from other tools unless \fB\-v\fR or \fB\-\-verbose\fR is specified\.
 .
 .SH "OPTIONS"
 .
@@ -32,14 +32,14 @@ Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
-Print number of commands in the first line\. Add a description to each command\. Print command names bold unless \fB\-\-color never\fR is specified\.
+Prints the number of commands in the first line and adds a description to each command\. Prints command names in bold unless \fB\-\-color never\fR is specified or output is printed to non\-terminals\.
 .
 .TP
 \fB\-0\fR, \fB\-\-null\fR
 Use binary 0 termination
 .
 .SH "EXAMPLES"
-To print a list of all internal kdb commands with their description:
+To print a list of all internal kdb commands with their description use:
 .
 .P
 \fBkdb list\-commands \-v\fR
