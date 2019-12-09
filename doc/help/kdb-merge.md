@@ -30,8 +30,18 @@ On unresolved conflicts nothing will be changed.<br>
 
 The options of `kdb merge` are:
 
-- `-f`, `--force`: overwrite existing keys in `result`
-- `-v`, `--verbose`: give additional information
+- `-H`, `--help`:
+  Show the man page.
+- `-V`, `--version`:
+  Print version info.
+- `-p`, `--profile <profile>`:
+  Use a different kdb profile.
+- `-C`, `--color <when>`:
+  Print never/auto(default)/always colored output.
+- `-f`, `--force`:
+  Overwrite existing keys in `result`
+- `-v`, `--verbose`:
+  Give additional information
 
 Strategies offer fine grained control over conflict handling. The option is:
 

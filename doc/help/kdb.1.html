@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv='content-type' value='text/html;charset=utf8'>
+  <meta name='generator' value='Ronn/v0.7.3 (http://github.com/rtomayko/ronn/tree/0.7.3)'>
+  <title>kdb(1) - key database access tools</title>
+  <style type='text/css' media='all'>
+  /* style: man */
+  body#manpage {margin:0}
+  .mp {max-width:100ex;padding:0 9ex 1ex 4ex}
+  .mp p,.mp pre,.mp ul,.mp ol,.mp dl {margin:0 0 20px 0}
+  .mp h2 {margin:10px 0 0 0}
+  .mp > p,.mp > pre,.mp > ul,.mp > ol,.mp > dl {margin-left:8ex}
+  .mp h3 {margin:0 0 0 4ex}
+  .mp dt {margin:0;clear:left}
+  .mp dt.flush {float:left;width:8ex}
+  .mp dd {margin:0 0 0 9ex}
+  .mp h1,.mp h2,.mp h3,.mp h4 {clear:left}
+  .mp pre {margin-bottom:20px}
+  .mp pre+h2,.mp pre+h3 {margin-top:22px}
+  .mp h2+pre,.mp h3+pre {margin-top:5px}
+  .mp img {display:block;margin:auto}
+  .mp h1.man-title {display:none}
+  .mp,.mp code,.mp pre,.mp tt,.mp kbd,.mp samp,.mp h3,.mp h4 {font-family:monospace;font-size:14px;line-height:1.42857142857143}
+  .mp h2 {font-size:16px;line-height:1.25}
+  .mp h1 {font-size:20px;line-height:2}
+  .mp {text-align:justify;background:#fff}
+  .mp,.mp code,.mp pre,.mp pre code,.mp tt,.mp kbd,.mp samp {color:#131211}
+  .mp h1,.mp h2,.mp h3,.mp h4 {color:#030201}
+  .mp u {text-decoration:underline}
+  .mp code,.mp strong,.mp b {font-weight:bold;color:#131211}
+  .mp em,.mp var {font-style:italic;color:#232221;text-decoration:none}
+  .mp a,.mp a:link,.mp a:hover,.mp a code,.mp a pre,.mp a tt,.mp a kbd,.mp a samp {color:#0000ff}
+  .mp b.man-ref {font-weight:normal;color:#434241}
+  .mp pre {padding:0 4ex}
+  .mp pre code {font-weight:normal;color:#434241}
+  .mp h2+pre,h3+pre {padding-left:0}
+  ol.man-decor,ol.man-decor li {margin:3px 0 10px 0;padding:0;float:left;width:33%;list-style-type:none;text-transform:uppercase;color:#999;letter-spacing:1px}
+  ol.man-decor {width:100%}
+  ol.man-decor li.tl {text-align:left}
+  ol.man-decor li.tc {text-align:center;letter-spacing:4px}
+  ol.man-decor li.tr {text-align:right;float:right}
+  </style>
+</head>
+<!--
+  The following styles are deprecated and will be removed at some point:
+  div#man, div#man ol.man, div#man ol.head, div#man ol.man.
+
+  The .man-page, .man-decor, .man-head, .man-foot, .man-title, and
+  .man-navigation should be used instead.
+-->
+<body id='manpage'>
+  <div class='mp' id='man'>
+
+  <div class='man-navigation' style='display:none'>
+    <a href="#NAME">NAME</a>
+    <a href="#INTRODUCTION">INTRODUCTION</a>
+    <a href="#OVERVIEW">OVERVIEW</a>
+    <a href="#BASIC-OPTIONS">BASIC OPTIONS</a>
+    <a href="#COMMON-OPTIONS">COMMON OPTIONS</a>
+    <a href="#KDB">KDB</a>
+    <a href="#PROFILES">PROFILES</a>
+    <a href="#BOOKMARKS">BOOKMARKS</a>
+    <a href="#RETURN-VALUES">RETURN VALUES</a>
+    <a href="#SEE-ALSO">SEE ALSO</a>
+  </div>
+
+  <ol class='man-decor man-head man head'>
+    <li class='tl'>kdb(1)</li>
+    <li class='tc'></li>
+    <li class='tr'>kdb(1)</li>
+  </ol>
+
+  <h2 id="NAME">NAME</h2>
+<p class="man-name">
+  <code>kdb</code> - <span class="man-whatis">key database access tools</span>
+</p>
+
+<h2 id="INTRODUCTION">INTRODUCTION</h2>
+
+<p><strong>kdb</strong> provides access to the global key database of Elektra via
+command-line.</p>
+
+<p>Concepts are in man page section 7 and are prefixed with <code>elektra-</code>.
+If you do not yet know about Elektra,
+you should start reading <a href="elektra-introduction.md">elektra-introduction(7)</a>.
+CLI Tools of Elektra are in man page section 1 and are prefixed with <code>kdb-</code>.</p>
+
+<p>The man pages can also be viewed online at:
+https://doc.libelektra.org/api/current/html/pages.html</p>
+
+<p>And the page you are currently reading at:
+https://doc.libelektra.org/api/current/html/md_doc_help_kdb.html</p>
+
+<h2 id="OVERVIEW">OVERVIEW</h2>
+
+<p>In this manual we give an overview of the tool suite
+<code>kdb</code>. It is part of Elektra’s tools. The tool suite <code>kdb</code> consists
+of individual commands. Most commands are independent and some commands
+are sharing an executable. Some commands are written as external scripts.
+Subcommands have to be the first after <code>kdb</code></p>
+
+<p>The included commands can be listed via:<br />
+<code>kdb</code></p>
+
+<p>External commands can be listed via:<br />
+<code>kdb list-tools</code></p>
+
+<p>Only a few commands are enough for daily use.
+We can retrieve a key by:<br />
+<code>kdb get user/key</code></p>
+
+<p>We store a key permanently with a value given by:<br />
+<code>kdb set user/key value</code></p>
+
+<p>We list all available keys arranged below a key by:<br />
+<code>kdb ls user/key</code></p>
+
+<p>Documentation of plugins is available using the
+<a href="kdb-plugin-info.md">kdb-plugin-info(1)</a> tool:<br />
+<code>kdb plugin-info</code></p>
+
+<p>Run <code>kdb plugin-list</code> for a list of plugins:<br />
+<code>kdb plugin-list</code></p>
+
+<p>Each of these commands has its own man page for
+further details.</p>
+
+<h2 id="BASIC-OPTIONS">BASIC OPTIONS</h2>
+
+<p>Every core-tool has the following options:</p>
+
+<dl>
+<dt><code>-H</code>, <code>--help</code></dt><dd>Show the man page.</dd>
+<dt><code>-V</code>, <code>--version</code></dt><dd>Print version info.</dd>
+<dt><code>-p</code>, <code>--profile &lt;profile></code></dt><dd>Use a different kdb profile, see below.</dd>
+<dt><code>-C</code>, <code>--color &lt;when></code></dt><dd>Print never/auto(default)/always colored output.</dd>
+<dt class="flush"><code>--</code></dt><dd>Do not process any following arguments starting with <code>-</code> as options.</dd>
+</dl>
+
+
+<h2 id="COMMON-OPTIONS">COMMON OPTIONS</h2>
+
+<p>Most tools have the following options:</p>
+
+<dl>
+<dt><code>-v</code>, <code>--verbose</code></dt><dd>Explain what is happening. Also shows Configfile and Mountpoint in case of an error/warning</dd>
+<dt><code>-q</code>, <code>--quiet</code></dt><dd>Suppress non-error messages.</dd>
+<dt><code>-d</code>, <code>--debug</code></dt><dd>Shows the line at which an error happened in case an error or warning is issued</dd>
+</dl>
+
+
+<h2 id="KDB">KDB</h2>
+
+<p>The <code>kdb</code> utility reads its own configuration from three sources
+within the KDB (key database):</p>
+
+<ol>
+<li>/sw/kdb/<strong>profile</strong>/ (for legacy configuration)</li>
+<li>/sw/elektra/kdb/#0/%/ (for empty profile, <code>%</code> in Elektra
+is used to represent emptiness)</li>
+<li>/sw/elektra/kdb/#0/<strong>profile</strong>/ (for current profile,
+if no <code>-p</code> or <code>--profile</code> is given, <code>current</code> will be
+used)</li>
+</ol>
+
+
+<p>Here the last source where a configuration value is found, wins.</p>
+
+<p>For example, to permanently change verbosity one can use:</p>
+
+<dl>
+<dt><code>kdb set /sw/elektra/kdb/#0/current/verbose 1</code></dt><dd><p>Be verbose for every tool.</p></dd>
+<dt><code>kdb set /sw/elektra/kdb/#0/current/quiet 1</code></dt><dd><p>Be quiet for every tool.</p></dd>
+</dl>
+
+
+<p>If <code>%</code> is passed to
+<code>-p</code> or <code>--profile</code>, the KDB will not be consulted for configuration and
+only the command-line arguments are used.</p>
+
+<h2 id="PROFILES">PROFILES</h2>
+
+<p>Profiles allow users to change many/all configuration settings of a tool
+at once. It influences from where the KDB entries are read.
+Without a <code>-p</code> or <code>--profile</code> argument following profiles are used
+(in the order of preference):</p>
+
+<dl>
+<dt class="flush"><code>current</code></dt><dd>Is the profile to be used only if no <code>-p</code> argument was used.</dd>
+<dt class="flush"><code>%</code></dt><dd>Is the fallback profile. It will be used if keys cannot be found in the main profile.</dd>
+</dl>
+
+
+<p>For example if you use:<br />
+<code>kdb export -p admin system</code></p>
+
+<p>It will read its format configuration from <code>/sw/elektra/kdb/#0/admin/format</code>.</p>
+
+<p>If you want different configuration per user or directories, you should prefer
+to use the <code>user</code> and <code>dir</code> namespaces. Then the correct configuration will
+be chosen automatically according to the current user or current working directory.</p>
+
+<p>Sometimes it is useful to start with default options, for example it is not
+possible to invert the <code>-q</code> option.
+In such situations one can simply select a non-existing profile, then <code>-q</code>
+works as usual:<br />
+<code>kdb mount -p nonexist -q /abc dir/abc</code></p>
+
+<p>If <code>%</code> is used as profile name for <code>-p</code>, the <code>kdb</code> tools disables reading from <code>KDB</code>
+for their own configuration settings. Then, they only use command-line arguments.</p>
+
+<p>To explicitly state the default behavior, we use:<br />
+<code>-p current</code></p>
+
+<p>To state that we do not want to read any configuration settings for <code>kdb</code>
+from KDB, we use:<br />
+<code>-p %</code></p>
+
+<blockquote><p>Note that KDB will still be used to perform the actions you want to perform
+with the <code>kdb</code> tool.</p></blockquote>
+
+<h2 id="BOOKMARKS">BOOKMARKS</h2>
+
+<p>Elektra recommends <a href="/doc/tutorials/application-integration.md">to use rather long paths</a>
+because it ensures flexibility in the future (e.g. to use profiles and have a compatible
+path for new major versions of configuration).</p>
+
+<p>Long paths are, however, cumbersome to enter in the CLI.
+Thus one can define bookmarks. Bookmarks are keys whose key name starts with <code>+</code>.
+They are only recognized by the <code>kdb</code> tool or tools that explicit have
+support for it. Your applications should not depend on the presence of a
+bookmark.</p>
+
+<p>Bookmarks are stored below:<br />
+<code>/sw/elektra/kdb/#0/current/bookmarks</code></p>
+
+<p>For every key found there, a new bookmark will be introduced.</p>
+
+<p>Bookmarks can be used to start key names by using <code>+</code> (plus) as first character.
+The string until the first <code>/</code> will be considered as bookmark.</p>
+
+<p>For example, if you set the bookmark kdb:</p>
+
+<pre><code class="sh">kdb set user/sw/elektra/kdb/#0/current/bookmarks
+kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+</code></pre>
+
+<p>You are able to use:</p>
+
+<pre><code class="sh">kdb ls +kdb/bookmarks
+kdb get +kdb/format
+</code></pre>
+
+<h2 id="RETURN-VALUES">RETURN VALUES</h2>
+
+<dl>
+<dt class="flush">0</dt><dd>successful.</dd>
+<dt class="flush">1</dt><dd>Invalid options passed.</dd>
+<dt class="flush">2</dt><dd>Invalid arguments passed.</dd>
+<dt class="flush">3</dt><dd>Command terminated unsuccessfully without specifying error code.</dd>
+<dt class="flush">4</dt><dd>Unknown command.</dd>
+<dt class="flush">5</dt><dd>KDB Error, could not read/write from/to KDB.</dd>
+<dt class="flush">6</dt><dd>Reserved error code.</dd>
+<dt class="flush">7</dt><dd>Unknown errors, wrong exceptions thrown.</dd>
+<dt class="flush">8-10</dt><dd>Reserved error codes.</dd>
+<dt class="flush">11-20</dt><dd>Command-specific error codes. See man page of specific command.</dd>
+</dl>
+
+
+<h2 id="SEE-ALSO">SEE ALSO</h2>
+
+<ul>
+<li><a href="elektra-introduction.md">elektra-introduction(7)</a></li>
+<li><a href="kdb.md">kdb(1)</a></li>
+<li>Get a <a href="/doc/BIGPICTURE.md">big picture about Elektra</a></li>
+</ul>
+
+
+
+  <ol class='man-decor man-foot man foot'>
+    <li class='tl'></li>
+    <li class='tc'>December 2019</li>
+    <li class='tr'>kdb(1)</li>
+  </ol>
+
+  </div>
+</body>
+</html>

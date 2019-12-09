@@ -1,0 +1,19 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "KDB\-MERGE\-CONFIG\-FILES" "1" "December 2019" "" ""
+.
+.SH "NAME"
+\fBkdb\-merge\-config\-files\fR \- Three\-way merge of files with Elektra
+.
+.SH "SYNOPSIS"
+\fBkdb merge\-config\-files <our> <their> <base> <format>\fR
+.
+.P
+\fBour\fR, \fBtheir\fR and \fBbase\fR are the three files that should be merged\. \fBformat\fR is the format of all the files\.
+.
+.SH "DESCRIPTION"
+Performs a three\-way merge between three files using Elektra\. Takes into account the semantic properties of the files using \fBformat\fR\. The result is written into the file \fBelektra\-merge_result\fR\.
+.
+.SH "EXAMPLE"
+\fBkdb merge\-config\-files fileA fileB fileC ini\fR
