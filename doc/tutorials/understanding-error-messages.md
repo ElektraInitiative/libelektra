@@ -117,7 +117,7 @@ Error messages from tools (see [kdb.md](/doc/help/kdb.md)) may yield different m
 or mounting without incorrect permissions.
 
 Elektra's error message also includes the information about the `module` which emits the error indicated by the first line:
-```Sorry, module `MODULE` issued [error|warning] `NR`:```. The module indicates either indicates the core of elektra (`kdb`) or can be
+`` Sorry, module `MODULE` issued [error|warning] `NR`: ``. The module indicates either indicates the core of elektra (`kdb`) or can be
 a concrete plugin. All plugins have to have a name and this is guaranteed by the compiler. Before Elektra v9.0 we also
 had even more fields to display such as `ingroup` that indicated which group emitted the error (e.g., plugins). In the effort to keep the
 message as succinct as possible we decided to [remove this field](/doc/decisions/ingroup_removal.md).
@@ -140,7 +140,7 @@ these messages should be identical in all cases. Each error message category com
 Validation errors for example should require the key and value in every message but is not "templated" yet. If you cannot find good possibility
 to add this information meaningful into the message you will most likely want to put an error into the wrong category or there is a need
 for a new category (e.g., if multiple keys are affected one might introduce a "structural validation" which accepts these). In the latter
-case please forge a [design decision](/doc/decisions/README.md) and open a pull request for discussion. 
+case please forge a [design decision](/doc/decisions/README.md) and open a pull request for discussion.
 
 ### Catching errors in language bindings
 
