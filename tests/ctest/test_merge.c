@@ -443,19 +443,19 @@ void test_strategy_equal (void)
 		keyNew ("user/test/c", KEY_VALUE, "cValue", KEY_END),
 		KS_END);
 	test_strategy_equal_helper (original1,     original2,     original3,     true,  counter++);
-	test_strategy_equal_helper (original1,     original2,     changedValue1, false, counter++);
+	test_strategy_equal_helper (original1,     original2,     changedValue1, true, counter++);
 	test_strategy_equal_helper (original1,     changedValue1, original2,     false, counter++);
 	test_strategy_equal_helper (original1,     changedValue1, changedValue2, false, counter++);
 	test_strategy_equal_helper (changedValue1, original1,     original1,     false, counter++);
 	test_strategy_equal_helper (changedValue1, original1,     changedValue2, false, counter++);
-	test_strategy_equal_helper (changedValue1, changedValue2, original1,     false, counter++);
+	test_strategy_equal_helper (changedValue1, changedValue2, original1,     true, counter++);
 	test_strategy_equal_helper (original1,         original2,         original3,         true,  counter++);
-	test_strategy_equal_helper (original1,         original2,         changedMetaValue1, false, counter++);
+	test_strategy_equal_helper (original1,         original2,         changedMetaValue1, true, counter++);
 	test_strategy_equal_helper (original1,         changedMetaValue1, original2,         false, counter++);
 	test_strategy_equal_helper (original1,         changedMetaValue1, changedMetaValue2, false, counter++);
 	test_strategy_equal_helper (changedMetaValue1, original1,         original2,         false, counter++);
 	test_strategy_equal_helper (changedMetaValue1, original1,         changedMetaValue2, false, counter++);
-	test_strategy_equal_helper (changedMetaValue1, changedMetaValue2, original1,         false, counter++);
+	test_strategy_equal_helper (changedMetaValue1, changedMetaValue2, original1,         true, counter++);
 	test_strategy_equal_different_roots ();
 	// clang-format on
 
