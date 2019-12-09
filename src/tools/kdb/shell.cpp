@@ -64,26 +64,38 @@ int ShellCommand::execute (Cmdline const &)
 		}
 		else if (command == "kdbMerge")
 		{
-			string theirRootString;
-			is >> theirRootString;
-			Key theirRootKey (theirRootString, KEY_END);
-			KeySet their;
-			kdb.get (their, theirRootKey);
-			ckdb::KeySet * result;
-			if ((result = ckdb::elektraMerge (current.getKeySet (), currentKey.getKey (), their.getKeySet (),
-							  theirRootKey.getKey (), current.getKeySet (), currentKey.getKey (),
-							  currentKey.getKey (), ckdb::MERGE_STRATEGY_ABORT, currentKey.getKey ())) != NULL)
+			if (currentKey.isValid ())
 			{
-				int retVal = current.append (result);
-				if (retVal < 0) {
-					cout << "ERROR: Could not append merge result to current key set! (Got " << retVal << ")" << endl;
-				} else {
-					cout << "Merge successful! Current key set is now of size " << retVal << "." << endl;
+				string theirRootString;
+				is >> theirRootString;
+				Key theirRootKey (theirRootString, KEY_END);
+				KeySet their;
+				kdb.get (their, theirRootKey);
+				ckdb::KeySet * result;
+				if ((result = ckdb::elektraMerge (current.getKeySet (), currentKey.getKey (), their.getKeySet (),
+								  theirRootKey.getKey (), current.getKeySet (), currentKey.getKey (),
+								  currentKey.getKey (), ckdb::MERGE_STRATEGY_ABORT,
+								  currentKey.getKey ())) != NULL)
+				{
+					int retVal = current.append (result);
+					if (retVal < 0)
+					{
+						cout << "ERROR: Could not append merge result to current key set! (Got " << retVal << ")"
+						     << endl;
+					}
+					else
+					{
+						cout << "Merge successful! Current key set is now of size " << retVal << "." << endl;
+					}
+				}
+				else
+				{
+					cout << "ERROR: Merge API returned NULL!" << endl;
 				}
 			}
 			else
 			{
-				cout << "ERROR: Merge API returned NULL!" << endl;
+				cout << "ERROR: Current key must be specified!" << endl;
 			}
 		}
 		else if (command == "keyClear")
