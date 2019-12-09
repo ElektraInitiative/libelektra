@@ -22,6 +22,7 @@ In this manual we give an overview of the tool suite
 `kdb`. It is part of Elektra’s tools. The tool suite `kdb` consists
 of individual commands. Most commands are independent and some commands
 are sharing an executable. Some commands are written as external scripts.
+Subcommands have to be the first after `kdb`
 
 The included commands can be listed via:<br>
 `kdb`
