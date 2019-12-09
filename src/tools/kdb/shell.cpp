@@ -74,11 +74,16 @@ int ShellCommand::execute (Cmdline const &)
 							  theirRootKey.getKey (), current.getKeySet (), currentKey.getKey (),
 							  currentKey.getKey (), ckdb::MERGE_STRATEGY_ABORT, currentKey.getKey ())) != NULL)
 			{
-				cout << "return value: " << current.append (result) << endl;
+				int retVal = current.append (result);
+				if (retVal < 0) {
+					cout << "ERROR: Could not append merge result to current key set! (Got " << retVal << ")" << endl;
+				} else {
+					cout << "Merge successful! Current key set is now of size " << retVal << "." << endl;
+				}
 			}
 			else
 			{
-				cout << "return value: -1" << endl;
+				cout << "ERROR: Merge API returned NULL!" << endl;
 			}
 		}
 		else if (command == "keyClear")
