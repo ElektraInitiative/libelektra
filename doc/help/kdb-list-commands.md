@@ -8,7 +8,7 @@
 
 This command will list all internal kdb commands.
 The output is suitable to be processed from other
-tools unless `--verbose` is specified.
+tools unless `-v` or `--verbose` is specified.
 
 ## OPTIONS
 
@@ -21,15 +21,15 @@ tools unless `--verbose` is specified.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-v`, `--verbose`:
-  Print number of commands in the first line.
-  Add a description to each command.
-  Print command names bold unless `--color never` is specified.
+  Prints the number of commands in the first line
+  and adds a description to each command.
+  Prints command names in bold unless `--color never` is specified or output is printed to non-terminals.
 - `-0`, `--null`:
   Use binary 0 termination
 
 ## EXAMPLES
 
-To print a list of all internal kdb commands with their description:
+To print a list of all internal kdb commands with their description use:
 
 `kdb list-commands -v`
 
