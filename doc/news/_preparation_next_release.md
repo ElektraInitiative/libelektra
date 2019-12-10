@@ -59,11 +59,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin now always prints a newline at the end of the YAML output. _(René Schwaiger)_
 
-### <<Plugin3>>
+### Yan LR
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The CMake code of the plugin does not print error messages produced by the tool `ldd` any more. _(René Schwaiger)_
 
 ## Libraries
 
@@ -124,7 +122,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
+- The [fish completion script](../../scripts/completion/kdb.fish) now recognizes the new names of subcommands (e.g. `meta-set` instead of `setmeta` ) introduced with Elektra `0.9.1`. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -137,7 +135,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Tests
 
 - We now use [Google Test](https://github.com/google/googletest) `1.10` to test Elektra. _(René Schwaiger)_
-- <<TODO>>
+- The C++ test code does not produce warnings about a missing macro argument for `...` any more. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -145,8 +143,9 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
-- <<TODO>>
+- We fixed warnings about CMake policy [CMP0078](https://cmake.org/cmake/help/latest/policy/CMP0078.html) and [CMP0086](https://cmake.org/cmake/help/latest/policy/CMP0086.html). _(René Schwaiger)_
+- The CMake functions `add_msr_test` and `add_msr_test_plugin` do not export the list of required plugins as environment variable any more. _(René Schwaiger)_
+- The CMake code of the code generation does not print warnings about unknown regex operators any more. _(René Schwaiger)_
 - <<TODO>>
 
 ### Docker
