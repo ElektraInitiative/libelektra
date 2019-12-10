@@ -325,9 +325,9 @@ static char * loadFile (FILE * fh)
 	{
 		content = elektraMalloc ((size_t) fileSize * sizeof (char) + 1);
 		if (content == 0) return 0;
-		int readBytes = (int) fread (content, sizeof (char), (size_t) fileSize, fh);
+		size_t readBytes = fread (content, sizeof (char), (size_t) fileSize, fh);
 
-		if (feof (fh) || ferror (fh) || readBytes != fileSize) return 0;
+		if (feof (fh) || ferror (fh) || readBytes != (size_t) fileSize) return 0;
 
 		/* null terminate the string, as fread doesn't do it */
 		content[fileSize] = 0;
