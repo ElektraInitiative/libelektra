@@ -792,10 +792,6 @@ def buildDoc() {
           sh "ln -s ${VERSION} current"
         }
 
-        warnings parserConfigurations: [
-          [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
-        ]
-
         if (isMaster()) {
           sshPublisher(
             publishers: [
