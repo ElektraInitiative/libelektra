@@ -1,3 +1,12 @@
+/**
+ * @file codepoint.c
+ *
+ * @brief Functions for converting unicode codepoints to utf8.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
 #include "codepoint.h"
 
 #include <kdbassert.h>
