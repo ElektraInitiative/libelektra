@@ -2,6 +2,7 @@
 #include "utility.h"
 #include <kdbassert.h>
 #include <kdbhelper.h>
+#include <stdlib.h>
 
 typedef struct ArrayInfo_
 {
