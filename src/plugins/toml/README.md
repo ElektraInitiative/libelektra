@@ -48,11 +48,11 @@ sudo kdb umount user/tests/storage
 
 # TOML specific structures
 TOML specific structures are represented by the metakey `tomltype` on a certain key.
-It will be set, when the TOML plugin reads a TOML structure from a file. Additionally, this metakey can be set by user, if they want a certain TOML structure to be written.
-No inference of this metakey is done on writing, it must either be read from a file or be set explicitly by the user.
+It will be set when the TOML plugin reads a TOML structure from a file. Additionally, this metakey can be set by the user, if they want a certain TOML structure to be written.
+No automatic inference of this metakey is done on writing.
 
 ## Simple Tables
-TOML's simple tables are represented with a `tomltype` metakey of value `simpletable`.
+TOML's simple tables are represented by setting the `tomltype` metakey to `simpletable`.
 Example
 ```
 # Mount TOML file
@@ -70,7 +70,7 @@ cat `kdb file user/tests/storage`
 #> common.b = 1
 #> common.c = 2
 
-# Create a key of the common tablespace of a/b/c, with a metakey representing a simple table
+# Create a simple table key
 kdb meta-set 'user/tests/storage/common' 'tomltype' 'simpletable'
 
 # Print the content of the resulting TOML file
@@ -90,6 +90,8 @@ sudo kdb umount user/tests/storage
 ## Inline Tables
 
 ## Arrays
+Arrays are recognized by the `array` metakey. On writing, the plugin will detect arrays automatically and set the appropriate metakey if it is missing.
+TODO: Example
 
 # Order
 The plugin preserves the file order by the usage of the metakey `order`. When reading a file, the order metakey will be set according to the order as read in the file.
@@ -152,7 +154,7 @@ TODO: Maybe explain better/more clear/shorter?
 	- Write documentation
 	- Correct interaction with other plugins, especially directory value
 		- directoryvalue seems to be in conflict with the toml plugin
-		- eg on writing, when having a value on a simpletable, the created dirval plugin steals all metakeys of the simpletable
+		- eg on writing, when having a value on a simpletable, the dirval plugin steals all metakeys of the simpletable
 		- and the simpletable key loses all  it's previous metakeys, like order and tomltype, resulting in incorrectly written TOML files
 		- (this happens on the KeySet the TOML plugin receives on kdbSet call, without any changes made by the TOML plugin)
 	- Check, how used plugins are chained (I heard something about wrapper plugin?). Order of filter plugins may be relevant in writeScalar()
