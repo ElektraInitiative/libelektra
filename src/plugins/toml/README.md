@@ -86,6 +86,44 @@ sudo kdb umount user/tests/storage
 ```
 
 ## Table Arrays
+Table arrays are represented by setting the `tomltype` metakey to `tablearray`. It is not required to also set the array metakey, since the plugin will set the metakey, if it is missing.
+
+```
+# Mount TOML file
+sudo kdb mount test_strings.toml user/tests/storage toml type
+
+# Create a table array containing two entries, each with a key `a` and `b`
+kdb meta-set 'user/tests/storage/tablearray' 'tomltype` `tablearray`
+kdb set 'user/tests/storage/tablearray/#0/a' '1'
+kdb set 'user/tests/storage/tablearray/#0/b' '2'
+
+kdb set 'user/tests/storage/tablearray/#1/a' '3'
+kdb set 'user/tests/storage/tablearray/#1/b' '4'
+
+# Print the highest index of the table array
+kdb meta-get 'user/tests/storage/tablearray' 'array'
+#> #1
+
+# Print the content of the resulting TOML file
+cat `kdb file user/tests/storage`
+#> [[tablearray]]
+#> a = 1
+#> b = 2
+#> [[tablearray]]
+#> a = 3
+#> b = 4
+
+# Print the content of the resulting TOML file
+cat `kdb file user/tests/storage`
+#> [common]
+#> a = 0
+#> b = 1
+#> c = 2
+
+# Cleanup
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
 
 ## Inline Tables
 
@@ -152,6 +190,7 @@ TODO: Maybe explain better/more clear/shorter?
 # TODOs
 
 	- Write documentation
+	- Change storage of toml specific structures (change tomltype metakey)
 	- Correct interaction with other plugins, especially directory value
 		- directoryvalue seems to be in conflict with the toml plugin
 		- eg on writing, when having a value on a simpletable, the dirval plugin steals all metakeys of the simpletable
@@ -163,4 +202,3 @@ TODO: Maybe explain better/more clear/shorter?
 	- Don't discard trailing array comments
 	- Maybe use date plugin
 	- Make distinction on writing basic and literal strings
-	- Write used metakeys in METADATA.ini
