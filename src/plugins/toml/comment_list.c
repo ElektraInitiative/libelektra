@@ -1,3 +1,12 @@
+/**
+ * @file comment_list.c
+ *
+ * @brief Functions for handling the CommentList struct.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
 #include "comment_list.h"
 
 #include <kdb.h>

@@ -646,7 +646,6 @@ void driverExitNewline (Driver * driver)
 		return;
 	}
 	driver->newlineCount++;
-	printf("newlines: %lu\n", driver->newlineCount);
 }
 
 static void driverNewCommentList (Driver * driver, const char * comment, size_t spaceCount)
