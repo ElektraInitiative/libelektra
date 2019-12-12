@@ -190,7 +190,7 @@ apt-get install clang-format-6.0
 For the basic use cases you can use `clang-format` directly. To do that, just call the tool using the option `-i` and specify the name of the files you want to reformat. For example, if you want to reformat the file `src/bindings/cpp/include/kdb.hpp` you can use the following command:
 
 ```sh
-# On some systems such as Debian the `cmake-format` executable also contains
+# On some systems such as Debian the `clang-format` executable also contains
 # the version number. For those systems, please replace `clang-format`,
 # with `clang-format-6.0` or `clang-format-7` in the command below.
 clang-format -i src/bindings/cpp/include/kdb.hpp
@@ -265,7 +265,7 @@ Since `cmake-format` is written in [Python](https://www.python.org) you usually 
 
 ```sh
 # Install cmake format `0.6` with support for YAML config files
-pip install cmake-format[yaml]==0.6
+pip install cmake-format[yaml]==0.6.2
 ```
 
 . Please make sure, that you install the correct version (`0.6.0`) of cmake format:
