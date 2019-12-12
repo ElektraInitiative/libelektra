@@ -62,6 +62,8 @@ macro (do_test source)
 	set_property (TEST ${source} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 endmacro (do_test)
 
+# Since we want to see the output of the tests immediately we specify the parameter `USES_TERMINAL` in the targets below. If we do not do
+# that, then the output of the commands will be buffered.
 add_custom_target (
 	run_all
 	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_all" "$<CONFIGURATION>"
