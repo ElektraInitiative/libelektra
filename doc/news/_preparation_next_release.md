@@ -150,6 +150,7 @@ you up to date with the multi-language support provided by Elektra.
   - `blockresolver`
 
   plugin any more. After this update, the code compiles without any warnings, even though we now use the compiler switch `-Wconversion`. _(René Schwaiger)_
+
 ### Support
 
 - Debian 9 “stretch” (oldstable) is now the oldest supported platform. _(René Schwaiger)_
