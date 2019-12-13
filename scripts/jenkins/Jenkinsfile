@@ -307,15 +307,6 @@ def dockerInit() {
       "./scripts/docker/debian/stretch/doc.Dockerfile"
     )
 
-    /* A Debian oldoldstable image used for testing backwards compatibility.
-       (will be removed on problems)
-     */
-    DOCKER_IMAGES.jessie = createDockerImageDesc(
-      "debian-jessie", this.&idTesting,
-      "./scripts/docker/debian/jessie",
-      "./scripts/docker/debian/jessie/Dockerfile"
-    )
-
     /* Ubuntu xenial image used to test compatibility with Ubuntu.
      */
     DOCKER_IMAGES.xenial = createDockerImageDesc(
@@ -538,18 +529,6 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_CLANG
-  )
-
-  // Build Elektra on jessie to see if we are backwards compatible
-  // Can be removed if it fails
-  tasks << buildAndTest(
-    "debian-jessie-full",
-    DOCKER_IMAGES.jessie,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      ['COMMON_FLAGS': ''] // The build system can not compile Elektra on Debian Jessie, if we specify the compiler switch `-Werror`.
-    ,
-    [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
   // Build Elektra on debian-unstable for compatibility tests
