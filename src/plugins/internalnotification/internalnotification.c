@@ -86,13 +86,9 @@ static int checkKeyIsSame (Key * key, Key * check)
 		}
 		else
 		{
-			if (cascadingCheck == NULL)
+			if (!cascadingCheck || !cascadingKey)
 			{
-				ELEKTRA_LOG_WARNING ("invalid key given: '%s' is not a valid key", cascadingCheck);
-			}
-			if (cascadingKey == NULL)
-			{
-				ELEKTRA_LOG_WARNING ("invalid key given: '%s' is not a valid key", cascadingKey);
+				ELEKTRA_LOG_WARNING ("invalid key given: 'NULL' is not a valid key");
 			}
 		}
 	}
