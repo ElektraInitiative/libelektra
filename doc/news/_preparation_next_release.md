@@ -137,7 +137,7 @@ you up to date with the multi-language support provided by Elektra.
 - We now use [Google Test](https://github.com/google/googletest) `1.10` to test Elektra. _(René Schwaiger)_
 - The C++ test code does not produce warnings about a missing macro argument for `...` any more. _(René Schwaiger)_
 - <<TODO>>
-- <<TODO>>
+- The [formatting check](../../tests/shell/check_formatting.sh) now also works correctly, if it is invoked multiple times. _(René Schwaiger)_
 
 ## Build
 
