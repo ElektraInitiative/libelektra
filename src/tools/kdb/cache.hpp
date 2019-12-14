@@ -25,17 +25,20 @@ public:
 
 	virtual std::string getSynopsis () override
 	{
-		return "{enable,disable,clear}";
+		return "{enable,disable,default,clear}";
 	}
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Enable, disable or clear the cache.";
+		return "Enable, disable, clear the cache or revert to default.";
 	}
 
 	virtual std::string getLongHelpText () override
 	{
-		return "";
+		return "This command is used to enable or disable the cache and to revert\n"
+		       "to the default settings. The default settings will let the system\n"
+		       "decide whether to use the cache or not. The clear command will\n"
+		       "remove the generated cache files in a safe way.\n";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;
