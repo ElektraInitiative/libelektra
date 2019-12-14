@@ -89,16 +89,9 @@ if (BUILD_SHARED)
 	set (elektra-all_LIBRARIES elektra-core elektra-kdb ${elektra-extension_LIBRARIES})
 	set_target_properties (
 		${elektra-all_LIBRARIES}
-		PROPERTIES COMPILE_DEFINITIONS
-			   "HAVE_KDBCONFIG_H"
-			   VERSION
-			   ${KDB_VERSION}
-			   SOVERSION
-			   ${SO_VERSION}
-			   CLEAN_DIRECT_OUTPUT
-			   1
-			   LINK_DEPENDS
-			   "${__symbols_file}")
+		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H" VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION} CLEAN_DIRECT_OUTPUT 1
+
+			   LINK_DEPENDS "${__symbols_file}")
 
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (${elektra-all_LIBRARIES} PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
@@ -113,7 +106,10 @@ if (BUILD_SHARED)
 	set (ELEKTRA_RPATH "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
 	set_target_properties (${elektra-all_LIBRARIES} PROPERTIES INSTALL_RPATH "${ELEKTRA_RPATH}")
 
-	install (TARGETS elektra-core elektra-kdb DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+	install (
+		TARGETS elektra-core elektra-kdb
+		DESTINATION lib${LIB_SUFFIX}
+		EXPORT ElektraTargetsLibelektra)
 
 	list (APPEND targets_built ${elektra-all_LIBRARIES})
 endif (BUILD_SHARED)
@@ -142,24 +138,16 @@ if (BUILD_FULL)
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
 	set_target_properties (
-		elektra-full
-		PROPERTIES COMPILE_DEFINITIONS
-			   "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
-			   VERSION
-			   ${KDB_VERSION}
-			   SOVERSION
-			   ${SO_VERSION}
-			   CLEAN_DIRECT_OUTPUT
-			   1
-			   LINKER_LANGUAGE
-			   CXX
-			   LINK_DEPENDS
-			   "${__symbols_file}")
+		elektra-full PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC" VERSION ${KDB_VERSION}
+					SOVERSION ${SO_VERSION} CLEAN_DIRECT_OUTPUT 1 LINKER_LANGUAGE CXX LINK_DEPENDS "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (elektra-full PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
-	install (TARGETS elektra-full DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+	install (
+		TARGETS elektra-full
+		DESTINATION lib${LIB_SUFFIX}
+		EXPORT ElektraTargetsLibelektra)
 
 	list (APPEND targets_built elektra-full)
 endif (BUILD_FULL)
@@ -173,23 +161,17 @@ if (BUILD_STATIC)
 
 	set_target_properties (
 		elektra-static
-		PROPERTIES COMPILE_DEFINITIONS
-			   "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
-			   VERSION
-			   ${KDB_VERSION}
-			   SOVERSION
-			   ${SO_VERSION}
-			   CLEAN_DIRECT_OUTPUT
-			   1
-			   LINKER_LANGUAGE
-			   CXX
-			   LINK_DEPENDS
-			   "${__symbols_file}")
+		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC" VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION}
+
+			   CLEAN_DIRECT_OUTPUT 1 LINKER_LANGUAGE CXX LINK_DEPENDS "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (elektra-static PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
-	install (TARGETS elektra-static DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+	install (
+		TARGETS elektra-static
+		DESTINATION lib${LIB_SUFFIX}
+		EXPORT ElektraTargetsLibelektra)
 
 	list (APPEND targets_built elektra-static)
 endif (BUILD_STATIC)
