@@ -35,15 +35,31 @@ else ()
 	endif ()
 
 	add_headers (HDR_FILES)
-	add_cppheaders (HDR_FILES)
 
 	include_directories (${PYTHON_INCLUDE_DIRS})
-	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 
-	set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}")
+	set (CMAKE_SWIG_OUTDIR "${CMAKE_CURRENT_BINARY_DIR}/kdb")
 	set (CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_SWIG_OUTDIR}")
-	set (CMAKE_SWIG_FLAGS "-O")
+	set (CMAKE_SWIG_FLAGS "-O;-DSWIG_WITHOUT_OVERRIDE")
 
+	# specify the SWIG_TYPE_TABLE to use (has to be in sync with the python plugin)
+	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
+
+	# TODO: Reenable the following warning after we add a virtual destructor to `PluginDatabase`, and its subclasses. See also:
+	#
+	# - https://github.com/ElektraInitiative/libelektra/pull/1841
+	# - https://github.com/ElektraInitiative/libelektra/commit/15d67328
+	#
+	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-delete-non-virtual-dtor")
+	# Unfortunately the generated code produces warnings.
+	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter")
+	if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-cast-function-type")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-stringop-truncation")
+	endif ()
+
+	# kdb module
+	add_cppheaders (HDR_FILES)
 	set_source_files_properties (kdb.i PROPERTIES CPLUSPLUS ON)
 	set_source_files_properties (kdb.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
 	if (CMAKE_VERSION VERSION_LESS 3.8)
@@ -60,14 +76,43 @@ else ()
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	swig_link_libraries (swig-python elektra-core elektra-kdb ${PYTHON_LIBRARIES})
 	set_target_properties (_swig-python PROPERTIES OUTPUT_NAME _kdb)
+	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+	add_custom_command (TARGET _swig-python POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
+								   ${CMAKE_SWIG_OUTDIR}/)
 
-	# Unfortunately the generated code produces warnings.
-	if (CMAKE_COMPILER_IS_GNUCXX)
-		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-cast-function-type")
-		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-stringop-truncation")
-	endif (CMAKE_COMPILER_IS_GNUCXX)
-	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
+	# add tests
+	add_subdirectory (tests)
 
+	# tools module
+	#
+	# we require SWIG 4 because of https://github.com/swig/swig/commit/9cb90982ee98b437fd3fe9f1257b48b5eef9b335
+	if (${SWIG_VERSION} VERSION_LESS "4.0.0")
+		message (WARNING "Python bindings for elektra tools require SWIG 4 or later. Not building.")
+	else (${SWIG_VERSION} VERSION_LESS "4.0.0")
+		add_toolheaders (HDR_FILES)
+		set_source_files_properties (tools.i PROPERTIES CPLUSPLUS ON)
+		set_source_files_properties (tools.i PROPERTIES SWIG_FLAGS "-py3;-extranative")
+		if (CMAKE_VERSION VERSION_LESS 3.8)
+			swig_add_module (swig-python-tools python tools.i)
+		else (CMAKE_VERSION VERSION_LESS 3.8)
+			swig_add_library (
+				swig-python-tools
+				LANGUAGE
+				python
+				SOURCES
+				tools.i
+				TYPE
+				MODULE)
+		endif (CMAKE_VERSION VERSION_LESS 3.8)
+		swig_link_libraries (swig-python-tools elektratools ${PYTHON_LIBRARIES})
+		set_target_properties (_swig-python-tools PROPERTIES OUTPUT_NAME _tools)
+		set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+
+		# add tests
+		add_subdirectory (tests_tools)
+	endif (${SWIG_VERSION} VERSION_LESS "4.0.0")
+
+	# install package
 	set (PYTHON_GET_MODULES_DIR_COMMAND
 	     "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))")
 	execute_process (
@@ -75,14 +120,12 @@ else ()
 		OUTPUT_VARIABLE PYTHON_SITE_PACKAGES
 		OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-	install (FILES ${CMAKE_CURRENT_BINARY_DIR}/kdb.py DESTINATION ${PYTHON_SITE_PACKAGES})
+	install (
+		DIRECTORY ${CMAKE_SWIG_OUTDIR}
+		DESTINATION ${PYTHON_SITE_PACKAGES}
+		FILES_MATCHING
+		REGEX "\\.(py|so)$")
 
-	install (TARGETS _swig-python LIBRARY DESTINATION ${PYTHON_SITE_PACKAGES})
-
-	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
-	include_directories (${CMAKE_SOURCE_DIR}/src/swig/)
-
-	add_subdirectory (tests)
 endif ()
 
 if (POLICY CMP0078)

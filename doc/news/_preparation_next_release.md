@@ -51,6 +51,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Configure line (-DBINDINGS="..") for SWIG based bindings have been changed from `swig_foo` to `foo`. _(Manuel Mausz)_
 
+### SWIG/python
+
+- Added bindings for libelektratools. _(Manuel Mausz)_
+
 ### SWIG/python2
 
 - Removed. _(Manuel Mausz)_
