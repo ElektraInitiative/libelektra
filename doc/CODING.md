@@ -133,7 +133,7 @@ ensure that you have the correct version of all our reformatting tools at hand.
 
 #### Clang Format
 
-To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) (version `6.0` or version `7.0`) to format all C and C++ code in the repository. Since our build servers also check the style for every pull request you might want to make sure you reformat your C/C++ code changes with this tool.
+To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) (version `9`) to format all C and C++ code in the repository. Since our build servers also check the style for every pull request you might want to make sure you reformat your C/C++ code changes with this tool.
 
 To find out which version of `clang-format` a certain build server uses please check:
 
@@ -143,9 +143,8 @@ To find out which version of `clang-format` a certain build server uses please c
 
 and search for the relevant packages (`clang-format`, `llvm`). Currently we use
 
-- clang-format `6.0` in the [Debian sid image](../scripts/docker/debian/sid/Dockerfile) on the Jenkins build server,
-- clang-format `7.0` in the [Travis configuration file ](../.travis.yml), and
-- clang-format `7.0` in the [Cirrus macOS](../.cirrus.yml) build jobs
+- clang-format `9` in the [Debian sid image](../scripts/docker/debian/sid/Dockerfile) on the Jenkins build server, and
+- clang-format `9` in the [Cirrus macOS](../.cirrus.yml) build jobs
 
 .
 
@@ -165,10 +164,10 @@ or by installing the whole [LLVM](http://llvm.org) infrastructure:
 brew install llvm
 ```
 
-. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `6.0` in certain edge cases. If you want you can also install Clang-Format `7.0` using LLVM `7.0`:
+. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `9` in certain edge cases. If you want you can also install Clang-Format `9` using LLVM `9`:
 
 ```
-brew install llvm@7
+brew install llvm@9
 ```
 
 .
@@ -177,10 +176,10 @@ brew install llvm@7
 
 ###### Debian
 
-In Debian the package for Clang-Format `6.0` is called `clang-format-6.0`:
+In Debian the package for Clang-Format `9` is called `clang-format-9`:
 
 ```sh
-apt-get install clang-format-6.0
+apt-get install clang-format-9
 ```
 
 .
@@ -192,7 +191,7 @@ For the basic use cases you can use `clang-format` directly. To do that, just ca
 ```sh
 # On some systems such as Debian the `clang-format` executable also contains
 # the version number. For those systems, please replace `clang-format`,
-# with `clang-format-6.0` or `clang-format-7` in the command below.
+# with `clang-format-9` in the command below.
 clang-format -i src/bindings/cpp/include/kdb.hpp
 ```
 
