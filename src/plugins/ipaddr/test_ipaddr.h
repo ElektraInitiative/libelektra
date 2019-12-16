@@ -107,9 +107,9 @@ static void testIPAll (void)
 		testIPv6 ("::", 1);				   // unspecified, compressed, non-routable
 		testIPv6 ("0:0:0:0:0:0:0:1", 1);		   // loopback, full
 		testIPv6 ("0:0:0:0:0:0:0:0", 1);		   // unspecified, full
-		testIPv6 ("2001:DB8:0:0:8:800:200C:417A", 1);      // unicast, full
+		testIPv6 ("2001:DB8:0:0:8:800:200C:417A", 1);	   // unicast, full
 		testIPv6 ("FF01:0:0:0:0:0:0:101", 1);		   // multicast, full
-		testIPv6 ("2001:DB8::8:800:200C:417A", 1);	 // unicast, compressed
+		testIPv6 ("2001:DB8::8:800:200C:417A", 1);	   // unicast, compressed
 		testIPv6 ("FF01::101", 1);			   // multicast, compressed
 		testIPv6 ("2001:DB8:0:0:8:800:200C:417A:221", -1); // unicast, full
 		testIPv6 ("FF01::101::2", -1);			   // multicast, compressed
@@ -132,10 +132,10 @@ static void testIPAll (void)
 		testIPv6 ("2001:0000:1234:0000:0000:C1C0:ABCD:0876  0", -1); // junk after valid address
 		testIPv6 ("2001:0000:1234: 0000:0000:C1C0:ABCD:0876", -1);   // internal space
 
-		testIPv6 ("3ffe:0b00:0000:0001:0000:0000:000a", -1);	   // seven segments
+		testIPv6 ("3ffe:0b00:0000:0001:0000:0000:000a", -1);	       // seven segments
 		testIPv6 ("FF02:0000:0000:0000:0000:0000:0000:0000:0001", -1); // nine segments
 		testIPv6 ("3ffe:b00::1::a", -1);			       // double "::"
-		testIPv6 ("::1111:2222:3333:4444:5555:6666::", -1);	    // double "::"
+		testIPv6 ("::1111:2222:3333:4444:5555:6666::", -1);	       // double "::"
 		testIPv6 ("2::10", 1);
 		testIPv6 ("ff02::1", 1);
 		testIPv6 ("fe80::", 1);
@@ -243,10 +243,10 @@ static void testIPAll (void)
 		testIPv6 ("2001:1:1:1:1:1:255Z255X255Y255", -1); // garbage instead of "." in IPv4
 		testIPv6 ("::ffff:192x168.1.26", -1);		 // ditto
 		testIPv6 ("::ffff:192.168.1.1", 1);
-		testIPv6 ("0:0:0:0:0:0:13.1.68.3", 1);	// IPv4-compatible IPv6 address, full, deprecated
+		testIPv6 ("0:0:0:0:0:0:13.1.68.3", 1);	      // IPv4-compatible IPv6 address, full, deprecated
 		testIPv6 ("0:0:0:0:0:FFFF:129.144.52.38", 1); // IPv4-mapped IPv6 address, full
 		testIPv6 ("::13.1.68.3", 1);		      // IPv4-compatible IPv6 address, compressed, deprecated
-		testIPv6 ("::FFFF:129.144.52.38", 1);	 // IPv4-mapped IPv6 address, compressed
+		testIPv6 ("::FFFF:129.144.52.38", 1);	      // IPv4-mapped IPv6 address, compressed
 		testIPv6 ("fe80:0:0:0:204:61ff:254.157.241.86", 1);
 		testIPv6 ("fe80::204:61ff:254.157.241.86", 1);
 		testIPv6 ("::ffff:12.34.56.78", 1);

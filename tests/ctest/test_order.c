@@ -129,7 +129,7 @@ static void per (int k, Key ** pool, Key ** result)
 		result[i] = pool[selected];
 
 		// remove the selected from the pool
-		memmove (pool + selected,       // destination
+		memmove (pool + selected,	// destination
 			 pool + (selected + 1), // source
 			 (size - selected - 1) * sizeof (struct Key *));
 	}

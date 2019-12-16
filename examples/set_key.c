@@ -64,7 +64,7 @@ int main (void)
 	Key * key = keyNew (0);
 	keySetName (key, "user/sw/MyApp/Tests/TestKey1"); // == 31
 	keySetString (key, "NULLTestValue");		  // == 14
-	keySetMeta (key, "comment", "NULLTestComment");   // == 16
+	keySetMeta (key, "comment", "NULLTestComment");	  // == 16
 	ksAppendKey (ks, key);				  // == 1
 	keyNeedSync (key);
 	kdbSet (kdb_handle, ks, top); // == -1

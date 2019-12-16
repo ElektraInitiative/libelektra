@@ -33,7 +33,7 @@ TEST (test_contextual_basic, command)
 
 	TestValueSubject v;
 	Key k;
-	Command::Func f = [k]() -> Command::Pair { return Command::Pair ("", ""); };
+	Command::Func f = [k] () -> Command::Pair { return Command::Pair ("", ""); };
 
 	Command c (v, f);
 	fooxx (c);
@@ -248,11 +248,11 @@ TYPED_TEST (test_contextual_basic, integer)
 	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
 	ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 
-	c.template with<LanguageGermanLayer> () ([&]() {
+	c.template with<LanguageGermanLayer> () ([&] () {
 		ASSERT_EQ (i, 15);
 		ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
 		ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
-		c.template without<LanguageGermanLayer> () ([&]() {
+		c.template without<LanguageGermanLayer> () ([&] () {
 			ASSERT_EQ (i, 10);
 			ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
 			ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
@@ -265,7 +265,7 @@ TYPED_TEST (test_contextual_basic, integer)
 	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
 	ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 
-	c.template with<LanguageGermanLayer> ().template with<CountryGermanyLayer> () ([&]() {
+	c.template with<LanguageGermanLayer> ().template with<CountryGermanyLayer> () ([&] () {
 		ASSERT_EQ (i, i_value);
 		ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
 		ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
@@ -291,7 +291,7 @@ TYPED_TEST (test_contextual_basic, integer)
 	ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 	ASSERT_EQ (ks.lookup ("/german/germany/%/test").getString (), "20");
 
-	c.template with<LanguageGermanLayer> ().template with<CountryGermanyLayer> () ([&]() {
+	c.template with<LanguageGermanLayer> ().template with<CountryGermanyLayer> () ([&] () {
 		ASSERT_EQ (i, 20);
 		ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
 		ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
@@ -305,12 +305,12 @@ TYPED_TEST (test_contextual_basic, integer)
 	ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 	ASSERT_EQ (ks.lookup ("/german/germany/%/test").getString (), "30");
 
-	c.template with<LanguageGermanLayer> ().template with<CountryGermanyLayer> () ([&]() {
+	c.template with<LanguageGermanLayer> ().template with<CountryGermanyLayer> () ([&] () {
 		ASSERT_EQ (i, 30);
 		ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
 		ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 		ASSERT_EQ (ks.lookup ("/german/germany/%/test").getString (), "30");
-		c.template with<CountryGPSLayer> () ([&]() { ASSERT_EQ (i, i_value); });
+		c.template with<CountryGPSLayer> () ([&] () { ASSERT_EQ (i, i_value); });
 		ASSERT_EQ (ks.lookup ("/german/austria/%/test").getString (), s_value);
 	});
 	ASSERT_EQ (i, 10);
@@ -340,7 +340,7 @@ TYPED_TEST (test_contextual_basic, mixedWithActivate)
 	ASSERT_EQ (i.getName (), "user/german/%/%/test");
 	ASSERT_EQ (ks.lookup ("user/german/%/%/test").getString (), "6");
 
-	c.template with<CountryGermanyLayer> () ([&]() {
+	c.template with<CountryGermanyLayer> () ([&] () {
 		i = 7;
 		ASSERT_EQ (i, 7);
 		ASSERT_EQ (i.getName (), "user/german/germany/%/test");
@@ -374,13 +374,13 @@ TYPED_TEST (test_contextual_basic, nestedWithActivate)
 	ASSERT_EQ (i.getName (), "user/%/%/%/test");
 	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
 
-	c.template with<CountryGermanyLayer> () ([&]() {
+	c.template with<CountryGermanyLayer> () ([&] () {
 		i = 7;
 		ASSERT_EQ (i, 7);
 		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
 		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "7");
 
-		c.template without<CountryGermanyLayer> () ([&]() {
+		c.template without<CountryGermanyLayer> () ([&] () {
 			c.template activate<LanguageGermanLayer> ();
 
 			i = 6;
@@ -418,13 +418,13 @@ TYPED_TEST (test_contextual_basic, nestedWithActivateConflicting)
 	ASSERT_EQ (i.getName (), "user/%/%/%/test");
 	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
 
-	c.template with<CountryGermanyLayer> () ([&]() {
+	c.template with<CountryGermanyLayer> () ([&] () {
 		i = 7;
 		ASSERT_EQ (i, 7);
 		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
 		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "7");
 
-		c.template without<CountryGermanyLayer> () ([&]() {
+		c.template without<CountryGermanyLayer> () ([&] () {
 			ASSERT_EQ (i, 5);
 			ASSERT_EQ (i.getName (), "user/%/%/%/test");
 			ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
@@ -665,12 +665,12 @@ TEST (test_contextual_basic, evaluate)
 	ASSERT_EQ (c["dialect"], "");
 	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
 
-	c.with<LanguageGermanLayer> () ([&]() {
+	c.with<LanguageGermanLayer> () ([&] () {
 		ASSERT_EQ (c["language"], "german");
 		ASSERT_EQ (c["country"], "");
 		ASSERT_EQ (c["dialect"], "");
 		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
-		c.without<LanguageGermanLayer> () ([&]() {
+		c.without<LanguageGermanLayer> () ([&] () {
 			ASSERT_EQ (c["language"], "");
 			ASSERT_EQ (c["country"], "");
 			ASSERT_EQ (c["dialect"], "");
@@ -686,20 +686,20 @@ TEST (test_contextual_basic, evaluate)
 	ASSERT_EQ (c["dialect"], "");
 	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
 
-	c.with<LanguageGermanLayer> ().with<CountryGermanyLayer> () ([&]() {
+	c.with<LanguageGermanLayer> ().with<CountryGermanyLayer> () ([&] () {
 		ASSERT_EQ (c["language"], "german");
 		ASSERT_EQ (c["country"], "germany");
 		ASSERT_EQ (c["dialect"], "");
 		ASSERT_EQ (c.size (), 2);
 		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
 		ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%germany/test");
-		c.with<CountryGPSLayer> () ([&]() {
+		c.with<CountryGPSLayer> () ([&] () {
 			ASSERT_EQ (c["language"], "german");
 			ASSERT_EQ (c["country"], "austria");
 			ASSERT_EQ (c["dialect"], "");
 			ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/austria/%/test");
 			ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%austria/test");
-			c.without<CountryGPSLayer> () ([&]() {
+			c.without<CountryGPSLayer> () ([&] () {
 				ASSERT_EQ (c["language"], "german");
 				ASSERT_EQ (c["country"], "");
 				ASSERT_EQ (c["dialect"], "");
@@ -831,7 +831,7 @@ bool fooFirst = true;
 //{foo}
 void foo (kdb::Integer & e)
 {
-	e.context ().with<SelectedPrinterLayer> () ([&]() {
+	e.context ().with<SelectedPrinterLayer> () ([&] () {
 		if (fooFirst)
 			ASSERT_EQ (e, i_value);
 		else
@@ -848,13 +848,13 @@ bool barFirst = true;
 
 void bar (kdb::Integer const & e)
 {
-	e.context ().with<ThreadLayer> ().with<SelectedPrinterLayer> () ([&]() {
+	e.context ().with<ThreadLayer> ().with<SelectedPrinterLayer> () ([&] () {
 		if (barFirst)
 			ASSERT_EQ (e, 20);
 		else
 			ASSERT_EQ (e, i_value);
 
-		e.context ().without<ThreadLayer> () ([&]() { ASSERT_EQ (e, 20); });
+		e.context ().without<ThreadLayer> () ([&] () { ASSERT_EQ (e, 20); });
 	});
 	ASSERT_EQ (e, 12);
 	barFirst = false;

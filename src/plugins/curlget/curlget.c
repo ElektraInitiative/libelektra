@@ -183,7 +183,7 @@ static ElektraCurlProtocol isValidURL (const char * str)
 
 	const struct checkProtocolStruct urlPrefix[] = {
 		{ PROTO_HTTP, "http://" }, { PROTO_HTTPS, "https://" }, { PROTO_FTP, "ftp://" }, { PROTO_FTPS, "ftps://" },
-		{ PROTO_SFTP, "sftp://" }, { PROTO_SCP, "scp://" },     { PROTO_SMB, "smb://" }, { PROTO_INVALID, NULL },
+		{ PROTO_SFTP, "sftp://" }, { PROTO_SCP, "scp://" },	{ PROTO_SMB, "smb://" }, { PROTO_INVALID, NULL },
 	};
 	for (int i = 0; urlPrefix[i].proto != PROTO_INVALID; ++i)
 	{

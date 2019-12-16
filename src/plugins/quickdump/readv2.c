@@ -24,7 +24,7 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 
 	keyGetName (parentKey, nameBuffer.string, parentSize);
 	nameBuffer.string[parentSize - 1] = '/'; // replaces null terminator
-	nameBuffer.string[parentSize] = '\0';    // set new null terminator
+	nameBuffer.string[parentSize] = '\0';	 // set new null terminator
 	nameBuffer.offset = parentSize;		 // set offset to null terminator
 
 	char c;
@@ -56,8 +56,7 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 
 		switch (type)
 		{
-		case 'b':
-		{
+		case 'b': {
 			// binary key value
 			kdb_unsigned_long_long_t valueSize;
 			if (!readUInt64 (file, &valueSize, parentKey))
@@ -89,8 +88,7 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 			}
 			break;
 		}
-		case 's':
-		{
+		case 's': {
 			// string key value
 			if (!readStringIntoBuffer (file, &valueBuffer, parentKey))
 			{
@@ -127,8 +125,7 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 
 			switch (c)
 			{
-			case 'm':
-			{
+			case 'm': {
 				// meta key
 				if (!readStringIntoBuffer (file, &metaNameBuffer, parentKey))
 				{
@@ -154,8 +151,7 @@ static int readVersion2 (FILE * file, KeySet * returned, Key * parentKey)
 				keySetMeta (k, metaNameBuffer.string, metaValue);
 				break;
 			}
-			case 'c':
-			{
+			case 'c': {
 				// copy meta
 				if (!readStringIntoBuffer (file, &nameBuffer, parentKey))
 				{

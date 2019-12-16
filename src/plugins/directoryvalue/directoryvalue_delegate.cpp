@@ -295,7 +295,7 @@ kdb::KeySet decreaseArrayIndices (kdb::KeySet const & parents, kdb::KeySet const
 
 		arraysIndexDecreased =
 			accumulate (arraysIndexDecreased.begin (), arraysIndexDecreased.end (), kdb::KeySet{},
-				    [&parent](kdb::KeySet collected, kdb::Key key) {
+				    [&parent] (kdb::KeySet collected, kdb::Key key) {
 					    if (key.isBelow (parent))
 					    {
 						    string newIndex;
@@ -544,7 +544,7 @@ int DirectoryValueDelegate::convertToLeaves (kdb::KeySet & keys)
 	notArrayParents.append (arrays);
 	notArrayParents.append (nonArrays);
 	notArrayParents = accumulate (notArrayParents.begin (), notArrayParents.end (), kdb::KeySet{},
-				      [&arrayParents, &emptyArrayParents](kdb::KeySet collected, kdb::Key key) {
+				      [&arrayParents, &emptyArrayParents] (kdb::KeySet collected, kdb::Key key) {
 					      if (!arrayParents.lookup (key) && !emptyArrayParents.lookup (key)) collected.append (key);
 					      return collected;
 				      });

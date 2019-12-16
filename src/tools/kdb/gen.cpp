@@ -35,7 +35,7 @@ int GenCommand::execute (Cmdline const & cl)
 	if (cl.arguments.size () > 3)
 	{
 		std::transform (cl.arguments.begin () + 3, cl.arguments.end (), std::inserter (parameters, parameters.end ()),
-				[](const std::string & param) {
+				[] (const std::string & param) {
 					auto search = param.find ('=');
 					if (search == std::string::npos)
 					{

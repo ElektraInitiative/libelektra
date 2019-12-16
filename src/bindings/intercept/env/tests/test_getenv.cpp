@@ -140,7 +140,7 @@ TEST (GetEnv, ArgvParam)
 TEST (GetEnv, ArgvParamUninvolved)
 {
 	const char * cargv[] = { "name",	 "--uninvolved", "--not-used", "-L",   "--elektra:does-exist=hello",
-				 "--uninvolved", "--not-used",   "-L",	 nullptr };
+				 "--uninvolved", "--not-used",	 "-L",	       nullptr };
 	char ** argv = const_cast<char **> (cargv);
 	int argc = 8;
 	using namespace ckdb;

@@ -38,7 +38,7 @@ int PluginListCommand::execute (Cmdline const & cl)
 		std::vector<PluginSpec> pluginspecs = db.lookupAllProvides (cl.arguments[0]);
 		plugins.resize (pluginspecs.size ());
 		std::transform (pluginspecs.begin (), pluginspecs.end (), plugins.begin (),
-				[](PluginSpec const & ps) { return ps.getName (); });
+				[] (PluginSpec const & ps) { return ps.getName (); });
 	}
 	else
 	{

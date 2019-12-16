@@ -1971,8 +1971,7 @@ static int ensureGlobalPluginState (KDB * handle, const char * pluginName, enum 
 		return ensureGlobalPluginUnmounted (handle, pluginName, errorKey);
 	case PLUGIN_STATE_MOUNTED:
 		return ensureGlobalPluginMounted (handle, pluginName, pluginConfig, errorKey);
-	case PLUGIN_STATE_REMOUNT:
-	{
+	case PLUGIN_STATE_REMOUNT: {
 		int ret = ensureGlobalPluginUnmounted (handle, pluginName, errorKey);
 		if (ret != 0)
 		{

@@ -46,9 +46,9 @@ class YAMLLexer : public antlr4::TokenSource
 		/** This enumeration specifies the type of a block node. */
 		enum class Type
 		{
-			MAP,      ///< The current indentation starts a block map
+			MAP,	  ///< The current indentation starts a block map
 			SEQUENCE, ///< The current indentation starts a block sequence
-			OTHER     ///< The current indentation starts a block scalar
+			OTHER	  ///< The current indentation starts a block scalar
 		};
 		size_t indent = 0;
 		Type type = Level::Type::OTHER;

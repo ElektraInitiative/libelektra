@@ -99,7 +99,7 @@ void processArgument (PluginSpecVector & arguments, size_t & counter, std::strin
 {
 	// ignore empty or useless arguments (whitespace , only)
 	if (argument.empty ()) return;
-	if (std::all_of (argument.begin (), argument.end (), [](char c) { return std::isspace (c) || c == ','; })) return;
+	if (std::all_of (argument.begin (), argument.end (), [] (char c) { return std::isspace (c) || c == ','; })) return;
 
 	if (argument.find ('=') == std::string::npos)
 	{
@@ -136,7 +136,7 @@ void fixArguments (PluginSpecVector & arguments)
 	for (auto & a : arguments)
 	{
 		size_t nr = std::count_if (arguments.begin (), arguments.end (),
-					   [&a](PluginSpec const & spec) { return spec.getName () == a.getName (); });
+					   [&a] (PluginSpec const & spec) { return spec.getName () == a.getName (); });
 		if (nr == 1 && a.isRefNumber ())
 		{
 			a.setRefName (a.getName ());

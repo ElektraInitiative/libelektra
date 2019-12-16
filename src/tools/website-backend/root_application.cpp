@@ -115,7 +115,7 @@ void RootApp::version ()
 			kdb::KeySet ks;
 			kdb.get (ks, "system/elektra/version/constants");
 
-			auto ksLookup = [&ks, &error](const std::string key, cppcms::json::value & out, const bool isInt) {
+			auto ksLookup = [&ks, &error] (const std::string key, cppcms::json::value & out, const bool isInt) {
 				kdb::Key k = ks.lookup (key);
 				if (!k)
 				{

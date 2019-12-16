@@ -12,7 +12,7 @@
 #include <time.h>   // time()
 #include <unistd.h> // usleep()
 
-#include <kdberrors.h>   // TIMEOUT ERROR
+#include <kdberrors.h>	 // TIMEOUT ERROR
 #include <kdbioplugin.h> // ElektraIoPluginSetBinding
 
 #include <tests.h>

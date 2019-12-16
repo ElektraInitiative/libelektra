@@ -1233,8 +1233,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 		Key * tmpDep;
 		switch (ksGetSize (deps))
 		{
-		case -1:
-		{
+		case -1: {
 			// key has no dependencies, give it an order number and add it to list of resolved dependencies
 			keySetMeta (cur, "order", keyBaseName (orderCounter));
 			elektraArrayIncName (orderCounter);
@@ -1243,8 +1242,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			ksDel (deps);
 			break;
 		}
-		case 1:
-		{
+		case 1: {
 			// only 1 dependency:
 			// test if it's reflexive
 			tmpDep = ksHead (deps);
@@ -1260,8 +1258,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			// if not, fallthrough to normal dependency handling
 		}
 		// FALLTHROUGH
-		default:
-		{
+		default: {
 			int gotUnresolved = 0;
 			while ((tmpDep = ksNext (deps)) != NULL)
 			{

@@ -111,8 +111,7 @@ QVariant TreeViewModel::data (const QModelIndex & idx, int role) const
 	case IndexRole:
 		return QVariant::fromValue (idx.row ());
 
-	case IsNullRole:
-	{
+	case IsNullRole: {
 		if (node->getKey ())
 			return QVariant::fromValue (false);
 		else
@@ -157,8 +156,7 @@ bool TreeViewModel::setData (const QModelIndex & idx, const QVariant & modelData
 		}
 		break;
 
-	case MetaValueRole:
-	{
+	case MetaValueRole: {
 		QVariantList valueList = modelData.toList ();
 		node->setMeta (valueList.at (0).toString (), valueList.at (1));
 		break;

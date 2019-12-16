@@ -89,7 +89,7 @@ char * keyNameGetOneLevel (const char * name, size_t * size)
 {
 	char * real = (char *) name;
 	size_t cursor = 0;
-	int end = 0;	 // bool to check for end of level
+	int end = 0;	     // bool to check for end of level
 	int escapeCount = 0; // counter to check if / was escaped
 
 	/* skip all repeating '/' in the beginning */

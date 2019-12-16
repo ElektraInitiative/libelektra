@@ -21,5 +21,5 @@ int main (void)
 	ksDel (myConfig); // delete the in-memory configuration
 
 	kdbClose (handle, parentKey); // no more affairs with the key database.
-	keyDel (parentKey);	   // working with key/ks does not need kdb
+	keyDel (parentKey);	      // working with key/ks does not need kdb
 }

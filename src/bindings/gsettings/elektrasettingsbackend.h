@@ -52,8 +52,8 @@ static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gcha
 static gboolean elektra_settings_write_string (GSettingsBackend * backend, const gchar * key, gchar * keypathname, GVariant * value,
 					       gpointer origin_tag);
 void elektra_settings_check_bus_connection (GSettingsBackend * backend);
-void(*GAsyncReadyCallback) elektra_settings_bus_connected (GObject * source_object, GAsyncResult * res, gpointer user_data);
-void(*GDBusSignalCallback)
+void (*GAsyncReadyCallback) elektra_settings_bus_connected (GObject * source_object, GAsyncResult * res, gpointer user_data);
+void (*GDBusSignalCallback)
 	elektra_settings_key_changed (GDBusConnection * connection, const gchar * sender_name, const gchar * object_path,
 				      const gchar * interface_name, const gchar * signal_name, GVariant * parameters, gpointer user_data);
 #endif ELEKTRA_SETTINGS_H

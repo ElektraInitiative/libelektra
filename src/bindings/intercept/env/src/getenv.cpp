@@ -120,7 +120,7 @@ typedef int (*fcn) (int argc, char ** argv, char ** ev, ElfW (auxv_t) * auxvec, 
 		    char ** stack_on_entry);
 #else
 typedef int (*fcn) (int *(main) (int, char **, char **), int argc, char ** argv, void (*init) (void), void (*fini) (void),
-		    void (*rtld_fini) (void), void(*stack_end));
+		    void (*rtld_fini) (void), void (*stack_end));
 #endif
 typedef char * (*gfcn) (const char *);
 
@@ -292,7 +292,7 @@ void parseArgs (int * argc, char ** argv)
 		}
 	}
 	char ** oldEnd = &argv[length];
-	char ** newEnd = remove_if<char **> (argv, oldEnd, [](char * c) { return c == nullptr; });
+	char ** newEnd = remove_if<char **> (argv, oldEnd, [] (char * c) { return c == nullptr; });
 	*newEnd = nullptr;
 	const size_t toSubtract = oldEnd - newEnd;
 	*argc -= toSubtract;
@@ -388,7 +388,7 @@ void applyOptions ()
 		}
 		else
 		{
-			elektraLog = shared_ptr<ostream> (&cerr, [](ostream *) {});
+			elektraLog = shared_ptr<ostream> (&cerr, [] (ostream *) {});
 		}
 		LOG << "Elektra getenv starts logging to ";
 		if (elektraLog.get () == &cerr)
@@ -505,7 +505,7 @@ extern "C" int __libc_start_main (int argc, char ** argv, char ** ev, ElfW (auxv
 				  char ** stack_on_entry)
 #else
 extern "C" int __libc_start_main (int *(main) (int, char **, char **), int argc, char ** argv, void (*init) (void), void (*fini) (void),
-				  void (*rtld_fini) (void), void(*stack_end))
+				  void (*rtld_fini) (void), void (*stack_end))
 #endif
 {
 	elektraLockMutex (); // dlsym mutex
