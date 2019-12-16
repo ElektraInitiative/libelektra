@@ -67,17 +67,20 @@ endmacro (do_test)
 add_custom_target (
 	run_all
 	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_all" "$<CONFIGURATION>"
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" USES_TERMINAL)
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	USES_TERMINAL)
 
 add_custom_target (
 	run_checkshell
 	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_checkshell" "$<CONFIGURATION>"
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" USES_TERMINAL)
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	USES_TERMINAL)
 
 add_custom_target (
 	run_nocheckshell
 	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_nocheckshell" "$<CONFIGURATION>"
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" USES_TERMINAL)
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	USES_TERMINAL)
 
 add_custom_target (
 	run_nokdbtests

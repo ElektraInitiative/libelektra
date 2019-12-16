@@ -123,7 +123,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Scripts
 
 - The [fish completion script](../../scripts/completion/kdb.fish) now recognizes the new names of subcommands (e.g. `meta-set` instead of `setmeta` ) introduced with Elektra `0.9.1`. _(René Schwaiger)_
-- <<TODO>>
+- The script [cmake-format](../../scripts/dev/reformat-cmake) now reformats the code with `cmake-format` 0.6.3. _(René Schwaiger)_
 - <<TODO>>
 
 ## Documentation
