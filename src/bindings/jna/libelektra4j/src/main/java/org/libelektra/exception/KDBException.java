@@ -1,10 +1,9 @@
 package org.libelektra.exception;
 
-import org.libelektra.Key;
-import org.libelektra.exception.model.WarningEntry;
-
 import java.util.ArrayList;
 import java.util.Collection;
+import org.libelektra.Key;
+import org.libelektra.exception.model.WarningEntry;
 
 
 /**

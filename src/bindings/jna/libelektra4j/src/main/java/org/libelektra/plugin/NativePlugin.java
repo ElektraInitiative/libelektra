@@ -3,6 +3,8 @@ package org.libelektra.plugin;
 import com.sun.jna.Callback;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import java.util.ArrayList;
+import java.util.List;
 import org.libelektra.Elektra;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
@@ -10,9 +12,6 @@ import org.libelektra.Plugin;
 import org.libelektra.exception.InstallationException;
 import org.libelektra.exception.KDBException;
 import org.libelektra.exception.mapper.ExceptionMapperService;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class can be used to load native Elektra Plugins to be used by Java directly

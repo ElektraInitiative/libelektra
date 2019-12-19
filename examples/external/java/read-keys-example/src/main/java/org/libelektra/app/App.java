@@ -1,13 +1,12 @@
 package org.libelektra.app;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.libelektra.KDB;
 import org.libelektra.KDB.KDBException;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
-
-import java.util.Arrays;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 class App
 {
