@@ -288,8 +288,8 @@ KeySetPair splitEmptyArrayParents (CppKeySet const & arrayParents)
 /**
  * @brief This function changes an array index of the given array element by one.
  *
- * @param parent This key set stores an array parent of `element`. The function will change the index of `element` that is directly below
- *               this key.
+ * @param parent This key stores an array parent of `element`. The function will change the index of `element` that is directly below this
+ *               key.
  * @param element This parameter stores an array element.
  * @param increment This boolean parameter specifies if the function should increase or decrease the index by one.
  *
