@@ -43,7 +43,7 @@ int keySetOrderMeta (Key * key, int order)
 
 	if (result < 0) return result;
 
-	result = keySetMeta (key, "order", buffer);
+	result = (int) keySetMeta (key, "order", buffer);
 	elektraFree (buffer);
 	return result;
 }
@@ -91,7 +91,7 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 				keyAddBaseName (k, "config");
 				ksAppendKey (ks, keyDup (k));
 				keyAddBaseName (k, "lens");
-				p[0] = toupper (p[0]);
+				p[0] = (char) toupper (p[0]);
 				p[l - 1] = 's';
 				p[l - 2] = 'n';
 				p[l - 3] = 'l';
@@ -168,7 +168,7 @@ static Key * createKeyFromPath (Key * parentKey, const char * treePath)
 	Key * key = keyDup (parentKey);
 	const char * baseName = (treePath + strlen (AUGEAS_TREE_ROOT) + 1);
 
-	size_t baseSize = keyGetNameSize (key);
+	size_t baseSize = (size_t) keyGetNameSize (key);
 	size_t keyNameSize = strlen (baseName) + baseSize + 1;
 	char * newName = elektraMalloc (keyNameSize);
 
@@ -210,7 +210,7 @@ static int convertToKey (augeas * handle, const char * treePath, void * data)
 	/* setting the correct key order failed */
 	if (result < 0) return result;
 
-	result = ksAppendKey (conversionData->ks, key);
+	result = (int) ksAppendKey (conversionData->ks, key);
 
 	return result;
 }
@@ -323,11 +323,11 @@ static char * loadFile (FILE * fh)
 
 	if (fileSize > 0)
 	{
-		content = elektraMalloc (fileSize * sizeof (char) + 1);
+		content = elektraMalloc ((size_t) fileSize * sizeof (char) + 1);
 		if (content == 0) return 0;
-		int readBytes = fread (content, sizeof (char), fileSize, fh);
+		size_t readBytes = fread (content, sizeof (char), (size_t) fileSize, fh);
 
-		if (feof (fh) || ferror (fh) || readBytes != fileSize) return 0;
+		if (feof (fh) || ferror (fh) || readBytes != (size_t) fileSize) return 0;
 
 		/* null terminate the string, as fread doesn't do it */
 		content[fileSize] = 0;
@@ -359,7 +359,7 @@ static int saveFile (augeas * augeasHandle, FILE * fh)
 	/* write the file */
 	if (value)
 	{
-		ret = fwrite (value, sizeof (char), strlen (value), fh);
+		ret = (int) fwrite (value, sizeof (char), strlen (value), fh);
 
 		if (feof (fh) || ferror (fh)) return -1;
 	}
@@ -371,9 +371,9 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 {
 	int ret = 0;
 
-	size_t prefixSize = keyGetNameSize (parentKey) - 1;
-	size_t arraySize = ksGetSize (ks);
-	Key ** keyArray = calloc (ksGetSize (ks), sizeof (Key *));
+	size_t prefixSize = (size_t) (keyGetNameSize (parentKey) - 1);
+	size_t arraySize = (size_t) ksGetSize (ks);
+	Key ** keyArray = calloc ((size_t) ksGetSize (ks), sizeof (Key *));
 	ret = elektraKsToMemArray (ks, keyArray);
 
 	if (ret < 0) goto memoryerror;
@@ -516,7 +516,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	/* convert the augeas tree to an Elektra KeySet */
 	ksClear (returned);
-	KeySet * append = ksNew (ksGetSize (returned) * 2, KS_END);
+	KeySet * append = ksNew ((size_t) ksGetSize (returned) * 2, KS_END);
 
 	Key * key = keyDup (parentKey);
 	ksAppendKey (append, key);

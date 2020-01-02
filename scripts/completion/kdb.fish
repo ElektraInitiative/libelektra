@@ -105,7 +105,7 @@ end
 # << Completion Checks >>
 
 function __fish_kdb_subcommand_needs_metanames -d 'Check if the current command needs a meta-name completion'
-    not __fish_kdb_subcommand_includes getmeta rmmeta setmeta
+    not __fish_kdb_subcommand_includes meta-get meta-rm meta-set
     and return 1
 
     test (__fish_kdb__number_arguments_input_left) -eq 3
@@ -299,7 +299,7 @@ function __fish_kdb_subcommand_supports_option_force -d 'Check if the current su
 end
 
 function __fish_kdb_subcommand_supports_option_null -d 'Check if the current subcommand supports binary null termination'
-    __fish_kdb_subcommand_includes complete find list list-commands ls lsmeta mount
+    __fish_kdb_subcommand_includes complete find list list-commands ls meta-ls mount
 end
 
 function __fish_kdb_subcommand_supports_option_plugins_config -d 'Check if the current subcommand supports plugin configuration'
@@ -307,7 +307,7 @@ function __fish_kdb_subcommand_supports_option_plugins_config -d 'Check if the c
 end
 
 function __fish_kdb_subcommand_supports_option_verbose -d 'Check if the current subcommand supports the option verbose'
-    set -l commands export file getmeta global-mount gmount info mount qt-gui remount rm rmmeta sget shell test help list-tools qt-gui
+    set -l commands export file meta-get global-mount gmount info mount qt-gui remount rm meta-rm sget shell test help list-tools qt-gui
     __fish_kdb_subcommand_exists_does_not_include $commands
 end
 
@@ -360,7 +360,7 @@ end
 
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
 
-set -l arguments complete editor export file fstab get getmeta import ls lsmeta rm rmmeta set setmeta sget smount spec-mount test umount
+set -l arguments complete editor export file fstab get meta-get import ls meta-ls rm meta-rm set meta-set sget smount spec-mount test umount
 set -l completion_function "__fish_kdb_needs_namespace $arguments"
 complete -c kdb -n "$completion_function" -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace cp mv 2' -x -a '(__fish_kdb_print_namespaces)'
@@ -434,7 +434,7 @@ set -l argument_function '__fish_kdb_print_option_namespace_arguments'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes editor file import set' 'namespace' 'N' "$description" "($argument_function)"
 
 # --no-newline -n
-__fish_kdb_add_option '__fish_kdb_subcommand_includes file get getmeta' 'no-newline' 'n' 'Suppress the newline at the end of the output'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes file get meta-get' 'no-newline' 'n' 'Suppress the newline at the end of the output'
 
 # --null -0
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_option_null' 'null' '0' 'Use binary 0 termination'
@@ -447,7 +447,7 @@ set -l description 'Use a different profile for kdb configuration'
 __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'profile' 'p' "$description" 'current'
 
 # --quiet -q
-__fish_kdb_add_option '__fish_kdb_subcommand_includes mount set setmeta smount spec-mount' 'quiet' 'q' 'Only print error messages'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes mount set meta-set smount spec-mount' 'quiet' 'q' 'Only print error messages'
 
 # --recursive -r
 __fish_kdb_add_option '__fish_kdb_subcommand_includes cp mv rm' 'recursive' 'r' 'Work in a recursive mode'

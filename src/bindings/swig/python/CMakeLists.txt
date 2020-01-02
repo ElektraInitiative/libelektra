@@ -1,3 +1,17 @@
+# ~~~
+# Disable warnings about unset CMake policy.
+# TODO: Remove the calls to `cmake_policy` after we upgraded to new behavior.
+# See also: http://issues.libelektra.org/3330
+# ~~~
+if (POLICY CMP0078)
+	cmake_policy (PUSH)
+	cmake_policy (SET CMP0078 OLD)
+endif (POLICY CMP0078)
+
+if (POLICY CMP0086)
+	cmake_policy (SET CMP0086 NEW)
+endif (POLICY CMP0086)
+
 include (${SWIG_USE_FILE})
 include (LibAddMacros)
 
@@ -11,12 +25,9 @@ elseif (NOT PYTHONLIBS_FOUND)
 	exclude_binding (python "python3 libs not found")
 elseif (PYTHONLIBS_VERSION_STRING MATCHES "^2\\.[0-9]+")
 	exclude_binding (python "python3 is for python 3 only and not ${PYTHONLIBS_VERSION_STRING}")
+elseif (NOT BUILD_SHARED)
+	exclude_binding (python "it can only be built if `BUILD_SHARED` is enabled")
 else ()
-	if (NOT BUILD_SHARED)
-		exclude_binding (python "it can only be built if `BUILD_SHARED` is enabled")
-		return ()
-	endif (NOT BUILD_SHARED)
-
 	add_binding (python)
 
 	if (${SWIG_VERSION} MATCHES "^2\\.")
@@ -73,3 +84,7 @@ else ()
 
 	add_subdirectory (tests)
 endif ()
+
+if (POLICY CMP0078)
+	cmake_policy (POP)
+endif (POLICY CMP0078)

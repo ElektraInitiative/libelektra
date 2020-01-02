@@ -59,11 +59,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin now always prints a newline at the end of the YAML output. _(René Schwaiger)_
 
-### <<Plugin3>>
+### Yan LR
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The CMake code of the plugin does not print error messages produced by the tool `ldd` any more. _(René Schwaiger)_
 
 ## Libraries
 
@@ -138,13 +136,14 @@ you up to date with the multi-language support provided by Elektra.
 - elektrad is completely rewritten in go using the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings. _(Raphael Gruber)_
 - `kdb import`, `kdb export` and `kdb editor` now search the plugin database for suitig plugins so it's now possible to run `kdb export /hello json` instead of having to specify the plugin for the desired format directly. _(Anton Hößl)_
 - <<TODO>>
+- Update `kdb cache` tool synopsis to reflect man page. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
 ## Scripts
 
-- <<TODO>>
-- <<TODO>>
+- The [fish completion script](../../scripts/completion/kdb.fish) now recognizes the new names of subcommands (e.g. `meta-set` instead of `setmeta` ) introduced with Elektra `0.9.1`. _(René Schwaiger)_
+- The script [cmake-format](../../scripts/dev/reformat-cmake) now reformats the code with `cmake-format` 0.6.3. _(René Schwaiger)_
 - <<TODO>>
 
 ## Documentation
@@ -156,17 +155,32 @@ you up to date with the multi-language support provided by Elektra.
 ## Tests
 
 - We now use [Google Test](https://github.com/google/googletest) `1.10` to test Elektra. _(René Schwaiger)_
+- The C++ test code does not produce warnings about a missing macro argument for `...` any more. _(René Schwaiger)_
 - <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The [formatting check](../../tests/shell/check_formatting.sh) now also works correctly, if it is invoked multiple times. _(René Schwaiger)_
 
 ## Build
 
+### Compilation
+
+- We do not use implicit typing in the code of the
+
+  - `augeas`,
+  - `base64`, and
+  - `blockresolver`
+
+  plugin any more. After this update, the code compiles without any warnings, even though we now use the compiler switch `-Wconversion`. _(René Schwaiger)_
+
+### Support
+
+- Debian 9 “stretch” (oldstable) is now the oldest supported platform. _(René Schwaiger)_
+
 ### CMake
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- We fixed warnings about CMake policy [CMP0078](https://cmake.org/cmake/help/latest/policy/CMP0078.html) and [CMP0086](https://cmake.org/cmake/help/latest/policy/CMP0086.html). _(René Schwaiger)_
+- The CMake functions `add_msr_test` and `add_msr_test_plugin` do not export the list of required plugins as environment variable any more. _(René Schwaiger)_
+- The CMake code of the code generation does not print warnings about unknown regex operators any more. _(René Schwaiger)_
+- Generating the build system now requires CMake `3.4` (released in November 2015). _(René Schwaiger)_
 
 ### Docker
 

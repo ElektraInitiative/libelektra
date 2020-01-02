@@ -161,7 +161,7 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # cmake-format
-RUN pip install cmake-format[yaml]==0.6
+RUN pip install cmake-format[yaml]==0.6.3
 
 # Coveralls
 ENV COVERALLS_VIRTUALENV_PATH=/home/jenkins/coveralls

@@ -55,7 +55,10 @@ function (add_lib name)
 									  "-Wl,--version-script='${CMAKE_BINARY_DIR}/src/libs/symbols.map'")
 		endif ()
 
-		install (TARGETS elektra-${name} DESTINATION lib${LIB_SUFFIX} EXPORT ElektraTargetsLibelektra)
+		install (
+			TARGETS elektra-${name}
+			DESTINATION lib${LIB_SUFFIX}
+			EXPORT ElektraTargetsLibelektra)
 	endif (BUILD_SHARED)
 
 endfunction ()

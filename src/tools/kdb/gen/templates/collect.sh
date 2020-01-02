@@ -15,7 +15,7 @@ BEGIN {
 {
 	for (i = 1; i <= length; i++) {
 	    c = substr($0, i, 1)
-		if (c ~ /[\\\"'"'"'\?]/) {
+		if (c ~ /[\\"'"'"'\?]/) {
 			printf("\\%s", c)
 		} else if (c == "\t") {
 			printf("%s", "\t")
