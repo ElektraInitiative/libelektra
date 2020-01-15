@@ -1,2 +1,2 @@
-usr/lib/python3/*-packages/_kdb.so
-usr/lib/python3/*-packages/kdb.py
+usr/lib/python3/*-packages/kdb/*.so
+usr/lib/python3/*-packages/kdb/*.py
