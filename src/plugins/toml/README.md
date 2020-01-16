@@ -198,10 +198,10 @@ TODO: Maybe explain better/more clear/shorter?
 - Write documentation
 - Change storage of toml specific structures (change tomltype metakey)
 - Correct interaction with other plugins, especially directory value
-   - directoryvalue seems to be in conflict with the toml plugin
-   - eg on writing, when having a value on a simpletable, the dirval plugin steals all metakeys of the simpletable
-   - and the simpletable key loses all  it's previous metakeys, like order and tomltype, resulting in incorrectly written TOML files
-   - (this happens on the KeySet the TOML plugin receives on kdbSet call, without any changes made by the TOML plugin)
+  - directoryvalue seems to be in conflict with the toml plugin
+  - eg on writing, when having a value on a simpletable, the dirval plugin steals all metakeys of the simpletable
+  - and the simpletable key loses all it's previous metakeys, like order and tomltype, resulting in incorrectly written TOML files
+  - (this happens on the KeySet the TOML plugin receives on kdbSet call, without any changes made by the TOML plugin)
 - Check, how used plugins are chained (I heard something about wrapper plugin?). Order of filter plugins may be relevant in writeScalar()
 - Error checks in write.c
 - Handle writing of sparse arrays somehow (maybe there is a plugin), otherwise create special meaning string to write in TOML file (eg '!ELEKTRA_NO_ELEMENT!')?
