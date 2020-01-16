@@ -7,17 +7,6 @@ macro (do_python_test source)
 	set_property (TEST ${name} PROPERTY ENVIRONMENT "PYTHONPATH=${PYTHON_MODULEPATH}" "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
 	set_property (TEST ${name} PROPERTY LABELS memleak bindings)
-
-	if (${name} MATCHES ".*_kdb")
-		set_property (
-			TEST ${name}
-			APPEND
-			PROPERTY LABELS kdbtests)
-		set_property (
-			TEST ${name}
-			APPEND
-			PROPERTY RUN_SERIAL TRUE)
-	endif ()
 endmacro (do_python_test)
 
 if (NOT (APPLE AND ENABLE_ASAN))
