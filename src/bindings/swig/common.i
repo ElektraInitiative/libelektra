@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-%include "attribute.i"
-%include "std_string.i"
-%include "stdint.i"
-%include "exception.i"
+%include <attribute.i>
+%include <std_string.i>
+%include <stdint.i>
+%include <exception.i>
 
 %{
   extern "C" {
