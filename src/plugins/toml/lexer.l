@@ -40,7 +40,6 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver);
 static size_t whitespaceToSpaces (const char * whitespace);
 
 static inline bool validAscii (char c);
-static inline bool validMultilineAscii (char c);
 static inline bool validHex (char c);
 %}
 
@@ -235,11 +234,6 @@ void initializeLexer(FILE * file) {
 static inline bool validAscii (char c)
 {
 	return c == '\t' || (c >= 0x20 && c <= 0x7E);
-}
-
-static inline bool validMultilineAscii (char c)
-{
-	return validAscii (c) || c == '\n';
 }
 
 static inline bool validHex (char c)
