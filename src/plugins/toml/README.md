@@ -14,7 +14,7 @@
 # NULL/empty keys
 The plugin supports null and empty keys with the help of the [null](../null/README.md) plugin.
 
-# Requirements:
+# Requirements
 
     - The plugin needs Flex (TODO: min version) and Bison (minimal version 3).
 
@@ -22,7 +22,6 @@ The plugin supports null and empty keys with the help of the [null](../null/READ
 Although the plugin can read any kind of TOML string (bare, basic, literal, basic multiline, literal multiline) it will write back all non-bare strings as basic strings (and it's multiline version of it).
 Therefore, any string set with `kdb set` must be treated as a basic string and possible escape sequences and special meanings of quotation characters must be taken care of.
 
-Example
 ```
 # Mount TOML file
 sudo kdb mount test_strings.toml user/tests/storage toml type
@@ -53,13 +52,13 @@ No automatic inference of this metakey is done on writing.
 
 ## Simple Tables
 TOML's simple tables are represented by setting the `tomltype` metakey to `simpletable`.
-Example
+
 ```
 # Mount TOML file
 sudo kdb mount test_strings.toml user/tests/storage toml type
 
-# Create three keys, which are all a subkey of `common`,
-# but we have no `common` simple table key yet
+# Create three keys, which are all a subkey of 'common',
+# but we have no 'common' simple table key yet
 kdb set 'user/tests/storage/common/a' '0'
 kdb set 'user/tests/storage/common/b' '1'
 kdb set 'user/tests/storage/common/c' '2'
@@ -92,7 +91,7 @@ Table arrays are represented by setting the `tomltype` metakey to `tablearray`. 
 # Mount TOML file
 sudo kdb mount test_strings.toml user/tests/storage toml type
 
-# Create a table array containing two entries, each with a key `a` and `b`
+# Create a table array containing two entries, each with a key 'a' and 'b'
 kdb meta-set 'user/tests/storage/tablearray' 'tomltype` `tablearray`
 kdb set 'user/tests/storage/tablearray/#0/a' '1'
 kdb set 'user/tests/storage/tablearray/#0/b' '2'
@@ -140,7 +139,6 @@ There is an additional limitation on ordering for prevention of messing up resul
 When sorting elements under the same TOML-parent, tables (simple and array) will always be sorted after non-table elements, regardless of their order.
 With this limitation, we prevent that a newly set key, that is not part of a certain table array/simple table, would be placed after the table declaration, making it a member of that table on a subsequent read.
 
-Example
 ```
 # Mount TOML file
 sudo kdb mount test_strings.toml user/tests/storage toml type
@@ -175,6 +173,7 @@ cat `kdb file user/tests/storage`
 kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
 ```
+
 In this example, `d` and `common` have the same parent (the file root). This means, they need to be sorted with each other. `d` would be placed before `common` by it's order (since it was set before, and thus, has lesser order).
 Their order however never gets compared, since `common` is a simple table and `d` is not, so `d` will get sorted before the table regardless of order.
 
