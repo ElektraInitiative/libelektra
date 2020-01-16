@@ -77,8 +77,10 @@ else ()
 	swig_link_libraries (swig-python elektra-core elektra-kdb ${PYTHON_LIBRARIES})
 	set_target_properties (_swig-python PROPERTIES OUTPUT_NAME _kdb)
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
-	add_custom_command (TARGET _swig-python POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py"
-								   ${CMAKE_SWIG_OUTDIR}/)
+	add_custom_command (
+		TARGET _swig-python
+		POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" ${CMAKE_SWIG_OUTDIR}/)
 
 	# add tests
 	add_subdirectory (tests)
