@@ -87,6 +87,7 @@ int tomlWrite (KeySet * keys, Key * parent)
 	Writer * writer = createWriter (parent);
 	if (writer == NULL)
 	{
+		destroyTree(root);
 		ELEKTRA_SET_RESOURCE_ERROR (parent, keyString (parent));
 		return 1;
 	}
