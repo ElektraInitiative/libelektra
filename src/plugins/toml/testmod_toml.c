@@ -1060,6 +1060,7 @@ static void testReadCompare (const char * filename, KeySet * expected)
 
 	ksDel (ks);
 	PLUGIN_CLOSE ();
+	keyDel(parentKey);
 	ksDel (expected);
 }
 
@@ -1074,6 +1075,7 @@ static void testReadMustError (const char * filename)
 
 	ksDel (ks);
 	PLUGIN_CLOSE ();
+	keyDel(parentKey);
 }
 
 static void printError (Key * parent)

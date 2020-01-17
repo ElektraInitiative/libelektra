@@ -134,6 +134,7 @@ static void pruneInvalidArrayKeys (KeySet * keys)
 		ELEKTRA_ASSERT (prune != NULL, "Key must exist in keyset");
 		keyDel (prune);
 	}
+	ksDel(pruneSet);
 }
 
 static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index)
