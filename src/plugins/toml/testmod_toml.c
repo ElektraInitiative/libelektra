@@ -1031,8 +1031,8 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 		ksDel (ksRead);
 	}
 
-
 	PLUGIN_CLOSE ();
+	keyDel(parentKey);
 	// remove (filename);
 }
 

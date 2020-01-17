@@ -97,6 +97,8 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 				return NULL;
 			}
 		} // else { TODO: Handle array holes }
+
+		keyDel(elementName);
 	}
 	Key * key;
 	while ((key = ksCurrent (keys)) != NULL && keyIsBelow (root, key) == 1)
@@ -110,6 +112,9 @@ void destroyTree (Node * node)
 {
 	if (node != NULL)
 	{
+		if (node->type == NT_LIST_ELEMENT) {
+			keyDel(node->key);
+		}
 		if (node->relativeName != NULL)
 		{
 			elektraFree (node->relativeName);
