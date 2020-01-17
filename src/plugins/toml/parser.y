@@ -4,13 +4,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <kdbhelper.h>
 #include "error.h"
 #include "scalar.h"
 #include "driver.h"
 
 
 extern int yylex(Driver * driver);
-#define ABORT_ON_ERR(driver) {if(driver->errorSet) YYABORT;}
 
 %}
 
@@ -63,8 +63,8 @@ YY_DECL;
 %type <scalar> FloatScalar
 %type <scalar> StringScalar
 %type <scalar> DateScalar
-%type <scalar> SimpleKey
 
+%destructor { freeScalar($$); } <scalar>
 
 %start Toml
 
