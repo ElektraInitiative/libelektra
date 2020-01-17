@@ -1027,8 +1027,6 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 		else
 		{
 			compare_keyset (expected, ksRead);
-			dumpKS (ksWrite);
-			dumpKS (ksRead);
 		}
 		ksDel (ksRead);
 	}
@@ -1083,7 +1081,7 @@ static void printError (Key * parent)
 	const Key * meta = findMetaKey (parent, "error/reason");
 	if (meta != NULL)
 	{
-		printf ("ERROR: %s\n", keyString (meta));
+		ELEKTRA_LOG_DEBUG("ERROR: %s\n", keyString (meta));
 	}
 }
 

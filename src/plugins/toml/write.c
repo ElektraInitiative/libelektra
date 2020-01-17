@@ -73,8 +73,6 @@ int tomlWrite (KeySet * keys, Key * parent)
 	cursor_t cursor = ksGetCursor (keys);
 	prepareKeySet (keys, parent);
 
-	// dumpKS(keys);
-
 	ksRewind (keys);
 	ksNext (keys);
 	if (keyCmp (ksCurrent (keys), parent) == 0)
@@ -150,6 +148,7 @@ static void destroyWriter (Writer * writer)
 			writer->f = NULL;
 		}
 		destroyTypeChecker (writer->checker);
+		elektraFree(writer);
 	}
 }
 
