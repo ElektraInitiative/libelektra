@@ -126,8 +126,7 @@ bool isHexadecimal (TypeChecker * checker, const char * str)
 
 bool isFloat (TypeChecker * checker, const char * str)
 {
-	return regexec (&checker->regexFloat, str, 0, NULL, 0) == 0 ||
-		   regexec (&checker->regexFloatSpecial, str, 0, NULL, 0) == 0;
+	return regexec (&checker->regexFloat, str, 0, NULL, 0) == 0 || regexec (&checker->regexFloatSpecial, str, 0, NULL, 0) == 0;
 }
 
 /* bool isBareString (TypeChecker * checker, const char * str)
@@ -143,26 +142,22 @@ bool isDateTime (TypeChecker * checker, const char * str)
 
 bool isOffsetDatetime (TypeChecker * checker, const char * str)
 {
-	return regexec (&checker->regexOffsetDt, str, 0, NULL, 0) == 0 &&
-		validOffsetDateTimeValues(str);
+	return regexec (&checker->regexOffsetDt, str, 0, NULL, 0) == 0 && validOffsetDateTimeValues (str);
 }
 
 bool isLocalDateTime (TypeChecker * checker, const char * str)
 {
-	return regexec (&checker->regexLocalDt, str, 0, NULL, 0) == 0 &&
-		validLocalDateTimeValues(str);
+	return regexec (&checker->regexLocalDt, str, 0, NULL, 0) == 0 && validLocalDateTimeValues (str);
 }
 
 bool isLocalDate (TypeChecker * checker, const char * str)
 {
-	return regexec (&checker->regexLocalDate, str, 0, NULL, 0) == 0 &&
-		validLocalDateValues(str);
+	return regexec (&checker->regexLocalDate, str, 0, NULL, 0) == 0 && validLocalDateValues (str);
 }
 
 bool isLocalTime (TypeChecker * checker, const char * str)
 {
-	return regexec (&checker->regexLocalTime, str, 0, NULL, 0) == 0 &&
-		validLocalTimeValues(str);
+	return regexec (&checker->regexLocalTime, str, 0, NULL, 0) == 0 && validLocalTimeValues (str);
 }
 
 bool validOffsetDateTimeValues (const char * str)

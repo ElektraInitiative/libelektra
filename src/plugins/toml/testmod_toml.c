@@ -226,30 +226,31 @@ static void testWriteRead (void)
 	testWriteReadOrderTableNonTable ();
 }
 
-static void testWriteReadOrderTableNonTable (void) {
+static void testWriteReadOrderTableNonTable (void)
+{
 	TEST_WR_HEAD;
 
-	WRITE_KEY("table");
-	SET_ORDER(0);
-	SET_TOML_TYPE("simpletable");
+	WRITE_KEY ("table");
+	SET_ORDER (0);
+	SET_TOML_TYPE ("simpletable");
 
-	WRITE_KV("table/a", "0");
-	SET_ORDER(1);
+	WRITE_KV ("table/a", "0");
+	SET_ORDER (1);
 
-	WRITE_KV("b", "1");
-	SET_ORDER(2);
+	WRITE_KV ("b", "1");
+	SET_ORDER (2);
 
 	// b is expected to get ordered before the table on writing,
 	// otherwise it would get a member of the table on subsequent readings
-	EXPECTED_KEY("table");
-	SET_ORDER(1);
-	SET_TOML_TYPE("simpletable");
+	EXPECTED_KEY ("table");
+	SET_ORDER (1);
+	SET_TOML_TYPE ("simpletable");
 
-	EXPECTED_KV("table/a", "0");
-	SET_ORDER(2);
+	EXPECTED_KV ("table/a", "0");
+	SET_ORDER (2);
 
-	EXPECTED_KV("b", "1");
-	SET_ORDER(0);
+	EXPECTED_KV ("b", "1");
+	SET_ORDER (0);
 
 	TEST_WR_FOOT;
 }
@@ -1032,7 +1033,7 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 	}
 
 	PLUGIN_CLOSE ();
-	keyDel(parentKey);
+	keyDel (parentKey);
 	// remove (filename);
 }
 
@@ -1058,7 +1059,7 @@ static void testReadCompare (const char * filename, KeySet * expected)
 
 	ksDel (ks);
 	PLUGIN_CLOSE ();
-	keyDel(parentKey);
+	keyDel (parentKey);
 	ksDel (expected);
 }
 
@@ -1073,7 +1074,7 @@ static void testReadMustError (const char * filename)
 
 	ksDel (ks);
 	PLUGIN_CLOSE ();
-	keyDel(parentKey);
+	keyDel (parentKey);
 }
 
 static void printError (Key * parent)
@@ -1081,7 +1082,7 @@ static void printError (Key * parent)
 	const Key * meta = findMetaKey (parent, "error/reason");
 	if (meta != NULL)
 	{
-		ELEKTRA_LOG_DEBUG("ERROR: %s\n", keyString (meta));
+		ELEKTRA_LOG_DEBUG ("ERROR: %s\n", keyString (meta));
 	}
 }
 

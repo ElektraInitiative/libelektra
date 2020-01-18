@@ -41,12 +41,12 @@ typedef struct
 Scalar * createScalar (ScalarType type, char * scalarString, size_t line);
 Scalar * createScalarComment (char * scalarString, size_t spaces, size_t line);
 Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t line);
-void freeScalar(Scalar * scalar);
+void freeScalar (Scalar * scalar);
 const char * getTypeCheckerType (const Scalar * scalar);
 char * translateScalar (const Scalar * scalar);
 
 bool isValidBareString (const char * str);
 bool isValidDateTime (const Scalar * scalar);
-char * stripTerminators(const char * str, size_t count);
+char * stripTerminators (const char * str, size_t count);
 
 #endif // ELEKTRA_PLUGIN_TOML_SCALAR_H

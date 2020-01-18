@@ -10,8 +10,8 @@
 
 #include <kdb.h>
 #include <kdberrors.h>
-#include <kdbmacros.h>
 #include <kdblogger.h>
+#include <kdbmacros.h>
 
 #include "driver.h"
 #include "toml.h"

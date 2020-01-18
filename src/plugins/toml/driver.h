@@ -173,21 +173,21 @@ void driverExitOptCommentKeyPair (Driver * driver);
 void driverExitOptCommentTable (Driver * driver);
 
 
-/**                                                                                                                               
+/**
  * @brief Called at the end of a SimpleKey grammar rule in @link parser.y
  *
  * SimpleKeys, as understood by the parser, are key names without any dots in them.
  * They get accumulated in the current key attribute of the driver during parsing.
  * Checks the scalar describing the key name for validity. Will also split up a possible Float scalar into two simple keys.
  * Does nothing if an error was set.
- * 
+ *
  * @param driver Used driver.
  * @param name Scalar which contains the key name.
  */
 void driverExitSimpleKey (Driver * driver, Scalar * name);
 
 
-/**                                                                                                                               
+/**
  * @brief Called after a Scalar was matched in the Value grammar rule in @link parser.y
  *
  * Checks, if a valid Scalar type was read. Will assigned the scalar to the lastScalar attribute of the driver.
@@ -199,7 +199,7 @@ void driverExitSimpleKey (Driver * driver, Scalar * name);
 void driverExitValue (Driver * driver, Scalar * scalar);
 
 
-/**                                                                                                                               
+/**
  * @brief Called when entering a TableSimple grammar rule in @link parser.y
  *
  * Will pop the parent stack, if we are in a simple table already.
@@ -210,7 +210,7 @@ void driverExitValue (Driver * driver, Scalar * scalar);
  */
 void driverEnterSimpleTable (Driver * driver);
 
-/**                                                                                                                               
+/**
  * @brief Called when leaving a TableSimple grammar rule in @link parser.y
  *
  * Adds a tomltype metakey of value "simpletable" the top parent stack key.
@@ -220,7 +220,7 @@ void driverEnterSimpleTable (Driver * driver);
  */
 void driverExitSimpleTable (Driver * driver);
 
-/**                                                                                                                               
+/**
  * @brief Called when entering a TableArray grammar rule in @link parser.y
  *
  * Will pop the parent stack and clear the simple table state, if we are in a simple table.
@@ -232,7 +232,7 @@ void driverExitSimpleTable (Driver * driver);
  */
 void driverEnterTableArray (Driver * driver);
 
-/**                                                                                                                               
+/**
  * @brief Called when exiting a TableArray grammar rule in @link parser.y
  *
  * Builds a keyname with correct table array indices, based on the table array stack, that will be pushed onto the parent stack.
@@ -248,7 +248,7 @@ void driverEnterTableArray (Driver * driver);
 void driverExitTableArray (Driver * driver);
 
 
-/**                                                                                                                               
+/**
  * @brief Called when entering the non-empty Array rule in @link parser.y
  *
  * Pushes an index with initial value zero onto the index stack of the driver.
@@ -262,7 +262,7 @@ void driverExitTableArray (Driver * driver);
 void driverEnterArray (Driver * driver);
 
 
-/**                                                                                                                               
+/**
  * @brief Called when exiting the non-empty Array rule in @link parser.y
  *
  * Handles remaining comments in the array and will pop the index stack.
@@ -274,7 +274,7 @@ void driverEnterArray (Driver * driver);
 void driverExitArray (Driver * driver);
 
 
-/**                                                                                                                               
+/**
  * @brief Called in the ArrayEmpty grammar rule in @link parser.y
  *
  * Calls the driverEnterArray and driverExitArray functions.
@@ -285,7 +285,7 @@ void driverExitArray (Driver * driver);
 void driverEmptyArray (Driver * driver);
 
 
-/**                                                                                                                               
+/**
  * @brief Called when entering the ArrayElement rule in @link parser.y
  *
  * Assigns comments to the appropriate array element keys.
@@ -298,7 +298,7 @@ void driverEmptyArray (Driver * driver);
 void driverEnterArrayElement (Driver * driver);
 
 
-/**                                                                                                                               
+/**
  * @brief Called when leaving the ArrayElement rule in @link parser.y
  *
  * Assigns the last read scalar of the driver to the top parent key.
@@ -310,7 +310,7 @@ void driverEnterArrayElement (Driver * driver);
 void driverExitArrayElement (Driver * driver);
 
 
-/**                                                                                                                               
+/**
  * @brief Called when entering the non-empty InlineTable grammar rule in @link parser.y
  *
  * Adds a tomltype metakey of value "inlinetable" to the top parent key.
@@ -322,7 +322,7 @@ void driverExitArrayElement (Driver * driver);
 void driverEnterInlineTable (Driver * driver);
 
 
-/**                                                                                                                               
+/**
  * @brief Called when leaving the non-empty InlineTable grammar rule in @link parser.y
  *
  * Clears the last scalar stored in the driver.
@@ -333,7 +333,7 @@ void driverEnterInlineTable (Driver * driver);
 void driverExitInlineTable (Driver * driver);
 
 
-/**                                                                                                                               
+/**
  * @brief Called when leaving the empty InlineTable grammar rule in @link parser.y
  *
  * Calls driverEnterInlineTable.
@@ -344,7 +344,7 @@ void driverExitInlineTable (Driver * driver);
 void driverEmptyInlineTable (Driver * driver);
 
 
-/**                                                                                                                               
+/**
  * @brief Called after COMMENT terminal symbols in @link parser.y
  *
  * Appends the given scalar to the comment list stored in the driver.
@@ -357,7 +357,7 @@ void driverEmptyInlineTable (Driver * driver);
 void driverExitComment (Driver * driver, Scalar * comment);
 
 
-/**                                                                                                                               
+/**
  * @brief Called when encountering a NEWLINE terminal symbol in @parser.y that should be counted
  *
  * Increments the newline counter in the driver.

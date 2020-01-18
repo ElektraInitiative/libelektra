@@ -830,7 +830,8 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 	}
 	keySetString (driver->parentStack->key, elektraStr);
 
-	if (!isSpecialString(elektraStr)) {
+	if (!isSpecialString (elektraStr))
+	{
 		switch (driver->lastScalar->type)
 		{
 		case SCALAR_STRING_LITERAL:

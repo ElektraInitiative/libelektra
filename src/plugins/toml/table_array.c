@@ -16,7 +16,8 @@ TableArrayList * pushTableArray (TableArrayList * top, Key * key)
 	if (top != NULL)
 	{
 		ta->keyStr = getChildFraction (top->key, key);
-		if (ta->keyStr == NULL) {
+		if (ta->keyStr == NULL)
+		{
 			return NULL;
 		}
 	}
@@ -68,7 +69,8 @@ static char * getChildFraction (const Key * parent, const Key * child)
 		Key * childDup = keyDup (child);
 		size_t fracSize = 256;
 		char * fraction = elektraCalloc (sizeof (char) * fracSize);
-		if (fraction == NULL) {
+		if (fraction == NULL)
+		{
 			return NULL;
 		}
 		do
@@ -77,11 +79,12 @@ static char * getChildFraction (const Key * parent, const Key * child)
 			if (elektraStrLen (fraction) + elektraStrLen (baseName) - 1 >= fracSize)
 			{
 				fracSize *= 2;
-				size_t oldLen = elektraStrLen(fraction);
-				if (elektraRealloc ((void **) &fraction, fracSize) < 0) {
+				size_t oldLen = elektraStrLen (fraction);
+				if (elektraRealloc ((void **) &fraction, fracSize) < 0)
+				{
 					return NULL;
 				}
-				memset(fraction + oldLen, 0, fracSize - oldLen);
+				memset (fraction + oldLen, 0, fracSize - oldLen);
 			}
 			char * fracDup = elektraStrDup (fraction); // TODO: avoid allocation
 			snprintf (fraction, fracSize, "%s/%s", baseName, fracDup);
