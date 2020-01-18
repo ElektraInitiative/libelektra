@@ -83,7 +83,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
-- <<TODO>>
+- Moved the header file `kdb.h` into the subfolder `elektra`, to avoid name clashes. `kdb.h` must now be included with the path `elektra/kdb.h`. _(Jakob Fischer)_
 - <<TODO>>
 - <<TODO>>
 
