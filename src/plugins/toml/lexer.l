@@ -262,7 +262,7 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 
 	while (terminatorCount < terminatorMax)
 	{
-		char c = input ();
+		char c = (char) input ();
 		if (c == terminatorChar)
 		{
 			if (terminatorChar == BASIC_TERMINATOR || terminatorChar == LITERAL_TERMINATOR)
@@ -463,7 +463,7 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver)
 	if (utfLen > 0)
 	{
 
-		bufferAddChar (buffer, c, driver);
+		bufferAddChar (buffer, (char) c, driver);
 		for (int i = 1; i < utfLen; i++)
 		{
 			c = (unsigned char) input ();
@@ -473,7 +473,7 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver)
 			}
 			else
 			{
-				bufferAddChar (buffer, c, driver);
+				bufferAddChar (buffer, (char) c, driver);
 			}
 		}
 	}
