@@ -17,11 +17,11 @@ static char * stripUnderscores (const char * num);
 static const char * skipLineEndingBackslash (const char * str);
 static const char * skipUntilNonWhitespace (const char * str);
 
-static char * uNumToStr(unsigned long long num);
-static char * convertDecimal(const char * str);
-static char * convertHex(const char * str);
-static char * convertOctal(const char * str);
-static char * convertBinary(const char * str);
+static char * uNumToStr (unsigned long long num);
+static char * convertDecimal (const char * str);
+static char * convertHex (const char * str);
+static char * convertOctal (const char * str);
+static char * convertBinary (const char * str);
 
 Scalar * createScalar (ScalarType type, char * scalarString, size_t line)
 {
@@ -37,9 +37,11 @@ Scalar * createScalar (ScalarType type, char * scalarString, size_t line)
 	return scalar;
 }
 
-Scalar * createScalarComment (char * scalarString, size_t leadingSpaces, size_t line) {
+Scalar * createScalarComment (char * scalarString, size_t leadingSpaces, size_t line)
+{
 	Scalar * scalar = createScalar (SCALAR_STRING_COMMENT, scalarString, line);
-	if (scalar != NULL) {
+	if (scalar != NULL)
+	{
 		scalar->leadingSpaces = leadingSpaces;
 	}
 	return scalar;
@@ -70,10 +72,12 @@ Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t lin
 	return scalar;
 }
 
-void freeScalar(Scalar * scalar) {
-	if (scalar != NULL) {
-		elektraFree(scalar->str);
-		elektraFree(scalar);
+void freeScalar (Scalar * scalar)
+{
+	if (scalar != NULL)
+	{
+		elektraFree (scalar->str);
+		elektraFree (scalar);
 	}
 }
 
@@ -107,11 +111,11 @@ char * translateScalar (const Scalar * scalar)
 	switch (scalar->type)
 	{
 	case SCALAR_INTEGER_DEC:
-		return convertDecimal(scalar->str);
+		return convertDecimal (scalar->str);
 	case SCALAR_INTEGER_HEX:
-		return convertHex(scalar->str);
+		return convertHex (scalar->str);
 	case SCALAR_INTEGER_OCT:
-		return convertOctal(scalar->str);
+		return convertOctal (scalar->str);
 	case SCALAR_FLOAT_NUM:
 		return stripUnderscores (scalar->str);
 	case SCALAR_FLOAT_INF:
@@ -148,40 +152,47 @@ char * translateScalar (const Scalar * scalar)
 	}
 }
 
-static char * uNumToStr(unsigned long long num) {
-	char * ret = elektraCalloc(100);
-	if (ret == NULL) {
+static char * uNumToStr (unsigned long long num)
+{
+	char * ret = elektraCalloc (100);
+	if (ret == NULL)
+	{
 		return NULL;
 	}
-	snprintf(ret, 100, "%llu", num);
+	snprintf (ret, 100, "%llu", num);
 	return ret;
 }
 
-static char * convertDecimal(const char * str) {
-	return stripUnderscores(str);
+static char * convertDecimal (const char * str)
+{
+	return stripUnderscores (str);
 }
-static char * convertHex(const char * str) {
+static char * convertHex (const char * str)
+{
 	unsigned long long n = 0;
 	char * stripped = stripUnderscores (str);
-	if (sscanf(stripped, "0x%llx", &n) != 1) {
-		elektraFree(stripped);
-		ELEKTRA_ASSERT(0, "str must be convertible as long long hex");
+	if (sscanf (stripped, "0x%llx", &n) != 1)
+	{
+		elektraFree (stripped);
+		ELEKTRA_ASSERT (0, "str must be convertible as long long hex");
 		return NULL;
 	}
-	elektraFree(stripped);
-	return uNumToStr(n);
+	elektraFree (stripped);
+	return uNumToStr (n);
 }
 
-static char * convertOctal(const char * str) {
+static char * convertOctal (const char * str)
+{
 	unsigned long long n = 0;
 	char * stripped = stripUnderscores (str);
-	if (sscanf(stripped, "0o%llo", &n) != 1) {
-		elektraFree(stripped);
-		ELEKTRA_ASSERT(0, "str must be convertible as long long octal");
+	if (sscanf (stripped, "0o%llo", &n) != 1)
+	{
+		elektraFree (stripped);
+		ELEKTRA_ASSERT (0, "str must be convertible as long long octal");
 		return NULL;
 	}
-	elektraFree(stripped);
-	return uNumToStr(n);
+	elektraFree (stripped);
+	return uNumToStr (n);
 }
 
 static char * convertBinary (const char * str)
@@ -298,11 +309,11 @@ static char * convertBasicStr (const char * str, size_t skipCount)
 				str++;
 				break;
 			case 'u':
-				outPos += (size_t)utf8FromUnicode (str + 1, 4, (unsigned char *) outStr + outPos);
+				outPos += (size_t) utf8FromUnicode (str + 1, 4, (unsigned char *) outStr + outPos);
 				str += 4 + 1;
 				break;
 			case 'U':
-				outPos += (size_t)utf8FromUnicode (str + 1, 8, (unsigned char *) outStr + outPos);
+				outPos += (size_t) utf8FromUnicode (str + 1, 8, (unsigned char *) outStr + outPos);
 				str += 8 + 1;
 				break;
 			// handling of line ending backslashes
@@ -343,14 +354,16 @@ static const char * skipLineEndingBackslash (const char * str)
 		{
 			str++;
 		}
-		ELEKTRA_ASSERT (*str == '\n', "After backslash, \\r only allowed when followed by \\n. This should have already been checked.");
+		ELEKTRA_ASSERT (*str == '\n',
+				"After backslash, \\r only allowed when followed by \\n. This should have already been checked.");
 		str = skipUntilNonWhitespace (str + 1);
 		break;
 	case '\n': // LF + WHITESPACE *
 		str = skipUntilNonWhitespace (str + 1);
 		break;
 	case '\r': // CR + LF + WHITESPACE*
-		ELEKTRA_ASSERT (*(str + 1) == '\n', "After backslash, \\r only allowed when followed by \\n. This should have already been checked.");
+		ELEKTRA_ASSERT (*(str + 1) == '\n',
+				"After backslash, \\r only allowed when followed by \\n. This should have already been checked.");
 		str = skipUntilNonWhitespace (str + 2);
 		break;
 	default:
@@ -360,13 +373,16 @@ static const char * skipLineEndingBackslash (const char * str)
 }
 
 
-char * stripTerminators(const char * str, size_t count) {
-	char * stripped = elektraCalloc (elektraStrLen(str) - 2 * count);
-	if (stripped == NULL) {
+char * stripTerminators (const char * str, size_t count)
+{
+	char * stripped = elektraCalloc (elektraStrLen (str) - 2 * count);
+	if (stripped == NULL)
+	{
 		return NULL;
 	}
 	size_t len = elektraStrLen (str) - 1 - count;
-	for (size_t i = count; i < len; i++) {
+	for (size_t i = count; i < len; i++)
+	{
 		stripped[i - count] = str[i];
 	}
 	return stripped;
@@ -382,7 +398,6 @@ static const char * skipUntilNonWhitespace (const char * str)
 }
 
 
-
 static char * stripUnderscores (const char * num)
 {
 	char * dup = elektraStrDup (num);
@@ -393,7 +408,8 @@ static char * stripUnderscores (const char * num)
 	char * ptr = dup;
 	while (*num != 0)
 	{
-		while(*num == '_') {
+		while (*num == '_')
+		{
 			num++;
 		}
 		*ptr = *num;
@@ -433,5 +449,3 @@ bool isValidDateTime (const Scalar * scalar)
 		return false;
 	}
 }
-
-

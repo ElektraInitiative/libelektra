@@ -13,7 +13,7 @@ typedef struct ArrayInfo_
 
 static void addMissingArrayKeys (KeySet * keys, Key * parent);
 static void pruneInvalidArrayKeys (KeySet * keys);
-static bool orderUnorderedKeys(KeySet * keys);
+static bool orderUnorderedKeys (KeySet * keys);
 static KeySet * collectUnorderedKeys (KeySet * ks);
 static int getMaxOrder (KeySet * ks);
 static void assignContinuousOrder (KeySet * ksUnordered, int startOrder);
@@ -25,7 +25,8 @@ bool prepareKeySet (KeySet * keys, Key * parent)
 	cursor_t cursor = ksGetCursor (keys);
 	addMissingArrayKeys (keys, parent);
 	pruneInvalidArrayKeys (keys);
-	if (!orderUnorderedKeys(keys)) {
+	if (!orderUnorderedKeys (keys))
+	{
 		ksSetCursor (keys, cursor);
 		return false;
 	}
@@ -33,13 +34,15 @@ bool prepareKeySet (KeySet * keys, Key * parent)
 	return false;
 }
 
-static bool orderUnorderedKeys(KeySet * keys) {
-	ksRewind(keys);
-	KeySet * unordered = collectUnorderedKeys(keys);
-	if (unordered == NULL) {
+static bool orderUnorderedKeys (KeySet * keys)
+{
+	ksRewind (keys);
+	KeySet * unordered = collectUnorderedKeys (keys);
+	if (unordered == NULL)
+	{
 		return false;
 	}
-	int maxOrder = getMaxOrder(keys);
+	int maxOrder = getMaxOrder (keys);
 	assignContinuousOrder (unordered, maxOrder + 1);
 	ksDel (unordered);
 	return true;
@@ -134,7 +137,7 @@ static void pruneInvalidArrayKeys (KeySet * keys)
 		ELEKTRA_ASSERT (prune != NULL, "Key must exist in keyset");
 		keyDel (prune);
 	}
-	ksDel(pruneSet);
+	ksDel (pruneSet);
 }
 
 static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index)

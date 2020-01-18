@@ -60,11 +60,11 @@ static int writeNewline (Writer * writer);
 static int writeFileTrailingComments (Key * parent, Writer * writer);
 static CommentList * collectComments (Key * key, Writer * writer);
 static void freeComments (CommentList * comments);
-static bool shouldWriteValue(Node * node);
+static bool shouldWriteValue (Node * node);
 static bool needsKeyAssignment (Node * node);
 static bool isListElement (Node * node);
 static bool isLastChild (Node * node);
-static bool hasInlineComment(Node * node);
+static bool hasInlineComment (Node * node);
 static bool isMultilineString (const char * str);
 static bool isTrue (const char * boolStr);
 
@@ -87,7 +87,7 @@ int tomlWrite (KeySet * keys, Key * parent)
 	Writer * writer = createWriter (parent);
 	if (writer == NULL)
 	{
-		destroyTree(root);
+		destroyTree (root);
 		ELEKTRA_SET_RESOURCE_ERROR (parent, keyString (parent));
 		return 1;
 	}
@@ -149,7 +149,7 @@ static void destroyWriter (Writer * writer)
 			writer->f = NULL;
 		}
 		destroyTypeChecker (writer->checker);
-		elektraFree(writer);
+		elektraFree (writer);
 	}
 }
 
@@ -189,12 +189,14 @@ static int writeTree (Node * node, Writer * writer)
 	CommentList * comments = collectComments (node->key, writer);
 	result |= writePrecedingComments (comments, writer);
 
-	if (node->type == NT_SIMPLE_TABLE) {
+	if (node->type == NT_SIMPLE_TABLE)
+	{
 		result |= writeSimpleTableHeader (node->relativeName, writer);
 		result |= writeInlineComment (comments, false, writer);
 		result |= writeNewline (writer);
 	}
-	if (node->parent != NULL && node->parent->type == NT_TABLE_ARRAY) {
+	if (node->parent != NULL && node->parent->type == NT_TABLE_ARRAY)
+	{
 		result |= writeTableArrayHeader (node->parent->relativeName, writer);
 		result |= writeInlineComment (comments, false, writer);
 		result |= writeNewline (writer);
@@ -215,31 +217,36 @@ static int writeTree (Node * node, Writer * writer)
 
 	result |= writeClosingSequence (node, writer);
 
-	if (shouldWriteValue(node))
+	if (shouldWriteValue (node))
 	{
 		result |= writeScalar (node->key, writer);
 	}
 
-	bool listElement = isListElement(node);
-	if (listElement) 
+	bool listElement = isListElement (node);
+	if (listElement)
 	{
-		if (!isLastChild(node))
+		if (!isLastChild (node))
 		{
 			result |= fputc (',', writer->f) == EOF;
-			if (!hasInlineComment(node)) {
+			if (!hasInlineComment (node))
+			{
 				result |= fputc (' ', writer->f) == EOF;
 			}
 		}
-		ELEKTRA_ASSERT(node->type == NT_LEAF || node->type == NT_ARRAY || NT_INLINE_TABLE, "Invalid type of list element, only NT_LEAF, NT_ARRAY or NT_INLINE_TABLE expected, but found other");
-		result |= writeInlineComment(comments, true, writer);
-	} else {
+		ELEKTRA_ASSERT (node->type == NT_LEAF || node->type == NT_ARRAY || NT_INLINE_TABLE,
+				"Invalid type of list element, only NT_LEAF, NT_ARRAY or NT_INLINE_TABLE expected, but found other");
+		result |= writeInlineComment (comments, true, writer);
+	}
+	else
+	{
 		switch (node->type)
 		{
 		case NT_LEAF:
 		case NT_ARRAY:
 		case NT_INLINE_TABLE:
 			result |= writeInlineComment (comments, false, writer);
-			if (!listElement) {
+			if (!listElement)
+			{
 				result |= writeNewline (writer);
 			}
 		default:
@@ -252,18 +259,23 @@ static int writeTree (Node * node, Writer * writer)
 	return result;
 }
 
-static bool shouldWriteValue(Node * node) {
-	switch (node->type) {
-		case NT_LEAF:
+static bool shouldWriteValue (Node * node)
+{
+	switch (node->type)
+	{
+	case NT_LEAF:
+		return true;
+	case NT_LIST_ELEMENT:
+		if (node->parent != NULL && node->parent->type == NT_ARRAY)
+		{
 			return true;
-		case NT_LIST_ELEMENT:
-			if (node->parent != NULL && node->parent->type == NT_ARRAY) {
-				return true;
-			} else {
-				return false;
-			}
-		default:
+		}
+		else
+		{
 			return false;
+		}
+	default:
+		return false;
 	}
 }
 
@@ -283,13 +295,15 @@ static bool isListElement (Node * node)
 	}
 }
 
-static bool hasInlineComment(Node * node) {
-	return findMetaKey(node->key, "comment/#0/space") != NULL;
+static bool hasInlineComment (Node * node)
+{
+	return findMetaKey (node->key, "comment/#0/space") != NULL;
 }
 
 static bool isLastChild (Node * node)
 {
-	if (node->parent == NULL) {
+	if (node->parent == NULL)
+	{
 		return false;
 	}
 	return node->parent->children[node->parent->childCount - 1] == node;

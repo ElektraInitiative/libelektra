@@ -15,7 +15,7 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys);
 static void sortChildren (Node * node);
 static int nodeCmpWrapper (const void * a, const void * b);
 static NodeType getNodeType (Key * key);
-static bool isTable(const Node * node);
+static bool isTable (const Node * node);
 
 Node * buildTree (Node * parent, Key * root, KeySet * keys)
 {
@@ -87,10 +87,11 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 		Key * elementKey = ksLookup (keys, elementName, 0);
 		if (elementKey != NULL)
 		{
-			if (!isLeaf(elementKey, keys)) {	// true for array that contains inline tables
-				ksNext(keys);					// we need to go to the first sub key of the element, since buildTree
-			}									// loops while ksCurrent is below root key (and root != below root)
-												// TODO: maybe make a cheaper check for leaf, eg. test if element has a value?
+			if (!isLeaf (elementKey, keys))
+			{		       // true for array that contains inline tables
+				ksNext (keys); // we need to go to the first sub key of the element, since buildTree
+			}		       // loops while ksCurrent is below root key (and root != below root)
+					       // TODO: maybe make a cheaper check for leaf, eg. test if element has a value?
 			if (!addChild (node, buildTree (node, elementKey, keys)))
 			{
 				destroyTree (node);
@@ -98,7 +99,7 @@ static Node * buildTreeArray (Node * parent, Key * root, KeySet * keys)
 			}
 		} // else { TODO: Handle array holes }
 
-		keyDel(elementName);
+		keyDel (elementName);
 	}
 	Key * key;
 	while ((key = ksCurrent (keys)) != NULL && keyIsBelow (root, key) == 1)
@@ -112,8 +113,9 @@ void destroyTree (Node * node)
 {
 	if (node != NULL)
 	{
-		if (node->type == NT_LIST_ELEMENT) {
-			keyDel(node->key);
+		if (node->type == NT_LIST_ELEMENT)
+		{
+			keyDel (node->key);
 		}
 		if (node->relativeName != NULL)
 		{
@@ -220,17 +222,21 @@ static void sortChildren (Node * node)
 
 static int nodeCmpWrapper (const void * a, const void * b)
 {
-	const Node * na = *((const Node**) a);
-	const Node * nb = *((const Node**) b);
-	if (!isTable(na) && isTable(nb)) {
+	const Node * na = *((const Node **) a);
+	const Node * nb = *((const Node **) b);
+	if (!isTable (na) && isTable (nb))
+	{
 		return -1;
-	} else if (!isTable(nb) && isTable(na)) {
+	}
+	else if (!isTable (nb) && isTable (na))
+	{
 		return 1;
 	}
 	return elektraKeyCmpOrder (na->key, nb->key);
 }
 
-static bool isTable(const Node * node) {
+static bool isTable (const Node * node)
+{
 	return node->type == NT_SIMPLE_TABLE || node->type == NT_TABLE_ARRAY;
 }
 

@@ -3,7 +3,8 @@
 
 #include <kdb.h>
 
-typedef enum {
+typedef enum
+{
 	NT_ARRAY,
 	NT_SIMPLE_TABLE,
 	NT_INLINE_TABLE,
