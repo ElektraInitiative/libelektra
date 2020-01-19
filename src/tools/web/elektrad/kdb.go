@@ -14,6 +14,7 @@ func set(handle elektra.KDB, ks elektra.KeySet, key elektra.Key) error {
 	}
 
 	_, err = handle.Get(ks, key)
+
 	if err != nil {
 		return err
 	}

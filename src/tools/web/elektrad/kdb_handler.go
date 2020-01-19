@@ -127,8 +127,8 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-		created(w)
-	}
+	created(w)
+}
 
 // deleteKdbHandler deletes a Key.
 //
@@ -138,7 +138,7 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 // Response Code:
 //		204 No Content if the key was deleted.
 // 		400 Bad Request if the key name is invalid.
-//      404 Not Foudn if they key to delete was not found.
+//      404 Not Found if they key to delete was not found.
 //
 // Example: `curl -X DELETE localhost:33333/kdb/user/test/hello`
 func (s *server) deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
@@ -176,8 +176,8 @@ func (s *server) deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-		noContent(w)
-	}
+	noContent(w)
+}
 
 func lookup(ks elektra.KeySet, key elektra.Key, depth int) (result *lookupResult, err error) {
 	childKs := ks.Cut(key)
@@ -216,7 +216,11 @@ func buildLookupResult(key elektra.Key, ks elektra.KeySet) *lookupResult {
 		meta = foundKey.MetaMap()
 	}
 
-	ls := ks.KeyNames()
+	ls := []string{}
+
+	if ks.Len() > 0 {
+		ls = ks.KeyNames()
+	}
 
 	return &lookupResult{
 		Exists: exists,
