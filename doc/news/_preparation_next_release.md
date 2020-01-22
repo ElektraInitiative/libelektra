@@ -183,7 +183,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Jenkins
 
 - Fixed [coveralls](https://coveralls.io/github/ElektraInitiative/libelektra) coverage report. _(Mihael Pranjić)_
-- <<TODO>>
+- Added the Jenkins.monthly in the jenkins' scripts file. _(Djordje Bulatovic)_
 - <<TODO>>
 
 ### Travis
