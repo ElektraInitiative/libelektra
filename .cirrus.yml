@@ -146,16 +146,8 @@ mac_task:
       tree
       xerces-c
       yajl
+      yaml-cpp
       zeromq
-    - | # We install yaml-cpp manually, since Homebrew currently does not install the shared version of the library.
-      git clone --branch yaml-cpp-0.6.3 --depth 1 https://github.com/jbeder/yaml-cpp.git
-      cd yaml-cpp
-      mkdir build
-      cmake -GNinja -DYAML_BUILD_SHARED_LIBS=ON -DYAML_CPP_BUILD_TESTS=OFF -Bbuild
-      cmake --build build
-      sudo cmake --build build --target install
-      cd ..
-      rm -r yaml-cpp
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
     - > # Start D-Bus session bus
