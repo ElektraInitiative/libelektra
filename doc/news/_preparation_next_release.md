@@ -176,7 +176,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Cirrus
 
-- <<TODO>>
+- We fixed a minor problem with the package install procedure on macOS build jobs. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 

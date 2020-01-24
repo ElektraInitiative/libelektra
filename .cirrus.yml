@@ -120,7 +120,6 @@ mac_task:
       brew install bison
       brew install boost
       brew install botan
-      brew install cmake
       brew install dbus
       brew install discount
       brew install doxygen
