@@ -113,41 +113,40 @@ mac_task:
   install_script:
     - > # Install Homebrew casks
       brew cask install java oclint
-    - > # Install Homebrew formulas
-      brew install
-      antlr
-      antlr4-cpp-runtime
-      augeas
-      bison
-      boost
-      botan
-      cmake
-      dbus
-      discount
-      doxygen
-      glib
-      gpgme
-      graphviz
-      libev
-      libgcrypt
-      libgit2
-      libuv
-      llvm
-      lua
-      maven
-      moreutils
-      ninja
-      openssl
-      pkg-config
-      prettier
-      qt
-      shfmt
-      swig
-      tree
-      xerces-c
-      yajl
-      yaml-cpp
-      zeromq
+    - | # Install Homebrew formulas
+      brew install antlr
+      brew install antlr4-cpp-runtime
+      brew install augeas
+      brew install bison
+      brew install boost
+      brew install botan
+      brew install cmake
+      brew install dbus
+      brew install discount
+      brew install doxygen
+      brew install glib
+      brew install gpgme
+      brew install graphviz
+      brew install libev
+      brew install libgcrypt
+      brew install libgit2
+      brew install libuv
+      brew install llvm
+      brew install lua
+      brew install maven
+      brew install moreutils
+      brew install ninja
+      brew install openssl
+      brew install pkg-config
+      brew install prettier
+      brew install qt
+      brew install shfmt
+      brew install swig
+      brew install tree
+      brew install xerces-c
+      brew install yajl
+      brew install yaml-cpp
+      brew install zeromq
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
     - > # Start D-Bus session bus
