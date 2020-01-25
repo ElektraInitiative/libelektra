@@ -1,0 +1,11 @@
+[all]
+opt=a
+opt/long=all
+
+[no-newline]
+opt=n
+opt/long=no-newline
+
+[debug]
+opt=d
+opt/long=debug

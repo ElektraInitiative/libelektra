@@ -1,0 +1,11 @@
+[verbose]
+opt=v
+opt/long=verbose
+
+[debug]
+opt=d
+opt/long=debug
+
+[null]
+opt=0
+opt/long=null

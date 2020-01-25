@@ -1,0 +1,7 @@
+[load]
+opt=l
+opt/long=load
+
+[plugins-config]
+opt=c
+opt/long=plugins-config

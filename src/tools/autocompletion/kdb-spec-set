@@ -1,0 +1,15 @@
+[quiet]
+opt=q
+opt/long=quiet
+
+[namespace]
+opt=N
+opt/long=namespace
+
+[verbose]
+opt=v
+opt/long=verbose
+
+[debug]
+opt=d
+opt/long=debug
