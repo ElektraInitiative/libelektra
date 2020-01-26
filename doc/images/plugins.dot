@@ -213,10 +213,6 @@ strict digraph G {
 	json [shape=Mdiamond];
 	yajl -> json;
 	storage [shape=Mdiamond];
-	yambi -> storage;
-	yaml [shape=Mdiamond];
-	yambi -> yaml;
-	storage [shape=Mdiamond];
 	yamlcpp -> storage;
 	yaml [shape=Mdiamond];
 	yamlcpp -> yaml;
