@@ -59,6 +59,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Removed. _(Manuel Mausz)_
 
+### YAMBi
+
+- We fixed a compiler warning about comparisons between integers with different signs for parsers produced by Bison 3.5. _(René Schwaiger)_
+
 ### YAML CPP
 
 - The plugin now always prints a newline at the end of the YAML output. _(René Schwaiger)_
