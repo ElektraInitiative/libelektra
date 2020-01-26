@@ -26,7 +26,6 @@ using kdb::Key;
 using kdb::KeySet;
 
 using yambi::Parser;
-using yambi::position;
 
 // -- Functions ----------------------------------------------------------------
 
@@ -87,7 +86,10 @@ string visualizeError (location_type const & location, string const & input, str
 {
 	string::size_type start = 0;
 	string::size_type end = 0;
-	for (position::counter_type currentLine = 1; currentLine <= location.begin.line; currentLine++)
+
+
+	for (/* clang-format off */ @PARSER_POSITION_COUNTER_TYPE@ /* clang-format on */ currentLine = 1;
+	     currentLine <= location.begin.line; currentLine++)
 	{
 		size_t offset = (end == 0 ? 0 : 1);
 		start = end + offset;
