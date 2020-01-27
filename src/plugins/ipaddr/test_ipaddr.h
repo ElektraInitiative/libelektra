@@ -98,8 +98,6 @@ static void testIPAll (void)
 		testIPv6 ("::", 1);				      // Valid
 		testIPAny ("should_not_exist", -1);
 		testIPAny ("www.google.com", 1);
-		testIPAny ("should_not_exist", -1);
-		testIPAny ("www.google.com", 1);
 		testIPv6 ("", -1);				   // empty string
 		testIPv6 ("::1", 1);				   // loopback, compressed, non-routable
 		testIPv6 ("::", 1);				   // unspecified, compressed, non-routable
