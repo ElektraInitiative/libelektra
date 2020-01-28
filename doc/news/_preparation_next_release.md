@@ -70,6 +70,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### Yan LR
 
 - The CMake code of the plugin does not print error messages produced by the tool `ldd` any more. _(René Schwaiger)_
+- The plugin now also supports ANTLR 4.8. _(René Schwaiger)_
 
 ## Libraries
 
