@@ -117,6 +117,14 @@ if (DEPENDENCY_PHASE)
 		endif (NOT GENERATED_CODE)
 	endif (NOT FOUND_DEPENDENCIES)
 
+	if (BISON_VERSION VERSION_LESS 3.5)
+		set (PARSER_POSITION_COUNTER_TYPE "size_t")
+	else (BISON_VERSION VERSION_LESS 3.5)
+		set (PARSER_POSITION_COUNTER_TYPE "yambi::position::counter_type")
+	endif (BISON_VERSION VERSION_LESS 3.5)
+
+	configure_file (driver.cpp driver.cpp @ONLY)
+
 	set (SOURCE_FILES_INPUT input.hpp input.cpp)
 
 	set (LIBSTDCPP CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
@@ -131,7 +139,7 @@ if (DEPENDENCY_PHASE)
 		convert.hpp
 		convert.cpp
 		driver.hpp
-		driver.cpp
+		${CMAKE_CURRENT_BINARY_DIR}/driver.cpp
 		lexer.hpp
 		lexer.cpp
 		yambi.hpp

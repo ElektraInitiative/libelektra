@@ -59,6 +59,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Removed. _(Manuel Mausz)_
 
+### YAMBi
+
+- We fixed a compiler warning about comparisons between integers with different signs for parsers produced by Bison 3.5. _(René Schwaiger)_
+
 ### YAML CPP
 
 - The plugin now always prints a newline at the end of the YAML output. _(René Schwaiger)_
@@ -127,8 +131,8 @@ you up to date with the multi-language support provided by Elektra.
 ## Scripts
 
 - The [fish completion script](../../scripts/completion/kdb.fish) now recognizes the new names of subcommands (e.g. `meta-set` instead of `setmeta` ) introduced with Elektra `0.9.1`. _(René Schwaiger)_
-- The script [cmake-format](../../scripts/dev/reformat-cmake) now reformats the code with `cmake-format` 0.6.3. _(René Schwaiger)_
-- <<TODO>>
+- The script [reformat-cmake](../../scripts/dev/reformat-cmake) now reformats the code with `cmake-format` 0.6.3. _(René Schwaiger)_
+- The script [reformat-shell](../../scripts/dev/reformat-shell) now makes sure that you do not use `shfmt` 3, which formats parts of the code base slightly differently. _(René Schwaiger)_
 
 ## Documentation
 
@@ -176,7 +180,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Cirrus
 
-- <<TODO>>
+- We fixed a minor problem with the package install procedure on macOS build jobs. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
