@@ -61,7 +61,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### YAMBi
 
-- We fixed a compiler warning about comparisons between integers with different signs for parsers produced by Bison 3.5. _(René Schwaiger)_
+- We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr). _(René Schwaiger)_
 
 ### YAML CPP
 
