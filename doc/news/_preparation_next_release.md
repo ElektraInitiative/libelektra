@@ -218,6 +218,10 @@ We are currently working on following topics:
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
+## Finished Thesis
+
+[René Schwaiger](https://github.com/sanssecours) finished [his thesis](https://github.com/sanssecours/Configuration-File-Parsing/releases) about parsing techniques and parsing tools for configuration files.
+
 ## Join the Initiative!
 
 We welcome new contributors!
