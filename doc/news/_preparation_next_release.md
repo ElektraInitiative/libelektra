@@ -138,7 +138,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
-- <<TODO>>
+- We fixed some minor spelling mistakes. _(René Schwaiger)_
 - <<TODO>>
 
 ## Tests
@@ -217,6 +217,10 @@ We are currently working on following topics:
 ## Statistics
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
+
+## Finished Thesis
+
+[René Schwaiger](https://github.com/sanssecours) finished [his thesis](https://github.com/sanssecours/Configuration-File-Parsing/releases) about parsing techniques and parsing tools for configuration files.
 
 ## Join the Initiative!
 
