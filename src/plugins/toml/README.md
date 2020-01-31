@@ -15,7 +15,7 @@ The plugin supports null and empty keys with the help of the [null](../null/READ
 
 # Requirements
 
-The plugin needs Flex (TODO: min version) and Bison (minimal version 3).
+The plugin needs Flex (>=2.6.2) and Bison (>=3).
 
 # Strings
 
