@@ -4,7 +4,7 @@ function (check_dependencies)
 		FALSE
 		PARENT_SCOPE)
 
-	find_package (FLEX QUIET)
+	find_package (FLEX 2.6.2 QUIET)
 
 	set (USE_HOMEBREW_BISON ${APPLE} AND EXISTS /usr/local/opt/bison)
 	if (USE_HOMEBREW_BISON)
