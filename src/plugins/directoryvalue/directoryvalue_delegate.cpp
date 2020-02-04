@@ -211,21 +211,23 @@ KeySetPair splitArrayParentsOther (CppKeySet const & keys)
 	CppKeySet arrayParents;
 	CppKeySet others;
 
-	keys.rewind ();
-	CppKey previous;
-	for (previous = keys.next (); keys.next (); previous = keys.current ())
+	for (auto const & key : keys)
 	{
-		bool const previousIsArray =
-			previous.hasMeta ("array") || (keys.current ().isDirectBelow (previous) &&
-						       keys.current ().getBaseName ()[0] == '#' && isArrayParent (previous, keys));
-
-		(previousIsArray ? arrayParents : others).append (previous);
+		(key.hasMeta ("array") ? arrayParents : others).append (key);
 	}
-	(previous.hasMeta ("array") ? arrayParents : others).append (previous);
 
 	ELEKTRA_ASSERT (arrayParents.size () + others.size () == keys.size (),
 			"Number of keys in split key sets: %zu ≠ number in given key set %zu", arrayParents.size () + others.size (),
 			keys.size ());
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Array parents:");
+	for (auto key : arrayParents)
+	{
+		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”", key.getName ().c_str (),
+				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
+	}
+#endif
 
 	return make_pair (arrayParents, others);
 }
@@ -282,6 +284,15 @@ KeySetPair splitEmptyArrayParents (CppKeySet const & arrayParents)
 		}
 		(isEmpty ? emptyParents : nonEmptyParents).append (arrayParent);
 	}
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Empty array parents:");
+	for (auto key : emptyParents)
+	{
+		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”", key.getName ().c_str (),
+				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
+	}
+#endif
+
 	return make_pair (emptyParents, nonEmptyParents);
 }
 
@@ -543,6 +554,13 @@ int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 	CppKeySet nonArrays;
 	CppKeySet directories;
 	CppKeySet leaves;
+
+	/*
+	 * - Determine array parents
+	 * - Split array keys and other keys
+	 * - Split empty arrays
+	 * - Increase array indices
+	 */
 
 	tie (arrayParents, ignore) = splitArrayParentsOther (keys);
 	tie (arrays, nonArrays) = splitArrayOther (arrayParents, keys);
