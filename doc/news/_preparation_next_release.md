@@ -134,6 +134,10 @@ you up to date with the multi-language support provided by Elektra.
 
 ### <<Binding3>>
 
+### Gsettings
+
+- Fix keynames used in `gsettings` bindings. _(Mihael Pranjić)_
+
 ## Tools
 
 - <<TODO>>
