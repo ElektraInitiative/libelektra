@@ -186,7 +186,7 @@ KeySet removeArrayMetaData (KeySet const & keys)
  * , the keys
  *
  * - `user/parent/level1`, and
- * - user/parent/level1/level2/level3
+ * - `user/parent/level1/level2/level3`
  *
  * are missing.
  *
