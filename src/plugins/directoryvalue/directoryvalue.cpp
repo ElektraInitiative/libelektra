@@ -8,6 +8,7 @@
  */
 
 #include "directoryvalue.hpp"
+#include "../yamlcpp/log.hpp"
 
 #include <kdbhelper.h>
 
@@ -90,11 +91,8 @@ int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKe
 	}
 
 #ifdef HAVE_LOGGER
-	for (auto key : keys)
-	{
-		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”", key.getName ().c_str (),
-				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
-	}
+	ELEKTRA_LOG_DEBUG ("Converted keys:");
+	logKeySet (keys);
 #endif
 
 	parent.release ();
