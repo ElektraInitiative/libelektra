@@ -202,8 +202,7 @@ static GVariant * elektra_settings_backend_read_user_value (GSettingsBackend * b
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s. %s %s.", "Function read_user_value:", key,
 	       "Expected_type is:", g_variant_type_peek_string (expected_type));
-	return elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_PATH, key, NULL),
-					     expected_type);
+	return elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_PATH, key, NULL), expected_type);
 }
 
 /* elektra_settings_backend_write implements g_settings_backend_write:
