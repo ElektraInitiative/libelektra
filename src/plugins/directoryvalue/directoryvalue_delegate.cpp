@@ -286,11 +286,7 @@ KeySetPair splitEmptyArrayParents (CppKeySet const & arrayParents)
 	}
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Empty array parents:");
-	for (auto key : emptyParents)
-	{
-		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”", key.getName ().c_str (),
-				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
-	}
+	logKeySet (emptyParents);
 #endif
 
 	return make_pair (emptyParents, nonEmptyParents);
