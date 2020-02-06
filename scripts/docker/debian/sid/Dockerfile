@@ -52,6 +52,7 @@ RUN apt-get update && apt-get -y install \
         python-dev \
         python-pip \
         python3-dev \
+        ronn \
         ruby-dev \
         sloccount \
         swig3.0 \
