@@ -8,7 +8,7 @@
  */
 
 #include "directoryvalue.hpp"
-#include "../yamlcpp/log.hpp"
+#include "log.hpp"
 
 #include <kdbhelper.h>
 

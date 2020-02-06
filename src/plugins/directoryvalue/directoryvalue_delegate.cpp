@@ -14,8 +14,8 @@
 #include <kdbease.h>
 #include <kdblogger.h>
 
-#include "../yamlcpp/log.hpp"
 #include "directoryvalue_delegate.hpp"
+#include "log.hpp"
 
 using ckdb::elektraArrayValidateBaseNameString;
 using std::accumulate;
