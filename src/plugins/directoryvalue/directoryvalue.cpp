@@ -107,6 +107,12 @@ int elektraDirectoryValueSet (Plugin * handle, KeySet * returned, Key * parentKe
 	CppKey parent{ parentKey };
 
 	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Convert keys:");
+	logKeySet (keys);
+#endif
+
 	try
 	{
 		status = delegator::get (handle)->convertToLeaves (keys);

@@ -9,10 +9,12 @@
 
 #include <numeric>
 
+#include <iostream>
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdblogger.h>
 
+#include "../yamlcpp/log.hpp"
 #include "directoryvalue_delegate.hpp"
 
 using ckdb::elektraArrayValidateBaseNameString;
@@ -503,6 +505,8 @@ int DirectoryValueDelegate::convertToDirectories (CppKeySet & keys)
 	CppKeySet arrayLeaves;
 	CppKeySet maps;
 
+	ELEKTRA_LOG_DEBUG ("Convert (special) leaf keys to directory keys");
+
 	/**
 	 * - Split array parents
 	 * - Split first array child containing directory value prefix, others
@@ -550,6 +554,8 @@ int DirectoryValueDelegate::convertToLeaves (CppKeySet & keys)
 	CppKeySet nonArrays;
 	CppKeySet directories;
 	CppKeySet leaves;
+
+	ELEKTRA_LOG_DEBUG ("Convert directory keys to leaf keys");
 
 	/*
 	 * - Determine array parents
