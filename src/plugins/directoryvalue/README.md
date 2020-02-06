@@ -146,6 +146,10 @@ kdb set user/tests/directoryvalue/harold/spongebob 'I am ready!'
 # Add an array
 kdb set user/tests/directoryvalue/patrick Star
 kdb set user/tests/directoryvalue/patrick/#0 'Being grown-up is boring. Besides, I don’t get Jazz.'
+# Elektra requires that the array parent contains the meta key `array`.
+# If this key is not present, then `user/tests/directoryvalue/patrick`
+# is **not an array**.
+kdb meta-set user/tests/directoryvalue/patrick array ''
 
 # Since the plugin converts values back in the get direction
 # a user of the database will not notice any changes.
