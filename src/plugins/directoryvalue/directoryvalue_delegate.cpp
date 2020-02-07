@@ -442,6 +442,9 @@ CppKeySet convertArrayParentsToLeaves (CppKeySet const & parents)
 	for (auto parent : parents)
 	{
 		CppKey directory{ parent.getName (), KS_END };
+		// The plugin still stores the `array` metadata in the parent and not the first child. Otherwise storage plugins pick up
+		// the wrong key as parent.
+		directory.setMeta ("array", parent.getMeta<string> ("array"));
 		CppKey leaf = parent.dup ();
 		leaf.delMeta ("array");
 		leaf.addBaseName ("#0");
