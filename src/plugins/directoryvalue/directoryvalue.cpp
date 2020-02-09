@@ -68,6 +68,11 @@ int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKe
 	CppKeySet keys{ returned };
 	CppKey parent{ parentKey };
 
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Convert keys:");
+	logKeySet (keys);
+#endif
+
 	if (parent.getName () == "system/elektra/modules/directoryvalue")
 	{
 		keys.append (getContract ());
