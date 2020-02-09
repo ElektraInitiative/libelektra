@@ -30,13 +30,13 @@ typedef pair<CppKeySet, CppKeySet> KeySetPair;
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Split `keys` into two key sets, one for array parents and one for all other keys.
+ * @brief Return all array parents of the given key set.
  *
- * @param keys This parameter contains the key set this function splits.
+ * @param keys This parameter contains the key set for which this function determines all array parent keys.
  *
- * @return A pair of key sets, where the first key set contains all array parents and the second key set contains all other keys
+ * @return A key set containing all array parents of `keys`
  */
-KeySetPair splitArrayParentsOther (CppKeySet const & keys);
+CppKeySet getArrayParents (CppKeySet const & keys);
 
 /**
  * @brief Increase the array index of array elements by one.

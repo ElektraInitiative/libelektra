@@ -24,8 +24,8 @@ using ckdb::keyNew;
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
 
+using elektra::getArrayParents;
 using elektra::increaseArrayIndices;
-using elektra::splitArrayParentsOther;
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
@@ -94,31 +94,32 @@ void test_roundtrip (CppKeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SU
 
 // -- Tests --------------------------------------------------------------------------------------------------------------------------------
 
-TEST (directoryvalue, splitArrayParentsOther)
+TEST (directoryvalue, getArrayParents)
 {
 	CppKeySet input{ 10,
 			 keyNew (PREFIX "key", KEY_END),
 			 keyNew (PREFIX "key/map", KEY_END),
-			 keyNew (PREFIX "key/array", KEY_END),
+			 keyNew (PREFIX "key/array", KEY_META, "array", "#2", KEY_END),
 			 keyNew (PREFIX "key/array/#0", KEY_END),
 			 keyNew (PREFIX "key/array/#1", KEY_END),
-			 keyNew (PREFIX "key/array/#2/nested", KEY_END),
+			 keyNew (PREFIX "key/array/#2/nested", KEY_META, "array", "#1", KEY_END),
 			 keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
 			 keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
 			 keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END),
 			 KS_END };
 
-	CppKeySet expected{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#2/nested", KEY_END),
+	CppKeySet expected{ 10, keyNew (PREFIX "key/array", KEY_META, "array", "#2", KEY_END),
+			    keyNew (PREFIX "key/array/#2/nested", KEY_META, "array", "#1", KEY_END),
 			    keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END), KS_END };
 
 	CppKeySet arrays;
-	tie (arrays, ignore) = splitArrayParentsOther (input);
+	arrays = getArrayParents (input);
 	compare_keyset (expected, arrays);
 
 	input = CppKeySet{ 10, keyNew (PREFIX "key", KEY_END), KS_END };
-	expected = input.dup ();
-	tie (ignore, input) = splitArrayParentsOther (input);
-	compare_keyset (expected, input);
+	expected = CppKeySet{};
+	arrays = getArrayParents (input);
+	compare_keyset (expected, arrays);
 }
 
 TEST (directoryvalue, increaseArrayIndices)
