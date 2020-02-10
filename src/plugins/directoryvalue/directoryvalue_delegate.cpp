@@ -442,7 +442,9 @@ CppKeySet convertArrayParentsToLeaves (CppKeySet const & parents)
 		// The plugin still stores the `array` metadata in the parent and not the first child. Otherwise storage plugins pick up
 		// the wrong key as parent.
 		CppKey lastElement{ parent.getName (), KEY_END };
-		lastElement.addBaseName (parent.getMeta<string> ("array"));
+		auto secondToLastIndex = parent.getMeta<string> ("array");
+		if (secondToLastIndex.empty ()) secondToLastIndex += "#";
+		lastElement.addBaseName (secondToLastIndex);
 		elektraArrayIncName (*lastElement);
 		directory.setMeta ("array", lastElement.getBaseName ());
 		CppKey leaf = parent.dup ();
