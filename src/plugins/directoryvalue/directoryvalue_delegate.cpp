@@ -434,6 +434,8 @@ CppKeySet convertArrayParentsToLeaves (CppKeySet const & parents)
 {
 	CppKeySet converted;
 
+	ELEKTRA_LOG_DEBUG ("Convert array parents to leaves");
+
 	for (auto parent : parents)
 	{
 		CppKey directory{ parent.getName (), KEY_END };
@@ -450,6 +452,11 @@ CppKeySet convertArrayParentsToLeaves (CppKeySet const & parents)
 		converted.append (directory);
 		converted.append (leaf);
 	}
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Converted keys:");
+	logKeySet (converted);
+#endif
 
 	return converted;
 }
