@@ -26,59 +26,7 @@ namespace
 using KeySetPair = pair<KeySet, KeySet>;
 
 /**
- * @brief This function checks if `element` is an array element of `parent`.
- *
- * @pre The key `child` must be below `parent`.
- *
- * @param parent This parameter specifies a parent key.
- * @param keys This variable stores a direct or indirect child of `parent`.
- *
- * @retval true If `element` is an array element
- * @retval false Otherwise
- */
-bool isArrayElementOf (Key const & parent, Key const & child)
-{
-	char const * relative = elektraKeyGetRelativeName (*child, *parent);
-	auto offsetIndex = ckdb::elektraArrayValidateBaseNameString (relative);
-	if (offsetIndex <= 0) return false;
-	// Skip `#`, underscores and digits
-	relative += 2 * offsetIndex;
-	// The next character has to be the separation char (`/`) or end of string
-	if (relative[0] != '\0' && relative[0] != '/') return false;
-
-	return true;
-}
-
-/**
- * @brief This function determines if the given key is an array parent.
- *
- * @param parent This parameter specifies a possible array parent.
- * @param keys This variable stores the key set of `parent`.
- *
- * @retval true If `parent` is the parent key of an array
- * @retval false Otherwise
- */
-bool isArrayParent (Key const & parent, KeySet const & keys)
-{
-	for (auto const & key : keys)
-	{
-		if (!key.isBelow (parent)) continue;
-		if (!isArrayElementOf (parent, key)) return false;
-	}
-
-	return true;
-}
-
-/**
  * @brief This function returns all array parents for a given key set.
- *
- * @note This function also adds empty parent keys for arrays, if they did not exist beforehand. For example for the key set that **only**
- *       contains the keys:
- *
- *       - `user/array/#0`, and
- *       - `user/array/#1`
- *
- *       the function will add the array parent `user/array` to the returned key set.
  *
  * @param keys This parameter contains the key set this function searches for array parents.
  *
@@ -87,30 +35,9 @@ bool isArrayParent (Key const & parent, KeySet const & keys)
 KeySet splitArrayParents (KeySet const & keys)
 {
 	KeySet arrayParents;
-
-	keys.rewind ();
-	Key previous;
-	for (; keys.next (); previous = keys.current ())
+	for (auto const & key : keys)
 	{
-		if (keys.current ().hasMeta ("array"))
-		{
-			arrayParents.append (keys.current ());
-			continue;
-		}
-
-		if (keys.current ().getBaseName ()[0] == '#')
-		{
-			if (!keys.current ().isDirectBelow (previous))
-			{
-				Key directParent{ keys.current ().getName (), KEY_END };
-				ckdb::keySetBaseName (*directParent, NULL);
-				if (isArrayParent (*directParent, keys)) arrayParents.append (directParent);
-			}
-			else if (isArrayParent (*previous, keys))
-			{
-				arrayParents.append (previous);
-			}
-		}
+		if (key.hasMeta ("array")) arrayParents.append (key);
 	}
 
 #ifdef HAVE_LOGGER
