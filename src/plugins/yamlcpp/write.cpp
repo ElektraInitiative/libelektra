@@ -71,34 +71,6 @@ KeySetPair splitArrayOther (KeySet const & arrayParents, KeySet const & keys)
 }
 
 /**
- * @brief This function removes all **non-essential** array metadata from a given key set.
- *
- * @param keys This parameter contains the key set this function modifies.
- *
- * @return A copy of `keys` that only contains array metadata for empty arrays
- */
-KeySet removeArrayMetaData (KeySet const & keys)
-{
-	KeySet result;
-	for (auto const & key : keys)
-	{
-		result.append (key.dup ());
-	}
-
-	Key previous;
-	result.rewind ();
-	while (result.next ())
-	{
-		if (result.current ().isBelow (previous)) previous.delMeta ("array");
-		previous = result.current ();
-	}
-
-	ELEKTRA_ASSERT (keys.size () == result.size (), "Size of input and output keys set is different (%zu ≠ %zu)", keys.size (),
-			result.size ());
-
-	return result;
-}
-/**
  * @brief This function determines all keys “missing” from the given keyset.
  *
  * The term “missing” refers to keys that are not part of the hierarchy. For example in a key set with the parent key
@@ -429,7 +401,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
  */
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
-	auto keys = removeArrayMetaData (mappings);
+	KeySet keys = mappings;
 	auto missing = missingKeys (keys, parent);
 	keys.append (missing);
 
