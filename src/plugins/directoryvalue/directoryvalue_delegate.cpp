@@ -219,11 +219,7 @@ CppKeySet getArrayParents (CppKeySet const & keys)
 
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Array parents:");
-	for (auto key : arrayParents)
-	{
-		ELEKTRA_LOG_DEBUG ("\t“%s”: “%s”", key.getName ().c_str (),
-				   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.getString ().c_str ());
-	}
+	logKeySet (arrayParents);
 #endif
 
 	return arrayParents;
