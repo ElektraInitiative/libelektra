@@ -1,4 +1,4 @@
-restylers_version: '20191031'
+restylers_version: '20191216'
 auto: true
 restylers:
 
@@ -6,10 +6,7 @@ restylers:
   # - clang-format:
   #     image: restyled/restyler-clang-format:v9.0.0
 
-  # TODO: Enable `prettier` again, after Restyled offers Prettier 1.19
-  # See also: https://github.com/restyled-io/restylers/blob/master/prettier/Dockerfile
-  # - prettier
-
+  - prettier
   - prettier-markdown:
       arguments: []
   - shfmt:

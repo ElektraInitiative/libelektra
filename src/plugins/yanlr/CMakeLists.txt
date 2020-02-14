@@ -47,7 +47,7 @@ function (check_dependencies)
 		endif (ANTLR4_NOT_AVAILABLE)
 	endif (ANTLR4_NOT_AVAILABLE AND ANTLR_NOT_AVAILABLE)
 
-	string (REGEX REPLACE ".*Version ([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1" ANTLR_VERSION ${ANTLR_VERSION})
+	string (REGEX REPLACE ".*Version ([0-9]+\\.[0-9]+(\\.[0-9]+)?).*" "\\1" ANTLR_VERSION ${ANTLR_VERSION})
 	if ("${ANTLR_VERSION}" VERSION_LESS 4.6)
 		set (
 			FAILURE_MESSAGE

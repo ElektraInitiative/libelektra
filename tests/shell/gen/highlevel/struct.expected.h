@@ -188,7 +188,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
+* - kdb_long_long_t index1: Replaces occurrence no. 1 of # in the keyname.
 * 
 * 
 */// 
@@ -199,7 +199,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
+* - const char * name1: Replaces occurrence no. 1 of _ in the keyname.
 * 
 * 
 */// 
@@ -210,7 +210,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
+* - const char * name1: Replaces occurrence no. 1 of _ in the keyname.
 * 
 * 
 */// 
@@ -221,9 +221,9 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
+* - const char * name1: Replaces occurrence no. 1 of _ in the keyname.
 * 
-* - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
+* - kdb_long_long_t index1: Replaces occurrence no. 1 of # in the keyname.
 * 
 * 
 */// 
@@ -234,7 +234,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
+* - const char * name1: Replaces occurrence no. 1 of _ in the keyname.
 * 
 * 
 */// 
@@ -245,7 +245,7 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (Person *, StructPerson);
 * 
 * Required arguments:
 * 
-* - const char * name1: Replaces occurence no. 1 of _ in the keyname.
+* - const char * name1: Replaces occurrence no. 1 of _ in the keyname.
 * 
 * 
 */// 
@@ -559,7 +559,7 @@ static inline kdb_long_long_t ELEKTRA_SIZE (ELEKTRA_TAG_PEOPLE) (Elektra * elekt
  * Get the value of key 'person/_' (tag #ELEKTRA_TAG_PERSON).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param name1 Replaces occurrence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_', free with ELEKTRA_STRUCT_FREE (StructPerson).
  *   Pointers contained in the struct may become invalid, if the internal state of @p elektra
@@ -587,7 +587,7 @@ static inline Person * ELEKTRA_GET (ELEKTRA_TAG_PERSON) (Elektra * elektra ,
  * Get the value of key 'person/_/age' (tag #ELEKTRA_TAG_PERSON_AGE).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param name1 Replaces occurrence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_/age'.
 
@@ -608,7 +608,7 @@ static inline kdb_short_t ELEKTRA_GET (ELEKTRA_TAG_PERSON_AGE) (Elektra * elektr
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'person/_/age'.
- * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param name1 Replaces occurrence no. 1 of _ in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
@@ -667,7 +667,7 @@ static inline Person * ELEKTRA_GET (ELEKTRA_TAG_PERSON_CHILDREN) (Elektra * elek
  * Get the size of the array 'person/_/children/#' (tag #ELEKTRA_TAG_PERSON_CHILDREN).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param name1 Replaces occurrence no. 1 of _ in the keyname.
  */// 
 static inline kdb_long_long_t ELEKTRA_SIZE (ELEKTRA_TAG_PERSON_CHILDREN) (Elektra * elektra ,
 								   const char * name1   )
@@ -685,7 +685,7 @@ static inline kdb_long_long_t ELEKTRA_SIZE (ELEKTRA_TAG_PERSON_CHILDREN) (Elektr
  * Get the value of key 'person/_/height' (tag #ELEKTRA_TAG_PERSON_HEIGHT).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param name1 Replaces occurrence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_/height'.
 
@@ -706,7 +706,7 @@ static inline kdb_float_t ELEKTRA_GET (ELEKTRA_TAG_PERSON_HEIGHT) (Elektra * ele
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'person/_/height'.
- * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param name1 Replaces occurrence no. 1 of _ in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 
@@ -728,7 +728,7 @@ static inline void ELEKTRA_SET (ELEKTRA_TAG_PERSON_HEIGHT) (Elektra * elektra,
  * Get the value of key 'person/_/name' (tag #ELEKTRA_TAG_PERSON_NAME).
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
- * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param name1 Replaces occurrence no. 1 of _ in the keyname.
  *
  * @return the value of 'person/_/name'.
  *   The returned pointer may become invalid, if the internal state of @p elektra
@@ -750,7 +750,7 @@ static inline const char * ELEKTRA_GET (ELEKTRA_TAG_PERSON_NAME) (Elektra * elek
  *
  * @param elektra Instance of Elektra. Create with loadConfiguration().
  * @param value   The value of 'person/_/name'.
- * @param name1 Replaces occurence no. 1 of _ in the keyname.
+ * @param name1 Replaces occurrence no. 1 of _ in the keyname.
  * @param error   Pass a reference to an ElektraError pointer.
  *                Will only be set in case of an error.
  */// 

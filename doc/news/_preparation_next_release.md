@@ -59,6 +59,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Removed. _(Manuel Mausz)_
 
+### YAMBi
+
+- We removed the plugin in favor of [Yan LR](../../src/plugins/yanlr). _(René Schwaiger)_
+
 ### YAML CPP
 
 - The plugin now always prints a newline at the end of the YAML output. _(René Schwaiger)_
@@ -66,6 +70,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### Yan LR
 
 - The CMake code of the plugin does not print error messages produced by the tool `ldd` any more. _(René Schwaiger)_
+- The plugin now also supports ANTLR 4.8. _(René Schwaiger)_
 
 ## Libraries
 
@@ -147,13 +152,13 @@ you up to date with the multi-language support provided by Elektra.
 ## Scripts
 
 - The [fish completion script](../../scripts/completion/kdb.fish) now recognizes the new names of subcommands (e.g. `meta-set` instead of `setmeta` ) introduced with Elektra `0.9.1`. _(René Schwaiger)_
-- The script [cmake-format](../../scripts/dev/reformat-cmake) now reformats the code with `cmake-format` 0.6.3. _(René Schwaiger)_
-- <<TODO>>
+- The script [reformat-cmake](../../scripts/dev/reformat-cmake) now reformats the code with `cmake-format` 0.6.3. _(René Schwaiger)_
+- The script [reformat-shell](../../scripts/dev/reformat-shell) now makes sure that you do not use `shfmt` 3, which formats parts of the code base slightly differently. _(René Schwaiger)_
 
 ## Documentation
 
 - improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
-- <<TODO>>
+- We fixed some minor spelling mistakes. _(René Schwaiger)_
 - <<TODO>>
 
 ## Tests
@@ -196,8 +201,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Cirrus
 
-- <<TODO>>
-- <<TODO>>
+- We fixed a minor problem with the package install procedure on macOS build jobs. _(René Schwaiger)_
+- We updated the startup command for D-Bus on macOS. _(René Schwaiger)_
 - <<TODO>>
 
 ### Jenkins
@@ -232,6 +237,10 @@ We are currently working on following topics:
 ## Statistics
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
+
+## Finished Thesis
+
+[René Schwaiger](https://github.com/sanssecours) finished [his thesis](https://github.com/sanssecours/Configuration-File-Parsing/releases) about parsing techniques and parsing tools for configuration files.
 
 ## Join the Initiative!
 

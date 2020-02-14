@@ -115,54 +115,46 @@ mac_task:
   install_script:
     - > # Install Homebrew casks
       brew cask install java oclint
-    - > # Install Homebrew formulas
-      brew install
-      antlr
-      antlr4-cpp-runtime
-      augeas
-      bison
-      boost
-      botan
-      cmake
-      dbus
-      discount
-      doxygen
-      glib
-      gpgme
-      go
-      graphviz
-      libev
-      libgcrypt
-      libgit2
-      libuv
-      llvm
-      lua
-      maven
-      moreutils
-      ninja
-      npm
-      openssl
-      pkg-config
-      prettier
-      qt
-      shfmt
-      swig
-      tree
-      xerces-c
-      yajl
-      zeromq
-    - | # We install yaml-cpp manually, since Homebrew currently does not install the shared version of the library.
-      git clone --branch yaml-cpp-0.6.3 --depth 1 https://github.com/jbeder/yaml-cpp.git
-      cd yaml-cpp
-      mkdir build
-      cmake -GNinja -DYAML_BUILD_SHARED_LIBS=ON -DYAML_CPP_BUILD_TESTS=OFF -Bbuild
-      cmake --build build
-      sudo cmake --build build --target install
-      cd ..
-      rm -r yaml-cpp
+    - | # Install Homebrew formulas
+      brew install antlr
+      brew install antlr4-cpp-runtime
+      brew install augeas
+      brew install bison
+      brew install boost
+      brew install botan
+      brew install dbus
+      brew install discount
+      brew install doxygen
+      brew install glib
+      brew install go
+      brew install gpgme
+      brew install graphviz
+      brew install libev
+      brew install libgcrypt
+      brew install libgit2
+      brew install libuv
+      brew install llvm
+      brew install lua
+      brew install maven
+      brew install moreutils
+      brew install ninja
+      brew install npm
+      brew install openssl
+      brew install pkg-config
+      brew install prettier
+      brew install qt
+      brew install shfmt
+      brew install swig
+      brew install tree
+      brew install xerces-c
+      brew install yajl
+      brew install yaml-cpp
+      brew install zeromq
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
-    - > # Start D-Bus session bus
+    - | # Start D-Bus session bus
+      brew tap homebrew/services
+      brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
       brew services start dbus
     - | # Install Python
       brew install python@2; brew link --overwrite python@2

@@ -10,8 +10,13 @@ SCRIPTS_DIR=$(dirname "$0")
 
 cd "$SOURCE"
 
-if ! which shfmt > /dev/null; then
-	printf 2>&1 'Please install `shfmt`\n'
+SHFMT="$(which shfmt)"
+SHFMT_VERSION="$(shfmt --version 2> /dev/null | sed s/^v//)"
+SHFMT_MAJOR_VERSION=$(printf "$SHFMT_VERSION" | sed -E 's/([1-9]+)\..*/\1/')
+if [ -z "${SHFMT}" ] || [ "$SHFMT_MAJOR_VERSION" -ge 3 ]; then
+	printf >&2 'shfmt:   %s\n' "$SHFMT"
+	printf >&2 'Version: %s\n' "$SHFMT_VERSION"
+	printf >&2 'Please install `shfmt` version 2\n'
 	exit 1
 fi
 
