@@ -69,11 +69,12 @@ func (s *server) getKdbHandler(w http.ResponseWriter, r *http.Request) {
 // putKdbHandler creates a new Key.
 //
 // Arguments:
-//		keyName		the name of the new Key. URL path param.
+//		keyName		the name of the (new) Key. URL path param.
 //		value		the (optional) value of the Key. JSON string POST body.
 //
 // Response Code:
-//		201 Created if the operation was succesfull.
+//		200 OK if the value was set on an existing key.
+//		201 Created if a new key was created.
 // 		400 Bad Request if the key name is invalid or the body is not a JSON
 // string.
 //
@@ -106,14 +107,20 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	existingKey := ks.Lookup(key)
+
+	if existingKey != nil {
+		key = existingKey
+	} else {
+		ks.AppendKey(key)
+	}
+
 	err = key.SetString(value)
 
 	if err != nil {
 		writeError(w, err)
 		return
 	}
-
-	ks.AppendKey(key)
 
 	if err != nil {
 		writeError(w, err)
@@ -127,7 +134,9 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	created(w)
+	if existingKey == nil {
+		created(w)
+	}
 }
 
 // deleteKdbHandler deletes a Key.
@@ -185,7 +194,7 @@ func lookup(ks elektra.KeySet, key elektra.Key, depth int) (result *lookupResult
 
 	result = buildLookupResult(key, childKs)
 
-	if depth > 0 {
+	if depth >= 0 {
 		result.Children, err = lookupChildren(childKs, key, depth)
 	}
 
@@ -216,11 +225,7 @@ func buildLookupResult(key elektra.Key, ks elektra.KeySet) *lookupResult {
 		meta = foundKey.MetaMap()
 	}
 
-	ls := []string{}
-
-	if ks.Len() > 0 {
-		ls = ks.KeyNames()
-	}
+	ls := ks.KeyNames()
 
 	return &lookupResult{
 		Exists: exists,
@@ -236,7 +241,7 @@ func lookupChildren(ks elektra.KeySet, key elektra.Key, depth int) ([]*lookupRes
 	var children []*lookupResult
 
 	ks.ForEach(func(subKey elektra.Key, _ int) {
-		if !key.IsDirectlyBelow(subKey) {
+		if !subKey.IsDirectlyBelow(key) {
 			return
 		}
 

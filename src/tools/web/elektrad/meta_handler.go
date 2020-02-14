@@ -52,7 +52,7 @@ func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
 
 	handle, ks := getHandle(r)
 
-	k := ks.Lookup(parentKey)
+	k := ks.LookupByName(keyName)
 
 	if k == nil {
 		k = parentKey
