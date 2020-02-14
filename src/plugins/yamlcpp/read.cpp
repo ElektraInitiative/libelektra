@@ -182,7 +182,8 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 	{
 		uintmax_t index = 0;
 		uintmax_t lastIndex = 0;
-		for (auto element : node)
+		parent.setMeta ("array", "");
+		for (auto const & element : node)
 		{
 			if (lastIndex == UINTMAX_MAX)
 			{
@@ -191,10 +192,10 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 							   parent.getName () + "”");
 			}
 			Key key = newArrayKey (parent, index);
-			mappings.append (parent); // Update array metadata
 			convertNodeToKeySet (element, mappings, key);
 			lastIndex = index++;
 		}
+		mappings.append (parent); // Update array metadata
 	}
 }
 } // end namespace
