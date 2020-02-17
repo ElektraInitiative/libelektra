@@ -265,11 +265,7 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 {
 	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
 
-#ifdef HAVE_LOGGER
-	ostringstream output;
-	output << data;
 	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
-#endif
 
 	if (keyIterator == key.end ())
 	{
@@ -305,11 +301,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 
 	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
 
-#ifdef HAVE_LOGGER
-	ostringstream output;
-	output << data;
 	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
-#endif
 
 	if (keyIterator == key.end ())
 	{
