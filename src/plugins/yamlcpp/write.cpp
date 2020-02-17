@@ -166,7 +166,7 @@ std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameItera
  *
  * @returns A new YAML node containing the data specified in `key`
  */
-YAML::Node createMetaDataNode (Key const & key)
+YAML::Node createNode (Key const & key)
 {
 	if (key.hasMeta ("array"))
 	{
@@ -203,7 +203,7 @@ YAML::Node createLeafNode (Key & key)
 {
 
 	YAML::Node metaNode{ YAML::Node (YAML::NodeType::Map) };
-	YAML::Node dataNode = createMetaDataNode (key);
+	YAML::Node dataNode = createNode (key);
 
 	key.rewindMeta ();
 	while (Key meta = key.nextMeta ())
