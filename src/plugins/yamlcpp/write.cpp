@@ -30,7 +30,7 @@ using KeySetPair = pair<KeySet, KeySet>;
  *
  * @param keys This parameter contains the key set this function searches for array parents.
  *
- * @return A key sets that contains all array parents stored in `keys`
+ * @return A key set that contains all array parents stored in `keys`
  */
 KeySet splitArrayParents (KeySet const & keys)
 {
