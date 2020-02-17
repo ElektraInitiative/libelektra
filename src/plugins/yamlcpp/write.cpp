@@ -51,7 +51,7 @@ KeySet splitArrayParents (KeySet const & keys)
 /**
  * @brief This function splits `keys` into two key sets, one for array parents and elements, and the other one for all other keys.
  *
- * @param arrayParents This key set contains a (copy) of all array parents of `keys`.
+ * @param arrayParents This key set contains (a copy of) all array parents of `keys`.
  * @param keys This parameter contains the key set this function splits.
  *
  * @return A pair of key sets, where the first key set contains all array parents and elements,
