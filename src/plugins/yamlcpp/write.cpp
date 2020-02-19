@@ -329,6 +329,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 	if (isArrayElement)
 	{
 		node = (arrayIndex < data.size () && !data[arrayIndex].IsScalar ()) ? data[arrayIndex] : YAML::Node ();
+		addEmptyArrayElements (data, arrayIndex - data.size ());
 		data[arrayIndex] = node;
 	}
 	else
