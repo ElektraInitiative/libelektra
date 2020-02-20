@@ -113,6 +113,11 @@ KeySet missingKeys (KeySet const & keys, Key const & parent)
 		}
 	}
 
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Add missing keys:");
+	logKeySet (missing);
+#endif
+
 	return missing;
 }
 
