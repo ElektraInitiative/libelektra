@@ -251,7 +251,7 @@ YAML::Node createLeafNode (Key & key)
  */
 void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numberOfElements)
 {
-	ELEKTRA_LOG_DEBUG ("Add %lld empty array elements", numberOfElements);
+	ELEKTRA_LOG_DEBUG ("Add %llu empty array elements", numberOfElements);
 	for (auto missingFields = numberOfElements; missingFields > 0; missingFields--)
 	{
 		sequence.push_back ({});
