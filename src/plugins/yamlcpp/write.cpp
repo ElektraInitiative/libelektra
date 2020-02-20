@@ -20,6 +20,8 @@
 using namespace std;
 using namespace kdb;
 
+using std::stack;
+
 namespace
 {
 
@@ -297,11 +299,15 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
  * @param data This node stores the data specified via `keyIterator`.
  * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
  * @param key This parameter specifies the key that should be added to `data`.
+ * @param converted This partial key specifies the part of `key` that is already part of `data`.
+ * @param arrayParent This key stores the (possible) array parent of the current part of `key` this
+ *                    function should add to `data`.
  */
-void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
+void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
 {
 	auto const isArrayAndIndex = isArrayIndex (keyIterator);
-	auto const isArrayElement = isArrayAndIndex.first;
+	converted.addBaseName (*keyIterator);
+	auto const isArrayElement = isArrayAndIndex.first && arrayParent && converted.isDirectBelow (*arrayParent);
 	auto const arrayIndex = isArrayAndIndex.second;
 
 	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
@@ -342,7 +348,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 		node = (data[*keyIterator] && !data[*keyIterator].IsScalar ()) ? data[*keyIterator] : YAML::Node ();
 		data[*keyIterator] = node;
 	}
-	addKeyArray (node, ++keyIterator, key);
+	addKeyArray (node, ++keyIterator, key, converted, arrayParent);
 }
 
 /**
@@ -356,6 +362,8 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
  */
 void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bool const isArray = false)
 {
+	stack<Key> arrayParents;
+
 	for (auto key : mappings)
 	{
 		ELEKTRA_LOG_DEBUG ("Convert key “%s”: “%s”", key.getName ().c_str (),
@@ -364,7 +372,19 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
 
 		if (isArray)
 		{
-			addKeyArray (data, keyIterator, key);
+			if (key.hasMeta ("array"))
+			{
+				ELEKTRA_LOG_DEBUG ("Add array parent “%s”", key.getName ().c_str ());
+				arrayParents.push (key);
+			}
+			else if (!arrayParents.empty () && !key.isBelow (arrayParents.top ()))
+			{
+				ELEKTRA_LOG_DEBUG ("Remove array parent “%s”", arrayParents.top ().getName ().c_str ());
+				arrayParents.pop ();
+			}
+
+			Key converted{ parent.getName (), KEY_END };
+			addKeyArray (data, keyIterator, key, converted, !arrayParents.empty () ? &arrayParents.top () : nullptr);
 		}
 		else
 		{
