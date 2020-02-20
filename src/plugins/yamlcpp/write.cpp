@@ -308,14 +308,14 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
 
 	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
 
-	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
-
 	if (keyIterator == key.end ())
 	{
 		ELEKTRA_LOG_DEBUG ("Create leaf node for key “%s”", key.getName ().c_str ());
 		data = createLeafNode (key);
 		return;
 	}
+
+	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
 	if (keyIterator == --key.end ())
 	{
 		if (isArrayElement)
