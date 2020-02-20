@@ -146,21 +146,18 @@ NameIterator relativeKeyIterator (Key const & key, Key const & parent)
 }
 
 /**
- * @brief This function checks if a key name specifies an array key.
- *
- * If the key name contains a valid array index that is smaller than `unsigned long long`, then the function will also return this index.
+ * @brief This function returns the array index for a given key part.
  *
  * @param nameIterator This iterator specifies the name of the key.
  *
- * @retval (true, arrayIndex) if `name` specifies an array key, where `arrayIndex` specifies the index stored in the array key.
- * @retval (false, 0) otherwise
+ * @retval The index of the array element, or `0` if the given key part is not an array element.
  */
-std::pair<bool, unsigned long long> isArrayIndex (NameIterator const & nameIterator)
+unsigned long long getArrayIndex (NameIterator const & nameIterator)
 {
 	string const name = *nameIterator;
 	auto const offsetIndex = ckdb::elektraArrayValidateBaseNameString (name.c_str ());
 	auto const isArrayElement = offsetIndex >= 1;
-	return { isArrayElement, isArrayElement ? stoull (name.substr (static_cast<size_t> (offsetIndex))) : 0 };
+	return isArrayElement ? stoull (name.substr (static_cast<size_t> (offsetIndex))) : 0;
 }
 
 /**
@@ -305,10 +302,9 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
  */
 void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
 {
-	auto const isArrayAndIndex = isArrayIndex (keyIterator);
 	converted.addBaseName (*keyIterator);
-	auto const isArrayElement = isArrayAndIndex.first && arrayParent && converted.isDirectBelow (*arrayParent);
-	auto const arrayIndex = isArrayAndIndex.second;
+	auto const isArrayElement = arrayParent && converted.isDirectBelow (*arrayParent);
+	auto const arrayIndex = isArrayElement ? getArrayIndex (keyIterator) : 0;
 
 	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
 
