@@ -320,7 +320,10 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
 	{
 		if (isArrayElement)
 		{
-			addEmptyArrayElements (data, arrayIndex - data.size ());
+			if (arrayIndex > data.size ())
+			{
+				addEmptyArrayElements (data, arrayIndex - data.size ());
+			}
 			data.push_back (createLeafNode (key));
 		}
 		else
@@ -336,7 +339,10 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
 	if (isArrayElement)
 	{
 		node = (arrayIndex < data.size () && !data[arrayIndex].IsScalar ()) ? data[arrayIndex] : YAML::Node ();
-		addEmptyArrayElements (data, arrayIndex - data.size ());
+		if (arrayIndex > data.size ())
+		{
+			addEmptyArrayElements (data, arrayIndex - data.size ());
+		}
 		data[arrayIndex] = node;
 	}
 	else
