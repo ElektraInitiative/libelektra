@@ -7,6 +7,7 @@
  */
 
 #include "read.hpp"
+#include "log.hpp"
 #include "yaml-cpp/yaml.h"
 
 #include <kdb.hpp>
@@ -229,5 +230,9 @@ void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 #endif
 
 	convertNodeToKeySet (config, mappings, parent);
-	ELEKTRA_LOG_DEBUG ("Added %zd key%s", mappings.size (), mappings.size () == 1 ? "" : "s");
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Converted keys:");
+	logKeySet (mappings);
+#endif
 }
