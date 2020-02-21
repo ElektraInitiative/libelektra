@@ -229,7 +229,8 @@ void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 	ELEKTRA_LOG_DEBUG ("——————————");
 #endif
 
-	convertNodeToKeySet (config, mappings, parent);
+	Key parentWithoutValue{ parent.getName (), KEY_BINARY, KEY_END }; // We do **not** want to save the filename inside the read key set
+	convertNodeToKeySet (config, mappings, parentWithoutValue);
 
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Converted keys:");
