@@ -303,7 +303,7 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
 {
 	converted.addBaseName (*keyIterator);
-	auto const isArrayElement = arrayParent && converted.isDirectBelow (*arrayParent);
+	auto const isArrayElement = data.IsSequence () || (arrayParent && converted.isDirectBelow (*arrayParent));
 	auto const arrayIndex = isArrayElement ? getArrayIndex (keyIterator) : 0;
 
 	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
