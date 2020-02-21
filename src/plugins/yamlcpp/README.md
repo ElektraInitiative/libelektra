@@ -198,10 +198,13 @@ Since Elektra allows [“holes”](../../../doc/decisions/holes.md) in a key set
 # Mount yamlcpp plugin
 sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
-kdb set user/tests/yamlcpp/#0/map/#1/#0 value
-kdb meta-set user/tests/yamlcpp array '#0'
-kdb meta-set user/tests/yamlcpp/map array '#1'
-kdb meta-set user/tests/yamlcpp/map/#1 array '#0'
+kdb set      user/tests/yamlcpp/#0/map/#1/#0 value
+kdb set      user/tests/yamlcpp
+kdb meta-set user/tests/yamlcpp           array '#0'
+kdb set      user/tests/yamlcpp/#0/map
+kdb meta-set user/tests/yamlcpp/#0/map    array '#1'
+kdb set      user/tests/yamlcpp/#0/map/#1
+kdb meta-set user/tests/yamlcpp/#0/map/#1 array '#0'
 kdb file user/tests/yamlcpp | xargs cat
 #> - map:
 #>     - ~
