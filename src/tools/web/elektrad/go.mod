@@ -7,5 +7,3 @@ require (
 	github.com/gorilla/mux v1.7.3
 	go.libelektra.org v0.0.0-20191118065631-d51fc6073e5d
 )
-
-replace go.libelektra.org => ../../../../../elektra-go
