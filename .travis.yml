@@ -173,6 +173,7 @@ matrix:
             - lua
             - ninja
             - openssl
+            - python3
             - qt
             - swig
             - yajl
@@ -211,17 +212,13 @@ matrix:
 before_install:
   - |
     if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
-      rvm install 2.6.5
-      rvm use 2.6.5
-      gem install test-unit --no-document
+      sudo gem install test-unit --no-document
       if [ "$CC" = 'gcc' ]; then
         brew upgrade gcc@9
         export CC=gcc-9
         export CXX=g++-9
       fi
-      pip2 install cheetah # Required by kdb-gen
-      # start D-Bus session bus
-      brew services start dbus
+      pip3 install cheetah # Required by kdb-gen
     fi
   - |
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
@@ -246,6 +243,11 @@ before_install:
 # Build directory will be "$TRAVIS_BUILD_DIR/build"
 #
 before_script:
+  - |
+    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
+      # start D-Bus session bus
+      brew services start dbus
+    fi
   - |
     cd $TRAVIS_BUILD_DIR
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
