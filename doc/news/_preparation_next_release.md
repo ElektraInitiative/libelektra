@@ -194,7 +194,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- <<TODO>>
+- Updated macOS image to use Xcode 11.3 and use ruby 2.6.5. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
