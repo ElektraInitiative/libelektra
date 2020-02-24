@@ -194,7 +194,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- Updated macOS image to use Xcode 11.3 and use bundled ruby 2.6.x. _(Mihael Pranjić)_
+- Updated macOS image to use Xcode 11.3 and use rvm ruby 2.7.0. _(Mihael Pranjić)_
 - Start dbus after homebrew packages are installed. _(Mihael Pranjić)_
 - <<TODO>>
 
