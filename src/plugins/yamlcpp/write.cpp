@@ -385,7 +385,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
 			}
 
 			Key converted{ parent.getName (), KEY_END };
-			addKeyArray (data, keyIterator, key, converted, !arrayParents.empty () ? &arrayParents.top () : nullptr);
+			addKeyArray (data, keyIterator, key, converted, arrayParents.empty () ? nullptr : &arrayParents.top ());
 		}
 		else
 		{
