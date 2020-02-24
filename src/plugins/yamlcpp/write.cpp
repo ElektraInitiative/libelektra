@@ -20,8 +20,6 @@
 using namespace std;
 using namespace kdb;
 
-using std::stack;
-
 namespace
 {
 
