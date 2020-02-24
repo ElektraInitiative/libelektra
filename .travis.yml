@@ -173,7 +173,6 @@ matrix:
             - lua
             - ninja
             - openssl
-            - python3
             - qt
             - swig
             - yajl
@@ -218,7 +217,7 @@ before_install:
         export CC=gcc-9
         export CXX=g++-9
       fi
-      pip3 install cheetah # Required by kdb-gen
+      pip2 install cheetah # Required by kdb-gen
     fi
   - |
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then

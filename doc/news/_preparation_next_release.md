@@ -196,7 +196,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Updated macOS image to use Xcode 11.3 and use bundled ruby 2.6.x. _(Mihael Pranjić)_
 - Start dbus after homebrew packages are installed. _(Mihael Pranjić)_
-- Use python3 packages. _(Mihael Pranjić)_
+- <<TODO>>
 
 ## Website
 
