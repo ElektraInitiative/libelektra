@@ -231,7 +231,7 @@ install:
       brew install gpgme
       brew install libev
       brew install libgcryp
-      brew install libgit2t
+      brew install libgit2
       brew install libuv
       brew install lua
       brew install ninja
