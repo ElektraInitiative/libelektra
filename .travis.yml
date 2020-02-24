@@ -177,6 +177,7 @@ matrix:
             - swig
             - yajl
             - zeromq
+          update: true
       env:
         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
         - PLUGINS='ALL;-xerces'
