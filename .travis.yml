@@ -158,25 +158,6 @@ matrix:
     - os: osx
       name: 🍏 GCC
       compiler: gcc
-      addons:
-        homebrew:
-          packages:
-            - augeas
-            - bison
-            - dbus
-            - discount
-            - gpgme
-            - libev
-            - libgcrypt
-            - libgit2
-            - libuv
-            - lua
-            - ninja
-            - openssl
-            - qt
-            - swig
-            - yajl
-            - zeromq
       env:
         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
         - PLUGINS='ALL;-xerces'
@@ -239,16 +220,38 @@ before_install:
       sudo pip install cmake-format[yaml]==0.6.3
     fi
 
+
+install:
+  - | # Install Homebrew formulas
+    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
+      brew install augeas
+      brew install bisoncpp-runtime
+      brew install dbus
+      brew install discount
+      brew install gpgme
+      brew install libev
+      brew install libgcryp
+      brew install libgit2t
+      brew install libuv
+      brew install lua
+      brew install ninja
+      brew install opensslz
+      brew install qt
+      brew install swigpt
+      brew install yajl
+      brew install zeromq
+    fi
+  - | # start D-Bus session bus
+    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
+      brew services start dbus
+    fi
+
+
 #
 # Source is checked out in $TRAVIS_BUILD_DIR
 # Build directory will be "$TRAVIS_BUILD_DIR/build"
 #
 before_script:
-  - |
-    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
-      # start D-Bus session bus
-      brew services start dbus
-    fi
   - |
     cd $TRAVIS_BUILD_DIR
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
