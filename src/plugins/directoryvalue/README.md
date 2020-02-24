@@ -113,7 +113,10 @@ user/array/#3         = Third Value
 
 . This way a storage plugin such as YAJL or YAML CPP are still able to store `user/array` as an array.
 
-**Remark:** The plugin only converts array parents that store **string values**.
+#### Remarks
+
+- The plugin only converts array parents that store **string values**
+- The [array metakey](../../../doc/decisions/array.md) of the array parent (increased by one) will still be stored in the original parent key after conversion. This is important, since otherwise the storage plugin would lose information about which key represents an array.
 
 ## Usage
 
@@ -146,7 +149,7 @@ kdb set user/tests/directoryvalue/harold/spongebob 'I am ready!'
 # Add an array
 kdb set user/tests/directoryvalue/patrick Star
 kdb set user/tests/directoryvalue/patrick/#0 'Being grown-up is boring. Besides, I don’t get Jazz.'
-# Elektra requires that the array parent contains the meta key `array`.
+# Elektra requires that the array parent contains the metakey `array`.
 # If this key is not present, then `user/tests/directoryvalue/patrick`
 # is **not an array**.
 kdb meta-set user/tests/directoryvalue/patrick array ''
