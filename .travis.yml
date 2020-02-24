@@ -243,11 +243,6 @@ before_install:
 #
 before_script:
   - |
-    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
-      # start D-Bus session bus
-      brew services start dbus
-    fi
-  - |
     cd $TRAVIS_BUILD_DIR
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
       CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
@@ -279,6 +274,11 @@ before_script:
   - cmake ${CMAKE_OPT[@]}
 
 script:
+  - |
+    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
+      # start D-Bus session bus
+      brew services start dbus
+    fi
   - ninja
   - output="$(ninja install 2>&1)" || printf '%s' "$output"
   - ninja run_all
