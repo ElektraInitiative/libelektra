@@ -156,6 +156,9 @@ mac_task:
       brew install python || brew upgrade python
     - | # Install Python packages
       pip3 install cmake-format[yaml]==0.6.3
+    - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
+      brew install ruby@2.7
+      export PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
     - | # Install Ruby gems
       sudo gem install ronn test-unit --no-document
 
