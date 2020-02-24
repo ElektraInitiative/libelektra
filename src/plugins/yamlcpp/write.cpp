@@ -16,6 +16,7 @@
 #include <kdbplugin.h>
 
 #include <fstream>
+#include <stack>
 
 using namespace std;
 using namespace kdb;
