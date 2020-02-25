@@ -184,6 +184,7 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed a minor problem with the package install procedure on macOS build jobs. _(René Schwaiger)_
 - We updated the startup command for D-Bus on macOS. _(René Schwaiger)_
 - We removed python2 (EOL and removed from homebrew). _(Mihael Pranjić)_
+- Use latest macOS catalina Xcode stable. _(Mihael Pranjić)_
 
 ### Jenkins
 
