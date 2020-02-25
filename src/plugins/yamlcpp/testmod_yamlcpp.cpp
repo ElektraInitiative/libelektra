@@ -54,25 +54,12 @@ TEST (yamlcpp, contract)
 	CLOSE_PLUGIN ();
 }
 
-void update_parent (CppKeySet expected, string const filepath)
-{
-	// We replace the value of the parent key of expected keyset, if the header file specifies the value @CONFIG_FILEPATH@.
-	// We could also do that via CMake, but the current solution should be easier for now.
-	CppKey root = expected.lookup (PREFIX, KDB_O_POP);
-	if (root)
-	{
-		if (root.getString () == "@CONFIG_FILEPATH@") root.setString (filepath);
-		expected.append (root);
-	}
-}
-
 static void test_read (string const & filename, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress")))
 #endif
 {
 	string filepath = srcdir_file (filename.c_str ());
-	update_parent (expected, filepath);
 
 	OPEN_PLUGIN (PREFIX, filepath.c_str ());
 
@@ -89,7 +76,6 @@ static void test_write_read (CppKeySet expected)
 #endif
 {
 	string filepath = elektraFilename ();
-	update_parent (expected, filepath);
 
 	OPEN_PLUGIN (PREFIX, filepath.c_str ());
 
