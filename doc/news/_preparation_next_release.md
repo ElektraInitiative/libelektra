@@ -195,7 +195,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- Use newer Xcode 11.3 and ruby 2.7 on macOS builds. _(Mihael Pranjić)_
+- Use newer Xcode 11.3 and ruby 2.6.4 on macOS builds. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
