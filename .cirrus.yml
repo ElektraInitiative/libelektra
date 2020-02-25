@@ -62,7 +62,7 @@ bsd_task:
       -DCOMMON_FLAGS=-Werror
       -DC_STD=-std=c11
       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-      -DPLUGINS=ALL
+      -DPLUGINS='ALL;-tcl'
       -DTARGET_PLUGIN_FOLDER=''
     - *print_cmake_options
     - *generate

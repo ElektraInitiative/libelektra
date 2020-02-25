@@ -186,6 +186,7 @@ you up to date with the multi-language support provided by Elektra.
 - We removed python2 (EOL and removed from homebrew). _(Mihael Pranjić)_
 - Use latest macOS catalina Xcode stable. _(Mihael Pranjić)_
 - Use newer FreeBSD images and use image family instead of concrete image names. _(Mihael Pranjić)_
+- Disable tcl on FreeBSD images because of test failures (see #3353). _(Mihael Pranjić)_
 
 ### Jenkins
 
