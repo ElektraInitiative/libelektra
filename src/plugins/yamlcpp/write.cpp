@@ -293,6 +293,9 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
  *                    function should add to `data`.
  */
 void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
+#ifdef __llvm__
+	__attribute__ ((annotate ("oclint:suppress[high cyclomatic complexity]")))
+#endif
 {
 	if (keyIterator == key.end ())
 	{
