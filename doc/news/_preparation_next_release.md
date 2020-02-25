@@ -43,6 +43,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Improved error message for augeas to show lensPath. _(Michael Zronek)_
 
+### CCode
+
+- The [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper) test of the plugin does not require Bash any more. _(René Schwaiger)_
+
 ### KConfig
 
 - We implemented the methods that save a KeySet into a file with the KConfig Ini format. _(Dardan Haxhimustafa)_
