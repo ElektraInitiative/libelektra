@@ -277,7 +277,7 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 
 	string part = *keyIterator;
 	if (data.IsScalar ()) data = YAML::Node ();
-	YAML::Node node = (data[part] && !data[part].IsScalar ()) ? data[part] : YAML::Node ();
+	YAML::Node node = data[part] ? data[part] : YAML::Node ();
 	addKeyNoArray (node, ++keyIterator, key);
 	data[part] = node;
 }
@@ -293,9 +293,6 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
  *                    function should add to `data`.
  */
 void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
-#ifdef __llvm__
-	__attribute__ ((annotate ("oclint:suppress[high cyclomatic complexity]")))
-#endif
 {
 	if (keyIterator == key.end ())
 	{
@@ -313,7 +310,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
 	if (data.IsScalar ()) data = YAML::Node ();
 	if (isArrayElement)
 	{
-		YAML::Node node = (arrayIndex < data.size () && !data[arrayIndex].IsScalar ()) ? data[arrayIndex] : YAML::Node ();
+		YAML::Node node = arrayIndex < data.size () ? data[arrayIndex] : YAML::Node ();
 		addKeyArray (node, ++keyIterator, key, converted, arrayParent);
 		if (arrayIndex > data.size ()) addEmptyArrayElements (data, arrayIndex - data.size ());
 		data[arrayIndex] = node;
@@ -321,7 +318,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
 	else
 	{
 		string part = *keyIterator;
-		YAML::Node node = (data[part] && !data[part].IsScalar ()) ? data[part] : YAML::Node ();
+		YAML::Node node = data[part] ? data[part] : YAML::Node ();
 		addKeyArray (node, ++keyIterator, key, converted, arrayParent);
 		data[part] = node;
 	}
