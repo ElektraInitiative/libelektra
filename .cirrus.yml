@@ -29,15 +29,15 @@ bsd_task:
 
     - name: 😈 FreeBSD 11
       freebsd_instance:
-        image: freebsd-11-2-release-amd64
+        image_family: freebsd-11-3-snap
 
     - name: 😈 FreeBSD 12
       freebsd_instance:
-        image: freebsd-12-0-release-amd64
+        image_family: freebsd-12-1
 
     - name: 😈 ASAN
       freebsd_instance:
-        image: freebsd-12-0-release-amd64
+        image_family: freebsd-12-1
       env:
         ENABLE_ASAN: ON
 
@@ -62,7 +62,7 @@ bsd_task:
       -DCOMMON_FLAGS=-Werror
       -DC_STD=-std=c11
       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-      -DPLUGINS=ALL
+      -DPLUGINS='ALL;-tcl'
       -DTARGET_PLUGIN_FOLDER=''
     - *print_cmake_options
     - *generate
@@ -82,13 +82,13 @@ mac_task:
 
     - name: 🍎 Clang
       osx_instance:
-        image: mojave-xcode-11.2.1
+        image: catalina-xcode
       env:
         ENABLE_LOGGER: ON
 
     - name: 🍎 Clang ASAN
       osx_instance:
-        image: mojave-xcode-11.2.1
+        image: catalina-xcode
       env:
         ASAN_OPTIONS: 'detect_leaks=1'
         BINDINGS: cpp
@@ -97,14 +97,14 @@ mac_task:
 
     - name: 🍎 FULL
       osx_instance:
-        image: mojave-xcode-11.2.1
+        image: catalina-xcode
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
 
     - name: 🍎 MMap
       osx_instance:
-        image: mojave-xcode-11.2.1
+        image: catalina-xcode
       env:
         KDB_DEFAULT_STORAGE: mmapstorage
         KDB_DB_FILE: default.mmap

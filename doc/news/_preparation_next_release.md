@@ -184,6 +184,9 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed a minor problem with the package install procedure on macOS build jobs. _(René Schwaiger)_
 - We updated the startup command for D-Bus on macOS. _(René Schwaiger)_
 - We removed python2 (EOL and removed from homebrew). _(Mihael Pranjić)_
+- Use latest macOS catalina Xcode stable. _(Mihael Pranjić)_
+- Use newer FreeBSD images and use image family instead of concrete image names. _(Mihael Pranjić)_
+- Disable tcl on FreeBSD images because of test failures (see #3353). _(Mihael Pranjić)_
 
 ### Jenkins
 
@@ -193,7 +196,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- <<TODO>>
+- Use newer Xcode 11.3 and ruby 2.6.4 on macOS builds. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
