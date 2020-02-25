@@ -294,16 +294,16 @@ void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
  */
 void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
 {
-	converted.addBaseName (*keyIterator);
-	auto const isArrayElement = data.IsSequence () || (arrayParent && converted.isDirectBelow (*arrayParent));
-	auto const arrayIndex = isArrayElement ? getArrayIndex (keyIterator) : 0;
-
 	if (keyIterator == key.end ())
 	{
 		ELEKTRA_LOG_DEBUG ("Create leaf node for value “%s”", key.getString ().c_str ());
 		data = createLeafNode (key);
 		return;
 	}
+
+	converted.addBaseName (*keyIterator);
+	auto const isArrayElement = data.IsSequence () || (arrayParent && converted.isDirectBelow (*arrayParent));
+	auto const arrayIndex = isArrayElement ? getArrayIndex (keyIterator) : 0;
 
 	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
 
