@@ -266,27 +266,20 @@ void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numb
  */
 void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
 {
-	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
-
-	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
-
 	if (keyIterator == key.end ())
 	{
-		ELEKTRA_LOG_DEBUG ("Create leaf node for key “%s”", key.getName ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Create leaf node for value “%s”", key.getString ().c_str ());
 		data = createLeafNode (key);
 		return;
 	}
-	if (keyIterator == --key.end ())
-	{
-		data[*keyIterator] = createLeafNode (key);
-		return;
-	}
 
-	YAML::Node node;
+	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
 
-	node = (data[*keyIterator] && !data[*keyIterator].IsScalar ()) ? data[*keyIterator] : YAML::Node ();
-	data[*keyIterator] = node;
+	string part = *keyIterator;
+	if (data.IsScalar ()) data = YAML::Node ();
+	YAML::Node node = (data[part] && !data[part].IsScalar ()) ? data[part] : YAML::Node ();
 	addKeyNoArray (node, ++keyIterator, key);
+	data[part] = node;
 }
 
 /**
@@ -431,7 +424,7 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 	arrayParents = splitArrayParents (keys);
 	tie (arrays, nonArrays) = splitArrayOther (arrayParents, keys);
 
-	auto data = YAML::Node ();
+	YAML::Node data;
 	addKeys (data, nonArrays, parent);
 	addKeys (data, arrays, parent, true);
 
