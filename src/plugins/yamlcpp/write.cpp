@@ -298,51 +298,38 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
 	auto const isArrayElement = data.IsSequence () || (arrayParent && converted.isDirectBelow (*arrayParent));
 	auto const arrayIndex = isArrayElement ? getArrayIndex (keyIterator) : 0;
 
-	if (data.IsScalar ()) data = YAML::Node (YAML::NodeType::Undefined);
-
 	if (keyIterator == key.end ())
 	{
-		ELEKTRA_LOG_DEBUG ("Create leaf node for key “%s”", key.getName ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Create leaf node for value “%s”", key.getString ().c_str ());
 		data = createLeafNode (key);
 		return;
 	}
 
 	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
-	if (keyIterator == --key.end ())
-	{
-		if (isArrayElement)
-		{
-			if (arrayIndex > data.size ())
-			{
-				addEmptyArrayElements (data, arrayIndex - data.size ());
-			}
-			data.push_back (createLeafNode (key));
-		}
-		else
-		{
-			data[*keyIterator] = createLeafNode (key);
-		}
-
-		return;
-	}
 
 	YAML::Node node;
 
+	string part = *keyIterator;
+	if (data.IsScalar ()) data = YAML::Node ();
 	if (isArrayElement)
 	{
 		node = (arrayIndex < data.size () && !data[arrayIndex].IsScalar ()) ? data[arrayIndex] : YAML::Node ();
-		if (arrayIndex > data.size ())
-		{
-			addEmptyArrayElements (data, arrayIndex - data.size ());
-		}
+	}
+	else
+	{
+		node = (data[part] && !data[part].IsScalar ()) ? data[part] : YAML::Node ();
+	}
+	addKeyArray (node, ++keyIterator, key, converted, arrayParent);
+
+	if (isArrayElement)
+	{
+		if (arrayIndex > data.size ()) addEmptyArrayElements (data, arrayIndex - data.size ());
 		data[arrayIndex] = node;
 	}
 	else
 	{
-		node = (data[*keyIterator] && !data[*keyIterator].IsScalar ()) ? data[*keyIterator] : YAML::Node ();
-		data[*keyIterator] = node;
+		data[part] = node;
 	}
-	addKeyArray (node, ++keyIterator, key, converted, arrayParent);
 }
 
 /**
