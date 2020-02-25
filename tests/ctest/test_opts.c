@@ -752,28 +752,28 @@ static void test_stop (void)
 
 	RUN_TEST (ks, ARGS ("--", "-a", "short"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", NULL), "should have stopped");
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#1"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#1"), "rest has wrong count");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "-a"), "rest has wrong value (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short"), "rest has wrong value (#1)");
 	clearValues (ks);
 
 	RUN_TEST (ks, ARGS ("-ashort", "--", "-a", "short2"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "should have stopped after short option");
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#1"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#1"), "rest has wrong count");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "-a"), "rest has wrong value (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short2"), "rest has wrong value (#1)");
 	clearValues (ks);
 
 	RUN_TEST (ks, ARGS ("--apple", "long", "--", "-a", "short2"), NO_ENVP);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "long"), "hould have stopped after long option");
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#1"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#1"), "rest has wrong count");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "-a"), "rest has wrong value (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short2"), "rest has wrong value (#1)");
 	clearValues (ks);
 
 	RUN_TEST (ks, ARGS ("--"), ENVP ("APPLE=env"));
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "env"), "env-var failed (stopped options)");
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#"), "rest has wrong count");
 	clearValues (ks);
 
 
@@ -785,7 +785,7 @@ static void test_stop (void)
 	}
 	keyDel (errorKey);
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "short"), "should have stopped after short option");
-	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest", "#2"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#2"), "rest has wrong count");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "other"), "rest has wrong value (#0)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "-a"), "rest has wrong value (#1)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#2", "short2"), "rest has wrong value (#2)");
@@ -832,6 +832,41 @@ static void test_mixed_config (void)
 	ksDel (ks);
 }
 
+static void test_args_remaining (void)
+{
+	KeySet * ks = ksNew (1, keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+
+	RUN_TEST (ks, ARGS ("short0", "short1", "long0", "long2", "test"), NO_ENVP);
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#4"), "args remaining (wrong count)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "short0"), "args remaining (#0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "short1"), "args remaining (#1)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#2", "long0"), "args remaining (#2)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#3", "long2"), "args remaining (#3)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#4", "test"), "args remaining (#4)");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
+static void test_args_indexed (void)
+{
+	KeySet * ks = ksNew (4, keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest1", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest2", KEY_META, "args", "indexed", KEY_META, "args/index", "2", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest3", KEY_META, "args", "indexed", KEY_META, "args/index", "3", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest4", KEY_META, "args", "indexed", KEY_META, "args/index", "4", KEY_END), KS_END);
+
+	RUN_TEST (ks, ARGS ("short0", "short1", "long0", "long2", "test"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest0", "short0"), "args indexed (0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest1", "short1"), "args indexed (1)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest2", "long0"), "args indexed (2)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest3", "long2"), "args indexed (3)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest4", "test"), "args indexed (4)");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
 int main (int argc, char ** argv)
 {
 	printf (" OPTS   TESTS\n");
@@ -856,6 +891,8 @@ int main (int argc, char ** argv)
 	test_help ();
 	test_stop ();
 	test_mixed_config ();
+	test_args_remaining ();
+	test_args_indexed ();
 
 	print_result ("test_opts");
 

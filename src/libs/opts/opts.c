@@ -52,7 +52,7 @@ static inline const char * keyGetMetaString (const Key * key, const char * meta)
 static int addProcKey (KeySet * ks, const Key * key, Key * valueKey);
 static KeySet * parseEnvp (const char ** envp);
 
-static KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * errorKey);
+static KeySet * parseArgs (Key * command, KeySet * optionsSpec, int argc, const char ** argv, Key * errorKey);
 static void setOption (Key * option, const char * value, bool repeated);
 
 static Key * splitEnvValue (const Key * envKey);
@@ -71,12 +71,14 @@ static bool processLongOptSpec (struct Specification * spec, struct OptionData *
 				Key * errorKey);
 static bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key * errorKey);
 
-static int writeOptionValues (KeySet * ks, Key * keyWithOpt, KeySet * options, Key * errorKey);
+static int writeOptionValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * options, Key * errorKey);
 static int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * errorKey);
-static int writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args);
+static int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * args, Key * errorKey);
 
-static bool parseLongOption (KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index, Key * errorKey);
-static bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index, Key * errorKey);
+static bool parseLongOption (Key * command, KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index,
+			     Key * errorKey);
+static bool parseShortOptions (Key * command, KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index,
+			       Key * errorKey);
 
 /**
  * This functions parses a specification of program options, together with a list of arguments
@@ -122,10 +124,12 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		return -1;
 	}
 
-	KeySet * options = parseArgs (spec.options, argc, argv, parentKey);
+	Key * command = keyNew ("/", KEY_END);
+	KeySet * options = parseArgs (command, spec.options, argc, argv, parentKey);
 
 	if (options == NULL)
 	{
+		keyDel (command);
 		ksDel (spec.options);
 		ksDel (spec.keys);
 		ksSetCursor (ks, initial);
@@ -148,6 +152,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		keySetMeta (parentKey, "internal/libopts/help/usage", usage);
 		keySetMeta (parentKey, "internal/libopts/help/options", optionsText);
 
+		keyDel (command);
 		elektraFree (usage);
 		elektraFree (optionsText);
 		ksDel (options);
@@ -160,7 +165,8 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 
 	KeySet * envValues = parseEnvp (envp);
 
-	Key * argsParent = keyNew ("/args", KEY_END);
+	Key * argsParent = keyNew (keyName (command), KEY_END);
+	keyAddBaseName (argsParent, "args");
 	KeySet * args = elektraArrayGet (argsParent, options);
 	keyDel (argsParent);
 
@@ -168,9 +174,10 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	ksRewind (spec.keys);
 	while ((keyWithOpt = ksNext (spec.keys)) != NULL)
 	{
-		int result = writeOptionValues (ks, keyWithOpt, options, parentKey);
+		int result = writeOptionValues (ks, keyWithOpt, command, options, parentKey);
 		if (result < 0)
 		{
+			keyDel (command);
 			ksDel (envValues);
 			ksDel (options);
 			ksDel (spec.keys);
@@ -183,9 +190,10 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			continue;
 		}
 
-		result = writeArgsValues (ks, keyWithOpt, args);
+		result = writeArgsValues (ks, keyWithOpt, command, args, parentKey);
 		if (result < 0)
 		{
+			keyDel (command);
 			ksDel (envValues);
 			ksDel (options);
 			ksDel (spec.keys);
@@ -201,6 +209,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
 		if (result < 0)
 		{
+			keyDel (command);
 			ksDel (envValues);
 			ksDel (options);
 			ksDel (spec.keys);
@@ -210,6 +219,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		}
 	}
 
+	keyDel (command);
 	ksDel (envValues);
 	ksDel (options);
 	ksDel (spec.keys);
@@ -280,6 +290,26 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 		}
 	}
 
+	bool useSubcommands = false;
+	Key * parent = ksLookupByName (ks, keyName (specParent), 0);
+	if (parent != NULL)
+	{
+		if (strlen (keyGetMetaString (parent, "command")) == 0)
+		{
+			useSubcommands = true;
+		}
+		else if (keyGetMeta (parent, "command") != NULL)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERROR (parentKey,
+							       "On the parent key 'command' can only be set to an empty string.");
+			keyDel (specParent);
+			ksDel (spec->options);
+			ksDel (spec->keys);
+			ksDel (usedEnvVars);
+			return false;
+		}
+	}
+
 	ksRewind (ks);
 	Key * cur;
 	while ((cur = ksNext (ks)) != NULL)
@@ -310,26 +340,89 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 		}
 
 		const char * argsMeta = keyGetMetaString (cur, "args");
-		if (argsMeta != NULL && elektraStrCmp (argsMeta, "remaining") == 0)
+		if (argsMeta != NULL)
 		{
-			if (elektraStrCmp (keyBaseName (cur), "#") != 0)
+			if (elektraStrCmp (argsMeta, "remaining") == 0)
+			{
+				if (elektraStrCmp (keyBaseName (cur), "#") != 0)
+				{
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+						parentKey,
+						"'args=remaining' can only be set on array keys (basename = '#'). Offending key: %s",
+						keyName (cur));
+					keyDel (specParent);
+					ksDel (spec->options);
+					ksDel (spec->keys);
+					ksDel (usedEnvVars);
+					return false;
+				}
+
+				if (keyWithOpt == NULL)
+				{
+					keyWithOpt = keyNew (keyName (cur), KEY_END);
+				}
+				keySetMeta (keyWithOpt, "args", "remaining");
+				spec->hasArgs = true;
+			}
+			else if (elektraStrCmp (argsMeta, "indexed") == 0)
+			{
+				if (elektraStrCmp (keyBaseName (cur), "#") == 0)
+				{
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+						parentKey,
+						"'args=indexed' can only be set on non-array keys (basename != '#'). Offending key: %s",
+						keyName (cur));
+					keyDel (specParent);
+					ksDel (spec->options);
+					ksDel (spec->keys);
+					ksDel (usedEnvVars);
+					return false;
+				}
+
+				const Key * argsIndex = keyGetMeta (cur, "args/index");
+				if (argsIndex == NULL)
+				{
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+						parentKey, "'args=indexed' must be accompanied by 'args/index'. Offending key: %s",
+						keyName (cur));
+					keyDel (specParent);
+					ksDel (spec->options);
+					ksDel (spec->keys);
+					ksDel (usedEnvVars);
+					return false;
+				}
+
+				kdb_long_long_t indexValue;
+				if (!elektraKeyToLongLong (argsIndex, &indexValue) || indexValue < 0)
+				{
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+						parentKey, "'args/index' must be a non-negative integer not '%s'. Offending key: %s",
+						keyString (argsIndex), keyName (cur));
+					keyDel (specParent);
+					ksDel (spec->options);
+					ksDel (spec->keys);
+					ksDel (usedEnvVars);
+					return false;
+				}
+
+				if (keyWithOpt == NULL)
+				{
+					keyWithOpt = keyNew (keyName (cur), KEY_END);
+				}
+				keySetMeta (keyWithOpt, "args", "indexed");
+				keySetMeta (keyWithOpt, "args/index", keyString (argsIndex));
+				spec->hasArgs = true;
+			}
+			else
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					parentKey, "'args=remaining' can only be set on array keys (basename = '#'). Offending key: %s",
-					keyName (cur));
+					parentKey, "unknown value for 'args' metadata: '%s'. Offending key: %s", argsMeta, keyName (cur));
 				keyDel (specParent);
 				ksDel (spec->options);
 				ksDel (spec->keys);
 				ksDel (usedEnvVars);
 				return false;
 			}
-
-			if (keyWithOpt == NULL)
-			{
-				keyWithOpt = keyNew (keyName (cur), KEY_END);
-			}
-			keySetMeta (keyWithOpt, "args", "remaining");
-			spec->hasArgs = true;
 		}
 
 		if (keyWithOpt != NULL)
@@ -740,7 +833,7 @@ bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key
  * @retval 0 if no key was added
  * @retval 1 if keys were added to @p ks
  */
-int writeOptionValues (KeySet * ks, Key * keyWithOpt, KeySet * options, Key * errorKey)
+int writeOptionValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * options, Key * errorKey)
 {
 	bool valueFound = false;
 
@@ -756,7 +849,9 @@ int writeOptionValues (KeySet * ks, Key * keyWithOpt, KeySet * options, Key * er
 	bool shortFound = false;
 	while ((optMeta = ksNext (optMetas)) != NULL)
 	{
-		Key * optKey = ksLookupByName (options, keyString (optMeta), 0);
+		Key * optLookup = keyNew (keyName (command), KEY_END);
+		keyAddName (optLookup, keyString (optMeta));
+		Key * optKey = ksLookup (options, optLookup, KDB_O_DEL);
 		bool isShort = strncmp (keyString (optMeta), "/short", 6) == 0;
 		if (shortFound && !isShort)
 		{
@@ -858,35 +953,68 @@ int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * 
  * @retval 0 if no key was added
  * @retval 1 if keys were added to @p ks
  */
-int writeArgsValues (KeySet * ks, Key * keyWithOpt, KeySet * args)
+int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * args, Key * errorKey)
 {
 	const char * argsMeta = keyGetMetaString (keyWithOpt, "args");
-	if (argsMeta == NULL || elektraStrCmp (argsMeta, "remaining") != 0)
+	if (argsMeta == NULL)
 	{
 		return 0;
 	}
 
-	Key * procKey = keyNew ("proc", KEY_END);
-	keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
-
-	Key * insertKey = keyDup (procKey);
-
-	ksRewind (args);
-	Key * arg = NULL;
-	while ((arg = ksNext (args)) != NULL)
+	if (strcmp (argsMeta, "remaining") == 0)
 	{
-		elektraArrayIncName (insertKey);
+		Key * procKey = keyNew ("proc", KEY_END);
+		keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
 
-		Key * k = keyDup (insertKey);
-		keySetString (k, keyString (arg));
-		ksAppendKey (ks, k);
+		Key * insertKey = keyDup (procKey);
+
+		ksRewind (args);
+		Key * arg = NULL;
+		while ((arg = ksNext (args)) != NULL)
+		{
+			elektraArrayIncName (insertKey);
+
+			Key * k = keyDup (insertKey);
+			keySetString (k, keyString (arg));
+			ksAppendKey (ks, k);
+		}
+
+		keySetBaseName (procKey, NULL); // remove #
+		keySetMeta (procKey, "array", keyBaseName (insertKey));
+		ksAppendKey (ks, procKey);
+		keyDel (insertKey);
+		return 1;
 	}
+	else if (strcmp (argsMeta, "indexed") == 0)
+	{
+		kdb_long_long_t index;
+		elektraKeyToLongLong (keyGetMeta (keyWithOpt, "args/index"), &index);
 
-	keySetBaseName (procKey, NULL); // remove #
-	keySetString (procKey, keyBaseName (insertKey));
-	ksAppendKey (ks, procKey);
-	keyDel (insertKey);
-	return 1;
+		char arrayIndex[ELEKTRA_MAX_ARRAY_SIZE];
+		elektraWriteArrayNumber (arrayIndex, index);
+
+		Key * argKey = keyNew (keyName (command), KEY_END);
+		keyAddBaseName (argKey, "args");
+		keyAddBaseName (argKey, arrayIndex);
+		Key * arg = ksLookup (args, argKey, KDB_O_DEL);
+		if (arg == NULL)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				errorKey, "Expected at least " ELEKTRA_LONG_LONG_F " non-option arguments, but only got %zd", index + 1,
+				ksGetSize (args));
+			return -1;
+		}
+
+		Key * procKey = keyNew ("proc", KEY_END);
+		keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
+		keySetString (procKey, keyString (arg));
+		ksAppendKey (ks, procKey);
+		return 1;
+	}
+	else
+	{
+		return -1;
+	}
 }
 
 /**
@@ -1018,7 +1146,7 @@ KeySet * parseEnvp (const char ** envp)
 	return ks;
 }
 
-KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * errorKey)
+KeySet * parseArgs (Key * command, KeySet * optionsSpec, int argc, const char ** argv, Key * errorKey)
 {
 	const char * posixlyStr = keyGetMetaString (errorKey, "posixly");
 	bool posixly = false;
@@ -1027,7 +1155,8 @@ KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * er
 		posixly = true;
 	}
 
-	Key * argKey = keyNew ("/args/#", KEY_END);
+	Key * argKey = keyNew (keyName (command), KEY_END);
+	keyAddName (argKey, "/args/#");
 
 	KeySet * options = ksNew (0, KS_END);
 	int i;
@@ -1046,7 +1175,7 @@ KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * er
 					break;
 				}
 
-				if (!parseLongOption (optionsSpec, options, argc, argv, &i, errorKey))
+				if (!parseLongOption (command, optionsSpec, options, argc, argv, &i, errorKey))
 				{
 					keyDel (argKey);
 					ksDel (options);
@@ -1056,7 +1185,7 @@ KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * er
 				continue;
 			}
 
-			if (!parseShortOptions (optionsSpec, options, argc, argv, &i, errorKey))
+			if (!parseShortOptions (command, optionsSpec, options, argc, argv, &i, errorKey))
 			{
 				keyDel (argKey);
 				ksDel (options);
@@ -1087,19 +1216,22 @@ KeySet * parseArgs (KeySet * optionsSpec, int argc, const char ** argv, Key * er
 		ksAppendKey (options, newArgKey);
 	}
 
-	ksAppendKey (options, keyNew ("/args", KEY_VALUE, keyBaseName (argKey), KEY_END));
+	Key * argsParent = keyNew (keyName (command), KEY_VALUE, keyBaseName (argKey), KEY_END);
+	keyAddBaseName (argsParent, "args");
+	ksAppendKey (options, argsParent);
 	keyDel (argKey);
 
 	return options;
 }
 
-bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index, Key * errorKey)
+bool parseShortOptions (Key * command, KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index, Key * errorKey)
 {
 	int i = *index;
 	for (const char * c = &argv[i][1]; *c != '\0'; ++c)
 	{
 
-		Key * shortOpt = keyNew ("/short", KEY_END);
+		Key * shortOpt = keyNew (keyName (command), KEY_END);
+		keyAddBaseName (shortOpt, "short");
 		keyAddBaseName (shortOpt, (char[]){ *c, '\0' });
 
 		Key * optSpec = ksLookupByName (optionsSpec, keyName (shortOpt), 0);
@@ -1176,10 +1308,11 @@ bool parseShortOptions (KeySet * optionsSpec, KeySet * options, int argc, const 
 	return true;
 }
 
-bool parseLongOption (KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index, Key * errorKey)
+bool parseLongOption (Key * command, KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index, Key * errorKey)
 {
 	int i = *index;
-	Key * longOpt = keyNew ("/long", KEY_END);
+	Key * longOpt = keyNew (keyName (command), KEY_END);
+	keyAddBaseName (longOpt, "long");
 
 	char * opt = elektraStrDup (&argv[i][2]);
 	char * eq = strchr (opt, '=');
