@@ -10,7 +10,6 @@
 #include "log.hpp"
 #include "yaml-cpp/yaml.h"
 
-#include <kdbassert.h>
 #include <kdbease.h>
 #include <kdblogger.h>
 #include <kdbplugin.h>
