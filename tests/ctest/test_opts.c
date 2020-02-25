@@ -708,11 +708,20 @@ static void test_help (void)
 	// ---
 
 	const char * expectedHelp =
-		"Usage: prog [OPTION]... [ARG]...\n"
+		"Usage: prog [OPTION]... [PARAMETER]...\n"
+		"\n"
 		"OPTIONS\n"
 		"  -a, -b BANANA, -C, --apple, --banana=BANANA, --cherry=[ARG]\n"
 		"                                Apple/Banana/Cherry description\n"
-		"  -p ARG                      A pear is not an apple, nor a banana, nor a cherry.\n";
+		"  -p ARG                      A pear is not an apple, nor a banana, nor a cherry.\n"
+		"\n"
+		"PARAMETERS\n"
+		"  [other]...                  Other parameters\n"
+		"  param1                      First parameter\n"
+		"  param2                      Second parameter\n"
+		"\n"
+		"ENVIRONMENT VARIABLES\n"
+		"  APPLE, BANANA, CHERRY       Apple/Banana/Cherry description\n";
 
 	Key * k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
 	keySetMeta (k, "opt", "#3");
@@ -727,11 +736,19 @@ static void test_help (void)
 	keySetMeta (k, "opt/#2/arg", "optional");
 	keySetMeta (k, "opt/#3", "d");
 	keySetMeta (k, "opt/#3/hidden", "1");
+	keySetMeta (k, "env", "#2");
+	keySetMeta (k, "env/#0", "APPLE");
+	keySetMeta (k, "env/#1", "BANANA");
+	keySetMeta (k, "env/#2", "CHERRY");
 	keySetMeta (k, "description", "Apple/Banana/Cherry description");
 	ks = ksNew (4, k,
 		    keyNew (SPEC_BASE_KEY "/pear", KEY_META, "opt", "p", KEY_META, "description",
 			    "A pear is not an apple, nor a banana, nor a cherry.", KEY_END),
-		    keyNew (SPEC_BASE_KEY "/args/#", KEY_META, "args", "remaining", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/param1", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "description",
+			    "First parameter", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/param2", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_META, "description",
+			    "Second parameter", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/other/#", KEY_META, "args", "remaining", KEY_META, "description", "Other parameters", KEY_END),
 		    keyNew (SPEC_BASE_KEY "/none", KEY_META, "opt", "n", KEY_META, "opt/hidden", "1", KEY_END), KS_END);
 	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 

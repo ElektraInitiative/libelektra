@@ -62,6 +62,8 @@ static KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName);
 
 static char * generateUsageLine (const char * progname, bool hasOpts, bool hasArgs);
 static char * generateOptionsList (KeySet * keysWithOpts);
+static char * generateArgsList (KeySet * keysWithOpts);
+static char * generateEnvsList (KeySet * keysWithOpts);
 
 static bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey);
 static bool processOptions (struct Specification * spec, Key * specKey, Key ** keyWithOpt, Key * errorKey);
@@ -153,13 +155,19 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 
 		char * usage = generateUsageLine (progname, spec.hasOpts, spec.hasArgs);
 		char * optionsText = generateOptionsList (spec.keys);
+		char * argsText = generateArgsList (spec.keys);
+		char * envsText = generateEnvsList (spec.keys);
 
 		keySetMeta (parentKey, "internal/libopts/help/usage", usage);
 		keySetMeta (parentKey, "internal/libopts/help/options", optionsText);
+		keySetMeta (parentKey, "internal/libopts/help/args", argsText);
+		keySetMeta (parentKey, "internal/libopts/help/envs", envsText);
 
 		keyDel (command);
 		elektraFree (usage);
 		elektraFree (optionsText);
+		elektraFree (argsText);
+		elektraFree (envsText);
 		ksDel (options);
 		ksDel (spec.options);
 		ksDel (spec.keys);
@@ -262,7 +270,19 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 		options = "";
 	}
 
-	return elektraFormat ("%s%s%s", usage, prefix == NULL ? "" : prefix, options);
+	const char * args = keyGetMetaString (errorKey, "internal/libopts/help/args");
+	if (args == NULL)
+	{
+		args = "";
+	}
+
+	const char * envs = keyGetMetaString (errorKey, "internal/libopts/help/envs");
+	if (envs == NULL)
+	{
+		envs = "";
+	}
+
+	return elektraFormat ("%s%s%s%s%s", usage, prefix == NULL ? "" : prefix, options, args, envs);
 }
 
 // -------------
@@ -745,11 +765,18 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
  */
 bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key * errorKey ELEKTRA_UNUSED)
 {
+	const char * optHelp = keyGetMetaString (specKey, "opt/help");
+	const char * description = keyGetMetaString (specKey, "description");
+
+	const char * help = optHelp != NULL ? optHelp : (description != NULL ? description : "");
+
 	KeySet * envVars = ksMetaGetSingleOrArray (specKey, "env");
 	if (envVars == NULL)
 	{
 		return true;
 	}
+
+	char * envsLinePart = elektraStrDup ("");
 
 	ksRewind (envVars);
 	ksNext (envVars); // skip count
@@ -772,16 +799,43 @@ bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key
 			*keyWithOpt = keyNew (keyName (specKey), KEY_END);
 		}
 		elektraMetaArrayAdd (*keyWithOpt, "env", keyName (envVarKey));
+
+		char * tmp = elektraFormat ("%s%s, ", envsLinePart, envVar);
+		elektraFree (envsLinePart);
+		envsLinePart = tmp;
 	}
 
 	ksDel (envVars);
 
+	if (strlen (envsLinePart) > 2)
+	{
+		envsLinePart[strlen (envsLinePart) - 2] = '\0'; // trim ", " of end
+	}
+
+	char * envsLine;
+	if (strlen (envsLinePart) < 30)
+	{
+		envsLine = elektraFormat ("  %-28s%s", envsLinePart, help);
+	}
+	else
+	{
+		envsLine = elektraFormat ("  %s\n  %30s%s", envsLinePart, "", help);
+	}
+
+	keySetMeta (*keyWithOpt, "env/help", envsLine);
+	elektraFree (envsLine);
+	elektraFree (envsLinePart);
 	return true;
 }
 
-bool processArgs (struct Specification * spec, Key * cur, KeySet * argIndices, Key ** keyWithOpt, Key * errorKey)
+bool processArgs (struct Specification * spec, Key * specKey, KeySet * argIndices, Key ** keyWithOpt, Key * errorKey)
 {
-	const char * argsMeta = keyGetMetaString (cur, "args");
+	const char * optHelp = keyGetMetaString (specKey, "opt/help");
+	const char * description = keyGetMetaString (specKey, "description");
+
+	const char * help = optHelp != NULL ? optHelp : (description != NULL ? description : "");
+
+	const char * argsMeta = keyGetMetaString (specKey, "args");
 	if (argsMeta == NULL)
 	{
 		return true;
@@ -789,38 +843,44 @@ bool processArgs (struct Specification * spec, Key * cur, KeySet * argIndices, K
 
 	if (elektraStrCmp (argsMeta, "remaining") == 0)
 	{
-		if (elektraStrCmp (keyBaseName (cur), "#") != 0)
+		if (elektraStrCmp (keyBaseName (specKey), "#") != 0)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 				errorKey, "'args=remaining' can only be set on array keys (basename = '#'). Offending key: %s",
-				keyName (cur));
+				keyName (specKey));
 			return false;
 		}
 
 		if (*keyWithOpt == NULL)
 		{
-			*keyWithOpt = keyNew (keyName (cur), KEY_END);
+			*keyWithOpt = keyNew (keyName (specKey), KEY_END);
 		}
 		keySetMeta (*keyWithOpt, "args", "remaining");
-		spec->hasArgs = true;
 
-		return true;
+		Key * dup = keyDup (specKey);
+		keySetBaseName (dup, NULL); // remove #
+		char * argName = elektraFormat ("[%s]...", keyBaseName (dup));
+		char * argHelp = elektraFormat ("  %-28s%s", argName, help);
+		keySetMeta (*keyWithOpt, "args/help", argHelp);
+		elektraFree (argHelp);
+		elektraFree (argName);
+		keyDel (dup);
 	}
 	else if (elektraStrCmp (argsMeta, "indexed") == 0)
 	{
-		if (elektraStrCmp (keyBaseName (cur), "#") == 0)
+		if (elektraStrCmp (keyBaseName (specKey), "#") == 0)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 				errorKey, "'args=indexed' can only be set on non-array keys (basename != '#'). Offending key: %s",
-				keyName (cur));
+				keyName (specKey));
 			return false;
 		}
 
-		const Key * argsIndex = keyGetMeta (cur, "args/index");
+		const Key * argsIndex = keyGetMeta (specKey, "args/index");
 		if (argsIndex == NULL)
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-				errorKey, "'args=indexed' must be accompanied by 'args/index'. Offending key: %s", keyName (cur));
+				errorKey, "'args=indexed' must be accompanied by 'args/index'. Offending key: %s", keyName (specKey));
 			return false;
 		}
 
@@ -829,17 +889,16 @@ bool processArgs (struct Specification * spec, Key * cur, KeySet * argIndices, K
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
 								"'args/index' must be a non-negative integer not '%s'. Offending key: %s",
-								keyString (argsIndex), keyName (cur));
+								keyString (argsIndex), keyName (specKey));
 			return false;
 		}
 
 		if (*keyWithOpt == NULL)
 		{
-			*keyWithOpt = keyNew (keyName (cur), KEY_END);
+			*keyWithOpt = keyNew (keyName (specKey), KEY_END);
 		}
 		keySetMeta (*keyWithOpt, "args", "indexed");
 		keySetMeta (*keyWithOpt, "args/index", keyString (argsIndex));
-		spec->hasArgs = true;
 
 		Key * indexKey = keyNew ("/", KEY_END);
 		char indexKeyName[ELEKTRA_MAX_ARRAY_SIZE];
@@ -847,14 +906,20 @@ bool processArgs (struct Specification * spec, Key * cur, KeySet * argIndices, K
 		keyAddBaseName (indexKey, indexKeyName);
 		ksAppendKey (argIndices, indexKey);
 
-		return true;
+		char * argHelp = elektraFormat ("  %-28s%s", keyBaseName (specKey), help);
+		keySetMeta (*keyWithOpt, "args/help", argHelp);
+		elektraFree (argHelp);
 	}
 	else
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "unknown value for 'args' metadata: '%s'. Offending key: %s", argsMeta,
-							keyName (cur));
+							keyName (specKey));
 		return false;
 	}
+
+	spec->hasArgs = true;
+
+	return true;
 }
 
 /**
@@ -1505,19 +1570,14 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
  */
 char * generateUsageLine (const char * progname, bool hasOpts, bool hasArgs)
 {
-	return elektraFormat ("Usage: %s%s%s\n", progname, hasOpts ? " [OPTION]..." : "", hasArgs ? " [ARG]..." : "");
+	return elektraFormat ("Usage: %s%s%s\n", progname, hasOpts ? " [OPTION]..." : "", hasArgs ? " [PARAMETER]..." : "");
 }
 
 char * generateOptionsList (KeySet * keysWithOpts)
 {
-	if (ksGetSize (keysWithOpts) == 0)
-	{
-		return elektraStrDup ("");
-	}
-
 	cursor_t cursor = ksGetCursor (keysWithOpts);
 
-	char * optionsList = elektraFormat ("OPTIONS");
+	char * optionsList = elektraFormat ("");
 
 	Key * cur = NULL;
 	ksRewind (keysWithOpts);
@@ -1532,10 +1592,79 @@ char * generateOptionsList (KeySet * keysWithOpts)
 		}
 	}
 
-	char * newOptionsList = elektraFormat ("%s\n", optionsList);
+	if (strlen (optionsList) == 0)
+	{
+		return optionsList;
+	}
+
+	char * newOptionsList = elektraFormat ("\nOPTIONS%s\n", optionsList);
 	elektraFree (optionsList);
 	optionsList = newOptionsList;
 
 	ksSetCursor (keysWithOpts, cursor);
 	return optionsList;
+}
+
+char * generateArgsList (KeySet * keysWithOpts)
+{
+	cursor_t cursor = ksGetCursor (keysWithOpts);
+
+	char * argsList = elektraFormat ("");
+
+	Key * cur = NULL;
+	ksRewind (keysWithOpts);
+	while ((cur = ksNext (keysWithOpts)) != NULL)
+	{
+		const char * optLine = keyGetMetaString (cur, "args/help");
+		if (optLine != NULL)
+		{
+			char * newArgsList = elektraFormat ("%s\n%s", argsList, optLine);
+			elektraFree (argsList);
+			argsList = newArgsList;
+		}
+	}
+
+	if (strlen (argsList) == 0)
+	{
+		return argsList;
+	}
+
+	char * newArgsList = elektraFormat ("\nPARAMETERS%s\n", argsList);
+	elektraFree (argsList);
+	argsList = newArgsList;
+
+	ksSetCursor (keysWithOpts, cursor);
+	return argsList;
+}
+
+char * generateEnvsList (KeySet * keysWithOpts)
+{
+	cursor_t cursor = ksGetCursor (keysWithOpts);
+
+	char * envsList = elektraStrDup ("");
+
+	Key * cur = NULL;
+	ksRewind (keysWithOpts);
+	while ((cur = ksNext (keysWithOpts)) != NULL)
+	{
+		const char * optLine = keyGetMetaString (cur, "env/help");
+		if (optLine != NULL)
+		{
+			char * newEnvsList = elektraFormat ("%s\n%s", envsList, optLine);
+			elektraFree (envsList);
+			envsList = newEnvsList;
+		}
+	}
+
+	if (strlen (envsList) == 0)
+	{
+		return envsList;
+	}
+
+	char * newEnvsList = elektraFormat ("\nENVIRONMENT VARIABLES%s\n", envsList);
+	elektraFree (envsList);
+	envsList = newEnvsList;
+
+	ksSetCursor (keysWithOpts, cursor);
+	return envsList;
 }
