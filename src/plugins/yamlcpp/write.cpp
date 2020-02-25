@@ -10,19 +10,27 @@
 #include "log.hpp"
 #include "yaml-cpp/yaml.h"
 
+#include <kdb.hpp>
 #include <kdbease.h>
 #include <kdblogger.h>
-#include <kdbplugin.h>
 
 #include <fstream>
 #include <stack>
 
-using namespace std;
-using namespace kdb;
-
 namespace
 {
 
+using std::endl;
+using std::istringstream;
+using std::ofstream;
+using std::ostringstream;
+using std::pair;
+using std::stack;
+using std::string;
+
+using kdb::Key;
+using kdb::KeySet;
+using kdb::NameIterator;
 using KeySetPair = pair<KeySet, KeySet>;
 
 /**
