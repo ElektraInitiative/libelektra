@@ -257,31 +257,6 @@ void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numb
 }
 
 /**
- * @brief This function adds a key that is not part of any array to a YAML node.
- *
- * @param data This node stores the data specified via `keyIterator`.
- * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
- * @param key This parameter specifies the key that should be added to `data`.
- */
-void addKeyNoArray (YAML::Node & data, NameIterator & keyIterator, Key & key)
-{
-	if (keyIterator == key.end ())
-	{
-		ELEKTRA_LOG_DEBUG ("Create leaf node for value “%s”", key.getString ().c_str ());
-		data = createLeafNode (key);
-		return;
-	}
-
-	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
-
-	string part = *keyIterator;
-	if (data.IsScalar ()) data = YAML::Node ();
-	YAML::Node node = data[part] ? data[part] : YAML::Node ();
-	addKeyNoArray (node, ++keyIterator, key);
-	data[part] = node;
-}
-
-/**
  * @brief This function adds a key that is either, element of an array, or an array parent to a YAML node.
  *
  * @param data This node stores the data specified via `keyIterator`.
@@ -332,7 +307,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
  * @param isArray This value specifies if the keys inside `keys` are all part of an array (either element or parent), or if none of them is
  *                part of an array.
  */
-void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bool const isArray = false)
+void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 {
 	stack<Key> arrayParents;
 
@@ -342,26 +317,19 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent, bo
 				   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
 		NameIterator keyIterator = relativeKeyIterator (key, parent);
 
-		if (isArray)
+		if (key.hasMeta ("array"))
 		{
-			if (key.hasMeta ("array"))
-			{
-				ELEKTRA_LOG_DEBUG ("Add array parent “%s”", key.getName ().c_str ());
-				arrayParents.push (key);
-			}
-			else if (!arrayParents.empty () && !key.isBelow (arrayParents.top ()))
-			{
-				ELEKTRA_LOG_DEBUG ("Remove array parent “%s”", arrayParents.top ().getName ().c_str ());
-				arrayParents.pop ();
-			}
+			ELEKTRA_LOG_DEBUG ("Add array parent “%s”", key.getName ().c_str ());
+			arrayParents.push (key);
+		}
+		else if (!arrayParents.empty () && !key.isBelow (arrayParents.top ()))
+		{
+			ELEKTRA_LOG_DEBUG ("Remove array parent “%s”", arrayParents.top ().getName ().c_str ());
+			arrayParents.pop ();
+		}
 
-			Key converted{ parent.getName (), KEY_END };
-			addKeyArray (data, keyIterator, key, converted, arrayParents.empty () ? nullptr : &arrayParents.top ());
-		}
-		else
-		{
-			addKeyNoArray (data, keyIterator, key);
-		}
+		Key converted{ parent.getName (), KEY_END };
+		addKeyArray (data, keyIterator, key, converted, arrayParents.empty () ? nullptr : &arrayParents.top ());
 
 #ifdef HAVE_LOGGER
 		ostringstream output;
@@ -404,7 +372,7 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 
 	YAML::Node data;
 	addKeys (data, nonArrays, parent);
-	addKeys (data, arrays, parent, true);
+	addKeys (data, arrays, parent);
 
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Write Data:");
