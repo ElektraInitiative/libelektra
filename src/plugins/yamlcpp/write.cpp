@@ -220,16 +220,15 @@ void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numb
 }
 
 /**
- * @brief This function adds a key that is either, element of an array, or an array parent to a YAML node.
+ * @brief This function adds a key to a YAML node.
  *
  * @param data This node stores the data specified via `keyIterator`.
  * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
  * @param key This parameter specifies the key that should be added to `data`.
  * @param converted This partial key specifies the part of `key` that is already part of `data`.
- * @param arrayParent This key stores the (possible) array parent of the current part of `key` this
- *                    function should add to `data`.
+ * @param arrayParent This key stores the (possible) array parent of the current part of `key` this function should add to `data`.
  */
-void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
+void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
 {
 	if (keyIterator == key.end ())
 	{
@@ -248,7 +247,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
 	if (isArrayElement)
 	{
 		YAML::Node node = arrayIndex < data.size () ? data[arrayIndex] : YAML::Node ();
-		addKeyArray (node, ++keyIterator, key, converted, arrayParent);
+		addKey (node, ++keyIterator, key, converted, arrayParent);
 		if (arrayIndex > data.size ()) addEmptyArrayElements (data, arrayIndex - data.size ());
 		data[arrayIndex] = node;
 	}
@@ -256,7 +255,7 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
 	{
 		string part = *keyIterator;
 		YAML::Node node = data[part] ? data[part] : YAML::Node ();
-		addKeyArray (node, ++keyIterator, key, converted, arrayParent);
+		addKey (node, ++keyIterator, key, converted, arrayParent);
 		data[part] = node;
 	}
 }
@@ -290,7 +289,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 		}
 
 		Key converted{ parent.getName (), KEY_END };
-		addKeyArray (data, keyIterator, key, converted, arrayParents.empty () ? nullptr : &arrayParents.top ());
+		addKey (data, keyIterator, key, converted, arrayParents.empty () ? nullptr : &arrayParents.top ());
 
 #ifdef HAVE_LOGGER
 		ostringstream output;
