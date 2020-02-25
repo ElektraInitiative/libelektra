@@ -850,7 +850,7 @@ static void test_args_remaining (void)
 
 static void test_args_indexed (void)
 {
-	KeySet * ks = ksNew (4, keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+	KeySet * ks = ksNew (5, keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/rest1", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/rest2", KEY_META, "args", "indexed", KEY_META, "args/index", "2", KEY_END),
 			     keyNew (SPEC_BASE_KEY "/rest3", KEY_META, "args", "indexed", KEY_META, "args/index", "3", KEY_END),
@@ -862,6 +862,24 @@ static void test_args_indexed (void)
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest2", "long0"), "args indexed (2)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest3", "long2"), "args indexed (3)");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest4", "test"), "args indexed (4)");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
+static void test_args_indexed_and_remaining (void)
+{
+	KeySet * ks = ksNew (4, keyNew (SPEC_BASE_KEY "/rest/#", KEY_META, "args", "remaining", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest0", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest1", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/rest2", KEY_META, "args", "indexed", KEY_META, "args/index", "2", KEY_END), KS_END);
+
+	RUN_TEST (ks, ARGS ("short0", "short1", "long0", "long2", "test"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest0", "short0"), "args indexed and remaining (index 0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest1", "short1"), "args indexed and remaining (index 1)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest2", "long0"), "args indexed and remaining (index 2)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#0", "long2"), "args indexed and remaining (remaining #0)");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#1", "test"), "args indexed and remaining (remaining #1)");
 	clearValues (ks);
 
 	ksDel (ks);
@@ -893,6 +911,7 @@ int main (int argc, char ** argv)
 	test_mixed_config ();
 	test_args_remaining ();
 	test_args_indexed ();
+	test_args_indexed_and_remaining ();
 
 	print_result ("test_opts");
 

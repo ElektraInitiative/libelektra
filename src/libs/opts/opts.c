@@ -40,6 +40,7 @@ struct Specification
 	KeySet * keys;
 	bool hasOpts;
 	bool hasArgs;
+	kdb_long_long_t argsIndexed;
 };
 
 static inline const char * keyGetMetaString (const Key * key, const char * meta)
@@ -70,6 +71,7 @@ static bool processShortOptSpec (struct Specification * spec, struct OptionData 
 static bool processLongOptSpec (struct Specification * spec, struct OptionData * optionData, Key ** keyWithOpt, char ** longOptLine,
 				Key * errorKey);
 static bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key * errorKey);
+static bool processArgs (struct Specification * spec, Key * cur, KeySet * argIndices, Key ** keyWithOpt, Key * errorKey);
 
 static int writeOptionValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * options, Key * errorKey);
 static int writeEnvVarValues (KeySet * ks, Key * keyWithOpt, KeySet * envValues, Key * errorKey);
@@ -124,7 +126,10 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		return -1;
 	}
 
-	Key * command = keyNew ("/", KEY_END);
+	char firstRemainingArg[ELEKTRA_MAX_ARRAY_SIZE];
+	elektraWriteArrayNumber (firstRemainingArg, spec.argsIndexed);
+	Key * command = keyNew ("/", KEY_META, "args/index", firstRemainingArg, KEY_END);
+
 	KeySet * options = parseArgs (command, spec.options, argc, argv, parentKey);
 
 	if (options == NULL)
@@ -310,6 +315,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 		}
 	}
 
+	KeySet * argIndices = ksNew (0, KS_END);
+
 	ksRewind (ks);
 	Key * cur;
 	while ((cur = ksNext (ks)) != NULL)
@@ -327,6 +334,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			ksDel (spec->options);
 			ksDel (spec->keys);
 			ksDel (usedEnvVars);
+			ksDel (argIndices);
 			return false;
 		}
 
@@ -336,93 +344,18 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			ksDel (spec->options);
 			ksDel (spec->keys);
 			ksDel (usedEnvVars);
+			ksDel (argIndices);
 			return false;
 		}
 
-		const char * argsMeta = keyGetMetaString (cur, "args");
-		if (argsMeta != NULL)
+		if (!processArgs (spec, cur, argIndices, &keyWithOpt, parentKey))
 		{
-			if (elektraStrCmp (argsMeta, "remaining") == 0)
-			{
-				if (elektraStrCmp (keyBaseName (cur), "#") != 0)
-				{
-					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-						parentKey,
-						"'args=remaining' can only be set on array keys (basename = '#'). Offending key: %s",
-						keyName (cur));
-					keyDel (specParent);
-					ksDel (spec->options);
-					ksDel (spec->keys);
-					ksDel (usedEnvVars);
-					return false;
-				}
-
-				if (keyWithOpt == NULL)
-				{
-					keyWithOpt = keyNew (keyName (cur), KEY_END);
-				}
-				keySetMeta (keyWithOpt, "args", "remaining");
-				spec->hasArgs = true;
-			}
-			else if (elektraStrCmp (argsMeta, "indexed") == 0)
-			{
-				if (elektraStrCmp (keyBaseName (cur), "#") == 0)
-				{
-					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-						parentKey,
-						"'args=indexed' can only be set on non-array keys (basename != '#'). Offending key: %s",
-						keyName (cur));
-					keyDel (specParent);
-					ksDel (spec->options);
-					ksDel (spec->keys);
-					ksDel (usedEnvVars);
-					return false;
-				}
-
-				const Key * argsIndex = keyGetMeta (cur, "args/index");
-				if (argsIndex == NULL)
-				{
-					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-						parentKey, "'args=indexed' must be accompanied by 'args/index'. Offending key: %s",
-						keyName (cur));
-					keyDel (specParent);
-					ksDel (spec->options);
-					ksDel (spec->keys);
-					ksDel (usedEnvVars);
-					return false;
-				}
-
-				kdb_long_long_t indexValue;
-				if (!elektraKeyToLongLong (argsIndex, &indexValue) || indexValue < 0)
-				{
-					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-						parentKey, "'args/index' must be a non-negative integer not '%s'. Offending key: %s",
-						keyString (argsIndex), keyName (cur));
-					keyDel (specParent);
-					ksDel (spec->options);
-					ksDel (spec->keys);
-					ksDel (usedEnvVars);
-					return false;
-				}
-
-				if (keyWithOpt == NULL)
-				{
-					keyWithOpt = keyNew (keyName (cur), KEY_END);
-				}
-				keySetMeta (keyWithOpt, "args", "indexed");
-				keySetMeta (keyWithOpt, "args/index", keyString (argsIndex));
-				spec->hasArgs = true;
-			}
-			else
-			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					parentKey, "unknown value for 'args' metadata: '%s'. Offending key: %s", argsMeta, keyName (cur));
-				keyDel (specParent);
-				ksDel (spec->options);
-				ksDel (spec->keys);
-				ksDel (usedEnvVars);
-				return false;
-			}
+			keyDel (specParent);
+			ksDel (spec->options);
+			ksDel (spec->keys);
+			ksDel (usedEnvVars);
+			ksDel (argIndices);
+			return false;
 		}
 
 		if (keyWithOpt != NULL)
@@ -432,6 +365,26 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 	}
 	keyDel (specParent);
 	ksDel (usedEnvVars);
+
+	char indexName[ELEKTRA_MAX_ARRAY_SIZE + 1];
+	indexName[0] = '/';
+	for (kdb_long_long_t i = 0; i < ksGetSize (argIndices); i++)
+	{
+		elektraWriteArrayNumber (indexName + 1, i);
+		if (ksLookupByName (argIndices, indexName, 0) == NULL)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				parentKey, "The values of 'args/index' must be continuous, but index " ELEKTRA_LONG_LONG_F " is missing.",
+				i);
+			ksDel (argIndices);
+			ksDel (spec->options);
+			ksDel (spec->keys);
+			return false;
+		}
+	}
+
+	spec->argsIndexed = ksGetSize (argIndices);
+	ksDel (argIndices);
 
 	return true;
 }
@@ -826,6 +779,84 @@ bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key
 	return true;
 }
 
+bool processArgs (struct Specification * spec, Key * cur, KeySet * argIndices, Key ** keyWithOpt, Key * errorKey)
+{
+	const char * argsMeta = keyGetMetaString (cur, "args");
+	if (argsMeta == NULL)
+	{
+		return true;
+	}
+
+	if (elektraStrCmp (argsMeta, "remaining") == 0)
+	{
+		if (elektraStrCmp (keyBaseName (cur), "#") != 0)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				errorKey, "'args=remaining' can only be set on array keys (basename = '#'). Offending key: %s",
+				keyName (cur));
+			return false;
+		}
+
+		if (*keyWithOpt == NULL)
+		{
+			*keyWithOpt = keyNew (keyName (cur), KEY_END);
+		}
+		keySetMeta (*keyWithOpt, "args", "remaining");
+		spec->hasArgs = true;
+
+		return true;
+	}
+	else if (elektraStrCmp (argsMeta, "indexed") == 0)
+	{
+		if (elektraStrCmp (keyBaseName (cur), "#") == 0)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				errorKey, "'args=indexed' can only be set on non-array keys (basename != '#'). Offending key: %s",
+				keyName (cur));
+			return false;
+		}
+
+		const Key * argsIndex = keyGetMeta (cur, "args/index");
+		if (argsIndex == NULL)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				errorKey, "'args=indexed' must be accompanied by 'args/index'. Offending key: %s", keyName (cur));
+			return false;
+		}
+
+		kdb_long_long_t indexValue;
+		if (!elektraKeyToLongLong (argsIndex, &indexValue) || indexValue < 0)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
+								"'args/index' must be a non-negative integer not '%s'. Offending key: %s",
+								keyString (argsIndex), keyName (cur));
+			return false;
+		}
+
+		if (*keyWithOpt == NULL)
+		{
+			*keyWithOpt = keyNew (keyName (cur), KEY_END);
+		}
+		keySetMeta (*keyWithOpt, "args", "indexed");
+		keySetMeta (*keyWithOpt, "args/index", keyString (argsIndex));
+		spec->hasArgs = true;
+
+		Key * indexKey = keyNew ("/", KEY_END);
+		char indexKeyName[ELEKTRA_MAX_ARRAY_SIZE];
+		elektraWriteArrayNumber (indexKeyName, indexValue);
+		keyAddBaseName (indexKey, indexKeyName);
+		ksAppendKey (argIndices, indexKey);
+
+		return true;
+	}
+	else
+	{
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "unknown value for 'args' metadata: '%s'. Offending key: %s", argsMeta,
+							keyName (cur));
+		return false;
+	}
+}
+
 /**
  * Add keys to the proc namespace in @p ks for all options specified
  * on @p keyWithOpt. The env-vars are taken from @p envValues.
@@ -963,6 +994,8 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * args
 
 	if (strcmp (argsMeta, "remaining") == 0)
 	{
+		char * firstRemainingArg = keyGetMetaString (command, "args/index");
+
 		Key * procKey = keyNew ("proc", KEY_END);
 		keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
 
@@ -972,6 +1005,11 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * args
 		Key * arg = NULL;
 		while ((arg = ksNext (args)) != NULL)
 		{
+			if (strcmp (keyBaseName (arg), firstRemainingArg) < 0)
+			{
+				continue;
+			}
+
 			elektraArrayIncName (insertKey);
 
 			Key * k = keyDup (insertKey);
