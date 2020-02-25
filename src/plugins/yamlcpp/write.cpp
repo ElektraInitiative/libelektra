@@ -26,51 +26,6 @@ namespace
 using KeySetPair = pair<KeySet, KeySet>;
 
 /**
- * @brief This function returns all array parents for a given key set.
- *
- * @param keys This parameter contains the key set this function searches for array parents.
- *
- * @return A key set that contains all array parents stored in `keys`
- */
-KeySet splitArrayParents (KeySet const & keys)
-{
-	KeySet arrayParents;
-	for (auto const & key : keys)
-	{
-		if (key.hasMeta ("array")) arrayParents.append (key);
-	}
-
-#ifdef HAVE_LOGGER
-	ELEKTRA_LOG_DEBUG ("Array parents:");
-	logKeySet (arrayParents);
-#endif
-
-	return arrayParents;
-}
-
-/**
- * @brief This function splits `keys` into two key sets, one for array parents and elements, and the other one for all other keys.
- *
- * @param arrayParents This key set contains (a copy of) all array parents of `keys`.
- * @param keys This parameter contains the key set this function splits.
- *
- * @return A pair of key sets, where the first key set contains all array parents and elements,
- *         and the second key set contains all other keys
- */
-KeySetPair splitArrayOther (KeySet const & arrayParents, KeySet const & keys)
-{
-	KeySet others = keys.dup ();
-	KeySet arrays;
-
-	for (auto const & parent : arrayParents)
-	{
-		arrays.append (others.cut (parent));
-	}
-
-	return make_pair (arrays, others);
-}
-
-/**
  * @brief This function determines all keys “missing” from the given keyset.
  *
  * The term “missing” refers to keys that are not part of the hierarchy. For example in a key set with the parent key
@@ -304,8 +259,6 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
  * @param data This node stores the data specified via `mappings`.
  * @param mappings This keyset specifies all keys and values this function adds to `data`.
  * @param parent This key is the root of all keys stored in `mappings`.
- * @param isArray This value specifies if the keys inside `keys` are all part of an array (either element or parent), or if none of them is
- *                part of an array.
  */
 void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 {
@@ -363,16 +316,8 @@ void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 	auto missing = missingKeys (keys, parent);
 	keys.append (missing);
 
-	KeySet arrayParents;
-	KeySet arrays;
-	KeySet nonArrays;
-
-	arrayParents = splitArrayParents (keys);
-	tie (arrays, nonArrays) = splitArrayOther (arrayParents, keys);
-
 	YAML::Node data;
-	addKeys (data, nonArrays, parent);
-	addKeys (data, arrays, parent);
+	addKeys (data, keys, parent);
 
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Write Data:");
