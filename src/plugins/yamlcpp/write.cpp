@@ -307,27 +307,19 @@ void addKeyArray (YAML::Node & data, NameIterator & keyIterator, Key & key, Key 
 
 	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
 
-	YAML::Node node;
-
-	string part = *keyIterator;
 	if (data.IsScalar ()) data = YAML::Node ();
 	if (isArrayElement)
 	{
-		node = (arrayIndex < data.size () && !data[arrayIndex].IsScalar ()) ? data[arrayIndex] : YAML::Node ();
-	}
-	else
-	{
-		node = (data[part] && !data[part].IsScalar ()) ? data[part] : YAML::Node ();
-	}
-	addKeyArray (node, ++keyIterator, key, converted, arrayParent);
-
-	if (isArrayElement)
-	{
+		YAML::Node node = (arrayIndex < data.size () && !data[arrayIndex].IsScalar ()) ? data[arrayIndex] : YAML::Node ();
+		addKeyArray (node, ++keyIterator, key, converted, arrayParent);
 		if (arrayIndex > data.size ()) addEmptyArrayElements (data, arrayIndex - data.size ());
 		data[arrayIndex] = node;
 	}
 	else
 	{
+		string part = *keyIterator;
+		YAML::Node node = (data[part] && !data[part].IsScalar ()) ? data[part] : YAML::Node ();
+		addKeyArray (node, ++keyIterator, key, converted, arrayParent);
 		data[part] = node;
 	}
 }
