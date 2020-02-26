@@ -16,11 +16,17 @@
 
 #include <sstream>
 
-using namespace std;
-using namespace kdb;
-
 namespace
 {
+
+using std::istringstream;
+using std::ostringstream;
+using std::string;
+using std::to_string;
+
+using kdb::Key;
+using kdb::KeySet;
+
 /**
  * @brief This function converts a given number to an array base name.
  *
