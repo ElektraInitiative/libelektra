@@ -28,7 +28,10 @@ using YAML::EmitterException;
 using YAML::ParserException;
 using YAML::RepresentationException;
 
+using ckdb::Key;
 using ckdb::keyNew;
+using ckdb::KeySet;
+using ckdb::Plugin;
 
 using yamlcpp::yamlRead;
 using yamlcpp::yamlWrite;

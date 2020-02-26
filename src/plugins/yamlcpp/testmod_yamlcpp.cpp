@@ -14,6 +14,9 @@
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
+using ckdb::Key;
+using ckdb::KeySet;
+using ckdb::Plugin;
 #include <tests.h>
 #include <tests.hpp>
 
