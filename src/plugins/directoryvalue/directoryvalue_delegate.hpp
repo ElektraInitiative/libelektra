@@ -18,14 +18,7 @@
 
 namespace elektra
 {
-using std::pair;
-using std::string;
-
-using CppKeySet = kdb::KeySet;
-
 constexpr ssize_t arrayValuePrefixSize = sizeof (ARRAY_VALUE_PREFIX) - 1;
-
-using KeySetPair = pair<CppKeySet, CppKeySet>;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
@@ -36,7 +29,7 @@ using KeySetPair = pair<CppKeySet, CppKeySet>;
  *
  * @return A key set containing all array parents of `keys`
  */
-CppKeySet getArrayParents (CppKeySet const & keys);
+kdb::KeySet getArrayParents (kdb::KeySet const & keys);
 
 /**
  * @brief Increase the array index of array elements by one.
@@ -49,7 +42,7 @@ CppKeySet getArrayParents (CppKeySet const & keys);
  *
  * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
  */
-KeySetPair increaseArrayIndices (CppKeySet const & parents, CppKeySet const & arrays);
+std::pair<kdb::KeySet, kdb::KeySet> increaseArrayIndices (kdb::KeySet const & parents, kdb::KeySet const & arrays);
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------
 
@@ -61,7 +54,7 @@ public:
 	 *
 	 * @param config This key set contains configuration values provided by the `directoryvalue` plugin
 	 */
-	explicit DirectoryValueDelegate (CppKeySet config);
+	explicit DirectoryValueDelegate (kdb::KeySet config);
 
 	/**
 	 * @brief This method converts all leaf keys in the given key set to directory keys.
@@ -71,7 +64,7 @@ public:
 	 * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the plugin converted any value in the given key set
 	 * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if the plugin did not update `keys`
 	 */
-	int convertToDirectories (CppKeySet & keys);
+	int convertToDirectories (kdb::KeySet & keys);
 
 	/**
 	 * @brief This method converts all directory keys in the given key set to leaf keys.
@@ -81,7 +74,7 @@ public:
 	 * @retval ELEKTRA_PLUGIN_STATUS_SUCCESS if the plugin converted any value in the given key set
 	 * @retval ELEKTRA_PLUGIN_STATUS_NO_UPDATE if the plugin did not update `keys`
 	 */
-	int convertToLeaves (CppKeySet & keys);
+	int convertToLeaves (kdb::KeySet & keys);
 };
 
 } // end namespace elektra

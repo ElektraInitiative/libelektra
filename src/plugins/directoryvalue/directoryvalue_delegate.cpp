@@ -25,6 +25,9 @@ using std::range_error;
 using std::string;
 using std::tie;
 
+using CppKeySet = kdb::KeySet;
+using KeySetPair = pair<CppKeySet, CppKeySet>;
+
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 namespace elektra
