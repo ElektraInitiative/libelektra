@@ -9,7 +9,6 @@
 
 #include <numeric>
 
-#include <iostream>
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdblogger.h>
