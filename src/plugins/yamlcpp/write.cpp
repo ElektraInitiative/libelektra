@@ -152,7 +152,7 @@ YAML::Node createLeafNode (Key & key)
 }
 
 /**
- * @brief This function adds `null` elements to the given YAML collection.
+ * @brief This function adds `null` elements to the given YAML sequence.
  *
  * @param sequence This node stores the collection to which this function adds `numberOfElements` empty elements.
  * @param numberOfElements This parameter specifies the number of empty element this function adds to `sequence`.
@@ -169,11 +169,12 @@ void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numb
 /**
  * @brief This function adds a key to a YAML node.
  *
- * @param data This node stores the data specified via `keyIterator`.
+ * @param data This node stores the data specified via the other parameters of this function.
  * @param keyIterator This iterator specifies the current part of the key name this function adds to `data`.
  * @param key This parameter specifies the key that should be added to `data`.
  * @param converted This partial key specifies the part of `key` that is already part of `data`.
- * @param arrayParent This key stores the (possible) array parent of the current part of `key` this function should add to `data`.
+ * @param arrayParent This key stores the array parent of the current part of `key` this function should add to `data`. This parameter must
+ *                    only contain a valid array parent for the first element key of an array.
  */
 void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
 {
@@ -210,12 +211,14 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & con
 /**
  * @brief This function adds a key set to a YAML node.
  *
- * @param data This node stores the data specified via `mappings`.
+ * @param data This node stores the data specified via the other parameters of this function.
  * @param mappings This keyset specifies all keys and values this function adds to `data`.
  * @param parent This key is the root of all keys stored in `mappings`.
  */
 void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 {
+	/* This stack stores the current array parents for a certain part of a key. The code below only guarantees that the
+	   array parents will be correct for the first array element below a parent. */
 	stack<Key> arrayParents;
 
 	for (auto key : mappings)
