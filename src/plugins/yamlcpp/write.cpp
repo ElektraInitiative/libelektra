@@ -24,65 +24,12 @@ using std::endl;
 using std::istringstream;
 using std::ofstream;
 using std::ostringstream;
-using std::pair;
 using std::stack;
 using std::string;
 
 using kdb::Key;
 using kdb::KeySet;
 using kdb::NameIterator;
-using KeySetPair = pair<KeySet, KeySet>;
-
-/**
- * @brief This function determines all keys “missing” from the given keyset.
- *
- * The term “missing” refers to keys that are not part of the hierarchy. For example in a key set with the parent key
- *
- *  - `user/parent`
- *
- * that contains the keys
- *
- * - `user/parent/level1/level2`, and
- * - `user/parent/level1/level2/level3/level4`
- *
- * , the keys
- *
- * - `user/parent/level1`, and
- * - `user/parent/level1/level2/level3`
- *
- * are missing.
- *
- * @param keys This parameter contains the key set for which this function determines missing keys.
- * @param parent This value stores the parent key of `keys`.
- *
- * @return A key set that contains all keys missing from `keys`
- */
-KeySet missingKeys (KeySet const & keys, Key const & parent)
-{
-	KeySet missing;
-
-	keys.rewind ();
-	Key previous{ parent.getName (), KEY_BINARY, KEY_END };
-	for (; keys.next (); previous = keys.current ())
-	{
-		if (keys.current ().isDirectBelow (previous) || !keys.current ().isBelow (previous)) continue;
-
-		Key current{ keys.current ().getName (), KEY_BINARY, KEY_END };
-		while (!current.isDirectBelow (previous))
-		{
-			ckdb::keySetBaseName (*current, NULL);
-			missing.append (current);
-			current = current.dup ();
-		}
-	}
-
-#ifdef HAVE_LOGGER
-	ELEKTRA_LOG_DEBUG ("Add missing keys:");
-	logKeySet (missing);
-#endif
-
-	return missing;
-}
 
 /**
  * @brief This function returns a `NameIterator` starting at the first level that is not part of `parent`.
@@ -320,9 +267,6 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
 	KeySet keys = mappings;
-	auto missing = missingKeys (keys, parent);
-	keys.append (missing);
-
 	YAML::Node data;
 	addKeys (data, keys, parent);
 
