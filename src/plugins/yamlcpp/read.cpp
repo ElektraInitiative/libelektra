@@ -92,7 +92,7 @@ Key newArrayKey (Key & arrayKey, uintmax_t const index)
  */
 void addMetadata (Key & key, Node const & node)
 {
-	for (auto & element : node)
+	for (auto const & element : node)
 	{
 		auto metakey = element.first.as<string> ();
 		auto metavalue = element.second.IsNull () ? "" : element.second.as<string> ();
@@ -180,7 +180,7 @@ void convertNodeToKeySet (Node const & node, KeySet & mappings, Key & parent)
 	}
 	else if (node.IsMap ())
 	{
-		for (auto element : node)
+		for (auto const & element : node)
 		{
 			Key key = newKey (element.first.as<string> (), parent);
 			convertNodeToKeySet (element.second, mappings, key);
