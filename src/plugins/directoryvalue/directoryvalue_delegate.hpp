@@ -25,7 +25,7 @@ using CppKeySet = kdb::KeySet;
 
 constexpr ssize_t arrayValuePrefixSize = sizeof (ARRAY_VALUE_PREFIX) - 1;
 
-typedef pair<CppKeySet, CppKeySet> KeySetPair;
+using KeySetPair = pair<CppKeySet, CppKeySet>;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
