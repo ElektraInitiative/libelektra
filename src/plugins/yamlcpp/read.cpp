@@ -23,6 +23,8 @@ using std::ostringstream;
 using std::string;
 using std::to_string;
 
+using YAML::Node;
+
 using kdb::Key;
 using kdb::KeySet;
 
@@ -88,7 +90,7 @@ Key newArrayKey (Key & arrayKey, uintmax_t const index)
  * @param key This parameter saves the key to which this function should add the metadata stored in `node`.
  * @param node This YAML node stores a map containing metadata.
  */
-void addMetadata (Key & key, YAML::Node const & node)
+void addMetadata (Key & key, Node const & node)
 {
 	for (auto & element : node)
 	{
@@ -107,7 +109,7 @@ void addMetadata (Key & key, YAML::Node const & node)
  *
  * @return A new key containing the data specified in `node`
  */
-Key createLeafKey (YAML::Node const & node, string const & name)
+Key createLeafKey (Node const & node, string const & name)
 {
 	Key key{ name, KEY_BINARY, KEY_END };
 	if (!node.IsNull ())
@@ -147,7 +149,7 @@ Key createLeafKey (YAML::Node const & node, string const & name)
  *
  * @return A key representing the key value stored in `node`
  */
-Key convertMetaNodeToKey (YAML::Node const & node, Key & parent)
+Key convertMetaNodeToKey (Node const & node, Key & parent)
 {
 	auto key = node[0].IsNull () ? Key{ parent.getFullName (), KEY_BINARY, KEY_END } :
 				       Key{ parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
@@ -163,7 +165,7 @@ Key convertMetaNodeToKey (YAML::Node const & node, Key & parent)
  * @param mappings The key set where the YAML data will be stored
  * @param parent This key stores the prefix for the key name
  */
-void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & parent)
+void convertNodeToKeySet (Node const & node, KeySet & mappings, Key & parent)
 {
 	if (node.Tag () == "!elektra/meta")
 	{
@@ -214,7 +216,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
  */
 void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 {
-	YAML::Node config = YAML::LoadFile (parent.getString ());
+	Node config = YAML::LoadFile (parent.getString ());
 
 	ELEKTRA_LOG_DEBUG ("Read file “%s”", parent.getString ().c_str ());
 

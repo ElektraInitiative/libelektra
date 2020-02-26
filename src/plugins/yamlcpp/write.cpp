@@ -27,6 +27,9 @@ using std::ostringstream;
 using std::stack;
 using std::string;
 
+using YAML::Node;
+using YAML::NodeType;
+
 using kdb::Key;
 using kdb::KeySet;
 using kdb::NameIterator;
@@ -78,27 +81,27 @@ uintmax_t getArrayIndex (NameIterator const & nameIterator)
  *
  * @returns A new YAML node containing the data specified in `key`
  */
-YAML::Node createNode (Key const & key)
+Node createNode (Key const & key)
 {
 	if (key.hasMeta ("array"))
 	{
-		return YAML::Node (YAML::NodeType::Sequence);
+		return Node (NodeType::Sequence);
 	}
 	if (key.getBinarySize () == 0)
 	{
-		return YAML::Node (YAML::NodeType::Null);
+		return Node (NodeType::Null);
 	}
 	if (key.isBinary ())
 	{
-		return YAML::Node ("Unsupported binary value!");
+		return Node ("Unsupported binary value!");
 	}
 
 	auto value = key.get<string> ();
 	if (value == "0" || value == "1")
 	{
-		return YAML::Node (key.get<bool> ());
+		return Node (key.get<bool> ());
 	}
-	return YAML::Node (value);
+	return Node (value);
 }
 
 /**
@@ -111,11 +114,11 @@ YAML::Node createNode (Key const & key)
  *
  * @returns A new YAML node containing the data and metadata specified in `key`
  */
-YAML::Node createLeafNode (Key & key)
+Node createLeafNode (Key & key)
 {
 
-	YAML::Node metaNode{ YAML::NodeType::Map };
-	YAML::Node dataNode = createNode (key);
+	Node metaNode{ NodeType::Map };
+	Node dataNode = createNode (key);
 
 	key.rewindMeta ();
 	while (Key meta = key.nextMeta ())
@@ -137,7 +140,7 @@ YAML::Node createLeafNode (Key & key)
 		return dataNode;
 	}
 
-	YAML::Node node{ YAML::NodeType::Sequence };
+	Node node{ NodeType::Sequence };
 	node.SetTag ("!elektra/meta");
 	node.push_back (dataNode);
 	node.push_back (metaNode);
@@ -157,7 +160,7 @@ YAML::Node createLeafNode (Key & key)
  * @param sequence This node stores the collection to which this function adds `numberOfElements` empty elements.
  * @param numberOfElements This parameter specifies the number of empty element this function adds to `sequence`.
  */
-void addEmptyArrayElements (YAML::Node & sequence, uintmax_t const numberOfElements)
+void addEmptyArrayElements (Node & sequence, uintmax_t const numberOfElements)
 {
 	ELEKTRA_LOG_DEBUG ("Add %ju empty array elements", numberOfElements);
 	for (auto missingFields = numberOfElements; missingFields > 0; missingFields--)
@@ -176,7 +179,7 @@ void addEmptyArrayElements (YAML::Node & sequence, uintmax_t const numberOfEleme
  * @param arrayParent This key stores the array parent of the current part of `key` this function should add to `data`. This parameter must
  *                    only contain a valid array parent for the first element key of an array.
  */
-void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
+void addKey (Node & data, NameIterator & keyIterator, Key & key, Key & converted, Key * arrayParent)
 {
 	if (keyIterator == key.end ())
 	{
@@ -191,10 +194,10 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & con
 
 	ELEKTRA_LOG_DEBUG ("Add key part “%s”", (*keyIterator).c_str ());
 
-	if (data.IsScalar ()) data = YAML::Node ();
+	if (data.IsScalar ()) data = Node ();
 	if (isArrayElement)
 	{
-		YAML::Node node = arrayIndex < data.size () ? data[arrayIndex] : YAML::Node ();
+		Node node = arrayIndex < data.size () ? data[arrayIndex] : Node ();
 		addKey (node, ++keyIterator, key, converted, arrayParent);
 		if (arrayIndex > data.size ()) addEmptyArrayElements (data, arrayIndex - data.size ());
 		data[arrayIndex] = node;
@@ -202,7 +205,7 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & con
 	else
 	{
 		string part = *keyIterator;
-		YAML::Node node = data[part] ? data[part] : YAML::Node ();
+		Node node = data[part] ? data[part] : Node ();
 		addKey (node, ++keyIterator, key, converted, arrayParent);
 		data[part] = node;
 	}
@@ -215,7 +218,7 @@ void addKey (YAML::Node & data, NameIterator & keyIterator, Key & key, Key & con
  * @param mappings This keyset specifies all keys and values this function adds to `data`.
  * @param parent This key is the root of all keys stored in `mappings`.
  */
-void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
+void addKeys (Node & data, KeySet const & mappings, Key const & parent)
 {
 	/* This stack stores the current array parents for a certain part of a key. The code below only guarantees that the
 	   array parents will be correct for the first array element below a parent. */
@@ -270,7 +273,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 void yamlcpp::yamlWrite (KeySet const & mappings, Key const & parent)
 {
 	KeySet keys = mappings;
-	YAML::Node data;
+	Node data;
 	addKeys (data, keys, parent);
 
 #ifdef HAVE_LOGGER
