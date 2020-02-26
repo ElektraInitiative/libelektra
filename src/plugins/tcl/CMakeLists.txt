@@ -10,4 +10,5 @@ add_plugin (
 	INCLUDE_SYSTEM_DIRECTORIES ${Boost_INCLUDE_DIRS}
 	SOURCES tcl.hpp tcl.cpp action.hpp action.cpp printer.hpp printer.cpp
 	LINK_ELEKTRA elektra-ease
-	TEST_README)
+	TEST_README
+	TEST_REQUIRED_PLUGINS xmltool)

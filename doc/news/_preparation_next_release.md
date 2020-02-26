@@ -43,6 +43,12 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Improved error message for augeas to show lensPath. _(Michael Zronek)_
 
+### CCode
+
+- The [Markdown Shell Recorder][] test of the plugin does not require Bash any more. _(René Schwaiger)_
+
+[markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
+
 ### KConfig
 
 - We implemented the methods that save a KeySet into a file with the KConfig Ini format. _(Dardan Haxhimustafa)_
@@ -58,6 +64,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### SWIG/python2
 
 - Removed. _(Manuel Mausz)_
+
+### Tcl
+
+- The [Markdown Shell Recorder][] test of the plugin now correctly requires the [`xmltool` plugin](../../src/plugins/xmltool). _(René Schwaiger)_
 
 ### YAMBi
 
