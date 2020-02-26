@@ -114,7 +114,7 @@ YAML::Node createNode (Key const & key)
 YAML::Node createLeafNode (Key & key)
 {
 
-	YAML::Node metaNode{ YAML::Node (YAML::NodeType::Map) };
+	YAML::Node metaNode{ YAML::NodeType::Map };
 	YAML::Node dataNode = createNode (key);
 
 	key.rewindMeta ();
@@ -137,7 +137,7 @@ YAML::Node createLeafNode (Key & key)
 		return dataNode;
 	}
 
-	YAML::Node node{ YAML::Node (YAML::NodeType::Sequence) };
+	YAML::Node node{ YAML::NodeType::Sequence };
 	node.SetTag ("!elektra/meta");
 	node.push_back (dataNode);
 	node.push_back (metaNode);
