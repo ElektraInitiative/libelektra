@@ -60,7 +60,7 @@ NameIterator relativeKeyIterator (Key const & key, Key const & parent)
  *
  * @retval The index of the array element, or `0` if the given key part is not an array element.
  */
-unsigned long long getArrayIndex (NameIterator const & nameIterator)
+uintmax_t getArrayIndex (NameIterator const & nameIterator)
 {
 	string const name = *nameIterator;
 	auto const offsetIndex = ckdb::elektraArrayValidateBaseNameString (name.c_str ());
@@ -157,9 +157,9 @@ YAML::Node createLeafNode (Key & key)
  * @param sequence This node stores the collection to which this function adds `numberOfElements` empty elements.
  * @param numberOfElements This parameter specifies the number of empty element this function adds to `sequence`.
  */
-void addEmptyArrayElements (YAML::Node & sequence, unsigned long long const numberOfElements)
+void addEmptyArrayElements (YAML::Node & sequence, uintmax_t const numberOfElements)
 {
-	ELEKTRA_LOG_DEBUG ("Add %llu empty array elements", numberOfElements);
+	ELEKTRA_LOG_DEBUG ("Add %ju empty array elements", numberOfElements);
 	for (auto missingFields = numberOfElements; missingFields > 0; missingFields--)
 	{
 		sequence.push_back ({});
