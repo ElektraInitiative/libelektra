@@ -19,16 +19,13 @@
 
 using ckdb::keyNew;
 
-using CppKeySet = kdb::KeySet;
-using CppKey = kdb::Key;
-
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
 #define OPEN_PLUGIN(parentName, filepath)                                                                                                  \
-	CppKeySet modules{ 0, KS_END };                                                                                                    \
-	CppKeySet config{ 0, KS_END };                                                                                                     \
+	kdb::KeySet modules{ 0, KS_END };                                                                                                  \
+	kdb::KeySet config{ 0, KS_END };                                                                                                   \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
-	CppKey parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                         \
+	kdb::Key parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                       \
 	Plugin * plugin = elektraPluginOpen ("yamlcpp", modules.getKeySet (), config.getKeySet (), *parent);                               \
 	exit_if_fail (plugin != NULL, "Could not open yamlcpp plugin")
 
@@ -47,14 +44,14 @@ TEST (yamlcpp, contract)
 {
 	OPEN_PLUGIN ("system/elektra/modules/yamlcpp", "file/path");
 
-	CppKeySet keys;
+	kdb::KeySet keys;
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			 "Unable to retrieve plugin contract");
 
 	CLOSE_PLUGIN ();
 }
 
-static void test_read (string const & filename, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+static void test_read (string const & filename, kdb::KeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress")))
 #endif
@@ -63,14 +60,14 @@ static void test_read (string const & filename, CppKeySet expected, int const st
 
 	OPEN_PLUGIN (PREFIX, filepath.c_str ());
 
-	CppKeySet keys;
+	kdb::KeySet keys;
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), status, parent.getMeta<string> ("error/reason"));
 	compare_keyset (keys, expected);
 
 	CLOSE_PLUGIN ();
 }
 
-static void test_write_read (CppKeySet expected)
+static void test_write_read (kdb::KeySet expected)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress")))
 #endif
@@ -84,7 +81,7 @@ static void test_write_read (CppKeySet expected)
 			 parent.getMeta<string> ("error/reason"));
 
 	// Read written data
-	CppKeySet keySetRead;
+	kdb::KeySet keySetRead;
 	succeed_if_same (plugin->kdbGet (plugin, keySetRead.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			 parent.getMeta<string> ("error/reason"));
 
