@@ -225,7 +225,6 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 	{
 		ELEKTRA_LOG_DEBUG ("Convert key “%s”: “%s”", key.getName ().c_str (),
 				   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
-		NameIterator keyIterator = relativeKeyIterator (key, parent);
 
 		if (key.hasMeta ("array"))
 		{
@@ -238,6 +237,7 @@ void addKeys (YAML::Node & data, KeySet const & mappings, Key const & parent)
 			arrayParents.pop ();
 		}
 
+		NameIterator keyIterator = relativeKeyIterator (key, parent);
 		Key converted{ parent.getName (), KEY_END };
 		addKey (data, keyIterator, key, converted, arrayParents.empty () ? nullptr : &arrayParents.top ());
 
