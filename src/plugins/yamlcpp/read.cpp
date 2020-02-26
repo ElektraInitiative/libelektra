@@ -12,7 +12,6 @@
 
 #include <kdb.hpp>
 #include <kdblogger.h>
-#include <kdbplugin.h>
 
 #include <sstream>
 
