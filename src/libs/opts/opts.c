@@ -235,6 +235,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 		}
 
 		ELEKTRA_ASSERT (0, "should be unreachable");
+		return -2;
 	}
 	else
 	{
