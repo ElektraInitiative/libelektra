@@ -77,8 +77,11 @@ bool isToBeIgnored (std::string const & name)
 
 	       startsWith (name, "binary") ||
 
+	       // elektraGetOpts
+	       startsWith (name, "opt") || startsWith (name, "args") || startsWith (name, "env") || startsWith (name, "command") ||
+
 	       // code generator
-	       startsWith (name, "opt") || startsWith (name, "env") || startsWith (name, "gen") ||
+	       startsWith (name, "gen") ||
 
 	       // docu
 	       startsWith (name, "comment") || startsWith (name, "description") || startsWith (name, "see") ||

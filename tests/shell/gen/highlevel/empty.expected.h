@@ -39,6 +39,8 @@ extern "C" {
 
 
 
+
+
 // clang-format off
 
 // clang-format on
@@ -151,6 +153,8 @@ extern "C" {
 int loadConfiguration (Elektra ** elektra, ElektraError ** error);
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix);
 void exitForSpecload (int argc, const char ** argv);
+
+
 
 
 /**

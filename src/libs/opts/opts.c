@@ -68,7 +68,7 @@ static char * generateOptionsList (KeySet * keysWithOpts);
 static char * generateArgsList (KeySet * keysWithOpts);
 static char * generateEnvsList (KeySet * keysWithOpts);
 
-static bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey);
+static bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Key * errorKey);
 static bool processOptions (struct Specification * spec, Key * command, Key * specKey, Key ** keyWithOpt, Key * errorKey);
 static bool readOptionData (struct OptionData * optionData, Key * key, const char * metaKey, Key * errorKey);
 static bool processShortOptSpec (struct Specification * spec, struct OptionData * optionData, Key * command, Key ** keyWithOpt,
@@ -127,15 +127,30 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 {
 	cursor_t initial = ksGetCursor (ks);
 
-	struct Specification spec;
-	if (!processSpec (&spec, ks, parentKey))
+	Key * specParent = keyDup (parentKey);
+	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
 	{
+		keySetName (specParent, "spec");
+
+		const char * parent = strchr (keyName (parentKey), '/');
+		if (parent != NULL)
+		{
+			keyAddName (specParent, parent + 1);
+		}
+	}
+
+	struct Specification spec;
+	if (!processSpec (&spec, ks, specParent, parentKey))
+	{
+		keyDel (specParent);
 		ksSetCursor (ks, initial);
 		return -1;
 	}
 
 	Key * command = keyNew ("/", KEY_END);
-	Key * commandKey = keyNew (keyName (parentKey), KEY_END);
+	Key * commandKey = keyNew (keyName (specParent), KEY_END);
+
+	keyDel (specParent);
 
 	if (spec.useSubcommands)
 	{
@@ -211,7 +226,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				return 0;
 			}
 
-			keySetString (procKey, argv[endArg]);
+			keySetString (procKey, keyString (subCommand));
 
 			keyAddBaseName (command, argv[endArg]);
 			keyAddBaseName (commandKey, keyString (subCommand));
@@ -261,6 +276,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
  */
 char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char * prefix)
 {
+	// FIXME: help message specific to command
 	if (usage == NULL)
 	{
 		usage = keyGetMetaString (errorKey, "internal/libopts/help/usage");
@@ -299,7 +315,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 /**
  * Process the specification set in the keys of @p ks, into @p spec.
  */
-bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
+bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Key * errorKey)
 {
 	KeySet * usedEnvVars = ksNew (0, KS_END);
 	spec->options = ksNew (
@@ -310,17 +326,6 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 	spec->hasOpts = false;
 	spec->hasArgs = false;
 
-	Key * specParent = keyDup (parentKey);
-	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
-	{
-		keySetName (specParent, "spec");
-
-		const char * parent = strchr (keyName (parentKey), '/');
-		if (parent != NULL)
-		{
-			keyAddName (specParent, parent + 1);
-		}
-	}
 	size_t specParentLen = strlen (keyName (specParent));
 
 	bool useSubcommands = false;
@@ -337,9 +342,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			else if (commandMeta != NULL)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					parentKey, "On the parent key 'command' can only be set to an empty string. Offending key: %s",
+					errorKey, "On the parent key 'command' can only be set to an empty string. Offending key: %s",
 					keyName (parent));
-				keyDel (specParent);
 				ksDel (spec->options);
 				ksDel (spec->keys);
 				ksDel (usedEnvVars);
@@ -370,9 +374,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			if (!useSubcommands)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					parentKey, "'command' can only be used, if it is set on the parent key as well. Offending key: %s",
+					errorKey, "'command' can only be used, if it is set on the parent key as well. Offending key: %s",
 					keyName (cur));
-				keyDel (specParent);
 				ksDel (spec->options);
 				ksDel (spec->argIndices);
 				ksDel (spec->keys);
@@ -384,10 +387,9 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			if (commandMetaString == NULL || (strlen (commandMetaString) == 0 && !isParentKey))
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					parentKey,
+					errorKey,
 					"'command' must be set to a non-empty string (except on the parent key). Offending key: %s",
 					keyName (cur));
-				keyDel (specParent);
 				ksDel (spec->options);
 				ksDel (spec->argIndices);
 				ksDel (spec->keys);
@@ -414,11 +416,10 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			Key * maybeCommand = ksLookup (ks, curParent, KDB_O_DEL);
 			if (maybeCommand == NULL)
 			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey,
+				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey,
 									"The parent of this key (%s) must have the 'command' metakey set. "
 									"Offending key: parent doesn't exist",
 									keyName (cur));
-				keyDel (specParent);
 				keyDel (keyWithOpt);
 				keyDel (command);
 				ksDel (spec->options);
@@ -432,9 +433,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			if (commandMetaString == NULL && strcmp (keyName (maybeCommand), keyName (specParent)) != 0)
 			{
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					parentKey, "The parent of this key (%s) must have the 'command' metakey set. Offending key: %s",
+					errorKey, "The parent of this key (%s) must have the 'command' metakey set. Offending key: %s",
 					keyName (cur), keyName (maybeCommand));
-				keyDel (specParent);
 				keyDel (keyWithOpt);
 				keyDel (command);
 				ksDel (spec->options);
@@ -453,9 +453,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 
 				if (ksLookup (keyMeta (parentCommand), subCommand, 0) != NULL)
 				{
-					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "Duplicate sub-command '%s'. Offending key: %s",
+					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Duplicate sub-command '%s'. Offending key: %s",
 										keyString (commandMeta), keyName (cur));
-					keyDel (specParent);
 					keyDel (subCommand);
 					keyDel (keyWithOpt);
 					keyDel (command);
@@ -473,10 +472,9 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			keySetString (command, keyName (maybeCommand));
 		}
 
-		if (!processOptions (spec, command, cur, &keyWithOpt, parentKey))
+		if (!processOptions (spec, command, cur, &keyWithOpt, errorKey))
 		{
 			keyDel (command);
-			keyDel (specParent);
 			keyDel (keyWithOpt);
 			ksDel (spec->argIndices);
 			ksDel (spec->options);
@@ -485,10 +483,9 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			return false;
 		}
 
-		if (!processEnvVars (usedEnvVars, cur, &keyWithOpt, parentKey))
+		if (!processEnvVars (usedEnvVars, cur, &keyWithOpt, errorKey))
 		{
 			keyDel (command);
-			keyDel (specParent);
 			keyDel (keyWithOpt);
 			ksDel (spec->argIndices);
 			ksDel (spec->options);
@@ -497,10 +494,9 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			return false;
 		}
 
-		if (!processArgs (spec, command, cur, spec->argIndices, &keyWithOpt, parentKey))
+		if (!processArgs (spec, command, cur, spec->argIndices, &keyWithOpt, errorKey))
 		{
 			keyDel (command);
-			keyDel (specParent);
 			keyDel (keyWithOpt);
 			ksDel (spec->argIndices);
 			ksDel (spec->options);
@@ -516,7 +512,6 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 			ksAppendKey (spec->keys, keyWithOpt);
 		}
 	}
-	keyDel (specParent);
 	ksDel (usedEnvVars);
 
 	for (kdb_long_long_t i = 0; i < ksGetSize (spec->argIndices); i++)
@@ -531,7 +526,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 				Key * command = keyDup (cur);
 				keySetBaseName (command, NULL);
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					parentKey,
+					errorKey,
 					"The values of 'args/index' must be continuous, but index " ELEKTRA_LONG_LONG_F
 					" is missing in keys below: %s",
 					j - 1, keyGetMetaString (cur, "key"));
@@ -1226,7 +1221,10 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * argI
 		}
 
 		keySetBaseName (procKey, NULL); // remove #
-		keySetMeta (procKey, "array", keyBaseName (insertKey));
+		if (strcmp (keyBaseName (insertKey), "#") != 0)
+		{
+			keySetMeta (procKey, "array", keyBaseName (insertKey));
+		}
 		ksAppendKey (ks, procKey);
 		keyDel (insertKey);
 		return 1;

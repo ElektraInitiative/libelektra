@@ -196,6 +196,66 @@ void /*%& help_function_name %*/ (Elektra * elektra, const char * usage, const c
 	elektraFree (help);
 }
 
+/*%# use_commands? %*/
+/*%={{ }}=%*/
+/**
+ * Determines which sub-commands (according to `elektraGetOpts`) have been invoked and calls the associated functions in
+ * order. The parameters @p elektra and @p userData will be passed through. In addition, the `terminal` parameter will be
+ * set to `true` for the last command function that is called.
+ *
+ * @param elektra  The Elektra instance produced by {{{ init_function_name }}}.
+ * @param usage	   Custom applicationd defined data. Will be passed untouched to the invoked command functions. Maybe NULL.
+ * 
+ * @return If @p elektra is NULL -1 is returned.
+ *         If one of the invoked command functions returns a non-zero value, that value is returned.
+ *         Otherwise the return value of the terminal command function is returned.
+ */// {{=/*% %*/=}}
+int /*%& run_commands_function_name %*/ (Elektra * elektra, void * userData)
+{
+	if (elektra == NULL)
+	{
+		return -1;
+	}
+
+	KeySet * commands = ksNew(/*%& commands_count %*/,
+		/*%# commands %*/
+		keyNew ("//*% name %*/", KEY_FUNC, /*%& function_name %*/, KEY_END),
+		/*%/ commands %*/
+		KS_END
+	);
+
+	typedef int (*commandFunction) (Elektra *, kdb_boolean_t, void *);
+
+	Key * lastCommand = keyNew ("/", KEY_END);
+	const char * command = ELEKTRA_GET (String) (elektra, keyName(lastCommand) + 1);
+	while(strlen(command) > 0)
+	{
+		Key * commandKey = ksLookup (commands, lastCommand, 0);
+		const void * rawFunc = keyValue (commandKey);
+		commandFunction func = *(commandFunction *) rawFunc;
+		int result = func (elektra, false, userData);
+		if (result != 0)
+		{
+			keyDel (lastCommand);
+			ksDel (commands);
+			return result;
+		}
+
+		keyAddBaseName (lastCommand, command);
+		command = ELEKTRA_GET (String) (elektra, keyName(lastCommand) + 1);
+	}
+
+	Key * commandKey = ksLookup (commands, lastCommand, 0);
+	const void * rawFunc = keyValue (commandKey);
+	commandFunction func = *(commandFunction *) rawFunc;
+	int result = func (elektra, true, userData);
+	
+	keyDel (lastCommand);
+	ksDel (commands);
+	return result;
+}
+/*%/ use_commands? %*/
+
 /*%> partial.enum.c %*/
 
 /*%> partial.union.c %*/

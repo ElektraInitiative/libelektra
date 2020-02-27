@@ -162,6 +162,8 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 	elektraFree (help);
 }
 
+
+
 // clang-format off
 
 // clang-format on

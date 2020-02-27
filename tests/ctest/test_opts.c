@@ -1022,7 +1022,7 @@ static void test_stop (void)
 
 	RUN_TEST (ks, ARGS ("--"), ENVP ("APPLE=env"));
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/apple", "env"), "env-var failed (stopped options)");
-	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", "#"), "rest has wrong count");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", NULL), "rest has wrong count");
 	clearValues (ks);
 
 
@@ -1094,6 +1094,10 @@ static void test_args_remaining (void)
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/rest/#4", "test"), "args remaining (#4)");
 	clearValues (ks);
 
+	RUN_TEST (ks, NO_ARGS, NO_ENVP);
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/rest", "array", NULL), "args remaining (wrong count)");
+	clearValues (ks);
+
 	ksDel (ks);
 }
 
@@ -1155,7 +1159,7 @@ static void test_commands (void)
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/printversion", "1"), "command failed: kdb {-v}");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb -v [get]");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb -v [set]");
-	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", "#"), "command failed: kdb -v [dynamic]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb -v [dynamic]");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb -v [dynamic]");
 	clearValues (ks);
 
@@ -1196,7 +1200,7 @@ static void test_commands (void)
 	clearValues (ks);
 
 	RUN_TEST (ks, ARGS ("set", "get", "-v"), NO_ENVP);
-	succeed_if (checkValue (ks, PROC_BASE_KEY, "set"), "command failed: {kdb} set get -v");
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "set1"), "command failed: {kdb} set get -v");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb {set} get -v");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/keyname", "get"), "command failed: kdb set {get} -v");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/value", "-v"), "command failed: kdb set get {-v}");
