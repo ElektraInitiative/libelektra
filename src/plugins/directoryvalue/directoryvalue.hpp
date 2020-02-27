@@ -10,8 +10,6 @@
 #ifndef ELEKTRA_PLUGIN_DIRECTORY_VALUE_HPP
 #define ELEKTRA_PLUGIN_DIRECTORY_VALUE_HPP
 
-#include <kdbplugin.h>
-
 #include "directoryvalue_delegate.hpp"
 
 extern "C" {
