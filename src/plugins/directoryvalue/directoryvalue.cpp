@@ -20,9 +20,6 @@ using elektra::DirectoryValueDelegate;
 using ckdb::keyNew;
 using ckdb::Plugin;
 
-using CppKey = kdb::Key;
-using CppKeySet = kdb::KeySet;
-
 namespace
 {
 
@@ -31,19 +28,19 @@ namespace
  *
  * @return A key set specifying the capabilities of the plugin
  */
-CppKeySet getContract ()
+kdb::KeySet getContract ()
 {
-	return CppKeySet{ 30,
-			  keyNew ("system/elektra/modules/directoryvalue", KEY_VALUE, "directoryvalue plugin waits for your orders",
-				  KEY_END),
-			  keyNew ("system/elektra/modules/directoryvalue/exports", KEY_END),
-			  keyNew ("system/elektra/modules/directoryvalue/exports/open", KEY_FUNC, elektraDirectoryValueOpen, KEY_END),
-			  keyNew ("system/elektra/modules/directoryvalue/exports/close", KEY_FUNC, elektraDirectoryValueClose, KEY_END),
-			  keyNew ("system/elektra/modules/directoryvalue/exports/get", KEY_FUNC, elektraDirectoryValueGet, KEY_END),
-			  keyNew ("system/elektra/modules/directoryvalue/exports/set", KEY_FUNC, elektraDirectoryValueSet, KEY_END),
+	return kdb::KeySet{ 30,
+			    keyNew ("system/elektra/modules/directoryvalue", KEY_VALUE, "directoryvalue plugin waits for your orders",
+				    KEY_END),
+			    keyNew ("system/elektra/modules/directoryvalue/exports", KEY_END),
+			    keyNew ("system/elektra/modules/directoryvalue/exports/open", KEY_FUNC, elektraDirectoryValueOpen, KEY_END),
+			    keyNew ("system/elektra/modules/directoryvalue/exports/close", KEY_FUNC, elektraDirectoryValueClose, KEY_END),
+			    keyNew ("system/elektra/modules/directoryvalue/exports/get", KEY_FUNC, elektraDirectoryValueGet, KEY_END),
+			    keyNew ("system/elektra/modules/directoryvalue/exports/set", KEY_FUNC, elektraDirectoryValueSet, KEY_END),
 #include ELEKTRA_README
-			  keyNew ("system/elektra/modules/directoryvalue/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-			  KS_END };
+			    keyNew ("system/elektra/modules/directoryvalue/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			    KS_END };
 }
 
 } // end namespace
@@ -67,8 +64,8 @@ int elektraDirectoryValueClose (Plugin * handle, Key * key)
 /** @see elektraDocGet */
 int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	CppKeySet keys{ returned };
-	CppKey parent{ parentKey };
+	kdb::KeySet keys{ returned };
+	kdb::Key parent{ parentKey };
 
 	if (parent.getName () == "system/elektra/modules/directoryvalue")
 	{
@@ -110,8 +107,8 @@ int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKe
 /** @see elektraDocSet */
 int elektraDirectoryValueSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	CppKeySet keys{ returned };
-	CppKey parent{ parentKey };
+	kdb::KeySet keys{ returned };
+	kdb::Key parent{ parentKey };
 
 	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
 

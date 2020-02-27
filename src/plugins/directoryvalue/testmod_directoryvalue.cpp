@@ -19,19 +19,16 @@ using std::tie;
 using ckdb::keyNew;
 using ckdb::Plugin;
 
-using CppKeySet = kdb::KeySet;
-using CppKey = kdb::Key;
-
 using elektra::getArrayParents;
 using elektra::increaseArrayIndices;
 
 // -- Macros -------------------------------------------------------------------------------------------------------------------------------
 
 #define OPEN_PLUGIN(parentName, filepath)                                                                                                  \
-	CppKeySet modules{ 0, KS_END };                                                                                                    \
-	CppKeySet config{ 0, KS_END };                                                                                                     \
+	kdb::KeySet modules{ 0, KS_END };                                                                                                  \
+	kdb::KeySet config{ 0, KS_END };                                                                                                   \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
-	CppKey parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                         \
+	kdb::Key parent{ parentName, KEY_VALUE, filepath, KEY_END };                                                                       \
 	Plugin * plugin = elektraPluginOpen ("directoryvalue", modules.getKeySet (), config.getKeySet (), *parent);                        \
 	exit_if_fail (plugin != NULL, "Could not open directoryvalue plugin");
 
@@ -45,7 +42,7 @@ using elektra::increaseArrayIndices;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
-void test_set (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+void test_set (kdb::KeySet keys, kdb::KeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[empty if statement]"),
 			annotate ("oclint:suppress[too few branches in switch statement]")))
@@ -59,7 +56,7 @@ void test_set (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PL
 	CLOSE_PLUGIN ();
 }
 
-void test_get (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+void test_get (kdb::KeySet keys, kdb::KeySet expected, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[empty if statement]"),
 			annotate ("oclint:suppress[too few branches in switch statement]")))
@@ -73,13 +70,13 @@ void test_get (CppKeySet keys, CppKeySet expected, int const status = ELEKTRA_PL
 	CLOSE_PLUGIN ();
 }
 
-void test_roundtrip (CppKeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
+void test_roundtrip (kdb::KeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SUCCESS)
 #ifdef __llvm__
 	__attribute__ ((annotate ("oclint:suppress[high ncss method]"), annotate ("oclint:suppress[empty if statement]"),
 			annotate ("oclint:suppress[too few branches in switch statement]")))
 #endif
 {
-	CppKeySet input = keys.dup ();
+	kdb::KeySet input = keys.dup ();
 
 	OPEN_PLUGIN (PREFIX, "file/path");
 
@@ -94,61 +91,62 @@ void test_roundtrip (CppKeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_SU
 
 TEST (directoryvalue, getArrayParents)
 {
-	CppKeySet input{ 10,
-			 keyNew (PREFIX "key", KEY_END),
-			 keyNew (PREFIX "key/map", KEY_END),
-			 keyNew (PREFIX "key/array", KEY_META, "array", "#2", KEY_END),
-			 keyNew (PREFIX "key/array/#0", KEY_END),
-			 keyNew (PREFIX "key/array/#1", KEY_END),
-			 keyNew (PREFIX "key/array/#2/nested", KEY_META, "array", "#1", KEY_END),
-			 keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
-			 keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
-			 keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END),
-			 KS_END };
+	kdb::KeySet input{ 10,
+			   keyNew (PREFIX "key", KEY_END),
+			   keyNew (PREFIX "key/map", KEY_END),
+			   keyNew (PREFIX "key/array", KEY_META, "array", "#2", KEY_END),
+			   keyNew (PREFIX "key/array/#0", KEY_END),
+			   keyNew (PREFIX "key/array/#1", KEY_END),
+			   keyNew (PREFIX "key/array/#2/nested", KEY_META, "array", "#1", KEY_END),
+			   keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
+			   keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
+			   keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END),
+			   KS_END };
 
-	CppKeySet expected{ 10, keyNew (PREFIX "key/array", KEY_META, "array", "#2", KEY_END),
-			    keyNew (PREFIX "key/array/#2/nested", KEY_META, "array", "#1", KEY_END),
-			    keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END), KS_END };
+	kdb::KeySet expected{ 10, keyNew (PREFIX "key/array", KEY_META, "array", "#2", KEY_END),
+			      keyNew (PREFIX "key/array/#2/nested", KEY_META, "array", "#1", KEY_END),
+			      keyNew (PREFIX "key/empty/array", KEY_META, "array", "", KEY_END), KS_END };
 
-	CppKeySet arrays;
+	kdb::KeySet arrays;
 	arrays = getArrayParents (input);
 	compare_keyset (expected, arrays);
 
-	input = CppKeySet{ 10, keyNew (PREFIX "key", KEY_END), KS_END };
-	expected = CppKeySet{};
+	input = kdb::KeySet{ 10, keyNew (PREFIX "key", KEY_END), KS_END };
+	expected = kdb::KeySet{};
 	arrays = getArrayParents (input);
 	compare_keyset (expected, arrays);
 }
 
 TEST (directoryvalue, increaseArrayIndices)
 {
-	CppKeySet arrayParents{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#2/nested", KEY_END), KS_END };
+	kdb::KeySet arrayParents{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#2/nested", KEY_END), KS_END };
 
-	CppKeySet expectedArrayParents{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#3/nested", KEY_END), KS_END };
+	kdb::KeySet expectedArrayParents{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#3/nested", KEY_END),
+					  KS_END };
 
-	CppKeySet arrays{ 10,
-			  keyNew (PREFIX "key/array", KEY_END),
-			  keyNew (PREFIX "key/array/#0", KEY_END),
-			  keyNew (PREFIX "key/array/#1", KEY_END),
-			  keyNew (PREFIX "key/array/#2/nested", KEY_END),
-			  keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
-			  keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
-			  keyNew (PREFIX "key/array", KEY_END),
-			  keyNew (PREFIX "key/array/#0", KEY_END),
-			  keyNew (PREFIX "key/array/#1", KEY_END),
-			  KS_END };
+	kdb::KeySet arrays{ 10,
+			    keyNew (PREFIX "key/array", KEY_END),
+			    keyNew (PREFIX "key/array/#0", KEY_END),
+			    keyNew (PREFIX "key/array/#1", KEY_END),
+			    keyNew (PREFIX "key/array/#2/nested", KEY_END),
+			    keyNew (PREFIX "key/array/#2/nested/#0", KEY_END),
+			    keyNew (PREFIX "key/array/#2/nested/#1", KEY_END),
+			    keyNew (PREFIX "key/array", KEY_END),
+			    keyNew (PREFIX "key/array/#0", KEY_END),
+			    keyNew (PREFIX "key/array/#1", KEY_END),
+			    KS_END };
 
-	CppKeySet expectedArrays{ 10,
-				  keyNew (PREFIX "key/array", KEY_END),
-				  keyNew (PREFIX "key/array/#1", KEY_END),
-				  keyNew (PREFIX "key/array/#2", KEY_END),
-				  keyNew (PREFIX "key/array/#3/nested", KEY_END),
-				  keyNew (PREFIX "key/array/#3/nested/#1", KEY_END),
-				  keyNew (PREFIX "key/array/#3/nested/#2", KEY_END),
-				  keyNew (PREFIX "key/array", KEY_END),
-				  keyNew (PREFIX "key/array/#1", KEY_END),
-				  keyNew (PREFIX "key/array/#2", KEY_END),
-				  KS_END };
+	kdb::KeySet expectedArrays{ 10,
+				    keyNew (PREFIX "key/array", KEY_END),
+				    keyNew (PREFIX "key/array/#1", KEY_END),
+				    keyNew (PREFIX "key/array/#2", KEY_END),
+				    keyNew (PREFIX "key/array/#3/nested", KEY_END),
+				    keyNew (PREFIX "key/array/#3/nested/#1", KEY_END),
+				    keyNew (PREFIX "key/array/#3/nested/#2", KEY_END),
+				    keyNew (PREFIX "key/array", KEY_END),
+				    keyNew (PREFIX "key/array/#1", KEY_END),
+				    keyNew (PREFIX "key/array/#2", KEY_END),
+				    KS_END };
 
 	tie (arrayParents, arrays) = increaseArrayIndices (arrayParents, arrays);
 	compare_keyset (expectedArrays, arrays);
@@ -159,7 +157,7 @@ TEST (directoryvalue, basics)
 {
 	OPEN_PLUGIN ("system/elektra/modules/directoryvalue", "")
 
-	CppKeySet keys{ 0, KS_END };
+	kdb::KeySet keys{ 0, KS_END };
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,
 			 "Unable to retrieve plugin contract");
 
