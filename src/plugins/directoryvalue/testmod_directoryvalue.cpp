@@ -20,6 +20,7 @@ using std::ignore;
 using std::tie;
 
 using ckdb::keyNew;
+using ckdb::Plugin;
 
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;

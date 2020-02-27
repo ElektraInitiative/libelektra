@@ -12,11 +12,13 @@
 
 #include <kdbhelper.h>
 
-using ckdb::keyNew;
 using std::exception;
 using std::range_error;
 
 using elektra::DirectoryValueDelegate;
+
+using ckdb::keyNew;
+using ckdb::Plugin;
 
 using CppKey = kdb::Key;
 using CppKeySet = kdb::KeySet;
