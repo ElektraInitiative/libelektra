@@ -87,15 +87,14 @@ static bool parseShortOptions (Key * command, KeySet * optionsSpec, KeySet * opt
 			       Key * errorKey);
 
 // FIXME: move
-int writeOptions (Key * command, Key * commandKey, bool writeArgs, KeySet * options, struct Specification * spec, KeySet * ks, int argc,
-		  const char ** argv, const char ** envp, Key * parentKey)
+int writeOptions (Key * command, Key * commandKey, bool writeArgs, KeySet * options, struct Specification * spec, KeySet * ks,
+		  const char * progname, const char ** envp, Key * parentKey)
 {
 	Key * helpKey = keyNew (keyName (command), KEY_END);
 	keyAddName (helpKey, "/long/help");
 	if (ksLookup (options, helpKey, KDB_O_DEL) != NULL)
 	{
 		// show help
-		const char * progname = argv[0];
 		char * lastSlash = strrchr (progname, '/');
 		if (lastSlash != NULL)
 		{
@@ -271,8 +270,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				subCommand = ksLookup (keyMeta (commandSpec), commandLookup, KDB_O_DEL);
 			}
 
-			int result =
-				writeOptions (command, commandKey, subCommand == NULL, options, &spec, ks, argc, argv, envp, parentKey);
+			int result = writeOptions (command, commandKey, subCommand == NULL, options, &spec, ks, argv[0], envp, parentKey);
 			if (result != 0)
 			{
 				keyDel (command);
@@ -315,7 +313,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			return -1;
 		}
 
-		int result = writeOptions (command, commandKey, true, options, &spec, ks, argc, argv, envp, parentKey);
+		int result = writeOptions (command, commandKey, true, options, &spec, ks, argv[0], envp, parentKey);
 		if (result != 0)
 		{
 			keyDel (command);
@@ -427,7 +425,6 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 
 	spec->argIndices = ksNew (0, KS_END);
 
-	Key * cur;
 	for (cursor_t i = 0; i < ksGetSize (ks); ++i)
 	{
 		Key * cur = ksAtCursor (ks, i);
@@ -1749,7 +1746,7 @@ char * generateOptionsList (KeySet * keysWithOpts)
 {
 	cursor_t cursor = ksGetCursor (keysWithOpts);
 
-	char * optionsList = elektraFormat ("");
+	char * optionsList = elektraStrDup ("");
 
 	Key * cur = NULL;
 	ksRewind (keysWithOpts);
@@ -1781,7 +1778,7 @@ char * generateArgsList (KeySet * keysWithOpts)
 {
 	cursor_t cursor = ksGetCursor (keysWithOpts);
 
-	char * argsList = elektraFormat ("");
+	char * argsList = elektraStrDup ("");
 
 	Key * cur = NULL;
 	ksRewind (keysWithOpts);
