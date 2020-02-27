@@ -14,7 +14,6 @@
 
 #include <tests.hpp>
 
-using std::ignore;
 using std::tie;
 
 using ckdb::keyNew;
