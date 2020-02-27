@@ -9,8 +9,6 @@
 
 #include "directoryvalue.hpp"
 
-#include <tuple>
-
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
