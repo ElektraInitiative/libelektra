@@ -94,7 +94,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Opts
 
-- Add Sub-commands _(Klemens Böswirth)_ # FIXME
+- The library function `elektraGetOpts` now supports sub-commands. For example `add` is a sub-command in `git add`, and
+  interprets `-p` differently from `git`: `git -p add` is `git --paginate add`, but `git add -p` is `git add --patch`.
+  For more information take a look at the [tutorial for command-line-options](../tutorials/command-line-options.md).
+  By extension this functionality is also available via the `gopts` plugin. _(Klemens Böswirth)_
 
 ### <<Library2>>
 
