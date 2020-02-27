@@ -15,6 +15,7 @@
 #include <kdbhelper.h>
 #include <kdbmeta.h>
 
+#include <kdbassert.h>
 #include <kdberrors.h>
 
 #ifdef _WIN32
@@ -249,7 +250,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	if (spec.useSubcommands)
 	{
 		int lastEndArg = 0;
-		while (true)
+		while (lastEndArg < argc)
 		{
 			int endArg = -1;
 			KeySet * options =
@@ -261,6 +262,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				keyDel (commandKey);
 				ksDel (spec.options);
 				ksDel (spec.keys);
+				ksDel (spec.argIndices);
 				ksSetCursor (ks, initial);
 				return -1;
 			}
@@ -276,15 +278,18 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				subCommand = ksLookup (keyMeta (commandSpec), commandLookup, KDB_O_DEL);
 			}
 
-			bool argsWritten;
+			bool argsWritten = false;
 			int result = writeOptions (command, commandKey, subCommand == NULL, &argsWritten, options, &spec, ks, argv[0], envp,
 						   parentKey);
+			ksDel (options);
+
 			if (result != 0)
 			{
 				keyDel (command);
 				keyDel (commandKey);
 				ksDel (spec.options);
 				ksDel (spec.keys);
+				ksDel (spec.argIndices);
 				ksSetCursor (ks, initial);
 				return result;
 			}
@@ -296,6 +301,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				keyDel (commandKey);
 				ksDel (spec.options);
 				ksDel (spec.keys);
+				ksDel (spec.argIndices);
 				ksSetCursor (ks, initial);
 				return -1;
 			}
@@ -306,6 +312,12 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 
 			if (subCommand == NULL)
 			{
+				keyDel (command);
+				keyDel (commandKey);
+				ksDel (spec.options);
+				ksDel (spec.keys);
+				ksDel (spec.argIndices);
+				ksSetCursor (ks, initial);
 				return 0;
 			}
 
@@ -316,6 +328,8 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 
 			lastEndArg = endArg;
 		}
+
+		ELEKTRA_ASSERT (0, "should be unreachable");
 	}
 	else
 	{
@@ -328,19 +342,18 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 			keyDel (commandKey);
 			ksDel (spec.options);
 			ksDel (spec.keys);
+			ksDel (spec.argIndices);
 			ksSetCursor (ks, initial);
 			return -1;
 		}
 
 		int result = writeOptions (command, commandKey, true, NULL, options, &spec, ks, argv[0], envp, parentKey);
-		if (result != 0)
-		{
-			keyDel (command);
-			keyDel (commandKey);
-			ksDel (spec.options);
-			ksDel (spec.keys);
-		}
-
+		keyDel (command);
+		keyDel (commandKey);
+		ksDel (options);
+		ksDel (spec.options);
+		ksDel (spec.keys);
+		ksDel (spec.argIndices);
 		ksSetCursor (ks, initial);
 		return result;
 	}
@@ -516,6 +529,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 									"Offending key: parent doesn't exist",
 									keyName (cur));
 				keyDel (specParent);
+				keyDel (keyWithOpt);
+				keyDel (command);
 				ksDel (spec->options);
 				ksDel (spec->argIndices);
 				ksDel (spec->keys);
@@ -530,6 +545,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 					parentKey, "The parent of this key (%s) must have the 'command' metakey set. Offending key: %s",
 					keyName (cur), keyName (maybeCommand));
 				keyDel (specParent);
+				keyDel (keyWithOpt);
+				keyDel (command);
 				ksDel (spec->options);
 				ksDel (spec->argIndices);
 				ksDel (spec->keys);
@@ -550,6 +567,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 										keyString (commandMeta), keyName (cur));
 					keyDel (specParent);
 					keyDel (subCommand);
+					keyDel (keyWithOpt);
+					keyDel (command);
 					ksDel (spec->options);
 					ksDel (spec->argIndices);
 					ksDel (spec->keys);
@@ -568,6 +587,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 		{
 			keyDel (command);
 			keyDel (specParent);
+			keyDel (keyWithOpt);
 			ksDel (spec->argIndices);
 			ksDel (spec->options);
 			ksDel (spec->keys);
@@ -579,6 +599,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 		{
 			keyDel (command);
 			keyDel (specParent);
+			keyDel (keyWithOpt);
 			ksDel (spec->argIndices);
 			ksDel (spec->options);
 			ksDel (spec->keys);
@@ -590,6 +611,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 		{
 			keyDel (command);
 			keyDel (specParent);
+			keyDel (keyWithOpt);
 			ksDel (spec->argIndices);
 			ksDel (spec->options);
 			ksDel (spec->keys);
@@ -621,7 +643,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 					parentKey,
 					"The values of 'args/index' must be continuous, but index " ELEKTRA_LONG_LONG_F
-					" is missing in keys below: %s", // FIXME: key name
+					" is missing in keys below: %s",
 					j - 1, keyGetMetaString (cur, "key"));
 				keyDel (command);
 				ksDel (indices);
@@ -631,6 +653,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * parentKey)
 				return false;
 			}
 		}
+		ksDel (indices);
 	}
 
 	spec->useSubcommands = useSubcommands;

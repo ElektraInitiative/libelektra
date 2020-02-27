@@ -497,7 +497,6 @@ static void test_illegal_spec (void)
 				"(key: " SPEC_BASE_KEY "/apple)"),
 		    "flagvalue should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -512,7 +511,6 @@ static void test_illegal_spec (void)
 				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
 		    "duplicate short option should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -528,7 +526,6 @@ static void test_illegal_spec (void)
 				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
 		    "duplicate long option should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -544,7 +541,6 @@ static void test_illegal_spec (void)
 				"'args=remaining' can only be set on array keys (basename = '#'). Offending key: " SPEC_BASE_KEY "/apple"),
 		    "non-array remaining args should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -561,7 +557,6 @@ static void test_illegal_spec (void)
 				"special string '--'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "'-' option should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -578,6 +573,7 @@ static void test_illegal_spec (void)
 				"help option '--help'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "'help' option should be illegal");
 	clearValues (ks);
+	ksDel (ks);
 
 	// ---
 	// args indexed without index
@@ -592,6 +588,7 @@ static void test_illegal_spec (void)
 				"'args=indexed' must be accompanied by 'args/index'. Offending key: " SPEC_BASE_KEY "/apple"),
 		    "args=indexed without args/index should be illegal");
 	clearValues (ks);
+	ksDel (ks);
 
 	// ---
 	// args indexed array
@@ -608,6 +605,7 @@ static void test_illegal_spec (void)
 				"/apple/#"),
 		    "args=indexed on an array key should be illegal");
 	clearValues (ks);
+	ksDel (ks);
 
 	// ---
 	// args indexed missing index
@@ -623,6 +621,7 @@ static void test_illegal_spec (void)
 				"The values of 'args/index' must be continuous, but index 0 is missing in keys below: " SPEC_BASE_KEY),
 		    "args=indexed with non-continuous indicies should be illegal");
 	clearValues (ks);
+	ksDel (ks);
 
 	// ---
 	// command non-empty root meta
@@ -637,6 +636,7 @@ static void test_illegal_spec (void)
 				"On the parent key 'command' can only be set to an empty string. Offending key: " SPEC_BASE_KEY),
 		    "command set to non-empty string on parent key should be illegal");
 	clearValues (ks);
+	ksDel (ks);
 
 	// ---
 	// command sub without root
@@ -651,7 +651,6 @@ static void test_illegal_spec (void)
 				"'command' can only be used, if it is set on the parent key as well. Offending key: " SPEC_BASE_KEY "/cmd"),
 		    "sub-commands without command metakey on parent key should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -668,7 +667,6 @@ static void test_illegal_spec (void)
 				"/cmd/sub) must have the 'command' metakey set. Offending key: parent doesn't exist"),
 		    "sub-commands without direct parent should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -685,7 +683,6 @@ static void test_illegal_spec (void)
 				"/cmd/sub) must have the 'command' metakey set. Offending key: " SPEC_BASE_KEY "/cmd"),
 		    "sub-commands without command metakey on direct parent should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -702,7 +699,6 @@ static void test_illegal_spec (void)
 				"/cmd/opt) must have the 'command' metakey set. Offending key: parent doesn't exist"),
 		    "in sub-command mode short options without command metakey on direct parent should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -719,7 +715,6 @@ static void test_illegal_spec (void)
 				"/cmd/opt) must have the 'command' metakey set. Offending key: parent doesn't exist"),
 		    "in sub-command mode long options without command metakey on direct parent should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -736,7 +731,6 @@ static void test_illegal_spec (void)
 				"/cmd/arg/#) must have the 'command' metakey set. Offending key: parent doesn't exist"),
 		    "in sub-command mode args=remaining without command metakey on direct parent should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -754,7 +748,6 @@ static void test_illegal_spec (void)
 				"/cmd/arg) must have the 'command' metakey set. Offending key: parent doesn't exist"),
 		    "in sub-command mode args=indexed without command metakey on direct parent should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -771,7 +764,6 @@ static void test_illegal_spec (void)
 				"/cmd"),
 		    "sub-command with empty command metadata should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 
 	// ---
@@ -788,7 +780,6 @@ static void test_illegal_spec (void)
 				"Duplicate sub-command 'sub'. Offending key: " SPEC_BASE_KEY "/cmd2"),
 		    "duplicate sub-commands should be illegal");
 	clearValues (ks);
-
 	ksDel (ks);
 }
 
