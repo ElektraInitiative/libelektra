@@ -70,13 +70,16 @@ key with basename `#`. The array will be copied into this key. As is the case wi
 if `--` is encountered in `argv`.
 
 If `elektraGetOpts` is called with a `parentKey` that has `posixly = 1` set, then processing of options will also stop, when
-a non-option argument is encountered. This is similar to the POSIX version of getopt(3).
+a non-option argument is encountered. This is similar to the POSIX version of getopt(3). NOTE: `posixly = 1` must be set on
+the parent key passed to `elektraGetOpts`, not in the specification itself.
 
 Additionally, there is `args=indexed`. If it is specified on a key, the key must also have the metakey `args/index=N` set to
-an integer `N`. Such a key will be set to the unused element at index `N`. If a key has `args=indexed and`args/index=N`, then there must also be keys for all integers`0 <= X < N`with`args=indexed`and`args/index=N`set. For example you cannot use`args/index=0`and`args/index=2`without`args/index=1`.
+an integer `N`. Such a key will be set to the unused element at index `N`. If a key has `args=indexed` and `args/index=N`,
+then there must also be keys for all integers `0 <= X < N` with `args=indexed` and `args/index=N` set. For example, you cannot
+use `args/index=0` and `args/index=2` without `args/index=1`.
 
 Combining `args=indexed` and `args=remaining` in the same specification (on different keys) is also possible. The key with
-`args=remaining` will only contain those elements to used via `args=indexed`.
+`args=remaining` will only contain those elements not used via `args=indexed`.
 
 ### Example
 
@@ -118,14 +121,11 @@ a key `X` marked with `command` is not marked with `command` and `X` is not the 
 
 To inform the application about the invoked sub-commands, `elektraGetOpts` sets each `command` key to one of two values:
 
-- All invoked sub-commands `S` will be set to `XYZ`, where `XYZ` is the sub-command of `S` that was invoked.
+- All invoked sub-commands `S` will be set to `XYZ`, where `XYZ` is the base name of the key whose sub-command of `S` was invoked.
 - Any other sub-command is set to an empty string.
 
 For example consider `./app add more`: The parent key will be set to `add`, the key for `add` will be set to `more` and
 the key for `more` is set to an empty string, because none of its sub-commands were invoked.
-
-Invoking a non-existent sub-command does not result in an error. Instead, the relevant `command` keys are assigned as
-described above and then `elektraGetOpts` returns, without further processing.
 
 Every key considered by `elektraGetOpts` is assigned either to the root command, or a single sub-command. Specifically,
 each key is assigned to the command of its immediate parent. If sub-commands are used and the immediate parent of an `opt`
@@ -135,6 +135,8 @@ the corresponding sub-command was invoked.
 Lastly, it is allowed to have keys with `args` and `command` below the same parent. If a matching sub-command is found among
 the `command` keys, processing will continue there. Otherwise, the `args` keys will be considered. This allows an application
 to implement dynamic commands (like `git` or `kdb`) by using the `args=remaining` array to invoke another application.
+
+If an unknown sub-command is encountered without an `args` key, an error is returned.
 
 All of this is best understood with an example:
 
@@ -162,10 +164,10 @@ type = string
 args = indexed
 args/index = 0
 
-[kdb/set]
+[kdb/setter]
 command = set
 
-[kdb/set/verbose]
+[kdb/setter/verbose]
 type = boolean
 opt = v
 opt/long = verbose
@@ -188,10 +190,10 @@ args = remaining
   - `kdb/get/keyname = name`
   - `kdb/set = ""`
 - If we invoke `kdb -v set -v`, keys below `kdb/get` and `kdb/dynamic` are not touched. The result is:
-  - `kdb = set`
+  - `kdb = setter`
   - `kdb/printversion = 1`
-  - `kdb/set = ""`
-  - `kdb/set/verbose = 1`
+  - `kdb/setter = ""`
+  - `kdb/setter/verbose = 1`
   - `kdb/get = ""`
 - If we invoke `kdb -v custom -v -x z`, keys below `kdb/get` and `kdb/set are not touched. The result is:
   - `kdb = ""`
@@ -200,6 +202,11 @@ args = remaining
   - `kdb/dynamic/#1 = -v`
   - `kdb/dynamic/#2 = -x`
   - `kdb/dynamic/#3 = z`
+
+To determine what code to execute, an application would just start with the parent key `kdb` in the example above. It would
+then repeatedly look at the current key's value, append that to the current key and continue, until the current key's value
+was the empty string `""`. Each of the examined keys corresponds to one of the sub-commands in the invocation and the keys
+directly below those, contain the relevant options (and for the last sub-command also parameters).
 
 ## Help Message
 

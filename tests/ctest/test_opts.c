@@ -579,6 +579,216 @@ static void test_illegal_spec (void)
 		    "'help' option should be illegal");
 	clearValues (ks);
 
+	// ---
+	// args indexed without index
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'args=indexed' must be accompanied by 'args/index'. Offending key: " SPEC_BASE_KEY "/apple"),
+		    "args=indexed without args/index should be illegal");
+	clearValues (ks);
+
+	// ---
+	// args indexed array
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple/#", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	keySetMeta (k, "args/index", "0");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'args=indexed' can only be set on non-array keys (basename != '#'). Offending key: " SPEC_BASE_KEY
+				"/apple/#"),
+		    "args=indexed on an array key should be illegal");
+	clearValues (ks);
+
+	// ---
+	// args indexed missing index
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	keySetMeta (k, "args/index", "3");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The values of 'args/index' must be continuous, but index 0 is missing in keys below: " SPEC_BASE_KEY),
+		    "args=indexed with non-continuous indicies should be illegal");
+	clearValues (ks);
+
+	// ---
+	// command non-empty root meta
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY, KEY_END);
+	keySetMeta (k, "command", "abc");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"On the parent key 'command' can only be set to an empty string. Offending key: " SPEC_BASE_KEY),
+		    "command set to non-empty string on parent key should be illegal");
+	clearValues (ks);
+
+	// ---
+	// command sub without root
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd", KEY_END);
+	keySetMeta (k, "command", "sub");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'command' can only be used, if it is set on the parent key as well. Offending key: " SPEC_BASE_KEY "/cmd"),
+		    "sub-commands without command metakey on parent key should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// command sub without parent
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/sub", KEY_END);
+	keySetMeta (k, "command", "sub");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/sub) must have the 'command' metakey set. Offending key: parent doesn't exist"),
+		    "sub-commands without direct parent should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// command sub parent without command
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/sub", KEY_END);
+	keySetMeta (k, "command", "sub");
+	ks = ksNew (3, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), keyNew (SPEC_BASE_KEY "/cmd", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/sub) must have the 'command' metakey set. Offending key: " SPEC_BASE_KEY "/cmd"),
+		    "sub-commands without command metakey on direct parent should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// command short option without parent
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/opt", KEY_END);
+	keySetMeta (k, "opt", "a");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/opt) must have the 'command' metakey set. Offending key: parent doesn't exist"),
+		    "in sub-command mode short options without command metakey on direct parent should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// command long option without parent
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/opt", KEY_END);
+	keySetMeta (k, "opt/long", "apple");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/opt) must have the 'command' metakey set. Offending key: parent doesn't exist"),
+		    "in sub-command mode long options without command metakey on direct parent should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// command args remaining without parent
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/arg/#", KEY_END);
+	keySetMeta (k, "args", "remaining");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/arg/#) must have the 'command' metakey set. Offending key: parent doesn't exist"),
+		    "in sub-command mode args=remaining without command metakey on direct parent should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// command args indexed without parent
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd/arg", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	keySetMeta (k, "args/index", "0");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The parent of this key (" SPEC_BASE_KEY
+				"/cmd/arg) must have the 'command' metakey set. Offending key: parent doesn't exist"),
+		    "in sub-command mode args=indexed without command metakey on direct parent should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// command sub empty
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd", KEY_END);
+	keySetMeta (k, "command", "");
+	ks = ksNew (2, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'command' must be set to a non-empty string (except on the parent key). Offending key: " SPEC_BASE_KEY
+				"/cmd"),
+		    "sub-command with empty command metadata should be illegal");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// command duplicate sub
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/cmd2", KEY_END);
+	keySetMeta (k, "command", "sub");
+	ks = ksNew (3, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/cmd", KEY_META, "command", "sub", KEY_END), k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"Duplicate sub-command 'sub'. Offending key: " SPEC_BASE_KEY "/cmd2"),
+		    "duplicate sub-commands should be illegal");
+	clearValues (ks);
+
 	ksDel (ks);
 }
 
@@ -674,6 +884,37 @@ static void test_illegal_use (void)
 			    "The environment variable 'BANANA' cannot be used, because another variable has already been used for the key "
 			    "'" SPEC_BASE_KEY "/apple/#'."),
 		"multiple repeated env-vars should have failed");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// missing indexed arg
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	keySetMeta (k, "args/index", "0");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Expected at least 1 non-option arguments, but only got 0"),
+		    "missing indexed argument should not be allowed");
+	clearValues (ks);
+
+	ksDel (ks);
+
+	// ---
+	// unknown sub-command
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY, KEY_END);
+	keySetMeta (k, "command", "");
+	ks = ksNew (1, k, KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, ARGS ("sub"), NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC, "Unknown sub-command: sub"),
+		    "unknown sub-command should not be allowed");
 	clearValues (ks);
 
 	ksDel (ks);
