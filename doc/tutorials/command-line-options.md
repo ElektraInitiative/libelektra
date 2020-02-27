@@ -163,7 +163,7 @@ args = indexed
 args/index = 0
 
 [kdb/set]
-command = get
+command = set
 
 [kdb/set/verbose]
 type = boolean

@@ -902,6 +902,92 @@ static void test_args_indexed_and_remaining (void)
 	ksDel (ks);
 }
 
+static void test_commands (void)
+{
+	KeySet * ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META,
+				     "opt/arg", "none", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/get", KEY_META, "command", "get", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/get/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META,
+				     "opt/arg", "none", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1", KEY_META, "command", "set", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META,
+				     "opt/arg", "none", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/set1/value", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
+			     keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+
+	RUN_TEST (ks, ARGS ("-v"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, ""), "command failed: {kdb} -v");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/printversion", "1"), "command failed: kdb {-v}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb -v [get]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb -v [set]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", "#"), "command failed: kdb -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb -v [dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("-v", "get", "x"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "get"), "command failed: {kdb} -v get x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/printversion", "1"), "command failed: kdb {-v} get x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb -v {get} x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get/keyname", "x"), "command failed: kdb -v get {x}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb -v get x [set]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb -v get x [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb -v get x [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", NULL), "command failed: kdb -v get x[dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("get", "-v", "x"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "get"), "command failed: {kdb} get -v x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb {get} -v x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get/verbose", "1"), "command failed: kdb get {-v} x");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get/keyname", "x"), "command failed: kdb get -v {x}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb get -v x [set]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb get -v x [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb get -v x [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", NULL), "command failed: kdb get -v x [dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("-v", "get", "-v", "abc"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "get"), "command failed: {kdb} -v get -v abc");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/printversion", "1"), "command failed: kdb {-v} get -v abc");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb -v {get} -v abc");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get/verbose", "1"), "command failed: kdb -v get {-v} abc");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get/keyname", "abc"), "command failed: kdb -v get -v {abc}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb -v get -v abc [set]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb -v get -v abc [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb -v get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", NULL), "command failed: kdb -v get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#2", NULL), "command failed: kdb -v get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#3", NULL), "command failed: kdb -v get -v [dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("set", "get", "-v"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "set"), "command failed: {kdb} set get -v");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb {set} get -v");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/keyname", "get"), "command failed: kdb set {get} -v");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/value", "-v"), "command failed: kdb set get {-v}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb set get -v [get]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#2", NULL), "command failed: kdb set get -v [dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("abc", "-v", "def"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, ""), "command failed: {kdb} abc -v def");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb abc -v def [get]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb abc -v def [set]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", "#2"), "command failed: kdb {abc -v def}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", "abc"), "command failed: kdb {abc} -v def");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", "-v"), "command failed: kdb abc {-v} def");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#2", "def"), "command failed: kdb abc -v {def}");
+	clearValues (ks);
+
+	ksDel (ks);
+}
+
 int main (int argc, char ** argv)
 {
 	printf (" OPTS   TESTS\n");
@@ -929,6 +1015,7 @@ int main (int argc, char ** argv)
 	test_args_remaining ();
 	test_args_indexed ();
 	test_args_indexed_and_remaining ();
+	test_commands ();
 
 	print_result ("test_opts");
 
