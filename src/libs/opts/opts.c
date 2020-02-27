@@ -87,118 +87,8 @@ static bool parseLongOption (Key * command, KeySet * optionsSpec, KeySet * optio
 static bool parseShortOptions (Key * command, KeySet * optionsSpec, KeySet * options, int argc, const char ** argv, int * index,
 			       Key * errorKey);
 
-// FIXME: move
-int writeOptions (Key * command, Key * commandKey, bool writeArgs, bool * argsWritten, KeySet * options, struct Specification * spec,
-		  KeySet * ks, const char * progname, const char ** envp, Key * parentKey)
-{
-	Key * helpKey = keyNew (keyName (command), KEY_END);
-	keyAddName (helpKey, "/long/help");
-	if (ksLookup (options, helpKey, KDB_O_DEL) != NULL)
-	{
-		// show help
-		char * lastSlash = strrchr (progname, '/');
-		if (lastSlash != NULL)
-		{
-			progname = lastSlash + 1;
-		}
-
-		char * usage = generateUsageLine (progname, spec->hasOpts, spec->hasArgs);
-		char * optionsText = generateOptionsList (spec->keys);
-		char * argsText = generateArgsList (spec->keys);
-		char * envsText = generateEnvsList (spec->keys);
-
-		keySetMeta (parentKey, "internal/libopts/help/usage", usage);
-		keySetMeta (parentKey, "internal/libopts/help/options", optionsText);
-		keySetMeta (parentKey, "internal/libopts/help/args", argsText);
-		keySetMeta (parentKey, "internal/libopts/help/envs", envsText);
-
-		elektraFree (usage);
-		elektraFree (optionsText);
-		elektraFree (argsText);
-		elektraFree (envsText);
-		return 1;
-	}
-
-	KeySet * envValues = parseEnvp (envp);
-
-	Key * argsParent = keyNew (keyName (command), KEY_END);
-	keyAddBaseName (argsParent, "args");
-	KeySet * args = elektraArrayGet (argsParent, options);
-	keyDel (argsParent);
-
-	Key * keyWithOpt;
-	ksRewind (spec->keys);
-	while ((keyWithOpt = ksNext (spec->keys)) != NULL)
-	{
-		if (spec->useSubcommands)
-		{
-			Key * checkKey = keyDup (keyWithOpt);
-			if (strcmp (keyBaseName (keyWithOpt), "#") == 0)
-			{
-				keySetBaseName (checkKey, NULL); // remove #
-			}
-
-			int result = keyIsDirectlyBelow (commandKey, checkKey);
-			keyDel (checkKey);
-
-			if (result != 1)
-			{
-				continue;
-			}
-		}
-
-		if (keyGetMeta (keyWithOpt, "command") != NULL)
-		{
-			Key * procKey = keyNew ("proc", KEY_VALUE, "", KEY_END);
-			keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
-			ksAppendKey (ks, procKey);
-		}
-
-		int result = writeOptionValues (ks, keyWithOpt, options, parentKey);
-		if (result < 0)
-		{
-			ksDel (envValues);
-			ksDel (args);
-			return -1;
-		}
-		else if (result > 0)
-		{
-			continue;
-		}
-
-		if (writeArgs)
-		{
-			result = writeArgsValues (ks, keyWithOpt, command, spec->argIndices, args, parentKey);
-			if (result < 0)
-			{
-				ksDel (envValues);
-				ksDel (args);
-				return -1;
-			}
-			else if (result > 0)
-			{
-				if (argsWritten != NULL)
-				{
-					*argsWritten = true;
-				}
-				continue;
-			}
-		}
-
-		result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
-		if (result < 0)
-		{
-			ksDel (envValues);
-			ksDel (args);
-			return -1;
-		}
-	}
-
-	ksDel (envValues);
-	ksDel (args);
-
-	return 0;
-}
+static int writeOptions (Key * command, Key * commandKey, bool writeArgs, bool * argsWritten, KeySet * options, struct Specification * spec,
+			 KeySet * ks, const char * progname, const char ** envp, Key * parentKey);
 
 /**
  * This functions parses a specification of program options, together with a list of arguments
@@ -1480,6 +1370,9 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 	return ksAppendKey (ks, procKey) > 0 ? 0 : 1;
 }
 
+/**
+ * Parses env-vars from envp into an internal format.
+ */
 KeySet * parseEnvp (const char ** envp)
 {
 	KeySet * ks = ksNew (0, KS_END);
@@ -1502,6 +1395,9 @@ KeySet * parseEnvp (const char ** envp)
 	return ks;
 }
 
+/**
+ * Parses command-line arguments (options and parameters) from argc/argv into an internal format.
+ */
 KeySet * parseArgs (Key * command, KeySet * optionsSpec, bool useSubcommands, int argc, const char ** argv, int * endArg, Key * errorKey)
 {
 	const char * posixlyStr = keyGetMetaString (errorKey, "posixly");
@@ -1792,6 +1688,121 @@ void setOption (Key * option, const char * value, bool repeated)
 	}
 }
 
+/**
+ * Writes the options from parseArgs into proc keys
+ */
+int writeOptions (Key * command, Key * commandKey, bool writeArgs, bool * argsWritten, KeySet * options, struct Specification * spec,
+		  KeySet * ks, const char * progname, const char ** envp, Key * parentKey)
+{
+	Key * helpKey = keyNew (keyName (command), KEY_END);
+	keyAddName (helpKey, "/long/help");
+	if (ksLookup (options, helpKey, KDB_O_DEL) != NULL)
+	{
+		// show help
+		char * lastSlash = strrchr (progname, '/');
+		if (lastSlash != NULL)
+		{
+			progname = lastSlash + 1;
+		}
+
+		char * usage = generateUsageLine (progname, spec->hasOpts, spec->hasArgs);
+		char * optionsText = generateOptionsList (spec->keys);
+		char * argsText = generateArgsList (spec->keys);
+		char * envsText = generateEnvsList (spec->keys);
+
+		keySetMeta (parentKey, "internal/libopts/help/usage", usage);
+		keySetMeta (parentKey, "internal/libopts/help/options", optionsText);
+		keySetMeta (parentKey, "internal/libopts/help/args", argsText);
+		keySetMeta (parentKey, "internal/libopts/help/envs", envsText);
+
+		elektraFree (usage);
+		elektraFree (optionsText);
+		elektraFree (argsText);
+		elektraFree (envsText);
+		return 1;
+	}
+
+	KeySet * envValues = parseEnvp (envp);
+
+	Key * argsParent = keyNew (keyName (command), KEY_END);
+	keyAddBaseName (argsParent, "args");
+	KeySet * args = elektraArrayGet (argsParent, options);
+	keyDel (argsParent);
+
+	Key * keyWithOpt;
+	ksRewind (spec->keys);
+	while ((keyWithOpt = ksNext (spec->keys)) != NULL)
+	{
+		if (spec->useSubcommands)
+		{
+			Key * checkKey = keyDup (keyWithOpt);
+			if (strcmp (keyBaseName (keyWithOpt), "#") == 0)
+			{
+				keySetBaseName (checkKey, NULL); // remove #
+			}
+
+			int result = keyIsDirectlyBelow (commandKey, checkKey);
+			keyDel (checkKey);
+
+			if (result != 1)
+			{
+				continue;
+			}
+		}
+
+		if (keyGetMeta (keyWithOpt, "command") != NULL)
+		{
+			Key * procKey = keyNew ("proc", KEY_VALUE, "", KEY_END);
+			keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
+			ksAppendKey (ks, procKey);
+		}
+
+		int result = writeOptionValues (ks, keyWithOpt, options, parentKey);
+		if (result < 0)
+		{
+			ksDel (envValues);
+			ksDel (args);
+			return -1;
+		}
+		else if (result > 0)
+		{
+			continue;
+		}
+
+		if (writeArgs)
+		{
+			result = writeArgsValues (ks, keyWithOpt, command, spec->argIndices, args, parentKey);
+			if (result < 0)
+			{
+				ksDel (envValues);
+				ksDel (args);
+				return -1;
+			}
+			else if (result > 0)
+			{
+				if (argsWritten != NULL)
+				{
+					*argsWritten = true;
+				}
+				continue;
+			}
+		}
+
+		result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
+		if (result < 0)
+		{
+			ksDel (envValues);
+			ksDel (args);
+			return -1;
+		}
+	}
+
+	ksDel (envValues);
+	ksDel (args);
+
+	return 0;
+}
+
 KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
 {
 	const Key * k = keyGetMeta (key, metaName);
@@ -1823,7 +1834,7 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
 }
 
 /**
- * Generate help message from optionsSpec.
+ * Generate usage line for help message from optionsSpec.
  *
  * @return a newly allocated string, must be freed with elektraFree()
  */
@@ -1832,6 +1843,12 @@ char * generateUsageLine (const char * progname, bool hasOpts, bool hasArgs)
 	return elektraFormat ("Usage: %s%s%s\n", progname, hasOpts ? " [OPTION]..." : "", hasArgs ? " [PARAMETER]..." : "");
 }
 
+
+/**
+ * Generate options list for help message from optionsSpec.
+ *
+ * @return a newly allocated string, must be freed with elektraFree()
+ */
 char * generateOptionsList (KeySet * keysWithOpts)
 {
 	cursor_t cursor = ksGetCursor (keysWithOpts);
@@ -1864,6 +1881,11 @@ char * generateOptionsList (KeySet * keysWithOpts)
 	return optionsList;
 }
 
+/**
+ * Generate args (parameters) list for help message from optionsSpec.
+ *
+ * @return a newly allocated string, must be freed with elektraFree()
+ */
 char * generateArgsList (KeySet * keysWithOpts)
 {
 	cursor_t cursor = ksGetCursor (keysWithOpts);
@@ -1896,6 +1918,11 @@ char * generateArgsList (KeySet * keysWithOpts)
 	return argsList;
 }
 
+/**
+ * Generate env-var list for help message from optionsSpec.
+ *
+ * @return a newly allocated string, must be freed with elektraFree()
+ */
 char * generateEnvsList (KeySet * keysWithOpts)
 {
 	cursor_t cursor = ksGetCursor (keysWithOpts);
