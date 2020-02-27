@@ -92,11 +92,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library1>>
+### Opts
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add Sub-commands _(Klemens Böswirth)_ # FIXME
 
 ### <<Library2>>
 
