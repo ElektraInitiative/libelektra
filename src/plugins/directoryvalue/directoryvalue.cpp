@@ -132,6 +132,11 @@ int elektraDirectoryValueSet (Plugin * handle, KeySet * returned, Key * parentKe
 		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (*parent, "Uncaught exception: %s", error.what ());
 	}
 
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Converted keys:");
+	logKeySet (keys);
+#endif
+
 	parent.release ();
 	keys.release ();
 	return status;
