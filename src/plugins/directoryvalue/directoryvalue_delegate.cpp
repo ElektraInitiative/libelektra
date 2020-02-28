@@ -33,8 +33,9 @@ using KeySetPair = pair<kdb::KeySet, kdb::KeySet>;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
-namespace elektra
+namespace
 {
+
 /**
  * @brief This function splits the given keyset into directory leaves (marked with `DIRECTORY_POSTFIX`) and other keys.
  *
@@ -158,30 +159,6 @@ kdb::Key convertToDirectChild (kdb::Key const & parent, kdb::Key const & child)
 		keySetBaseName (*directChild, 0);
 	}
 	return directChild;
-}
-
-/**
- * @brief Return all array parents of the given key set.
- *
- * @param keys This parameter contains the key set for which this function determines all array parent keys.
- *
- * @return A key set containing all array parents of `keys`
- */
-kdb::KeySet getArrayParents (kdb::KeySet const & keys)
-{
-	kdb::KeySet arrayParents;
-
-	for (auto const & key : keys)
-	{
-		if (key.hasMeta ("array")) arrayParents.append (key);
-	}
-
-#ifdef HAVE_LOGGER
-	ELEKTRA_LOG_DEBUG ("Array parents:");
-	logKeySet (arrayParents);
-#endif
-
-	return arrayParents;
 }
 
 /**
@@ -314,48 +291,6 @@ kdb::KeySet decreaseArrayIndices (kdb::KeySet const & parents, kdb::KeySet const
 }
 
 /**
- * @brief Increase the array index of array elements by one.
- *
- * Since it is also possible that one of the array parents is part of another array, this function also updates the indices of the given
- * array parents.
- *
- * @param parents This parameter contains the array parents for which this function increases the index by one.
- * @param arrays This variable stores the arrays elements this function updates.
- *
- * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
- */
-KeySetPair increaseArrayIndices (kdb::KeySet const & parents, kdb::KeySet const & arrays)
-{
-	kdb::KeySet arraysIncreasedIndex = arrays.dup ();
-	kdb::KeySet arrayParents = parents.dup ();
-	kdb::KeySet updatedParents = parents.dup ();
-
-	while (kdb::Key parent = arrayParents.pop ())
-	{
-		ELEKTRA_LOG_DEBUG ("Increase indices for array parent “%s”", parent.getName ().c_str ());
-
-		kdb::KeySet newArrays;
-		for (auto key : arraysIncreasedIndex)
-		{
-			if (key.isBelow (parent))
-			{
-				kdb::Key updated;
-				tie (updated, ignore) = changeArrayIndexByOne (parent, key);
-				if (updatedParents.lookup (key, KDB_O_POP)) updatedParents.append (updated);
-				newArrays.append (updated);
-			}
-			else
-			{
-				newArrays.append (key);
-			}
-		}
-		arraysIncreasedIndex = newArrays;
-	}
-
-	return make_pair (updatedParents, arraysIncreasedIndex);
-}
-
-/**
  * @brief Split `keys` into two key sets, one for directories (keys without children) and one for all other keys.
  *
  * @param keys This parameter contains the key set this function splits.
@@ -439,6 +374,76 @@ kdb::KeySet convertDirectoriesToLeaves (kdb::KeySet const & directories)
 	}
 
 	return directoryLeaves;
+}
+
+} // end namespace
+
+namespace elektra
+{
+/**
+ * @brief Return all array parents of the given key set.
+ *
+ * @param keys This parameter contains the key set for which this function determines all array parent keys.
+ *
+ * @return A key set containing all array parents of `keys`
+ */
+kdb::KeySet getArrayParents (kdb::KeySet const & keys)
+{
+	kdb::KeySet arrayParents;
+
+	for (auto const & key : keys)
+	{
+		if (key.hasMeta ("array")) arrayParents.append (key);
+	}
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Array parents:");
+	logKeySet (arrayParents);
+#endif
+
+	return arrayParents;
+}
+
+/**
+ * @brief Increase the array index of array elements by one.
+ *
+ * Since it is also possible that one of the array parents is part of another array, this function also updates the indices of the given
+ * array parents.
+ *
+ * @param parents This parameter contains the array parents for which this function increases the index by one.
+ * @param arrays This variable stores the arrays elements this function updates.
+ *
+ * @return A pair containing a copy of `parents` and `arrays`, where all indices specified by `parents` are increased by one
+ */
+KeySetPair increaseArrayIndices (kdb::KeySet const & parents, kdb::KeySet const & arrays)
+{
+	kdb::KeySet arraysIncreasedIndex = arrays.dup ();
+	kdb::KeySet arrayParents = parents.dup ();
+	kdb::KeySet updatedParents = parents.dup ();
+
+	while (kdb::Key parent = arrayParents.pop ())
+	{
+		ELEKTRA_LOG_DEBUG ("Increase indices for array parent “%s”", parent.getName ().c_str ());
+
+		kdb::KeySet newArrays;
+		for (auto key : arraysIncreasedIndex)
+		{
+			if (key.isBelow (parent))
+			{
+				kdb::Key updated;
+				tie (updated, ignore) = changeArrayIndexByOne (parent, key);
+				if (updatedParents.lookup (key, KDB_O_POP)) updatedParents.append (updated);
+				newArrays.append (updated);
+			}
+			else
+			{
+				newArrays.append (key);
+			}
+		}
+		arraysIncreasedIndex = newArrays;
+	}
+
+	return make_pair (updatedParents, arraysIncreasedIndex);
 }
 
 // -- Class --------------------------------------------------------------------------------------------------------------------------------

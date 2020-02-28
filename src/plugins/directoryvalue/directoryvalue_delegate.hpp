@@ -15,9 +15,10 @@
 #define DIRECTORY_POSTFIX "___dirdata"
 #define ARRAY_VALUE_PREFIX "___dirdata:"
 
+constexpr ssize_t arrayValuePrefixSize = sizeof (ARRAY_VALUE_PREFIX) - 1;
+
 namespace elektra
 {
-constexpr ssize_t arrayValuePrefixSize = sizeof (ARRAY_VALUE_PREFIX) - 1;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
