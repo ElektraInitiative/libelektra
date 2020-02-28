@@ -23,15 +23,6 @@ namespace elektra
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 /**
- * @brief Return all array parents of the given key set.
- *
- * @param keys This parameter contains the key set for which this function determines all array parent keys.
- *
- * @return A key set containing all array parents of `keys`
- */
-kdb::KeySet getArrayParents (kdb::KeySet const & keys);
-
-/**
  * @brief Increase the array index of array elements by one.
  *
  * Since it is also possible that one of the array parents is part of another array, this function also updates the indices of the given

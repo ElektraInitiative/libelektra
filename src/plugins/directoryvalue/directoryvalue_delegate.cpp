@@ -162,6 +162,30 @@ kdb::Key convertToDirectChild (kdb::Key const & parent, kdb::Key const & child)
 }
 
 /**
+ * @brief Return all array parents of the given key set.
+ *
+ * @param keys This parameter contains the key set for which this function determines all array parent keys.
+ *
+ * @return A key set containing all array parents of `keys`
+ */
+kdb::KeySet getArrayParents (kdb::KeySet const & keys)
+{
+	kdb::KeySet arrayParents;
+
+	for (auto const & key : keys)
+	{
+		if (key.hasMeta ("array")) arrayParents.append (key);
+	}
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Array parents:");
+	logKeySet (arrayParents);
+#endif
+
+	return arrayParents;
+}
+
+/**
  * @brief This function splits `keys` into two key sets, one for array parents and elements, and the other one for all other keys.
  *
  * @param arrayParents This key set contains a (copy) of all array parents of `keys`.
@@ -380,29 +404,6 @@ kdb::KeySet convertDirectoriesToLeaves (kdb::KeySet const & directories)
 
 namespace elektra
 {
-/**
- * @brief Return all array parents of the given key set.
- *
- * @param keys This parameter contains the key set for which this function determines all array parent keys.
- *
- * @return A key set containing all array parents of `keys`
- */
-kdb::KeySet getArrayParents (kdb::KeySet const & keys)
-{
-	kdb::KeySet arrayParents;
-
-	for (auto const & key : keys)
-	{
-		if (key.hasMeta ("array")) arrayParents.append (key);
-	}
-
-#ifdef HAVE_LOGGER
-	ELEKTRA_LOG_DEBUG ("Array parents:");
-	logKeySet (arrayParents);
-#endif
-
-	return arrayParents;
-}
 
 /**
  * @brief Increase the array index of array elements by one.
