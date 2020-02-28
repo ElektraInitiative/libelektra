@@ -10,8 +10,6 @@
 #include "directoryvalue.hpp"
 #include "log.hpp"
 
-#include <kdbhelper.h>
-
 using std::exception;
 using std::range_error;
 
