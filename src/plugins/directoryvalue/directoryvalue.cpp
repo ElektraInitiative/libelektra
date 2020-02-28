@@ -7,16 +7,20 @@
  *
  */
 
+#include <kdberrors.h>
+#include <kdbplugin.hpp>
+
 #include "directoryvalue.hpp"
+#include "directoryvalue_delegate.hpp"
 #include "log.hpp"
 
 using std::exception;
 using std::range_error;
 
-using elektra::DirectoryValueDelegate;
-
 using ckdb::keyNew;
 using ckdb::Plugin;
+
+using elektra::DirectoryValueDelegate;
 
 namespace
 {

@@ -11,12 +11,14 @@
 
 #include <kdbassert.h>
 #include <kdbease.h>
+#include <kdberrors.h>
 #include <kdblogger.h>
+
+#include <kdbplugin.hpp>
 
 #include "directoryvalue_delegate.hpp"
 #include "log.hpp"
 
-using ckdb::elektraArrayValidateBaseNameString;
 using std::accumulate;
 using std::ignore;
 using std::make_pair;
@@ -24,6 +26,8 @@ using std::pair;
 using std::range_error;
 using std::string;
 using std::tie;
+
+using ckdb::elektraArrayValidateBaseNameString;
 
 using KeySetPair = pair<kdb::KeySet, kdb::KeySet>;
 

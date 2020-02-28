@@ -7,12 +7,13 @@
  *
  */
 
-#include "directoryvalue.hpp"
-
 #include <kdbmodule.h>
 #include <kdbprivate.h>
 
 #include <tests.hpp>
+
+#include "directoryvalue.hpp"
+#include "directoryvalue_delegate.hpp"
 
 using std::tie;
 

@@ -10,8 +10,7 @@
 #ifndef ELEKTRA_CPP_DIRECTORY_VALUE_DELEGATE_HPP
 #define ELEKTRA_CPP_DIRECTORY_VALUE_DELEGATE_HPP
 
-#include <kdberrors.h>
-#include <kdbplugin.hpp>
+#include <kdb.hpp>
 
 #define DIRECTORY_POSTFIX "___dirdata"
 #define ARRAY_VALUE_PREFIX "___dirdata:"
