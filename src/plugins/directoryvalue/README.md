@@ -191,5 +191,3 @@ sudo kdb umount user/tests/directoryvalue
   - use `___dirdata:` at the beginning of a normal value in the first array element
 
   !
-
-- The plugin is [quite slow](https://issues.libelektra.org/2281).
