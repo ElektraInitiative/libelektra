@@ -49,7 +49,7 @@ kdb::KeySet getContract ()
 
 extern "C" {
 
-typedef Delegator<DirectoryValueDelegate> delegator;
+using delegator = Delegator<DirectoryValueDelegate>;
 
 /** @see elektraDocOpen */
 int elektraDirectoryValueOpen (Plugin * handle, Key * key)
