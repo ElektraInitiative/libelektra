@@ -431,7 +431,7 @@ kdb::KeySet convertDirectoriesToLeaves (kdb::KeySet const & directories)
 
 	for (auto directory : directories)
 	{
-		kdb::Key emptyDirectory{ directory.getName (), KS_END };
+		kdb::Key emptyDirectory{ directory.getName (), KEY_END };
 		kdb::Key leaf = directory.dup ();
 		leaf.addBaseName (DIRECTORY_POSTFIX);
 		directoryLeaves.append (leaf);
