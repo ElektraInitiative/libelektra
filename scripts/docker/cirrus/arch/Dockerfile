@@ -8,6 +8,7 @@ RUN pacman -Sy --noconfirm \
     discount \
     doxygen \
     git \
+    go \
     graphviz \
     ninja \
     npm \
