@@ -125,26 +125,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- `KDB_EXEC_PATH`, which can be used to add further external tools to `kdb`, now supports `:` to separate paths.
-  `kdb list-tools` and `run_env` were improved to take advantage of this. _(Markus Raab)_
-- Checks for `kdbCommit` have been added to [kdb plugin-check](../help/kdb-plugin-check.md). _(Vid Leskovar)_
-- add PID file config setting for kdb-run-rest-frontend _(Markus Raab)_
 - [elektrad](../../src/tools/web/elektrad/README.md) is completely rewritten in Go - which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` commandline tool on every request. _(Raphael Gruber)_
-- Added `kdb meta-show` command which prints out all metadata along with its values for a given key. _(Michael Zronek)_
-- Removed `kdb vset` as it does not properly put meta-data to the spec namespace. _(Michael Zronek)_
-- Renamed kdb plugin commands following a hierarchical structure. `kdb info` is now `kdb plugin-info`, `kdb check` is now `kdb plugin-check` and `kdb list` is now `kdb plugin-list`. We also removed the obsolete `kdb fstab`. _(Philipp Gackstatter)_
-- Renamed kdb meta commands:
-  - `kdb getmeta` is now `kdb meta-get`
-  - `kdb lsmeta` is now `kdb meta-ls`
-  - `kdb showmeta` is now `kdb meta-show`
-  - `kdb rmmeta` is now `kdb meta-rm`
-  - `kdb setmeta` is now `kdb meta-set` _(Philipp Gackstatter)_
-- Fix test tool `gen-gpg-testkey` by giving a narrower GPG key description. Fixes mismatches with existing GPG keys that contain "elektra.org" as e-mail address. _(Peter Nirschl)_
-- `kdb list-commands` and `kdb plugins-list` now sort their output in an alphabetical order _(Anton Hößl)_
-- `kdb plugin-list` does now mention in the helptext that with option `-v` the output is sorted by the plugin status _(Anton Hößl)_
-- elektrad is completely rewritten in go using the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings. _(Raphael Gruber)_
-- `kdb import`, `kdb export` and `kdb editor` now search the plugin database for suitig plugins so it's now possible to run `kdb export /hello json` instead of having to specify the plugin for the desired format directly. _(Anton Hößl)_
-- <<TODO>>
 - Update `kdb cache` tool synopsis to reflect man page. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
