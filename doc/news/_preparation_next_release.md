@@ -80,6 +80,16 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### YAML CPP
 
 - The plugin now always prints a newline at the end of the YAML output. _(René Schwaiger)_
+- The plugin does not interpret a key set such as
+
+  ```
+  user/example
+  user/example/#0
+  user/example/#1
+  user/example/#2
+  ```
+
+  as array unless the parent key `user/example` contains the meta key `array`. _(René Schwaiger)_
 
 ### Yan LR
 
