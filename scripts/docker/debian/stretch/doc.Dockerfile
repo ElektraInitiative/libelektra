@@ -7,6 +7,8 @@ ENV LC_ALL C.UTF-8
 RUN apt-get update && apt-get -y install \
     cmake git build-essential curl
 
+# We install version `2.4.3` of the `launchy` gem (a dependency of `apiaryio`),
+# since later version of the gem require Ruby `2.4` or newer.
 RUN apt-get -y install \
         doxygen \
         graphviz \
@@ -17,6 +19,7 @@ RUN apt-get -y install \
         texlive-latex-recommended \
         texlive-latex-extra \
         texlive-fonts-recommended \
+    && gem install launchy -v 2.4.3 \
     && gem install apiaryio \
     && rm -rf /var/lib/apt/lists/*
 
