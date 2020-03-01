@@ -373,10 +373,17 @@ echo 'truth: true' > `kdb file user/tests/yamlcpp`
 kdb get user/tests/yamlcpp/truth
 #> 1
 
+# A boolean in Elektra has the type `boolean`
+kdb meta-get user/tests/yamlcpp/truth type
+#> boolean
+
 # Add another boolean value
 kdb set user/tests/yamlcpp/success 0
+kdb meta-set user/tests/yamlcpp/success type boolean
 kdb get user/tests/yamlcpp/success
 #> 0
+kdb export user/tests/yamlcpp/success yamlcpp
+#> false
 
 # Undo modifications to the database
 kdb rm -r user/tests/yamlcpp
