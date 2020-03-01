@@ -198,7 +198,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Docker
 
 - We updated some of the software in the [Dockerfile for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
-- <<TODO>>
+- Building the [documentation Dockerfile for Debian Stretch](../../scripts/docker/debian/stretch/doc.Dockerfile) works again. _(René Schwaiger)_
 - <<TODO>>
 
 ## Infrastructure
