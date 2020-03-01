@@ -79,11 +79,12 @@ Elektra uses [`0` and `1` to represent binary data](../decisions/boolean.md). A 
 ```sh
 # Mount plugin
 sudo kdb mount config.yaml user/tests/storage yamlcpp type
+
 kdb set user/tests/storage/bool/value true
+kdb meta-set user/tests/storage/bool/value type boolean
 kdb get user/tests/storage/bool/value
 #> 1
 
-kdb meta-set user/tests/storage/bool/value type boolean
 kdb set user/tests/storage/bool/value 1
 kdb get user/tests/storage/bool/value
 #> 1
