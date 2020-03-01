@@ -91,6 +91,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
   as array unless the parent key `user/example` contains the meta key `array`. _(René Schwaiger)_
 
+- YAML CPP now always sets and requires the metakey `type` with the value `boolean` for boolean data. _(René Schwaiger)_
+
 ### Yan LR
 
 - The CMake code of the plugin does not print error messages produced by the tool `ldd` any more. _(René Schwaiger)_
