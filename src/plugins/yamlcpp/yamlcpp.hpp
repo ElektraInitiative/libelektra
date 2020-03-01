@@ -12,10 +12,6 @@
 
 #include <kdbplugin.h>
 
-using ckdb::Key;
-using ckdb::KeySet;
-using ckdb::Plugin;
-
 extern "C" {
 
 int elektraYamlcppGet (ckdb::Plugin * handle, ckdb::KeySet * ks, ckdb::Key * parentKey);

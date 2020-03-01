@@ -7,19 +7,27 @@
  */
 
 #include "read.hpp"
+#include "log.hpp"
 #include "yaml-cpp/yaml.h"
 
 #include <kdb.hpp>
 #include <kdblogger.h>
-#include <kdbplugin.h>
 
 #include <sstream>
 
-using namespace std;
-using namespace kdb;
-
 namespace
 {
+
+using std::istringstream;
+using std::ostringstream;
+using std::string;
+using std::to_string;
+
+using YAML::Node;
+
+using kdb::Key;
+using kdb::KeySet;
+
 /**
  * @brief This function converts a given number to an array base name.
  *
@@ -82,9 +90,9 @@ Key newArrayKey (Key & arrayKey, uintmax_t const index)
  * @param key This parameter saves the key to which this function should add the metadata stored in `node`.
  * @param node This YAML node stores a map containing metadata.
  */
-void addMetadata (Key & key, YAML::Node const & node)
+void addMetadata (Key & key, Node const & node)
 {
-	for (auto & element : node)
+	for (auto const & element : node)
 	{
 		auto metakey = element.first.as<string> ();
 		auto metavalue = element.second.IsNull () ? "" : element.second.as<string> ();
@@ -101,7 +109,7 @@ void addMetadata (Key & key, YAML::Node const & node)
  *
  * @return A new key containing the data specified in `node`
  */
-Key createLeafKey (YAML::Node const & node, string const & name)
+Key createLeafKey (Node const & node, string const & name)
 {
 	Key key{ name, KEY_BINARY, KEY_END };
 	if (!node.IsNull ())
@@ -141,7 +149,7 @@ Key createLeafKey (YAML::Node const & node, string const & name)
  *
  * @return A key representing the key value stored in `node`
  */
-Key convertMetaNodeToKey (YAML::Node const & node, Key & parent)
+Key convertMetaNodeToKey (Node const & node, Key & parent)
 {
 	auto key = node[0].IsNull () ? Key{ parent.getFullName (), KEY_BINARY, KEY_END } :
 				       Key{ parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
@@ -157,7 +165,7 @@ Key convertMetaNodeToKey (YAML::Node const & node, Key & parent)
  * @param mappings The key set where the YAML data will be stored
  * @param parent This key stores the prefix for the key name
  */
-void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & parent)
+void convertNodeToKeySet (Node const & node, KeySet & mappings, Key & parent)
 {
 	if (node.Tag () == "!elektra/meta")
 	{
@@ -172,7 +180,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 	}
 	else if (node.IsMap ())
 	{
-		for (auto element : node)
+		for (auto const & element : node)
 		{
 			Key key = newKey (element.first.as<string> (), parent);
 			convertNodeToKeySet (element.second, mappings, key);
@@ -182,7 +190,8 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 	{
 		uintmax_t index = 0;
 		uintmax_t lastIndex = 0;
-		for (auto element : node)
+		parent.setMeta ("array", "");
+		for (auto const & element : node)
 		{
 			if (lastIndex == UINTMAX_MAX)
 			{
@@ -191,10 +200,10 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
 							   parent.getName () + "”");
 			}
 			Key key = newArrayKey (parent, index);
-			mappings.append (parent); // Update array metadata
 			convertNodeToKeySet (element, mappings, key);
 			lastIndex = index++;
 		}
+		mappings.append (parent); // Update array metadata
 	}
 }
 } // end namespace
@@ -207,7 +216,7 @@ void convertNodeToKeySet (YAML::Node const & node, KeySet & mappings, Key & pare
  */
 void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 {
-	YAML::Node config = YAML::LoadFile (parent.getString ());
+	Node config = YAML::LoadFile (parent.getString ());
 
 	ELEKTRA_LOG_DEBUG ("Read file “%s”", parent.getString ().c_str ());
 
@@ -227,6 +236,11 @@ void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 	ELEKTRA_LOG_DEBUG ("——————————");
 #endif
 
-	convertNodeToKeySet (config, mappings, parent);
-	ELEKTRA_LOG_DEBUG ("Added %zd key%s", mappings.size (), mappings.size () == 1 ? "" : "s");
+	Key parentWithoutValue{ parent.getName (), KEY_BINARY, KEY_END }; // We do **not** want to save the filename inside the read key set
+	convertNodeToKeySet (config, mappings, parentWithoutValue);
+
+#ifdef HAVE_LOGGER
+	ELEKTRA_LOG_DEBUG ("Converted keys:");
+	logKeySet (mappings);
+#endif
 }

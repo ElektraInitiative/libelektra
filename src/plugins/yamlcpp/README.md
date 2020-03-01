@@ -117,11 +117,13 @@ kdb meta-set user/tests/yamlcpp/empty array ''
 kdb export user/tests/yamlcpp/empty yamlcpp
 #> []
 
-# For arrays with at least one value we do not need to set the type `array`
+# Arrays in Elektra always require the `array` metakey.
+# Otherwise the keys will be interpreted as normal key-value mappings.
 kdb set user/tests/yamlcpp/movies
 kdb set user/tests/yamlcpp/movies/#0 'A Silent Voice'
-kdb meta-get user/tests/yamlcpp/movies array
-#> #0
+kdb export user/tests/yamlcpp/movies yamlcpp
+#> "#0": A Silent Voice
+kdb meta-set user/tests/yamlcpp/movies array ''
 kdb export user/tests/yamlcpp/movies yamlcpp
 #> - A Silent Voice
 
@@ -140,9 +142,11 @@ sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
 # Add some key value pairs
 kdb set user/tests/yamlcpp/key value
+kdb set user/tests/yamlcpp/array
 kdb set user/tests/yamlcpp/array/#0 scalar
 kdb set user/tests/yamlcpp/array/#1/key value
 kdb set user/tests/yamlcpp/array/#1/🔑 🙈
+kdb meta-set user/tests/yamlcpp/array array '#1'
 
 kdb ls user/tests/yamlcpp
 #> user/tests/yamlcpp/array
@@ -194,7 +198,13 @@ Since Elektra allows [“holes”](../../../doc/decisions/holes.md) in a key set
 # Mount yamlcpp plugin
 sudo kdb mount config.yaml user/tests/yamlcpp yamlcpp
 
-kdb set user/tests/yamlcpp/#0/map/#1/#0 value
+kdb set      user/tests/yamlcpp/#0/map/#1/#0 value
+kdb set      user/tests/yamlcpp
+kdb meta-set user/tests/yamlcpp           array '#0'
+kdb set      user/tests/yamlcpp/#0/map
+kdb meta-set user/tests/yamlcpp/#0/map    array '#1'
+kdb set      user/tests/yamlcpp/#0/map/#1
+kdb meta-set user/tests/yamlcpp/#0/map/#1 array '#0'
 kdb file user/tests/yamlcpp | xargs cat
 #> - map:
 #>     - ~

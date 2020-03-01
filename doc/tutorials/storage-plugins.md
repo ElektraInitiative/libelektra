@@ -163,17 +163,18 @@ sudo kdb umount user/tests/storage
 
 ## Support Array And Non-Array Data Properly
 
-You already learned about the array syntax in the [array tutorial](arrays.md). Now it is time to check, if your storage plugin supports array and non-array keys properly. Let us look at an concrete example. In the key set that contains keys with the following names:
+You already learned about the array syntax and the mandatory `array` metakey in the [array tutorial](arrays.md). Now it is time to check, if your storage plugin supports array and non-array keys properly. Let us look at a concrete example. We use a key set that contains the following keys as example:
 
 ```
+user/tests/storage/array
 user/tests/storage/array/#0
 user/tests/storage/array/#1
+user/tests/storage/map
 user/tests/storage/map/#0
-user/tests/storage/map/key
 user/tests/storage/map/#1
 ```
 
-the keys:
+. If we assume that only `user/tests/storage/array` stores the metakey `array`, then the keys
 
 - `user/tests/storage/array/#0`, and
 - `user/tests/storage/array/#1`
@@ -183,47 +184,29 @@ represent array elements, while
 - `user/tests/storage/map/#0`, and
 - `user/tests/storage/map/#1`
 
-do not, since the key set also contains the key **`user/tests/storage/map/key`**. The following example shows that the storage plugin [YAML CPP](https://www.libelektra.org/plugins/yamlcpp) handles this situation properly:
+are normal key-value pairs. The following example shows that the storage plugin [YAML CPP](https://www.libelektra.org/plugins/yamlcpp) handles this situation properly:
 
 ```sh
 # Mount plugin
 sudo kdb mount config.yaml user/tests/storage yamlcpp
 
 # Create an array containing two elements
+kdb meta-set user/tests/storage/array array ''
 kdb set user/tests/storage/array/#0 one
 kdb set user/tests/storage/array/#1 two
 
-# The plugin creates an array parent key
-# that stores the basename of the last element
+# The array parent key stores the basename of the last element
 kdb meta-get user/tests/storage/array array
 #> #1
 
-# Add an array that contains a single element
+# If you do not add the metakey `array`, then keys
+# containing array syntax `#0`, `#1`, … will not be
+# interpreted as arrays.
+kdb set user/tests/storage/map
 kdb set user/tests/storage/map/#0
+kdb set user/tests/storage/map/#1
 kdb meta-get user/tests/storage/map array
-#> #0
-
-# After we add `user/tests/storage/map/key`,
-# `user/tests/storage/map` is not an array any more.
-kdb set user/tests/storage/map/key three
-kdb meta-get user/tests/storage/map array
-# RET: 1
-
-# Adding a another key that uses array syntax below
-# `user/tests/storage/map` does not change this.
-kdb set user/tests/storage/map/#1 four
-kdb meta-get user/tests/storage/map array
-# RET: 1
-
-# If we remove the key `user/tests/storage/map/key`, then
-# `user/tests/storage/map` represents an array again.
-kdb rm user/tests/storage/map/key
-kdb ls user/tests/storage/map
-#> user/tests/storage/map
-#> user/tests/storage/map/#0
-#> user/tests/storage/map/#1
-kdb meta-get user/tests/storage/map array
-#> #1
+# RET: 2
 
 # Undo modifications to the key database
 kdb rm -r user/tests/storage

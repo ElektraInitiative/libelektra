@@ -49,6 +49,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
+### Directory Value
+
+- The plugin now only interprets a key set as [array](../tutorials/arrays.md) if the parent contains the meta key `array`. _(René Schwaiger)_
+
 ### KConfig
 
 - We implemented the methods that save a KeySet into a file with the KConfig Ini format. _(Dardan Haxhimustafa)_
@@ -76,6 +80,16 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### YAML CPP
 
 - The plugin now always prints a newline at the end of the YAML output. _(René Schwaiger)_
+- The plugin does not interpret a key set such as
+
+  ```
+  user/example
+  user/example/#0
+  user/example/#1
+  user/example/#2
+  ```
+
+  as array unless the parent key `user/example` contains the meta key `array`. _(René Schwaiger)_
 
 ### Yan LR
 
