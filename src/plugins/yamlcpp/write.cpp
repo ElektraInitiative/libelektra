@@ -97,7 +97,7 @@ Node createNode (Key const & key)
 	}
 
 	auto value = key.get<string> ();
-	if (value == "0" || value == "1")
+	if (key.getMeta<string> ("type") == "boolean")
 	{
 		return Node (key.get<bool> ());
 	}
@@ -123,7 +123,11 @@ Node createLeafNode (Key & key)
 	key.rewindMeta ();
 	while (Key meta = key.nextMeta ())
 	{
-		if (meta.getName () == "array" || meta.getName () == "binary") continue;
+		if (meta.getName () == "array" || meta.getName () == "binary" ||
+		    (meta.getName () == "type" && meta.getString () == "boolean"))
+		{
+			continue;
+		}
 		if (meta.getName () == "type" && meta.getString () == "binary")
 		{
 			dataNode.SetTag ("tag:yaml.org,2002:binary");

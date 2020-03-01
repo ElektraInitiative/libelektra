@@ -120,6 +120,7 @@ Key createLeafKey (Node const & node, string const & name)
 			try
 			{
 				key.set<bool> (node.as<bool> ());
+				key.setMeta ("type", "boolean");
 			}
 			catch (YAML::BadConversion const &)
 			{
