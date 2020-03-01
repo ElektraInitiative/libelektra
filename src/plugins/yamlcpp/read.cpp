@@ -112,24 +112,20 @@ void addMetadata (Key & key, Node const & node)
 Key createLeafKey (Node const & node, string const & name)
 {
 	Key key{ name, KEY_BINARY, KEY_END };
+
 	if (!node.IsNull ())
 	{
-		auto value = node.as<string> ();
-		if (value == "true" || value == "false")
+		// The following code is certainly not ideal from a performance perspective, since it will throw and catch an exception
+		// in the usual case (when the current key does not store boolean data). However the statements more or less reproduces the
+		// steps the main author of yaml-cpp suggest to check for types (see also: https://stackoverflow.com/questions/19994312).
+		try
 		{
-			try
-			{
-				key.set<bool> (node.as<bool> ());
-				key.setMeta ("type", "boolean");
-			}
-			catch (YAML::BadConversion const &)
-			{
-				key.set<string> (value); // Save value as string, if `node` is a quoted scalar
-			}
+			key.set<bool> (node.as<bool> ());
+			key.setMeta ("type", "boolean");
 		}
-		else
+		catch (YAML::BadConversion const &)
 		{
-			key.set<string> (value);
+			key.set<string> (node.as<string> ()); // Save value as string, if `node` is a quoted scalar
 		}
 	}
 	if (node.Tag () == "tag:yaml.org,2002:binary")
