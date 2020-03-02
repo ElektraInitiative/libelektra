@@ -373,10 +373,17 @@ echo 'truth: true' > `kdb file user/tests/yamlcpp`
 kdb get user/tests/yamlcpp/truth
 #> 1
 
+# A boolean in Elektra has the type `boolean`
+kdb meta-get user/tests/yamlcpp/truth type
+#> boolean
+
 # Add another boolean value
 kdb set user/tests/yamlcpp/success 0
+kdb meta-set user/tests/yamlcpp/success type boolean
 kdb get user/tests/yamlcpp/success
 #> 0
+kdb export user/tests/yamlcpp/success yamlcpp
+#> false
 
 # Undo modifications to the database
 kdb rm -r user/tests/yamlcpp
@@ -495,6 +502,36 @@ sudo kdb umount user/tests/yamlcpp
 ```
 
 .
+
+### Special Values
+
+Due to the way the plugin writes data
+
+- first converting the key set into yaml-cpp’s `Node` data structure, and then
+- writing this data structure into a file,
+
+and the way the yaml-cpp library handles writing `Nodes`, the plugin does currently not handle data with special meaning according to the [YAML spec](https://yaml.org/spec/1.2/spec.html) correctly. For example, if you use the `kdb` tool to save the value `true` in a key, then the plugin will not quote this value and you will end up with a boolean value.
+
+```sh
+# Mount plugin
+sudo kdb mount test.yaml user/tests/yamlcpp yamlcpp
+
+kdb set user/tests/yamlcpp/boolean true
+# The following command should print a quoted YAML scalar
+# (e.g. `"true"` or `'true'`).
+kdb export user/tests/yamlcpp/boolean yamlcpp
+#> true
+
+# Since the value is not quoted the YAML CPP plugin will
+# correctly convert the YAML data into one of Elektra’s
+# boolean values (`0` or `1`).
+kdb get user/tests/yamlcpp/boolean
+#> 1
+
+# Undo modifications to the database
+kdb rm -r user/tests/yamlcpp
+sudo kdb umount user/tests/yamlcpp
+```
 
 ### Other Limitations
 

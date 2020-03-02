@@ -81,7 +81,7 @@ uintmax_t getArrayIndex (NameIterator const & nameIterator)
  *
  * @returns A new YAML node containing the data specified in `key`
  */
-Node createNode (Key const & key)
+Node createDataNode (Key const & key)
 {
 	if (key.hasMeta ("array"))
 	{
@@ -97,11 +97,41 @@ Node createNode (Key const & key)
 	}
 
 	auto value = key.get<string> ();
-	if (value == "0" || value == "1")
+	if (key.getMeta<string> ("type") == "boolean")
 	{
 		return Node (key.get<bool> ());
 	}
-	return Node (value);
+
+	Node node{ value };
+	if (key.getMeta<string> ("type") == "binary") node.SetTag ("tag:yaml.org,2002:binary");
+
+	return node;
+}
+
+/**
+ * @brief This function creates a YAML Node representing metadata.
+ *
+ * @param key This key specifies the metadata that should be saved in the YAML node returned by this function.
+ *
+ * @returns A new YAML node containing the metadata specified in `key`
+ */
+Node createMetaNode (Key & key)
+{
+	Node metaNode{ NodeType::Map };
+
+	key.rewindMeta ();
+	while (Key meta = key.nextMeta ())
+	{
+		if (meta.getName () == "array" || meta.getName () == "binary" ||
+		    (meta.getName () == "type" && (meta.getString () == "boolean" || meta.getString () == "binary")))
+		{
+			continue;
+		}
+		metaNode[meta.getName ()] = meta.getString ();
+		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", meta.getName ().c_str (), meta.getString ().c_str ());
+	}
+
+	return metaNode;
 }
 
 /**
@@ -116,22 +146,8 @@ Node createNode (Key const & key)
  */
 Node createLeafNode (Key & key)
 {
-
-	Node metaNode{ NodeType::Map };
-	Node dataNode = createNode (key);
-
-	key.rewindMeta ();
-	while (Key meta = key.nextMeta ())
-	{
-		if (meta.getName () == "array" || meta.getName () == "binary") continue;
-		if (meta.getName () == "type" && meta.getString () == "binary")
-		{
-			dataNode.SetTag ("tag:yaml.org,2002:binary");
-			continue;
-		}
-		metaNode[meta.getName ()] = meta.getString ();
-		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", meta.getName ().c_str (), meta.getString ().c_str ());
-	}
+	Node dataNode = createDataNode (key);
+	Node metaNode = createMetaNode (key);
 
 	if (metaNode.size () <= 0)
 	{
