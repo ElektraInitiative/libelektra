@@ -32,10 +32,12 @@ const set = (host, path, value) =>
   fetch(`${host}/kdb/${encodePath(path)}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "text/plain"
+      "Content-Type": "application/json"
     },
-    body: value
-  }).then(res => res.json());
+    body: JSON.stringify(value || "")
+  }).then(res => {
+    return { status: res.status };
+  });
 
 const rm = (host, path) =>
   fetch(`${host}/kdb/${encodePath(path)}`, { method: "DELETE" }).then(res => {
@@ -46,9 +48,9 @@ const mv = (host, path, destination) =>
   fetch(`${host}/kdbMv/${encodePath(path)}`, {
     method: "POST",
     headers: {
-      "Content-Type": "text/plain"
+      "Content-Type": "application/json"
     },
-    body: destination
+    body: JSON.stringify(destination || "")
   }).then(res => {
     return { status: res.status };
   });
@@ -59,7 +61,7 @@ const cp = (host, path, destination) =>
     headers: {
       "Content-Type": "text/plain"
     },
-    body: destination
+    body: JSON.stringify(destination || "")
   }).then(res => {
     return { status: res.status };
   });

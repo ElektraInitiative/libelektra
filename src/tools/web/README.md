@@ -12,12 +12,13 @@ Elektra-web requires:
 
 - [Elektra](https://libelektra.org/) with the [`yajl` plugin](https://master.libelektra.org/src/plugins/yajl/) installed
 - A recent [node.js](https://nodejs.org/en/) installation (at least 6.x)
+- [Go](https://golang.org/) with version > 1.13
 
 ## Building with elektra-web Tool
 
 To build Elektra with the elektra-web tool:
 
-- Install Node.js and dependencies for `yajl` plugin (see links above)
+- Install Node.js, Go and dependencies for `yajl` plugin (see links above)
 - Configure libelektra build with the elektra-web tool, e.g. `cmake .. -DTOOLS="kdb;web"`
 - Build libelektra: `make`
 - Install libelektra: `sudo make install`
@@ -40,8 +41,8 @@ To build Elektra with the elektra-web tool:
 - Install and start an elektrad instance:
 
   - `cd elektrad`
-  - `npm install`
-  - `npm start` (replaces `kdb run-elektrad`)
+  - `go build`
+  - `./elektrad` (replaces `kdb run-elektrad`)
 
 - Install and start the client (connects to the elektrad instance):
 
@@ -85,13 +86,12 @@ browser, the configuration page for the instance will be opened immediately.
 ### Using a Different `kdb` Executable
 
 It is possible to change the `kdb` executable that elektra-web uses by setting
-the `KDB` environment variable. Please ensure to use the same `KDB` executable
-when starting `elektrad` and the `client`.
+the `KDB` environment variable, this is not needed for `elektrad`.
 
 For example:
 
 ```sh
-KDB="/usr/local/custom/bin/kdb" kdb run-elektrad
+kdb run-elektrad
 KDB="/usr/local/custom/bin/kdb" kdb run-web
 ```
 
@@ -122,8 +122,8 @@ In order to test API on localhost, you have to start elektrad instance. You can 
 
   - `cd libelektra/src/tools/web`
   - `cd elektrad`
-  - `npm install`
-  - `npm start`
+  - `go build`
+  - `./elektrad`
 
 - by installing elektrad tool together with Elektra and run it
   - please see the section `Building with elektra-web Tool`
@@ -148,7 +148,7 @@ let's create the new key-value pair `user/test` and set its value to 5. You can 
   curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user/test
   ```
 
-The output of any of two commands will be: `Set string to "5"`. If the specified key didn't exist before, then the output will be `Create a new key user/test with string "5"`.
+The output of the commandline tool will be: `Set string to "5"`. If the specified key didn't exist before, then the output will be `Create a new key user/test with string "5"`. Elektrad will respond with code `200`.
 
 Now, the command
 

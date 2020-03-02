@@ -151,6 +151,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
+- [elektrad](../../src/tools/web/elektrad/README.md) is completely rewritten in Go - which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` commandline tool on every request. _(Raphael Gruber)_
 - Update `kdb cache` tool synopsis to reflect man page. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>

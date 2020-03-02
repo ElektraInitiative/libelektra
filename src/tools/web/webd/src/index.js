@@ -32,12 +32,12 @@ getVersions()
       process.exit(1);
     } else {
       const { major, minor, patch } = versions.elektra;
-      const versionSupported = major >= 0 && minor >= 8 && patch >= 23;
+      const versionSupported = major >= 0 && minor >= 9 && patch >= 0;
       if (!versionSupported) {
         error(
-          `you are running an old libelektra version, which is not supported`
+          `you are running an old libelektra version ${major}.${minor}.${patch}, which is not supported`
         );
-        error(`please upgrade to libelektra 0.8.23 or higher`);
+        error(`please upgrade to libelektra 0.9.0 or higher`);
         process.exit(1);
       }
       return getInstances() // make sure yajl is installed

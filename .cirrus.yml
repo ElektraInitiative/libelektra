@@ -85,6 +85,7 @@ mac_task:
         image: catalina-xcode
       env:
         ENABLE_LOGGER: ON
+        TOOLS: ALL;web
 
     - name: 🍎 Clang ASAN
       osx_instance:
@@ -124,6 +125,7 @@ mac_task:
       brew install discount
       brew install doxygen
       brew install glib
+      brew install go
       brew install gpgme
       brew install graphviz
       brew install libev
@@ -135,6 +137,7 @@ mac_task:
       brew install maven
       brew install moreutils
       brew install ninja
+      brew install npm
       brew install openssl
       brew install pkg-config
       brew install prettier
@@ -161,10 +164,12 @@ mac_task:
       export PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
     - | # Install Ruby gems
       sudo gem install ronn test-unit --no-document
+    - | # Install JavaScript packages
+      npm install dredd --global
 
   script:
     - > # Use latest version of LLVM to translate Elektra
-      export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
+      if [ "$USE_LLVM" != OFF ] ; then export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++; fi
     - *create_build_dir
     - >
       set --
@@ -297,4 +302,3 @@ docu_task:
         printf >&2 -- '\n\n————————————————————————————————————————————————————————————\n\n'
         false
       fi
-

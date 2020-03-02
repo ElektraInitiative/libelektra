@@ -16,13 +16,16 @@ Elektra \fIhttps://libelektra\.org/\fR with the \fByajl\fR plugin \fIhttps://mas
 .IP "\(bu" 4
 A recent node\.js \fIhttps://nodejs\.org/en/\fR installation (at least 6\.x)
 .
+.IP "\(bu" 4
+Go \fIhttps://golang\.org/\fR with version > 1\.13
+.
 .IP "" 0
 .
 .SH "Building with elektra\-web Tool"
 To build Elektra with the elektra\-web tool:
 .
 .IP "\(bu" 4
-Install Node\.js and dependencies for \fByajl\fR plugin (see links above)
+Install Node\.js, Go and dependencies for \fByajl\fR plugin (see links above)
 .
 .IP "\(bu" 4
 Configure libelektra build with the elektra\-web tool, e\.g\. \fBcmake \.\. \-DTOOLS="kdb;web"\fR
@@ -73,10 +76,10 @@ Install and start an elektrad instance:
 \fBcd elektrad\fR
 .
 .IP "\(bu" 4
-\fBnpm install\fR
+\fBgo build\fR
 .
 .IP "\(bu" 4
-\fBnpm start\fR (replaces \fBkdb run\-elektrad\fR)
+\fB\./elektrad\fR (replaces \fBkdb run\-elektrad\fR)
 .
 .IP "" 0
 
@@ -151,7 +154,6 @@ For example:
 .
 .nf
 
-KDB="/usr/local/custom/bin/kdb" kdb run\-elektrad
 KDB="/usr/local/custom/bin/kdb" kdb run\-web
 .
 .fi
