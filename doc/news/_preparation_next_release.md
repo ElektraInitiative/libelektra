@@ -219,7 +219,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Fixed [coveralls](https://coveralls.io/github/ElektraInitiative/libelektra) coverage report. _(Mihael Pranjić)_
 - The build jobs `debian-unstable-clang-asan` and `debian-unstable-full-clang` now use Clang 9 to compile Elektra. _(René Schwaiger)_
-- <<TODO>>
+- Test jenkins. _(Mihael Pranjić)_
 
 ### Travis
 
