@@ -169,7 +169,7 @@ mac_task:
 
   script:
     - > # Use latest version of LLVM to translate Elektra
-      if [ "$USE_LLVM" != OFF ] ; then export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++; fi
+      export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
     - *create_build_dir
     - >
       set --
