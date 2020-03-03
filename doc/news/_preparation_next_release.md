@@ -166,7 +166,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
 - We fixed some minor spelling mistakes. _(René Schwaiger)_
-- <<TODO>>
+- We updated the man pages of the [`web`](../../src/tools/web/README.md) tool. _(René Schwaiger)_
 
 ## Tests
 
