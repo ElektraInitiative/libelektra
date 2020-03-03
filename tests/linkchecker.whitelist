@@ -20,11 +20,9 @@ http://www.snmp.com/protocol
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.81.7888
 # LLVM links broken currently
 https://clang.llvm.org/docs/ClangFormat.html
-https://clang.llvm.org/docs/ClangFormat.html
-https://clang.llvm.org/docs/ClangFormat.html
-https://clang.llvm.org/docs/ClangFormat.html
-https://clang.llvm.org/docs/ClangFormat.html
 https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
 https://clang.llvm.org/index.html
-https://jira.apache.org/jira/browse/MDEP-518
+https://llvm.org/docs/XRay.html
 https://llvm.org/docs/XRayExample.html
+https://jira.apache.org/jira/browse/MDEP-518
+
