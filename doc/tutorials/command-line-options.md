@@ -106,7 +106,7 @@ assigned as follows:
 
 ## Sub-Commands
 
-`elektraGetOpts` also supports sub-commands. For example calling `git -p add` and `git add -p` result in different behaviour.
+`elektraGetOpts` also supports sub-commands. For example calling `git -p add` and `git add -p` result in different behavior.
 This is because the options that `git` understands are separate from the options that its sub-command `add` knows. However,
 the option `-p` is understood by both. In `git` it is short for `--paginate` and in `add` it is short for `--patch`.
 
