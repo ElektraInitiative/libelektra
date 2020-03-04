@@ -594,28 +594,29 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 	for (kdb_long_long_t i = 0; i < ksGetSize (spec->argIndices); i++)
 	{
 		Key * cur = ksAtCursor (spec->argIndices, i);
-		KeySet * indices = elektraMetaArrayToKS (cur, "index");
-		for (kdb_long_long_t j = 1; j < ksGetSize (indices); j++) // start at 1 to skip size
+		const char * maxIndex = keyGetMetaString (cur, "index");
+
+		char indexMetaName[ELEKTRA_MAX_ARRAY_SIZE + sizeof ("index/")] = "index/#0";
+		kdb_long_long_t indexValue = 0;
+		while (maxIndex != NULL && strcmp (indexMetaName + sizeof ("index"), maxIndex) < 0)
 		{
-			Key * index = ksAtCursor (indices, j);
-			if (strcmp (keyBaseName (index), keyString (index)) != 0)
+			const char * meta = keyGetMetaString (cur, indexMetaName);
+			if (meta == NULL)
 			{
-				Key * command = keyDup (cur);
-				keySetBaseName (command, NULL);
 				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 					errorKey,
 					"The values of 'args/index' must be continuous, but index " ELEKTRA_LONG_LONG_F
 					" is missing in keys below: %s",
-					j - 1, keyGetMetaString (cur, "key"));
-				keyDel (command);
-				ksDel (indices);
+					indexValue, keyGetMetaString (cur, "key"));
 				ksDel (spec->argIndices);
 				ksDel (spec->options);
 				ksDel (spec->keys);
 				return false;
 			}
+
+			++indexValue;
+			elektraWriteArrayNumber (indexMetaName + sizeof ("index"), indexValue);
 		}
-		ksDel (indices);
 	}
 
 	spec->useSubcommands = useSubcommands;
@@ -1000,6 +1001,17 @@ bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key
 		Key * envVarKey = keyNew ("/", KEY_META, "key", keyName (specKey), KEY_END);
 		keyAddBaseName (envVarKey, envVar);
 
+		Key * existing = ksLookup (usedEnvVars, envVarKey, 0);
+		if (existing != NULL)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				errorKey, "The environment variable '%s' has already been specified for the key '%s'. Additional key: %s",
+				envVar, keyGetMetaString (existing, "key"), keyName (specKey));
+			keyDel (existing);
+			keyDel (envVarKey);
+			return false;
+		}
+
 		ksAppendKey (usedEnvVars, envVarKey);
 
 		if (*keyWithOpt == NULL)
@@ -1059,8 +1071,6 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 			return false;
 		}
 
-		// FIXME: duplicate args=remaining
-
 		if (*keyWithOpt == NULL)
 		{
 			*keyWithOpt = keyNew (keyName (specKey), KEY_END);
@@ -1069,7 +1079,18 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 
 		Key * dup = keyDup (specKey);
 		keySetBaseName (dup, NULL); // remove #
+
+		const char * existing = keyGetMetaString (command, "remainingargskey");
+		if (existing != NULL)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "'args=remaining' is already used on key '%s'. Offending key: %s",
+								existing, keyName (specKey));
+			return false;
+		}
+
 		keySetMeta (command, "remainingargs", keyBaseName (dup));
+		keySetMeta (command, "remainingargskey", keyName (specKey));
+
 		char * argName = elektraFormat ("%s...", keyBaseName (dup));
 		char * argHelp = elektraFormat ("  %-28s%s", argName, help);
 		keySetMeta (*keyWithOpt, "args/help", argHelp);
@@ -1104,8 +1125,6 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 			return false;
 		}
 
-		// FIXME: duplicate args=indexed
-
 		if (*keyWithOpt == NULL)
 		{
 			*keyWithOpt = keyNew (keyName (specKey), KEY_END);
@@ -1114,10 +1133,28 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 		keySetMeta (*keyWithOpt, "args/index", keyString (argsIndex));
 
 		Key * indexKey = ksLookup (argIndices, keyNew (keyName (command), KEY_END), KDB_O_DEL | KDB_O_CREATE);
-		char indexKeyName[ELEKTRA_MAX_ARRAY_SIZE];
-		elektraWriteArrayNumber (indexKeyName, indexValue);
 		keySetMeta (indexKey, "key", keyString (command));
-		elektraMetaArrayAdd (indexKey, "index", indexKeyName);
+
+		char indexMetaName[ELEKTRA_MAX_ARRAY_SIZE + sizeof ("index/")];
+		strcpy (indexMetaName, "index/");
+		elektraWriteArrayNumber (indexMetaName + sizeof ("index"), indexValue);
+
+		const char * maxIndex = keyGetMetaString (indexKey, "index");
+		if (maxIndex == NULL || strcmp (maxIndex, indexMetaName + sizeof ("index")) < 0)
+		{
+			keySetMeta (indexKey, "index", indexMetaName + sizeof ("index"));
+		}
+
+		const char * existing = keyGetMetaString (indexKey, indexMetaName);
+		if (existing != NULL)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+				errorKey, "'args/index=" ELEKTRA_LONG_LONG_F "' is already used by '%s'. Offending Key: %s", indexValue,
+				existing, keyName (specKey));
+			return false;
+		}
+
+		keySetMeta (indexKey, indexMetaName, keyName (specKey));
 
 		char * argHelp = elektraFormat ("  %-28s%s", keyBaseName (specKey), help);
 		keySetMeta (*keyWithOpt, "args/help", argHelp);

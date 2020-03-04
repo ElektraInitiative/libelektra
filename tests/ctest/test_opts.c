@@ -529,6 +529,21 @@ static void test_illegal_spec (void)
 	ksDel (ks);
 
 	// ---
+	// duplicate envrionment variable
+	//
+
+	ks = ksNew (1, keyWithOpt (SPEC_BASE_KEY "/apple", 0, NULL, "APPLE"), keyWithOpt (SPEC_BASE_KEY "/banana", 0, NULL, "APPLE"),
+		    KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"The environment variable 'APPLE' has already been specified for the key '" SPEC_BASE_KEY
+				"/apple'. Additional key: " SPEC_BASE_KEY "/banana"),
+		    "duplicate env-var option should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
 	// args remaining not array
 	// ---
 
@@ -620,6 +635,39 @@ static void test_illegal_spec (void)
 	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
 				"The values of 'args/index' must be continuous, but index 0 is missing in keys below: " SPEC_BASE_KEY),
 		    "args=indexed with non-continuous indicies should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+
+	// ---
+	// args duplicate remaining
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple/#", KEY_END);
+	keySetMeta (k, "args", "remaining");
+	ks = ksNew (2, k, keyNew (SPEC_BASE_KEY "/banana/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'args=remaining' is already used on key '" SPEC_BASE_KEY "/apple/#'. Offending key: " SPEC_BASE_KEY
+				"/banana/#"),
+		    "args=remaining duplicate should be illegal");
+	clearValues (ks);
+	ksDel (ks);
+
+	// ---
+	// args duplicate index
+	// ---
+
+	k = keyNew (SPEC_BASE_KEY "/apple", KEY_END);
+	keySetMeta (k, "args", "indexed");
+	keySetMeta (k, "args/index", "0");
+	ks = ksNew (2, k, keyNew (SPEC_BASE_KEY "/banana", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END), KS_END);
+
+	RUN_TEST_ERROR (ks, errorKey, NO_ARGS, NO_ENVP);
+	succeed_if (checkError (errorKey, ELEKTRA_ERROR_VALIDATION_SEMANTIC,
+				"'args/index=0' is already used by '" SPEC_BASE_KEY "/apple'. Offending Key: " SPEC_BASE_KEY "/banana"),
+		    "args=indexed duplicate index should be illegal");
 	clearValues (ks);
 	ksDel (ks);
 
