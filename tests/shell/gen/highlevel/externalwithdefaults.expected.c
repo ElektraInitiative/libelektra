@@ -40,7 +40,7 @@
 
 
 
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_externalwithdefaults\n";
+static const char * helpFallback = "Usage: tests_script_gen_highlevel_externalwithdefaults [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
 static int isHelpMode (void)
 {

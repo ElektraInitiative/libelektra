@@ -51,7 +51,7 @@ static KeySet * embeddedSpec (void)
 ;
 }
 
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_simple [OPTION]...\n\nOPTIONS\n  -p                          enable printing\n";
+static const char * helpFallback = "Usage: tests_script_gen_highlevel_simple [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n  -p                          enable printing\n";
 
 static int isHelpMode (void)
 {

@@ -429,6 +429,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 					keyName (cur));
 				ksDel (spec->options);
 				ksDel (spec->argIndices);
+				ksDel (spec->commands);
 				ksDel (spec->keys);
 				ksDel (usedEnvVars);
 				return false;
@@ -443,6 +444,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 					keyName (cur));
 				ksDel (spec->options);
 				ksDel (spec->argIndices);
+				ksDel (spec->commands);
 				ksDel (spec->keys);
 				ksDel (usedEnvVars);
 				return false;
@@ -492,6 +494,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 				keyDel (command);
 				ksDel (spec->options);
 				ksDel (spec->argIndices);
+				ksDel (spec->commands);
 				ksDel (spec->keys);
 				ksDel (usedEnvVars);
 				return false;
@@ -507,6 +510,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 				keyDel (command);
 				ksDel (spec->options);
 				ksDel (spec->argIndices);
+				ksDel (spec->commands);
 				ksDel (spec->keys);
 				ksDel (usedEnvVars);
 				return false;
@@ -529,6 +533,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 					ksDel (spec->options);
 					ksDel (spec->argIndices);
 					ksDel (spec->keys);
+					ksDel (spec->commands);
 					ksDel (usedEnvVars);
 					return false;
 				}
@@ -554,6 +559,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 			ksDel (spec->argIndices);
 			ksDel (spec->options);
 			ksDel (spec->keys);
+			ksDel (spec->commands);
 			ksDel (usedEnvVars);
 			return false;
 		}
@@ -565,6 +571,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 			ksDel (spec->argIndices);
 			ksDel (spec->options);
 			ksDel (spec->keys);
+			ksDel (spec->commands);
 			ksDel (usedEnvVars);
 			return false;
 		}
@@ -576,6 +583,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 			ksDel (spec->argIndices);
 			ksDel (spec->options);
 			ksDel (spec->keys);
+			ksDel (spec->commands);
 			ksDel (usedEnvVars);
 			return false;
 		}
@@ -611,6 +619,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 				ksDel (spec->argIndices);
 				ksDel (spec->options);
 				ksDel (spec->keys);
+				ksDel (spec->commands);
 				return false;
 			}
 
@@ -1007,8 +1016,10 @@ bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 				errorKey, "The environment variable '%s' has already been specified for the key '%s'. Additional key: %s",
 				envVar, keyGetMetaString (existing, "key"), keyName (specKey));
+			elektraFree (envsLinePart);
 			keyDel (existing);
 			keyDel (envVarKey);
+			ksDel (envVars);
 			return false;
 		}
 
@@ -1085,6 +1096,7 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "'args=remaining' is already used on key '%s'. Offending key: %s",
 								existing, keyName (specKey));
+			keyDel (dup);
 			return false;
 		}
 
@@ -1826,6 +1838,7 @@ int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool write
 
 		elektraFree (usage);
 		elektraFree (optionsText);
+		elektraFree (commandsText);
 		elektraFree (argsText);
 		elektraFree (envsText);
 		return 1;
@@ -2047,6 +2060,7 @@ char * generateUsageLine (const char * progname, const Key * command, const Key 
 		}
 	}
 
+	ksDel (args);
 	elektraFree (indexedArgs);
 	elektraFree (commandString);
 	return usage;

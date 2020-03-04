@@ -58,7 +58,7 @@ static KeySet * embeddedSpec (void)
 ;
 }
 
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_commands [OPTION]... [PARAMETER]...\n\nOPTIONS\n  -v, --verbose               \n  -v, --verbose               \n  -v, --version               \n\nPARAMETERS\n  [dynamic]...                \n  keyname                     \n  keyname                     \n  metaname                    \n";
+static const char * helpFallback = "Usage: tests_script_gen_highlevel_commands [OPTION...] [COMMAND [...]|[<dynamic>...]]\n\nOPTIONS\n  --help                      Print this help message\n  -v, --version               \n\nCOMMANDS\n  get                         \n  set                         \n\nPARAMETERS\n  dynamic...                  \n";
 
 static int isHelpMode (void)
 {

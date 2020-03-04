@@ -51,7 +51,7 @@ static KeySet * embeddedSpec (void)
 ;
 }
 
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_enum\n";
+static const char * helpFallback = "Usage: tests_script_gen_highlevel_enum [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
 static int isHelpMode (void)
 {

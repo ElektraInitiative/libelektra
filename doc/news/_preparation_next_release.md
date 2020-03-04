@@ -98,6 +98,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   interprets `-p` differently from `git`: `git -p add` is `git --paginate add`, but `git add -p` is `git add --patch`.
   For more information take a look at the [tutorial for command-line-options](../tutorials/command-line-options.md).
   By extension this functionality is also available via the `gopts` plugin. _(Klemens Böswirth)_
+- The generated help message was improved. It now also gives details about parameter arguments, sub-commands and
+  environment variables in addition to the existing support for option arguments. This also means that it is no longer
+  possible to have multiple keys with the `args=remaining` metadata (because their `opt/help` may not bep the same).
+  _(Klemens Böswirth)_
 
 ### <<Library2>>
 
