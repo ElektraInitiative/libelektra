@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "README" "" "November 2019" "" ""
+.TH "README" "" "March 2020" "" ""
 \fIan API and web user interface to remotely manage Elektra instances\fR
 .
 .P
@@ -145,7 +145,7 @@ INSTANCE="advanced@http://localhost:33333" kdb run\-web
 Now, when you open \fIhttp://localhost:33334\fR in your browser, the configuration page for the instance will be opened immediately\.
 .
 .SS "Using a Different <code>kdb</code> Executable"
-It is possible to change the \fBkdb\fR executable that elektra\-web uses by setting the \fBKDB\fR environment variable\. Please ensure to use the same \fBKDB\fR executable when starting \fBelektrad\fR and the \fBclient\fR\.
+It is possible to change the \fBkdb\fR executable that elektra\-web uses by setting the \fBKDB\fR environment variable, this is not needed for \fBelektrad\fR\.
 .
 .P
 For example:
@@ -154,6 +154,7 @@ For example:
 .
 .nf
 
+kdb run\-elektrad
 KDB="/usr/local/custom/bin/kdb" kdb run\-web
 .
 .fi
@@ -202,10 +203,10 @@ run manually (if you would like to start it manually or you don\'t have eletrad\
 \fBcd elektrad\fR
 .
 .IP "\(bu" 4
-\fBnpm install\fR
+\fBgo build\fR
 .
 .IP "\(bu" 4
-\fBnpm start\fR
+\fB\./elektrad\fR
 .
 .IP "" 0
 
@@ -242,7 +243,7 @@ through the rest api using curl \fBsh curl \-X PUT \-H "Content\-Type: text/plai
 .IP "" 0
 .
 .P
-The output of any of two commands will be: \fBSet string to "5"\fR\. If the specified key didn\'t exist before, then the output will be \fBCreate a new key user/test with string "5"\fR\.
+The output of the commandline tool will be: \fBSet string to "5"\fR\. If the specified key didn\'t exist before, then the output will be \fBCreate a new key user/test with string "5"\fR\. Elektrad will respond with code \fB200\fR\.
 .
 .P
 Now, the command
