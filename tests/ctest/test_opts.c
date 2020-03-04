@@ -921,10 +921,16 @@ static void test_help (void)
 
 	Key * errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 
+	const char * expectedHelpBase =
+		"Usage: prog [OPTION...]\n"
+		"\n"
+		"OPTIONS\n"
+		"  --help                      Print this help message\n";
+
 	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, "Usage: prog\n");
+	checkHelpMessage (errorKey, expectedHelpBase);
 	succeed_if (elektraGetOpts (ks, ARGS ("--help", "long"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, "Usage: prog\n");
+	checkHelpMessage (errorKey, expectedHelpBase);
 
 	keyDel (errorKey);
 
@@ -939,16 +945,17 @@ static void test_help (void)
 	// with options
 	// ---
 
-	const char * expectedHelp =
-		"Usage: prog [OPTION]... [PARAMETER]...\n"
+	const char * expectedHelpOpts =
+		"Usage: prog [OPTION...] <param1> <param2> [<other>...]\n"
 		"\n"
 		"OPTIONS\n"
+		"  --help                      Print this help message\n"
 		"  -a, -b BANANA, -C, --apple, --banana=BANANA, --cherry=[ARG]\n"
 		"                                Apple/Banana/Cherry description\n"
 		"  -p ARG                      A pear is not an apple, nor a banana, nor a cherry.\n"
 		"\n"
 		"PARAMETERS\n"
-		"  [other]...                  Other parameters\n"
+		"  other...                    Other parameters\n"
 		"  param1                      First parameter\n"
 		"  param2                      Second parameter\n"
 		"\n"
@@ -985,10 +992,74 @@ static void test_help (void)
 	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 
 	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, expectedHelp);
+	checkHelpMessage (errorKey, expectedHelpOpts);
 	succeed_if (elektraGetOpts (ks, ARGS ("--help", "long"), NO_ENVP, errorKey) == 1, "help not generated");
-	checkHelpMessage (errorKey, expectedHelp);
+	checkHelpMessage (errorKey, expectedHelpOpts);
+	clearValues (ks);
+	keyDel (errorKey);
 
+	ksDel (ks);
+
+	// ---
+	// with commands
+	// --
+
+	const char * expectedHelpMain =
+		"Usage: prog [OPTION...] [COMMAND [...]|[<dynamic>...]]\n"
+		"\n"
+		"OPTIONS\n"
+		"  --help                      Print this help message\n"
+		"  -v, --version               \n"
+		"\n"
+		"COMMANDS\n"
+		"  get                         \n"
+		"  set                         \n"
+		"\n"
+		"PARAMETERS\n"
+		"  dynamic...                  \n";
+
+	const char * expectedHelpGet =
+		"Usage: prog get [OPTION...] <keyname>\n"
+		"\n"
+		"OPTIONS\n"
+		"  --help                      Print this help message\n"
+		"  -v, --verbose               \n"
+		"\n"
+		"PARAMETERS\n"
+		"  keyname                     \n";
+
+	const char * expectedHelpSet =
+		"Usage: prog set [OPTION...] <keyname> <value>\n"
+		"\n"
+		"OPTIONS\n"
+		"  --help                      Print this help message\n"
+		"  -v, --verbose               \n"
+		"\n"
+		"PARAMETERS\n"
+		"  keyname                     \n"
+		"  value                       \n";
+
+	ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_META, "command", "", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META, "opt/arg",
+			    "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/get", KEY_META, "command", "get", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/get/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META, "opt/arg",
+			    "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1", KEY_META, "command", "set", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1/verbose", KEY_META, "opt", "v", KEY_META, "opt/long", "verbose", KEY_META, "opt/arg",
+			    "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/set1/value", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
+
+	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelpMain);
+	succeed_if (elektraGetOpts (ks, ARGS ("get", "--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelpGet);
+	succeed_if (elektraGetOpts (ks, ARGS ("set", "--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelpSet);
 	keyDel (errorKey);
 
 	ksDel (ks);
@@ -1204,6 +1275,19 @@ static void test_commands (void)
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb {set} get -v");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/keyname", "get"), "command failed: kdb set {get} -v");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/value", "-v"), "command failed: kdb set get {-v}");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb set get -v [get]");
+	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#1", NULL), "command failed: kdb set get -v [dynamic]");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#2", NULL), "command failed: kdb set get -v [dynamic]");
+	clearValues (ks);
+
+	RUN_TEST (ks, ARGS ("set", "-v", "a", "b"), NO_ENVP);
+	succeed_if (checkValue (ks, PROC_BASE_KEY, "set1"), "command failed: {kdb} set -v a b");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1", ""), "command failed: kdb {set} -v a b");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/verbose", "1"), "command failed: kdb set {-v} a b");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/keyname", "a"), "command failed: kdb set -v {a} b");
+	succeed_if (checkValue (ks, PROC_BASE_KEY "/set1/value", "b"), "command failed: kdb set -v a {b}");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/get", ""), "command failed: kdb set get -v [get]");
 	succeed_if (checkMeta (ks, PROC_BASE_KEY "/dynamic", "array", NULL), "command failed: kdb set get -v [dynamic]");
 	succeed_if (checkValue (ks, PROC_BASE_KEY "/dynamic/#0", NULL), "command failed: kdb set get -v [dynamic]");
