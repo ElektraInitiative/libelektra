@@ -61,6 +61,7 @@
 
   #define KDB_EXCEPTIONS \
     KDB_CATCH_EX(kdb, KDBException) \
+    KDB_CATCH_EX(kdb, ContractException) \
     KDB_CATCH_EX(kdb, Exception)
 %}
 
