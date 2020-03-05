@@ -59,7 +59,8 @@ class KDB(unittest.TestCase):
 			ks = kdb.KeySet()
 			k = kdb.Key("system/elektra/ensure/plugins/global/gopts", kdb.KEY_VALUE, "mounted")
 			parent = kdb.Key("system/elektra")
-			db.ensure (ks, parent)
+			rc = db.ensure (ks, parent)
+			self.assertEqual(rc, 0)
 			db.get(ks, parent)
 
 	@classmethod
