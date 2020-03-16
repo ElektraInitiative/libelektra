@@ -85,7 +85,7 @@ mac_task:
         image: catalina-xcode
       env:
         ENABLE_LOGGER: ON
-        TOOLS: ALL;web
+        TOOLS: ALL;elektrad;webui;webd
 
     - name: 🍎 Clang ASAN
       osx_instance:
