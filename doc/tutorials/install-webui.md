@@ -103,11 +103,11 @@ Elektra web consists of multiple components:
 - a single server to communicate with the elektra daemons and serve the client ([`webd`](webd/))
 - a web browser that accesses the client (Web UI) on the [`webd`](webd/) server ([`client`](client/))
 
-![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png)
+![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/network_structure.png)
 
 ## API
 
-![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/daemon_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/daemon_structure.png)
+![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/daemon_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/daemon_structure.png)
 
 [API blueprints](https://apiblueprint.org/) are available for both APIs:
 
