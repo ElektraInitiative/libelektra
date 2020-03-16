@@ -1,0 +1,66 @@
+.\" generated with Ronn/v0.7.3
+.\" http://github.com/rtomayko/ronn/tree/0.7.3
+.
+.TH "README" "" "March 2020" "" ""
+The instance management server for elektra\-web, built using express \fIhttps://expressjs\.com/\fR\. It accesses the API of multiple \fBelektrad\fR \fI\.\./elektrad/\fR instances and provides an API to manage instances\.
+.
+.SH "Installation"
+.
+.IP "\(bu" 4
+first, install libelektra \fIhttps://libelektra\.org/\fR with the \fByajl\fR plugin \fIhttps://master\.libelektra\.org/src/plugins/yajl/\fR
+.
+.IP "\(bu" 4
+now run \fBnpm install\fR
+.
+.IP "" 0
+.
+.SH "Running"
+.
+.nf
+
+npm start
+.
+.fi
+.
+.P
+to run in verbose mode (full logs):
+.
+.IP "" 4
+.
+.nf
+
+npm run start:verbose
+.
+.fi
+.
+.IP "" 0
+.
+.P
+to run in development mode (full logs & running from source):
+.
+.IP "" 4
+.
+.nf
+
+npm run start:dev
+.
+.fi
+.
+.IP "" 0
+.
+.SH "Client"
+By default, \fBwebd\fR serves its API and the elektra\-web client on \fIhttp://localhost:33334\fR
+.
+.P
+If you want to use the \fBwebd\fR in combination with the client in development mode, start the client via \fBnpm run start:dev\fR, it will also start \fBwebd\fR\.
+.
+.SH "API"
+.
+.IP "\(bu" 4
+API documentation: https://elektrawebd\.docs\.apiary\.io/
+.
+.IP "\(bu" 4
+API blueprint: webd\.apib \fIhttps://master\.libelektra\.org/doc/api_blueprints/webd\.apib\fR
+.
+.IP "" 0
+

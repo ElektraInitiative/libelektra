@@ -6,7 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import kdb from "../../../kdb";
+import kdb from "../kdb";
 import { path, generateId, findById, updateById, deleteById } from "./utils";
 
 export const getClusters = () =>
