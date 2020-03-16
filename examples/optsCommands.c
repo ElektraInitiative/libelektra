@@ -88,7 +88,7 @@ int main (int argc, const char ** argv)
 		lookup = ksLookupByName (ks, BASE_KEY "/getter/keyname", 0);
 		if (lookup == NULL || strlen (keyString (lookup)) == 0)
 		{
-			printf ("report the error 'missing parameter: keyname'\n");
+			printf ("report the error 'empty parameter: keyname'\n");
 			keyDel (errorKey);
 			ksDel (ks);
 

@@ -110,7 +110,7 @@ assigned as follows:
 This is because the options that `git` understands are separate from the options that its sub-command `add` knows. However,
 the option `-p` is understood by both. In `git` it is short for `--paginate` and in `add` it is short for `--patch`.
 
-The first thing you need to know about sub-commands is that they imply `posixly = 1` mode. This means **all** options must
+The first thing you need to know about sub-commands is that they turn on `posixly = 1` mode. This means **all** options must
 be given before any non-option arguments (such as parameters or sub-commands). Otherwise, we couldn't distinguish between
 `git -p add` and `git add -p`.
 
