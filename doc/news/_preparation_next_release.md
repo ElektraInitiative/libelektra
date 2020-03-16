@@ -100,7 +100,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   By extension this functionality is also available via the `gopts` plugin. _(Klemens Böswirth)_
 - The generated help message was improved. It now also gives details about parameter arguments, sub-commands and
   environment variables in addition to the existing support for option arguments. This also means that it is no longer
-  possible to have multiple keys with the `args=remaining` metadata (because their `opt/help` may not bep the same).
+  possible to have multiple keys with the `args=remaining` metadata (because their `opt/help` may not be the same).
   _(Klemens Böswirth)_
 
 ### <<Library2>>

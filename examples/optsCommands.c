@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief Implements example given in doc/tutorials/command-line-options.md 
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -69,7 +69,7 @@ int main (int argc, const char ** argv)
 		return EXIT_SUCCESS;
 	}
 
-	printf ("A real implementation would now \n");
+	printf ("A real implementation would now\n");
 
 	Key * lookup = ksLookupByName (ks, BASE_KEY "/printversion", 0);
 	if (lookup != NULL && elektraStrCmp (keyString (lookup), "1") == 0)
@@ -94,7 +94,7 @@ int main (int argc, const char ** argv)
 
 			return EXIT_SUCCESS;
 		}
-		printf ("read the key '%s'\n", keyString (lookup));
+		printf ("get the key '%s'\n", keyString (lookup));
 
 		lookup = ksLookupByName (ks, BASE_KEY "/getter/verbose", 0);
 		if (lookup != NULL && elektraStrCmp (keyString (lookup), "1") == 0)
@@ -124,7 +124,7 @@ int main (int argc, const char ** argv)
 
 			return EXIT_SUCCESS;
 		}
-		printf ("write the value '%s' to the key '%s'\n", keyString (lookup), keyname);
+		printf ("set the key '%s' with the value '%s'\n", keyname, keyString (lookup));
 
 		lookup = ksLookupByName (ks, BASE_KEY "/setter/verbose", 0);
 		if (lookup != NULL && elektraStrCmp (keyString (lookup), "1") == 0)

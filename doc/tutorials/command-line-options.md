@@ -208,6 +208,7 @@ then repeatedly look at the current key's value, append that to the current key 
 was the empty string `""`. Each of the examined keys corresponds to one of the sub-commands in the invocation and the keys
 directly below those, contain the relevant options (and for the last sub-command also parameters).
 
+The C code for this example is located in examples/optsCommands.c 
 ## Help Message
 
 When the help option `--help` is encountered in `argv`, `elektraGetOpts` only reads the specification, but does not
