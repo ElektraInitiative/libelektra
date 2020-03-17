@@ -99,9 +99,9 @@ KDB="/usr/local/custom/bin/kdb" kdb run-web
 
 Elektra web consists of multiple components:
 
-- (multiple) servers running an elektra daemon ([`elektrad`](elektrad/))
-- a single server to communicate with the elektra daemons and serve the client ([`webd`](webd/))
-- a web browser that accesses the client (Web UI) on the [`webd`](webd/) server ([`client`](client/))
+- (multiple) servers running an elektra daemon ([`elektrad`](../../src/tools/elektrad/))
+- a single server to communicate with the elektra daemons and serve the client ([`webd`](../../src/tools/webd/))
+- a web browser that accesses the client (Web UI) on the [`webd`](../../src/tools/webd/) server ([`client`](../../src/tools/webui/))
 
 ![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/network_structure.png)
 

@@ -151,7 +151,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- [elektrad](../../src/tools/web/elektrad/README.md) is completely rewritten in Go - which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` commandline tool on every request. _(Raphael Gruber)_
+- [elektrad](../../src/tools/elektrad/README.md) is completely rewritten in Go - which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` commandline tool on every request. _(Raphael Gruber)_
 - Update `kdb cache` tool synopsis to reflect man page. _(Mihael Pranjić)_
 - Pull elektrad, webui and webd out of shared web folder to allow fine grained selection of tools. _(Raphael Gruber)_
 - <<TODO>>
@@ -166,7 +166,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
 - We fixed some minor spelling mistakes. _(René Schwaiger)_
-- We updated the man pages of the [`web`](../../src/tools/web/README.md) tool. _(René Schwaiger)_
+- We updated the man pages of the [`web`](../tutorials/install-webui.md) tool. _(René Schwaiger)_
 
 ## Tests
 
