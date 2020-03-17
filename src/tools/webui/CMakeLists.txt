@@ -1,7 +1,7 @@
 find_program (NPM_EXECUTABLE "npm")
 
 if (NOT NPM_EXECUTABLE)
-		remove_tool (${tool} "`npm` executable was not found")
+	remove_tool (${tool} "`npm` executable was not found")
 else ()
 
 	# configure and copy files
