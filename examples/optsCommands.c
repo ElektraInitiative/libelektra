@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Implements example given in doc/tutorials/command-line-options.md 
+ * @brief Implements example given in doc/tutorials/command-line-options.md
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -53,6 +53,7 @@ int main (int argc, const char ** argv)
 	int result = elektraGetOpts (ks, argc, argv, (const char **) environ, errorKey);
 	if (result == -1)
 	{
+		// there was an error
 		fprintf (stderr, "ERROR: %s\n", keyString (keyGetMeta (errorKey, "error/reason")));
 		keyDel (errorKey);
 		ksDel (ks);
@@ -61,6 +62,7 @@ int main (int argc, const char ** argv)
 
 	if (result == 1)
 	{
+		// '--help' option was used
 		char * help = elektraGetOptsHelpMessage (errorKey, NULL, NULL);
 		fprintf (stderr, "%s\n", help);
 		elektraFree (help);
@@ -141,12 +143,13 @@ int main (int argc, const char ** argv)
 		{
 			printf ("dynamically invoke the command '");
 			ksRewind (dynamicCommand);
+			printf ("%s' with arguments:", keyString (ksNext (dynamicCommand)));
 			Key * cur = NULL;
 			while ((cur = ksNext (dynamicCommand)) != NULL)
 			{
-				printf ("%s ", keyString (cur));
+				printf (" %s", keyString (cur));
 			}
-			printf ("'\n");
+			printf ("\n");
 		}
 		else
 		{

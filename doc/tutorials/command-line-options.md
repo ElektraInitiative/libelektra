@@ -79,7 +79,9 @@ then there must also be keys for all integers `0 <= X < N` with `args=indexed` a
 use `args/index=0` and `args/index=2` without `args/index=1`.
 
 Combining `args=indexed` and `args=remaining` in the same specification (on different keys) is also possible. The key with
-`args=remaining` will only contain those elements not used via `args=indexed`.
+`args=remaining` will only contain those elements not used via `args=indexed`. E.g. if there are keys with `args/index=0`
+and `args/index=1` then the `args=remaining` array will start with the third (index 2) parameter argument. Note however,
+the `args=remaining` array **always** starts with index `#0`, even if it doesn't contain the first parameter argument.
 
 ### Example
 
@@ -106,13 +108,18 @@ assigned as follows:
 
 ## Sub-Commands
 
-`elektraGetOpts` also supports sub-commands. For example calling `git -p add` and `git add -p` result in different behavior.
-This is because the options that `git` understands are separate from the options that its sub-command `add` knows. However,
-the option `-p` is understood by both. In `git` it is short for `--paginate` and in `add` it is short for `--patch`.
+`elektraGetOpts` also supports sub-commands. Explaining sub-commands is easiest through the help of an example: `add` and
+`commit` are both sub-commands of `git`, since we can call `git add` and `git commit` and they do entirely different things.
+The most important impact of using sub-commands is their effect on option arguments. For example calling `git -p add` and
+`git add -p` result in different behavior, since the `-p` option is interpreted differently. The options that `git`
+understands are separate from the options that its sub-command `add` knows. However, the option `-p` is understood by both.
+In `git` it is short for `--paginate` and in `add` it is short for `--patch`.
 
-The first thing you need to know about sub-commands is that they turn on `posixly = 1` mode. This means **all** options must
-be given before any non-option arguments (such as parameters or sub-commands). Otherwise, we couldn't distinguish between
-`git -p add` and `git add -p`.
+An important thing to know about sub-commands in `elektraGetOpts` is that they turn on `posixly = 1` mode. This means **all**
+options for a specific sub-command must be given before any non-option arguments (such as parameters or sub-commands).
+Otherwise, we couldn't distinguish between `git -p add` and `git add -p`. In other words an option argument is always assigned
+to the first sub-command to its left. Any element of `argv` that is not the argument for an option argument, either switches to
+a new sub-command or is the start of the parameter arguments.
 
 A sub-command is created by specifying `command` on a key. To enable sub-command processing the parent key of the whole
 specification must have `command` set to an empty string. All keys marked with `command` **directly** below another
@@ -121,11 +128,12 @@ a key `X` marked with `command` is not marked with `command` and `X` is not the 
 
 To inform the application about the invoked sub-commands, `elektraGetOpts` sets each `command` key to one of two values:
 
-- All invoked sub-commands `S` will be set to `XYZ`, where `XYZ` is the base name of the key whose sub-command of `S` was invoked.
-- Any other sub-command is set to an empty string.
+- The basename of the key, whose command was invoked.
+- An empty string otherwise.
 
-For example consider `./app add more`: The parent key will be set to `add`, the key for `add` will be set to `more` and
-the key for `more` is set to an empty string, because none of its sub-commands were invoked.
+For example consider `./app add more`: The parent key will be set to the basename of whatever key `command=add` was specified on,
+the key for `add` will be set to the basename corresponding to `more` and the key for `more` is set to an empty string, because
+none of its sub-commands were invoked. A more detailed example is shown below.
 
 Every key considered by `elektraGetOpts` is assigned either to the root command, or a single sub-command. Specifically,
 each key is assigned to the command of its immediate parent. If sub-commands are used and the immediate parent of an `opt`
@@ -145,59 +153,73 @@ All of this is best understood with an example:
 command = ""
 
 [kdb/printversion]
-type = boolean
+description = "print version information and exit (ignoring all other options/commands/parameters)"
 opt = v
 opt/long = version
 opt/arg = none
 
-[kdb/get]
+[kdb/getter]
+description = "get a key's value"
 command = get
 
-[kdb/get/verbose]
-type = boolean
+[kdb/getter/verbose]
+description = "print additional information about where the value comes from"
 opt = v
 opt/long = verbose
 opt/arg = none
 
-[kdb/get/keyname]
-type = string
+[kdb/getter/keyname]
+description = "name of the key to read"
 args = indexed
 args/index = 0
 
 [kdb/setter]
+description = "print additional information about where the value will be stored"
 command = set
 
 [kdb/setter/verbose]
-type = boolean
+description = "name of the key to write"
 opt = v
 opt/long = verbose
 opt/arg = none
 
+[kdb/setter/keyname]
+description = "name of the key to write"
+args = indexed
+args/index = 0
+
+[kdb/setter/value]
+description = "value to be written"
+args = indexed
+args/index = 1
+
 [kdb/dynamic/#]
-type = string
+description = "dynamically call a user-supplied command"
 args = remaining
 ```
 
-- If we invoke `kdb -v`, keys below `kdb/get`, `kdb/set` and `kdb/dynamic` are not touched. The result is:
+- If we invoke `kdb -v`, keys below `kdb/getter`, `kdb/setter` and `kdb/dynamic` are not touched. The result is:
   - `kdb = ""`
   - `kdb/printversion = 1`
-  - `kdb/get = ""`
-  - `kdb/set = ""`
-- If we invoke `kdb get -v name`, keys below `kdb/set` and `kdb/dynamic` are not touched. The result is:
-  - `kdb = get`
-  - `kdb/get = ""`
-  - `kdb/get/verbose = 1`
-  - `kdb/get/keyname = name`
-  - `kdb/set = ""`
-- If we invoke `kdb -v set -v`, keys below `kdb/get` and `kdb/dynamic` are not touched. The result is:
+  - `kdb/getter = ""`
+  - `kdb/setter = ""`
+- If we invoke `kdb get -v name`, keys below `kdb/setter` and `kdb/dynamic` are not touched. The result is:
+  - `kdb = getter`
+  - `kdb/getter = ""`
+  - `kdb/getter/verbose = 1`
+  - `kdb/getter/keyname = name`
+  - `kdb/setter = ""`
+- If we invoke `kdb -v set -v`, keys below `kdb/getter` and `kdb/dynamic` are not touched. The result is:
   - `kdb = setter`
   - `kdb/printversion = 1`
   - `kdb/setter = ""`
   - `kdb/setter/verbose = 1`
-  - `kdb/get = ""`
-- If we invoke `kdb -v custom -v -x z`, keys below `kdb/get` and `kdb/set are not touched. The result is:
+  - `kdb/getter = ""`
+- If we invoke `kdb -v custom -v -x z`, keys below `kdb/getter` and `kdb/setter` are not touched. The result is:
   - `kdb = ""`
   - `kdb/printversion = 1`
+  - `kdb/getter = ""`
+  - `kdb/setter = ""`
   - `kdb/dynamic/#0 = custom`
   - `kdb/dynamic/#1 = -v`
   - `kdb/dynamic/#2 = -x`
