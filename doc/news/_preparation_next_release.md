@@ -72,6 +72,13 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - The CMake code of the plugin does not print error messages produced by the tool `ldd` any more. _(René Schwaiger)_
 - The plugin now also supports ANTLR 4.8. _(René Schwaiger)_
 
+### GOpts
+
+- The plugin now supports an offset into `argv` given by the `/offset` config key. When `/offset` is set, `gopts` will
+  ignore a number of arguments at the start of `argv`. This can be used in e.g. python scripts to ignore the interpreter
+  arguments. _(Klemens Böswirth)_
+- `gopts` is also affected by the changes and improvements to the `opts` library outlined below.
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.

@@ -14,6 +14,9 @@
 This plugin is very simple in what it does. It uses system specific methods of accessing `argc` and `argv` outside of `main` and then calls
 `elektraGetOpts` to do options processing.
 
+The config key `/offset` may be given to ignore a number of arguments at the start of `argv`. This is useful, if `gopts` was called from a
+script via an interpreter (e.g. in python scripts).
+
 ## Usage
 
 The preferred way of using this plugin is via `kdbEnsure`:
