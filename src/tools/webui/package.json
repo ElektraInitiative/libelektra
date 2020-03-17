@@ -9,7 +9,7 @@
   ],
   "repository": "github:ElektraInitiative/libelektra",
   "proxy": "http://localhost:33334",
-  "license": "SEE LICENSE IN ../../../../LICENSE.md",
+  "license": "SEE LICENSE IN ../../../LICENSE.md",
   "dependencies": {
     "@bosket/core": "^0.4.2",
     "@bosket/tools": "^0.4.2",

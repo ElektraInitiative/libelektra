@@ -8,7 +8,7 @@
     "webd"
   ],
   "repository": "github:ElektraInitiative/libelektra",
-  "license": "SEE LICENSE IN ../../../../LICENSE.md",
+  "license": "SEE LICENSE IN ../../../LICENSE.md",
   "main": "src/index.js",
   "scripts": {
     "start": "npm run build && npm run start:prod",
@@ -17,7 +17,7 @@
     "start:prod": "cross-env NODE_ENV=production DEBUG=webd:*,-*debug,-*log node build/",
     "start:prod:verbose": "cross-env NODE_ENV=production DEBUG=webd:* node build/",
     "start:dev": "cross-env NODE_ENV=development DEBUG=webd:* babel-watch src/",
-    "test": "dredd ../../../../doc/api_blueprints/webd.apib http://localhost:33334 --hookfiles=./testHooks.js --server \"npm run test:server\" --server-wait 20",
+    "test": "dredd ../../../doc/api_blueprints/webd.apib http://localhost:33334 --hookfiles=./testHooks.js --server \"npm run test:server\" --server-wait 20",
     "test:server": "concurrently \"npm run test:server:elektrad\" \"npm run test:server:webd\"",
     "test:server:elektrad": "cd ../elektrad && npm start",
     "test:server:webd": "npm start"
