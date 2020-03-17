@@ -64,6 +64,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### SWIG/python
 
 - Added bindings for libelektratools. _(Manuel Mausz)_
+- Add test for kdbEnsure. _(Mihael Pranjić)_
 
 ### SWIG/python2
 
