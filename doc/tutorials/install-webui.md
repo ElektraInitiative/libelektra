@@ -185,11 +185,10 @@ authenticate users, e.g. by [username/password auth](https://www.digitalocean.co
 
 ## Code Structure
 
-- `elektrad/` - contains the daemon to interact with a single elektra instance
-- `webd/` - contains a daemon to serve the client and interact with multiple elektra instances
+`elektrad/` - contains the daemon to interact with a single elektra instance   
+`webd/` - contains a daemon to serve the client and interact with multiple elektra instances   
 
-- `client/` - contains the elektra-web client (Web UI)
-
+`client/` - contains the elektra-web client (Web UI)
   - `src/actions/` - Redux actions to access the KDB or display notifications in the UI
   - `src/components/` - React components
 
