@@ -190,7 +190,7 @@ Then administrators do not need to guess.
 
 Next to the documentation for humans, specifications
 also provide information for software.
-For example, the [Web UI](/src/tools/web) automatically
+For example, the [Web UI](/src/tools/webui) automatically
 gives input fields according to the type of
 the configuration setting. For example, a boolean
 configuration setting gets a checkbox.
