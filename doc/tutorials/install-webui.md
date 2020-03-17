@@ -27,12 +27,12 @@ To build Elektra with the elektra-web tool:
 
 - Start an elektrad instance: `kdb run-elektrad`
 - Start the client: `kdb run-web`
-- You can now access the client on: `http://localhost:33334`
+- You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ## Getting Started (docker)
 
 - Create and run a new docker container: `docker run -d -it -p 33333:33333 -p 33334:33334 elektra/web`
-- You can now access the client on: `http://localhost:33334`
+- You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ## Running from source
 
@@ -50,7 +50,7 @@ To build Elektra with the elektra-web tool:
   - `npm install`
   - `npm start` (replaces `kdb run-web`)
 
-- You can now access the client on: `http://localhost:33334`
+- You can now access the client on: [http://localhost:33334](http://localhost:33334)
 
 ## Use-cases
 
@@ -80,7 +80,7 @@ For example (`advanced` visibility, `user` is default):
 INSTANCE="advanced@http://localhost:33333" kdb run-web
 ```
 
-Now, when you open `http://localhost:33334` in your
+Now, when you open [http://localhost:33334](http://localhost:33334) in your
 browser, the configuration page for the instance will be opened immediately.
 
 ### Using a Different `kdb` Executable
@@ -128,7 +128,7 @@ In order to test API on localhost, you have to start elektrad instance. You can 
 - by installing elektrad tool together with Elektra and run it
   - please see the section `Building with elektra-web Tool`
 
-Now the server is runing on `http://localhost:33333`. After that you can test API with help of Postman or other tool, which allows to send REST API requests.
+Now the server is runing on [http://localhost:33333](http://localhost:33333). After that you can test API with help of Postman or other tool, which allows to send REST API requests.
 
 Additional note. It is recommended to install the elektrad tool than starting the server manually.
 When Elektra is installed, the `kdb` command together with its tools is installed globally.
