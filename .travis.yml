@@ -121,7 +121,7 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-trusty-7
+            - llvm-toolchain-bionic-7
             - ubuntu-toolchain-r-test
           packages:
             - clang-7

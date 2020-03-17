@@ -1,0 +1,5 @@
+#!/usr/bin/env groovy
+
+stage("Trigger monthly libelektra/master build") {
+  build job: "libelektra/master", wait: false
+}
