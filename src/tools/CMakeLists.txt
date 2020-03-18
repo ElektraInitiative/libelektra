@@ -8,5 +8,5 @@ foreach (tool ${TOOLS})
 	else ()
 		add_subdirectory ("${tool}")
 	endif (${tool} STREQUAL "web")
-	
+
 endforeach (tool)
