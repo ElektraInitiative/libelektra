@@ -77,6 +77,8 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - The plugin now supports an offset into `argv` given by the `/offset` config key. When `/offset` is set, `gopts` will
   ignore a number of arguments at the start of `argv`. This can be used in e.g. python scripts to ignore the interpreter
   arguments. _(Klemens Böswirth)_
+- `gopts` now also writes help message into the key `proc/elektra/gopts/help/message` in addition to setting
+  `proc/elektra/gopts/help = 1`. This is also useful in non-C/C++ environments. _(Klemens Böswirth)_
 - `gopts` is also affected by the changes and improvements to the `opts` library outlined below.
 
 ## Libraries

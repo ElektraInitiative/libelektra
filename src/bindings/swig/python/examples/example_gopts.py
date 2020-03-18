@@ -104,7 +104,7 @@ with kdb.KDB() as db:
 	db.get(ks, spec_base_key)
 	
 	if "proc/elektra/gopts/help" in ks and ks["proc/elektra/gopts/help"].value == "1":
-		# TODO: call elektraGetOptsHelpMessage (not exposed to python right now) and print result
+		print (ks["proc/elektra/gopts/help/message"].value)
 		removeSpec()
 		exit(0)
 	

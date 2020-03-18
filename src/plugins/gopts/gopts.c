@@ -95,6 +95,9 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	KeySet * config = elektraPluginGetConfig (handle);
 
 	const Key * offsetKey = ksLookupByName (config, "/offset", 0);
+	const Key * usageKey = ksLookupByName (config, "/help/usage", 0);
+	const Key * prefixKey = ksLookupByName (config, "/help/prefix", 0);
+
 	kdb_long_long_t offset;
 	if (offsetKey != NULL)
 	{
@@ -124,6 +127,14 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		Key * helpKey = keyNew ("proc/elektra/gopts/help", KEY_VALUE, "1", KEY_END);
 		keyCopyAllMeta (helpKey, parentKey);
 		ksAppendKey (returned, helpKey);
+
+		const char * usage = usageKey == NULL ? NULL : keyString (usageKey);
+		const char * prefix = prefixKey == NULL ? NULL : keyString (prefixKey);
+
+		char * message = elektraGetOptsHelpMessage (parentKey, usage, prefix);
+		Key * messageKey = keyNew ("proc/elektra/gopts/help/message", KEY_VALUE, message, KEY_END);
+		elektraFree (message);
+		ksAppendKey (returned, messageKey);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
