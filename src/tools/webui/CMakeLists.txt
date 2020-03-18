@@ -1,14 +1,14 @@
 find_program (NPM_EXECUTABLE "npm")
 
 if (NOT NPM_EXECUTABLE)
-	remove_tool (${tool} "`npm` executable was not found")
+	remove_tool (webui "`npm` executable was not found")
 else ()
 
 	# configure and copy files
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/README.md" "${CMAKE_CURRENT_BINARY_DIR}/README.md")
 
 	# find installation path
-	set (install_directory ${TARGET_TOOL_DATA_FOLDER}/${tool})
+	set (install_directory ${TARGET_TOOL_DATA_FOLDER}/webui)
 
 	# install files to destination
 	install (

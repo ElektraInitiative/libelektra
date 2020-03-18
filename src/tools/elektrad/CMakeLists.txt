@@ -3,28 +3,24 @@ find_program (GO_EXECUTABLE "go")
 list (FIND REMOVED_PLUGINS "yajl" yajl_index)
 
 if (NOT yajl_index EQUAL -1)
-	remove_tool (${tool} "yajl plugin not available")
+	remove_tool (elektrad "yajl plugin not available")
 elseif (NOT GO_EXECUTABLE)
-	remove_tool (${tool} "`go` executable was not found")
+	remove_tool (elektrad "`go` executable was not found")
 else ()
-	# define configuration path
-	set (config_root "user/sw/elektra/${tool}/#0/")
-	set (config_default_profile "current")
-
 	# find installation path
-	set (install_directory ${TARGET_TOOL_DATA_FOLDER}/${tool})
+	set (install_directory ${TARGET_TOOL_DATA_FOLDER}/elektrad)
 
 	# configure and copy files
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/README.md" "${CMAKE_CURRENT_BINARY_DIR}/README.md")
-	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run-elektrad.sh" "${CMAKE_CURRENT_BINARY_DIR}/run-elektrad")
-	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/build.sh" "${CMAKE_CURRENT_BINARY_DIR}/build-${tool}")
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run.sh" "${CMAKE_CURRENT_BINARY_DIR}/run-elektrad")
+	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/build.sh" "${CMAKE_CURRENT_BINARY_DIR}/build-elektrad")
 
 	# create temporary elektra.pc file
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/temp-elektra.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra.pc" @ONLY)
 
 	# install files to destination
-	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad
-			  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad
+			  ${CMAKE_CURRENT_BINARY_DIR}/build-elektrad DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 	if (BUILD_SHARED)
 		set (ELEKTRA_LIBS_ELEKTRAD elektra-core elektra-kdb elektra-plugin elektra-ease elektra-meta)

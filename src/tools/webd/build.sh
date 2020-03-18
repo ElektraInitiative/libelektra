@@ -1,7 +1,8 @@
 #!/bin/sh
 cd @CMAKE_INSTALL_PREFIX@/@install_directory@
 
-cd client
+cd ../webui
 npm install
 npm run build
-cd ..
+
+cd ../webd
