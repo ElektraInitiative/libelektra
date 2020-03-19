@@ -42,6 +42,7 @@ END {
 
 WHITELIST=$(mktemp)
 grep -v '^#' "$SCRIPT_DIR/../tests/linkchecker.whitelist" > "$WHITELIST"
+sed -i '/^$/d' "$WHITELIST"
 
 NUMTHREADS=10
 TIMEOUT=20
