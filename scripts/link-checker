@@ -51,7 +51,7 @@ check() {
 	link=$(echo "$1" | grep -oE "(https|http|ftp):[^|]*")
 	files=$(echo "$1" | grep -oE "\|.*" | sed 's/|/ /g')
 
-	if grep -xq "$link" "$WHITELIST"; then
+	if echo "$link" | grep -Eqxf "$WHITELIST"; then
 		echo "whitelisted: $link"
 		printf "%i/%i\r" "$COUNTLINKS" "$NUMLINKS"
 		return

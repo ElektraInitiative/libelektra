@@ -23,7 +23,7 @@ http://localhost:33333
 http://localhost:33334
 
 # Currently broken GitHub links
-https://git.libelektra.org/*
-https://github.com/*
-https://master.libelektra.org/*
-https://puppet.libelektra.org/*
+https://git.libelektra.org(\S)*
+https://github.com(\S)*
+https://master.libelektra.org(\S)*
+https://puppet.libelektra.org(\S)*
