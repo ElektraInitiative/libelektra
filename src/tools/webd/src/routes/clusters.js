@@ -25,7 +25,7 @@ import {
 } from "../db";
 
 import remoteKdb from "../connector";
-import kdb from "../../../kdb";
+import kdb from "../kdb";
 
 // execute `fn` on all instances in the specified cluster
 const applyToAllInstances = (res, clusterId, fn) =>

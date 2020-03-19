@@ -99,15 +99,15 @@ KDB="/usr/local/custom/bin/kdb" kdb run-web
 
 Elektra web consists of multiple components:
 
-- (multiple) servers running an elektra daemon ([`elektrad`](elektrad/))
-- a single server to communicate with the elektra daemons and serve the client ([`webd`](webd/))
-- a web browser that accesses the client (Web UI) on the [`webd`](webd/) server ([`client`](client/))
+- (multiple) servers running an elektra daemon ([`elektrad`](/src/tools/elektrad/))
+- a single server to communicate with the elektra daemons and serve the client ([`webd`](/src/tools/webd/))
+- a web browser that accesses the client (Web UI) on the [`webd`](/src/tools/webd/) server ([`client`](/src/tools/webui/))
 
-![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/network_structure.png)
+![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/network_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/network_structure.png)
 
 ## API
 
-![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/daemon_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/src/tools/web/doc/daemon_structure.png)
+![https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/daemon_structure.png](https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/daemon_structure.png)
 
 [API blueprints](https://apiblueprint.org/) are available for both APIs:
 
@@ -185,38 +185,38 @@ authenticate users, e.g. by [username/password auth](https://www.digitalocean.co
 
 ## Code Structure
 
-- `elektrad/` - contains the daemon to interact with a single elektra instance
-- `webd/` - contains a daemon to serve the client and interact with multiple elektra instances
+`elektrad/` - contains the daemon to interact with a single elektra instance  
+`webd/` - contains a daemon to serve the client and interact with multiple elektra instances
 
-- `client/` - contains the elektra-web client (Web UI)
+`client/` - contains the elektra-web client (Web UI)
 
-  - `src/actions/` - Redux actions to access the KDB or display notifications in the UI
-  - `src/components/` - React components
+- `src/actions/` - Redux actions to access the KDB or display notifications in the UI
+- `src/components/` - React components
 
-    - `pages/` - pages in the app
+  - `pages/` - pages in the app
 
-      - `Home.jsx` - the main page (overview of all instances)
-      - `Configuration.jsx` - configuration page (single instance)
+    - `Home.jsx` - the main page (overview of all instances)
+    - `Configuration.jsx` - configuration page (single instance)
 
-    - `TreeItem/` - contains all UI components related to a single item in the tree view
+  - `TreeItem/` - contains all UI components related to a single item in the tree view
 
-      - `dialogs/` - these dialogs are opened when certain actions are pressed (icons next to the tree items)
+    - `dialogs/` - these dialogs are opened when certain actions are pressed (icons next to the tree items)
 
-        - `AddDialog.jsx` - dialog to create a new (sub-)key
-        - `DuplicateDialog.jsx` - dialog to duplicate a key
-        - `EditDialog.jsx` - dialog to edit a key value
-        - `RemoveDialog.jsx` - dialog to confirm the removal of a key
-        - `SettingsDialog.jsx` - dialog to edit metadata (new metadata can be implemented here)
-        - `*SubDialog.jsx` - sub-dialogs of the SettingsDialog
+      - `AddDialog.jsx` - dialog to create a new (sub-)key
+      - `DuplicateDialog.jsx` - dialog to duplicate a key
+      - `EditDialog.jsx` - dialog to edit a key value
+      - `RemoveDialog.jsx` - dialog to confirm the removal of a key
+      - `SettingsDialog.jsx` - dialog to edit metadata (new metadata can be implemented here)
+      - `*SubDialog.jsx` - sub-dialogs of the SettingsDialog
 
-      - `fields/` - special input fields to display various values
+    - `fields/` - special input fields to display various values
 
-    - `App.jsx` - defines app structure and routes
+  - `App.jsx` - defines app structure and routes
 
-  - `src/index.js` - main entry point of the app (fetches instances and renders UI)
-  - `src/containers/` - contains components that are connected to Redux
-  - `src/css/` - contains CSS styles
-  - `src/reducers/` - contains Redux reducers (used to process actions)
+- `src/index.js` - main entry point of the app (fetches instances and renders UI)
+- `src/containers/` - contains components that are connected to Redux
+- `src/css/` - contains CSS styles
+- `src/reducers/` - contains Redux reducers (used to process actions)
 
 ## Development Guides
 

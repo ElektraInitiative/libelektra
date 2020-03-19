@@ -19,7 +19,7 @@ import {
 } from "../package.json";
 import getVersions from "./versions";
 import initApp from "./app";
-import kdb from "../../kdb";
+import kdb from "./kdb";
 
 import { getInstances } from "./db";
 

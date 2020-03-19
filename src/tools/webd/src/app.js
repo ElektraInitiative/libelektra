@@ -24,7 +24,7 @@ export default function initApp(cb) {
   initRoutes(app); // initialize routes
 
   // serve the client
-  app.use(serveClient({ path: path.join(__dirname, "/../../client") }));
+  app.use(serveClient({ path: path.join(__dirname, "/../../webui") }));
 
   app.listen(PORT, () => cb(PORT)); // serve API at PORT
 }

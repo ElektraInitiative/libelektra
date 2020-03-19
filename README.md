@@ -86,7 +86,7 @@ Now that we have Elektra installed, we can start:
 
 - using the [kdb command](/doc/help/kdb.md),
 - using [qt-gui](/src/tools/qt-gui/) for people preferring graphical user interfaces, and
-- using [web-ui](/src/tools/web/) for people preferring web user interfaces.
+- using [web-ui](/src/tools/webui/) for people preferring web user interfaces.
 
 ### Documentation
 
