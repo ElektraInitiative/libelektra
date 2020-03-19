@@ -12,6 +12,8 @@ func setupRouter(app *server) http.Handler {
 
 	r.Use(handleMiddleware(app.pool))
 
+	r.HandleFunc("/", app.getDocHandler).Methods("GET")
+
 	r.HandleFunc("/version", app.getVersionHandler).Methods("GET")
 
 	r.HandleFunc("/kdb", app.getKdbHandler).Methods("GET")
