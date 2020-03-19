@@ -99,6 +99,15 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - The CMake code of the plugin does not print error messages produced by the tool `ldd` any more. _(René Schwaiger)_
 - The plugin now also supports ANTLR 4.8. _(René Schwaiger)_
 
+### GOpts
+
+- The plugin now supports an offset into `argv` given by the `/offset` config key. When `/offset` is set, `gopts` will
+  ignore a number of arguments at the start of `argv`. This can be used in e.g. python scripts to ignore the interpreter
+  arguments. _(Klemens Böswirth)_
+- `gopts` now also writes help message into the key `proc/elektra/gopts/help/message` in addition to setting
+  `proc/elektra/gopts/help = 1`. This is also useful in non-C/C++ environments. _(Klemens Böswirth)_
+- `gopts` is also affected by the changes and improvements to the `opts` library outlined below.
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
@@ -119,11 +128,19 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library1>>
+### Opts
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The library function `elektraGetOpts` now supports sub-commands.
+  Sub-commands are best explained by looking at an application that uses them, like `git`.
+  For example `add` is a sub-command in `git add`, and interprets `-p` differently from `git`:
+  `git -p add` is `git --paginate add`, but `git add -p` is `git add --patch`.
+  `elektraGetOpts` now implements this notion of sub-commands.
+  For more information take a look at the [tutorial for command-line-options](../tutorials/command-line-options.md).
+  By extension this functionality is also available via the `gopts` plugin. _(Klemens Böswirth)_
+- The generated help message was improved. It now also gives details about parameter arguments, sub-commands and
+  environment variables in addition to the existing support for option arguments. This also means that it is no longer
+  possible to have multiple keys with the `args=remaining` metadata (because their `opt/help` may not be the same).
+  _(Klemens Böswirth)_
 
 ### <<Library2>>
 

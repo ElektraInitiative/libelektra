@@ -10,6 +10,7 @@
 #include "gopts.h"
 
 #include <kdbassert.h>
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdbmacros.h>
@@ -64,7 +65,7 @@ int elektraGOptsIsHelpMode (void)
 }
 
 
-int elektraGOptsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
+int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/gopts"))
 	{
@@ -91,7 +92,28 @@ int elektraGOptsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	int ret = elektraGetOpts (returned, argc, (const char **) argv, (const char **) envp, parentKey);
+	KeySet * config = elektraPluginGetConfig (handle);
+
+	const Key * offsetKey = ksLookupByName (config, "/offset", 0);
+	const Key * usageKey = ksLookupByName (config, "/help/usage", 0);
+	const Key * prefixKey = ksLookupByName (config, "/help/prefix", 0);
+
+	kdb_long_long_t offset;
+	if (offsetKey != NULL)
+	{
+		if (!elektraKeyToLongLong (offsetKey, &offset) || offset < 0)
+		{
+			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "config key offset must be a non-negative integer, not %s",
+								keyString (offsetKey));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
+	else
+	{
+		offset = 0;
+	}
+
+	int ret = elektraGetOpts (returned, argc - offset, (const char **) argv + offset, (const char **) envp, parentKey);
 
 	cleanupArgs (argc, argv);
 	cleanupEnvp (envp);
@@ -105,6 +127,14 @@ int elektraGOptsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		Key * helpKey = keyNew ("proc/elektra/gopts/help", KEY_VALUE, "1", KEY_END);
 		keyCopyAllMeta (helpKey, parentKey);
 		ksAppendKey (returned, helpKey);
+
+		const char * usage = usageKey == NULL ? NULL : keyString (usageKey);
+		const char * prefix = prefixKey == NULL ? NULL : keyString (prefixKey);
+
+		char * message = elektraGetOptsHelpMessage (parentKey, usage, prefix);
+		Key * messageKey = keyNew ("proc/elektra/gopts/help/message", KEY_VALUE, message, KEY_END);
+		elektraFree (message);
+		ksAppendKey (returned, messageKey);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 

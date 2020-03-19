@@ -24,7 +24,7 @@
  *     PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include "notype.actual.h"
+#include "commands.actual.h"
 
 
 
@@ -40,14 +40,25 @@
 
 static KeySet * embeddedSpec (void)
 {
-	return ksNew (2,
-	keyNew("", KEY_META, "mountpoint", "tests_gen_elektra_notype.ini", KEY_END),
-	keyNew ("/notype", KEY_META, "default", "2", KEY_END),
+	return ksNew (13,
+	keyNew("", KEY_META, "command", "", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdb", KEY_META, "mountpoint", "tests_gen_elektra_commands.ini", KEY_META, "type", "string", KEY_END),
+	keyNew ("/dynamic/#", KEY_META, "args", "remaining", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/get", KEY_META, "command", "get", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdbGet", KEY_META, "type", "string", KEY_END),
+	keyNew ("/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/get/meta", KEY_META, "command", "meta", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdbGetMeta", KEY_META, "type", "string", KEY_END),
+	keyNew ("/get/meta/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/get/meta/metaname", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/get/meta/verbose", KEY_META, "default", "0", KEY_META, "opt", "v", KEY_META, "opt/arg", "none", KEY_META, "opt/long", "verbose", KEY_META, "type", "boolean", KEY_END),
+	keyNew ("/get/verbose", KEY_META, "default", "0", KEY_META, "opt", "v", KEY_META, "opt/arg", "none", KEY_META, "opt/long", "verbose", KEY_META, "type", "boolean", KEY_END),
+	keyNew ("/printversion", KEY_META, "default", "0", KEY_META, "opt", "v", KEY_META, "opt/arg", "none", KEY_META, "opt/long", "version", KEY_META, "type", "boolean", KEY_END),
+	keyNew ("/setter", KEY_META, "command", "set", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdbSet", KEY_META, "type", "string", KEY_END),
+	keyNew ("/setter/keyname", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/setter/value", KEY_META, "args/index", "1", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
 	KS_END);
 ;
 }
 
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_notype [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
+static const char * helpFallback = "Usage: tests_script_gen_highlevel_commands [OPTION...] [COMMAND [...]|[<dynamic>...]]\n\nOPTIONS\n  --help                      Print this help message\n  -v, --version               \n\nCOMMANDS\n  get                         \n  set                         \n\nPARAMETERS\n  dynamic...                  \n";
 
 static int isHelpMode (void)
 {
@@ -64,7 +75,7 @@ static int isHelpMode (void)
 
 
 /**
- * Initializes an instance of Elektra for the application '/tests/script/gen/highlevel/notype'.
+ * Initializes an instance of Elektra for the application '/tests/script/gen/highlevel/commands'.
  *
  * This can be invoked as many times as you want, however it is not a cheap operation,
  * so you should try to reuse the Elektra handle as much as possible.
@@ -94,7 +105,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	KS_END);
 ;
 
-	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/notype", defaults, contract, error);
+	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/commands", defaults, contract, error);
 
 	if (defaults != NULL)
 	{
@@ -138,7 +149,7 @@ void exitForSpecload (int argc, const char ** argv)
 
 	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/highlevel/notype", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
+	Key * parentKey = keyNew ("spec/tests/script/gen/highlevel/commands", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
 
 	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
@@ -181,6 +192,63 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 }
 
 
+/**
+ * Determines which sub-commands (according to `elektraGetOpts`) have been invoked and calls the associated functions in
+ * order. The parameters @p elektra and @p userData will be passed through. In addition, the `terminal` parameter will be
+ * set to `true` for the last command function that is called.
+ *
+ * @param elektra  The Elektra instance produced by loadConfiguration.
+ * @param usage	   Custom applicationd defined data. Will be passed untouched to the invoked command functions. Maybe NULL.
+ * 
+ * @return If @p elektra is NULL -1 is returned.
+ *         If one of the invoked command functions returns a non-zero value, that value is returned.
+ *         Otherwise the return value of the terminal command function is returned.
+ */// 
+int runCommands (Elektra * elektra, void * userData)
+{
+	if (elektra == NULL)
+	{
+		return -1;
+	}
+
+	KeySet * commands = ksNew(4,
+		keyNew ("/", KEY_FUNC, commandKdb, KEY_END),
+		keyNew ("/get", KEY_FUNC, commandKdbGet, KEY_END),
+		keyNew ("/get/meta", KEY_FUNC, commandKdbGetMeta, KEY_END),
+		keyNew ("/setter", KEY_FUNC, commandKdbSet, KEY_END),
+		KS_END
+	);
+
+	typedef int (*commandFunction) (Elektra *, kdb_boolean_t, void *);
+
+	Key * lastCommand = keyNew ("/", KEY_END);
+	const char * command = ELEKTRA_GET (String) (elektra, keyName(lastCommand) + 1);
+	while(strlen(command) > 0)
+	{
+		Key * commandKey = ksLookup (commands, lastCommand, 0);
+		const void * rawFunc = keyValue (commandKey);
+		commandFunction func = *(commandFunction *) rawFunc;
+		int result = func (elektra, false, userData);
+		if (result != 0)
+		{
+			keyDel (lastCommand);
+			ksDel (commands);
+			return result;
+		}
+
+		keyAddBaseName (lastCommand, command);
+		command = ELEKTRA_GET (String) (elektra, keyName(lastCommand) + 1);
+	}
+
+	Key * commandKey = ksLookup (commands, lastCommand, 0);
+	const void * rawFunc = keyValue (commandKey);
+	commandFunction func = *(commandFunction *) rawFunc;
+	int result = func (elektra, true, userData);
+	
+	keyDel (lastCommand);
+	ksDel (commands);
+	return result;
+}
 
 // clang-format off
 
