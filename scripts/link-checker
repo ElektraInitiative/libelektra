@@ -41,8 +41,7 @@ END {
 }' > "$LINKFILE"
 
 WHITELIST=$(mktemp)
-grep -v '^#' "$SCRIPT_DIR/../tests/linkchecker.whitelist" > "$WHITELIST"
-sed -i '/^$/d' "$WHITELIST"
+grep -Ev '^(#|[[:space:]]*$)' "$SCRIPT_DIR/../tests/linkchecker.whitelist" > "$WHITELIST"
 
 NUMTHREADS=10
 TIMEOUT=20
