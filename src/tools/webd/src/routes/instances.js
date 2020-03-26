@@ -6,7 +6,14 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import { APIError, successResponse, errorResponse, dontShowDB } from "./utils";
+import {
+  APIError,
+  successResponse,
+  errorResponse,
+  dontShowDB,
+  setSessionID,
+  getSessionID
+ } from "./utils";
 
 import {
   getInstances as getDBInstances,
@@ -102,8 +109,10 @@ export default function initInstanceRoutes(app) {
         if (!instance || !instance.host) {
           throw new APIError("Instance not found or invalid (no host)");
         }
-        return remoteKdb.get(instance.host);
+        return remoteKdb.get(instance.host, { sessionId: getSessionID(instance.id, req.session) });
       })
+      .then(instanceRes => setSessionID("asd", req.session, instanceRes))
+      .then(res => res.json())
       .then(dontShowDB)
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
@@ -117,10 +126,15 @@ export default function initInstanceRoutes(app) {
           const qs = req._parsedUrl.query;
           return remoteKdb.get(
             instance.host,
-            req.params[0],
-            qs ? "?" + qs : ""
+            {
+              query: qs ? "?" + qs : "",
+              sessionId: getSessionID(instance.id, req.session),
+              path: req.params[0]
+            }
           );
         })
+        .then(instanceRes => setSessionID("asd", req.session, instanceRes))
+        .then(res => res.json())
         .then(dontShowDB)
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))

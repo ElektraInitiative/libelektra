@@ -7,6 +7,7 @@
  */
 
 import express from "express";
+import cookieSession from "cookie-session";
 import bodyParser from "body-parser";
 import serveClient from "./serveClient";
 import path from "path";
@@ -17,6 +18,11 @@ import { PORT } from "./config";
 export default function initApp(cb) {
   const app = express(); // create the express app
 
+  app.use(cookieSession({
+    name: "session",
+    secret: "test", // todo: get secret from somewhere
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }));
   app.use(bodyParser.json()); // parse json body
   app.use(bodyParser.urlencoded({ extended: true })); // parse urlencoded body
   app.use(bodyParser.text()); // parse raw text body, for kdb commands
