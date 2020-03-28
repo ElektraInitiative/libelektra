@@ -95,6 +95,8 @@ void testOldMount (std::string mp, std::string ump)
 	Key x ("system/elektra/mountpoints", KEY_END);
 	x.addBaseName (mp);
 	ks.append (x.dup ());
+	x.addBaseName ("config");
+	ks.append (x.dup ());
 	x.addBaseName ("mountpoint");
 	x.setString (mp);
 	ks.append (x);
