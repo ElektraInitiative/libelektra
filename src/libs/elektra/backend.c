@@ -177,23 +177,23 @@ Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * fil
 	elektraKeySetName (errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
 	KeySet * config =
-		ksNew (30, keyNew ("default", KEY_END), keyNew ("default/config", KEY_END),
-		       keyNew ("default/config/mountpoint", KEY_VALUE, "default", KEY_END),
-		       keyNew ("default/config/path", KEY_VALUE, file, KEY_END), keyNew ("default/error", KEY_END),
-		       keyNew ("default/error/rollback", KEY_END), keyNew ("default/error/rollback/#0", KEY_END),
-		       keyNew ("default/error/rollback/#0/label", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		       keyNew ("default/error/rollback/#0/name", KEY_VALUE, KDB_RESOLVER, KEY_END), keyNew ("default/get", KEY_END),
-		       keyNew ("default/get/getresolver", KEY_END), keyNew ("default/get/getresolver/#0", KEY_END),
-		       keyNew ("default/get/getresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		       keyNew ("default/get/getstorage", KEY_END), keyNew ("default/get/getstorage/#0", KEY_END),
-		       keyNew ("default/get/getstorage/#0/label", KEY_VALUE, KDB_STORAGE, KEY_END),
-		       keyNew ("default/get/getstorage/#0/name", KEY_VALUE, KDB_STORAGE, KEY_END), keyNew ("default/set", KEY_END),
-		       keyNew ("default/set/commit", KEY_END), keyNew ("default/set/commit/#0", KEY_END),
-		       keyNew ("default/set/commit/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		       keyNew ("default/set/setresolver", KEY_END), keyNew ("default/set/setresolver/#0", KEY_END),
-		       keyNew ("default/set/setresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		       keyNew ("default/set/setstorage", KEY_END), keyNew ("default/set/setstorage/#0", KEY_END),
-		       keyNew ("default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
+		ksNew (30, keyNew ("system/elektra/mountpoints/default", KEY_END), keyNew ("system/elektra/mountpoints/default/config", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/config/mountpoint", KEY_VALUE, "system/elektra/mountpoints/default", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/config/path", KEY_VALUE, file, KEY_END), keyNew ("system/elektra/mountpoints/default/error", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/error/rollback", KEY_END), keyNew ("system/elektra/mountpoints/default/error/rollback/#0", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/error/rollback/#0/label", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/error/rollback/#0/name", KEY_VALUE, KDB_RESOLVER, KEY_END), keyNew ("system/elektra/mountpoints/default/get", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/get/getresolver", KEY_END), keyNew ("system/elektra/mountpoints/default/get/getresolver/#0", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/get/getresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/get/getstorage", KEY_END), keyNew ("system/elektra/mountpoints/default/get/getstorage/#0", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/label", KEY_VALUE, KDB_STORAGE, KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/name", KEY_VALUE, KDB_STORAGE, KEY_END), keyNew ("system/elektra/mountpoints/default/set", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/set/commit", KEY_END), keyNew ("system/elektra/mountpoints/default/set/commit/#0", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/set/commit/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/set/setresolver", KEY_END), keyNew ("system/elektra/mountpoints/default/set/setresolver/#0", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/set/setresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/set/setstorage", KEY_END), keyNew ("system/elektra/mountpoints/default/set/setstorage/#0", KEY_END),
+		       keyNew ("system/elektra/mountpoints/default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
 
 #ifdef ENABLE_TRACER
 	KeySet * tracerConfig = ksNew (10, keyNew ("default/error/prerollback", KEY_END), keyNew ("default/error/prerollback/#0", KEY_END),
