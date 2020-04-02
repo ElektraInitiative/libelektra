@@ -53,7 +53,7 @@ RUN apt-get update && apt-get -y install \
         python3-pip \
         python3-dev \
         ronn \
-        ruby-dev \
+        ruby2.5-dev \
         sloccount \
         swig3.0 \
         systemd \
