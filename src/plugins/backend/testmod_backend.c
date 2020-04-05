@@ -52,7 +52,7 @@ KeySet * set_simple (void)
 
 KeySet * set_default (void)
 {
-	return ksNew (30, keyNew ("system/elektra/mountpoints/default", KEY_END),
+	return ksNew (27, keyNew ("system/elektra/mountpoints/default", KEY_END),
 		keyNew ("system/elektra/mountpoints/default/config", KEY_END),
 		keyNew ("system/elektra/mountpoints/default/config/mountpoint", KEY_VALUE, "user/tests/backend/default", KEY_END),
 		keyNew ("system/elektra/mountpoints/default/config/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
@@ -90,11 +90,6 @@ Plugin * open_backend (KeySet * config, KeySet * modules, KeySet * global, Key *
 	}
 
 	return backend;
-}
-
-Plugin * open_default (KeySet * modules, KeySet * global)
-{
-	return open_backend (set_default (), modules, global, 0);
 }
 
 
@@ -264,7 +259,8 @@ static void test_default (void)
 	elektraPluginClose (plugin, 0);
 
 	KeySet * global = ksNew (0, KS_END);
-	Plugin * backend = open_default (modules, global);
+	KeySet * defaultKeyset = set_default ();
+	Plugin * backend = open_backend (defaultKeyset, modules, global, 0);
 
 	exit_if_fail (backend != 0, "no backend found");
 

@@ -232,6 +232,8 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 
 			int ret = processPlugin (cut, cur, &name, &pluginConfig, &referenceName, errorKey);
 
+			ksDel(cut);
+
 			if (ret == -1)
 			{
 				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not parse plugin name, label and configuration");
@@ -639,7 +641,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 	}
 
 	ksDel (setPluginsSet);
-
+	ksDel (referencePlugins);
 	ksDel(systemConfig);
 
 	// TODO Open missing backend instead of returning errors
