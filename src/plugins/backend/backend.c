@@ -640,6 +640,8 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 
 	ksDel (setPluginsSet);
 
+	ksDel(systemConfig);
+
 	// TODO Open missing backend instead of returning errors
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -702,7 +704,7 @@ int elektraBackendClose (Plugin * handle, Key * errorKey)
 
 	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
 	{
-		Slot * cur = bh->getplugins[a];
+		Slot * cur = bh->errorplugins[a];
 		if (!cur)
 		{
 			continue;
