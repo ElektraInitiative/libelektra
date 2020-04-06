@@ -49,9 +49,9 @@ RUN apt-get update && apt-get -y install \
         ninja-build \
         npm \
         pkg-config \
-        python3-dev \
-        python3-pip \
-        python3-dev \
+        python3.7-dev \
+        python3.7-pip \
+        python3.7-dev \
         ronn \
         ruby2.5-dev \
         sloccount \
