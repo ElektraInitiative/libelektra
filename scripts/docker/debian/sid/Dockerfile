@@ -50,8 +50,7 @@ RUN apt-get update && apt-get -y install \
         npm \
         pkg-config \
         python3.7-dev \
-        python3.7-pip \
-        python3.7-dev \
+        python3-pip \
         ronn \
         ruby2.5-dev \
         sloccount \
