@@ -49,13 +49,12 @@ RUN apt-get update && apt-get -y install \
         ninja-build \
         npm \
         pkg-config \
-        python-dev \
-        python-pip \
         python3-dev \
+        python3-pip \
         ronn \
-        ruby-dev \
+        ruby2.5-dev \
         sloccount \
-        swig3.0 \
+        swig4.0 \
         systemd \
         tclcl-dev \
         valgrind \
@@ -64,7 +63,7 @@ RUN apt-get update && apt-get -y install \
 # Update cache for shared libraries
 RUN ldconfig
 
-RUN pip install cmake-format[yaml]==0.6.3
+RUN pip3 install cmake-format[yaml]==0.6.3
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
