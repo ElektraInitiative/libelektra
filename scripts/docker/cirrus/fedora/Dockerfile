@@ -10,13 +10,13 @@ RUN dnf upgrade -y && dnf install -y \
         file \
         findutils \
         gcc-c++ \
-        gcrypt-devel \
         git \
         glib2 \
         gpgme-devel \
         java-1.8.0-openjdk-devel \
         jna \
         libcurl-devel \
+        libgcrypt-devel \
         libgit2-devel \
         libxml2-devel \
         lua-devel \
