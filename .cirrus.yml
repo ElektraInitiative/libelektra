@@ -12,7 +12,7 @@ commands:
   - &generate | # We need to specify the source directory (`.`) explicitly for Alpine linux (`🔗 Check`).
     cmake "$@" -G Ninja -B "$BUILD_DIR" .
   - &build cmake --build "$BUILD_DIR"
-  - &install output="$(cmake --build "$BUILD_DIR" --target "$CIRRUS_WORKING_DIR/$INSTALL_DIR" 2>&1)" || printf '%s' "$output"
+  - &install output="$(cmake --build "$BUILD_DIR" --target "$CIRRUS_WORKING_DIR/install" 2>&1)" || printf '%s' "$output"
   - &run_tests | # Run tests
     if [ "$ENABLE_ASAN" = 'ON' ]; then
       cmake --build "$BUILD_DIR" --target run_nocheckshell
@@ -214,8 +214,7 @@ mac_task:
 
 linux_task:
   env:
-    INSTALL_DIR: install
-    LUA_CPATH: ${CIRRUS_WORKING_DIR}/${INSTALL_DIR}/lib/lua/5.2/?.so;
+    LUA_CPATH: ${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;
 
   matrix:
 
@@ -234,7 +233,7 @@ linux_task:
       -DBINDINGS='ALL'
       -DPLUGINS='ALL'
       -DTOOLS='ALL'
-      -DCMAKE_INSTALL_PREFIX='$CIRRUS_WORKING_DIR/$INSTALL_DIR'
+      -DCMAKE_INSTALL_PREFIX='$CIRRUS_WORKING_DIR/install'
     - *generate
     - *build
     - *install
