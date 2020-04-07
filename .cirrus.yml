@@ -215,7 +215,7 @@ mac_task:
 linux_task:
   env:
     INSTALL_DIR: install
-    LUA_CPATH: ${BUILD_DIR}/install/lib/lua/5.2/?.so;
+    LUA_CPATH: ${CIRRUS_WORKING_DIR}/${BUILD_DIR}/${INSTALL_DIR}/lib/lua/5.2/?.so;
 
   matrix:
 
@@ -224,6 +224,7 @@ linux_task:
           dockerfile: scripts/docker/cirrus/fedora/Dockerfile
 
   script:
+    - >
       set --
       -DBUILD_FULL=ON
       -DBUILD_SHARED=ON
