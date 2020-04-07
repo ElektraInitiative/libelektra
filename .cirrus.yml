@@ -12,7 +12,7 @@ commands:
   - &generate | # We need to specify the source directory (`.`) explicitly for Alpine linux (`🔗 Check`).
     cmake "$@" -G Ninja -B "$BUILD_DIR" .
   - &build cmake --build "$BUILD_DIR"
-  - &install output="$(cmake --build "$BUILD_DIR" --target install 2>&1)" || printf '%s' "$output"
+  - &install output="$(cmake --build "$BUILD_DIR" --target "$CIRRUS_WORKING_DIR/$INSTALL_DIR" 2>&1)" || printf '%s' "$output"
   - &run_tests | # Run tests
     if [ "$ENABLE_ASAN" = 'ON' ]; then
       cmake --build "$BUILD_DIR" --target run_nocheckshell
