@@ -16,7 +16,7 @@ RUN dnf upgrade -y && dnf install -y \
     libcurl-devel \
     libgit2-devel \
     libxml2-devel \
-    lua-devel
+    lua-devel \
     make \
     ninja-build \
     openssl-devel \
