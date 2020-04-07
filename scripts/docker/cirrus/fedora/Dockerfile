@@ -1,9 +1,9 @@
 FROM fedora:31
 
 RUN dnf upgrade -y && dnf install -y \
-    antlr4 \
     augeas-devel \
     boost-devel \
+    botan-devel \
     cmake \
     curl \
     diffutils \
@@ -11,6 +11,8 @@ RUN dnf upgrade -y && dnf install -y \
     findutils \
     gcc-c++ \
     git \
+    glib2 \
+    gpgme-devel \
     java-1.8.0-openjdk-devel \
     jna \
     libcurl-devel \
@@ -18,9 +20,11 @@ RUN dnf upgrade -y && dnf install -y \
     libxml2-devel \
     lua-devel \
     make \
+    maven \
     ninja-build \
     openssl-devel \
     python3-devel \
+    qt5-devel \
     ruby-devel \
     swig \
     xerces-c-devel \
