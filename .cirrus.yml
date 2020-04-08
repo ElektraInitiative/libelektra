@@ -213,8 +213,6 @@ mac_task:
       fi
 
 linux_task:
-  env:
-    LUA_CPATH: ${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;
 
   matrix:
 
@@ -231,17 +229,17 @@ linux_task:
       -DENABLE_LOGGER=ON
       -DENABLE_DEBUG=ON
       -DBINDINGS='ALL'
-      -DPLUGINS='ALL'
+      -DPLUGINS='ALL;-fcrypt'
       -DTOOLS='ALL'
-      -DCMAKE_INSTALL_PREFIX='$CIRRUS_WORKING_DIR/install'
+      -DKDB_DB_SYSTEM="$CIRRUS_WORKING_DIR/system"
+      -DCMAKE_INSTALL_PREFIX="$CIRRUS_WORKING_DIR/install"
+    - *print_cmake_options
     - *generate
     - *build
     - *install
 
   tests_script:
-    - |
-      echo $LUA_CPATH
-      echo $CIRRUS_WORKING_DIR
+    - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
     - *run_tests
 
 link_task:
