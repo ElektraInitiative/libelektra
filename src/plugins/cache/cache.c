@@ -25,7 +25,7 @@
 #include <ftw.h>       // nftw()
 #include <stdint.h>    // nftw()
 #include <stdio.h>     // rename(), sprintf()
-#include <stdlib.h>    // nftw()
+#include <stdlib.h>    // nftw(), getenv()
 #include <string.h>    // nftw()
 #include <sys/stat.h>  // elektraMkdirParents
 #include <sys/time.h>  // gettimeofday()
@@ -52,9 +52,29 @@ struct _cacheHandle
 	Plugin * cacheStorage;
 };
 
+static char * elektraStrConcat (const char * a, const char * b)
+{
+	size_t len = strlen (a) + strlen (b) + 1;
+	char * ret = elektraMalloc (len);
+	ret = strcpy (ret, a);
+	ret = strcat (ret, b);
+	return ret;
+}
+
 static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, Key * errorKey)
 {
-	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/elektra", KEY_END), KS_END);
+	char * cacheDir = getenv ("XDG_CACHE_HOME");
+	if (cacheDir)
+	{
+		cacheDir = elektraStrConcat (cacheDir, "/elektra");
+	}
+	else
+	{
+		cacheDir = getenv ("HOME");
+		cacheDir = elektraStrConcat (cacheDir, "/.cache/elektra");
+	}
+
+	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, cacheDir, KEY_END), KS_END);
 	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cachePath);
 	if (!ch->resolver)
 	{
@@ -144,15 +164,6 @@ static int elektraMkdirParents (const char * pathname)
 	}
 
 	return 0;
-}
-
-static char * elektraStrConcat (const char * a, const char * b)
-{
-	size_t len = strlen (a) + strlen (b) + 1;
-	char * ret = elektraMalloc (len);
-	ret = strcpy (ret, a);
-	ret = strcat (ret, b);
-	return ret;
 }
 
 static char * elektraGenTempFilename (char * cacheFileName)
