@@ -228,4 +228,4 @@ TEST_P (Conflict, DISABLED_ConflictWithRemovalLoop)
 }
 
 
-INSTANTIATE_TEST_CASE_P (Conflict, Conflict, ::testing::Values (true, false));
+INSTANTIATE_TEST_CASE_P (Conflict, Conflict, ::testing::Values (true, false),);
