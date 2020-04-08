@@ -235,7 +235,7 @@ you up to date with the multi-language support provided by Elektra.
 - Use latest macOS catalina Xcode stable. _(Mihael Pranjić)_
 - Use newer FreeBSD images and use image family instead of concrete image names. _(Mihael Pranjić)_
 - Disable tcl on FreeBSD images because of test failures (see #3353). _(Mihael Pranjić)_
-- Do nothing and test broken cirrus macOS builds. _(Mihael Pranjić)_
+- Test broken cirrus macOS builds. _(Mihael Pranjić)_
 
 ### Jenkins
 
