@@ -168,8 +168,11 @@ mac_task:
       npm install dredd --global
 
   script:
-    - > # Use latest version of LLVM to translate Elektra
+    - | # Use latest version of LLVM to translate Elektra
       export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
+      export LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"
+      export CPPFLAGS="-I/usr/local/opt/llvm/include"
+      export PATH="/usr/local/opt/llvm/bin:$PATH"
     - *create_build_dir
     - >
       set --
