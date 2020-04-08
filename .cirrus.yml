@@ -170,7 +170,7 @@ mac_task:
   script:
     - | # Use latest version of LLVM to translate Elektra
       export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
-      export LDFLAGS="-L/usr/local/opt/llvm/lib -Wl,-rpath,/usr/local/opt/llvm/lib"
+      export LDFLAGS="-L/usr/local/opt/llvm/lib"
       export CPPFLAGS="-I/usr/local/opt/llvm/include"
       export PATH="/usr/local/opt/llvm/bin:$PATH"
     - *create_build_dir
@@ -191,6 +191,8 @@ mac_task:
       -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
       -DPLUGINS="${PLUGINS:-ALL}"
       -DTOOLS="${TOOLS:-ALL}"
+      -DCMAKE_OSX_SYSROOT=""
+      -DCMAKE_OSX_DEPLOYMENT_TARGET=""
     - *print_cmake_options
     - *generate
     - *build
