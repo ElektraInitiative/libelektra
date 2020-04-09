@@ -317,7 +317,7 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 		{
 			// since ens are numbers, there is no way to get a string representation if not found in that case
 			bool found = false;
-			for (const string ns : namespaces)
+			for (const string & ns : namespaces)
 			{
 				found = found || ckdb::keyGetNamespace (Key (ns, KEY_END).getKey ()) == ens;
 			}
@@ -328,7 +328,7 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 		}
 	}
 
-	for (const string ns : namespaces)
+	for (const string & ns : namespaces)
 	{
 		const Key nsKey (ns, KEY_END);
 		if ((cl.debug || cl.verbose) && ckdb::keyGetNamespace (nsKey.getKey ()) == KEY_NS_EMPTY)
