@@ -250,9 +250,12 @@ before_script:
   - |
     cd $TRAVIS_BUILD_DIR
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
-      CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install" -DCMAKE_OSX_SYSROOT="" -DCMAKE_OSX_DEPLOYMENT_TARGET="")
+      CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
       export PATH=$PATH:"$PWD/install/bin"
       export LD_LIBRARY_PATH="$PWD/install/lib"
+    fi
+    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
+      CMAKE_OPT+=(-DCMAKE_OSX_DEPLOYMENT_TARGET="")
     fi
     SYSTEM_DIR="$PWD/kdbsystem"
     mkdir build && cd build

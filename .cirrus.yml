@@ -191,7 +191,6 @@ mac_task:
       -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
       -DPLUGINS="${PLUGINS:-ALL}"
       -DTOOLS="${TOOLS:-ALL}"
-      -DCMAKE_OSX_SYSROOT=""
       -DCMAKE_OSX_DEPLOYMENT_TARGET=""
     - *print_cmake_options
     - *generate
