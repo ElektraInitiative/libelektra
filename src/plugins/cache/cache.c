@@ -63,18 +63,20 @@ static char * elektraStrConcat (const char * a, const char * b)
 
 static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, Key * errorKey)
 {
+	KeySet * resolverConfig;
 	char * cacheDir = getenv ("XDG_CACHE_HOME");
 	if (cacheDir)
 	{
 		cacheDir = elektraStrConcat (cacheDir, "/elektra");
+		ch->cachePath = keyNew ("system/elektracache", KEY_END);
+		resolverConfig = ksNew (5, keyNew ("system/path", KEY_VALUE, cacheDir, KEY_END), KS_END);
 	}
 	else
 	{
-		cacheDir = getenv ("HOME");
-		cacheDir = elektraStrConcat (cacheDir, "/.cache/elektra");
+		ch->cachePath = keyNew ("user/elektracache", KEY_END);
+		resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/elektra", KEY_END), KS_END);
 	}
 
-	KeySet * resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, cacheDir, KEY_END), KS_END);
 	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cachePath);
 	if (!ch->resolver)
 	{
@@ -196,14 +198,14 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey, PathMode mode
 	ELEKTRA_LOG_DEBUG ("mountpoint name: %s", name);
 	if (strlen (name) != 0)
 	{
-		cacheFileName = elektraStrConcat (directory, "/backend/");
+		cacheFileName = elektraStrConcat (directory, "/backend");
 		char * tmp = cacheFileName;
 		cacheFileName = elektraStrConcat (cacheFileName, name);
 		elektraFree (tmp);
 	}
 	else if (elektraStrCmp (value, "default") == 0)
 	{
-		cacheFileName = elektraStrConcat (directory, "/default/");
+		cacheFileName = elektraStrConcat (directory, "/default");
 	}
 	else
 	{
@@ -251,7 +253,6 @@ int elektraCacheOpen (Plugin * handle, Key * errorKey)
 
 	ch->modules = ksNew (0, KS_END);
 	elektraModulesInit (ch->modules, 0);
-	ch->cachePath = keyNew ("user/elektracache", KEY_END);
 
 	if (resolveCacheDirectory (handle, ch, errorKey) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
 	if (loadCacheStoragePlugin (handle, ch, errorKey) == -1) return ELEKTRA_PLUGIN_STATUS_ERROR;
