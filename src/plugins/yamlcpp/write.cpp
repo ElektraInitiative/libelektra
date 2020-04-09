@@ -7,7 +7,6 @@
  */
 
 #include "write.hpp"
-#include "log.hpp"
 #include "yaml-cpp/yaml.h"
 
 #include <kdb.hpp>
