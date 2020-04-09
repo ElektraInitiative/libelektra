@@ -238,6 +238,6 @@ void yamlcpp::yamlRead (KeySet & mappings, Key & parent)
 
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Converted keys:");
-	yamlcpp::logKeySet (mappings);
+	logKeySet (mappings);
 #endif
 }

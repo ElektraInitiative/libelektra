@@ -124,7 +124,7 @@ int elektraYamlcppSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 #ifdef HAVE_LOGGER
 	ELEKTRA_LOG_DEBUG ("Write keys:");
-	yamlcpp::logKeySet (keys);
+	logKeySet (keys);
 #endif
 
 	int status = ELEKTRA_PLUGIN_STATUS_ERROR;
