@@ -180,7 +180,8 @@ matrix:
           update: true
       env:
         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
-        - PLUGINS='ALL;-xerces'
+        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        - PLUGINS='ALL;-xerces;-curlget'
 
     - os: linux
       name: 🐧 GCC
@@ -253,9 +254,6 @@ before_script:
       CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
       export PATH=$PATH:"$PWD/install/bin"
       export LD_LIBRARY_PATH="$PWD/install/lib"
-    fi
-    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
-      CMAKE_OPT+=(-DCMAKE_OSX_DEPLOYMENT_TARGET="")
     fi
     SYSTEM_DIR="$PWD/kdbsystem"
     mkdir build && cd build

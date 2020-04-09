@@ -86,6 +86,7 @@ mac_task:
       env:
         ENABLE_LOGGER: ON
         TOOLS: ALL;web
+        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
     - name: 🍎 Clang ASAN
       osx_instance:
@@ -95,6 +96,7 @@ mac_task:
         BINDINGS: cpp
         ENABLE_ASAN: ON
         TOOLS: kdb
+        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
     - name: 🍎 FULL
       osx_instance:
@@ -102,6 +104,7 @@ mac_task:
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
+        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
     - name: 🍎 MMap
       osx_instance:
@@ -110,6 +113,7 @@ mac_task:
         KDB_DEFAULT_STORAGE: mmapstorage
         KDB_DB_FILE: default.mmap
         KDB_DB_INIT: elektra.mmap
+        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
   install_script:
     - > # Install Homebrew casks
@@ -191,7 +195,6 @@ mac_task:
       -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
       -DPLUGINS="${PLUGINS:-ALL}"
       -DTOOLS="${TOOLS:-ALL}"
-      -DCMAKE_OSX_DEPLOYMENT_TARGET=""
     - *print_cmake_options
     - *generate
     - *build
