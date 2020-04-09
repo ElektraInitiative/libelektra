@@ -70,6 +70,7 @@ static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, Key * error
 		cacheDir = elektraStrConcat (cacheDir, "/elektra");
 		ch->cachePath = keyNew ("system/elektracache", KEY_END);
 		resolverConfig = ksNew (5, keyNew ("system/path", KEY_VALUE, cacheDir, KEY_END), KS_END);
+		elektraFree (cacheDir);
 	}
 	else
 	{
