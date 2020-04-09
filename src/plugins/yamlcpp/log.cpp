@@ -13,6 +13,9 @@
 
 #ifdef HAVE_LOGGER
 
+namespace yamlcpp
+{
+
 /**
  * @brief This function uses Elektra’s logging facility to print the contents of a key set.
  *
@@ -34,5 +37,7 @@ void logKeySet (kdb::KeySet const & keys)
 				   metadata.c_str ());
 	}
 }
+
+} // end namespace yamlcpp
 
 #endif // HAVE_LOGGER
