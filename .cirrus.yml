@@ -220,6 +220,10 @@ linux_task:
           dockerfile: scripts/docker/cirrus/fedora/Dockerfile
 
   script:
+    - >
+      set --
+      -DBUILD_FULL=ON
+      -DENABLE_LOGGER=ON
     - *generate
     - *build
     - *install
