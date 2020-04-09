@@ -31,4 +31,5 @@ Incompatible with storage plugins, which do not always produce the same keyset o
 concerning the same configuration file. A notable example here is the `ini` plugin (see issue #2592).
 
 The cache files are located in the user's home directory below `~/.cache/elektra/` and
-shall not be altered, otherwise the behavior is undefined.
+shall not be altered, otherwise the behavior is undefined. If `XDG_CACHE_HOME` is set, the
+cache files are located below `$XDG_CACHE_HOME/elektra`.
