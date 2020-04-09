@@ -110,7 +110,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### Cache
 
-- Respect XDG_CACHE_HOME when resolving the mmap cache directory. _(Mihael Pranjić)_
+- Respect `XDG_CACHE_HOME` when resolving the mmap cache directory. _(Mihael Pranjić)_
 
 ## Libraries
 
