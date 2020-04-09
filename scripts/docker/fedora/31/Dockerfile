@@ -24,6 +24,7 @@ RUN dnf upgrade -y && dnf install -y \
         maven \
         ninja-build \
         openssl-devel \
+        procps-ng \
         python3-devel \
         qt5-devel \
         ruby-devel \
