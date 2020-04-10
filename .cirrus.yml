@@ -213,7 +213,6 @@ mac_task:
       fi
 
 linux_task:
-
   matrix:
 
     - name: 🐧 Fedora
