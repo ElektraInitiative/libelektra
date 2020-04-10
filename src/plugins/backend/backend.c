@@ -39,7 +39,6 @@ int setMountpoint (BackendHandle * bh, Key * root, KeySet * config, Key * errorK
 		return -1;
 	}
 
-	keyIncRef (bh->mountpoint);
 	return 0;
 }
 
@@ -94,6 +93,7 @@ int linkedListPosition (Key * cur, Key * errorKey)
 		digitCountdown--;
 	}
 
+	elektraFree (name);
 
 	return position;
 }
@@ -161,6 +161,8 @@ int processPlugin (KeySet * config, Key * cur, char ** name, KeySet ** pluginCon
 		strcpy (*referenceName, prefixReferenceName);
 		strcat (*referenceName, keyName);
 
+		elektraFree (keyName);
+
 		return 2;
 	}
 	else if (nameKey != 0) // A new plugin will be created
@@ -178,6 +180,8 @@ int processPlugin (KeySet * config, Key * cur, char ** name, KeySet ** pluginCon
 			*referenceName = elektraCalloc (strlen (prefixReferenceName) + strlen (keyString (labelKey)) + 1);
 			strcpy (*referenceName, prefixReferenceName);
 			strcat (*referenceName, keyName);
+
+			elektraFree (keyName);
 
 			return 3;
 		}
@@ -232,7 +236,7 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 
 			int ret = processPlugin (cut, cur, &name, &pluginConfig, &referenceName, errorKey);
 
-			ksDel(cut);
+			ksDel (cut);
 
 			if (ret == -1)
 			{
@@ -258,7 +262,7 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 						ksAppend (pluginConfig, systemConfig);
 						ksRewind (pluginConfig);
 
-						curSlot->value = elektraPluginOpen (name, modules, pluginConfig, errorKey);
+						curSlot->value = elektraPluginOpen (name, modules, ksDup (pluginConfig), errorKey);
 
 						if (!curSlot->value)
 						{
@@ -301,6 +305,9 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 					curSlot = curSlot->next;
 				}
 			}
+			ksDel (pluginConfig);
+			elektraFree (referenceName);
+			elektraFree (name);
 		}
 		else
 		{
@@ -313,11 +320,10 @@ Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins
 	return slot;
 }
 
-Slot ** processGetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig, Key * errorKey)
+int processGetPlugins (Slot ** slots, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig, Key * errorKey)
 {
 	Key * root;
 	Key * cur;
-	Slot ** slots = elektraCalloc (sizeof (Slot *) * NR_OF_GET_PLUGINS);
 
 	ksRewind (config);
 
@@ -336,7 +342,7 @@ Slot ** processGetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: resolver");
-					return 0;
+					return -1;
 				}
 
 				slots[0] = slot;
@@ -349,7 +355,7 @@ Slot ** processGetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey,
 										"Could not build up slots for role: pregetstorage");
-					return 0;
+					return -1;
 				}
 
 				slots[1] = slot;
@@ -361,7 +367,7 @@ Slot ** processGetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: getstorage");
-					return 0;
+					return -1;
 				}
 
 				slots[2] = slot;
@@ -374,7 +380,7 @@ Slot ** processGetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey,
 										"Could not build up slots for role: postgetstorage");
-					return 0;
+					return -1;
 				}
 
 				slots[3] = slot;
@@ -382,19 +388,18 @@ Slot ** processGetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 			else
 			{
 				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Unexpected key: %s", keyName (cur));
-				return 0;
+				return -1;
 			}
 		}
 	}
 
-	return slots;
+	return 1;
 }
 
-Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig, Key * errorKey)
+int processSetPlugins (Slot ** slots, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig, Key * errorKey)
 {
 	Key * root;
 	Key * cur;
-	Slot ** slots = elektraCalloc (sizeof (Slot *) * NR_OF_SET_PLUGINS);
 
 	ksRewind (config);
 
@@ -413,7 +418,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: resolver");
-					return 0;
+					return -1;
 				}
 
 				slots[0] = slot;
@@ -425,7 +430,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: prestorage");
-					return 0;
+					return -1;
 				}
 
 				slots[1] = slot;
@@ -437,7 +442,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: storage");
-					return 0;
+					return -1;
 				}
 
 				slots[2] = slot;
@@ -449,7 +454,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: precommit");
-					return 0;
+					return -1;
 				}
 
 				slots[3] = slot;
@@ -461,7 +466,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: commit");
-					return 0;
+					return -1;
 				}
 
 				slots[4] = slot;
@@ -473,7 +478,7 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: postcommit");
-					return 0;
+					return -1;
 				}
 
 				slots[5] = slot;
@@ -481,19 +486,18 @@ Slot ** processSetPlugins (KeySet * modules, KeySet * referencePlugins, KeySet *
 			else
 			{
 				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Unexpected key: %s", keyName (cur));
-				return 0;
+				return -1;
 			}
 		}
 	}
 
-	return slots;
+	return 1;
 }
 
-Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig, Key * errorKey)
+int processErrorPlugins (Slot ** slots, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig, Key * errorKey)
 {
 	Key * root;
 	Key * cur;
-	Slot ** slots = elektraCalloc (sizeof (Slot *) * NR_OF_ERROR_PLUGINS);
 
 	ksRewind (config);
 
@@ -512,7 +516,7 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up prerollback slots");
-					return 0;
+					return -1;
 				}
 
 				slots[0] = slot;
@@ -524,7 +528,7 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up rollback slots");
-					return 0;
+					return -1;
 				}
 
 				slots[1] = slot;
@@ -536,7 +540,7 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 				if (slot == 0)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up postrollback slots");
-					return 0;
+					return -1;
 				}
 
 				slots[2] = slot;
@@ -544,12 +548,12 @@ Slot ** processErrorPlugins (KeySet * modules, KeySet * referencePlugins, KeySet
 			else
 			{
 				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Unexpected key: %s", keyName (cur));
-				return 0;
+				return -1;
 			}
 		}
 	}
 
-	return slots;
+	return 1;
 }
 
 int elektraBackendOpen (Plugin * handle, Key * errorKey)
@@ -587,62 +591,69 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 	KeySet * errorPluginsSet = ksCut (handle->config, errorPluginsKey);
 	keyDel (errorPluginsKey);
 
-	Slot ** errorPlugins = processErrorPlugins (handle->modules, referencePlugins, errorPluginsSet, systemConfig, errorKey);
+	Slot ** errorPlugins = elektraCalloc ((sizeof (Slot *)) * NR_OF_ERROR_PLUGINS);
 
-	if (!errorPlugins)
+	if (processErrorPlugins (errorPlugins, handle->modules, referencePlugins, errorPluginsSet, systemConfig, errorKey) == -1)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up error array");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+
+	ksDel (errorPluginsSet);
 
 	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
 	{
 		bh->errorplugins[a] = errorPlugins[a];
 	}
 
-	ksDel (errorPluginsSet);
+	elektraFree (errorPlugins);
 
 	Key * getPluginsKey = keyDup (root);
 	keyAddBaseName (getPluginsKey, "get");
 	KeySet * getPluginsSet = ksCut (handle->config, getPluginsKey);
 	keyDel (getPluginsKey);
 
-	Slot ** getPlugins = processGetPlugins (handle->modules, referencePlugins, getPluginsSet, systemConfig, errorKey);
+	Slot ** getPlugins = elektraCalloc ((sizeof (Slot *)) * NR_OF_GET_PLUGINS);
 
-	if (!getPlugins)
+	if (processGetPlugins (getPlugins, handle->modules, referencePlugins, getPluginsSet, systemConfig, errorKey) == -1)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up get array");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+
+	ksDel (getPluginsSet);
 
 	for (int a = 0; a < NR_OF_GET_PLUGINS; a++)
 	{
 		bh->getplugins[a] = getPlugins[a];
 	}
 
-	ksDel (getPluginsSet);
+	elektraFree (getPlugins);
 
 	Key * setPluginsKey = keyDup (root);
 	keyAddBaseName (setPluginsKey, "set");
 	KeySet * setPluginsSet = ksCut (handle->config, setPluginsKey);
 	keyDel (setPluginsKey);
 
-	Slot ** setPlugins = processSetPlugins (handle->modules, referencePlugins, setPluginsSet, systemConfig, errorKey);
+	Slot ** setPlugins = elektraCalloc ((sizeof (Slot *)) * NR_OF_SET_PLUGINS);
 
-	if (!setPlugins)
+	if (processSetPlugins (setPlugins, handle->modules, referencePlugins, setPluginsSet, systemConfig, errorKey) == -1)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up set array");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+
+	ksDel (setPluginsSet);
 
 	for (int a = 0; a < NR_OF_SET_PLUGINS; a++)
 	{
 		bh->setplugins[a] = setPlugins[a];
 	}
 
-	ksDel (setPluginsSet);
+	elektraFree (setPlugins);
+
 	ksDel (referencePlugins);
-	ksDel(systemConfig);
+	ksDel (systemConfig);
 
 	// TODO Open missing backend instead of returning errors
 
@@ -681,7 +692,9 @@ int elektraBackendClose (Plugin * handle, Key * errorKey)
 			{
 				++error;
 			}
+			Slot * prev = cur;
 			cur = cur->next;
+			elektraFree (prev);
 		}
 	}
 
@@ -700,7 +713,9 @@ int elektraBackendClose (Plugin * handle, Key * errorKey)
 			{
 				++error;
 			}
+			Slot * prev = cur;
 			cur = cur->next;
+			elektraFree (prev);
 		}
 	}
 
@@ -719,7 +734,9 @@ int elektraBackendClose (Plugin * handle, Key * errorKey)
 			{
 				++error;
 			}
+			Slot * prev = cur;
 			cur = cur->next;
+			elektraFree (prev);
 		}
 	}
 

@@ -83,11 +83,13 @@ KeySet * set_default (void)
 
 Plugin * open_backend (KeySet * config, KeySet * modules, KeySet * global, Key * errorKey)
 {
-	Plugin * backend = elektraPluginOpen ("backend", modules, config, errorKey);
+	Plugin * backend = elektraPluginOpen ("backend", modules, ksDup (config), errorKey);
 	if (backend != 0)
 	{
 		backend->global = global;
 	}
+
+	ksDel (config);
 
 	return backend;
 }
@@ -275,6 +277,7 @@ static void test_default (void)
 
 	elektraPluginClose (backend, 0);
 	elektraModulesClose (modules, 0);
+
 	ksDel (modules);
 	ksDel (global);
 }
