@@ -35,7 +35,6 @@ set_source_files_properties (
 	write.hpp
 	write.cpp
 	log.hpp
-	log.cpp
 	PROPERTIES
 	COMPILE_FLAGS
 	"-Wconversion")
@@ -52,7 +51,6 @@ add_plugin (
 		write.hpp
 		write.cpp
 		log.hpp
-		log.cpp
 	INCLUDE_SYSTEM_DIRECTORIES ${yaml-cpp_INCLUDE_DIRS}
 	LINK_LIBRARIES ${yaml-cpp_LIBRARIES}
 	LINK_ELEKTRA elektra-ease)

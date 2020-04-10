@@ -94,10 +94,16 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - YAML CPP now always sets and requires the metakey `type` with the value `boolean` for boolean data. _(René Schwaiger)_
 
+- We limited the scope of a logging function of the module. This makes it possible to build Elektra again, if
+  - you enabled the logger (`ENABLE_LOGGER=ON`),
+  - build the “full” (`BUILD_FULL=ON`) version of Elektra, and
+  - include both the Directory Value and YAML CPP plugin in your build configuration. _(René Schwaiger)_
+
 ### Yan LR
 
 - The CMake code of the plugin does not print error messages produced by the tool `ldd` any more. _(René Schwaiger)_
 - The plugin now also supports ANTLR 4.8. _(René Schwaiger)_
+- We limited the scope of the logging code of the module. For more information, please take a look at the last news entry of the YAML CPP plugin. _(René Schwaiger)_
 
 ### GOpts
 
@@ -232,7 +238,7 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed a minor problem with the package install procedure on macOS build jobs. _(René Schwaiger)_
 - We updated the startup command for D-Bus on macOS. _(René Schwaiger)_
 - We removed python2 (EOL and removed from homebrew). _(Mihael Pranjić)_
-- Use latest macOS catalina Xcode stable. _(Mihael Pranjić)_
+- Use latest macOS Catalina Xcode stable. _(Mihael Pranjić)_
 - Use newer FreeBSD images and use image family instead of concrete image names. _(Mihael Pranjić)_
 - Disable tcl on FreeBSD images because of test failures (see #3353). _(Mihael Pranjić)_
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_

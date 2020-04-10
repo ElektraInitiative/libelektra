@@ -6,7 +6,6 @@ container:
 
 # We store common commands here, so we can reference them in the build jobs below.
 commands:
-  - &create_build_dir mkdir "$BUILD_DIR"
   - &print_cmake_options |
       printf '—— CMake Config ——\n'
       for option; do printf '%s\n' "$option"; done
@@ -53,7 +52,6 @@ bsd_task:
       yaml-cpp
 
   script:
-    - *create_build_dir
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       set --
       -DBINDINGS='ALL;-io_glib'
@@ -177,7 +175,6 @@ mac_task:
       export LDFLAGS="-L/usr/local/opt/llvm/lib"
       export CPPFLAGS="-I/usr/local/opt/llvm/include"
       export PATH="/usr/local/opt/llvm/bin:$PATH"
-    - *create_build_dir
     - >
       set --
       -DBINDINGS="${BINDINGS:-ALL}"
@@ -223,7 +220,10 @@ linux_task:
           dockerfile: scripts/docker/cirrus/fedora/Dockerfile
 
   script:
-    - *create_build_dir
+    - >
+      set --
+      -DBUILD_FULL=ON
+      -DENABLE_LOGGER=ON
     - *generate
     - *build
     - *install
@@ -252,7 +252,6 @@ link_task:
     fi
 
   script:
-    - *create_build_dir
     - >
       set --
       -DBUILD_FULL=OFF
@@ -281,7 +280,6 @@ docu_task:
           dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   script:
-    - *create_build_dir
     - >
       set --
       -DBUILD_PDF=ON

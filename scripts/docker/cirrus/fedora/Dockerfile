@@ -8,4 +8,5 @@ RUN dnf install -y \
     gcc-c++ \
     git \
     make \
-    ninja-build
+    ninja-build \
+    yaml-cpp-devel
