@@ -37,6 +37,16 @@ RUN dnf upgrade -y && dnf install -y \
         zlib-devel \
     && dnf clean all -y
 
+# Google Test
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=release-1.10.0
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
+
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
 # on the slaves to execute containers
