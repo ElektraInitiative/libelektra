@@ -69,7 +69,7 @@ RUN apt-get update \
         reprepro \
         ruby \
         ruby-dev \
-        swig4.0 \
+        swig3.0 \
         systemd \
         tclcl-dev \
         uuid-dev \
