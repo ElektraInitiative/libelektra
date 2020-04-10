@@ -114,6 +114,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
   `proc/elektra/gopts/help = 1`. This is also useful in non-C/C++ environments. _(Klemens Böswirth)_
 - `gopts` is also affected by the changes and improvements to the `opts` library outlined below.
 
+### Cache
+
+- Respect `XDG_CACHE_HOME` when resolving the mmap cache directory. _(Mihael Pranjić)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
