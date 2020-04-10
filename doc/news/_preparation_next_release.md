@@ -246,6 +246,7 @@ you up to date with the multi-language support provided by Elektra.
 - Use newer FreeBSD images and use image family instead of concrete image names. _(Mihael Pranjić)_
 - Disable tcl on FreeBSD images because of test failures (see #3353). _(Mihael Pranjić)_
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
+- Add more dependencies to Fedora image. _(Mihael Pranjić)_
 
 ### Jenkins
 

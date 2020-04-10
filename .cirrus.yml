@@ -223,12 +223,23 @@ linux_task:
     - >
       set --
       -DBUILD_FULL=ON
+      -DBUILD_SHARED=ON
+      -DBUILD_STATIC=ON
       -DENABLE_LOGGER=ON
+      -DENABLE_DEBUG=ON
+      -DBINDINGS='ALL'
+      -DPLUGINS='ALL;-fcrypt'
+      -DTOOLS='ALL'
+      -DKDB_DB_SYSTEM="$CIRRUS_WORKING_DIR/system"
+      -DCMAKE_INSTALL_PREFIX="$CIRRUS_WORKING_DIR/install"
+    - *print_cmake_options
     - *generate
     - *build
     - *install
 
   tests_script:
+    - export PATH=$PATH:"$CIRRUS_WORKING_DIR/install/bin"
+    - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
     - *run_tests
 
 link_task:

@@ -330,6 +330,13 @@ def dockerInit() {
       "./scripts/docker/ubuntu/bionic/Dockerfile"
     )
 
+    /* Fedora 31 image*/
+    DOCKER_IMAGES.fedora_31 = createDockerImageDesc(
+      "fedora-31", this.&idTesting,
+      "./scripts/docker/fedora/31",
+      "./scripts/docker/fedora/31/Dockerfile"
+    )
+
     /* Image building the libelektra.org frontend */
     DOCKER_IMAGES.website_frontend = createDockerImageDesc(
       "website-frontend", this.&idWebsite,
@@ -463,16 +470,13 @@ def generateMainBuildStages() {
   // We want fo fail fast (i.e. abort parallel stages if one fails
   tasks.failFast = true
 
-  // Add a task that should build the whole project to catch all test errors
-  // in a standard environment
   tasks << buildAndTest(
-    "debian-stretch-full",
-    DOCKER_IMAGES.stretch,
+    "fedora-31-full",
+    DOCKER_IMAGES.fedora_31,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_COVERAGE
+      CMAKE_FLAGS_BUILD_STATIC
     ,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
@@ -513,6 +517,20 @@ def generateFullBuildStages() {
 
   // Build doc and upload
   tasks << buildDoc()
+
+  // Add a task that should build the whole project to catch all test errors
+  // in a standard environment
+  tasks << buildAndTest(
+    "debian-stretch-full",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
+      CMAKE_FLAGS_BUILD_FULL +
+      CMAKE_FLAGS_BUILD_STATIC +
+      CMAKE_FLAGS_COVERAGE
+    ,
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
 
   // Build Elektra with ASAN enabled
   // Detects memory leaks via ASAN
@@ -633,10 +651,10 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM]
   )
 
-  // Build Elektra with the mmap backend instead of the default
+  // Build Elektra without the cache plugin
   tasks << buildAndTest(
-    "debian-stretch-full-mmap",
-    DOCKER_IMAGES.stretch,
+    "debian-buster-full-nocache",
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_COVERAGE + [
@@ -646,8 +664,8 @@ def generateFullBuildStages() {
   )
 
   tasks << buildAndTestAsan(
-    "debian-stretch-full-mmap-asan",
-    DOCKER_IMAGES.stretch,
+    "debian-buster-full-mmap-asan",
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_MMAP
@@ -953,7 +971,7 @@ export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
 env
 
 kdb run_all
-kill `pidof dbus-daemon`
+kill `pidof dbus-daemon` || echo "No dbus-daemon to kill."
 '''
           }
         } catch(e) {
