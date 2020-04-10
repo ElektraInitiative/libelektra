@@ -484,20 +484,6 @@ def generateMainBuildStages() {
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
   tasks << buildAndTest(
-    "debian-stretch-full",
-    DOCKER_IMAGES.stretch,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_COVERAGE
-    ,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
-  )
-
-  // Add a task that should build the whole project to catch all test errors
-  // in a standard environment
-  tasks << buildAndTest(
     "debian-buster-full",
     DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL +
@@ -531,6 +517,20 @@ def generateFullBuildStages() {
 
   // Build doc and upload
   tasks << buildDoc()
+
+  // Add a task that should build the whole project to catch all test errors
+  // in a standard environment
+  tasks << buildAndTest(
+    "debian-stretch-full",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
+      CMAKE_FLAGS_BUILD_FULL +
+      CMAKE_FLAGS_BUILD_STATIC +
+      CMAKE_FLAGS_COVERAGE
+    ,
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
 
   // Build Elektra with ASAN enabled
   // Detects memory leaks via ASAN
