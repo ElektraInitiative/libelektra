@@ -6,6 +6,7 @@ RUN dnf upgrade -y && dnf install -y \
         botan-devel \
         cmake \
         curl \
+        dbus-devel \
         diffutils \
         file \
         findutils \
@@ -16,8 +17,11 @@ RUN dnf upgrade -y && dnf install -y \
         java-1.8.0-openjdk-devel \
         jna \
         libcurl-devel \
+        libev-devel \
         libgcrypt-devel \
         libgit2-devel \
+        libmarkdown-devel \
+        libuv-devel \
         libxml2-devel \
         lua-devel \
         make \
