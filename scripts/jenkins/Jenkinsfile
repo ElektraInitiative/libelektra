@@ -1006,6 +1006,7 @@ constants/constants\\.c|\
 (lua|ruby)/runtime\\.h|\
 yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
 ).*' \
+          -E '.*${buildDir}/src/plugins/([a-zA-Z0-9]+)/readme_([a-zA-Z0-9]+).c' \
           -E '.*/src/error/.*' \
 """)
               }
