@@ -220,8 +220,12 @@ static size_t getRecipientCount (KeySet * config, const char * keyName)
 
 static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char ** argv, int argc, int tmpFileFd, char * tmpFile)
 {
+	ssize_t readCount;
+	ssize_t writeCount;
+	kdb_octet_t buffer[512];
 	int parentKeyFd = -1;
 	int result = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
+	int manualCopy = 0;
 
 	if (result == 1)
 	{
@@ -230,15 +234,29 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		// gpg call returned success, overwrite the original file with the gpg payload data
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Renaming file %s to %s failed. Reason: %s", tmpFile, keyString (parentKey),
-						     strerror (errno));
-			result = -1;
+			// if rename failed we can still try to copy the file content manually
+			lseek (tmpFileFd, 0, SEEK_SET);
+			lseek (parentKeyFd, 0, SEEK_SET);
+			readCount = read (tmpFileFd, buffer, sizeof (buffer));
+			while (readCount > 0)
+			{
+				writeCount = write (parentKeyFd, buffer, readCount);
+				if (writeCount != readCount)
+				{
+					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Data transfer from file %s to %s failed. Reason: %s",
+								     tmpFile, keyString (parentKey), strerror (errno));
+					result = -1;
+					break;
+				}
+				readCount = read (tmpFileFd, buffer, sizeof (buffer));
+			}
+			manualCopy = 1;
 		}
 	}
 
 	if (result == 1)
 	{
-		if (parentKeyFd >= 0)
+		if (parentKeyFd >= 0 && !manualCopy)
 		{
 			shredTemporaryFile (parentKeyFd, parentKey);
 		}
