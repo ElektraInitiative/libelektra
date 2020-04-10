@@ -971,7 +971,11 @@ export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
 env
 
 kdb run_all
-kill `pidof dbus-daemon`
+
+dbus_pid=`pidof dbus-daemon`
+if [ -z "$dbus_pid" ]; then
+    kill $dbus_pid
+fi
 '''
           }
         } catch(e) {
