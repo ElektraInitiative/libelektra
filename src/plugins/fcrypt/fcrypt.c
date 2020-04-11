@@ -226,7 +226,7 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 	int parentKeyFd = -1;
 	int result = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
 	int manualCopy = 0;
-	int transferErrno;
+	int transferErrno = 0;
 
 	if (result == 1)
 	{
