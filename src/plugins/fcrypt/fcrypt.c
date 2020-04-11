@@ -226,6 +226,7 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 	int parentKeyFd = -1;
 	int result = ELEKTRA_PLUGIN_FUNCTION (gpgCall) (pluginConfig, parentKey, NULL, argv, argc);
 	int manualCopy = 0;
+	int transferErrno;
 
 	if (result == 1)
 	{
@@ -237,28 +238,18 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 			// if rename failed we can still try to copy the file content manually
 			if (lseek (tmpFileFd, 0, SEEK_SET))
 			{
-				ELEKTRA_SET_RESOURCE_ERRORF (
-					parentKey,
-					"Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s", tmpFile,
-					keyString (parentKey), strerror (errno));
+				transferErrno = errno;
 				result = -1;
 			}
 			if (lseek (parentKeyFd, 0, SEEK_SET))
 			{
-				ELEKTRA_SET_RESOURCE_ERRORF (
-					parentKey,
-					"Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s", tmpFile,
-					keyString (parentKey), strerror (errno));
+				transferErrno = errno;
 				result = -1;
 			}
 			readCount = read (tmpFileFd, buffer, sizeof (buffer));
 			if (readCount < 0)
 			{
-				// error during read
-				ELEKTRA_SET_RESOURCE_ERRORF (
-					parentKey,
-					"Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s", tmpFile,
-					keyString (parentKey), strerror (errno));
+				transferErrno = errno;
 				result = -1;
 			}
 			while (result == 1 && readCount > 0)
@@ -266,22 +257,14 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 				writeCount = write (parentKeyFd, buffer, readCount);
 				if (writeCount < 0)
 				{
-					// error during write
-					ELEKTRA_SET_RESOURCE_ERRORF (
-						parentKey,
-						"Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s",
-						tmpFile, keyString (parentKey), strerror (errno));
+					transferErrno = errno;
 					result = -1;
 					break;
 				}
 				readCount = read (tmpFileFd, buffer, sizeof (buffer));
 				if (readCount < 0)
 				{
-					// error during read
-					ELEKTRA_SET_RESOURCE_ERRORF (
-						parentKey,
-						"Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s",
-						tmpFile, keyString (parentKey), strerror (errno));
+					transferErrno = errno;
 					result = -1;
 				}
 			}
@@ -289,28 +272,22 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		}
 	}
 
-	if (result == 1)
+	if (result == -1)
 	{
-		if (parentKeyFd >= 0 && !manualCopy)
-		{
-			shredTemporaryFile (parentKeyFd, parentKey);
-		}
-		if (manualCopy)
-		{
-			// in case of a manual copy the temporary file was NOT renamed and still floats around in TMPDIR
-			shredTemporaryFile (tmpFileFd, parentKey);
-			if (unlink (tmpFile))
-			{
-				ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey,
-							       "Failed to unlink a temporary file. Please try to delete the file manually. "
-							       "Affected file: %s. Reason: %s",
-							       tmpFile, strerror (errno));
-			}
-		}
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
+					     "Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s",
+					     tmpFile, keyString (parentKey), strerror (transferErrno));
 	}
-	else
+
+	if (result == 1 && parentKeyFd >= 0 && !manualCopy)
+	{
+		shredTemporaryFile (parentKeyFd, parentKey);
+	}
+
+	if (result == -1 || manualCopy)
 	{
 		// if anything went wrong above the temporary file is shredded and removed
+		// in case of manual copy tmpFile was NOT renamed so it still floats around in TMPDIR
 		shredTemporaryFile (tmpFileFd, parentKey);
 		if (unlink (tmpFile))
 		{
