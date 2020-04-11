@@ -1296,8 +1296,6 @@ def ctest(target = "Test") {
   /*
      We disable the tests:
 
-     - `testmod_crypto_botan`,
-     - `testmod_crypto_openssl`,
      - `testmod_dbus`,
      - `testmod_dbusrecv`,
      - `testmod_fcrypt`,
@@ -1309,7 +1307,7 @@ def ctest(target = "Test") {
   */
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
-          -E 'testmod_(crypto_(botan|openssl)|dbus(recv)?|fcrypt|gpgme|zeromqsend)'"""
+          -E 'testmod_(dbus(recv)?|fcrypt|gpgme|zeromqsend)'"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests

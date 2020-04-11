@@ -39,9 +39,7 @@ matrix:
           -constants;\
           -counter;\
           -cpptemplate;\
-          -crypto_botan;\
-          -crypto_gcrypt;\
-          -crypto_openssl;\
+          -crypto;\
           -csvstorage;\
           -curlget;\
           -date;\
