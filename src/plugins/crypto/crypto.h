@@ -81,8 +81,4 @@ enum ElektraCryptoOperation
 #define ELEKTRA_CRYPTO_META_ENCRYPT "crypto/encrypt"
 #define ELEKTRA_CRYPTO_META_SALT "crypto/salt"
 
-// gcrypt specific declarations
-#include <gcrypt.h>
-typedef gcry_cipher_hd_t elektraCryptoHandle;
-
 #endif
