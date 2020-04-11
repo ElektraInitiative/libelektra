@@ -55,7 +55,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### Fcrypt
 
-- Improve handling of temporary files after encryption and decryption by trying to perform a manual copy if the call of `rename` fails. Tis problem might occur if `/tmp` is mounted to a another file system. _(Peter Nirschl)_
+- Improve handling of temporary files after encryption and decryption by trying to perform a manual copy if the call of `rename` fails. This problem might occur if another file system is mounted on `/tmp`. _(Peter Nirschl)_
 
 ### KConfig
 
