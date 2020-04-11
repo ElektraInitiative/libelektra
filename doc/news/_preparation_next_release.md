@@ -53,6 +53,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin now only interprets a key set as [array](../tutorials/arrays.md) if the parent contains the meta key `array`. _(René Schwaiger)_
 
+### Fcrypt
+
+- Improve handling of temporary files after encryption and decryption by trying to perform a manual copy if the call of `rename` fails. This problem might occur if another file system is mounted at `/tmp`. _(Peter Nirschl)_
+
 ### KConfig
 
 - We implemented the methods that save a KeySet into a file with the KConfig Ini format. _(Dardan Haxhimustafa)_
