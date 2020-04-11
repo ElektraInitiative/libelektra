@@ -1,12 +1,12 @@
 /**
  * @file
  *
- * @brief test suite for the crypto plugin.
- * Contains shared functions for all compile variants.
+ * @brief test suite for the crypto plugin (gcrypt compile variant)
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
+#define PLUGIN_NAME "crypto"
 
 #include "crypto.h"
 #include "gpg.h"
@@ -277,4 +277,17 @@ static void test_gpg (void)
 	keyDel (msg);
 	keyDel (errorKey);
 	ksDel (conf);
+}
+
+int main (int argc, char ** argv)
+{
+	printf ("CYPTO        TESTS\n");
+	printf ("==================\n\n");
+
+	init (argc, argv);
+
+	TEST_SUITE (PLUGIN_NAME);
+
+	print_result (PLUGIN_NAME);
+	return nbError;
 }
