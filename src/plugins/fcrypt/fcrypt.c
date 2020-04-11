@@ -260,6 +260,18 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		{
 			shredTemporaryFile (parentKeyFd, parentKey);
 		}
+		if (manualCopy)
+		{
+			// in case of a manual copy the temporary file was NOT renamed and still floats around in TMPDIR
+			shredTemporaryFile (tmpFileFd, parentKey);
+			if (unlink (tmpFile))
+			{
+				ELEKTRA_ADD_RESOURCE_WARNINGF (parentKey,
+							       "Failed to unlink a temporary file. Please try to delete the file manually. "
+							       "Affected file: %s. Reason: %s",
+							       tmpFile, strerror (errno));
+			}
+		}
 	}
 	else
 	{
