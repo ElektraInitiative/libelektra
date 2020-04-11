@@ -235,20 +235,55 @@ static int fcryptGpgCallAndCleanup (Key * parentKey, KeySet * pluginConfig, char
 		if (rename (tmpFile, keyString (parentKey)) != 0)
 		{
 			// if rename failed we can still try to copy the file content manually
-			lseek (tmpFileFd, 0, SEEK_SET);
-			lseek (parentKeyFd, 0, SEEK_SET);
+			if (lseek (tmpFileFd, 0, SEEK_SET))
+			{
+				ELEKTRA_SET_RESOURCE_ERRORF (
+					parentKey,
+					"Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s", tmpFile,
+					keyString (parentKey), strerror (errno));
+				result = -1;
+			}
+			if (lseek (parentKeyFd, 0, SEEK_SET))
+			{
+				ELEKTRA_SET_RESOURCE_ERRORF (
+					parentKey,
+					"Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s", tmpFile,
+					keyString (parentKey), strerror (errno));
+				result = -1;
+			}
 			readCount = read (tmpFileFd, buffer, sizeof (buffer));
-			while (readCount > 0)
+			if (readCount < 0)
+			{
+				// error during read
+				ELEKTRA_SET_RESOURCE_ERRORF (
+					parentKey,
+					"Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s", tmpFile,
+					keyString (parentKey), strerror (errno));
+				result = -1;
+			}
+			while (result == 1 && readCount > 0)
 			{
 				writeCount = write (parentKeyFd, buffer, readCount);
-				if (writeCount != readCount)
+				if (writeCount < 0)
 				{
-					ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Data transfer from file %s to %s failed. Reason: %s",
-								     tmpFile, keyString (parentKey), strerror (errno));
+					// error during write
+					ELEKTRA_SET_RESOURCE_ERRORF (
+						parentKey,
+						"Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s",
+						tmpFile, keyString (parentKey), strerror (errno));
 					result = -1;
 					break;
 				}
 				readCount = read (tmpFileFd, buffer, sizeof (buffer));
+				if (readCount < 0)
+				{
+					// error during read
+					ELEKTRA_SET_RESOURCE_ERRORF (
+						parentKey,
+						"Data transfer from file %s to %s failed. WARNING: Unencrypted data may leak! Reason: %s",
+						tmpFile, keyString (parentKey), strerror (errno));
+					result = -1;
+				}
 			}
 			manualCopy = 1;
 		}
