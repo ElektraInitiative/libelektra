@@ -281,7 +281,7 @@ static void test_gpg (void)
 
 int main (int argc, char ** argv)
 {
-	printf ("CYPTO        TESTS\n");
+	printf ("CRYPTO       TESTS\n");
 	printf ("==================\n\n");
 
 	init (argc, argv);
