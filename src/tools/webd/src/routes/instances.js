@@ -112,7 +112,9 @@ export default function initInstanceRoutes(app) {
         if (!instance || !instance.host) {
           throw new APIError("Instance not found or invalid (no host)");
         }
-        return remoteKdb.get(instance.host, { sessionId: getSessionID(instance.id, req.session) });
+        return remoteKdb.get(instance.host, {
+          sessionId: getSessionID(instance.id, req.session)
+        });
       })
       .then(instanceRes =>
         setSessionID(req.params.id, req.session, instanceRes)
@@ -166,7 +168,7 @@ export default function initInstanceRoutes(app) {
     getInstance(req.params.id)
       .then(instance => remoteKdb.find(instance.host, req.params[0]))
       .then(instanceRes =>
-          setSessionID(req.params.id, req.session, instanceRes)
+        setSessionID(req.params.id, req.session, instanceRes)
       )
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
