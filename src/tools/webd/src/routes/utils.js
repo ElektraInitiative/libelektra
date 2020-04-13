@@ -40,7 +40,7 @@ export const getSessionID = (instanceId, cookie) => {
     cookie.sessions && cookie.sessions[instanceId]
       ? cookie.sessions[instanceId]
       : "";
-  
+
   return sessionId;
 };
 
