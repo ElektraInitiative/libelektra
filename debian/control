@@ -26,7 +26,6 @@ Build-Depends: debhelper (>= 9),
  liblua5.2-dev,
  libssl-dev,
  libgcrypt20-dev,
- libbotan1.10-dev | libbotan-2-dev,
  libcurl4-nss-dev | libcurl4-gnutls-dev | libcurl4-openssl-dev | libcurl-dev,
  libcurl3 (>= 7.28.0) | libcurl4,
 Build-Depends-Indep:
