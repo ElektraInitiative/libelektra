@@ -32,7 +32,6 @@ RUN apt-get update \
         libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-dev \
-        libbotan-2-dev \
         libdbus-1-dev \
         libev-dev \
         libgirepository1.0-dev \
@@ -78,7 +77,6 @@ RUN apt-get update \
         wine \
         rustc \
         clang-6.0 \
-        libbotan-2-dev \
         libcurl4-gnutls-dev \
     && rm -rf /var/lib/apt/lists/*
 

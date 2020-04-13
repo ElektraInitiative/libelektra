@@ -81,31 +81,4 @@ enum ElektraCryptoOperation
 #define ELEKTRA_CRYPTO_META_ENCRYPT "crypto/encrypt"
 #define ELEKTRA_CRYPTO_META_SALT "crypto/salt"
 
-#if defined(ELEKTRA_CRYPTO_API_GCRYPT)
-
-// gcrypt specific declarations
-#include <gcrypt.h>
-typedef gcry_cipher_hd_t elektraCryptoHandle;
-
-#elif defined(ELEKTRA_CRYPTO_API_OPENSSL)
-
-// libcrypto (OpenSSL) specific declarations
-#include <openssl/evp.h>
-typedef struct
-{
-	EVP_CIPHER_CTX * encrypt;
-	EVP_CIPHER_CTX * decrypt;
-} elektraCryptoHandle;
-
-#elif defined(ELEKTRA_CRYPTO_API_BOTAN)
-
-// Botan specific declarations
-typedef void elektraCryptoHandle;
-
-#else
-
-typedef void elektraCryptoHandle;
-
-#endif
-
 #endif

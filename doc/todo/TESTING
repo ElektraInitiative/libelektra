@@ -11,8 +11,6 @@ doc/help/kdb-get.md   for INI
 
 We disabled the tests
 
-- `testmod_crypto_botan`,
-- `testmod_crypto_openssl`,
 - `testmod_dbus`,
 - `testmod_dbusrecv`,
 - `testmod_fcrypt`,
@@ -98,8 +96,6 @@ ASAN disables the following parts during cmake as they throw errors:
   - SWIG
   - GLIB
   - IO (+async notification example)
-- plugins:
-  - crypto_botan
 
 Further kdb_check_internal skips tests that output sanitizer warnings during
 load as it would make the test fail.

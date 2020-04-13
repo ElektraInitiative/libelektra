@@ -29,7 +29,6 @@ RUN apt-get -y install \
   ruby-ronn \
   libgcrypt20-dev \
   libgpgme-dev \
-  libbotan1.10-dev \
   libev-dev \
   libuv1-dev \
   libsystemd-dev \

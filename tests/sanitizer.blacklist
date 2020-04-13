@@ -9,9 +9,6 @@ src:.*include/c\+\+/v1/memory
 # memory leaks reported by asan due to xerces interfaces, no issue according to valgrind
 src:*xerces/*.cpp
 src:*xerces/*.hpp
-# memory leaks reported by asan in botan, no issue according to valgrind
-src:*crypto/botan_operations.cpp
-src:*botan/*.h
 # Memory leaks in `libstdc++`
 src:*4.*/bits/stl_tree.h
 # Ignore undefined behavior caused by implicit conversion in `stringstream`’s `>>` operator
