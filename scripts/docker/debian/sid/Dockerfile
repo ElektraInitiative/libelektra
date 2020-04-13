@@ -20,6 +20,7 @@ RUN apt-get update && apt-get -y install \
         ed \
         gawk \
         git \
+        gnupg2 \
         gobject-introspection \
         icheck \
         lcov \
