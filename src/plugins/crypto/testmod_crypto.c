@@ -1,13 +1,11 @@
 /**
  * @file
  *
- * @brief test suite for the crypto plugin (gcrypt compile variant)
+ * @brief test suite for the crypto plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
-#define PLUGIN_NAME "crypto"
-
 #include "crypto.h"
 #include "gpg.h"
 #include "helper.h"
@@ -23,23 +21,10 @@
 #include "gpgagent_teardown.h"
 #include "test_key.h"
 
+#define PLUGIN_NAME "crypto"
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
 static KeySet * newPluginConfiguration (void);
-
-#define TEST_SUITE(PLUGIN_NAME)                                                                                                            \
-	if (gpg_available (newPluginConfiguration ()))                                                                                     \
-	{                                                                                                                                  \
-		test_gpg ();                                                                                                               \
-		test_init (PLUGIN_NAME);                                                                                                   \
-		test_incomplete_config (PLUGIN_NAME);                                                                                      \
-		test_crypto_operations (PLUGIN_NAME);                                                                                      \
-		test_teardown ();                                                                                                          \
-	}                                                                                                                                  \
-	else                                                                                                                               \
-	{                                                                                                                                  \
-		printf ("The test was disabled because gpg could not be found on the system.\n");                                          \
-	}
 
 typedef int (*checkConfPtr) (Key *, KeySet *);
 
@@ -286,7 +271,18 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	TEST_SUITE (PLUGIN_NAME);
+	if (gpg_available (newPluginConfiguration ()))
+	{
+		test_gpg ();
+		test_init (PLUGIN_NAME);
+		test_incomplete_config (PLUGIN_NAME);
+		test_crypto_operations (PLUGIN_NAME);
+		test_teardown ();
+	}
+	else
+	{
+		printf ("The test was disabled because gpg could not be found on the system.\n");
+	}
 
 	print_result (PLUGIN_NAME);
 	return nbError;
