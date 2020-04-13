@@ -29,8 +29,8 @@ The crypto plugin uses libgcrypt as provider of cryptographic operations.
 
 ### GnuPG (GPG)
 
-GPG is a run-time dependency for all crypto plugin variants.
-Either the `gpg` or the `gpg2` binary should be installed when using the plugin.
+GPG is a run-time dependency of the crypto plugin.
+Either the `gpg` or the `gpg2` binary must be installed when using the plugin.
 Note that `gpg2` will be preferred if both versions are available.
 The GPG binary can be configured in the plugin configuration as `/gpg/bin` (see _GPG Configuration_ below).
 If no such configuration is provided, the plugin will look at the PATH environment variable to find the GPG binaries.
