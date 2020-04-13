@@ -26,7 +26,6 @@ RUN apt-get update && apt-get -y install \
         libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-all-dev \
-        libbotan-2-dev \
         libdbus-1-dev \
         libev-dev \
         libgirepository1.0-dev \

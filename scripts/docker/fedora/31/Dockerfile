@@ -3,7 +3,6 @@ FROM fedora:31
 RUN dnf upgrade -y && dnf install -y \
         augeas-devel \
         boost-devel \
-        botan-devel \
         cmake \
         curl \
         dbus-devel \

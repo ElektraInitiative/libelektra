@@ -23,7 +23,6 @@ RUN apt-get update \
         liblua5.3-dev \
         tclcl-dev \
         libaugeas-dev \
-        libbotan1.10-dev \
         libgpgme-dev \
         libyajl-dev \
         git \

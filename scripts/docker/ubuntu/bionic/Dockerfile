@@ -19,7 +19,6 @@ RUN apt-get update && apt-get -y install \
         graphviz \
         libaugeas-dev \
         libboost-dev \
-        libbotan-2-dev \
         libdbus-1-dev \
         libgit2-dev \
         libgpgme-dev \
