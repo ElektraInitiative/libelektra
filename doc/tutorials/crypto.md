@@ -269,8 +269,11 @@ kdb rm user/tests/unencrypted
 kdb rm user/tests/password
 kdb umount user/tests
 ```
+
 To shut down the `gpg-agent` we run:
 
 ```sh
 gpg-connect-agent --quiet KILLAGENT /bye
 ```
+
+The shutdown of `gpg-agent` is optional.
