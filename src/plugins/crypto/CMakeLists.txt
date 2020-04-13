@@ -1,14 +1,10 @@
 include (LibAddPlugin)
 
 if (DEPENDENCY_PHASE)
-	set (plugin crypto)
 	find_package (Libgcrypt QUIET)
 	if (NOT LIBGCRYPT_FOUND)
-		remove_plugin (${plugin} "libgcrypt development files not found")
+		remove_plugin (crypto "libgcrypt development files not found")
 	endif ()
-
-	# clean up for dependency phase
-	unset (plugin)
 endif ()
 
 #
