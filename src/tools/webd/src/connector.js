@@ -17,17 +17,23 @@ const encodePath = path =>
 const version = host => fetch(`${host}/version`).then(res => res.json());
 
 const getRoot = (host, sessionId, query = "") =>
-  fetch(`${host}/kdb${query}`, { headers: {
-    'Cookie': sessionId
-  }});
+  fetch(`${host}/kdb${query}`, {
+    headers: {
+      Cookie: sessionId
+    }
+  });
 
 const getPath = (host, path, sessionId, query = "") =>
-  fetch(`${host}/kdb/${encodePath(path)}${query}`, { headers: {
-    'Cookie': sessionId
-  }});
+  fetch(`${host}/kdb/${encodePath(path)}${query}`, {
+    headers: {
+      Cookie: sessionId
+    }
+  });
 
 const get = (host, { path, query, sessionId } = {}) =>
-  path ? getPath(host, path, sessionId, query) : getRoot(host, sessionId, query);
+  path
+    ? getPath(host, path, sessionId, query)
+    : getRoot(host, sessionId, query);
 
 const find = (host, query) =>
   fetch(`${host}/kdbFind/${encodeURIComponent(query)}`).then(res => res.json());

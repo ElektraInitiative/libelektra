@@ -36,15 +36,16 @@ const sessionRegex = /session=([a-zA-Z0-9-]*)/;
 export const getSessionID = (instanceId, cookie) => {
   instanceId = "asd"; // remove me
 
-  const sessionId = cookie.sessions && cookie.sessions[instanceId]
-    ? cookie.sessions[instanceId]
-    : "";
+  const sessionId =
+    cookie.sessions && cookie.sessions[instanceId]
+      ? cookie.sessions[instanceId]
+      : "";
   
   return sessionId;
-}
+};
 
 export const setSessionID = (instanceId, cookie, response) => {
-  const setCookie = response.headers.get("Set-Cookie");  
+  const setCookie = response.headers.get("Set-Cookie");
 
   if (setCookie) {
     if (!cookie.sessions) {
