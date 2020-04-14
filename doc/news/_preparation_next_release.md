@@ -52,6 +52,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### Crypto
 
 - The crypto plugin no longer supports Botan and OpenSSL as provider of cryptographic functions. The support has been removed to improve the maintainability of the code. _(Peter Nirschl)_
+- The unit test of the crypto plugin attempts to kill the gpg-agent if a regular shutdown via `connect-gpg-agent` should fail for any reason during the clean-up phase. _(Peter Nirschl)_
 
 ### Directory Value
 
