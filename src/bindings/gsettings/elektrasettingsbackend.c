@@ -202,7 +202,8 @@ static GVariant * elektra_settings_backend_read_user_value (GSettingsBackend * b
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s. %s %s.", "Function read_user_value:", key,
 	       "Expected_type is:", g_variant_type_peek_string (expected_type));
-	return elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_PATH, key, NULL), expected_type);
+	return elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL),
+					     expected_type);
 }
 
 /* elektra_settings_backend_write implements g_settings_backend_write:
@@ -246,7 +247,7 @@ static gboolean elektra_settings_backend_write (GSettingsBackend * backend, cons
  */
 static gint elektra_settings_keyset_from_tree (gpointer key, gpointer value, gpointer data)
 {
-	gchar * fullpathname = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, (gchar *) (key), NULL);
+	gchar * fullpathname = g_strconcat (G_ELEKTRA_SETTINGS_PATH, (gchar *) (key), NULL);
 	gchar * string_value = (value != NULL ? g_variant_print ((GVariant *) value, FALSE) : NULL);
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s: %s.", "Append to keyset ", fullpathname, string_value);
 	GElektraKeySet * gks = (GElektraKeySet *) data;
@@ -512,7 +513,7 @@ static void elektra_settings_backend_sync (GSettingsBackend * backend)
 static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Init new ElektraSettingsBackend");
-	esb->gkey = gelektra_key_new ("/", KEY_END);
+	esb->gkey = gelektra_key_new ("", KEY_CASCADING_NAME, KEY_END);
 	esb->gkdb = gelektra_kdb_open (NULL, esb->gkey);
 	esb->gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	esb->subscription_gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
