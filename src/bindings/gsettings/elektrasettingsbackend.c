@@ -117,6 +117,7 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, const
 {
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	/* Lookup if key already exists */
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s.", "ksLookup keypathname", keypathname);
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, keypathname, GELEKTRA_KDB_O_NONE);
 	gchar * string_value = (value != NULL ? g_variant_print ((GVariant *) value, FALSE) : NULL);
 	if (gkey == NULL)
@@ -513,7 +514,7 @@ static void elektra_settings_backend_sync (GSettingsBackend * backend)
 static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Init new ElektraSettingsBackend");
-	esb->gkey = gelektra_key_new ("", KEY_CASCADING_NAME, KEY_END);
+	esb->gkey = gelektra_key_new ("user/sw", KEY_END);
 	esb->gkdb = gelektra_kdb_open (NULL, esb->gkey);
 	esb->gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	esb->subscription_gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
