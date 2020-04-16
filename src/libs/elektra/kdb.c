@@ -1252,6 +1252,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		cacheParent = keyNew ("default:/", KEY_VALUE, "default", KEY_END);
 	}
 	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
+	keySetName (parentKey, keyName (initialParent));
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
 		elektraCacheLoad (handle, cache, parentKey, initialParent, cacheParent); // parentkey different from initialParent
