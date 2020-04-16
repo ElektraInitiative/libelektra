@@ -988,6 +988,8 @@ static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key
 		elektraCacheCutMeta (handle);
 		return;
 	}
+
+	keySetName (parentKey, keyName (initialParent));
 	if (!(elektraStrCmp (keyName (initialParent), keyName (parentKey)) == 0))
 	{
 		ELEKTRA_LOG_WARNING ("parentKey name (%s) differs from initial (%s)", keyName (parentKey), keyName (initialParent));
