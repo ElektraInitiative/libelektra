@@ -1246,7 +1246,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	keySetName (parentKey, keyName (initialParent));
 	cache = ksNew (0, KS_END);
-	cacheParent = keyDup (mountGetMountpoint (handle, keyName (initialParent)), KEY_CP_ALL);
+	cacheParent = keyDup (mountGetMountpoint (handle, keyName (parentKey)), KEY_CP_ALL);
 	if (cacheParent == NULL)
 	{
 		cacheParent = keyNew ("default:/", KEY_VALUE, "default", KEY_END);
