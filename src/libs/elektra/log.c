@@ -14,8 +14,8 @@
 // please do not include changes here to PRs
 // unless you want to change the defaults.
 // #define USE_STDERR_SINK
-// #define USE_SYSLOG_SINK
-#define USE_FILE_SINK
+#define USE_SYSLOG_SINK
+// #define USE_FILE_SINK
 #define NO_FILTER
 
 
