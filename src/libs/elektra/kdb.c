@@ -989,7 +989,9 @@ static void elektraCacheLoad (KDB * handle, KeySet * cache, Key * parentKey, Key
 		return;
 	}
 	if (!(elektraStrCmp (keyName (initialParent), keyName (parentKey)) == 0))
+	{
 		ELEKTRA_LOG_WARNING ("parentKey name (%s) differs from initial (%s)", keyName (parentKey), keyName (initialParent));
+	}
 	ELEKTRA_ASSERT (elektraStrCmp (keyName (initialParent), keyName (parentKey)) == 0,
 			"parentKey name (%s) differs from initial (%s)", keyName (parentKey), keyName (initialParent));
 	if (elektraCacheCheckParent (handle->global, cacheParent, parentKey) != 0)
@@ -1242,6 +1244,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
+	keySetName (parentKey, keyName (initialParent));
 	cache = ksNew (0, KS_END);
 	cacheParent = keyDup (mountGetMountpoint (handle, keyName (initialParent)), KEY_CP_ALL);
 	if (cacheParent == NULL)
@@ -1251,7 +1254,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
-		elektraCacheLoad (handle, cache, parentKey, initialParent, cacheParent);
+		elektraCacheLoad (handle, cache, parentKey, initialParent, cacheParent); // parentkey different from initialParent
 	}
 
 	// Check if a update is needed at all
