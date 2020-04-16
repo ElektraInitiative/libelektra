@@ -396,6 +396,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 					  const gchar * object_path G_GNUC_UNUSED, const gchar * interface_name G_GNUC_UNUSED,
 					  const gchar * signal_name G_GNUC_UNUSED, GVariant * parameters, gpointer user_data)
 {
+	g_mutex_lock (&elektra_settings_kdb_lock);
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "dbus signal that key has changed", g_variant_print (parameters, FALSE));
 	GVariant * variant = g_variant_get_child_value (parameters, 0);
 	gchar const * keypathname = g_variant_get_string (variant, NULL);
@@ -418,6 +419,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 		pos++;
 	}
 	g_variant_unref (variant);
+	g_mutex_unlock (&elektra_settings_kdb_lock);
 }
 
 static void elektra_settings_bus_connected (GObject * source_object G_GNUC_UNUSED, GAsyncResult * res, gpointer user_data)
@@ -557,12 +559,14 @@ static void elektra_settings_backend_sync (GSettingsBackend * backend)
 static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Init new ElektraSettingsBackend");
+	g_mutex_lock (&elektra_settings_kdb_lock);
 	esb->gkey = gelektra_key_new ("user/sw", KEY_END);
 	esb->gkdb = gelektra_kdb_open (NULL, esb->gkey);
 	esb->gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	esb->subscription_gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
 	elektra_settings_check_bus_connection (esb);
+	g_mutex_unlock (&elektra_settings_kdb_lock);
 }
 
 /*
@@ -582,6 +586,7 @@ static void elektra_settings_backend_finalize (GObject * object)
 
 static void elektra_settings_backend_class_init (GSettingsBackendClass * class)
 {
+	g_mutex_lock (&elektra_settings_kdb_lock);
 	GObjectClass * object_class = G_OBJECT_CLASS (class);
 
 	object_class->finalize = elektra_settings_backend_finalize; // locked
@@ -594,7 +599,8 @@ static void elektra_settings_backend_class_init (GSettingsBackendClass * class)
 	class->get_writable = elektra_settings_backend_get_writable; // locked
 	class->subscribe = elektra_settings_backend_subscribe; // locked
 	class->unsubscribe = elektra_settings_backend_unsubscribe; // locked
-	class->sync = elektra_settings_backend_sync;
+	class->sync = elektra_settings_backend_sync; // locked
+	g_mutex_unlock (&elektra_settings_kdb_lock);
 }
 
 // TODO check if this is changeable at runtime
