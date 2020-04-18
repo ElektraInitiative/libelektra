@@ -34,8 +34,6 @@ export const errorResponse = (res, err) => {
 const sessionRegex = /session=([a-zA-Z0-9-]*)/;
 
 export const getSessionID = (instanceId, cookie) => {
-  instanceId = "asd"; // remove me
-
   const sessionId =
     cookie.sessions && cookie.sessions[instanceId]
       ? cookie.sessions[instanceId]
