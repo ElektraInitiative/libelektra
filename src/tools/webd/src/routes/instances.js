@@ -6,7 +6,14 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import { APIError, successResponse, errorResponse, dontShowDB } from "./utils";
+import {
+  APIError,
+  successResponse,
+  errorResponse,
+  dontShowDB,
+  setSessionID,
+  getSessionID
+} from "./utils";
 
 import {
   getInstances as getDBInstances,
@@ -92,6 +99,9 @@ export default function initInstanceRoutes(app) {
         }
         return remoteKdb.version(instance.host);
       })
+      .then(instanceRes =>
+        setSessionID(req.params.id, req.session, instanceRes)
+      )
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
   );
@@ -102,8 +112,14 @@ export default function initInstanceRoutes(app) {
         if (!instance || !instance.host) {
           throw new APIError("Instance not found or invalid (no host)");
         }
-        return remoteKdb.get(instance.host);
+        return remoteKdb.get(instance.host, {
+          sessionId: getSessionID(instance.id, req.session)
+        });
       })
+      .then(instanceRes =>
+        setSessionID(req.params.id, req.session, instanceRes)
+      )
+      .then(res => res.json())
       .then(dontShowDB)
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
@@ -115,12 +131,16 @@ export default function initInstanceRoutes(app) {
       getInstance(req.params.id)
         .then(instance => {
           const qs = req._parsedUrl.query;
-          return remoteKdb.get(
-            instance.host,
-            req.params[0],
-            qs ? "?" + qs : ""
-          );
+          return remoteKdb.get(instance.host, {
+            query: qs ? "?" + qs : "",
+            sessionId: getSessionID(instance.id, req.session),
+            path: req.params[0]
+          });
         })
+        .then(instanceRes =>
+          setSessionID(req.params.id, req.session, instanceRes)
+        )
+        .then(res => res.json())
         .then(dontShowDB)
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
@@ -128,12 +148,18 @@ export default function initInstanceRoutes(app) {
     .put((req, res) =>
       getInstance(req.params.id)
         .then(instance => remoteKdb.set(instance.host, req.params[0], req.body))
+        .then(instanceRes =>
+          setSessionID(req.params.id, req.session, instanceRes)
+        )
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     )
     .delete((req, res) =>
       getInstance(req.params.id)
         .then(instance => remoteKdb.rm(instance.host, req.params[0]))
+        .then(instanceRes =>
+          setSessionID(req.params.id, req.session, instanceRes)
+        )
         .then(output => successResponse(res, output))
         .catch(err => errorResponse(res, err))
     );
@@ -141,6 +167,9 @@ export default function initInstanceRoutes(app) {
   app.get("/api/instances/:id/kdbFind/*", (req, res) =>
     getInstance(req.params.id)
       .then(instance => remoteKdb.find(instance.host, req.params[0]))
+      .then(instanceRes =>
+        setSessionID(req.params.id, req.session, instanceRes)
+      )
       .then(output => successResponse(res, output))
       .catch(err => errorResponse(res, err))
   );
@@ -148,6 +177,9 @@ export default function initInstanceRoutes(app) {
   app.post("/api/instances/:id/kdbMv/*", (req, res) =>
     getInstance(req.params.id)
       .then(instance => remoteKdb.mv(instance.host, req.params[0], req.body))
+      .then(instanceRes =>
+        setSessionID(req.params.id, req.session, instanceRes)
+      )
       .then(() => res.status(204).send())
       .catch(err => errorResponse(res, err))
   );
@@ -155,6 +187,9 @@ export default function initInstanceRoutes(app) {
   app.post("/api/instances/:id/kdbCp/*", (req, res) =>
     getInstance(req.params.id)
       .then(instance => remoteKdb.cp(instance.host, req.params[0], req.body))
+      .then(instanceRes =>
+        setSessionID(req.params.id, req.session, instanceRes)
+      )
       .then(() => res.status(204).send())
       .catch(err => errorResponse(res, err))
   );
@@ -171,6 +206,9 @@ export default function initInstanceRoutes(app) {
             req.body.value
           )
         )
+        .then(instanceRes =>
+          setSessionID(req.params.id, req.session, instanceRes)
+        )
         .then(() => res.status(204).send())
         .catch(err => errorResponse(res, err))
     )
@@ -178,6 +216,9 @@ export default function initInstanceRoutes(app) {
       getInstance(req.params.id)
         .then(instance =>
           remoteKdb.rmmeta(instance.host, req.params[0], req.body.key)
+        )
+        .then(instanceRes =>
+          setSessionID(req.params.id, req.session, instanceRes)
         )
         .then(() => res.status(204).send())
         .catch(err => errorResponse(res, err))

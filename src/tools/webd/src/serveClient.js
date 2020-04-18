@@ -15,7 +15,6 @@ const { info } = makeLog("client");
 
 import express from "express";
 import { join as joinPath } from "path";
-import { existsSync, readFileSync } from "fs";
 
 // adapted from https://github.com/rangle/serve-webpack-client
 export default function createRouter({

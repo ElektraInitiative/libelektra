@@ -31,6 +31,33 @@ export const errorResponse = (res, err) => {
     .json({ error: errObj });
 };
 
+const sessionRegex = /session=([a-zA-Z0-9-]*)/;
+
+export const getSessionID = (instanceId, cookie) => {
+  const sessionId =
+    cookie.sessions && cookie.sessions[instanceId]
+      ? cookie.sessions[instanceId]
+      : "";
+
+  return sessionId;
+};
+
+export const setSessionID = (instanceId, cookie, response) => {
+  const setCookie = response.headers.get("Set-Cookie");
+
+  if (setCookie) {
+    if (!cookie.sessions) {
+      cookie.sessions = {};
+    }
+
+    const sessionId = setCookie.match(sessionRegex)[0];
+
+    cookie.sessions[instanceId] = sessionId;
+  }
+
+  return response;
+};
+
 // don't show the internal database via the API
 export const dontShowDB = output => {
   if (output && Array.isArray(output.ls)) {
