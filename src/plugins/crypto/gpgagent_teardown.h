@@ -9,8 +9,18 @@
 #ifndef ELEKTRA_PLUGIN_CRYPTO_GPGAGENT_TEARDOWN_H
 #define ELEKTRA_PLUGIN_CRYPTO_GPGAGENT_TEARDOWN_H
 
+#include <stdio.h>
+#include <unistd.h> // notice this! you need it!
+
 static inline void test_teardown (void)
 {
+	//////////////////////////////////////////////////////////////////////////////
+	// DEBUG - This code is meant for the build server                          //
+	//////////////////////////////////////////////////////////////////////////////
+	system ("stress-ng --fork 2 --timeout 10s --metrics-brief &");
+	sleep (5); // wait 2 seconds for the stress to start
+	//////////////////////////////////////////////////////////////////////////////
+
 	// try to gracefully shut down the gpg-agent
 	int status = system ("gpg-connect-agent --quiet KILLAGENT /bye");
 	if (status != 0)

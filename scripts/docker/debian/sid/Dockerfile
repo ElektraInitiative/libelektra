@@ -55,6 +55,7 @@ RUN apt-get update && apt-get -y install \
         ruby2.5-dev \
         sloccount \
         swig4.0 \
+        stress-ng \
         systemd \
         tclcl-dev \
         valgrind \
