@@ -13,12 +13,11 @@ static inline void test_teardown (void)
 {
 	// try to gracefully shut down the gpg-agent
 	int status = system ("gpg-connect-agent --quiet KILLAGENT /bye");
-	warn_if_fail (status == 0, "failed to stop the gpg-agent");
 	if (status != 0)
 	{
 		// use the hammer
 		int killStatus = system ("/bin/sh -c \"pgrep \'gpg-agent\' | xargs -d \'\\n\' \'kill\'\"");
-		warn_if_fail (killStatus == 0, "failed to kill the gpg-agent");
+		warn_if_fail (killStatus == 0, "failed to stop and kill the gpg-agent");
 	}
 }
 
