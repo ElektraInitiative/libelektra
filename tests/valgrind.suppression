@@ -13,6 +13,22 @@
    Memcheck:Leak
    match-leak-kinds: all
    ...
+   obj:*/bin/kill*
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/usr/bin/pgrep*
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
    obj:*libgcrypt*
    ...
 }
@@ -404,4 +420,3 @@
    fun:test_childDies
    fun:main
 }
-
