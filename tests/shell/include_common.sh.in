@@ -68,9 +68,6 @@ if [ $? = 0 ]; then
 	KDB=${KDB_GETENV}
 fi
 
-# Do not overwriting existing KDB_EXEC_PATH
-export KDB_EXEC_PATH="@CMAKE_BINARY_DIR@/bin:$KDB_EXEC_PATH"
-
 # ensure ruby plugin finds Ruby bindings without installation
 # (require both the src and the build dir)
 export RUBYLIB="@CMAKE_SOURCE_DIR@/src/bindings/swig/ruby:@CMAKE_BINARY_DIR@/src/bindings/swig/ruby"
