@@ -1307,7 +1307,7 @@ def ctest(target = "Test") {
   */
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
-          -E 'testmod_(dbus(recv)?|fcrypt|gpgme|zeromqsend)'"""
+          -E 'testmod_(dbus(recv)?|zeromqsend)'"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests
