@@ -38,7 +38,8 @@ else (ENABLE_ASAN)
 	add_msr_test (
 		tutorial_crypto "${CMAKE_SOURCE_DIR}/doc/tutorials/crypto.md"
 		REQUIRED_PLUGINS crypto fcrypt
-		REQUIRED_TOOLS gen-gpg-testkey)
+		REQUIRED_TOOLS gen-gpg-testkey
+		ENVIRONMENT KDB_EXEC_PATH=${CMAKE_BINARY_DIR}/bin)
 endif (ENABLE_ASAN)
 
 # ========

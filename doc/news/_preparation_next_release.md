@@ -212,6 +212,7 @@ you up to date with the multi-language support provided by Elektra.
 - Whitelisted many broken links. _(Mihael Pranjić)_
 - Enabled regex in link checker. _(Mihael Pranjić)_
 - The [formatting check](../../tests/shell/check_formatting.sh) now also works correctly, if it is invoked multiple times. _(René Schwaiger)_
+- `KDB_EXEC_PATH` is not being set globally to contain the build directory any longer. _(Peter Nirschl)_
 
 ## Build
 

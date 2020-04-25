@@ -32,6 +32,7 @@ RUN apt-get update && apt-get -y install \
         libgirepository1.0-dev \
         libgit2-dev \
         libglib2.0-dev \
+        libgpgme-dev \
         liblua5.3-dev \
         libpcre++-dev \
         libpcre3-dev \
