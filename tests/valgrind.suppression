@@ -13,7 +13,15 @@
    Memcheck:Leak
    match-leak-kinds: all
    ...
-   fun:*gpgQuitAgent*
+   obj:*/bin/kill*
+   ...
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*/usr/bin/pgrep*
    ...
 }
 {

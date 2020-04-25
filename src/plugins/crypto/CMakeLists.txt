@@ -18,8 +18,6 @@ add_plugin (
 		helper.c
 		gpg.h
 		gpg.c
-		gpg_shutdown.h
-		gpg_shutdown.c
 		crypto.h
 		crypto.c
 	INCLUDE_DIRECTORIES ${Libgcrypt_INCLUDE_DIRS}

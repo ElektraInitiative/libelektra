@@ -9,7 +9,7 @@ if (DEPENDENCY_PHASE)
 
 endif ()
 
-set (GPGME_SOURCE_FILES keylist.h keylist.c gpgme.h gpgme.c ../crypto/gpg_shutdown.h ../crypto/gpg_shutdown.c)
+set (GPGME_SOURCE_FILES keylist.h keylist.c gpgme.h gpgme.c)
 
 add_plugin (
 	gpgme

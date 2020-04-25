@@ -19,8 +19,8 @@
 #include <test_key.h>
 
 #include "../crypto/common_gpg_tests.c"
+#include "../crypto/gpgagent_teardown.h"
 #include "fcrypt.h"
-#include <gpg_shutdown.h>
 
 #define PLUGIN_NAME "fcrypt"
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
@@ -114,12 +114,6 @@ static int isTestFileCorrect (const char * file)
 
 	fclose (f);
 	return returnValue;
-}
-
-static inline void test_teardown (void)
-{
-	int status = ELEKTRA_PLUGIN_FUNCTION (gpgQuitAgent) ();
-	succeed_if (status == 0, "failed to stop and kill the gpg-agent");
 }
 
 static void test_init (void)
