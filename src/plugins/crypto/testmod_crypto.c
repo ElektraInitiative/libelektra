@@ -18,7 +18,7 @@
 #include <tests_plugin.h>
 
 #include "common_gpg_tests.c"
-#include "gpgagent_teardown.h"
+#include "gpg_shutdown.h"
 #include "test_key.h"
 
 #define PLUGIN_NAME "crypto"
@@ -99,6 +99,12 @@ static KeySet * newPluginConfiguration (void)
 {
 	return ksNew (2, keyNew (ELEKTRA_RECIPIENT_KEY, KEY_VALUE, TEST_KEY_ID, KEY_END),
 		      keyNew (ELEKTRA_CRYPTO_PARAM_GPG_UNIT_TEST, KEY_VALUE, "1", KEY_END), KS_END);
+}
+
+static inline void test_teardown (void)
+{
+	int status = ELEKTRA_PLUGIN_FUNCTION (gpgQuitAgent) ();
+	succeed_if (status == 0, "failed to stop and kill the gpg-agent");
 }
 
 static void test_init (const char * pluginName)

@@ -20,10 +20,11 @@
 
 #include "gpgme.h"
 
-#include "../crypto/gpgagent_teardown.h"
-
 // GPG private key for importing and testing
 #include "../crypto/test_key.h"
+
+// shutdown code for the gpg-agent
+#include "../crypto/gpg_shutdown.h"
 
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 #define GPGME_PLUGIN_NAME "gpgme"
@@ -81,6 +82,12 @@ static KeySet * newTestdataKeySet (void)
 	keySetMeta (kBin, ELEKTRA_GPGME_META_ENCRYPT, "1");
 
 	return ksNew (4, kUnchanged, kNull, kString, kBin, KS_END);
+}
+
+static inline void test_teardown (void)
+{
+	int status = ELEKTRA_PLUGIN_FUNCTION (gpgQuitAgent) ();
+	succeed_if (status == 0, "failed to stop and kill the gpg-agent");
 }
 
 static void test_import_key (void)
