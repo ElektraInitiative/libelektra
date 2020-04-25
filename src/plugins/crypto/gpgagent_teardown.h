@@ -9,17 +9,47 @@
 #ifndef ELEKTRA_PLUGIN_CRYPTO_GPGAGENT_TEARDOWN_H
 #define ELEKTRA_PLUGIN_CRYPTO_GPGAGENT_TEARDOWN_H
 
+#include <sys/wait.h>
+#include <unistd.h>
+
+#define GPG_CONNECT_AGENT_CMD "gpg-connect-agent"
+
 static inline void test_teardown (void)
 {
-	// try to gracefully shut down the gpg-agent
-	int status = system ("gpg-connect-agent --quiet KILLAGENT /bye");
-	warn_if_fail (status == 0, "failed to stop the gpg-agent, trying to kill it");
-	if (status != 0)
+	pid_t pid;
+	int status;
+	char * argv[] = { GPG_CONNECT_AGENT_CMD, "--quiet", "KILLAGENT", "/bye", NULL };
+
+	// check if gpg-connect-agent is available and executable
+	if (access (GPG_CONNECT_AGENT_CMD, F_OK))
 	{
-		// use the hammer
-		int killStatus = system ("/bin/sh -c \"pgrep \'gpg-agent\' | xargs -d \'\\n\' \'kill\'\"");
-		warn_if_fail (killStatus == 0, "failed to kill the gpg-agent");
+		return;
 	}
+	if (access (GPG_CONNECT_AGENT_CMD, X_OK))
+	{
+		return;
+	}
+
+	// execute the shutdown command
+	switch (pid = fork ())
+	{
+	case -1: // failure
+		yield_error ("fork failed");
+		return;
+
+	case 0: // child process
+		if (execv ("gpg-connect-agent", argv) < 0)
+		{
+			exit (-1);
+		}
+		// end of the child process
+	}
+
+	// parent process - check if execv failed
+	// NOTE the return value of gpg-connect-agent is irrelevant because it will
+	//      always return 0 (see source code of GnuPG).
+	waitpid (pid, &status, 0);
+	succeed_if (status != -1, "failed to execute gpg-connect-agent");
 }
 
 #endif
