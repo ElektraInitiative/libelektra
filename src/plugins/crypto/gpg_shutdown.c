@@ -18,6 +18,14 @@
  */
 int ELEKTRA_PLUGIN_FUNCTION (gpgQuitAgent) (void)
 {
+	// check if the gpg-connect-agent command is available
+	int cmdAvailable = system ("command -v gpg-connect-agent");
+	if (cmdAvailable != 0)
+	{
+		// nothing to do here
+		return 0;
+	}
+
 	// try to gracefully shut down the gpg-agent
 	int status = system ("gpg-connect-agent --quiet KILLAGENT /bye");
 	if (status != 0)
