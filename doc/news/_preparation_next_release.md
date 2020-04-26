@@ -257,6 +257,7 @@ you up to date with the multi-language support provided by Elektra.
 - Disable tcl on FreeBSD images because of test failures (see #3353). _(Mihael Pranjić)_
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
 - Add more dependencies to Fedora image to cover many tests. _(Mihael Pranjić)_
+- Downgrade ruby version on cirrus due to upstream swig incompatibility (see #3378). _(Mihael Pranjić)_
 
 ### Jenkins
 
