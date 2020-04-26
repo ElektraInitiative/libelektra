@@ -13,15 +13,27 @@
    Memcheck:Leak
    match-leak-kinds: all
    ...
-   obj:*/bin/kill*
+   obj:*/usr/bin/gpg2*
    ...
 }
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
    match-leak-kinds: all
+   obj:*/usr/bin/gpg2*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: all
    ...
-   obj:*/usr/bin/pgrep*
+   obj:*/usr/bin/gpg2*
+}
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: all
+   obj:*/usr/bin/gpg2*
    ...
 }
 {
