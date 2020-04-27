@@ -54,8 +54,6 @@ if (DEPENDENCY_PHASE)
 		endif ()
 
 		set_source_files_properties ("ruby.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
-		message (WARNING "swig version: ${SWIG_VERSION}")
-		message (WARNING "ruby version: ${RUBY_VERSION}")
 	endif ()
 endif ()
 

@@ -15,9 +15,6 @@ endif ()
 
 find_package (Ruby QUIET)
 
-		message (WARNING "swig version: ${SWIG_VERSION}")
-		message (WARNING "ruby version: ${RUBY_VERSION}")
-
 if (NOT RUBY_FOUND)
 	exclude_binding (ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
 elseif (SWIG_VERSION VERSION_LESS "4.0.2" AND (RUBY_VERSION VERSION_GREATER "2.7.0" OR RUBY_VERSION VERSION_EQUAL "2.7.0"))
