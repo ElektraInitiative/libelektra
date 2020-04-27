@@ -5,7 +5,7 @@ if (DEPENDENCY_PHASE)
 		set (CMAKE_FIND_FRAMEWORK "LAST")
 
 		# Prefer Ruby versions installed via Homebrew
-		set (RUBY_DIRECTORIES "/usr/local/opt/ruby@2.5" "/usr/local/opt/ruby")
+		set (RUBY_DIRECTORIES "/usr/local/opt/ruby@2.6" "/usr/local/opt/ruby")
 		foreach (directory ${RUBY_DIRECTORIES})
 			if (EXISTS ${directory})
 				list (APPEND CMAKE_PREFIX_PATH ${directory})
@@ -47,6 +47,8 @@ if (DEPENDENCY_PHASE)
 		endif ()
 
 		set_source_files_properties ("ruby.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
+		message (WARNING "swig version: ${SWIG_VERSION}")
+		message (WARNING "ruby version: ${RUBY_VERSION}")
 	elseif (NOT RUBY_FOUND)
 		remove_plugin (ruby "ruby not found")
 	elseif (SWIG_VERSION VERSION_LESS "4.0.2" AND (RUBY_VERSION VERSION_GREATER "2.7.0" OR RUBY_VERSION VERSION_EQUAL "2.7.0"))

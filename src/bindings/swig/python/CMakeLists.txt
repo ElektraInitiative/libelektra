@@ -19,6 +19,9 @@ include (LibAddMacros)
 find_package (PythonInterp 3 QUIET)
 find_package (PythonLibs 3 QUIET)
 
+		message (WARNING "swig version: ${SWIG_VERSION}")
+		message (WARNING "PYTHONLIBS_VERSION_STRING version: ${PYTHONLIBS_VERSION_STRING}")
+
 if (NOT PYTHONINTERP_FOUND)
 	exclude_binding (python "python3 interpreter not found")
 elseif (NOT PYTHONLIBS_FOUND)
