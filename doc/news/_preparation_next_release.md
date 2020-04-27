@@ -69,6 +69,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### SWIG
 
 - Configure line (-DBINDINGS="..") for SWIG based bindings have been changed from `swig_foo` to `foo`. _(Manuel Mausz)_
+- Exclude SWIG bindings if SWIG Version is 4.0.1 and Python is >= 3.8 or Ruby is >= 2.7 due to incompatibility (#3378, #3379). _(Mihael Pranjić)_
 
 ### SWIG/python
 
@@ -257,7 +258,6 @@ you up to date with the multi-language support provided by Elektra.
 - Disable tcl on FreeBSD images because of test failures (see #3353). _(Mihael Pranjić)_
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
 - Add more dependencies to Fedora image to cover many tests. _(Mihael Pranjić)_
-- Downgrade ruby version on cirrus due to upstream swig incompatibility (see #3378). _(Mihael Pranjić)_
 
 ### Jenkins
 
