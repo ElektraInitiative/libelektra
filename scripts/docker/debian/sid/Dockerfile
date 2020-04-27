@@ -29,6 +29,7 @@ RUN apt-get update && apt-get -y install \
         libboost-all-dev \
         libdbus-1-dev \
         libev-dev \
+        libgcrypt20-dev \
         libgirepository1.0-dev \
         libgit2-dev \
         libglib2.0-dev \
