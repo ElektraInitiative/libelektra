@@ -141,7 +141,6 @@ mac_task:
       brew install npm
       brew install openssl
       brew install pkg-config
-      brew install prettier
       brew install qt
       brew install shfmt
       brew install swig
@@ -167,6 +166,7 @@ mac_task:
       sudo gem install ronn test-unit --no-document
     - | # Install JavaScript packages
       npm install dredd --global
+      npm install --global prettier@1.19.1
 
   script:
     - | # Use latest version of LLVM to translate Elektra
