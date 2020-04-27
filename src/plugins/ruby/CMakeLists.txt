@@ -33,7 +33,11 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (ruby "ruby binding is required")
 	elseif (SWIG_VERSION VERSION_LESS "4.0.2" AND (RUBY_VERSION VERSION_GREATER "2.7.0" OR RUBY_VERSION VERSION_EQUAL "2.7.0"))
 		remove_plugin (ruby "SWIG <= 4.0.1 incompatible with Ruby >= 2.7")
-	elseif (RUBY_FOUND AND SWIG_FOUND AND BINDING_WAS_ADDED AND ${SUPPORTED_COMPILER})
+	elseif (
+		RUBY_FOUND
+		AND SWIG_FOUND
+		AND BINDING_WAS_ADDED
+		AND ${SUPPORTED_COMPILER})
 		include (LibAddMacros)
 
 		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -external-runtime runtime.h)
