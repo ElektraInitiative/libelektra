@@ -578,14 +578,14 @@ def generateFullBuildStages() {
 
   // Build Elektra with clang. We use unstable for easy access to clang-9.0
   // Detects problems when using an alternative compiler (clang)
-  // SWIG 4.0.1 has issues with Python 3.8 (https://github.com/ElektraInitiative/libelektra/issues/3379)
+  // crypto disabled due to memory leaks
   tasks << buildAndTest(
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_CLANG + [
-      'BINDINGS': 'ALL;-python',
+      'PLUGINS': 'ALL;-crypto',
       ],
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
