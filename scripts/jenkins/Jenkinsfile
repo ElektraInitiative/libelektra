@@ -477,7 +477,7 @@ def generateMainBuildStages() {
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
       CMAKE_FLAGS_BUILD_STATIC + [
-      'PLUGINS': 'ALL;-crypto',
+      'PLUGINS': 'ALL',
       ]
     ,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
