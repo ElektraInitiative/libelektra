@@ -1309,12 +1309,9 @@ def ctest(target = "Test") {
      , since they are known to fail in scenarios with high load.
      See also: https://issues.libelektra.org/2439
   */
-  sh 'export GNUPGHOME=`mktemp -d`'
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
           -E 'testmod_(dbus(recv)?|zeromqsend)'"""
-  sh 'gpg-connect-agent --quiet KILLAGENT /bye || true'
-  sh 'rm -rf ${GNUPGHOME}'
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests
