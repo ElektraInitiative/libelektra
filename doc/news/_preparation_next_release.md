@@ -69,6 +69,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### SWIG
 
 - Configure line (-DBINDINGS="..") for SWIG based bindings have been changed from `swig_foo` to `foo`. _(Manuel Mausz)_
+- Exclude SWIG bindings if SWIG Version is 4.0.1 and Python is >= 3.8 or Ruby is >= 2.7 due to incompatibility (#3378, #3379). _(Mihael Pranjić)_
 
 ### SWIG/python
 
