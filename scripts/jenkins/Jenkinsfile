@@ -580,14 +580,14 @@ def generateFullBuildStages() {
 
   // Build Elektra with clang. We use unstable for easy access to clang-9.0
   // Detects problems when using an alternative compiler (clang)
-  // crypto disabled due to memory leaks
+  // crypto disabled due to memory leaks, fcrypt disabled due to random failures
   tasks << buildAndTest(
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_CLANG + [
-      'PLUGINS': 'ALL;-crypto',
+      'PLUGINS': 'ALL;-crypto;-fcrypt',
       ],
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
