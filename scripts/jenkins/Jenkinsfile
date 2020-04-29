@@ -556,7 +556,9 @@ def generateFullBuildStages() {
     "debian-unstable-full",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL+
-      CMAKE_FLAGS_DEBUG,
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'ALL;-crypto;-fcrypt;-gpgme',
+      ],
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
@@ -587,7 +589,7 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_CLANG + [
-      'PLUGINS': 'ALL;-crypto;-fcrypt',
+      'PLUGINS': 'ALL;-crypto;-fcrypt;-gpgme',
       ],
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
