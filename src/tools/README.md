@@ -15,7 +15,7 @@ The graphical user interface (GUI) is called `kdb qt-gui`.
 
 ## Web-UI
 
-For information about the Web-UI, please read [here](../../doc/tutorials/install-webui.md).
+For information about the Web-UI, please read [here](../../doc/tutorials/install-webui.md) and [here](./webui/README.md).
 
 Note that the Web-UI also provides a REST service
 [elektrad](elektrad/README.md) that allows you to get
