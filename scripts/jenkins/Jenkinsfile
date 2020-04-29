@@ -337,13 +337,6 @@ def dockerInit() {
       "./scripts/docker/fedora/31/Dockerfile"
     )
 
-    /* Fedora 32 image */
-    DOCKER_IMAGES.fedora_32 = createDockerImageDesc(
-      "fedora-32", this.&idTesting,
-      "./scripts/docker/fedora/32",
-      "./scripts/docker/fedora/32/Dockerfile"
-    )
-
     /* Image building the libelektra.org frontend */
     DOCKER_IMAGES.website_frontend = createDockerImageDesc(
       "website-frontend", this.&idWebsite,
@@ -485,19 +478,6 @@ def generateMainBuildStages() {
       CMAKE_FLAGS_BUILD_FULL +
       CMAKE_FLAGS_BUILD_STATIC + [
       'PLUGINS': 'ALL;-crypto',
-      ]
-    ,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
-  )
-
-  tasks << buildAndTest(
-    "fedora-32-full",
-    DOCKER_IMAGES.fedora_32,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC + [
-      'PLUGINS': 'ALL',
       ]
     ,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
