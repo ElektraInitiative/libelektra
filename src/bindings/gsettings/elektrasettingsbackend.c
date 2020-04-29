@@ -325,7 +325,7 @@ static void elektra_settings_backend_reset (GSettingsBackend * backend, const gc
 	g_free (keypathname);
 	if (gkey != NULL)
 	{
-		gelektra_keyset_lookup (esb->gks, gkey, KDB_O_POP);
+		gelektra_keyset_lookup (esb->gks, gkey, GELEKTRA_KDB_O_POP);
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Key not found and reseted");
 		g_settings_backend_changed (backend, key, origin_tag);
 	}
@@ -480,7 +480,7 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 		if (*counter == 0)
 		{
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Subscription found deleting");
-			gelektra_keyset_lookup (esb->subscription_gks, gkey, KDB_O_POP);
+			gelektra_keyset_lookup (esb->subscription_gks, gkey, GELEKTRA_KDB_O_POP);
 		}
 		return;
 	}
