@@ -589,7 +589,7 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_CLANG + [
-      'PLUGINS': 'ALL;-crypto;-fcrypt;-gpgme',
+      'PLUGINS': 'ALL',
       ],
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
