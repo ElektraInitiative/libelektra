@@ -267,7 +267,7 @@ you up to date with the multi-language support provided by Elektra.
 - The build jobs `debian-unstable-clang-asan` and `debian-unstable-full-clang` now use Clang 9 to compile Elektra. _(René Schwaiger)_
 - Added the Jenkins.monthly in the jenkins' scripts file. _(Djordje Bulatovic)_
 - Temporarily disabled some problematic tests on debian unstable. _(Mihael Pranjić)_
-- <<TODO>>
+- Enabled building packages for Bionic. _(Djordje Bulatovic)_
 
 ### Travis
 
