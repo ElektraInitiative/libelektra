@@ -38,7 +38,7 @@ static inline void test_teardown (void)
 		return;
 
 	case 0: // child process
-		if (execv ("gpg-connect-agent", argv) < 0)
+		if (execv (GPG_CONNECT_AGENT_CMD, argv) < 0)
 		{
 			exit (-1);
 		}
