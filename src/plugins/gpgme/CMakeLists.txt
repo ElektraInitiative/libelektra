@@ -18,4 +18,6 @@ add_plugin (
 	LINK_LIBRARIES ${LIBGPGME_LIBRARIES}
 	ADD_TEST)
 
-set_property (TEST "testmod_gpgme" PROPERTY LABELS memleak)
+if (ADDTESTING_PHASE)
+	set_property (TEST "testmod_gpgme" PROPERTY LABELS memleak)
+endif (ADDTESTING_PHASE)

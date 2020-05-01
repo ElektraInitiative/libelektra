@@ -6,4 +6,6 @@ add_plugin (
 	INCLUDE_DIRECTORIES ${CMAKE_SOURCE_DIR}/src/plugins/crypto/
 	ADD_TEST)
 
-set_property (TEST "testmod_fcrypt" PROPERTY LABELS memleak)
+if (ADDTESTING_PHASE)
+	set_property (TEST "testmod_fcrypt" PROPERTY LABELS memleak)
+endif (ADDTESTING_PHASE)
