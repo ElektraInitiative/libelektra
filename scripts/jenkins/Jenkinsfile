@@ -1058,6 +1058,8 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
           }
           if(testMem || testNokdb || testAll) {
             xunitUpload("${buildDir}/Testing/**/*.xml")
+            // TODO: remove line below to save space
+            xunitUpload("${buildDir}/Testing/Temporary/MemoryChecker.*.log")
           }
           deleteDir()
         }

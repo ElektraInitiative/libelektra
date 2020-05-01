@@ -353,7 +353,7 @@ set (
 	""
 	CACHE STRING "Optional suffix to use on lib folders (e.g. 64 for lib64)")
 
-set (MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --gen-suppressions=all --error-exitcode=1")
+set (MEMORYCHECK_COMMAND_OPTIONS "--trace-children=yes --leak-check=full --show-leak-kinds=all --track-origins=yes --gen-suppressions=all --error-exitcode=1")
 set (
 	MEMORYCHECK_SUPPRESSIONS_FILE
 	"${CMAKE_SOURCE_DIR}/tests/valgrind.suppression"
