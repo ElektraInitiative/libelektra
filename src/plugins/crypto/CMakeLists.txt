@@ -24,3 +24,5 @@ add_plugin (
 	LINK_LIBRARIES ${Libgcrypt_LIBRARIES}
 	LINK_ELEKTRA elektra-invoke
 	ADD_TEST)
+
+set_property (TEST "testmod_crypto" PROPERTY LABELS memleak)
