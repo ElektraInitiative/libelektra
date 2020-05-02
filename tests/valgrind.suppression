@@ -404,6 +404,15 @@
    fun:(below main)
 }
 {
+   gpg-agent
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
+   obj:/usr/bin/gpg-agent
+   obj:/usr/bin/gpg-agent
+   fun:(below main)
+}
+{
    PluginProcess child dies keyDup
    Memcheck:Leak
    match-leak-kinds: definite
