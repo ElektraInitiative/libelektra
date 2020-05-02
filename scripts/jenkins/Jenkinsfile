@@ -707,7 +707,7 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG + [
       'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme',
-      'TOOLS': 'gen-gpg-testkey',
+      'TOOLS': 'kdb;gen-gpg-testkey',
       'BINDINGS': '',
       ],
     [TEST.CRYPTOS]
@@ -719,7 +719,7 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG + [
       'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme',
-      'TOOLS': 'gen-gpg-testkey',
+      'TOOLS': 'kdb;gen-gpg-testkey',
       'BINDINGS': '',
       ],
     [TEST.CRYPTOS]
@@ -731,7 +731,7 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG + [
       'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme',
-      'TOOLS': 'gen-gpg-testkey',
+      'TOOLS': 'kdb;gen-gpg-testkey',
       'BINDINGS': '',
       ],
     [TEST.CRYPTOS]
