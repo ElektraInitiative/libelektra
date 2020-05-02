@@ -699,6 +699,55 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM]
   )
 
+  // Run memory analysis of the crypto plugins in separate environment as theses tests are quite unstable
+  tasks << buildAndTest(
+    "debian-unstable-cryptoplugins",
+    DOCKER_IMAGES.sid,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'dump;resolver;list;spec;sync;crypto;fcrypt;gpgme',
+      'TOOLS': '',
+      'BINDINGS': '',
+      ],
+    [TEST.CRYPTOS]
+  )
+
+  tasks << buildAndTest(
+    "debian-stretch-cryptoplugins",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'dump;resolver;list;spec;sync;crypto;fcrypt;gpgme',
+      'TOOLS': '',
+      'BINDINGS': '',
+      ],
+    [TEST.CRYPTOS]
+  )
+
+  tasks << buildAndTest(
+    "fedora-31-cryptoplugins",
+    DOCKER_IMAGES.fedora_31,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'dump;resolver;list;spec;sync;crypto;fcrypt;gpgme',
+      'TOOLS': '',
+      'BINDINGS': '',
+      ],
+    [TEST.CRYPTOS]
+  )
+
+  tasks << buildAndTest(
+    "alpine-cryptoplugins",
+    DOCKER_IMAGES.alpine,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'dump;resolver;list;spec;sync;crypto;fcrypt;gpgme',
+      'TOOLS': '',
+      'BINDINGS': '',
+      ],
+    [TEST.CRYPTOS]
+  )
+
   // We need the webui_base image to build webui images later
   tasks << buildImageStage(DOCKER_IMAGES.webui_base)
 
@@ -925,6 +974,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
   def testMem = tests.contains(TEST.MEM)
   def testNokdb = tests.contains(TEST.NOKDB)
   def testAll = tests.contains(TEST.ALL)
+  def testCryptos = tests.contains(TEST.CRYPTOS)
   def install = tests.contains(TEST.INSTALL)
   def dockerOpts = [DOCKER_OPTS.MOUNT_MIRROR]
   return [(testName): {
@@ -959,6 +1009,9 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                     cmemcheck(testNokdb)
                   }
                 }
+              }
+              if(testCryptos) {
+                ctestcryptoplugins()
               }
             }
             if(install) {
@@ -1330,7 +1383,6 @@ def cmemcheck(kdbtests=true) {
   } else {
     ctest("MemCheck -LE memleak||kdbtests")
   }
-  ctestcryptoplugins("MemCheck")
 }
 
 /* Helper for ctest to run tests without tests tagged as kdbtests.
