@@ -185,11 +185,11 @@ static void test_crypto_operations (const char * pluginName)
 
 		// read and check the contract
 		KeySet * contract = ksNew (0, KS_END);
-		Key * contractParent = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+		Key * contractParent = keyNew ("system/elektra/modules/" PLUGIN_NAME, KEY_END);
 		succeed_if (plugin->kdbGet (plugin, contract, contractParent) == 1, "kdb get for contract failed");
 
 		// run checkconf to generate the master password
-		Key * function = ksLookupByName (contract, "system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", 0);
+		Key * function = ksLookupByName (contract, "system/elektra/modules/" PLUGIN_NAME "/exports/checkconf", 0);
 		succeed_if (function, "no symbol exported for the checkconf function");
 		if (function)
 		{
