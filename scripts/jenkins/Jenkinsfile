@@ -104,7 +104,8 @@ enum TEST {
   MEM,        // Test for memoryleaks via valgrind
   NOKDB,      // Only run tests that do not write to disk
   ALL,        // Run all tests
-  INSTALL     // Run all tests on an installed version of Elektra
+  INSTALL,    // Run all tests on an installed version of Elektra
+  CRYPTOS     // Test crypto, fcrypt and gpgme for memory leaks (quite unstable)
   public TEST() {}  // WORKAROUND https://issues.jenkins-ci.org/browse/JENKINS-33023
 }
 
