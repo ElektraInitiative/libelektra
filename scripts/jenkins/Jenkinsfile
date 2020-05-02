@@ -737,18 +737,6 @@ def generateFullBuildStages() {
     [TEST.CRYPTOS]
   )
 
-  tasks << buildAndTest(
-    "alpine-cryptoplugins",
-    DOCKER_IMAGES.alpine,
-    CMAKE_FLAGS_BUILD_ALL+
-      CMAKE_FLAGS_DEBUG + [
-      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme',
-      'TOOLS': 'gen-gpg-testkey',
-      'BINDINGS': '',
-      ],
-    [TEST.CRYPTOS]
-  )
-
   // We need the webui_base image to build webui images later
   tasks << buildImageStage(DOCKER_IMAGES.webui_base)
 
