@@ -1301,9 +1301,7 @@ def ctest(target = "Test") {
      We disable the tests:
 
      - `testmod_dbus`,
-     - `testmod_dbusrecv`,
-     - `testmod_fcrypt`,
-     - `testmod_gpgme`, and
+     - `testmod_dbusrecv`,and
      - `testmod_zeromqsend`
 
      , since they are known to fail in scenarios with high load.
@@ -1312,6 +1310,15 @@ def ctest(target = "Test") {
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
           -E 'testmod_(dbus(recv)?|zeromqsend)'"""
+}
+
+/* Helper for ctest to run MemCheck for the crypto, fcrypt and gpgme plugin
+ * tests, which cause trouble when run in parallel or under high server load.
+ */
+def ctestcryptoplugins(target = "MemCheck") {
+  sh """ctest --force-new-ctest-process \
+        --output-on-failure --no-compress-output -T ${target} \
+        -R 'testmod_(crypto|fcrypt|gpgme)'"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests
@@ -1323,6 +1330,7 @@ def cmemcheck(kdbtests=true) {
   } else {
     ctest("MemCheck -LE memleak||kdbtests")
   }
+  ctestcryptoplugins("MemCheck")
 }
 
 /* Helper for ctest to run tests without tests tagged as kdbtests.
