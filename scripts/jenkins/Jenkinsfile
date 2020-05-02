@@ -600,9 +600,7 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_CLANG + [
-      'PLUGINS': 'ALL',
-      ],
+      CMAKE_FLAGS_CLANG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
