@@ -972,7 +972,6 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
         if(tests) {
           artifacts.add("\"${buildDir}\"/Testing/*/*.xml")
-          artifacts.add("\"${buildDir}\"/Testing/Temporary/MemoryChecker.*.log")
         }
 
         try {
