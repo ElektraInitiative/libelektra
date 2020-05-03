@@ -9,7 +9,6 @@ RUN apt-get update && apt-get -y install \
         automake \
         autotools-dev \
         bison \
-        bison-dbgsym \
         build-essential \
         checkinstall \
         clang-9 \
@@ -55,7 +54,7 @@ RUN apt-get update && apt-get -y install \
         python3-dev \
         python3-pip \
         ronn \
-        ruby2.5-dev \
+        ruby-dev \
         sloccount \
         swig4.0 \
         systemd \
