@@ -50,6 +50,13 @@ static inline void test_teardown (void)
 	//      always return 0 (see source code of GnuPG).
 	waitpid (pid, &status, 0);
 	succeed_if (status != -1, "failed to execute gpg-connect-agent");
+
+	// wait for the agent to properly shut down
+	if (status > 0)
+	{
+		pid = status;
+		waitpid (pid, &status, 0);
+	}
 }
 
 #endif
