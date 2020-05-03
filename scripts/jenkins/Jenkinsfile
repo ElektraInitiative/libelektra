@@ -702,8 +702,8 @@ def generateFullBuildStages() {
 
   // Run memory analysis of the crypto plugins in separate environment as theses tests are quite unstable
   tasks << buildAndTest(
-    "debian-unstable-cryptoplugins",
-    DOCKER_IMAGES.sid,
+    "debian-buster-cryptoplugins",
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG + [
       'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
@@ -719,18 +719,6 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG + [
       'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
-      'TOOLS': 'kdb;gen-gpg-testkey',
-      'BINDINGS': '',
-      ],
-    [TEST.CRYPTOS]
-  )
-
-  tasks << buildAndTest(
-    "fedora-31-cryptoplugins",
-    DOCKER_IMAGES.fedora_31,
-    CMAKE_FLAGS_BUILD_ALL+
-      CMAKE_FLAGS_DEBUG + [
-      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;fcrypt;gpgme;base64',
       'TOOLS': 'kdb;gen-gpg-testkey',
       'BINDINGS': '',
       ],
