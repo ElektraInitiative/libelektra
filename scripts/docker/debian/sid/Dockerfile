@@ -9,6 +9,7 @@ RUN apt-get update && apt-get -y install \
         automake \
         autotools-dev \
         bison \
+        bison-dbgsym \
         build-essential \
         checkinstall \
         clang-9 \
