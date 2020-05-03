@@ -730,7 +730,7 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.fedora_31,
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG + [
-      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
+      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;fcrypt;gpgme;base64',
       'TOOLS': 'kdb;gen-gpg-testkey',
       'BINDINGS': '',
       ],
