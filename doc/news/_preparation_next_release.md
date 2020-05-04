@@ -261,6 +261,7 @@ you up to date with the multi-language support provided by Elektra.
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
 - Add more dependencies to Fedora image to cover many tests. _(Mihael Pranjić)_
 - Installed ruby 2.6 to test the ruby bindings and plugins. _(Mihael Pranjić)_
+- Upgraded Fedora image to current stable (version 32). _(Mihael Pranjić)_
 
 ### Jenkins
 
@@ -270,6 +271,7 @@ you up to date with the multi-language support provided by Elektra.
 - Temporarily disabled some problematic tests on debian unstable. _(Mihael Pranjić)_
 - Enabled building packages for Bionic. _(Djordje Bulatovic)_
 - Improve gpgme unit test stability. _(Peter Nirschl)_
+- Added Fedora 32 image to main build stage, moved Fedora 31 to full build stage. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Travis

@@ -10,7 +10,6 @@
 
 KDB * kdb;
 Key * key;
-KeySet * large;
 
 void benchmarkOpen (void)
 {

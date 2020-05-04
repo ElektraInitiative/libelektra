@@ -30,26 +30,26 @@
 #define FD_READ_END 0
 #define FD_WRITE_END 1
 
-ElektraIoTestSuiteStop testStop;
+static ElektraIoTestSuiteStop testStop;
 
-int testSignalWritableCalled;
+static int testSignalWritableCalled;
 
-int testSignalReadableCalled;
+static int testSignalReadableCalled;
 
-int testUpdateEnabledCalled;
-int testUpdateEnabledStep;
-ElektraIoInterface * testUpdateEnabledBinding;
-ElektraIoFdOperation * testUpdateEnabledFdOp;
+static int testUpdateEnabledCalled;
+static int testUpdateEnabledStep;
+static ElektraIoInterface * testUpdateEnabledBinding;
+static ElektraIoFdOperation * testUpdateEnabledFdOp;
 
-int testUpdateFlagsCalled;
-int testUpdateFlagsStep;
-ElektraIoInterface * testUpdateFlagsBinding;
-ElektraIoFdOperation * testUpdateFlagsFdOp;
+static int testUpdateFlagsCalled;
+static int testUpdateFlagsStep;
+static ElektraIoInterface * testUpdateFlagsBinding;
+static ElektraIoFdOperation * testUpdateFlagsFdOp;
 
-int testRemoveCalled;
-int testRemoveStep;
-ElektraIoInterface * testRemoveBinding;
-ElektraIoFdOperation * testRemoveFdOp;
+static int testRemoveCalled;
+static int testRemoveStep;
+static ElektraIoInterface * testRemoveBinding;
+static ElektraIoFdOperation * testRemoveFdOp;
 
 static void testFdBasicsCallback (ElektraIoFdOperation * fdOp ELEKTRA_UNUSED, int flags ELEKTRA_UNUSED)
 {

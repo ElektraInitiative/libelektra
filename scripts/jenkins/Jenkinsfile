@@ -338,6 +338,13 @@ def dockerInit() {
       "./scripts/docker/fedora/31/Dockerfile"
     )
 
+    /* Fedora 32 image*/
+    DOCKER_IMAGES.fedora_32 = createDockerImageDesc(
+      "fedora-32", this.&idTesting,
+      "./scripts/docker/fedora/32",
+      "./scripts/docker/fedora/32/Dockerfile"
+    )
+
     /* Image building the libelektra.org frontend */
     DOCKER_IMAGES.website_frontend = createDockerImageDesc(
       "website-frontend", this.&idWebsite,
@@ -472,15 +479,12 @@ def generateMainBuildStages() {
   tasks.failFast = true
 
   tasks << buildAndTest(
-    "fedora-31-full",
-    DOCKER_IMAGES.fedora_31,
+    "fedora-32-full",
+    DOCKER_IMAGES.fedora_32,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC + [
-      'PLUGINS': 'ALL',
-      ]
-    ,
+      CMAKE_FLAGS_BUILD_STATIC,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
@@ -521,6 +525,16 @@ def generateFullBuildStages() {
   // Build doc and upload
   tasks << buildDoc()
 
+  tasks << buildAndTest(
+    "fedora-31-full",
+    DOCKER_IMAGES.fedora_31,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
+      CMAKE_FLAGS_BUILD_FULL +
+      CMAKE_FLAGS_BUILD_STATIC,
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
+
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
   tasks << buildAndTest(
@@ -557,9 +571,7 @@ def generateFullBuildStages() {
     "debian-unstable-full",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL+
-      CMAKE_FLAGS_DEBUG + [
-      'PLUGINS': 'ALL',
-      ],
+      CMAKE_FLAGS_DEBUG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
@@ -583,15 +595,12 @@ def generateFullBuildStages() {
 
   // Build Elektra with clang. We use unstable for easy access to clang-9.0
   // Detects problems when using an alternative compiler (clang)
-  // crypto disabled due to memory leaks, fcrypt disabled due to random failures
   tasks << buildAndTest(
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_CLANG + [
-      'PLUGINS': 'ALL',
-      ],
+      CMAKE_FLAGS_CLANG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
