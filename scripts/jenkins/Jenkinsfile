@@ -557,6 +557,14 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL
   )
 
+  // Build Elektra with ASAN enabled
+  // Detects memory leaks via ASAN
+  tasks << buildAndTestAsan(
+    "fedora-32-asan",
+    DOCKER_IMAGES.fedora_32,
+    CMAKE_FLAGS_BUILD_ALL
+  )
+
   // Build Elektra with clang and ASAN
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
