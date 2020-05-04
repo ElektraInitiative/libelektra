@@ -2,6 +2,8 @@ FROM fedora:32
 
 RUN dnf upgrade -y && dnf install -y \
         augeas-devel \
+        bison \
+        bison-devel \
         boost-devel \
         cmake \
         curl \
@@ -9,6 +11,8 @@ RUN dnf upgrade -y && dnf install -y \
         diffutils \
         file \
         findutils \
+        flex \
+        flex-devel \
         gcc-c++ \
         git \
         glib2 \
@@ -38,6 +42,14 @@ RUN dnf upgrade -y && dnf install -y \
         yajl-devel \
         yaml-cpp-devel \
         zlib-devel \
+    && dnf debuginfo-install -y \
+        bison \
+        boost \
+        flex \
+        glib2 \
+        glibc \
+        gpgme \
+        libgcrypt \
     && dnf clean all -y
 
 # Google Test
