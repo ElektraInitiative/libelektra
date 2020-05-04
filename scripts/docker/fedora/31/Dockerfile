@@ -9,6 +9,7 @@ RUN dnf upgrade -y && dnf install -y \
         curl \
         dbus-devel \
         diffutils \
+        dnf-plugins-core \
         file \
         findutils \
         flex \
