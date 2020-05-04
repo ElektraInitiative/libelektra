@@ -1109,7 +1109,12 @@ def buildDebianPackage(stageName, image) {
               sh "gbp buildpackage -sa"
             }
             if(isMaster()) {
-              publishDebianPackages()
+              if(stageName == 'buildPackage/debian/buster'){
+                publishDebianPackages()
+              }
+              if(stageName == 'buildPackage/ubuntu/bionic'){
+                publishBionicPackages()
+              }
             }
           }
         }
@@ -1522,6 +1527,55 @@ def publishDebianPackages(remote="a7") {
     failOnError: true
   )
 }
+
+
+/* Publishes all files necessary for hosting a bionic package
+ * @param remote where the repository is located
+ */
+def publishBionicPackages(remote="doc.libelektra.org") {
+  // This path must coincide with the incoming dir on community
+  def remotedir = '/srv/repositories/incoming/'
+  sshPublisher(
+    publishers: [
+      sshPublisherDesc(
+        configName: remote,
+        transfers: [
+          sshTransfer(
+            sourceFiles: '*.deb',
+            remoteDirectory: remotedir
+          ),
+          sshTransfer(
+            sourceFiles: '*.build',
+            remoteDirectory: remotedir
+          ),
+          sshTransfer(
+            sourceFiles: '*.buildinfo',
+            remoteDirectory: remotedir
+          ),
+          sshTransfer(
+            sourceFiles: '*.dsc',
+            remoteDirectory: remotedir
+          ),
+          sshTransfer(
+            sourceFiles: '*.tar.xz',
+            remoteDirectory: remotedir
+          ),
+          sshTransfer(
+            sourceFiles: '*.tar.gz',
+            remoteDirectory: remotedir
+          ),
+          sshTransfer(
+            sourceFiles: '*.changes',
+            remoteDirectory: remotedir
+          )
+        ]
+      )
+    ],
+    verbose: true,
+    failOnError: true
+  )
+}
+
 
 /* Run apiary
  * @param input Input file (.apib)

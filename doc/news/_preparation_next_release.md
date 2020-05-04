@@ -270,7 +270,7 @@ you up to date with the multi-language support provided by Elektra.
 - Temporarily disabled some problematic tests on debian unstable. _(Mihael Pranjić)_
 - Enabled building packages for Bionic. _(Djordje Bulatovic)_
 - Improve gpgme unit test stability. _(Peter Nirschl)_
-- <<TODO>>
+- Publishing packages for Bionic to community. _(Djordje Bulatovic)_
 
 ### Travis
 
