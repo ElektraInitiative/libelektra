@@ -18,6 +18,14 @@
 }
 {
    <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: all
+   ...
+   obj:*libgpgme*
+   ...
+}
+{
+   <insert_a_suppression_name_here>
    Memcheck:Cond
    ...
    fun:elektraCryptoGcryDecrypt

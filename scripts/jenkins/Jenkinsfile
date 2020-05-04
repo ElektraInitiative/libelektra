@@ -104,7 +104,8 @@ enum TEST {
   MEM,        // Test for memoryleaks via valgrind
   NOKDB,      // Only run tests that do not write to disk
   ALL,        // Run all tests
-  INSTALL     // Run all tests on an installed version of Elektra
+  INSTALL,    // Run all tests on an installed version of Elektra
+  CRYPTOS     // Test crypto, fcrypt and gpgme for memory leaks (quite unstable)
   public TEST() {}  // WORKAROUND https://issues.jenkins-ci.org/browse/JENKINS-33023
 }
 
@@ -477,7 +478,7 @@ def generateMainBuildStages() {
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
       CMAKE_FLAGS_BUILD_STATIC + [
-      'PLUGINS': 'ALL;-crypto',
+      'PLUGINS': 'ALL',
       ]
     ,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
@@ -557,7 +558,7 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG + [
-      'PLUGINS': 'ALL;-crypto;-fcrypt;-gpgme',
+      'PLUGINS': 'ALL',
       ],
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
@@ -697,6 +698,31 @@ def generateFullBuildStages() {
       CMAKE_FLAGS_LOGGER
     ,
     [TEST.ALL, TEST.MEM]
+  )
+
+  // Run memory analysis of the crypto plugins in separate environment as theses tests are quite unstable
+  tasks << buildAndTest(
+    "debian-buster-cryptoplugins",
+    DOCKER_IMAGES.buster,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
+      'TOOLS': 'kdb;gen-gpg-testkey',
+      'BINDINGS': '',
+      ],
+    [TEST.CRYPTOS]
+  )
+
+  tasks << buildAndTest(
+    "debian-stretch-cryptoplugins",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
+      'TOOLS': 'kdb;gen-gpg-testkey',
+      'BINDINGS': '',
+      ],
+    [TEST.CRYPTOS]
   )
 
   // We need the webui_base image to build webui images later
@@ -925,6 +951,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
   def testMem = tests.contains(TEST.MEM)
   def testNokdb = tests.contains(TEST.NOKDB)
   def testAll = tests.contains(TEST.ALL)
+  def testCryptos = tests.contains(TEST.CRYPTOS)
   def install = tests.contains(TEST.INSTALL)
   def dockerOpts = [DOCKER_OPTS.MOUNT_MIRROR]
   return [(testName): {
@@ -959,6 +986,9 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                     cmemcheck(testNokdb)
                   }
                 }
+              }
+              if(testCryptos) {
+                ctestcryptoplugins()
               }
             }
             if(install) {
@@ -1301,9 +1331,7 @@ def ctest(target = "Test") {
      We disable the tests:
 
      - `testmod_dbus`,
-     - `testmod_dbusrecv`,
-     - `testmod_fcrypt`,
-     - `testmod_gpgme`, and
+     - `testmod_dbusrecv`,and
      - `testmod_zeromqsend`
 
      , since they are known to fail in scenarios with high load.
@@ -1312,6 +1340,15 @@ def ctest(target = "Test") {
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
           -E 'testmod_(dbus(recv)?|zeromqsend)'"""
+}
+
+/* Helper for ctest to run MemCheck for the crypto, fcrypt and gpgme plugin
+ * tests, which cause trouble when run in parallel or under high server load.
+ */
+def ctestcryptoplugins(target = "MemCheck") {
+  sh """ctest --force-new-ctest-process \
+        --output-on-failure --no-compress-output -T ${target} \
+        -R 'testmod_(crypto|fcrypt|gpgme)'"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests

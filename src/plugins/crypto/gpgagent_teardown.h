@@ -38,7 +38,7 @@ static inline void test_teardown (void)
 		return;
 
 	case 0: // child process
-		if (execv ("gpg-connect-agent", argv) < 0)
+		if (execv (GPG_CONNECT_AGENT_CMD, argv) < 0)
 		{
 			exit (-1);
 		}
@@ -50,6 +50,13 @@ static inline void test_teardown (void)
 	//      always return 0 (see source code of GnuPG).
 	waitpid (pid, &status, 0);
 	succeed_if (status != -1, "failed to execute gpg-connect-agent");
+
+	// wait for the agent to properly shut down
+	if (status > 0)
+	{
+		pid = status;
+		waitpid (pid, &status, 0);
+	}
 }
 
 #endif
