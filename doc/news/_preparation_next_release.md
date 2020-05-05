@@ -197,6 +197,13 @@ you up to date with the multi-language support provided by Elektra.
 
 - The [fish completion script](../../scripts/completion/kdb.fish) now recognizes the new names of subcommands (e.g. `meta-set` instead of `setmeta` ) introduced with Elektra `0.9.1`. _(René Schwaiger)_
 - The script [reformat-cmake](../../scripts/dev/reformat-cmake) now reformats the code with `cmake-format` 0.6.3. _(René Schwaiger)_
+- The scripts
+
+  - [reformat-c](../../scripts/dev/reformat-cmake), and
+  - [reformat-java](../../scripts/dev/reformat-java)
+
+  now uses `clang-format` 9 to reformat the code base. _(René Schwaiger)_
+
 - The script [reformat-shell](../../scripts/dev/reformat-shell) now makes sure that you do not use `shfmt` 3, which formats parts of the code base slightly differently. _(René Schwaiger)_
 
 ## Documentation
