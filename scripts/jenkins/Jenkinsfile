@@ -1118,7 +1118,12 @@ def buildDebianPackage(stageName, image) {
               sh "gbp buildpackage -sa"
             }
             if(isMaster()) {
-              publishDebianPackages()
+              if(stageName == 'buildPackage/debian/buster'){
+                publishPackages('a7', 'compose/frontend/volumes/incoming')
+              }
+              if(stageName == 'buildPackage/ubuntu/bionic'){
+                publishBionicPackages('doc.libelektra.org', '/srv/repositories/incoming/')
+              }
             }
           }
         }
@@ -1487,10 +1492,9 @@ def isMaster() {
 
 /* Publishes all files necessary for hosting a debian package
  * @param remote where the repository is located
+ * @param remotedir must match with the directory tree inside the remote
  */
-def publishDebianPackages(remote="a7") {
-  // This path must coincide with the incoming dir on a7
-  def remotedir = 'compose/frontend/volumes/incoming'
+def publishPackages(remote, remotedir) {
   sshPublisher(
     publishers: [
       sshPublisherDesc(
