@@ -1110,10 +1110,10 @@ def buildDebianPackage(stageName, image) {
             }
             if(isMaster()) {
               if(stageName == 'buildPackage/debian/buster'){
-                publishDebianPackages()
+                publishPackages('a7', 'compose/frontend/volumes/incoming')
               }
               if(stageName == 'buildPackage/ubuntu/bionic'){
-                publishBionicPackages()
+                publishBionicPackages('doc.libelektra.org', '/srv/repositories/incoming/')
               }
             }
           }
@@ -1483,10 +1483,9 @@ def isMaster() {
 
 /* Publishes all files necessary for hosting a debian package
  * @param remote where the repository is located
+ * @param remotedir must match with the directory tree inside the remote
  */
-def publishDebianPackages(remote="a7") {
-  // This path must coincide with the incoming dir on a7
-  def remotedir = 'compose/frontend/volumes/incoming'
+def publishPackages(remote, remotedir) {
   sshPublisher(
     publishers: [
       sshPublisherDesc(
@@ -1528,53 +1527,6 @@ def publishDebianPackages(remote="a7") {
   )
 }
 
-
-/* Publishes all files necessary for hosting a bionic package
- * @param remote where the repository is located
- */
-def publishBionicPackages(remote="doc.libelektra.org") {
-  // This path must coincide with the incoming dir on community
-  def remotedir = '/srv/repositories/incoming/'
-  sshPublisher(
-    publishers: [
-      sshPublisherDesc(
-        configName: remote,
-        transfers: [
-          sshTransfer(
-            sourceFiles: '*.deb',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.build',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.buildinfo',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.dsc',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.tar.xz',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.tar.gz',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.changes',
-            remoteDirectory: remotedir
-          )
-        ]
-      )
-    ],
-    verbose: true,
-    failOnError: true
-  )
-}
 
 
 /* Run apiary
