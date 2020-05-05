@@ -46,7 +46,7 @@ static KeySet * embeddedSpec (void)
 ;
 }
 
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_empty\n";
+static const char * helpFallback = "Usage: tests_script_gen_highlevel_empty [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
 static int isHelpMode (void)
 {
@@ -178,6 +178,8 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 	printf ("%s", help);
 	elektraFree (help);
 }
+
+
 
 // clang-format off
 

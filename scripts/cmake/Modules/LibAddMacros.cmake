@@ -136,7 +136,12 @@ macro (find_swig)
 			cmake_policy (SET CMP0078 OLD)
 		endif (POLICY CMP0078)
 
-		find_package (SWIG 3 QUIET)
+		find_package (SWIG 4 QUIET)
+		if (NOT SWIG_FOUND)
+			message (STATUS "Search for swig3 instead")
+			find_package (SWIG 3 QUIET)
+		endif ()
+
 		if (NOT SWIG_FOUND)
 			message (STATUS "Search for swig2 instead")
 			find_package (SWIG 2 QUIET)

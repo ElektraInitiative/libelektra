@@ -5,7 +5,7 @@ ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
 RUN apt-get update && apt-get -y install \
-    cmake git build-essential curl googletest
+    cmake git build-essential curl
 
 RUN apt-get -y install \
         doxygen \
@@ -22,7 +22,14 @@ RUN apt-get -y install \
     && rm -rf /var/lib/apt/lists/*
 
 # Google Test
-ENV GTEST_ROOT=/usr/src/googletest
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=release-1.10.0
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

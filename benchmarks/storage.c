@@ -21,8 +21,6 @@ KeySet * modules[NUM_PLUGINS];
 Plugin * plugins[NUM_PLUGINS];
 char * pluginNames[NUM_PLUGINS] = { "dump", "mmapstorage_crc", "mmapstorage", "quickdump" };
 
-char * tmpfilename;
-
 static void benchmarkDel (void)
 {
 	ksDel (large);

@@ -5,7 +5,7 @@ if (DEPENDENCY_PHASE)
 		set (CMAKE_FIND_FRAMEWORK "LAST")
 
 		# Prefer Ruby versions installed via Homebrew
-		set (RUBY_DIRECTORIES "/usr/local/opt/ruby@2.5" "/usr/local/opt/ruby")
+		set (RUBY_DIRECTORIES "/usr/local/opt/ruby@2.6" "/usr/local/opt/ruby")
 		foreach (directory ${RUBY_DIRECTORIES})
 			if (EXISTS ${directory})
 				list (APPEND CMAKE_PREFIX_PATH ${directory})
@@ -23,10 +23,21 @@ if (DEPENDENCY_PHASE)
 	# ~~~
 	set (SUPPORTED_COMPILER (NOT ("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU" AND ${CMAKE_CXX_COMPILER_VERSION} VERSION_LESS 5)))
 
-	if (RUBY_FOUND
-	    AND SWIG_FOUND
-	    AND BINDING_WAS_ADDED
-	    AND ${SUPPORTED_COMPILER})
+	if (NOT RUBY_FOUND)
+		remove_plugin (ruby "ruby not found")
+	elseif (NOT ${SUPPORTED_COMPILER})
+		remove_plugin (ruby "gcc version too old (gcc -dumpversion < 5.0)")
+	elseif (NOT SWIG_FOUND)
+		remove_plugin (ruby "swig not found")
+	elseif (NOT BINDING_WAS_ADDED)
+		remove_plugin (ruby "ruby binding is required")
+	elseif (SWIG_VERSION VERSION_LESS "4.0.2" AND (RUBY_VERSION VERSION_GREATER "2.7.0" OR RUBY_VERSION VERSION_EQUAL "2.7.0"))
+		remove_plugin (ruby "SWIG <= 4.0.1 incompatible with Ruby >= 2.7")
+	elseif (
+		RUBY_FOUND
+		AND SWIG_FOUND
+		AND BINDING_WAS_ADDED
+		AND ${SUPPORTED_COMPILER})
 		include (LibAddMacros)
 
 		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -external-runtime runtime.h)
@@ -47,14 +58,6 @@ if (DEPENDENCY_PHASE)
 		endif ()
 
 		set_source_files_properties ("ruby.cpp" PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
-	elseif (NOT RUBY_FOUND)
-		remove_plugin (ruby "ruby not found")
-	elseif (NOT ${SUPPORTED_COMPILER})
-		remove_plugin (ruby "gcc version too old (gcc -dumpversion < 5.0)")
-	elseif (NOT SWIG_FOUND)
-		remove_plugin (ruby "swig not found")
-	elseif (NOT BINDING_WAS_ADDED)
-		remove_plugin (ruby "ruby binding is required")
 	endif ()
 endif ()
 

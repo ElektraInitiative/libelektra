@@ -20,18 +20,20 @@ RUN apt-get update && apt-get -y install \
         ed \
         gawk \
         git \
+        gnupg2 \
         gobject-introspection \
         icheck \
         lcov \
         libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-all-dev \
-        libbotan-2-dev \
         libdbus-1-dev \
         libev-dev \
+        libgcrypt20-dev \
         libgirepository1.0-dev \
         libgit2-dev \
         libglib2.0-dev \
+        libgpgme-dev \
         liblua5.3-dev \
         libpcre++-dev \
         libpcre3-dev \
@@ -49,13 +51,12 @@ RUN apt-get update && apt-get -y install \
         ninja-build \
         npm \
         pkg-config \
-        python-dev \
-        python-pip \
         python3-dev \
+        python3-pip \
         ronn \
         ruby-dev \
         sloccount \
-        swig3.0 \
+        swig4.0 \
         systemd \
         tclcl-dev \
         valgrind \
@@ -64,7 +65,7 @@ RUN apt-get update && apt-get -y install \
 # Update cache for shared libraries
 RUN ldconfig
 
-RUN pip install cmake-format[yaml]==0.6.3
+RUN pip3 install cmake-format[yaml]==0.6.3
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

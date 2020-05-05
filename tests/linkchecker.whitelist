@@ -1,7 +1,10 @@
 # Whitelist for the linkchecker
 #
-# Any lines starting with '#' will be stripped out.
-# If a link equals any other line, it will not be checked.
+# Empty lines and lines starting with '#' will be stripped out.
+# If a link equals any other (even partial) line, it will not be checked.
+# This enables us to simply write example.com to exclude all partial URL matches
+# containing the given string. Keep in mind that http://libelektra.org/example.com
+# would also match the example exclusion pattern.
 #
 # The following link only works if you are logged into the build server
 # See also: https://github.com/ElektraInitiative/libelektra/issues/2674
@@ -18,12 +21,14 @@ https://wiki.jenkins.io/display/JENKINS/Pipeline%2BMultibranch+Plugin
 https://build.libelektra.org/job/libelektra-monthly
 http://www.snmp.com/protocol
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.81.7888
-# LLVM links broken currently
-https://clang.llvm.org/docs/ClangFormat.html
-https://clang.llvm.org/docs/UndefinedBehaviorSanitizer.html
-https://clang.llvm.org/index.html
-https://llvm.org/docs/XRay.html
-https://llvm.org/docs/XRayExample.html
-https://jira.apache.org/jira/browse/MDEP-518
 http://localhost:33333
 http://localhost:33334
+https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html
+https://packages.qa.debian.org/e/elektra/news/20151215T000031Z.html
+http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
+# Currently broken GitHub links
+git.libelektra.org
+github.com
+master.libelektra.org
+puppet.libelektra.org
+issues.libelektra.org

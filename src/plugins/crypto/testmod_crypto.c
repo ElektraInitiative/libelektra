@@ -1,13 +1,11 @@
 /**
  * @file
  *
- * @brief test suite for the crypto plugin.
- * Contains shared functions for all compile variants.
+ * @brief test suite for the crypto plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
-
 #include "crypto.h"
 #include "gpg.h"
 #include "helper.h"
@@ -23,23 +21,10 @@
 #include "gpgagent_teardown.h"
 #include "test_key.h"
 
+#define PLUGIN_NAME "crypto"
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 
 static KeySet * newPluginConfiguration (void);
-
-#define TEST_SUITE(PLUGIN_NAME)                                                                                                            \
-	if (gpg_available (newPluginConfiguration ()))                                                                                     \
-	{                                                                                                                                  \
-		test_gpg ();                                                                                                               \
-		test_init (PLUGIN_NAME);                                                                                                   \
-		test_incomplete_config (PLUGIN_NAME);                                                                                      \
-		test_crypto_operations (PLUGIN_NAME);                                                                                      \
-		test_teardown ();                                                                                                          \
-	}                                                                                                                                  \
-	else                                                                                                                               \
-	{                                                                                                                                  \
-		printf ("The test was disabled because gpg could not be found on the system.\n");                                          \
-	}
 
 typedef int (*checkConfPtr) (Key *, KeySet *);
 
@@ -200,11 +185,11 @@ static void test_crypto_operations (const char * pluginName)
 
 		// read and check the contract
 		KeySet * contract = ksNew (0, KS_END);
-		Key * contractParent = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+		Key * contractParent = keyNew ("system/elektra/modules/" PLUGIN_NAME, KEY_END);
 		succeed_if (plugin->kdbGet (plugin, contract, contractParent) == 1, "kdb get for contract failed");
 
 		// run checkconf to generate the master password
-		Key * function = ksLookupByName (contract, "system/elektra/modules/" ELEKTRA_PLUGIN_NAME "/exports/checkconf", 0);
+		Key * function = ksLookupByName (contract, "system/elektra/modules/" PLUGIN_NAME "/exports/checkconf", 0);
 		succeed_if (function, "no symbol exported for the checkconf function");
 		if (function)
 		{
@@ -277,4 +262,28 @@ static void test_gpg (void)
 	keyDel (msg);
 	keyDel (errorKey);
 	ksDel (conf);
+}
+
+int main (int argc, char ** argv)
+{
+	printf ("CRYPTO       TESTS\n");
+	printf ("==================\n\n");
+
+	init (argc, argv);
+
+	if (gpg_available (newPluginConfiguration ()))
+	{
+		test_gpg ();
+		test_init (PLUGIN_NAME);
+		test_incomplete_config (PLUGIN_NAME);
+		test_crypto_operations (PLUGIN_NAME);
+		test_teardown ();
+	}
+	else
+	{
+		printf ("The test was disabled because gpg could not be found on the system.\n");
+	}
+
+	print_result (PLUGIN_NAME);
+	return nbError;
 }

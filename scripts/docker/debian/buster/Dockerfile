@@ -26,14 +26,12 @@ RUN apt-get update \
         git \
         git-buildpackage \
         gobject-introspection \
-        googletest \
         graphviz \
         icheck \
         lcov \
         libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-dev \
-        libbotan-2-dev \
         libdbus-1-dev \
         libev-dev \
         libgirepository1.0-dev \
@@ -79,13 +77,19 @@ RUN apt-get update \
         wine \
         rustc \
         clang-6.0 \
-        libbotan-2-dev \
         libcurl4-gnutls-dev \
     && rm -rf /var/lib/apt/lists/*
 
 
 # Google Test
-ENV GTEST_ROOT=/usr/src/googletest
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=release-1.10.0
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
 
 # Update cache for shared libraries
 RUN ldconfig

@@ -63,11 +63,174 @@ into the array.
 Environment variables obviously cannot be repeated, instead a behavior similar that used for PATH is adopted. On Windows
 the variable will be split at each ';' character. On all other systems ':' is used as a separator.
 
-## Arguments (Parameters)
+## Parameter Arguments
 
 All unused elements of `argv` are be collected into an array. You can access this array by specifying `args=remaining` on a
 key with basename `#`. The array will be copied into this key. As is the case with getopt(3) processing of options will stop,
 if `--` is encountered in `argv`.
+
+If `elektraGetOpts` is called with a `parentKey` that has `posixly = 1` set, then processing of options will also stop, when
+a non-option argument is encountered. This is similar to the POSIX version of getopt(3). NOTE: `posixly = 1` must be set on
+the parent key passed to `elektraGetOpts`, not in the specification itself.
+
+Additionally, there is `args=indexed`. If it is specified on a key, the key must also have the metakey `args/index=N` set to
+an integer `N`. Such a key will be set to the unused element at index `N`. If a key has `args=indexed` and `args/index=N`,
+then there must also be keys for all integers `0 <= X < N` with `args=indexed` and `args/index=N` set. For example, you cannot
+use `args/index=0` and `args/index=2` without `args/index=1`.
+
+Combining `args=indexed` and `args=remaining` in the same specification (on different keys) is also possible. The key with
+`args=remaining` will only contain those elements not used via `args=indexed`. E.g. if there are keys with `args/index=0`
+and `args/index=1` then the `args=remaining` array will start with the third (index 2) parameter argument. Note however,
+the `args=remaining` array **always** starts with index `#0`, even if it doesn't contain the first parameter argument.
+
+### Example
+
+```ini
+[from]
+args = indexed
+args/index = 0
+
+[to]
+args = indexed
+args/index = 1
+
+[more/#]
+args = remaining
+```
+
+If an application `app` with the specification above is called as `./app apple banana cherry date`, then the keys will be
+assigned as follows:
+
+- `from = apple`
+- `to = banana`
+- `more/#0 = cherry`
+- `more/#1 = date`
+
+## Sub-Commands
+
+`elektraGetOpts` also supports sub-commands. Explaining sub-commands is easiest through the help of an example: `add` and
+`commit` are both sub-commands of `git`, since we can call `git add` and `git commit` and they do entirely different things.
+The most important impact of using sub-commands is their effect on option arguments. For example calling `git -p add` and
+`git add -p` result in different behavior, since the `-p` option is interpreted differently. The options that `git`
+understands are separate from the options that its sub-command `add` knows. However, the option `-p` is understood by both.
+In `git` it is short for `--paginate` and in `add` it is short for `--patch`.
+
+An important thing to know about sub-commands in `elektraGetOpts` is that they turn on `posixly = 1` mode. This means **all**
+options for a specific sub-command must be given before any non-option arguments (such as parameters or sub-commands).
+Otherwise, we couldn't distinguish between `git -p add` and `git add -p`. In other words an option argument is always assigned
+to the first sub-command to its left. Any element of `argv` that is not the argument for an option argument, either switches to
+a new sub-command or is the start of the parameter arguments.
+
+A sub-command is created by specifying `command` on a key. To enable sub-command processing the parent key of the whole
+specification must have `command` set to an empty string. All keys marked with `command` **directly** below another
+key `K` marked with `command` (e.g. the parent key) are sub-commands of `K`. It is an error, if the immediate parent of
+a key `X` marked with `command` is not marked with `command` and `X` is not the parent of the whole specification.
+
+To inform the application about the invoked sub-commands, `elektraGetOpts` sets each `command` key to one of two values:
+
+- The basename of the key, whose command was invoked.
+- An empty string otherwise.
+
+For example consider `./app add more`: The parent key will be set to the basename of whatever key `command=add` was specified on,
+the key for `add` will be set to the basename corresponding to `more` and the key for `more` is set to an empty string, because
+none of its sub-commands were invoked. A more detailed example is shown below.
+
+Every key considered by `elektraGetOpts` is assigned either to the root command, or a single sub-command. Specifically,
+each key is assigned to the command of its immediate parent. If sub-commands are used and the immediate parent of an `opt`
+or `args` key has no `command` metadata an error occurs. The value of a key will **only** be set by `elektraGetOpts`, if
+the corresponding sub-command was invoked.
+
+Lastly, it is allowed to have keys with `args` and `command` below the same parent. If a matching sub-command is found among
+the `command` keys, processing will continue there. Otherwise, the `args` keys will be considered. This allows an application
+to implement dynamic commands (like `git` or `kdb`) by using the `args=remaining` array to invoke another application.
+
+If an unknown sub-command is encountered without an `args` key, an error is returned.
+
+All of this is best understood with an example:
+
+```ini
+[kdb]
+command = ""
+
+[kdb/printversion]
+description = "print version information and exit (ignoring all other options/commands/parameters)"
+opt = v
+opt/long = version
+opt/arg = none
+
+[kdb/getter]
+description = "get a key's value"
+command = get
+
+[kdb/getter/verbose]
+description = "print additional information about where the value comes from"
+opt = v
+opt/long = verbose
+opt/arg = none
+
+[kdb/getter/keyname]
+description = "name of the key to read"
+args = indexed
+args/index = 0
+
+[kdb/setter]
+description = "print additional information about where the value will be stored"
+command = set
+
+[kdb/setter/verbose]
+description = "name of the key to write"
+opt = v
+opt/long = verbose
+opt/arg = none
+
+[kdb/setter/keyname]
+description = "name of the key to write"
+args = indexed
+args/index = 0
+
+[kdb/setter/value]
+description = "value to be written"
+args = indexed
+args/index = 1
+
+[kdb/dynamic/#]
+description = "dynamically call a user-supplied command"
+args = remaining
+```
+
+- If we invoke `kdb -v`, keys below `kdb/getter`, `kdb/setter` and `kdb/dynamic` are not touched. The result is:
+  - `kdb = ""`
+  - `kdb/printversion = 1`
+  - `kdb/getter = ""`
+  - `kdb/setter = ""`
+- If we invoke `kdb get -v name`, keys below `kdb/setter` and `kdb/dynamic` are not touched. The result is:
+  - `kdb = getter`
+  - `kdb/getter = ""`
+  - `kdb/getter/verbose = 1`
+  - `kdb/getter/keyname = name`
+  - `kdb/setter = ""`
+- If we invoke `kdb -v set -v`, keys below `kdb/getter` and `kdb/dynamic` are not touched. The result is:
+  - `kdb = setter`
+  - `kdb/printversion = 1`
+  - `kdb/setter = ""`
+  - `kdb/setter/verbose = 1`
+  - `kdb/getter = ""`
+- If we invoke `kdb -v custom -v -x z`, keys below `kdb/getter` and `kdb/setter` are not touched. The result is:
+  - `kdb = ""`
+  - `kdb/printversion = 1`
+  - `kdb/getter = ""`
+  - `kdb/setter = ""`
+  - `kdb/dynamic/#0 = custom`
+  - `kdb/dynamic/#1 = -v`
+  - `kdb/dynamic/#2 = -x`
+  - `kdb/dynamic/#3 = z`
+
+To determine what code to execute, an application would just start with the parent key `kdb` in the example above. It would
+then repeatedly look at the current key's value, append that to the current key and continue, until the current key's value
+was the empty string `""`. Each of the examined keys corresponds to one of the sub-commands in the invocation and the keys
+directly below those, contain the relevant options (and for the last sub-command also parameters).
+
+The C code for this example is located in `examples/optsCommands.c`.
 
 ## Help Message
 
@@ -95,6 +258,12 @@ The help message can be modified in a few different ways:
   of the option. If you want to hide just one form, use an array of two options an hide just one index.
 - If the option has an `"optional"` or `"required"` argument, the string `ARG` will be used as a placeholder by default. You
   can change this, by setting `opt/arg/help` for the corresponding option.
+
+### Sub-Commands
+
+If sub-commands are in use, the help message returned by `elektraGetOptsHelpMessage` will apply to the invoked sub-command only.
+For example `./app --help` generates the general help message for `./app` containing only options valid for the root command.
+In contrast, `./app more --help` generates the help message for the sub-command `more`.
 
 ## Precedence
 

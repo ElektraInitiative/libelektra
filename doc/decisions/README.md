@@ -1,7 +1,7 @@
 # Introduction
 
 We use decision template is based on
-[''using patterns to capture architectural decisions''](http://www.cs.rug.nl/~paris/papers/IEEESW07.pdf)
+[''using patterns to capture architectural decisions''](https://dl.acm.org/doi/10.1109/MS.2007.124)
 and [arc42 decisions](http://docs.arc42.org/section-9/)
 
 To add a new decision copy `template.md` and add a link in the appropriate

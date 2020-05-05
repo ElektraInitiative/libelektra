@@ -6,7 +6,6 @@ container:
 
 # We store common commands here, so we can reference them in the build jobs below.
 commands:
-  - &create_build_dir mkdir "$BUILD_DIR"
   - &print_cmake_options |
       printf '—— CMake Config ——\n'
       for option; do printf '%s\n' "$option"; done
@@ -53,7 +52,6 @@ bsd_task:
       yaml-cpp
 
   script:
-    - *create_build_dir
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       set --
       -DBINDINGS='ALL;-io_glib'
@@ -86,6 +84,7 @@ mac_task:
       env:
         ENABLE_LOGGER: ON
         TOOLS: ALL;web
+        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
     - name: 🍎 Clang ASAN
       osx_instance:
@@ -95,6 +94,7 @@ mac_task:
         BINDINGS: cpp
         ENABLE_ASAN: ON
         TOOLS: kdb
+        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
     - name: 🍎 FULL
       osx_instance:
@@ -102,6 +102,7 @@ mac_task:
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
+        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
     - name: 🍎 MMap
       osx_instance:
@@ -110,6 +111,7 @@ mac_task:
         KDB_DEFAULT_STORAGE: mmapstorage
         KDB_DB_FILE: default.mmap
         KDB_DB_INIT: elektra.mmap
+        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
   install_script:
     - > # Install Homebrew casks
@@ -120,7 +122,6 @@ mac_task:
       brew install augeas
       brew install bison
       brew install boost
-      brew install botan
       brew install dbus
       brew install discount
       brew install doxygen
@@ -140,7 +141,6 @@ mac_task:
       brew install npm
       brew install openssl
       brew install pkg-config
-      brew install prettier
       brew install qt
       brew install shfmt
       brew install swig
@@ -160,17 +160,20 @@ mac_task:
     - | # Install Python packages
       pip3 install cmake-format[yaml]==0.6.3
     - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
-      brew install ruby@2.7
-      export PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
+      brew install ruby@2.6
+      export PATH="/usr/local/opt/ruby@2.6/bin:/usr/local/lib/ruby/gems/2.6.0/bin:$PATH"
     - | # Install Ruby gems
       sudo gem install ronn test-unit --no-document
     - | # Install JavaScript packages
       npm install dredd --global
+      npm install --global prettier@1.19.1
 
   script:
-    - > # Use latest version of LLVM to translate Elektra
+    - | # Use latest version of LLVM to translate Elektra
       export CC=/usr/local/opt/llvm/bin/clang CXX=/usr/local/opt/llvm/bin/clang++
-    - *create_build_dir
+      export LDFLAGS="-L/usr/local/opt/llvm/lib"
+      export CPPFLAGS="-I/usr/local/opt/llvm/include"
+      export PATH="/usr/local/opt/llvm/bin:$PATH"
     - >
       set --
       -DBINDINGS="${BINDINGS:-ALL}"
@@ -216,12 +219,26 @@ linux_task:
           dockerfile: scripts/docker/cirrus/fedora/Dockerfile
 
   script:
-    - *create_build_dir
+    - >
+      set --
+      -DBUILD_FULL=ON
+      -DBUILD_SHARED=ON
+      -DBUILD_STATIC=ON
+      -DENABLE_LOGGER=ON
+      -DENABLE_DEBUG=ON
+      -DBINDINGS='ALL'
+      -DPLUGINS='ALL'
+      -DTOOLS='ALL'
+      -DKDB_DB_SYSTEM="$CIRRUS_WORKING_DIR/system"
+      -DCMAKE_INSTALL_PREFIX="$CIRRUS_WORKING_DIR/install"
+    - *print_cmake_options
     - *generate
     - *build
     - *install
 
   tests_script:
+    - export PATH=$PATH:"$CIRRUS_WORKING_DIR/install/bin"
+    - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
     - *run_tests
 
 link_task:
@@ -245,7 +262,6 @@ link_task:
     fi
 
   script:
-    - *create_build_dir
     - >
       set --
       -DBUILD_FULL=OFF
@@ -274,7 +290,6 @@ docu_task:
           dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   script:
-    - *create_build_dir
     - >
       set --
       -DBUILD_PDF=ON

@@ -39,9 +39,7 @@ matrix:
           -constants;\
           -counter;\
           -cpptemplate;\
-          -crypto_botan;\
-          -crypto_gcrypt;\
-          -crypto_openssl;\
+          -crypto;\
           -csvstorage;\
           -curlget;\
           -date;\
@@ -121,7 +119,7 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-trusty-7
+            - llvm-toolchain-bionic-7
             - ubuntu-toolchain-r-test
           packages:
             - clang-7
@@ -180,7 +178,8 @@ matrix:
           update: true
       env:
         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
-        - PLUGINS='ALL;-xerces'
+        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        - PLUGINS='ALL;-xerces;-curlget'
 
     - os: linux
       name: 🐧 GCC

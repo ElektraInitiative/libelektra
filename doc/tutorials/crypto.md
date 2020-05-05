@@ -186,22 +186,15 @@ So far we learned how to encrypt and decrypt entry configuration files.
 Sometimes we only want to protect a smaller subset of configuration values in a bigger configuration setting.
 For this reason the `crypto` plugin was developed.
 
-The `crypto` plugin is actually a family of plugins and comes with three different providers:
+The `crypto` plugin uses `libgcrypt` as provider of cryptographic functions.
 
-1. `crypto_gcrypt` using `libgcrypt`,
-2. `crypto_openssl` using `libcrypto`, and
-3. `crypto_botan` using `Botan`.
-
-We recommend that you use `crypto_gcrypt` as it is the fastest variant.
-The variants of the `crypto` plugin work the same internally, but use a different crypto library for cryptographic operations.
-
-The `crypto` plugins provide the option to encrypt and decrypt single configuration values (Keys) in a Keyset.
+The `crypto` plugin provides the option to encrypt and decrypt single configuration values (Keys) in a Keyset.
 GPG is required for the key-handling.
 
-To follow our example of an encrypted password in `test.ini`, we first mount the INI-file with the `crypto_gcrypt` plugin enabled, like this:
+To follow our example of an encrypted password in `test.ini`, we first mount the INI-file with the `crypto` plugin enabled, like this:
 
 ```bash
-sudo kdb mount test.ini user/tests crypto_gcrypt "crypto/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" base64 ini
+sudo kdb mount test.ini user/tests crypto "crypto/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" base64 ini
 ```
 
 We recommend adding the `base64` plugin to the backend, because `crypto` will output binary data.
@@ -255,7 +248,7 @@ kdb meta-set user/tests/password crypto/encrypt 0
 The complete example looks like this:
 
 ```sh
-kdb mount test.ini user/tests crypto_gcrypt "crypto/key=$(kdb gen-gpg-testkey)" base64 ini
+kdb mount test.ini user/tests crypto "crypto/key=$(kdb gen-gpg-testkey)" base64 ini
 kdb meta-set user/tests/password crypto/encrypt 1
 kdb set user/tests/password 1234
 kdb set user/tests/unencrypted "I am not encrypted"
@@ -276,3 +269,11 @@ kdb rm user/tests/unencrypted
 kdb rm user/tests/password
 kdb umount user/tests
 ```
+
+To shut down the `gpg-agent` we run:
+
+```sh
+gpg-connect-agent --quiet KILLAGENT /bye
+```
+
+The shutdown of `gpg-agent` is optional.

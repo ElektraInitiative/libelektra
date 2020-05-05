@@ -39,6 +39,8 @@ extern "C" {
 
 
 
+
+
 // clang-format off
 
 // clang-format on
@@ -296,6 +298,8 @@ static inline kdb_boolean_t ELEKTRA_GET (ELEKTRA_TAG_PRINT) (Elektra * elektra )
 int loadConfiguration (Elektra ** elektra, ElektraError ** error);
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix);
 void exitForSpecload (int argc, const char ** argv);
+
+
 
 
 /**

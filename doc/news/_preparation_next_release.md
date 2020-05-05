@@ -49,9 +49,18 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
+### Crypto
+
+- The crypto plugin no longer supports Botan and OpenSSL as provider of cryptographic functions. The support has been removed to improve the maintainability of the code. _(Peter Nirschl)_
+- The unit test of the crypto plugin attempts to kill the gpg-agent if a regular shutdown via `connect-gpg-agent` should fail for any reason during the clean-up phase. _(Peter Nirschl)_
+
 ### Directory Value
 
 - The plugin now only interprets a key set as [array](../tutorials/arrays.md) if the parent contains the meta key `array`. _(René Schwaiger)_
+
+### Fcrypt
+
+- Improve handling of temporary files after encryption and decryption by trying to perform a manual copy if the call of `rename` fails. This problem might occur if another file system is mounted at `/tmp`. _(Peter Nirschl)_
 
 ### KConfig
 
@@ -60,10 +69,12 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### SWIG
 
 - Configure line (-DBINDINGS="..") for SWIG based bindings have been changed from `swig_foo` to `foo`. _(Manuel Mausz)_
+- Exclude SWIG bindings if SWIG Version is 4.0.1 and Python is >= 3.8 or Ruby is >= 2.7 due to incompatibility (#3378, #3379). _(Mihael Pranjić)_
 
 ### SWIG/python
 
 - Added bindings for libelektratools. _(Manuel Mausz)_
+- Add test for kdbEnsure. _(Mihael Pranjić)_
 
 ### SWIG/python2
 
@@ -93,10 +104,29 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - YAML CPP now always sets and requires the metakey `type` with the value `boolean` for boolean data. _(René Schwaiger)_
 
+- We limited the scope of a logging function of the module. This makes it possible to build Elektra again, if
+  - you enabled the logger (`ENABLE_LOGGER=ON`),
+  - build the “full” (`BUILD_FULL=ON`) version of Elektra, and
+  - include both the Directory Value and YAML CPP plugin in your build configuration. _(René Schwaiger)_
+
 ### Yan LR
 
 - The CMake code of the plugin does not print error messages produced by the tool `ldd` any more. _(René Schwaiger)_
 - The plugin now also supports ANTLR 4.8. _(René Schwaiger)_
+- We limited the scope of the logging code of the module. For more information, please take a look at the last news entry of the YAML CPP plugin. _(René Schwaiger)_
+
+### GOpts
+
+- The plugin now supports an offset into `argv` given by the `/offset` config key. When `/offset` is set, `gopts` will
+  ignore a number of arguments at the start of `argv`. This can be used in e.g. python scripts to ignore the interpreter
+  arguments. _(Klemens Böswirth)_
+- `gopts` now also writes help message into the key `proc/elektra/gopts/help/message` in addition to setting
+  `proc/elektra/gopts/help = 1`. This is also useful in non-C/C++ environments. _(Klemens Böswirth)_
+- `gopts` is also affected by the changes and improvements to the `opts` library outlined below.
+
+### Cache
+
+- Respect `XDG_CACHE_HOME` when resolving the mmap cache directory. _(Mihael Pranjić)_
 
 ## Libraries
 
@@ -118,11 +148,19 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library1>>
+### Opts
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The library function `elektraGetOpts` now supports sub-commands.
+  Sub-commands are best explained by looking at an application that uses them, like `git`.
+  For example `add` is a sub-command in `git add`, and interprets `-p` differently from `git`:
+  `git -p add` is `git --paginate add`, but `git add -p` is `git add --patch`.
+  `elektraGetOpts` now implements this notion of sub-commands.
+  For more information take a look at the [tutorial for command-line-options](../tutorials/command-line-options.md).
+  By extension this functionality is also available via the `gopts` plugin. _(Klemens Böswirth)_
+- The generated help message was improved. It now also gives details about parameter arguments, sub-commands and
+  environment variables in addition to the existing support for option arguments. This also means that it is no longer
+  possible to have multiple keys with the `args=remaining` metadata (because their `opt/help` may not be the same).
+  _(Klemens Böswirth)_
 
 ### <<Library2>>
 
@@ -151,7 +189,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- [elektrad](../../src/tools/elektrad/README.md) is completely rewritten in Go - which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` command-line tool on every request. _(Raphael Gruber)_
+- [elektrad](../../src/tools/elektrad/README.md) is completely rewritten in Go, which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra) bindings instead of calling the `kdb` command-line tool on every request. _(Raphael Gruber)_
 - Update `kdb cache` tool synopsis to reflect man page. _(Mihael Pranjić)_
 - Pull elektrad, webui and webd out of shared web folder to allow fine grained selection of tools. _(Raphael Gruber)_
 
@@ -166,13 +204,17 @@ you up to date with the multi-language support provided by Elektra.
 - improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
 - We fixed some minor spelling mistakes. _(René Schwaiger)_
 - We updated the man pages of the [`web`](../tutorials/install-webui.md) tool. _(René Schwaiger)_
+- We now automatically close issues after one year of inactivity. _(Mihael Pranjić)_
 
 ## Tests
 
 - We now use [Google Test](https://github.com/google/googletest) `1.10` to test Elektra. _(René Schwaiger)_
 - The C++ test code does not produce warnings about a missing macro argument for `...` any more. _(René Schwaiger)_
-- Whitelisted some broken links. _(Mihael Pranjić)_
+- Whitelisted many broken links. _(Mihael Pranjić)_
+- Enabled regex in link checker. _(Mihael Pranjić)_
 - The [formatting check](../../tests/shell/check_formatting.sh) now also works correctly, if it is invoked multiple times. _(René Schwaiger)_
+- `KDB_EXEC_PATH` is not being set globally to contain the build directory any longer. _(Peter Nirschl)_
+- Rewrite gpg-agent shutdown logic to use `fork` and `execv` instead of `system`. _(Peter Nirschl)_
 
 ## Build
 
@@ -201,6 +243,9 @@ you up to date with the multi-language support provided by Elektra.
 
 - We updated some of the software in the [Dockerfile for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
 - Building the [documentation Dockerfile for Debian Stretch](../../scripts/docker/debian/stretch/doc.Dockerfile) works again. _(René Schwaiger)_
+- Use python 3, SWIG 4.0 and ruby 2.5 in the [Dockerfile for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(Mihael Pranjić)_
+- Disable python binding on `debian-unstable-full-clang` due to upstream [issue](https://github.com/ElektraInitiative/libelektra/issues/3379). _(Mihael Pranjić)_
+- Use current ruby-dev on debian sid image as ruby 2.5 has been dropped. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Infrastructure
@@ -210,20 +255,31 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed a minor problem with the package install procedure on macOS build jobs. _(René Schwaiger)_
 - We updated the startup command for D-Bus on macOS. _(René Schwaiger)_
 - We removed python2 (EOL and removed from homebrew). _(Mihael Pranjić)_
-- Use latest macOS catalina Xcode stable. _(Mihael Pranjić)_
+- Use latest macOS Catalina Xcode stable. _(Mihael Pranjić)_
 - Use newer FreeBSD images and use image family instead of concrete image names. _(Mihael Pranjić)_
 - Disable tcl on FreeBSD images because of test failures (see #3353). _(Mihael Pranjić)_
+- Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
+- Add more dependencies to Fedora image to cover many tests. _(Mihael Pranjić)_
+- Installed ruby 2.6 to test the ruby bindings and plugins. _(Mihael Pranjić)_
+- Upgraded Fedora image to current stable (version 32). _(Mihael Pranjić)_
 
 ### Jenkins
 
 - Fixed [coveralls](https://coveralls.io/github/ElektraInitiative/libelektra) coverage report. _(Mihael Pranjić)_
 - The build jobs `debian-unstable-clang-asan` and `debian-unstable-full-clang` now use Clang 9 to compile Elektra. _(René Schwaiger)_
+- Added the Jenkins.monthly in the jenkins' scripts file. _(Djordje Bulatovic)_
+- Temporarily disabled some problematic tests on debian unstable. _(Mihael Pranjić)_
+- Enabled building packages for Bionic. _(Djordje Bulatovic)_
+- Improve gpgme unit test stability. _(Peter Nirschl)_
+- Publishing packages for Bionic to community. _(Djordje Bulatovic)_
+- Added Fedora 32 image to main build stage, moved Fedora 31 to full build stage. _(Mihael Pranjić)_
+- Method call correction. _(Djordje Bulatovic)_
 - <<TODO>>
 
 ### Travis
 
 - Use newer Xcode 11.3 and ruby 2.6.4 on macOS builds. _(Mihael Pranjić)_
-- <<TODO>>
+- Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Website
