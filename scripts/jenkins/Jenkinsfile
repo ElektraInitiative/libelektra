@@ -1527,8 +1527,6 @@ def publishPackages(remote, remotedir) {
   )
 }
 
-
-
 /* Run apiary
  * @param input Input file (.apib)
  * @param output Output file (.html)
