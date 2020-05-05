@@ -31,10 +31,12 @@ staleLabel: stale
 
 # Comment to post when marking as stale. Set to `false` to disable
 markComment: >
-  This issue has been automatically marked as stale because it has not had
-  recent activity. It will be closed within two weeks if no further activity occurs.
-  If the issue is closed by mistake, please reopen it.
-  Thank you for your contributions.
+  I mark this issue stale as it did not have any activity for one year.
+  I'll close it in two weeks if no further activity occurs.
+  If you want it to be alive again, ping the issue by writing a message here
+  or create a new issue with the remainder of this issue.
+  
+  Thank you for your contributions :sparkling_heart:
 
 # Comment to post when removing the stale label.
 # unmarkComment: >
