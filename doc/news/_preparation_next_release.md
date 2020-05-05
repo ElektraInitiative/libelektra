@@ -288,6 +288,10 @@ you up to date with the multi-language support provided by Elektra.
 - Reliably build the rust bindings based on the same version, by adding back the `Cargo.lock` file. _(Philipp Gackstatter)_
 - <<TODO>>
 
+### Restyled
+
+- Restyled now also checks the formatting of C, C++ and Java code in the repository. _(René Schwaiger)_
+
 ### Travis
 
 - Use newer Xcode 11.3 and ruby 2.6.4 on macOS builds. _(Mihael Pranjić)_
