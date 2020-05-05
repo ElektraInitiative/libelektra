@@ -117,7 +117,7 @@ multiple keys can contribute to each cascading key name.
 
 Cascading is the same as a name resolution and provides a
 namespace unification as described in
-[Versatility and Unix semantics in namespace unification](http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.81.7888).
+[Versatility and Unix semantics in namespace unification](https://dl.acm.org/doi/10.1145/1138041.1138045).
 
 Keys without a namespace can not be stored by their nature. So they
 are transient: after a restart they are forgotten.

@@ -45,6 +45,8 @@ extern gid_t nbGid;
 extern char * tempHome;
 extern int tempHomeLen;
 
+extern char * tmpfilename;
+
 int init (int argc, char ** argv);
 
 #ifndef __cplusplus

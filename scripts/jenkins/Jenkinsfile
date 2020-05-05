@@ -104,7 +104,8 @@ enum TEST {
   MEM,        // Test for memoryleaks via valgrind
   NOKDB,      // Only run tests that do not write to disk
   ALL,        // Run all tests
-  INSTALL     // Run all tests on an installed version of Elektra
+  INSTALL,    // Run all tests on an installed version of Elektra
+  CRYPTOS     // Test crypto, fcrypt and gpgme for memory leaks (quite unstable)
   public TEST() {}  // WORKAROUND https://issues.jenkins-ci.org/browse/JENKINS-33023
 }
 
@@ -337,6 +338,13 @@ def dockerInit() {
       "./scripts/docker/fedora/31/Dockerfile"
     )
 
+    /* Fedora 32 image*/
+    DOCKER_IMAGES.fedora_32 = createDockerImageDesc(
+      "fedora-32", this.&idTesting,
+      "./scripts/docker/fedora/32",
+      "./scripts/docker/fedora/32/Dockerfile"
+    )
+
     /* Image building the libelektra.org frontend */
     DOCKER_IMAGES.website_frontend = createDockerImageDesc(
       "website-frontend", this.&idWebsite,
@@ -471,15 +479,12 @@ def generateMainBuildStages() {
   tasks.failFast = true
 
   tasks << buildAndTest(
-    "fedora-31-full",
-    DOCKER_IMAGES.fedora_31,
+    "fedora-32-full",
+    DOCKER_IMAGES.fedora_32,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC + [
-      'PLUGINS': 'ALL;-crypto',
-      ]
-    ,
+      CMAKE_FLAGS_BUILD_STATIC,
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
@@ -519,6 +524,16 @@ def generateFullBuildStages() {
 
   // Build doc and upload
   tasks << buildDoc()
+
+  tasks << buildAndTest(
+    "fedora-31-full",
+    DOCKER_IMAGES.fedora_31,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
+      CMAKE_FLAGS_BUILD_FULL +
+      CMAKE_FLAGS_BUILD_STATIC,
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
 
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
@@ -580,15 +595,12 @@ def generateFullBuildStages() {
 
   // Build Elektra with clang. We use unstable for easy access to clang-9.0
   // Detects problems when using an alternative compiler (clang)
-  // crypto disabled due to memory leaks, fcrypt disabled due to random failures
   tasks << buildAndTest(
     "debian-unstable-full-clang",
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_CLANG + [
-      'PLUGINS': 'ALL;-crypto;-fcrypt',
-      ],
+      CMAKE_FLAGS_CLANG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
@@ -695,6 +707,31 @@ def generateFullBuildStages() {
       CMAKE_FLAGS_LOGGER
     ,
     [TEST.ALL, TEST.MEM]
+  )
+
+  // Run memory analysis of the crypto plugins in separate environment as theses tests are quite unstable
+  tasks << buildAndTest(
+    "debian-buster-cryptoplugins",
+    DOCKER_IMAGES.buster,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
+      'TOOLS': 'kdb;gen-gpg-testkey',
+      'BINDINGS': '',
+      ],
+    [TEST.CRYPTOS]
+  )
+
+  tasks << buildAndTest(
+    "debian-stretch-cryptoplugins",
+    DOCKER_IMAGES.stretch,
+    CMAKE_FLAGS_BUILD_ALL+
+      CMAKE_FLAGS_DEBUG + [
+      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
+      'TOOLS': 'kdb;gen-gpg-testkey',
+      'BINDINGS': '',
+      ],
+    [TEST.CRYPTOS]
   )
 
   // We need the webui_base image to build webui images later
@@ -923,6 +960,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
   def testMem = tests.contains(TEST.MEM)
   def testNokdb = tests.contains(TEST.NOKDB)
   def testAll = tests.contains(TEST.ALL)
+  def testCryptos = tests.contains(TEST.CRYPTOS)
   def install = tests.contains(TEST.INSTALL)
   def dockerOpts = [DOCKER_OPTS.MOUNT_MIRROR]
   return [(testName): {
@@ -957,6 +995,9 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
                     cmemcheck(testNokdb)
                   }
                 }
+              }
+              if(testCryptos) {
+                ctestcryptoplugins()
               }
             }
             if(install) {
@@ -1028,7 +1069,7 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
 def generateArtifactStages() {
   def tasks = [:]
   tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
-  // tasks << buildDebianPackage("buildPackage/debian/bionic", DOCKER_IMAGES.bionic)
+  tasks << buildDebianPackage("buildPackage/ubuntu/bionic", DOCKER_IMAGES.bionic)
   tasks << buildWebsite()
   // tasks << buildWebUI()
   return tasks
@@ -1077,7 +1118,12 @@ def buildDebianPackage(stageName, image) {
               sh "gbp buildpackage -sa"
             }
             if(isMaster()) {
-              publishDebianPackages()
+              if(stageName == 'buildPackage/debian/buster'){
+                publishPackages('a7', 'compose/frontend/volumes/incoming')
+              }
+              if(stageName == 'buildPackage/ubuntu/bionic'){
+                publishPackages('doc.libelektra.org', '/srv/repositories/incoming/')
+              }
             }
           }
         }
@@ -1299,9 +1345,7 @@ def ctest(target = "Test") {
      We disable the tests:
 
      - `testmod_dbus`,
-     - `testmod_dbusrecv`,
-     - `testmod_fcrypt`,
-     - `testmod_gpgme`, and
+     - `testmod_dbusrecv`,and
      - `testmod_zeromqsend`
 
      , since they are known to fail in scenarios with high load.
@@ -1310,6 +1354,15 @@ def ctest(target = "Test") {
   sh """ctest -j ${env.CTEST_PARALLEL_LEVEL} --force-new-ctest-process \
           --output-on-failure --no-compress-output -T ${target} \
           -E 'testmod_(dbus(recv)?|zeromqsend)'"""
+}
+
+/* Helper for ctest to run MemCheck for the crypto, fcrypt and gpgme plugin
+ * tests, which cause trouble when run in parallel or under high server load.
+ */
+def ctestcryptoplugins(target = "MemCheck") {
+  sh """ctest --force-new-ctest-process \
+        --output-on-failure --no-compress-output -T ${target} \
+        -R 'testmod_(crypto|fcrypt|gpgme)'"""
 }
 
 /* Helper for ctest to run MemCheck without memleak tagged tests
@@ -1439,10 +1492,9 @@ def isMaster() {
 
 /* Publishes all files necessary for hosting a debian package
  * @param remote where the repository is located
+ * @param remotedir must match with the directory tree inside the remote
  */
-def publishDebianPackages(remote="a7") {
-  // This path must coincide with the incoming dir on a7
-  def remotedir = 'compose/frontend/volumes/incoming'
+def publishPackages(remote, remotedir) {
   sshPublisher(
     publishers: [
       sshPublisherDesc(

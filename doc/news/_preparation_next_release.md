@@ -205,6 +205,7 @@ you up to date with the multi-language support provided by Elektra.
 - improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
 - We fixed some minor spelling mistakes. _(René Schwaiger)_
 - We updated the man pages of the [`web`](../tutorials/install-webui.md) tool. _(René Schwaiger)_
+- We now automatically close issues after one year of inactivity. _(Mihael Pranjić)_
 
 ## Tests
 
@@ -214,6 +215,7 @@ you up to date with the multi-language support provided by Elektra.
 - Enabled regex in link checker. _(Mihael Pranjić)_
 - The [formatting check](../../tests/shell/check_formatting.sh) now also works correctly, if it is invoked multiple times. _(René Schwaiger)_
 - `KDB_EXEC_PATH` is not being set globally to contain the build directory any longer. _(Peter Nirschl)_
+- Rewrite gpg-agent shutdown logic to use `fork` and `execv` instead of `system`. _(Peter Nirschl)_
 
 ## Build
 
@@ -244,6 +246,7 @@ you up to date with the multi-language support provided by Elektra.
 - Building the [documentation Dockerfile for Debian Stretch](../../scripts/docker/debian/stretch/doc.Dockerfile) works again. _(René Schwaiger)_
 - Use python 3, SWIG 4.0 and ruby 2.5 in the [Dockerfile for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(Mihael Pranjić)_
 - Disable python binding on `debian-unstable-full-clang` due to upstream [issue](https://github.com/ElektraInitiative/libelektra/issues/3379). _(Mihael Pranjić)_
+- Use current ruby-dev on debian sid image as ruby 2.5 has been dropped. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Infrastructure
@@ -259,12 +262,19 @@ you up to date with the multi-language support provided by Elektra.
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
 - Add more dependencies to Fedora image to cover many tests. _(Mihael Pranjić)_
 - Installed ruby 2.6 to test the ruby bindings and plugins. _(Mihael Pranjić)_
+- Upgraded Fedora image to current stable (version 32). _(Mihael Pranjić)_
 
 ### Jenkins
 
 - Fixed [coveralls](https://coveralls.io/github/ElektraInitiative/libelektra) coverage report. _(Mihael Pranjić)_
 - The build jobs `debian-unstable-clang-asan` and `debian-unstable-full-clang` now use Clang 9 to compile Elektra. _(René Schwaiger)_
 - Added the Jenkins.monthly in the jenkins' scripts file. _(Djordje Bulatovic)_
+- Temporarily disabled some problematic tests on debian unstable. _(Mihael Pranjić)_
+- Enabled building packages for Bionic. _(Djordje Bulatovic)_
+- Improve gpgme unit test stability. _(Peter Nirschl)_
+- Publishing packages for Bionic to community. _(Djordje Bulatovic)_
+- Added Fedora 32 image to main build stage, moved Fedora 31 to full build stage. _(Mihael Pranjić)_
+- Method call correction. _(Djordje Bulatovic)_
 - <<TODO>>
 
 ### Travis

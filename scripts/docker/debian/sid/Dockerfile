@@ -29,6 +29,7 @@ RUN apt-get update && apt-get -y install \
         libboost-all-dev \
         libdbus-1-dev \
         libev-dev \
+        libgcrypt20-dev \
         libgirepository1.0-dev \
         libgit2-dev \
         libglib2.0-dev \
@@ -53,7 +54,7 @@ RUN apt-get update && apt-get -y install \
         python3-dev \
         python3-pip \
         ronn \
-        ruby2.5-dev \
+        ruby-dev \
         sloccount \
         swig4.0 \
         systemd \

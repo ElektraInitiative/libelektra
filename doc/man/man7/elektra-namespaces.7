@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-NAMESPACES" "7" "August 2019" "" ""
+.TH "ELEKTRA\-NAMESPACES" "7" "May 2020" "" ""
 .
 .SH "NAME"
 \fBelektra\-namespaces\fR \- namespaces
@@ -128,7 +128,7 @@ The configuration is typically located below \fBKDB_DB_SYSTEM\fR\. Other absolut
 Keys that are not in a namespace (i\.e\. start with an \fB/\fR) are called cascading keys\. Cascading keys do not stem from a configuration source, but are used by applications to lookup a key in different namespaces\. So, multiple keys can contribute to each cascading key name\.
 .
 .P
-Cascading is the same as a name resolution and provides a namespace unification as described in Versatility and Unix semantics in namespace unification \fIhttp://citeseerx\.ist\.psu\.edu/viewdoc/summary?doi=10\.1\.1\.81\.7888\fR\.
+Cascading is the same as a name resolution and provides a namespace unification as described in Versatility and Unix semantics in namespace unification \fIhttps://dl\.acm\.org/doi/10\.1145/1138041\.1138045\fR\.
 .
 .P
 Keys without a namespace can not be stored by their nature\. So they are transient: after a restart they are forgotten\.

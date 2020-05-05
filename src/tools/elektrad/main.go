@@ -14,7 +14,11 @@ func main() {
 
 	flag.Parse()
 
-	loadVersion()
+	err := loadVersion()
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	app := &server{pool: initPool(*initHandles)}
 
@@ -38,8 +42,13 @@ type elektraVersion struct {
 
 var version elektraVersion
 
-func loadVersion() {
-	kdb, _ := newHandle()
+func loadVersion() error {
+	kdb, err := newHandle()
+
+	if err != nil {
+		return err
+	}
+
 	defer kdb.kdb.Close()
 
 	versionString, _ := kdb.kdb.Version()
@@ -52,6 +61,8 @@ func loadVersion() {
 		Minor:   minor,
 		Micro:   micro,
 	}
+
+	return nil
 }
 
 func parseSemVer(version string) (major, minor, micro int) {
