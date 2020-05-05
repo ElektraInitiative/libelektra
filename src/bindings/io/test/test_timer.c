@@ -31,30 +31,30 @@
 #define TIMER_CHANGE_SECOND_INTERVAL TIMER_TEST_INTERVAL - TIMER_CHANGE_CONTROL_INTERVAL
 #define TIMER_CHANGE_PROBE_TIMES 2
 
-ElektraIoTestSuiteStop testStop;
-struct timespec testTimeStarted;
+static ElektraIoTestSuiteStop testStop;
+static struct timespec testTimeStarted;
 
-int testCallbackOnceCalled;
-struct timespec testCallbackOnceTimeCalled;
+static int testCallbackOnceCalled;
+static struct timespec testCallbackOnceTimeCalled;
 
-int testCallbackAtIntervalsCounter;
-struct timespec testCallbackAtIntervalsTimeCalled[TIMER_TEST_TIMES];
+static int testCallbackAtIntervalsCounter;
+static struct timespec testCallbackAtIntervalsTimeCalled[TIMER_TEST_TIMES];
 
-int testUpdateEnabledControlCalled;
-int testUpdateEnabledProbeCalled;
-ElektraIoTimerOperation * testUpdateEnabledTimerProbe;
-ElektraIoInterface * testUpdateEnabledBinding;
+static int testUpdateEnabledControlCalled;
+static int testUpdateEnabledProbeCalled;
+static ElektraIoTimerOperation * testUpdateEnabledTimerProbe;
+static ElektraIoInterface * testUpdateEnabledBinding;
 
-int testUpdateIntervalControlCalled;
-int testUpdateIntervalProbeCalled;
-ElektraIoTimerOperation * testUpdateIntervalTimerProbe;
-ElektraIoInterface * testUpdateIntervalBinding;
-struct timespec testUpdateIntervalTimeCalled, testUpdateIntervalTimeCalledLast;
+static int testUpdateIntervalControlCalled;
+static int testUpdateIntervalProbeCalled;
+static ElektraIoTimerOperation * testUpdateIntervalTimerProbe;
+static ElektraIoInterface * testUpdateIntervalBinding;
+static struct timespec testUpdateIntervalTimeCalled, testUpdateIntervalTimeCalledLast;
 
-int testRemoveControlCalled;
-int testRemoveProbeCalled;
-ElektraIoTimerOperation * testRemoveTimerProbe;
-ElektraIoInterface * testRemoveBinding;
+static int testRemoveControlCalled;
+static int testRemoveProbeCalled;
+static ElektraIoTimerOperation * testRemoveTimerProbe;
+static ElektraIoInterface * testRemoveBinding;
 
 static void testTimerBasicsCallback (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 {

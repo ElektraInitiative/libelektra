@@ -205,6 +205,7 @@ you up to date with the multi-language support provided by Elektra.
 - improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
 - We fixed some minor spelling mistakes. _(René Schwaiger)_
 - We updated the man pages of the [`web`](../tutorials/install-webui.md) tool. _(René Schwaiger)_
+- We now automatically close issues after one year of inactivity. _(Mihael Pranjić)_
 
 ## Tests
 
@@ -261,6 +262,7 @@ you up to date with the multi-language support provided by Elektra.
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
 - Add more dependencies to Fedora image to cover many tests. _(Mihael Pranjić)_
 - Installed ruby 2.6 to test the ruby bindings and plugins. _(Mihael Pranjić)_
+- Upgraded Fedora image to current stable (version 32). _(Mihael Pranjić)_
 
 ### Jenkins
 
@@ -271,6 +273,8 @@ you up to date with the multi-language support provided by Elektra.
 - Enabled building packages for Bionic. _(Djordje Bulatovic)_
 - Improve gpgme unit test stability. _(Peter Nirschl)_
 - Publishing packages for Bionic to community. _(Djordje Bulatovic)_
+- Added Fedora 32 image to main build stage, moved Fedora 31 to full build stage. _(Mihael Pranjić)_
+- <<TODO>>
 
 ### Travis
 

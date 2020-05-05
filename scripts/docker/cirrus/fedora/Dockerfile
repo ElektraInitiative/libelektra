@@ -1,4 +1,4 @@
-FROM fedora:31
+FROM fedora:32
 
 RUN dnf upgrade -y && dnf install -y \
         augeas-devel \
