@@ -274,6 +274,7 @@ you up to date with the multi-language support provided by Elektra.
 - Improve gpgme unit test stability. _(Peter Nirschl)_
 - Publishing packages for Bionic to community. _(Djordje Bulatovic)_
 - Added Fedora 32 image to main build stage, moved Fedora 31 to full build stage. _(Mihael Pranjić)_
+- Method call correction. _(Djordje Bulatovic)_
 - <<TODO>>
 
 ### Travis
