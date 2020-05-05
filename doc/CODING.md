@@ -141,12 +141,11 @@ To find out which version of `clang-format` a certain build server uses please c
 - the [Travis configuration file ](../.travis.yml), and
 - the [Cirrus configuration file](../.cirrus.yml)
 
-and search for the relevant packages (`clang-format`, `llvm`). Currently we use
+and search for the relevant packages (`clang-format`, `llvm`). Currently we use clang-format `9`
 
-- clang-format `9` in the [Debian sid image](../scripts/docker/debian/sid/Dockerfile) on the Jenkins build server, and
-- clang-format `9` in the [Cirrus macOS](../.cirrus.yml) build jobs
-
-.
+- in the [Travis configuration file ](../.travis.yml),
+- in the [Debian sid Docker container](../scripts/docker/debian/sid/Dockerfile) on the Jenkins build server, and
+- in the [Cirrus macOS](../.cirrus.yml) build jobs.
 
 ##### Installation
 
