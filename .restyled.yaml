@@ -2,9 +2,8 @@ restylers_version: '20191216'
 auto: true
 restylers:
 
-  # TODO: Uncomment the lines below, when we switch to `clang-format` 9.
-  # - clang-format:
-  #     image: restyled/restyler-clang-format:v9.0.0
+  - clang-format:
+      image: restyled/restyler-clang-format:v9.0.0
 
   - prettier
   - prettier-markdown:
