@@ -43,10 +43,12 @@ markComment: >
 #   Your comment here.
 
 # Comment to post when closing a stale Issue or Pull Request.
-# closeComment: >
-#   This issue has been inactive for more than one year. Probot will close the issue now.
-#   If the issue was closed by mistake, please reopen it. Thank you
-#   for your contributions.
+closeComment: >
+  I closed this issue now because it has been inactive for more than one year.
+  If I closed it by mistake, please do not hesitate to reopen it
+  or create a new issue with the remainder of this issue.
+  
+  Thank you for your contributions :sparkling_heart:
 
 # Limit the number of actions per hour, from 1-30. Default is 30
 limitPerRun: 5
