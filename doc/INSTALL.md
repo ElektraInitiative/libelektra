@@ -29,7 +29,7 @@ To use the Ubuntu-Bionic packages following steps need to be made:
 
 1. Run `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D919CE8B27A64C16656FCA9FF1532673651F9C6C` to obtain the key.
 
-2. Add `deb [trusted=yes] https://ubuntu-bionic-repo.libelektra.org/ bionic main` into `/etc/apt/sources.list`
+2. Add `deb https://ubuntu-bionic-repo.libelektra.org/ bionic main` into `/etc/apt/sources.list`
 
 3. `sudo apt-get update`
 
