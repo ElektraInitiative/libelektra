@@ -478,29 +478,37 @@ def generateMainBuildStages() {
   // We want fo fail fast (i.e. abort parallel stages if one fails
   tasks.failFast = true
 
-  tasks << buildAndTest(
-    "fedora-32-full",
+  // tasks << buildAndTest(
+  //   "fedora-32-full",
+  //   DOCKER_IMAGES.fedora_32,
+  //   CMAKE_FLAGS_BUILD_ALL +
+  //     CMAKE_FLAGS_DEBUG +
+  //     CMAKE_FLAGS_BUILD_FULL +
+  //     CMAKE_FLAGS_BUILD_STATIC,
+  //   [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  // )
+
+  // Build Elektra with clang and ASAN
+  // Detects memory leaks via ASAN
+  tasks << buildAndTestAsan(
+    "fedora-32-asan",
     DOCKER_IMAGES.fedora_32,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+    CMAKE_FLAGS_BUILD_ALL
   )
 
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
-  tasks << buildAndTest(
-    "debian-buster-full",
-    DOCKER_IMAGES.buster,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_COVERAGE
-    ,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
-  )
+  // tasks << buildAndTest(
+  //   "debian-buster-full",
+  //   DOCKER_IMAGES.buster,
+  //   CMAKE_FLAGS_BUILD_ALL +
+  //     CMAKE_FLAGS_DEBUG +
+  //     CMAKE_FLAGS_BUILD_FULL +
+  //     CMAKE_FLAGS_BUILD_STATIC +
+  //     CMAKE_FLAGS_COVERAGE
+  //   ,
+  //   [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  // )
 
   // Check the ABI and API compatibility of Elektra
   tasks << buildIcheck()

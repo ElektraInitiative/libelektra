@@ -276,6 +276,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added Fedora 32 image to main build stage, moved Fedora 31 to full build stage. _(Mihael Pranjić)_
 - Method call correction. _(Djordje Bulatovic)_
 - Fixed path for publishing in Jenkinsfile. _(Djordje Bulatovic)_
+- Added Fedora 32 ASAN builds. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Travis
