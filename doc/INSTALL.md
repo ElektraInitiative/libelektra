@@ -25,7 +25,7 @@ Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensus
 
 ### Ubuntu-Bionic
 
-To use the Ubuntu-Bionic packages following steps need to be made:
+To use the Ubuntu-Bionic packages, the following steps need to be made:
 
 1. Run `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D919CE8B27A64C16656FCA9FF1532673651F9C6C` to obtain the key.
 
