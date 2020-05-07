@@ -874,19 +874,19 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 {
 
 	if (ka == NULL && kb == NULL)
-    {
-        return 0;
-    }
+	{
+		return 0;
+	}
 
 	if (ka != NULL && kb == NULL)
-    {
-        return 1;
-    }
+	{
+		return 1;
+	}
 
 	if (ka == NULL && kb != NULL)
-    {
-        return -1;
-    }
+	{
+		return -1;
+	}
 
 	const Key * kam = keyGetMeta (ka, "order");
 	const Key * kbm = keyGetMeta (kb, "order");
@@ -895,7 +895,7 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 	{
 		return 0;
 	}
-    if (kam != NULL && kbm == NULL)
+	if (kam != NULL && kbm == NULL)
 	{
 		return 1;
 	}
@@ -904,7 +904,7 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 		return -1;
 	}
 
-	return atoi (keyString (kam)) - atoi (keyString(kbm));
+	return atoi (keyString (kam)) - atoi (keyString (kbm));
 }
 
 
