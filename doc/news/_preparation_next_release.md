@@ -189,7 +189,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- [elektrad](../../src/tools/elektrad/README.md) is completely rewritten in Go, which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra) bindings instead of calling the `kdb` command-line tool on every request. _(Raphael Gruber)_
+- [elektrad](../../src/tools/elektrad/README.md) is completely rewritten in Go, which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` command-line tool on every request. The new Elektrad creates a session per user to reuse the same kdb handle for better performance. _(Raphael Gruber)_
 - Update `kdb cache` tool synopsis to reflect man page. _(Mihael Pranjić)_
 - Pull elektrad, webui and webd out of shared web folder to allow fine grained selection of tools. _(Raphael Gruber)_
 
@@ -205,6 +205,7 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed some minor spelling mistakes. _(René Schwaiger)_
 - We updated the man pages of the [`web`](../tutorials/install-webui.md) tool. _(René Schwaiger)_
 - We now automatically close issues after one year of inactivity. _(Mihael Pranjić)_
+- Updated documentation for Ubuntu-Bionic Packages. _(Djordje Bulatovic)_
 
 ## Tests
 
@@ -274,6 +275,7 @@ you up to date with the multi-language support provided by Elektra.
 - Publishing packages for Bionic to community. _(Djordje Bulatovic)_
 - Added Fedora 32 image to main build stage, moved Fedora 31 to full build stage. _(Mihael Pranjić)_
 - Method call correction. _(Djordje Bulatovic)_
+- Fixed path for publishing in Jenkinsfile. _(Djordje Bulatovic)_
 - <<TODO>>
 
 ### Travis

@@ -1122,7 +1122,7 @@ def buildDebianPackage(stageName, image) {
                 publishPackages('a7', 'compose/frontend/volumes/incoming')
               }
               if(stageName == 'buildPackage/ubuntu/bionic'){
-                publishPackages('doc.libelektra.org', '/srv/repositories/incoming/')
+                publishPackages('doc.libelektra.org', '/incoming/')
               }
             }
           }
