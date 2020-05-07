@@ -191,7 +191,6 @@ static void testRead (void)
 	testReadMustError ("toml/bad_duplicate_key_03.toml");
 	testReadMustError ("toml/bad_empty_assignment.toml");
 	testReadMustError ("toml/bad_bare_string_rhs.toml");
-	testReadMustError ("toml/bad_array_missing_closing_brackets.toml");
 	testReadMustError ("toml/bad_date_invalid_day.toml");
 	testReadMustError ("toml/bad_date_invalid_month.toml");
 	testReadMustError ("toml/bad_date_invalid_year.toml");
