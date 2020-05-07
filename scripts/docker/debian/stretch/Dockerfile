@@ -71,6 +71,7 @@ RUN apt-get update \
         virtualenv \
         bison \
         flex \
+        libc6-dbg
         uuid-dev \
         ninja-build \
     && rm -rf /var/lib/apt/lists/*
@@ -173,4 +174,3 @@ RUN virtualenv "${COVERALLS_VIRTUALENV_PATH}" \
     && pip install cpp-coveralls \
     && deactivate
 ENV PATH="${PATH}:${COVERALLS_VIRTUALENV_PATH}/bin"
-
