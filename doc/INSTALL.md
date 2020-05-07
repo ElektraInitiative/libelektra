@@ -23,6 +23,16 @@ For the following Linux distributions and package managers 0.8 packages are avai
 For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
 
+### Ubuntu-Bionic
+
+To use the Ubuntu-Bionic packages, the following steps need to be made:
+
+1. Run `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D919CE8B27A64C16656FCA9FF1532673651F9C6C` to obtain the key.
+
+2. Add `deb https://ubuntu-bionic-repo.libelektra.org/ bionic main` into `/etc/apt/sources.list`
+
+3. `sudo apt-get update`
+
 ### Debian
 
 To use the debian repository of the latest builds from master put following lines in

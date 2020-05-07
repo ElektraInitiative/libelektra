@@ -206,6 +206,7 @@ you up to date with the multi-language support provided by Elektra.
 - We fixed some minor spelling mistakes. _(René Schwaiger)_
 - We updated the man pages of the [`web`](../tutorials/install-webui.md) tool. _(René Schwaiger)_
 - We now automatically close issues after one year of inactivity. _(Mihael Pranjić)_
+- Updated documentation for Ubuntu-Bionic Packages. _(Djordje Bulatovic)_
 
 ## Tests
 
