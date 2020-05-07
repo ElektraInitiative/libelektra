@@ -11,6 +11,7 @@ RUN apt-get update \
         autotools-dev \
         bison \
         flex \
+        libc6-dbg \
         build-essential \
         cmake \
         curl \
