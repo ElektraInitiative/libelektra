@@ -227,8 +227,9 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 void initializeLexer(FILE * file) {
 	yylineno = 1;
 	BEGIN(0);
-	yy_flush_buffer(YY_CURRENT_BUFFER);
-	yyin = file;
+    yyrestart(file);
+	// yy_flush_buffer(YY_CURRENT_BUFFER);
+	// yyin = file;
 }
 
 static inline bool validAscii (char c)

@@ -89,7 +89,7 @@ OptComment	:	COMMENT { driverExitComment (driver, $1); }
 
 NewlinesBetweenNodes	:	NEWLINE	/* Not counted because it's the normal line ending newline between nodes, not one indicating an empty line.*/
 					|	NewlinesBetweenNodes NEWLINE { driverExitNewline (driver); }
-					;	
+					;
 
 NewlinesLeading	:	%empty
 				|	NewlinesLeading NEWLINE { driverExitNewline(driver); }
