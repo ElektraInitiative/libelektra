@@ -19,6 +19,7 @@ RUN apt-get update && apt-get -y install \
         dh-lua \
         ed \
         flex \
+        libc6-dbg \
         gawk \
         git \
         gnupg2 \
