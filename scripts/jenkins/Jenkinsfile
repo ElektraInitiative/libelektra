@@ -535,6 +535,14 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
+  // Build Elektra with clang and ASAN
+  // Detects memory leaks via ASAN
+  tasks << buildAndTestAsan(
+    "fedora-32-asan",
+    DOCKER_IMAGES.fedora_32,
+    CMAKE_FLAGS_BUILD_ALL
+  )
+
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
   tasks << buildAndTest(

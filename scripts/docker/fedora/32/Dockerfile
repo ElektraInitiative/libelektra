@@ -20,13 +20,16 @@ RUN dnf upgrade -y && dnf install -y \
         gpgme-devel \
         java-1.8.0-openjdk-devel \
         jna \
+        libasan \
         libcurl-devel \
         libev-devel \
         libgcrypt-devel \
         libgit2-devel \
         libmarkdown-devel \
+        libubsan \
         libuv-devel \
         libxml2-devel \
+        llvm \
         lua-devel \
         make \
         maven \
