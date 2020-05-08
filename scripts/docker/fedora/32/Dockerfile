@@ -29,6 +29,7 @@ RUN dnf upgrade -y && dnf install -y \
         libubsan \
         libuv-devel \
         libxml2-devel \
+        llvm \
         lua-devel \
         make \
         maven \
