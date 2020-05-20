@@ -240,6 +240,7 @@ you up to date with the multi-language support provided by Elektra.
 - The CMake functions `add_msr_test` and `add_msr_test_plugin` do not export the list of required plugins as environment variable any more. _(René Schwaiger)_
 - The CMake code of the code generation does not print warnings about unknown regex operators any more. _(René Schwaiger)_
 - Generating the build system now requires CMake `3.4` (released in November 2015). _(René Schwaiger)_
+- Temporarily disabled rust bindings due to [compilation errors](https://github.com/ElektraInitiative/libelektra/issues/3436). _(Mihael Pranjić)_
 
 ### Docker
 

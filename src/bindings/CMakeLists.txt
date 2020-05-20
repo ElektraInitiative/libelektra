@@ -10,11 +10,6 @@ if (IS_INCLUDED)
 	add_subdirectory (jna)
 endif ()
 
-check_binding_included ("rust" IS_INCLUDED)
-if (IS_INCLUDED)
-	add_subdirectory (rust)
-endif ()
-
 add_subdirectory (swig)
 
 check_binding_included ("glib" IS_INCLUDED)
