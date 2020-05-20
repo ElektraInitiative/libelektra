@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides = check apply
 - infos/placements = postgetstorage presetstorage
-- infos/status = recommended productive maintained nodep configurable global unfinished
+- infos/status = recommended productive nodep configurable global unfinished
 - infos/description = allows to give specifications for keys
 
 ## Introduction
@@ -176,4 +176,7 @@ kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a l
 
 ## Known Issues
 
-Added metadata is not correctly removed during `kdbSet`, if the corresponding spec key was modified.
+- Added metadata is not correctly removed during `kdbSet`, if the corresponding spec key was modified.
+- Default values do not work if globbing is involved.
+- By default, keys tagged with `require` do not emit errors even if not present
+  (https://issues.libelektra.org/1024)

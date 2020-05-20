@@ -5,7 +5,7 @@
 - infos/provides = resolver storage
 - infos/recommends =
 - infos/placements = getresolver setresolver commit rollback getstorage setstorage
-- infos/status = maintained conformant compatible specific shelltest tested nodep configurable
+- infos/status = compatible specific shelltest nodep configurable
 - infos/metadata =
 - infos/description = mounts multiple files within a directory
 
@@ -133,3 +133,7 @@ sudo kdb umount user/tests/multifile
 ## Limitations
 
 - You cannot get rid of the configuration file name.
+- You cannot create new configuration files.
+- Not all file names are supported (see https://issues.libelektra.org/2124)
+- Cannot handle conflicts (see https://issues.libelektra.org/2527)
+

@@ -102,3 +102,7 @@ kdb set /tests/hosts/ipv6/localhost 127.0.0.1
 kdb rm -r /tests/hosts
 sudo kdb umount /tests/hosts
 ```
+
+## Limitations
+
+- host names are not validated (see https://issues.libelektra.org/2185)

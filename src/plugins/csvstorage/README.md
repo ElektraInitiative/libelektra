@@ -5,7 +5,7 @@
 - infos/needs =
 - infos/recommends =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest nodep libc configurable limited
+- infos/status = unittest nodep libc configurable limited
 - infos/description = parses CSV files
 
 ## Introduction
@@ -183,3 +183,5 @@ sudo kdb umount /tests/csv
 ## Limitations
 
 - Does not work on file streams (e.g. `kdb import` without file)
+- When using csvstorage for exporting, all parent keys must be present
+  (see https://issues.libelektra.org/2304)

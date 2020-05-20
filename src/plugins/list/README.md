@@ -4,7 +4,7 @@
 - infos/needs =
 - infos/provides =
 - infos/placements = pregetstorage procgetstorage postgetstorage postgetcleanup presetstorage presetcleanup precommit postcommit prerollback postrollback
-- infos/status = maintained unittest nodep libc configurable global
+- infos/status = unittest nodep libc configurable global
 - infos/description = delegates work to a list of plugins
 
 ## Introduction

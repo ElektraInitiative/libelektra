@@ -1,4 +1,4 @@
-- infos = Information about SIMPLEINI plugin is in keys below
+- infos = Information about simpleini plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/ini
