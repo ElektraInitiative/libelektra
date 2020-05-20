@@ -136,4 +136,3 @@ sudo kdb umount user/tests/multifile
 - You cannot create new configuration files.
 - Not all file names are supported (see https://issues.libelektra.org/2124)
 - Cannot handle conflicts (see https://issues.libelektra.org/2527)
-
