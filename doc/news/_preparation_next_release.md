@@ -278,6 +278,7 @@ you up to date with the multi-language support provided by Elektra.
 - Method call correction. _(Djordje Bulatovic)_
 - Fixed path for publishing in Jenkinsfile. _(Djordje Bulatovic)_
 - Added Fedora 32 ASAN builds. _(Mihael Pranjić)_
+- Reliably build the rust bindings based on the same version, by adding back the `Cargo.lock` file. _(Philipp Gackstatter)_
 - <<TODO>>
 
 ### Travis
