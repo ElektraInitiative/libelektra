@@ -42,8 +42,8 @@ RUN curl -o cppcms-${CPPCMS_VERSION}.tar.bz -L \
     && make install \
     && cd /app/deps \
     && rm -Rf cppcms-${CPPCMS_VERSION}
-ARG JANSSON_VERSION="2.11"
-RUN curl -O http://www.digip.org/jansson/releases/jansson-${JANSSON_VERSION}.tar.gz \
+ARG JANSSON_VERSION="v2.11"
+RUN curl -O https://github.com/akheron/jansson/archive/${JANSSON_VERSION}.tar.gz \
     && tar -xvzf jansson-${JANSSON_VERSION}.tar.gz \
     && cd jansson-${JANSSON_VERSION} \
     && mkdir build && cd build \
