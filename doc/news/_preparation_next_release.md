@@ -37,7 +37,16 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Plugins
 
-The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
+We updated the `maintained` status of the following [plugins](https://www.libelektra.org/plugins/readme):
+
+- blockresolver
+- csvstorage
+- gitresolver
+- list
+- multifile
+- spec
+
+New maintainers are very much welcomed!
 
 ### Augeas
 

@@ -1,4 +1,8 @@
-Perl and PHP bindings
+C#/F# bindings
+Perl bindings
+PHP bindings
+
+type safe get/set from/to collections
 
 == C++ ==
 
@@ -7,9 +11,3 @@ iomanip using iword, pword, and xalloc
 
 KeyMeta(Reverse)Iterator:
 	allow iterations over metakeys
-
-type safe get/set from/to collections
-
-## getenv
-
-detect gcc for faster compilation

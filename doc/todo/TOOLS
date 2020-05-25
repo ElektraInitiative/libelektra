@@ -7,6 +7,14 @@ lazy-mount (vs. directly improve all mountpoints with lazy wrapper?)
 
 allow --no-env --no-arg --no-default arguments?
 
+== OTHER ==
+
+chroot
+	-c option which allows you to chroot before doing operation
+	-u options which allows you to switch user (by setting env internally)
+	Problems:
+		- already possible by chaining commands
+
 
 
 
