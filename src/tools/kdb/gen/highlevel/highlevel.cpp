@@ -582,7 +582,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 					if (parts.size () <= baseDepth + maxDepth)
 					{
 						if (std::any_of (parts.begin () + baseDepth, parts.end () - 1,
-								 [](const std::string & s) { return s == "_" || s == "#"; }) ||
+								 [] (const std::string & s) { return s == "_" || s == "#"; }) ||
 						    parts.back () == "_")
 						{
 							throw CommandAbortException ("struct cannot contain globbed keys (_, #).");

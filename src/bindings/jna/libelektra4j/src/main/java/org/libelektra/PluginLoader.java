@@ -1,13 +1,12 @@
 package org.libelektra;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.libelektra.exception.InstallationException;
 import org.libelektra.plugin.Echo;
 import org.libelektra.plugin.NativePlugin;
 import org.libelektra.plugin.PropertiesStorage;
 import org.libelektra.plugin.Return;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This class can be used to load Plugins from Elektra.

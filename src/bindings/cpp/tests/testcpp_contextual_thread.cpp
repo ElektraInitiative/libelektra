@@ -131,8 +131,8 @@ void activate1 (Coordinator & gc, KeySet & ks)
 
 	ThreadContext c1 (gc);
 	ThreadValue<int> v1 (ks, c1, specKey);
-	gc.onLayerActivation<Activate> ([]() { toggleOn (); });
-	gc.onLayerDeactivation<Activate> ([]() { toggleOff (); });
+	gc.onLayerActivation<Activate> ([] () { toggleOn (); });
+	gc.onLayerDeactivation<Activate> ([] () { toggleOff (); });
 	ASSERT_EQ (v1, 10);
 	c1.activate<Activate> ();
 	ASSERT_TRUE (g_toggle);
@@ -366,7 +366,7 @@ TEST (test_contextual_thread, syncInWith)
 	ASSERT_EQ (c2.size (), 1);
 	ASSERT_EQ (c2["activate"], "active");
 
-	c1.with<Other> () ([&]() {
+	c1.with<Other> () ([&] () {
 		ASSERT_EQ (c1.size (), 1);
 		ASSERT_EQ (c1["other"], "notused");
 		ASSERT_EQ (c1["activate"], "");
@@ -418,7 +418,7 @@ TEST (test_contextual_thread, syncBeforeWith)
 	ASSERT_EQ (v.getName (), "user/act/active");
 	ASSERT_EQ (v, 22);
 
-	c1.with<Other> () ([&]() {
+	c1.with<Other> () ([&] () {
 		ASSERT_EQ (c1.size (), 2);
 		ASSERT_EQ (c1["other"], "notused");
 		ASSERT_EQ (c1["activate"], "active");

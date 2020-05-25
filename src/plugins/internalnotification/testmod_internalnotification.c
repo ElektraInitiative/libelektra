@@ -102,7 +102,7 @@ static char * convertLongLongToString (long long number)
 	int invert = 1;
 	if (number < 0)
 	{
-		invert = -1;     // Invert negative numbers
+		invert = -1;	 // Invert negative numbers
 		correction += 1; // Allocate extra space for sign ('-')
 	}
 	int size = digits (number * invert) + correction;

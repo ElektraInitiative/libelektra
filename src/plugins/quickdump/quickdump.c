@@ -231,7 +231,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 	keyGetName (parentKey, nameBuffer.string, parentSize);
 	nameBuffer.string[parentSize - 1] = '/'; // replaces null terminator
-	nameBuffer.string[parentSize] = '\0';    // set new null terminator
+	nameBuffer.string[parentSize] = '\0';	 // set new null terminator
 	nameBuffer.offset = parentSize;		 // set offset to null terminator
 
 	char c;
@@ -263,8 +263,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 		switch (type)
 		{
-		case 'b':
-		{
+		case 'b': {
 			// binary key value
 			kdb_unsigned_long_long_t valueSize = 0;
 			if (!varintRead (file, &valueSize))
@@ -297,8 +296,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			}
 			break;
 		}
-		case 's':
-		{
+		case 's': {
 			// string key value
 			if (!readStringIntoBuffer (file, &valueBuffer, parentKey))
 			{
@@ -332,8 +330,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 			switch (c)
 			{
-			case 'm':
-			{
+			case 'm': {
 				// meta key
 				if (!readStringIntoBuffer (file, &metaNameBuffer, parentKey))
 				{
@@ -359,8 +356,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 				keySetMeta (k, metaNameBuffer.string, metaValue);
 				break;
 			}
-			case 'c':
-			{
+			case 'c': {
 				// copy meta
 				if (!readStringIntoBuffer (file, &nameBuffer, parentKey))
 				{

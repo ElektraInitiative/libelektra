@@ -12,7 +12,7 @@ RUN apt-get update && apt-get -y install \
         build-essential \
         checkinstall \
         clang-9 \
-        clang-format-7 \
+        clang-format-9 \
         cmake \
         curl \
         default-jdk \

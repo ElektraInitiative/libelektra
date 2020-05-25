@@ -10,7 +10,7 @@
 
 #include <kdbassert.h>
 #include <kdbconfig.h>
-#include <kdbhelper.h>  // elektraStrDup
+#include <kdbhelper.h>	// elektraStrDup
 #include <kdbprivate.h> // KDB_CACHE_PREFIX
 #include <kdbproposal.h>
 
@@ -142,7 +142,7 @@ static int elektraLockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSE
 #ifdef ELEKTRA_LOCK_FILE
 	struct flock l;
 	l.l_type = F_WRLCK; /*Do exclusive Lock*/
-	l.l_start = 0;      /*Start at begin*/
+	l.l_start = 0;	    /*Start at begin*/
 	l.l_whence = SEEK_SET;
 	l.l_len = 0; /*Do it with whole file*/
 	int ret = fcntl (fd, F_SETLK, &l);
@@ -182,7 +182,7 @@ static int elektraUnlockFile (int fd ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNU
 #ifdef ELEKTRA_LOCK_FILE
 	struct flock l;
 	l.l_type = F_UNLCK; /*Give Lock away*/
-	l.l_start = 0;      /*Start at begin*/
+	l.l_start = 0;	    /*Start at begin*/
 	l.l_whence = SEEK_SET;
 	l.l_len = 0; /*Do it with whole file*/
 	int ret = fcntl (fd, F_SETLK, &l);
@@ -210,7 +210,7 @@ static int elektraLockMutex (Key * parentKey ELEKTRA_UNUSED)
 	int ret = pthread_mutex_trylock (&elektraResolverMutex);
 	if (ret != 0)
 	{
-		if (errno == EBUSY       // for trylock
+		if (errno == EBUSY	 // for trylock
 		    || errno == EDEADLK) // for error checking mutex, if enabled
 		{
 			ELEKTRA_SET_CONFLICTING_STATE_ERROR (
@@ -778,8 +778,7 @@ static int elektraMkdirParents (resolverHandle * pk, const char * pathname, Key 
 
 	return 0;
 
-error:
-{
+error : {
 	ELEKTRA_SET_RESOURCE_ERRORF (parentKey,
 				     "Could not create directory '%s'. Reason: %s. Identity: uid: %u, euid: %u, gid: %u, egid: %u",
 				     pathname, elektraAddErrnoText (), getuid (), geteuid (), getgid (), getegid ());
@@ -942,7 +941,7 @@ static void elektraModifyFileTime (resolverHandle * pk)
 static void elektraUpdateFileTime (resolverHandle * pk, int fd, Key * parentKey)
 {
 #ifdef HAVE_FUTIMENS
-	const struct timespec times[2] = { pk->mtime,   // atime
+	const struct timespec times[2] = { pk->mtime,	// atime
 					   pk->mtime }; // mtime
 
 	if (futimens (fd, times) == -1)

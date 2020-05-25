@@ -20,7 +20,7 @@
 #include <kdbhelper.h>
 #include <kdbmeta.h>
 #include <kdbos.h>
-#include <kdbprivate.h>  //elektraReadArrayNumber
+#include <kdbprivate.h>	 //elektraReadArrayNumber
 #include <kdbproposal.h> //elektraKsToMemArray
 #include <stdlib.h>
 #include <string.h>

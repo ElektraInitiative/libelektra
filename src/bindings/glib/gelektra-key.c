@@ -38,8 +38,7 @@ static void gelektra_key_get_property (GObject * object, guint property_id, GVal
 	case PROP_KEY_BASENAME:
 		g_value_set_string (value, keyBaseName (self->key));
 		break;
-	case PROP_KEY_FULLNAME:
-	{
+	case PROP_KEY_FULLNAME: {
 		gssize size = keyGetFullNameSize (self->key);
 		if (size == 0)
 			g_value_set_static_string (value, "");

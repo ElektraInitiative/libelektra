@@ -1,12 +1,11 @@
 package org.libelektra.plugin;
 
-import org.libelektra.Key;
-import org.libelektra.KeySet;
-import org.libelektra.Plugin;
-
 import java.io.*;
 import java.util.Map;
 import java.util.Properties;
+import org.libelektra.Key;
+import org.libelektra.KeySet;
+import org.libelektra.Plugin;
 
 public class PropertiesStorage implements Plugin
 {

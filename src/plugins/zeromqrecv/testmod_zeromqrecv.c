@@ -12,7 +12,7 @@
 #include <time.h>   // time()
 #include <unistd.h> // usleep()
 
-#include <kdbio/uv.h>    // elektraIoUvNew()
+#include <kdbio/uv.h>	 // elektraIoUvNew()
 #include <kdbioplugin.h> // ElektraIoPluginSetBinding
 
 #include <tests.h>

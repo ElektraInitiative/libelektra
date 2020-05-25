@@ -91,7 +91,7 @@ struct _KsTreeVertex
 	struct hsearch_data * htab; /*!< stores the Hash Map, containing the children names */
 #endif
 	size_t numberofChildren; /*!< number of the stored children */
-	size_t mallocSize;       /*!< size malloced for the children */
+	size_t mallocSize;	 /*!< size malloced for the children */
 };
 
 /**

@@ -1,5 +1,8 @@
 package org.libelektra;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.libelektra.exception.InstallationException;
@@ -7,9 +10,6 @@ import org.libelektra.plugin.Echo;
 import org.libelektra.plugin.NativePlugin;
 import org.libelektra.plugin.PropertiesStorage;
 import org.libelektra.plugin.Return;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class PluginLoaderIT
 {

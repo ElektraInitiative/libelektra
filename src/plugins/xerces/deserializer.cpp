@@ -51,7 +51,7 @@ string trim (string const & str)
 	while (getline (ss, to, '\n'))
 	{
 		// Remove whitespace lines, most likely caused by pretty printing
-		if (!all_of (to.begin (), to.end (), [](char c) { return isspace (c, locale ()); })) trimmed += to;
+		if (!all_of (to.begin (), to.end (), [] (char c) { return isspace (c, locale ()); })) trimmed += to;
 	}
 
 	return trimmed;

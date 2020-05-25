@@ -33,7 +33,7 @@ int GlobalUmountCommand::execute (Cmdline const & cl)
 
 	const string name = cl.arguments[0];
 	auto it =
-		find_if (conf.begin (), conf.end (), [&](Key key) { return key.isDirectBelow (parentKey) && key.get<string> () == name; });
+		find_if (conf.begin (), conf.end (), [&] (Key key) { return key.isDirectBelow (parentKey) && key.get<string> () == name; });
 
 	if (it == conf.end ())
 	{

@@ -14,16 +14,12 @@
 #define PROC_BASE_KEY "proc/tests/opts"
 #define SPEC_BASE_KEY "spec/tests/opts"
 
-// version 6 and 7 of clang-format don't agree whether it is supposed to be *[] or * [] so disable it here
-// TODO: re-enable clang-format once version 7 is used on build server
-// clang-format off
 #define NUMARGS(...) (sizeof ((void *[]){ __VA_ARGS__ }) / sizeof (void *))
 #define ARGS(...) NUMARGS ("prog", __VA_ARGS__), ((const char *[]){ "prog", __VA_ARGS__, NULL })
 #define NO_ARGS 1, ((const char *[]){ "prog" })
 
 #define ENVP(...) ((const char *[]){ __VA_ARGS__, NULL })
 #define NO_ENVP ((const char *[]){ NULL })
-// clang-format on
 
 #define xstr(a) str (a)
 #define str(a) #a

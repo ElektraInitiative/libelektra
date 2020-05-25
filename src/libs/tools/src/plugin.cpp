@@ -47,7 +47,7 @@ Plugin::Plugin (PluginSpec const & spec_, KeySet & modules) : spec (spec_), firs
 	if (spec.getName () != plugin->name)
 	{
 		spec.setRefName (spec.getName ()); // save virtual name as refname
-		spec.setName (plugin->name);       // use actual name
+		spec.setName (plugin->name);	   // use actual name
 	}
 }
 

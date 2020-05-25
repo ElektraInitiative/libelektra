@@ -32,7 +32,7 @@ void SearchEngine::filterConfigurationsByName (std::vector<kdbrest::model::Entry
 {
 
 	entries.erase (std::remove_if (entries.begin (), entries.end (),
-				       [startsWith](kdbrest::model::Entry & elem) -> bool {
+				       [startsWith] (kdbrest::model::Entry & elem) -> bool {
 					       return !boost::starts_with (elem.getPublicName (), startsWith);
 				       }),
 		       entries.end ());
@@ -63,7 +63,7 @@ void SearchEngine::findConfigurationsByFilter (std::vector<kdbrest::model::Entry
 					       const std::string filterby) const
 {
 	entries.erase (std::remove_if (entries.begin (), entries.end (),
-				       [filter, filterby](kdbrest::model::Entry & elem) -> bool {
+				       [filter, filterby] (kdbrest::model::Entry & elem) -> bool {
 					       if (filterby == "key")
 					       {
 						       if (elem.getPublicName ().find (filter) == std::string::npos)
@@ -137,7 +137,7 @@ void SearchEngine::findUsersByFilter (std::vector<kdbrest::model::User> & users,
 				      const std::string filterby) const
 {
 	users.erase (std::remove_if (users.begin (), users.end (),
-				     [filter, filterby](kdbrest::model::User & elem) -> bool {
+				     [filter, filterby] (kdbrest::model::User & elem) -> bool {
 					     if (filterby == "username")
 					     {
 						     if (elem.getUsername ().find (filter) == std::string::npos)

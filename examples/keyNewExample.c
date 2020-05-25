@@ -40,10 +40,10 @@ int main (void)
 				 KEY_END));				 /* end of args */
 
 	ksAppendKey (ks, keyNew ("user/env/alias/ls", /* a key we know we have */
-				 KEY_END));	   /* do nothing more */
+				 KEY_END));	      /* do nothing more */
 
-	ksAppendKey (ks, keyNew ("user/env/alias/ls",	/* same key, to compare in output */
-				 KEY_OWNER, "root",	  /* set new owner (not uid) as root */
+	ksAppendKey (ks, keyNew ("user/env/alias/ls",	     /* same key, to compare in output */
+				 KEY_OWNER, "root",	     /* set new owner (not uid) as root */
 				 KEY_COMMENT, "new comment", /* set new comment */
 				 KEY_END));		     /* end of args */
 

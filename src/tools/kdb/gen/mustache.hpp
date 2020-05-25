@@ -832,7 +832,7 @@ private:
 
 		current_text.reserve (input_size);
 
-		const auto process_current_text = [&current_text, &current_text_position, &sections]() {
+		const auto process_current_text = [&current_text, &current_text_position, &sections] () {
 			if (!current_text.empty ())
 			{
 				const component<string_type> comp{ current_text, current_text_position };
@@ -1120,7 +1120,7 @@ public:
 	template <typename stream_type>
 	stream_type & render (const basic_data<string_type> & data, stream_type & stream)
 	{
-		render (data, [&stream](const string_type & str) { stream << str; });
+		render (data, [&stream] (const string_type & str) { stream << str; });
 		return stream;
 	}
 
@@ -1134,7 +1134,7 @@ public:
 	stream_type & render (basic_context<string_type> & ctx, stream_type & stream)
 	{
 		context_internal<string_type> context{ ctx };
-		render ([&stream](const string_type & str) { stream << str; }, context);
+		render ([&stream] (const string_type & str) { stream << str; }, context);
 		return stream;
 	}
 
@@ -1144,7 +1144,7 @@ public:
 		return render (ctx, ss).str ();
 	}
 
-	using render_handler = std::function<void(const string_type &)>;
+	using render_handler = std::function<void (const string_type &)>;
 	void render (const basic_data<string_type> & data, const render_handler & handler)
 	{
 		if (!is_valid ())
@@ -1171,7 +1171,7 @@ private:
 	string_type render (context_internal<string_type> & ctx)
 	{
 		std::basic_ostringstream<typename string_type::value_type> ss;
-		render ([&ss](const string_type & str) { ss << str; }, ctx);
+		render ([&ss] (const string_type & str) { ss << str; }, ctx);
 		return ss.str ();
 	}
 
@@ -1309,8 +1309,8 @@ private:
 			    render_lambda_escape escape, const string_type & text, bool parse_with_same_context)
 	{
 		const typename basic_renderer<string_type>::type2 render2 = [this, &ctx, parse_with_same_context,
-									     escape](const string_type & text, bool escaped) {
-			const auto process_template = [this, &ctx, escape, escaped](basic_mustache & tmpl) -> string_type {
+									     escape] (const string_type & text, bool escaped) {
+			const auto process_template = [this, &ctx, escape, escaped] (basic_mustache & tmpl) -> string_type {
 				if (!tmpl.is_valid ())
 				{
 					error_message_ = tmpl.error_message ();
@@ -1347,7 +1347,7 @@ private:
 			tmpl.set_custom_escape (escape_);
 			return process_template (tmpl);
 		};
-		const typename basic_renderer<string_type>::type1 render = [&render2](const string_type & text) {
+		const typename basic_renderer<string_type>::type1 render = [&render2] (const string_type & text) {
 			return render2 (text, false);
 		};
 		if (var->is_lambda2 ())

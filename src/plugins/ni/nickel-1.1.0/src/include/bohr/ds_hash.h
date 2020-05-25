@@ -67,8 +67,8 @@ typedef struct Ds_hash_entry
 	struct Ds_hash_entry * next; // linked list next pointer
 
 	Ds_hash_t hash; // the item's hash value
-	size_t bucket;  // which bucket it's in
-	size_t size;    // how big the item is
+	size_t bucket;	// which bucket it's in
+	size_t size;	// how big the item is
 	uint8_t item[]; // the item itself (struct hack, valid C99)
 
 } Ds_hash_entry;

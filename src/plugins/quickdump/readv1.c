@@ -34,8 +34,7 @@ static int readVersion1 (FILE * file, KeySet * returned, Key * parentKey)
 
 		switch (type)
 		{
-		case 'b':
-		{
+		case 'b': {
 			// binary key value
 			kdb_unsigned_long_long_t valueSize;
 			if (!readUInt64 (file, &valueSize, parentKey))
@@ -65,8 +64,7 @@ static int readVersion1 (FILE * file, KeySet * returned, Key * parentKey)
 			}
 			break;
 		}
-		case 's':
-		{
+		case 's': {
 			// string key value
 			char * value = readString (file, parentKey);
 			if (value == NULL)
@@ -97,8 +95,7 @@ static int readVersion1 (FILE * file, KeySet * returned, Key * parentKey)
 
 			switch (c)
 			{
-			case 'm':
-			{
+			case 'm': {
 				// meta key
 				char * metaName = readString (file, parentKey);
 				if (metaName == NULL)
@@ -122,8 +119,7 @@ static int readVersion1 (FILE * file, KeySet * returned, Key * parentKey)
 				elektraFree (metaValue);
 				break;
 			}
-			case 'c':
-			{
+			case 'c': {
 				// copy meta
 				char * keyName = readString (file, parentKey);
 				if (keyName == NULL)
