@@ -1168,10 +1168,7 @@ def deployDockerContainer(name, imageDesc, hostName) {
 }
 
 def deployWebsite() {
-  def stageName = "deployWebsite"
-  return [(stageName): {
-    stage(stageName) {
-      return withDockerEnv(DOCKER_IMAGES.website_frontend) {
+  withDockerEnv(DOCKER_IMAGES.website_frontend) {
         sshPublisher(
             publishers: [
               sshPublisherDesc(
@@ -1188,8 +1185,6 @@ def deployWebsite() {
             verbose: true
           )
       }
-    }
-  }]
 }
 
 def buildWebsite() {
