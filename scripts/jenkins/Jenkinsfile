@@ -1176,7 +1176,7 @@ def deployWebsite() {
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
-                    execCommand: 'rm -Rf website-frontend/public_old; cp -Rfpv website-frontend/public website-frontend/public_old'
+                    execCommand: 'pwd; rm -Rf /srv/libelektra/website-frontend/public_old; cp -Rfpv /srv/libelektra/website-frontend/public website-frontend/public_old'
                   )
                 ]
               )
@@ -1191,7 +1191,7 @@ def deployWebsite() {
                   sshTransfer(
                     sourceFiles: '/usr/share/nginx/html/**',
                     removePrefix: '/usr/share/nginx/html/',
-                    remoteDirectory: 'website-frontend/public'
+                    remoteDirectory: '/srv/libelektra/website-frontend/public'
                   )
                 ]
               )
