@@ -47,7 +47,7 @@ ARG FRONTEND=https://libelektra.org/
 RUN kdb global-mount \
     && kdb mount-website-frontend-config \
     && kdb set -N system /sw/elektra/restfrontend/#0/current/backend/root "${BACKEND}" \
-    && kdb set -N system /sw/elektra/restfrontend/#0/current/website/url "${URL}" \
+    && kdb set -N system /sw/elektra/restfrontend/#0/current/website/url "${FRONTEND}" \
     && kdb build-website-frontend
 
 # FROM nginx:alpine
