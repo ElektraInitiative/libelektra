@@ -304,7 +304,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- Use newer Xcode 11.3 and ruby 2.6.4 on macOS builds. _(Mihael Pranjić)_
+- Use newer Xcode 11.4 and ruby 2.6.5 on macOS builds and use macOS 10.15. _(Mihael Pranjić)_
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
 - <<TODO>>
 
