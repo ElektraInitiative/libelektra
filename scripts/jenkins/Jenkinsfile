@@ -1169,7 +1169,8 @@ def deployDockerContainer(name, imageDesc, hostName) {
 
 def deployWebsite() {
   withDockerEnv(DOCKER_IMAGES.website_frontend) {
-        sh "ls -al /usr/local/share/elektra/tool_data/website-frontend/public/ || /bin/true"
+        sh "ls -al /usr/local/share/elektra/tool_data/website-frontend/public/"
+        sh "mv /usr/local/share/elektra/tool_data/website-frontend ."
         sshPublisher(
             publishers: [
               sshPublisherDesc(
@@ -1190,9 +1191,9 @@ def deployWebsite() {
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
-                    sourceFiles: '../../usr/local/share/elektra/tool_data/website-frontend/public/**/*',
-                    removePrefix: '../../usr/local/share/elektra/tool_data/website-frontend/',
-                    remoteDirectory: '/srv/libelektra/website-frontend/'
+                    sourceFiles: 'website-frontend/public/**/*',
+                    removePrefix: 'website-frontend',
+                    remoteDirectory: 'website-frontend'
                   )
                 ]
               )
