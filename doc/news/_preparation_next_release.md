@@ -37,9 +37,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Plugins
 
-We updated following [plugins](https://www.libelektra.org/plugins/readme):
-
-We do not maintain following plugins anymore (status "maintained" was removed):
+We updated the `maintained` status of the following [plugins](https://www.libelektra.org/plugins/readme):
 
 - blockresolver
 - csvstorage
