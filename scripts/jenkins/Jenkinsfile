@@ -849,6 +849,7 @@ def buildDoc() {
           sshPublisher(
             publishers: [
               sshPublisherDesc(
+                verbose: true,
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
@@ -868,13 +869,13 @@ def buildDoc() {
                   )
                 ]
               )
-            ],
-            verbose: true
+            ]
           )
         } else {
           sshPublisher(
             publishers: [
               sshPublisherDesc(
+                verbose: true,
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
@@ -894,8 +895,7 @@ def buildDoc() {
                   )
                 ]
               )
-            ],
-            verbose: true
+            ]
           )
         }
         deleteDir()
@@ -1172,6 +1172,7 @@ def deployWebsite() {
         sshPublisher(
             publishers: [
               sshPublisherDesc(
+                verbose: true,
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
@@ -1179,12 +1180,12 @@ def deployWebsite() {
                   )
                 ]
               )
-            ],
-            verbose: true
+            ]
           )
         sshPublisher(
             publishers: [
               sshPublisherDesc(
+                verbose: true,
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
@@ -1194,8 +1195,7 @@ def deployWebsite() {
                   )
                 ]
               )
-            ],
-            verbose: true
+            ]
           )
       }
 }
@@ -1282,6 +1282,7 @@ def publishCoverage(source = 'build/coverage') {
   sshPublisher(
     publishers: [
       sshPublisherDesc(
+        verbose: true,
         configName: 'doc.libelektra.org',
         transfers: [
           sshTransfer(
@@ -1290,8 +1291,7 @@ def publishCoverage(source = 'build/coverage') {
           )
         ]
       )
-    ],
-    verbose: true
+    ]
   )
   echo "Finish publication of coverage data"
 }
@@ -1531,6 +1531,7 @@ def publishPackages(remote, remotedir) {
   sshPublisher(
     publishers: [
       sshPublisherDesc(
+        verbose: true,
         configName: remote,
         transfers: [
           sshTransfer(
@@ -1564,7 +1565,6 @@ def publishPackages(remote, remotedir) {
         ]
       )
     ],
-    verbose: true,
     failOnError: true
   )
 }
