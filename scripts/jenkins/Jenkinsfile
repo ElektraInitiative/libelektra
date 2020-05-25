@@ -146,24 +146,27 @@ def main() {
     }
   }
 
-  stage("Main builds") {
-    milestone label: "Main builds"
-    parallel generateMainBuildStages()
-  }
+  // TODO: we are only testing here
 
-  stage("Full builds") {
-    milestone label: "Full builds"
-    parallel generateFullBuildStages()
-  }
+  // stage("Main builds") {
+  //   milestone label: "Main builds"
+  //   parallel generateMainBuildStages()
+  // }
+
+  // stage("Full builds") {
+  //   milestone label: "Full builds"
+  //   parallel generateFullBuildStages()
+  // }
 
   stage("Build artifacts") {
     milestone label: "artifacts"
     parallel generateArtifactStages()
   }
 
-  // maybeStage("Deploy Website", isMaster()) {
-  //   deployWebsite()
-  // }
+  // TODO: make it a maybeStage
+  stage("Deploy Website") {
+    deployWebsite()
+  }
 
   // maybeStage("Deploy Web UI", isMaster()) {
   //   deployWebUI()
@@ -1076,8 +1079,11 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
  */
 def generateArtifactStages() {
   def tasks = [:]
-  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
-  tasks << buildDebianPackage("buildPackage/ubuntu/bionic", DOCKER_IMAGES.bionic)
+  
+  // TODO: testing
+  
+  // tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
+  // tasks << buildDebianPackage("buildPackage/ubuntu/bionic", DOCKER_IMAGES.bionic)
   tasks << buildWebsite()
   // tasks << buildWebUI()
   return tasks
@@ -1162,16 +1168,28 @@ def deployDockerContainer(name, imageDesc, hostName) {
 }
 
 def deployWebsite() {
-  deployDockerContainer(
-    "elektra-backend",
-    DOCKER_IMAGES.website_backend,
-    "restapi.libelektra.org"
-  )
-  deployDockerContainer(
-    "elektra-frontend",
-    DOCKER_IMAGES.website_frontend,
-    "www.libelektra.org"
-  )
+  def stageName = "deployWebsite"
+  return [(stageName): {
+    stage(stageName) {
+      return withDockerEnv(DOCKER_IMAGES.website_frontend) {
+        sshPublisher(
+            publishers: [
+              sshPublisherDesc(
+                configName: 'doc.libelektra.org',
+                transfers: [
+                  sshTransfer(
+                    sourceFiles: '/usr/share/nginx/html/*',
+                    removePrefix: '/usr/share/nginx/html/',
+                    remoteDirectory: 'website-frontend'
+                  )
+                ]
+              )
+            ],
+            verbose: true
+          )
+      }
+    }
+  }]
 }
 
 def buildWebsite() {
