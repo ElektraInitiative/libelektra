@@ -1182,7 +1182,6 @@ def deployWebsite() {
             ],
             verbose: true
           )
-      }
         sshPublisher(
             publishers: [
               sshPublisherDesc(
