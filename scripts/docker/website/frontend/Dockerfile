@@ -43,11 +43,11 @@ RUN mkdir build \
     && ldconfig
 
 ARG BACKEND=https://restapi.libelektra.org/
-ARG URL=https://libelektra.org/
+ARG URL=https://www.libelektra.org/
 RUN kdb global-mount \
     && kdb mount-website-frontend-config \
-    && kdb set -N system /sw/elektra/restfrontend/#0/current/backend/root "${BACKEND}" \
-    && kdb set -N system /sw/elektra/restfrontend/#0/current/website/url "${URL}" \
+    && kdb set -N system /sw/elektra/websitefrontend/#0/current/backend/root "${BACKEND}" \
+    && kdb set -N system /sw/elektra/websitefrontend/#0/current/website/url "${URL}" \
     && kdb build-website-frontend
 
 # FROM nginx:alpine
