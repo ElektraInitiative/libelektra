@@ -222,6 +222,7 @@ you up to date with the multi-language support provided by Elektra.
 - We updated the man pages of the [`web`](../tutorials/install-webui.md) tool. _(René Schwaiger)_
 - We now automatically close issues after one year of inactivity. _(Mihael Pranjić)_
 - Updated documentation for Ubuntu-Bionic Packages. _(Djordje Bulatovic)_
+- Fixed an old path of the reformatting script in the [`docker reformatting tutorial`](../tutorials/run_reformatting_script_with_docker.md) _(Jakob Fischer)_
 
 ## Tests
 
