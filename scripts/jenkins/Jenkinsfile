@@ -1169,6 +1169,7 @@ def deployDockerContainer(name, imageDesc, hostName) {
 
 def deployWebsite() {
   withDockerEnv(DOCKER_IMAGES.website_frontend) {
+        sh "ls -al /usr/share/nginx/html/ || /bin/true"
         sshPublisher(
             publishers: [
               sshPublisherDesc(
@@ -1189,7 +1190,7 @@ def deployWebsite() {
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
-                    sourceFiles: '/usr/share/nginx/html/',
+                    sourceFiles: '/usr/share/nginx/html/**/*',
                     removePrefix: '/usr/share/nginx/html',
                     remoteDirectory: '/srv/libelektra/website-frontend/public'
                   )
