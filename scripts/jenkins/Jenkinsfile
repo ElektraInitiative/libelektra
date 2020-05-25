@@ -1190,9 +1190,9 @@ def deployWebsite() {
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
-                    sourceFiles: '/usr/share/nginx/html/**/*',
-                    removePrefix: '/usr/share/nginx/html',
-                    remoteDirectory: '/srv/libelektra/website-frontend/public'
+                    sourceFiles: '/usr/local/share/elektra/tool_data/website-frontend/public/**',
+                    removePrefix: '/usr/local/share/elektra/tool_data/website-frontend/',
+                    remoteDirectory: '/srv/libelektra/website-frontend/'
                   )
                 ]
               )

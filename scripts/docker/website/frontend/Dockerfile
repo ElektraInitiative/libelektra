@@ -50,6 +50,6 @@ RUN kdb global-mount \
     && kdb set -N system /sw/elektra/restfrontend/#0/current/website/url "${URL}" \
     && kdb build-website-frontend
 
-FROM nginx:alpine
-COPY --from=0 /usr/local/share/elektra/tool_data/website-frontend/public \
-              /usr/share/nginx/html
+# FROM nginx:alpine
+# COPY --from=0 /usr/local/share/elektra/tool_data/website-frontend/public \
+#               /usr/share/nginx/html
