@@ -25,9 +25,6 @@
                         <li>
                             <a ui-sref="main.account">{{ 'APP.NAV.BUTTON.ACCOUNT' | translate }}</a>
                         </li>
-                        <li>
-                            <a href="#" ng-click="ctrl.goMySnippets()">{{ 'APP.NAV.BUTTON.MYSNIPPETS' | translate }}</a>
-                        </li>
                         <li role="separator" class="divider"></li>
                         <li>
                             <a ui-sref="main.auth.logout">{{ 'APP.NAV.BUTTON.LOGOUT' | translate }}</a>
@@ -69,9 +66,6 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
-                    <li ng-class="{active: $state.includes('main.conversion')}">
-                        <a ui-sref="main.conversion">{{ 'APP.NAV.BUTTON.MAIN.CONVERSION' | translate }}</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right" style="margin-right:0px">

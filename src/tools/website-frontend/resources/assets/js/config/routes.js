@@ -192,23 +192,6 @@ module.exports = function(
         parent: "main.home"
       }
     })
-    .state("main.conversion", {
-      url: "/conversion",
-      templateUrl: "pages/main/website/conversion.html",
-      controller: "WebsiteConversionController as ctrl",
-      resolve: {
-        formats: [
-          "EntryService",
-          function(EntryService) {
-            return EntryService.loadAvailableFormats();
-          }
-        ]
-      },
-      ncyBreadcrumb: {
-        label: "APP.BREADCRUMBS.MAIN.CONVERSION",
-        parent: "main.home"
-      }
-    })
     .state("main.entries", {
       abstract: true,
       url: "/entries",
