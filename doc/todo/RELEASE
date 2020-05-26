@@ -152,14 +152,14 @@ Now copy the packages to ftp:
 export DVERSION=$VERSION-1
 
 Build deb:
- cd ~e && git-checkout debian
- git-merge --no-ff $VERSION -m "Merge for debian release $DVERSION"
+ cd ~e && git checkout debian
+ git merge --no-ff $VERSION -m "Merge for debian release $DVERSION"
 
 UNRELEASED -> unstable
 
  dch --release $DVERSION "New upstream version"
- git-add debian/changelog
- git-commit -m "Debian Package $DVERSION"
+ git add debian/changelog
+ git commit -m "Debian Package $DVERSION"
 
 Fix debian/ + document in NEWS what maintainer need to consider, then build the package:
  cp ~elektra-ftp/releases/elektra-$VERSION.tar.gz ~elektra/elektra_$VERSION.orig.tar.gz
@@ -227,7 +227,7 @@ And the API docu:
  cd ~build && cmake -DBUILD_PDF=ON . && rm -rf doc && make html man && cp -ra doc/html doc/latex doc/man ~elektra-doc/api/$VERSION/
 
 Symlink current to latest version and add everything:
- cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git-add current $VERSION && git-commit -a -m "$VERSION Release"
+ cd ~elektra-doc/api/ && rm current && ln -s $VERSION current && git add current $VERSION && git commit -a -m "$VERSION Release"
 
 
 
@@ -241,7 +241,7 @@ Symlink current to latest version and add everything:
 == Commit source package ==
 
 Commit elektra-ftp:
- cd ~elektra-ftp && git-add releases/elektra-$VERSION.tar.gz* && git-commit -a -m "Release $VERSION"
+ cd ~elektra-ftp && git add releases/elektra-$VERSION.tar.gz* && git commit -a -m "Release $VERSION"
 
 
 == push ==
@@ -249,7 +249,7 @@ Commit elektra-ftp:
 Now we know that everything worked well:
 
 Now push release branch with tags to github:
- cd ~e && git-push && git-push --tags
+ cd ~e && git push && git push --tags
 
 Push elektra-ftp:
  cd ~elektra-ftp && git push && git push github
