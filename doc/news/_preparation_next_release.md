@@ -1,19 +1,12 @@
-# 0.9.<<VERSION>> Release
+# 0.9.2 Release
 
-This release did not happen yet.
+Not yet released.
 
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial (checked by
-shell recorder) or asciinema for highlighted items.
+- shortDesc: KDE and GNOME Integration,`elektrad` in Go
 
-Please add your name at the end of every contribution.
-**Syntax:** _(your name)_
+We are proud to release Elektra 0.9.2.
 
-<<`scripts/generate-news-entry`>>
-
-We are proud to release Elektra 0.9.<<VERSION>>.
+This release focuses on bugfixes and stability improvements, but also brings some new features. With the 0.9.x series of releases we shift our focus to KDE and GNOME integration.
 
 ## What is Elektra?
 
@@ -25,19 +18,24 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+- KDE and GNOME Integration
+- `elektrad` rewritten in Go
 
-### <<HIGHLIGHT1>>
+### KDE Integration
 
-### <<HIGHLIGHT2>>
+We created a [fork](https://github.com/ElektraInitiative/kconfig) of [KDE's](https://kde.org/) `KConfig` configuration system and patched it to use libelektra. We have done some initial testing and replaced the `KConfig` library for [Kate](https://kate-editor.org/) and [KDevelop](https://www.kdevelop.org/) successfully. Additionally, a new Elektra plugin called `kconfig` was added, which can read and write KDE's kconfig ini files to help migrate to Elektra's `KConfig` fork. _(Dardan Haxhimustafa)_ and _(Felix Resch)_
 
-### <<HIGHLIGHT2>>
+### GNOME Integration
+
+We continued work on Elektra's bindings for [GNOME GSettings](https://developer.gnome.org/gio/stable/GSettings.html). Our implementation should be able to replace the widely used [dconf](https://wiki.gnome.org/Projects/dconf) backend. Elektra's `gsettings` bindings are not yet ready for production use, but they are already able to replace dconf for a complete GNOME session without problems. We are still lacking proper dbus integration for change notifications. _(Gabriel Rauter)_ and _(Mihael Pranjić)_
+
+### `elektrad` rewritten in Go
+
+[elektrad](https://www.libelektra.org/tools/elektrad) provides an HTTP API to access Elektra remotely. `elektrad` is now completely rewritten in Go, which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` command-line tool on every request. The new Elektrad creates a session per user to reuse the same kdb handle for better performance. _(Raphael Gruber)_
 
 ## Plugins
 
-We updated the `maintained` status of the following [plugins](https://www.libelektra.org/plugins/readme):
+We removed the `maintained` status of the following [plugins](https://www.libelektra.org/plugins/readme):
 
 - blockresolver
 - csvstorage
@@ -147,15 +145,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   Furthermore, we renamed `system/elektra/version/constants/KDB_VERSION_MICRO`
   to `system/elektra/version/constants/KDB_VERSION_PATCH` to be compatible
   with [Semantic Versioning 2.0.0](https://semver.org/). _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Core
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Opts
 
@@ -170,18 +159,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   environment variables in addition to the existing support for option arguments. This also means that it is no longer
   possible to have multiple keys with the `args=remaining` metadata (because their `opt/help` may not be the same).
   _(Klemens Böswirth)_
-
-### <<Library2>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -198,7 +175,6 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- [elektrad](../../src/tools/elektrad/README.md) is completely rewritten in Go, which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` command-line tool on every request. The new Elektrad creates a session per user to reuse the same kdb handle for better performance. _(Raphael Gruber)_
 - Update `kdb cache` tool synopsis to reflect man page. _(Mihael Pranjić)_
 - Pull elektrad, webui and webd out of shared web folder to allow fine grained selection of tools. _(Raphael Gruber)_
 - [webd](../../src/tools/webd/README.md) has updated dependencies. _(Mihael Pranjić)_
@@ -267,7 +243,6 @@ you up to date with the multi-language support provided by Elektra.
 - Use python 3, SWIG 4.0 and ruby 2.5 in the [Dockerfile for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(Mihael Pranjić)_
 - Disable python binding on `debian-unstable-full-clang` due to upstream [issue](https://github.com/ElektraInitiative/libelektra/issues/3379). _(Mihael Pranjić)_
 - Use current ruby-dev on debian sid image as ruby 2.5 has been dropped. _(Mihael Pranjić)_
-- <<TODO>>
 
 ## Infrastructure
 
@@ -298,7 +273,6 @@ you up to date with the multi-language support provided by Elektra.
 - Fixed path for publishing in Jenkinsfile. _(Djordje Bulatovic)_
 - Added Fedora 32 ASAN builds. _(Mihael Pranjić)_
 - Reliably build the rust bindings based on the same version, by adding back the `Cargo.lock` file. _(Philipp Gackstatter)_
-- <<TODO>>
 
 ### Restyled
 
@@ -306,31 +280,21 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- Use newer Xcode 11.3 and ruby 2.6.4 on macOS builds. _(Mihael Pranjić)_
+- Use newer Xcode 11.4 and ruby 2.6.5 on macOS builds and use macOS 10.15. _(Mihael Pranjić)_
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
-- <<TODO>>
 
 ## Website
 
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- Re-enable website auto-deployment. _(Mihael Pranjić)_
+- Fix and re-enable website auto-deployment. _(Mihael Pranjić)_
 - Update docker images for website frontend and backend to debian buster. Update dependencies to newer versions. _(Mihael Pranjić)_
-- Fix jansson download link and disable website backend build. _(Mihael Pranjić)_
-- <<TODO>>
-
-## Outlook
-
-We are currently working on following topics:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Remove obsolete parts from the website. _(Mihael Pranjić)_
 
 ## Statistics
 
-<<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
+<<`scripts/git-release-stats 0.9.1 0.9.2`>>
 
 ## Finished Thesis
 
@@ -351,7 +315,7 @@ or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektr
 
 The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.hashsum?raw=true)
 
-<<`scripts/generate-hashsums elektra-0.9.<<VERSION>>.tar.gz`>>
+<<`scripts/generate-hashsums elektra-0.9.2.tar.gz`>>
 
 The release tarball is also available signed by Markus Raab using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on

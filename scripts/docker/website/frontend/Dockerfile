@@ -21,7 +21,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
-ARG PARALLEL=2
+ARG PARALLEL=8
 # start build of kdb
 ENV C_FLAGS="-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie"
 WORKDIR /app/kdb
@@ -43,13 +43,13 @@ RUN mkdir build \
     && ldconfig
 
 ARG BACKEND=https://restapi.libelektra.org/
-ARG FRONTEND=https://libelektra.org/
+ARG URL=https://www.libelektra.org/
 RUN kdb global-mount \
     && kdb mount-website-frontend-config \
-    && kdb set -N system /sw/elektra/restfrontend/#0/current/backend/root "${BACKEND}" \
-    && kdb set -N system /sw/elektra/restfrontend/#0/current/website/url "${URL}" \
+    && kdb set -N system /sw/elektra/websitefrontend/#0/current/backend/root "${BACKEND}" \
+    && kdb set -N system /sw/elektra/websitefrontend/#0/current/website/url "${URL}" \
     && kdb build-website-frontend
 
-FROM nginx:alpine
-COPY --from=0 /usr/local/share/elektra/tool_data/website-frontend/public \
-              /usr/share/nginx/html
+# FROM nginx:alpine
+# COPY --from=0 /usr/local/share/elektra/tool_data/website-frontend/public \
+#               /usr/share/nginx/html

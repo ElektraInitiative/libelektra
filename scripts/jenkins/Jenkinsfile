@@ -157,13 +157,14 @@ def main() {
   }
 
   stage("Build artifacts") {
-    milestone label: "artifacts"
+    milestone label: "Build artifacts"
     parallel generateArtifactStages()
   }
 
-  // maybeStage("Deploy Website", isMaster()) {
-  //   deployWebsite()
-  // }
+  maybeStage("Deploy Website", isMaster()) {
+    milestone label: "Deploy Website"
+    deployWebsite()
+  }
 
   // maybeStage("Deploy Web UI", isMaster()) {
   //   deployWebUI()
@@ -846,6 +847,7 @@ def buildDoc() {
           sshPublisher(
             publishers: [
               sshPublisherDesc(
+                verbose: true,
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
@@ -865,13 +867,13 @@ def buildDoc() {
                   )
                 ]
               )
-            ],
-            verbose: true
+            ]
           )
         } else {
           sshPublisher(
             publishers: [
               sshPublisherDesc(
+                verbose: true,
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
@@ -891,8 +893,7 @@ def buildDoc() {
                   )
                 ]
               )
-            ],
-            verbose: true
+            ]
           )
         }
         deleteDir()
@@ -1162,16 +1163,38 @@ def deployDockerContainer(name, imageDesc, hostName) {
 }
 
 def deployWebsite() {
-  deployDockerContainer(
-    "elektra-backend",
-    DOCKER_IMAGES.website_backend,
-    "restapi.libelektra.org"
-  )
-  deployDockerContainer(
-    "elektra-frontend",
-    DOCKER_IMAGES.website_frontend,
-    "www.libelektra.org"
-  )
+  withDockerEnv(DOCKER_IMAGES.website_frontend) {
+        sh "ls -al /usr/local/share/elektra/tool_data/website-frontend/public/"
+        sh "cp -Rf /usr/local/share/elektra/tool_data/website-frontend ."
+        sshPublisher(
+            publishers: [
+              sshPublisherDesc(
+                verbose: true,
+                configName: 'doc.libelektra.org',
+                transfers: [
+                  sshTransfer(
+                    execCommand: 'rm -Rf /srv/libelektra/website-frontend/public_old; cp -Rfpv /srv/libelektra/website-frontend/public /srv/libelektra/website-frontend/public_old'
+                  )
+                ]
+              )
+            ]
+          )
+        sshPublisher(
+            publishers: [
+              sshPublisherDesc(
+                verbose: true,
+                configName: 'doc.libelektra.org',
+                transfers: [
+                  sshTransfer(
+                    sourceFiles: 'website-frontend/public/**/*',
+                    removePrefix: 'website-frontend',
+                    remoteDirectory: 'website-frontend'
+                  )
+                ]
+              )
+            ]
+          )
+      }
 }
 
 def buildWebsite() {
@@ -1256,6 +1279,7 @@ def publishCoverage(source = 'build/coverage') {
   sshPublisher(
     publishers: [
       sshPublisherDesc(
+        verbose: true,
         configName: 'doc.libelektra.org',
         transfers: [
           sshTransfer(
@@ -1264,8 +1288,7 @@ def publishCoverage(source = 'build/coverage') {
           )
         ]
       )
-    ],
-    verbose: true
+    ]
   )
   echo "Finish publication of coverage data"
 }
@@ -1505,6 +1528,7 @@ def publishPackages(remote, remotedir) {
   sshPublisher(
     publishers: [
       sshPublisherDesc(
+        verbose: true,
         configName: remote,
         transfers: [
           sshTransfer(
@@ -1538,7 +1562,6 @@ def publishPackages(remote, remotedir) {
         ]
       )
     ],
-    verbose: true,
     failOnError: true
   )
 }
