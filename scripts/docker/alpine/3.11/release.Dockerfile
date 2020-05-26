@@ -37,9 +37,6 @@ RUN mkdir -p ${ELEKTRA_ROOT} \
     && tar -zxvf elektra.tar.gz --strip-components=1 -C ${ELEKTRA_ROOT} \
     && rm elektra.tar.gz
 
-# PATCH YAML ENDLINE (TODO: remove this)
-RUN sed -i '536s/output << data;/output << data << endl;/' ${ELEKTRA_ROOT}/src/plugins/yamlcpp/write.cpp
-
 ARG USERID=1000
 RUN adduser -u ${USERID} -G wheel -D elektra
 
@@ -95,6 +92,9 @@ RUN echo "alias sudo='sudo -i' # in this image we do not need to be root" >> /et
 RUN echo "export PS1='\u $ '" >> /etc/profile
 RUN echo "export LD_LIBRARY_PATH=/usr/local/lib/elektra/" >> /etc/profile
 RUN echo "export ALLUSERSPROFILE=''" >> /etc/profile
+
+# Workaround for "sudo: setrlimit(RLIMIT_CORE): Operation not permitted" problem
+RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 
 USER ${USERID}
 WORKDIR /home/elektra
