@@ -301,9 +301,9 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 We are currently working on following topics:
 
 - Elektrify KDE _(Dardan Haxhimustafa)_, _(Felix Resch)_ and _(Mihael Pranjić)_
-- Elektrify GNOME  _(Mihael Pranjić)_
+- Elektrify GNOME _(Mihael Pranjić)_
 - Elektrify LCDproc _(Klemens Böswirth)_ and _(Jakob Fischer)_
-- Packaging for popular Linux distributions  _(Djordje Bulatovic)_
+- Packaging for popular Linux distributions _(Djordje Bulatovic)_
 - Improve 3-way merge. _(Dominic Jäger)_
 - Go bindings and improved Web-UI _(Raphael Gruber)_
 - TOML plugin as new default storage _(Jakob Fischer)_
