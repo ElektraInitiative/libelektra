@@ -2,11 +2,12 @@
 
 Not yet released.
 
-- shortDesc: KDE and GNOME Integration,`elektrad` in Go
+- shortDesc: KDE and GNOME Integration, `elektrad` in Go
 
 We are proud to release Elektra 0.9.2.
 
-This release focuses on bugfixes and stability improvements, but also brings some new features. With the 0.9.x series of releases we shift our focus to KDE and GNOME integration.
+With the 0.9.x series of releases we shift our focus to bugfixes and stability improvements as needed for the KDE and GNOME integration.
+We do not guarantee any compatibility in this series.
 
 ## What is Elektra?
 
@@ -18,20 +19,24 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Highlights
 
-- KDE and GNOME Integration
+- KDE integration
+- GNOME Integration
 - `elektrad` rewritten in Go
 
 ### KDE Integration
 
-We created a [fork](https://github.com/ElektraInitiative/kconfig) of [KDE's](https://kde.org/) `KConfig` configuration system and patched it to use libelektra. We have done some initial testing and replaced the `KConfig` library for [Kate](https://kate-editor.org/) and [KDevelop](https://www.kdevelop.org/) successfully. Additionally, a new Elektra plugin called `kconfig` was added, which can read and write KDE's kconfig ini files to help migrate to Elektra's `KConfig` fork. _(Dardan Haxhimustafa)_ and _(Felix Resch)_
+We created a [fork](https://github.com/ElektraInitiative/kconfig) of [KDE's](https://kde.org/) `KConfig` configuration system and patched it to use libelektra. We have done some initial testing and replaced the `KConfig` library for [Kate](https://kate-editor.org/) and [KDevelop](https://www.kdevelop.org/) successfully.
+
+Additionally, we added a new Elektra plugin called `kconfig`, which can read and write kconfig's INI files.
+The plugin enables smooth migration of existing KDE configurations. _(Dardan Haxhimustafa)_ and _(Felix Resch)_
 
 ### GNOME Integration
 
-We continued work on Elektra's bindings for [GNOME GSettings](https://developer.gnome.org/gio/stable/GSettings.html). Our implementation should be able to replace the widely used [dconf](https://wiki.gnome.org/Projects/dconf) backend. Elektra's `gsettings` bindings are not yet ready for production use, but they are already able to replace dconf for a complete GNOME session without problems. We are still lacking proper dbus integration for change notifications. _(Gabriel Rauter)_ and _(Mihael Pranjić)_
+We continued work on Elektra's bindings for [GNOME GSettings](https://developer.gnome.org/gio/stable/GSettings.html). Our implementation should be able to replace the widely used [dconf](https://wiki.gnome.org/Projects/dconf) backend. Elektra's `gsettings` bindings are not yet ready for production use, but they are already able to replace `dconf` for a complete GNOME session without problems. We are still lacking proper dbus integration for change notifications. _(Mihael Pranjić)_
 
 ### `elektrad` rewritten in Go
 
-[elektrad](https://www.libelektra.org/tools/elektrad) provides an HTTP API to access Elektra remotely. `elektrad` is now completely rewritten in Go, which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` command-line tool on every request. The new Elektrad creates a session per user to reuse the same kdb handle for better performance. _(Raphael Gruber)_
+[elektrad](https://www.libelektra.org/tools/elektrad) provides an HTTP API to access Elektra remotely. `elektrad` is now completely rewritten in Go, which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` command-line tool on every request. The new `elektrad` creates a session per user to reuse the same [KDB handle](https://doc.libelektra.org/api/current/html/group__kdb.html) for correct conflict handling and better performance. _(Raphael Gruber)_
 
 ## Plugins
 
@@ -48,7 +53,7 @@ New maintainers are very much welcomed!
 
 ### Augeas
 
-- Improved error message for augeas to show lensPath. _(Michael Zronek)_
+- Improved error message for Augeas to show lensPath. _(Michael Zronek)_
 
 ### CCode
 
@@ -59,11 +64,11 @@ New maintainers are very much welcomed!
 ### Crypto
 
 - The crypto plugin no longer supports Botan and OpenSSL as provider of cryptographic functions. The support has been removed to improve the maintainability of the code. _(Peter Nirschl)_
-- The unit test of the crypto plugin attempts to kill the gpg-agent if a regular shutdown via `connect-gpg-agent` should fail for any reason during the clean-up phase. _(Peter Nirschl)_
+- The unit test of the crypto plugin attempts to kill the gpg-agent if a regular shutdown via `connect-gpg-agent` failed. _(Peter Nirschl)_
 
 ### Directory Value
 
-- The plugin now only interprets a key set as [array](../tutorials/arrays.md) if the parent contains the meta key `array`. _(René Schwaiger)_
+- The plugin now only interprets a [KeySet](https://doc.libelektra.org/api/current/html/group__keyset.html) as [array](../tutorials/arrays.md) if the parent contains the meta key `array`. _(René Schwaiger)_
 
 ### Fcrypt
 
@@ -71,7 +76,7 @@ New maintainers are very much welcomed!
 
 ### KConfig
 
-- We implemented the methods that save a KeySet into a file with the KConfig Ini format. _(Dardan Haxhimustafa)_
+- Write support for the KConfig INI format was added. _(Dardan Haxhimustafa)_
 
 ### SWIG
 
@@ -85,7 +90,7 @@ New maintainers are very much welcomed!
 
 ### SWIG/python2
 
-- Removed. _(Manuel Mausz)_
+- Removed python2 binding, as python2 support ended. _(Manuel Mausz)_
 
 ### Tcl
 
@@ -124,11 +129,11 @@ New maintainers are very much welcomed!
 
 ### GOpts
 
-- The plugin now supports an offset into `argv` given by the `/offset` config key. When `/offset` is set, `gopts` will
+- The plugin now supports an offset into `argv` given by the `/offset` config key. If `/offset` is set, `gopts` will
   ignore a number of arguments at the start of `argv`. This can be used in e.g. python scripts to ignore the interpreter
   arguments. _(Klemens Böswirth)_
 - `gopts` now also writes help message into the key `proc/elektra/gopts/help/message` in addition to setting
-  `proc/elektra/gopts/help = 1`. This is also useful in non-C/C++ environments. _(Klemens Böswirth)_
+  `proc/elektra/gopts/help = 1`. This is especially useful in non-C/C++ environments. _(Klemens Böswirth)_
 - `gopts` is also affected by the changes and improvements to the `opts` library outlined below.
 
 ### Cache
@@ -167,18 +172,17 @@ you up to date with the multi-language support provided by Elektra.
 
 ### python2
 
-- Removed. _(Manuel Mausz)_
+- Removed python2 plugin, as python2 support ended. _(Manuel Mausz)_
 
 ### Rust
 
-- Published `elektra` and `elektra-sys` versions `0.9.1` to crates.io. _(Philipp Gackstatter)_
+- Published `elektra` and `elektra-sys` to crates.io. _(Philipp Gackstatter)_
 
 ## Tools
 
 - Update `kdb cache` tool synopsis to reflect man page. _(Mihael Pranjić)_
 - Pull elektrad, webui and webd out of shared web folder to allow fine grained selection of tools. _(Raphael Gruber)_
 - [webd](../../src/tools/webd/README.md) has updated dependencies. _(Mihael Pranjić)_
-- <<TODO>>
 
 ## Scripts
 
@@ -195,16 +199,15 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
+- Improved formatting of the [`validation tutorial`](../../doc/tutorials/validation.md) _(Anton Hößl)_
 - We fixed some minor spelling mistakes. _(René Schwaiger)_
 - We updated the man pages of the [`web`](../tutorials/install-webui.md) tool. _(René Schwaiger)_
-- We now automatically close issues after one year of inactivity. _(Mihael Pranjić)_
 - Updated documentation for Ubuntu-Bionic Packages. _(Djordje Bulatovic)_
 - Fixed an old path of the reformatting script in the [`docker reformatting tutorial`](../tutorials/run_reformatting_script_with_docker.md) _(Jakob Fischer)_
 
 ## Tests
 
-- We now use [Google Test](https://github.com/google/googletest) `1.10` to test Elektra. _(René Schwaiger)_
+- We now use [Google Test](https://github.com/google/googletest) version `1.10` to test Elektra. _(René Schwaiger)_
 - The C++ test code does not produce warnings about a missing macro argument for `...` any more. _(René Schwaiger)_
 - Whitelisted many broken links. _(Mihael Pranjić)_
 - Enabled regex in link checker. _(Mihael Pranjić)_
@@ -231,18 +234,18 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
+- Generating the build system now requires CMake `3.4` (released in November 2015). _(René Schwaiger)_
 - We fixed warnings about CMake policy [CMP0078](https://cmake.org/cmake/help/latest/policy/CMP0078.html) and [CMP0086](https://cmake.org/cmake/help/latest/policy/CMP0086.html). _(René Schwaiger)_
 - The CMake functions `add_msr_test` and `add_msr_test_plugin` do not export the list of required plugins as environment variable any more. _(René Schwaiger)_
 - The CMake code of the code generation does not print warnings about unknown regex operators any more. _(René Schwaiger)_
-- Generating the build system now requires CMake `3.4` (released in November 2015). _(René Schwaiger)_
 
 ### Docker
 
 - We updated some of the software in the [Dockerfile for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(René Schwaiger)_
 - Building the [documentation Dockerfile for Debian Stretch](../../scripts/docker/debian/stretch/doc.Dockerfile) works again. _(René Schwaiger)_
-- Use python 3, SWIG 4.0 and ruby 2.5 in the [Dockerfile for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(Mihael Pranjić)_
+- Use Python 3, SWIG 4.0 and Ruby 2.5 in the [Dockerfile for Debian sid](../../scripts/docker/debian/sid/Dockerfile). _(Mihael Pranjić)_
 - Disable python binding on `debian-unstable-full-clang` due to upstream [issue](https://github.com/ElektraInitiative/libelektra/issues/3379). _(Mihael Pranjić)_
-- Use current ruby-dev on debian sid image as ruby 2.5 has been dropped. _(Mihael Pranjić)_
+- Use current ruby-dev on Debian sid image as Ruby 2.5 has been dropped. _(Mihael Pranjić)_
 
 ## Infrastructure
 
@@ -253,25 +256,22 @@ you up to date with the multi-language support provided by Elektra.
 - We removed python2 (EOL and removed from homebrew). _(Mihael Pranjić)_
 - Use latest macOS Catalina Xcode stable. _(Mihael Pranjić)_
 - Use newer FreeBSD images and use image family instead of concrete image names. _(Mihael Pranjić)_
-- Disable tcl on FreeBSD images because of test failures (see #3353). _(Mihael Pranjić)_
+- Disable tcl plugin on FreeBSD images because of test failures (see #3353). _(Mihael Pranjić)_
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
 - Add more dependencies to Fedora image to cover many tests. _(Mihael Pranjić)_
-- Installed ruby 2.6 to test the ruby bindings and plugins. _(Mihael Pranjić)_
+- Installed Ruby 2.6 to test the ruby bindings and plugins. _(Mihael Pranjić)_
 - Upgraded Fedora image to current stable (version 32). _(Mihael Pranjić)_
 
 ### Jenkins
 
 - Fixed [coveralls](https://coveralls.io/github/ElektraInitiative/libelektra) coverage report. _(Mihael Pranjić)_
 - The build jobs `debian-unstable-clang-asan` and `debian-unstable-full-clang` now use Clang 9 to compile Elektra. _(René Schwaiger)_
-- Added the Jenkins.monthly in the jenkins' scripts file. _(Djordje Bulatovic)_
-- Temporarily disabled some problematic tests on debian unstable. _(Mihael Pranjić)_
+- Added the `Jenkins.monthly` in the Jenkins' scripts file. _(Djordje Bulatovic)_
 - Enabled building packages for Bionic. _(Djordje Bulatovic)_
 - Improve gpgme unit test stability. _(Peter Nirschl)_
 - Publishing packages for Bionic to community. _(Djordje Bulatovic)_
 - Added Fedora 32 image to main build stage, moved Fedora 31 to full build stage. _(Mihael Pranjić)_
-- Method call correction. _(Djordje Bulatovic)_
 - Fixed path for publishing in Jenkinsfile. _(Djordje Bulatovic)_
-- Added Fedora 32 ASAN builds. _(Mihael Pranjić)_
 - Reliably build the rust bindings based on the same version, by adding back the `Cargo.lock` file. _(Philipp Gackstatter)_
 
 ### Restyled
@@ -283,7 +283,11 @@ you up to date with the multi-language support provided by Elektra.
 - Use newer Xcode 11.4 and ruby 2.6.5 on macOS builds and use macOS 10.15. _(Mihael Pranjić)_
 - Disable curlget plugin for macOS jobs (see #3382). _(Mihael Pranjić)_
 
-## Website
+### Issue Tracker
+
+- We now automatically close issues after one year of inactivity. _(Mihael Pranjić)_
+
+### Website
 
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
@@ -291,6 +295,22 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - Fix and re-enable website auto-deployment. _(Mihael Pranjić)_
 - Update docker images for website frontend and backend to debian buster. Update dependencies to newer versions. _(Mihael Pranjić)_
 - Remove obsolete parts from the website. _(Mihael Pranjić)_
+
+## Outlook
+
+We are currently working on following topics:
+
+- Elektrify KDE _(Dardan Haxhimustafa)_, _(Felix Resch)_ and _(Mihael Pranjić)_
+- Elektrify GNOME _(Mihael Pranjić)_
+- Elektrify LCDproc _(Klemens Böswirth)_ and _(Jakob Fischer)_
+- Packaging for popular Linux distributions _(Djordje Bulatovic)_
+- Improve 3-way merge. _(Dominic Jäger)_
+- Go bindings and improved Web-UI _(Raphael Gruber)_
+- TOML plugin as new default storage _(Jakob Fischer)_
+- Shell completion _(Ulrike Schäfer)_
+- Improve Elektra developer experience _(Hani Torabi)_
+- Ansible bindings _(Thomas Waser)_
+- Plugin interface improvements _(Vid Leskovar)_
 
 ## Statistics
 
