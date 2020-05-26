@@ -6,6 +6,8 @@ Not yet released.
 
 We are proud to release Elektra 0.9.2.
 
+This release focuses on bugfixes and stability improvements, but also brings some new features. With the 0.9.x series of releases we shift our focus to KDE and GNOME integration.
+
 ## What is Elektra?
 
 Elektra serves as a universal and secure framework to access
@@ -21,7 +23,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ### KDE Integration
 
-We created a [fork](https://github.com/ElektraInitiative/kconfig) of [KDE's](https://kde.org/) `KConfig` configuration system and patched it to use libelektra. Additionally, a new Elektra plugin called `kconfig` was added which can read and write KDE's kconfig ini files. _(Dardan Haxhimustafa)_ and _(Felix Resch)_
+We created a [fork](https://github.com/ElektraInitiative/kconfig) of [KDE's](https://kde.org/) `KConfig` configuration system and patched it to use libelektra. We have done some initial testing and replaced the `KConfig` library for [Kate](https://kate-editor.org/) and [KDevelop](https://www.kdevelop.org/) successfully. Additionally, a new Elektra plugin called `kconfig` was added, which can read and write KDE's kconfig ini files to help migrate to Elektra's `KConfig` fork. _(Dardan Haxhimustafa)_ and _(Felix Resch)_
 
 ### GNOME Integration
 
