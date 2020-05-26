@@ -22,7 +22,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ### `elektrad` rewritten in Go
 
-[elektrad](../../src/tools/elektrad/README.md) is completely rewritten in Go, which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` command-line tool on every request. The new Elektrad creates a session per user to reuse the same kdb handle for better performance. _(Raphael Gruber)_
+[elektrad](https://www.libelektra.org/tools/elektrad) provides an HTTP API to access Elektra remotely. `elektrad` is now completely rewritten in Go, which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` command-line tool on every request. The new Elektrad creates a session per user to reuse the same kdb handle for better performance. _(Raphael Gruber)_
 
 ### KDE and GNOME Integration
 
