@@ -2,7 +2,7 @@
 
 Not yet released.
 
-- shortDesc: `elektrad` in Go, KDE and GNOME Integration, Bugfixes and Documentation Improvements
+- shortDesc: KDE and GNOME Integration,`elektrad` in Go
 
 We are proud to release Elektra 0.9.2.
 
@@ -16,25 +16,20 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Highlights
 
-- `elektrad` rewritten in Go
 - KDE and GNOME Integration
-- Bugfixes and Documentation Improvements
+- `elektrad` rewritten in Go
+
+### KDE Integration
+
+We created a [fork](https://github.com/ElektraInitiative/kconfig) of [KDE's](https://kde.org/) `KConfig` configuration system and patched it to use libelektra. Additionally, a new Elektra plugin called `kconfig` was added which can read and write KDE's kconfig ini files. _(Dardan Haxhimustafa)_ and _(Felix Resch)_
+
+### GNOME Integration
+
+We continued work on Elektra's bindings for [GNOME GSettings](https://developer.gnome.org/gio/stable/GSettings.html). Our implementation should be able to replace the widely used [dconf](https://wiki.gnome.org/Projects/dconf) backend. Elektra's `gsettings` bindings are not yet ready for production use, but they are already able to replace dconf for a complete GNOME session without problems. We are still lacking proper dbus integration for change notifications. _(Gabriel Rauter)_ and _(Mihael Pranjić)_
 
 ### `elektrad` rewritten in Go
 
 [elektrad](https://www.libelektra.org/tools/elektrad) provides an HTTP API to access Elektra remotely. `elektrad` is now completely rewritten in Go, which drastically improves the performance by leveraging the new [go-elektra](https://github.com/ElektraInitiative/go-elektra/) bindings instead of calling the `kdb` command-line tool on every request. The new Elektrad creates a session per user to reuse the same kdb handle for better performance. _(Raphael Gruber)_
-
-### KDE and GNOME Integration
-
-We are working on integrating Elektra into [KDE](https://kde.org/) and [GNOME](https://www.gnome.org/).
-
-A new Elektra plugin called `kconfig` was added which can read and write KDE's kconfig ini files. Additionally we are working on a [fork](https://github.com/ElektraInitiative/kconfig) of KDE's `KConfig` configuration system and patching it to use libelektra. _(Dardan Haxhimustafa)_ and _(Felix Resch)_
-
-We continued work on Elektra's bindings for GNOME [GSettings](https://developer.gnome.org/gio/stable/GSettings.html). We aim to create a drop-in replacement for the [dconf](https://wiki.gnome.org/Projects/dconf) GSettings backend. _(Gabriel Rauter)_ and _(Mihael Pranjić)_
-
-### Bugfixes and Documentation Improvements
-
-This Elektra release brings many bugfixes and documentation improvements. We updated and improved the stability of our test infrastructure. Continue reading for the full list of improvements we have made.
 
 ## Plugins
 
