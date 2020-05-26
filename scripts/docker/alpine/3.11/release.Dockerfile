@@ -19,10 +19,8 @@ RUN apk update \
         yaml-cpp \
         yaml-cpp-dev
 
-
-# Google Test (TODO: update before 0.9.2 to gtest 1.10.0, but does not work with elektra 0.9.1)
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.8.1
+ARG GTEST_VER=release-1.10.0
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -31,7 +29,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 ENV ELEKTRA_ROOT=/opt/elektra
-ENV ELEKTRA_RELEASE=0.9.1
+ENV ELEKTRA_RELEASE=0.9.2
 RUN mkdir -p ${ELEKTRA_ROOT} \
     && cd /tmp \
     && curl -o elektra.tar.gz \
@@ -67,7 +65,7 @@ RUN mkdir build \
     && rm -Rf ${GTEST_ROOT}
 
 
-FROM alpine:3.10.3
+FROM alpine:3.11.6
 COPY --from=0 ${ELEKTRA_ROOT} \
               ${ELEKTRA_ROOT}
 ARG USERID=1000
