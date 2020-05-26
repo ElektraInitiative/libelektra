@@ -262,10 +262,10 @@ Push elektra-doc to github:
 
 cd ~e && cp doc/todo/NEWS.md doc/news/_preparation_next_release.md
 
-increment CMPVERSION in scripts/run_icheck
+increment CMPVERSION in scripts/build/run_icheck
 and cleanup tests/icheck.suppression (and add info to release notes)
 increment version in output of doc/tutorials/hello-elektra.md
-increment VERSION in scripts/build-debian-package
+increment VERSION in scripts/dev/build-debian-package
 
 
 == Announce ==
