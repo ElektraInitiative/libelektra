@@ -4,11 +4,15 @@ elektra (0.9.2-1) unstable; urgency=medium
 
  -- Mihael Pranjic <mpranj@limun.org>  Tue, 26 May 2020 18:26:23 +0200
 
-elektra (0.9.1-1) unstable; urgency=medium
+elektra (0.9.1-2) unstable; urgency=medium
 
+  [ Mihael Pranjic ]
   * New upstream version.
 
- -- Mihael Pranjic <mpranj@limun.org>  Wed, 27 Nov 2019 02:49:42 +0100
+  [ Markus Raab ]
+  * 0.9.1-2 Bump version.
+
+ -- Markus Raab <debian@markus-raab.org>  Fri, 22 May 2020 21:42:39 +0200
 
 elektra (0.9.0-1) unstable; urgency=medium
 
