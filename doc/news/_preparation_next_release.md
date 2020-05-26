@@ -90,7 +90,7 @@ New maintainers are very much welcomed!
 
 ### SWIG/python2
 
-- Removed python2 plugin, as python2 support ended. _(Manuel Mausz)_
+- Removed python2 binding, as python2 support ended. _(Manuel Mausz)_
 
 ### Tcl
 
