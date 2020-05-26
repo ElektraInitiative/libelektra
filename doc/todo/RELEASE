@@ -49,23 +49,23 @@ Increment version numbers in
 export VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
 export DVERSION=$VERSION-1
  dch --newversion $DVERSION "New upstream version."
- git-add debian/changelog
- git-commit -m "Debian Package $DVERSION (UNRELEASED)"
+ git add debian/changelog
+ git commit -m "Debian Package $DVERSION (UNRELEASED)"
 
 
 == Cleanup ==
 
 For the first few steps you have to work on branch master:
- git-checkout master
+ git checkout master
 
 If any feature branch is left over merge it:
- git-merge --no-ff feature
+ git merge --no-ff feature
 
 And now commit everything:
- git-commit -a
+ git commit -a
 
 Clean up the mess left over:
- git-clean -dfx
+ git clean -dfx
 
 Make an empty builddirectory:
  mkdir ~build
