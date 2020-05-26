@@ -42,7 +42,7 @@ Following shell expansions are used in this document:
 Increment version numbers in
 
 - CMakeLists.txt
-- ~e/scripts/build-debian-package
+- ~e/scripts/dev/build-debian-package
 - Change VERSION variable in build-server
 
 
