@@ -35,6 +35,12 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ### <<HIGHLIGHT2>>
 
+## Try out Elektra
+
+You can try out the latest elektra release using our docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra). This is the quickest way to get started with Elektra without compiling and other obstacles.
+
+Get started with Elektra by running `docker run -it elektra/elektra`.
+
 ## Plugins
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
