@@ -172,7 +172,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### python2
 
-- Removed python2 binding, as python2 support ended. _(Manuel Mausz)_
+- Removed python2 plugin, as python2 support ended. _(Manuel Mausz)_
 
 ### Rust
 
