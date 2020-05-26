@@ -146,25 +146,23 @@ def main() {
     }
   }
 
-  // TODO: we are only testing here
+  stage("Main builds") {
+    milestone label: "Main builds"
+    parallel generateMainBuildStages()
+  }
 
-  // stage("Main builds") {
-  //   milestone label: "Main builds"
-  //   parallel generateMainBuildStages()
-  // }
-
-  // stage("Full builds") {
-  //   milestone label: "Full builds"
-  //   parallel generateFullBuildStages()
-  // }
+  stage("Full builds") {
+    milestone label: "Full builds"
+    parallel generateFullBuildStages()
+  }
 
   stage("Build artifacts") {
-    milestone label: "artifacts"
+    milestone label: "Build artifacts"
     parallel generateArtifactStages()
   }
 
-  // TODO: make it a maybeStage
-  stage("Deploy Website") {
+  maybeStage("Deploy Website", isMaster()) {
+    milestone label: "Deploy Website"
     deployWebsite()
   }
 
@@ -1079,11 +1077,8 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
  */
 def generateArtifactStages() {
   def tasks = [:]
-  
-  // TODO: testing
-  
-  // tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
-  // tasks << buildDebianPackage("buildPackage/ubuntu/bionic", DOCKER_IMAGES.bionic)
+  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
+  tasks << buildDebianPackage("buildPackage/ubuntu/bionic", DOCKER_IMAGES.bionic)
   tasks << buildWebsite()
   // tasks << buildWebUI()
   return tasks
