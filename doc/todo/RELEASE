@@ -32,9 +32,9 @@ Following shell expansions are used in this document:
 == Updates ==
 
 - Update doc/COMPILE.md to reflect actually tested setups
-- Update/run ~e/scripts/build-debian-package
-- Update contracts using update-infos-status
-- regenerate dot of plugins using scripts/draw-all-plugins
+- Update/run ~e/scripts/dev/build-debian-package
+- Update contracts using ~e/scripts/dev/update-infos-status
+- regenerate dot of plugins using ~e/scripts/dev/draw-all-plugins
 - run link checker: cd ~build && ~e/scripts/link-checker external-links.txt
 
 == Increment Version Number ==
