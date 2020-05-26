@@ -44,7 +44,7 @@ bool Config::initializeConfiguration (const cppcms::json::value & cfg, const std
 	std::string conf_root = std::string (ELEKTRA_REST_CONFIG_ROOT) + profile;
 	bool error = false;
 
-	auto checkType = [this, &error, &conf_root](std::string key, cppcms::json::json_type type, std::string setToMsg) {
+	auto checkType = [this, &error, &conf_root] (std::string key, cppcms::json::json_type type, std::string setToMsg) {
 		if (this->m_config.type (key) != type)
 		{
 			error = true;

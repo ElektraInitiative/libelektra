@@ -109,7 +109,7 @@ First there is some boilerplate, including the copyright header, include stateme
 * Tag name for 'myfloatarray/#'
 *
 * Required arguments:
-* - kdb_long_long_t index1: Replaces occurence no. 1 of # in the keyname.
+* - kdb_long_long_t index1: Replaces occurrence no. 1 of # in the keyname.
 */
 #define ELEKTRA_TAG_MYFLOATARRAY Myfloatarray
 ```

@@ -13,7 +13,7 @@ cd $BUILD
 CC=musl-gcc CXX=g++ cmake \
 	-DINSTALL_BUILD_TOOLS=ON \
 	-DBUILD_TESTING=OFF -DBUILD_FULL=OFF -DBUILD_STATIC=OFF \
-	-DPLUGINS="ALL;-yajl;-journald;-CRYPTO;-dbus;-dbusrecv;-xmltool;-curlget;-multifile" \
+	-DPLUGINS="ALL;-yajl;-journald;-crypto;-dbus;-dbusrecv;-xmltool;-curlget;-multifile" \
 	-DBINDINGS="cpp" \
 	-KDB_DEFAULT_STORAGE=ini \
 	-DTARGET_PLUGIN_FOLDER="" \

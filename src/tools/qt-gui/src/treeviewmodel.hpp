@@ -49,12 +49,12 @@ public:
 		ChildrenRole,		     ///< The role QML can access the children model of a ConfigNode at a specified index.
 		ChildrenHaveNoChildrenRole,  ///< The role QML can access if children of a ConfigNode at a specified index do have children
 		/// on their own.
-		MetaValueRole,   ///< The role QML can access the meta model of a ConfigNode at a specified index.
-		NodeRole,	///< The role QML can retrieve the ConfigNode at a specified index.
+		MetaValueRole,	 ///< The role QML can access the meta model of a ConfigNode at a specified index.
+		NodeRole,	 ///< The role QML can retrieve the ConfigNode at a specified index.
 		ParentModelRole, ///< The role QML can retrieve a pointer to the ParentModel of a ConfigNode.
-		IndexRole,       ///< The role QML can retrieve the index of a ConfigNode.
-		IsNullRole,      ///< The role QML can retrieve if the key of this node is null.
-		IsExpandedRole   ///< The role QML can retrieve if a ConfigNode is expanded.
+		IndexRole,	 ///< The role QML can retrieve the index of a ConfigNode.
+		IsNullRole,	 ///< The role QML can retrieve if the key of this node is null.
+		IsExpandedRole	 ///< The role QML can retrieve if a ConfigNode is expanded.
 	};
 
 	/**

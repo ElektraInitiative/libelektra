@@ -57,7 +57,7 @@ After starting the container, you should be automatically inside it in the worki
 Now run the script:
 
 ```sh
-scripts/reformat-all
+scripts/dev/reformat-all
 ```
 
 All your files should be reformatted afterwards.

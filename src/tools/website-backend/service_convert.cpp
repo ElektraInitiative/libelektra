@@ -136,7 +136,7 @@ std::vector<model::PluginFormat> ConvertEngine::loadEnabledFormats ()
 	std::vector<PluginSpec> plugins = db.lookupAllProvides (m_pluginProviderStorage);
 
 	// sort the plugins by status before processing
-	std::sort (plugins.begin (), plugins.end (), [this, &db](const PluginSpec & l, const PluginSpec & r) -> bool {
+	std::sort (plugins.begin (), plugins.end (), [this, &db] (const PluginSpec & l, const PluginSpec & r) -> bool {
 		return db.calculateStatus (db.lookupInfo (l, m_pluginStatus)) > db.calculateStatus (db.lookupInfo (r, m_pluginStatus));
 	});
 

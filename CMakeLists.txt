@@ -1,12 +1,12 @@
-cmake_minimum_required (VERSION 3.0)
+cmake_minimum_required (VERSION 3.4)
 
 # allows us to override platform specific variables
 set (CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_SOURCE_DIR}/scripts/cmake/Platform.cmake")
 
 set (KDB_VERSION_MAJOR 0)
 set (KDB_VERSION_MINOR 9)
-set (KDB_VERSION_MICRO 1)
-set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_MICRO}")
+set (KDB_VERSION_PATCH 2)
+set (KDB_VERSION "${KDB_VERSION_MAJOR}.${KDB_VERSION_MINOR}.${KDB_VERSION_PATCH}")
 
 set (ELEKTRA_DESCRIPTION
      "Elektra serves as a universal and secure framework to access configuration settings in a global, hierarchical key database.")

@@ -1,8 +1,8 @@
 package org.libelektra;
 
 import com.sun.jna.Pointer;
-import org.libelektra.exception.mapper.ExceptionMapperService;
 import org.libelektra.exception.KDBException;
+import org.libelektra.exception.mapper.ExceptionMapperService;
 
 /**
  * Represents session with the Key database. Close after usage, or simply use a try-with-resources statement.

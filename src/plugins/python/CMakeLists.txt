@@ -5,7 +5,7 @@ if (DEPENDENCY_PHASE)
 	find_package (PythonLibs 3 QUIET)
 	find_package (Pluginprocess)
 	find_swig ()
-	check_binding_included ("swig_python" BINDING_WAS_ADDED SUBDIRECTORY "swig/python" SILENT)
+	check_binding_included ("python" BINDING_WAS_ADDED SUBDIRECTORY "swig/python" SILENT)
 
 	if (PYTHONLIBS_FOUND
 	    AND SWIG_FOUND
@@ -37,7 +37,7 @@ if (DEPENDENCY_PHASE)
 	elseif (NOT PYTHONLIBS_FOUND)
 		remove_plugin (python "python 3 libs (libpython3-dev) not found")
 	elseif (NOT BINDING_WAS_ADDED)
-		remove_plugin (python "swig_python binding is required")
+		remove_plugin (python "python binding is required")
 	elseif (NOT PLUGINPROCESS_FOUND)
 		remove_plugin (python "Elektra's pluginprocess library is required")
 	else ()
@@ -55,7 +55,7 @@ add_plugin (
 
 if (ADDTESTING_PHASE)
 	# bindings are required for tests
-	check_binding_was_added ("swig_python" BINDING_WAS_ADDED)
+	check_binding_was_added ("python" BINDING_WAS_ADDED)
 	if (BUILD_TESTING AND BINDING_WAS_ADDED)
 
 		# test environment clears env so setting PYTHONPATH is no option we workaround this by changing the current directory to our
@@ -68,6 +68,6 @@ if (ADDTESTING_PHASE)
 		endif ()
 
 	else ()
-		message (WARNING "The swig_python binding is required for testing, test deactivated")
+		message (WARNING "The python binding is required for testing, test deactivated")
 	endif ()
 endif ()

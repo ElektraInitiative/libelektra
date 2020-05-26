@@ -767,7 +767,7 @@ __attribute__ ((noinline)) void benchmark_layer_withnoalloc9 (kdb::Environment &
 	for (long long i = 0; i < iterations1; ++i)
 	{
 		s.context ().withl (l1).withl (l2).withl (l3).withl (l4).withl (l5).withl (l6).withl (l7).withl (l8).withl (
-			l9, [&]() { x ^= add_contextual (s.bm, s.bm); });
+			l9, [&] () { x ^= add_contextual (s.bm, s.bm); });
 		x ^= add_contextual (s.bm, s.bm);
 	}
 	t.stop ();

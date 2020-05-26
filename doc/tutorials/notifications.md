@@ -408,7 +408,7 @@ in an ant colony but it also has disadvantages.
 Systems that bear _unwanted_ emergent behavior are difficult to manage and
 experience failures in the worst case.
 This kind of unwanted emergent behavior is called
-[_emergent misbehavior_](http://www.hpl.hp.com/techreports/2006/HPL-2006-2.html).
+[_emergent misbehavior_](https://dl.acm.org/doi/10.1145/1217935.1217964).
 Examples of emergent misbehavior are traffic jams or the
 [Millenium Footbridge](https://researchcourse.pbworks.com/f/structural+engineering.pdf)
 [incident in London](https://www.sciencedaily.com/releases/2005/11/051103080801.htm).

@@ -1,4 +1,4 @@
-set (PYTHON_MODULEPATH "${CMAKE_SWIG_OUTDIR}")
+set (PYTHON_MODULEPATH "${CMAKE_SWIG_OUTDIR}/..")
 
 macro (do_python_test source)
 	get_filename_component (name ${source} NAME)

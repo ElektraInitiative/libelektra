@@ -19,9 +19,9 @@
  */
 
 #include <kdb.h>
-#include <kdbhelper.h>       // elektraFree
-#include <kdbio.h>	   // I/O binding functions (elektraIo*)
-#include <kdbio/glib.h>      // I/O binding constructor for glib (elektraIoGlibNew)
+#include <kdbhelper.h>	     // elektraFree
+#include <kdbio.h>	     // I/O binding functions (elektraIo*)
+#include <kdbio/glib.h>	     // I/O binding constructor for glib (elektraIoGlibNew)
 #include <kdbnotification.h> // notification functions
 
 #include <glib-unix.h> // g_unix_signal_add()

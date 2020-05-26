@@ -1,9 +1,8 @@
 package org.libelektra;
 
+import com.sun.jna.Pointer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-
-import com.sun.jna.Pointer;
 
 /**
  * An {@link Iterator} over a {@link Key}'s name parts, separated by /.

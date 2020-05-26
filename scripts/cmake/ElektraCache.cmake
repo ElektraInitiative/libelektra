@@ -43,10 +43,10 @@ set (
 
 set (BINDINGS_DOC "Which bindings should be added? ALL for all available, DEFAULT for minimal set, see doc/COMPILE.md.")
 
-# TODO include swig_ruby when issue #1770 is resolved (also in scripts/configure-*)
+# TODO include ruby when issue #1770 is resolved (also in scripts/configure-*)
 set (
 	BINDINGS
-	"MAINTAINED;-EXPERIMENTAL;-DEPRECATED;-swig_ruby"
+	"MAINTAINED;-EXPERIMENTAL;-DEPRECATED;-ruby"
 	CACHE STRING ${BINDINGS_DOC})
 
 set (INFO_BINDINGS_DOC "only for informational purposes. Modify BINDINGS to change the list.")
@@ -389,7 +389,6 @@ mark_as_advanced (
 	NPM_EXECUTABLE
 	RONN_LOC
 	Boost_DIR
-	BOTAN_INCLUDE_DIRS
 	LIBGCRYPT_INCLUDE_DIR
 	XercesC_DIR
 	OPENSSL_INCLUDE_DIR

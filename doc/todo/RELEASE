@@ -32,9 +32,9 @@ Following shell expansions are used in this document:
 == Updates ==
 
 - Update doc/COMPILE.md to reflect actually tested setups
-- Update/run ~e/scripts/build-debian-package
-- Update contracts using update-infos-status
-- regenerate dot of plugins using scripts/draw-all-plugins
+- Update/run ~e/scripts/dev/build-debian-package
+- Update contracts using ~e/scripts/dev/update-infos-status
+- regenerate dot of plugins using ~e/scripts/dev/draw-all-plugins
 - run link checker: cd ~build && ~e/scripts/link-checker external-links.txt
 
 == Increment Version Number ==
@@ -42,30 +42,30 @@ Following shell expansions are used in this document:
 Increment version numbers in
 
 - CMakeLists.txt
-- ~e/scripts/build-debian-package
+- ~e/scripts/dev/build-debian-package
 - Change VERSION variable in build-server
 
 
 export VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
 export DVERSION=$VERSION-1
  dch --newversion $DVERSION "New upstream version."
- git-add debian/changelog
- git-commit -m "Debian Package $DVERSION (UNRELEASED)"
+ git add debian/changelog
+ git commit -m "Debian Package $DVERSION (UNRELEASED)"
 
 
 == Cleanup ==
 
 For the first few steps you have to work on branch master:
- git-checkout master
+ git checkout master
 
 If any feature branch is left over merge it:
- git-merge --no-ff feature
+ git merge --no-ff feature
 
 And now commit everything:
- git-commit -a
+ git commit -a
 
 Clean up the mess left over:
- git-clean -dfx
+ git clean -dfx
 
 Make an empty builddirectory:
  mkdir ~build
@@ -85,7 +85,7 @@ If version numbers are correct in
   mkdir ~elektra/$VERSION && kdb --version > ~elektra/$VERSION/version
 
 Rebuild cleanly, run all tests and also check for memleaks:
-  cd ~build && ~e/scripts/configure-debian ~e && make -j5 && make run_all -j5 && make run_memcheck -j5
+  cd ~build && ~e/scripts/dev/configure-debian ~e && make -j24 && make run_all -j24 && make run_memcheck -j24
 
 Check if there are really >=241 or >=131 tests
 
@@ -130,6 +130,9 @@ commands below work for copy&paste:
 == Prepare Source Package ==
 
 Build tar.gz:
+ export KDB_VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
+ # CMAKE_BINARY_DIR not working on my machine?
+ export CMAKE_BINARY_DIR=/home/mpranj/workspace/libelektra/build
  cd ~build && make source-package
 
 Check if tar is reproduceable + sign it:

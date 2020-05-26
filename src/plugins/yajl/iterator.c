@@ -108,8 +108,8 @@ Key * elektraNextNotBelow (KeySet * ks)
 	do
 	{
 		pos = ksGetCursor (ks); // remember candidate
-		previous = current;     // and remember last key
-		current = ksNext (ks);  // look forward to next key
+		previous = current;	// and remember last key
+		current = ksNext (ks);	// look forward to next key
 	} while (current && keyIsBelow (previous, current));
 
 	// jump to and return candidate, because next is known to be not

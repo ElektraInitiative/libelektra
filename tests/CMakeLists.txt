@@ -19,18 +19,14 @@ if (ENABLE_TESTING)
 		set (googletest_BINARY_DIR "${CMAKE_BINARY_DIR}/gtest")
 	else (DEFINED GOOGLETEST_ROOT)
 		include (DownloadProject)
-		if (CMAKE_VERSION VERSION_LESS 3.2)
-			set (UPDATE_DISCONNECTED_IF_AVAILABLE "")
-		else ()
-			set (UPDATE_DISCONNECTED_IF_AVAILABLE "UPDATE_DISCONNECTED 1")
-		endif ()
 
 		download_project (
 			PROJ googletest
 			GIT_REPOSITORY https://github.com/google/googletest.git
-			GIT_TAG release-1.8.1
+			GIT_TAG release-1.10.0
 				QUIET
-				${UPDATE_DISCONNECTED_IF_AVAILABLE})
+				UPDATE_DISCONNECTED
+				1)
 	endif (DEFINED GOOGLETEST_ROOT)
 
 	# Prevent GoogleTest from overriding our compiler/linker options when building with Visual Studio
@@ -66,24 +62,25 @@ macro (do_test source)
 	set_property (TEST ${source} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 endmacro (do_test)
 
-if (NOT CMAKE_VERSION VERSION_LESS 3.2)
-	set (USES_TERMINAL USES_TERMINAL)
-endif (NOT CMAKE_VERSION VERSION_LESS 3.2)
-
+# Since we want to see the output of the tests immediately we specify the parameter `USES_TERMINAL` in the targets below. If we do not do
+# that, then the output of the commands will be buffered.
 add_custom_target (
 	run_all
 	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_all" "$<CONFIGURATION>"
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" ${USES_TERMINAL})
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	USES_TERMINAL)
 
 add_custom_target (
 	run_checkshell
 	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_checkshell" "$<CONFIGURATION>"
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" ${USES_TERMINAL})
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	USES_TERMINAL)
 
 add_custom_target (
 	run_nocheckshell
 	COMMAND "${CMAKE_BINARY_DIR}/scripts/dev/run_nocheckshell" "$<CONFIGURATION>"
-	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}" ${USES_TERMINAL})
+	WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+	USES_TERMINAL)
 
 add_custom_target (
 	run_nokdbtests

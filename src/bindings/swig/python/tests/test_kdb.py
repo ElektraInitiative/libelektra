@@ -16,7 +16,7 @@ class Constants(unittest.TestCase):
 		self.assertIsInstance(kdb.VERSION,       str)
 		self.assertIsInstance(kdb.VERSION_MAJOR, int)
 		self.assertIsInstance(kdb.VERSION_MINOR, int)
-		self.assertIsInstance(kdb.VERSION_MICRO, int)
+		self.assertIsInstance(kdb.VERSION_PATCH, int)
 		self.assertIsNone(kdb.KS_END)
 
 class KDB(unittest.TestCase):
@@ -53,6 +53,15 @@ class KDB(unittest.TestCase):
 			ks = kdb.KeySet(100)
 			db.get(ks, TEST_NS)
 			self.assertEqual(ks[TEST_NS + "/mykey"].value, "new_value")
+
+	def test_ensure(self):
+		with kdb.KDB() as db:
+			ks = kdb.KeySet()
+			k = kdb.Key("system/elektra/ensure/plugins/global/gopts", kdb.KEY_VALUE, "mounted")
+			parent = kdb.Key("system/elektra")
+			rc = db.ensure (ks, parent)
+			self.assertEqual(rc, 0)
+			db.get(ks, parent)
 
 	@classmethod
 	def tearDownClass(cls):

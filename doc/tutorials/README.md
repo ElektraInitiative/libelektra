@@ -42,7 +42,8 @@ already somehow integrated with Elektra.
 - [Export Configuration](export.md)
 - [Intercept Environment](/src/bindings/intercept/env/README.md)
 - [Intercept File System](/src/bindings/intercept/fs/README.md)
-- [Merge Configuration](merge.md)
+- [Merge Configuration](cmerge.md) (new version)
+- [Merge Configuration](merge.md) (deprecated)
 - [Validate Configuration](validation.md)
 - [Encrypt Configuration](crypto.md)
 
@@ -65,3 +66,4 @@ These tutorials provide additional information on how to
 install and set up specific plugins and tools.
 
 - [Snippet Sharing REST-Service](snippet-sharing-rest-service.md)
+- [Webui](install-webui.md)

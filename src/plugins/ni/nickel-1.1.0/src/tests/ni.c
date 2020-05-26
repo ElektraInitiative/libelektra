@@ -181,9 +181,9 @@ elektraNi_Free (node);
 END_TEST ()
 
 BEGIN_TEST (parse_spaces_quotes)
-char * names[24] = { "a", "b",  "c", "d",  "e ", "f", " g", "h", "i",  "j", "k",  "l",
-		     "m", "n ", "o", " p", "q",  "r", "s",  "t", "u ", "v", " w", "x" };
-char * values[24] = { "1",  "2",  "3",  "4",  "5",  "6",  "7",  "8",  "9",  "10", "11", "12",
+char * names[24] = { "a", "b",	"c", "d",  "e ", "f", " g", "h", "i",  "j", "k",  "l",
+		     "m", "n ", "o", " p", "q",	 "r", "s",  "t", "u ", "v", " w", "x" };
+char * values[24] = { "1",  "2",  "3",	"4",  "5",  "6",  "7",	"8",  "9",  "10", "11", "12",
 		      "13", "14", "15", "16", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
 elektraNi_node node = elektraNi_New ();
@@ -324,7 +324,7 @@ char * names[10] = {
 	"loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong",
 	"something"
 };
-char * values[10] = { "not ignored",     "",     "multi line", "enated", "line\ninside quotes", "\\\a\r\n\x11\b\056\t\\t\\xj",
+char * values[10] = { "not ignored",	 "",	 "multi line", "enated", "line\ninside quotes", "\\\a\r\n\x11\b\056\t\\t\\xj",
 		      "; not a comment", "yeah", "truncated",  "" };
 
 elektraNi_node node = elektraNi_New ();

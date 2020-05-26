@@ -303,6 +303,6 @@ int main (int argc, char ** argv)
 	test_file_faulty_signature ();
 	test_teardown ();
 
-	print_result (ELEKTRA_PLUGIN_NAME);
+	print_result (PLUGIN_NAME);
 	return nbError;
 }

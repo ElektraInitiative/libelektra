@@ -1,6 +1,6 @@
 language: cpp
 dist: bionic
-osx_image: xcode10.2
+osx_image: xcode11.4
 
 #
 # Define the build matrix
@@ -39,9 +39,7 @@ matrix:
           -constants;\
           -counter;\
           -cpptemplate;\
-          -crypto_botan;\
-          -crypto_gcrypt;\
-          -crypto_openssl;\
+          -crypto;\
           -csvstorage;\
           -curlget;\
           -date;\
@@ -121,7 +119,7 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-trusty-7
+            - llvm-toolchain-bionic-7
             - ubuntu-toolchain-r-test
           packages:
             - clang-7
@@ -177,9 +175,11 @@ matrix:
             - swig
             - yajl
             - zeromq
+          update: true
       env:
         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
-        - PLUGINS='ALL;-xerces'
+        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        - PLUGINS='ALL;-xerces;-curlget'
 
     - os: linux
       name: 🐧 GCC
@@ -200,21 +200,21 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-xenial-7
+            - llvm-toolchain-bionic
           packages:
             - clang-7
-            - clang-format-7
+            - clang-format-9
       env:
         - CC_COMPILER=clang-7
         - CXX_COMPILER=clang++-7
 
 before_install:
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      rvm install 2.5.1
-      rvm use 2.5.1
+    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
+      rvm install 2.6.5
+      rvm use 2.6.5
       gem install test-unit --no-document
-      if [[ "$CC" == "gcc" ]]; then
+      if [ "$CC" = 'gcc' ]; then
         brew upgrade gcc@9
         export CC=gcc-9
         export CXX=g++-9
@@ -224,9 +224,9 @@ before_install:
       brew services start dbus
     fi
   - |
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
-      [[ -n "$CC_COMPILER" ]] && export CC="$CC_COMPILER"
-      [[ -n "$CXX_COMPILER" ]] && export CXX="$CXX_COMPILER"
+    if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
+      [ -n "$CC_COMPILER" ] && export CC="$CC_COMPILER"
+      [ -n "$CXX_COMPILER" ] && export CXX="$CXX_COMPILER"
       sudo apt-get -qq update
       sudo apt-get install ninja-build
       sudo apt-get install devscripts # contains `checkbashisms`
@@ -238,7 +238,7 @@ before_install:
       sudo apt-get install libzmq3-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
-      sudo pip install cmake-format[yaml]==0.6
+      sudo pip install cmake-format[yaml]==0.6.3
     fi
 
 #
@@ -248,7 +248,7 @@ before_install:
 before_script:
   - |
     cd $TRAVIS_BUILD_DIR
-    if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+    if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
       CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
       export PATH=$PATH:"$PWD/install/bin"
       export LD_LIBRARY_PATH="$PWD/install/lib"

@@ -1,10 +1,10 @@
 package org.libelektra;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.libelektra.exception.KDBException;
 import org.libelektra.exception.mapper.ExceptionMapperService;
-
-import static org.junit.Assert.assertEquals;
 
 public class ExceptionMapperTest
 {

@@ -169,6 +169,9 @@ where `handle` is the handle returned by `filename`.
 
 ## Limitations
 
-If none of the resolving techniques work, the resolver will fail during `kdbOpen`.
-This happens, for example, with the default resolver (ELEKTRA_VARIANT_USER `hpu`)
-if neither: `$HOME`, `$USER`, nor any home directory in `/etc/passwd` is set.
+- If none of the resolving techniques work, the resolver will fail during `kdbOpen`.
+  This happens, for example, with the default resolver (ELEKTRA_VARIANT_USER `hpu`)
+  if neither: `$HOME`, `$USER`, nor any home directory in `/etc/passwd` is set.
+- Conflicts with removed files are not handled.
+- Links are not handled.
+- uid/gid from files are not restored.

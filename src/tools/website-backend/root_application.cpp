@@ -115,7 +115,7 @@ void RootApp::version ()
 			kdb::KeySet ks;
 			kdb.get (ks, "system/elektra/version/constants");
 
-			auto ksLookup = [&ks, &error](const std::string key, cppcms::json::value & out, const bool isInt) {
+			auto ksLookup = [&ks, &error] (const std::string key, cppcms::json::value & out, const bool isInt) {
 				kdb::Key k = ks.lookup (key);
 				if (!k)
 				{
@@ -137,7 +137,7 @@ void RootApp::version ()
 			ksLookup ("system/elektra/version/constants/KDB_VERSION", data["elektra"]["version"], false);
 			ksLookup ("system/elektra/version/constants/KDB_VERSION_MAJOR", data["elektra"]["major"], true);
 			ksLookup ("system/elektra/version/constants/KDB_VERSION_MINOR", data["elektra"]["minor"], true);
-			ksLookup ("system/elektra/version/constants/KDB_VERSION_MICRO", data["elektra"]["micro"], true);
+			ksLookup ("system/elektra/version/constants/KDB_VERSION_PATCH", data["elektra"]["patch"], true);
 		}
 		catch (kdb::KDBException const & e)
 		{
@@ -153,7 +153,7 @@ void RootApp::version ()
 			data["elektra"]["version"] = KDB_VERSION;
 			data["elektra"]["major"] = KDB_VERSION_MAJOR;
 			data["elektra"]["minor"] = KDB_VERSION_MINOR;
-			data["elektra"]["micro"] = KDB_VERSION_MICRO;
+			data["elektra"]["patch"] = KDB_VERSION_PATCH;
 		}
 
 		RootApp::setOk (response (), data, MIME_APPLICATION_JSON);

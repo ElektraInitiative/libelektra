@@ -9,7 +9,7 @@
 %module kdb
 #pragma SWIG nowarn=317 // Disable warning: Specialization of non-template
 
-%include "stl.i"
+%include <stl.i>
 %include "../common.i"
 %feature("autodoc", "3");
 

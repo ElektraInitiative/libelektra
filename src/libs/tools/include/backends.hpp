@@ -27,9 +27,9 @@ namespace tools
  */
 struct BackendInfo
 {
-	std::string name;       ///< escaped mountpoint name (except for old mountpoints)
+	std::string name;	///< escaped mountpoint name (except for old mountpoints)
 	std::string mountpoint; ///< where the backend is mounted
-	std::string path;       ///< the configuration file path to this backend
+	std::string path;	///< the configuration file path to this backend
 };
 
 /**

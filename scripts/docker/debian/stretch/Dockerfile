@@ -23,7 +23,6 @@ RUN apt-get update \
         liblua5.3-dev \
         tclcl-dev \
         libaugeas-dev \
-        libbotan1.10-dev \
         libgpgme-dev \
         libyajl-dev \
         git \
@@ -77,7 +76,7 @@ RUN apt-get update \
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.8.1
+ARG GTEST_VER=release-1.10.0
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -161,7 +160,7 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # cmake-format
-RUN pip install cmake-format[yaml]==0.6
+RUN pip install cmake-format[yaml]==0.6.3
 
 # Coveralls
 ENV COVERALLS_VIRTUALENV_PATH=/home/jenkins/coveralls

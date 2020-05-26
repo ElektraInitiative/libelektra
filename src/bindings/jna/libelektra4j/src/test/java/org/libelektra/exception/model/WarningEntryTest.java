@@ -1,10 +1,10 @@
 package org.libelektra.exception.model;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.libelektra.Key;
 import org.libelektra.exception.InstallationException;
-
-import static org.junit.Assert.assertEquals;
 
 public class WarningEntryTest
 {

@@ -174,7 +174,7 @@ int GetCommand::execute (Cmdline const & cl)
 			const uint8_t * data = static_cast<const uint8_t *> (k.getValue ());
 			for (auto position = 0; position < k.getBinarySize (); position++)
 			{
-				cout << "\\x" << unsigned(data[position]);
+				cout << "\\x" << unsigned (data[position]);
 			}
 			cout << std::dec;
 		}

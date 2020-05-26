@@ -5,7 +5,7 @@ if (APPLE)
 	set (CMAKE_FIND_FRAMEWORK "LAST") # try user environment first, then search for system libs  required on OSX under rvm
 
 	# Prefer Ruby versions installed via Homebrew
-	set (RUBY_DIRECTORIES "/usr/local/opt/ruby@2.5" "/usr/local/opt/ruby")
+	set (RUBY_DIRECTORIES "/usr/local/opt/ruby@2.6" "/usr/local/opt/ruby")
 	foreach (directory ${RUBY_DIRECTORIES})
 		if (EXISTS ${directory})
 			list (APPEND CMAKE_PREFIX_PATH ${directory})
@@ -16,16 +16,18 @@ endif ()
 find_package (Ruby QUIET)
 
 if (NOT RUBY_FOUND)
-	exclude_binding (swig_ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
+	exclude_binding (ruby "ruby interpreter or ruby header files not found (package ruby-dev/ruby-devel installed?)")
+elseif (SWIG_VERSION VERSION_LESS "4.0.2" AND (RUBY_VERSION VERSION_GREATER "2.7.0" OR RUBY_VERSION VERSION_EQUAL "2.7.0"))
+	exclude_binding (ruby "SWIG <= 4.0.1 incompatible with Ruby >= 2.7")
 elseif (SWIG_VERSION MATCHES "^([12]\\.)|(3\\.0\\.[01234567])$")
-	exclude_binding (swig_ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
+	exclude_binding (ruby "found SWIG version (${SWIG_VERSION}) is not suitable. SWIG version >= 3.0.8 required")
 else ()
 	if (NOT BUILD_SHARED)
-		exclude_binding (swig_ruby "it can only be built if `BUILD_SHARED` is enabled")
+		exclude_binding (ruby "it can only be built if `BUILD_SHARED` is enabled")
 		return ()
 	endif (NOT BUILD_SHARED)
 
-	add_binding (swig_ruby)
+	add_binding (ruby)
 
 	add_headers (HDR_FILES)
 	add_cppheaders (HDR_FILES)

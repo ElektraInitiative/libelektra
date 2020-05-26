@@ -22,15 +22,11 @@
 
 #include "testdata.h"
 
-// version 6 and 7 of clang-format don't agree whether it is supposed to be *[] or * [] so disable it here
-// TODO: re-enable clang-format once version 7 is used on build server
-// clang-format off
 #define ARGS(NAME, ...) ((const char *[]){ TESTAPP_PATH, NAME, __VA_ARGS__, NULL })
 #define ENVP(LD_LIB_PATH, ...) ((const char *[]){ LD_LIB_PATH, __VA_ARGS__, NULL })
 
 #define NO_ARGS(NAME) ((const char *[]){ TESTAPP_PATH, NAME, NULL })
 #define NO_ENVP(LD_LIB_PATH) ((const char *[]){ LD_LIB_PATH, NULL })
-// clang-format on
 
 static void run_test (const char ** argv, const char ** envp)
 {

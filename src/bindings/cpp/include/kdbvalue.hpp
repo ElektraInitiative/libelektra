@@ -203,7 +203,7 @@ public:
 	}
 
 	ValueSubject & v;   // this pointer
-	Func & execute;     // to be executed within lock
+	Func & execute;	    // to be executed within lock
 	bool hasChanged;    // if the value (m_cache) has changed and value propagation is needed
 	std::string oldKey; // old name before assignment
 	std::string newKey; // new name after assignment
@@ -234,7 +234,7 @@ public:
 	}
 
 	std::string evaluate (std::string const & key_name,
-			      std::function<bool(std::string const &, std::string &, bool in_group)> const &) const
+			      std::function<bool (std::string const &, std::string &, bool in_group)> const &) const
 	{
 		return key_name;
 	}
@@ -448,7 +448,7 @@ public:
 	{
 		assert (m_spec.getName ()[0] == '/' && "spec keys are not yet supported");
 		m_context.attachByName (m_spec.getName (), *this);
-		Command::Func fun = [this]() -> Command::Pair {
+		Command::Func fun = [this] () -> Command::Pair {
 			this->unsafeUpdateKeyUsingContext (m_context.evaluate (m_spec.getName ()));
 			this->unsafeSyncCache (); // set m_cache
 			return std::make_pair ("", m_key.getName ());
@@ -459,7 +459,7 @@ public:
 
 	~Value<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5, PolicySetter6> ()
 	{
-		Command::Func fun = [this]() -> Command::Pair {
+		Command::Func fun = [this] () -> Command::Pair {
 			std::string oldName = m_key.getName ();
 			m_key = static_cast<ckdb::Key *> (nullptr);
 			// after destructor we do not need to care about
@@ -629,7 +629,7 @@ public:
 	 */
 	void syncCache () const
 	{
-		Command::Func fun = [this]() -> Command::Pair {
+		Command::Func fun = [this] () -> Command::Pair {
 			std::string const & oldKey = m_key.getName ();
 			this->unsafeLookupKey ();
 			this->unsafeSyncCache ();
@@ -644,7 +644,7 @@ public:
 	 */
 	void syncKeySet () const
 	{
-		Command::Func fun = [this]() -> Command::Pair {
+		Command::Func fun = [this] () -> Command::Pair {
 			std::string const & oldKey = m_key.getName ();
 			this->unsafeSyncKeySet ();
 			return std::make_pair (oldKey, m_key.getName ());
@@ -721,7 +721,7 @@ private:
 		std::cout << "update context " << evaluatedName << " from " << m_spec.getName () << " with write " << write << std::endl;
 #endif
 
-		Command::Func fun = [this, &evaluatedName, write]() -> Command::Pair {
+		Command::Func fun = [this, &evaluatedName, write] () -> Command::Pair {
 			std::string oldKey = m_key.getName ();
 			if (write && evaluatedName == oldKey)
 			{
@@ -752,7 +752,7 @@ private:
 		{
 			dep.setMeta ("order", meta.getString ());
 		}
-		m_context.evaluate (m_spec.getName (), [&](std::string const & current_id, std::string &, bool) {
+		m_context.evaluate (m_spec.getName (), [&] (std::string const & current_id, std::string &, bool) {
 #if DEBUG && VERBOSE
 			std::cout << "add dep " << current_id << " to " << dep.getName () << std::endl;
 #endif

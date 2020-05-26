@@ -6,10 +6,10 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-%include "attribute.i"
-%include "std_string.i"
-%include "stdint.i"
-%include "exception.i"
+%include <attribute.i>
+%include <std_string.i>
+%include <stdint.i>
+%include <exception.i>
 
 %{
   extern "C" {
@@ -43,7 +43,7 @@
 %constant const char *VERSION = KDB_VERSION;
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;
 %constant const short VERSION_MINOR = KDB_VERSION_MINOR;
-%constant const short VERSION_MICRO = KDB_VERSION_MICRO;
+%constant const short VERSION_PATCH = KDB_VERSION_PATCH;
 // we only care about the enums. ignore the c functions
 %ignore ckdb;
 %include "kdb.h"
@@ -60,6 +60,7 @@
     KDB_CATCH_EX(kdb, Exception)
 
   #define KDB_EXCEPTIONS \
+    KDB_CATCH_EX(kdb, ContractException) \
     KDB_CATCH_EX(kdb, KDBException) \
     KDB_CATCH_EX(kdb, Exception)
 %}

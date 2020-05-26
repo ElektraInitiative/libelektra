@@ -3,7 +3,6 @@
 src/plugins/lua/CMakeLists.txt  for APPLE
 src/plugins/jni/CMakeLists.txt
 src/plugins/python/CMakeLists.txt
-src/plugins/python2/CMakeLists.txt
 tests/shell/check_merge.sh   for INI
 tests/shell/shell_recorder/mathcheck.esr     for INI (hard-coded ni)
 doc/help/kdb-get.md   for INI
@@ -12,8 +11,6 @@ doc/help/kdb-get.md   for INI
 
 We disabled the tests
 
-- `testmod_crypto_botan`,
-- `testmod_crypto_openssl`,
 - `testmod_dbus`,
 - `testmod_dbusrecv`,
 - `testmod_fcrypt`,
@@ -24,6 +21,8 @@ in the function `ctest` in the file `scripts/jenkins/Jenkinsfile`, since they ar
 [cause problems in high load scenarios](https://issues.libelektra.org/2439).
 
 We also disabled `testmod_zeromqsend` from `kdb run_all` in `tests/shell/run_all.sh`. (See commit 526f916d3c983d5310448c002510f06c4d4b43ac)
+
+We disabled `testmod_crypto` on `debian-unstable-full-clang` due to memory leaks.
 
 ## error
 
@@ -99,8 +98,6 @@ ASAN disables the following parts during cmake as they throw errors:
   - SWIG
   - GLIB
   - IO (+async notification example)
-- plugins:
-  - crypto_botan
 
 Further kdb_check_internal skips tests that output sanitizer warnings during
 load as it would make the test fail.
@@ -110,7 +107,7 @@ mount spec step an memory leak is detected which fails the test.
 
 ## bindings
 
-- swig_ruby excluded due to failing tests (see #1770)
+- ruby excluded due to failing tests (see #1770)
 
 
 == ABI compatibility tests ==

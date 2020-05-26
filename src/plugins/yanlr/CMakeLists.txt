@@ -47,7 +47,7 @@ function (check_dependencies)
 		endif (ANTLR4_NOT_AVAILABLE)
 	endif (ANTLR4_NOT_AVAILABLE AND ANTLR_NOT_AVAILABLE)
 
-	string (REGEX REPLACE ".*Version ([0-9]+\\.[0-9]+\\.[0-9]+).*" "\\1" ANTLR_VERSION ${ANTLR_VERSION})
+	string (REGEX REPLACE ".*Version ([0-9]+\\.[0-9]+(\\.[0-9]+)?).*" "\\1" ANTLR_VERSION ${ANTLR_VERSION})
 	if ("${ANTLR_VERSION}" VERSION_LESS 4.6)
 		set (
 			FAILURE_MESSAGE
@@ -187,7 +187,8 @@ if ("${CMAKE_SYSTEM_NAME}" STREQUAL Linux AND NOT ${ENABLE_ASAN})
 	execute_process (
 		COMMAND ldd --version
 		RESULT_VARIABLE ANTLR4_NOT_AVAILABLE
-		OUTPUT_VARIABLE LDD_OUTPUT)
+		OUTPUT_VARIABLE LDD_OUTPUT
+		ERROR_QUIET)
 	if ("${LDD_OUTPUT}" MATCHES "GLIBC|GNU libc")
 		set (TEST_ARGUMENTS "")
 	endif ("${LDD_OUTPUT}" MATCHES "GLIBC|GNU libc")

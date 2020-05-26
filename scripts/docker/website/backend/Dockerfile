@@ -21,7 +21,7 @@ RUN apt-get update && apt-get -y install \
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.8.1
+ARG GTEST_VER=release-1.10.0
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -42,8 +42,8 @@ RUN curl -o cppcms-${CPPCMS_VERSION}.tar.bz -L \
     && make install \
     && cd /app/deps \
     && rm -Rf cppcms-${CPPCMS_VERSION}
-ARG JANSSON_VERSION="2.11"
-RUN curl -O http://www.digip.org/jansson/releases/jansson-${JANSSON_VERSION}.tar.gz \
+ARG JANSSON_VERSION="v2.11"
+RUN curl -O https://github.com/akheron/jansson/archive/${JANSSON_VERSION}.tar.gz \
     && tar -xvzf jansson-${JANSSON_VERSION}.tar.gz \
     && cd jansson-${JANSSON_VERSION} \
     && mkdir build && cd build \
@@ -74,7 +74,7 @@ RUN ldconfig \
     && cd build \
     && cmake -DENABLE_ASAN=ON -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
              -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
-             -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;-python2;file;yajl" \
+             -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;file;yajl" \
              -DTOOLS="kdb;website-backend" \
              -DCMAKE_C_FLAGS="$C_FLAGS" \
              -DCMAKE_CXX_FLAGS="$C_FLAGS" \

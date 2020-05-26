@@ -371,7 +371,7 @@ std::vector<PluginSpec> ModulesPluginDatabase::lookupAllProvides (std::string co
 		std::vector<PluginSpec> plugins;
 		plugins.reserve (foundPlugins.size ());
 		std::for_each (foundPlugins.begin (), foundPlugins.end (),
-			       [&plugins](const std::map<int, PluginSpec>::value_type & elem) { plugins.push_back (elem.second); });
+			       [&plugins] (const std::map<int, PluginSpec>::value_type & elem) { plugins.push_back (elem.second); });
 		return plugins;
 	}
 	catch (kdb::tools::NoPlugin const & e)
@@ -407,7 +407,7 @@ std::vector<std::string> PluginVariantDatabase::listAllPlugins () const
 {
 	std::vector<std::string> plugins (ModulesPluginDatabase::listAllPlugins ());
 	plugins.erase (std::remove_if (plugins.begin (), plugins.end (),
-				       [this](const std::string & elem) {
+				       [this] (const std::string & elem) {
 					       Key k ("system/elektra/plugins", KEY_END);
 					       k.addBaseName (elem);
 					       k.addBaseName ("disable");

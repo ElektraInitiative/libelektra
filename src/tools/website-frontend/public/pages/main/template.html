@@ -15,29 +15,6 @@
                     placeholder="{{ 'APP.ENTRIES.SEARCH.SEARCHBOX.PLACEHOLDER' | translate }}" >
                 </div>
             </div>
-
-            <ul class="nav navbar-nav navbar-right col-md-3" style="margin-right:0px">
-                <li ng-if="authenticated" class="dropdown pull-right" uib-dropdown>
-                    <a href="#" uib-dropdown-toggle>
-                        {{ $rootScope.currentUser.username }} <span class="caret"></span>
-                    </a>
-                    <ul uib-dropdown-menu>
-                        <li>
-                            <a ui-sref="main.account">{{ 'APP.NAV.BUTTON.ACCOUNT' | translate }}</a>
-                        </li>
-                        <li>
-                            <a href="#" ng-click="ctrl.goMySnippets()">{{ 'APP.NAV.BUTTON.MYSNIPPETS' | translate }}</a>
-                        </li>
-                        <li role="separator" class="divider"></li>
-                        <li>
-                            <a ui-sref="main.auth.logout">{{ 'APP.NAV.BUTTON.LOGOUT' | translate }}</a>
-                        </li>
-                    </ul>
-                </li>
-                <li ng-if="!authenticated" class="pull-right">
-                    <a ui-sref="main.auth.login">{{ 'APP.NAV.BUTTON.LOGIN' | translate }}</a>
-                </li>
-            </ul>
         </div>
     </nav>
 
@@ -69,22 +46,6 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
-                    <li ng-class="{active: $state.includes('main.conversion')}">
-                        <a ui-sref="main.conversion">{{ 'APP.NAV.BUTTON.MAIN.CONVERSION' | translate }}</a>
-                    </li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right" style="margin-right:0px">
-                    <li ng-if="!authenticated">
-                        <a ui-sref="main.auth.login">{{ 'APP.NAV.BUTTON.SHARESNIPPET' | translate }}</a>
-                    </li>
-                    <li ng-if="authenticated" has-rank="10"
-                        ng-class="{active: $state.includes('main.entries.create')}">
-                        <a ui-sref="main.entries.create">{{ 'APP.NAV.BUTTON.NEWNETRY' | translate }}</a>
-                    </li>
-                    <li ng-if="authenticated" has-rank="100"
-                        ng-class="{active: $state.includes('main.users.search')}">
-                        <a ui-sref="main.users.search">{{ 'APP.NAV.BUTTON.MAIN.USERS' | translate }}</a>
                     </li>
                 </ul>
             </div>

@@ -32,7 +32,6 @@ RUN apt-get update \
         libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-dev \
-        libbotan-2-dev \
         libdbus-1-dev \
         libev-dev \
         libgirepository1.0-dev \
@@ -78,14 +77,13 @@ RUN apt-get update \
         wine \
         rustc \
         clang-6.0 \
-        libbotan-2-dev \
         libcurl4-gnutls-dev \
     && rm -rf /var/lib/apt/lists/*
 
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.8.1
+ARG GTEST_VER=release-1.10.0
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
@@ -127,7 +125,7 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # cmake-format
-RUN pip install cmake-format[yaml]==0.6
+RUN pip install cmake-format[yaml]==0.6.3
 
 # Coveralls
 ENV COVERALLS_VIRTUALENV_PATH=/home/jenkins/coveralls

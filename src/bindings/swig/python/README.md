@@ -1,6 +1,6 @@
 - infos =
 - infos/author = Manuel Mausz <manuel-elektra@mausz.at>
-- infos/status =
+- infos/status = maintained
 - infos/provides = swig
 - infos/description =
 

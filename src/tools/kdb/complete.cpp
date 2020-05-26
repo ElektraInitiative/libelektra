@@ -84,7 +84,7 @@ void CompleteCommand::complete (string const & argument, Cmdline const & cl)
 		if ((!parsedArgument.isValid () || !shallShowNextLevel (argument)) && parsedArgument.getBaseName ().empty ())
 		{ // is it a namespace completion?
 			const Key root = Key ("/", KEY_END);
-			const auto filter = [&](const pair<Key, pair<int, int>> & c) {
+			const auto filter = [&] (const pair<Key, pair<int, int>> & c) {
 				return filterDepth (cl.minDepth, cl.maxDepth, c) && filterName (argument, c);
 			};
 			printResults (root, cl.minDepth, cl.maxDepth, cl, analyze (getKeys (root, false, cl), cl), filter, printResult);
@@ -124,7 +124,7 @@ void CompleteCommand::completeNormal (string const & argument, Key const & parse
 	const auto nameFilter = root.isCascading () ? filterCascading : filterName;
 	// Let elektra handle the escaping of the input for us
 	const string argumentEscaped = parsedArgument.getFullName ();
-	const auto filter = [&](const pair<Key, pair<int, int>> & c) {
+	const auto filter = [&] (const pair<Key, pair<int, int>> & c) {
 		return filterDepth (cl.minDepth + offset,
 				    max (cl.maxDepth, cl.maxDepth > INT_MAX - offset ? INT_MAX : cl.maxDepth + offset), c) &&
 		       nameFilter (argument, c);
@@ -172,8 +172,8 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 
 		if (current.isDirectBelow (parent))
 		{ // hierarchy continues at the current level
-			increaseCount (hierarchy, parent, [](int p) { return p; });
-			increaseCount (hierarchy, current, [=](int) { return curDepth; });
+			increaseCount (hierarchy, parent, [] (int p) { return p; });
+			increaseCount (hierarchy, current, [=] (int) { return curDepth; });
 		}
 		else
 		{ // hierarchy does not fit the current parent, expand the current key to the stack to find the new parent
@@ -209,8 +209,8 @@ const map<Key, pair<int, int>> CompleteCommand::analyze (KeySet const & ks, Cmdl
 
 void CompleteCommand::printResults (
 	Key const & root, const int minDepth, const int maxDepth, Cmdline const & cl, map<Key, pair<int, int>> const & result,
-	std::function<bool(pair<Key, pair<int, int>> const & current)> const & filter,
-	std::function<void(pair<Key, pair<int, int>> const & current, const bool verbose)> const & resultPrinter)
+	std::function<bool (pair<Key, pair<int, int>> const & current)> const & filter,
+	std::function<void (pair<Key, pair<int, int>> const & current, const bool verbose)> const & resultPrinter)
 {
 	if (cl.verbose)
 	{
@@ -317,7 +317,7 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 		{
 			// since ens are numbers, there is no way to get a string representation if not found in that case
 			bool found = false;
-			for (const string ns : namespaces)
+			for (const string & ns : namespaces)
 			{
 				found = found || ckdb::keyGetNamespace (Key (ns, KEY_END).getKey ()) == ens;
 			}
@@ -328,7 +328,7 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 		}
 	}
 
-	for (const string ns : namespaces)
+	for (const string & ns : namespaces)
 	{
 		const Key nsKey (ns, KEY_END);
 		if ((cl.debug || cl.verbose) && ckdb::keyGetNamespace (nsKey.getKey ()) == KEY_NS_EMPTY)
@@ -339,7 +339,7 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 	}
 }
 
-void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, Key const & key, function<int(int)> const & depthIncreaser)
+void CompleteCommand::increaseCount (map<Key, pair<int, int>> & hierarchy, Key const & key, function<int (int)> const & depthIncreaser)
 {
 	const pair<int, int> prev = hierarchy[key];
 	hierarchy[key] = pair<int, int> (prev.first + 1, depthIncreaser (prev.second));

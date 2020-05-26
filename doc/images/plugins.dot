@@ -150,7 +150,6 @@ strict digraph G {
 	process [shape=Mdiamond];
 	profile [shape=Mdiamond];
 	python [shape=Mdiamond];
-	python2 [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	quickdump -> storage;
 	quickdump [shape=Mdiamond];
@@ -213,10 +212,6 @@ strict digraph G {
 	yajl -> storage;
 	json [shape=Mdiamond];
 	yajl -> json;
-	storage [shape=Mdiamond];
-	yambi -> storage;
-	yaml [shape=Mdiamond];
-	yambi -> yaml;
 	storage [shape=Mdiamond];
 	yamlcpp -> storage;
 	yaml [shape=Mdiamond];

@@ -1,9 +1,8 @@
 package org.libelektra;
 
+import com.sun.jna.Pointer;
 import java.util.Arrays;
 import java.util.Iterator;
-
-import com.sun.jna.Pointer;
 
 /**
  * A keyset holds together a set of keys.

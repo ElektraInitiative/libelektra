@@ -741,7 +741,7 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 	// write the meta keys into place
 	for (size_t i = 0; i < dynArray->size; ++i)
 	{
-		Key * curMeta = dynArray->keyArray[i];	// old key location
+		Key * curMeta = dynArray->keyArray[i];	      // old key location
 		Key * mmapMetaKey = (Key *) mmapAddr->keyPtr; // new key location
 		*mmapMetaKey = *curMeta;
 		mmapAddr->keyPtr += SIZEOF_KEY;

@@ -3,7 +3,6 @@ package org.libelektra;
 import static org.junit.Assert.*;
 
 import java.util.Iterator;
-
 import org.junit.Test;
 import org.libelektra.Key;
 import org.libelektra.Key.KeyInvalidName;

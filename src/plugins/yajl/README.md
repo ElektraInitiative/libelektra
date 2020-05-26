@@ -161,6 +161,10 @@ kdb set user/tests/yajl/roots/bloody/roots 'No Roots'
 
 # Add an array containing two elements
 kdb set user/tests/yajl/now ', Now'
+# Elektra arrays require the metakey `array` to the parent.
+# Otherwise the keys below `user/tests/yajl/now` would be
+# interpreted as normal key-value pairs.
+kdb meta-set user/tests/yajl/now array ''
 kdb set user/tests/yajl/now/#0 'Neighbors'
 kdb set user/tests/yajl/now/#1 'Threads'
 

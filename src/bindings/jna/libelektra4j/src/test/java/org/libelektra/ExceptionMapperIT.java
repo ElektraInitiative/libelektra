@@ -1,11 +1,11 @@
 package org.libelektra;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.libelektra.exception.*;
 import org.libelektra.plugin.NativePlugin;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class ExceptionMapperIT
 {

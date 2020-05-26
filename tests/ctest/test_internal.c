@@ -50,7 +50,7 @@ static void test_elektraStrLen (void)
 	{
 		charSeq[0] = '\33';
 		charSeq[1] = 'a';
-		charSeq[2] = i;       // 1..254
+		charSeq[2] = i;	      // 1..254
 		charSeq[3] = 256 - i; // 255..2
 		charSeq[4] = '\0';
 
@@ -105,12 +105,12 @@ static void test_elektraEscapeKeyNamePart (void)
 	succeed_if_same_string (elektraEscapeKeyNamePart ("\\\\\\..", dest), "\\\\\\\\..");
 	succeed_if_same_string (elektraEscapeKeyNamePart ("/", dest), "\\/");
 	succeed_if_same_string (elektraEscapeKeyNamePart ("\\/", dest), "\\\\\\/");		  // 1 -> 3
-	succeed_if_same_string (elektraEscapeKeyNamePart ("\\\\/", dest), "\\\\\\\\\\/");	 // 2 -> 5
-	succeed_if_same_string (elektraEscapeKeyNamePart ("ab\\\\/", dest), "ab\\\\\\\\\\/");     // 2 -> 5
+	succeed_if_same_string (elektraEscapeKeyNamePart ("\\\\/", dest), "\\\\\\\\\\/");	  // 2 -> 5
+	succeed_if_same_string (elektraEscapeKeyNamePart ("ab\\\\/", dest), "ab\\\\\\\\\\/");	  // 2 -> 5
 	succeed_if_same_string (elektraEscapeKeyNamePart ("ab\\\\/de", dest), "ab\\\\\\\\\\/de"); // 2 -> 5
 	succeed_if_same_string (elektraEscapeKeyNamePart ("\\", dest), "\\\\");			  // 1 -> 2
 	succeed_if_same_string (elektraEscapeKeyNamePart ("\\\\", dest), "\\\\\\\\");		  // 2 -> 4
-	succeed_if_same_string (elektraEscapeKeyNamePart ("\\\\\\", dest), "\\\\\\\\\\\\");       // 3 -> 6
+	succeed_if_same_string (elektraEscapeKeyNamePart ("\\\\\\", dest), "\\\\\\\\\\\\");	  // 3 -> 6
 }
 
 static void test_elektraUnescapeKeyName (void)
