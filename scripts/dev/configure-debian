@@ -14,5 +14,4 @@ cmake -DSWIG_EXECUTABLE=/usr/bin/swig3.0 \
 	-DTOOLS="ALL" \
 	-DENABLE_DEBUG="OFF" \
 	-DENABLE_LOGGER="OFF" \
-	-DGTEST_ROOT="/usr/src/googletest/googletest" \
 	$*
