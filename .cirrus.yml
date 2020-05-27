@@ -3,6 +3,7 @@ env:
 
 container:
   memory: 12
+  cpu: 4
 
 # We store common commands here, so we can reference them in the build jobs below.
 commands:
