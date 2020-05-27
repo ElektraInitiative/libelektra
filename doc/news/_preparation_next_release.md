@@ -119,7 +119,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
+- Fix googletest framework path in debian configure script. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -149,7 +149,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Docker
 
 - Added alpine linux docker image with latest elektra installed. This image is published on docker hub as [elektra/elektra](https://hub.docker.com/r/elektra/elektra). We will update the image for each elektra release such that novices can easily test elektra without compiling or installing. _(Mihael Pranjić)_
-- <<TODO>>
+- Remove unused `libgtest-dev` from docker images. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Infrastructure
@@ -157,6 +157,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Cirrus
 
 - Update FreeBSD images from version 11.3 to 11.4. _(Mihael Pranjić)_
+- Increase CPU count for containers to 4. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -169,6 +170,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Travis
 
 - Update macOS builds to use gcc 10 and ruby 2.6.6. _(Mihael Pranjić)_
+- Update Ruby to version 2.6.6 on macOS. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
