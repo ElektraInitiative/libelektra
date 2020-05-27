@@ -25,7 +25,6 @@ RUN apt-get -y install \
   dh-lua \
   python-all \
   python3-all \
-  libgtest-dev \
   ruby-ronn \
   libgcrypt20-dev \
   libgpgme-dev \
@@ -43,6 +42,17 @@ RUN apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # TODO use Elektra for the configuration steps below
+
+# Google Test
+ENV GTEST_ROOT=/opt/gtest
+ARG GTEST_VER=release-1.10.0
+RUN mkdir -p ${GTEST_ROOT} \
+    && cd /tmp \
+    && curl -o gtest.tar.gz \
+      -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
+    && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
+    && rm gtest.tar.gz
+
 
 # setup the ssh server
 RUN sed --in-place 's/^\(PermitRootLogin\|UsePAM\|UseDNS\)/#\1/' /etc/ssh/sshd_config && \

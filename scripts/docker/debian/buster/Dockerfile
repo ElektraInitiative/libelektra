@@ -40,7 +40,6 @@ RUN apt-get update \
         libgit2-dev \
         libglib2.0-dev \
         libgpgme-dev \
-        libgtest-dev \
         liblua5.3-dev \
         libmarkdown2-dev \
         libpcre++-dev \
