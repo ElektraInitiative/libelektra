@@ -8,10 +8,10 @@ numbers for the publicly announced versions.
 The version can also be retrieved at run-time from KDB:
 
 ```
-system/elektra/version/constants/KDB_VERSION
-system/elektra/version/constants/KDB_VERSION_MAJOR
-system/elektra/version/constants/KDB_VERSION_MINOR
-system/elektra/version/constants/KDB_VERSION_PATCH
+system:/elektra/version/constants/KDB_VERSION
+system:/elektra/version/constants/KDB_VERSION_MAJOR
+system:/elektra/version/constants/KDB_VERSION_MICRO
+system:/elektra/version/constants/KDB_VERSION_MINOR
 ```
 
 ## Scope

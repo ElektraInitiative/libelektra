@@ -71,7 +71,7 @@ int elektraInvoke1Arg (ElektraInvokeHandle * handle, const char * elektraPluginF
 
 static int isContractKey (Key * key)
 {
-	return !elektraStrCmp (keyName (key), "system/elektra/modules/process");
+	return !elektraStrCmp (keyName (key), "system:/elektra/modules/process");
 }
 
 int elektraProcessOpen (Plugin * handle, Key * errorKey)
@@ -181,16 +181,16 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		Key * pluginName = ksLookupByName (processConfig, "/plugin", KDB_O_NONE);
 
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/process", KEY_VALUE, "process plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/process/exports", KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/open", KEY_FUNC, elektraProcessOpen, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/close", KEY_FUNC, elektraProcessClose, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/get", KEY_FUNC, elektraProcessGet, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/set", KEY_FUNC, elektraProcessSet, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/error", KEY_FUNC, elektraProcessError, KEY_END),
-			       keyNew ("system/elektra/modules/process/exports/checkconf", KEY_FUNC, elektraProcessCheckConf, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/process", KEY_VALUE, "process plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/open", KEY_FUNC, elektraProcessOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/close", KEY_FUNC, elektraProcessClose, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/get", KEY_FUNC, elektraProcessGet, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/set", KEY_FUNC, elektraProcessSet, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/error", KEY_FUNC, elektraProcessError, KEY_END),
+			       keyNew ("system:/elektra/modules/process/exports/checkconf", KEY_FUNC, elektraProcessCheckConf, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/process/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/process/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

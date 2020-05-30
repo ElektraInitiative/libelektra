@@ -52,6 +52,24 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 
 ### TOML
+### Quickdump
+
+- Support for the old quickdump v1 and v2 formats has been removed. _(Klemens Böswirth)_
+
+### Tcl
+
+- We made sure that building the plugin works, if you use the latest version of CMake (`3.15.3`) and Boost (`1.71`). _(René Schwaiger)_
+
+### Type
+
+- We added an option to disable the restoring of boolean values. This useful for storage formats like YAML that have
+  native boolean types. _(Klemens Böswirth)_
+
+### Yajl
+
+- Yajl now correctly supports Elektras boolean types using the `type` plugin. For example, setting `on`, `enable` or `true` all map to JSONs native `true` value. See the [type](../../src/plugins/type/README.md) plugin for more details about boolean types. _(Philipp Gackstatter)_
+
+### <<Plugin2>>
 
 - Added the TOML plugin, which can read and write TOML files using flex and bison. _(Jakob Fischer)_
 - Removed the `null` plugin dependency of the plugin. _(Jakob Fischer)_

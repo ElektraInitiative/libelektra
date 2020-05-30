@@ -19,15 +19,15 @@
 
 int elektraNullGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/null"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/null"))
 	{
 		KeySet * moduleConfig =
-			ksNew (30, keyNew ("system/elektra/modules/null", KEY_VALUE, "null plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/null/exports", KEY_END),
-			       keyNew ("system/elektra/modules/null/exports/get", KEY_FUNC, elektraNullGet, KEY_END),
-			       keyNew ("system/elektra/modules/null/exports/set", KEY_FUNC, elektraNullSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/null", KEY_VALUE, "null plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/null/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/null/exports/get", KEY_FUNC, elektraNullGet, KEY_END),
+			       keyNew ("system:/elektra/modules/null/exports/set", KEY_FUNC, elektraNullSet, KEY_END),
 #include "readme_null.c"
-			       keyNew ("system/elektra/modules/null/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/null/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, moduleConfig);
 		ksDel (moduleConfig);
 

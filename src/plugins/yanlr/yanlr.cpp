@@ -54,11 +54,11 @@ namespace
 CppKeySet getContract ()
 {
 	return CppKeySet{ 30,
-			  keyNew ("system/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
-			  keyNew ("system/elektra/modules/yanlr/exports", KEY_END),
-			  keyNew ("system/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
+			  keyNew ("system:/elektra/modules/yanlr", KEY_VALUE, "yanlr plugin waits for your orders", KEY_END),
+			  keyNew ("system:/elektra/modules/yanlr/exports", KEY_END),
+			  keyNew ("system:/elektra/modules/yanlr/exports/get", KEY_FUNC, elektraYanlrGet, KEY_END),
 #include ELEKTRA_README
-			  keyNew ("system/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			  keyNew ("system:/elektra/modules/yanlr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			  KS_END };
 }
 
@@ -117,7 +117,7 @@ int elektraYanlrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	CppKey parent{ parentKey };
 	CppKeySet keys{ returned };
 
-	if (parent.getName () == "system/elektra/modules/yanlr")
+	if (parent.getName () == "system:/elektra/modules/yanlr")
 	{
 		keys.append (getContract ());
 		keys.release ();

@@ -18,7 +18,7 @@ static void test_ctor (void)
 	succeed_if (ks != NULL, "unable to create keyset");
 	g_object_unref (ks);
 
-	GElektraKey * key = gelektra_key_new ("user/foo", GELEKTRA_KEY_END);
+	GElektraKey * key = gelektra_key_new ("user:/foo", GELEKTRA_KEY_END);
 	ks = gelektra_keyset_new (10, key, GELEKTRA_KEYSET_END);
 	succeed_if (ks != NULL, "unable to create keyset");
 	g_object_unref (ks);
@@ -37,7 +37,7 @@ static void test_basic (void)
 	ks1 = gelektra_keyset_new (0);
 	succeed_if (gelektra_keyset_len (ks1) == 0, "len must be 0");
 
-	gelektra_keyset_append (ks1, gelektra_key_new ("user/foo", GELEKTRA_KEY_END));
+	gelektra_keyset_append (ks1, gelektra_key_new ("user:/foo", GELEKTRA_KEY_END));
 	succeed_if (gelektra_keyset_len (ks1) == 1, "len must be 1");
 
 	ks2 = gelektra_keyset_dup (ks1);
@@ -50,7 +50,7 @@ static void test_basic (void)
 	succeed_if (gelektra_keyset_len (ks2) == 1, "len must be 1 again");
 
 	gelektra_keyset_clear (ks2);
-	gelektra_keyset_append (ks2, gelektra_key_new ("user/bar", GELEKTRA_KEY_END));
+	gelektra_keyset_append (ks2, gelektra_key_new ("user:/bar", GELEKTRA_KEY_END));
 	gelektra_keyset_append_keyset (ks1, ks2);
 	succeed_if (gelektra_keyset_len (ks1) == 2, "len must be 2");
 
@@ -58,7 +58,7 @@ static void test_basic (void)
 	succeed_if (gelektra_keyset_len (ks1) == 1, "len must be 1 again");
 	g_object_unref (key);
 
-	key = gelektra_key_new ("user", GELEKTRA_KEY_END);
+	key = gelektra_key_new ("user:/", GELEKTRA_KEY_END);
 	ks2 = gelektra_keyset_cut (ks1, key);
 	succeed_if (gelektra_keyset_len (ks2) == 1, "len must be 1");
 	g_object_unref (key);
@@ -71,12 +71,12 @@ static void test_searching (void)
 {
 	GElektraKeySet * ks;
 	GElektraKey *key1, *key2;
-	const char * name = "user/bar";
+	const char * name = "user:/bar";
 
 	key1 = gelektra_key_new (name, GELEKTRA_KEY_END);
 	g_object_ref (key1);
-	ks = gelektra_keyset_new (3, gelektra_key_new ("user/foo", GELEKTRA_KEY_END), key1,
-				  gelektra_key_new ("user/foobar", GELEKTRA_KEY_END), GELEKTRA_KEYSET_END);
+	ks = gelektra_keyset_new (3, gelektra_key_new ("user:/foo", GELEKTRA_KEY_END), key1,
+				  gelektra_key_new ("user:/foobar", GELEKTRA_KEY_END), GELEKTRA_KEYSET_END);
 
 	key2 = gelektra_keyset_lookup (ks, key1, GELEKTRA_KDB_O_NONE);
 	succeed_if (gelektra_key_cmp (key1, key2) == 0, "lookup returned different key");
@@ -95,11 +95,11 @@ static void test_iterating (void)
 	GElektraKeySet * ks;
 	GElektraKey *key1, *key2, *tmpkey;
 
-	key1 = gelektra_key_new ("user/a", GELEKTRA_KEY_END);
+	key1 = gelektra_key_new ("user:/a", GELEKTRA_KEY_END);
 	g_object_ref (key1);
-	key2 = gelektra_key_new ("user/c", GELEKTRA_KEY_END);
+	key2 = gelektra_key_new ("user:/c", GELEKTRA_KEY_END);
 	g_object_ref (key2);
-	ks = gelektra_keyset_new (3, key1, gelektra_key_new ("user/b", GELEKTRA_KEY_END), key2, GELEKTRA_KEYSET_END);
+	ks = gelektra_keyset_new (3, key1, gelektra_key_new ("user:/b", GELEKTRA_KEY_END), key2, GELEKTRA_KEYSET_END);
 
 	gssize pos = 0;
 	while ((tmpkey = gelektra_keyset_at (ks, pos)) != NULL)

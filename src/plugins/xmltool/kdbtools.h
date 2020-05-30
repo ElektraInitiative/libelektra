@@ -56,7 +56,7 @@ enum
 };
 
 
-#define KDB_SCHEMA_PATH_KEY "system/elektra/xml/schemapath"
+#define KDB_SCHEMA_PATH_KEY "system:/elektra/xml/schemapath"
 
 #ifndef DYN_LINK
 

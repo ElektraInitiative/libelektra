@@ -324,7 +324,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle ELEKTRA_UNUSED, Key * errorK
  */
 int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
-	/* default behaviour: no teardown except the user/system requests it */
+	/* default behaviour: no teardown except the user:/system requests it */
 	KeySet * pluginConfig = elektraPluginGetConfig (handle);
 	if (!pluginConfig)
 	{
@@ -368,7 +368,7 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNU
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	// Publish module configuration to Elektra (establish the contract)
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/" ELEKTRA_PLUGIN_NAME))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/" ELEKTRA_PLUGIN_NAME))
 	{
 		KeySet * moduleConfig = ksNew (30,
 #include "contract.h"
@@ -442,7 +442,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 		}
 
 		// store password in configuration
-		k = keyNew ("user/" ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, KEY_END);
+		k = keyNew ("user:/" ELEKTRA_CRYPTO_PARAM_MASTER_PASSWORD, KEY_END);
 		keySetString (k, r);
 		elektraFree (r);
 		if (ELEKTRA_PLUGIN_FUNCTION (gpgEncryptMasterPassword) (conf, errorKey, k) != 1)

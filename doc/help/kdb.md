@@ -31,13 +31,13 @@ External commands can be listed via:<br>
 
 Only a few commands are enough for daily use.
 We can retrieve a key by:<br>
-`kdb get user/key`
+`kdb get user:/key`
 
 We store a key permanently with a value given by:<br>
-`kdb set user/key value`
+`kdb set user:/key value`
 
 We list all available keys arranged below a key by:<br>
-`kdb ls user/key`
+`kdb ls user:/key`
 
 Documentation of plugins is available using the
 [kdb-plugin-info(1)](kdb-plugin-info.md) tool:<br>
@@ -126,7 +126,7 @@ Sometimes it is useful to start with default options, for example it is not
 possible to invert the `-q` option.
 In such situations one can simply select a non-existing profile, then `-q`
 works as usual:<br>
-`kdb mount -p nonexist -q /abc dir/abc`
+`kdb mount -p nonexist -q /abc dir:/abc`
 
 If `%` is used as profile name for `-p`, the `kdb` tools disables reading from `KDB`
 for their own configuration settings. Then, they only use command-line arguments.
@@ -164,8 +164,8 @@ The string until the first `/` will be considered as bookmark.
 For example, if you set the bookmark kdb:
 
 ```sh
-kdb set user/sw/elektra/kdb/#0/current/bookmarks
-kdb set user/sw/elektra/kdb/#0/current/bookmarks/kdb user/sw/elektra/kdb/#0/current
+kdb set user:/sw/elektra/kdb/#0/current/bookmarks
+kdb set user:/sw/elektra/kdb/#0/current/bookmarks/kdb user:/sw/elektra/kdb/#0/current
 ```
 
 You are able to use:

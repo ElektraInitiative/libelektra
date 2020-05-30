@@ -21,30 +21,30 @@ The Directory Value plugin converts
 A directory key is a key that has children. For example in the key set:
 
 ```
-user/grandparent                = Grandparent
-user/grandparent/leaf           = Leaf
-user/grandparent/parent         = Parent
-user/grandparent/parent/child   = Child
-user/mother                     = Mother
-user/mother/daughter            = Daughter
-user/mother/son                 = Son
+user:/grandparent                = Grandparent
+user:/grandparent/leaf           = Leaf
+user:/grandparent/parent         = Parent
+user:/grandparent/parent/child   = Child
+user:/mother                     = Mother
+user:/mother/daughter            = Daughter
+user:/mother/son                 = Son
 ```
 
 the keys
 
 ```
-user/grandparent
-user/grandparent/parent
-user/mother
+user:/grandparent
+user:/grandparent/parent
+user:/mother
 ```
 
 represent directory keys, while the keys
 
 ```
-user/grandparent/leaf
-user/grandparent/parent/child
-user/mother/daughter
-user/mother/son
+user:/grandparent/leaf
+user:/grandparent/parent/child
+user:/mother/daughter
+user:/mother/son
 ```
 
 are leaf keys. You can easily check this by drawing the key set in the form of a rooted tree:
@@ -63,16 +63,16 @@ leaf  parent    daughter son
 `___dirdata`. Theses keys then store the old value of their parent keys
 
 ```
-user/grandparent                    =
-user/grandparent/___dirdata         = Grandparent
-user/grandparent/leaf               = Leaf
-user/grandparent/parent             =
-user/grandparent/parent/___dirdata  = Parent
-user/grandparent/parent/child       = Child
-user/mother                         =
-user/mother/___dirdata              = Mother
-user/mother/daughter                = Daughter
-user/mother/son                     = Son
+user:/grandparent                    =
+user:/grandparent/___dirdata         = Grandparent
+user:/grandparent/leaf               = Leaf
+user:/grandparent/parent             =
+user:/grandparent/parent/___dirdata  = Parent
+user:/grandparent/parent/child       = Child
+user:/mother                         =
+user:/mother/___dirdata              = Mother
+user:/mother/daughter                = Daughter
+user:/mother/son                     = Son
 ```
 
 . You might ask why we need the Directory Value plugin at all. The reason why we created this plugin is that some storage plugins like
@@ -84,34 +84,34 @@ plugin these storage plugins are also able to represent directory values properl
 The Directory value plugin also converts array values. Let us take a look at an example key set:
 
 ```
-user/array    = Array Value
-user/array/#0 = Firt Value
-user/array/#1 = Second Value
-user/array/#2 = Third Value
+user:/array    = Array Value
+user:/array/#0 = Firt Value
+user:/array/#1 = Second Value
+user:/array/#2 = Third Value
 ```
 
 . The plugin **does not** convert this key set into:
 
 ```
-user/array            =
-user/array/___dirdata = Array Value
-user/array/#0         = First Value
-user/array/#1         = Second Value
-user/array/#2         = Third Value
+user:/array            =
+user:/array/___dirdata = Array Value
+user:/array/#0         = First Value
+user:/array/#1         = Second Value
+user:/array/#2         = Third Value
 ```
 
-, since then `user/array` **would not be an array** any more. Instead the plugin inserts a new element at index 0 with the **value prefix**
+, since then `user:/array` **would not be an array** any more. Instead the plugin inserts a new element at index 0 with the **value prefix**
 `___dirdata:`:
 
 ```
-user/array            =
-user/array/#0         = ___dirdata: Array Value
-user/array/#1         = First Value
-user/array/#2         = Second Value
-user/array/#3         = Third Value
+user:/array            =
+user:/array/#0         = ___dirdata: Array Value
+user:/array/#1         = First Value
+user:/array/#2         = Second Value
+user:/array/#3         = Third Value
 ```
 
-. This way a storage plugin such as YAJL or YAML CPP are still able to store `user/array` as an array.
+. This way a storage plugin such as YAJL or YAML CPP are still able to store `user:/array` as an array.
 
 #### Remarks
 
@@ -123,14 +123,14 @@ user/array/#3         = Third Value
 To mount the plugin use the command:
 
 ```sh
-# Mount plugin at `user/tests/directoryvalue`
-sudo kdb mount config.file user/tests/directoryvalue directoryvalue
+# Mount plugin at `user:/tests/directoryvalue`
+sudo kdb mount config.file user:/tests/directoryvalue directoryvalue
 ```
 
 . To unmount the plugin use the command
 
 ```sh
-sudo kdb umount user/tests/directoryvalue
+sudo kdb umount user:/tests/directoryvalue
 ```
 
 .
@@ -139,48 +139,48 @@ sudo kdb umount user/tests/directoryvalue
 
 ```sh
 # Mount plugin
-sudo kdb mount config.file user/tests/directoryvalue directoryvalue
+sudo kdb mount config.file user:/tests/directoryvalue directoryvalue
 
 # Add a directory value
-kdb set user/tests/directoryvalue/harold 'Father of SpongeBob SquarePants'
+kdb set user:/tests/directoryvalue/harold 'Father of SpongeBob SquarePants'
 # Add a leaf value
-kdb set user/tests/directoryvalue/harold/spongebob 'I am ready!'
+kdb set user:/tests/directoryvalue/harold/spongebob 'I am ready!'
 
 # Add an array
-kdb set user/tests/directoryvalue/patrick Star
-kdb set user/tests/directoryvalue/patrick/#0 'Being grown-up is boring. Besides, I don’t get Jazz.'
+kdb set user:/tests/directoryvalue/patrick Star
+kdb set user:/tests/directoryvalue/patrick/#0 'Being grown-up is boring. Besides, I don’t get Jazz.'
 # Elektra requires that the array parent contains the metakey `array`.
-# If this key is not present, then `user/tests/directoryvalue/patrick`
+# If this key is not present, then `user:/tests/directoryvalue/patrick`
 # is **not an array**.
-kdb meta-set user/tests/directoryvalue/patrick array ''
+kdb meta-set user:/tests/directoryvalue/patrick array ''
 
 # Since the plugin converts values back in the get direction
 # a user of the database will not notice any changes.
 
-kdb ls user/tests/directoryvalue
-#> user/tests/directoryvalue/harold
-#> user/tests/directoryvalue/harold/spongebob
-#> user/tests/directoryvalue/patrick
-#> user/tests/directoryvalue/patrick/#0
+kdb ls user:/tests/directoryvalue
+#> user:/tests/directoryvalue/harold
+#> user:/tests/directoryvalue/harold/spongebob
+#> user:/tests/directoryvalue/patrick
+#> user:/tests/directoryvalue/patrick/#0
 
-kdb get user/tests/directoryvalue/harold
+kdb get user:/tests/directoryvalue/harold
 #> Father of SpongeBob SquarePants
-kdb get user/tests/directoryvalue/harold/spongebob
+kdb get user:/tests/directoryvalue/harold/spongebob
 #> I am ready!
 
-kdb get user/tests/directoryvalue/patrick
+kdb get user:/tests/directoryvalue/patrick
 #> Star
-kdb get user/tests/directoryvalue/patrick/#0
+kdb get user:/tests/directoryvalue/patrick/#0
 #> Being grown-up is boring. Besides, I don’t get Jazz.
 
 # Retrieve index of last element in array.
 # This also works if the storage plugin does not store this index.
-kdb meta-get user/tests/directoryvalue/patrick array
+kdb meta-get user:/tests/directoryvalue/patrick array
 #> #0
 
 # Undo changes to the key database
-kdb rm -r user/tests/directoryvalue
-sudo kdb umount user/tests/directoryvalue
+kdb rm -r user:/tests/directoryvalue
+sudo kdb umount user:/tests/directoryvalue
 ```
 
 # Limitations

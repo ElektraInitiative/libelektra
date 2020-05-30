@@ -88,7 +88,7 @@ Backend & Backend::operator= (Backend && other)
  *    It is allowed to pass a key with a KEY_CASCADING_NAME
  *
  * @param mountConf needs to include the keys below
- * system/elektra/mountpoints
+ * system:/elektra/mountpoints
  */
 void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 {
@@ -100,16 +100,16 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 		std::string const & name = it->mountpoint;
 		if (name == "/")
 		{
-			alreadyUsedMountpoints.push_back ("spec");
-			alreadyUsedMountpoints.push_back ("dir");
-			alreadyUsedMountpoints.push_back ("user");
-			alreadyUsedMountpoints.push_back ("system");
+			alreadyUsedMountpoints.push_back ("spec:/");
+			alreadyUsedMountpoints.push_back ("dir:/");
+			alreadyUsedMountpoints.push_back ("user:/");
+			alreadyUsedMountpoints.push_back ("system:/");
 		}
 		else if (name.at (0) == '/')
 		{
-			alreadyUsedMountpoints.push_back (Key ("dir" + name, KEY_END).getName ());
-			alreadyUsedMountpoints.push_back (Key ("user" + name, KEY_END).getName ());
-			alreadyUsedMountpoints.push_back (Key ("system" + name, KEY_END).getName ());
+			alreadyUsedMountpoints.push_back (Key ("dir:" + name, KEY_END).getName ());
+			alreadyUsedMountpoints.push_back (Key ("user:" + name, KEY_END).getName ());
+			alreadyUsedMountpoints.push_back (Key ("system:" + name, KEY_END).getName ());
 		}
 
 		// always add name itself, too
@@ -136,7 +136,7 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 	// STEP 2: check for wrong namespace (proc)
 	if (mountpoint.getNamespace () == "proc")
 	{
-		throw MountpointAlreadyInUseException ("proc mountpoint not allowed");
+		throw MountpointAlreadyInUseException ("proc:/ mountpoint not allowed");
 	}
 
 	// STEP 3: check for name match
@@ -147,25 +147,25 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 			throw MountpointAlreadyInUseException (
 				"Root mountpoint not possible, because the root mountpoint already exists.\n");
 		}
-		Key specmp ("spec", KEY_END);
+		Key specmp ("spec:/", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), specmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because spec mountpoint already exists.\n");
 		}
-		Key dkmp ("dir", KEY_END);
+		Key dkmp ("dir:/", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), dkmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because dir mountpoint already exists.\n");
 		}
-		Key ukmp ("user", KEY_END);
+		Key ukmp ("user:/", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), ukmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Root mountpoint not possible, because user mountpoint already exists.\n");
 		}
-		Key skmp ("system", KEY_END);
+		Key skmp ("system:/", KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), skmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
@@ -179,21 +179,21 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
 							       " not possible, because cascading mountpoint " + smp + " already exists.\n");
 		}
-		Key dkmp ("dir" + smp, KEY_END);
+		Key dkmp ("dir:" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), dkmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
 							       " not possible, because dir mountpoint already exists.\n");
 		}
-		Key ukmp ("user" + smp, KEY_END);
+		Key ukmp ("user:" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), ukmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
 			throw MountpointAlreadyInUseException ("Cascading mountpoint " + smp +
 							       " not possible, because user mountpoint already exists.\n");
 		}
-		Key skmp ("system" + smp, KEY_END);
+		Key skmp ("system:" + smp, KEY_END);
 		if (std::find (alreadyUsedMountpoints.begin (), alreadyUsedMountpoints.end (), skmp.getName ()) !=
 		    alreadyUsedMountpoints.end ())
 		{
@@ -213,7 +213,7 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 		}
 	}
 
-	// TODO STEP 4: check if mounted below system/elektra
+	// TODO STEP 4: check if mounted below system:/elektra
 	Key elektraCheck (mountpoint.dup ());
 	helper::removeNamespace (elektraCheck);
 	if (elektraCheck.isBelowOrSame (Key ("/elektra", KEY_END)))
@@ -230,7 +230,7 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 /**
  * @brief Backend Config to add to
  *
- * @param ks the config to add, should be below system/
+ * @param ks the config to add, should be below system:/
  */
 void Backend::setBackendConfig (KeySet const & ks)
 {
@@ -422,7 +422,7 @@ void Backend::serialize (kdb::KeySet & ret)
 
 	config.rewind ();
 	Key common = config.next ();
-	Key oldParent ("system", KEY_END);
+	Key oldParent ("system:/", KEY_END);
 	Key newParent (configBasePath, KEY_END);
 
 	for (KeySet::iterator i = config.begin (); i != config.end (); ++i)
@@ -560,17 +560,17 @@ void GlobalPlugins::serialize (kdb::KeySet & ret)
 		}
 	}
 
-	ret.append (Key ("system/elektra/globalplugins", KEY_VALUE, "", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE, "presetstorage precommit postcommit",
+	ret.append (Key ("system:/elektra/globalplugins", KEY_VALUE, "", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/postcommit", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/postcommit/user", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/postcommit/user/placements", KEY_VALUE, "", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/postcommit/user/placements/set", KEY_VALUE, "presetstorage precommit postcommit",
 			 KEY_END));
 	ret.append (
-		Key ("system/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/postcommit/user/plugins", KEY_VALUE, "", KEY_END));
-	Key i ("system/elektra/globalplugins/postcommit/user/plugins/#0", KEY_END);
+		Key ("system:/elektra/globalplugins/postcommit/user/placements/get", KEY_VALUE, "pregetstorage postgetstorage", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/postcommit/user/placements/error", KEY_VALUE, "prerollback postrollback", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/postcommit/user/plugins", KEY_VALUE, "", KEY_END));
+	Key i ("system:/elektra/globalplugins/postcommit/user/plugins/#0", KEY_END);
 	for (auto const & plugin : pp)
 	{
 		i.setString (plugin.first->name ());
@@ -586,12 +586,13 @@ void GlobalPlugins::serialize (kdb::KeySet & ret)
 		serializeConf (ret, Key (i.getName () + "/config", KEY_VALUE, "", KEY_END), plugin.first->getConfig ());
 		ckdb::elektraArrayIncName (*i);
 	}
-	ret.append (Key ("system/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END));
-	ret.append (Key ("system/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/postgetstorage", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/prerollback", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END));
 }
 
 void ImportExportBackend::status (std::ostream & os) const

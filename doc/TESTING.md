@@ -83,15 +83,15 @@ You have some options to avoid running them as root:
 
    ```sh
    kdb mount-info
-   echo `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
-   echo `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
+   echo `kdb sget system:/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .`
+   echo `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
 
    Then change the permissions:
 
    ```sh
-   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system/info/elektra/constants/cmake/KDB_DB_SPEC .`
-   chown -R `whoami` `kdb sget system/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
+   chown -R `whoami` `kdb sget system:/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .`
+   chown -R `whoami` `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
 
    After that all test cases should run successfully as described above.
@@ -195,7 +195,7 @@ are expected to be in the README.md of the plugin.
 - should not run, if `ENABLE_KDB_TESTING` is OFF.
 - should only write below
   - `/tests/<testname>` (e.g. `/tests/ruby`) and
-  - `system/elektra` (e.g. for mounts or globalplugins).
+  - `system:/elektra` (e.g. for mounts or globalplugins).
 - Before executing tests, no keys must be present below `/tests`.
   The test cases need to clean up everything they wrote.
   (Including temporary files)
@@ -323,13 +323,13 @@ cp ~e/src/plugins/ini/ini/* testcase_dir
 Fewer files is better. Then run, for example:
 
 ```sh
-LD_LIBRARY_PATH=`pwd`/lib /usr/src/afl/afl-2.52b/afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests ini
+LD_LIBRARY_PATH=`pwd`/lib /usr/src/afl/afl-2.52b/afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user:/tests ini
 ```
 
 Check if something is happening with:
 
 ```sh
-watch kdb export user/tests
+watch kdb export user:/tests
 ```
 
 ### ASAN

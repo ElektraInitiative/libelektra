@@ -38,8 +38,8 @@ TEST (test_contextual_basic, command)
 	Command c (v, f);
 	fooxx (c);
 	c ();
-	ASSERT_EQ (&f, &c.execute);
-	ASSERT_EQ (&v, &c.v);
+	EXPECT_EQ (&f, &c.execute);
+	EXPECT_EQ (&v, &c.v);
 }
 
 const uint32_t i_value = 55;
@@ -212,67 +212,67 @@ TYPED_TEST (test_contextual_basic, integer)
 	using namespace kdb;
 	KeySet ks;
 	TypeParam c = this->context;
-	ASSERT_TRUE (!ks.lookup ("/%/%/%/test"));
+	EXPECT_TRUE (!ks.lookup ("/%/%/%/test"));
 	Value<int, ContextPolicyIs<TypeParam>> i (
 		ks, c, Key ("/%language%/%country%/%dialect%/test", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ (i, i_value);
+	EXPECT_EQ (i, i_value);
 	// The value always needs a connection to a key
-	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
+	EXPECT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
-	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
+	EXPECT_EQ (i, 5);
+	EXPECT_EQ (i.getName (), "user:/%/%/%/test");
 	i.syncKeySet ();
-	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "5");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "5");
+	EXPECT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 	i = 10;
-	ASSERT_EQ (i, 10);
-	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
+	EXPECT_EQ (i, 10);
+	EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+	EXPECT_EQ (i.getName (), "user:/%/%/%/test");
 
 	c.template activate<LanguageGermanLayer> ();
-	ASSERT_EQ (i, i_value);
-	//{debug/ASSERT_TRUE}
-	ASSERT_EQ (i.context ()["language"], "german");
-	ASSERT_EQ (i.getName (), "/german/%/%/test");
+	EXPECT_EQ (i, i_value);
+	//{debug/EXPECT_TRUE}
+	EXPECT_EQ (i.context ()["language"], "german");
+	EXPECT_EQ (i.getName (), "default:/german/%/%/test");
 	//{end}
-	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-	ASSERT_TRUE (ks.lookup ("/german/%/%/test"));
+	EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+	EXPECT_TRUE (ks.lookup ("/german/%/%/test"));
 	i = 15;
-	ASSERT_EQ (i, 15);
-	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+	EXPECT_EQ (i, 15);
+	EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
 	i.syncKeySet ();
-	ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+	EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 
 	c.template deactivate<LanguageGermanLayer> ();
-	ASSERT_EQ (i, 10);
-	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-	ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+	EXPECT_EQ (i, 10);
+	EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+	EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 
 	c.template with<LanguageGermanLayer> () ([&] () {
-		ASSERT_EQ (i, 15);
-		ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-		ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+		EXPECT_EQ (i, 15);
+		EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+		EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 		c.template without<LanguageGermanLayer> () ([&] () {
-			ASSERT_EQ (i, 10);
-			ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-			ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+			EXPECT_EQ (i, 10);
+			EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+			EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 		});
-		ASSERT_EQ (i, 15);
-		ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-		ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+		EXPECT_EQ (i, 15);
+		EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+		EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 	});
-	ASSERT_EQ (i, 10);
-	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-	ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+	EXPECT_EQ (i, 10);
+	EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+	EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 
 	c.template with<LanguageGermanLayer> ().template with<CountryGermanyLayer> () ([&] () {
-		ASSERT_EQ (i, i_value);
-		ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-		ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
-		ASSERT_TRUE (ks.lookup ("/german/germany/%/test"));
+		EXPECT_EQ (i, i_value);
+		EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+		EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+		EXPECT_TRUE (ks.lookup ("/german/germany/%/test"));
 		i = 20;
-		ASSERT_EQ (i.getName (), "user/german/germany/%/test");
-		ASSERT_EQ (ks.lookup ("/german/germany/%/test").getString (), "20");
+		EXPECT_EQ (i.getName (), "user:/german/germany/%/test");
+		EXPECT_EQ (ks.lookup ("/german/germany/%/test").getString (), "20");
 		/*
 		//{debug/backtrace}
 		#3  0x0000000000407a56 in operator() at first.cpp:1521
@@ -284,38 +284,38 @@ TYPED_TEST (test_contextual_basic, integer)
 			      .compare("/german/germany/%/test") == 0
 		//{end}
 		*/
-		ASSERT_EQ (i, 20);
+		EXPECT_EQ (i, 20);
 	});
-	ASSERT_EQ (i, 10);
-	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-	ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
-	ASSERT_EQ (ks.lookup ("/german/germany/%/test").getString (), "20");
+	EXPECT_EQ (i, 10);
+	EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+	EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+	EXPECT_EQ (ks.lookup ("/german/germany/%/test").getString (), "20");
 
 	c.template with<LanguageGermanLayer> ().template with<CountryGermanyLayer> () ([&] () {
-		ASSERT_EQ (i, 20);
-		ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-		ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
-		ASSERT_EQ (ks.lookup ("/german/germany/%/test").getString (), "20");
+		EXPECT_EQ (i, 20);
+		EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+		EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+		EXPECT_EQ (ks.lookup ("/german/germany/%/test").getString (), "20");
 		i = 30;
-		ASSERT_EQ (i, 30);
-		ASSERT_EQ (ks.lookup ("/german/germany/%/test").getString (), "30");
+		EXPECT_EQ (i, 30);
+		EXPECT_EQ (ks.lookup ("/german/germany/%/test").getString (), "30");
 	});
-	ASSERT_EQ (i, 10);
-	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-	ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
-	ASSERT_EQ (ks.lookup ("/german/germany/%/test").getString (), "30");
+	EXPECT_EQ (i, 10);
+	EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+	EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+	EXPECT_EQ (ks.lookup ("/german/germany/%/test").getString (), "30");
 
 	c.template with<LanguageGermanLayer> ().template with<CountryGermanyLayer> () ([&] () {
-		ASSERT_EQ (i, 30);
-		ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-		ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
-		ASSERT_EQ (ks.lookup ("/german/germany/%/test").getString (), "30");
-		c.template with<CountryGPSLayer> () ([&] () { ASSERT_EQ (i, i_value); });
-		ASSERT_EQ (ks.lookup ("/german/austria/%/test").getString (), s_value);
+		EXPECT_EQ (i, 30);
+		EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+		EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+		EXPECT_EQ (ks.lookup ("/german/germany/%/test").getString (), "30");
+		c.template with<CountryGPSLayer> () ([&] () { EXPECT_EQ (i, i_value); });
+		EXPECT_EQ (ks.lookup ("/german/austria/%/test").getString (), s_value);
 	});
-	ASSERT_EQ (i, 10);
-	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
-	ASSERT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
+	EXPECT_EQ (i, 10);
+	EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "10");
+	EXPECT_EQ (ks.lookup ("/german/%/%/test").getString (), "15");
 }
 
 TYPED_TEST (test_contextual_basic, mixedWithActivate)
@@ -323,39 +323,39 @@ TYPED_TEST (test_contextual_basic, mixedWithActivate)
 	using namespace kdb;
 	KeySet ks;
 	TypeParam c = this->context;
-	ASSERT_TRUE (!ks.lookup ("/%/%/%/test"));
+	EXPECT_TRUE (!ks.lookup ("/%/%/%/test"));
 	Value<int, ContextPolicyIs<TypeParam>> i (
 		ks, c, Key ("/%language%/%country%/%dialect%/test", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ (i, i_value);
+	EXPECT_EQ (i, i_value);
 	// The value always needs a connection to a key
-	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
+	EXPECT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
-	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	EXPECT_EQ (i, 5);
+	EXPECT_EQ (i.getName (), "user:/%/%/%/test");
+	EXPECT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 
 	c.template activate<LanguageGermanLayer> ();
 	i = 6;
-	ASSERT_EQ (i, 6);
-	ASSERT_EQ (i.getName (), "user/german/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/german/%/%/test").getString (), "6");
+	EXPECT_EQ (i, 6);
+	EXPECT_EQ (i.getName (), "user:/german/%/%/test");
+	EXPECT_EQ (ks.lookup ("user:/german/%/%/test").getString (), "6");
 
 	c.template with<CountryGermanyLayer> () ([&] () {
 		i = 7;
-		ASSERT_EQ (i, 7);
-		ASSERT_EQ (i.getName (), "user/german/germany/%/test");
-		ASSERT_EQ (ks.lookup ("user/german/germany/%/test").getString (), "7");
+		EXPECT_EQ (i, 7);
+		EXPECT_EQ (i.getName (), "user:/german/germany/%/test");
+		EXPECT_EQ (ks.lookup ("user:/german/germany/%/test").getString (), "7");
 	});
 
 	// LanguageGermanLayer still active
-	ASSERT_EQ (i, 6);
-	ASSERT_EQ (i.getName (), "user/german/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/german/%/%/test").getString (), "6");
+	EXPECT_EQ (i, 6);
+	EXPECT_EQ (i.getName (), "user:/german/%/%/test");
+	EXPECT_EQ (ks.lookup ("user:/german/%/%/test").getString (), "6");
 
 	c.template deactivate<LanguageGermanLayer> ();
-	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	EXPECT_EQ (i, 5);
+	EXPECT_EQ (i.getName (), "user:/%/%/%/test");
+	EXPECT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 }
 
 TYPED_TEST (test_contextual_basic, nestedWithActivate)
@@ -363,42 +363,42 @@ TYPED_TEST (test_contextual_basic, nestedWithActivate)
 	using namespace kdb;
 	KeySet ks;
 	TypeParam c = this->context;
-	ASSERT_TRUE (!ks.lookup ("/%/%/%/test"));
+	EXPECT_TRUE (!ks.lookup ("/%/%/%/test"));
 	Value<int, ContextPolicyIs<TypeParam>> i (
 		ks, c, Key ("/%language%/%country%/%dialect%/test", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ (i, i_value);
+	EXPECT_EQ (i, i_value);
 	// The value always needs a connection to a key
-	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
+	EXPECT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
-	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	EXPECT_EQ (i, 5);
+	EXPECT_EQ (i.getName (), "user:/%/%/%/test");
+	EXPECT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 
 	c.template with<CountryGermanyLayer> () ([&] () {
 		i = 7;
-		ASSERT_EQ (i, 7);
-		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
-		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "7");
+		EXPECT_EQ (i, 7);
+		EXPECT_EQ (i.getName (), "user:/%/germany/%/test");
+		EXPECT_EQ (ks.lookup ("user:/%/germany/%/test").getString (), "7");
 
 		c.template without<CountryGermanyLayer> () ([&] () {
 			c.template activate<LanguageGermanLayer> ();
 
 			i = 6;
-			ASSERT_EQ (i, 6);
-			ASSERT_EQ (i.getName (), "user/german/%/%/test");
-			ASSERT_EQ (ks.lookup ("user/german/%/%/test").getString (), "6");
+			EXPECT_EQ (i, 6);
+			EXPECT_EQ (i.getName (), "user:/german/%/%/test");
+			EXPECT_EQ (ks.lookup ("user:/german/%/%/test").getString (), "6");
 		});
 	});
 
 	// LanguageGermanLayer still active
-	ASSERT_EQ (i, 6);
-	ASSERT_EQ (i.getName (), "user/german/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/german/%/%/test").getString (), "6");
+	EXPECT_EQ (i, 6);
+	EXPECT_EQ (i.getName (), "user:/german/%/%/test");
+	EXPECT_EQ (ks.lookup ("user:/german/%/%/test").getString (), "6");
 
 	c.template deactivate<LanguageGermanLayer> ();
-	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	EXPECT_EQ (i, 5);
+	EXPECT_EQ (i.getName (), "user:/%/%/%/test");
+	EXPECT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 }
 
 
@@ -407,46 +407,46 @@ TYPED_TEST (test_contextual_basic, nestedWithActivateConflicting)
 	using namespace kdb;
 	KeySet ks;
 	TypeParam c = this->context;
-	ASSERT_TRUE (!ks.lookup ("/%/%/%/test"));
+	EXPECT_TRUE (!ks.lookup ("/%/%/%/test"));
 	Value<int, ContextPolicyIs<TypeParam>> i (
 		ks, c, Key ("/%language%/%country%/%dialect%/test", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ (i, i_value);
+	EXPECT_EQ (i, i_value);
 	// The value always needs a connection to a key
-	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
+	EXPECT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
-	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	EXPECT_EQ (i, 5);
+	EXPECT_EQ (i.getName (), "user:/%/%/%/test");
+	EXPECT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 
 	c.template with<CountryGermanyLayer> () ([&] () {
 		i = 7;
-		ASSERT_EQ (i, 7);
-		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
-		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "7");
+		EXPECT_EQ (i, 7);
+		EXPECT_EQ (i.getName (), "user:/%/germany/%/test");
+		EXPECT_EQ (ks.lookup ("user:/%/germany/%/test").getString (), "7");
 
 		c.template without<CountryGermanyLayer> () ([&] () {
-			ASSERT_EQ (i, 5);
-			ASSERT_EQ (i.getName (), "user/%/%/%/test");
-			ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+			EXPECT_EQ (i, 5);
+			EXPECT_EQ (i.getName (), "user:/%/%/%/test");
+			EXPECT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 
 			c.template activate<CountryGermanyLayer> ();
 
 			i = 6;
-			ASSERT_EQ (i, 6);
-			ASSERT_EQ (i.getName (), "user/%/germany/%/test");
-			ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "6");
+			EXPECT_EQ (i, 6);
+			EXPECT_EQ (i.getName (), "user:/%/germany/%/test");
+			EXPECT_EQ (ks.lookup ("user:/%/germany/%/test").getString (), "6");
 		});
 		// restore activation of layer
 
-		ASSERT_EQ (i, 6);
-		ASSERT_EQ (i.getName (), "user/%/germany/%/test");
-		ASSERT_EQ (ks.lookup ("user/%/germany/%/test").getString (), "6");
+		EXPECT_EQ (i, 6);
+		EXPECT_EQ (i.getName (), "user:/%/germany/%/test");
+		EXPECT_EQ (ks.lookup ("user:/%/germany/%/test").getString (), "6");
 	});
 	// restore deactivation of layer
 
-	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
-	ASSERT_EQ (ks.lookup ("user/%/%/%/test").getString (), "5");
+	EXPECT_EQ (i, 5);
+	EXPECT_EQ (i.getName (), "user:/%/%/%/test");
+	EXPECT_EQ (ks.lookup ("user:/%/%/%/test").getString (), "5");
 }
 
 
@@ -457,34 +457,34 @@ TYPED_TEST (test_contextual_basic, counting)
 	std::shared_ptr<kdb::Layer> l = std::make_shared<CountingLayer> ();
 	KeySet ks;
 	TypeParam c = this->context;
-	c.template with<CountingLayer> () ([&] { ASSERT_EQ (c["counting"], "0"); });
+	c.template with<CountingLayer> () ([&] { EXPECT_EQ (c["counting"], "0"); });
 	// is it a specification error to have counting
 	// two times?
 	Value<int, ContextPolicyIs<TypeParam>> i (
 		ks, c, Key ("/%counting%/%counting%", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
 
-	ASSERT_EQ ((*l) (), "0");
-	ASSERT_EQ ((*l) (), "1");
+	EXPECT_EQ ((*l) (), "0");
+	EXPECT_EQ ((*l) (), "1");
 	c.withl (l, [&] {
-		ASSERT_EQ (c["counting"], "4");
-		ASSERT_EQ (c["counting"], "5");
+		EXPECT_EQ (c["counting"], "4");
+		EXPECT_EQ (c["counting"], "5");
 	});
-	ASSERT_EQ ((*l) (), "6");
+	EXPECT_EQ ((*l) (), "6");
 	c.template with<CountingLayer> () ([&] {
-		ASSERT_EQ (c["counting"], "2");
-		ASSERT_EQ (c["counting"], "3");
+		EXPECT_EQ (c["counting"], "2");
+		EXPECT_EQ (c["counting"], "3");
 	});
-	ASSERT_TRUE (c["counting"].empty ());
+	EXPECT_TRUE (c["counting"].empty ());
 	c.template with<CountingLayer> () ([&] {
-		ASSERT_EQ (c["counting"], "2");
-		ASSERT_EQ (c["counting"], "3");
+		EXPECT_EQ (c["counting"], "2");
+		EXPECT_EQ (c["counting"], "3");
 	});
-	ASSERT_TRUE (c["counting"].empty ());
+	EXPECT_TRUE (c["counting"].empty ());
 	c.template activate<CountingLayer> ();
-	ASSERT_EQ (c["counting"], "2");
-	ASSERT_EQ (c["counting"], "3");
+	EXPECT_EQ (c["counting"], "2");
+	EXPECT_EQ (c["counting"], "3");
 	c.template deactivate<CountingLayer> ();
-	ASSERT_TRUE (c["counting"].empty ());
+	EXPECT_TRUE (c["counting"].empty ());
 }
 
 TYPED_TEST (test_contextual_basic, groups)
@@ -497,40 +497,40 @@ TYPED_TEST (test_contextual_basic, groups)
 		ks, c,
 		Key ("/%application%/%version profile thread module%/%manufacturer type family model%/serial_number", KEY_CASCADING_NAME,
 		     KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ (i.getName (), "/%/%/%/serial_number");
+	EXPECT_EQ (i.getName (), "default:/%/%/%/serial_number");
 	c.template activate<MainApplicationLayer> ();
 	String s (ks, c, Key ("/%x%", KEY_CASCADING_NAME, KEY_META, "default", "anonymous", KEY_END));
 	c.template activate<ProfileLayer> (s);
-	ASSERT_EQ (i.getName (), "/main/%/%/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%/%/serial_number");
 	c.activate ("version", "1");
-	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%1%anonymous/%/serial_number");
 	c.activate ("module", "M1");
-	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%1%anonymous/%/serial_number");
 	c.activate ("manufacturer", "hp");
-	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%1%anonymous/%hp/serial_number");
 	c.activate ("family", "EliteBook");
-	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%1%anonymous/%hp/serial_number");
 	c.template activate<KeyValueLayer> ("type", "MobileWorkstation");
-	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%1%anonymous/%hp%MobileWorkstation%EliteBook/serial_number");
 	c.template activate<KeyValueLayer> ("model", "8570");
-	ASSERT_EQ (i.getName (), "/main/%1%anonymous/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%1%anonymous/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.template activate<KeyValueLayer> ("thread", "40");
-	ASSERT_EQ (i.getName (), "/main/%1%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%1%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.template deactivate<KeyValueLayer> ("version", "");
-	ASSERT_EQ (i.getName (), "/main/%/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.template activate<KeyValueLayer> ("version", "4");
-	ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%hp%MobileWorkstation%EliteBook%8570/serial_number");
 	c.template deactivate<KeyValueLayer> ("manufacturer", "");
-	ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%/serial_number");
 	c.template activate<KeyValueLayer> ("manufacturer", "HP");
-	ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%HP%MobileWorkstation%EliteBook%8570/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%HP%MobileWorkstation%EliteBook%8570/serial_number");
 	c.template deactivate<KeyValueLayer> ("type", "");
-	ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%HP/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%HP/serial_number");
 	c.template with<KeyValueLayer> ("type", "Notebook") ([&] {
-		ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
-		c.template without<KeyValueLayer> ("type",
-						   "") ([&] { ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%HP/serial_number"); });
-		ASSERT_EQ (i.getName (), "/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
+		EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
+		c.template without<KeyValueLayer> ("type", "") (
+			[&] { EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%HP/serial_number"); });
+		EXPECT_EQ (i.getName (), "default:/main/%4%anonymous%40%M1/%HP%Notebook%EliteBook%8570/serial_number");
 	});
 }
 
@@ -555,9 +555,9 @@ TYPED_TEST (test_contextual_basic, wrapped)
 	KeySet ks;
 	TypeParam c = this->context;
 	Value<int, ContextPolicyIs<TypeParam>> i (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ (i.getName (), "/%/key");
+	EXPECT_EQ (i.getName (), "default:/%/key");
 	c.activate (myId ());
-	ASSERT_EQ (i.getName (), "/my/key");
+	EXPECT_EQ (i.getName (), "default:/my/key");
 }
 
 
@@ -571,23 +571,23 @@ TYPED_TEST (test_contextual_basic, cvWrapped)
 
 	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
 
-	ASSERT_EQ (x.getName (), "/%/key");
-	ASSERT_TRUE (ks.lookup ("/%/key"));
+	EXPECT_EQ (x.getName (), "default:/%/key");
+	EXPECT_TRUE (ks.lookup ("/%/key"));
 	c.activate (i);
-	ASSERT_EQ (x.getName (), "/my/key");
-	ASSERT_TRUE (ks.lookup ("/my/key"));
+	EXPECT_EQ (x.getName (), "default:/my/key");
+	EXPECT_TRUE (ks.lookup ("/my/key"));
 
-	ks.append (Key ("/other/key", KEY_VALUE, "88", KEY_END));
+	ks.append (Key ("default:/other/key", KEY_VALUE, "88", KEY_END));
 	i = "other";
 	c.activate (i);
-	ASSERT_EQ (x.getName (), "/other/key");
-	ASSERT_TRUE (ks.lookup ("/other/key"));
-	ASSERT_EQ (x, 88);
-	ASSERT_EQ (ks.lookup ("/other/key").getString (), "88");
+	EXPECT_EQ (x.getName (), "default:/other/key");
+	EXPECT_TRUE (ks.lookup ("default:/other/key"));
+	EXPECT_EQ (x, 88);
+	EXPECT_EQ (ks.lookup ("default:/other/key").getString (), "88");
 
-	ks.append (Key ("/other/key", KEY_VALUE, "100", KEY_END));
-	ASSERT_EQ (ks.lookup ("/other/key").getString (), "100");
-	ASSERT_EQ (x, 88) << "updated from KeySet?";
+	ks.append (Key ("default:/other/key", KEY_VALUE, "100", KEY_END));
+	EXPECT_EQ (ks.lookup ("default:/other/key").getString (), "100");
+	EXPECT_EQ (x, 88) << "updated from KeySet?";
 }
 
 
@@ -601,9 +601,9 @@ TYPED_TEST (test_contextual_basic, cvWrappedInt)
 
 	Value<int, ContextPolicyIs<TypeParam>> x (ks, c, Key ("/%id%/key", KEY_META, "default", s_value, KEY_END));
 
-	ASSERT_EQ (x.getName (), "/%/key");
+	EXPECT_EQ (x.getName (), "default:/%/key");
 	c.activate (i);
-	ASSERT_EQ (x.getName (), "/88/key");
+	EXPECT_EQ (x.getName (), "default:/88/key");
 }
 
 
@@ -612,130 +612,130 @@ TEST (test_contextual_basic, integer_copy)
 	using namespace kdb;
 	KeySet ks;
 	Context c;
-	ASSERT_TRUE (!ks.lookup ("/%/%/%/test"));
+	EXPECT_TRUE (!ks.lookup ("/%/%/%/test"));
 	Integer i (ks, c, Key ("/%language%/%country%/%dialect%/test", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ (i, i_value);
-	ASSERT_TRUE (ks.lookup ("/%/%/%/test"));
+	EXPECT_EQ (i, i_value);
+	EXPECT_TRUE (ks.lookup ("/%/%/%/test"));
 	i = 5;
-	ASSERT_EQ (i, 5);
-	ASSERT_EQ (i.getName (), "user/%/%/%/test");
+	EXPECT_EQ (i, 5);
+	EXPECT_EQ (i.getName (), "user:/%/%/%/test");
 	i.syncKeySet ();
-	ASSERT_EQ (ks.lookup ("/%/%/%/test").getString (), "5");
+	EXPECT_EQ (ks.lookup ("/%/%/%/test").getString (), "5");
 }
 
 TEST (test_contextual_basic, evaluate)
 {
 	using namespace kdb;
 	kdb::Context c;
-	ASSERT_EQ (c["language"], "");
-	ASSERT_EQ (c["country"], "");
-	ASSERT_EQ (c["dialect"], "");
-	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
-	ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%/test");
+	EXPECT_EQ (c["language"], "");
+	EXPECT_EQ (c["country"], "");
+	EXPECT_EQ (c["dialect"], "");
+	EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
+	EXPECT_EQ (c.evaluate ("/%language country dialect%/test"), "/%/test");
 
 	c.activate<LanguageGermanLayer> ();
-	ASSERT_EQ (c["language"], "german");
-	ASSERT_EQ (c["country"], "");
-	ASSERT_EQ (c["dialect"], "");
-	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
-	ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german/test");
+	EXPECT_EQ (c["language"], "german");
+	EXPECT_EQ (c["country"], "");
+	EXPECT_EQ (c["dialect"], "");
+	EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
+	EXPECT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german/test");
 
 	c.activate<LanguageGermanLayer> ();
 	c.activate<CountryGermanyLayer> ();
-	ASSERT_EQ (c["language"], "german");
-	ASSERT_EQ (c["country"], "germany");
-	ASSERT_EQ (c["dialect"], "");
-	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
-	ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%germany/test");
+	EXPECT_EQ (c["language"], "german");
+	EXPECT_EQ (c["country"], "germany");
+	EXPECT_EQ (c["dialect"], "");
+	EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
+	EXPECT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%germany/test");
 	c.deactivate<CountryGermanyLayer> ();
 
 	c.activate<LanguageGermanLayer> ();
 	c.activate<KeyValueLayer> ("country", "%");
-	ASSERT_EQ (c["language"], "german");
-	ASSERT_EQ (c["country"], "%");
-	ASSERT_EQ (c["dialect"], "");
+	EXPECT_EQ (c["language"], "german");
+	EXPECT_EQ (c["country"], "%");
+	EXPECT_EQ (c["dialect"], "");
 	// TODO: Escaping not implemented
-	// ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/\\%/%/test");
-	// ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%\\%/test");
+	// EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/\\%/%/test");
+	// EXPECT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%\\%/test");
 	c.deactivate<KeyValueLayer> ("country", "%");
 
 	c.deactivate<LanguageGermanLayer> ();
-	ASSERT_EQ (c["language"], "");
-	ASSERT_EQ (c["country"], "");
-	ASSERT_EQ (c["dialect"], "");
-	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
+	EXPECT_EQ (c["language"], "");
+	EXPECT_EQ (c["country"], "");
+	EXPECT_EQ (c["dialect"], "");
+	EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
 
 	c.with<LanguageGermanLayer> () ([&] () {
-		ASSERT_EQ (c["language"], "german");
-		ASSERT_EQ (c["country"], "");
-		ASSERT_EQ (c["dialect"], "");
-		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
+		EXPECT_EQ (c["language"], "german");
+		EXPECT_EQ (c["country"], "");
+		EXPECT_EQ (c["dialect"], "");
+		EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
 		c.without<LanguageGermanLayer> () ([&] () {
-			ASSERT_EQ (c["language"], "");
-			ASSERT_EQ (c["country"], "");
-			ASSERT_EQ (c["dialect"], "");
-			ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
+			EXPECT_EQ (c["language"], "");
+			EXPECT_EQ (c["country"], "");
+			EXPECT_EQ (c["dialect"], "");
+			EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
 		});
-		ASSERT_EQ (c["language"], "german");
-		ASSERT_EQ (c["country"], "");
-		ASSERT_EQ (c["dialect"], "");
-		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
+		EXPECT_EQ (c["language"], "german");
+		EXPECT_EQ (c["country"], "");
+		EXPECT_EQ (c["dialect"], "");
+		EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
 	});
-	ASSERT_EQ (c["language"], "");
-	ASSERT_EQ (c["country"], "");
-	ASSERT_EQ (c["dialect"], "");
-	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
+	EXPECT_EQ (c["language"], "");
+	EXPECT_EQ (c["country"], "");
+	EXPECT_EQ (c["dialect"], "");
+	EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
 
 	c.with<LanguageGermanLayer> ().with<CountryGermanyLayer> () ([&] () {
-		ASSERT_EQ (c["language"], "german");
-		ASSERT_EQ (c["country"], "germany");
-		ASSERT_EQ (c["dialect"], "");
-		ASSERT_EQ (c.size (), 2);
-		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
-		ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%germany/test");
+		EXPECT_EQ (c["language"], "german");
+		EXPECT_EQ (c["country"], "germany");
+		EXPECT_EQ (c["dialect"], "");
+		EXPECT_EQ (c.size (), 2);
+		EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
+		EXPECT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%germany/test");
 		c.with<CountryGPSLayer> () ([&] () {
-			ASSERT_EQ (c["language"], "german");
-			ASSERT_EQ (c["country"], "austria");
-			ASSERT_EQ (c["dialect"], "");
-			ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/austria/%/test");
-			ASSERT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%austria/test");
+			EXPECT_EQ (c["language"], "german");
+			EXPECT_EQ (c["country"], "austria");
+			EXPECT_EQ (c["dialect"], "");
+			EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/austria/%/test");
+			EXPECT_EQ (c.evaluate ("/%language country dialect%/test"), "/%german%austria/test");
 			c.without<CountryGPSLayer> () ([&] () {
-				ASSERT_EQ (c["language"], "german");
-				ASSERT_EQ (c["country"], "");
-				ASSERT_EQ (c["dialect"], "");
-				ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
+				EXPECT_EQ (c["language"], "german");
+				EXPECT_EQ (c["country"], "");
+				EXPECT_EQ (c["dialect"], "");
+				EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/%/%/test");
 			});
 		});
-		ASSERT_EQ (c["language"], "german");
-		ASSERT_EQ (c["country"], "germany");
-		ASSERT_EQ (c["dialect"], "");
-		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
-		ASSERT_EQ (c.evaluate ("/%language country%/%dialect%/test"), "/%german%germany/%/test");
+		EXPECT_EQ (c["language"], "german");
+		EXPECT_EQ (c["country"], "germany");
+		EXPECT_EQ (c["dialect"], "");
+		EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
+		EXPECT_EQ (c.evaluate ("/%language country%/%dialect%/test"), "/%german%germany/%/test");
 	});
-	ASSERT_EQ (c["language"], "");
-	ASSERT_EQ (c["country"], "");
-	ASSERT_EQ (c["dialect"], "");
-	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
+	EXPECT_EQ (c["language"], "");
+	EXPECT_EQ (c["country"], "");
+	EXPECT_EQ (c["dialect"], "");
+	EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
 
 	c.with<LanguageGermanLayer> ().with<CountryGermanyLayer> () ([&] {
-		ASSERT_EQ (c["language"], "german");
-		ASSERT_EQ (c["country"], "germany");
-		ASSERT_EQ (c["dialect"], "");
-		ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
-		ASSERT_EQ (c.evaluate ("/%language%/%language%/%dialect%/test"), "/german/german/%/test");
+		EXPECT_EQ (c["language"], "german");
+		EXPECT_EQ (c["country"], "germany");
+		EXPECT_EQ (c["dialect"], "");
+		EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/german/germany/%/test");
+		EXPECT_EQ (c.evaluate ("/%language%/%language%/%dialect%/test"), "/german/german/%/test");
 
-		ASSERT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/germangermany%/test");
-		ASSERT_EQ (c.evaluate ("/%language%%language%%dialect%/test"), "/germangerman%/test");
+		EXPECT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/germangermany%/test");
+		EXPECT_EQ (c.evaluate ("/%language%%language%%dialect%/test"), "/germangerman%/test");
 	});
-	ASSERT_EQ (c["language"], "");
-	ASSERT_EQ (c["country"], "");
-	ASSERT_EQ (c["dialect"], "");
-	ASSERT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
+	EXPECT_EQ (c["language"], "");
+	EXPECT_EQ (c["country"], "");
+	EXPECT_EQ (c["dialect"], "");
+	EXPECT_EQ (c.evaluate ("/%language%/%country%/%dialect%/test"), "/%/%/%/test");
 
-	ASSERT_EQ (c["language"], "");
-	ASSERT_EQ (c["country"], "");
-	ASSERT_EQ (c["dialect"], "");
-	ASSERT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/%%%/test");
+	EXPECT_EQ (c["language"], "");
+	EXPECT_EQ (c["country"], "");
+	EXPECT_EQ (c["dialect"], "");
+	EXPECT_EQ (c.evaluate ("/%language%%country%%dialect%/test"), "/%%%/test");
 
 	KeySet ks;
 	Integer i (ks, c,
@@ -744,27 +744,27 @@ TEST (test_contextual_basic, evaluate)
 	Integer j (ks, c,
 		   Key ("/%application version profile thread module manufacturer type family model%/serial_number", KEY_CASCADING_NAME,
 			KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ (i.getName (), "/%/%/%/%/%/%/%/%/%/serial_number");
-	ASSERT_EQ (j.getName (), "/%/serial_number");
+	EXPECT_EQ (i.getName (), "default:/%/%/%/%/%/%/%/%/%/serial_number");
+	EXPECT_EQ (j.getName (), "default:/%/serial_number");
 	c.activate<MainApplicationLayer> ();
-	ASSERT_EQ (i.getName (), "/main/%/%/%/%/%/%/%/%/serial_number");
-	ASSERT_EQ (j.getName (), "/%main/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%/%/%/%/%/%/%/%/serial_number");
+	EXPECT_EQ (j.getName (), "default:/%main/serial_number");
 	String s (ks, c, Key ("/%x%", KEY_CASCADING_NAME, KEY_META, "default", "anonymous", KEY_END));
 	c.activate<ProfileLayer> (s);
-	ASSERT_EQ (i.getName (), "/main/%/anonymous/%/%/%/%/%/%/serial_number");
-	ASSERT_EQ (j.getName (), "/%main/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%/anonymous/%/%/%/%/%/%/serial_number");
+	EXPECT_EQ (j.getName (), "default:/%main/serial_number");
 	c.activate<KeyValueLayer> ("module", "M1");
-	ASSERT_EQ (i.getName (), "/main/%/anonymous/%/M1/%/%/%/%/serial_number");
-	ASSERT_EQ (j.getName (), "/%main/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%/anonymous/%/M1/%/%/%/%/serial_number");
+	EXPECT_EQ (j.getName (), "default:/%main/serial_number");
 	c.activate<KeyValueLayer> ("manufacturer", "hp");
-	ASSERT_EQ (i.getName (), "/main/%/anonymous/%/M1/hp/%/%/%/serial_number");
-	ASSERT_EQ (j.getName (), "/%main/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%/anonymous/%/M1/hp/%/%/%/serial_number");
+	EXPECT_EQ (j.getName (), "default:/%main/serial_number");
 	c.activate<KeyValueLayer> ("family", "EliteBook");
-	ASSERT_EQ (i.getName (), "/main/%/anonymous/%/M1/hp/%/EliteBook/%/serial_number");
-	ASSERT_EQ (j.getName (), "/%main/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/%/anonymous/%/M1/hp/%/EliteBook/%/serial_number");
+	EXPECT_EQ (j.getName (), "default:/%main/serial_number");
 	c.activate<KeyValueLayer> ("version", "1");
-	ASSERT_EQ (i.getName (), "/main/1/anonymous/%/M1/hp/%/EliteBook/%/serial_number");
-	ASSERT_EQ (j.getName (), "/%main%1%anonymous/serial_number");
+	EXPECT_EQ (i.getName (), "default:/main/1/anonymous/%/M1/hp/%/EliteBook/%/serial_number");
+	EXPECT_EQ (j.getName (), "default:/%main%1%anonymous/serial_number");
 }
 
 
@@ -798,31 +798,31 @@ TEST (test_contextual_basic, valueObserver)
 	c.attachByName ("/%event1%/%event3%", o2);
 	c.attachByName ("/%eventX%", o3);
 	c.attachByName ("/%eventX%", o3);
-	ASSERT_EQ (o1.counter, 0);
-	ASSERT_EQ (o2.counter, 0);
+	EXPECT_EQ (o1.counter, 0);
+	EXPECT_EQ (o2.counter, 0);
 	c.notifyByEvents ({ "event1" });
-	ASSERT_EQ (o1.counter, 1);
-	ASSERT_EQ (o2.counter, 1);
+	EXPECT_EQ (o1.counter, 1);
+	EXPECT_EQ (o2.counter, 1);
 	c.notifyByEvents ({ "event2" });
-	ASSERT_EQ (o1.counter, 2);
-	ASSERT_EQ (o2.counter, 1);
+	EXPECT_EQ (o1.counter, 2);
+	EXPECT_EQ (o2.counter, 1);
 	c.notifyByEvents ({ "event3" });
-	ASSERT_EQ (o1.counter, 2);
-	ASSERT_EQ (o2.counter, 2);
+	EXPECT_EQ (o1.counter, 2);
+	EXPECT_EQ (o2.counter, 2);
 	c.notifyByEvents ({ "event4" });
-	ASSERT_EQ (o1.counter, 2);
-	ASSERT_EQ (o2.counter, 2);
+	EXPECT_EQ (o1.counter, 2);
+	EXPECT_EQ (o2.counter, 2);
 	c.notifyByEvents ({ "event1", "event2" });
-	ASSERT_EQ (o1.counter, 3);
-	ASSERT_EQ (o2.counter, 3);
+	EXPECT_EQ (o1.counter, 3);
+	EXPECT_EQ (o2.counter, 3);
 	c.notifyByEvents ({ "event1", "event3" });
-	ASSERT_EQ (o1.counter, 4);
-	ASSERT_EQ (o2.counter, 4);
-	ASSERT_EQ (o3.counter, 0);
+	EXPECT_EQ (o1.counter, 4);
+	EXPECT_EQ (o2.counter, 4);
+	EXPECT_EQ (o3.counter, 0);
 	c.notifyAllEvents ();
-	ASSERT_EQ (o1.counter, 5);
-	ASSERT_EQ (o2.counter, 5);
-	ASSERT_EQ (o3.counter, 1);
+	EXPECT_EQ (o1.counter, 5);
+	EXPECT_EQ (o2.counter, 5);
+	EXPECT_EQ (o3.counter, 1);
 }
 
 
@@ -833,13 +833,13 @@ void foo (kdb::Integer & e)
 {
 	e.context ().with<SelectedPrinterLayer> () ([&] () {
 		if (fooFirst)
-			ASSERT_EQ (e, i_value);
+			EXPECT_EQ (e, i_value);
 		else
-			ASSERT_EQ (e, 20);
+			EXPECT_EQ (e, 20);
 		e = 20;
-		ASSERT_EQ (e, 20);
+		EXPECT_EQ (e, 20);
 	});
-	ASSERT_EQ (e, 12);
+	EXPECT_EQ (e, 12);
 	fooFirst = false;
 }
 //{end}
@@ -850,13 +850,13 @@ void bar (kdb::Integer const & e)
 {
 	e.context ().with<ThreadLayer> ().with<SelectedPrinterLayer> () ([&] () {
 		if (barFirst)
-			ASSERT_EQ (e, 20);
+			EXPECT_EQ (e, 20);
 		else
-			ASSERT_EQ (e, i_value);
+			EXPECT_EQ (e, i_value);
 
-		e.context ().without<ThreadLayer> () ([&] () { ASSERT_EQ (e, 20); });
+		e.context ().without<ThreadLayer> () ([&] () { EXPECT_EQ (e, 20); });
 	});
-	ASSERT_EQ (e, 12);
+	EXPECT_EQ (e, 12);
 	barFirst = false;
 }
 
@@ -870,35 +870,35 @@ TEST (test_contextual_basic, threads)
 
 
 	n.context ().activate<MainApplicationLayer> ();
-	ASSERT_EQ (n, i_value);
+	EXPECT_EQ (n, i_value);
 
 	n = 18;
-	ASSERT_EQ (n, 18);
+	EXPECT_EQ (n, 18);
 
 	Integer & d = n;
 
 	d = i_value;
-	ASSERT_EQ (d, i_value);
+	EXPECT_EQ (d, i_value);
 
 	d = 12;
-	ASSERT_EQ (d, 12);
+	EXPECT_EQ (d, 12);
 
 	foo (d);
-	ASSERT_EQ (d, 12);
+	EXPECT_EQ (d, 12);
 
 	foo (d);
-	ASSERT_EQ (d, 12);
+	EXPECT_EQ (d, 12);
 
 	bar (d);
-	ASSERT_EQ (d, 12);
+	EXPECT_EQ (d, 12);
 
 	std::thread t1 (bar, std::cref (d));
 	t1.join ();
-	ASSERT_EQ (d, 12);
+	EXPECT_EQ (d, 12);
 
 	std::thread t2 (foo, std::ref (d));
 	t2.join ();
-	ASSERT_EQ (d, 12);
+	EXPECT_EQ (d, 12);
 }
 
 TEST (test_contextual_basic, nocontext)
@@ -907,10 +907,10 @@ TEST (test_contextual_basic, nocontext)
 	KeySet ks;
 	NoContext c;
 	kdb::Value<int> n (ks, c, Key ("/test", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ (n, i_value);
+	EXPECT_EQ (n, i_value);
 
 	n = 18;
-	ASSERT_EQ (n, 18);
+	EXPECT_EQ (n, 18);
 }
 
 TEST (test_contextual_basic, operators)
@@ -920,81 +920,81 @@ TEST (test_contextual_basic, operators)
 	NoContext c;
 	kdb::Value<int> n (ks, c, Key ("/test/n", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
 	kdb::Value<int> m (ks, c, Key ("/test/m", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
-	ASSERT_EQ (n, i_value);
-	ASSERT_EQ (m, i_value);
+	EXPECT_EQ (n, i_value);
+	EXPECT_EQ (m, i_value);
 
 	n = 18;
-	ASSERT_EQ (n, 18);
-	ASSERT_EQ (18, n);
-	ASSERT_EQ (n, n);
-	ASSERT_EQ (!n, 0);
-	ASSERT_EQ (0, !n);
-	ASSERT_EQ (~n, ~18);
-	ASSERT_EQ (~18, ~n);
+	EXPECT_EQ (n, 18);
+	EXPECT_EQ (18, n);
+	EXPECT_EQ (n, n);
+	EXPECT_EQ (!n, 0);
+	EXPECT_EQ (0, !n);
+	EXPECT_EQ (~n, ~18);
+	EXPECT_EQ (~18, ~n);
 
-	ASSERT_NE (n, 19);
-	ASSERT_NE (19, n);
-	ASSERT_NE (!n, n);
-	ASSERT_NE (~n, n);
+	EXPECT_NE (n, 19);
+	EXPECT_NE (19, n);
+	EXPECT_NE (!n, n);
+	EXPECT_NE (~n, n);
 
-	ASSERT_LT (n, 19);
-	ASSERT_GT (n, 17);
-	ASSERT_LE (n, 19);
-	ASSERT_GE (n, 17);
+	EXPECT_LT (n, 19);
+	EXPECT_GT (n, 17);
+	EXPECT_LE (n, 19);
+	EXPECT_GE (n, 17);
 
-	ASSERT_LE (n, 18);
-	ASSERT_GE (n, 18);
+	EXPECT_LE (n, 18);
+	EXPECT_GE (n, 18);
 
 	n = 18;
 	m = 18;
 
-	ASSERT_EQ (n, m);
-	ASSERT_EQ (m, n);
+	EXPECT_EQ (n, m);
+	EXPECT_EQ (m, n);
 
 	n += 3;
 	m += 3;
 
-	ASSERT_EQ (n, m);
-	ASSERT_EQ (m, n);
+	EXPECT_EQ (n, m);
+	EXPECT_EQ (m, n);
 
 	m += n;
-	ASSERT_EQ (n, 21);
-	ASSERT_EQ (m, 42);
+	EXPECT_EQ (n, 21);
+	EXPECT_EQ (m, 42);
 
-	ASSERT_EQ (n + n, m);
-	ASSERT_EQ (m, n + n);
+	EXPECT_EQ (n + n, m);
+	EXPECT_EQ (m, n + n);
 
 	--n;
-	ASSERT_EQ (n, 20);
+	EXPECT_EQ (n, 20);
 
-	ASSERT_EQ (n && n, true);
+	EXPECT_EQ (n && n, true);
 
 	n -= 10;
-	ASSERT_EQ (n, 10);
+	EXPECT_EQ (n, 10);
 
 	n *= 2;
-	ASSERT_EQ (n, 20);
+	EXPECT_EQ (n, 20);
 
 	n /= 2;
-	ASSERT_EQ (n, 10);
+	EXPECT_EQ (n, 10);
 
 	n %= 12;
-	ASSERT_EQ (n, 10 % 12);
+	EXPECT_EQ (n, 10 % 12);
 
 	n = 4 | 8;
 	n |= 16;
-	ASSERT_EQ (n, 4 | 8 | 16);
+	EXPECT_EQ (n, 4 | 8 | 16);
 
 	n = 8;
 	n = *&n; // *& added to suppress clang warning
 	m = n;
-	ASSERT_EQ (n, 8);
-	ASSERT_EQ (m, 8);
-	ASSERT_EQ (8, n);
-	ASSERT_EQ (8, m);
+	EXPECT_EQ (n, 8);
+	EXPECT_EQ (m, 8);
+	EXPECT_EQ (8, n);
+	EXPECT_EQ (8, m);
 
 	n = -8;
 	m = 8;
-	ASSERT_EQ (n, -m);
-	ASSERT_EQ (-n, m);
+	EXPECT_EQ (n, -m);
+	EXPECT_EQ (-n, m);
 }

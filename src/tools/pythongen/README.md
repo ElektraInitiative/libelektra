@@ -11,7 +11,7 @@ arguments and configuration files to native variables is error-prone and
 time consuming to code, e.g.:
 
 ```c
-k = ksLookupByName(ks, "user/app/current/number");
+k = ksLookupByName(ks, "user:/app/current/number");
 int i = 20;
 if (k) i = atoi(keyString(k));
 ```
@@ -69,14 +69,14 @@ introduction of an additional level in the hierarchy.
 So instead of:
 
 ```ini
-user/firefox/username = Max Mustermann
+user:/firefox/username = Max Mustermann
 ```
 
 We can have multiple values for the same key:
 
 ```ini
-user/firefox/default/username = Max Mustermann
-user/firefox/anonymous/username = Anonymous User
+user:/firefox/default/username = Max Mustermann
+user:/firefox/anonymous/username = Anonymous User
 ```
 
 To define such a contextual value, we change the specification to

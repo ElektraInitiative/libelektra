@@ -17,7 +17,7 @@
 
 #define test(ks, retval)                                                                                                                   \
 	{                                                                                                                                  \
-		Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);                                                 \
+		Key * parentKey = keyNew ("user:/tests/mathcheck", KEY_VALUE, "", KEY_END);                                                \
 		KeySet * conf = ksNew (0, KS_END);                                                                                         \
 		PLUGIN_OPEN ("mathcheck");                                                                                                 \
 		ksRewind (ks);                                                                                                             \
@@ -28,39 +28,39 @@
 
 #define testSet(ks, value)                                                                                                                 \
 	{                                                                                                                                  \
-		Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);                                                 \
+		Key * parentKey = keyNew ("user:/tests/mathcheck", KEY_VALUE, "", KEY_END);                                                \
 		KeySet * conf = ksNew (0, KS_END);                                                                                         \
 		PLUGIN_OPEN ("mathcheck");                                                                                                 \
 		ksRewind (ks);                                                                                                             \
 		plugin->kdbSet (plugin, ks, parentKey);                                                                                    \
-		succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/mathcheck/sum", 0)), value), "error");                     \
+		succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/mathcheck/sum", 0)), value), "error");                    \
 		keyDel (parentKey);                                                                                                        \
 		PLUGIN_CLOSE ();                                                                                                           \
 	}
 
 static KeySet * create_ks (const char * res, const char * meta)
 {
-	return ksNew (5, keyNew ("user/tests/mathcheck/sum", KEY_VALUE, res, KEY_META, "check/math", meta, KEY_END),
-		      keyNew ("user/tests/mathcheck/bla/val1", KEY_VALUE, "100", KEY_END),
-		      keyNew ("user/tests/mathcheck/bla/val2", KEY_VALUE, "50", KEY_END),
-		      keyNew ("user/tests/mathcheck/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
+	return ksNew (5, keyNew ("user:/tests/mathcheck/sum", KEY_VALUE, res, KEY_META, "check/math", meta, KEY_END),
+		      keyNew ("user:/tests/mathcheck/bla/val1", KEY_VALUE, "100", KEY_END),
+		      keyNew ("user:/tests/mathcheck/bla/val2", KEY_VALUE, "50", KEY_END),
+		      keyNew ("user:/tests/mathcheck/bla/val3", KEY_VALUE, "3", KEY_END), KS_END);
 }
 
 static void test_multiUp (void)
 {
-	Key * parentKey = keyNew ("user/tests/mathcheck", KEY_VALUE, "", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/mathcheck", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (5,
-			     keyNew ("user/tests/mathcheck/up/sum", KEY_VALUE, "0", KEY_META, "check/math",
+			     keyNew ("user:/tests/mathcheck/up/sum", KEY_VALUE, "0", KEY_META, "check/math",
 				     ":= + ../val1 + ../../val2 ../val3", KEY_END),
-			     keyNew ("user/tests/mathcheck/up/val1", KEY_VALUE, "1", KEY_END),
-			     keyNew ("user/tests/mathcheck/val2", KEY_VALUE, "2", KEY_END),
-			     keyNew ("user/tests/mathcheck/up/val3", KEY_VALUE, "10", KEY_END), KS_END);
+			     keyNew ("user:/tests/mathcheck/up/val1", KEY_VALUE, "1", KEY_END),
+			     keyNew ("user:/tests/mathcheck/val2", KEY_VALUE, "2", KEY_END),
+			     keyNew ("user:/tests/mathcheck/up/val3", KEY_VALUE, "10", KEY_END), KS_END);
 
 	PLUGIN_OPEN ("mathcheck");
 	ksRewind (ks);
 	plugin->kdbSet (plugin, ks, parentKey);
-	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user/tests/mathcheck/up/sum", 0)), "13"), "error");
+	succeed_if (!strcmp (keyString (ksLookupByName (ks, "user:/tests/mathcheck/up/sum", 0)), "13"), "error");
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 	ksDel (ks);

@@ -38,20 +38,20 @@ int elektraSyslogClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 
 int elektraSyslogGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/syslog"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/syslog"))
 	{
 		KeySet * n;
 		ksAppend (returned,
 			  n = ksNew (30,
-				     keyNew ("system/elektra/modules/syslog", KEY_VALUE, "syslog plugin waits for your orders", KEY_END),
-				     keyNew ("system/elektra/modules/syslog/exports", KEY_END),
-				     keyNew ("system/elektra/modules/syslog/exports/open", KEY_FUNC, elektraSyslogOpen, KEY_END),
-				     keyNew ("system/elektra/modules/syslog/exports/close", KEY_FUNC, elektraSyslogClose, KEY_END),
-				     keyNew ("system/elektra/modules/syslog/exports/get", KEY_FUNC, elektraSyslogGet, KEY_END),
-				     keyNew ("system/elektra/modules/syslog/exports/set", KEY_FUNC, elektraSyslogSet, KEY_END),
-				     keyNew ("system/elektra/modules/syslog/exports/error", KEY_FUNC, elektraSyslogError, KEY_END),
+				     keyNew ("system:/elektra/modules/syslog", KEY_VALUE, "syslog plugin waits for your orders", KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports", KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/open", KEY_FUNC, elektraSyslogOpen, KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/close", KEY_FUNC, elektraSyslogClose, KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/get", KEY_FUNC, elektraSyslogGet, KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/set", KEY_FUNC, elektraSyslogSet, KEY_END),
+				     keyNew ("system:/elektra/modules/syslog/exports/error", KEY_FUNC, elektraSyslogError, KEY_END),
 #include "readme_syslog.c"
-				     keyNew ("system/elektra/modules/syslog/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
+				     keyNew ("system:/elektra/modules/syslog/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END));
 		ksDel (n);
 
 		return 1;

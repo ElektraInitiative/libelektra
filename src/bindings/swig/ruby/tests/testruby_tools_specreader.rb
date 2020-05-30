@@ -18,7 +18,7 @@ class KdbtoolsSpecReaderTestCases < Test::Unit::TestCase
       bb = Kdbtools::SpecReader.new
 
       spec = Kdb::KeySet.new
-      spec << Kdb::Key.new("spec/example/xx", 
+      spec << Kdb::Key.new("spec:/example/xx", 
                            mountpoint: "/example/xx")
 
       bb.read_specification spec
@@ -34,7 +34,7 @@ class KdbtoolsSpecReaderTestCases < Test::Unit::TestCase
       assert_equal 1, backends.size
 
       assert_instance_of Kdbtools::SpecBackendBuilder, 
-                         backends[Kdb::Key.new "spec/example/xx"]
+                         backends[Kdb::Key.new "spec:/example/xx"]
 
     end
   end

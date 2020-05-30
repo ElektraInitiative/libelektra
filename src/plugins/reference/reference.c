@@ -18,15 +18,15 @@
 
 int elektraReferenceGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/reference"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/reference"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/reference", KEY_VALUE, "reference plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/reference/exports", KEY_END),
-			keyNew ("system/elektra/modules/reference/exports/get", KEY_FUNC, elektraReferenceGet, KEY_END),
-			keyNew ("system/elektra/modules/reference/exports/set", KEY_FUNC, elektraReferenceSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/reference", KEY_VALUE, "reference plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/reference/exports", KEY_END),
+			keyNew ("system:/elektra/modules/reference/exports/get", KEY_FUNC, elektraReferenceGet, KEY_END),
+			keyNew ("system:/elektra/modules/reference/exports/set", KEY_FUNC, elektraReferenceSet, KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/reference/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/reference/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

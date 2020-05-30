@@ -152,13 +152,13 @@ Additional metakeys yield all the details.
 - [error/line] represents the exact line of that source file.
 
 Beside errors, Elektra can also emit warnings metadata. While only a single error can be set
-on a specific error key, warnings can be up to 100 entries (#00 - #99):
+on a specific error key, warnings can be up to 100 entries (#0 - #\_99):
 
 - [warnings] indicate that at least one warning is present. The value of the metakey contains
   the number of warnings which can be accessed.
 
 Additional metakeys yield all the details. The warnings are stored in a special array format
-which range from 00 to 99. E.g., the first warning number can be accessed by getting the key `warnings/#00/number`.
+which range from 0 to \_99. E.g., the first warning number can be accessed by getting the key `warnings/#0/number`.
 The following metadatas are available and have the same semantics as the error metadata:
 `[warnings/<number>/number]`, `[warnings/<number>/description]`,
 `[warnings/<number>/reason]`, `[warnings/<number>/module]`,

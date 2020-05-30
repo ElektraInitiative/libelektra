@@ -284,7 +284,7 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
  * @param informationKey will contain information if an error occurs
  * @returns a new key set without the root
  *
- * Example: If root is user/example and the KeySet contains a key with the name user/example/something then
+ * Example: If root is user:/example and the KeySet contains a key with the name user:/example/something then
  * the returned KeySet will contain the key /something.
  */
 static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)

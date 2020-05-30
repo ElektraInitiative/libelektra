@@ -8,7 +8,7 @@ end
 
 function elektraGet(returned, parentKey)
 	print(parentKey.name)
-	mod = "system/elektra/modules/lua"
+	mod = "system:/elektra/modules/lua"
 	if parentKey.name == mod then
 		returned:append(kdb.Key(mod, kdb.KEY_VALUE, "contract below"))
 		returned:append(kdb.Key(mod.."/infos", kdb.KEY_VALUE, "infos below"))

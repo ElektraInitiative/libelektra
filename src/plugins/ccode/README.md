@@ -30,53 +30,53 @@ for C strings (e.g. `\n` for newline, `\t` for tab). You can also configure the 
 ```sh
 # Mount `tcl` storage plugin together with the required `base64` plugin.
 # We use the `ccode` plugin to escape special characters.
-sudo kdb mount config.tcl user/tests/ccode tcl ccode base64
+sudo kdb mount config.tcl user:/tests/ccode tcl ccode base64
 
 # Add a key value containing newline characters
-kdb set user/tests/ccode/multiline "`printf 'one\ntwo\nthree'`"
+kdb set user:/tests/ccode/multiline "`printf 'one\ntwo\nthree'`"
 # By default the plugin uses `\n` to escape newline characters
-grep 'multiline' `kdb file user/tests/ccode` | sed 's/[[:space:]]*//'
+grep 'multiline' `kdb file user:/tests/ccode` | sed 's/[[:space:]]*//'
 #> multiline = one\ntwo\nthree
 
 # The `ccode` plugin escapes and unescapes the data. The `tcl` plugin
 # returns the unescaped values.
-kdb get user/tests/ccode/multiline
+kdb get user:/tests/ccode/multiline
 #> one
 #> two
 #> three
 
 # Write and read a key value containing a tab character
-kdb set user/tests/ccode/tab 'Tab	Fabulous'
-kdb get user/tests/ccode/tab
+kdb set user:/tests/ccode/tab 'Tab	Fabulous'
+kdb get user:/tests/ccode/tab
 #> Tab	Fabulous
 
 # The plugin also escapes special characters inside key names
-kdb set 'user/tests/ccode/tab/t\ta	b' 'Escaped Tabs'
-grep 'tab/' `kdb file user/tests/ccode` | sed 's/[[:space:]]*//'
-#> tab/t\\ta\tb = Escaped Tabs
+kdb set 'user:/tests/ccode/tab/t\\ta	b' 'Escaped Tabs'
+grep 'tab/' `kdb file user:/tests/ccode` | sed 's/[[:space:]]*//'
+#> tab/t\\\\ta\\tb = Escaped Tabs
 
 # Undo modifications to database
-kdb rm -r user/tests/ccode
-sudo kdb umount user/tests/ccode
+kdb rm -r user:/tests/ccode
+sudo kdb umount user:/tests/ccode
 ```
 
 ### Custom Configuration
 
 ```sh
 # We use `%` (hex: `25`) as escape character and map the space character (hex: `20`) to the character `_` (hex `5f`).
-sudo kdb mount config.tcl user/tests/ccode tcl base64 ccode escape=25 chars/20=5f
+sudo kdb mount config.tcl user:/tests/ccode tcl base64 ccode escape=25 chars/20=5f
 
-kdb set user/tests/ccode/spaces 'one two three'
+kdb set user:/tests/ccode/spaces 'one two three'
 
-grep 'space' `kdb file user/tests/ccode/spaces` | sed 's/[[:space:]]*//'
+grep 'space' `kdb file user:/tests/ccode/spaces` | sed 's/[[:space:]]*//'
 #> spaces = one%_two%_three
 
-kdb get user/tests/ccode/spaces
+kdb get user:/tests/ccode/spaces
 #> one two three
 
 # Undo modifications to database
-kdb rm -r user/tests/ccode
-sudo kdb umount user/tests/ccode
+kdb rm -r user:/tests/ccode
+sudo kdb umount user:/tests/ccode
 ```
 
 ## Restrictions

@@ -16,8 +16,8 @@
 #error "no gsetting priority selected"
 #endif
 
-#define G_ELEKTRA_SETTINGS_SYSTEM "system"
-#define G_ELEKTRA_SETTINGS_USER "user"
+#define G_ELEKTRA_SETTINGS_SYSTEM "system:/"
+#define G_ELEKTRA_SETTINGS_USER "user:/"
 #ifndef G_ELEKTRA_SETTINGS_PATH
 #define G_ELEKTRA_SETTINGS_PATH "/sw"
 #endif

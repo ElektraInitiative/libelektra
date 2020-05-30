@@ -39,13 +39,13 @@ using ckdb::keyNew;
 	config.release ()
 
 /* We use this prefix in all header files that contain test data. */
-#define PREFIX "user/examples/yamlcpp/"
+#define PREFIX "user:/examples/yamlcpp/"
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
 TEST (yamlcpp, contract)
 {
-	OPEN_PLUGIN ("system/elektra/modules/yamlcpp", "file/path");
+	OPEN_PLUGIN ("system:/elektra/modules/yamlcpp", "file/path");
 
 	kdb::KeySet keys;
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,

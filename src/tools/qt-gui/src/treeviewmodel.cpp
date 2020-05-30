@@ -438,7 +438,7 @@ void TreeViewModel::insertMetaRow (int row, Key key, const QString & name)
 		QString keyName;
 
 		if (key)
-			keyName = QString::fromStdString (key.getFullName ());
+			keyName = QString::fromStdString (key.getName ());
 		else
 			keyName = name;
 
@@ -524,6 +524,8 @@ void TreeViewModel::populateModel (KeySet const & keySet)
 			break;
 		case KEY_NS_CASCADING:
 			break;
+		case KEY_NS_DEFAULT:
+			break;
 		}
 		if (toAdd) m_model << toAdd;
 	}
@@ -592,7 +594,7 @@ void printKeys (KeySet const & theirs, KeySet const & base, KeySet const & ours)
 	base.rewind ();
 	for (Key o : ours)
 	{
-		std::string prefix ("user/guitest");
+		std::string prefix ("user:/guitest");
 		Key t = theirs.next ();
 		Key b = base.next ();
 		if (!((o && !o.getName ().compare (0, prefix.size (), prefix)) &&

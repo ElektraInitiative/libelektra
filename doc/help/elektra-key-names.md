@@ -18,10 +18,10 @@ Only the administrator can change system configuration.
 Examples of valid system key names:
 
 ```
-system
-system/hosts/hostname
-system/sw/apache/httpd/#0/current/num_processes
-system/sw/apps/abc/#0/current/default-setting
+system:/
+system:/hosts/hostname
+system:/sw/apache/httpd/#0/current/num_processes
+system:/sw/apps/abc/#0/current/default-setting
 ```
 
 user configuration is empty until the user changes some preferences.
@@ -32,18 +32,18 @@ and anything not useful for the rest of the system.
 Examples of valid user key names:
 
 ```
-user
-user/env/#1/LD_LIBRARY_PATH
-user/sw/apps/abc/#0/current/default-setting
-user/sw/kde/kicker/#0/current/preferred_applications/#0
+user:/
+user:/env/#1/LD_LIBRARY_PATH
+user:/sw/apps/abc/#0/current/default-setting
+user:/sw/kde/kicker/#0/current/preferred_applications/#0
 ```
 
 The slash (`/`) separates key names and structures them hierarchically.
 If two keys start with the same key names, but one key name continues
 after a slash, this key is **below** the other and is called a
-_subkey_. For example `user/sw/apps/abc/current` is a subkey of the
-key `user/sw/apps`. The key is not directly below but, for example,
-`user/sw/apps/abc` is. Various functions in `keytest` implement
+_subkey_. For example `user:/sw/apps/abc/current` is a subkey of the
+key `user:/sw/apps`. The key is not directly below but, for example,
+`user:/sw/apps/abc` is. Various functions in `keytest` implement
 ways to determine the relationship between two keys.
 
 ## Conventions
@@ -100,8 +100,8 @@ the key names of software-applications should always start with:
   `/sw/org/myapp/#/%/` where `#` is a major version number, e.g. `#3` for
   the 4th version and `%` is a profile (`%` for default profile). This way, from
   a sysadmin perspective, it will be possible to copy the
-  `system/sw/myapp/#3/%/` tree to something like
-  `system/sw/myapp/#3/old/` and keep system clean and organized.
+  `system:/sw/myapp/#3/%/` tree to something like
+  `system:/sw/myapp/#3/old/` and keep system clean and organized.
 
 ## SEE ALSO
 

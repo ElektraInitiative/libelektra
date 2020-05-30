@@ -2,7 +2,7 @@ import kdb, kdb.tools, unittest
 
 class SpecReader(unittest.TestCase):
 	def test_spec_reader(self):
-		spec = kdb.KeySet(1, kdb.Key("spec/example/xx", { "mountpoint": "/example/xx" }))
+		spec = kdb.KeySet(1, kdb.Key("spec:/example/xx", { "mountpoint": "/example/xx" }))
 
 		sr = kdb.tools.SpecReader()
 		sr.readSpecification(spec)

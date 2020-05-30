@@ -506,15 +506,15 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 
 int elektraCsvstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/csvstorage"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/csvstorage"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/csvstorage", KEY_VALUE, "csvstorage plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/csvstorage/exports", KEY_END),
-			keyNew ("system/elektra/modules/csvstorage/exports/get", KEY_FUNC, elektraCsvstorageGet, KEY_END),
-			keyNew ("system/elektra/modules/csvstorage/exports/set", KEY_FUNC, elektraCsvstorageSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/csvstorage", KEY_VALUE, "csvstorage plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/csvstorage/exports", KEY_END),
+			keyNew ("system:/elektra/modules/csvstorage/exports/get", KEY_FUNC, elektraCsvstorageGet, KEY_END),
+			keyNew ("system:/elektra/modules/csvstorage/exports/set", KEY_FUNC, elektraCsvstorageSet, KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/csvstorage/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/csvstorage/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

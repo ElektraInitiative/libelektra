@@ -78,7 +78,7 @@ TEST (meta, basic)
 TEST (meta, iter)
 {
 	// clang-format off
-	Key k ("user/metakey",
+	Key k ("user:/metakey",
 		KEY_META, "a", "meta",
 		KEY_META, "b", "my",
 		KEY_META, "c", "other",
@@ -112,7 +112,7 @@ TEST (test, copy)
 {
 	// cout << "testing copy meta" << std::endl;
 
-	Key k ("user/metakey", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
+	Key k ("user:/metakey", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
 	       "c metavalue", KEY_END);
 	Key c;
 
@@ -160,7 +160,7 @@ TEST (test, copy)
 
 TEST (meta, string)
 {
-	Key k ("user/anything", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
+	Key k ("user:/anything", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
 	       "c metavalue", KEY_END);
 
 	succeed_if (k.getMeta<string> ("a") == "a metavalue", "could not get metavalue");
@@ -175,7 +175,7 @@ TEST (meta, string)
 
 TEST (meta, copyAll)
 {
-	Key k ("user/metakey", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
+	Key k ("user:/metakey", KEY_META, "", "metavalue", KEY_META, "a", "a metavalue", KEY_META, "b", "b metavalue", KEY_META, "c",
 	       "c metavalue", KEY_META, "i", "420", KEY_END);
 	Key c;
 

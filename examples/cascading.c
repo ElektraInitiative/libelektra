@@ -18,7 +18,7 @@ void printError (char * what, Key const * parentKey)
 
 int main (void)
 {
-	Key * parentKey = keyNew ("", KEY_CASCADING_NAME, KEY_END);
+	Key * parentKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
 	KDB * kdb = kdbOpen (parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 	if (kdbGet (kdb, ks, parentKey) == -1)
@@ -26,7 +26,7 @@ int main (void)
 		printError ("kdbGet", parentKey);
 	}
 	keyDel (parentKey);
-	parentKey = keyNew ("meta", KEY_META_NAME, KEY_END);
+	parentKey = keyNew ("meta:/", KEY_END);
 	if (kdbGet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbGet", parentKey);
@@ -47,7 +47,7 @@ int main (void)
 	}
 
 	/*
-	k = keyNew("user/test/shell/somewhere/key", KEY_VALUE, "value", KEY_END);
+	k = keyNew("user:/test/shell/somewhere/key", KEY_VALUE, "value", KEY_END);
 	ksAppendKey(ks, k);
 	keyDel(k);
 	*/
@@ -58,7 +58,7 @@ int main (void)
 		printError ("kdbSet", parentKey);
 	}
 	keyDel (parentKey);
-	parentKey = keyNew ("meta", KEY_META_NAME, KEY_END);
+	parentKey = keyNew ("meta:/", KEY_END);
 	if (kdbSet (kdb, ks, parentKey) == -1)
 	{
 		printError ("kdbSet", parentKey);

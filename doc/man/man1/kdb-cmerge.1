@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-CMERGE" "1" "November 2019" "" ""
+.TH "KDB\-CMERGE" "1" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-cmerge\fR \- Three\-way merge of KeySets
@@ -142,14 +142,14 @@ To complete a simple merge of three KeySets:
 .
 .nf
 
-kdb set user/base "A"
-#> Create a new key user/base with string "A"
-kdb set user/their "A"
-#> Create a new key user/their with string "A"
-kdb set user/our "B"
-#> Create a new key user/our with string "B"
-kdb cmerge user/our user/their user/base user/result
-kdb get user/result
+kdb set user:/base "A"
+#> Create a new key user:/base with string "A"
+kdb set user:/their "A"
+#> Create a new key user:/their with string "A"
+kdb set user:/our "B"
+#> Create a new key user:/our with string "B"
+kdb cmerge user:/our user:/their user:/base user:/result
+kdb get user:/result
 #>B
 
 ```<br>

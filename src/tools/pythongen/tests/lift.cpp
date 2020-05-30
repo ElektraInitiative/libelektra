@@ -33,10 +33,10 @@ int main(int argc, char**argv)
 	bool write = par.getTestLiftWrite();
 	par.setTestLiftWrite(false);
 
-	// write back to user/test/lift, see comments in lift.c
+	// write back to user:/test/lift, see comments in lift.c
 	if (write)
 	{
-		kdb.set(ks, "user/test/lift");
+		kdb.set(ks, "user:/test/lift");
 	}
 
 	return 0;

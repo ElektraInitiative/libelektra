@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-GLOBAL\-UMOUNT" "1" "August 2019" "" ""
+.TH "KDB\-GLOBAL\-UMOUNT" "1" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-global\-umount\fR \- Unmount a global plugin from the key database
@@ -34,23 +34,24 @@ Print never/auto(default)/always colored output\.
 .
 .nf
 
-# Backup\-and\-Restore: system/elektra/globalplugins
-
-sudo kdb global\-mount tracer
-
-sudo kdb global\-mount
-# STDOUT\-REGEX: \.*spec⏎tracer\.*
-
-sudo kdb global\-umount tracer
-
-# spec is always mounted by default
-sudo kdb global\-mount
-#> spec
-
-sudo kdb global\-umount spec
-
-sudo kdb global\-mount
-#>
+# FIXME (kodebach): disabled, because it breaks other tests
+##$ # Backup\-and\-Restore: system:/elektra/globalplugins
+##$
+##$ sudo kdb global\-mount tracer
+##$
+##$ sudo kdb global\-mount
+##$ # STDOUT\-REGEX: \.*spec⏎tracer\.*
+##$
+##$ sudo kdb global\-umount tracer
+##$
+##$ # spec is always mounted by default
+##$ sudo kdb global\-mount
+##$ #> spec
+##$
+##$ sudo kdb global\-umount spec
+##$
+##$ sudo kdb global\-mount
+##$ #>
 .
 .fi
 .

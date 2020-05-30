@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-META\-GET" "1" "October 2019" "" ""
+.TH "KDB\-META\-GET" "1" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-meta\-get\fR \- Get the value of a metakey stored in the key database
@@ -68,16 +68,16 @@ Explain what is happening\. Prints additional information in case of errors/warn
 Give debug information\. Prints additional debug information in case of errors/warnings\.
 .
 .SH "EXAMPLES"
-To get the value of a metakey called \fBdescription\fR stored in the key \fBspec/example/key\fR:
+To get the value of a metakey called \fBdescription\fR stored in the key \fBspec:/example/key\fR:
 .
 .br
-\fBkdb meta\-get spec/example/key description\fR
+\fBkdb meta\-get spec:/example/key description\fR
 .
 .P
-To get the value of metakey called \fBoverride/#0\fR stored in the key \fBspec/example/dir/key\fR:
+To get the value of metakey called \fBoverride/#0\fR stored in the key \fBspec:/example/dir/key\fR:
 .
 .br
-\fBkdb meta\-get spec/example/dir/key "override/#0"\fR
+\fBkdb meta\-get spec:/example/dir/key "override/#0"\fR
 .
 .SH "SEE ALSO"
 .

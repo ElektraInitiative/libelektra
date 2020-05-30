@@ -86,7 +86,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 	{
 		option o = { "load", no_argument, nullptr, 'f' };
 		long_options.push_back (o);
-		helpText += "-l --load                Load plugin even if system/elektra is available.\n";
+		helpText += "-l --load                Load plugin even if system:/elektra is available.\n";
 	}
 	if (acceptedOptions.find ('h') != string::npos)
 	{
@@ -506,6 +506,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		ns = "user";
 #endif
 	}
+	ns += ":";
 
 	optind++; // skip the command name
 	while (optind < argc)
@@ -549,7 +550,7 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 		kdb::Key bookmark = resolveBookmark (name);
 		if (!bookmark.isValid ())
 		{
-			throw invalid_argument ("cannot find bookmark " + bookmark.getFullName ());
+			throw invalid_argument ("cannot find bookmark " + bookmark.getName ());
 		}
 		root = bookmark;
 	}
@@ -560,7 +561,7 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 					"For absolute keys (starting without '/'), please note that only one of the predefined namespaces "
 					"can be used (see 'man elektra-namespaces').\n" +
 					"Please also ensure that the path is separated by a '/'.\n" +
-					"An example for a valid absolute key is user/a/key, and for a valid cascading key /a/key.");
+					"An example for a valid absolute key is user:/a/key, and for a valid cascading key /a/key.");
 	}
 
 	if (!allowCascading && root.isCascading ())

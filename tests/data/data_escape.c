@@ -23,8 +23,8 @@ TEST_ESCAPE_PART("a/b/c/d/e/f/g/h/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z",
 TEST_ESCAPE_PART("", "%");
 TEST_ESCAPE_PART("%", "\\%");
 TEST_ESCAPE_PART("\\%", "\\\\%");
-TEST_ESCAPE_PART("\\\\%", "\\\\\\%");
-TEST_ESCAPE_PART("\\\\\\%", "\\\\\\\\%");
+TEST_ESCAPE_PART("\\\\%", "\\\\\\\\%");
+TEST_ESCAPE_PART("\\\\\\%", "\\\\\\\\\\\\%");
 
 TEST_ESCAPE_PART("\\", "\\\\"); // 1->2
 TEST_ESCAPE_PART("\\\\", "\\\\\\\\"); // 2 -> 4

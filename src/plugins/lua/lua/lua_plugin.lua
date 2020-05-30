@@ -7,8 +7,8 @@ end
 
 function elektraGet(returned, parentKey)
 	print("[LUA-1] get")
-	if parentKey.name == 'user/from_c' then
-			returned:append(kdb.Key("user/from_lua"))
+	if parentKey.name == 'user:/from_c' then
+			returned:append(kdb.Key("user:/from_lua"))
 	end
 	return 1
 end

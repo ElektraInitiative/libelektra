@@ -238,7 +238,7 @@ int elektraKeyToMetaGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 	int errnosave = errno;
 
 	/* configuration only */
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/keytometa"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/keytometa"))
 	{
 		KeySet * info =
 #include "contract.h"

@@ -60,24 +60,12 @@ x1000000 [6] up to 49 bits in 7 bytes
 
 Thanks to https://github.com/stoklund/varint for listing various integer encodings.
 
-## Old Formats
-
-All old versions can still be read by this plugin, but we will always write the newest format.
-
-### Version 1
-
-The first version used the magic number `0x454b444200000001` and stored the full keynames, instead of one relative to the parent key.
-
-### Version 2
-
-The second version used the magic number `0x454b444200000001` and always used 64-bit integers to store the length of strings.
-
 ## Usage
 
 Like any other storage plugin, you simply use `quickdump` during mounting, import or export.
 
 ```
-sudo kdb mount quickdump.eqd user/tests/quickdump quickdump
+sudo kdb mount quickdump.eqd user:/tests/quickdump quickdump
 ```
 
 ## Dependencies
@@ -88,20 +76,20 @@ None.
 
 ```sh
 # Mount a backend using quickdump
-sudo kdb mount quickdump.eqd user/tests/quickdump quickdump
+sudo kdb mount quickdump.eqd user:/tests/quickdump quickdump
 # RET: 0
 
 # Set some keys and metakeys
-kdb set user/tests/quickdump/key value
-#> Create a new key user/tests/quickdump/key with string "value"
+kdb set user:/tests/quickdump/key value
+#> Create a new key user:/tests/quickdump/key with string "value"
 
-kdb meta-set user/tests/quickdump/key meta "metavalue"
+kdb meta-set user:/tests/quickdump/key meta "metavalue"
 
-kdb set user/tests/quickdump/otherkey "other value"
-#> Create a new key user/tests/quickdump/otherkey with string "other value"
+kdb set user:/tests/quickdump/otherkey "other value"
+#> Create a new key user:/tests/quickdump/otherkey with string "other value"
 
 # Show resulting file (not part of test, because xxd is not available everywhere)
-# xxd $(kdb file user/tests/quickdump/key)
+# xxd $(kdb file user:/tests/quickdump/key)
 # 00000000: 454b 4442 0000 0003 076b 6579 730b 7661  EKDB.....keys.va
 # 00000010: 6c75 656d 096d 6574 6113 6d65 7461 7661  luem.meta.metava
 # 00000020: 6c75 6500 116f 7468 6572 6b65 7973 176f  lue..otherkeys.o
@@ -109,7 +97,7 @@ kdb set user/tests/quickdump/otherkey "other value"
 
 
 # Change mounted file (in a very stupid way to enable shell-recorder testing):
-cp $(kdb file user/tests/quickdump/key) a.tmp
+cp $(kdb file user:/tests/quickdump/key) a.tmp
 
 # 1. change key from 'value' to 'other value'
 (head -c 13 a.tmp; printf "%bother value" '\0027'; tail -c 40 a.tmp) > b.tmp
@@ -122,23 +110,23 @@ rm a.tmp
 rm b.tmp
 
 # test file name, so KDB isn't destroyed if mounting failed
-[ "x$(kdb file user/tests/quickdump/key)" != "x$(kdb file user)" ] && mv c.tmp $(kdb file user/tests/quickdump/key)
+[ "x$(kdb file user:/tests/quickdump/key)" != "x$(kdb file user:/)" ] && mv c.tmp $(kdb file user:/tests/quickdump/key)
 
-kdb get user/tests/quickdump/key
+kdb get user:/tests/quickdump/key
 #> other value
 
-kdb meta-get user/tests/quickdump/key meta
+kdb meta-get user:/tests/quickdump/key meta
 #> metavalue
 
-kdb get user/tests/quickdump/otherkey
+kdb get user:/tests/quickdump/otherkey
 #> other value
 
-kdb meta-get user/tests/quickdump/otherkey meta
+kdb meta-get user:/tests/quickdump/otherkey meta
 #> metavalue
 
 # Cleanup
-kdb rm -r user/tests/quickdump
-sudo kdb umount user/tests/quickdump
+kdb rm -r user:/tests/quickdump
+sudo kdb umount user:/tests/quickdump
 ```
 
 ## Limitations

@@ -29,4 +29,4 @@ Elektra. There are two possible scenarios:
 
 To install the config file at `~/.config/installing.ini` we can use the following command
 
-`kdb install-config-file user/tests/installing installing.ini ini`
+`kdb install-config-file user:/tests/installing installing.ini ini`

@@ -119,18 +119,18 @@ int elektraTimeofdayGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		position = "postgetstorage";
 	}
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/timeofday"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/timeofday"))
 	{
 		KeySet * pluginConfig = ksNew (
-			30, keyNew ("system/elektra/modules/timeofday", KEY_VALUE, "timeofday plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports", KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports/open", KEY_FUNC, elektraTimeofdayOpen, KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports/close", KEY_FUNC, elektraTimeofdayClose, KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports/get", KEY_FUNC, elektraTimeofdayGet, KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports/set", KEY_FUNC, elektraTimeofdaySet, KEY_END),
-			keyNew ("system/elektra/modules/timeofday/exports/error", KEY_FUNC, elektraTimeofdayError, KEY_END),
+			30, keyNew ("system:/elektra/modules/timeofday", KEY_VALUE, "timeofday plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports", KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/open", KEY_FUNC, elektraTimeofdayOpen, KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/close", KEY_FUNC, elektraTimeofdayClose, KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/get", KEY_FUNC, elektraTimeofdayGet, KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/set", KEY_FUNC, elektraTimeofdaySet, KEY_END),
+			keyNew ("system:/elektra/modules/timeofday/exports/error", KEY_FUNC, elektraTimeofdayError, KEY_END),
 #include "readme_timeofday.c"
-			keyNew ("system/elektra/modules/timeofday/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/timeofday/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 

@@ -45,14 +45,14 @@ int main (void)
 	// clang-format off
 //! [set]
 KeySet * myConfig = ksNew (0, KS_END);
-Key * parentKey = keyNew ("system/sw/MyApp", KEY_END);
+Key * parentKey = keyNew ("system:/sw/MyApp", KEY_END);
 KDB * handle = kdbOpen (parentKey);
 
 kdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!
 KeySet * base = ksDup (myConfig);     // save a copy of original keyset
 
 // change the keys within myConfig
-ksAppendKey (myConfig, keyNew ("system/sw/MyApp/Test", KEY_VALUE, "5", KEY_END));
+ksAppendKey (myConfig, keyNew ("system:/sw/MyApp/Test", KEY_VALUE, "5", KEY_END));
 
 KeySet * ours = ksDup (myConfig); // save a copy of our keyset
 KeySet * theirs;		  // needed for 3-way merging

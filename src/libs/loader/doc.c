@@ -29,7 +29,7 @@
  * Initialises the module loading system.
  *
  * Most operating systems will have to do nothing here.
- * Anyway you are required to add the key system/elektra/modules
+ * Anyway you are required to add the key system:/elektra/modules
  * if it was successful.
  *
  * On error -1 is returned and if error != 0 error information
@@ -62,7 +62,7 @@ int elektraModulesInit (KeySet * modules, Key * error)
  * If everything was successful append all information to the keyset modules
  * and return the pointer. Take care that you can close the module with that
  * information. All information needs to be stored within
- * system/elektra/modules/name
+ * system:/elektra/modules/name
  * You might want to use an struct and store it there as binary key.
  *
  * If anything goes wrong don't append anything to modules. Instead

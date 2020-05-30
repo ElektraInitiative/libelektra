@@ -42,7 +42,7 @@ void serialise (ostream & ofs, KeySet & output, Key & parent)
 		while (const Key m = k.nextMeta ())
 		{
 			ofs << "\t\t{" << endl;
-			ofs << "\t\t\t" << m.getName () << " = " << m.getString () << endl;
+			ofs << "\t\t\t" << m.getName ().substr (sizeof ("meta:/") - 1) << " = " << m.getString () << endl;
 			ofs << "\t\t}" << endl;
 		}
 		ofs << "\t}" << endl;

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-MERGE" "1" "August 2019" "" ""
+.TH "KDB\-MERGE" "1" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-merge\fR \- Three\-way merge of KeySets
@@ -134,7 +134,7 @@ Conflicts in a merge can be resolved using a \fIstrategy\fR with the \fB\-s\fR o
 To complete a simple merge of three KeySets:
 .
 .br
-\fBkdb merge user/ours user/theirs user/base user/result\fR
+\fBkdb merge user:/ours user:/theirs user:/base user:/result\fR
 .
 .br
 .
@@ -142,7 +142,7 @@ To complete a simple merge of three KeySets:
 To complete a merge whilst using the \fBours\fR version of the KeySet to resolve conflicts:
 .
 .br
-\fBkdb merge \-s ours user/ours user/theirs user/base user/result\fR
+\fBkdb merge \-s ours user:/ours user:/theirs user:/base user:/result\fR
 .
 .br
 .
@@ -150,7 +150,7 @@ To complete a merge whilst using the \fBours\fR version of the KeySet to resolve
 To complete a three\-way merge and overwrite all current keys in the \fBresultpath\fR:
 .
 .br
-\fBkdb merge \-s cut user/ours user/theirs user/base user/result\fR
+\fBkdb merge \-s cut user:/ours user:/theirs user:/base user:/result\fR
 .
 .br
 .

@@ -19,18 +19,18 @@
 
 KeySet * getContract (void)
 {
-	return ksNew (30, keyNew ("system/elektra/modules/toml", KEY_VALUE, "toml plugin waits for your orders", KEY_END),
-		      keyNew ("system/elektra/modules/toml/exports", KEY_END),
-		      keyNew ("system/elektra/modules/toml/exports/get", KEY_FUNC, elektraTomlGet, KEY_END),
-		      keyNew ("system/elektra/modules/toml/exports/set", KEY_FUNC, elektraTomlSet, KEY_END),
+	return ksNew (30, keyNew ("system:/elektra/modules/toml", KEY_VALUE, "toml plugin waits for your orders", KEY_END),
+		      keyNew ("system:/elektra/modules/toml/exports", KEY_END),
+		      keyNew ("system:/elektra/modules/toml/exports/get", KEY_FUNC, elektraTomlGet, KEY_END),
+		      keyNew ("system:/elektra/modules/toml/exports/set", KEY_FUNC, elektraTomlSet, KEY_END),
 #include ELEKTRA_README
-		      keyNew ("system/elektra/modules/toml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		      keyNew ("system:/elektra/modules/toml/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 }
 
 
 int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (strcmp (keyName (parentKey), "system/elektra/modules/toml") == 0)
+	if (strcmp (keyName (parentKey), "system:/elektra/modules/toml") == 0)
 	{
 		KeySet * contract = getContract ();
 		ksAppend (returned, contract);

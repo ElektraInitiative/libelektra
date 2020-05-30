@@ -22,20 +22,20 @@
  * So if @p ks contains this keys:
  *
  * @code
- *   system/sw/xorg/Monitors/Monitor1/vrefresh
- *   system/sw/xorg/Monitors/Monitor1/hrefresh
- *   system/sw/xorg/Devices/Device1/driver
- *   system/sw/xorg/Devices/Device1/mode
+ *   system:/sw/xorg/Monitors/Monitor1/vrefresh
+ *   system:/sw/xorg/Monitors/Monitor1/hrefresh
+ *   system:/sw/xorg/Devices/Device1/driver
+ *   system:/sw/xorg/Devices/Device1/mode
  * @endcode
  *
- * The common parent is @p system/sw/xorg .
+ * The common parent is @p system:/sw/xorg .
  *
  * On the other hand, if we have this KeySet:
  *
  * @code
- *   system/some/thing
- *   system/other/thing
- *   user/unique/thing
+ *   system:/some/thing
+ *   system:/other/thing
+ *   user:/unique/thing
  * @endcode
  *
  * No common parent is possible, so @p returnedCommonParent will contain nothing.

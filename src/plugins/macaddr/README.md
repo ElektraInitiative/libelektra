@@ -23,63 +23,63 @@ This plugin validates MAC-addresses. The following MAC-address-formats are suppo
 ## Usage
 
 ```sh
-# Backup-and-Restore: user/tests/mac
+# Backup-and-Restore: user:/tests/mac
 
 # Mount `macaddr` plugin
-sudo kdb mount macconf.ecf user/tests/mac macaddr
+sudo kdb mount macconf.ecf user:/tests/mac macaddr
 
 # Setting a MAC address using colons
-kdb set user/tests/mac/mac1 00:A0:C9:14:C8:29
+kdb set user:/tests/mac/mac1 00:A0:C9:14:C8:29
 # RET: 0
 
 # Setting a MAC address using hyphens
-kdb set user/tests/mac/mac2 00-A0-C9-14-C8-29
+kdb set user:/tests/mac/mac2 00-A0-C9-14-C8-29
 # RET: 0
 
 # Setting a MAC address using one hyphen
-kdb set user/tests/mac/mac3 00A0C9-14C829
+kdb set user:/tests/mac/mac3 00A0C9-14C829
 # RET: 0
 
 # Setting a MAC address using an integer value
-kdb set user/tests/mac/mac4 17661175009296
+kdb set user:/tests/mac/mac4 17661175009296
 # RET: 0
 
 # Marking written keys as MAC addresses
-kdb meta-set user/tests/mac/mac1 check/macaddr ""
-kdb meta-set user/tests/mac/mac2 check/macaddr ""
-kdb meta-set user/tests/mac/mac3 check/macaddr ""
-kdb meta-set user/tests/mac/mac4 check/macaddr ""
+kdb meta-set user:/tests/mac/mac1 check/macaddr ""
+kdb meta-set user:/tests/mac/mac2 check/macaddr ""
+kdb meta-set user:/tests/mac/mac3 check/macaddr ""
+kdb meta-set user:/tests/mac/mac4 check/macaddr ""
 
 # Setting a MAC address using an invalid address
-kdb set user/tests/mac/mac1 00:G1:C9:14:C8:29
+kdb set user:/tests/mac/mac1 00:G1:C9:14:C8:29
 # RET: 5
 
 # Setting a MAC address using an invalid address
-kdb set user/tests/mac/mac1 00:E1:C914:C8:29
+kdb set user:/tests/mac/mac1 00:E1:C914:C8:29
 # RET: 5
 
 # Setting a MAC address using an invalid address
-kdb set user/tests/mac/mac4 281474976710656
+kdb set user:/tests/mac/mac4 281474976710656
 # RET: 5
 
 # Retrieving a MAC address with colons as integer
-kdb get user/tests/mac/mac1
+kdb get user:/tests/mac/mac1
 #> 690568349737
 
 # Retrieving a MAC address with hyphens as integer
-kdb get user/tests/mac/mac2
+kdb get user:/tests/mac/mac2
 #> 690568349737
 
 # Retrieving a MAC address with one hyphen as integer
-kdb get user/tests/mac/mac3
+kdb get user:/tests/mac/mac3
 #> 690568349737
 
 # Retrieving an integer MAC address
-kdb get user/tests/mac/mac4
+kdb get user:/tests/mac/mac4
 #> 17661175009296
 
-kdb rm -r user/tests/mac
-sudo kdb umount user/tests/mac
+kdb rm -r user:/tests/mac
+sudo kdb umount user:/tests/mac
 ```
 
 ## Dependencies

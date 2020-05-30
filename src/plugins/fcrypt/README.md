@@ -55,7 +55,7 @@ you might want to consider disabling the sync plugin by entering:
 
 ```sh
 kdb set /sw/elektra/kdb/#0/current/plugins ""
-kdb set system/sw/elektra/kdb/#0/current/plugins ""
+kdb set system:/sw/elektra/kdb/#0/current/plugins ""
 ```
 
 Please note that this is a workaround until a more sustainable solution is found.

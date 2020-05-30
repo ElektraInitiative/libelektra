@@ -96,7 +96,6 @@ gssize gelektra_key_addbasename (GElektraKey * key, const char * basename);
 
 gssize gelektra_key_getnamesize (const GElektraKey * key);
 gssize gelektra_key_getbasenamesize (const GElektraKey * key);
-gssize gelektra_key_getfullnamesize (const GElektraKey * key);
 
 /* value operations */
 gssize gelektra_key_setstring (GElektraKey * key, const gchar * value);

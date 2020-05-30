@@ -28,7 +28,7 @@ void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationC
 #define INTERNALNOTIFICATION_REGISTER_NAME(TYPE_NAME) elektraInternalnotificationRegister##TYPE_NAME
 
 #define INTERNALNOTIFICATION_EXPORT_FUNCTION(TYPE_NAME)                                                                                    \
-	keyNew ("system/elektra/modules/internalnotification/exports/register" #TYPE_NAME, KEY_FUNC,                                       \
+	keyNew ("system:/elektra/modules/internalnotification/exports/register" #TYPE_NAME, KEY_FUNC,                                      \
 		INTERNALNOTIFICATION_REGISTER_NAME (TYPE_NAME), KEY_END)
 
 /**

@@ -64,8 +64,8 @@ static void completeKeyComments (Key * key)
 	for (size_t index = 0;; index++)
 	{
 		char * indexStr = indexToArrayString (index);
-		char name[32];
-		snprintf (name, 32, "comment/%s", indexStr);
+		char name[48];
+		snprintf (name, 48, "meta:/comment/%s", indexStr);
 		elektraFree (indexStr);
 		if (keyGetMeta (key, name) == NULL)
 		{ // Inline comment with index 0 is optional, so don't stop if not present

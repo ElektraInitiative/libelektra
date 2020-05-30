@@ -41,7 +41,7 @@ To mount `specload` use (note: only the `spec` namespace is supported):
 
 ```
 # specload will call '/usr/bin/exampleapp --elektra-spec'
-kdb mount specload.eqd spec/tests/specload/example specload 'app=/usr/bin/exampleapp'
+kdb mount specload.eqd spec:/tests/specload/example specload 'app=/usr/bin/exampleapp'
 ```
 
 You always have to specify the `app` that shall be called. This application will be called with the single argument `--elektra-spec`. This
@@ -49,20 +49,20 @@ can be configured by using `app/args/#` during mounting:
 
 ```
 # specload will call '/usr/bin/exampleapp -o spec'
-kdb mount specload.eqd spec/tests/specload/example specload 'app=/usr/bin/exampleapp' 'app/args=#1' 'app/args/#0=-o' 'app/args/#1=spec'
+kdb mount specload.eqd spec:/tests/specload/example specload 'app=/usr/bin/exampleapp' 'app/args=#1' 'app/args/#0=-o' 'app/args/#1=spec'
 ```
 
 To inhibit the default `--elektra-spec` argument and call an application without any arguments use `'app/args='`.
 
 The app must only output the expected base specification to `stdout` and then exit, when called by `specload`. We use the `quickdump` plugin
 for communication, so the application should call `elektraQuickdumpSet`. Because this dependency may change in future, it is recommended
-you use the function `elektraSpecloadSendSpec` exported as `"system/elektra/modules/specload/exports/sendspec"`:
+you use the function `elektraSpecloadSendSpec` exported as `"system:/elektra/modules/specload/exports/sendspec"`:
 
 ```c
-Key * errorKey = keyNew (0, KEY_END);
+Key * errorKey = keyNew ("/", KEY_END);
 
-// add 'system/sendspec' key to suppress checking the 'app' key in elektraSpecloadOpen
-KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
+// add 'system:/sendspec' key to suppress checking the 'app' key in elektraSpecloadOpen
+KeySet * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
 ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, errorKey);
 
 int result = elektraInvoke2Args (specload, "sendspec", ks, NULL);
@@ -93,15 +93,15 @@ Note: If `file` is specified, `app` will be ignored.
 This assumes you compiled the file [`testapp.c`](testapp.c) and it is available as the executable `testapp` in the current folder.
 
 ```
-sudo kdb mount -R noresolver specload.eqd spec/tests/specload specload "app=$(pwd)/testapp"
+sudo kdb mount -R noresolver specload.eqd spec:/tests/specload specload "app=$(pwd)/testapp"
 
-kdb meta-ls spec/tests/specload/mykey
+kdb meta-ls spec:/tests/specload/mykey
 #> default
 
 kdb get /tests/specload/mykey
 #> 7
 
-sudo kdb umount spec/tests/specload
+sudo kdb umount spec:/tests/specload
 
 ```
 
@@ -109,15 +109,15 @@ Or in direct file mode:
 
 ```sh
 # This assumes that `$PWD` is the root of the Elektra source tree.
-sudo kdb mount -R noresolver specload.eqd spec/tests/specload specload "file=$(pwd)/src/plugins/specload/specload/spec.quickdump"
+sudo kdb mount -R noresolver specload.eqd spec:/tests/specload specload "file=$(pwd)/src/plugins/specload/specload/spec.quickdump"
 
-kdb meta-ls spec/tests/specload/mykey
+kdb meta-ls spec:/tests/specload/mykey
 #> default
 
 kdb get /tests/specload/mykey
 #> 7
 
-sudo kdb umount spec/tests/specload
+sudo kdb umount spec:/tests/specload
 ```
 
 ## Limitations

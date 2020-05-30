@@ -47,21 +47,21 @@ omitted):
 kdbOpen 1
 ksNew 207
 keyNew 27 1
-system/elektra/mountpoints
+system:/elektra/mountpoints
 keyMeta 8 27
 commentBelow are the mount points.
 keyEnd
 keyNew 32 19
-system/elektra/mountpoints/dbusserialized Backend
+system:/elektra/mountpoints/dbusserialized Backend
 keyEnd keyNew 39 1
-system/elektra/mountpoints/dbus/config
+system:/elektra/mountpoints/dbus/config
 keyMeta 8 72
 commentThis is a configuration for a backend, see subkeys for more information
 keyEnd
 keyNew 53 1
-system/elektra/mountpoints/fstab/config/struct/FStab
+system:/elektra/mountpoints/fstab/config/struct/FStab
 keyCopyMeta 59 11
-system/elektra/mountpoints/file
+system:/elektra/mountpoints/file
 systems/config/struct/FStabcheck/type
 keyEnd
 ksEnd
@@ -79,13 +79,13 @@ ksEnd
 Export a KeySet using `dump`:
 
 ```sh
-kdb export system/example dump > example.ecf
+kdb export system:/example dump > example.ecf
 ```
 
 Import a KeySet using `dump`:
 
 ```sh
-cat example.ecf | kdb import system/example dump
+cat example.ecf | kdb import system:/example dump
 ```
 
 Using grep/diff or other Unix tools on the dump file. Make sure that you

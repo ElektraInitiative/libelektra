@@ -225,8 +225,7 @@ ssize_t keySetComment (Key * key, const char * newComment)
 		return 1;
 	}
 
-	keySetMeta (key, "comment", newComment);
-	return keyGetCommentSize (key);
+	return keySetMeta (key, "comment", newComment);
 }
 
 
@@ -911,7 +910,7 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 /**
  * creates an metadata array or appends another element to an existing metadata array
  * e.g.
- * Key *key = keyNew("user/test", KEY_END);
+ * Key *key = keyNew("user:/test", KEY_END);
  * elektraMetaArrayAdd(key, "test", "val0");
  * key now has "test/#0" with value "val0" as metadata
  * elektraMetaArrayAdd(key, "test", "val1");
@@ -939,7 +938,8 @@ void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
 		keyAddBaseName (arrayKey, keyString (meta));
 	}
 	elektraArrayIncName (arrayKey);
-	keySetMeta (key, keyName (arrayKey), value);
+	const char * arrayName = keyName (arrayKey) + sizeof ("meta:/") - 1;
+	keySetMeta (key, arrayName, value);
 	keySetMeta (key, metaName, keyBaseName (arrayKey));
 	keyDel (arrayKey);
 }
@@ -968,30 +968,22 @@ elektraMetaArrayToKS(
  * @param key the key containing the metakey array
  * @param metaName the name of the metakey array parent
  */
-KeySet * elektraMetaArrayToKS (const Key * key, const char * metaName)
+KeySet * elektraMetaArrayToKS (Key * key, const char * metaName)
 {
 	const Key * meta = keyGetMeta (key, metaName);
 	if (!meta) return NULL;
 
-	KeySet * result = ksNew (0, KS_END);
-
+	KeySet * result;
 	if (keyString (meta)[0] != '#')
 	{
-		ksAppendKey (result, (Key *) meta);
-		ksRewind (result);
-		return result;
+		result = ksNew (1, meta, KS_END);
 	}
-	ksAppendKey (result, keyDup (meta));
-	Key * currentKey = keyDup (meta);
-	keyAddName (currentKey, "#");
-	elektraArrayIncName (currentKey);
-	Key * curMeta = NULL;
-	while ((curMeta = (Key *) keyGetMeta (key, keyName (currentKey))) != NULL)
+	else
 	{
-		ksAppendKey (result, keyDup (curMeta));
-		elektraArrayIncName (currentKey);
+		result = elektraArrayGet (meta, keyMeta (key));
+		ksAppendKey (result, (Key *) meta);
 	}
-	keyDel (currentKey);
+
 	ksRewind (result);
 	return result;
 }
@@ -1174,7 +1166,7 @@ static int isValidKeyName (const char * testName)
 {
 	int retVal = 0;
 	Key * testKey = keyNew (testName, KEY_CASCADING_NAME, KEY_END);
-	if (!strcmp (keyName (testKey), testName)) retVal = 1;
+	if (testKey && !strcmp (keyName (testKey), testName)) retVal = 1;
 	keyDel (testKey);
 	return retVal;
 }
@@ -1214,7 +1206,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	ksRewind (ks);
 	Key * cur;
 	ssize_t size = ksGetSize (ks);
-	Key * orderCounter = keyNew ("/#", KEY_CASCADING_NAME, KEY_END);
+	Key * orderCounter = keyNew ("/#", KEY_END);
 	elektraArrayIncName (orderCounter);
 	_adjMatrix adjMatrix[size];
 	int i = 0;
@@ -1236,7 +1228,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	{
 		cur = localArray[j];
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
-		keyDel (ksLookupByName (deps, "dep", KDB_O_POP));
+		keyDel (ksLookupByName (deps, "meta:/dep", KDB_O_POP));
 		Key * tmpDep;
 		switch (ksGetSize (deps))
 		{

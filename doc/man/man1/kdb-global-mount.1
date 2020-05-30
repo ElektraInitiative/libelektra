@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-GLOBAL\-MOUNT" "1" "August 2019" "" ""
+.TH "KDB\-GLOBAL\-MOUNT" "1" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-global\-mount\fR \- Globally mount plugins
@@ -24,7 +24,7 @@ Plugins may be followed by a \fB,\fR separated list of \fBkeys=values\fR pairs w
 This command allows a user to globally mount some plugins that will be part of every interaction with the global keydatabase\.
 .
 .SH "IMPORTANT"
-This command writes into the \fB/etc\fR directory and as such it requires root permissions\. Use \fBkdb file system/elektra/globalplugins\fR to find out where exactly it will write to\.
+This command writes into the \fB/etc\fR directory and as such it requires root permissions\. Use \fBkdb file system:/elektra/globalplugins\fR to find out where exactly it will write to\.
 .
 .SH "OPTIONS"
 .

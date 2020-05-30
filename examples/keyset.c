@@ -28,7 +28,7 @@ void g (const Key * source, KeySet * ks)
 
 void h (Key * k)
 {
-	Key * c = keyNew ("user/from/h", KEY_END);
+	Key * c = keyNew ("user:/from/h", KEY_END);
 	printf ("\tin h\n");
 
 	keyCopy (k, c);
@@ -42,7 +42,7 @@ void simpleAppend (void)
 {
 //! [simple append]
 KeySet * ks = ksNew (1, KS_END);
-ksAppendKey (ks, keyNew ("user/my/new/key", KEY_END));
+ksAppendKey (ks, keyNew ("user:/my/new/key", KEY_END));
 ksDel (ks);
 // key deleted, too!
 //! [simple append]
@@ -53,7 +53,7 @@ void refAppend (void)
 {
 //! [ref append]
 KeySet * ks = ksNew (1, KS_END);
-Key * k = keyNew ("user/ref/key", KEY_END);
+Key * k = keyNew ("user:/ref/key", KEY_END);
 keyIncRef (k);
 ksAppendKey (ks, k);
 ksDel (ks);
@@ -67,7 +67,7 @@ void dupAppend (void)
 {
 //! [dup append]
 KeySet * ks = ksNew (1, KS_END);
-Key * k = keyNew ("user/ref/key", KEY_END);
+Key * k = keyNew ("user:/ref/key", KEY_END);
 ksAppendKey (ks, keyDup (k));
 ksDel (ks);
 // now we still can work with the key k!
@@ -80,7 +80,7 @@ int main (void)
 	Key * origKey;
 	KeySet * ks = ksNew (0, KS_END);
 
-	Key * key = keyNew ("user/test/name", KEY_VALUE, "myvalue", KEY_END);
+	Key * key = keyNew ("user:/test/name", KEY_VALUE, "myvalue", KEY_END);
 	printf ("Created key %s with value %s\n", keyName (key), keyString (key));
 
 	f (key);

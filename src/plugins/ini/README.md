@@ -28,29 +28,29 @@ it is quite buggy and shows unexpected behavior in some of its features.
 If you want to add an INI file to the global key database, simply use mount:
 
 ```sh
-sudo kdb mount file.ini user/tests/ini ini
+sudo kdb mount file.ini user:/tests/ini ini
 ```
 
 Then you can modify the contents of the INI file using set:
 
 ```sh
-kdb set user/tests/ini/key value
-#> Create a new key user/tests/ini/key with string "value"
-kdb set user/tests/ini/section
-#> Create a new key user/tests/ini/section with null value
-kdb set user/tests/ini/section/key value
-#> Create a new key user/tests/ini/section/key with string "value"
+kdb set user:/tests/ini/key value
+#> Create a new key user:/tests/ini/key with string "value"
+kdb set user:/tests/ini/section
+#> Create a new key user:/tests/ini/section with null value
+kdb set user:/tests/ini/section/key value
+#> Create a new key user:/tests/ini/section/key with string "value"
 ```
 
 Find out which file you modified:
 
 ```sh
-kdb file user/tests/ini
+kdb file user:/tests/ini
 # STDOUT-REGEX: .+/file.ini
 
 # Undo modifications
-kdb rm -r user/tests/ini
-sudo kdb umount user/tests/ini
+kdb rm -r user:/tests/ini
+sudo kdb umount user:/tests/ini
 ```
 
 ## Comments
@@ -113,33 +113,33 @@ The following example shows how you can store and retrieve array values using th
 
 ```sh
 # Mount the INI plugin with array support
-sudo kdb mount config.ini user/tests/ini ini array=true
+sudo kdb mount config.ini user:/tests/ini ini array=true
 
 # Add an array storing song titles
-kdb set user/tests/ini/songs/#0 "Non-Zero Possibility"
-kdb set user/tests/ini/songs/#1 "Black Art Number One"
-kdb set user/tests/ini/songs/#2 "A Story Of Two Convicts"
+kdb set user:/tests/ini/songs/#0 "Non-Zero Possibility"
+kdb set user:/tests/ini/songs/#1 "Black Art Number One"
+kdb set user:/tests/ini/songs/#2 "A Story Of Two Convicts"
 
 # Check if INI saved all array entries
-kdb ls user/tests/ini/songs
-#> user/tests/ini/songs
-#> user/tests/ini/songs/#0
-#> user/tests/ini/songs/#1
-#> user/tests/ini/songs/#2
+kdb ls user:/tests/ini/songs
+#> user:/tests/ini/songs
+#> user:/tests/ini/songs/#0
+#> user:/tests/ini/songs/#1
+#> user:/tests/ini/songs/#2
 
 # Retrieve an array item
-kdb get user/tests/ini/songs/#2
+kdb get user:/tests/ini/songs/#2
 #> A Story Of Two Convicts
 
 # Check the file written by the INI plugin
-kdb file user/tests/ini | xargs cat
+kdb file user:/tests/ini | xargs cat
 #> songs=Non-Zero Possibility
 #> songs=Black Art Number One
 #> songs=A Story Of Two Convicts
 
 # Undo modifications
-kdb rm -r user/tests/ini
-sudo kdb umount user/tests/ini
+kdb rm -r user:/tests/ini
+sudo kdb umount user:/tests/ini
 ```
 
 ## Binary Data
@@ -150,29 +150,29 @@ By default the INI plugin does not support binary data. You can use the [Base64 
 # Mount INI and recommended plugin Base64
 # We add the required plugin `base64` (which provides `binary`) at the end too,
 # since otherwise this command leaks memory.
-sudo kdb mount --with-recommends config.ini user/tests/ini ini base64
+sudo kdb mount --with-recommends config.ini user:/tests/ini ini base64
 
 # Add empty binary value
-printf 'nothing="@BASE64"\n' > `kdb file user/tests/ini`
+printf 'nothing="@BASE64"\n' > `kdb file user:/tests/ini`
 # Copy binary data
-kdb cp system/elektra/modules/ini/exports/get user/tests/ini/binary
+kdb cp system:/elektra/modules/ini/exports/get user:/tests/ini/binary
 # Add textual data
-kdb set user/tests/ini/text 'Na na na na na na na na na na na na na na na na Batman!'
+kdb set user:/tests/ini/text 'Na na na na na na na na na na na na na na na na Batman!'
 
 # Print empty binary value
-kdb get user/tests/ini/nothing
+kdb get user:/tests/ini/nothing
 #>
 
 # Print binary data
-kdb get user/tests/ini/binary
+kdb get user:/tests/ini/binary
 # STDOUT-REGEX: ^(\\x[0-9a-f]{1,2})+$
 
 # Print textual data
-kdb get user/tests/ini/text
+kdb get user:/tests/ini/text
 #> Na na na na na na na na na na na na na na na na Batman!
 
-kdb rm -r user/tests/ini
-sudo kdb umount user/tests/ini
+kdb rm -r user:/tests/ini
+sudo kdb umount user:/tests/ini
 ```
 
 ## Metadata
@@ -180,37 +180,37 @@ sudo kdb umount user/tests/ini
 The INI plugin also supports to store arbitrary metadata in comments after the `@META` declarative.
 
 ```sh
-sudo kdb mount config.ini user/tests/ini ini
+sudo kdb mount config.ini user:/tests/ini ini
 
 # Add a new key and some metadata
-kdb set user/tests/ini/brand new
-kdb meta-set user/tests/ini/brand description "The Devil And God Are Raging Inside Me"
-kdb meta-set user/tests/ini/brand rationale "Because I Love It"
+kdb set user:/tests/ini/brand new
+kdb meta-set user:/tests/ini/brand description "The Devil And God Are Raging Inside Me"
+kdb meta-set user:/tests/ini/brand rationale "Because I Love It"
 
 # The plugin stores metadata as comments inside the INI file
-kdb file user/tests/ini | xargs cat
+kdb file user:/tests/ini | xargs cat
 #> #@META description = The Devil And God Are Raging Inside Me
 #> #@META rationale = Because I Love It
 #> brand=new
 
 # Retrieve metadata
-kdb meta-ls user/tests/ini/brand | grep -v 'internal'
+kdb meta-ls user:/tests/ini/brand | grep -v 'internal'
 # rationale
 # description
 
-kdb meta-get user/tests/ini/brand description
+kdb meta-get user:/tests/ini/brand description
 #> The Devil And God Are Raging Inside Me
-kdb meta-get user/tests/ini/brand rationale
+kdb meta-get user:/tests/ini/brand rationale
 #> Because I Love It
 
 # The plugin ignores some metadata such as `comment`!
-kdb meta-set user/tests/ini/brand comment "Where Art Thou?"
-kdb meta-get user/tests/ini/brand comment
+kdb meta-set user:/tests/ini/brand comment "Where Art Thou?"
+kdb meta-get user:/tests/ini/brand comment
 # STDERR: Metakey not found
 # RET: 2
 
-kdb rm -r user/tests/ini
-sudo kdb umount user/tests/ini
+kdb rm -r user:/tests/ini
+sudo kdb umount user:/tests/ini
 ```
 
 ## Sections
@@ -222,38 +222,38 @@ The ini plugin supports 3 different sectioning modes (via `section=`):
 - `ALWAYS` sections will be created automatically. This is the default setting:
 
 ```sh
-sudo kdb mount /empty.ini dir/tests ini
-kdb set dir/tests/a/b ab
-kdb get dir/tests/a       # <-- key is suddenly here
+sudo kdb mount /empty.ini dir:/tests ini
+kdb set dir:/tests/a/b ab
+kdb get dir:/tests/a       # <-- key is suddenly here
 cat empty.ini
 #> [a]
 #> b=ab
 
 # Undo modifications
-kdb rm -r dir/tests
-sudo kdb umount dir/tests
+kdb rm -r dir:/tests
+sudo kdb umount dir:/tests
 ```
 
 By changing the option `section` you can suppress the automatic creation of keys.
 E.g., if you use `NULL` instead you only get a section if you explicitly create it:
 
 ```sh
-sudo kdb mount /empty.ini dir/tests ini section=NULL
-kdb set dir/tests/a/b ab
-kdb get dir/tests/a       # no key here
+sudo kdb mount /empty.ini dir:/tests ini section=NULL
+kdb set dir:/tests/a/b ab
+kdb get dir:/tests/a       # no key here
 # RET: 11
 cat empty.ini
 #> a/b=ab
-kdb rm dir/tests/a/b
-kdb set dir/tests/a    # create section first
-kdb set dir/tests/a/b ab
+kdb rm dir:/tests/a/b
+kdb set dir:/tests/a    # create section first
+kdb set dir:/tests/a/b ab
 cat empty.ini
 #> [a]
 #> b=ab
 
 # Undo modifications
-kdb rm -r dir/tests
-sudo kdb umount dir/tests
+kdb rm -r dir:/tests
+sudo kdb umount dir:/tests
 ```
 
 ### Merge Sections
@@ -309,19 +309,19 @@ with the cache plugin [(see ini bug)](https://github.com/ElektraInitiative/libel
 The INI plugin also supports values and keys containing delimiter characters (`=`) properly.
 
 ```sh
-sudo kdb mount test.ini user/tests/ini ini
+sudo kdb mount test.ini user:/tests/ini ini
 
-printf '[section1]\n'    >  `kdb file user/tests/ini`
-printf 'hello=world\n' >> `kdb file user/tests/ini`
+printf '[section1]\n'    >  `kdb file user:/tests/ini`
+printf 'hello=world\n' >> `kdb file user:/tests/ini`
 
-kdb get user/tests/ini/section1/hello
+kdb get user:/tests/ini/section1/hello
 #> world
 
-kdb set user/tests/ini/section1/x=x 'a + b=b + a'
-kdb get user/tests/ini/section1/x=x
+kdb set user:/tests/ini/section1/x=x 'a + b=b + a'
+kdb get user:/tests/ini/section1/x=x
 #> a + b=b + a
 
 # Undo modifications
-kdb rm -r user/tests/ini
-sudo kdb umount user/tests/ini
+kdb rm -r user:/tests/ini
+sudo kdb umount user:/tests/ini
 ```

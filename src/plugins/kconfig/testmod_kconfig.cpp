@@ -28,7 +28,7 @@ using CppKey = kdb::Key;
 	CppKeySet modules{ 0, KS_END };                                                                                                    \
 	CppKeySet config{ 0, KS_END };                                                                                                     \
 	elektraModulesInit (modules.getKeySet (), 0);                                                                                      \
-	CppKey parent{ "system/elektra/modules/kconfig", KEY_END };                                                                        \
+	CppKey parent{ "system:/elektra/modules/kconfig", KEY_END };                                                                       \
 	Plugin * plugin = elektraPluginOpen ("kconfig", modules.getKeySet (), config.getKeySet (), *parent);                               \
 	exit_if_fail (plugin != NULL, "Could not open kconfig plugin")
 #define CLOSE_PLUGIN()                                                                                                                     \

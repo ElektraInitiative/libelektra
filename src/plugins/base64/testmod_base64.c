@@ -28,7 +28,7 @@ static void test_init (void)
 #endif
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
@@ -131,7 +131,7 @@ static void test_base64_plugin_regular (void)
 #endif
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * config = newPluginConfiguration ();
 
@@ -234,7 +234,7 @@ static void test_base64_plugin_decoding_error (void)
 #endif
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * config = newPluginConfiguration ();
 

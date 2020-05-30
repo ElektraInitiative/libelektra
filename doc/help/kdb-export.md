@@ -28,7 +28,7 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
 - `-E`, `--without-elektra`:
-  Omit the `system/elektra` directory.
+  Omit the `system:/elektra` directory.
 - `-c`, `--plugins-config <plugins-config>`:
   Add a configuration to the format plugin.
 - `-v`, `--verbose`:
@@ -58,10 +58,10 @@ Change default format to `simpleini`:<br>
 Create two key values and export them as `xml`:
 
 ```sh
-kdb set user/tests/kdb-export/one one
-kdb set user/tests/kdb-export/two two
+kdb set user:/tests/kdb-export/one one
+kdb set user:/tests/kdb-export/two two
 
-kdb export user/tests/kdb-export/ xml
+kdb export user:/tests/kdb-export/ xml
 #> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 #> <kdb-export>
 #>
@@ -72,17 +72,17 @@ kdb export user/tests/kdb-export/ xml
 #> </kdb-export>
 
 
-kdb rm -r user/tests
+kdb rm -r user:/tests
 # cleanup
 ```
 
 Create two key values and export them with the `xerces` plugin:
 
 ```sh
-kdb set user/tests/kdb-export/one one
-kdb set user/tests/kdb-export/two two
+kdb set user:/tests/kdb-export/one one
+kdb set user:/tests/kdb-export/two two
 
-kdb export user/tests/kdb-export/ xerces
+kdb export user:/tests/kdb-export/ xerces
 #> <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 #> <kdb-export>
 #>
@@ -92,7 +92,7 @@ kdb export user/tests/kdb-export/ xerces
 #>
 #> </kdb-export>
 
-kdb rm -r user/tests
+kdb rm -r user:/tests
 # cleanup
 ```
 

@@ -17,7 +17,7 @@ if [ -z "$KDB" ]; then
 fi
 
 if [ -z "$MOUNTPOINT" ]; then
-	MOUNTPOINT=system/info/elektra
+	MOUNTPOINT=system:/info/elektra
 fi
 
 $KDB mount -c assume/unchanged=1 --resolver noresolver none $MOUNTPOINT/constants constants

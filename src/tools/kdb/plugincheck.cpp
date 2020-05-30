@@ -95,7 +95,7 @@ int PluginCheckCommand::execute (Cmdline const & cl)
 	try
 	{
 		KeySet ks = cl.getPluginsConfig ();
-		ks.append (Key ("system/module", KEY_END));
+		ks.append (Key ("system:/module", KEY_END));
 		PluginPtr plugin = modules.load (name, ks);
 		plugin->check (warnings);
 	}

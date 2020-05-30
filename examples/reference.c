@@ -12,7 +12,7 @@
 void f (Key * k)
 {
 	printf ("\tf called with %s\n", keyName (k));
-	keySetName (k, "user/delete");
+	keySetName (k, "user:/delete");
 	keyDel (k);
 }
 
@@ -28,13 +28,13 @@ void h (Key * k)
 
 int main (void)
 {
-	Key * k = keyNew ("user/key1", KEY_END);
+	Key * k = keyNew ("user:/key1", KEY_END);
 	printf ("key has ref %zd\n", keyGetRef (k));
 
 	f (k);
 	printf ("key is now deleted\n\n");
 
-	k = keyNew ("user/key2", KEY_END);
+	k = keyNew ("user:/key2", KEY_END);
 	keyIncRef (k);
 	printf ("key has ref %zd\n", keyGetRef (k));
 
@@ -48,7 +48,7 @@ int main (void)
 	keyDel (k);
 	printf ("key is now deleted\n\n");
 
-	k = keyNew ("user/key3", KEY_END);
+	k = keyNew ("user:/key3", KEY_END);
 	printf ("key has ref %zd\n", keyGetRef (k));
 	h (k);
 	keyDel (k);

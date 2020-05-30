@@ -104,10 +104,10 @@ int elektraNotificationOpen (KDB * kdb)
 	context->kdb = kdb;
 	context->kdbUpdate = &elektraNotificationKdbUpdate;
 
-	Key * parent = keyNew ("", KEY_END);
-	KeySet * contract = ksNew (2, keyNew ("system/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "mounted", KEY_END),
-				   keyNew ("system/elektra/ensure/plugins/global/internalnotification/config/context", KEY_BINARY, KEY_SIZE,
-					   sizeof (context), KEY_VALUE, &context, KEY_END),
+	Key * parent = keyNew ("/", KEY_END);
+	KeySet * contract = ksNew (2, keyNew ("system:/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "mounted", KEY_END),
+				   keyNew ("system:/elektra/ensure/plugins/global/internalnotification/config/context", KEY_BINARY,
+					   KEY_SIZE, sizeof (context), KEY_VALUE, &context, KEY_END),
 				   KS_END);
 	if (kdbEnsure (kdb, contract, parent) != 0)
 	{
@@ -130,7 +130,7 @@ int elektraNotificationOpen (KDB * kdb)
 	if (!func)
 	{
 		// remove notification plugin again
-		contract = ksNew (1, keyNew ("system/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END),
+		contract = ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END),
 				  KS_END);
 		if (kdbEnsure (kdb, contract, parent) != 0)
 		{
@@ -166,14 +166,14 @@ int elektraNotificationClose (KDB * kdb)
 		return 0;
 	}
 
-	Key * contextKey = ksLookupByName (notificationPlugin->config, "user/context", 0);
+	Key * contextKey = ksLookupByName (notificationPlugin->config, "user:/context", 0);
 	ElektraNotificationCallbackContext * context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
 	elektraFree (context);
 
 	// Unmount the plugin
-	Key * parent = keyNew ("", KEY_END);
+	Key * parent = keyNew ("/", KEY_END);
 	KeySet * contract =
-		ksNew (1, keyNew ("system/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END), KS_END);
+		ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END), KS_END);
 	if (kdbEnsure (kdb, contract, parent) != 0)
 	{
 		ELEKTRA_LOG_WARNING ("kdbEnsure failed");

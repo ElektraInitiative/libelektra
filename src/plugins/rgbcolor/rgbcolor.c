@@ -350,15 +350,15 @@ static void elektraColorRestore (Key * key)
 
 int elektraRgbcolorGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/rgbcolor"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/rgbcolor"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/rgbcolor", KEY_VALUE, "rgbcolor plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/rgbcolor/exports", KEY_END),
-			       keyNew ("system/elektra/modules/rgbcolor/exports/get", KEY_FUNC, elektraRgbcolorGet, KEY_END),
-			       keyNew ("system/elektra/modules/rgbcolor/exports/set", KEY_FUNC, elektraRgbcolorSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/rgbcolor", KEY_VALUE, "rgbcolor plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/rgbcolor/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/rgbcolor/exports/get", KEY_FUNC, elektraRgbcolorGet, KEY_END),
+			       keyNew ("system:/elektra/modules/rgbcolor/exports/set", KEY_FUNC, elektraRgbcolorSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/rgbcolor/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/rgbcolor/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

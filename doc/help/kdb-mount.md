@@ -30,7 +30,7 @@ More about mounting is explained in [elektra-mounting(7)](elektra-mounting.md).
 
 This command writes into the `/etc` directory to make the mounting persistent.
 As such it requires root permissions.
-Use `kdb file system/elektra/mountpoints` to find out where exactly it will write to.
+Use `kdb file system:/elektra/mountpoints` to find out where exactly it will write to.
 
 Absolute paths are still relative to their namespace (see `kdb plugin-info resolver`).
 Only system+spec mount points are actually absolute.
@@ -103,19 +103,19 @@ To list the currently mounted backends:<br>
 `kdb mount`
 
 To mount a system configuration file using the ini format:<br>
-`kdb mount /etc/configuration.ini system/example ini`
+`kdb mount /etc/configuration.ini system:/example ini`
 
 Print a null-terminated output of paths and backend names:<br>
 `kdb mount -02 | xargs -0n 2 echo`
 
 To mount the /etc/file system file with two plugins with a respective configuration option each:<br>
-`kdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`
+`kdb mount /etc/file system:/file plugin1 plugin1config=config1 plugin2 plugin2config=config2`
 
 To mount the /etc/file system file with two plugins and setting both to be verbose:<br>
-`kdb mount -c verbose=1 /etc/file system/file plugin1 plugin2`
+`kdb mount -c verbose=1 /etc/file system:/file plugin1 plugin2`
 
 To recode and rename a configuration file using Elektra:<br>
-`kdb mount recode.txt dir/recode ni rename cut=path iconv to=utf8,from=latin1`
+`kdb mount recode.txt dir:/recode ni rename cut=path iconv to=utf8,from=latin1`
 
 ## SEE ALSO
 

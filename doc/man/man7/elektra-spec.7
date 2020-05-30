@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-SPEC" "7" "June 2019" "" ""
+.TH "ELEKTRA\-SPEC" "7" "September 2020" "" ""
 .
 .SH "NAME"
 \fBelektra\-spec\fR \- spec namespace
@@ -82,10 +82,10 @@ namespace/#0=user
 .IP "" 0
 .
 .IP "1." 4
-When this file is mounted to \fBspec/sw/app/#0\fR we specify, that for the key \fB/sw/app/#0/promise\fR only the namespace \fBuser\fR should be used\.
+When this file is mounted to \fBspec:/sw/app/#0\fR we specify, that for the key \fB/sw/app/#0/promise\fR only the namespace \fBuser\fR should be used\.
 .
 .IP "2." 4
-If this key was not found, but \fB/somewhere/else\fR is present, we will use this key instead\. The \fBfallback\fR technique is very powerful: it allows us to have (recursive) links between applications\. In the example above, the application is tricked in receiving e\.g\. the key \fBuser/somewhere/else\fR when \fBpromise\fR was not available\.
+If this key was not found, but \fB/somewhere/else\fR is present, we will use this key instead\. The \fBfallback\fR technique is very powerful: it allows us to have (recursive) links between applications\. In the example above, the application is tricked in receiving e\.g\. the key \fBuser:/somewhere/else\fR when \fBpromise\fR was not available\.
 .
 .IP "3." 4
 The value \fB20\fR will be used as default, even if no configuration file is found\.

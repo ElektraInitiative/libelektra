@@ -67,7 +67,7 @@ int main (void)
 		return EXIT_FAILURE;
 	}
 
-	Key * k = keyNew (s, KEY_CASCADING_NAME, KEY_META_NAME, KEY_END);
+	Key * k = keyNew (s, KEY_END);
 	printNamespace (k);
 	keyDel (k);
 }

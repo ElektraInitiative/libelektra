@@ -562,6 +562,7 @@ static CommentList * collectComments (Key * key, Writer * writer)
 	{
 		const char * pos = (const char *) keyUnescapedName (meta);
 		const char * stop = pos + keyGetUnescapedNameSize (meta);
+		pos += 2; // skip namespace
 		if (elektraStrCmp (pos, "comment") == 0)
 		{
 			int subDepth = 0;

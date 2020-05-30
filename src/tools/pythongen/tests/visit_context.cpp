@@ -88,15 +88,15 @@ int main()
 	KeySet ks;
 	Context c;
 	// some predefined values (for convenience):
-	ks.append(Key("user/visit/%/%/%/person/greeting",
+	ks.append(Key("user:/visit/%/%/%/person/greeting",
 				   KEY_VALUE,
 				   "Tag",
 				   KEY_END));
-	ks.append(Key("user/visit/german/Austria/%/person/greeting",
+	ks.append(Key("user:/visit/german/Austria/%/person/greeting",
 				   KEY_VALUE,
 				   "Servus",
 				   KEY_END));
-	ks.append(Key("user/visit/german/switzerland/%/person/greeting",
+	ks.append(Key("user:/visit/german/switzerland/%/person/greeting",
 				   KEY_VALUE,
 				   "Grüezi",
 				   KEY_END));

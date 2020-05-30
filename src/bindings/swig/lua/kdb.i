@@ -181,13 +181,11 @@
 // lua supports properties and also wraps in the exception code - yeah!
 %attributestring(kdb::Key, std::string, name,     getName, setName);
 %attributestring(kdb::Key, std::string, basename, getBaseName, setBaseName);
-%attributestring(kdb::Key, std::string, fullname, getFullName);
 
 %ignore kdb::Key::getName;
 %ignore kdb::Key::setName;
 %ignore kdb::Key::getBaseName;
 %ignore kdb::Key::setBaseName;
-%ignore kdb::Key::getFullName;
 
 // we handle binary just like strings with additional length param
 %typemap(out) std::string kdb::Key::getBinary {

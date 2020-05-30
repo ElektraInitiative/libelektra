@@ -39,10 +39,10 @@ struct change
 };
 
 // TODO: allow more changes
-static struct change allowedChanges[] = { { "description", true, true, true }, { "opt/help", true, true, true },
-					  { "comment", true, true, true },     { "order", true, true, true },
-					  { "rationale", true, true, true },   { "requirement", true, true, true },
-					  { "example", true, true, true },     { NULL, false, false, false } };
+static struct change allowedChanges[] = { { "meta:/description", true, true, true }, { "meta:/opt/help", true, true, true },
+					  { "meta:/comment", true, true, true },     { "meta:/order", true, true, true },
+					  { "meta:/rationale", true, true, true },   { "meta:/requirement", true, true, true },
+					  { "meta:/example", true, true, true },     { NULL, false, false, false } };
 
 static bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, char *** argvPtr, Key * errorKey);
 static bool loadSpec (KeySet * returned, const char * directFile, const char * app, char * argv[], Key * parentKey,
@@ -83,7 +83,7 @@ int elektraSpecloadOpen (Plugin * handle, Key * errorKey)
 	Specload * specload = elektraMalloc (sizeof (Specload));
 
 	KeySet * conf = elektraPluginGetConfig (handle);
-	if (ksLookupByName (conf, "system/module", 0) != NULL || ksLookupByName (conf, "system/sendspec", 0) != NULL)
+	if (ksLookupByName (conf, "system:/module", 0) != NULL || ksLookupByName (conf, "system:/sendspec", 0) != NULL)
 	{
 		elektraFree (specload);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -142,7 +142,7 @@ int elektraSpecloadClose (Plugin * handle, Key * errorKey)
  * Sends the given specification (@p spec) over stdout, to be received by the process using specload.
  *
  * Note: To use this function with elektraInvoke2Args, call elektraInvokeOpen with a config containing
- * the key 'system/sendspec'. This postpones the check for an existent app until elektraSpecloadGet is called.
+ * the key 'system:/sendspec'. This postpones the check for an existent app until elektraSpecloadGet is called.
  *
  * @param handle    A specload plugin handle.
  * @param spec      The specification to send.
@@ -153,13 +153,13 @@ int elektraSpecloadClose (Plugin * handle, Key * errorKey)
  */
 int elektraSpecloadSendSpec (Plugin * handle ELEKTRA_UNUSED, KeySet * spec, Key * parentKey)
 {
-	Key * errorKey = keyNew (0, KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 
 	KeySet * quickDumpConf = ksNew (0, KS_END);
 
-	if (keyGetMeta (parentKey, "system/elektra/quickdump/noparent") != NULL)
+	if (keyGetMeta (parentKey, "system:/elektra/quickdump/noparent") != NULL)
 	{
-		ksAppendKey (quickDumpConf, keyNew ("system/noparent", KEY_END));
+		ksAppendKey (quickDumpConf, keyNew ("system:/noparent", KEY_END));
 	}
 
 	ElektraInvokeHandle * quickDump = elektraInvokeOpen ("quickdump", quickDumpConf, errorKey);
@@ -178,19 +178,19 @@ int elektraSpecloadSendSpec (Plugin * handle ELEKTRA_UNUSED, KeySet * spec, Key 
 
 int elektraSpecloadGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/specload"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/specload"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/specload", KEY_VALUE, "specload plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports", KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/open", KEY_FUNC, elektraSpecloadOpen, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/close", KEY_FUNC, elektraSpecloadClose, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/get", KEY_FUNC, elektraSpecloadGet, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/set", KEY_FUNC, elektraSpecloadSet, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/checkconf", KEY_FUNC, elektraSpecloadCheckConf, KEY_END),
-			       keyNew ("system/elektra/modules/specload/exports/sendspec", KEY_FUNC, elektraSpecloadSendSpec, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/specload", KEY_VALUE, "specload plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/open", KEY_FUNC, elektraSpecloadOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/close", KEY_FUNC, elektraSpecloadClose, KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/get", KEY_FUNC, elektraSpecloadGet, KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/set", KEY_FUNC, elektraSpecloadSet, KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/checkconf", KEY_FUNC, elektraSpecloadCheckConf, KEY_END),
+			       keyNew ("system:/elektra/modules/specload/exports/sendspec", KEY_FUNC, elektraSpecloadSendSpec, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/specload/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/specload/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -429,7 +429,7 @@ bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, char *** 
 	KeySet * args;
 	if (ksLookupByName (conf, "/app/args", 0) == NULL)
 	{
-		args = ksNew (1, keyNew ("user/app/args/#0", KEY_VALUE, "--elektra-spec", KEY_END), KS_END);
+		args = ksNew (1, keyNew ("user:/app/args/#0", KEY_VALUE, "--elektra-spec", KEY_END), KS_END);
 	}
 	else
 	{
@@ -699,22 +699,20 @@ KeySet * calculateMetaDiff (Key * oldKey, Key * newKey)
 		if (cmp < 0)
 		{
 			// oldKey has to "catch up"
-			ksAppendKey (result,
-				     keyNew (oldName, KEY_META_NAME, KEY_VALUE, "remove", KEY_META, "old", keyString (oldMeta), KEY_END));
+			ksAppendKey (result, keyNew (oldName, KEY_VALUE, "remove", KEY_META, "old", keyString (oldMeta), KEY_END));
 			oldMeta = keyNextMeta (oldKey);
 		}
 		else if (cmp > 0)
 		{
 			// newKey has to "catch up"
-			ksAppendKey (result,
-				     keyNew (newName, KEY_META_NAME, KEY_VALUE, "add", KEY_META, "new", keyString (newMeta), KEY_END));
+			ksAppendKey (result, keyNew (newName, KEY_VALUE, "add", KEY_META, "new", keyString (newMeta), KEY_END));
 			newMeta = keyNextMeta (newKey);
 		}
 		else
 		{
 			// same name
-			ksAppendKey (result, keyNew (oldName, KEY_META_NAME, KEY_VALUE, "edit", KEY_META, "old", keyString (oldMeta),
-						     KEY_META, "new", keyString (newMeta), KEY_END));
+			ksAppendKey (result, keyNew (oldName, KEY_VALUE, "edit", KEY_META, "old", keyString (oldMeta), KEY_META, "new",
+						     keyString (newMeta), KEY_END));
 			oldMeta = keyNextMeta (oldKey);
 			newMeta = keyNextMeta (newKey);
 		}
@@ -723,15 +721,13 @@ KeySet * calculateMetaDiff (Key * oldKey, Key * newKey)
 	// remaining metadata in oldKey was removed
 	while ((oldMeta = keyNextMeta (oldKey)) != NULL)
 	{
-		ksAppendKey (result,
-			     keyNew (keyName (oldMeta), KEY_META_NAME, KEY_VALUE, "remove", KEY_META, "old", keyString (oldMeta), KEY_END));
+		ksAppendKey (result, keyNew (keyName (oldMeta), KEY_VALUE, "remove", KEY_META, "old", keyString (oldMeta), KEY_END));
 	}
 
 	// remaining metadata in newKey was added
 	while ((newMeta = keyNextMeta (newKey)) != NULL)
 	{
-		ksAppendKey (result,
-			     keyNew (keyName (newMeta), KEY_META_NAME, KEY_VALUE, "add", KEY_META, "new", keyString (newMeta), KEY_END));
+		ksAppendKey (result, keyNew (keyName (newMeta), KEY_VALUE, "add", KEY_META, "new", keyString (newMeta), KEY_END));
 	}
 
 	return result;

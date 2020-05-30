@@ -63,143 +63,143 @@ brew install antlr antlr4-cpp-runtime
 ### Mappings
 
 ```sh
-# Mount plugin to `user/tests/yanlr`
-sudo kdb mount config.yaml user/tests/yanlr yanlr
+# Mount plugin to `user:/tests/yanlr`
+sudo kdb mount config.yaml user:/tests/yanlr yanlr
 
 # Manually add some mappings to the configuration file
-printf 'all : circles presuppose\n' >  `kdb file user/tests/yanlr`
-printf 'hello : world\n'            >> `kdb file user/tests/yanlr`
+printf 'all : circles presuppose\n' >  `kdb file user:/tests/yanlr`
+printf 'hello : world\n'            >> `kdb file user:/tests/yanlr`
 
 kdb ls /tests/yanlr
-#> user/tests/yanlr/all
-#> user/tests/yanlr/hello
+#> user:/tests/yanlr/all
+#> user:/tests/yanlr/hello
 
-kdb get user/tests/yanlr/all
+kdb get user:/tests/yanlr/all
 #> circles presuppose
 
 # Store value at root of mountpoint
-kdb set user/tests/yanlr 'Mount Eerie'
-kdb get user/tests/yanlr
+kdb set user:/tests/yanlr 'Mount Eerie'
+kdb get user:/tests/yanlr
 #> Mount Eerie
 
 # Add new key-value pairs
 # Yan LR actually uses the YAML Smith plugin to write data
-kdb set user/tests/yanlr/brand new
-kdb set user/tests/yanlr/brand/new eyes
-kdb set user/tests/yanlr/dance/gavin 'Dance!'
+kdb set user:/tests/yanlr/brand new
+kdb set user:/tests/yanlr/brand/new eyes
+kdb set user:/tests/yanlr/dance/gavin 'Dance!'
 
 kdb ls /tests/yanlr
-#> user/tests/yanlr
-#> user/tests/yanlr/all
-#> user/tests/yanlr/brand
-#> user/tests/yanlr/brand/new
-#> user/tests/yanlr/dance/gavin
-#> user/tests/yanlr/hello
+#> user:/tests/yanlr
+#> user:/tests/yanlr/all
+#> user:/tests/yanlr/brand
+#> user:/tests/yanlr/brand/new
+#> user:/tests/yanlr/dance/gavin
+#> user:/tests/yanlr/hello
 
 kdb get /tests/yanlr/hello
 #> world
-kdb get user/tests/yanlr/brand
+kdb get user:/tests/yanlr/brand
 #> new
 kdb get /tests/yanlr/dance/gavin
 #> Dance!
 
 # Undo modifications to the key database
-kdb rm -r user/tests/yanlr
-sudo kdb umount user/tests/yanlr
+kdb rm -r user:/tests/yanlr
+sudo kdb umount user:/tests/yanlr
 ```
 
 ### Arrays
 
 ```sh
 # Mount plugin to `/tests/yanlr`
-sudo kdb mount config.yaml user/tests/yanlr yanlr
+sudo kdb mount config.yaml user:/tests/yanlr yanlr
 
 # Manually add a sequences to the configuration file
-printf 'primes:\n'   >  `kdb file user/tests/yanlr`
-printf '  - two\n'   >> `kdb file user/tests/yanlr`
-printf '  - three\n' >> `kdb file user/tests/yanlr`
-printf '  - five\n'  >> `kdb file user/tests/yanlr`
+printf 'primes:\n'   >  `kdb file user:/tests/yanlr`
+printf '  - two\n'   >> `kdb file user:/tests/yanlr`
+printf '  - three\n' >> `kdb file user:/tests/yanlr`
+printf '  - five\n'  >> `kdb file user:/tests/yanlr`
 
-kdb ls user/tests/yanlr
-#> user/tests/yanlr/primes
-#> user/tests/yanlr/primes/#0
-#> user/tests/yanlr/primes/#1
-#> user/tests/yanlr/primes/#2
+kdb ls user:/tests/yanlr
+#> user:/tests/yanlr/primes
+#> user:/tests/yanlr/primes/#0
+#> user:/tests/yanlr/primes/#1
+#> user:/tests/yanlr/primes/#2
 
-kdb set user/tests/yanlr/primes/#3 seven
+kdb set user:/tests/yanlr/primes/#3 seven
 
 # Retrieve index of last array element
-kdb meta-get user/tests/yanlr/primes array
+kdb meta-get user:/tests/yanlr/primes array
 #> #3
 
 # Undo modifications to the key database
-kdb rm -r user/tests/yanlr
-sudo kdb umount user/tests/yanlr
+kdb rm -r user:/tests/yanlr
+sudo kdb umount user:/tests/yanlr
 ```
 
 ### Boolean Values
 
 ```sh
 # Mount plugin to `/tests/yanlr`
-sudo kdb mount config.yaml user/tests/yanlr yanlr
+sudo kdb mount config.yaml user:/tests/yanlr yanlr
 
 # Manually add a boolean value to the database
-printf 'boolean: true' > `kdb file user/tests/yanlr`
+printf 'boolean: true' > `kdb file user:/tests/yanlr`
 
 # Elektra stores boolean values as `0` and `1`
-kdb get user/tests/yanlr/boolean
+kdb get user:/tests/yanlr/boolean
 #> 1
 
 # Undo modifications to the key database
-kdb rm -r user/tests/yanlr
-sudo kdb umount user/tests/yanlr
+kdb rm -r user:/tests/yanlr
+sudo kdb umount user:/tests/yanlr
 ```
 
 ### Null Values
 
 ```sh
 # Mount plugin to `/tests/yanlr`
-sudo kdb mount config.yaml user/tests/yanlr yanlr
+sudo kdb mount config.yaml user:/tests/yanlr yanlr
 
 # Manually add a null value to the database
-printf '"null":' > `kdb file user/tests/yanlr`
+printf '"null":' > `kdb file user:/tests/yanlr`
 
 # Elektra adds the metakey `binary` for empty keys
-kdb meta-ls user/tests/yanlr/null
+kdb meta-ls user:/tests/yanlr/null
 #> binary
 
 # Undo modifications to the key database
-kdb rm -r user/tests/yanlr
-sudo kdb umount user/tests/yanlr
+kdb rm -r user:/tests/yanlr
+sudo kdb umount user:/tests/yanlr
 ```
 
 ### Error Messages
 
 ```sh
 # Mount plugin
-sudo kdb mount config.yaml user/tests/yanlr yanlr
+sudo kdb mount config.yaml user:/tests/yanlr yanlr
 
 # Manually add syntactically incorrect data
-printf -- 'key: - element 1\n'                   >  `kdb file user/tests/yanlr`
-printf -- '- element 2 # Incorrect Indentation!' >> `kdb file user/tests/yanlr`
+printf -- 'key: - element 1\n'                   >  `kdb file user:/tests/yanlr`
+printf -- '- element 2 # Incorrect Indentation!' >> `kdb file user:/tests/yanlr`
 
 # The plugin reports the location of the error
-kdb ls user/tests/yanlr
+kdb ls user:/tests/yanlr
 # RET: 5
 # STDERR: .*/config.yaml:2:1: mismatched input '- ' expecting end of map.*
 
 # Let us look at the error message more closely.
 # Since the location of `config.yaml` depends on the current user and OS,
-# we store the text before `config.yaml` as `user/tests/error/prefix`.
-kdb set user/tests/error "$(2>&1 kdb ls user/tests/yanlr)"
-kdb set user/tests/error/prefix "$(kdb get user/tests/error | grep 'config.yaml' | head -1 | sed -E 's/(.*)config.yaml.*/\1/')"
+# we store the text before `config.yaml` as `user:/tests/error/prefix`.
+kdb set user:/tests/error "$(2>&1 kdb ls user:/tests/yanlr)"
+kdb set user:/tests/error/prefix "$(kdb get user:/tests/error | grep 'config.yaml' | head -1 | sed -E 's/(.*)config.yaml.*/\1/')"
 # We also store the length of the prefix, so we can remove it from every
 # line of the error message.
-kdb set user/tests/error/prefix/length "$(kdb get user/tests/error/prefix | wc -c | sed 's/[ ]*//g')"
+kdb set user:/tests/error/prefix/length "$(kdb get user:/tests/error/prefix | wc -c | sed 's/[ ]*//g')"
 
 # Since we only want to look at the “reason” of the error, we
 # remove the other part of the error message with `head` and `tail`.
-kdb get user/tests/error | tail -n6 | cut -c"$(kdb get user/tests/error/prefix/length | tr -d '\n')"-
+kdb get user:/tests/error | tail -n6 | cut -c"$(kdb get user:/tests/error/prefix/length | tr -d '\n')"-
 #> config.yaml:2:1: mismatched input '- ' expecting end of map
 #>                  - element 2 # Incorrect Indentation!
 #>                  ^^
@@ -208,18 +208,18 @@ kdb get user/tests/error | tail -n6 | cut -c"$(kdb get user/tests/error/prefix/l
 #>                                                       ^
 
 # Fix syntax error
-printf -- 'key: - element 1\n'        >  `kdb file user/tests/yanlr`
-printf -- '     - element 2 # Fixed!' >> `kdb file user/tests/yanlr`
+printf -- 'key: - element 1\n'        >  `kdb file user:/tests/yanlr`
+printf -- '     - element 2 # Fixed!' >> `kdb file user:/tests/yanlr`
 
-kdb ls user/tests/yanlr
-#> user/tests/yanlr/key
-#> user/tests/yanlr/key/#0
-#> user/tests/yanlr/key/#1
+kdb ls user:/tests/yanlr
+#> user:/tests/yanlr/key
+#> user:/tests/yanlr/key/#0
+#> user:/tests/yanlr/key/#1
 
 # Undo modifications
-kdb rm -r user/tests/error
-kdb rm -r user/tests/yanlr
-sudo kdb umount user/tests/yanlr
+kdb rm -r user:/tests/error
+kdb rm -r user:/tests/yanlr
+sudo kdb umount user:/tests/yanlr
 ```
 
 ## Limitations
