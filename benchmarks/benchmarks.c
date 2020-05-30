@@ -598,7 +598,7 @@ KeySet * generateKeySet (const size_t size, int32_t * seed, KeySetShape * shape)
 	}
 	for (size_t i = 0; i < root->numberofChildren; ++i)
 	{
-		Key * key = keyNew ("", KEY_END);
+		Key * key = keyNew ("/", KEY_END);
 		if (!key)
 		{
 			printExit ("generateKeySet: Can not create Key");

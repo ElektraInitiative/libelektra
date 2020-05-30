@@ -3,7 +3,7 @@
 <keyset xmlns="https://www.libelektra.org"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="https://www.libelektra.org elektra.xsd"
-        parent="user/tests/hosts">
+        parent="user:/tests/hosts">
 
 	<key basename="gateway" mode="0664" value="192.168.0.1"/>
 	<key basename="home" mode="0664" value="86.59.55.224"/>

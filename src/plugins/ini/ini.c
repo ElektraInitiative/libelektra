@@ -25,9 +25,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-char * keyNameGetOneLevel (const char *, size_t *);
-
 int elektraIniOpen (Plugin * handle, Key * parentKey);
 int elektraIniClose (Plugin * handle, Key * parentKey);
 static char * findParent (Key *, Key *, KeySet *);
@@ -89,7 +86,10 @@ static void flushCollectedComment (CallbackHandle * handle, Key * key)
 		keyRewindMeta (handle->collectedComment);
 		while ((cur = (Key *) keyNextMeta (handle->collectedComment)) != NULL)
 		{
-			if (!strncmp (keyName (cur), "meta/", 5)) keySetMeta (key, keyName (cur) + 5, keyString (cur));
+			if (!strncmp (keyName (cur), "meta:/meta/", sizeof ("meta:/meta/") - 1))
+			{
+				keySetMeta (key, keyName (cur) + sizeof ("meta:/meta/") - 1, keyString (cur));
+			}
 		}
 		keyDel (handle->collectedComment);
 		handle->collectedComment = NULL;
@@ -119,6 +119,49 @@ static int elektraKeyAppendLine (Key * target, const char * line)
 	return keyGetValueSize (target);
 }
 
+// TODO (kodebach): use something else
+static char * keyNameGetOneLevel (const char * name, size_t * size)
+{
+	char * real = (char *) name;
+	size_t cursor = 0;
+	int end = 0;	     // bool to check for end of level
+	int escapeCount = 0; // counter to check if / was escaped
+
+	/* skip all repeating '/' in the beginning */
+	while (*real && *real == KDB_PATH_SEPARATOR)
+	{
+		++real;
+	}
+
+	/* now see where this basename ends handling escaped chars with '\' */
+	while (real[cursor] && !end)
+	{
+		switch (real[cursor])
+		{
+		case KDB_PATH_ESCAPE:
+			++escapeCount;
+			break;
+		case KDB_PATH_SEPARATOR:
+			if (!(escapeCount % 2))
+			{
+				end = 1;
+			}
+		// fallthrough
+		default:
+			escapeCount = 0;
+		}
+		++cursor;
+	}
+
+	/* if a '/' stopped our loop, balance the counter */
+	if (end)
+	{
+		--cursor;
+	}
+
+	*size = cursor;
+	return real;
+}
 
 static void keyAddUnescapedBasePath (Key * key, const char * path)
 {
@@ -137,8 +180,8 @@ static void keyAddUnescapedBasePath (Key * key, const char * path)
 		int ret = keyAddName (key, buffer);
 		if (ret == -1)
 		{
-			char * tmp = elektraMalloc (keyGetFullNameSize (key) + strlen (buffer) + 2);
-			keyGetFullName (key, tmp, keyGetFullNameSize (key));
+			char * tmp = elektraMalloc (keyGetNameSize (key) + strlen (buffer) + 2);
+			keyGetName (key, tmp, keyGetNameSize (key));
 			strcat (tmp, "/");
 			strcat (tmp, buffer);
 			ssize_t rc = keySetName (key, tmp);
@@ -706,7 +749,7 @@ int elektraIniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	/* get all keys */
 	int errnosave = errno;
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/ini"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/ini"))
 	{
 		KeySet * info = getPluginContract ();
 
@@ -1185,7 +1228,7 @@ static void iniWriteMeta (FILE * fh, Key * key)
 	while (keyNextMeta (key) != NULL)
 	{
 		Key * meta = (Key *) keyCurrentMeta (key);
-		const char * name = keyName (meta);
+		const char * name = keyName (meta) + sizeof ("meta:/") - 1; // ignore namespace
 		if (strncmp (name, "internal/", 9) && strcmp (name, "internal/ini/section") && strncmp (name, "comment", 7) &&
 		    strncmp (name, "warnings/", 9) && strncmp (name, "error/", 6) && strcmp (name, "warnings") && strcmp (name, "error"))
 		{

@@ -24,21 +24,21 @@ will be stored in `result`.
 The easiest case is if all three versions contain equal data.
 
 ```sh
-kdb set user/tests/base a
-#> Create a new key user/tests/base with string "a"
-kdb set user/tests/their a
-#> Create a new key user/tests/their with string "a"
-kdb set user/tests/our a
-#> Create a new key user/tests/our with string "a"
-kdb cmerge user/tests/our user/tests/their user/tests/base user/tests/result
-kdb get user/tests/result
+kdb set user:/tests/base a
+#> Create a new key user:/tests/base with string "a"
+kdb set user:/tests/their a
+#> Create a new key user:/tests/their with string "a"
+kdb set user:/tests/our a
+#> Create a new key user:/tests/our with string "a"
+kdb cmerge user:/tests/our user:/tests/their user:/tests/base user:/tests/result
+kdb get user:/tests/result
 #> a
 ```
 
 We change the our key for another example.
 
 ```sh
-kdb set user/tests/our b
+kdb set user:/tests/our b
 #> Set string to "b"
 ```
 
@@ -46,21 +46,21 @@ Using a `result` path that is not empty gives an error.
 The option `-f` can be used to override. **Attention!** This deletes existing keys below `result`.
 
 ```sh
-kdb cmerge user/tests/our user/tests/their user/tests/base user/tests/result
+kdb cmerge user:/tests/our user:/tests/their user:/tests/base user:/tests/result
 # RET: 3
 # There are keys in the result path. Use -f to override them.
-kdb cmerge -f user/tests/our user/tests/their user/tests/base user/tests/result
-kdb get user/tests/result
+kdb cmerge -f user:/tests/our user:/tests/their user:/tests/base user:/tests/result
+kdb get user:/tests/result
 #> b
 ```
 
 We can use the same key multiple times in a single call to cmerge.
 
 ```sh
-kdb set user/tests/same a
-#> Create a new key user/tests/same with string "a"
-kdb cmerge -f user/tests/same user/tests/same user/tests/same user/tests/result
-kdb get user/tests/result
+kdb set user:/tests/same a
+#> Create a new key user:/tests/same with string "a"
+kdb cmerge -f user:/tests/same user:/tests/same user:/tests/same user:/tests/result
+kdb get user:/tests/result
 #> a
 ```
 
@@ -77,7 +77,7 @@ echo "127.0.0.1       localhost
 fe00::0 ip6-localnet
 ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters" | kdb import user/tests/hosts/base hosts
+ff02::2 ip6-allrouters" | kdb import user:/tests/hosts/base hosts
 
 echo "127.0.0.1       localhost
 127.0.1.1       computer
@@ -87,7 +87,7 @@ echo "127.0.0.1       localhost
 fe00::0 ip6-localnet
 ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters" | kdb import user/tests/hosts/our hosts
+ff02::2 ip6-allrouters" | kdb import user:/tests/hosts/our hosts
 
 echo "127.0.0.1       localhost
 127.0.1.1       computer
@@ -97,16 +97,16 @@ echo "127.0.0.1       localhost
 fe00::0 ip6-localnet
 ff00::0 ip6-mcastprefix
 ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters" | kdb import user/tests/hosts/their hosts
+ff02::2 ip6-allrouters" | kdb import user:/tests/hosts/their hosts
 
-kdb cmerge user/tests/hosts/our user/tests/hosts/their user/tests/hosts/base user/tests/hosts/result
+kdb cmerge user:/tests/hosts/our user:/tests/hosts/their user:/tests/hosts/base user:/tests/hosts/result
 ```
 
 The merge notices that only one of the three versions of the key `ip6-localhost` has changed.
 Assuming that this was an update it puts the new value in the result.
 
 ```
-kdb get user/tests/hosts/result/ipv6/ip6-localhost
+kdb get user:/tests/hosts/result/ipv6/ip6-localhost
 #> ::2
 ```
 
@@ -124,32 +124,32 @@ To demonstrate this, we continue the hosts example:
 recorder tests -->
 
 ```
-kdb meta-get user/tests/hosts/result/ipv6/ip6-localhost comment/#2
+kdb meta-get user:/tests/hosts/result/ipv6/ip6-localhost comment/#2
 #>  THEIR The following lines are desirable for IPv6 capable hosts
 ```
 
 We set up some keys:
 
 ```sh
-kdb set user/tests/meta/base equal
-#> Create a new key user/tests/meta/base with string "equal"
-kdb meta-set user/tests/meta/base comment/#0 "This is the original inline comment"
-kdb meta-set user/tests/meta/base comment/#1 "This is the first line of the original comment above the key"
-kdb meta-set user/tests/meta/base comment/#2 "This is the second line of the original comment above the key"
+kdb set user:/tests/meta/base equal
+#> Create a new key user:/tests/meta/base with string "equal"
+kdb meta-set user:/tests/meta/base comment/#0 "This is the original inline comment"
+kdb meta-set user:/tests/meta/base comment/#1 "This is the first line of the original comment above the key"
+kdb meta-set user:/tests/meta/base comment/#2 "This is the second line of the original comment above the key"
 
-kdb set user/tests/meta/their equal
-#> Create a new key user/tests/meta/their with string "equal"
-kdb meta-set user/tests/meta/their comment/#0 "This is their inline comment"
-kdb meta-set user/tests/meta/their comment/#1 "This is the first line of their comment above the key"
-kdb meta-set user/tests/meta/their comment/#2 "This is the second line of their comment above the key"
+kdb set user:/tests/meta/their equal
+#> Create a new key user:/tests/meta/their with string "equal"
+kdb meta-set user:/tests/meta/their comment/#0 "This is their inline comment"
+kdb meta-set user:/tests/meta/their comment/#1 "This is the first line of their comment above the key"
+kdb meta-set user:/tests/meta/their comment/#2 "This is the second line of their comment above the key"
 
-kdb set user/tests/meta/our equal
-#> Create a new key user/tests/meta/our with string "equal"
-kdb meta-set user/tests/meta/our comment/#0 "This is your custom inline comment"
-kdb meta-set user/tests/meta/our comment/#1 "This is the first line of your custom comment above the key"
-kdb meta-set user/tests/meta/our comment/#2 "This is the second line of your custom comment above the key"
+kdb set user:/tests/meta/our equal
+#> Create a new key user:/tests/meta/our with string "equal"
+kdb meta-set user:/tests/meta/our comment/#0 "This is your custom inline comment"
+kdb meta-set user:/tests/meta/our comment/#1 "This is the first line of your custom comment above the key"
+kdb meta-set user:/tests/meta/our comment/#2 "This is the second line of your custom comment above the key"
 
-kdb cmerge user/tests/meta/our user/tests/meta/their user/tests/meta/base user/tests/meta/metaFromOur
+kdb cmerge user:/tests/meta/our user:/tests/meta/their user:/tests/meta/base user:/tests/meta/metaFromOur
 ```
 
 Now we can check if the metadata has been merged as expected.
@@ -158,21 +158,21 @@ Now we can check if the metadata has been merged as expected.
 recorder tests -->
 
 ```
-kdb meta-get user/tests/meta/metaFromOur comment/#0
+kdb meta-get user:/tests/meta/metaFromOur comment/#0
 #> This is your custom inline comment
-kdb meta-get user/tests/meta/metaFromOur comment/#1
+kdb meta-get user:/tests/meta/metaFromOur comment/#1
 #> This is the first line of your custom comment above the key
-kdb meta-get user/tests/meta/metaFromOur comment/#2
+kdb meta-get user:/tests/meta/metaFromOur comment/#2
 #> This is the second line of your custom comment above the key
 ```
 
 If a key is part of the result because its value has changed then the result will also contain the metadata of that key.
 
 ```sh
-kdb set user/tests/meta/their different
+kdb set user:/tests/meta/their different
 #> Set string to "different"
 
-kdb cmerge user/tests/meta/our user/tests/meta/their user/tests/meta/base user/tests/meta/metaFromChanged
+kdb cmerge user:/tests/meta/our user:/tests/meta/their user:/tests/meta/base user:/tests/meta/metaFromChanged
 ```
 
 We can test again if the result meets our expectations.
@@ -181,7 +181,7 @@ We can test again if the result meets our expectations.
 recorder tests -->
 
 ```
-kdb meta-get user/tests/meta/metaFromChanged comment/#2
+kdb meta-get user:/tests/meta/metaFromChanged comment/#2
 #> This is the second line of their comment above the key
 ```
 
@@ -194,18 +194,18 @@ echo "one\
 two\
 three\
 four\
-five" | kdb import user/tests/arrays/original line
+five" | kdb import user:/tests/arrays/original line
 
 echo "previous\
 one\
 two\
 three\
 four\
-five" | kdb import user/tests/arrays/changed line
+five" | kdb import user:/tests/arrays/changed line
 
-kdb cmerge -f user/tests/arrays/changed user/tests/arrays/original user/tests/arrays/original user/tests/arrays/result
+kdb cmerge -f user:/tests/arrays/changed user:/tests/arrays/original user:/tests/arrays/original user:/tests/arrays/result
 
-kdb get user/tests/arrays/result/#0
+kdb get user:/tests/arrays/result/#0
 #> previous
 ```
 

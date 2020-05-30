@@ -76,7 +76,7 @@ int elektraProcessPlugin (Key * cur, int * pluginNumber, char ** pluginName, cha
 
 	if (fullname[2] == '#')
 	{
-		char prefixReferenceName[] = "system/elektra/plugins/";
+		char prefixReferenceName[] = "system:/elektra/plugins/";
 
 		/* We have a back reference here */
 		if (fullname[fullsize - 2] == '#')
@@ -176,7 +176,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 				KeySet * cutConfig = ksCut (config, key);
 				keyDel (key);
 
-				KeySet * pluginConfig = ksRenameKeys (cutConfig, "user");
+				KeySet * pluginConfig = ksRenameKeys (cutConfig, "user:/");
 				ksDel (cutConfig);
 				if (!pluginConfig) return -1;
 				ksAppend (pluginConfig, systemConfig);
@@ -351,7 +351,7 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name)
 	ELEKTRA_NOT_NULL (name);
 
 	KeySet * exports = ksNew (0, KS_END);
-	Key * pk = keyNew ("system/elektra/modules", KEY_END);
+	Key * pk = keyNew ("system:/elektra/modules", KEY_END);
 	keyAddBaseName (pk, plugin->name);
 	plugin->kdbGet (plugin, exports, pk);
 	ksRewind (exports);

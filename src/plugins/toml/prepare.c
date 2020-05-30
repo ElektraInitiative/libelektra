@@ -64,8 +64,8 @@ static void completeKeyComments (Key * key)
 	for (size_t index = 0;; index++)
 	{
 		char * indexStr = indexToArrayString (index);
-		char name[32];
-		snprintf (name, 32, "comment/%s", indexStr);
+		char name[48];
+		snprintf (name, 48, "meta:/comment/%s", indexStr);
 		elektraFree (indexStr);
 		if (findMetaKey (key, name) == NULL)
 		{ // Inline comment with index 0 is optional, so don't stop if not present
@@ -175,7 +175,7 @@ static void pruneInvalidArrayKeys (KeySet * keys)
 	Key * key = ksNext (keys);
 	while (key != NULL)
 	{
-		const Key * meta = findMetaKey (key, "array");
+		const Key * meta = findMetaKey (key, "meta:/array");
 		if (meta != NULL)
 		{
 			Key * sub;
@@ -254,7 +254,7 @@ static int getMaxOrder (KeySet * ks)
 	Key * key;
 	while ((key = ksNext (ks)) != NULL)
 	{
-		const Key * meta = findMetaKey (key, "order");
+		const Key * meta = findMetaKey (key, "meta:/order");
 		if (meta != NULL)
 		{
 			int order = atoi (keyString (meta));
@@ -270,5 +270,5 @@ static int getMaxOrder (KeySet * ks)
 
 static bool predNeedsOrder (Key * key)
 {
-	return findMetaKey (key, "order") == NULL && !isArrayIndex (keyBaseName (key));
+	return findMetaKey (key, "meta:/order") == NULL && !isArrayIndex (keyBaseName (key));
 }

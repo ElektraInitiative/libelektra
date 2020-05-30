@@ -336,18 +336,18 @@ int elektraJniClose (Plugin * handle, Key * errorKey)
 
 int elektraJniGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/jni"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/jni"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/jni", KEY_VALUE, "jni plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/jni/exports", KEY_END),
-			       keyNew ("system/elektra/modules/jni/exports/open", KEY_FUNC, elektraJniOpen, KEY_END),
-			       keyNew ("system/elektra/modules/jni/exports/close", KEY_FUNC, elektraJniClose, KEY_END),
-			       keyNew ("system/elektra/modules/jni/exports/get", KEY_FUNC, elektraJniGet, KEY_END),
-			       keyNew ("system/elektra/modules/jni/exports/set", KEY_FUNC, elektraJniSet, KEY_END),
-			       keyNew ("system/elektra/modules/jni/exports/error", KEY_FUNC, elektraJniError, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/jni", KEY_VALUE, "jni plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/jni/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/jni/exports/open", KEY_FUNC, elektraJniOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/jni/exports/close", KEY_FUNC, elektraJniClose, KEY_END),
+			       keyNew ("system:/elektra/modules/jni/exports/get", KEY_FUNC, elektraJniGet, KEY_END),
+			       keyNew ("system:/elektra/modules/jni/exports/set", KEY_FUNC, elektraJniSet, KEY_END),
+			       keyNew ("system:/elektra/modules/jni/exports/error", KEY_FUNC, elektraJniError, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/jni/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/jni/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 	}

@@ -23,17 +23,22 @@ namespace helper
 string rebasePath (const Key & key, const Key & oldParent, const Key & newParent)
 {
 	string oldKeyPath = key.getName ();
+	string ns = key.getNamespace ();
+	if (ns != "/")
+	{
+		ns = ns + ":";
+	}
 
 	Key actualOldParent = oldParent.dup ();
 	if (oldParent.getNamespace () == "/")
 	{
-		actualOldParent.setName (key.getNamespace () + oldParent.getName ());
+		actualOldParent.setName (ns + oldParent.getName ());
 	}
 
 	Key actualNewParent = newParent.dup ();
 	if (newParent.getNamespace () == "/")
 	{
-		actualNewParent.setName (key.getNamespace () + newParent.getName ());
+		actualNewParent.setName (ns + newParent.getName ());
 	}
 
 	if (!key.isBelowOrSame (actualOldParent))
@@ -45,12 +50,19 @@ string rebasePath (const Key & key, const Key & oldParent, const Key & newParent
 	{
 		string actualOldParentName = actualOldParent.getName ();
 		string withoutNamespaceParent = actualOldParentName.substr (actualOldParentName.find ('/'));
-		relativePath = oldKeyPath.substr (withoutNamespaceParent.length (), oldKeyPath.length ());
+		relativePath = oldKeyPath.substr (withoutNamespaceParent.length ());
 	}
 	else
 	{
-		relativePath = oldKeyPath.substr (actualOldParent.getName ().length (), oldKeyPath.length ());
+		relativePath = oldKeyPath.substr (actualOldParent.getName ().length ());
 	}
+
+	if (relativePath.length () > 0 && relativePath[0] != '/')
+	{
+		relativePath = "/" + relativePath;
+	}
+
+
 	string newPath = actualNewParent.getName () + relativePath;
 
 	return newPath;
@@ -67,15 +79,10 @@ Key rebaseKey (const Key & key, const Key & oldParent, const Key & newParent)
 void removeNamespace (Key & key)
 {
 	std::string name = key.getName ();
-	size_t pos = name.find_first_of ('/');
-	if (pos == string::npos)
+	size_t pos = name.find_first_of (':');
+	if (pos != string::npos)
 	{
-		// we directly had a namespace
-		key.setName ("/");
-	}
-	else
-	{
-		name = name.substr (pos);
+		name = name.substr (pos + 1);
 		key.setName (name);
 	}
 }
@@ -127,7 +134,13 @@ Key commonKeyName (Key key1, Key key2)
 		removeNamespace (key2);
 	}
 
-	Key ret (key1.getNamespace (), KEY_END);
+	auto ns = key1.getNamespace ();
+	if (ns != "/")
+	{
+		ns += ":/";
+	}
+
+	Key ret (ns, KEY_END);
 	for (auto it1 = ++key1.begin (), it2 = ++key2.begin (); it1 != key1.end () && it2 != key2.end (); ++it1, ++it2)
 	{
 		if (*it1 != *it2) break;

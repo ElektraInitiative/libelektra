@@ -30,17 +30,17 @@ int elektraHiddenClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 int elektraHiddenGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/hidden"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hidden"))
 	{
 		KeySet * pluginConfig =
-			ksNew (30, keyNew ("system/elektra/modules/hidden", KEY_VALUE, "hidden plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/hidden/exports", KEY_END),
-			       keyNew ("system/elektra/modules/hidden/exports/open", KEY_FUNC, elektraHiddenOpen, KEY_END),
-			       keyNew ("system/elektra/modules/hidden/exports/close", KEY_FUNC, elektraHiddenClose, KEY_END),
-			       keyNew ("system/elektra/modules/hidden/exports/get", KEY_FUNC, elektraHiddenGet, KEY_END),
-			       keyNew ("system/elektra/modules/hidden/exports/set", KEY_FUNC, elektraHiddenSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/hidden", KEY_VALUE, "hidden plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/hidden/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/hidden/exports/open", KEY_FUNC, elektraHiddenOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/hidden/exports/close", KEY_FUNC, elektraHiddenClose, KEY_END),
+			       keyNew ("system:/elektra/modules/hidden/exports/get", KEY_FUNC, elektraHiddenGet, KEY_END),
+			       keyNew ("system:/elektra/modules/hidden/exports/set", KEY_FUNC, elektraHiddenSet, KEY_END),
 #include "readme_hidden.c"
-			       keyNew ("system/elektra/modules/hidden/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/hidden/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, pluginConfig);
 		ksDel (pluginConfig);
 		return 1;

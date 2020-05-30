@@ -33,7 +33,7 @@ public class NativePlugin implements Plugin
 		elektraPlugin = Elektra.INSTANCE.elektraPluginOpen (pluginName, modules.get (), config.get (), errorKey.get ());
 		if (elektraPlugin == null)
 		{
-			Key temporaryError = Key.create ("user/temporary/errorkey");
+			Key temporaryError = Key.create ("user:/temporary/errorkey");
 			temporaryError.setMeta ("error/number", InstallationException.errorNumber ());
 			temporaryError.setMeta ("error/reason", String.format ("I could not find plugin '%s'", pluginName));
 			throw new InstallationException (temporaryError);

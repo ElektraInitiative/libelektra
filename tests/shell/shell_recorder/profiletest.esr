@@ -1,26 +1,26 @@
 DiffType: Dump
-Mountpoint: system/
+Mountpoint: system:/
 
-< kdb set system/elektra/globalplugins ""
-< kdb set system/elektra/globalplugins/postcommit list
-< kdb set system/elektra/globalplugins/postcommit/user list
-< kdb set system/elektra/globalplugins/postcommit/user/placements ""
-< kdb set system/elektra/globalplugins/postcommit/user/placements/set "presetstorage presetcleanup precommit postcommit"
-< kdb set system/elektra/globalplugins/postcommit/user/placements/get "pregetstorage postgetstorage postgetcleanup"
-< kdb set system/elektra/globalplugins/postcommit/user/placements/error "prerollback postrollback"
-< kdb set system/elektra/globalplugins/postcommit/user/plugins ""
-< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0 profile
-< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements profile
-< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements/set "presetstorage presetcleanup"
-< kdb set system/elektra/globalplugins/postcommit/user/plugins/#0/placements/get "postgetstorage postgetcleanup"
-< kdb set system/elektra/globalplugins/postrollback list
-< kdb set system/elektra/globalplugins/precommit list
-< kdb set system/elektra/globalplugins/pregetstorage list
-< kdb set system/elektra/globalplugins/postgetcleanup list
-< kdb set system/elektra/globalplugins/postgetstorage list
-< kdb set system/elektra/globalplugins/presetstorage list
-< kdb set system/elektra/globalplugins/presetcleanup list
-< kdb set system/elektra/globalplugins/prerollback list
+< kdb set system:/elektra/globalplugins ""
+< kdb set system:/elektra/globalplugins/postcommit list
+< kdb set system:/elektra/globalplugins/postcommit/user list
+< kdb set system:/elektra/globalplugins/postcommit/user/placements ""
+< kdb set system:/elektra/globalplugins/postcommit/user/placements/set "presetstorage presetcleanup precommit postcommit"
+< kdb set system:/elektra/globalplugins/postcommit/user/placements/get "pregetstorage postgetstorage postgetcleanup"
+< kdb set system:/elektra/globalplugins/postcommit/user/placements/error "prerollback postrollback"
+< kdb set system:/elektra/globalplugins/postcommit/user/plugins ""
+< kdb set system:/elektra/globalplugins/postcommit/user/plugins/#0 profile
+< kdb set system:/elektra/globalplugins/postcommit/user/plugins/#0/placements profile
+< kdb set system:/elektra/globalplugins/postcommit/user/plugins/#0/placements/set "presetstorage presetcleanup"
+< kdb set system:/elektra/globalplugins/postcommit/user/plugins/#0/placements/get "postgetstorage postgetcleanup"
+< kdb set system:/elektra/globalplugins/postrollback list
+< kdb set system:/elektra/globalplugins/precommit list
+< kdb set system:/elektra/globalplugins/pregetstorage list
+< kdb set system:/elektra/globalplugins/postgetcleanup list
+< kdb set system:/elektra/globalplugins/postgetstorage list
+< kdb set system:/elektra/globalplugins/presetstorage list
+< kdb set system:/elektra/globalplugins/presetcleanup list
+< kdb set system:/elektra/globalplugins/prerollback list
 
 
 < kdb export /sw dump > /tmp/sw.dump
@@ -32,7 +32,7 @@ Mountpoint: system/
 STDOUT: TEST
 < kdb get /sw/org/myapp/#0/current/testkey
 
-< kdb rm -r system/elektra/globalplugins
+< kdb rm -r system:/elektra/globalplugins
 < kdb rm -r /sw
 < kdb import /sw dump < /tmp/sw.dump
 < rm /tmp/sw.dump

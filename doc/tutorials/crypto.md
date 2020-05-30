@@ -47,27 +47,27 @@ In this tutorial we explain the use of the `crypto` plugin and the `fcrypt` plug
 We want to protect a password that is contained in an INI-file.
 
 The following example demonstrates how the INI-file is mounted without encryption enabled.
-We create the password at `user/tests/password` and display the contents of `test.ini`.
+We create the password at `user:/tests/password` and display the contents of `test.ini`.
 
 _Step 1:_ Mount `test.ini`
 
 ```sh
-kdb mount test.ini user/tests ini
+kdb mount test.ini user:/tests ini
 ```
 
-_Step 2:_ Set the password at `user/tests/password` and display the contents of `test.ini`
+_Step 2:_ Set the password at `user:/tests/password` and display the contents of `test.ini`
 
 ```sh
-kdb set user/tests/password 1234
-kdb file user/tests/password | xargs cat
+kdb set user:/tests/password 1234
+kdb file user:/tests/password | xargs cat
 #> password=1234
 ```
 
 _Step 3:_ (Optional) Cleanup
 
 ```sh
-kdb rm user/tests/password
-kdb umount user/tests
+kdb rm user:/tests/password
+kdb umount user:/tests
 ```
 
 As you can see the password is stored in plain text.
@@ -85,7 +85,7 @@ The `fcrypt` plugin enables the encryption and decryption of entire configuratio
 The GPG key, which is used for encryption and decryption, is specified in the backend configuration under `encrypt/key`.
 
 ```bash
-sudo kdb mount test.ini user/tests fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
+sudo kdb mount test.ini user:/tests fcrypt "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
 ```
 
 If the above command fails, please take a look at the
@@ -108,16 +108,16 @@ gpg2 -d test.ini
 The complete procedure looks like this:
 
 ```sh
-kdb mount test.ini user/tests fcrypt "encrypt/key=$(kdb gen-gpg-testkey)" ini
-kdb set user/tests/password 1234
-kdb file user/tests/password | xargs cat
+kdb mount test.ini user:/tests fcrypt "encrypt/key=$(kdb gen-gpg-testkey)" ini
+kdb set user:/tests/password 1234
+kdb file user:/tests/password | xargs cat
 ```
 
 To clean up the environment we run:
 
 ```sh
-kdb rm user/tests/password
-kdb umount user/tests
+kdb rm user:/tests/password
+kdb umount user:/tests
 ```
 
 ## Configuration File Signatures
@@ -128,7 +128,7 @@ If `sign/key` is specified in the backend configuration, `fcrypt` will forward t
 An example backend configuration is given as follows:
 
 ```bash
-sudo kdb mount test.ini user/tests fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
+sudo kdb mount test.ini user:/tests fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
 ```
 
 As a result the file `test.ini` will be signed using GPG.
@@ -143,16 +143,16 @@ If `test.ini` is modified, all following calls of `kdb get` will fail with an er
 The complete example looks like this:
 
 ```sh
-kdb mount test.ini user/tests fcrypt "sign/key=$(kdb gen-gpg-testkey)" ini
-kdb set user/tests/password 1234
-kdb file user/tests/password | xargs cat
+kdb mount test.ini user:/tests fcrypt "sign/key=$(kdb gen-gpg-testkey)" ini
+kdb set user:/tests/password 1234
+kdb file user:/tests/password | xargs cat
 ```
 
 To clean up the environment we run:
 
 ```sh
-kdb rm user/tests/password
-kdb umount user/tests
+kdb rm user:/tests/password
+kdb umount user:/tests
 ```
 
 ### Combining Signatures and Encryption
@@ -162,22 +162,22 @@ The options `sign/key` and `encrypt/key` can be combined together, resulting in 
 Mounting `test.ini` with signatures and encryption enabled can be done like this:
 
 ```bash
-sudo kdb mount test.ini user/tests fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D,encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
+sudo kdb mount test.ini user:/tests fcrypt "sign/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D,encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" ini
 ```
 
 The complete example looks like this:
 
 ```sh
-kdb mount test.ini user/tests fcrypt "sign/key=$(kdb gen-gpg-testkey),encrypt/key=$(kdb gen-gpg-testkey)" ini
-kdb set user/tests/password 1234
-kdb file user/tests/password | xargs cat
+kdb mount test.ini user:/tests fcrypt "sign/key=$(kdb gen-gpg-testkey),encrypt/key=$(kdb gen-gpg-testkey)" ini
+kdb set user:/tests/password 1234
+kdb file user:/tests/password | xargs cat
 ```
 
 To clean up the environment we run:
 
 ```sh
-kdb rm user/tests/password
-kdb umount user/tests
+kdb rm user:/tests/password
+kdb umount user:/tests
 ```
 
 ## Configuration Value Encryption/Decryption
@@ -194,7 +194,7 @@ GPG is required for the key-handling.
 To follow our example of an encrypted password in `test.ini`, we first mount the INI-file with the `crypto` plugin enabled, like this:
 
 ```bash
-sudo kdb mount test.ini user/tests crypto "crypto/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" base64 ini
+sudo kdb mount test.ini user:/tests crypto "crypto/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D" base64 ini
 ```
 
 We recommend adding the `base64` plugin to the backend, because `crypto` will output binary data.
@@ -207,17 +207,17 @@ To tell the `crypto` plugin which Keys it should process, the metakey `crypto/en
 The `crypto` plugin searches for the metakey `crypto/encrypt`.
 If the value is equal to `1`, the value of the Key will be encrypted.
 
-We want to protect the password, that is stored under `user/test/password`.
+We want to protect the password, that is stored under `user:/test/password`.
 So we set the metakey as follows:
 
 ```bash
-kdb meta-set user/tests/password crypto/encrypt 1
+kdb meta-set user:/tests/password crypto/encrypt 1
 ```
 
 Now we are safe to set the actual password:
 
 ```bash
-kdb set user/tests/password "1234"
+kdb set user:/tests/password "1234"
 ```
 
 The resulting INI-file contains the following data:
@@ -230,7 +230,7 @@ password=@BASE64IyFjcnlwdG8wMBEAAADwPI+lqp+X2b6BIfLdRYgwxmAhVUPurqkQVAI78Pn4OYON
 You can access the password as usual with `kdb get`:
 
 ```bash
-kdb get user/tests/password
+kdb get user:/tests/password
 ```
 
 As a result you get "1234".
@@ -240,7 +240,7 @@ As a result you get "1234".
 You can disable the encryption by setting `crypto/encrypt` to a value other than `1`, for example:
 
 ```bash
-kdb meta-set user/tests/password crypto/encrypt 0
+kdb meta-set user:/tests/password crypto/encrypt 0
 ```
 
 ### Complete Example
@@ -248,26 +248,26 @@ kdb meta-set user/tests/password crypto/encrypt 0
 The complete example looks like this:
 
 ```sh
-kdb mount test.ini user/tests crypto "crypto/key=$(kdb gen-gpg-testkey)" base64 ini
-kdb meta-set user/tests/password crypto/encrypt 1
-kdb set user/tests/password 1234
-kdb set user/tests/unencrypted "I am not encrypted"
-kdb file user/tests/password | xargs cat
+kdb mount test.ini user:/tests crypto "crypto/key=$(kdb gen-gpg-testkey)" base64 ini
+kdb meta-set user:/tests/password crypto/encrypt 1
+kdb set user:/tests/password 1234
+kdb set user:/tests/unencrypted "I am not encrypted"
+kdb file user:/tests/password | xargs cat
 ```
 
-To disable encryption on `user/tests/password`, we can run:
+To disable encryption on `user:/tests/password`, we can run:
 
 ```sh
-kdb meta-set user/tests/password crypto/encrypt 0
-kdb file user/tests/password | xargs cat
+kdb meta-set user:/tests/password crypto/encrypt 0
+kdb file user:/tests/password | xargs cat
 ```
 
 To clean up the environment we run:
 
 ```sh
-kdb rm user/tests/unencrypted
-kdb rm user/tests/password
-kdb umount user/tests
+kdb rm user:/tests/unencrypted
+kdb rm user:/tests/password
+kdb umount user:/tests
 ```
 
 To shut down the `gpg-agent` we run:

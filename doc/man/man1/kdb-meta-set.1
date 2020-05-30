@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-META\-SET" "1" "October 2019" "" ""
+.TH "KDB\-META\-SET" "1" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-meta\-set\fR \- Set the value of a metakey
@@ -63,13 +63,13 @@ Same as \fB\-q\fR: Suppress default messages\.
 Specifies which default namespace should be used when setting a cascading name\. By default the namespace is \fBuser\fR, except \fBkdb\fR is used as root, then \fBsystem\fR is the default\.
 .
 .SH "EXAMPLES"
-To set a metakey called \fBdescription\fR associated with the key \fBuser/example/key\fR to the value \fBHello World!\fR:
+To set a metakey called \fBdescription\fR associated with the key \fBuser:/example/key\fR to the value \fBHello World!\fR:
 .
 .br
-\fBkdb meta\-set spec/example/key description "Hello World!"\fR
+\fBkdb meta\-set spec:/example/key description "Hello World!"\fR
 .
 .P
-To create a new key \fBspec/example/newkey\fR with a null value (if it did not exist before) and a metakey \fBnamespace/#0\fR associated with it to the value \fBsystem\fR:
+To create a new key \fBspec:/example/newkey\fR with a null value (if it did not exist before) and a metakey \fBnamespace/#0\fR associated with it to the value \fBsystem\fR:
 .
 .br
 \fBkdb meta\-set /example/newkey "namespace/#0" system\fR
@@ -82,7 +82,7 @@ To create an override link for a \fB/test\fR key:
 .nf
 
 kdb set /overrides/test "example override"
-sudo kdb meta\-set spec/test override/#0 /overrides/test
+sudo kdb meta\-set spec:/test override/#0 /overrides/test
 .
 .fi
 .
@@ -95,7 +95,7 @@ To remove it:
 .
 .nf
 
-sudo kdb meta\-set spec/test override/#0
+sudo kdb meta\-set spec:/test override/#0
 .
 .fi
 .

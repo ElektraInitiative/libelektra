@@ -67,22 +67,22 @@ At the moment the plugin will only run on Unix/Linux-like systems, that provide 
 To mount a backend with the crypto plugin that uses the GPG key 9CCC3B514E196C6308CCD230666260C14A525406, use:
 
 ```sh
-kdb mount test.ecf user/t crypto "crypto/key=9CCC3B514E196C6308CCD230666260C14A525406"
+kdb mount test.ecf user:/t crypto "crypto/key=9CCC3B514E196C6308CCD230666260C14A525406"
 ```
 
-Now you can specify a key `user/t/a` and protect its content by using:
+Now you can specify a key `user:/t/a` and protect its content by using:
 
 ```sh
-kdb set user/t/a
-kdb meta-set user/t/a crypto/encrypt 1
-kdb set user/t/a "secret"
+kdb set user:/t/a
+kdb meta-set user:/t/a crypto/encrypt 1
+kdb set user:/t/a "secret"
 ```
 
-The value of `user/t/a` will be stored encrypted.
+The value of `user:/t/a` will be stored encrypted.
 But you can still access the original value using `kdb get`:
 
 ```sh
-kdb get user/t/a
+kdb get user:/t/a
 ```
 
 ## Configuration
@@ -111,7 +111,7 @@ If you are not sure which keys are available to you, the `kdb` program will give
 For example you can type:
 
 ```sh
-kdb mount test.ecf user/t crypto
+kdb mount test.ecf user:/t crypto
 ```
 
 In the error description you should see something like:
@@ -133,7 +133,7 @@ This means that the following keys are available:
 So the full mount command could look like this:
 
 ```sh
-kdb mount test.ecf user/t crypto "crypto/key=847378ABCF0A552B48082A80C52E8E92F785163F"
+kdb mount test.ecf user:/t crypto "crypto/key=847378ABCF0A552B48082A80C52E8E92F785163F"
 ```
 
 ### Cryptographic Operations

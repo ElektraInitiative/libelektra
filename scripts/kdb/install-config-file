@@ -6,10 +6,10 @@
 # @tags creator
 
 # This is a part of the preserved base path
-specialPathStart="system/elektra/merge/preserve/"
+specialPathStart="system:/elektra/merge/preserve/"
 # This is the path where a config file is loaded temporarily for merging
-# cannot use user/elektra here and use mount at the same time
-tempPath="system/tmp/merge"
+# cannot use user:/elektra here and use mount at the same time
+tempPath="system:/tmp/merge"
 
 our=$1
 their=$2

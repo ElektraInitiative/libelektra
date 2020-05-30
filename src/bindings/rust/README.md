@@ -83,7 +83,7 @@ use elektra::{ReadableKey, StringKey, WriteableKey};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // To create a simple key with a name and value
-    let mut key = StringKey::new("user/test/language")?;
+    let mut key = StringKey::new("user:/test/language")?;
     key.set_value("rust");
 
     println!("Key with name {} has value {}", key.name(), key.value());
@@ -102,7 +102,7 @@ use elektra::{BinaryKey, ReadableKey, WriteableKey};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let binary_content: [u8; 7] = [25, 34, 0, 254, 1, 0, 7];
-    let mut key = BinaryKey::new("user/test/rust")?;
+    let mut key = BinaryKey::new("user:/test/rust")?;
     key.set_value(&binary_content);
     let read_content = key.value();
 
@@ -134,10 +134,10 @@ use elektra::{KeyBuilder, KeySet, ReadableKey, StringKey, keyset};
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // keyset! works just like vec!
     let keyset = keyset![
-        KeyBuilder::<StringKey>::new("user/sw/app/#1/host")?
+        KeyBuilder::<StringKey>::new("user:/sw/app/#1/host")?
             .value("localhost")
             .build(),
-        KeyBuilder::<StringKey>::new("user/sw/app/#1/port")?
+        KeyBuilder::<StringKey>::new("user:/sw/app/#1/port")?
             .value("8080")
             .build(),
     ];
@@ -154,7 +154,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 A `KeySet` only contains `StringKey`s, since they are far more prevalent than `BinaryKey`s. However since the underlying KeySet holds generic `Key`s, `BinaryKey`s can occur. You can cast between the two keys, by using the `From` trait. This is safe memory-wise, but can be unsafe if you cast a `BinaryKey` holding arbitrary bytes to a `StringKey`. You can use `is_string` or `is_binary` to find out whether the cast is safe.
 
 ```rust
-let mut key = StringKey::new("user/test/language")?;
+let mut key = StringKey::new("user:/test/language")?;
 
 // Cast the StringKey to BinaryKey
 let binary_key = BinaryKey::from(key);
@@ -184,7 +184,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut ks = KeySet::with_capacity(10);
 
     // Get the current state of the key database
-    let mut parent_key = StringKey::new("user/test")?;
+    let mut parent_key = StringKey::new("user:/test")?;
     let get_res = kdb.get(&mut ks, &mut parent_key);
 
     if let Err(kdb_error) = get_res {
@@ -212,7 +212,7 @@ use elektra_sys::{keyDel, keyName, keyNew, keyString, KEY_END, KEY_VALUE};
 use std::ffi::{CStr, CString};
 
 fn main() {
-    let key_name = CString::new("user/test/key").unwrap();
+    let key_name = CString::new("user:/test/key").unwrap();
     let key_val = CString::new("rust-bindings").unwrap();
     let key = unsafe { keyNew(key_name.as_ptr(), KEY_VALUE, key_val.as_ptr(), KEY_END) };
     let name_str = unsafe { CStr::from_ptr(keyName(key)) };

@@ -34,7 +34,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	if (keyname[0] == '/')
 	{
 		// fix name for lookup
-		keyname = "spec" + keyname;
+		keyname = "spec:" + keyname;
 		if (!cl.quiet) std::cout << "Using keyname " << keyname << std::endl;
 
 		// fix k for kdb.set later

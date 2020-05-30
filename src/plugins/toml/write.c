@@ -316,7 +316,7 @@ static bool isListElement (Node * node)
 
 static bool hasInlineComment (Node * node)
 {
-	return findMetaKey (node->key, "comment/#0/space") != NULL;
+	return findMetaKey (node->key, "meta:/comment/#0/space") != NULL;
 }
 
 static bool isLastChild (Node * node)
@@ -402,8 +402,8 @@ static int writeScalar (Key * key, Writer * writer)
 	// ELEKTRA_ASSERT (keyGetUnescapedNameSize (key) != 0, "NULL keys should have been handled by null plugin");
 
 	keyRewindMeta (key);
-	const Key * origValue = findMetaKey (key, "origvalue");
-	const Key * type = findMetaKey (key, "type");
+	const Key * origValue = findMetaKey (key, "meta:/origvalue");
+	const Key * type = findMetaKey (key, "meta:/type");
 	const char * valueStr = keyString (key);
 	if (origValue != NULL)
 	{
@@ -565,6 +565,7 @@ static CommentList * collectComments (Key * key, Writer * writer)
 	{
 		const char * pos = (const char *) keyUnescapedName (meta);
 		const char * stop = pos + keyGetUnescapedNameSize (meta);
+		pos += 2; // skip namespace
 		if (elektraStrCmp (pos, "comment") == 0)
 		{
 			int subDepth = 0;

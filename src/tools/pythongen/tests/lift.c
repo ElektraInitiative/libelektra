@@ -81,13 +81,13 @@ int main(int argc, char**argv)
 		printf ("Error in parsing options %d\n", retval);
 	}
 
-	// write back to user/test/lift what we got by commandline
+	// write back to user:/test/lift what we got by commandline
 	// that means overrides in *_lift are still active, but
 	// fallbacks will be overriden.
 	if (lift(conf))
 	{
 		printf("Write out config\n");
-		keySetName(parentKey, "user/test/lift");
+		keySetName(parentKey, "user:/test/lift");
 		kdbSet(kdb, conf, parentKey);
 	}
 

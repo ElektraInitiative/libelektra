@@ -23,15 +23,15 @@ int elektraDesktopGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 {
 	ELEKTRA_LOG ("get desktop %s from %s\n", keyName (parentKey), keyString (parentKey));
 
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/desktop"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/desktop"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/desktop", KEY_VALUE, "desktop plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/desktop/exports", KEY_END),
-			       keyNew ("system/elektra/modules/desktop/exports/get", KEY_FUNC, elektraDesktopGet, KEY_END),
-			       keyNew ("system/elektra/modules/desktop/exports/set", KEY_FUNC, elektraDesktopSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/desktop", KEY_VALUE, "desktop plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/desktop/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/desktop/exports/get", KEY_FUNC, elektraDesktopGet, KEY_END),
+			       keyNew ("system:/elektra/modules/desktop/exports/set", KEY_FUNC, elektraDesktopSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/desktop/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/desktop/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

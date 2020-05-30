@@ -76,7 +76,7 @@ string getElementText (DOMNode const * parent)
 
 Key newNodeKey (Key const & parent, DOMNode const * node)
 {
-	Key childKey (parent.getFullName (), KEY_END);
+	Key childKey (parent.getName (), KEY_END);
 	const string keyName = toStr (node->getNodeName ());
 	childKey.addBaseName (keyName);
 	return childKey;
@@ -85,7 +85,7 @@ Key newNodeKey (Key const & parent, DOMNode const * node)
 void node2key (DOMNode const * n, Key const & parent, KeySet const & ks, Key & current)
 {
 	const string keyName = toStr (n->getNodeName ());
-	ELEKTRA_LOG_DEBUG ("Encountered Element: %s with parent %s", keyName.c_str (), current.getFullName ().c_str ());
+	ELEKTRA_LOG_DEBUG ("Encountered Element: %s with parent %s", keyName.c_str (), current.getName ().c_str ());
 
 	if (!ks.size ())
 	{ // we map the parent key to the xml root element
@@ -105,7 +105,7 @@ void node2key (DOMNode const * n, Key const & parent, KeySet const & ks, Key & c
 
 	if (!current.isValid ()) throw XercesPluginException ("Given keyset contains invalid keys to serialize");
 
-	ELEKTRA_LOG_DEBUG ("new parent is %s with value %s", current.getFullName ().c_str (), current.get<string> ().c_str ());
+	ELEKTRA_LOG_DEBUG ("new parent is %s with value %s", current.getName ().c_str (), current.get<string> ().c_str ());
 
 	if (n->hasAttributes ())
 	{
@@ -134,7 +134,7 @@ void analyzeMultipleElements (DOMNode const * n, Key const & current, map<Key, b
 			if (!it->second)
 			{
 				ELEKTRA_LOG_DEBUG ("There are multiple elements of %s, mapping this as an array",
-						   childKey.getFullName ().c_str ());
+						   childKey.getName ().c_str ());
 				arrays[childKey] = true;
 			}
 		}
@@ -159,7 +159,7 @@ void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks, map<Key, bo
 {
 	if (n)
 	{
-		Key current (parent.getFullName (), KEY_END);
+		Key current (parent.getName (), KEY_END);
 
 		if (n->getNodeType () == DOMNode::ELEMENT_NODE)
 		{
@@ -173,12 +173,12 @@ void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks, map<Key, bo
 			// Only add keys with a value, attributes or leafs or the root to preserve the original name or array keys
 			if (n->hasAttributes () || !current.getString ().empty () || !n->getFirstChild () || !ks.size () || array)
 			{
-				ELEKTRA_LOG_DEBUG ("adding %s", current.getFullName ().c_str ());
+				ELEKTRA_LOG_DEBUG ("adding %s", current.getName ().c_str ());
 				ks.append (current);
 			}
 			else
 			{
-				ELEKTRA_LOG_DEBUG ("skipping %s", current.getFullName ().c_str ());
+				ELEKTRA_LOG_DEBUG ("skipping %s", current.getName ().c_str ());
 			}
 		}
 		// the first level cannot have more children so its enough to check that here
@@ -195,8 +195,7 @@ void xerces::deserialize (Key const & parentKey, KeySet & ks)
 	if (!parentKey.isValid ()) throw XercesPluginException ("Parent key is invalid");
 	if (parentKey.get<string> ().empty ()) throw XercesPluginException ("No source file specified as key value");
 
-	ELEKTRA_LOG_DEBUG ("deserializing relative to %s from file %s", parentKey.getFullName ().c_str (),
-			   parentKey.get<string> ().c_str ());
+	ELEKTRA_LOG_DEBUG ("deserializing relative to %s from file %s", parentKey.getName ().c_str (), parentKey.get<string> ().c_str ());
 	auto document = doc2dom (parentKey.get<string> ());
 	map<Key, bool> arrays;
 	if (document) dom2keyset (document->getDocumentElement (), parentKey, ks, arrays);

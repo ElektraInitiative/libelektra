@@ -40,10 +40,10 @@ test error plugin when mounted at open
 array:
 	together with yajl
 	check if its a valid array via metadata
-	spec/array metadaten: array=1-10
-	user/array/#0 -> valid
-	user/array -> invalid
-	system/array/x -> invalid
+	spec:/array metadaten: array=1-10
+	user:/array/#0 -> valid
+	user:/array -> invalid
+	system:/array/x -> invalid
 
 ## mingw
 

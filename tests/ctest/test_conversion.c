@@ -23,7 +23,7 @@
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		const char * value = (val);                                                                                                \
-		Key * k = keyNew ("user/test", KEY_VALUE, value, KEY_END);                                                                 \
+		Key * k = keyNew ("user:/test", KEY_VALUE, value, KEY_END);                                                                \
 		ctype expected = (expect);                                                                                                 \
 		ctype var;                                                                                                                 \
 		succeed_if (elektraKeyTo##Type (k, &var) == 1, val " couldn't be read");                                                   \
@@ -38,7 +38,7 @@
 		ctype value = (val);                                                                                                       \
 		{                                                                                                                          \
 			char * s = elektra##Type##ToString (value);                                                                        \
-			Key * k = keyNew ("user/test", KEY_VALUE, s, KEY_END);                                                             \
+			Key * k = keyNew ("user:/test", KEY_VALUE, s, KEY_END);                                                            \
 			ctype var;                                                                                                         \
 			succeed_if (elektraKeyTo##Type (k, &var) == 1, strval " couldn't be read back (1)");                               \
 			succeed_if (var == value, strval " not read back correctly");                                                      \
@@ -47,7 +47,7 @@
 		}                                                                                                                          \
                                                                                                                                            \
 		{                                                                                                                          \
-			Key * k = keyNew ("user/test", KEY_VALUE, string, KEY_END);                                                        \
+			Key * k = keyNew ("user:/test", KEY_VALUE, string, KEY_END);                                                       \
 			ctype var;                                                                                                         \
 			succeed_if (elektraKeyTo##Type (k, &var) == 1, strval " couldn't be read (1)");                                    \
 			char * s = elektra##Type##ToString (var);                                                                          \
@@ -64,11 +64,11 @@
 		ctype value = (val);                                                                                                       \
 		{                                                                                                                          \
 			char * s = elektra##Type##ToString (value);                                                                        \
-			Key * k = keyNew ("user/test", KEY_VALUE, s, KEY_END);                                                             \
+			Key * k = keyNew ("user:/test", KEY_VALUE, s, KEY_END);                                                            \
 			ctype var;                                                                                                         \
 			succeed_if (elektraKeyTo##Type (k, &var) == 1, strval " couldn't be read back (1)");                               \
 			char * s1 = elektra##Type##ToString (var);                                                                         \
-			Key * k1 = keyNew ("user/test", KEY_VALUE, s1, KEY_END);                                                           \
+			Key * k1 = keyNew ("user:/test", KEY_VALUE, s1, KEY_END);                                                          \
 			ctype var1;                                                                                                        \
 			succeed_if (elektraKeyTo##Type (k1, &var1) == 1, strval " couldn't be read back (2)");                             \
 			succeed_if (var1 == var, strval " not read back correctly");                                                       \
@@ -79,11 +79,11 @@
 		}                                                                                                                          \
                                                                                                                                            \
 		{                                                                                                                          \
-			Key * k = keyNew ("user/test", KEY_VALUE, string, KEY_END);                                                        \
+			Key * k = keyNew ("user:/test", KEY_VALUE, string, KEY_END);                                                       \
 			ctype var;                                                                                                         \
 			succeed_if (elektraKeyTo##Type (k, &var) == 1, strval " couldn't be read (1)");                                    \
 			char * s = elektra##Type##ToString (var);                                                                          \
-			Key * k1 = keyNew ("user/test", KEY_VALUE, s, KEY_END);                                                            \
+			Key * k1 = keyNew ("user:/test", KEY_VALUE, s, KEY_END);                                                           \
 			ctype var1;                                                                                                        \
 			succeed_if (elektraKeyTo##Type (k, &var1) == 1, strval " couldn't be read (2)");                                   \
 			char * s1 = elektra##Type##ToString (var1);                                                                        \

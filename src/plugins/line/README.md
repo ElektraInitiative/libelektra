@@ -43,14 +43,14 @@ numbers on the left represent the line numbers:
 We mount that file by:
 
 ```bash
-sudo kdb mount line user/line line
+sudo kdb mount line user:/line line
 ```
 
 This file would result in the following keyset which is being displayed as
 `key: value`, e.g. with:
 
 ```bash
-kdb export -c "format=%s: %s" user/line simpleini
+kdb export -c "format=%s: %s" user:/line simpleini
 #> 0: setting1 true
 #> 1: setting2 false
 #> 2: setting3 1000

@@ -137,7 +137,7 @@ bool isArrayElement (const Key * key)
 
 bool isEmptyArray (Key * key)
 {
-	const Key * meta = findMetaKey (key, "array");
+	const Key * meta = findMetaKey (key, "meta:/array");
 	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
 	const char * sizeStr = keyString (meta);
 	return elektraStrLen (sizeStr) == 1;
@@ -145,7 +145,7 @@ bool isEmptyArray (Key * key)
 
 size_t getArrayMax (Key * key)
 {
-	const Key * meta = findMetaKey (key, "array");
+	const Key * meta = findMetaKey (key, "meta:/array");
 	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
 
 	return arrayStringToIndex (keyString (meta));
@@ -153,6 +153,7 @@ size_t getArrayMax (Key * key)
 
 const Key * findMetaKey (Key * key, const char * metakeyName)
 {
+	// FIXME (kodebach): why not use keyGetMeta?
 	keyRewindMeta (key);
 	for (const Key * meta = keyNextMeta (key); meta != NULL; meta = keyNextMeta (key))
 	{
@@ -185,7 +186,7 @@ void setOrderForKey (Key * key, size_t order)
 
 bool isArray (Key * key)
 {
-	return findMetaKey (key, "array") != NULL;
+	return findMetaKey (key, "meta:/array") != NULL;
 }
 
 bool isInlineTable (Key * key)
@@ -205,7 +206,7 @@ bool isTableArray (Key * key)
 
 bool isTomlType (Key * key, const char * type)
 {
-	const Key * meta = findMetaKey (key, "tomltype");
+	const Key * meta = findMetaKey (key, "meta:/tomltype");
 	if (meta == NULL)
 	{
 		return false;

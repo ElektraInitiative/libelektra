@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-REMOUNT" "1" "August 2019" "" ""
+.TH "KDB\-REMOUNT" "1" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-remount\fR \- Use an existing backend to mount a new file
@@ -56,10 +56,10 @@ Give debug information or ask debug questions (in interactive mode)\. Prints add
 Instead of passing all information by parameters ask the user interactively\.
 .
 .SH "EXAMPLES"
-To mount a new file using an existing backend that is mounted to \fBsystem/example\fR:
+To mount a new file using an existing backend that is mounted to \fBsystem:/example\fR:
 .
 .br
-\fBkdb remount /etc/configuration2\.ini system/example2 system/example\fR
+\fBkdb remount /etc/configuration2\.ini system:/example2 system:/example\fR
 .
 .br
 

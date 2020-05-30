@@ -59,7 +59,7 @@ Key newKey (string const & name, Key const & parent)
 {
 	ELEKTRA_LOG_DEBUG ("Add new key with base name “%s”", name.c_str ());
 
-	Key key{ parent.getFullName (), KEY_BINARY, KEY_END };
+	Key key{ parent.getName (), KEY_BINARY, KEY_END };
 	key.addBaseName (name);
 
 	return key;
@@ -148,8 +148,8 @@ Key createLeafKey (Node const & node, string const & name)
  */
 Key convertMetaNodeToKey (Node const & node, Key & parent)
 {
-	auto key = node[0].IsNull () ? Key{ parent.getFullName (), KEY_BINARY, KEY_END } :
-				       Key{ parent.getFullName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
+	auto key = node[0].IsNull () ? Key{ parent.getName (), KEY_BINARY, KEY_END } :
+				       Key{ parent.getName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
 	ELEKTRA_LOG_DEBUG ("Add key “%s”: “%s”", key.getName ().c_str (),
 			   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
 	return key;
@@ -172,7 +172,7 @@ void convertNodeToKeySet (Node const & node, KeySet & mappings, Key & parent)
 	}
 	else if (node.IsScalar () || node.IsNull ())
 	{
-		auto key = createLeafKey (node, parent.getFullName ());
+		auto key = createLeafKey (node, parent.getName ());
 		mappings.append (key);
 	}
 	else if (node.IsMap ())

@@ -28,4 +28,4 @@ Show how to set keys:
 `kdb help set`
 
 Use the info program as man page viewer for the current user:
-`kdb set user/sw/elektra/kdb/#0/current/man /usr/bin/info`
+`kdb set user:/sw/elektra/kdb/#0/current/man /usr/bin/info`

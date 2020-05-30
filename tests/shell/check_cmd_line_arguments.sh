@@ -6,7 +6,7 @@ echo
 
 check_version
 
-ROOT=user/tests
+ROOT=user:/tests
 
 if ! is_plugin_available dump; then
 	echo "Need dump to run test, will abort"

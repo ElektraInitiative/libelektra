@@ -122,7 +122,7 @@ KDB *handle = kdbOpen();
 KeySet *ks=ksNew(0, KS_END);
 Key *current=0;
 
-kdbGetByName(handle,ks,"system/sw/my",KDB_O_SORT|KDB_O_RECURSIVE);
+kdbGetByName(handle,ks,"system:/sw/my",KDB_O_SORT|KDB_O_RECURSIVE);
 
 ksRewind(ks);
 while (current=ksNext(ks)) {
@@ -269,7 +269,7 @@ ssize_t keyGetValueSize (const Key * key)
  *
  * @par Example:
  * @code
-Key *key = keyNew ("user/keyname", KEY_END);
+Key *key = keyNew ("user:/keyname", KEY_END);
 char buffer[300];
 
 if (keyGetString(key,buffer,sizeof(buffer)) == -1)
@@ -386,7 +386,7 @@ ssize_t keySetString (Key * key, const char * newStringValue)
  *
  * @par Example:
  * @code
-Key *key = keyNew ("user/keyname", KEY_TYPE, KEY_TYPE_BINARY, KEY_END);
+Key *key = keyNew ("user:/keyname", KEY_TYPE, KEY_TYPE_BINARY, KEY_END);
 char buffer[300];
 
 if (keyGetBinary(key,buffer,sizeof(buffer)) == -1)

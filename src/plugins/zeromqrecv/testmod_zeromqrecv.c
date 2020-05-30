@@ -145,7 +145,7 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	usleep (TIME_SETTLE_US);
 
 	char * changeType = "Commit";
-	char * expectedKeyName = "system/foo/bar";
+	char * expectedKeyName = "system:/foo/bar";
 	sendTestNotification (pubSocket, changeType, expectedKeyName);
 
 	ElektraIoTimerOperation * timerOp = elektraIoNewTimerOperation (TEST_TIMEOUT * 1000, 1, test_timerCallback, NULL);
@@ -200,7 +200,7 @@ static void test_incompleteMessage (uv_loop_t * loop, ElektraIoInterface * bindi
 	usleep (TIME_SETTLE_US);
 
 	char * changeType = "KeyChanged";
-	char * expectedKeyName = "system/foo/bar";
+	char * expectedKeyName = "system:/foo/bar";
 	// send message parts as standalone messages
 	succeed_if (zmq_send (pubSocket, changeType, elektraStrLen (changeType), 0 /* no ZMQ_SNDMORE here */) != -1,
 		    "failed to send change type");

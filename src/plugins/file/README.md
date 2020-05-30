@@ -43,15 +43,15 @@ None.
 ## Examples
 
 ```sh
-# Mount the file `file/multiline` at `system/tests/file`
-sudo kdb mount "$PWD/src/plugins/file/file/singleline" system/tests/file file info=
+# Mount the file `file/multiline` at `system:/tests/file`
+sudo kdb mount "$PWD/src/plugins/file/file/singleline" system:/tests/file file info=
 
 # Check the content of the file
-kdb get system/tests/file
+kdb get system:/tests/file
 #> this is a single line testfile
 
 #  List available attributes of the mounted file
-kdb meta-ls system/tests/file
+kdb meta-ls system:/tests/file
 #> info/atime
 #> info/ctime
 #> info/gid
@@ -62,11 +62,11 @@ kdb meta-ls system/tests/file
 #> info/uid
 
 # Check out the file’s permissions
-kdb meta-get system/tests/file info/mode
+kdb meta-get system:/tests/file info/mode
 # STDOUT-REGEX: 1006[46]4
 
 # Unmount the file
-sudo kdb umount system/tests/file
+sudo kdb umount system:/tests/file
 ```
 
 ## Limitations

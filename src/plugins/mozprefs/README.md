@@ -34,9 +34,9 @@ Only Keys below one of these points are valid, everything else will be dropped
 In Mozilla preference files `.` is used to separate sections, while elektra uses `/`. For simplification, and because `/` isn't allowed in preference keys, the plugin treats `.` and `/` equally.
 
 ```bash
-kdb set system/prefs/lock/a/lock/key lock
-kdb set system/prefs/lock/a/lock.key lock
-kdb set system/prefs/lock/a.lock.key lock
+kdb set system:/prefs/lock/a/lock/key lock
+kdb set system:/prefs/lock/a/lock.key lock
+kdb set system:/prefs/lock/a.lock.key lock
 ```
 
 will all result in `lockPref("a.lock.key", "lock");`
@@ -44,18 +44,18 @@ will all result in `lockPref("a.lock.key", "lock");`
 ## Example
 
 ```sh
-# Backup-and-Restore:user/tests/mozprefs
+# Backup-and-Restore:user:/tests/mozprefs
 
-sudo kdb mount prefs.js user/tests/mozprefs mozprefs
+sudo kdb mount prefs.js user:/tests/mozprefs mozprefs
 
-kdb meta-set user/tests/mozprefs/lock/a/lock/key type boolean
-kdb set user/tests/mozprefs/lock/a/lock/key true
-kdb meta-set user/tests/mozprefs/pref/a/default/key type string
-kdb set user/tests/mozprefs/pref/a/default/key "i'm a default key"
-kdb meta-set user/tests/mozprefs/user/a/user/key type integer
-kdb set user/tests/mozprefs/user/a/user/key 123
+kdb meta-set user:/tests/mozprefs/lock/a/lock/key type boolean
+kdb set user:/tests/mozprefs/lock/a/lock/key true
+kdb meta-set user:/tests/mozprefs/pref/a/default/key type string
+kdb set user:/tests/mozprefs/pref/a/default/key "i'm a default key"
+kdb meta-set user:/tests/mozprefs/user/a/user/key type integer
+kdb set user:/tests/mozprefs/user/a/user/key 123
 
-kdb export user/tests/mozprefs ini
+kdb export user:/tests/mozprefs ini
 #> [lock/a/lock]
 #> #@META type = boolean
 #> key=true
@@ -66,12 +66,12 @@ kdb export user/tests/mozprefs ini
 #> #@META type = integer
 #> key=123
 
-cat `kdb file user/tests/mozprefs`
+cat `kdb file user:/tests/mozprefs`
 #> lockPref("a.lock.key", true);
 #> pref("a.default.key", "i'm a default key");
 #> user_pref("a.user.key", 123);
 
 # cleanup
-kdb rm -r user/tests/mozprefs
-sudo kdb umount user/tests/mozprefs
+kdb rm -r user:/tests/mozprefs
+sudo kdb umount user:/tests/mozprefs
 ```

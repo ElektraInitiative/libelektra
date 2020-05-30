@@ -27,14 +27,14 @@ require 'kdb'
 ks = Kdb::KeySet.new
 
 # create a keyset with one initial key
-ks = Kdb::KeySet.new Kdb::Key.new("user/myapp/#1/config")
+ks = Kdb::KeySet.new Kdb::Key.new("user:/myapp/#1/config")
 
 # create a keyset with many initial keys
 ks = Kdb::KeySet.new [
-        Kdb::Key.new("user/myapp/#1/config1"),
-        Kdb::Key.new("user/myapp/#1/config2"),
-        Kdb::Key.new("user/myapp/#1/config3"),
-        Kdb::Key.new("user/myapp/#1/config4")
+        Kdb::Key.new("user:/myapp/#1/config1"),
+        Kdb::Key.new("user:/myapp/#1/config2"),
+        Kdb::Key.new("user:/myapp/#1/config3"),
+        Kdb::Key.new("user:/myapp/#1/config4")
 ]
 
 # create a keyset from an already existing keyset
@@ -46,22 +46,22 @@ ks = Kdb::KeySet.new ks
 #
 
 # append method
-ks.append Kdb::Key.new("user/myapp/#1/setting1")
+ks.append Kdb::Key.new("user:/myapp/#1/setting1")
 
 # shift-left operator
-ks << Kdb::Key.new("user/myapp/#1/setting2")
+ks << Kdb::Key.new("user:/myapp/#1/setting2")
 
 # append a keyset
 ks_append = Kdb::KeySet.new [
-        Kdb::Key.new("user/myapp/#1/setting3"),
-        Kdb::Key.new("user/myapp/#1/setting4")
+        Kdb::Key.new("user:/myapp/#1/setting3"),
+        Kdb::Key.new("user:/myapp/#1/setting4")
 ]
 
 ks << ks_append
 
 # append an array of keys
-ks << [ Kdb::Key.new("user/myapp/#1/setting5"),
-        Kdb::Key.new("user/myapp/#1/setting6") ]
+ks << [ Kdb::Key.new("user:/myapp/#1/setting5"),
+        Kdb::Key.new("user:/myapp/#1/setting6") ]
 
 
 #
@@ -79,9 +79,9 @@ first = ks.head
 last = ks.tail
 
 # lookup keys in the keyset
-key = ks.lookup "user/myapp/#1/setting1"
+key = ks.lookup "user:/myapp/#1/setting1"
 # can also be done by key
-key = ks.lookup Kdb::Key.new("user/myapp/#1/setting2")
+key = ks.lookup Kdb::Key.new("user:/myapp/#1/setting2")
 
 
 #
@@ -92,7 +92,7 @@ key = ks.lookup Kdb::Key.new("user/myapp/#1/setting2")
 key = ks.pop
 
 # lookup: get and remove key by name/key
-key = ks.lookup "user/myapp/#1/setting6", Kdb::KDB_O_POP
+key = ks.lookup "user:/myapp/#1/setting6", Kdb::KDB_O_POP
 
 # delete_at: delete key by index
 # returns key or nil if index is out of range
@@ -100,8 +100,8 @@ key = ks.delete_at 1
 
 # delete by key/name:
 # returns key or nil if key was not found
-key = ks.delete "user/myapp/#1/setting5"
-key = ks.delete Kdb::Key.new "user/myapp/#1/setting4"
+key = ks.delete "user:/myapp/#1/setting5"
+key = ks.delete Kdb::Key.new "user:/myapp/#1/setting4"
 
 
 #
@@ -142,8 +142,8 @@ ks.each { |k|
 # comparision
 #
 
-ks_a = Kdb::KeySet.new Kdb::Key.new("user/key1")
-ks_b = Kdb::KeySet.new Kdb::Key.new("user/key1")
+ks_a = Kdb::KeySet.new Kdb::Key.new("user:/key1")
+ks_b = Kdb::KeySet.new Kdb::Key.new("user:/key1")
 
 ks_a == ks_b  # => true
 ks_a != ks_b  # => false
@@ -158,6 +158,6 @@ ks_clone = ks.dup
 
 ks_clone == ks  # => true
 
-ks_clone << Kdb::Key.new("user/newkey")
+ks_clone << Kdb::Key.new("user:/newkey")
 
 ks_clone == ks  # => false

@@ -25,15 +25,15 @@ KeySet * get_dump (void)
 	Key *k1, *k2;
 	// clang-format off
 	KeySet *ks = ksNew(10,
-			k1 = keyNew("user/tests/dump",
+			k1 = keyNew("user:/tests/dump",
 			       KEY_VALUE, "root key",
 			       KEY_META, "a", "b",
 			       KEY_END),
-			k2 = keyNew("user/tests/dump/a",
+			k2 = keyNew("user:/tests/dump/a",
 			       KEY_VALUE, "a value",
 			       KEY_META, "ab", "cd",
 			       KEY_END),
-			keyNew("user/tests/dump/b",
+			keyNew("user:/tests/dump/b",
 			       KEY_VALUE, "b value",
 			       KEY_META, "longer val", "here some even more with ugly €@\\1¹²³¼ chars",
 			       KEY_END),
@@ -56,10 +56,10 @@ void test_writedump(const char *file)
 
 	printf("Test write dump\n");
 
-	succeed_if (kdbMount(kdb,mnt=keyNew("user/tests/dump",KEY_VALUE,"dump", KEY_END),
-		conf=ksNew (2,keyNew("system/path", KEY_VALUE, file, KEY_END), KS_END)) == 0,
+	succeed_if (kdbMount(kdb,mnt=keyNew("user:/tests/dump",KEY_VALUE,"dump", KEY_END),
+		conf=ksNew (2,keyNew("system:/path", KEY_VALUE, file, KEY_END), KS_END)) == 0,
 		"could not mount dump");
-	succeed_if (kdbSet(kdb,ks,keyNew("user/tests/dump",KEY_END),KDB_O_DEL) >= 0, "could not set keys");
+	succeed_if (kdbSet(kdb,ks,keyNew("user:/tests/dump",KEY_END),KDB_O_DEL) >= 0, "could not set keys");
 	ksDel (conf);
 	keyDel(mnt);
 
@@ -78,18 +78,18 @@ void test_readdump(const char *file)
 
 	printf("Test read dump\n");
 
-	succeed_if (kdbMount(kdb,mnt=keyNew("user/tests/dump",KEY_VALUE,"dump", KEY_END),
-		conf=ksNew (2,keyNew("system/path", KEY_VALUE, file, KEY_END), KS_END)) == 0,
+	succeed_if (kdbMount(kdb,mnt=keyNew("user:/tests/dump",KEY_VALUE,"dump", KEY_END),
+		conf=ksNew (2,keyNew("system:/path", KEY_VALUE, file, KEY_END), KS_END)) == 0,
 		"could not mount dump");
-	succeed_if (kdbGet(kdb,read,keyNew("user/tests/dump",KEY_END),KDB_O_DEL) >= 0, "could not get keys");
+	succeed_if (kdbGet(kdb,read,keyNew("user:/tests/dump",KEY_END),KDB_O_DEL) >= 0, "could not get keys");
 	ksDel (conf);
 	keyDel(mnt);
 
 	compare_keyset (read, ks, 0, 0);
 
-	k1 = ksLookupByName(ks, "user/tests/dump", 0);
+	k1 = ksLookupByName(ks, "user:/tests/dump", 0);
 	succeed_if (k1 != 0, "did not find key");
-	k2 = ksLookupByName(ks, "user/tests/dump/a", 0);
+	k2 = ksLookupByName(ks, "user:/tests/dump/a", 0);
 	succeed_if (k2 != 0, "did not find key");
 
 	succeed_if (!strcmp(keyValue(keyGetMeta(k1, "ab")), "cd"), "metavalue not correct");

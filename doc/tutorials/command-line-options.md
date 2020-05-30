@@ -359,23 +359,23 @@ If this specification is used in a program called `erm` (for Elektra rm), which 
 FILES="one.txt:other.log" VERBOSE=1 erm -fi --recursive
 ```
 
-The following keys will be created by `elektraGetOpts` (assuming the specification is mounted at `spec/sw/org/erm/#0/current`):
+The following keys will be created by `elektraGetOpts` (assuming the specification is mounted at `spec:/sw/org/erm/#0/current`):
 
-- `proc/sw/org/erm/#0/current/force = "1"`
-- `proc/sw/org/erm/#0/current/interactive = "always"`
-- `proc/sw/org/erm/#0/current/recursive = "1"`
-- `proc/sw/org/erm/#0/current/verbose = "1"`
-- `proc/sw/org/erm/#0/current/files [array] = "#1"`
-- `proc/sw/org/erm/#0/current/files/#0 = "one.txt"`
-- `proc/sw/org/erm/#0/current/files/#1 = "other.log"`
+- `proc:/sw/org/erm/#0/current/force = "1"`
+- `proc:/sw/org/erm/#0/current/interactive = "always"`
+- `proc:/sw/org/erm/#0/current/recursive = "1"`
+- `proc:/sw/org/erm/#0/current/verbose = "1"`
+- `proc:/sw/org/erm/#0/current/files [array] = "#1"`
+- `proc:/sw/org/erm/#0/current/files/#0 = "one.txt"`
+- `proc:/sw/org/erm/#0/current/files/#1 = "other.log"`
 
 Calling `FILES="abcd.txt" erm 123.txt 456.txt` meanwhile will result in:
 
-- `proc/sw/org/erm/#0/current/files [array] = "#1"`
-- `proc/sw/org/erm/#0/current/files/#0 = "123.txt"`
-- `proc/sw/org/erm/#0/current/files/#1 = "456.txt"`
+- `proc:/sw/org/erm/#0/current/files [array] = "#1"`
+- `proc:/sw/org/erm/#0/current/files/#0 = "123.txt"`
+- `proc:/sw/org/erm/#0/current/files/#1 = "456.txt"`
 
-NOTE: `proc/sw/org/erm/#0/current/files [array] = "#1"` means the `array` metadata of `proc/sw/org/erm/#0/current/files` is `#1`.
+NOTE: `proc:/sw/org/erm/#0/current/files [array] = "#1"` means the `array` metadata of `proc:/sw/org/erm/#0/current/files` is `#1`.
 
 You can find a full working example [here](/examples/opts.c). However, it uses a hard coded
 specification which is a bit harder to read.

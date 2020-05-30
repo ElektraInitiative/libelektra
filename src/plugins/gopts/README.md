@@ -24,7 +24,7 @@ The preferred way of using this plugin is via `kdbEnsure`:
 ```c
 KDB * kdb = kdbOpen (parentKey);
 
-KeySet * contract = ksNew (1, keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
+KeySet * contract = ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
 int rc = kdbEnsure (kdb, contract, parentKey);
 if (rc != 0)
 {

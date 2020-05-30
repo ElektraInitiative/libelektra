@@ -58,8 +58,9 @@ bool startsWith (std::string const & str, std::string const & start)
 	return std::equal (start.begin (), start.end (), str.begin ());
 }
 
-bool isToBeIgnored (std::string const & name)
+bool isToBeIgnored (std::string const & metaName)
 {
+	const auto & name = metaName.substr (sizeof ("meta:/") - 1);
 	// TODO: read from METADATA.ini
 	return startsWith (name, "infos") || startsWith (name, "exports") || startsWith (name, "constants") ||
 	       startsWith (name, "exports") ||
@@ -98,22 +99,22 @@ void SpecMountpointReader::processKey (Key const & ck)
 	Key m;
 	while ((m = k.nextMeta ()))
 	{
-		std::string const & cn = "config/needs";
+		std::string const & cn = "meta:/config/needs";
 		if (startsWith (m.getName (), cn))
 		{
 			Key bKey = m.dup ();
-			bKey.setName ("user" + bKey.getName ().substr (cn.length ()));
+			bKey.setName ("user:" + bKey.getName ().substr (cn.length ()));
 			backendConfig.append (bKey);
 		}
-		else if (m.getName () == "infos/plugins")
+		else if (m.getName () == "meta:/infos/plugins")
 		{
 			bb.addPlugins (parseArguments (m.getString ()));
 		}
-		else if (m.getName () == "infos/needs")
+		else if (m.getName () == "meta:/infos/needs")
 		{
 			bb.needPlugin (m.getString ());
 		}
-		else if (m.getName () == "infos/recommends")
+		else if (m.getName () == "meta:/infos/recommends")
 		{
 			bb.recommendPlugin (m.getString ());
 		}

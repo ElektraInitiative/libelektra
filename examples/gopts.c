@@ -17,7 +17,7 @@
 extern char ** environ;
 
 #define BASE_KEY "/sw/org/erm/#0/current"
-#define SPEC_BASE_KEY "spec" BASE_KEY
+#define SPEC_BASE_KEY "spec:" BASE_KEY
 
 // -----------------
 // Helper methods
@@ -121,7 +121,7 @@ int main (void)
 	Key * parentKey = keyNew (BASE_KEY, KEY_END);
 	KDB * kdb = kdbOpen (parentKey);
 
-	KeySet * contract = ksNew (1, keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
+	KeySet * contract = ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
 	int rc = kdbEnsure (kdb, contract, parentKey);
 	if (rc == 1)
 	{
@@ -153,7 +153,7 @@ int main (void)
 		return EXIT_FAILURE;
 	}
 
-	Key * helpKey = ksLookupByName (ks, "proc/elektra/gopts/help", 0);
+	Key * helpKey = ksLookupByName (ks, "proc:/elektra/gopts/help", 0);
 	if (helpKey != NULL && elektraStrCmp (keyString (helpKey), "1") == 0)
 	{
 		char * help = elektraGetOptsHelpMessage (helpKey, NULL, NULL);

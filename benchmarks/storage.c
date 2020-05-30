@@ -33,7 +33,7 @@ static int benchmarkOpenPlugins (void)
 		modules[i] = ksNew (0, KS_END);
 		elektraModulesInit (modules[i], 0);
 		KeySet * conf = ksNew (0, KS_END);
-		Key * errorKey = keyNew ("", KEY_END);
+		Key * errorKey = keyNew ("/", KEY_END);
 		Plugin * plugin = elektraPluginOpen (pluginNames[i], modules[i], conf, errorKey);
 
 		const Key * metaWarnings = keyGetMeta (errorKey, "warnings");
@@ -102,7 +102,7 @@ int main (int argc, char ** argv)
 		init (argc, argv);
 
 		Plugin * plugin = plugins[i];
-		Key * parentKey = keyNew ("user/benchmarks/storage", KEY_VALUE, tmpfilename, KEY_END);
+		Key * parentKey = keyNew ("user:/benchmarks/storage", KEY_VALUE, tmpfilename, KEY_END);
 
 		for (size_t run = 0; run < NUM_RUNS; ++run)
 		{

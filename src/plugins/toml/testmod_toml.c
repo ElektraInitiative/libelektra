@@ -16,16 +16,19 @@
 #include "toml.h"
 #include "utility.h"
 
-#define PREFIX "user/tests/toml"
+#define PREFIX "user:/tests/toml"
 
 #define TEST_WR_HEAD                                                                                                                       \
+	printf ("Start Test: %s\n", __func__);                                                                                             \
 	Key * lastKey = NULL;                                                                                                              \
 	KeySet * writeKs = ksNew (0, KS_END);                                                                                              \
 	KeySet * expectedKs = ksNew (0, KS_END)
 #define TEST_WR_FOOT                                                                                                                       \
 	testWriteReadCompare (writeKs, expectedKs);                                                                                        \
 	ksDel (expectedKs);                                                                                                                \
-	ksDel (writeKs)
+	ksDel (writeKs);                                                                                                                   \
+	printf ("End Test: %s\n\n", __func__)
+
 // Macros to be used in TEST_WR environments
 #define WRITE_KV(name, value)                                                                                                              \
 	{                                                                                                                                  \
@@ -1078,7 +1081,7 @@ static void testReadMustError (const char * filename)
 
 static void printError (Key * parent)
 {
-	const Key * meta = findMetaKey (parent, "error/reason");
+	const Key * meta = findMetaKey (parent, "meta:/error/reason");
 	if (meta != NULL)
 	{
 		ELEKTRA_LOG_DEBUG ("ERROR: %s\n", keyString (meta));

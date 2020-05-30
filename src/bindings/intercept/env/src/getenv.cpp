@@ -180,13 +180,13 @@ extern "C" void elektraUnlockMutex ()
 void printVersion ()
 {
 	cout << "Elektra getenv is active" << std::endl;
-	Key * k = keyNew ("system/elektra/version", KEY_END);
+	Key * k = keyNew ("system:/elektra/version", KEY_END);
 	KDB * kdb = kdbOpen (k);
 	KeySet * c = ksNew (20, KS_END);
 	kdbGet (kdb, c, k);
 	kdbClose (kdb, k);
 	keyDel (k);
-	Key * kdb_version = ksLookupByName (c, "system/elektra/version/constants/KDB_VERSION", 0);
+	Key * kdb_version = ksLookupByName (c, "system:/elektra/version/constants/KDB_VERSION", 0);
 	if (!kdb_version)
 	{
 		cerr << "Could not lookup KDB_VERSION key" << endl;
@@ -207,7 +207,7 @@ void addOverride (string kv)
 	getline (ss, v);
 	LOG << "add override " << k << " with " << v << endl;
 
-	string fullName = "proc/elektra/intercept/getenv/override/";
+	string fullName = "proc:/elektra/intercept/getenv/override/";
 	fullName += k;
 	ksAppendKey (elektraConfig, keyNew (fullName.c_str (), KEY_VALUE, v.c_str (), KEY_END));
 }
@@ -221,7 +221,7 @@ void addOption (string kv)
 	getline (ss, v);
 	LOG << "add option " << k << " with " << v << endl;
 
-	string fullName = "proc/elektra/intercept/getenv/option/";
+	string fullName = "proc:/elektra/intercept/getenv/option/";
 	fullName += k;
 	ksAppendKey (elektraConfig, keyNew (fullName.c_str (), KEY_VALUE, v.c_str (), KEY_END));
 }
@@ -235,7 +235,7 @@ void addLayer (string kv)
 	getline (ss, v);
 	LOG << "add layer " << k << " with " << v << endl;
 
-	string fullName = "proc/elektra/intercept/getenv/layer/";
+	string fullName = "proc:/elektra/intercept/getenv/layer/";
 	fullName += k;
 	ksAppendKey (elektraConfig, keyNew (fullName.c_str (), KEY_VALUE, v.c_str (), KEY_END));
 }
@@ -246,8 +246,8 @@ void giveName (string name)
 	std::string basename = ::basename (n);
 	elektraFree (n);
 	LOG << "give name " << name << ", basename: " << basename << std::endl;
-	ksAppendKey (elektraConfig, keyNew ("proc/elektra/intercept/getenv/layer/name", KEY_VALUE, name.c_str (), KEY_END));
-	ksAppendKey (elektraConfig, keyNew ("proc/elektra/intercept/getenv/layer/basename", KEY_VALUE, basename.c_str (), KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("proc:/elektra/intercept/getenv/layer/name", KEY_VALUE, name.c_str (), KEY_END));
+	ksAppendKey (elektraConfig, keyNew ("proc:/elektra/intercept/getenv/layer/basename", KEY_VALUE, basename.c_str (), KEY_END));
 }
 
 void parseArgs (int * argc, char ** argv)
@@ -307,7 +307,7 @@ void addEnvironment (string kv)
 	getline (ss, v);
 	LOG << "add option " << k << " with " << v << endl;
 
-	string fullName = "proc/elektra/intercept/getenv/option/";
+	string fullName = "proc:/elektra/intercept/getenv/option/";
 	fullName += k;
 	ksAppendKey (elektraConfig, keyNew (fullName.c_str (), KEY_VALUE, v.c_str (), KEY_END));
 }
@@ -431,7 +431,7 @@ void applyOptions ()
 	     (k = ksLookupByName (elektraConfig, "/env/option/help", 0))) &&
 	    !keyIsBinary (k))
 	{
-		cout << keyString (ksLookupByName (elektraDocu, "system/elektra/modules/elektrify-getenv/infos/description", 0)) << endl;
+		cout << keyString (ksLookupByName (elektraDocu, "system:/elektra/modules/elektrify-getenv/infos/description", 0)) << endl;
 		exit (0);
 	}
 
@@ -552,7 +552,7 @@ extern "C" pid_t fork ()
 
 Key * elektraContextEvaluation (ELEKTRA_UNUSED KeySet * ks, ELEKTRA_UNUSED Key * key, Key * found, elektraLookupFlags option)
 {
-	if (found && !strncmp (keyName (found), "spec/", 5) && option == KDB_O_CALLBACK)
+	if (found && !strncmp (keyName (found), "spec:/", 5) && option == KDB_O_CALLBACK)
 	{
 		const Key * meta = keyGetMeta (found, "context");
 		if (meta)

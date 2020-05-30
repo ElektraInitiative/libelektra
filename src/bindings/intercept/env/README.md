@@ -17,7 +17,7 @@ kdb elektrify-getenv <application> <options>
 ```sh
 kdb elektrify-getenv curl --elektra-version
 kdb elektrify-getenv curl https://www.libelektra.org
-kdb set system/elektra/intercept/getenv/override/http_proxy http://www.example.com/
+kdb set system:/elektra/intercept/getenv/override/http_proxy http://www.example.com/
 kdb elektrify-getenv curl https://www.libelektra.org
 ```
 
@@ -26,7 +26,7 @@ Or you can also reload while the application is running:
 
 ```sh
 ELEKTRA_RELOAD_TIMEOUT=100 kdb elektrify-getenv firefox
-kdb set system/elektra/intercept/getenv/override/http_proxy http://www.example.com
+kdb set system:/elektra/intercept/getenv/override/http_proxy http://www.example.com
 ```
 
 ## DESCRIPTION
@@ -64,7 +64,7 @@ To do so, getenv(3) will lookup multiple sources next to searching in the enviro
 2. Then `/elektra/intercept/getenv/override/<key>` will be looked up, where <key> is the parameter to `getenv`.
    If found, the key will be returned, if it is a null keys, `getenv` will return `NULL`.
 
-   E.g. `kdb set user/elektra/intercept/getenv/override/HOME /path/to/home`
+   E.g. `kdb set user:/elektra/intercept/getenv/override/HOME /path/to/home`
 
 3. Then environment will be requested.
 
@@ -73,7 +73,7 @@ To do so, getenv(3) will lookup multiple sources next to searching in the enviro
 4. Then `/elektra/intercept/getenv/fallback/<key>` will be looked up.
    If found, the key will be returned, if it is a null keys, `getenv` will return `NULL`.
 
-   E.g. `kdb set user/elektra/intercept/getenv/fallback/HOME /path/to/home`
+   E.g. `kdb set user:/elektra/intercept/getenv/fallback/HOME /path/to/home`
 
 ## OPTIONS
 
@@ -94,7 +94,7 @@ the application will be called with `<application> -V -L`.
   Gives version information.
 - `--elektra-debug=file`, `ELEKTRA_DEBUG` or `/elektra/intercept/getenv/option/debug`:
   Trace all getenv(3) calls to a file.
-  stderr if no file is given, e.g. `kdb set user/elektra/intercept/getenv/option/debug ""`.
+  stderr if no file is given, e.g. `kdb set user:/elektra/intercept/getenv/option/debug ""`.
   Note that null values (no forth argument), will disable debug messages.
   See examples below.
 - `--elektra-clearenv`, `ELEKTRA_CLEARENV` or `/elektra/intercept/getenv/option/clearenv`:
@@ -113,13 +113,13 @@ Internal Options are available in three different variants:
 3. as Elektra KDB entry: `/elektra/intercept/getenv/option/<option>`,
    which are the way to achieve an option to be enabled for every application.
 
-   E.g. `kdb set user/elektra/intercept/getenv/option/clearenv ""` to clear the environment for all
+   E.g. `kdb set user:/elektra/intercept/getenv/option/clearenv ""` to clear the environment for all
    applications started by that user (note that at least `PATH` should to be set
-   using `kdb set user/elektra/intercept/getenv/fallback/PATH "/bin:/usr/bin"` then).
+   using `kdb set user:/elektra/intercept/getenv/fallback/PATH "/bin:/usr/bin"` then).
 
    Note, that null keys are equal to non-set options.
-   E.g. `kdb set system/elektra/intercept/getenv/option/debug "/tmp/elektra.log"` and
-   `kdb set user/elektra/intercept/getenv/option/debug` will activate logging for the system, except
+   E.g. `kdb set system:/elektra/intercept/getenv/option/debug "/tmp/elektra.log"` and
+   `kdb set user:/elektra/intercept/getenv/option/debug` will activate logging for the system, except
    for the current user.
 
 ### Contextual Options
@@ -149,8 +149,8 @@ kdb elektrify-getenv | tail -1 | sudo tee -a /etc/ld.so.preload
 Or in a more Elektra-like way with mounting:
 
 ```sh
-sudo kdb mount /etc/ld.so.preload system/ld/preload line null
-sudo kdb set "system/ld/preload/new"  `kdb elektrify-getenv | tail -1`
+sudo kdb mount /etc/ld.so.preload system:/ld/preload line null
+sudo kdb set "system:/ld/preload/new"  `kdb elektrify-getenv | tail -1`
 ```
 
 ## CONTEXT
@@ -162,19 +162,19 @@ given contextual options `--elektra%<name>%=<value>` and `/elektra/intercept/get
 E.g. to have a different home directory for any user and application:
 
 ```sh
-kdb set user/elektra/intercept/getenv/layer/user markus
-kdb set user/users/markus/konqueror/HOME /home/download
-kdb meta-set spec/elektra/intercept/getenv/override/HOME context  /users/%user%/%name%/HOME
+kdb set user:/elektra/intercept/getenv/layer/user markus
+kdb set user:/users/markus/konqueror/HOME /home/download
+kdb meta-set spec:/elektra/intercept/getenv/override/HOME context  /users/%user%/%name%/HOME
 ```
 
 Or to have a different lock/suspend program per computer (that all have the same config):
 
 ```sh
-kdb mount-info system/elektra/intercept/getenv/info            # must be below /elektra/intercept/getenv to be available
-kdb meta-set spec/elektra/intercept/getenv/layer/hostname override/#0 system/elektra/intercept/getenv/info/uname/nodename
-kdb meta-set spec/elektra/intercept/getenv/override/lock context /elektra/intercept/getenv/info/lock/%hostname%
-kdb set user/elektra/intercept/getenv/info/lock/computer1 "systemctl suspend -i"
-kdb set user/elektra/intercept/getenv/info/lock/computer2 "xset dpms force off && xtrlock"
+kdb mount-info system:/elektra/intercept/getenv/info            # must be below /elektra/intercept/getenv to be available
+kdb meta-set spec:/elektra/intercept/getenv/layer/hostname override/#0 system:/elektra/intercept/getenv/info/uname/nodename
+kdb meta-set spec:/elektra/intercept/getenv/override/lock context /elektra/intercept/getenv/info/lock/%hostname%
+kdb set user:/elektra/intercept/getenv/info/lock/computer1 "systemctl suspend -i"
+kdb set user:/elektra/intercept/getenv/info/lock/computer2 "xset dpms force off && xtrlock"
 `kdb getenv lock`  # call the appropriate lock method for the current computer
 ```
 
@@ -224,19 +224,19 @@ Debugging:
 
 ```sh
 # system wide to stderr (not recommended!):
-sudo kdb set system/elektra/intercept/getenv/option/debug ""
+sudo kdb set system:/elektra/intercept/getenv/option/debug ""
 # system wide to /var/log/elektra.log:
-sudo kdb set system/elektra/intercept/getenv/option/debug "/var/log/error.log"
+sudo kdb set system:/elektra/intercept/getenv/option/debug "/var/log/error.log"
 # but for my user to ~/.elektra.log:
-kdb set user/elektra/intercept/getenv/option/debug "$HOME/.elektra.log"
+kdb set user:/elektra/intercept/getenv/option/debug "$HOME/.elektra.log"
 # or disable it for my user:
-kdb set user/elektra/intercept/getenv/option/debug
+kdb set user:/elektra/intercept/getenv/option/debug
 ```
 
 Some more examples:
 
 ```sh
-kdb set user/elektra/intercept/getenv/override/MANOPT -- "--regex -LC"
+kdb set user:/elektra/intercept/getenv/override/MANOPT -- "--regex -LC"
 kdb elektrify-getenv getenv MANOPT   # to check if it is set as expected
 kdb getenv MANOPT   # if /etc/ld.so.preload is active
 ```
@@ -248,7 +248,7 @@ This feature is handy to change the default behavior of
 applications (either system, user or directory-wide).
 
 ```sh
-kdb set system/elektra/intercept/getenv/override/HTTP_PROXY http://proxy.hogege.com:8000/
+kdb set system:/elektra/intercept/getenv/override/HTTP_PROXY http://proxy.hogege.com:8000/
 ```
 
 Will permanently and system-wide change the proxy for all applications
@@ -256,6 +256,6 @@ that honor HTTP_PROXY, e.g. w3m.
 We can also link `http_proxy` to the value of `HTTP_PROXY`:
 
 ```sh
-kdb meta-set spec/elektra/intercept/getenv/override/http_proxy "override/#0" /elektra/intercept/getenv/override/HTTP_PROXY
+kdb meta-set spec:/elektra/intercept/getenv/override/http_proxy "override/#0" /elektra/intercept/getenv/override/HTTP_PROXY
 kdb get /elektra/intercept/getenv/override/http_proxy
 ```

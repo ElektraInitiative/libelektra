@@ -49,7 +49,7 @@ int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks)
 		while ((meta = ckdb::keyNextMeta (cur)) != nullptr)
 		{
 			std::stringstream ss;
-			ss << "user/" << meta; // use the address of pointer as name
+			ss << "/" << meta; // use the address of pointer as name
 
 			ckdb::Key * search = ckdb::keyNew (ss.str ().c_str (), KEY_END);
 			ckdb::Key * ret = ksLookup (metacopies, search, 0);
@@ -127,15 +127,14 @@ int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
 		}
 		else if (command == "keyNew")
 		{
-			cur = ckdb::keyNew (nullptr);
-
 			ss >> namesize;
 			ss >> valuesize;
 
 			if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
 			is.read (&namebuffer[0], namesize);
 			namebuffer[namesize] = 0;
-			ckdb::keySetName (cur, &namebuffer[0]);
+
+			cur = ckdb::keyNew (namebuffer.data (), KEY_END);
 
 			if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
 			is.read (&valuebuffer[0], valuesize);
@@ -231,19 +230,19 @@ extern "C" {
 
 int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
-	Key * root = ckdb::keyNew ("system/elektra/modules/dump", KEY_END);
+	Key * root = ckdb::keyNew ("system:/elektra/modules/dump", KEY_END);
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);
-		KeySet * n = ksNew (50, keyNew ("system/elektra/modules/dump", KEY_VALUE, "dump plugin waits for your orders", KEY_END),
-				    keyNew ("system/elektra/modules/dump/exports", KEY_END),
-				    keyNew ("system/elektra/modules/dump/exports/get", KEY_FUNC, elektraDumpGet, KEY_END),
-				    keyNew ("system/elektra/modules/dump/exports/set", KEY_FUNC, elektraDumpSet, KEY_END),
-				    keyNew ("system/elektra/modules/dump/exports/serialise", KEY_FUNC, dump::serialise, KEY_END),
-				    keyNew ("system/elektra/modules/dump/exports/unserialise", KEY_FUNC, dump::unserialise, KEY_END),
-				    keyNew ("system/elektra/modules/dump/config/needs/fcrypt/textmode", KEY_VALUE, "0", KEY_END),
+		KeySet * n = ksNew (50, keyNew ("system:/elektra/modules/dump", KEY_VALUE, "dump plugin waits for your orders", KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports", KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/get", KEY_FUNC, elektraDumpGet, KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/set", KEY_FUNC, elektraDumpSet, KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/serialise", KEY_FUNC, dump::serialise, KEY_END),
+				    keyNew ("system:/elektra/modules/dump/exports/unserialise", KEY_FUNC, dump::unserialise, KEY_END),
+				    keyNew ("system:/elektra/modules/dump/config/needs/fcrypt/textmode", KEY_VALUE, "0", KEY_END),
 #include "readme_dump.c"
-				    keyNew ("system/elektra/modules/dump/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+				    keyNew ("system:/elektra/modules/dump/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, n);
 		ksDel (n);
 		return 1;

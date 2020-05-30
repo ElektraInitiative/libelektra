@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-RM" "1" "August 2019" "" ""
+.TH "KDB\-RM" "1" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-rm\fR \- Remove key(s) from the key database
@@ -54,7 +54,7 @@ Work in a recursive mode\.
 .
 .TP
 \fB\-E\fR, \fB\-\-without\-elektra\fR
-Omit the \fBsystem/elektra\fR directory\.
+Omit the \fBsystem:/elektra\fR directory\.
 .
 .TP
 \fB\-f\fR, \fB\-\-force\fR
@@ -72,16 +72,16 @@ Give debug information\. Prints additional debug information in case of errors/w
 To remove a single key:
 .
 .br
-\fBkdb rm user/example/key1\fR
+\fBkdb rm user:/example/key1\fR
 .
 .P
 To remove multiple keys:
 .
 .br
-\fBkdb rm \-r user/example\fR
+\fBkdb rm \-r user:/example\fR
 .
 .P
-To remove all keys in \fBsystem\fR except \fBsystem/elektra\fR:
+To remove all keys in \fBsystem\fR except \fBsystem:/elektra\fR:
 .
 .br
 \fBsudo kdb rm \-rE system\fR
@@ -90,7 +90,7 @@ To remove all keys in \fBsystem\fR except \fBsystem/elektra\fR:
 To not fail when key is missing:
 .
 .br
-\fBkdb rm \-f user/maybe/missing\fR
+\fBkdb rm \-f user:/maybe/missing\fR
 .
 .SH "SEE ALSO"
 .

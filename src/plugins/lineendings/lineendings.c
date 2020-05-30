@@ -113,15 +113,15 @@ static int checkLineEndings (const char * fileName, Lineending validLineEnding, 
 
 int elektraLineendingsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/lineendings"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/lineendings"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/lineendings", KEY_VALUE, "lineendings plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/lineendings/exports", KEY_END),
-			keyNew ("system/elektra/modules/lineendings/exports/get", KEY_FUNC, elektraLineendingsGet, KEY_END),
-			keyNew ("system/elektra/modules/lineendings/exports/set", KEY_FUNC, elektraLineendingsSet, KEY_END),
+			30, keyNew ("system:/elektra/modules/lineendings", KEY_VALUE, "lineendings plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/lineendings/exports", KEY_END),
+			keyNew ("system:/elektra/modules/lineendings/exports/get", KEY_FUNC, elektraLineendingsGet, KEY_END),
+			keyNew ("system:/elektra/modules/lineendings/exports/set", KEY_FUNC, elektraLineendingsSet, KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/lineendings/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/lineendings/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

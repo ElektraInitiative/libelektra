@@ -28,7 +28,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
   def test_keySet_new_with_key
     assert_nothing_raised do
-      k = Kdb::Key.new "user/key", value: "hello"
+      k = Kdb::Key.new "user:/key", value: "hello"
       ks = Kdb::KeySet.new k
 
       assert_equal 1, ks.size
@@ -45,31 +45,31 @@ class KdbKeySetTestCases < Test::Unit::TestCase
   def test_keySet_new_with_keySet
     assert_nothing_raised do
       ks1 = Kdb::KeySet.new
-      ks1 << Kdb::Key.new("user/ks1")
-      ks1 << Kdb::Key.new("user/ks2")
+      ks1 << Kdb::Key.new("user:/ks1")
+      ks1 << Kdb::Key.new("user:/ks2")
 
       ks2 = Kdb::KeySet.new ks1
 
       assert_equal 2, ks2.size
 
-      ks2 << Kdb::Key.new("user/ks3")
+      ks2 << Kdb::Key.new("user:/ks3")
 
       assert_equal 3, ks2.size
-      assert_equal "user/ks3", ks2.tail.name
+      assert_equal "user:/ks3", ks2.tail.name
 
       # ensure old KeySet holds only the first 2 Keys
       assert_equal 2, ks1.size
-      assert_equal "user/ks2", ks1.tail.name
+      assert_equal "user:/ks2", ks1.tail.name
     end
   end
 
   def test_keySet_new_with_array
     assert_nothing_raised do
       a = Array.new
-      a << Kdb::Key.new("user/ks1")
-      a << Kdb::Key.new("user/ks2")
-      a << Kdb::Key.new("user/ks3")
-      a << Kdb::Key.new("user/ks4")
+      a << Kdb::Key.new("user:/ks1")
+      a << Kdb::Key.new("user:/ks2")
+      a << Kdb::Key.new("user:/ks3")
+      a << Kdb::Key.new("user:/ks4")
 
       ks = Kdb::KeySet.new a
 
@@ -81,9 +81,9 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       }
 
       ks = Kdb::KeySet.new [
-        Kdb::Key.new("user/key1"),
-        Kdb::Key.new("user/key2"),
-        Kdb::Key.new("user/key3")
+        Kdb::Key.new("user:/key1"),
+        Kdb::Key.new("user:/key2"),
+        Kdb::Key.new("user:/key3")
       ]
 
       assert_equal 3, ks.size
@@ -91,7 +91,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       # ensure also larger arrays, with more than 16 (preallocated) elements
       # work correctly
-      a = (1..40).map { |n| Kdb::Key.new("user/key%02d" % n) }
+      a = (1..40).map { |n| Kdb::Key.new("user:/key%02d" % n) }
       ks = Kdb::KeySet.new a
 
       assert_equal 40, ks.size
@@ -100,7 +100,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
     assert_raise ArgumentError do
       Kdb::KeySet.new [
-        Kdb::Key.new("user/key"),
+        Kdb::Key.new("user:/key"),
         "not a key",
         1
       ]
@@ -110,7 +110,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
   def test_keySet_append
     assert_nothing_raised do
-      k = Kdb::Key.new "user/ks1", value: "val", meta: "metaval"
+      k = Kdb::Key.new "user:/ks1", value: "val", meta: "metaval"
 
       ks = Kdb::KeySet.new
 
@@ -122,12 +122,12 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal k, ks.head
       assert_equal k, ks.tail
 
-      ks << Kdb::Key.new("user/ks2", value: "val2")
+      ks << Kdb::Key.new("user:/ks2", value: "val2")
 
       assert_equal 2, ks.size
 
       assert_equal k, ks.head
-      assert_equal "user/ks2", ks.tail.name
+      assert_equal "user:/ks2", ks.tail.name
 
     end
   end
@@ -136,16 +136,16 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     assert_nothing_raised do
       ks1 = Kdb::KeySet.new
 
-      num = ks1 << Kdb::Key.new("user/ks1")
+      num = ks1 << Kdb::Key.new("user:/ks1")
       assert_equal 1, num
-      num = ks1 << Kdb::Key.new("user/ks2")
+      num = ks1 << Kdb::Key.new("user:/ks2")
       assert_equal 2, num
 
       ks2 = Kdb::KeySet.new
 
-      num = ks2 << Kdb::Key.new("user/ks3")
+      num = ks2 << Kdb::Key.new("user:/ks3")
       assert_equal 1, num
-      num = ks2 << Kdb::Key.new("user/ks4")
+      num = ks2 << Kdb::Key.new("user:/ks4")
       assert_equal 2, num
 
       num = ks1 << ks2
@@ -159,8 +159,8 @@ class KdbKeySetTestCases < Test::Unit::TestCase
   def test_keySet_append_array
     assert_nothing_raised do
       a = Array.new
-      a << Kdb::Key.new("user/ks2")
-      a << Kdb::Key.new("user/ks1")
+      a << Kdb::Key.new("user:/ks2")
+      a << Kdb::Key.new("user:/ks1")
 
       ks = Kdb::KeySet.new
 
@@ -176,14 +176,14 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       ks = Kdb::KeySet.new
 
       num = ks << [
-        Kdb::Key.new("user/ks1"),
-        Kdb::Key.new("user/ks2"),
-        Kdb::Key.new("user/ks3")
+        Kdb::Key.new("user:/ks1"),
+        Kdb::Key.new("user:/ks2"),
+        Kdb::Key.new("user:/ks3")
       ]
       assert_equal 3, num
 
       assert_equal 3, ks.size
-      assert_equal "user/ks1", ks.head.name
+      assert_equal "user:/ks1", ks.head.name
     end
 
 
@@ -209,14 +209,14 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
   def test_keySet_get_by_cursor_or_index
     assert_nothing_raised do
-      ks = Kdb::KeySet.new (0..9).map { |i| Kdb::Key.new "user/key%02d" % i }
+      ks = Kdb::KeySet.new (0..9).map { |i| Kdb::Key.new "user:/key%02d" % i }
 
       assert_equal 10, ks.size
 
       # test get by index
       for i in (0..9) do
-        assert_equal ("user/key%02d" % i), ks.at(i).name
-        assert_equal ("user/key%02d" % i), ks[i].name
+        assert_equal ("user:/key%02d" % i), ks.at(i).name
+        assert_equal ("user:/key%02d" % i), ks[i].name
       end
 
       # test get by cursor
@@ -228,7 +228,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       for i in (0..9) do
         nxt = ks.next
         cur = ks.current
-        assert_equal ("user/key%02d" % i), nxt.name
+        assert_equal ("user:/key%02d" % i), nxt.name
         assert_equal cur, nxt
 
         assert_equal i, ks.cursor
@@ -252,22 +252,22 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       assert_nil ks.pop
 
-      k = Kdb::Key.new("user/k0")
+      k = Kdb::Key.new("user:/k0")
       ks << k
       assert_equal 1, ks.size
       assert_equal k, ks.pop
       assert_equal 0, ks.size
 
-      k = Kdb::Key.new("user/k1")
+      k = Kdb::Key.new("user:/k1")
       ks << k
       assert_equal 1, ks.size
       assert_equal k, ks.pop
       assert_equal 0, ks.size
 
-      k2 = Kdb::Key.new("user/k2")
-      k3 = Kdb::Key.new("user/k3")
-      k4 = Kdb::Key.new("user/k4")
-      k5 = Kdb::Key.new("user/k5")
+      k2 = Kdb::Key.new("user:/k2")
+      k3 = Kdb::Key.new("user:/k3")
+      k4 = Kdb::Key.new("user:/k4")
+      k5 = Kdb::Key.new("user:/k5")
 
       ks << [k2, k3, k4, k5]
 
@@ -292,7 +292,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_nil ks.head
       assert_nil ks.tail
 
-      a = (0..3).map { |i| Kdb::Key.new "user/key#{i}" }
+      a = (0..3).map { |i| Kdb::Key.new "user:/key#{i}" }
 
       ks << a[0]
 
@@ -334,16 +334,16 @@ class KdbKeySetTestCases < Test::Unit::TestCase
     assert_nothing_raised do
       a = Array.new
       # create test keys
-      a << Kdb::Key.new("user/k0", value: "v0", owner: "me")
-      a << Kdb::Key.new("user/k1", value: "v1", owner: "you")
-      a << Kdb::Key.new("user/k2", value: "v2", owner: "john", m2: "a")
-      a << Kdb::Key.new("user/k3", value: "v3", owner: "jane")
-      a << Kdb::Key.new("user/k4", value: "v4", owner: "max")
-      a << Kdb::Key.new("user/k5", value: "v5", owner: "bob", m2: "b")
-      a << Kdb::Key.new("user/k6", value: "v6", owner: "alice")
-      a << Kdb::Key.new("user/k7", value: "v7", owner: "fritz", m3: "c")
-      a << Kdb::Key.new("user/k8", value: "v8", owner: "anton")
-      a << Kdb::Key.new("user/k9", value: "v9", owner: "berta")
+      a << Kdb::Key.new("user:/k0", value: "v0", owner: "me")
+      a << Kdb::Key.new("user:/k1", value: "v1", owner: "you")
+      a << Kdb::Key.new("user:/k2", value: "v2", owner: "john", m2: "a")
+      a << Kdb::Key.new("user:/k3", value: "v3", owner: "jane")
+      a << Kdb::Key.new("user:/k4", value: "v4", owner: "max")
+      a << Kdb::Key.new("user:/k5", value: "v5", owner: "bob", m2: "b")
+      a << Kdb::Key.new("user:/k6", value: "v6", owner: "alice")
+      a << Kdb::Key.new("user:/k7", value: "v7", owner: "fritz", m3: "c")
+      a << Kdb::Key.new("user:/k8", value: "v8", owner: "anton")
+      a << Kdb::Key.new("user:/k9", value: "v9", owner: "berta")
 
       ks = Kdb::KeySet.new
 
@@ -370,11 +370,11 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert ! ks.all? { |e| e.value == "v0" }
       assert ks.any? { |e| e.value == "v0" }
 
-      k = ks.find { |e| e.name == "user/k5" }
+      k = ks.find { |e| e.name == "user:/k5" }
       assert_instance_of Kdb::Key, k
       assert k.is_valid?
       assert ! k.is_null?
-      assert_equal "user/k5", k.name
+      assert_equal "user:/k5", k.name
       assert a[5] == k
 
       k = ks.find { |e| e.name == "does_not_exist" }
@@ -426,7 +426,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
   def test_keySet_comparison
     assert_nothing_raised do
-      a = (1..5).map { |i| Kdb::Key.new "user/key#{i}" }
+      a = (1..5).map { |i| Kdb::Key.new "user:/key#{i}" }
 
       ks1 = Kdb::KeySet.new a
       ks2 = Kdb::KeySet.new a
@@ -444,7 +444,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert ks1.eql?(ks2)
       assert ks2.eql?(ks1)
 
-      ks2 << Kdb::Key.new("user/key100")
+      ks2 << Kdb::Key.new("user:/key100")
 
       assert ks1 != ks2
 
@@ -455,23 +455,23 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
   def test_keySet_lookup_lookupByName
     assert_nothing_raised do
-      ks = Kdb::KeySet.new (1..10).map { |i| Kdb::Key.new("user/key%02d" % i) }
+      ks = Kdb::KeySet.new (1..10).map { |i| Kdb::Key.new("user:/key%02d" % i) }
 
       assert_equal 10, ks.size
 
       # lookupByName
-      assert_equal "user/key01", ks.lookup("user/key01").name
-      assert_equal Kdb::Key.new("user/key02"), ks.lookup("user/key02")
+      assert_equal "user:/key01", ks.lookup("user:/key01").name
+      assert_equal Kdb::Key.new("user:/key02"), ks.lookup("user:/key02")
 
       # lookup
-      assert_equal "user/key03", ks.lookup(Kdb::Key.new "user/key03").name
+      assert_equal "user:/key03", ks.lookup(Kdb::Key.new "user:/key03").name
 
       # lookup unknown key
-      assert_nil ks.lookup("user/key_now_in_keyset")
-      assert_nil ks.lookup(Kdb::Key.new "user/key_now_in_keyset")
+      assert_nil ks.lookup("user:/key_now_in_keyset")
+      assert_nil ks.lookup(Kdb::Key.new "user:/key_now_in_keyset")
 
       # with options
-      lookupkey = Kdb::Key.new "user/key05"
+      lookupkey = Kdb::Key.new "user:/key05"
       assert_equal lookupkey, ks.lookup(lookupkey, Kdb::KDB_O_POP)
       assert_equal 9, ks.size
       assert_nil ks.lookup(lookupkey)
@@ -481,7 +481,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
   def test_keySet_dup_or_clone
     assert_nothing_raised do
-      a = (0..4).map { |i| Kdb::Key.new "user/key#{i}" }
+      a = (0..4).map { |i| Kdb::Key.new "user:/key#{i}" }
 
       ks = Kdb::KeySet.new a
 
@@ -493,19 +493,19 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert ks == ks_dup
       assert ks.__id__ != ks_dup.__id__
 
-      ks_dup << Kdb::Key.new("user/key5")
+      ks_dup << Kdb::Key.new("user:/key5")
 
       assert_equal 5, ks.size
       assert_equal 6, ks_dup.size
 
-      assert_equal "user/key4", ks.tail.name
-      assert_equal "user/key5", ks_dup.tail.name
+      assert_equal "user:/key4", ks.tail.name
+      assert_equal "user:/key5", ks_dup.tail.name
 
       assert_equal a[4], ks.pop
       assert_equal 4, ks.size
       assert_equal 6, ks_dup.size
-      assert_equal "user/key3", ks.tail.name
-      assert_equal "user/key5", ks_dup.tail.name
+      assert_equal "user:/key3", ks.tail.name
+      assert_equal "user:/key5", ks_dup.tail.name
 
       # however, its just a shallow copy, thus modifying keys has effect
       # to both key sets
@@ -524,35 +524,35 @@ class KdbKeySetTestCases < Test::Unit::TestCase
   def test_keySet_cut
     assert_nothing_raised do
       ks = Kdb::KeySet.new [
-        Kdb::Key.new("user/app1/setting1"),
-        Kdb::Key.new("user/app1/setting2"),
-        Kdb::Key.new("user/app1/setting3"),
-        Kdb::Key.new("user/app2/setting1"),
-        Kdb::Key.new("user/app2/common/setting1"),
-        Kdb::Key.new("user/app2/common/setting2"),
-        Kdb::Key.new("user/app2/setting2"),
-        Kdb::Key.new("user/app3/setting1")
+        Kdb::Key.new("user:/app1/setting1"),
+        Kdb::Key.new("user:/app1/setting2"),
+        Kdb::Key.new("user:/app1/setting3"),
+        Kdb::Key.new("user:/app2/setting1"),
+        Kdb::Key.new("user:/app2/common/setting1"),
+        Kdb::Key.new("user:/app2/common/setting2"),
+        Kdb::Key.new("user:/app2/setting2"),
+        Kdb::Key.new("user:/app3/setting1")
       ]
 
       assert_equal 8, ks.size
 
-      app2 = ks.cut Kdb::Key.new("user/app2")
+      app2 = ks.cut Kdb::Key.new("user:/app2")
 
       assert_equal 4, app2.size
       assert_equal 4, ks.size
 
-      assert_equal "user/app1/setting1", ks[0].name
-      assert_equal "user/app1/setting2", ks[1].name
-      assert_equal "user/app1/setting3", ks[2].name
-      assert_equal "user/app3/setting1", ks[3].name
+      assert_equal "user:/app1/setting1", ks[0].name
+      assert_equal "user:/app1/setting2", ks[1].name
+      assert_equal "user:/app1/setting3", ks[2].name
+      assert_equal "user:/app3/setting1", ks[3].name
 
-      assert_equal "user/app2/common/setting1", app2[0].name
-      assert_equal "user/app2/common/setting2", app2[1].name
-      assert_equal "user/app2/setting1", app2[2].name
-      assert_equal "user/app2/setting2", app2[3].name
+      assert_equal "user:/app2/common/setting1", app2[0].name
+      assert_equal "user:/app2/common/setting2", app2[1].name
+      assert_equal "user:/app2/setting1", app2[2].name
+      assert_equal "user:/app2/setting2", app2[3].name
 
 
-      app4 = ks.cut Kdb::Key.new("user/app4")
+      app4 = ks.cut Kdb::Key.new("user:/app4")
 
       assert_equal 4, ks.size
       assert_equal 0, app4.size
@@ -562,7 +562,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
   def test_keySet_to_array
     assert_nothing_raised do
-      ks = Kdb::KeySet.new (0..5).map { |i| Kdb::Key.new "user/key#{i}" }
+      ks = Kdb::KeySet.new (0..5).map { |i| Kdb::Key.new "user:/key#{i}" }
 
       a = ks.to_a
 
@@ -584,11 +584,11 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       assert ks.empty?
 
-      ks << Kdb::Key.new("user/k1")
+      ks << Kdb::Key.new("user:/k1")
 
       assert ! ks.empty?
 
-      ks << Kdb::Key.new("user/k2")
+      ks << Kdb::Key.new("user:/k2")
 
       assert ! ks.empty?
 
@@ -608,13 +608,13 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal 0, ks.size
       assert_equal 0, ks.length
 
-      ks << Kdb::Key.new("user/k1")
+      ks << Kdb::Key.new("user:/k1")
 
       assert_equal 1, ks.size
       assert_equal 1, ks.length
 
       (2..10).map do |i|
-          ks << Kdb::Key.new("user/sw/org/my_app/k#{i}")
+          ks << Kdb::Key.new("user:/sw/org/my_app/k#{i}")
           assert_equal i, ks.size
           assert_equal i, ks.length
       end
@@ -638,7 +638,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
   def test_keySet_delete_by_index
     assert_nothing_raised do
       a = (0..9).map { |i|
-        Kdb::Key.new "user/sw/org/my_app/k#{i}"
+        Kdb::Key.new "user:/sw/org/my_app/k#{i}"
       }
 
       ks = Kdb::KeySet.new a
@@ -670,7 +670,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
   def test_keySet_delete_by_lookup
     assert_nothing_raised do
       a = (0..9).map { |i|
-        Kdb::Key.new "user/sw/org/my_app/k#{i}"
+        Kdb::Key.new "user:/sw/org/my_app/k#{i}"
       }
 
       ks = Kdb::KeySet.new a
@@ -689,20 +689,20 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal 8, ks.size
 
 
-      assert_nil ks.delete(Kdb::Key.new "user/doesn_t_exist")
+      assert_nil ks.delete(Kdb::Key.new "user:/doesn_t_exist")
 
       # delete by name
       ak = a.delete_at 0
-      k = ks.delete "user/sw/org/my_app/k1"
+      k = ks.delete "user:/sw/org/my_app/k1"
       assert_equal ak, k
       assert_equal 7, ks.size
 
       ak = a.delete_at 6
-      k = ks.delete "user/sw/org/my_app/k9"
+      k = ks.delete "user:/sw/org/my_app/k9"
       assert_equal ak, k
       assert_equal 6, ks.size
 
-      assert_nil ks.delete("user/doesn_t_exist")
+      assert_nil ks.delete("user:/doesn_t_exist")
 
     end
   end
@@ -713,17 +713,17 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
       assert_equal '', ks.to_s
 
-      ks << Kdb::Key.new("user/k1", value: "v1")
+      ks << Kdb::Key.new("user:/k1", value: "v1")
 
-      assert_equal "user/k1: v1", ks.to_s
+      assert_equal "user:/k1: v1", ks.to_s
 
-      ks << Kdb::Key.new("user/k2", value: "v2")
+      ks << Kdb::Key.new("user:/k2", value: "v2")
 
-      assert_equal "user/k1: v1, user/k2: v2", ks.to_s
+      assert_equal "user:/k1: v1, user:/k2: v2", ks.to_s
 
-      ks << Kdb::Key.new("user/k3", flags: Kdb::KEY_BINARY, value: "\x00\x00")
+      ks << Kdb::Key.new("user:/k3", flags: Kdb::KEY_BINARY, value: "\x00\x00")
 
-      expected = "user/k1: v1, user/k2: v2, user/k3: (binary) length: 2"
+      expected = "user:/k1: v1, user:/k2: v2, user:/k3: (binary) length: 2"
       assert_equal expected, ks.to_s
     end
   end
@@ -737,16 +737,16 @@ class KdbKeySetTestCases < Test::Unit::TestCase
       assert_equal '', out
       assert_equal '', err
 
-      ks << Kdb::Key.new("user/k1", value: "v1")
-      ks << Kdb::Key.new("user/k2", value: "v2")
-      ks << Kdb::Key.new("user/k3", value: "v3")
+      ks << Kdb::Key.new("user:/k1", value: "v1")
+      ks << Kdb::Key.new("user:/k2", value: "v2")
+      ks << Kdb::Key.new("user:/k3", value: "v3")
 
       out, err = capture_output { ks.pretty_print }
 
       expected = <<EOF
-user/k1: v1
-user/k2: v2
-user/k3: v3
+user:/k1: v1
+user:/k2: v2
+user:/k3: v3
 EOF
       assert_equal expected, out
       assert_equal '', err

@@ -38,7 +38,7 @@ using elektra::increaseArrayIndices;
 	elektraPluginClose (plugin, 0);                                                                                                    \
 	elektraModulesClose (modules.getKeySet (), 0)
 
-#define PREFIX "user/tests/directoryvalue/"
+#define PREFIX "user:/tests/directoryvalue/"
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
@@ -127,7 +127,7 @@ TEST (directoryvalue, increaseArrayIndices)
 
 TEST (directoryvalue, basics)
 {
-	OPEN_PLUGIN ("system/elektra/modules/directoryvalue", "")
+	OPEN_PLUGIN ("system:/elektra/modules/directoryvalue", "")
 
 	kdb::KeySet keys{ 0, KS_END };
 	succeed_if_same (plugin->kdbGet (plugin, keys.getKeySet (), *parent), ELEKTRA_PLUGIN_STATUS_SUCCESS,

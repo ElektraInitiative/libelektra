@@ -40,7 +40,7 @@ public:
 		       "\n"
 		       "Example:\n"
 		       "\n"
-		       "   kdb get system/elektra/version/constants/KDB_VERSION\n";
+		       "   kdb get system:/elektra/version/constants/KDB_VERSION\n";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;
