@@ -45,11 +45,9 @@ Get started with Elektra by running `docker run -it elektra/elektra`.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### TOML
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Added the plugin as EXPERIMENTAL. Reads/Writes TOML files by using a flex and bison generated parser. _(Jakob Fischer)_
 
 ### <<Plugin2>>
 
