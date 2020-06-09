@@ -66,7 +66,7 @@ char * indexToArrayString (size_t index)
 	}
 	int strLen = 1 +	    //  '#'
 		     (digits - 1) + // underscores
-		     digits +       // actual digits
+		     digits +	    // actual digits
 		     1;		    // '\0'
 	char * str = (char *) elektraCalloc (sizeof (char) * strLen);
 	memset (str, '_', sizeof (char) * strLen);
