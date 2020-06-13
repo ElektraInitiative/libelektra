@@ -17,6 +17,7 @@
 extern int yyparse (Driver * driver);
 extern int yylineno;
 extern void initializeLexer (FILE * file);
+extern void clearLexer (void);
 
 static Driver * createDriver (Key * parent, KeySet * keys);
 static void destroyDriver (Driver * driver);
