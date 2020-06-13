@@ -118,6 +118,7 @@ static int driverParse (Driver * driver)
 	}
 	initializeLexer (file);
 	int yyResult = yyparse (driver);
+	clearLexer ();
 	fclose (file);
 	return driver->errorSet == true || yyResult != 0;
 }

@@ -232,6 +232,11 @@ void initializeLexer(FILE * file) {
 	// yyin = file;
 }
 
+void clearLexer(void) {
+	// yy_delete_buffer(YY_CURRENT_BUFFER);
+	yylex_destroy();
+}
+
 static inline bool validAscii (char c)
 {
 	return c == '\t' || (c >= 0x20 && c <= 0x7E);

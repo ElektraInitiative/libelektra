@@ -233,8 +233,10 @@ static int writeTree (Node * node, Writer * writer)
 				result |= fputc (' ', writer->f) == EOF;
 			}
 		}
-		ELEKTRA_ASSERT (node->type == NT_LEAF || node->type == NT_ARRAY || NT_INLINE_TABLE,
-				"Invalid type of list element, only NT_LEAF, NT_ARRAY or NT_INLINE_TABLE expected, but found other");
+		ELEKTRA_ASSERT (node->type == NT_LEAF || node->type == NT_ARRAY || node->type == NT_INLINE_TABLE ||
+					node->type == NT_LIST_ELEMENT,
+				"Invalid type of list element, only NT_LEAF, NT_ARRAY or NT_INLINE_TABLE expected, but found other: %d",
+				node->type);
 		result |= writeInlineComment (comments, true, writer);
 	}
 	else
