@@ -1,7 +1,8 @@
 import org.libelektra.*;
+import org.libelektra.exception.*;
 import org.libelektra.plugin.Echo;
 
-/** Simple hello world example how Elektra could be wrapped to java. */
+/** Simple hello world to see how Elektra can be used in Java. */
 public class HelloElektra
 {
 
@@ -11,7 +12,7 @@ public class HelloElektra
 		System.out.println (key); // to get name
 		System.out.println (key.getString ());
 
-		final KeySet ks = KeySet.create (10, Key.create ("user/hello_world2", "Hello World2"), key, KeySet.KS_END);
+		final KeySet ks = KeySet.create (10, Key.create ("user/hello_world2", "Hello World2"), key);
 
 		for (Key k : ks)
 		{
@@ -31,7 +32,7 @@ public class HelloElektra
 			final Key k = ks.lookup (key);
 			System.out.println (k.getString ());
 		}
-		catch (KDB.KDBException e)
+		catch (KDBException e)
 		{
 			System.out.println (e);
 		}

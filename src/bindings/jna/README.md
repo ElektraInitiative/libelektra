@@ -36,7 +36,7 @@ which contains the libelektra4j subdirectory that corresponds to the
 libelektra.jar), e.g.:
 
 ```sh
-export CLASSPATH="/usr/share/java/libelektra4j.jar:/usr/share/java/jna.jar"
+export CLASSPATH=".:/usr/share/java/libelektra4j.jar:/usr/share/java/jna.jar"
 ```
 
 Or, if you want to use Elektra from cmake's build directory, use
