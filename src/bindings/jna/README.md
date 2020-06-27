@@ -6,20 +6,24 @@
 
 # JNA
 
-A full java binding using JNA. This binding requires Elektra to be installed on
+A Java binding using JNA. This binding requires Elektra to be installed on
 the system to work.
 
 ## Usage
 
-To use the bindings in a java project, we have to include the jar file
+To use the bindings in a Java project, we have to include the jar file
 libelektra-_version_.jar in the project. The version number is the same one as
-used for Elektra. This jar is created upon build, if you enable the jna bindings.
-You can also use maven to take care about the dependencies.
+used for Elektra. This jar is created upon build, if you enable the jna bindings,
+e.g. with `cmake -DBINDINGS=jna`, see also [COMPILE](/doc/COMPILE.md#bindings).
+Internally, `mvn` will be used to actually compile the plugin.
 
-Please note that the jni plugin is a different thing than the jna bindings. We
-can use the jni plugin to develop plugins for Elektra itself, whereas the jna
-bindings allow to use Elektra to access configuration in java projects. The jni
-plugin is _not_ required for the jna bindings to work.
+Please note that the [jni plugin](/src/plugins/jni) is a different thing. We
+use the jni plugin to develop plugins for Elektra itself, whereas the jna
+bindings allow to use Elektra to access configuration in Java projects. The jni
+plugin is _not_ required for the jna bindings to work. But, to develop
+jni plugins, jna can be used. [Here](libelektra4j/plugin) are example
+plugins, which need jni at runtime.
+
 
 ### Command line
 
@@ -35,13 +39,7 @@ export CLASSPATH="/usr/share/java/libelektra-*version*.jar:/usr/share/java/jna.j
 export CLASSPATH="~e/src/bindings/jna:/usr/share/java/jna.jar"
 ```
 
-to set it permanently for your user, you can use:
-
-```sh
-kdb set user/env/override/CLASSPATH "/usr/share/java/libelektra-*version*.jar:/usr/share/java/jna.jar"
-```
-
-then you can compile and run [HelloElektra](HelloElektra.java):
+Then you can compile and run [HelloElektra](HelloElektra.java):
 
 ```sh
 javac HelloElektra.java && java HelloElektra
@@ -55,9 +53,6 @@ compiled HelloElektra.class when executing it, otherwise it will not find it:
 javac -cp /usr/share/java/libelektra4j-*version*.jar:/usr/share/java/jna.jar HelloElektra.java
 java -cp .:/usr/share/java/libelektra4j-*version*.jar:/usr/share/java/jna.jar HelloElektra
 ```
-
-For plugin development, see [plugins](libelektra4j/plugin)
-and also [here](/src/plugins/jni) for more information.
 
 #### macOS
 
@@ -233,6 +228,4 @@ if you run all tests on a build (the target is called testjna_maven).
 ## Limitations
 
 - no binary keys
-- error/warning fixed to a special number, no generator for any
-  error/warning
-- no java iterator for metadata
+- no Java iterator for metadata
