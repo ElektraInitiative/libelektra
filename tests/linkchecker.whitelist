@@ -26,9 +26,6 @@ https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html
 https://packages.qa.debian.org/e/elektra/news/20151215T000031Z.html
 http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
 https://jira.apache.org/jira/browse/MDEP-518
-# Currently broken GitHub links
-git.libelektra.org
-github.com
-master.libelektra.org
-puppet.libelektra.org
-issues.libelektra.org
+#currently broken links
+https://cgit.kde.org/kconfig.git
+https://doc.libelektra.org/coverage/master/debian-buster-full
