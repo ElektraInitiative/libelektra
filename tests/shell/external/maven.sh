@@ -4,12 +4,7 @@ echo
 echo ELEKTRA CHECK EXTERNAL JAVA EXAMPLE
 echo
 
-if command -v mvn; then
-	if ! mvn; then
-		echo "Maven not installed, will skip"
-		exit 0
-	fi
-else
+if ! command -v mvn; then
 	echo "Maven not installed, will skip"
 	exit 0
 fi
