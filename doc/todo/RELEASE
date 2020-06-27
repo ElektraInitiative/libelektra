@@ -266,6 +266,7 @@ increment CMPVERSION in scripts/build/run_icheck
 and cleanup tests/icheck.suppression (and add info to release notes)
 increment version in output of doc/tutorials/hello-elektra.md
 increment VERSION in scripts/dev/build-debian-package
+increment <version> of libelektra4j in examples/external/java/read-keys-example/pom.xml
 
 
 == Announce ==
