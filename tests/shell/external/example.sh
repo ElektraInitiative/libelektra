@@ -75,4 +75,4 @@ do_tests
 
 rm application
 
-end_script gen
+end_script example
