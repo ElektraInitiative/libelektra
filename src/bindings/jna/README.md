@@ -68,7 +68,8 @@ mvn org.apache.maven.plugins:maven-install-plugin:install-file \
     -DpomFile=/usr/share/java/libelektra4j.pom.xml
 ```
 
-[Here](../../examples/external/java/read-keys-example/pom.xml) you can find a fully working example of the pom file. you see a full example using maven.
+[Here](../../examples/external/java/read-keys-example/pom.xml) is a full example using maven,
+which should work out of the box if above `mvn` command was executed.
 
 ### Using Elektra Plugins
 
