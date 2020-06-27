@@ -36,8 +36,12 @@ endif (PYTHONINTERP_FOUND)
 # = Files =
 # =========
 
-string (APPEND files "${CMAKE_INSTALL_PREFIX}/share/java/libelektra4j.jar")
-string (APPEND files "${CMAKE_INSTALL_PREFIX}/share/java/libelektra4j.pom.xml")
+# manual fixes for symlinks:
+string (APPEND files "\n${CMAKE_INSTALL_PREFIX}/share/java/libelektra4j.jar")
+string (APPEND files "\n${CMAKE_INSTALL_PREFIX}/share/java/libelektra4j.pom.xml")
+string (APPEND files "\n${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/libelektraintercept.so")
+string (APPEND files "\n${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/libelektragetenv.so.0")
+string (APPEND files "\n${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/libelektragetenv.so")
 
 string (REGEX REPLACE "\n" ";" files "${files}")
 foreach (file ${files})
