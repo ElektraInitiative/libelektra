@@ -18,7 +18,7 @@ macro (create_lib_symlink src dest)
 
 	cmake_parse_arguments (
 		ARG
-		"PLUGIN" # optional keywords
+		"PLUGIN;JAVA" # optional keywords
 		"" # one value keywords
 		"" # multi value keywords
 		${ARGN})
@@ -32,6 +32,8 @@ macro (create_lib_symlink src dest)
 
 	if (ARG_PLUGIN)
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	elseif (ARG_JAVA)
+		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/java")
 	else ()
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
 	endif ()

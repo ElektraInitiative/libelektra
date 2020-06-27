@@ -36,7 +36,7 @@ which contains the libelektra4j subdirectory that corresponds to the
 libelektra.jar), e.g.:
 
 ```sh
-export CLASSPATH="/usr/share/java/libelektra4j-$VERSION.jar:/usr/share/java/jna.jar"
+export CLASSPATH="/usr/share/java/libelektra4j.jar:/usr/share/java/jna.jar"
 ```
 
 Or, if you want to use Elektra from cmake's build directory, use
@@ -64,8 +64,8 @@ local maven repository from that location, execute the following command:
 
 ```sh
 mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file \
-    -Dfile=/usr/local/share/java/libelektra4j-$VERSION.jar \
-    -DpomFile=/usr/local/share/java/libelektra4j-$VERSION.pom.xml
+    -Dfile=/usr/local/share/java/libelektra4j.jar \
+    -DpomFile=/usr/local/share/java/libelektra4j.pom.xml
 ```
 
 Given that libelektra is actually installed on your system you can use it by
@@ -77,7 +77,7 @@ including the following maven dependency in your project afterwards:
 <version>$VERSION</version>
 ```
 
-If you wish to make the jna bindings part of your project, copy $VERSION.jar file to some location within your project, for example,
+If you wish to make the jna bindings part of your project, copy the jar file to some location within your project, for example,
 to `libs` directory in the project root. Then add to your pom.xml the following element as child of the `<dependencies>` element.
 
 ```xml
@@ -86,7 +86,7 @@ to `libs` directory in the project root. Then add to your pom.xml the following 
 	<artifactId>libelektra4j</artifactId>
 	<version>$VERSION</version>
 	<scope>system</scope>
-	<systemPath>${basedir}/libs/libelektra4j-$VERSION.jar</systemPath>
+	<systemPath>${basedir}/libs/libelektra4j.jar</systemPath>
 </dependency>
 ```
 
