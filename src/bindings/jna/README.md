@@ -12,10 +12,10 @@ the system to work.
 ## Usage
 
 To use the bindings in a Java project, we have to include the jar file
-libelektra-$VERSION.jar in the project. The version number is the same
+libelektra-\$VERSION.jar in the project. The version number is the same
 one as used for Elektra. This jar is created upon build of Elektra if
 you enable the jna bindings, e.g., with `cmake -DBINDINGS=jna`, see also
-[COMPILE](/doc/COMPILE.md#bindings).  Internally, `mvn` will be used to
+[COMPILE](/doc/COMPILE.md#bindings). Internally, `mvn` will be used to
 actually compile the plugin.
 
 Please note that the [jni plugin](/src/plugins/jni) is a different thing. We
@@ -24,7 +24,6 @@ bindings allow to use Elektra to access configuration in Java projects. The jni
 plugin is _not_ required for the jna bindings to work. But, to develop
 jni plugins, jna can be used. [Here](libelektra4j/plugin) are example
 plugins, which need jni at runtime.
-
 
 ### Command line
 
