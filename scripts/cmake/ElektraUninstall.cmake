@@ -36,6 +36,9 @@ endif (PYTHONINTERP_FOUND)
 # = Files =
 # =========
 
+string (APPEND files "${CMAKE_INSTALL_PREFIX}/share/java/libelektra4j.jar")
+string (APPEND files "${CMAKE_INSTALL_PREFIX}/share/java/libelektra4j.pom.xml")
+
 string (REGEX REPLACE "\n" ";" files "${files}")
 foreach (file ${files})
 	message (STATUS "Uninstalling $ENV{DESTDIR}${file}")
