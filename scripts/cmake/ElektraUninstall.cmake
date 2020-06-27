@@ -16,7 +16,6 @@ file (READ "${MANIFEST}" files)
 file (READ "${EXTRA_MANIFEST}" extra_files)
 string (APPEND files "${extra_files}")
 
-
 # ==========
 # = Python =
 # ==========
