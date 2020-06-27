@@ -9,7 +9,7 @@ if ! command -v mvn; then
 	exit 0
 fi
 
-if ! test -f /usr/share/java/libelektra4j.jar; then
+if ! test -f @CMAKE_INSTALL_PREFIX@/share/java/libelektra4j.jar; then
 	echo "libelektra4j.jar not installed, will skip"
 	exit 0
 fi
@@ -23,8 +23,8 @@ echo "Testing build with mvn"
 cd "$EXTERNAL_FOLDER"
 
 mvn org.apache.maven.plugins:maven-install-plugin:install-file \
-	-Dfile=/usr/share/java/libelektra4j.jar \
-	-DpomFile=/usr/share/java/libelektra4j.pom.xml
+	-Dfile=@CMAKE_INSTALL_PREFIX@/share/java/libelektra4j.jar \
+	-DpomFile=@CMAKE_INSTALL_PREFIX@/share/java/libelektra4j.pom.xml
 
 mvn clean package test
 
