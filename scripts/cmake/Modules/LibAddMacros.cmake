@@ -54,6 +54,10 @@ macro (create_lib_symlink src dest)
 			WORKING_DIRECTORY \"\$ENV{DESTDIR}${LIB_INSTALL_DIR}\"
 			RESULT_VARIABLE RET
 			)
+
+		# for uninstall:
+		file (APPEND \"${CMAKE_BINARY_DIR}/extra_install_manifest.txt\" \"\$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest}\\n\")
+
 		if (RET)
 			message (WARNING \"Could not install symlink\")
 		endif ()

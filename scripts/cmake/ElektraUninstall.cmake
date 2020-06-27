@@ -1,9 +1,10 @@
 # ~~~
 # Much faster is:
-# xargs rm < install_manifest.txt
+# xargs rm < install_manifest.txt extra_install_manifest.txt
 # ~~~
 
 set (MANIFEST "${CMAKE_BINARY_DIR}/install_manifest.txt")
+set (EXTRA_MANIFEST "${CMAKE_BINARY_DIR}/extra_install_manifest.txt")
 
 if (NOT EXISTS "${MANIFEST}")
 	message (FATAL_ERROR "Cannot find install manifest: ${MANIFEST}")
@@ -11,6 +12,10 @@ endif (NOT EXISTS "${MANIFEST}")
 
 # message (MANIFEST IS ${MANIFEST})
 file (READ "${MANIFEST}" files)
+
+file (READ "${EXTRA_MANIFEST}" extra_files)
+string (APPEND files "${extra_files}")
+
 
 # ==========
 # = Python =
@@ -35,13 +40,6 @@ endif (PYTHONINTERP_FOUND)
 # =========
 # = Files =
 # =========
-
-# manual fixes for symlinks:
-string (APPEND files "\n${CMAKE_INSTALL_PREFIX}/share/java/libelektra4j.jar")
-string (APPEND files "\n${CMAKE_INSTALL_PREFIX}/share/java/libelektra4j.pom.xml")
-string (APPEND files "\n${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/libelektraintercept.so")
-string (APPEND files "\n${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/libelektragetenv.so.0")
-string (APPEND files "\n${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/libelektragetenv.so")
 
 string (REGEX REPLACE "\n" ";" files "${files}")
 foreach (file ${files})
