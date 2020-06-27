@@ -101,7 +101,7 @@ if (Java_JAVAC_EXECUTABLE)
 				COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true package
 				WORKING_DIRECTORY libelektra4j
 				DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml" ${JNA_BINDING_SOURCE_FILES})
-	
+
 			create_lib_symlink (libelektra4j-${KDB_VERSION}.jar libelektra4j.jar JAVA)
 			create_lib_symlink (libelektra4j-${KDB_VERSION}.pom.xml libelektra4j.pom.xml JAVA)
 
