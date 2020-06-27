@@ -14,7 +14,7 @@ else
 	exit 0
 fi
 
-if test -f /usr/share/java/libelektra4j.jar; then
+if ! test -f /usr/share/java/libelektra4j.jar; then
 	echo "libelektra4j.jar not installed, will skip"
 	exit 0
 fi
