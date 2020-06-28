@@ -5,4 +5,4 @@ the files are known by `mvn`. Unfortunately, it is not yet uploaded
 on [Maven Central Repository](https://maven.apache.org/repository/guide-central-repository-upload.html),
 contributions are welcomed.
 
-See [src/bindings/jna/README.md](JNA binding) for more information.
+See [/src/bindings/jna/README.md](JNA binding) for more information.
