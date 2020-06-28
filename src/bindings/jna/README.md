@@ -38,7 +38,6 @@ libelektra.jar), e.g.:
 export CLASSPATH=".:/usr/share/java/libelektra4j.jar:/usr/share/java/jna.jar"
 ```
 
-
 Then you can compile and run [HelloElektra](HelloElektra.java):
 
 ```sh
