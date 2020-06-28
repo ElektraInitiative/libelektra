@@ -139,7 +139,7 @@ you up to date with the multi-language support provided by Elektra.
 ### CMake
 
 - `make uninstall` also uninstalls symlinks. _(Markus Raab)_
-- external-links.txt and extra_install_manifest.txt are cleaned up at cmake runs. _(Markus Raab)_
+- `external-links.txt` and `extra_install_manifest.txt` are cleaned up at cmake runs. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
