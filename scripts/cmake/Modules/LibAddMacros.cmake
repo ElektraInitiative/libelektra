@@ -10,7 +10,10 @@ endmacro (copy_file)
 # ~~~
 # Create a symlink for a plugin both in lib and at installation
 #
-# Parameter: PLUGIN: install symlink in TARGET_PLUGIN_FOLDER subdirectory
+# Parameters:
+# - PLUGIN: install symlink in TARGET_PLUGIN_FOLDER subdirectory
+# - JAVA: install symlink for Java in share/java
+# - otherwise: install symlink for normal libraries
 #
 # create_lib_symlink src dest - create a symbolic link from src -> dest
 # ~~~
