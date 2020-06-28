@@ -173,7 +173,7 @@ It should also be possible to run the tests by command line:
 
     If you copied the jna.jar, junit.jar and hamcrest-core.jar directly to the
     jna directory, the correct path would be `./jna.jar:./junit.jar:./hamcrest-core.jar`
-    (separated by : on mac and Linux, by ; on windows), otherwise specify the
+    (separated by : on Mac and Linux, by ; on Windows), otherwise specify the
     appropriate locations.
 
     For Linux users they are usually in `/usr/share/java/jna.jar:/usr/share/java/junit4.jar`
