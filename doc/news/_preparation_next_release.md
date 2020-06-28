@@ -102,7 +102,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up to date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
+### JNA
+
+- make examples work again _(Markus Raab)_
 
 ### <<Binding2>>
 
@@ -136,6 +138,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
+- `make uninstall` also uninstalls symlinks. _(Markus Raab)_
+- `external-links.txt` and `extra_install_manifest.txt` are cleaned up at cmake runs. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

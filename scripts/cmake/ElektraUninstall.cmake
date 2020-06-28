@@ -1,9 +1,10 @@
 # ~~~
 # Much faster is:
-# xargs rm < install_manifest.txt
+# xargs rm < install_manifest.txt extra_install_manifest.txt
 # ~~~
 
 set (MANIFEST "${CMAKE_BINARY_DIR}/install_manifest.txt")
+set (EXTRA_MANIFEST "${CMAKE_BINARY_DIR}/extra_install_manifest.txt")
 
 if (NOT EXISTS "${MANIFEST}")
 	message (FATAL_ERROR "Cannot find install manifest: ${MANIFEST}")
@@ -11,6 +12,9 @@ endif (NOT EXISTS "${MANIFEST}")
 
 # message (MANIFEST IS ${MANIFEST})
 file (READ "${MANIFEST}" files)
+
+file (READ "${EXTRA_MANIFEST}" extra_files)
+string (APPEND files "${extra_files}")
 
 # ==========
 # = Python =

@@ -34,6 +34,9 @@ set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 # additional modules for loading libraries
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/scripts/cmake/Modules/")
 
+file (REMOVE "${CMAKE_BINARY_DIR}/extra_install_manifest.txt")
+file (REMOVE "${CMAKE_BINARY_DIR}/external-links.txt")
+
 # needed by ifs below
 include (scripts/cmake/ElektraCache.cmake)
 include (scripts/cmake/ElektraCompiling.cmake)

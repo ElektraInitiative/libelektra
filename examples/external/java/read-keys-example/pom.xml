@@ -17,18 +17,16 @@
   </properties>
 
   <dependencies>
-	<dependency>
-		<groupId>org.libelektra</groupId>
-		<artifactId>libelektra4j</artifactId>
-		<version>VERSION</version>
-		<scope>system</scope>
-		<systemPath>${basedir}/lib/libelektra4j-VERSION.jar</systemPath>
-	</dependency>
-	<dependency>
-		<groupId>net.java.dev.jna</groupId>
-		<artifactId>jna</artifactId>
-		<version>4.5.0</version>
-	</dependency>
+    <dependency>
+      <groupId>org.libelektra</groupId>
+      <artifactId>libelektra4j</artifactId>
+      <version>0.9.2</version>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>4.5.0</version>
+    </dependency>
   </dependencies>
 
   <build>

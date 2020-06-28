@@ -102,6 +102,9 @@ if (Java_JAVAC_EXECUTABLE)
 				WORKING_DIRECTORY libelektra4j
 				DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml" ${JNA_BINDING_SOURCE_FILES})
 
+			create_lib_symlink (libelektra4j-${KDB_VERSION}.jar libelektra4j.jar JAVA)
+			create_lib_symlink (libelektra4j-${KDB_VERSION}.pom.xml libelektra4j.pom.xml JAVA)
+
 			add_custom_target (jna ALL
 					   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
 

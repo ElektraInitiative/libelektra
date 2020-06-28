@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.libelektra.KDB;
-import org.libelektra.KDB.KDBException;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
+import org.libelektra.exception.KDBException;
 
 class App
 {

@@ -10,7 +10,10 @@ endmacro (copy_file)
 # ~~~
 # Create a symlink for a plugin both in lib and at installation
 #
-# Parameter: PLUGIN: install symlink in TARGET_PLUGIN_FOLDER subdirectory
+# Parameters:
+# - PLUGIN: install symlink in TARGET_PLUGIN_FOLDER subdirectory
+# - JAVA: install symlink for Java in share/java
+# - otherwise: install symlink for normal libraries
 #
 # create_lib_symlink src dest - create a symbolic link from src -> dest
 # ~~~
@@ -18,7 +21,7 @@ macro (create_lib_symlink src dest)
 
 	cmake_parse_arguments (
 		ARG
-		"PLUGIN" # optional keywords
+		"PLUGIN;JAVA" # optional keywords
 		"" # one value keywords
 		"" # multi value keywords
 		${ARGN})
@@ -32,6 +35,8 @@ macro (create_lib_symlink src dest)
 
 	if (ARG_PLUGIN)
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}")
+	elseif (ARG_JAVA)
+		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/java")
 	else ()
 		set (LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}")
 	endif ()
@@ -52,6 +57,10 @@ macro (create_lib_symlink src dest)
 			WORKING_DIRECTORY \"\$ENV{DESTDIR}${LIB_INSTALL_DIR}\"
 			RESULT_VARIABLE RET
 			)
+
+		# for uninstall:
+		file (APPEND \"${CMAKE_BINARY_DIR}/extra_install_manifest.txt\" \"\$ENV{DESTDIR}${LIB_INSTALL_DIR}/${dest}\\n\")
+
 		if (RET)
 			message (WARNING \"Could not install symlink\")
 		endif ()

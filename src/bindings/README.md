@@ -9,7 +9,7 @@ in the respective programming languages, but you additionally need an
 [Interpreter Plugin](/src/plugins/README.md). Nevertheless, bindings
 can be immediately used in applications without plugins.
 
-List of currently supported bindings (use `ALL;-EXPERIMENTAL;-DEPRECATED`):
+List of currently supported bindings (use `cmake -DBINDINGS=ALL;-EXPERIMENTAL;-DEPRECATED`):
 
 - [cpp](cpp/) C++11 bindings (included per default)
 - [glib](glib/) GLib bindings
@@ -17,10 +17,10 @@ List of currently supported bindings (use `ALL;-EXPERIMENTAL;-DEPRECATED`):
 - [lua](swig/lua/) Lua SWIG bindings
 - [python](swig/python/) Python 3 SWIG bindings
 - [ruby](swig/ruby/) Ruby bindings
-- [jna](jna/) A full java binding using JNA
-- [rust](rust/) Bindings for the low-level API in Rust
+- [jna](jna/) Java binding using JNA
+- [rust](rust/) Rust bindings
 
-Experimental bindings (included in `EXPERIMENTAL`):
+Experimental bindings (included in `cmake -DBINDINGS=EXPERIMENTAL`):
 
 - [gsettings](gsettings/) GLib bindings (experimental)
 - [intercept_fs](intercept/fs/) Intercepts file system calls to configuration files (experimental)
@@ -32,7 +32,7 @@ Experimental bindings (included in `EXPERIMENTAL`):
 
 These bindings allow Elektra to integrate into different main loop APIs using a
 thin abstraction layer called "I/O binding".
-The build all available I/O bindings use `-DBINDINGS="IO"` when configuring `cmake`.
+To build all available I/O bindings use `cmake -DBINDINGS="IO"`.
 
 For more information please check out the
 [notification tutorial](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
@@ -43,4 +43,4 @@ asynchronous I/O management library.
 
 ## See Also
 
-- See [COMPILE](/doc/COMPILE.md#bindings) for how to specify the bindings to build, e.g. `ALL`.
+- See [COMPILE](/doc/COMPILE.md#bindings) for how to specify the bindings to build.

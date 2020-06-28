@@ -6,20 +6,24 @@
 
 # JNA
 
-A full java binding using JNA. This binding requires Elektra to be installed on
+A Java binding using JNA. This binding requires Elektra to be installed on
 the system to work.
 
 ## Usage
 
-To use the bindings in a java project, we have to include the jar file
-libelektra-_version_.jar in the project. The version number is the same one as
-used for Elektra. This jar is created upon build, if you enable the jna bindings.
-You can also use maven to take care about the dependencies.
+To use the bindings in a Java project, we have to include the jar file
+libelektra-\$VERSION.jar in the project. The version number is the same
+one as used for Elektra. This jar is created upon build of Elektra if
+you enable the jna bindings, e.g., with `cmake -DBINDINGS=jna`, see also
+[COMPILE](/doc/COMPILE.md#bindings). Internally, `mvn` will be used to
+actually compile the plugin.
 
-Please note that the jni plugin is a different thing than the jna bindings. We
-can use the jni plugin to develop plugins for Elektra itself, whereas the jna
-bindings allow to use Elektra to access configuration in java projects. The jni
-plugin is _not_ required for the jna bindings to work.
+Please note that the [jni plugin](/src/plugins/jni) serves a different purpose. We
+use the jni plugin to develop plugins for Elektra itself, whereas the jna
+bindings allow to use Elektra to access configuration in Java projects. The jni
+plugin is _not_ required for the jna bindings to work. But, to develop
+jni plugins, jna can be used. [Here](libelektra4j/plugin) are example
+plugins, which need jni at runtime.
 
 ### Command line
 
@@ -31,33 +35,14 @@ which contains the libelektra4j subdirectory that corresponds to the
 libelektra.jar), e.g.:
 
 ```sh
-export CLASSPATH="/usr/share/java/libelektra-*version*.jar:/usr/share/java/jna.jar"
-export CLASSPATH="~e/src/bindings/jna:/usr/share/java/jna.jar"
+export CLASSPATH=".:/usr/share/java/libelektra4j.jar:/usr/share/java/jna.jar"
 ```
 
-to set it permanently for your user, you can use:
-
-```sh
-kdb set user/env/override/CLASSPATH "/usr/share/java/libelektra-*version*.jar:/usr/share/java/jna.jar"
-```
-
-then you can compile and run [HelloElektra](HelloElektra.java):
+Then you can compile and run [HelloElektra](HelloElektra.java):
 
 ```sh
 javac HelloElektra.java && java HelloElektra
 ```
-
-You can also specify the classpath directly, both during compilation and execution.
-Also note its important in that case to include this directory containing the
-compiled HelloElektra.class when executing it, otherwise it will not find it:
-
-```sh
-javac -cp /usr/share/java/libelektra4j-*version*.jar:/usr/share/java/jna.jar HelloElektra.java
-java -cp .:/usr/share/java/libelektra4j-*version*.jar:/usr/share/java/jna.jar HelloElektra
-```
-
-For plugin development, see [plugins](libelektra4j/plugin)
-and also [here](/src/plugins/jni) for more information.
 
 #### macOS
 
@@ -71,47 +56,27 @@ To use the jna bindings via maven, first you have to install the jna bindings
 to your local maven repository. When you have built Elektra with the jna
 bindings included, they should have been automatically installed to
 ´/usr/share/java/´ along with a pom file for the library. To install it to your
-local maven repository from that location, execute the following command:
+local maven repository from that location, execute the following command
+(Note: use `/usr/local/...` if it was installed there):
 
 ```sh
-mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file \
-    -Dfile=/usr/local/share/java/libelektra4j-*version*.jar \
-    -DpomFile=/usr/local/share/java/libelektra4j-*version*.pom.xml
+mvn org.apache.maven.plugins:maven-install-plugin:install-file \
+    -Dfile=/usr/share/java/libelektra4j.jar \
+    -DpomFile=/usr/share/java/libelektra4j.pom.xml
 ```
 
-Given that libelektra is actually installed on your system you can use it by
-including the following maven dependency in your project afterwards:
+Then you can simply add libelektra as dependency using:
 
 ```xml
-<groupId>org.libelektra</groupId>
-<artifactId>libelektra4j</artifactId>
-<version>*version*</version>
+    <dependency>
+      <groupId>org.libelektra</groupId>
+      <artifactId>libelektra4j</artifactId>
+      <version>0.9.2</version>
+    </dependency>
 ```
 
-If you wish to make the jna bindings part of your project, copy _version_.jar file to some location within your project, for example,
-to `libs` directory in the project root. Then add to your pom.xml the following element as child of the `<dependencies>` element.
-
-```xml
-<dependency>
-	<groupId>org.libelektra</groupId>
-	<artifactId>libelektra4j</artifactId>
-	<version>*version*</version>
-	<scope>system</scope>
-	<systemPath>${basedir}/libs/libelektra4j-*version*.jar</systemPath>
-</dependency>
-```
-
-Most likely, you have to include this dependency as well:
-
-```xml
-<dependency>
-     <groupId>net.java.dev.jna</groupId>
-     <artifactId>jna</artifactId>
-     <version>4.5.0</version>
- </dependency>
-```
-
-[here](../../examples/external/java/read-keys-example/pom.xml) you can find a fully working example of the pom file.
+[Here](../../examples/external/java/read-keys-example/pom.xml) is a full example using maven,
+which should work out of the box if above `mvn` command was executed.
 
 ### Using Elektra Plugins
 
@@ -205,10 +170,10 @@ It should also be possible to run the tests by command line:
 
     If you copied the jna.jar, junit.jar and hamcrest-core.jar directly to the
     jna directory, the correct path would be `./jna.jar:./junit.jar:./hamcrest-core.jar`
-    (separated by : on mac and linux, by ; on windows), otherwise specify the
+    (separated by : on Mac and Linux, by ; on Windows), otherwise specify the
     appropriate locations.
 
-    For linux users they are usually in `/usr/share/java/jna.jar:/usr/share/java/junit4.jar`
+    For Linux users they are usually in `/usr/share/java/jna.jar:/usr/share/java/junit4.jar`
 
 2.  Run all jUnit tests (please note that the -cp parameter now also has to
     include the target directory we created in the first step, where the compiled
@@ -233,6 +198,4 @@ if you run all tests on a build (the target is called testjna_maven).
 ## Limitations
 
 - no binary keys
-- error/warning fixed to a special number, no generator for any
-  error/warning
-- no java iterator for metadata
+- no Java iterator for metadata
