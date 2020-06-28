@@ -68,6 +68,16 @@ mvn org.apache.maven.plugins:maven-install-plugin:install-file \
     -DpomFile=/usr/share/java/libelektra4j.pom.xml
 ```
 
+Then you can simply add libelektra as dependency using:
+
+```xml
+    <dependency>
+      <groupId>org.libelektra</groupId>
+      <artifactId>libelektra4j</artifactId>
+      <version>0.9.2</version>
+    </dependency>
+```
+
 [Here](../../examples/external/java/read-keys-example/pom.xml) is a full example using maven,
 which should work out of the box if above `mvn` command was executed.
 
