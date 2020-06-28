@@ -35,7 +35,7 @@ set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/scripts/cmake/Modules/")
 
 file (REMOVE "${CMAKE_BINARY_DIR}/extra_install_manifest.txt")
-install (CODE "file (REMOVE \"${CMAKE_BINARY_DIR}/external-links.txt\")")
+file (REMOVE "${CMAKE_BINARY_DIR}/external-links.txt")
 
 # needed by ifs below
 include (scripts/cmake/ElektraCache.cmake)
