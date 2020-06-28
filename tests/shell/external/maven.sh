@@ -1,7 +1,7 @@
 @INCLUDE_COMMON@
 
 echo
-echo ELEKTRA CHECK EXTERNAL JAVA EXAMPLE
+echo ELEKTRA CHECK EXTERNAL JAVA MAVEN EXAMPLE
 echo
 
 if ! command -v mvn; then
@@ -30,4 +30,4 @@ mvn clean package test
 
 rm -r target
 
-end_script java
+end_script maven
