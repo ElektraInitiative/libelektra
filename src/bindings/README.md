@@ -32,7 +32,7 @@ Experimental bindings (included in `cmake -DBINDINGS=EXPERIMENTAL`):
 
 These bindings allow Elektra to integrate into different main loop APIs using a
 thin abstraction layer called "I/O binding".
-The build all available I/O bindings use `cmake -DBINDINGS="IO"`.
+To build all available I/O bindings use `cmake -DBINDINGS="IO"`.
 
 For more information please check out the
 [notification tutorial](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
