@@ -30,6 +30,4 @@ mvn clean package test
 
 rm -r target
 
-exit 1 # check if the script actually is run somewhere
-
 end_script maven
