@@ -18,7 +18,7 @@ you enable the jna bindings, e.g., with `cmake -DBINDINGS=jna`, see also
 [COMPILE](/doc/COMPILE.md#bindings). Internally, `mvn` will be used to
 actually compile the plugin.
 
-Please note that the [jni plugin](/src/plugins/jni) is a different thing. We
+Please note that the [jni plugin](/src/plugins/jni) serves a different purpose. We
 use the jni plugin to develop plugins for Elektra itself, whereas the jna
 bindings allow to use Elektra to access configuration in Java projects. The jni
 plugin is _not_ required for the jna bindings to work. But, to develop
