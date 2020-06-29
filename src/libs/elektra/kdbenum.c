@@ -17,7 +17,7 @@
  * @ingroup key
  * @see keyNew()
  */
-enum keyswitch_t
+enum elektraKeyFlags
 {
 	KEY_NAME=1,		/*!< Flag for the key name */
 	KEY_VALUE=1<<1,		/*!< Flag for the key data */
@@ -35,7 +35,7 @@ enum keyswitch_t
 	KEY_DIR=1<<14,		/*!< Flag for the key directories @deprecated do not use */
 	KEY_META=1<<15,		/*!< Flag for metadata */
 	KEY_NULL=1<<16,		/*!< Is *not* a flag, only as return value @deprecated do not use */
-	// see elektraLockOptions
+	// hole for elektraLockOptions
 	KEY_CASCADING_NAME=1<<20,	/*!< Is default, no need to use it @deprecated do not use */
 	KEY_META_NAME=1<<21,	/*!< Allow any key names (not only with known namespaces+cascading */
 	KEY_END=0		/*!< Used as a parameter terminator to keyNew() */

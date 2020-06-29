@@ -449,12 +449,12 @@ int keyIsString (const Key * key)
  * Compare 2 keys.
  *
  * The returned flags bit array has 1s (differ) or 0s (equal) for each key
- * meta info compared, that can be logically ORed using @c #keyswitch_t flags.
- * @link keyswitch_t::KEY_NAME KEY_NAME @endlink,
- * @link keyswitch_t::KEY_VALUE KEY_VALUE @endlink,
- * @link keyswitch_t::KEY_OWNER KEY_OWNER @endlink,
- * @link keyswitch_t::KEY_COMMENT KEY_COMMENT @endlink,
- * @link keyswitch_t::KEY_META KEY_META @endlink (will be set in addition to owner and comment),
+ * meta info compared, that can be logically ORed using @c #elektraKeyFlags flags.
+ * @link elektraKeyFlags::KEY_NAME KEY_NAME @endlink,
+ * @link elektraKeyFlags::KEY_VALUE KEY_VALUE @endlink,
+ * @link elektraKeyFlags::KEY_OWNER KEY_OWNER @endlink,
+ * @link elektraKeyFlags::KEY_COMMENT KEY_COMMENT @endlink,
+ * @link elektraKeyFlags::KEY_META KEY_META @endlink (will be set in addition to owner and comment),
  *
  * @par A very simple example would be
  * @code
@@ -525,15 +525,15 @@ keyDel(base);
 * @return a bit array pointing the differences
 * @param key1 first key
 * @param key2 second key
-* @see #keyswitch_t
+* @see #elektraKeyFlags
 * @ingroup keytest
 	*/
-keyswitch_t keyCompare (const Key * key1, const Key * key2)
+elektraKeyFlags keyCompare (const Key * key1, const Key * key2)
 {
 	if (!key1 && !key2) return 0;
 	if (!key1 || !key2) return KEY_NULL;
 
-	keyswitch_t ret = 0;
+	elektraKeyFlags ret = 0;
 	ssize_t nsize1 = keyGetNameSize (key1);
 	ssize_t nsize2 = keyGetNameSize (key2);
 	const char * name1 = keyName (key1);

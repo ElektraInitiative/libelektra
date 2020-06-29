@@ -98,7 +98,7 @@
  * easier to keyDup() the key.
  *
  * You can call keyNew() in many different ways depending on the attribute tags you
- * pass as parameters. Tags are represented as #keyswitch_t values, and
+ * pass as parameters. Tags are represented as #elektraKeyFlags values, and
  * tell keyNew() which Key attribute comes next.
  * The Key attribute tags are the following:
  * - ::KEY_VALUE \n
@@ -229,7 +229,7 @@ Key * keyVNew (const char * name, va_list va)
 	keyInit (key);
 	if (name)
 	{
-		keyswitch_t action = 0;
+		elektraKeyFlags action = 0;
 		size_t value_size = 0;
 		void * value = 0;
 		void (*func) (void) = 0;
@@ -238,7 +238,7 @@ Key * keyVNew (const char * name, va_list va)
 		int mode = 0;
 		int hasMode = 0;
 
-		while ((action = va_arg (va, keyswitch_t)))
+		while ((action = va_arg (va, elektraKeyFlags)))
 		{
 			switch (action)
 			{

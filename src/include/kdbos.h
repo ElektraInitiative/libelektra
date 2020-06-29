@@ -17,7 +17,6 @@
  * Following Elektra specific types must be defined with at least 32 bit:
  *
  * Type     Purpose
- * keyswitch_t For keyNew
  * option_t    For keyLock and ksLookup*
  * cursor_t stores information to find a position in a keyset
  *
@@ -182,12 +181,12 @@ typedef SSIZE_T ssize_t;
  * as int) */
 typedef ssize_t cursor_t;
 
-/*Integer types*/
+/* Enum types, documented in src/libs/elektra/kdbenum.c */
 typedef int option_t;
 
-typedef int keyswitch_t;
-
 typedef int elektraNamespace;
+
+typedef int elektraKeyFlags;
 
 /**@brief Separator for key names.
  *

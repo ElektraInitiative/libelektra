@@ -565,7 +565,7 @@ int isChangeAllowed (Key * oldKey, Key * newKey)
 		return 0;
 	}
 
-	keyswitch_t changes = keyCompare (oldKey, newKey);
+	int changes = keyCompare (oldKey, newKey);
 	if (changes == 0)
 	{
 		// equal keys

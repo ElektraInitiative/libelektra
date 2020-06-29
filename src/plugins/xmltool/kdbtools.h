@@ -24,7 +24,7 @@
  * options here.
  *
  * For full influence of value, comment and metadata shown, use these
- * options together with #keyswitch_t. All bits of metainformation ORed
+ * options together with #elektraKeyFlags. All bits of metainformation ORed
  * together are KDB_O_SHOWMETA.
  *
  * For more information about the flags, consult the documentation of
@@ -32,7 +32,7 @@
  *
  * These options can be ORed. That is the |-Operator in C.
  *
- * It uses the values defined in #keyswitch_t too, so it starts with 14.
+ * It uses the values defined in #elektraKeyFlags too, so it starts with 22.
  *
  * @ingroup stream
  * @see kdbGetChildKeys()
@@ -43,13 +43,13 @@ enum KDBStream
 {
 	// clang-format off
 	KDB_O_SHOWMETA = 0xF0,       /*!< Show all metadata (type, uid, gid, mode) */
-	KDB_O_SHOWFLAGS = 1 << 14,   /*!< Show all flags */
-	KDB_O_SHOWINDICES = 1 << 15, /*!< Show the indices for the entries */
-	KDB_O_CONDENSED = 1 << 16,   /*!< Spare any whitespace and do not group visually together.*/
-	KDB_O_NUMBER = 1 << 17,      /*!< Use a number instead of user and group name.*/
-	KDB_O_HEADER = 1 << 18,      /*!< Show also the header of the document. */
-	KDB_O_FULLNAME = 1 << 19,    /*!< Export @p user keys using full name.*/
-	KDB_O_HIER = 1 << 20	     /*!< Export to the new hierarchical XML
+	KDB_O_SHOWFLAGS = 1 << 22,   /*!< Show all flags */
+	KDB_O_SHOWINDICES = 1 << 23, /*!< Show the indices for the entries */
+	KDB_O_CONDENSED = 1 << 24,   /*!< Spare any whitespace and do not group visually together.*/
+	KDB_O_NUMBER = 1 << 25,      /*!< Use a number instead of user and group name.*/
+	KDB_O_HEADER = 1 << 26,      /*!< Show also the header of the document. */
+	KDB_O_FULLNAME = 1 << 27,    /*!< Export @p user keys using full name.*/
+	KDB_O_HIER = 1 << 28	     /*!< Export to the new hierarchical XML
 					  representation using key basename.
 					  See ksToStream(). */
 	// clang-format on

@@ -45,9 +45,9 @@ Get started with Elektra by running `docker run -it elektra/elektra`.
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### xmltool
 
-- <<TODO>>
+- values of KDBStream changed to fit with elektraKeyFlags, recompilation of application is needed. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
@@ -75,6 +75,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
+- keyswitch_t renamed to elektraKeyFlags. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
