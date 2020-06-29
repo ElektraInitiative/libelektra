@@ -12,6 +12,73 @@
 // clang-format off
 
 /**
+  * The version information in x.y.z format as string.
+  *
+  * To get the version at run-time, you can get the key
+  * system/elektra/version/constants/KDB_VERSION
+  *
+  * @see [VERSION.md](/doc/VERSION.md).
+  * @see #KDB_VERSION_MAJOR
+  * @see #KDB_VERSION_MINOR
+  * @see #KDB_VERSION_PATCH
+  * @ingroup kdb
+  */
+#define KDB_VERSION "x.y.z"
+
+/**
+  * The version information of the major version as number.
+  *
+  * To get the version at run-time, you can get the key
+  * system/elektra/version/constants/KDB_VERSION_MAJOR
+  *
+  * @see [VERSION.md](/doc/VERSION.md).
+  * @see #KDB_VERSION
+  * @ingroup kdb
+  */
+#define KDB_VERSION_MAJOR x
+
+/**
+  * The version information of the minor version as number.
+  *
+  * To get the version at run-time, you can get the key
+  * system/elektra/version/constants/KDB_VERSION_MINOR
+  *
+  * @see [VERSION.md](/doc/VERSION.md).
+  * @see #KDB_VERSION
+  * @ingroup kdb
+  */
+#define KDB_VERSION_MINOR y
+
+/**
+  * The version information of the patch version as number.
+  *
+  * To get the version at run-time, you can get the key
+  * system/elektra/version/constants/KDB_VERSION_PATCH
+  *
+  * @see [VERSION.md](/doc/VERSION.md).
+  * @see #KDB_VERSION
+  * @ingroup kdb
+  */
+#define KDB_VERSION_PATCH z
+
+/** `/` is used to separate key names.
+ *
+ * @see @link keyname description about key names @endlink.
+  * @ingroup key
+ * */
+#define KDB_PATH_SEPARATOR '/'
+
+/** `\` is used as escape character in the key name.
+ *
+ * @see @link keyname description about key names @endlink.
+ * @ingroup key
+ * */
+#define KDB_PATH_ESCAPE '\\'
+
+/** If optimizations are enabled in Elektra */
+#define ELEKTRA_ENABLE_OPTIMIZATIONS
+
+/**
  * Allows keyNew() to determine which information comes next.
  *
  * @ingroup key
@@ -84,6 +151,7 @@ enum elektraNamespace
  *
  * @def KS_END
  * @see ksNew() and ksVNew()
+  * @ingroup keyset
  */
 #define KS_END ((Key*)0)
 

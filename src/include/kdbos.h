@@ -10,23 +10,14 @@
  * size_t   size of array or string 0, SIZE_MAX
  * ssize_t  size with error cond.   -1, SSIZE_MAX(<SIZE_MAX)
  * time_t   Seconds since 1970      0,.. recommended: 64 bit
- * uid_t    User identification     0,..
- * gid_t    Group identification    0,..
  *
- *
- * Following Elektra specific types must be defined with at least 32 bit:
- *
- * Type     Purpose
- * elektraCursor stores information to find a position in a keyset
  *
  * Following constants must be defined:
  *
- * KDB_PATH_SEPARATOR  how to delimit pathnames
  * KDB_FILE_MODE       the standard mode for keys
  * KDB_DIR_MODE        the mode to add (|=) for key directories
  *
- * Following limits must be defined (in addition to limits mentioned
- * above for types):
+ * Following limits must be defined:
  *
  * KDB_MAX_PATH_LENGTH the maximum length for a pathname
  *
@@ -175,33 +166,5 @@ typedef SSIZE_T ssize_t;
 
 /* Include essential headers used in kdb.h */
 #include <stdarg.h>
-
-/*Type to point to every position within the keyset
- * (note that for windows ssize_t is already redefined
- * as int) */
-typedef ssize_t elektraCursor;
-
-/* Enum types, documented in src/libs/elektra/kdbenum.c */
-typedef int elektraLockFlags;
-
-typedef int elektraLookupFlags;
-
-typedef int elektraNamespace;
-
-typedef int elektraKeyFlags;
-
-/**@brief Separator for key names.
- *
- * This character will be used to separate key names
- *
- * @see @link keyname here @endlink.
- * */
-#define KDB_PATH_SEPARATOR '/'
-
-/**@brief Escape symbol for special characters in the key name.
- *
- * @see @link keyname here @endlink.
- * */
-#define KDB_PATH_ESCAPE '\\'
 
 #endif /* KDBOS_H */
