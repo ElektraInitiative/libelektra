@@ -18,7 +18,7 @@
  *
  * Type     Purpose
  * keyswitch_t For keyNew
- * option_t    For kdbGet, kdbSet and ksLookup*
+ * option_t    For keyLock and ksLookup*
  * cursor_t stores information to find a position in a keyset
  *
  * Following constants must be defined:
@@ -26,7 +26,6 @@
  * KDB_PATH_SEPARATOR  how to delimit pathnames
  * KDB_FILE_MODE       the standard mode for keys
  * KDB_DIR_MODE        the mode to add (|=) for key directories
- * KDB_MAX_UCHAR       the maximum value of unsigned char
  *
  * Following limits must be defined (in addition to limits mentioned
  * above for types):
@@ -203,12 +202,5 @@ typedef int elektraNamespace;
  * @see @link keyname here @endlink.
  * */
 #define KDB_PATH_ESCAPE '\\'
-
-/**For iteration over trie children/values
- *
- * for (i=0; i<KDB_MAX_UCHAR; ++i)
- * */
-#define KDB_MAX_UCHAR (UCHAR_MAX + 1)
-
 
 #endif /* KDBOS_H */

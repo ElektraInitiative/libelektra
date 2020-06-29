@@ -48,6 +48,14 @@
 /** Trie optimization */
 #define APPROXIMATE_NR_OF_BACKENDS 16
 
+/** The maximum value of unsigned char+1, needed
+ *  for iteration over trie children/values:
+ *
+ *  for (i=0; i<KDB_MAX_UCHAR; ++i)
+ * */
+#define KDB_MAX_UCHAR (UCHAR_MAX + 1)
+
+
 /**The maximum of how many characters an integer
   needs as decimal number.*/
 #define MAX_LEN_INT 31
