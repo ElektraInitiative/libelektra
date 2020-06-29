@@ -137,9 +137,11 @@
 /* Avoid the most crazy things */
 #ifndef NOMINMAX
 #define NOMINMAX
-#endif
-
 #include <windows.h>
+#undef NOMINMAX
+#else
+#include <windows.h>
+#endif
 
 #include <limits.h>
 #include <sys/types.h>
@@ -149,13 +151,8 @@
 #undef ssize_t
 typedef SSIZE_T ssize_t;
 #endif
-// # define usleep(x) Sleep(x)
-// # define ssize_t int
-// # define snprintf _snprintf
 
 #define KDB_MAX_PATH_LENGTH 4096
-
-#undef NOMINMAX // avoid macro-clutter
 
 #endif /* _WIN32 */
 
