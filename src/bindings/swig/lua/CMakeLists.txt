@@ -40,6 +40,7 @@ else ()
 	set_target_properties (swig-lua PROPERTIES OUTPUT_NAME kdb)
 	set_target_properties (${SWIG_MODULE_swig-lua_REAL_NAME} PROPERTIES PREFIX "")
 
+	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-ignored-qualifiers")
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
 	install (TARGETS swig-lua LIBRARY DESTINATION ${TARGET_LUA_CMOD_FOLDER})
