@@ -24,7 +24,7 @@ ssize_t elektraKeySetName (Key * key, const char * newName, elektraKeyFlags opti
 
 KeySet * elektraKeyGetMetaKeySet (const Key * key);
 
-Key * ksPopAtCursor (KeySet * ks, cursor_t c);
+Key * ksPopAtCursor (KeySet * ks, elektraCursor c);
 
 #ifdef __cplusplus
 }

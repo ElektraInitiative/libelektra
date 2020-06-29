@@ -171,7 +171,7 @@ static void test_ksToArray (void)
 
 	/* test if cursor is restored */
 	ksNext (ks);
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	elektraKsToMemArray (ks, keyArray);
 
 	succeed_if (ksGetCursor (ks) == cursor, "cursor was not restored");

@@ -17,7 +17,7 @@ static void test_ksPopAtCursor (void)
 	ksRewind (ks);
 	ksNext (ks);
 	ksNext (ks);
-	cursor_t c = ksGetCursor (ks);
+	elektraCursor c = ksGetCursor (ks);
 	keyDel (ksPopAtCursor (ks, c));
 	succeed_if (ksCurrent (ks) == 0, "cursor position wrong");
 

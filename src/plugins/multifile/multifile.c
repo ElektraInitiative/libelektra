@@ -508,7 +508,7 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, KeySet * returned, 
 			{
 				if (mc->stayAlive)
 				{
-					cursor_t savedCursor = ksGetCursor (found);
+					elektraCursor savedCursor = ksGetCursor (found);
 					ksAppendKey (found, c);
 					ksSetCursor (found, savedCursor);
 				}

@@ -508,7 +508,7 @@ static void test_ksCursor (void)
 {
 	KeySet * ks = ksNew (0, KS_END);
 	Key * key;
-	cursor_t cursor;
+	elektraCursor cursor;
 	Key * cur;
 	int i;
 	char name[] = "user/n";
@@ -619,7 +619,7 @@ static void test_ksAtCursor (void)
 
 	ksRewind (ks);
 
-	cursor_t cursor;
+	elektraCursor cursor;
 
 	/* test whether the correct key is returned */
 	for (size_t index = 0; index < 5; index++)
@@ -1519,7 +1519,7 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
 	int ret = 0;
 	Key * current;
 
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	ksRewind (ks);
 	while ((current = ksNext (ks)) != 0)
 	{
@@ -1556,7 +1556,7 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 	int ret = 0;
 	Key * current;
 
-	cursor_t cursor = ksGetCursor (input);
+	elektraCursor cursor = ksGetCursor (input);
 	ksRewind (input);
 	while ((current = ksNext (input)) != 0)
 	{

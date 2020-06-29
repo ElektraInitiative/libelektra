@@ -90,11 +90,11 @@ public:
 	Key next () const;
 	Key current () const;
 
-	void setCursor (cursor_t cursor) const;
-	cursor_t getCursor () const;
+	void setCursor (elektraCursor cursor) const;
+	elektraCursor getCursor () const;
 
 	Key pop ();
-	Key at (cursor_t pos) const;
+	Key at (elektraCursor pos) const;
 
 	KeySet cut (Key k);
 
@@ -148,20 +148,20 @@ class KeySetIterator
 {
 public:
 	typedef Key value_type;
-	typedef cursor_t difference_type;
+	typedef elektraCursor difference_type;
 	typedef Key pointer;
 	typedef Key reference;
 	typedef std::random_access_iterator_tag iterator_category;
 
 	KeySetIterator (KeySet const & k) : ks (k), current (){};
-	KeySetIterator (KeySet const & k, const cursor_t c) : ks (k), current (c){};
+	KeySetIterator (KeySet const & k, const elektraCursor c) : ks (k), current (c){};
 	// conversion to const iterator?
 
 	Key get () const
 	{
 		return Key (ckdb::ksAtCursor (ks.getKeySet (), current));
 	}
-	Key get (cursor_t pos) const
+	Key get (elektraCursor pos) const
 	{
 		return Key (ckdb::ksAtCursor (ks.getKeySet (), pos));
 	}
@@ -224,14 +224,14 @@ public:
 	{
 		return KeySetIterator (ks, current - pos);
 	}
-	const cursor_t & base () const
+	const elektraCursor & base () const
 	{
 		return current;
 	}
 
 private:
 	KeySet const & ks;
-	cursor_t current;
+	elektraCursor current;
 };
 
 
@@ -289,20 +289,20 @@ class KeySetReverseIterator
 {
 public:
 	typedef Key value_type;
-	typedef cursor_t difference_type;
+	typedef elektraCursor difference_type;
 	typedef Key pointer;
 	typedef Key reference;
 	typedef std::random_access_iterator_tag iterator_category;
 
 	KeySetReverseIterator (KeySet const & k) : ks (k), current (){};
-	KeySetReverseIterator (KeySet const & k, const cursor_t c) : ks (k), current (c){};
+	KeySetReverseIterator (KeySet const & k, const elektraCursor c) : ks (k), current (c){};
 	// conversion to const iterator?
 
 	Key get () const
 	{
 		return Key (ckdb::ksAtCursor (ks.getKeySet (), current));
 	}
-	Key get (cursor_t pos) const
+	Key get (elektraCursor pos) const
 	{
 		return Key (ckdb::ksAtCursor (ks.getKeySet (), pos));
 	}
@@ -365,14 +365,14 @@ public:
 	{
 		return KeySetReverseIterator (ks, current + pos);
 	}
-	const cursor_t & base () const
+	const elektraCursor & base () const
 	{
 		return current;
 	}
 
 private:
 	KeySet const & ks;
-	cursor_t current;
+	elektraCursor current;
 };
 
 
@@ -755,7 +755,7 @@ inline Key KeySet::current () const
 /**
  * @copydoc ksSetCursor()
  */
-inline void KeySet::setCursor (cursor_t cursor) const
+inline void KeySet::setCursor (elektraCursor cursor) const
 {
 	ckdb::ksSetCursor (ks, cursor);
 }
@@ -763,7 +763,7 @@ inline void KeySet::setCursor (cursor_t cursor) const
 /**
  * @copydoc ksGetCursor()
  */
-inline cursor_t KeySet::getCursor () const
+inline elektraCursor KeySet::getCursor () const
 {
 	return ckdb::ksGetCursor (ks);
 }
@@ -785,7 +785,7 @@ inline Key KeySet::pop ()
  *
  * @return the found key
  */
-inline Key KeySet::at (cursor_t pos) const
+inline Key KeySet::at (elektraCursor pos) const
 {
 	if (pos < 0) pos += size ();
 	return Key (ckdb::ksAtCursor (ks, pos));

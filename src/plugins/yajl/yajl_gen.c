@@ -260,7 +260,7 @@ static void elektraCheckForEmptyArray (KeySet * ks)
 		const char * meta = keyString (keyGetMeta (curr, "array"));
 		if (*meta == '\0')
 		{
-			cursor_t cursor = ksGetCursor (ks);
+			elektraCursor cursor = ksGetCursor (ks);
 
 			Key * k = keyNew (keyName (curr), KEY_END);
 			keyAddBaseName (k, "###empty_array");

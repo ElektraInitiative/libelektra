@@ -504,7 +504,7 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Backend 
 	strcat (warningMsg, msg);
 	ELEKTRA_ADD_INTERFACE_WARNINGF (warningKey, "Postcondition of backend was violated: %s", warningMsg);
 	elektraFree (warningMsg);
-	cursor_t c = ksGetCursor (ks);
+	elektraCursor c = ksGetCursor (ks);
 	keyDel (elektraKsPopAtCursor (ks, c));
 	ksSetCursor (ks, c - 1); // next ksNext() will point correctly again
 }

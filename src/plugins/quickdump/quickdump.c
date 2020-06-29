@@ -429,7 +429,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 int elektraQuickdumpSet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	cursor_t cursor = ksGetCursor (returned);
+	elektraCursor cursor = ksGetCursor (returned);
 	ksRewind (returned);
 
 	FILE * file;

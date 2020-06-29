@@ -189,7 +189,7 @@ static int elektraKeySetMetaKeySet (Key * key, KeySet * metaKeySet)
 	if (!metaKeySet) return 0;
 
 	Key * currentMeta;
-	cursor_t initialCursor = ksGetCursor (metaKeySet);
+	elektraCursor initialCursor = ksGetCursor (metaKeySet);
 	ksRewind (metaKeySet);
 	while ((currentMeta = ksNext (metaKeySet)))
 	{

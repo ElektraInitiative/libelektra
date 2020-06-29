@@ -1470,7 +1470,7 @@ Key * ksTail (const KeySet * ks)
  * in a keyset:
  *
  * @code
-cursor_t jump;
+elektraCursor jump;
 ksRewind (ks);
 while ((key = keyNextMeta (ks))!=0)
 {
@@ -1495,7 +1495,7 @@ while ((key = keyNextMeta (ks))!=0)
  * @code
 int f (KeySet *ks)
 {
-	cursor_t state = ksGetCursor(ks);
+	elektraCursor state = ksGetCursor(ks);
 
 	// work with keyset
 
@@ -1535,14 +1535,14 @@ int f (KeySet *ks)
  * @return an invalid cursor on NULL pointer or after ksRewind()
  * @see ksNext(), ksSetCursor()
  */
-cursor_t ksGetCursor (const KeySet * ks)
+elektraCursor ksGetCursor (const KeySet * ks)
 {
-	if (!ks) return (cursor_t) -1;
+	if (!ks) return (elektraCursor) -1;
 
 	if (ks->cursor == 0)
-		return (cursor_t) -1;
+		return (elektraCursor) -1;
 	else
-		return (cursor_t) ks->current;
+		return (elektraCursor) ks->current;
 }
 
 /**
@@ -1556,7 +1556,7 @@ cursor_t ksGetCursor (const KeySet * ks)
  * @retval NULL on NULL pointer, negative cursor position
  * or a position that does not lie within the keyset
  */
-Key * ksAtCursor (KeySet * ks, cursor_t pos)
+Key * ksAtCursor (KeySet * ks, elektraCursor pos)
 {
 	if (!ks) return 0;
 	if (pos < 0) return 0;
@@ -1576,7 +1576,7 @@ Key * ksAtCursor (KeySet * ks, cursor_t pos)
  * with KDB_O_POP.
  *
  * @code
-cursor_t cursor;
+elektraCursor cursor;
 ..
 // key now in any position here
 cursor = ksGetCursor (ks);
@@ -1596,11 +1596,11 @@ ksCurrent(ks); // in same position as before
  * @retval -1 on NULL pointer
  * @see ksNext(), ksGetCursor()
  */
-int ksSetCursor (KeySet * ks, cursor_t cursor)
+int ksSetCursor (KeySet * ks, elektraCursor cursor)
 {
 	if (!ks) return -1;
 
-	if ((cursor_t) -1 == cursor)
+	if ((elektraCursor) -1 == cursor)
 	{
 		ksRewind (ks);
 		return 0;
@@ -1944,7 +1944,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, elektraLookupFlag
 
 static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, elektraLookupFlags options)
 {
-	cursor_t cursor = 0;
+	elektraCursor cursor = 0;
 	cursor = ksGetCursor (ks);
 	Key ** found;
 	size_t jump = 0;
@@ -2073,7 +2073,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
 static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, elektraLookupFlags options)
 {
 	ELEKTRA_ASSERT (opmphmIsBuild (ks->opmphm), "OPMPHM not build");
-	cursor_t cursor = 0;
+	elektraCursor cursor = 0;
 	cursor = ksGetCursor (ks);
 	size_t index = opmphmLookup (ks->opmphm, ks->size, keyName (key));
 	if (index >= ks->size)

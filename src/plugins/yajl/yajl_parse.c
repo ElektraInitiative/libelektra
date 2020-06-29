@@ -21,7 +21,7 @@
 static void elektraYajlSetArrayLength (KeySet * ks, Key * current)
 {
 	// Update array length in array key
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	Key * arrayKey = keyNew (keyName (current), KEY_END);
 	keySetBaseName (arrayKey, 0);
 	Key * foundKey = ksLookup (ks, arrayKey, 0);
@@ -261,7 +261,7 @@ static void elektraYajlParseSuppressNonLeafKeys (KeySet * returned)
 	Key * cur = ksNext (returned);
 	while (cur != NULL)
 	{
-		cursor_t cursor = ksGetCursor (returned);
+		elektraCursor cursor = ksGetCursor (returned);
 
 		if (ksNext (returned) == NULL) break;
 

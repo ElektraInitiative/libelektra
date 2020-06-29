@@ -17,7 +17,7 @@
  * Following Elektra specific types must be defined with at least 32 bit:
  *
  * Type     Purpose
- * cursor_t stores information to find a position in a keyset
+ * elektraCursor stores information to find a position in a keyset
  *
  * Following constants must be defined:
  *
@@ -178,7 +178,7 @@ typedef SSIZE_T ssize_t;
 /*Type to point to every position within the keyset
  * (note that for windows ssize_t is already redefined
  * as int) */
-typedef ssize_t cursor_t;
+typedef ssize_t elektraCursor;
 
 /* Enum types, documented in src/libs/elektra/kdbenum.c */
 typedef int elektraLockFlags;

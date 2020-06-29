@@ -51,7 +51,7 @@ static Key * findNearestParent (Key * key, KeySet * ks)
 	Key * current;
 	ksSetCursor (ks, ksGetSize (ks) - 1);
 
-	for (cursor_t cursor = ksGetCursor (ks) - 1; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
+	for (elektraCursor cursor = ksGetCursor (ks) - 1; (current = ksAtCursor (ks, cursor)) != NULL; --cursor)
 	{
 		if (keyIsBelow (current, key))
 		{

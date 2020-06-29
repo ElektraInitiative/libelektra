@@ -64,7 +64,7 @@ pub struct KeySet {
 }
 
 /// The internal cursor for the KeySet.
-pub type Cursor = elektra_sys::cursor_t;
+pub type Cursor = elektra_sys::elektraCursor;
 
 bitflags! {
     /// Bitflags to be passed to [`lookup`](struct.KeySet.html#method.lookup) and [`lookup_by_name`](struct.KeySet.html#method.lookup_by_name).

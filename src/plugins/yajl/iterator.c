@@ -103,7 +103,7 @@ Key * elektraNextNotBelow (KeySet * ks)
 	}
 
 	// uninitialized variables are ok, because do{}while guarantees initialisation
-	cursor_t pos;			// always one before current
+	elektraCursor pos;			// always one before current
 	const Key * current = previous; // current is same as ksCurrent()
 	do
 	{

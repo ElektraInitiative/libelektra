@@ -183,7 +183,7 @@ TEST (ks, cursor)
 {
 	KeySet ks3 (5, *Key ("user/key3/1", KEY_END), *Key ("user/key3/2", KEY_END), *Key ("user/key3/3", KEY_VALUE, "value", KEY_END),
 		    KS_END);
-	cursor_t cursorTest = ks3.getCursor ();
+	elektraCursor cursorTest = ks3.getCursor ();
 
 	ks3.rewind ();
 	for (ssize_t i = 0; i < ks3.size (); i++)
