@@ -655,7 +655,7 @@ aliased to '<=>', implemented for sorting operations.
 /*
  * lookup
  */
-%apply int { option_t }
+%apply int { elektraLookupFlags }
 
 /*
  * delete

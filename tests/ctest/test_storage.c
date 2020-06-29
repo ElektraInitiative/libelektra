@@ -340,7 +340,7 @@ static void test_ksPop (const size_t storagePlugin, const char * tmpFile)
 	closeStoragePlugin (storagePlugin);
 }
 
-static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, option_t options)
+static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, elektraLookupFlags options)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	open_storage_plugin (storagePlugin);
@@ -372,7 +372,7 @@ static void test_ksLookup (const size_t storagePlugin, const char * tmpFile, opt
 	closeStoragePlugin (storagePlugin);
 }
 
-static void test_ksLookupByName (const size_t storagePlugin, const char * tmpFile, option_t options)
+static void test_ksLookupByName (const size_t storagePlugin, const char * tmpFile, elektraLookupFlags options)
 {
 	Key * parentKey = keyNew (TEST_ROOT_KEY, KEY_VALUE, tmpFile, KEY_END);
 	open_storage_plugin (storagePlugin);

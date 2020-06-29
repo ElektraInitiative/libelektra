@@ -1742,7 +1742,7 @@ static Key * elektraLookupBySpecDefault (KeySet * ks, Key * specKey)
 	return ret;
 }
 
-static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options);
+static Key * elektraLookupByCascading (KeySet * ks, Key * key, elektraLookupFlags options);
 
 /**
  * @internal
@@ -1804,7 +1804,7 @@ static Key * elektraLookupBySpecNamespaces (KeySet * ks, Key * specKey, char * b
  * @internal
  * @brief Helper for ksLookup
  */
-static Key * elektraLookupBySpec (KeySet * ks, Key * specKey, option_t options)
+static Key * elektraLookupBySpec (KeySet * ks, Key * specKey, elektraLookupFlags options)
 {
 	Key * ret = 0;
 	// strip away beginning of specKey
@@ -1848,7 +1848,7 @@ finished:
  * @internal
  * @brief Helper for ksLookup
  */
-static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
+static Key * elektraLookupByCascading (KeySet * ks, Key * key, elektraLookupFlags options)
 {
 	char * name = key->key;
 	size_t size = key->keySize;
@@ -1942,7 +1942,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, option_t options)
 	return found;
 }
 
-static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, option_t options)
+static Key * elektraLookupBinarySearch (KeySet * ks, Key const * key, elektraLookupFlags options)
 {
 	cursor_t cursor = 0;
 	cursor = ksGetCursor (ks);
@@ -2070,7 +2070,7 @@ static int elektraLookupBuildOpmphm (KeySet * ks)
  * @return NULL when key not found
  *
  */
-static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, option_t options)
+static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, elektraLookupFlags options)
 {
 	ELEKTRA_ASSERT (opmphmIsBuild (ks->opmphm), "OPMPHM not build");
 	cursor_t cursor = 0;
@@ -2110,10 +2110,10 @@ static Key * elektraLookupOpmphmSearch (KeySet * ks, Key const * key, option_t o
  *
  * @return the found key
  */
-static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
+static Key * elektraLookupSearch (KeySet * ks, Key * key, elektraLookupFlags options)
 {
 	if (!ks->size) return 0;
-	typedef Key * (*callback_t) (KeySet * ks, Key * key, Key * found, option_t options);
+	typedef Key * (*callback_t) (KeySet * ks, Key * key, Key * found, elektraLookupFlags options);
 	union
 	{
 		callback_t f;
@@ -2225,7 +2225,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, option_t options)
 	return ret;
 }
 
-static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED option_t options)
+static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elektraLookupFlags options)
 {
 	Key * ret = keyDup (key);
 	ksAppendKey (ks, ret);
@@ -2316,13 +2316,13 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED opti
  *
  * @param ks where to look for
  * @param key the key object you are looking for
- * @param options of type ::option_t with some @p KDB_O_* option bits as explained above
+ * @param options of type ::elektraLookupFlags with some @p KDB_O_* option bits as explained above
  * @return pointer to the Key found, 0 otherwise
  * @retval 0 on NULL pointers
  * @see ksLookupByName() to search by a name given by a string
  * @see ksCurrent(), ksRewind(), ksNext() for iterating over a keyset
  */
-Key * ksLookup (KeySet * ks, Key * key, option_t options)
+Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 {
 	if (!ks) return 0;
 	if (!key) return 0;
@@ -2384,7 +2384,7 @@ Key * ksLookup (KeySet * ks, Key * key, option_t options)
  * @see ksLookup() to search with a given key
  * @see ksCurrent(), ksRewind(), ksNext()
  */
-Key * ksLookupByName (KeySet * ks, const char * name, option_t options)
+Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options)
 {
 	Key * found = 0;
 

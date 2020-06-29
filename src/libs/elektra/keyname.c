@@ -511,7 +511,7 @@ ssize_t keySetName (Key * key, const char * newName)
 	return elektraKeySetName (key, newName, 0);
 }
 
-ssize_t elektraKeySetName (Key * key, const char * newName, option_t options)
+ssize_t elektraKeySetName (Key * key, const char * newName, elektraKeyFlags options)
 {
 	if (!key) return -1;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;

@@ -81,19 +81,19 @@
  *
  * @param key the key object to work with
  * @param stream where to write output: a file or stdout
- * @param options Some #option_t ORed:
- * - @p option_t::KDB_O_NUMBERS \n
+ * @param options Some #KDBStream ORed:
+ * - @p KDBStream::KDB_O_NUMBERS \n
  *   Do not convert UID and GID into user and group names
- * - @p option_t::KDB_O_CONDENSED \n
+ * - @p KDBStream::KDB_O_CONDENSED \n
  *   Less human readable, more condensed output
- * - @p option_t::KDB_O_FULLNAME \n
+ * - @p KDBStream::KDB_O_FULLNAME \n
  *   The @p user keys are exported with their full names (including
  *   user domains)
  *
  * @see ksToStream()
  * @return number of bytes written to output
  */
-ssize_t keyToStream (const Key * key, FILE * stream, option_t options)
+ssize_t keyToStream (const Key * key, FILE * stream, KDBStream options)
 {
 	return keyToStreamBasename (key, stream, 0, 0, options);
 }
@@ -136,18 +136,18 @@ ssize_t keyToStream (const Key * key, FILE * stream, option_t options)
  *        If 0, the entire @p parent will be used.
  * @param parent the string (or part of it, defined by @p parentSize ) that
  *        will be used to strip from the key name.
- * @param options Some #option_t ORed:
- * - @p option_t::KDB_O_NUMBERS \n
+ * @param options Some #KDBStream ORed:
+ * - @p KDBStream::KDB_O_NUMBERS \n
  *   Do not convert UID and GID into user and group names
- * - @p option_t::KDB_O_CONDENSED \n
+ * - @p KDBStream::KDB_O_CONDENSED \n
  *   Less human readable, more condensed output
- * - @p option_t::KDB_O_FULLNAME \n
+ * - @p KDBStream::KDB_O_FULLNAME \n
  *   The @p user keys are exported with their full names (including
  *   user domains)
  *
  * @return number of bytes written to output
  */
-ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent, const size_t parentSize, option_t options)
+ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent, const size_t parentSize, KDBStream options)
 {
 	ssize_t written = 0;
 
@@ -343,18 +343,18 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
  *
  * @param ks the KeySet to serialise
  * @param stream where to write output: a file or stdout
- * @param options accepted #option_t ORed:
- * - @p option_t::KDB_O_NUMBERS \n
+ * @param options accepted #KDBStream ORed:
+ * - @p KDBStream::KDB_O_NUMBERS \n
  *   Do not convert UID and GID into user and group names.
- * - @p option_t::KDB_O_FULLNAME \n
+ * - @p KDBStream::KDB_O_FULLNAME \n
  *   The @c user keys are exported with their full names (including
  *   user domains)
- * - @p option_t::KDB_O_CONDENSED \n
+ * - @p KDBStream::KDB_O_CONDENSED \n
  *   Less human readable, more condensed output.
- * - @p option_t::KDB_O_XMLHEADERS \n
+ * - @p KDBStream::KDB_O_XMLHEADERS \n
  *   Exclude the correct XML headers in the output. If not used, the
  *   &lt;?xml?&gt; and schema info inside the &lt;keyset&gt; object will not be generated.
- * - @p option_t::KDB_O_HIER \n
+ * - @p KDBStream::KDB_O_HIER \n
  *   Will generate a &lt;keyset&gt; node containing a @c parent attribute, and
  *   &lt;key&gt; nodes with a @c basename relative to that @c parent. The @c parent
  *   is calculated by taking the smallest key name in the keyset, so it is a
@@ -370,7 +370,7 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
  * @param stream the file pointer where to send the stream
  * @param options see above text
  */
-ssize_t ksToStream (const KeySet * ks, FILE * stream, option_t options)
+ssize_t ksToStream (const KeySet * ks, FILE * stream, KDBStream options)
 {
 	size_t written = 0;
 	Key * key = 0;
@@ -446,7 +446,7 @@ ssize_t ksToStream (const KeySet * ks, FILE * stream, option_t options)
  * @retval -1 on allocation errors
  * @ingroup stream
  */
-int keyOutput (const Key * k, FILE * stream, option_t options)
+int keyOutput (const Key * k, FILE * stream, KDBStream options)
 {
 	time_t t;
 	size_t s;
@@ -574,7 +574,7 @@ int keyOutput (const Key * k, FILE * stream, option_t options)
  * @retval -1 on allocation errors
  * @ingroup stream
  */
-int ksOutput (const KeySet * ks, FILE * stream, option_t options)
+int ksOutput (const KeySet * ks, FILE * stream, KDBStream options)
 {
 	Key * key;
 	KeySet * cks = ksDup (ks);

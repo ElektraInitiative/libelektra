@@ -69,11 +69,11 @@ pub type Cursor = elektra_sys::cursor_t;
 bitflags! {
     /// Bitflags to be passed to [`lookup`](struct.KeySet.html#method.lookup) and [`lookup_by_name`](struct.KeySet.html#method.lookup_by_name).
     #[derive(Default)]
-    pub struct LookupOption: elektra_sys::option_t {
+    pub struct LookupOption: elektra_sys::elektraLookupFlags {
         /// No Option set.
-        const KDB_O_NONE = elektra_sys::KDB_O_NONE as elektra_sys::option_t;
+        const KDB_O_NONE = elektra_sys::KDB_O_NONE as elektra_sys::elektraLookupFlags;
         /// The found key will be popped from the keyset.
-        const KDB_O_POP = elektra_sys::KDB_O_POP as elektra_sys::option_t;
+        const KDB_O_POP = elektra_sys::KDB_O_POP as elektra_sys::elektraLookupFlags;
     }
 }
 
@@ -379,7 +379,7 @@ impl KeySet {
             elektra_sys::ksLookup(
                 self.as_ptr(),
                 key.as_ptr(),
-                options.bits() as elektra_sys::option_t,
+                options.bits() as elektra_sys::elektraLookupFlags,
             )
         };
 

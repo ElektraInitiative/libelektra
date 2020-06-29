@@ -39,7 +39,7 @@
  * @see ksToStream()
  * @see keyToStream()
  */
-enum KDBStream
+enum
 {
 	// clang-format off
 	KDB_O_SHOWMETA = 0xF0,       /*!< Show all metadata (type, uid, gid, mode) */
@@ -56,11 +56,6 @@ enum KDBStream
 };
 
 
-typedef int (*KSFromXMLfile) (KeySet * ks, const char * filename);
-typedef int (*KSFromXML) (KeySet * ks, int fd);
-typedef ssize_t (*output) (const KeySet * ks, FILE * stream, option_t options);
-
-
 #define KDB_SCHEMA_PATH_KEY "system/elektra/xml/schemapath"
 
 #ifndef DYN_LINK
@@ -71,19 +66,26 @@ namespace ckdb
 extern "C" {
 #endif
 
+typedef int KDBStream;
+
+
+typedef int (*KSFromXMLfile) (KeySet * ks, const char * filename);
+typedef int (*KSFromXML) (KeySet * ks, int fd);
+typedef ssize_t (*output) (const KeySet * ks, FILE * stream, KDBStream options);
+
 
 int ksFromXMLfile (KeySet * ks, const char * filename);
 int ksFromXML (KeySet * ks, int fd);
 
-ssize_t ksToStream (const KeySet * ks, FILE * stream, option_t options);
-int ksOutput (const KeySet * ks, FILE * stream, option_t options);
-int ksGenerate (const KeySet * ks, FILE * stream, option_t options);
+ssize_t ksToStream (const KeySet * ks, FILE * stream, KDBStream options);
+int ksOutput (const KeySet * ks, FILE * stream, KDBStream options);
+int ksGenerate (const KeySet * ks, FILE * stream, KDBStream options);
 
-ssize_t keyToStream (const Key * key, FILE * stream, option_t options);
-ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent, const size_t parentSize, option_t options);
+ssize_t keyToStream (const Key * key, FILE * stream, KDBStream options);
+ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent, const size_t parentSize, KDBStream options);
 
-int keyOutput (const Key * key, FILE * stream, option_t options);
-int keyGenerate (const Key * key, FILE * stream, option_t options);
+int keyOutput (const Key * key, FILE * stream, KDBStream options);
+int keyGenerate (const Key * key, FILE * stream, KDBStream options);
 
 #ifdef __cplusplus
 }

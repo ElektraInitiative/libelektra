@@ -98,10 +98,10 @@ public:
 
 	KeySet cut (Key k);
 
-	Key lookup (const Key & k, const option_t options = KDB_O_NONE) const;
-	Key lookup (std::string const & name, const option_t options = KDB_O_NONE) const;
+	Key lookup (const Key & k, const elektraLookupFlags options = KDB_O_NONE) const;
+	Key lookup (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
 	template <typename T>
-	T get (std::string const & name, const option_t options = KDB_O_NONE) const;
+	T get (std::string const & name, const elektraLookupFlags options = KDB_O_NONE) const;
 
 	// operators
 	inline bool operator== (const KeySet & ks) const;
@@ -804,7 +804,7 @@ inline KeySet KeySet::cut (Key k)
  *
  * @note That the internal key cursor will point to the found key
  */
-inline Key KeySet::lookup (const Key & key, const option_t options) const
+inline Key KeySet::lookup (const Key & key, const elektraLookupFlags options) const
 {
 	ckdb::Key * k = ckdb::ksLookup (ks, key.getKey (), options);
 	return Key (k);
@@ -817,11 +817,11 @@ inline Key KeySet::lookup (const Key & key, const option_t options) const
  * @param options some options to pass
  *
  * @return the found key
- * @see lookup (const Key &key, const option_t options)
+ * @see lookup (const Key &key, const elektraLookupFlags options)
  *
  * @note That the internal key cursor will point to the found key
  */
-inline Key KeySet::lookup (std::string const & name, option_t const options) const
+inline Key KeySet::lookup (std::string const & name, elektraLookupFlags const options) const
 {
 	ckdb::Key * k = ckdb::ksLookupByName (ks, name.c_str (), options);
 	return Key (k);
@@ -833,7 +833,7 @@ struct KeySetTypeWrapper;
 template <typename T>
 struct KeySetTypeWrapper
 {
-	T operator() (KeySet const & ks, std::string const & name, option_t const options) const
+	T operator() (KeySet const & ks, std::string const & name, elektraLookupFlags const options) const
 	{
 		Key k = ks.lookup (name, options);
 		if (!k) throw kdb::KeyNotFoundException ("key " + name + " was not found");
@@ -861,7 +861,7 @@ struct KeySetTypeWrapper
  * @return the requested type
  */
 template <typename T>
-inline T KeySet::get (std::string const & name, option_t const options) const
+inline T KeySet::get (std::string const & name, elektraLookupFlags const options) const
 {
 	KeySetTypeWrapper<T> typeWrapper;
 	return typeWrapper (*this, name, options);

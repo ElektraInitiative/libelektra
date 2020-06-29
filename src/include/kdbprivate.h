@@ -156,7 +156,7 @@ typedef enum {
 
 
 /**
- * Ks Flags.
+ * Advanced KS Flags.
  *
  * Store a synchronizer state so that the Elektra knows if something
  * has changed or not.

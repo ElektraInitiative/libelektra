@@ -1246,7 +1246,7 @@ void benchmarkOPMPHMBuildTime (char * name)
  *
  * @retval median time
  */
-static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t searchSeed, option_t option, size_t * repeats,
+static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t searchSeed, elektraLookupFlags option, size_t * repeats,
 					  size_t numberOfRepeats)
 {
 	if (option & KDB_O_OPMPHM)
@@ -1337,7 +1337,7 @@ static size_t benchmarkSearchTimeMeasure (KeySet * ks, size_t searches, int32_t 
  * @param outFileName the output file name
  * @param option the option to pass to the ksLookup (...)
  */
-static void benchmarkSearchTime (char * name, char * outFileName, option_t option)
+static void benchmarkSearchTime (char * name, char * outFileName, elektraLookupFlags option)
 {
 	const size_t startN = 50;
 	const size_t stepN = 500;

@@ -550,7 +550,7 @@ extern "C" pid_t fork ()
 	return ret;
 }
 
-Key * elektraContextEvaluation (ELEKTRA_UNUSED KeySet * ks, ELEKTRA_UNUSED Key * key, Key * found, option_t option)
+Key * elektraContextEvaluation (ELEKTRA_UNUSED KeySet * ks, ELEKTRA_UNUSED Key * key, Key * found, elektraLookupFlags option)
 {
 	if (found && !strncmp (keyName (found), "spec/", 5) && option == KDB_O_CALLBACK)
 	{

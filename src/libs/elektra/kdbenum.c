@@ -35,7 +35,7 @@ enum elektraKeyFlags
 	KEY_DIR=1<<14,		/*!< Flag for the key directories @deprecated do not use */
 	KEY_META=1<<15,		/*!< Flag for metadata */
 	KEY_NULL=1<<16,		/*!< Is *not* a flag, only as return value @deprecated do not use */
-	// hole for elektraLockOptions
+	// hole for elektraLockFlags
 	KEY_CASCADING_NAME=1<<20,	/*!< Is default, no need to use it @deprecated do not use */
 	KEY_META_NAME=1<<21,	/*!< Allow any key names (not only with known namespaces+cascading */
 	KEY_END=0		/*!< Used as a parameter terminator to keyNew() */
@@ -47,11 +47,11 @@ enum elektraKeyFlags
  * @ingroup key
  * @see keyLock(), keyIsLocked()
  */
-enum elektraLockOptions
+enum elektraLockFlags
 {
-	KEY_LOCK_NAME=1<<17,  ///< lock the name of a key
-	KEY_LOCK_VALUE=1<<18, ///< lock the value of a key
-	KEY_LOCK_META=1<<19   ///< lock the meta data of a key
+	KEY_LOCK_NAME=1<<17,	/*!< lock the name of a key */
+	KEY_LOCK_VALUE=1<<18,	/*!< lock the value of a key */
+	KEY_LOCK_META=1<<19,	/*!< lock the meta data of a key */
 };
 
 
@@ -96,7 +96,7 @@ enum elektraNamespace
  * @ingroup keyset
  * @see kdbGet(), kdbSet()
  */
-enum option_t
+enum elektraLookupFlags
 {
 
 /**
