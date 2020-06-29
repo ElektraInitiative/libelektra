@@ -75,9 +75,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
-- keyswitch_t renamed to elektraKeyFlags. _(Markus Raab)_
-- option_t renamed to elektraLockFlags and elektraLookupFlags. _(Markus Raab)_
-- cursor_t renamed to elektraCursor. _(Markus Raab)_
+- `keyswitch_t` renamed to elektraKeyFlags. _(Markus Raab)_
+- `option_t` renamed to elektraLockFlags and elektraLookupFlags. _(Markus Raab)_
+- `cursor_t` renamed to elektraCursor. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
