@@ -164,6 +164,7 @@ typedef SSIZE_T ssize_t;
 
 #define KDB_MAX_PATH_LENGTH 4096
 
+#undef NOMINMAX // avoid macro-clutter
 
 #endif /* _WIN32 */
 
