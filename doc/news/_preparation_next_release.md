@@ -163,7 +163,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- <<TODO>>
+- Temporarily resolve cyclic dependency between go-elektra and libelektra builds. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
