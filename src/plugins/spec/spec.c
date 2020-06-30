@@ -325,7 +325,7 @@ static int handleErrors (Key * key, Key * parentKey, KeySet * ks, Key * specKey,
 	Key * parentLookup = keyDup (key);
 	keySetBaseName (parentLookup, NULL);
 
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	Key * parent = ksLookup (ks, parentLookup, KDB_O_NONE);
 	ksSetCursor (ks, cursor);
 
@@ -534,7 +534,7 @@ static void validateArrayMembers (KeySet * ks, Key * arraySpec)
 // instantiates all array spec parts in an array spec key (e.g. abc/#/a/d/#/e)
 static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parentKey, OnConflict onConflict)
 {
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	size_t usize = keyGetUnescapedNameSize (arraySpec);
 	const char * cur = keyUnescapedName (arraySpec);
 	const char * end = cur + usize;
@@ -779,7 +779,7 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 	ksNext (ks); // set cursor to first
 
 	// externalize cursor to avoid having to reset after ksLookups
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	for (; (cur = ksAtCursor (ks, cursor)) != NULL; ++cursor)
 	{
 		if (!specMatches (specKey, cur))

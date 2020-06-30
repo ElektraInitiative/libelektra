@@ -299,7 +299,7 @@ static int iniKeyToElektraArray (CallbackHandle * handle, Key * existingKey, Key
 
 static void insertKeyIntoKeySet (Key * parentKey, Key * key, KeySet * ks)
 {
-	cursor_t savedCursor = ksGetCursor (ks);
+	elektraCursor savedCursor = ksGetCursor (ks);
 	char * parent = findParent (parentKey, key, ksDup (ks));
 	keySetMeta (key, "internal/ini/parent", parent);
 	if (keyGetMeta (key, "internal/ini/section"))

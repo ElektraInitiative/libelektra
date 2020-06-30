@@ -38,7 +38,7 @@ inline void addAsymmetricConflict (MergeResult & result, Key & key, ConflictOper
 void ThreeWayMerge::detectConflicts (const MergeTask & task, MergeResult & mergeResult, bool reverseConflictMeta = false)
 {
 	Key our;
-	cursor_t savedCursor = task.ours.getCursor ();
+	elektraCursor savedCursor = task.ours.getCursor ();
 	task.ours.rewind ();
 
 	while ((our = task.ours.next ()))

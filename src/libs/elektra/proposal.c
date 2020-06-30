@@ -14,7 +14,7 @@
 /**
  * @copydoc ksPopAtCursor
  */
-Key * elektraKsPopAtCursor (KeySet * ks, cursor_t pos)
+Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos)
 {
 	if (!ks) return 0;
 	if (pos < 0) return 0;

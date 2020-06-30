@@ -130,7 +130,7 @@
 /*
  * keyset.hpp
  */
-%apply ssize_t { cursor_t }
+%apply ssize_t { elektraCursor }
 
 %ignore kdb::VaAlloc;
 %ignore kdb::KeySet::KeySet (VaAlloc va, va_list ap);

@@ -298,7 +298,7 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	cursor_t cursor = ksGetCursor (returned);
+	elektraCursor cursor = ksGetCursor (returned);
 
 	ksRewind (returned);
 
@@ -358,7 +358,7 @@ int elektraTypeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 
 int elektraTypeSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	cursor_t cursor = ksGetCursor (returned);
+	elektraCursor cursor = ksGetCursor (returned);
 
 	ksRewind (returned);
 

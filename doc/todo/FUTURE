@@ -6,9 +6,6 @@ Some ideas which should be decided until 1.0
 Avoid anything starting with _
 	_KDB, _KeySet, _Key typedefs
 
-_t is reserved by POSIX, so cursor_t, keyswitch_t and option_t
-	should be renamed to something elektra specific
-
 remove elektraInvokeInitialize compatibility layer
 
 Single Interface: only get pointers, no memcopy (only one keyGetString, no

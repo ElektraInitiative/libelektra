@@ -435,7 +435,7 @@ int elektraReferenceSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 
 		const char * metaValue = keyString (metaKey);
 
-		cursor_t cursor = ksGetCursor (returned);
+		elektraCursor cursor = ksGetCursor (returned);
 		if (strcmp (metaValue, CHECK_REFERNCE_VALUE_SINGLE) == 0)
 		{
 			status |= checkSingleReference (cur, returned, parentKey);

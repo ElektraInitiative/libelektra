@@ -567,7 +567,7 @@ aliased to '<=>', implemented for sorting operations.
 %extend kdb::KeySet {
   void each() {
     if (rb_block_given_p()) {
-      cursor_t cur_pos = $self->getCursor();
+      elektraCursor cur_pos = $self->getCursor();
 
       for ( $self->rewind(); $self->next(); ) {
         VALUE cur;
@@ -631,7 +631,7 @@ aliased to '<=>', implemented for sorting operations.
 /*
  * cursor operations
  */
-%apply long { cursor_t }
+%apply long { elektraCursor }
 %rename("cursor") kdb::KeySet::getCursor;
 %rename("cursor=") kdb::KeySet::setCursor;
 
@@ -655,7 +655,7 @@ aliased to '<=>', implemented for sorting operations.
 /*
  * lookup
  */
-%apply int { option_t }
+%apply int { elektraLookupFlags }
 
 /*
  * delete
@@ -666,7 +666,7 @@ aliased to '<=>', implemented for sorting operations.
 %rename("delete") kdb::KeySet::delete_;
 
 %extend kdb::KeySet {
-  Key delete_at(cursor_t pos) {
+  Key delete_at(elektraCursor pos) {
     Key k = $self->at(pos);
     if (!k.isNull()) {
       $self->lookup(k, KDB_O_POP);

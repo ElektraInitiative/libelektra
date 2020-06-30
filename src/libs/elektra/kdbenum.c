@@ -12,12 +12,79 @@
 // clang-format off
 
 /**
+  * The version information in x.y.z format as string.
+  *
+  * To get the version at run-time, you can get the key
+  * system/elektra/version/constants/KDB_VERSION
+  *
+  * @see [VERSION.md](/doc/VERSION.md).
+  * @see #KDB_VERSION_MAJOR
+  * @see #KDB_VERSION_MINOR
+  * @see #KDB_VERSION_PATCH
+  * @ingroup kdb
+  */
+#define KDB_VERSION "x.y.z"
+
+/**
+  * The version information of the major version as number.
+  *
+  * To get the version at run-time, you can get the key
+  * system/elektra/version/constants/KDB_VERSION_MAJOR
+  *
+  * @see [VERSION.md](/doc/VERSION.md).
+  * @see #KDB_VERSION
+  * @ingroup kdb
+  */
+#define KDB_VERSION_MAJOR x
+
+/**
+  * The version information of the minor version as number.
+  *
+  * To get the version at run-time, you can get the key
+  * system/elektra/version/constants/KDB_VERSION_MINOR
+  *
+  * @see [VERSION.md](/doc/VERSION.md).
+  * @see #KDB_VERSION
+  * @ingroup kdb
+  */
+#define KDB_VERSION_MINOR y
+
+/**
+  * The version information of the patch version as number.
+  *
+  * To get the version at run-time, you can get the key
+  * system/elektra/version/constants/KDB_VERSION_PATCH
+  *
+  * @see [VERSION.md](/doc/VERSION.md).
+  * @see #KDB_VERSION
+  * @ingroup kdb
+  */
+#define KDB_VERSION_PATCH z
+
+/** `/` is used to separate key names.
+ *
+ * @see @link keyname description about key names @endlink.
+  * @ingroup key
+ * */
+#define KDB_PATH_SEPARATOR '/'
+
+/** `\` is used as escape character in the key name.
+ *
+ * @see @link keyname description about key names @endlink.
+ * @ingroup key
+ * */
+#define KDB_PATH_ESCAPE '\\'
+
+/** If optimizations are enabled in Elektra */
+#define ELEKTRA_ENABLE_OPTIMIZATIONS
+
+/**
  * Allows keyNew() to determine which information comes next.
  *
  * @ingroup key
  * @see keyNew()
  */
-enum keyswitch_t
+enum elektraKeyFlags
 {
 	KEY_NAME=1,		/*!< Flag for the key name */
 	KEY_VALUE=1<<1,		/*!< Flag for the key data */
@@ -35,7 +102,7 @@ enum keyswitch_t
 	KEY_DIR=1<<14,		/*!< Flag for the key directories @deprecated do not use */
 	KEY_META=1<<15,		/*!< Flag for metadata */
 	KEY_NULL=1<<16,		/*!< Is *not* a flag, only as return value @deprecated do not use */
-	// see elektraLockOptions
+	// hole for elektraLockFlags
 	KEY_CASCADING_NAME=1<<20,	/*!< Is default, no need to use it @deprecated do not use */
 	KEY_META_NAME=1<<21,	/*!< Allow any key names (not only with known namespaces+cascading */
 	KEY_END=0		/*!< Used as a parameter terminator to keyNew() */
@@ -47,11 +114,11 @@ enum keyswitch_t
  * @ingroup key
  * @see keyLock(), keyIsLocked()
  */
-enum elektraLockOptions
+enum elektraLockFlags
 {
-	KEY_LOCK_NAME=1<<17,  ///< lock the name of a key
-	KEY_LOCK_VALUE=1<<18, ///< lock the value of a key
-	KEY_LOCK_META=1<<19   ///< lock the meta data of a key
+	KEY_LOCK_NAME=1<<17,	/*!< lock the name of a key */
+	KEY_LOCK_VALUE=1<<18,	/*!< lock the value of a key */
+	KEY_LOCK_META=1<<19,	/*!< lock the meta data of a key */
 };
 
 
@@ -84,6 +151,7 @@ enum elektraNamespace
  *
  * @def KS_END
  * @see ksNew() and ksVNew()
+  * @ingroup keyset
  */
 #define KS_END ((Key*)0)
 
@@ -96,7 +164,7 @@ enum elektraNamespace
  * @ingroup keyset
  * @see kdbGet(), kdbSet()
  */
-enum option_t
+enum elektraLookupFlags
 {
 
 /**

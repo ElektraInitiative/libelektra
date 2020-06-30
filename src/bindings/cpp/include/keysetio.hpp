@@ -37,7 +37,7 @@ namespace kdb
 inline std::ostream & operator<< (std::ostream & os, kdb::KeySet const & cks)
 {
 	kdb::KeySet & ks = const_cast<kdb::KeySet &> (cks);
-	cursor_t c = ks.getCursor ();
+	elektraCursor c = ks.getCursor ();
 	ks.rewind ();
 	kdb::Key k;
 	while ((k = ks.next ()))
@@ -74,7 +74,7 @@ inline std::ostream & operator<< (std::ostream & os, kdb::KeySet const & cks)
  */
 inline std::istream & operator>> (std::istream & is, kdb::KeySet & ks)
 {
-	cursor_t c = ks.getCursor ();
+	elektraCursor c = ks.getCursor ();
 	while (!is.eof ())
 	{
 		kdb::Key k;

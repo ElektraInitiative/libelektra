@@ -34,7 +34,7 @@ int ksForEach (KeySet * ks, int (*func) (Key * k))
 	int ret = 0;
 	Key * current;
 
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	ksRewind (ks);
 	while ((current = ksNext (ks)) != 0)
 	{
@@ -71,7 +71,7 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 	int ret = 0;
 	Key * current;
 
-	cursor_t cursor = ksGetCursor (input);
+	elektraCursor cursor = ksGetCursor (input);
 	ksRewind (input);
 	while ((current = ksNext (input)) != 0)
 	{

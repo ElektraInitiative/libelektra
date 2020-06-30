@@ -113,7 +113,7 @@ static bool checkError (Key * errorKey, const char * expectedNumber, const char 
 
 static void clearValues (KeySet * ks)
 {
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 
 	ksRewind (ks);
 	Key * cur;

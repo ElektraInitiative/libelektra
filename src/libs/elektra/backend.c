@@ -344,7 +344,7 @@ Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 {
 	Backend * backend = elektraBackendAllocate ();
 
-	cursor_t save = ksGetCursor (modules);
+	elektraCursor save = ksGetCursor (modules);
 	KeySet * defaultConfig =
 		ksNew (5, keyNew ("system/module", KEY_VALUE, "1", KEY_END), keyNew ("user/module", KEY_VALUE, "1", KEY_END), KS_END);
 	Key * cur = ksCurrent (modules);

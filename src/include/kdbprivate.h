@@ -48,6 +48,14 @@
 /** Trie optimization */
 #define APPROXIMATE_NR_OF_BACKENDS 16
 
+/** The maximum value of unsigned char+1, needed
+ *  for iteration over trie children/values:
+ *
+ *  for (i=0; i<KDB_MAX_UCHAR; ++i)
+ * */
+#define KDB_MAX_UCHAR (UCHAR_MAX + 1)
+
+
 /**The maximum of how many characters an integer
   needs as decimal number.*/
 #define MAX_LEN_INT 31
@@ -148,7 +156,7 @@ typedef enum {
 
 
 /**
- * Ks Flags.
+ * Advanced KS Flags.
  *
  * Store a synchronizer state so that the Elektra knows if something
  * has changed or not.
@@ -558,7 +566,7 @@ int ksResize (KeySet * ks, size_t size);
 size_t ksGetAlloc (const KeySet * ks);
 KeySet * ksDeepDup (const KeySet * source);
 
-Key * elektraKsPopAtCursor (KeySet * ks, cursor_t pos);
+Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos);
 
 ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
 

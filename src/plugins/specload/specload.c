@@ -279,7 +279,7 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	KeySet * overrides = ksNew (0, KS_END);
 
-	cursor_t cursor = ksGetCursor (returned);
+	elektraCursor cursor = ksGetCursor (returned);
 	ksRewind (returned);
 	Key * new;
 	Key * old;
@@ -565,7 +565,7 @@ int isChangeAllowed (Key * oldKey, Key * newKey)
 		return 0;
 	}
 
-	keyswitch_t changes = keyCompare (oldKey, newKey);
+	elektraKeyFlags changes = keyCompare (oldKey, newKey);
 	if (changes == 0)
 	{
 		// equal keys

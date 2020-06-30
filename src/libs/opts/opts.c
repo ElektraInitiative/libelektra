@@ -132,7 +132,7 @@ static int writeOptions (Key * command, Key * commandKey, Key * commandArgs, boo
  */
 int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * parentKey)
 {
-	cursor_t initial = ksGetCursor (ks);
+	elektraCursor initial = ksGetCursor (ks);
 
 	Key * specParent = keyDup (parentKey);
 	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
@@ -406,7 +406,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 	spec->argIndices = ksNew (0, KS_END);
 	spec->commands = ksNew (0, KS_END);
 
-	for (cursor_t i = 0; i < ksGetSize (ks); ++i)
+	for (elektraCursor i = 0; i < ksGetSize (ks); ++i)
 	{
 		Key * cur = ksAtCursor (ks, i);
 
@@ -1322,7 +1322,7 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * argI
 	{
 		Key * argIndex = ksLookup (argIndices, command, 0);
 		KeySet * indices = elektraMetaArrayToKS (argIndex, "index");
-		cursor_t firstRemainingArg = argIndex == NULL ? 0 : ksGetSize (indices) - 1; // -1 because of parent
+		elektraCursor firstRemainingArg = argIndex == NULL ? 0 : ksGetSize (indices) - 1; // -1 because of parent
 		ksDel (indices);
 
 		Key * procKey = keyNew ("proc", KEY_END);
@@ -1331,7 +1331,7 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * argI
 		Key * insertKey = keyDup (procKey);
 
 		ksRewind (args);
-		for (cursor_t i = firstRemainingArg; i < ksGetSize (args); ++i)
+		for (elektraCursor i = firstRemainingArg; i < ksGetSize (args); ++i)
 		{
 			Key * arg = ksAtCursor (args, i);
 			elektraArrayIncName (insertKey);
@@ -1983,7 +1983,7 @@ char * generateUsageLine (const char * progname, const Key * command, const Key 
 	else
 	{
 		size_t argsTotalSize = 0;
-		for (cursor_t i = 1; i < ksGetSize (args); ++i) // start at one to skip size
+		for (elektraCursor i = 1; i < ksGetSize (args); ++i) // start at one to skip size
 		{
 			argsTotalSize += strlen (keyString (ksAtCursor (args, i))) + 3; // + 3 for space and []
 		}
@@ -1991,7 +1991,7 @@ char * generateUsageLine (const char * progname, const Key * command, const Key 
 		indexedArgs = elektraMalloc (argsTotalSize + 1);
 		char * pos = indexedArgs;
 		size_t size = argsTotalSize + 1;
-		for (cursor_t i = 1; i < ksGetSize (args); i++) // start at one to skip size
+		for (elektraCursor i = 1; i < ksGetSize (args); i++) // start at one to skip size
 		{
 			*pos++ = '<';
 			pos = memccpy (pos, keyString (ksAtCursor (args, i)), '\0', size);
@@ -2074,7 +2074,7 @@ char * generateUsageLine (const char * progname, const Key * command, const Key 
  */
 char * generateOptionsList (KeySet * keysWithOpts, Key * commandKey)
 {
-	cursor_t cursor = ksGetCursor (keysWithOpts);
+	elektraCursor cursor = ksGetCursor (keysWithOpts);
 
 	char * optionsList = elektraStrDup ("");
 
@@ -2124,7 +2124,7 @@ char * generateOptionsList (KeySet * keysWithOpts, Key * commandKey)
  */
 char * generateCommandsList (KeySet * keysWithOpts, Key * commandKey)
 {
-	cursor_t cursor = ksGetCursor (keysWithOpts);
+	elektraCursor cursor = ksGetCursor (keysWithOpts);
 
 	char * commandsList = elektraStrDup ("");
 
@@ -2175,7 +2175,7 @@ char * generateCommandsList (KeySet * keysWithOpts, Key * commandKey)
  */
 char * generateArgsList (KeySet * keysWithOpts, Key * commandKey)
 {
-	cursor_t cursor = ksGetCursor (keysWithOpts);
+	elektraCursor cursor = ksGetCursor (keysWithOpts);
 
 	char * argsList = elektraStrDup ("");
 
@@ -2226,7 +2226,7 @@ char * generateArgsList (KeySet * keysWithOpts, Key * commandKey)
  */
 char * generateEnvsList (KeySet * keysWithOpts)
 {
-	cursor_t cursor = ksGetCursor (keysWithOpts);
+	elektraCursor cursor = ksGetCursor (keysWithOpts);
 
 	char * envsList = elektraStrDup ("");
 

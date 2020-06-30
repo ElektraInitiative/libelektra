@@ -20,11 +20,11 @@ extern "C" {
 #endif
 
 // this might become the new keySetName
-ssize_t elektraKeySetName (Key * key, const char * newName, option_t options);
+ssize_t elektraKeySetName (Key * key, const char * newName, elektraKeyFlags options);
 
 KeySet * elektraKeyGetMetaKeySet (const Key * key);
 
-Key * ksPopAtCursor (KeySet * ks, cursor_t c);
+Key * ksPopAtCursor (KeySet * ks, elektraCursor c);
 
 #ifdef __cplusplus
 }

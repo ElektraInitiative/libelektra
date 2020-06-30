@@ -51,7 +51,7 @@ ssize_t ksGetCommonParentName (const KeySet * working, char * returnedCommonPare
 {
 	size_t parentSize = 0;
 	Key * current = 0;
-	cursor_t cinit;
+	elektraCursor cinit;
 	KeySet * ks;
 	ssize_t sMaxSize;
 

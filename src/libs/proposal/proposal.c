@@ -102,7 +102,7 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key)
  * ksGetCursor() and ksSetCursor() jump back to the previous position.
  * e.g. to pop at current position within ksNext() loop:
  * @code
- * cursor_t c = ksGetCursor(ks);
+ * elektraCursor c = ksGetCursor(ks);
  * keyDel (ksPopAtCursor(ks, c));
  * ksSetCursor(ks, c);
  * ksPrev(ks); // to have correct key after next ksNext()
@@ -113,7 +113,7 @@ KeySet * elektraKeyGetMetaKeySet (const Key * key)
  * @return the popped key
  * @retval 0 if ks is 0
  */
-Key * ksPopAtCursor (KeySet * ks, cursor_t pos)
+Key * ksPopAtCursor (KeySet * ks, elektraCursor pos)
 {
 	return elektraKsPopAtCursor (ks, pos);
 }

@@ -3,6 +3,11 @@
  *
  * @brief Exported methods of the Library
  *
+ * The documentation is in source files, not in this header file.
+ * Enum types and macros are documented in src/libs/elektra/kdbenum.c.
+ *
+ * For already rendered API documentation, see https://doc.libelektra.org/api/
+ *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
@@ -25,8 +30,8 @@
 #define KDB_VERSION_MAJOR @KDB_VERSION_MAJOR@
 #define KDB_VERSION_MINOR @KDB_VERSION_MINOR@
 #define KDB_VERSION_PATCH @KDB_VERSION_PATCH@
-
-/* ENABLE_OPTIMIZATIONS */
+#define KDB_PATH_SEPARATOR '/'
+#define KDB_PATH_ESCAPE '\\'
 #cmakedefine ELEKTRA_ENABLE_OPTIMIZATIONS
 
 #ifdef __cplusplus
@@ -64,12 +69,15 @@ enum {
 	KEY_META_NAME=1<<21,
 	KEY_END=0,
 };
+typedef int elektraLockFlags;
+typedef int elektraKeyFlags;
 
 enum {
 	KDB_O_NONE=0,
 	KDB_O_DEL=1,
 	KDB_O_POP=1<<1
 };
+typedef int elektraLookupFlags;
 
 enum {
 	KEY_NS_NONE=0,
@@ -84,13 +92,15 @@ enum {
 	KEY_NS_SYSTEM=8,
 	KEY_NS_LAST=8
 };
+typedef int elektraNamespace;
+
+typedef ssize_t elektraCursor;
 
 
 #ifdef __cplusplus
 namespace ckdb {
 extern "C" {
 #endif
-
 
 typedef struct _KDB	KDB;
 typedef struct _Key	Key;
@@ -195,8 +205,8 @@ ssize_t keySetString(Key *key, const char *newString);
 ssize_t keyGetBinary(const Key *key, void *returnedBinary, size_t maxSize);
 ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
 
-int keyLock (Key * key, option_t what);
-int keyIsLocked (const Key * key, option_t what);
+int keyLock (Key * key, elektraLockFlags what);
+int keyIsLocked (const Key * key, elektraLockFlags what);
 
 /**************************************
  *
@@ -231,12 +241,12 @@ Key *ksCurrent(const KeySet *ks);
 Key *ksHead(const KeySet *ks);
 Key *ksTail(const KeySet *ks);
 
-cursor_t ksGetCursor(const KeySet *ks);
-int ksSetCursor(KeySet *ks, cursor_t cursor);
-Key *ksAtCursor(KeySet *ks, cursor_t cursor);
+elektraCursor ksGetCursor(const KeySet *ks);
+int ksSetCursor(KeySet *ks, elektraCursor cursor);
+Key *ksAtCursor(KeySet *ks, elektraCursor cursor);
 
-Key *ksLookup(KeySet *ks, Key *k, option_t options);
-Key *ksLookupByName(KeySet *ks, const char *name, option_t options);
+Key *ksLookup(KeySet *ks, Key *k, elektraLookupFlags options);
+Key *ksLookupByName(KeySet *ks, const char *name, elektraLookupFlags options);
 
 #ifdef __cplusplus
 }
