@@ -4,3 +4,5 @@ github.com/gorilla/mux v1.7.3 h1:gnP5JzjVOuiZD07fKKToCAOjS0yOpj/qPETTXCCS6hw=
 github.com/gorilla/mux v1.7.3/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
 go.libelektra.org v0.0.0-20200214215340-d51fc6073e5d h1:XFsSSpwbXuiWGUCRyT2zMv4l0VdkmWR+p3s8G7lrmDA=
 go.libelektra.org v0.0.0-20200214215340-d51fc6073e5d/go.mod h1:CIfEvRCFSp22m99NSN5btdGsu3ERuo2yv4blUd82AwQ=
+go.libelektra.org v0.0.0-20200630103018-330ea4c6fc3e h1:UiVqJ2yhWOCLkRrPq5RV1hRCH32BVCAok8lDMCa1FKM=
+go.libelektra.org v0.0.0-20200630103018-330ea4c6fc3e/go.mod h1:CIfEvRCFSp22m99NSN5btdGsu3ERuo2yv4blUd82AwQ=
