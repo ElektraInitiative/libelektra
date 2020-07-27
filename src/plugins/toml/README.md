@@ -7,15 +7,22 @@
 - infos/placements = getstorage setstorage
 - infos/status = experimental unfinished nodoc
 - infos/metadata = order comment/# comment/#/start comment/#/space type tomltype origvalue
-- infos/description = This storage plugin reads and writes TOML files, using Flex and Bison.
+- infos/description = This storage plugin reads and writes TOML files using Flex and Bison.
 
-# NULL/empty keys
+# Introduction
 
-The plugin supports null and empty keys with the help of the [null](../null/README.md) plugin.
+This plugin is a storage plugin for reading and writing TOML files. The plugin retains most of the file structure of a read TOML file such as comments, empty lines and TOML tables.
+It supports all kinds of TOML specific types and tables, including nested inline tables and multiline strings.
+
+For parsing TOML files, the plugins uses Flex and Bison.
 
 # Requirements
 
 The plugin needs Flex (>=2.6.2) and Bison (>=3).
+
+# NULL/empty keys
+
+The plugin supports null and empty keys with the help of the [null](../null/README.md) plugin.
 
 # Strings
 
@@ -32,7 +39,6 @@ kdb set 'user/tests/storage/string' 'I am a basic string\not a literal one.'
 kdb get 'user/tests/storage/string'
 # > I am a basic string
 # > ot a literal one
-
 
 # setting the string again, but escape the backslash with another backslash so that the \not gets written out
 kdb set 'user/tests/storage/string' 'I am a basic string\\not a literal one.'
@@ -95,7 +101,7 @@ Table arrays are represented by setting the `tomltype` metakey to `tablearray`. 
 sudo kdb mount test_strings.toml user/tests/storage toml type
 
 # Create a table array containing two entries, each with a key 'a' and 'b'
-kdb meta-set 'user/tests/storage/tablearray' 'tomltype` `tablearray`
+kdb meta-set 'user/tests/storage/tablearray' 'tomltype' 'tablearray'
 kdb set 'user/tests/storage/tablearray/#0/a' '1'
 kdb set 'user/tests/storage/tablearray/#0/b' '2'
 
@@ -115,13 +121,6 @@ cat `kdb file user/tests/storage`
 #> a = 3
 #> b = 4
 
-# Print the content of the resulting TOML file
-cat `kdb file user/tests/storage`
-#> [common]
-#> a = 0
-#> b = 1
-#> c = 2
-
 # Cleanup
 kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
@@ -129,7 +128,25 @@ sudo kdb umount user/tests/storage
 
 ## Inline Tables
 
-TODO: Write doc
+Inline tables are represented by setting the `tomltype` metakey to `inlinetable`. The plugin also supports reading/writing nested inline tables.
+
+```
+# Mount TOML file
+sudo kdb mount test_inline_table.toml user/tests/storage toml type
+
+# Create a table array containing two entries, each with a key 'a' and 'b'
+kdb meta-set 'user/tests/storage/inlinetable' 'tomltype' 'inlinetable'
+kdb set 'user/tests/storage/inlinetable/a' '1'
+kdb set 'user/tests/storage/inlinetable/b' '2'
+
+# Print the content of the resulting TOML file
+cat `kdb file user/tests/storage`
+#> TODO: Fix interaction with directoryvalue plugin to get correct output
+
+# Cleanup
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
 
 ## Arrays
 
@@ -140,25 +157,32 @@ TODO: Example
 
 The plugin preserves the file order by the usage of the metakey `order`. When reading a file, the order metakey will be set according to the order as read in the file.
 If new keys are added, eg. via `kdb set`, the order of the set key will be set to the next-to-highest order value present in the existing key set.
+
 However, the order is only relevant between elements with the same TOML-parent. For example keys of a simple table are only sorted with respecet to each other, not with any keys outside that table. If that table has it's order changed and moves to another position in the file, so will it's subkeys.
 
-There is an additional limitation on ordering for prevention of messing up resulting TOML-file semantics on writing.
 When sorting elements under the same TOML-parent, tables (simple and array) will always be sorted after non-table elements, regardless of their order.
 With this limitation, we prevent that a newly set key, that is not part of a certain table array/simple table, would be placed after the table declaration, making it a member of that table on a subsequent read.
 
-```
+ ```
 # Mount TOML file
-sudo kdb mount test_strings.toml user/tests/storage toml type
+sudo kdb mount test_order.toml user/tests/storage toml type
 
 # Create three keys in reverse alphabetical order under the subkey common
 # Additionally, create one key not in the common subkey space
+
 kdb set 'user/tests/storage/common/c' '0'
 kdb set 'user/tests/storage/common/b' '1'
 kdb set 'user/tests/storage/common/a' '2'
 kdb set 'user/tests/storage/d' '3'
 
+# Create a table array containing two entries, each with a key 'a' and 'b'
+kdb meta-set 'user/tests/storage/inlinetable' 'tomltype' 'inlinetable'
+kdb set 'user/tests/storage/inlinetable/a' '1'
+kdb set 'user/tests/storage/inlinetable/b' '2'
+
 # Print the content of the resulting TOML file
 # The keys are ordered as they were set
+
 cat `kdb file user/tests/storage`
 #> common.c = 2
 #> common.b = 1
@@ -180,11 +204,8 @@ cat `kdb file user/tests/storage`
 kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
 ```
-
 In this example, `d` and `common` have the same parent (the file root). This means, they need to be sorted with each other. `d` would be placed before `common` by it's order (since it was set before, and thus, has lesser order).
-Their order however never gets compared, since `common` is a simple table and `d` is not, so `d` will get sorted before the table regardless of order.
-
-TODO: Maybe explain better/more clear/shorter?
+However, their order never gets compared, since `common` is a simple table and `d` is not, so `d` will get sorted before the table regardless of order
 
 # Limitations
 
@@ -195,16 +216,14 @@ TODO: Maybe explain better/more clear/shorter?
 
 # TODOs
 
-- Write documentation
-- Change storage of toml specific structures (change tomltype metakey)
 - Correct interaction with other plugins, especially directory value
   - directoryvalue seems to be in conflict with the toml plugin
   - eg on writing, when having a value on a simpletable, the dirval plugin steals all metakeys of the simpletable
   - and the simpletable key loses all it's previous metakeys, like order and tomltype, resulting in incorrectly written TOML files
   - (this happens on the KeySet the TOML plugin receives on kdbSet call, without any changes made by the TOML plugin)
-- Check, how used plugins are chained (I heard something about wrapper plugin?). Order of filter plugins may be relevant in writeScalar()
-- Error checks in write.c
+  - same happens for inline tables
+  - Problem is: dirval plugins sees inlinetable/simpletable key as directory key and splits them up by duplicating the table key,
+  assigning it the dirval suffix, while the old directory key only gets it's old name, but not the metakey.
+  As as result, the dirval key has the metakey, but not the inlinetable/simpletable key.
 - Handle writing of sparse arrays somehow (maybe there is a plugin), otherwise create special meaning string to write in TOML file (eg '!ELEKTRA_NO_ELEMENT!')?
-- Don't discard trailing array comments
-- Maybe use date plugin
-- Make distinction on writing basic and literal strings
+- Change storage of toml specific structures (change tomltype metakey)
