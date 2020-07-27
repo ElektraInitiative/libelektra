@@ -127,6 +127,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
+- Describe hierarchy and limitations of [hosts plugin](https://www.libelektra.org/plugins/hosts). _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>

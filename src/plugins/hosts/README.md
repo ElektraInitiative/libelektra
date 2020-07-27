@@ -14,17 +14,22 @@
 The `/etc/hosts` file is a simple text file that associates IP addresses
 with hostnames, one line per IP address. The format is described in `hosts(5)`.
 
+The `hosts` plugins transforms the information of this file to the
+following structure. The keys directly below `ipv4` or `ipv6` are host
+names of IPv4 or IPv6 addresses, respectively. The keys directly below
+these keys are aliases. The IP addresses themselves are stored as values.
+
 ## Special values
 
 ### Hostnames
 
-Canonical hostnames are stored as key names with their IP address
+Canonical hostnames are stored as key base names with their IP addresses
 as value.
 
 ### Aliases
 
-Aliases are stored as sub keys with a read only duplicate of the
-associated IP address as value.
+Aliases are stored as keys directly below canonical hostnames with a
+read-only duplicate of the associated IP address as value.
 
 ### Comments
 
@@ -105,4 +110,7 @@ sudo kdb umount /tests/hosts
 
 ## Limitations
 
-- host names are not validated (see https://issues.libelektra.org/2185)
+- host names are not validated, see https://issues.libelektra.org/2185
+- duplicates, where a host names is the same as an alias name, are not
+  rejected, see https://issues.libelektra.org/3461
+- keys that do not confirm to the hierarchy are ignored
