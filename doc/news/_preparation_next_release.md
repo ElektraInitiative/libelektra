@@ -157,7 +157,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Cirrus
 
-- <<TODO>>
+- Update FreeBSD images from version 11.3 to 11.4. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -169,7 +169,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- <<TODO>>
+- Update macOS builds to use gcc 10 and ruby 2.6.6. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
