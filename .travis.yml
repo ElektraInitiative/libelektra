@@ -211,8 +211,8 @@ matrix:
 before_install:
   - |
     if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
-      rvm install 2.6.5
-      rvm use 2.6.5
+      rvm install 2.6.6
+      rvm use 2.6.6
       gem install test-unit --no-document
       if [ "$CC" = 'gcc' ]; then
         brew upgrade gcc@9
