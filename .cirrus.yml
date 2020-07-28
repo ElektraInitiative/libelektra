@@ -28,7 +28,7 @@ bsd_task:
 
     - name: 😈 FreeBSD 11
       freebsd_instance:
-        image_family: freebsd-11-3-snap
+        image_family: freebsd-11-4
 
     - name: 😈 FreeBSD 12
       freebsd_instance:
