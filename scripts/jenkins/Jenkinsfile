@@ -346,19 +346,11 @@ def dockerInit() {
       "./scripts/docker/fedora/32/Dockerfile"
     )
 
-    /* Image building the libelektra.org frontend */
-    DOCKER_IMAGES.website_frontend = createDockerImageDesc(
-      "website-frontend", this.&idWebsite,
+    /* Image building the libelektra.org website */
+    DOCKER_IMAGES.website = createDockerImageDesc(
+      "website", this.&idWebsite,
       ".",
-      "./scripts/docker/website/frontend/Dockerfile",
-      false
-    )
-
-    /* Image building the libelektra.org backend */
-    DOCKER_IMAGES.website_backend = createDockerImageDesc(
-      "website-backend", this.&idWebsite,
-      ".",
-      "./scripts/docker/website/backend/Dockerfile",
+      "./scripts/docker/website/Dockerfile",
       false
     )
 
@@ -1163,9 +1155,9 @@ def deployDockerContainer(name, imageDesc, hostName) {
 }
 
 def deployWebsite() {
-  withDockerEnv(DOCKER_IMAGES.website_frontend) {
-        sh "ls -al /usr/local/share/elektra/tool_data/website-frontend/public/"
-        sh "cp -Rf /usr/local/share/elektra/tool_data/website-frontend ."
+  withDockerEnv(DOCKER_IMAGES.website) {
+        sh "ls -al /usr/local/share/elektra/tool_data/website/public/"
+        sh "cp -Rf /usr/local/share/elektra/tool_data/website."
         sshPublisher(
             publishers: [
               sshPublisherDesc(
@@ -1173,7 +1165,7 @@ def deployWebsite() {
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
-                    execCommand: 'rm -Rf /srv/libelektra/website-frontend/public_old; cp -Rfpv /srv/libelektra/website-frontend/public /srv/libelektra/website-frontend/public_old'
+                    execCommand: 'rm -Rf /srv/libelektra/website/public_old; cp -Rfpv /srv/libelektra/website/public /srv/libelektra/website/public_old'
                   )
                 ]
               )
@@ -1186,9 +1178,9 @@ def deployWebsite() {
                 configName: 'doc.libelektra.org',
                 transfers: [
                   sshTransfer(
-                    sourceFiles: 'website-frontend/public/**/*',
-                    removePrefix: 'website-frontend',
-                    remoteDirectory: 'website-frontend'
+                    sourceFiles: 'website/public/**/*',
+                    removePrefix: 'website',
+                    remoteDirectory: 'website'
                   )
                 ]
               )
