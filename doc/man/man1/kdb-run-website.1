@@ -1,25 +1,25 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "README" "" "November 2019" "" ""
+.TH "README" "" "August 2020" "" ""
 .
 .SH "Introduction"
-This document aims to provide information about Elektra’s \fBwebsite\-frontend\fR, which is the frontend of the \fBwebsite\-backend\fR allowing for search and sharing of configuration snippets\. Besides that functionality, the frontend also contains the Elektra website\.
+This document aims to provide information about how to build Elektra’s Website,
 .
 .SH "Design and Structure"
 The frontend is developed as single\-page application (SPA) in AngularJS (v1\.5) \fIhttps://angularjs\.org/\fR\. All dependencies are either already contained in the application project or (preferred) resolved through the dependency manager npm \fIhttps://www\.npmjs\.com/\fR during installation (requires active internet connection)\. Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the nodeJS based task runner grunt \fIhttp://gruntjs\.com/\fR (installed by npm)\.
 .
 .SH "Run and Configure"
-The application allows for some basic configuration\. Under normal circumstances it is sufficient to change the \fIapplication\-config\.json\fR in the root directory\. It contains the URL to the backend, some URLs for GitHub resources and translation, as well as logger settings\. Any change of this configuration does require to re\-run \fBgrunt full\fR (or \fBkdb build\-website\-frontend\fR) in order to re\-compile the project\.
+The application allows for some basic configuration\. Under normal circumstances it is sufficient to change the \fIapplication\-config\.json\fR in the root directory\. It contains the URL to the backend, some URLs for GitHub resources and translation, as well as logger settings\. Any change of this configuration does require to re\-run \fBgrunt full\fR (or \fBkdb build\-website\fR) in order to re\-compile the project\.
 .
 .P
 To run the application, basically two options are available:
 .
 .IP "\(bu" 4
-Use the built\-in webserver of \fBgrunt\fR, which can be configured in the \fIGruntfile\.js\fR and run by \fBgrunt server\fR (in the installation target directory) or \fBkdb run\-website\-frontend\fR from anywhere\.
+Use the built\-in webserver of \fBgrunt\fR, which can be configured in the \fIGruntfile\.js\fR and run by \fBgrunt server\fR (in the installation target directory) or \fBkdb run\-website\fR from anywhere\.
 .
 .IP "\(bu" 4
-Use an own webserver to distribute the application\. In order to do so, first \fBgrunt full\fR (or \fBkdb build\-website\-frontend\fR) should be run\. After that, the content of the public \fIpublic/\fR directory can be copied to any location that suits the needs\. \fBnpm\fR dependencies in the node_modules \fInode_modules/\fR directory and the resources \fIresources/\fR directory are only necessary for development, but can be ignored for deployment\. The required dependencies were copied to the public \fIpublic/\fR directory already\.
+Use an own webserver to distribute the application\. In order to do so, first \fBgrunt full\fR (or \fBkdb build\-website\fR) should be run\. After that, the content of the public \fIpublic/\fR directory can be copied to any location that suits the needs\. \fBnpm\fR dependencies in the node_modules \fInode_modules/\fR directory and the resources \fIresources/\fR directory are only necessary for development, but can be ignored for deployment\. The required dependencies were copied to the public \fIpublic/\fR directory already\.
 .
 .IP "" 0
 .
@@ -27,19 +27,19 @@ Use an own webserver to distribute the application\. In order to do so, first \f
 In order to not receive any 404 errors by the webserver, it should serve the \fBindex\.html\fR for all requests that do not have a static file as target\. The \fBindex\.html\fR will then try to serve the (dynamic) URL itself\.
 .
 .P
-To stop the \fBwebsite\-frontend\fR, simply run \fBkdb stop\-website\-frontend\fR from anywhere\.
+To stop the \fBwebsite\fR, simply run \fBkdb stop\-website\fR from anywhere\.
 .
 .SS "application\-config\.json"
-This file will be copied and mounted by the command \fBkdb mount\-website\-frontend\-config\fR\. The configuration will then be available below \fB/sw/elektra/websitefrontend/#0//current\fR in Elektra\.
+This file will be copied and mounted by the command \fBkdb mount\-website\-config\fR\. The configuration will then be available below \fB/sw/elektra/website/#0//current\fR in Elektra\.
 .
 .P
-Using /sw/elektra/websitefrontend/#0/current/daemon/lock (i\.e\., \fBdaemon\.lock\fR in JSON) you can specify which PID file should be used\. Default: /run/elektra\-website\-frontend\.pid
+Using /sw/elektra/website/#0/current/daemon/lock (i\.e\., \fBdaemon\.lock\fR in JSON) you can specify which PID file should be used\. Default: /run/elektra\-website\.pid
 .
 .P
 The configuration file allows to set the URL to the backend in \fBbackend\.root\fR\. GitHub settings may be done in \fBgithub\fR\.
 .
 .P
-The configuration file also allows to specify available translations in \fBtranslations\.enabled\fR\. To add a translation, copy an existing translation file in \fIpublic/assets/translations\fR, translate it and add the name of the new language to the list in \fBtranslations\.enabled\fR\. After that run \fBgrunt full\fR (or \fBkdb build\-website\-frontend\fR) to re\-compile the application\.
+The configuration file also allows to specify available translations in \fBtranslations\.enabled\fR\. To add a translation, copy an existing translation file in \fIpublic/assets/translations\fR, translate it and add the name of the new language to the list in \fBtranslations\.enabled\fR\. After that run \fBgrunt full\fR (or \fBkdb build\-website\fR) to re\-compile the application\.
 .
 .P
 If necessary, mappings for dialects as well as a default language can be specified as well\.
@@ -91,7 +91,7 @@ The website structure is dynamically adjustable\. There is a set of types which 
 The project has quite a few dependencies, of which most can be resolved automatically by the used package manager\. The only dependency that has to be installed beforehand is the package manager npm \fIhttps://www\.npmjs\.com/\fR itself, which comes bundled with Node\.js \fIhttps://nodejs\.org/\fR (preferred installation)\.
 .
 .SS "Compiling"
-The \fBwebsite\-frontend\fR has full CMake integration, which does actually only two things:
+The \fBwebsite\fR has full CMake integration, which does actually only two things:
 .
 .IP "\(bu" 4
 Install (copy) the project files to a target directory\.
@@ -108,7 +108,7 @@ run \fBgrunt full\fR to compile all application sources (resources \fIresources/
 .IP "" 0
 .
 .SS "Installing"
-It is not necessary to install anything by hand, CMake does this job already\. If changes are made to the source files in resources \fIresources/\fR, it is sufficient to run \fBgrunt full\fR (or \fBkdb build\-website\-frontend\fR) to build the application again\. During development, it can be handy to use \fBgrunt watch\fR to run a watcher daemon that re\-compiles LESS or JS files whenever a change was made in the respective resources \fIresources/\fR directory\.
+It is not necessary to install anything by hand, CMake does this job already\. If changes are made to the source files in resources \fIresources/\fR, it is sufficient to run \fBgrunt full\fR (or \fBkdb build\-website\fR) to build the application again\. During development, it can be handy to use \fBgrunt watch\fR to run a watcher daemon that re\-compiles LESS or JS files whenever a change was made in the respective resources \fIresources/\fR directory\.
 .
 .SS "resources/structure\.json\.in"
 This configuration file can be used to define the website structure\. The file consists at its root of an array, which will be transformed into the main menu of the website (the dynamic part of the menu)\. The array houses objects, of which every object represents an element on the website (e\.g\. a link)\.
