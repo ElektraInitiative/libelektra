@@ -86,31 +86,6 @@ module.exports = function(grunt) {
         target_dir: "public/website"
       }
     },
-    "create-website-sitemap": {
-      options: {},
-      build: {
-        root_url: "<%= app.website.url %>",
-        output: "public/sitemap.xml",
-        static: {
-          change_frequency: "monthly",
-          paths: [
-            "home",
-            "conversion",
-            "entries/search",
-            "auth/login",
-            "auth/register"
-          ]
-        },
-        dynamic: {
-          input: {
-            structure:
-              "<%= grunt.config('create-website-structure.build.output') %>",
-            news: "<%= grunt.config('create-website-news.build.output') %>"
-          },
-          backend: "<%= app.backend.root %>"
-        }
-      }
-    },
     jshint: {
       options: {
         reporter: require("jshint-stylish"),
@@ -345,7 +320,6 @@ module.exports = function(grunt) {
     "create-website-structure",
     "copy-website-content",
     "copy",
-    "create-website-sitemap",
     "preprocess",
     "browserify:build",
     "uglify:build"
