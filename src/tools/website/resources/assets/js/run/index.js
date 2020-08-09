@@ -1,8 +1,5 @@
 "use strict";
 
-var angular = require("angular");
+var angular = require ("angular");
 
-angular
-  .module("elektra.rest.angular")
-  .run(require("./logger"))
-  .run(require("./states"));
+angular.module("elektra.rest.angular").run(require ("./logger")).run(require ("./states"));
