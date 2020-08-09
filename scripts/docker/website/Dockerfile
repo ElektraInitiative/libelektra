@@ -31,7 +31,7 @@ RUN mkdir build \
     && cmake -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
              -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
              -DPLUGINS="ALL;-EXPERIMENTAL;-fstab;-ruby;-lua;-python;-xerces;-yamlcpp;file;yajl" \
-             -DTOOLS="kdb;website-frontend" \
+             -DTOOLS="kdb;website" \
              -DCMAKE_C_FLAGS="$C_FLAGS" \
              -DCMAKE_CXX_FLAGS="$C_FLAGS" \
              -DCMAKE_EXE_LINKER_FLAGS="-Wl,-z,now -Wl,-z,relro" \
@@ -45,11 +45,11 @@ RUN mkdir build \
 ARG BACKEND=https://restapi.libelektra.org/
 ARG URL=https://www.libelektra.org/
 RUN kdb global-mount \
-    && kdb mount-website-frontend-config \
+    && kdb mount-website-config \
     && kdb set -N system /sw/elektra/websitefrontend/#0/current/backend/root "${BACKEND}" \
     && kdb set -N system /sw/elektra/websitefrontend/#0/current/website/url "${URL}" \
-    && kdb build-website-frontend
+    && kdb build-website
 
 # FROM nginx:alpine
-# COPY --from=0 /usr/local/share/elektra/tool_data/website-frontend/public \
+# COPY --from=0 /usr/local/share/elektra/tool_data/website/public \
 #               /usr/share/nginx/html

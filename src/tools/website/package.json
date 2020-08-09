@@ -1,5 +1,5 @@
 {
-    "name": "website-frontend",
+    "name": "website",
     "version": "1.0.0",
     "description": "rest frontend application",
     "main": "Gruntfile.js",

@@ -72,7 +72,7 @@ bindings and libraries sections will get some more attention.
 
 If you are interested in the techniques we use to structure our files,
 you can have a look at the
-[website-frontend readme](https://blob.libelektra.org/src/tools/website-frontend/README.md).
+[website readme](https://blob.libelektra.org/src/tools/website/README.md).
 The website is already the fourth view of our markdown pages!
 The others are man pages, doxygen, and github.
 
@@ -123,7 +123,7 @@ repository:
    can find all resources also [here](https://git.libelektra.org).
 2. If you are only worried about executed untrusted JavaScript,
    you can study and improve the
-   [Web Frontend](https://blob.libelektra.org/src/tools/website-frontend/README.md),
+   [Web Frontend](https://blob.libelektra.org/src/tools/website/README.md),
    which builds the website.
    Based on this, we hope you disable `NoScript` for our page
    so that you are able to share snippets!

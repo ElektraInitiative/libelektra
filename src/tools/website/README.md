@@ -1,10 +1,8 @@
-# Elektra REST Frontend
+# Elektra's Website
 
 ## Introduction
 
-This document aims to provide information about Elektra’s `@tool@`,
-which is the frontend of the `website-backend` allowing for search and sharing of configuration snippets.
-Besides that functionality, the frontend also contains the Elektra website.
+This document aims to provide information about how to build Elektra’s Website,
 
 ## Design and Structure
 
@@ -45,7 +43,7 @@ To stop the `@tool@`, simply run `kdb stop-@tool@` from anywhere.
 
 ### application-config.json
 
-This file will be copied and mounted by the command `kdb mount-website-frontend-config`. The configuration will then be available
+This file will be copied and mounted by the command `kdb mount-website-config`. The configuration will then be available
 below `@config_root@/@config_default_profile@` in Elektra.
 
 #### PID file
