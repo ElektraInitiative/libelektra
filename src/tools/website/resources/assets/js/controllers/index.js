@@ -1,3 +1,3 @@
 "use strict";
 
-require ("./main");
+require("./main");
