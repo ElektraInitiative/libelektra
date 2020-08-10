@@ -4,7 +4,7 @@
     },
     "website": {
         "url": "http://localhost:9000/",
-        "content_root": "/",
+        "content_root": "website/",
         "target_file_dir_links": ["README.md", "README", "readme.md", "readme"],
         "slogan": {
             "rotation_interval": 2500
