@@ -7,30 +7,35 @@
 This document aims to provide information about how to build Elektra’s Website,
 .
 .SH "Design and Structure"
-The frontend is developed as single\-page application (SPA) in AngularJS (v1\.5) \fIhttps://angularjs\.org/\fR\. All dependencies are either already contained in the application project or (preferred) resolved through the dependency manager npm \fIhttps://www\.npmjs\.com/\fR during installation (requires active internet connection)\. Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the nodeJS based task runner grunt \fIhttp://gruntjs\.com/\fR (installed by npm)\.
+The website is developed as single\-page application (SPA) in AngularJS (v1\.5) \fIhttps://angularjs\.org/\fR\. All dependencies are either already contained in the application project or (preferred) resolved through the dependency manager npm \fIhttps://www\.npmjs\.com/\fR during installation (requires active internet connection)\. Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the nodeJS based task runner grunt \fIhttp://gruntjs\.com/\fR (installed by npm)\.
 .
 .SH "Run and Configure"
-The application allows for some basic configuration\. Under normal circumstances it is sufficient to change the \fIapplication\-config\.json\fR in the root directory\. It contains the URL to the backend, some URLs for GitHub resources and translation, as well as logger settings\. Any change of this configuration does require to re\-run \fBgrunt full\fR (or \fBkdb build\-website\fR) in order to re\-compile the project\.
+To install the website, make sure \fBwebsite\fR is included in TOOLS\. \fBnpm\fR is the only dependency\. Then use \fBmake install\fR to install the website\. It will be installed in \fB/home/markus/Projekte/Elektra/installation/share/elektra/tool_data/website/public\fR\.
+.
+.P
+As next step, the website configuration needs to be copied and mounted: \fB/home/markus/Projekte/Elektra/installation/lib/elektra/tool_exec/mount\-website\-config\fR
+.
+.P
+The configuration will be mounted to \fBsystem/sw/elektra/website/#0/current\fR in Elektra (\fB/sw/elektra/website/#0//current\fR) and contains the URL to the backend, some URLs for GitHub resources and translation, as well as logger settings\. Usually, no changes are required there, see Configuration Options below for some useful options\.
+.
+.P
+As next step, you can build the website: \fB/home/markus/Projekte/Elektra/installation/lib/elektra/tool_exec/build\-website\fR (or \fBkdb build\-website\fR)
 .
 .P
 To run the application, basically two options are available:
 .
 .IP "\(bu" 4
-Use the built\-in webserver of \fBgrunt\fR, which can be configured in the \fIGruntfile\.js\fR and run by \fBgrunt server\fR (in the installation target directory) or \fBkdb run\-website\fR from anywhere\.
+Use the built\-in webserver of \fBgrunt\fR, which can be configured in the \fIGruntfile\.js\fR and run by \fBgrunt server\fR (in the installation target directory) or \fBkdb run\-website\fR from anywhere\. To stop the \fBwebsite\fR, run \fBkdb stop\-website\fR\.
 .
 .IP "\(bu" 4
-Use an own webserver to distribute the application\. In order to do so, first \fBgrunt full\fR (or \fBkdb build\-website\fR) should be run\. After that, the content of the public \fIpublic/\fR directory can be copied to any location that suits the needs\. \fBnpm\fR dependencies in the node_modules \fInode_modules/\fR directory and the resources \fIresources/\fR directory are only necessary for development, but can be ignored for deployment\. The required dependencies were copied to the public \fIpublic/\fR directory already\.
+Use an own webserver to distribute the application\. In order to do so, only \fBgrunt full\fR (or \fBkdb build\-website\fR, see above) needs to be run\. After that, the content of the public \fIpublic/\fR directory can be copied to any location that suits the needs\. \fBnpm\fR dependencies in the node_modules \fInode_modules/\fR directory and the resources \fIresources/\fR directory are only necessary for development, but can be ignored for deployment\. The required dependencies were copied to the public \fIpublic/\fR directory already\.
 .
 .IP "" 0
 .
 .P
 In order to not receive any 404 errors by the webserver, it should serve the \fBindex\.html\fR for all requests that do not have a static file as target\. The \fBindex\.html\fR will then try to serve the (dynamic) URL itself\.
 .
-.P
-To stop the \fBwebsite\fR, simply run \fBkdb stop\-website\fR from anywhere\.
-.
-.SS "application\-config\.json"
-This file will be copied and mounted by the command \fBkdb mount\-website\-config\fR\. The configuration will then be available below \fB/sw/elektra/website/#0//current\fR in Elektra\.
+.SS "Configuration Options"
 .
 .P
 Using /sw/elektra/website/#0/current/daemon/lock (i\.e\., \fBdaemon\.lock\fR in JSON) you can specify which PID file should be used\. Default: /run/elektra\-website\.pid
@@ -56,14 +61,7 @@ The resources \fIresources/\fR directory contains the JavaScript source files, c
 .P
 The public \fIpublic/\fR directory contains HTML template files, assets like fonts, compiled JS and CSS files, as well as translation files and all dependencies resolved by \fBnpm\fR, which are copied by \fBgrunt\fR\. It does also contain copied documentation files for the website\.
 .
-.SS "Part 1: Snippet Sharing"
-Sharing of snippets will require authentication, therefore registration and login were implemented\. Snippets can be looked up by using the search function, which offers some convenience options like a filter and sorting\. Snippets themselves can then be viewed in any supported format, downloaded, copied, etc\. The snippets API is readable without authentication, but does require authentication for write operations (insert, update & delete)\.
-.
-.P
-Besides the snippet sharing functionality, the whole frontend implements a basic user system along with a permission system, allowing for higher roles with more privileges\. This is necessary to be able to moderate the database, if necessary (spam protection)\.
-.
-.SS "Part 2: Elektra Website"
-The second part of the frontend is the new Elektra website containing documentation, tutorials and other important artifacts like news\. Almost all necessary resources are generated and copied from a local repository clone to the website deployment during build (to refresh the website, a new build is necessary)\.
+.SS "Important facts"
 .
 .IP "\(bu" 4
 Links are internal on the website if the target is part of it too, otherwise they are external (i\.e\. linked to repo on external site)\.
@@ -77,13 +75,13 @@ Styling can then be done easily through LESS/CSS\.
 .IP "\(bu" 4
 The website structure is dynamically adjustable\. There is a set of types which can be used to define links, menus, content of sites, etc\. A detailed discussion for the website structure happened in #1015\.
 .
+.IP "\(bu" 4
+A full text search using Algolia is implemented https://issues\.libelektra\.org/2796
+.
 .IP "" 0
 .
-.P
-\fBGlobal search:\fR It is not planned to implement a global search for the website itself (documentation, tutorials, \.\.\.) as the resources are not easily searchable (static files, everything happens in the browser, i\.e\. pre\-fetch of all files would be necessary for a search)\. The available search will only search the configuration snippet database (and users, for admins)\.
-.
-.P
-\fBAngularJS 2:\fR At the time of development start, there was no stable AngularJS 2 release available yet, only early previews\. Because of that, the frontend was developed using AngularJS 1\.5\. This shouldn\'t be seen as drawback, but rather as advantage as there are a lot more modules (plugins) available for Angular 1\.5 right now than for version 2\.
+.SS "Limitations"
+\fBAngularJS 2:\fR At the time of development start, there was no stable AngularJS 2 release available yet, only early previews\. Because of that, the frontend was developed using AngularJS 1\.5\.
 .
 .SH "Compiling and Installing"
 .

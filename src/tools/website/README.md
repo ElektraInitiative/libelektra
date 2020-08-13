@@ -6,7 +6,7 @@ This document aims to provide information about how to build Elektra’s Website
 
 ## Design and Structure
 
-The frontend is developed as single-page application (SPA) in [AngularJS (v1.5)](https://angularjs.org/).
+The website is developed as single-page application (SPA) in [AngularJS (v1.5)](https://angularjs.org/).
 All dependencies are either already contained in the application project or (preferred) resolved through
 the dependency manager [npm](https://www.npmjs.com/) during installation (requires active internet connection).
 Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight
@@ -14,21 +14,30 @@ webserver are handled by the nodeJS based task runner [grunt](http://gruntjs.com
 
 ## Run and Configure
 
-The application allows for some basic configuration.
-Under normal circumstances it is sufficient to change the
-[application-config.json](application-config.json) in the root directory.
-It contains the URL to the backend, some URLs for GitHub resources and translation,
-as well as logger settings.
-Any change of this configuration does require to re-run `grunt full` (or `kdb build-@tool@`)
-in order to re-compile the project.
+To install the website, make sure `website` is included in TOOLS. `npm` is the only dependency.
+Then use `make install` to install the website.
+It will be installed in `@CMAKE_INSTALL_PREFIX@/share/elektra/tool_data/website/public`.
+
+As next step, the website configuration needs to be copied and mounted:
+`@CMAKE_INSTALL_PREFIX@/lib/elektra/tool_exec/mount-website-config`
+
+The configuration will be mounted to `system/sw/elektra/website/#0/current` in Elektra
+(`@config_root@/@config_default_profile@`)
+and contains the URL to the backend, some URLs for GitHub resources and translation,
+as well as logger settings. Usually, no changes are required there, see
+Configuration Options below for some useful options.
+
+As next step, you can build the website:
+`@CMAKE_INSTALL_PREFIX@/lib/elektra/tool_exec/build-website` (or `kdb build-@tool@`)
 
 To run the application, basically two options are available:
 
 - Use the built-in webserver of `grunt`, which can be configured in the
   [Gruntfile.js](Gruntfile.js) and run by `grunt server` (in the installation target directory)
   or `kdb run-@tool@` from anywhere.
+  To stop the `@tool@`, run `kdb stop-@tool@`.
 - Use an own webserver to distribute the application.
-  In order to do so, first `grunt full` (or `kdb build-@tool@`) should be run.
+  In order to do so, only `grunt full` (or `kdb build-@tool@`, see above) needs to be run.
   After that, the content of the [public](public/) directory can be copied to any location
   that suits the needs. `npm` dependencies in the [node_modules](node_modules/) directory
   and the [resources](resources/) directory are only necessary for development,
@@ -39,12 +48,7 @@ In order to not receive any 404 errors by the webserver, it should serve the `in
 for all requests that do not have a static file as target.
 The `index.html` will then try to serve the (dynamic) URL itself.
 
-To stop the `@tool@`, simply run `kdb stop-@tool@` from anywhere.
-
-### application-config.json
-
-This file will be copied and mounted by the command `kdb mount-website-config`. The configuration will then be available
-below `@config_root@/@config_default_profile@` in Elektra.
+### Configuration Options
 
 #### PID file
 
@@ -83,27 +87,7 @@ The [public](public/) directory contains HTML template files, assets like fonts,
 compiled JS and CSS files, as well as translation files and all dependencies resolved by `npm`,
 which are copied by `grunt`. It does also contain copied documentation files for the website.
 
-### Part 1: Snippet Sharing
-
-Sharing of snippets will require authentication, therefore registration and login were implemented.
-Snippets can be looked up by using the search function, which offers some convenience options
-like a filter and sorting.
-Snippets themselves can then be viewed in any supported format, downloaded, copied, etc.
-The snippets API is readable without authentication, but does require authentication for
-write operations (insert, update & delete).
-
-Besides the snippet sharing functionality, the whole frontend implements a basic user system
-along with a permission system, allowing for higher roles with more privileges.
-This is necessary to be able to moderate the database, if necessary (spam protection).
-
-### Part 2: Elektra Website
-
-The second part of the frontend is the new Elektra website containing documentation,
-tutorials and other important artifacts like news.
-Almost all necessary resources are generated and copied from a local repository clone
-to the website deployment during build (to refresh the website, a new build is necessary).
-
-#### Important facts
+### Important facts
 
 - Links are internal on the website if the target is part of it too,
   otherwise they are external (i.e. linked to repo on external site).
@@ -112,20 +96,16 @@ to the website deployment during build (to refresh the website, a new build is n
 - The website structure is dynamically adjustable.
   There is a set of types which can be used to define links, menus, content of sites, etc.
   A detailed discussion for the website structure happened in #1015.
+- A full text search using Algolia is implemented https://issues.libelektra.org/2796
 
-#### Limitations
-
-**Global search:**
-It is not planned to implement a global search for the website itself (documentation, tutorials, ...)
-as the resources are not easily searchable (static files, everything happens in the browser,
-i.e. pre-fetch of all files would be necessary for a search).
-The available search will only search the configuration snippet database (and users, for admins).
+### Limitations
 
 **AngularJS 2:**
 At the time of development start, there was no stable AngularJS 2 release available yet,
 only early previews. Because of that, the frontend was developed using AngularJS 1.5.
-This shouldn't be seen as drawback, but rather as advantage as there are a lot more
-modules (plugins) available for Angular 1.5 right now than for version 2.
+Later we tried an upgrade but failed of the extensive work which would be required.
+Another idea would be to build a static webpage, so that at least the end user
+is not confronted with the old version of AngularJS: https://issues.libelektra.org/3470
 
 ## Compiling and Installing
 

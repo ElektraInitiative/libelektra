@@ -1191,7 +1191,7 @@ def deployWebsite() {
 
 def buildWebsite() {
   def websiteTasks = [:]
-  websiteTasks << buildImageStage(DOCKER_IMAGES.website_frontend)
+  websiteTasks << buildImageStage(DOCKER_IMAGES.website)
   return websiteTasks
 }
 
