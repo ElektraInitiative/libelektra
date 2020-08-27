@@ -90,10 +90,7 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 		else
 		{
 			const Key * meta = findMetaKey (arrayRoot, "array");
-			if (meta == NULL)
-			{
 				keyUpdateArrayMetakey (arrayRoot, arrays->maxIndex);
-			}
 			keyDel (arrays->name);
 		}
 		ArrayInfo * next = arrays->next;
