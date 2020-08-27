@@ -22,7 +22,7 @@ static bool predNeedsOrder (Key * key);
 
 bool prepareKeySet (KeySet * keys, Key * parent)
 {
-	cursor_t cursor = ksGetCursor (keys);
+	elektraCursor cursor = ksGetCursor (keys);
 	addMissingArrayKeys (keys, parent);
 	pruneInvalidArrayKeys (keys);
 	if (!orderUnorderedKeys (keys))

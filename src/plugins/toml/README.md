@@ -2,7 +2,7 @@
 - infos/author = Jakob Fischer <jakobfischer93@gmail.com>
 - infos/licence = BSD
 - infos/provides = storage/toml
-- infos/needs = null base64 directoryvalue
+- infos/needs = null base64
 - infos/recommends = type
 - infos/placements = getstorage setstorage
 - infos/status = experimental unfinished nodoc
@@ -305,5 +305,3 @@ However, their order never gets compared, since `common` is a simple table and `
   - Problem is: dirval plugins sees inlinetable/simpletable key as directory key and splits them up by duplicating the table key,
   assigning it the dirval suffix, while the old directory key only gets it's old name, but not the metakey.
   As as result, the dirval key has the metakey, but not the inlinetable/simpletable key.
-- Handle writing of sparse arrays somehow (maybe there is a plugin), otherwise create special meaning string to write in TOML file (eg '!ELEKTRA_NO_ELEMENT!')?
-- Change storage of toml specific structures (change tomltype metakey)

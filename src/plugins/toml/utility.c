@@ -362,7 +362,7 @@ KeySet * extractSubKeys (KeySet * ks, Key * parent)
 
 bool isLeaf (Key * leafCandidate, KeySet * ks)
 {
-	cursor_t cursor = ksGetCursor (ks);
+	elektraCursor cursor = ksGetCursor (ks);
 	ksRewind (ks);
 	Key * key;
 	while ((key = ksNext (ks)) != NULL)

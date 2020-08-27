@@ -70,7 +70,7 @@ static bool isTrue (const char * boolStr);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
-	cursor_t cursor = ksGetCursor (keys);
+	elektraCursor cursor = ksGetCursor (keys);
 	prepareKeySet (keys, parent);
 
 	ksRewind (keys);
