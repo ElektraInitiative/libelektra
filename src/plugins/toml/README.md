@@ -175,11 +175,6 @@ kdb set 'user/tests/storage/common/b' '1'
 kdb set 'user/tests/storage/common/a' '2'
 kdb set 'user/tests/storage/d' '3'
 
-# Create a table array containing two entries, each with a key 'a' and 'b'
-kdb meta-set 'user/tests/storage/inlinetable' 'tomltype' 'inlinetable'
-kdb set 'user/tests/storage/inlinetable/a' '1'
-kdb set 'user/tests/storage/inlinetable/b' '2'
-
 # Print the content of the resulting TOML file
 # The keys are ordered as they were set
 
