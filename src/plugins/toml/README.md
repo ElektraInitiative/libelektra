@@ -138,10 +138,13 @@ sudo kdb mount test_inline_table.toml user/tests/storage toml type
 kdb meta-set 'user/tests/storage/inlinetable' 'tomltype' 'inlinetable'
 kdb set 'user/tests/storage/inlinetable/a' '1'
 kdb set 'user/tests/storage/inlinetable/b' '2'
+kdb meta-set 'user/tests/storage/inlinetable/nested' 'tomltype' 'inlinetable'
+kdb set 'user/tests/storage/inlinetable/nested/x' '3'
+kdb set 'user/tests/storage/inlinetable/nested/y' '4'
 
 # Print the content of the resulting TOML file
 cat `kdb file user/tests/storage`
-#> TODO: Fix interaction with directoryvalue plugin to get correct output
+#> inlinetable = { a = 1, b = 2, nested = { x = 3, y = 4 } }
 
 # Cleanup
 kdb rm -r user/tests/storage
@@ -151,7 +154,89 @@ sudo kdb umount user/tests/storage
 ## Arrays
 
 Arrays are recognized by the `array` metakey. On writing, the plugin will detect arrays automatically and set the appropriate metakey if it is missing.
-TODO: Example
+
+```
+# Mount TOML file
+sudo kdb mount test_array.toml user/tests/storage toml type
+
+# Create array elements
+kdb set 'user/tests/storage/array/#0' '1'
+kdb set 'user/tests/storage/array/#1' '2'
+kdb set 'user/tests/storage/array/#2' '3'
+
+# Print the highest index of the array
+kdb meta-get 'user/tests/storage/array' 'array'
+#> #2
+
+# Print the content of the resulting TOML file
+cat `kdb file user/tests/storage`
+#> array = [1, 2, 3]
+
+
+# Cleanup
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
+
+### Comments in Arrays
+Any amount of comments can be placed between array elements or between the first element and the opening brackets.
+
+However, only one comment - an inline commment - can be placed after the last element and the closing brackets.
+When reading a TOML file with non-inline comments between the last element and the closing brackets, these comments get discarded.
+
+```
+# Mount TOML file
+sudo kdb mount test_array_comments.toml user/tests/storage toml type
+
+# Create array elements
+kdb set 'user/tests/storage/array/#0' '1'
+kdb set 'user/tests/storage/array/#1' '2'
+kdb set 'user/tests/storage/array/#2' '3'
+
+# Add inline comment after the array
+kdb meta-set 'user/tests/storage/array' 'comment/#0' 'Inline comment after the array'
+kdb meta-set 'user/tests/storage/array' 'comment/#0/start' '#'
+kdb meta-set 'user/tests/storage/array' 'comment/#0/space' '5'
+
+# Add comments for array elements
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#0' 'Inline comment of first element'
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#0/start' '#'
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#0/space' '4'
+
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#1' 'Comment preceding the first element'
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#1/start' '#'
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#1/space' '4'
+
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#2' 'Another comment preceding the first element'
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#2/start' '#'
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#2/space' '6'
+
+kdb meta-set 'user/tests/storage/array/#1' 'comment/#0' 'Inline comment of second element'
+kdb meta-set 'user/tests/storage/array/#1' 'comment/#0/start' '#'
+kdb meta-set 'user/tests/storage/array/#1' 'comment/#0/space' '4'
+
+kdb meta-set 'user/tests/storage/array/#1' 'comment/#1' 'Comment preceding the second element'
+kdb meta-set 'user/tests/storage/array/#1' 'comment/#1/start' '#'
+kdb meta-set 'user/tests/storage/array/#1' 'comment/#1/space' '6'
+
+kdb meta-set 'user/tests/storage/array/#2' 'comment/#0' 'Inline comment of the last element'
+kdb meta-set 'user/tests/storage/array/#2' 'comment/#0/start' '#'
+kdb meta-set 'user/tests/storage/array/#2' 'comment/#0/space' '5'
+
+# Print the content of the resulting TOML file
+cat `kdb file user/tests/storage`
+#> array = [    # Comment preceding the first element
+#>       # Another comment preceding the first element
+#> 1,    # Inline comment of first element
+#>       # Comment preceding the second element
+#> 2,    # Inline comment of second element
+#> 3     # Inline comment of third element
+#> ]     # Inline comment after the array
+
+# Cleanup
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
 
 # Order
 
