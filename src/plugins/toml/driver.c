@@ -130,7 +130,11 @@ void driverExitToml (Driver * driver)
 	{
 		return;
 	}
-	driverDrainCommentsToKey (driver->root, driver);
+	if (driver->commentRoot != NULL) {
+		Key * root = keyNew(keyName(driver->root), KEY_END);
+		ksAppendKey(driver->keys, root);
+		driverDrainCommentsToKey (root, driver);
+	}
 }
 
 void driverEnterKey (Driver * driver)

@@ -178,11 +178,67 @@ kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
 ```
 
-### Comments in Arrays
+# Comments/Empty Lines
+
+The plugin preserves all comments with only one limitation for arrays. The amount of whitespace in front of a comment is also saved.
+For this purpose, each tab will get translated to 4 spaces.
+
+Comments can also be created by assigning meta keys to a key.
+The meta keys must be of the form `comment/#n`, where `n` is a positive number, indicating the position of the comment relative to the key.
+An index of 0 is always the inline comment of the key.
+Indices greater than zero are for comments preceding the given key, where 1 is the top-most comment and the highest index comment is right above the key.
+
+Spaces can be added to a comment by creating a `comment/#n/space` metakey with the amount of spaces to the key.
+
+File ending comments must be assigned to the file root key.
+
+Empty lines in front of a key can be created by adding an empty `comment/#n/start` entry to it.
+
+```
+# Mount TOML file
+sudo kdb mount test_comments.toml user/tests/storage toml type
+
+# create a key/value pair, ready for comment decoration
+
+kdb set 'user/tests/storage/key' '1'
+
+# add an inline comment with 4 spaces before the '#'
+kdb meta-set 'user/tests/storage/key' 'comment/#0' ' This value is very interesting'
+kdb meta-set 'user/tests/storage/key' 'comment/#0/space' '4'
+
+# add some comments preceding the key
+kdb meta-set 'user/tests/storage/key' 'comment/#1' ' I am the top-most comment relative to my key.'
+kdb meta-set 'user/tests/storage/key' 'comment/#2' ' I am in the middle. Just boring.'
+kdb meta-set 'user/tests/storage/key' 'comment/#3' ' I am in the line right above my key.'
+
+# add file ending comments and empty lines
+kdb meta-set 'user/tests/storage' 'comment/#1' ' First file-ending comment'
+kdb meta-set 'user/tests/storage' 'comment/#2/start' ''
+kdb meta-set 'user/tests/storage' 'comment/#3' ' Second file-ending comment. I am the last line of the file.'
+
+
+# Print the content of the resulting TOML file
+cat `kdb file user/tests/storage`
+#> # I am the top-most comment relative to my key.'
+#> # I am in the middle. Just boring.'
+#> # I am in the line right above my key.'
+#> key = 1    # This value is very interesting
+#> # First file-ending comment+
+#>
+#> # Second file-ending comment. I am the list line of the file.
+
+
+# Cleanup
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
+
+
+## Comments in Arrays
 Any amount of comments can be placed between array elements or between the first element and the opening brackets.
 
 However, only one comment - an inline commment - can be placed after the last element and the closing brackets.
-When reading a TOML file with non-inline comments between the last element and the closing brackets, these comments get discarded.
+On reading, the plugin discards any non-inline comments between the last element and the closing brackets.
 
 ```
 # Mount TOML file
@@ -194,32 +250,32 @@ kdb set 'user/tests/storage/array/#1' '2'
 kdb set 'user/tests/storage/array/#2' '3'
 
 # Add inline comment after the array
-kdb meta-set 'user/tests/storage/array' 'comment/#0' 'Inline comment after the array'
+kdb meta-set 'user/tests/storage/array' 'comment/#0' ' Inline comment after the array'
 kdb meta-set 'user/tests/storage/array' 'comment/#0/start' '#'
 kdb meta-set 'user/tests/storage/array' 'comment/#0/space' '5'
 
 # Add comments for array elements
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#0' 'Inline comment of first element'
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#0' ' Inline comment of first element'
 kdb meta-set 'user/tests/storage/array/#0' 'comment/#0/start' '#'
 kdb meta-set 'user/tests/storage/array/#0' 'comment/#0/space' '4'
 
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#1' 'Comment preceding the first element'
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#1' ' Comment preceding the first element'
 kdb meta-set 'user/tests/storage/array/#0' 'comment/#1/start' '#'
 kdb meta-set 'user/tests/storage/array/#0' 'comment/#1/space' '4'
 
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#2' 'Another comment preceding the first element'
+kdb meta-set 'user/tests/storage/array/#0' 'comment/#2' ' Another comment preceding the first element'
 kdb meta-set 'user/tests/storage/array/#0' 'comment/#2/start' '#'
 kdb meta-set 'user/tests/storage/array/#0' 'comment/#2/space' '6'
 
-kdb meta-set 'user/tests/storage/array/#1' 'comment/#0' 'Inline comment of second element'
+kdb meta-set 'user/tests/storage/array/#1' 'comment/#0' ' Inline comment of second element'
 kdb meta-set 'user/tests/storage/array/#1' 'comment/#0/start' '#'
 kdb meta-set 'user/tests/storage/array/#1' 'comment/#0/space' '4'
 
-kdb meta-set 'user/tests/storage/array/#1' 'comment/#1' 'Comment preceding the second element'
+kdb meta-set 'user/tests/storage/array/#1' 'comment/#1' ' Comment preceding the second element'
 kdb meta-set 'user/tests/storage/array/#1' 'comment/#1/start' '#'
 kdb meta-set 'user/tests/storage/array/#1' 'comment/#1/space' '6'
 
-kdb meta-set 'user/tests/storage/array/#2' 'comment/#0' 'Inline comment of the last element'
+kdb meta-set 'user/tests/storage/array/#2' 'comment/#0' ' Inline comment of the last element'
 kdb meta-set 'user/tests/storage/array/#2' 'comment/#0/start' '#'
 kdb meta-set 'user/tests/storage/array/#2' 'comment/#0/space' '5'
 
@@ -285,23 +341,12 @@ kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
 ```
 In this example, `d` and `common` have the same parent (the file root). This means, they need to be sorted with each other. `d` would be placed before `common` by it's order (since it was set before, and thus, has lesser order).
-However, their order never gets compared, since `common` is a simple table and `d` is not, so `d` will get sorted before the table regardless of order
+However, their order never gets compared, since `common` is a simple table and `d` is not, so `d` will get sorted before the table regardless of order.
 
 # Limitations
 
 - Comments and newlines between the last array element and closing brackets are discarded.
 - Trailing commas in arrays and inline tables are discarded
 - Only spaces in front of comments are preserved.
-- Currently, Elektra's sparse arrays are not preserved on writing (they get a continuous array without index holes).
-
-# TODOs
-
-- Correct interaction with other plugins, especially directory value
-  - directoryvalue seems to be in conflict with the toml plugin
-  - eg on writing, when having a value on a simpletable, the dirval plugin steals all metakeys of the simpletable
-  - and the simpletable key loses all it's previous metakeys, like order and tomltype, resulting in incorrectly written TOML files
-  - (this happens on the KeySet the TOML plugin receives on kdbSet call, without any changes made by the TOML plugin)
-  - same happens for inline tables
-  - Problem is: dirval plugins sees inlinetable/simpletable key as directory key and splits them up by duplicating the table key,
-  assigning it the dirval suffix, while the old directory key only gets it's old name, but not the metakey.
-  As as result, the dirval key has the metakey, but not the inlinetable/simpletable key.
+- Sparse arrays are not preserved on writing, they get a continuous array without index holes.
+- Values on non-leaf keys are currently not supported, they get discarded.

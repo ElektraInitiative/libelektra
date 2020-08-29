@@ -2,6 +2,7 @@
 #include "utility.h"
 #include <kdbassert.h>
 #include <kdbhelper.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 typedef struct ArrayInfo_
@@ -11,6 +12,8 @@ typedef struct ArrayInfo_
 	struct ArrayInfo_ * next;
 } ArrayInfo;
 
+static void completeKeySetComments (KeySet * keys);
+static void completeKeyComments (Key * key);
 static void addMissingArrayKeys (KeySet * keys, Key * parent);
 static void pruneInvalidArrayKeys (KeySet * keys);
 static bool orderUnorderedKeys (KeySet * keys);
@@ -30,8 +33,63 @@ bool prepareKeySet (KeySet * keys, Key * parent)
 		ksSetCursor (keys, cursor);
 		return false;
 	}
+	completeKeySetComments (keys);
+	//completeKeyComments(parent);
 	ksSetCursor (keys, cursor);
 	return false;
+}
+
+static void completeKeySetComments (KeySet * keys)
+{
+	ksRewind (keys);
+	Key * key;
+	while ((key = ksNext (keys)) != NULL)
+	{
+		completeKeyComments (key);
+	}
+}
+
+static void completeKeyComments (Key * key)
+{
+	Key * meta;
+	keyRewindMeta (key);
+	for (size_t index = 0;; index++)
+	{
+		char * indexStr = indexToArrayString (index);
+		char name[32];
+		snprintf (name, 32, "comment/%s", indexStr);
+		elektraFree (indexStr);
+		if (findMetaKey (key, name) == NULL)
+		{ // Inline comment with index 0 is optional, so don't stop if not present
+			if (index == 0)
+			{
+				continue;
+			}
+			else
+			{
+				char nameStart[64];
+				snprintf (nameStart, 64, "%s/start", name);
+				if (findMetaKey (key, nameStart) == NULL)
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			char nameExt[64];
+			snprintf (nameExt, 64, "%s/start", name);
+			if (findMetaKey (key, nameExt) == NULL)
+			{
+				keySetMeta (key, nameExt, "#");
+			}
+			snprintf (nameExt, 64, "%s/space", name);
+			if (findMetaKey (key, nameExt) == NULL)
+			{
+				keySetMeta (key, nameExt, "0");
+			}
+		}
+	}
 }
 
 static bool orderUnorderedKeys (KeySet * keys)
@@ -55,6 +113,9 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 	Key * key;
 	while ((key = ksNext (keys)) != NULL)
 	{
+		if (keyCmp(key, parent) == 0) {
+			continue;
+		}
 		if (isTableArray (key) && !isArray (key))
 		{
 			arrays = updateArrayInfo (arrays, key, 0);
@@ -89,8 +150,7 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 		}
 		else
 		{
-			const Key * meta = findMetaKey (arrayRoot, "array");
-				keyUpdateArrayMetakey (arrayRoot, arrays->maxIndex);
+			keyUpdateArrayMetakey (arrayRoot, arrays->maxIndex);
 			keyDel (arrays->name);
 		}
 		ArrayInfo * next = arrays->next;

@@ -1033,7 +1033,7 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 
 	PLUGIN_CLOSE ();
 	keyDel (parentKey);
-	// remove (filename);
+	remove (filename);
 }
 
 static void testReadCompare (const char * filename, KeySet * expected)

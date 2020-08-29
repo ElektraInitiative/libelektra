@@ -33,7 +33,6 @@ typedef struct
 	bool errorSet;
 } Writer;
 
-// TODO: use commentlist from file
 typedef struct CommentList_
 {
 	size_t index;
@@ -94,7 +93,11 @@ int tomlWrite (KeySet * keys, Key * parent)
 	int result = 0;
 
 	result |= writeTree (root, writer);
-	result |= writeFileTrailingComments (parent, writer);
+	Key * parentKey = ksLookup (keys, parent, 0);
+	if (parentKey != NULL)
+	{
+		result |= writeFileTrailingComments (parentKey, writer);
+	}
 
 	destroyWriter (writer);
 	destroyTree (root);
@@ -186,8 +189,12 @@ static void writerError (Writer * writer, int err, const char * format, ...)
 static int writeTree (Node * node, Writer * writer)
 {
 	int result = 0;
-	CommentList * comments = collectComments (node->key, writer);
-	result |= writePrecedingComments (comments, writer);
+	CommentList * comments = NULL;
+	if (keyCmp (node->key, writer->rootKey) != 0)
+	{
+		comments = collectComments (node->key, writer);
+		result |= writePrecedingComments (comments, writer);
+	}
 
 	if (node->type == NT_SIMPLE_TABLE)
 	{
@@ -544,7 +551,7 @@ static CommentList * collectComments (Key * key, Writer * writer)
 	CommentList * commentRoot = NULL;
 	CommentList * commentBack = NULL;
 	size_t currIndex = 0;
-	while ((meta = keyNextMeta (key)) != 0)
+	while ((meta = keyNextMeta (key)) != NULL)
 	{
 		const char * pos = (const char *) keyUnescapedName (meta);
 		const char * stop = pos + keyGetUnescapedNameSize (meta);

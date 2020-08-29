@@ -1,5 +1,19 @@
 // clang-format off
 ksNew (128,
+
+	keyNew (PREFIX,
+		KEY_META, "comment/#1/start", "",
+		KEY_META, "comment/#1/space", "0",
+		KEY_META, "comment/#2/", " Comment on second-to-last line",
+		KEY_META, "comment/#2/start", "#",
+		KEY_META, "comment/#2/space", "0",
+		KEY_META, "comment/#3/", " Comment on last (non-empty) line",
+		KEY_META, "comment/#3/start", "#",
+		KEY_META, "comment/#3/space", "0",
+		KEY_META, "comment/#4/start", "",
+		KEY_META, "comment/#4/space", "0",
+	KEY_END),
+
 	keyNew (PREFIX "/a",
 		KEY_VALUE, "3",
 		KEY_META, "order", "0",
