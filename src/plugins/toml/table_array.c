@@ -1,3 +1,11 @@
+/**
+ * @file table_array.c
+ *
+ * @brief Contains functionaly for handling table arrays on reading.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
 #include "table_array.h"
 
 #include <kdbhelper.h>

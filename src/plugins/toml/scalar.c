@@ -1,3 +1,13 @@
+/**
+ * @file scalar.c
+ *
+ * @brief Functions for handling scalar key values, used on reading.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
+
 #include "scalar.h"
 
 #include <kdbassert.h>
@@ -78,31 +88,6 @@ void freeScalar (Scalar * scalar)
 	{
 		elektraFree (scalar->str);
 		elektraFree (scalar);
-	}
-}
-
-const char * getTypeCheckerType (const Scalar * scalar)
-{
-	switch (scalar->type)
-	{
-	case SCALAR_INTEGER_DEC:
-		return "long_long";
-	case SCALAR_INTEGER_HEX:
-	case SCALAR_INTEGER_OCT:
-	case SCALAR_INTEGER_BIN:
-		return "unsigned_long_long";
-	case SCALAR_BOOLEAN:
-		return "boolean";
-	case SCALAR_FLOAT_NUM:
-	case SCALAR_FLOAT_INF:
-	case SCALAR_FLOAT_POS_INF:
-	case SCALAR_FLOAT_NEG_INF:
-	case SCALAR_FLOAT_NAN:
-	case SCALAR_FLOAT_POS_NAN:
-	case SCALAR_FLOAT_NEG_NAN:
-		return "double";
-	default:
-		return "string";
 	}
 }
 

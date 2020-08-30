@@ -1,3 +1,13 @@
+/**
+ * @file node.c
+ *
+ * @brief Used for building a tree of a key set, which is used on writing.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
+
 #include "node.h"
 #include "utility.h"
 #include <kdbassert.h>
@@ -38,7 +48,6 @@ Node * buildTree (Node * parent, Key * root, KeySet * keys)
 			{
 				ksNext (keys);
 				Node * child = buildTree (node, key, keys);
-				// printf ("<< BUILT TREE, back at %s\n", keyName (node->key));
 				if (child == NULL)
 				{
 					destroyTree (node);

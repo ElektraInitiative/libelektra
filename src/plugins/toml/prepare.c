@@ -1,3 +1,13 @@
+/**
+ * @file prepare.c
+ *
+ * @brief Contains functionality for preparing a keyset to be written.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
+
 #include "prepare.h"
 #include "utility.h"
 #include <kdbassert.h>
@@ -34,7 +44,6 @@ bool prepareKeySet (KeySet * keys, Key * parent)
 		return false;
 	}
 	completeKeySetComments (keys);
-	//completeKeyComments(parent);
 	ksSetCursor (keys, cursor);
 	return false;
 }
@@ -51,7 +60,6 @@ static void completeKeySetComments (KeySet * keys)
 
 static void completeKeyComments (Key * key)
 {
-	Key * meta;
 	keyRewindMeta (key);
 	for (size_t index = 0;; index++)
 	{
@@ -113,7 +121,8 @@ static void addMissingArrayKeys (KeySet * keys, Key * parent)
 	Key * key;
 	while ((key = ksNext (keys)) != NULL)
 	{
-		if (keyCmp(key, parent) == 0) {
+		if (keyCmp (key, parent) == 0)
+		{
 			continue;
 		}
 		if (isTableArray (key) && !isArray (key))

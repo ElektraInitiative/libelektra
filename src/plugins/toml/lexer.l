@@ -1,3 +1,11 @@
+/**
+ * @file lexer.l
+ *
+ * @brief Contains the flex lexer.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
 %{
 #include <stdio.h>
 #include <stdlib.h>

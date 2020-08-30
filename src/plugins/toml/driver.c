@@ -1,3 +1,15 @@
+/**
+ * @file driver.c
+ *
+ * @brief Used by the TOML lexer/parser for generating appropriate Elektra Key/Values.
+ *
+ * All functions of the format driverEnter/driverExit are strongly bound to their similarly named grammar rules in the bison parser.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
+
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -130,9 +142,10 @@ void driverExitToml (Driver * driver)
 	{
 		return;
 	}
-	if (driver->commentRoot != NULL) {
-		Key * root = keyNew(keyName(driver->root), KEY_END);
-		ksAppendKey(driver->keys, root);
+	if (driver->commentRoot != NULL)
+	{
+		Key * root = keyNew (keyName (driver->root), KEY_END);
+		ksAppendKey (driver->keys, root);
 		driverDrainCommentsToKey (root, driver);
 	}
 }

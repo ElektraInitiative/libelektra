@@ -1,3 +1,11 @@
+/**
+ * @file utility.h
+ *
+ * @brief Contains functionality for handling Keys used throughout writing and reading.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
 #ifndef ELEKTRA_PLUGIN_TOML_UTILITY_H
 #define ELEKTRA_PLUGIN_TOML_UTILITY_H
 

@@ -1,3 +1,11 @@
+/**
+ * @file error.c
+ *
+ * @brief Contains functionality for handling errors.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
 #include "error.h"
 
 #include <kdberrors.h>

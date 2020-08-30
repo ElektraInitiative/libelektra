@@ -1,3 +1,12 @@
+/**
+ * @file parser.y
+ *
+ * @brief Contains the bison parser.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
 %{
 
 #include <stdio.h>

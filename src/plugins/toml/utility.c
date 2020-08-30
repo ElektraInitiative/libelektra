@@ -1,3 +1,11 @@
+/**
+ * @file utility.h
+ *
+ * @brief Contains functionality for handling Keys used throughout writing and reading.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
 #include "utility.h"
 
 #include <kdbassert.h>

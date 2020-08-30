@@ -1,3 +1,13 @@
+/**
+ * @file type.c
+ *
+ * @brief Used for validating types.
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *
+ */
+
+
 #include "type.h"
 
 #include <kdbassert.h>

@@ -1,3 +1,12 @@
+/**
+ * @file write.c
+ *
+ * @brief Contains functionality for writing a TOML file from an Elektra keyset
+ *
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ */
+
+
 #include <kdb.h>
 #include <kdbassert.h>
 #include <kdbease.h>
@@ -43,6 +52,7 @@ typedef struct CommentList_
 } CommentList;
 
 static Writer * createWriter (Key * parent);
+
 static void destroyWriter (Writer * writer);
 static void writerError (Writer * writer, int err, const char * format, ...);
 static int writeTree (Node * node, Writer * writer);
@@ -349,7 +359,7 @@ static int writeOpeningSequence (Node * node, Writer * writer)
 	case NT_ARRAY:
 		return fputs ("[", writer->f) == EOF;
 	case NT_INLINE_TABLE:
-		return fputs ("{", writer->f) == EOF;
+		return fputs ("{ ", writer->f) == EOF;
 	default:
 		return 0;
 	}
@@ -362,7 +372,7 @@ static int writeClosingSequence (Node * node, Writer * writer)
 	case NT_ARRAY:
 		return fputs ("]", writer->f) == EOF;
 	case NT_INLINE_TABLE:
-		return fputs ("}", writer->f) == EOF;
+		return fputs (" }", writer->f) == EOF;
 	default:
 		return 0;
 	}
