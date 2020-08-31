@@ -236,6 +236,7 @@ sudo kdb umount user/tests/storage
 ```
 
 ## Comments in Arrays
+
 Any amount of comments can be placed between array elements or between the first element and the opening brackets.
 
 However, only one comment - an inline commment - can be placed after the last element and the closing brackets.
