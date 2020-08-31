@@ -202,7 +202,7 @@ Empty lines in front of a key can be created by adding an empty `comment/#n/star
 # Mount TOML file
 sudo kdb mount test_comments.toml user/tests/storage toml type
 
-# create a key/value pair, ready for comment decoration
+# create a key-value pair, ready for comment decoration
 
 kdb set 'user/tests/storage/key' '1'
 
