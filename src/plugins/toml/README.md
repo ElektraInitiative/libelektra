@@ -305,7 +305,7 @@ However, the order is only relevant between elements with the same TOML-parent. 
 When sorting elements under the same TOML-parent, tables (simple and array) will always be sorted after non-table elements, regardless of their order.
 With this limitation, we prevent that a newly set key, that is not part of a certain table array/simple table, would be placed after the table declaration, making it a member of that table on a subsequent read.
 
- ```
+```
 # Mount TOML file
 sudo kdb mount test_order.toml user/tests/storage toml type
 
