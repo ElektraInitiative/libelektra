@@ -182,7 +182,7 @@ kdb rm -r user/tests/storage
 sudo kdb umount user/tests/storage
 ```
 
-# Comments/Empty Lines
+# Comments and Empty Lines
 
 The plugin preserves all comments with only one limitation for arrays. The amount of whitespace in front of a comment is also saved.
 For this purpose, each tab will get translated to 4 spaces.
@@ -236,6 +236,7 @@ sudo kdb umount user/tests/storage
 ```
 
 ## Comments in Arrays
+
 Any amount of comments can be placed between array elements or between the first element and the opening brackets.
 
 However, only one comment - an inline commment - can be placed after the last element and the closing brackets.
