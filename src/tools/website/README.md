@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This document aims to provide information about how to build Elektra’s Website,
+This document aims to provide information about how to build Elektra’s Website.
 
 ## Design and Structure
 
