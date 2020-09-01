@@ -6,7 +6,7 @@ This document aims to provide information about how to build Elektra’s Website
 
 ## Design and Structure
 
-The website is developed as single-page application (SPA) in [AngularJS (v1.5)](https://angularjs.org/).
+The website is developed as a single-page application (SPA) in [AngularJS (v1.5)](https://angularjs.org/).
 All dependencies are either already contained in the application project or (preferred) resolved through
 the dependency manager [npm](https://www.npmjs.com/) during installation (requires active internet connection).
 Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight
