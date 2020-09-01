@@ -284,7 +284,7 @@ int keyIsBelowOrSame (const Key * key, const Key * check)
 
 
 /**
- * Check if the key check is direct below the key key or not.
+ * Check whether the key `check` is directly below the key `key`.
  *
  @verbatim
 Example:

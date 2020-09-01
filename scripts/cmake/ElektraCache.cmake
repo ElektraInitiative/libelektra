@@ -393,6 +393,31 @@ mark_as_advanced (
 	XercesC_DIR
 	OPENSSL_INCLUDE_DIR
 	LUA_EXECUTABLE # The following settings are internal (not to be changed by users):
+	CARGO_EXECUTABLE
+	DIFF_COMMAND
+	GLib_CONFIG_INCLUDE_DIR
+	GLib_INCLUDE_DIRS
+	pkgcfg_lib_GIO_gio-2.0
+	pkgcfg_lib_GIO_glib-2.0
+	pkgcfg_lib_GIO_gobject-2.0
+	pkgcfg_lib_GLIB_glib-2.0
+	pkgcfg_lib_GLib_PKG_glib-2.0
+	pkgcfg_lib_GMODULE_glib-2.0
+	pkgcfg_lib_GMODULE_gmodule-2.0
+	pkgcfg_lib_GOBJECT_glib-2.0
+	pkgcfg_lib_GOBJECT_gobject-2.0
+	pkgcfg_lib_PC_LIBXML_xml2
+	pkgcfg_lib_PC_ZeroMQ_zmq
+	pkgcfg_lib_PC_libuv_dl
+	pkgcfg_lib_PC_libuv_nsl
+	pkgcfg_lib_PC_libuv_pthread
+	pkgcfg_lib_PC_libuv_rt
+	pkgcfg_lib_PC_libuv_uv
+	pkgcfg_lib_PC_yaml-cpp_yaml-cp
+	pkgcfg_lib__DBUS_PC_dbus-1
+	pkgcfg_lib__LIBSYSTEMD_PC_syst
+	pkgcfg_lib__OPENSSL_crypto
+	pkgcfg_lib__OPENSSL_ssl
 	SWIG_DIR
 	SWIG_VERSION
 	gtest_build_samples

@@ -63,7 +63,6 @@ Elektra:
 ## Installation Manuals
 
 These tutorials provide additional information on how to
-install and set up specific plugins and tools.
+install and set up specific tools.
 
-- [Snippet Sharing REST-Service](snippet-sharing-rest-service.md)
 - [Webui](install-webui.md)
