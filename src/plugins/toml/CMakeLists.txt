@@ -4,6 +4,10 @@ function (check_dependencies)
 		FALSE
 		PARENT_SCOPE)
 
+	set (USE_HOMEBREW_FLEX ${APPLE} AND EXISTS /usr/local/opt/flex)
+	if (USE_HOMEBREW_FLEX)
+		list (APPEND CMAKE_PREFIX_PATH "/usr/local/opt/flex")
+	endif (USE_HOMEBREW_FLEX)
 	find_package (FLEX 2.6.2 QUIET)
 
 	set (USE_HOMEBREW_BISON ${APPLE} AND EXISTS /usr/local/opt/bison)
