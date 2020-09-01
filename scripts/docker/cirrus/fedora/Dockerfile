@@ -2,6 +2,7 @@ FROM fedora:32
 
 RUN dnf upgrade -y && dnf install -y \
         augeas-devel \
+		bison \
         boost-devel \
         cmake \
         curl \
@@ -9,6 +10,7 @@ RUN dnf upgrade -y && dnf install -y \
         diffutils \
         file \
         findutils \
+		flex \
         gcc-c++ \
         git \
         glib2 \
