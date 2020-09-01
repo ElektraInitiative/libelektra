@@ -163,6 +163,7 @@ matrix:
             - bison
             - dbus
             - discount
+            - flex
             - gpgme
             - libev
             - libgcrypt
