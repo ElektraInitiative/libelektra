@@ -1157,7 +1157,7 @@ def deployDockerContainer(name, imageDesc, hostName) {
 def deployWebsite() {
   withDockerEnv(DOCKER_IMAGES.website) {
         sh "ls -al /usr/local/share/elektra/tool_data/website/public/"
-        sh "cp -Rf /usr/local/share/elektra/tool_data/website."
+        sh "cp -Rf /usr/local/share/elektra/tool_data/website ."
         sshPublisher(
             publishers: [
               sshPublisherDesc(
