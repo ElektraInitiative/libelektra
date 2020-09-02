@@ -1,13 +1,13 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "README" "" "August 2020" "" ""
+.TH "README" "" "September 2020" "" ""
 .
 .SH "Introduction"
-This document aims to provide information about how to build Elektra’s Website,
+This document aims to provide information about how to build Elektra’s Website\.
 .
 .SH "Design and Structure"
-The website is developed as single\-page application (SPA) in AngularJS (v1\.5) \fIhttps://angularjs\.org/\fR\. All dependencies are either already contained in the application project or (preferred) resolved through the dependency manager npm \fIhttps://www\.npmjs\.com/\fR during installation (requires active internet connection)\. Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the nodeJS based task runner grunt \fIhttp://gruntjs\.com/\fR (installed by npm)\.
+The website is developed as a single\-page application (SPA) in AngularJS (v1\.5) \fIhttps://angularjs\.org/\fR\. All dependencies are either already contained in the application project or (preferred) resolved through the dependency manager npm \fIhttps://www\.npmjs\.com/\fR during installation (requires active internet connection)\. Compiling (browserification, concatenation & minification), as well as other tasks like running a lightweight webserver are handled by the nodeJS based task runner grunt \fIhttp://gruntjs\.com/\fR (installed by npm)\.
 .
 .SH "Run and Configure"
 To install the website, make sure \fBwebsite\fR is included in TOOLS\. \fBnpm\fR is the only dependency\. Then use \fBmake install\fR to install the website\. It will be installed in \fB/usr/local/share/elektra/tool_data/website/public\fR\.
