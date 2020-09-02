@@ -4,13 +4,13 @@
 - infos/provides = storage/xml
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = unittest final memleak unfinished old nodoc
-- infos/description = Storage using libelektratools XML format.
+- infos/status = unittest final memleak unfinished old nodoc discouraged
+- infos/description = Storage using legacy XML format.
 
 ## Introduction
 
 This plugin is a storage plugin allowing Elektra to read and write XML
-formatted files. It uses the `libelektratools` 0.7 XML format.
+formatted files. It uses the legacy Elektra 0.7 XML format.
 
 This plugin can be used for migration of Key Databases
 from 0.7 -> 0.8. It should not be used otherwise.
