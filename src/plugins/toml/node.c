@@ -74,6 +74,16 @@ static Node * buildTreeTableArray (Node * parent, Key * root, KeySet * keys)
 	for (size_t i = 0; i <= max; i++)
 	{
 		Key * elementName = keyAppendIndex (i, root);
+
+		// Check if, we have got the array element root in the keyset
+		// This happens, if comments are associated to the table array declaration in a TOML file.
+		// If we have, use this key as root instead.and forward to the next key in the keyset
+		if (keyCmp (ksCurrent (keys), elementName) == 0)
+		{
+			keyDel (elementName);
+			elementName = ksCurrent (keys);
+			ksNext (keys);
+		}
 		Node * element = buildTree (node, elementName, keys);
 		if (!addChild (node, element))
 		{
