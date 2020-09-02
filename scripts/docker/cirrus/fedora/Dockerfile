@@ -10,7 +10,7 @@ RUN dnf upgrade -y && dnf install -y \
         diffutils \
         file \
         findutils \
-		flex \
+        flex \
         gcc-c++ \
         git \
         glib2 \
