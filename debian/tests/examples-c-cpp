@@ -4,66 +4,66 @@ set -e
 cd $ADTTMP
 
 for src in /usr/share/doc/libelektra-dev/examples/*.c; do
-  echo "Testing $(basename $src)..."
-  name=$(basename $src .c)
-  case "$name" in
-    namespace)
-      echo "  -> skipping, requires stdin"
-      echo
-      continue
-      ;;
-    *) ;;
-  esac
-  export TMP=$(mktemp -d --tmpdir=$PWD elektra.XXXXXXXX)
-  export TMPDIR=$TMP
-  export HOME=$TMP
+	echo "Testing $(basename $src)..."
+	name=$(basename $src .c)
+	case "$name" in
+	namespace)
+		echo "  -> skipping, requires stdin"
+		echo
+		continue
+		;;
+	*) ;;
+	esac
+	export TMP=$(mktemp -d --tmpdir=$PWD elektra.XXXXXXXX)
+	export TMPDIR=$TMP
+	export HOME=$TMP
 
-  gcc -std=gnu99 -Wall -Werror -pedantic -Wno-long-long -o $name $src $(pkg-config --cflags --libs elektra)
-  ./$name
-  echo
+	gcc -std=gnu99 -Wall -Werror -pedantic -Wno-long-long -o $name $src $(pkg-config --cflags --libs elektra)
+	./$name
+	echo
 done
 
 for src in /usr/share/doc/libelektra-dev/examples/cpp_example_*.cpp; do
-  echo "Testing $(basename $src)..."
-  name=$(basename $src .cpp)
-  case "$name" in
-    cpp_example_get)
-      echo "  -> skipping, as failing on missing lookup"
-      echo
-      continue
-      ;;
-    *) ;;
-  esac
-  export TMP=$(mktemp -d --tmpdir=$PWD elektra.XXXXXXXX)
-  export TMPDIR=$TMP
-  export HOME=$TMP
+	echo "Testing $(basename $src)..."
+	name=$(basename $src .cpp)
+	case "$name" in
+	cpp_example_get)
+		echo "  -> skipping, as failing on missing lookup"
+		echo
+		continue
+		;;
+	*) ;;
+	esac
+	export TMP=$(mktemp -d --tmpdir=$PWD elektra.XXXXXXXX)
+	export TMPDIR=$TMP
+	export HOME=$TMP
 
-  g++ -std=c++11 -Wall -Werror -pedantic -Wno-long-long -o $name $src $(pkg-config --cflags --libs elektra)
-  ./$name
-  echo
+	g++ -std=c++11 -Wall -Werror -pedantic -Wno-long-long -o $name $src $(pkg-config --cflags --libs elektra)
+	./$name
+	echo
 done
 
 (
-export TMP=$(mktemp -d --tmpdir=$PWD elektra.XXXXXXXX)
-export TMPDIR=$TMP
-export HOME=$TMP
-mkdir build-pkg-config
-cd build-pkg-config
-cp -a /usr/share/doc/libelektra-dev/examples/external/pkgconfig .
-cd pkgconfig
-make
-./application
-echo
+	export TMP=$(mktemp -d --tmpdir=$PWD elektra.XXXXXXXX)
+	export TMPDIR=$TMP
+	export HOME=$TMP
+	mkdir build-pkg-config
+	cd build-pkg-config
+	cp -a /usr/share/doc/libelektra-dev/examples/external/pkgconfig .
+	cd pkgconfig
+	make
+	./application
+	echo
 )
 
 (
-export TMP=$(mktemp -d --tmpdir=$PWD elektra.XXXXXXXX)
-export TMPDIR=$TMP
-export HOME=$TMP
-mkdir build-cmake
-cd build-cmake
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_VERBOSE_MAKEFILE=ON /usr/share/doc/libelektra-dev/examples/external/cmake
-make
-./application
-echo
+	export TMP=$(mktemp -d --tmpdir=$PWD elektra.XXXXXXXX)
+	export TMPDIR=$TMP
+	export HOME=$TMP
+	mkdir build-cmake
+	cd build-cmake
+	cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_VERBOSE_MAKEFILE=ON /usr/share/doc/libelektra-dev/examples/external/cmake
+	make
+	./application
+	echo
 )
