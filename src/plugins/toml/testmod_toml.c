@@ -113,6 +113,7 @@ static void testWriteReadArrayInlineTableAlternating (void);
 static void testWriteReadTable (void);
 static void testWriteReadTableNested (void);
 static void testWriteReadTableArray (void);
+static void testWriteReadTableArrayWithComments (void);
 static void testWriteReadSimpleTableInTableArray (void);
 static void testWriteReadSimpleTableBeforeTableArray (void);
 static void testWriteReadString (void);
@@ -205,6 +206,7 @@ static void testWriteRead (void)
 	testWriteReadArray ();
 	testWriteReadArrayNested ();
 	testWriteReadTableArray ();
+	testWriteReadTableArrayWithComments ();
 	testWriteReadTable ();
 	testWriteReadTableNested ();
 	testWriteReadInlineTable ();
@@ -730,6 +732,37 @@ static void testWriteReadTableArray (void)
 	SET_ORDER (10);
 	DUP_EXPECTED;
 
+
+	TEST_WR_FOOT;
+}
+
+static void testWriteReadTableArrayWithComments (void)
+{
+	TEST_WR_HEAD;
+
+	WRITE_KV ("key", "0");
+	SET_ORDER (0);
+	DUP_EXPECTED;
+
+	WRITE_KEY ("ta");
+	SET_ORDER (1);
+	SET_TOML_TYPE ("tablearray");
+	DUP_EXPECTED;
+	SET_ARRAY ("#0");
+
+	WRITE_KEY ("ta/#0");
+	SET_COMMENT (0, " inline comment", 4);
+	SET_COMMENT (1, " top-most preceding comment", 0);
+	SET_COMMENT (2, " preceding comment", 0);
+	DUP_EXPECTED;
+
+	WRITE_KV ("ta/#0/a", "1");
+	SET_ORDER (2);
+	DUP_EXPECTED;
+
+	WRITE_KV ("ta/#0/b", "2");
+	SET_ORDER (3);
+	DUP_EXPECTED;
 
 	TEST_WR_FOOT;
 }
