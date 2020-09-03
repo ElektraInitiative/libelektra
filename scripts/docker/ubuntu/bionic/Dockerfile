@@ -24,7 +24,6 @@ RUN apt-get update && apt-get -y install \
         libdbus-1-dev \
         libgit2-dev \
         libgpgme-dev \
-        libgtest-dev \
         liblua5.2-dev \
         libmarkdown2-dev \
         libssl-dev \

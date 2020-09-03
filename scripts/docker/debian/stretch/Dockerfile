@@ -27,7 +27,6 @@ RUN apt-get update \
         libyajl-dev \
         git \
         libgit2-dev \
-        libgtest-dev \
         libboost-all-dev \
         libssl-dev \
         libdbus-1-dev \
