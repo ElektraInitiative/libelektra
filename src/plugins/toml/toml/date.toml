@@ -1,0 +1,10 @@
+local_date_1 = 0000-01-01
+local_date_2 = 9999-12-31
+local_time_1 = 00:00:00
+local_time_2 = 23:59:60
+local_time_3 = 23:59:59.99999
+local_datetime_1 = 2000-12-31T10:00:00Z
+local_datetime_2 = 1985-04-12T23:20:50.52Z
+local_datetime_3 = 1990-12-31T23:59:60Z
+offset_datetime_1 = 1600-02-29T23:59:59+23:59
+offset_datetime_2 = 1937-01-01T12:00:27.87+00:20

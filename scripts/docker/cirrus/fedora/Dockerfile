@@ -2,6 +2,7 @@ FROM fedora:32
 
 RUN dnf upgrade -y && dnf install -y \
         augeas-devel \
+        bison \
         boost-devel \
         cmake \
         curl \
@@ -9,6 +10,7 @@ RUN dnf upgrade -y && dnf install -y \
         diffutils \
         file \
         findutils \
+        flex \
         gcc-c++ \
         git \
         glib2 \
@@ -49,4 +51,3 @@ RUN mkdir -p ${GTEST_ROOT} \
       -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
-

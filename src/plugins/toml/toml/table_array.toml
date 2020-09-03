@@ -1,0 +1,20 @@
+[[table_array_basic]]
+x = 1
+y = 2
+z = 3
+[[table_array_basic]]
+x = 1337
+y = 666
+z = 42
+[[table_array_basic]]
+x = 100
+y = 200
+z = 300
+[[table_array_maybe_empty]]
+[[table_array_maybe_empty]]
+[[table_array_maybe_empty]]
+some_content = 1
+[[table_array_maybe_empty]]
+[[table_array_maybe_empty]]
+some_content = 2
+[[table_array_maybe_empty]]

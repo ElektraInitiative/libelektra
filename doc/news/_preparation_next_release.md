@@ -51,11 +51,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin2>>
+### TOML
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Added the TOML plugin, which can read and write TOML files using flex and bison. _(Jakob Fischer)_
 
 ### <<Plugin3>>
 

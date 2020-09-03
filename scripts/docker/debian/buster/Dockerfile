@@ -10,6 +10,8 @@ RUN apt-get update \
         automake \
         autotools-dev \
         bison \
+        flex \
+        libc6-dbg \
         build-essential \
         cmake \
         curl \

@@ -8,6 +8,7 @@ RUN apk update \
         curl \
         diffutils \
         file \
+        flex \
         git \
         gtest-dev \
         ninja \

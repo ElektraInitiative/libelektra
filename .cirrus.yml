@@ -45,6 +45,7 @@ bsd_task:
       pkg install -y
       bison
       cmake
+      flex
       git
       libgit2
       ninja
@@ -125,6 +126,7 @@ mac_task:
       brew install dbus
       brew install discount
       brew install doxygen
+      brew install flex
       brew install glib
       brew install go
       brew install gpgme

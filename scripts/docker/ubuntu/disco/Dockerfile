@@ -8,6 +8,7 @@ RUN apt-get update && apt-get -y install \
         cmake \
         curl \
         ed \
+        flex \
         git \
         googletest \
         libantlr4-runtime-dev \
