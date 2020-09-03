@@ -169,7 +169,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- Update macOS builds to use gcc 10 and ruby 2.6.6. _(Mihael Pranjić)_
+- Update macOS builds to use gcc 10 and ruby 2.7.1 and Xcode 11.6. _(Mihael Pranjić)_
 - Update Ruby to version 2.6.6 on macOS. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
