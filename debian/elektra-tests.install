@@ -24,3 +24,4 @@ usr/share/libelektra-test/test-data/python/*
 usr/share/libelektra-test/test-data/quickdump/*
 usr/share/libelektra-test/test-data/specload/*
 usr/share/libelektra-test/test-data/gen/*
+usr/share/libelektra-test/test-data/toml/*
