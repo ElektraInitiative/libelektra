@@ -5,6 +5,7 @@ RUN apt-get update && apt-get -y install \
         automake \
         autotools-dev \
         build-essential \
+        bison \
         clang \
         cmake \
         curl \
@@ -14,6 +15,7 @@ RUN apt-get update && apt-get -y install \
         dh-lua \
         discount \
         doxygen \
+        flex \
         git \
         git-buildpackage \
         graphviz \
