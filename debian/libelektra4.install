@@ -29,6 +29,7 @@ usr/lib/*/elektra4/libelektra-specload.so
 usr/lib/*/elektra4/libelektra-spec.so*
 usr/lib/*/elektra4/libelektra-storage.so*
 usr/lib/*/elektra4/libelektra-sync.so*
+usr/lib/*/elektra4/libelektra-toml.so*
 usr/lib/*/elektra4/libelektra-type.so*
 usr/lib/*/elektra4/libelektra-validation.so*
 usr/lib/*/elektra4/libelektra-wresolver.so*
