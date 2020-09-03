@@ -4,7 +4,7 @@
 #export DH_VERBOSE=1
 
 # Which plugins and tools should be built
-ELEKTRA_PLUGINS='ALL;mozprefs;multifile;-gitresolver;-jni;-ruby;-haskell;-yamlcpp'
+ELEKTRA_PLUGINS='ALL;mozprefs;multifile;-gitresolver;-jni;-ruby;-haskell;-yamlcpp;toml'
 ELEKTRA_TOOLS='ALL'
 ELEKTRA_BINDINGS='cpp;lua;python;INTERCEPT'
 
