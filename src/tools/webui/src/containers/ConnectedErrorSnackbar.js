@@ -8,21 +8,23 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import {connect} from "react-redux";
-import {bindActionCreators} from "redux";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
-import {dismissError} from "../actions";
+import { dismissError } from "../actions";
 import ErrorSnackbar from "../components/ErrorSnackbar.jsx";
 
 const mapStateToProps = state => {
-	const { error } = state;
-	return {
-		error: error && error.instanceError ? false // instance error is already handled by configuration page
-						      :
-						      error
-	};
+  const { error } = state;
+  return {
+    error:
+      error && error.instanceError
+        ? false // instance error is already handled by configuration page
+        : error
+  };
 };
 
-const mapDispatchToProps = dispatch => bindActionCreators ({ dismissError }, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ dismissError }, dispatch);
 
-export default connect (mapStateToProps, mapDispatchToProps) (ErrorSnackbar);
+export default connect(mapStateToProps, mapDispatchToProps)(ErrorSnackbar);

@@ -8,16 +8,26 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import {connect} from "react-redux";
-import {bindActionCreators} from "redux";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
-import {copyKey, getKey, moveKey, sendNotification, updateInstance} from "../actions";
+import {
+  copyKey,
+  getKey,
+  moveKey,
+  sendNotification,
+  updateInstance
+} from "../actions";
 import TreeView from "../components/TreeView.jsx";
 
 const mapStateToProps = (state, { instanceId, treeRef }) => {
-	return { kdb: state.kdb && state.kdb[instanceId], ref: treeRef };
+  return { kdb: state.kdb && state.kdb[instanceId], ref: treeRef };
 };
 
-const mapDispatchToProps = dispatch => bindActionCreators ({ getKey, moveKey, copyKey, updateInstance, sendNotification }, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    { getKey, moveKey, copyKey, updateInstance, sendNotification },
+    dispatch
+  );
 
-export default connect (mapStateToProps, mapDispatchToProps) (TreeView);
+export default connect(mapStateToProps, mapDispatchToProps)(TreeView);

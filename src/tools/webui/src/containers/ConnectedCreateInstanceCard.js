@@ -8,16 +8,20 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-import {connect} from "react-redux";
-import {bindActionCreators} from "redux";
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 
-import {createInstance, sendNotification, unaddInstance} from "../actions";
+import { createInstance, sendNotification, unaddInstance } from "../actions";
 import CreateInstanceCard from "../components/CreateInstanceCard.jsx";
 
 const mapStateToProps = state => {
-	return { instances: state.instances };
+  return { instances: state.instances };
 };
 
-const mapDispatchToProps = dispatch => bindActionCreators ({ createInstance, unaddInstance, sendNotification }, dispatch);
+const mapDispatchToProps = dispatch =>
+  bindActionCreators(
+    { createInstance, unaddInstance, sendNotification },
+    dispatch
+  );
 
-export default connect (mapStateToProps, mapDispatchToProps) (CreateInstanceCard);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateInstanceCard);
