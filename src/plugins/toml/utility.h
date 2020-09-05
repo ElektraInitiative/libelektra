@@ -28,7 +28,6 @@ bool isArrayElement (const Key * key);
 bool isEmptyArray (Key * key);
 bool isBareString (const char * str);
 size_t getArrayMax (Key * key);
-const Key * findMetaKey (Key * key, const char * metakeyName);
 bool isArray (Key * key);
 bool isSimpleTable (Key * key);
 bool isTableArray (Key * key);

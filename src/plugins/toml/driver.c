@@ -494,7 +494,7 @@ void driverEnterArray (Driver * driver)
 		return;
 	}
 	driver->indexStack = pushIndex (driver->indexStack, 0);
-	const Key * meta = findMetaKey (driver->parentStack->key, "array"); // check for nested arrays
+	const Key * meta = keyGetMeta (driver->parentStack->key, "array"); // check for nested arrays
 	if (meta != NULL)
 	{
 		ELEKTRA_ASSERT (elektraStrCmp (keyString (meta), "") != 0,

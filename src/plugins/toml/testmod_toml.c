@@ -1111,7 +1111,7 @@ static void testReadMustError (const char * filename)
 
 static void printError (Key * parent)
 {
-	const Key * meta = findMetaKey (parent, "error/reason");
+	const Key * meta = keyGetMeta (parent, "error/reason");
 	if (meta != NULL)
 	{
 		ELEKTRA_LOG_DEBUG ("ERROR: %s\n", keyString (meta));

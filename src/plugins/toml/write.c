@@ -316,7 +316,7 @@ static bool isListElement (Node * node)
 
 static bool hasInlineComment (Node * node)
 {
-	return findMetaKey (node->key, "comment/#0/space") != NULL;
+	return keyGetMeta (node->key, "comment/#0/space") != NULL;
 }
 
 static bool isLastChild (Node * node)
@@ -402,8 +402,8 @@ static int writeScalar (Key * key, Writer * writer)
 	// ELEKTRA_ASSERT (keyGetUnescapedNameSize (key) != 0, "NULL keys should have been handled by null plugin");
 
 	keyRewindMeta (key);
-	const Key * origValue = findMetaKey (key, "origvalue");
-	const Key * type = findMetaKey (key, "type");
+	const Key * origValue = keyGetMeta (key, "origvalue");
+	const Key * type = keyGetMeta (key, "type");
 	const char * valueStr = keyString (key);
 	if (origValue != NULL)
 	{
