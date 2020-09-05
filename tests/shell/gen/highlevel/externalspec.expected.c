@@ -27,7 +27,6 @@
 #include "externalspec.actual.h"
 
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -39,8 +38,8 @@
 #include <elektra/conversion.h>
 
 
-
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_externalspec [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
+static const char * helpFallback =
+	"Usage: tests_script_gen_highlevel_externalspec [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
 static int isHelpMode (void)
 {
@@ -48,7 +47,7 @@ static int isHelpMode (void)
 
 	typedef int (*func) (void);
 	func * goptsIsHelpModePtr = (func *) elektraInvokeGetFunction (gopts, "ishelpmode");
-	
+
 	int ret = goptsIsHelpModePtr == NULL ? 0 : (*goptsIsHelpModePtr) ();
 
 	elektraInvokeClose (gopts, NULL);
@@ -75,18 +74,16 @@ static int isHelpMode (void)
  *            @p error will be unchanged
  *
  * @see elektraOpen
- */// 
+ *///
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
-	
-	
+
+
 	KeySet * defaults = NULL;
 
-	KeySet * contract = ksNew (2,
-	keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
-	keyNew ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
-	KS_END);
-;
+	KeySet * contract = ksNew (2, keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+				   keyNew ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END), KS_END);
+	;
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/externalspec", defaults, contract, error);
 
@@ -125,7 +122,6 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
  */
 void exitForSpecload (int argc, const char ** argv)
 {
-	
 }
 
 
@@ -135,7 +131,7 @@ void exitForSpecload (int argc, const char ** argv)
  * @param elektra  The Elektra instance produced by loadConfiguration.
  * @param usage	   If this is not NULL, it will be used instead of the default usage line.
  * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
- */// 
+ *///
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix)
 {
 	if (elektra == NULL)
@@ -156,7 +152,6 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 }
 
 
-
 // clang-format off
 
 // clang-format on
@@ -166,12 +161,9 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 // -------------------------
 
 
-
 // -------------------------
 // Enum accessor functions
 // -------------------------
-
-
 
 
 // clang-format off
@@ -183,8 +175,6 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 // -------------------------
 
 
-
-
 // clang-format off
 
 // clang-format on
@@ -192,6 +182,3 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 // -------------------------
 // Struct accessor functions
 // -------------------------
-
-
-

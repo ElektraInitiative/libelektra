@@ -27,7 +27,6 @@
 #include "nosetter.actual.h"
 
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -40,18 +39,17 @@
 
 static KeySet * embeddedSpec (void)
 {
-	return ksNew (6,
-	keyNew ("/", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
-	keyNew ("/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
-	keyNew ("/myfloatarray/#", KEY_META, "default", "2.5", KEY_META, "type", "float", KEY_END),
-	keyNew ("/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
-	keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END),
-	KS_END);
-;
+	return ksNew (6, keyNew ("/", KEY_META, "mountpoint", "tests_gen_elektra_simple.ini", KEY_END),
+		      keyNew ("/mydouble", KEY_META, "default", "0.0", KEY_META, "type", "double", KEY_END),
+		      keyNew ("/myfloatarray/#", KEY_META, "default", "2.5", KEY_META, "type", "float", KEY_END),
+		      keyNew ("/myint", KEY_META, "default", "0", KEY_META, "type", "long", KEY_END),
+		      keyNew ("/mystring", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+		      keyNew ("/print", KEY_META, "default", "0", KEY_META, "type", "boolean", KEY_END), KS_END);
+	;
 }
 
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_nosetter [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
+static const char * helpFallback =
+	"Usage: tests_script_gen_highlevel_nosetter [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
 static int isHelpMode (void)
 {
@@ -59,7 +57,7 @@ static int isHelpMode (void)
 
 	typedef int (*func) (void);
 	func * goptsIsHelpModePtr = (func *) elektraInvokeGetFunction (gopts, "ishelpmode");
-	
+
 	int ret = goptsIsHelpModePtr == NULL ? 0 : (*goptsIsHelpModePtr) ();
 
 	elektraInvokeClose (gopts, NULL);
@@ -86,17 +84,15 @@ static int isHelpMode (void)
  *            @p error will be unchanged
  *
  * @see elektraOpen
- */// 
+ *///
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = embeddedSpec ();
-	
 
-	KeySet * contract = ksNew (2,
-	keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
-	keyNew ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
-	KS_END);
-;
+
+	KeySet * contract = ksNew (2, keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+				   keyNew ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END), KS_END);
+	;
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/nosetter", defaults, contract, error);
 
@@ -164,7 +160,7 @@ void exitForSpecload (int argc, const char ** argv)
  * @param elektra  The Elektra instance produced by loadConfiguration.
  * @param usage	   If this is not NULL, it will be used instead of the default usage line.
  * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
- */// 
+ *///
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix)
 {
 	if (elektra == NULL)
@@ -185,7 +181,6 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 }
 
 
-
 // clang-format off
 
 // clang-format on
@@ -195,12 +190,9 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 // -------------------------
 
 
-
 // -------------------------
 // Enum accessor functions
 // -------------------------
-
-
 
 
 // clang-format off
@@ -212,8 +204,6 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 // -------------------------
 
 
-
-
 // clang-format off
 
 // clang-format on
@@ -221,6 +211,3 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
 // -------------------------
 // Struct accessor functions
 // -------------------------
-
-
-

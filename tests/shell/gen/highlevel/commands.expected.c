@@ -27,7 +27,6 @@
 #include "commands.actual.h"
 
 
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,24 +40,37 @@
 static KeySet * embeddedSpec (void)
 {
 	return ksNew (13,
-	keyNew ("/", KEY_META, "command", "", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdb", KEY_META, "mountpoint", "tests_gen_elektra_commands.ini", KEY_META, "type", "string", KEY_END),
-	keyNew ("/dynamic/#", KEY_META, "args", "remaining", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/get", KEY_META, "command", "get", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdbGet", KEY_META, "type", "string", KEY_END),
-	keyNew ("/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/get/meta", KEY_META, "command", "meta", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdbGetMeta", KEY_META, "type", "string", KEY_END),
-	keyNew ("/get/meta/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/get/meta/metaname", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/get/meta/verbose", KEY_META, "default", "0", KEY_META, "opt", "v", KEY_META, "opt/arg", "none", KEY_META, "opt/long", "verbose", KEY_META, "type", "boolean", KEY_END),
-	keyNew ("/get/verbose", KEY_META, "default", "0", KEY_META, "opt", "v", KEY_META, "opt/arg", "none", KEY_META, "opt/long", "verbose", KEY_META, "type", "boolean", KEY_END),
-	keyNew ("/printversion", KEY_META, "default", "0", KEY_META, "opt", "v", KEY_META, "opt/arg", "none", KEY_META, "opt/long", "version", KEY_META, "type", "boolean", KEY_END),
-	keyNew ("/setter", KEY_META, "command", "set", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdbSet", KEY_META, "type", "string", KEY_END),
-	keyNew ("/setter/keyname", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	keyNew ("/setter/value", KEY_META, "args/index", "1", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
-	KS_END);
-;
+		      keyNew ("/", KEY_META, "command", "", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdb",
+			      KEY_META, "mountpoint", "tests_gen_elektra_commands.ini", KEY_META, "type", "string", KEY_END),
+		      keyNew ("/dynamic/#", KEY_META, "args", "remaining", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+		      keyNew ("/get", KEY_META, "command", "get", KEY_META, "default", "", KEY_META, "gen/command/function",
+			      "commandKdbGet", KEY_META, "type", "string", KEY_END),
+		      keyNew ("/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META,
+			      "type", "string", KEY_END),
+		      keyNew ("/get/meta", KEY_META, "command", "meta", KEY_META, "default", "", KEY_META, "gen/command/function",
+			      "commandKdbGetMeta", KEY_META, "type", "string", KEY_END),
+		      keyNew ("/get/meta/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "default", "",
+			      KEY_META, "type", "string", KEY_END),
+		      keyNew ("/get/meta/metaname", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_META, "default", "",
+			      KEY_META, "type", "string", KEY_END),
+		      keyNew ("/get/meta/verbose", KEY_META, "default", "0", KEY_META, "opt", "v", KEY_META, "opt/arg", "none", KEY_META,
+			      "opt/long", "verbose", KEY_META, "type", "boolean", KEY_END),
+		      keyNew ("/get/verbose", KEY_META, "default", "0", KEY_META, "opt", "v", KEY_META, "opt/arg", "none", KEY_META,
+			      "opt/long", "verbose", KEY_META, "type", "boolean", KEY_END),
+		      keyNew ("/printversion", KEY_META, "default", "0", KEY_META, "opt", "v", KEY_META, "opt/arg", "none", KEY_META,
+			      "opt/long", "version", KEY_META, "type", "boolean", KEY_END),
+		      keyNew ("/setter", KEY_META, "command", "set", KEY_META, "default", "", KEY_META, "gen/command/function",
+			      "commandKdbSet", KEY_META, "type", "string", KEY_END),
+		      keyNew ("/setter/keyname", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+		      keyNew ("/setter/value", KEY_META, "args/index", "1", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+		      KS_END);
+	;
 }
 
-static const char * helpFallback = "Usage: tests_script_gen_highlevel_commands [OPTION...] [COMMAND [...]|[<dynamic>...]]\n\nOPTIONS\n  --help                      Print this help message\n  -v, --version               \n\nCOMMANDS\n  get                         \n  set                         \n\nPARAMETERS\n  dynamic...                  \n";
+static const char * helpFallback =
+	"Usage: tests_script_gen_highlevel_commands [OPTION...] [COMMAND [...]|[<dynamic>...]]\n\nOPTIONS\n  --help                      "
+	"Print this help message\n  -v, --version               \n\nCOMMANDS\n  get                         \n  set                        "
+	" \n\nPARAMETERS\n  dynamic...                  \n";
 
 static int isHelpMode (void)
 {
@@ -66,7 +78,7 @@ static int isHelpMode (void)
 
 	typedef int (*func) (void);
 	func * goptsIsHelpModePtr = (func *) elektraInvokeGetFunction (gopts, "ishelpmode");
-	
+
 	int ret = goptsIsHelpModePtr == NULL ? 0 : (*goptsIsHelpModePtr) ();
 
 	elektraInvokeClose (gopts, NULL);
@@ -93,17 +105,15 @@ static int isHelpMode (void)
  *            @p error will be unchanged
  *
  * @see elektraOpen
- */// 
+ *///
 int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 {
 	KeySet * defaults = embeddedSpec ();
-	
 
-	KeySet * contract = ksNew (2,
-	keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
-	keyNew ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
-	KS_END);
-;
+
+	KeySet * contract = ksNew (2, keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+				   keyNew ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END), KS_END);
+	;
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/commands", defaults, contract, error);
 
@@ -171,7 +181,7 @@ void exitForSpecload (int argc, const char ** argv)
  * @param elektra  The Elektra instance produced by loadConfiguration.
  * @param usage	   If this is not NULL, it will be used instead of the default usage line.
  * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
- */// 
+ *///
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix)
 {
 	if (elektra == NULL)
@@ -199,11 +209,11 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
  *
  * @param elektra  The Elektra instance produced by loadConfiguration.
  * @param usage	   Custom applicationd defined data. Will be passed untouched to the invoked command functions. Maybe NULL.
- * 
+ *
  * @return If @p elektra is NULL -1 is returned.
  *         If one of the invoked command functions returns a non-zero value, that value is returned.
  *         Otherwise the return value of the terminal command function is returned.
- */// 
+ *///
 int runCommands (Elektra * elektra, void * userData)
 {
 	if (elektra == NULL)
@@ -211,19 +221,15 @@ int runCommands (Elektra * elektra, void * userData)
 		return -1;
 	}
 
-	KeySet * commands = ksNew(4,
-		keyNew ("/", KEY_FUNC, commandKdb, KEY_END),
-		keyNew ("/get", KEY_FUNC, commandKdbGet, KEY_END),
-		keyNew ("/get/meta", KEY_FUNC, commandKdbGetMeta, KEY_END),
-		keyNew ("/setter", KEY_FUNC, commandKdbSet, KEY_END),
-		KS_END
-	);
+	KeySet * commands = ksNew (4, keyNew ("/", KEY_FUNC, commandKdb, KEY_END), keyNew ("/get", KEY_FUNC, commandKdbGet, KEY_END),
+				   keyNew ("/get/meta", KEY_FUNC, commandKdbGetMeta, KEY_END),
+				   keyNew ("/setter", KEY_FUNC, commandKdbSet, KEY_END), KS_END);
 
 	typedef int (*commandFunction) (Elektra *, kdb_boolean_t, void *);
 
 	Key * lastCommand = keyNew ("/", KEY_END);
-	const char * command = ELEKTRA_GET (String) (elektra, keyName(lastCommand) + 1);
-	while(strlen(command) > 0)
+	const char * command = ELEKTRA_GET (String) (elektra, keyName (lastCommand) + 1);
+	while (strlen (command) > 0)
 	{
 		Key * commandKey = ksLookup (commands, lastCommand, 0);
 		const void * rawFunc = keyValue (commandKey);
@@ -237,14 +243,14 @@ int runCommands (Elektra * elektra, void * userData)
 		}
 
 		keyAddBaseName (lastCommand, command);
-		command = ELEKTRA_GET (String) (elektra, keyName(lastCommand) + 1);
+		command = ELEKTRA_GET (String) (elektra, keyName (lastCommand) + 1);
 	}
 
 	Key * commandKey = ksLookup (commands, lastCommand, 0);
 	const void * rawFunc = keyValue (commandKey);
 	commandFunction func = *(commandFunction *) rawFunc;
 	int result = func (elektra, true, userData);
-	
+
 	keyDel (lastCommand);
 	ksDel (commands);
 	return result;
@@ -259,12 +265,9 @@ int runCommands (Elektra * elektra, void * userData)
 // -------------------------
 
 
-
 // -------------------------
 // Enum accessor functions
 // -------------------------
-
-
 
 
 // clang-format off
@@ -276,8 +279,6 @@ int runCommands (Elektra * elektra, void * userData)
 // -------------------------
 
 
-
-
 // clang-format off
 
 // clang-format on
@@ -285,6 +286,3 @@ int runCommands (Elektra * elektra, void * userData)
 // -------------------------
 // Struct accessor functions
 // -------------------------
-
-
-
