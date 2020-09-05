@@ -272,12 +272,24 @@ int init (int argc, char ** argv);
  *
  */
 #define compare_key(pk1, pk2)                                                                                                              \
+	do                                                                                                                                 \
 	{                                                                                                                                  \
 		nbTest++;                                                                                                                  \
 		Key * mmk1 = (Key *) pk1;                                                                                                  \
 		Key * mmk2 = (Key *) pk2;                                                                                                  \
 		if (mmk1 != mmk2)                                                                                                          \
 		{                                                                                                                          \
+			if (mmk1 == NULL)                                                                                                  \
+			{                                                                                                                  \
+				printf ("%s:%d: error in %s: First key is NULL (but second isn't)\n", __FILE__, __LINE__, __func__);       \
+				break;                                                                                                     \
+			}                                                                                                                  \
+                                                                                                                                           \
+			if (mmk2 == NULL)                                                                                                  \
+			{                                                                                                                  \
+				printf ("%s:%d: error in %s: Second key is NULL (but first isn't)\n", __FILE__, __LINE__, __func__);       \
+				break;                                                                                                     \
+			}                                                                                                                  \
 			compare_key_name (mmk1, mmk2);                                                                                     \
                                                                                                                                            \
 			compare_key_value (mmk1, mmk2);                                                                                    \
@@ -322,7 +334,7 @@ int init (int argc, char ** argv);
 					__FILE__, __LINE__, __func__, ELEKTRA_QUOTE (mmk1), ELEKTRA_QUOTE (mmk2));                         \
 			}                                                                                                                  \
 		}                                                                                                                          \
-	}
+	} while (0)
 
 
 /**Compare two keysets.

@@ -6,6 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <kdb.h>
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -36,6 +37,11 @@
 
 Key * backendGetMountpoint (const Plugin * backend)
 {
+	if (backend == NULL)
+	{
+		return NULL;
+	}
+
 	Key * mp = ksLookupByName (backend->config, "system/mountpoint", 0);
 
 	return mp;
@@ -50,22 +56,9 @@ Key * backendGetMountpoint (const Plugin * backend)
  */
 static void appendKeyToBackendKs (Key * mp, const char * nameEnding, KeySet * config, const char * value)
 {
-	char * dest = elektraMalloc (strlen (keyName (mp)) + strlen (nameEnding) + 1);
-
-	strcpy (dest, keyName (mp));
-	strcat (dest, nameEnding);
-
-	Key * key;
-	if (!value)
-	{
-		key = keyNew (dest, KEY_END);
-	}
-	else
-	{
-		char * copiedValue = elektraMalloc (sizeof (value));
-		strcpy (copiedValue, value);
-		key = keyNew (dest, KEY_VALUE, copiedValue, KEY_END);
-	}
+	Key * key = keyDup (mp);
+	keyAddName (key, nameEnding);
+	keySetString (key, value);
 	ksAppendKey (config, key);
 }
 
@@ -79,7 +72,7 @@ static void appendKeyToBackendKs (Key * mp, const char * nameEnding, KeySet * co
  */
 static Plugin * backendOpenMissing (KeySet * global, KeySet * modules, Key * mp, Key * errorKey)
 {
-	KeySet * missingConfig = ksNew (5, KS_END);
+	KeySet * missingConfig = ksNew (12, KS_END);
 
 	appendKeyToBackendKs (mp, "", missingConfig, 0);
 	appendKeyToBackendKs (mp, "/config", missingConfig, 0);
@@ -95,12 +88,11 @@ static Plugin * backendOpenMissing (KeySet * global, KeySet * modules, Key * mp,
 	appendKeyToBackendKs (mp, "/set/setstorage/#0/reference", missingConfig, "missing");
 
 	Plugin * backend = elektraPluginOpen ("backend", modules, missingConfig, errorKey);
-
-	if (!backend)
+	if (backend == NULL)
 	{
-		elektraFree (backend);
-		return 0;
+		return NULL;
 	}
+
 	backend->global = global;
 
 	return backend;
@@ -143,16 +135,14 @@ system/elektra/mountpoints/<name>
  */
 Plugin * backendOpen (KeySet * elektraConfig, KeySet * modules, KeySet * global, Key * errorKey)
 {
-	Plugin * backend = elektraPluginOpen ("backend", modules, elektraConfig, errorKey);
-	if (!backend)
+	Plugin * backend = elektraPluginOpen ("backend", modules, ksDup (elektraConfig), errorKey);
+	if (backend == NULL)
 	{
-		elektraPluginClose (backend, errorKey);
-
 		ksRewind (elektraConfig);
 
-		Key * mp = backendGetMountpoint (backend);
+		Key * mp = ksLookupByName (elektraConfig, "system/mountpoint", 0);
 
-		if (mp)
+		if (mp != NULL)
 		{
 			backend = backendOpenMissing (global, modules, mp, errorKey);
 		}
@@ -176,24 +166,33 @@ Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * fil
 {
 	elektraKeySetName (errorKey, "", KEY_CASCADING_NAME | KEY_EMPTY_NAME);
 
-	KeySet * config =
-		ksNew (30, keyNew ("system/elektra/mountpoints/default", KEY_END), keyNew ("system/elektra/mountpoints/default/config", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/config/mountpoint", KEY_VALUE, "system/elektra/mountpoints/default", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/config/path", KEY_VALUE, file, KEY_END), keyNew ("system/elektra/mountpoints/default/error", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/error/rollback", KEY_END), keyNew ("system/elektra/mountpoints/default/error/rollback/#0", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/error/rollback/#0/label", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/error/rollback/#0/name", KEY_VALUE, KDB_RESOLVER, KEY_END), keyNew ("system/elektra/mountpoints/default/get", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/get/getresolver", KEY_END), keyNew ("system/elektra/mountpoints/default/get/getresolver/#0", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/get/getresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/get/getstorage", KEY_END), keyNew ("system/elektra/mountpoints/default/get/getstorage/#0", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/label", KEY_VALUE, KDB_STORAGE, KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/name", KEY_VALUE, KDB_STORAGE, KEY_END), keyNew ("system/elektra/mountpoints/default/set", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/set/commit", KEY_END), keyNew ("system/elektra/mountpoints/default/set/commit/#0", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/set/commit/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/set/setresolver", KEY_END), keyNew ("system/elektra/mountpoints/default/set/setresolver/#0", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/set/setresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/set/setstorage", KEY_END), keyNew ("system/elektra/mountpoints/default/set/setstorage/#0", KEY_END),
-		       keyNew ("system/elektra/mountpoints/default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
+	KeySet * config = ksNew (
+		30, keyNew ("system/elektra/mountpoints/default", KEY_END), keyNew ("system/elektra/mountpoints/default/config", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/config/mountpoint", KEY_VALUE, "system/elektra/mountpoints/default", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/config/path", KEY_VALUE, file, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/error", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/error/rollback", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/error/rollback/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/error/rollback/#0/label", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/error/rollback/#0/name", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getresolver", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getresolver/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getstorage", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getstorage/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/label", KEY_VALUE, KDB_STORAGE, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/name", KEY_VALUE, KDB_STORAGE, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/commit", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/commit/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/commit/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setresolver", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setresolver/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setstorage", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setstorage/#0", KEY_END),
+		keyNew ("system/elektra/mountpoints/default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
 
 #ifdef ENABLE_TRACER
 	KeySet * tracerConfig = ksNew (10, keyNew ("default/error/prerollback", KEY_END), keyNew ("default/error/prerollback/#0", KEY_END),
@@ -207,12 +206,9 @@ Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * fil
 #endif
 
 	Plugin * backend = elektraPluginOpen ("backend", modules, config, errorKey);
-
-	if (!backend)
+	if (backend == NULL)
 	{
-		elektraPluginClose (backend, errorKey);
-		elektraFree (backend);
-		return 0;
+		return NULL;
 	}
 	backend->global = global;
 
@@ -234,7 +230,7 @@ Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 
 	keyAddBaseName (mp, keyBaseName (cur));
 
-	KeySet * moduleConfig = ksNew (9, KS_END);
+	KeySet * moduleConfig = ksNew (12, KS_END);
 
 	appendKeyToBackendKs (mp, "", moduleConfig, 0);
 	appendKeyToBackendKs (mp, "/config", moduleConfig, 0);
@@ -253,10 +249,9 @@ Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 	elektraCursor save = ksGetCursor (modules);
 
 	Plugin * backend = elektraPluginOpen ("backend", modules, moduleConfig, errorKey);
-	if (!backend)
+	if (backend == NULL)
 	{
-		elektraFree (backend);
-		return 0;
+		return NULL;
 	}
 
 	backend->global = global;
@@ -287,11 +282,10 @@ Plugin * backendOpenVersion (KeySet * global, KeySet * modules, Key * errorKey)
 		       keyNew ("system/elektra/version/set/setstorage/#0/reference", KEY_VALUE, "version", KEY_END), KS_END);
 
 	Plugin * backend = elektraPluginOpen ("backend", modules, versionConfig, errorKey);
-	if (!backend)
+	if (backend == NULL)
 	{
 		/* Could not allocate plugin */
-		elektraFree (backend);
-		return 0;
+		return NULL;
 	}
 	backend->global = global;
 
@@ -314,7 +308,8 @@ Plugin * backendOpenVersion (KeySet * global, KeySet * modules, Key * errorKey)
  */
 int backendUpdateSize (Split * split, int index, Key * parent, int size)
 {
-	switch (keyGetNamespace (parent))
+	elektraNamespace namespace = keyGetNamespace (parent);
+	switch (namespace)
 	{
 	case KEY_NS_SPEC:
 		split->specsizes[index] = size;
@@ -333,7 +328,7 @@ int backendUpdateSize (Split * split, int index, Key * parent, int size)
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
 	case KEY_NS_NONE:
-		ELEKTRA_ASSERT (0, "invalid namespace %d", keyGetNamespace (parent));
+		ELEKTRA_ASSERT (0, "invalid namespace %d", namespace);
 		return -1;
 	}
 

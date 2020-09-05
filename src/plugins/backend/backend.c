@@ -871,7 +871,7 @@ int elektraBackendSet (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	// TODO implement global plugins
 	BackendHandle * bh = elektraPluginGetData (handle);
-	if (!bh || !bh->setplugins)
+	if (bh == NULL)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined correctly!");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -943,7 +943,7 @@ int elektraBackendSet (Plugin * handle, KeySet * ks, Key * parentKey)
 int elektraBackendCommit (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	BackendHandle * bh = elektraPluginGetData (handle);
-	if (!bh || !bh->setplugins)
+	if (bh == NULL)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined correctly!");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -971,7 +971,7 @@ int elektraBackendCommit (Plugin * handle, KeySet * ks, Key * parentKey)
 int elektraBackendError (Plugin * handle, KeySet * ks, Key * parentKey)
 {
 	BackendHandle * bh = elektraPluginGetData (handle);
-	if (!bh || !bh->errorplugins)
+	if (bh == NULL)
 	{
 		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined correctly!");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;

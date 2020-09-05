@@ -53,37 +53,40 @@ KeySet * set_simple (void)
 KeySet * set_default (void)
 {
 	return ksNew (27, keyNew ("system/elektra/mountpoints/default", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/config", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/config/mountpoint", KEY_VALUE, "user/tests/backend/default", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/config/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
-		keyNew ("system/elektra/mountpoints/default/error", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/error/rollback", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/error/rollback/#0", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/error/rollback/#0/label", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("system/elektra/mountpoints/default/error/rollback/#0/name", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("system/elektra/mountpoints/default/get", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/get/getresolver", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/get/getresolver/#0", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/get/getresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("system/elektra/mountpoints/default/get/getstorage", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/get/getstorage/#0", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/label", KEY_VALUE, KDB_STORAGE, KEY_END),
-		keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/name", KEY_VALUE, KDB_STORAGE, KEY_END),
-		keyNew ("system/elektra/mountpoints/default/set", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/set/commit", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/set/commit/#0", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/set/commit/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("system/elektra/mountpoints/default/set/setresolver", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/set/setresolver/#0", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/set/setresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
-		keyNew ("system/elektra/mountpoints/default/set/setstorage", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/set/setstorage/#0", KEY_END),
-		keyNew ("system/elektra/mountpoints/default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
+		      keyNew ("system/elektra/mountpoints/default/config", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/config/mountpoint", KEY_VALUE, "user/tests/backend/default", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/config/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/error", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/error/rollback", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/error/rollback/#0", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/error/rollback/#0/label", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/error/rollback/#0/name", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/get", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/get/getresolver", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/get/getresolver/#0", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/get/getresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/get/getstorage", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/get/getstorage/#0", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/label", KEY_VALUE, KDB_STORAGE, KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/get/getstorage/#0/name", KEY_VALUE, KDB_STORAGE, KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/set", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/set/commit", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/set/commit/#0", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/set/commit/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/set/setresolver", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/set/setresolver/#0", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/set/setresolver/#0/reference", KEY_VALUE, KDB_RESOLVER, KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/set/setstorage", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/set/setstorage/#0", KEY_END),
+		      keyNew ("system/elektra/mountpoints/default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
 }
 
 Plugin * open_backend (KeySet * config, KeySet * modules, KeySet * global, Key * errorKey)
 {
 	Plugin * backend = elektraPluginOpen ("backend", modules, ksDup (config), errorKey);
+	output_error (errorKey);
+	output_warnings (errorKey);
+
 	if (backend != 0)
 	{
 		backend->global = global;
@@ -97,49 +100,31 @@ Plugin * open_backend (KeySet * config, KeySet * modules, KeySet * global, Key *
 
 KeySet * set_simpleconf (void)
 {
-	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END),
-		      keyNew ("system/more", KEY_END),
-		      keyNew ("system/more/config", KEY_END),
-		      keyNew ("system/more/config/below", KEY_END),
-		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
-		      keyNew ("system/path", KEY_END),
-		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END),
-		      keyNew ("user/more", KEY_END),
-		      keyNew ("user/more/config", KEY_END),
-		      keyNew ("user/more/config/below", KEY_END),
-		      keyNew ("user/path", KEY_END),
+	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system/more", KEY_END),
+		      keyNew ("system/more/config", KEY_END), keyNew ("system/more/config/below", KEY_END),
+		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END), keyNew ("system/path", KEY_END),
+		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END), keyNew ("user/more", KEY_END),
+		      keyNew ("user/more/config", KEY_END), keyNew ("user/more/config/below", KEY_END), keyNew ("user/path", KEY_END),
 		      KS_END);
 }
 
 KeySet * set_backrefconf (void)
 {
-	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END),
-		      keyNew ("system/more", KEY_END),
-		      keyNew ("system/more/config", KEY_END),
-		      keyNew ("system/more/config/below", KEY_END),
-		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/backref", KEY_END),
-		      keyNew ("system/path", KEY_END),
-		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END),
-		      keyNew ("user/more", KEY_END),
-		      keyNew ("user/more/config", KEY_END),
-		      keyNew ("user/more/config/below", KEY_END),
-		      keyNew ("user/path", KEY_END),
+	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system/more", KEY_END),
+		      keyNew ("system/more/config", KEY_END), keyNew ("system/more/config/below", KEY_END),
+		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/backref", KEY_END), keyNew ("system/path", KEY_END),
+		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END), keyNew ("user/more", KEY_END),
+		      keyNew ("user/more/config", KEY_END), keyNew ("user/more/config/below", KEY_END), keyNew ("user/path", KEY_END),
 		      KS_END);
 }
 
 KeySet * set_defaultconf (void)
 {
-	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END),
-		      keyNew ("system/more", KEY_END),
-		      keyNew ("system/more/config", KEY_END),
-		      keyNew ("system/more/config/below", KEY_END),
-		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/default", KEY_END),
-		      keyNew ("system/path", KEY_END),
-		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END),
-		      keyNew ("user/more", KEY_END),
-		      keyNew ("user/more/config", KEY_END),
-		      keyNew ("user/more/config/below", KEY_END),
-		      keyNew ("user/path", KEY_END),
+	return ksNew (10, keyNew ("system/anything", KEY_VALUE, "backend", KEY_END), keyNew ("system/more", KEY_END),
+		      keyNew ("system/more/config", KEY_END), keyNew ("system/more/config/below", KEY_END),
+		      keyNew ("system/mountpoint", KEY_VALUE, "user/tests/backend/default", KEY_END), keyNew ("system/path", KEY_END),
+		      keyNew ("user/anything", KEY_VALUE, "plugin", KEY_END), keyNew ("user/more", KEY_END),
+		      keyNew ("user/more/config", KEY_END), keyNew ("user/more/config/below", KEY_END), keyNew ("user/path", KEY_END),
 		      KS_END);
 }
 
@@ -178,7 +163,7 @@ static void test_simple (void)
 	elektraModulesInit (modules, 0);
 
 	KeySet * global = ksNew (0, KS_END);
-	Key * errorKey = 0;
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * backend = open_backend (set_simple (), modules, global, errorKey);
 
 	exit_if_fail (backend != 0, "no backend found");
@@ -237,6 +222,8 @@ static void test_simple (void)
 	ksDel (modules);
 
 	ksDel (global);
+
+	keyDel (errorKey);
 }
 
 static void test_default (void)
@@ -285,39 +272,38 @@ static void test_default (void)
 
 KeySet * set_backref (void)
 {
-	return ksNew (
-		50, keyNew ("system/elektra/mountpoints/backref", KEY_END),
+	return ksNew (50, keyNew ("system/elektra/mountpoints/backref", KEY_END),
 
-		keyNew ("system/elektra/mountpoints/backref/config", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/config/anything", KEY_VALUE, "backend", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/config/more", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/config/more/config", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/config/more/config/below", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/config/mountpoint", KEY_VALUE, "user/tests/backend/backref", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/config/path", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/config", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/config/anything", KEY_VALUE, "backend", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/config/more", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/config/more/config", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/config/more/config/below", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/config/mountpoint", KEY_VALUE, "user/tests/backend/backref", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/config/path", KEY_END),
 
-		keyNew ("system/elektra/mountpoints/backref/error", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/error/prerollback", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config/anything", KEY_VALUE, "plugin", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config/more", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config/more/config", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config/more/config/below", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config/path", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/label", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/name", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error/prerollback", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config/anything", KEY_VALUE, "plugin", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config/more", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config/more/config", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config/more/config/below", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/config/path", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/label", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/error/prerollback/#0/name", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
 
-		keyNew ("system/elektra/mountpoints/backref/get", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/get/pregetstorage", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/get/pregetstorage/#0", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/get/pregetstorage/#0/reference", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/get", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/get/pregetstorage", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/get/pregetstorage/#0", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/get/pregetstorage/#0/reference", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
 
-		keyNew ("system/elektra/mountpoints/backref/set", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/set/presetstorage", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/set/presetstorage/#0", KEY_END),
-		keyNew ("system/elektra/mountpoints/backref/set/presetstorage/#0/reference", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
-		KS_END);
+		      keyNew ("system/elektra/mountpoints/backref/set", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/set/presetstorage", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/set/presetstorage/#0", KEY_END),
+		      keyNew ("system/elektra/mountpoints/backref/set/presetstorage/#0/reference", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
+		      KS_END);
 }
 
 static void test_backref (void)

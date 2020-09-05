@@ -557,7 +557,8 @@ int mountBackend (KDB * kdb, Plugin * backend, Key * errorKey ELEKTRA_UNUSED)
 
 	Key * mp = backendGetMountpoint (backend);
 
-	char * mountpoint = elektraMalloc (sizeof keyString (mp));
+	/* 20 is enough for any of the combinations below. */
+	char * mountpoint = elektraMalloc (keyGetValueSize (mp) + 20);
 
 	/* Note that you must set the refcounter to the number of insertions
 	   into the trie */

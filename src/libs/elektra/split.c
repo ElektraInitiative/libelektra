@@ -64,6 +64,7 @@ Split * splitNew (void)
 	ret->syncbits = elektraCalloc (sizeof (int) * ret->alloc);
 	ret->systemsizes = elektraCalloc (sizeof (ssize_t) * ret->alloc);
 	ret->usersizes = elektraCalloc (sizeof (ssize_t) * ret->alloc);
+	ret->specsizes = elektraCalloc (sizeof (ssize_t) * ret->alloc);
 	ret->dirsizes = elektraCalloc (sizeof (ssize_t) * ret->alloc);
 
 	return ret;
@@ -90,6 +91,10 @@ void splitDel (Split * keysets)
 	elektraFree (keysets->handles);
 	elektraFree (keysets->parents);
 	elektraFree (keysets->syncbits);
+	elektraFree (keysets->systemsizes);
+	elektraFree (keysets->usersizes);
+	elektraFree (keysets->specsizes);
+	elektraFree (keysets->dirsizes);
 	elektraFree (keysets);
 }
 
@@ -116,6 +121,10 @@ void splitRemove (Split * split, size_t where)
 		split->handles[i] = split->handles[i + 1];
 		split->parents[i] = split->parents[i + 1];
 		split->syncbits[i] = split->syncbits[i + 1];
+		split->systemsizes[i] = split->systemsizes[i + 1];
+		split->usersizes[i] = split->usersizes[i + 1];
+		split->specsizes[i] = split->specsizes[i + 1];
+		split->dirsizes[i] = split->dirsizes[i + 1];
 	}
 }
 
@@ -133,6 +142,10 @@ static void splitResize (Split * split)
 	elektraRealloc ((void **) &split->handles, split->alloc * sizeof (KDB *));
 	elektraRealloc ((void **) &split->parents, split->alloc * sizeof (Key *));
 	elektraRealloc ((void **) &split->syncbits, split->alloc * sizeof (int));
+	elektraRealloc ((void **) &split->systemsizes, split->alloc * sizeof (ssize_t));
+	elektraRealloc ((void **) &split->usersizes, split->alloc * sizeof (ssize_t));
+	elektraRealloc ((void **) &split->specsizes, split->alloc * sizeof (ssize_t));
+	elektraRealloc ((void **) &split->dirsizes, split->alloc * sizeof (ssize_t));
 }
 
 /**
@@ -170,6 +183,12 @@ ssize_t splitAppend (Split * split, Plugin * backend, Key * parentKey, int syncb
 	split->handles[n] = backend;
 	split->parents[n] = parentKey;
 	split->syncbits[n] = syncbits;
+
+	// FIXME: somehow find correct sizes
+	split->systemsizes[n] = 0;
+	split->usersizes[n] = 0;
+	split->specsizes[n] = 0;
+	split->dirsizes[n] = 0;
 
 	return n;
 }
@@ -477,13 +496,12 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Plugin *
 	const size_t sizeOfStaticText = 300;
 
 	Key * curHandleMountpoint = backendGetMountpoint (curHandle);
-	Key * otherHandleMountpoint = backendGetMountpoint (otherHandle);
+	Key * otherHandleMountpoint = otherHandle == NULL ? NULL : backendGetMountpoint (otherHandle);
 
-	size_t size = keyGetValueSize (curHandleMountpoint)*2 + keyGetNameSize (k) + strlen (msg) +
-		      sizeOfStaticText;
+	size_t size = keyGetValueSize (curHandleMountpoint) * 2 + keyGetNameSize (k) + strlen (msg) + sizeOfStaticText;
 	if (otherHandle)
 	{
-		size += keyGetValueSize (otherHandleMountpoint)*2;
+		size += keyGetValueSize (otherHandleMountpoint) * 2;
 	}
 	char * warningMsg = elektraMalloc (size);
 	strcpy (warningMsg, "drop key ");
