@@ -30,7 +30,7 @@ The plugin can read any kind of TOML string: bare, basic, literal, basic multili
 However, it will write back all non-bare strings as basic strings or it's multiline version.
 Therefore, any string set with `kdb set` must be treated as a basic string and possible escape sequences and special meanings of quotation characters must be taken care of.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_strings.toml user/tests/storage toml type
 
@@ -65,7 +65,7 @@ No automatic inference of this metakey is done on writing.
 
 TOML's simple tables are represented by setting the `tomltype` metakey to `simpletable`.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_table.toml user/tests/storage toml type
 
@@ -100,7 +100,7 @@ sudo kdb umount user/tests/storage
 
 Table arrays are represented by setting the `tomltype` metakey to `tablearray`. It is not required to also set the array metakey, since the plugin will set the metakey, if it is missing.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_table_array.toml user/tests/storage toml type
 
@@ -134,7 +134,7 @@ sudo kdb umount user/tests/storage
 
 Inline tables are represented by setting the `tomltype` metakey to `inlinetable`. The plugin also supports reading/writing nested inline tables.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_inline_table.toml user/tests/storage toml type
 
@@ -159,7 +159,7 @@ sudo kdb umount user/tests/storage
 
 Arrays are recognized by the `array` metakey. On writing, the plugin will detect arrays automatically and set the appropriate metakey if it is missing.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_array.toml user/tests/storage toml type
 
@@ -198,7 +198,7 @@ File ending comments must be assigned to the file root key.
 
 Empty lines in front of a key can be created by adding an empty `comment/#n/start` entry to it. In this case, no `comment/#n` key is needed.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_comments.toml user/tests/storage toml type
 
@@ -242,7 +242,7 @@ Any amount of comments can be placed between array elements or between the first
 However, only one comment - an inline comment - can be placed after the last element and the closing brackets.
 On reading, the plugin discards any non-inline comments between the last element and the closing brackets.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_array_comments.toml user/tests/storage toml type
 
@@ -306,7 +306,7 @@ However, the order is only relevant between elements with the same TOML-parent. 
 When sorting elements under the same TOML-parent, tables (simple and array) will always be sorted after non-table elements, regardless of their order.
 With this limitation, we prevent that a newly set key, that is not part of a certain table array/simple table, would be placed after the table declaration, making it a member of that table on a subsequent read.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_order.toml user/tests/storage toml type
 
