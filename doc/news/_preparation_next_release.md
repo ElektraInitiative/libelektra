@@ -120,7 +120,15 @@ you up to date with the multi-language support provided by Elektra.
 ## Scripts
 
 - Fix googletest framework path in debian configure script. _(Mihael Pranjić)_
-- <<TODO>>
+- The [fish completion script](../../scripts/completion/kdb.fish) does not fail any more, if you try to complete a simple
+  command that expects a namespace. For example, completing
+
+  ```sh
+  kdb ls ‸
+  ```
+
+  with the tab key (<kbd>⇥</kbd>) (`‸` represents the current cursor position) should work correctly again. _(René Schwaiger)_
+
 - <<TODO>>
 
 ## Documentation

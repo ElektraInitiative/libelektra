@@ -361,7 +361,7 @@ end
 complete -c kdb -n 'not __fish_kdb_subcommand' -x -a '(__fish_kdb_print_subcommands -v)'
 
 set -l arguments complete editor export file fstab get meta-get import ls meta-ls rm meta-rm set meta-set sget smount spec-mount test umount
-set -l completion_function "__fish_kdb_needs_namespace $arguments"
+set -l completion_function "__fish_kdb_needs_namespace $arguments" 1
 complete -c kdb -n "$completion_function" -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace cp mv 2' -x -a '(__fish_kdb_print_namespaces)'
 complete -c kdb -n '__fish_kdb_needs_namespace merge 4' -x -a '(__fish_kdb_print_namespaces)'
