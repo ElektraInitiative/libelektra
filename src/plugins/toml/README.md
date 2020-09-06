@@ -239,7 +239,7 @@ sudo kdb umount user/tests/storage
 
 Any amount of comments can be placed between array elements or between the first element and the opening brackets.
 
-However, only one comment - an inline commment - can be placed after the last element and the closing brackets.
+However, only one comment - an inline comment - can be placed after the last element and the closing brackets.
 On reading, the plugin discards any non-inline comments between the last element and the closing brackets.
 
 ```
@@ -301,7 +301,7 @@ sudo kdb umount user/tests/storage
 The plugin preserves the file order by the usage of the metakey `order`. When reading a file, the order metakey will be set according to the order as read in the file.
 If new keys are added, eg. via `kdb set`, the order of the set key will be set to the next-to-highest order value present in the existing key set.
 
-However, the order is only relevant between elements with the same TOML-parent. For example keys of a simple table are only sorted with respecet to each other, not with any keys outside that table. If that table has it's order changed and moves to another position in the file, so will it's subkeys.
+However, the order is only relevant between elements with the same TOML-parent. For example keys of a simple table are only sorted with respect to each other, not with any keys outside that table. If that table has it's order changed and moves to another position in the file, so will it's subkeys.
 
 When sorting elements under the same TOML-parent, tables (simple and array) will always be sorted after non-table elements, regardless of their order.
 With this limitation, we prevent that a newly set key, that is not part of a certain table array/simple table, would be placed after the table declaration, making it a member of that table on a subsequent read.
@@ -352,7 +352,7 @@ While the plugin has good capabilities in handling the TOML file format, it curr
 
 - Sparse arrays are not preserved on writing, they get a continuous array without index holes.
 - Values on non-leaf keys are currently not supported, they get discarded.
-- Custom metakeys cannot be written by the plugin, so they get discared.
+- Custom metakeys cannot be written by the plugin, so they get discarded.
 
 Additionally, there are some minor limitations related to the TOML file format, mostly related to the preservation of the original file structure:
 
