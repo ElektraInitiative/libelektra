@@ -222,13 +222,13 @@ kdb meta-set 'user/tests/storage' 'comment/#3' ' Second file-ending comment. I a
 
 # Print the content of the resulting TOML file
 cat `kdb file user/tests/storage`
-#> # I am the top-most comment relative to my key.'
-#> # I am in the middle. Just boring.'
-#> # I am in the line right above my key.'
+#> # I am the top-most comment relative to my key.
+#> # I am in the middle. Just boring.
+#> # I am in the line right above my key.
 #> key = 1    # This value is very interesting
 #> # First file-ending comment
 #>
-#> # Second file-ending comment. I am the list line of the file.
+#> # Second file-ending comment. I am the last line of the file.
 
 # Cleanup
 kdb rm -r user/tests/storage
@@ -288,7 +288,7 @@ cat `kdb file user/tests/storage`
 #> 1,    # Inline comment of first element
 #>       # Comment preceding the second element
 #> 2,    # Inline comment of second element
-#> 3     # Inline comment of third element
+#> 3     # Inline comment of the last element
 #> ]     # Inline comment after the array
 
 # Cleanup
@@ -322,9 +322,9 @@ kdb set 'user/tests/storage/d' '3'
 # The keys are ordered as they were set
 
 cat `kdb file user/tests/storage`
-#> common.c = 2
+#> common.c = 0
 #> common.b = 1
-#> common.a = 0
+#> common.a = 2
 #> d = 3
 
 # Create a simple table for the three keys under `common`
