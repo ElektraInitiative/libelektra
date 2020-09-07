@@ -51,7 +51,6 @@ static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
 static bool sameString (const char * raw, const char * transformed, char terminator, int terminatorCount);
-static bool isSpecialString (const char * str);
 static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, char terminator, int terminatorCount,
 				  Driver * driver);
 
@@ -841,6 +840,7 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		driverError (driver, ERROR_INTERNAL, 0, "Wanted to assign scalar to top parent key, but top parent key is NULL.");
 		return;
 	}
+
 	char * elektraStr = translateScalar (driver->lastScalar);
 	if (elektraStr == NULL)
 	{
@@ -849,32 +849,31 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 	}
 	keySetString (driver->parentStack->key, elektraStr);
 
-	if (!isSpecialString (elektraStr))
+	switch (driver->lastScalar->type)
 	{
-		switch (driver->lastScalar->type)
+	case SCALAR_STRING_LITERAL:
+		assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '\'', 1, driver);
+		break;
+	case SCALAR_STRING_ML_LITERAL:
+		assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '\'', 3, driver);
+		break;
+	case SCALAR_STRING_BASIC:
+		assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '"', 1, driver);
+		break;
+	case SCALAR_STRING_ML_BASIC:
+		assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '"', 3, driver);
+		break;
+	case SCALAR_BOOLEAN:
+		keySetMeta (driver->parentStack->key, "type", "boolean");
+		break;
+	case SCALAR_BINARY:
+		break;
+	default:
+		if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
 		{
-		case SCALAR_STRING_LITERAL:
-			assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '\'', 1, driver);
-			break;
-		case SCALAR_STRING_ML_LITERAL:
-			assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '\'', 3, driver);
-			break;
-		case SCALAR_STRING_BASIC:
-			assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '"', 1, driver);
-			break;
-		case SCALAR_STRING_ML_BASIC:
-			assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '"', 3, driver);
-			break;
-		case SCALAR_BOOLEAN:
-			keySetMeta (driver->parentStack->key, "type", "boolean");
-			break;
-		default:
-			if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
-			{
-				keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
-			}
-			break;
+			keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
 		}
+		break;
 	}
 	elektraFree (elektraStr);
 
@@ -885,7 +884,10 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, char terminator, int terminatorCount,
 				  Driver * driver)
 {
-	keySetMeta (key, "type", "string");
+	if (elektraStrLen (translatedStr) > 1) // only assign it on non-empty strings, otherwise the type plugin complains
+	{
+		keySetMeta (key, "type", "string");
+	}
 	if (!sameString (origStr, translatedStr, terminator, terminatorCount))
 	{
 		char * orig = stripTerminators (origStr, terminatorCount);
@@ -973,9 +975,4 @@ void driverErrorGeneric (Driver * driver, int err, const char * caller, const ch
 		emitElektraError (driver->root, err, msg);
 		ELEKTRA_LOG_DEBUG ("Error: %s\n", msg);
 	}
-}
-
-static bool isSpecialString (const char * str)
-{
-	return elektraStrCmp (str, "@NULL") == 0 || elektraStrCmp (str, "@EMPTY") == 0;
 }

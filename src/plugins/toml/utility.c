@@ -371,3 +371,20 @@ bool isLeaf (Key * leafCandidate, KeySet * ks)
 	ksSetCursor (ks, cursor);
 	return true;
 }
+
+bool isBase64String (const char * str)
+{
+	const char * prefix = "@BASE64";
+	if (elektraStrLen (str) < elektraStrLen (prefix))
+	{
+		return false;
+	}
+	for (size_t i = 0; i < elektraStrLen (prefix) - 1; i++)
+	{
+		if (str[i] != prefix[i])
+		{
+			return false;
+		}
+	}
+	return true;
+}

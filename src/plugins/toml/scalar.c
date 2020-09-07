@@ -86,7 +86,10 @@ void freeScalar (Scalar * scalar)
 {
 	if (scalar != NULL)
 	{
-		elektraFree (scalar->str);
+		if (scalar->str != NULL)
+		{
+			elektraFree (scalar->str);
+		}
 		elektraFree (scalar);
 	}
 }
@@ -131,6 +134,9 @@ char * translateScalar (const Scalar * scalar)
 		return elektraStrDup (scalar->str);
 	case SCALAR_STRING_BARE:
 		return elektraStrDup (scalar->str);
+	case SCALAR_BINARY: // binary translation itself is done by base64 plugin
+			    // We only remove the quotes here
+		return elektraStrNDup (scalar->str + 1, elektraStrLen (scalar->str) - 3);
 	default:
 		ELEKTRA_ASSERT (0, "All possible scalar enums must be handled, but got into default branch");
 		return NULL;

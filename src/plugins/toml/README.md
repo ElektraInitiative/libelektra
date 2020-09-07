@@ -2,7 +2,7 @@
 - infos/author = Jakob Fischer <jakobfischer93@gmail.com>
 - infos/licence = BSD
 - infos/provides = storage/toml
-- infos/needs = null base64
+- infos/needs = base64
 - infos/recommends = type
 - infos/placements = getstorage setstorage
 - infos/status = experimental unfinished
@@ -19,10 +19,6 @@ For parsing TOML files, the plugins uses Flex and Bison.
 # Requirements
 
 The plugin needs Flex (>=2.6.2) and Bison (>=3).
-
-# NULL/empty keys
-
-The plugin supports null and empty keys with the help of the [null](../null/README.md) plugin.
 
 # Strings
 

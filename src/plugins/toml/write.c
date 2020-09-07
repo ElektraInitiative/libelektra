@@ -401,10 +401,16 @@ static int writeScalar (Key * key, Writer * writer)
 	int result = 0;
 	// ELEKTRA_ASSERT (keyGetUnescapedNameSize (key) != 0, "NULL keys should have been handled by null plugin");
 
-	keyRewindMeta (key);
+
 	const Key * origValue = keyGetMeta (key, "origvalue");
 	const Key * type = keyGetMeta (key, "type");
 	const char * valueStr = keyString (key);
+
+	if (isBase64String (valueStr))
+	{
+		return writeQuoted (valueStr, '\'', 1, writer);
+	}
+
 	if (origValue != NULL)
 	{
 		valueStr = keyString (origValue);
@@ -436,6 +442,7 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		result |= fputs (valueStr, writer->f) == EOF;
 	}
+
 	else
 	{
 		result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
