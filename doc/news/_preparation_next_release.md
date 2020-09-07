@@ -134,7 +134,9 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - Describe hierarchy and limitations of [hosts plugin](https://www.libelektra.org/plugins/hosts). _(Markus Raab)_
-- <<TODO>>
+- The Doxygen PDF documentation now also requires the packages
+  - `stix` (part of `texlive-fonts-extra`) and
+  - `stmaryrd` (part of `texlive-math-extra`). _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
