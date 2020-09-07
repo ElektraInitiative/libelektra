@@ -30,7 +30,7 @@ The plugin can read any kind of TOML string: bare, basic, literal, basic multili
 However, it will write back all non-bare strings as basic strings or it's multiline version.
 Therefore, any string set with `kdb set` must be treated as a basic string and possible escape sequences and special meanings of quotation characters must be taken care of.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_strings.toml user/tests/storage toml type
 
@@ -65,7 +65,7 @@ No automatic inference of this metakey is done on writing.
 
 TOML's simple tables are represented by setting the `tomltype` metakey to `simpletable`.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_table.toml user/tests/storage toml type
 
@@ -100,7 +100,7 @@ sudo kdb umount user/tests/storage
 
 Table arrays are represented by setting the `tomltype` metakey to `tablearray`. It is not required to also set the array metakey, since the plugin will set the metakey, if it is missing.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_table_array.toml user/tests/storage toml type
 
@@ -134,7 +134,7 @@ sudo kdb umount user/tests/storage
 
 Inline tables are represented by setting the `tomltype` metakey to `inlinetable`. The plugin also supports reading/writing nested inline tables.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_inline_table.toml user/tests/storage toml type
 
@@ -159,7 +159,7 @@ sudo kdb umount user/tests/storage
 
 Arrays are recognized by the `array` metakey. On writing, the plugin will detect arrays automatically and set the appropriate metakey if it is missing.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_array.toml user/tests/storage toml type
 
@@ -198,7 +198,7 @@ File ending comments must be assigned to the file root key.
 
 Empty lines in front of a key can be created by adding an empty `comment/#n/start` entry to it. In this case, no `comment/#n` key is needed.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_comments.toml user/tests/storage toml type
 
@@ -222,13 +222,13 @@ kdb meta-set 'user/tests/storage' 'comment/#3' ' Second file-ending comment. I a
 
 # Print the content of the resulting TOML file
 cat `kdb file user/tests/storage`
-#> # I am the top-most comment relative to my key.'
-#> # I am in the middle. Just boring.'
-#> # I am in the line right above my key.'
+#> # I am the top-most comment relative to my key.
+#> # I am in the middle. Just boring.
+#> # I am in the line right above my key.
 #> key = 1    # This value is very interesting
 #> # First file-ending comment
 #>
-#> # Second file-ending comment. I am the list line of the file.
+#> # Second file-ending comment. I am the last line of the file.
 
 # Cleanup
 kdb rm -r user/tests/storage
@@ -239,10 +239,10 @@ sudo kdb umount user/tests/storage
 
 Any amount of comments can be placed between array elements or between the first element and the opening brackets.
 
-However, only one comment - an inline commment - can be placed after the last element and the closing brackets.
+However, only one comment - an inline comment - can be placed after the last element and the closing brackets.
 On reading, the plugin discards any non-inline comments between the last element and the closing brackets.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_array_comments.toml user/tests/storage toml type
 
@@ -288,7 +288,7 @@ cat `kdb file user/tests/storage`
 #> 1,    # Inline comment of first element
 #>       # Comment preceding the second element
 #> 2,    # Inline comment of second element
-#> 3     # Inline comment of third element
+#> 3     # Inline comment of the last element
 #> ]     # Inline comment after the array
 
 # Cleanup
@@ -301,12 +301,12 @@ sudo kdb umount user/tests/storage
 The plugin preserves the file order by the usage of the metakey `order`. When reading a file, the order metakey will be set according to the order as read in the file.
 If new keys are added, eg. via `kdb set`, the order of the set key will be set to the next-to-highest order value present in the existing key set.
 
-However, the order is only relevant between elements with the same TOML-parent. For example keys of a simple table are only sorted with respecet to each other, not with any keys outside that table. If that table has it's order changed and moves to another position in the file, so will it's subkeys.
+However, the order is only relevant between elements with the same TOML-parent. For example keys of a simple table are only sorted with respect to each other, not with any keys outside that table. If that table has it's order changed and moves to another position in the file, so will it's subkeys.
 
 When sorting elements under the same TOML-parent, tables (simple and array) will always be sorted after non-table elements, regardless of their order.
 With this limitation, we prevent that a newly set key, that is not part of a certain table array/simple table, would be placed after the table declaration, making it a member of that table on a subsequent read.
 
-```
+```sh
 # Mount TOML file
 sudo kdb mount test_order.toml user/tests/storage toml type
 
@@ -322,9 +322,9 @@ kdb set 'user/tests/storage/d' '3'
 # The keys are ordered as they were set
 
 cat `kdb file user/tests/storage`
-#> common.c = 2
+#> common.c = 0
 #> common.b = 1
-#> common.a = 0
+#> common.a = 2
 #> d = 3
 
 # Create a simple table for the three keys under `common`
@@ -352,7 +352,7 @@ While the plugin has good capabilities in handling the TOML file format, it curr
 
 - Sparse arrays are not preserved on writing, they get a continuous array without index holes.
 - Values on non-leaf keys are currently not supported, they get discarded.
-- Custom metakeys cannot be written by the plugin, so they get discared.
+- Custom metakeys cannot be written by the plugin, so they get discarded.
 
 Additionally, there are some minor limitations related to the TOML file format, mostly related to the preservation of the original file structure:
 

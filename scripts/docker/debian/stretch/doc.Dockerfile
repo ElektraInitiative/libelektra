@@ -19,6 +19,8 @@ RUN apt-get -y install \
         texlive-latex-recommended \
         texlive-latex-extra \
         texlive-fonts-recommended \
+        texlive-fonts-extra \
+        texlive-science \
     && gem install launchy -v 2.4.3 \
     && gem install apiaryio \
     && rm -rf /var/lib/apt/lists/*
