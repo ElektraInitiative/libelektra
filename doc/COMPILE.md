@@ -76,7 +76,10 @@ gem install ronn
 To build PDF documentation you need `pdflatex` with
 
 ```sh
-apt-get install pdflatex texlive-fonts-recommended texlive-latex-recommended texlive-latex-extra
+apt-get install pdflatex \
+        texlive-fonts-recommended texlive-fonts-extra \
+        texlive-latex-recommended texlive-latex-extra \
+        texlive-math-extra
 ```
 
 For the plugins, please refer to the README.md of the respective plugin.
