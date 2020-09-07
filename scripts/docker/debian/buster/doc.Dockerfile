@@ -18,6 +18,8 @@ RUN apt-get -y install \
         texlive-latex-recommended \
         texlive-latex-extra \
         texlive-fonts-recommended \
+        texlive-fonts-extra \
+        texlive-math-extra \
     && gem install apiaryio \
     && rm -rf /var/lib/apt/lists/*
 
