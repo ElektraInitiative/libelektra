@@ -817,7 +817,7 @@ int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		int returnValue = resolver->value->kdbGet (handle, ks, parentKey);
+		int returnValue = resolver->value->kdbGet (resolver->value, ks, parentKey);
 
 		switch (returnValue)
 		{
@@ -844,7 +844,7 @@ int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 		{
 			if (cur->value && cur->value->kdbGet)
 			{
-				if (cur->value->kdbGet (handle, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+				if (cur->value->kdbGet (cur->value, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 				{
 					incrementGetPosition (bh);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
