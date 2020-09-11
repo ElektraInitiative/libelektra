@@ -72,9 +72,13 @@ cat `kdb file user/tests/storage`
 # Write base64 encoded data to the file
 echo "base64 = '@BASE64SSBhbSBiYXNlIDY0IGVuY29kZWQgZm9yIG5vIHJlYXNvbi4='" > `kdb file user/test`
 
-# Print the encoded data
+# Print the value of the key, which is a binary value
 kdb get 'user/test/base64'
 #> \x49\x20\x61\x6d\x20\x62\x61\x73\x65\x20\x36\x34\x20\x65\x6e\x63\x6f\x64\x65\x64\x20\x66\x6f\x72\x20\x6e\x6f\x20\x72\x65\x61\x73\x6f\x6e\x2e
+
+# Print the value again, but apply the escape codes
+echo -e `kdb get 'user/test/base64'`
+#> I am base 64 encoded for no reason.
 
 # Cleanup
 kdb rm -r user/tests/storage
