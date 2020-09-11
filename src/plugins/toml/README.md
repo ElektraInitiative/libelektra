@@ -51,6 +51,36 @@ sudo kdb umount user/tests/storage
 The plugin supports all kinds of escape sequences used by TOML in basic and basic multiline strings, like `\n`, `\r`, `\t` and
 even `\u`/`\U` for Unicode escape sequences. `\t` is interpreted to be 4 spaces.
 
+# Binary/NULL values
+
+The plugin handles binary values by using the [base64](../base64/README.md) plugin.
+As a result, binary values get written as base64 encoded strings, which start with the special prefix `@BASE64`.
+`NULL` key values are written as special strings of value `@NULL`.
+
+```
+# Mount TOML file
+sudo kdb mount test_binary.toml user/tests/storage toml type
+
+# Creating a key with a NULL value
+kdb set 'user/tests/storage/nullkey'
+# > Create a new key user/test/nullkey with null value
+
+# Print file content
+cat `kdb file user/tests/storage`
+# > nullkey = '@NULL'
+
+# Write base64 encoded data to the file
+echo "base64 = '@BASE64SSBhbSBiYXNlIDY0IGVuY29kZWQgZm9yIG5vIHJlYXNvbi4='" > `kdb file user/test`
+
+# Print the encoded data
+kdb get 'user/test/base64'
+#> \x49\x20\x61\x6d\x20\x62\x61\x73\x65\x20\x36\x34\x20\x65\x6e\x63\x6f\x64\x65\x64\x20\x66\x6f\x72\x20\x6e\x6f\x20\x72\x65\x61\x73\x6f\x6e\x2e
+
+# Cleanup
+kdb rm -r user/tests/storage
+sudo kdb umount user/tests/storage
+```
+
 # TOML specific structures
 
 TOML specific structures are represented by the metakey `tomltype` on a certain key.

@@ -408,7 +408,7 @@ static int writeScalar (Key * key, Writer * writer)
 
 	if (isBase64String (valueStr))
 	{
-		if (elektraStrCmp (valueStr, "@BASE64") == 0)	// could also only match for length
+		if (elektraStrCmp (valueStr, "@BASE64") == 0) // could also only match for length
 		{
 			return writeQuoted ("@NULL", '\'', 1, writer);
 		}
