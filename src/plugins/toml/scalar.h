@@ -37,7 +37,6 @@ typedef enum
 	SCALAR_DATE_LOCAL_DATETIME,
 	SCALAR_DATE_LOCAL_DATE,
 	SCALAR_DATE_LOCAL_TIME,
-	SCALAR_BINARY,
 } ScalarType;
 
 typedef struct

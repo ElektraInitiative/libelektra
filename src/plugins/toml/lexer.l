@@ -106,12 +106,7 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 "'" {
 	char * str = readString (LITERAL_TERMINATOR, false, driver);
-	ScalarType type = SCALAR_STRING_LITERAL;
-	if (isBase64String(str + 1))	// +1 because string includes starting '
-	{
-		type = SCALAR_BINARY;
-	}
-	yylval.scalar = createScalar (type, str, yylineno);
+	yylval.scalar = createScalar (SCALAR_STRING_LITERAL, str, yylineno);
 	return LITERAL_STRING;
 }
 
@@ -124,12 +119,7 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 "\"" {
 	char * str = readString(BASIC_TERMINATOR, false, driver);
-	ScalarType type = SCALAR_STRING_BASIC;
-	if (isBase64String(str + 1))	// +1 because string includes starting "
-	{
-		type = SCALAR_BINARY;
-	}
-	yylval.scalar = createScalar (type, str, yylineno);
+	yylval.scalar = createScalar (SCALAR_STRING_BASIC, str, yylineno);
 	return BASIC_STRING;
 }
 

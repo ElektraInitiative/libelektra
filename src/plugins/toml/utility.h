@@ -41,5 +41,6 @@ KeySet * collectSubKeys (KeySet * ks, Key * parent);
 KeySet * extractSubKeys (KeySet * ks, Key * parent);
 bool isLeaf (Key * leafCandidate, KeySet * ks);
 bool isBase64String (const char * str);
+bool isNullString (const char * str);
 
 #endif // ELEKTRA_PLUGIN_TOML_UTILITY_H

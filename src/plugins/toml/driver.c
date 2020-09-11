@@ -53,6 +53,7 @@ static IndexList * popIndex (IndexList * top);
 static bool sameString (const char * raw, const char * transformed, char terminator, int terminatorCount);
 static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, char terminator, int terminatorCount,
 				  Driver * driver);
+static bool handleSpecialStrings (const char * string, Key * key);
 
 int tomlRead (KeySet * keys, Key * parent)
 {
@@ -847,26 +848,31 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 		driverError (driver, ERROR_MEMORY, 0, "Could allocate memory for scalar translation");
 		return;
 	}
+
 	keySetString (driver->parentStack->key, elektraStr);
 
 	switch (driver->lastScalar->type)
 	{
 	case SCALAR_STRING_LITERAL:
-		assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '\'', 1, driver);
+		if (!handleSpecialStrings (elektraStr, driver->parentStack->key))
+		{
+			assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '\'', 1, driver);
+		}
 		break;
 	case SCALAR_STRING_ML_LITERAL:
 		assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '\'', 3, driver);
 		break;
 	case SCALAR_STRING_BASIC:
-		assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '"', 1, driver);
+		if (!handleSpecialStrings (elektraStr, driver->parentStack->key))
+		{
+			assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '"', 1, driver);
+		}
 		break;
 	case SCALAR_STRING_ML_BASIC:
 		assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '"', 3, driver);
 		break;
 	case SCALAR_BOOLEAN:
 		keySetMeta (driver->parentStack->key, "type", "boolean");
-		break;
-	case SCALAR_BINARY:
 		break;
 	default:
 		if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
@@ -879,6 +885,24 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 
 	ksAppendKey (driver->keys, driver->parentStack->key);
 	driverClearLastScalar (driver);
+}
+
+// handles base64 encoded or null-indicator strings
+static bool handleSpecialStrings (const char * string, Key * key)
+{
+	if (isNullString (string))
+	{
+		keySetBinary (key, NULL, 0);
+		return true;
+	}
+	else if (isBase64String (string))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, char terminator, int terminatorCount,

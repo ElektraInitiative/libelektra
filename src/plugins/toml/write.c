@@ -408,7 +408,14 @@ static int writeScalar (Key * key, Writer * writer)
 
 	if (isBase64String (valueStr))
 	{
-		return writeQuoted (valueStr, '\'', 1, writer);
+		if (elektraStrCmp (valueStr, "@BASE64") == 0)	// could also only match for length
+		{
+			return writeQuoted ("@NULL", '\'', 1, writer);
+		}
+		else
+		{
+			return writeQuoted (valueStr, '\'', 1, writer);
+		}
 	}
 
 	if (origValue != NULL)
@@ -442,7 +449,6 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		result |= fputs (valueStr, writer->f) == EOF;
 	}
-
 	else
 	{
 		result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);

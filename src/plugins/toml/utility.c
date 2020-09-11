@@ -388,3 +388,9 @@ bool isBase64String (const char * str)
 	}
 	return true;
 }
+
+bool isNullString (const char * str)
+{
+	const char * nullIndicator = "@NULL";
+	return elektraStrCmp (str, nullIndicator) == 0;
+}
