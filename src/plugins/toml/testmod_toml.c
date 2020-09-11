@@ -29,19 +29,24 @@
 // Macros to be used in TEST_WR environments
 #define WRITE_KV(name, value)                                                                                                              \
 	{                                                                                                                                  \
-		lastKey = addKey (writeKs, name, value, NULL, NULL, NULL, NULL, -1);                                                       \
+		lastKey = addKey (writeKs, name, value, 0, NULL, NULL, NULL, NULL, -1);                                                    \
 	}
+#define WRITE_KV_BIN(name, value, size)                                                                                                    \
+	{                                                                                                                                  \
+		lastKey = addKey (writeKs, name, value, size, NULL, NULL, NULL, NULL, -1);                                                 \
+	}
+
 #define WRITE_KEY(name)                                                                                                                    \
 	{                                                                                                                                  \
-		lastKey = addKey (writeKs, name, NULL, NULL, NULL, NULL, NULL, -1);                                                        \
+		lastKey = addKey (writeKs, name, NULL, 0, NULL, NULL, NULL, NULL, -1);                                                     \
 	}
 #define EXPECTED_KV(name, value)                                                                                                           \
 	{                                                                                                                                  \
-		lastKey = addKey (expectedKs, name, value, NULL, NULL, NULL, NULL, -1);                                                    \
+		lastKey = addKey (expectedKs, name, value, 0, NULL, NULL, NULL, NULL, -1);                                                 \
 	}
 #define EXPECTED_KEY(name)                                                                                                                 \
 	{                                                                                                                                  \
-		lastKey = addKey (expectedKs, name, NULL, NULL, NULL, NULL, NULL, -1);                                                     \
+		lastKey = addKey (expectedKs, name, NULL, 0, NULL, NULL, NULL, NULL, -1);                                                  \
 	}
 #define DUP_EXPECTED                                                                                                                       \
 	{                                                                                                                                  \
@@ -75,11 +80,19 @@
 	}
 #define SET_ARRAY(array)                                                                                                                   \
 	{                                                                                                                                  \
-		if (lastKey != NULL) keySetMeta (lastKey, "array", array);                                                                 \
+		if (lastKey != NULL)                                                                                                       \
+		{                                                                                                                          \
+			keySetMeta (lastKey, "array", array);                                                                              \
+			keySetMeta (lastKey, "binary", NULL);                                                                              \
+		}                                                                                                                          \
 	}
 #define SET_TOML_TYPE(type)                                                                                                                \
 	{                                                                                                                                  \
-		if (lastKey != NULL) keySetMeta (lastKey, "tomltype", type);                                                               \
+		if (lastKey != NULL)                                                                                                       \
+		{                                                                                                                          \
+			keySetMeta (lastKey, "tomltype", type);                                                                            \
+			keySetMeta (lastKey, "binary", NULL);                                                                              \
+		}                                                                                                                          \
 	}
 #define SET_ORDER(order)                                                                                                                   \
 	{                                                                                                                                  \
@@ -96,6 +109,15 @@
 #define SET_EMPTY_LINE(index)                                                                                                              \
 	{                                                                                                                                  \
 		if (lastKey != NULL) setComment (lastKey, NULL, "", 0, index);                                                             \
+	}
+
+#define SET_BINARY                                                                                                                         \
+	{                                                                                                                                  \
+		if (lastKey != NULL) keySetMeta (lastKey, "binary", "");                                                                   \
+	}
+#define CLEAR_BINARY                                                                                                                       \
+	{                                                                                                                                  \
+		if (lastKey != NULL) keySetMeta (lastKey, "binary", NULL);                                                                 \
 	}
 
 static void testRead (void);
@@ -126,9 +148,11 @@ static void testWriteReadCheckSparseHierarchy (void);
 static void testWriteReadComments (void);
 static void testWriteReadCommentsArray (void);
 static void testWriteReadOrderTableNonTable (void);
+static void testWriteReadNull (void);
+// static void testWriteReadBase64(void);
 static void printError (Key * parent);
-static Key * addKey (KeySet * ks, const char * name, const char * value, const char * orig, const char * type, const char * array,
-		     const char * tomltype, int order);
+static Key * addKey (KeySet * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
+		     const char * array, const char * tomltype, int order);
 static void setComment (Key * key, const char * comment, const char * start, size_t spaces, size_t index);
 
 int main (int argc, char ** argv)
@@ -155,6 +179,12 @@ static void testRead (void)
 	);
 	testReadCompare ("toml/string_multiline.toml",
 #include "toml/string_multiline.h"
+	);
+	testReadCompare ("toml/string_null.toml",
+#include "toml/string_null.h"
+	);
+	testReadCompare ("toml/string_base64.toml",
+#include "toml/string_base64.h"
 	);
 	testReadCompare ("toml/date.toml",
 #include "toml/date.h"
@@ -212,6 +242,8 @@ static void testWriteRead (void)
 	testWriteReadInlineTable ();
 	testWriteReadInlineTableNested ();
 	testWriteReadString ();
+	testWriteReadNull ();
+	// testWriteReadBase64();
 	testWriteReadInteger ();
 	testWriteReadIntegerOtherBase ();
 	testWriteReadFloat ();
@@ -226,6 +258,31 @@ static void testWriteRead (void)
 	testWriteReadArrayInlineTableAlternating ();
 	testWriteReadOrderTableNonTable ();
 }
+
+static void testWriteReadNull (void)
+{
+	TEST_WR_HEAD;
+
+	WRITE_KV ("null_valued_key", NULL);
+	CLEAR_BINARY;
+	SET_ORDER (0);
+
+	DUP_EXPECTED;
+
+	TEST_WR_FOOT;
+}
+
+/*static void testWriteReadBase64 (void)
+{
+	TEST_WR_HEAD;
+
+	WRITE_KV_BIN("base64_valued_key", "\x00\x01\x02\xFF", 4);
+	SET_ORDER (0);
+
+	DUP_EXPECTED;
+
+	TEST_WR_FOOT;
+}*/
 
 static void testWriteReadOrderTableNonTable (void)
 {
@@ -754,6 +811,7 @@ static void testWriteReadTableArrayWithComments (void)
 	SET_COMMENT (0, " inline comment", 4);
 	SET_COMMENT (1, " top-most preceding comment", 0);
 	SET_COMMENT (2, " preceding comment", 0);
+	CLEAR_BINARY;
 	DUP_EXPECTED;
 
 	WRITE_KV ("ta/#0/a", "1");
@@ -1060,6 +1118,10 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 		else
 		{
 			compare_keyset (expected, ksRead);
+			/*printf ("EXPECTED:\n");
+			dumpKS (expected);
+			printf ("READ:\n");
+			dumpKS (ksRead);*/
 		}
 		ksDel (ksRead);
 	}
@@ -1118,8 +1180,8 @@ static void printError (Key * parent)
 	}
 }
 
-static Key * addKey (KeySet * ks, const char * name, const char * value, const char * orig, const char * type, const char * array,
-		     const char * tomltype, int order)
+static Key * addKey (KeySet * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
+		     const char * array, const char * tomltype, int order)
 {
 	Key * key = keyNew (PREFIX "/", KEY_END);
 	if (name != NULL)
@@ -1128,7 +1190,18 @@ static Key * addKey (KeySet * ks, const char * name, const char * value, const c
 	}
 	if (value != NULL)
 	{
-		keySetString (key, value);
+		if (size == 0)
+		{
+			keySetString (key, value);
+		}
+		else
+		{
+			keySetBinary (key, (const void *) value, size);
+		}
+	}
+	else if (tomltype == NULL && array == NULL)
+	{
+		keySetBinary (key, NULL, 0);
 	}
 	if (orig != NULL)
 	{
