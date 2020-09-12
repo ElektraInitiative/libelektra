@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-FAQ" "" "August 2019" "" ""
+.TH "ELEKTRA\-FAQ" "" "September 2020" "" ""
 .
 .SH "I Am Stuck\. Where Can I Get Help?"
 If this FAQ does not contain your question, please open an issue \fIhttps://git\.libelektra\.org/issues\fR\. You can simply remove all template text and it is enough if the issue only contains your question\. If you want you can label it as question \fIhttps://git\.libelektra\.org/issues/labels/question\fR, but we can also categorize it for you\.
@@ -47,8 +47,27 @@ As an intermediate step, we can mount \fIelektra\-mounting\.md\fR existing confi
 .SH "Do We Retain the Old Way of Configuring Things, i\.e\. Manually Editing an INI File in /etc?"
 Absolutely, you can think of libelektra as a small library in C that reads a configuration file and returns a data structure if you do not use any of its advanced features\.
 .
+.P
+In fact, from the view of system\-calls, a properly written configuration parser within your application would do exactly the same as Elektra does:
+.
+.IP "" 4
+.
+.nf
+
+stat("/etc/kdb/elektra\.ecf", {st_mode=S_IFREG|0644, st_size=1996, \.\.\.}) = 0
+open("/etc/kdb/elektra\.ecf", O_RDONLY)  = 3
+read(3, "\.\.\., 8191) = 1996
+close(3)                                = 0
+.
+.fi
+.
+.IP "" 0
+.
+.P
+Writing configuration files is much more tricky, as Elektra avoids data loss in the case of concurrent writes, even if the other application does not use Elektra (this only works on modern file systems with high\-resolution time stamps)\.
+.
 .SH "Do We Retain the Old Way of Reloading/Restarting the System Service?"
-Elektra does not interfere with restarting\. It is a passive library\. It provides some techniques for reloading but they are optional (but we recommend that you keep the in\-memory and persistent configuration in sync via notification)\.
+Elektra does not interfere with restarting\. It is a passive library\. It provides some techniques for reloading but they are optional\. We recommend, however, that you keep the in\-memory and persistent configuration always in sync via immediate writes on changes and immediate reloading after notifications\.
 .
 .SH "Is This an Actual Problem of Elektra or Is It Just Me?"
 In case of doubt please open an issue \fIhttps://git\.libelektra\.org/issues\fR\. If the question was already answered or is already in the documentation, we will simply point it out to you\.
@@ -60,13 +79,19 @@ So do not worry too much, do not hesitate to ask any question\. We welcome feedb
 Please check the issue tracker \fIhttps://git\.libelektra\.org/issues\fR if it has already been reported\. If it has not, please fill out the template \fIhttps://git\.libelektra\.org/issues/new\fR\. If you are in doubt, please report it\.
 .
 .SH "How Can I Contribute to Elektra?"
-Due to the modular architecture we can accept nearly all contributions as plugins\. Please only make sure that the README\.md clearly states the purpose and quality of the plugin\. If you need, e\.g\., a plugin that crashes the process make sure that you tag (\fBinfos/status\fR) it with \fBdiscouraged\fR\.
+Due to the modular architecture we can accept many contributions as plugins\. Please only make sure that the README\.md clearly states the purpose and quality of the plugin\.
 .
 .P
 Please start by reading here \fI/\.github/CONTRIBUTING\.md\fR\.
 .
 .SH "What Is Elektra’s License?"
 New BSD license \fI/LICENSE\.md\fR which allows us to have plugins link against GPL and GPL\-incompatible libraries\. If you compile Elektra, e\.g\., with GPL plugins, the result is GPL\.
+.
+.SH "Which version should I use?"
+If you already use 0\.8, you might want to continue using it until 1\.0 is released\. As announced here \fIdoc/news/2019\-08\-06_0\.9\.0\.md\fR, the 0\.9 series introduces incompatible changes as needed, in particular cleanup for the 1\.0 release is done\.
+.
+.P
+For details of versioning principles, see here \fI/doc/VERSION\.md\fR\.
 .
 .SH "Who Are the Authors?"
 List of authors \fI/doc/AUTHORS\.md\fR\.
