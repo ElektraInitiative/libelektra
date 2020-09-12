@@ -111,7 +111,7 @@ result is GPL.
 ## Which version should I use?
 
 If you already use 0.8, you might want to continue using it until 1.0 is released.
-As announced [here](doc/news/2019-08-06_0.9.0.md), the 0.9 series introduces incompatible
+As announced [here](/doc/news/2019-08-06_0.9.0.md), the 0.9 series introduces incompatible
 changes as needed, in particular cleanup for the 1.0 release is done.
 
 For details of versioning principles, see [here](/doc/VERSION.md).
