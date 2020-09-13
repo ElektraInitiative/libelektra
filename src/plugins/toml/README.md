@@ -90,7 +90,6 @@ To write a boolean value, the `type` metakey must be set to `boolean` for the ke
 Otherwise, no conversion to the TOML boolean values will take place.
 Per default, Elektra uses 0/1 to represent boolean values.
 
-
 ```sh
 sudo kdb mount test.toml user/test/types toml type
 
