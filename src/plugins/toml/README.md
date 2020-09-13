@@ -36,7 +36,7 @@ When writing a key, the value of that metakey will be written instead, in order 
 Note that the `origvalue` metakey gets removed if the value of the key changes.
 
 ```sh
-sudo kdb mount test.toml user/test/storage/types toml type
+sudo kdb mount test.toml user/tests/storage/types toml type
 
 # Create a TOML file with 4 keys
 echo -e "plain_decimal = 1000\nfile_permissions = 0o777\npi = 3.1415\ndivision_gone_wrong = -inf" > `kdb file user/tests/storage/types`
