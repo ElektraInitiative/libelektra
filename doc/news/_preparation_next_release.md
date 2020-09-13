@@ -113,7 +113,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- <<TODO>>
+- Updated webd dependencies: node-fetch from 1.7.3 to 2.6.1. _(DependaBot)_
 - <<TODO>>
 - <<TODO>>
 
