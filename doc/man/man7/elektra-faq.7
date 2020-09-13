@@ -64,7 +64,7 @@ close(3)                                = 0
 .IP "" 0
 .
 .P
-Writing configuration files is much more tricky, as Elektra avoids data loss in the case of concurrent writes, even if the other application does not use Elektra (this only works on modern file systems with high\-resolution time stamps)\.
+Writing configuration files is much more tricky, as Elektra avoids data loss in the case of concurrent writes, even if the other application does not use Elektra (this only works on modern file systems with high\-resolution timestamps)\.
 .
 .SH "Do We Retain the Old Way of Reloading/Restarting the System Service?"
 Elektra does not interfere with restarting\. It is a passive library\. It provides some techniques for reloading but they are optional\. We recommend, however, that you keep the in\-memory and persistent configuration always in sync via immediate writes on changes and immediate reloading after notifications\.
