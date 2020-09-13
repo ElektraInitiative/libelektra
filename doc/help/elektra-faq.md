@@ -69,7 +69,7 @@ close(3)                                = 0
 Writing configuration files is much more tricky, as Elektra avoids
 data loss in the case of concurrent writes, even if the other
 application does not use Elektra (this only works on modern
-file systems with high-resolution time stamps).
+file systems with high-resolution timestamps).
 
 ## Do We Retain the Old Way of Reloading/Restarting the System Service?
 
