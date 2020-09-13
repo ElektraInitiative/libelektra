@@ -36,13 +36,13 @@ When writing a key, the value of that metakey will be written instead, in order 
 Note that the `origvalue` metakey gets removed if the value of the key changes.
 
 ```sh
-sudo kdb mount test.toml user/test/types toml type
+sudo kdb mount test.toml user/test/storage/types toml type
 
 # Create a TOML file with 4 keys
-echo -e "plain_decimal = 1000\nfile_permissions = 0o777\npi = 3.1415\ndivision_gone_wrong = -inf" > `kdb file user/test/types`
+echo -e "plain_decimal = 1000\nfile_permissions = 0o777\npi = 3.1415\ndivision_gone_wrong = -inf" > `kdb file user/tests/storage/types`
 
 # Print the content of the toml file
-cat `kdb file user/test/types`
+cat `kdb file user/tests/storage/types`
 # > plain_decimal = 1000
 # > file_permissions = 0o777
 # > pi = 3.1415
@@ -50,30 +50,30 @@ cat `kdb file user/test/types`
 
 # Print types and values of the keys with `kdb`
 
-kdb meta-get 'user/test/types/plain_decimal' 'type'
+kdb meta-get 'user/tests/storage/types/plain_decimal' 'type'
 # > long_long
-kdb get 'user/test/types/plain_decimal'
+kdb get 'user/test/storage/types/plain_decimal'
 # > 1000
 
-kdb meta-get 'user/test/types/file_permissions' 'type'
+kdb meta-get 'user/tests/storage/types/file_permissions' 'type'
 # > unsigned_long_long
 # The octal value will be converted to decimal
-kdb get 'user/test/types/file_permissions'
+kdb get 'user/test/storage/types/file_permissions'
 # > 511
 
-kdb meta-get 'user/test/types/pi' 'type'
+kdb meta-get 'user/tests/storage/types/pi' 'type'
 # > double
-kdb get 'user/test/types/pi'
+kdb get 'user/tests/storage/types/pi'
 # > 3.1415
 
-kdb meta-get 'user/test/types/division_gone_wrong' 'type'
+kdb meta-get 'user/tests/storage/types/division_gone_wrong' 'type'
 # > double
-kdb get 'user/test/types/division_gone_wrong'
+kdb get 'user/tests/storage/types/division_gone_wrong'
 # > -inf
 
 # Cleanup
-kdb rm -r user/test/types
-sudo kdb umount user/test/types
+kdb rm -r user/tests/storage/types
+sudo kdb umount user/tests/storage/types
 ```
 
 ## Writing
@@ -91,36 +91,36 @@ Otherwise, no conversion to the TOML boolean values will take place.
 Per default, Elektra uses 0/1 to represent boolean values.
 
 ```sh
-sudo kdb mount test.toml user/test/types toml type
+sudo kdb mount test.toml user/tests/storage/types toml type
 
 # Create a key, which may be a integer, boolean or string
-kdb set 'user/test/types/value' '1'
+kdb set 'user/tests/storage/types/value' '1'
 
 # The plugin infers `long_long` for this value
-kdb meta-get 'user/test/types/value' 'type'
+kdb meta-get 'user/tests/storage/types/value' 'type'
 # > long_long
 
 # The value is written as an integer
-cat `kdb file user/test/types`
+cat `kdb file user/tests/storage/types`
 # > value = 1
 
 # Manually set the `type` metakey to boolean
-kdb meta-set 'user/test/types/value' 'type' 'boolean'
+kdb meta-set 'user/tests/storage/types/value' 'type' 'boolean'
 
 # The value is written as a boolean
-cat `kdb file user/test/types`
+cat `kdb file user/tests/storage/types`
 # > value = true
 
 # Manually set the `type` metakey to string
-kdb meta-set 'user/test/types/value' 'type' 'string'
+kdb meta-set 'user/tests/storage/types/value' 'type' 'string'
 
 # The value is written as a string
-cat `kdb file user/test/types`
+cat `kdb file user/tests/storage/types`
 # > value = "1"
 
 # Cleanup
-kdb rm -r user/test/types
-sudo kdb umount user/test/types
+kdb rm -r user/tests/storage/types
+sudo kdb umount user/tests/storage/types
 
 ```
 
