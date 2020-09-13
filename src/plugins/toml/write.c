@@ -399,8 +399,6 @@ static int writeTableArrayHeader (const char * name, Writer * writer)
 static int writeScalar (Key * key, Writer * writer)
 {
 	int result = 0;
-	// ELEKTRA_ASSERT (keyGetUnescapedNameSize (key) != 0, "NULL keys should have been handled by null plugin");
-
 
 	const Key * origValue = keyGetMeta (key, "origvalue");
 	const Key * type = keyGetMeta (key, "type");
@@ -422,28 +420,14 @@ static int writeScalar (Key * key, Writer * writer)
 	{
 		valueStr = keyString (origValue);
 	}
-	// ELEKTRA_ASSERT (elektraStrLen (valueStr) > 1, "Empty strings should have been handled by null plugin");
-	if (type != NULL)
+
+	if (type != NULL && elektraStrCmp (keyString (type), "boolean") == 0)
 	{
-		if (elektraStrCmp (keyString (type), "boolean") == 0)
-		{
-			if (isTrue (valueStr))
-			{
-				result |= fputs ("true", writer->f) == EOF;
-			}
-			else
-			{
-				result |= fputs ("false", writer->f) == EOF;
-			}
-		}
-		else if (elektraStrCmp (keyString (type), "string") == 0)
-		{
-			result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
-		}
-		else
-		{
-			result |= fputs (valueStr, writer->f) == EOF;
-		}
+		result |= fputs (isTrue(valueStr) ? "true" : "false", writer->f) == EOF;
+	}
+	else if (type != NULL && elektraStrCmp (keyString (type), "string") == 0)
+	{
+		result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
 	}
 	else if (isNumber (writer->checker, valueStr) || isDateTime (writer->checker, valueStr))
 	{
