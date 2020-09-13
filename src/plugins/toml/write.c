@@ -423,7 +423,7 @@ static int writeScalar (Key * key, Writer * writer)
 
 	if (type != NULL && elektraStrCmp (keyString (type), "boolean") == 0)
 	{
-		result |= fputs (isTrue(valueStr) ? "true" : "false", writer->f) == EOF;
+		result |= fputs (isTrue (valueStr) ? "true" : "false", writer->f) == EOF;
 	}
 	else if (type != NULL && elektraStrCmp (keyString (type), "string") == 0)
 	{
