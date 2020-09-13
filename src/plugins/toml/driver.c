@@ -54,6 +54,7 @@ static bool sameString (const char * raw, const char * transformed, char termina
 static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, char terminator, int terminatorCount,
 				  Driver * driver);
 static bool handleSpecialStrings (const char * string, Key * key);
+static void assignOrigValueIfDifferent (Key * key, const char * origValue);
 
 int tomlRead (KeySet * keys, Key * parent)
 {
@@ -874,18 +875,45 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 	case SCALAR_BOOLEAN:
 		keySetMeta (driver->parentStack->key, "type", "boolean");
 		break;
+	case SCALAR_FLOAT_NUM:
+	case SCALAR_FLOAT_INF:
+	case SCALAR_FLOAT_POS_INF:
+	case SCALAR_FLOAT_NEG_INF:
+	case SCALAR_FLOAT_NAN:
+	case SCALAR_FLOAT_POS_NAN:
+	case SCALAR_FLOAT_NEG_NAN:
+		keySetMeta (driver->parentStack->key, "type", "double");
+		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->str);
+		break;
+	case SCALAR_INTEGER_DEC:
+		keySetMeta (driver->parentStack->key, "type", "long_long");
+		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->str);
+		break;
+	case SCALAR_INTEGER_BIN:
+	case SCALAR_INTEGER_OCT:
+	case SCALAR_INTEGER_HEX:
+		keySetMeta (driver->parentStack->key, "type", "unsigned_long_long");
+		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->str);
+		break;
 	default:
-		if (elektraStrCmp (elektraStr, driver->lastScalar->str) != 0)
-		{
-			keySetMeta (driver->parentStack->key, "origvalue", driver->lastScalar->str);
-		}
+		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->str);
 		break;
 	}
+
 	elektraFree (elektraStr);
 
 	ksAppendKey (driver->keys, driver->parentStack->key);
 	driverClearLastScalar (driver);
 }
+
+static void assignOrigValueIfDifferent (Key * key, const char * origValue)
+{
+	if (elektraStrCmp (keyString (key), origValue) != 0)
+	{
+		keySetMeta (key, "origvalue", origValue);
+	}
+}
+
 
 // handles base64 encoded or null-indicator strings
 static bool handleSpecialStrings (const char * string, Key * key)

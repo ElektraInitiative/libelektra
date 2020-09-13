@@ -20,6 +20,111 @@ For parsing TOML files, the plugins uses Flex and Bison.
 
 The plugin needs Flex (>=2.6.2) and Bison (>=3).
 
+# Types
+
+## Reading
+
+On reading, the plugin will set the `type` metakey for strings, integers, floats and boolean values, if applicable.
+For decimal integers, the metakey is set to `long_long`.
+For binary/octal/hexadecimal integers, the metakey is set to `unsigned_long_long`.
+For floats, the metakey will be set to `double`.
+These types are chosen to conform with the TOML format as stated on the offical [TOML](https://toml.io/en/v1.0.0-rc.1) page.
+
+On reading, non-decimal integers will get converted to decimal.
+The non-decimal representation will be stored in the `origvalue` metakey of the key.
+When writing a key, the value of that metakey will be written instead, in order to retain the original format.
+Note that the `origvalue` metakey gets removed if the value of the key changes.
+
+```sh
+sudo kdb mount test.toml user/test/types toml type
+
+# Create a TOML file with 4 keys
+echo -e "plain_decimal = 1000\nfile_permissions = 0o777\npi = 3.1415\ndivision_gone_wrong = -inf" > `kdb file user/test/types`
+
+# Print the content of the toml file
+cat `kdb file user/test/types`
+# > plain_decimal = 1000
+# > file_permissions = 0o777
+# > pi = 3.1415
+# > division_gone_wrong = -inf
+
+# Print types and values of the keys with `kdb`
+
+kdb meta-get 'user/test/types/plain_decimal' 'type'
+# > long_long
+kdb get 'user/test/types/plain_decimal'
+# > 1000
+
+kdb meta-get 'user/test/types/file_permissions' 'type'
+# > unsigned_long_long
+# The octal value will be converted to decimal
+kdb get 'user/test/types/file_permissions'
+# > 511
+
+kdb meta-get 'user/test/types/pi' 'type'
+# > double
+kdb get 'user/test/types/pi'
+# > 3.1415
+
+kdb meta-get 'user/test/types/division_gone_wrong' 'type'
+# > double
+kdb get 'user/test/types/division_gone_wrong'
+# > -inf
+
+# Cleanup
+kdb rm -r user/test/types
+sudo kdb umount user/test/types
+```
+
+## Writing
+
+On writing, for most values, the plugin will infer the appropriate type and will write them accordingly.
+This means, values, that match a TOML float, integer or date will be written without any quotes around them.
+If a value does not match any of these types, it will be written as a string.
+
+The plugin uses an existing `type` metakey only to check if it should write a value as a `string` or a `boolean`.
+
+With this functionality, numbers can be written as a string to the file, if wanted.
+
+To write a boolean value, the `type` metakey must be set to `boolean` for the key.
+Otherwise, no conversion to the TOML boolean values will take place.
+Per default, Elektra uses 0/1 to represent boolean values.
+
+
+```sh
+sudo kdb mount test.toml user/test/types toml type
+
+# Create a key, which may be a integer, boolean or string
+kdb set 'user/test/types/value' '1'
+
+# The plugin infers `long_long` for this value
+kdb meta-get 'user/test/types/value' 'type'
+# > long_long
+
+# The value is written as an integer
+cat `kdb file user/test/types`
+# > value = 1
+
+# Manually set the `type` metakey to boolean
+kdb meta-set 'user/test/types/value' 'type' 'boolean'
+
+# The value is written as a boolean
+cat `kdb file user/test/types`
+# > value = true
+
+# Manually set the `type` metakey to string
+kdb meta-set 'user/test/types/value' 'type' 'string'
+
+# The value is written as a string
+cat `kdb file user/test/types`
+# > value = "1"
+
+# Cleanup
+kdb rm -r user/test/types
+sudo kdb umount user/test/types
+
+```
+
 # Strings
 
 The plugin can read any kind of TOML string: bare, basic, literal, basic multiline and literal multiline.
