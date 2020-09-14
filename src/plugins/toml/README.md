@@ -131,7 +131,7 @@ sudo kdb umount user/tests/storage/types
 The plugin supports reading and writing of any kind of number supported by the TOML format, such as floating point numbers and binary/octal/decimal/hexadecimal integers.
 To write a non-decimal integer, add the corresponding prefix to the number (`0b` for binary, `0o` for octal, `0x` for hexadecimal).
 The value will be written in the given base to the file, but converted to decimal within Elektra (see [Reading](##reading)).
-Note that the plugin doesn't warn about invalid prefix/digit combinations.  If the combination is not valid, it will be written as a string instead.
+Note that the plugin doesn't warn about invalid prefix/digit combinations. If the combination is not valid, it will be written as a string instead.
 
 If the `type` plugin is enabled and you want to change the value of an existing number key which needs conversion (all keys which have a `origvalue`),
 you have to change the value of `origvalue` instead of the key value. Otherwise the `type` plugin will give an error.
