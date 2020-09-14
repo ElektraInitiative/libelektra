@@ -124,7 +124,54 @@ cat `kdb file user/tests/storage/types`
 # Cleanup
 kdb rm -r user/tests/storage/types
 sudo kdb umount user/tests/storage/types
+```
 
+# Numbers
+
+The plugin supports reading and writing of any kind of number supported by the TOML format, such as floating point numbers and binary/octal/decimal/hexadecimal integers.
+To write a non-decimal integer, add the corresponding prefix to the number (`0b` for binary, `0o` for octal, `0x` for hexadecimal).
+The value will be written in the given base to the file, but converted to decimal within Elektra (see [Reading](##reading)).
+Note that the plugin doesn't warn about invalid prefix/digit combinations.  If the combination is not valid, it will be written as a string instead.
+
+If the `type` plugin is enabled and you want to change the value of an existing number key which needs conversion (all keys which have a `origvalue`),
+you have to change the value of `origvalue` instead of the key value. Otherwise the `type` plugin will give an error.
+
+```sh
+# Mount a new TOML file
+sudo kdb mount test.toml user/tests/storage/numbers toml type
+
+# Write an octal value
+kdb set 'user/tests/storage/numbers/a' '0o777'
+
+# Get the converted decimal value
+kdb get 'user/tests/storage/numbers/a'
+# > 511
+
+# Get the original octal value
+kdb meta-get 'user/tests/storage/numbers/a' 'origvalue'
+# > 0o777
+
+# Get the type of the number; since it's originally octal, we get `unsigned_long_long`
+kdb meta-get 'user/tests/storage/numbers/a' 'type'
+# > unsigned_long_long
+
+# Change the value by changing the `origvalue` metakey
+kdb meta-set 'user/tests/storage/numbers/a' 'origvalue' '0o666'
+
+# Get the new value as decimal
+kdb get 'user/tests/storage/numbers/a'
+# > 438
+
+# Change the value to an invalid octal value.
+kdb meta-set 'user/tests/storage/numbers/a' 'origvalue' '0o888'
+
+# The key value is no longer considered a number
+kdb meta-get 'user/tests/storage/numbers/a' 'type'
+# > string
+
+# Cleanup
+kdb rm -r user/tests/storage/numbers
+sudo kdb umount user/tests/storage/numbers
 ```
 
 # Strings
