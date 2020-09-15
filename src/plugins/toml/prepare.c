@@ -67,7 +67,7 @@ static void completeKeyComments (Key * key)
 		char name[32];
 		snprintf (name, 32, "comment/%s", indexStr);
 		elektraFree (indexStr);
-		if (findMetaKey (key, name) == NULL)
+		if (keyGetMeta (key, name) == NULL)
 		{ // Inline comment with index 0 is optional, so don't stop if not present
 			if (index == 0)
 			{
@@ -77,7 +77,7 @@ static void completeKeyComments (Key * key)
 			{
 				char nameStart[64];
 				snprintf (nameStart, 64, "%s/start", name);
-				if (findMetaKey (key, nameStart) == NULL)
+				if (keyGetMeta (key, nameStart) == NULL)
 				{
 					break;
 				}
@@ -87,12 +87,12 @@ static void completeKeyComments (Key * key)
 		{
 			char nameExt[64];
 			snprintf (nameExt, 64, "%s/start", name);
-			if (findMetaKey (key, nameExt) == NULL)
+			if (keyGetMeta (key, nameExt) == NULL)
 			{
 				keySetMeta (key, nameExt, "#");
 			}
 			snprintf (nameExt, 64, "%s/space", name);
-			if (findMetaKey (key, nameExt) == NULL)
+			if (keyGetMeta (key, nameExt) == NULL)
 			{
 				keySetMeta (key, nameExt, "0");
 			}
@@ -175,7 +175,7 @@ static void pruneInvalidArrayKeys (KeySet * keys)
 	Key * key = ksNext (keys);
 	while (key != NULL)
 	{
-		const Key * meta = findMetaKey (key, "array");
+		const Key * meta = keyGetMeta (key, "array");
 		if (meta != NULL)
 		{
 			Key * sub;
@@ -254,7 +254,7 @@ static int getMaxOrder (KeySet * ks)
 	Key * key;
 	while ((key = ksNext (ks)) != NULL)
 	{
-		const Key * meta = findMetaKey (key, "order");
+		const Key * meta = keyGetMeta (key, "order");
 		if (meta != NULL)
 		{
 			int order = atoi (keyString (meta));
@@ -270,5 +270,5 @@ static int getMaxOrder (KeySet * ks)
 
 static bool predNeedsOrder (Key * key)
 {
-	return findMetaKey (key, "order") == NULL && !isArrayIndex (keyBaseName (key));
+	return keyGetMeta (key, "order") == NULL && !isArrayIndex (keyBaseName (key));
 }

@@ -28,7 +28,6 @@ bool isArrayElement (const Key * key);
 bool isEmptyArray (Key * key);
 bool isBareString (const char * str);
 size_t getArrayMax (Key * key);
-const Key * findMetaKey (Key * key, const char * metakeyName);
 bool isArray (Key * key);
 bool isSimpleTable (Key * key);
 bool isTableArray (Key * key);
@@ -41,5 +40,7 @@ KeySet * keysByPredicate (KeySet * ks, bool (*pred) (Key *));
 KeySet * collectSubKeys (KeySet * ks, Key * parent);
 KeySet * extractSubKeys (KeySet * ks, Key * parent);
 bool isLeaf (Key * leafCandidate, KeySet * ks);
+bool isBase64String (const char * str);
+bool isNullString (const char * str);
 
 #endif // ELEKTRA_PLUGIN_TOML_UTILITY_H

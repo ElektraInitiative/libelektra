@@ -137,7 +137,7 @@ bool isArrayElement (const Key * key)
 
 bool isEmptyArray (Key * key)
 {
-	const Key * meta = findMetaKey (key, "array");
+	const Key * meta = keyGetMeta (key, "array");
 	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
 	const char * sizeStr = keyString (meta);
 	return elektraStrLen (sizeStr) == 1;
@@ -145,23 +145,10 @@ bool isEmptyArray (Key * key)
 
 size_t getArrayMax (Key * key)
 {
-	const Key * meta = findMetaKey (key, "array");
+	const Key * meta = keyGetMeta (key, "array");
 	ELEKTRA_ASSERT (meta != NULL, "Supplied key must have array meta key, but hadn't");
 
 	return arrayStringToIndex (keyString (meta));
-}
-
-const Key * findMetaKey (Key * key, const char * metakeyName)
-{
-	keyRewindMeta (key);
-	for (const Key * meta = keyNextMeta (key); meta != NULL; meta = keyNextMeta (key))
-	{
-		if (elektraStrCmp (keyName (meta), metakeyName) == 0)
-		{
-			return meta;
-		}
-	}
-	return NULL;
 }
 
 void setPlainIntMeta (Key * key, const char * metaKeyName, size_t value)
@@ -185,7 +172,7 @@ void setOrderForKey (Key * key, size_t order)
 
 bool isArray (Key * key)
 {
-	return findMetaKey (key, "array") != NULL;
+	return keyGetMeta (key, "array") != NULL;
 }
 
 bool isInlineTable (Key * key)
@@ -205,7 +192,7 @@ bool isTableArray (Key * key)
 
 bool isTomlType (Key * key, const char * type)
 {
-	const Key * meta = findMetaKey (key, "tomltype");
+	const Key * meta = keyGetMeta (key, "tomltype");
 	if (meta == NULL)
 	{
 		return false;
@@ -383,4 +370,27 @@ bool isLeaf (Key * leafCandidate, KeySet * ks)
 	}
 	ksSetCursor (ks, cursor);
 	return true;
+}
+
+bool isBase64String (const char * str)
+{
+	const char * prefix = "@BASE64";
+	if (elektraStrLen (str) < elektraStrLen (prefix))
+	{
+		return false;
+	}
+	for (size_t i = 0; i < elektraStrLen (prefix) - 1; i++)
+	{
+		if (str[i] != prefix[i])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+bool isNullString (const char * str)
+{
+	const char * nullIndicator = "@NULL";
+	return elektraStrCmp (str, nullIndicator) == 0;
 }

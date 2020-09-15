@@ -20,6 +20,7 @@
 #include "driver.h"
 #include "codepoint.h"
 #include "error.h"
+#include "utility.h"
 
 #define BASIC_TERMINATOR '\"'
 #define LITERAL_TERMINATOR '\''

@@ -86,7 +86,10 @@ void freeScalar (Scalar * scalar)
 {
 	if (scalar != NULL)
 	{
-		elektraFree (scalar->str);
+		if (scalar->str != NULL)
+		{
+			elektraFree (scalar->str);
+		}
 		elektraFree (scalar);
 	}
 }
