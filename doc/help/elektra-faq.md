@@ -56,12 +56,28 @@ Absolutely, you can think of libelektra as a small library in C that
 reads a configuration file and returns a data structure if you do not
 use any of its advanced features.
 
+In fact, from the view of system-calls, a properly written configuration
+parser within your application would do exactly the same as Elektra does:
+
+```
+stat("/etc/kdb/elektra.ecf", {st_mode=S_IFREG|0644, st_size=1996, ...}) = 0
+open("/etc/kdb/elektra.ecf", O_RDONLY)  = 3
+read(3, "..., 8191) = 1996
+close(3)                                = 0
+```
+
+Writing configuration files is much more tricky, as Elektra avoids
+data loss in the case of concurrent writes, even if the other
+application does not use Elektra (this only works on modern
+file systems with high-resolution timestamps).
+
 ## Do We Retain the Old Way of Reloading/Restarting the System Service?
 
 Elektra does not interfere with restarting. It is a passive library.
-It provides some techniques for reloading but they are optional (but we
-recommend that you keep the in-memory and persistent configuration in
-sync via notification).
+It provides some techniques for reloading but they are optional. We
+recommend, however, that you keep the in-memory and persistent
+configuration always in sync via immediate writes on changes and
+immediate reloading after notifications.
 
 ## Is This an Actual Problem of Elektra or Is It Just Me?
 
@@ -80,10 +96,9 @@ If you are in doubt, please report it.
 
 ## How Can I Contribute to Elektra?
 
-Due to the modular architecture we can accept nearly all contributions as plugins.
+Due to the modular architecture we can accept many contributions as plugins.
 Please only make sure that the README.md clearly states the purpose and quality
-of the plugin. If you need, e.g., a plugin that crashes the process make sure that
-you tag (`infos/status`) it with `discouraged`.
+of the plugin.
 
 Please start by reading [here](/.github/CONTRIBUTING.md).
 
@@ -92,6 +107,14 @@ Please start by reading [here](/.github/CONTRIBUTING.md).
 [New BSD license](/LICENSE.md) which allows us to have plugins link against GPL
 and GPL-incompatible libraries. If you compile Elektra, e.g., with GPL plugins, the
 result is GPL.
+
+## Which version should I use?
+
+If you already use 0.8, you might want to continue using it until 1.0 is released.
+As announced [here](/doc/news/2019-08-06_0.9.0.md), the 0.9 series introduces incompatible
+changes as needed, in particular cleanup for the 1.0 release is done.
+
+For details of versioning principles, see [here](/doc/VERSION.md).
 
 ## Who Are the Authors?
 

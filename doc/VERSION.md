@@ -37,7 +37,7 @@ The version applies to following parts of Elektra:
 
 ## Behavior
 
-The following order defines the behavior of Elektra:
+The behavior of Elektra is defined by (in that order):
 
 1. [ABI](/tests/abi) test cases
 2. Non-ABI test cases (including Shell Recorder)

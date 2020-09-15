@@ -47,7 +47,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### xmltool
 
-- values of KDBStream changed to fit with elektraKeyFlags, recompilation of application is needed. _(Markus Raab)_
+- Values of KDBStream changed to fit with elektraKeyFlags: recompilation of application is needed. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
