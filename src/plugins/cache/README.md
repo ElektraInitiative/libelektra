@@ -39,4 +39,3 @@ Use the tool `kdb cache` to enable, disable or clear the cache.
 
 Incompatible with storage plugins, which do not always produce the same keyset on any invocation
 concerning the same configuration file. A notable example here is the `ini` plugin (see issue #2592).
-
