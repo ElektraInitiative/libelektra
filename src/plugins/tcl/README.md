@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/tcl
-- infos/needs = code null binary
+- infos/needs = code binary
 - infos/placements = setstorage getstorage
 - infos/status = unfinished concept
 - infos/description = Serialize tcl lists
@@ -38,7 +38,7 @@ distinguish-able style. It looks like:
 # Mount Tcl plugin to namespace `user/examples/tcl`
 # We add the required plugins (instead of the plugin providers)
 # for `tcl` manually, since otherwise this command leaks memory.
-sudo kdb mount config.tcl user/tests/tcl tcl ccode null base64
+sudo kdb mount config.tcl user/tests/tcl tcl ccode base64
 
 # Add a key value pair to the database
 kdb set user/tests/tcl/key value
@@ -65,11 +65,11 @@ sudo kdb umount user/tests/tcl
 
 ## Binary Data
 
-The plugin also supports binary data via the [base64 plugin](../base64/) and null keys via the [null plugin](../null/).
+The plugin also supports binary data via the [base64 plugin](../base64/).
 
 ```sh
 # Mount plugin
-sudo kdb mount config.tcl user/tests tcl ccode null base64
+sudo kdb mount config.tcl user/tests tcl ccode base64
 
 # Import some data
 kdb import user/tests/dump xmltool < src/plugins/xmltool/xmltool/dump.xml
