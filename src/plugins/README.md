@@ -174,7 +174,6 @@ Rewrite unwanted characters with different techniques:
 - [hidden](hidden/) hides keys whose names start with a `.`.
 - [iconv](iconv/) makes sure the configuration will have correct
   character encoding
-- [null](null/) takes care of null values and other binary specialities
 
 ### Notification and Logging
 
