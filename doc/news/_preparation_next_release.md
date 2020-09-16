@@ -39,6 +39,20 @@ Furthermore, it follows the popular [TOML spec](https://toml.io).
 It has nearly no run-time dependency, it only needs `base64` if binary values are needed.
 
 A huge thanks to Jakob Fischer for this amazing work!
+- TOML plugin
+- <<HIGHLIGHT>>
+- Cleanup
+
+### TOML
+
+- Added the TOML plugin, which can read and write TOML files using flex and bison. _(Jakob Fischer)_
+- The `type` metakey is now set for numbers on reading. _(Jakob Fischer)_
+
+### <<HIGHLIGHT>>
+
+### Cleanup
+
+We removed the `ini` plugin (superseded by the TOML plugin) and the null plugin (superseded by the base64 plugin)
 
 > Warning: In one of the following `0.9.*` releases, INI will be removed and TOML will become the
 > default plugin. If you are using INI, please migrate to TOML now.
@@ -58,6 +72,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - The `type` metakey is now set for numbers on reading. _(Jakob Fischer)_
 
 ### Dump
+### <<Plugin3>>
 
 - The `dump` plugin got a major update. The new version can read old files, but only write new files.
   The new files **cannot** be read by the old version of the plugin and will result in a "version error" message. _(Klemens Böswirth)_
