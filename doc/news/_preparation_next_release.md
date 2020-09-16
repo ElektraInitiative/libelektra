@@ -25,15 +25,20 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+- TOML plugin
+- <<HIGHLIGHT>>
+- Cleanup
 
-### <<HIGHLIGHT1>>
+### TOML
 
-### <<HIGHLIGHT2>>
+- Added the TOML plugin, which can read and write TOML files using flex and bison. _(Jakob Fischer)_
+- The `type` metakey is now set for numbers on reading. _(Jakob Fischer)_
 
-### <<HIGHLIGHT2>>
+### <<HIGHLIGHT>>
+
+### Cleanup
+
+We removed the `ini` plugin (superseded by the TOML plugin) and the null plugin (superseded by the base64 plugin)
 
 ## Plugins
 
@@ -51,6 +56,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### Dump
 ### <<Plugin3>>
 
 - <<TODO>>
