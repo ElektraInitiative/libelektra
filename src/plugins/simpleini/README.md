@@ -2,7 +2,7 @@
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
 - infos/provides = storage/ini
-- infos/needs = code null
+- infos/needs = code binary
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest nodep concept obsolete 3000
 - infos/description = Very simple storage which writes out in a basic ini format.
@@ -53,16 +53,16 @@ kdb export -c "format=%%:% %" system/samba simpleini
 - Delimiting symbols cannot be part of the key.
 - The last occurrence of the same key wins (others are discarded).
 - The parent Key cannot be used.
-- This plugin needs the code and null plugins.
+- This plugin needs the code and binary plugins.
   A code plugin is used for the escape character for some symbols (but does not respect user-defined `format`)
-  and the null plugin is used to handle null values.
+  and the binary plugin is used to handle binary values.
 
 ## Examples
 
 Mount the plugin:
 
 ```sh
-kdb mount -d /etc/samba/smb.conf system/samba ccode null simpleini
+kdb mount -d /etc/samba/smb.conf system/samba ccode simpleini
 ```
 
 ## Limitations
