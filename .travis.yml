@@ -46,7 +46,6 @@ matrix:
           -dbus;\
           -dbusrecv;\
           -desktop;\
-          -dini;\
           -directoryvalue;\
           -doc;\
           -dpkg;\
@@ -63,7 +62,6 @@ matrix:
           -hidden;\
           -hosts;\
           -iconv;\
-          -ini;\
           -internalnotification;\
           -ipaddr;\
           -iterate;\
