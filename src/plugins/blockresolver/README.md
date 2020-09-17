@@ -43,10 +43,7 @@ echo 'text'                   >  $(kdb get system/tests/blockfile)
 echo 'more text'              >> $(kdb get system/tests/blockfile)
 echo 'some more text'         >> $(kdb get system/tests/blockfile)
 echo '>>> block config start' >> $(kdb get system/tests/blockfile)
-echo '[section1]'             >> $(kdb get system/tests/blockfile)
 echo 'key1=val1'            >> $(kdb get system/tests/blockfile)
-echo '[section2]'             >> $(kdb get system/tests/blockfile)
-echo 'key2=val2'            >> $(kdb get system/tests/blockfile)
 echo '>>> block config stop'  >> $(kdb get system/tests/blockfile)
 echo 'text again'             >> $(kdb get system/tests/blockfile)
 echo 'and more text'          >> $(kdb get system/tests/blockfile)
@@ -60,10 +57,7 @@ cat $(kdb get system/tests/blockfile)
 #> more text
 #> some more text
 #> >>> block config start
-#> [section1]
 #> key1=val1
-#> [section2]
-#> key2=val2
 #> >>> block config stop
 #> text again
 #> and more text
@@ -71,10 +65,7 @@ cat $(kdb get system/tests/blockfile)
 
 # only the block between the tags is read!
 kdb export system/tests/blockresolver ini
-#> [section1]
-#> key1=val1
-#> [section2]
-#> key2=val2
+# STDOUT-REGEX: key1.*=.*val1
 
 # add a new key to the resolved block
 kdb set system/tests/blockresolver/section1/key12 val12
@@ -84,11 +75,7 @@ cat $(kdb get system/tests/blockfile)
 #> more text
 #> some more text
 #> >>> block config start
-#> [section1]
 #> key1=val1
-#> key12=val12
-#> [section2]
-#> key2=val2
 #> >>> block config stop
 #> text again
 #> and more text
