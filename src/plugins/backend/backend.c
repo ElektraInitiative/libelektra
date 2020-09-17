@@ -5,7 +5,6 @@
 
 #include <kdberrors.h>
 #include <kdbprivate.h>
-#include <stdio.h>
 
 int setMountpoint (BackendHandle * bh, Key * root, KeySet * config, Key * errorKey)
 {
@@ -649,11 +648,11 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 	{
 		bh->setplugins[a] = setPlugins[a];
 	}
-
 	elektraFree (setPlugins);
 
 	ksDel (referencePlugins);
-	ksDel (systemConfig);
+
+	handle->config = systemConfig;
 
 	// TODO Open missing backend instead of returning errors
 
@@ -897,7 +896,7 @@ int elektraBackendSet (Plugin * handle, KeySet * ks, Key * parentKey)
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		int ret = resolver->value->kdbSet (handle, ks, parentKey);
+		int ret = resolver->value->kdbSet (resolver->value, ks, parentKey);
 
 		switch (ret)
 		{
@@ -921,7 +920,7 @@ int elektraBackendSet (Plugin * handle, KeySet * ks, Key * parentKey)
 		{
 			if (cur->value && cur->value->kdbSet)
 			{
-				if (cur->value->kdbSet (handle, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+				if (cur->value->kdbSet (cur->value, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 				{
 					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey,
 										 "Error while carrying out kdbSet before the commit: %s",
@@ -957,7 +956,8 @@ int elektraBackendCommit (Plugin * handle, KeySet * ks, Key * parentKey)
 
 	if (bh->setplugins[SET_COMMIT] && bh->setplugins[SET_COMMIT]->value && bh->setplugins[SET_COMMIT]->value->kdbCommit)
 	{
-		if (bh->setplugins[SET_COMMIT]->value->kdbCommit (handle, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		if (bh->setplugins[SET_COMMIT]->value->kdbCommit (bh->setplugins[SET_COMMIT]->value, ks, parentKey) ==
+		    ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Error during the commit phase");
 		}
@@ -988,7 +988,7 @@ int elektraBackendError (Plugin * handle, KeySet * ks, Key * parentKey)
 	{
 		if (cur->value && cur->value->kdbError)
 		{
-			if (cur->value->kdbError (handle, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+			if (cur->value->kdbError (cur->value, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 			{
 				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Error while carrying out kdbError(oh the irony)");
 			}
