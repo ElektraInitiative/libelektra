@@ -55,8 +55,6 @@ The plugin supports two different modes:
 
 In order to identify the base64 encoded content, the values are marked with the prefix `@BASE64`. To distinguish between the `@` as character and `@` as Base64 marker, all strings starting with `@` will be modified so that they begin with `@@`.
 
-See the documentation of the [null plugin](../null/), as it uses the same pattern for masking `@`.
-
 #### Example
 
 The following example shows how you can use this plugin together with the INI plugin to store binary data.
@@ -74,7 +72,7 @@ kdb get user/tests/base64/binary
 
 # The value inside the configuration file is encoded by the Base64 plugin
 kdb file user/tests/base64 | xargs cat
-# STDOUT-REGEX: binary="@BASE64[a-zA-Z0-9+/]+={0,2}"
+# STDOUT-REGEX: binary.*=.*"@BASE64[a-zA-Z0-9+/]+={0,2}"
 
 # Undo modifications
 kdb rm -r user/tests/base64
