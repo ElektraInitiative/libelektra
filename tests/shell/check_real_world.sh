@@ -61,7 +61,7 @@ fi
 APPS_FILE=${FILE_SUFFIX}_apps.ini
 APPS_MOUNTPOINT=/test/script/apps
 if is_plugin_available simpleini; then
-	"$KDB" mount $APPS_FILE $APPS_MOUNTPOINT simpleini ccode null
+	"$KDB" mount $APPS_FILE $APPS_MOUNTPOINT simpleini ccode
 	succeed_if "could not mount simpleini: $APPS_FILE at $APPS_MOUNTPOINT"
 fi
 
