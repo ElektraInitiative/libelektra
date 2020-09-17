@@ -226,7 +226,7 @@ The same but experimental:
 - [rgbcolor](rgbcolor/) validates and normalizes hexcolors
 - [validation](validation/) by using regex
 
-Other validation mechanisms not based on meta-data:
+Other validation mechanisms not based on metadata:
 
 - [filecheck](filecheck/) does sanity checks on a file
 - [lineendings](lineendings/) tests file for consistent line endings
