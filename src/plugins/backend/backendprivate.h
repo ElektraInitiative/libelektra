@@ -58,4 +58,4 @@ struct _BackendHandle
 	ssize_t errorposition;
 };
 
-#endif //ELEKTRA_BACKENDPRIVATE_H
+#endif // ELEKTRA_BACKENDPRIVATE_H

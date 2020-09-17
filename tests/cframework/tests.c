@@ -343,8 +343,8 @@ void output_split (Split * split)
 			printf ("split #%zu size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: "
 				"%zd\n",
 				i, ksGetSize (split->keysets[i]), (void *) split->handles[i], split->syncbits[i],
-				keyName (split->parents[i]), keyString (split->parents[i]), split->specsizes[i],
-				split->dirsizes[i], split->usersizes[i], split->systemsizes[i]);
+				keyName (split->parents[i]), keyString (split->parents[i]), split->specsizes[i], split->dirsizes[i],
+				split->usersizes[i], split->systemsizes[i]);
 		}
 		else
 		{

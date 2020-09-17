@@ -1891,59 +1891,57 @@ static int ensureGlobalPluginUnmounted (KDB * handle, const char * pluginName, K
  * @retval 0 on error, warnings will be logged
  * @retval 1 on success
  */
-static int ensurePluginUnmounted (KDB * handle ELEKTRA_UNUSED, const char * mountpoint ELEKTRA_UNUSED, const char * pluginName ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
+static int ensurePluginUnmounted (KDB * handle ELEKTRA_UNUSED, const char * mountpoint ELEKTRA_UNUSED,
+				  const char * pluginName ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
 {
 	return 0;
 
-//	Key * mountpointKey = keyNew (mountpoint, KEY_END);
-//	Plugin * backend = mountGetBackend (handle, mountpointKey);
-//
-//	int ret = 1;
-//	for (int i = 0; i < NR_OF_PLUGINS; ++i)
-//	{
-//		Plugin * getPlugin = backend->getplugins[i];
-//		Plugin * setPlugin = backend->setplugins[i];
-//		Plugin * errorPlugin = backend->errorplugins[i];
-//
-//		if (setPlugin != NULL && elektraStrCmp (setPlugin->name, pluginName) == 0)
-//		{
-//			if (elektraPluginClose (setPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-//			{
-//				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-//					errorKey, "The plugin %s couldn't be closed (set, position: %d, mountpoint: %s)", pluginName, i,
-//					mountpoint);
-//				ret = 0;
-//			}
-//			backend->setplugins[i] = NULL;
-//		}
-//
-//		if (getPlugin != NULL && elektraStrCmp (getPlugin->name, pluginName) == 0)
-//		{
-//			if (elektraPluginClose (getPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-//			{
-//				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-//					errorKey, "The plugin %s couldn't be closed (get, position: %d, mountpoint: %s)", pluginName, i,
-//					mountpoint);
-//				ret = 0;
-//			}
-//			backend->getplugins[i] = NULL;
-//		}
-//
-//		if (errorPlugin != NULL && elektraStrCmp (errorPlugin->name, pluginName) == 0)
-//		{
-//			if (elektraPluginClose (errorPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-//			{
-//				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-//					errorKey, "The plugin %s couldn't be closed (error, position: %d, mountpoint: %s)", pluginName, i,
-//					mountpoint);
-//				ret = 0;
-//			}
-//			backend->errorplugins[i] = NULL;
-//		}
-//	}
-//
-//	keyDel (mountpointKey);
-//	return ret;
+	//	Key * mountpointKey = keyNew (mountpoint, KEY_END);
+	//	Plugin * backend = mountGetBackend (handle, mountpointKey);
+	//
+	//	int ret = 1;
+	//	for (int i = 0; i < NR_OF_PLUGINS; ++i)
+	//	{
+	//		Plugin * getPlugin = backend->getplugins[i];
+	//		Plugin * setPlugin = backend->setplugins[i];
+	//		Plugin * errorPlugin = backend->errorplugins[i];
+	//
+	//		if (setPlugin != NULL && elektraStrCmp (setPlugin->name, pluginName) == 0)
+	//		{
+	//			if (elektraPluginClose (setPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	//			{
+	//				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+	//					errorKey, "The plugin %s couldn't be closed (set, position: %d, mountpoint: %s)", pluginName,
+	//i, 					mountpoint); 				ret = 0;
+	//			}
+	//			backend->setplugins[i] = NULL;
+	//		}
+	//
+	//		if (getPlugin != NULL && elektraStrCmp (getPlugin->name, pluginName) == 0)
+	//		{
+	//			if (elektraPluginClose (getPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	//			{
+	//				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+	//					errorKey, "The plugin %s couldn't be closed (get, position: %d, mountpoint: %s)", pluginName,
+	//i, 					mountpoint); 				ret = 0;
+	//			}
+	//			backend->getplugins[i] = NULL;
+	//		}
+	//
+	//		if (errorPlugin != NULL && elektraStrCmp (errorPlugin->name, pluginName) == 0)
+	//		{
+	//			if (elektraPluginClose (errorPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	//			{
+	//				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+	//					errorKey, "The plugin %s couldn't be closed (error, position: %d, mountpoint: %s)", pluginName,
+	//i, 					mountpoint); 				ret = 0;
+	//			}
+	//			backend->errorplugins[i] = NULL;
+	//		}
+	//	}
+	//
+	//	keyDel (mountpointKey);
+	//	return ret;
 }
 
 enum PluginContractState
@@ -2013,7 +2011,8 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
 	switch (pluginState)
 	{
 	case PLUGIN_STATE_UNMOUNTED:
-		ELEKTRA_ASSERT (0, "not supported"); //TODO: implement ensurePluginUnmounted in a way that is compatible with the backend plugin
+		ELEKTRA_ASSERT (
+			0, "not supported"); // TODO: implement ensurePluginUnmounted in a way that is compatible with the backend plugin
 		ksDel (pluginConfig);
 		return ensurePluginUnmounted (handle, mountpoint, pluginName, errorKey);
 	case PLUGIN_STATE_MOUNTED:

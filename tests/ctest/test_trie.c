@@ -42,8 +42,7 @@ KeySet * set_simple (void)
 		      keyNew ("system/elektra/mountpoints/simple/set", KEY_END),
 		      keyNew ("system/elektra/mountpoints/simple/set/presetstorage", KEY_END),
 		      keyNew ("system/elektra/mountpoints/simple/set/presetstorage/#0", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/set/presetstorage/#0/name", KDB_DEFAULT_STORAGE, KEY_END),
-		      KS_END);
+		      keyNew ("system/elektra/mountpoints/simple/set/presetstorage/#0/name", KDB_DEFAULT_STORAGE, KEY_END), KS_END);
 }
 
 KeySet * set_pluginconf (void)
