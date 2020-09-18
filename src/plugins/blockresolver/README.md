@@ -49,7 +49,7 @@ echo 'text again'             >> $(kdb get system/tests/blockfile)
 echo 'and more text'          >> $(kdb get system/tests/blockfile)
 echo 'text'                   >> $(kdb get system/tests/blockfile)
 
-sudo kdb mount -R blockresolver $(kdb get system/tests/blockfile) system/tests/blockresolver -c identifier=">>> block config" ini
+sudo kdb mount -R blockresolver $(kdb get system/tests/blockfile) system/tests/blockresolver -c identifier=">>> block config" mini
 
 # check testfile
 cat $(kdb get system/tests/blockfile)
@@ -64,11 +64,11 @@ cat $(kdb get system/tests/blockfile)
 #> text
 
 # only the block between the tags is read!
-kdb export system/tests/blockresolver ini
+kdb export system/tests/blockresolver mini
 # STDOUT-REGEX: key1.*=.*val1
 
 # add a new key to the resolved block
-kdb set system/tests/blockresolver/section1/key12 val12
+kdb set system/tests/blockresolver/key12 val12
 
 cat $(kdb get system/tests/blockfile)
 #> text
@@ -76,6 +76,7 @@ cat $(kdb get system/tests/blockfile)
 #> some more text
 #> >>> block config start
 #> key1=val1
+#> key12=val12
 #> >>> block config stop
 #> text again
 #> and more text
