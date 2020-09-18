@@ -40,7 +40,11 @@ sudo kdb umount /tests/base64/test
 @BASE64SGVsbG8gV29ybGQhCg==
 ```
 
-.
+. And for a null-key it will be:
+
+```
+@BASE64
+```
 
 ## Modes
 
