@@ -100,7 +100,7 @@ In the case of **key names** you **must not use any of the characters mentioned 
 
 ## Limitations
 
-This plugin only supports simple key-value based properties files without sections. mINI also does not support metadata. If you want a more feature complete plugin, then please take a look at the [ini plugin](../ini/). The example below shows some of the limitations of the plugin.
+This plugin only supports simple key-value based properties files without sections. mINI also does not support metadata. If you want a more feature complete plugin, then please take a look at the [toml plugin](../toml/). The example below shows some of the limitations of the plugin.
 
 ```sh
 sudo kdb mount mini.ini user/tests/mini mini
