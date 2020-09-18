@@ -28,7 +28,7 @@ static void test_BlockresolverRead (char * fileName)
 	succeed_if (resolver->kdbGet (resolver, ks, parentKey) >= 0, "blockresolver->kdbGet failed");
 	output_warnings (parentKey);
 	output_error (parentKey);
-	Plugin * storage = elektraPluginOpen ("ini", modules, ksNew (0, KS_END), 0);
+	Plugin * storage = elektraPluginOpen ("mini", modules, ksNew (0, KS_END), 0);
 	succeed_if (storage->kdbGet (storage, ks, parentKey) >= 0, "storage->kdbGet failed");
 	succeed_if (!strcmp (keyString (ksLookupByName (ks, "system/test/blockresolver-read/section/key", 0)), "inside block"),
 		    "blockresolver failed to resolve requested block");
@@ -62,7 +62,7 @@ static void test_BlockresolverWrite (char * fileName, char * compareName)
 	elektraModulesInit (modules, 0);
 	Plugin * resolver = elektraPluginOpen ("blockresolver", modules, ksDup (conf), 0);
 	succeed_if (resolver->kdbGet (resolver, ks, parentKey) >= 0, "blockresolver->kdbGet failed");
-	Plugin * storage = elektraPluginOpen ("ini", modules, ksNew (0, KS_END), 0);
+	Plugin * storage = elektraPluginOpen ("mini", modules, ksNew (0, KS_END), 0);
 	succeed_if (storage->kdbGet (storage, ks, parentKey) >= 0, "storage->kdbGet failed");
 	keySetString (ksLookupByName (ks, "system/test/blockresolver-write/section/key", 0), "only the inside has changed");
 	succeed_if (storage->kdbSet (storage, ks, parentKey) >= 0, "storage->kdbSet failed");
