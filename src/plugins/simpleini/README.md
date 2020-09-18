@@ -10,8 +10,8 @@
 ## Introduction
 
 This plugin reads and writes files written in a basic line-oriented ini-like format.
-It is very simplistic without sections, the [ini](../ini/) plugin and for specifications
-the [ni](../ni/) plugin should be preferred in most cases. Since the `simpleini` plugin requires
+It is very simplistic without sections, the [toml](../toml/) plugin and for specifications
+the [ni](../ni/) plugin should be preferred. Since the `simpleini` plugin requires
 the GNU C library it **will not work** on operating systems that use another C library
 such as macOS.
 
