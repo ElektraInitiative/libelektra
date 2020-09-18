@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief test suite for the fcrypt plugin
+ * @brief test suite for the base64 plugin
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
