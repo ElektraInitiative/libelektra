@@ -87,10 +87,6 @@ strict digraph G {
 	hosts -> hosts;
 	conv [shape=Mdiamond];
 	iconv -> conv;
-	storage [shape=Mdiamond];
-	ini -> storage;
-	ini [shape=Mdiamond];
-	ini -> ini;
 	internalnotification [shape=Mdiamond];
 	check [shape=Mdiamond];
 	ipaddr -> check;
@@ -139,8 +135,6 @@ strict digraph G {
 	ni -> ini;
 	resolver [shape=Mdiamond];
 	noresolver -> resolver;
-	code [shape=Mdiamond];
-	null -> code;
 	storage [shape=Mdiamond];
 	passwd -> storage;
 	passwd [shape=Mdiamond];
@@ -180,13 +174,13 @@ strict digraph G {
 	sync -> sync;
 	logging [shape=Mdiamond];
 	syslog -> logging;
-	storage [shape=Mdiamond];
-	tcl -> storage;
-	tcl [shape=Mdiamond];
-	tcl -> tcl;
 	template [shape=Mdiamond];
 	tracing [shape=Mdiamond];
 	timeofday -> tracing;
+	storage [shape=Mdiamond];
+	toml -> storage;
+	toml [shape=Mdiamond];
+	toml -> toml;
 	tracing [shape=Mdiamond];
 	tracer -> tracing;
 	check [shape=Mdiamond];
