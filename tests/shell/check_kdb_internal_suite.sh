@@ -20,10 +20,6 @@ for PLUGIN in $PLUGINS; do
 		MOUNT_PLUGIN="$PLUGIN ccode null"
 		TESTS="basic"
 		;;
-	"ini")
-		MOUNT_PLUGIN="$PLUGIN"
-		TESTS="basic string umlauts"
-		;;
 	"line")
 		TESTS="basic"
 		;;
