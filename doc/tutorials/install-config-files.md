@@ -21,7 +21,7 @@ The following call to `kdb install-config-file` will mount it at `system/tests/i
 The copy will be required for a three-way merge later on.
 
 ```sh
-kdb install-config-file system/tests/installing `kdb get user/tests/tempfiles/firstFile` ini
+kdb install-config-file system/tests/installing `kdb get user/tests/tempfiles/firstFile` mini
 ```
 
 We can now safely make changes to our configuration.
@@ -41,7 +41,7 @@ Read the tutorials on mounting and namespaces if you are not sure what this mean
 ```sh
 kdb set user/tests/tempfiles/secondFile $(echo $(mktemp -d)/$(basename $(kdb get user/tests/tempfiles/firstFile)))
 echo -e "keyA=a\nkeyB=b\nkeyC=Y" > `kdb get user/tests/tempfiles/secondFile`
-kdb install-config-file system/tests/installing $(kdb get user/tests/tempfiles/secondFile) ini
+kdb install-config-file system/tests/installing $(kdb get user/tests/tempfiles/secondFile) mini
 ```
 
 We can check that this worked by calling
