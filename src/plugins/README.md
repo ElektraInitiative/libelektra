@@ -96,7 +96,6 @@ spec-namespace (put a focus on having nice syntax for metadata):
 
 - [ni](ni/) parses INI files based on (including metadata)
   [ni](https://lab.burn.capital/chaz-attic/bohr/-/blob/main/include/bohr/ni.h).
-- [tcl](tcl/)-like config files (including metadata).
 
 Only suited for import/export:
 
