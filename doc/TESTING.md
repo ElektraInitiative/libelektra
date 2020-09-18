@@ -310,20 +310,21 @@ build directory. First compile Elektra with afl
 (~e is source-dir of Elektra):
 
 ```sh
-~e/scripts/configure-debian -DCMAKE_C_COMPILER=/usr/src/afl/afl-2.52b/afl-gcc -DCMAKE_CXX_COMPILER=/usr/src/afl/afl-2.52b/afl-g++ ~e
+~e/scripts/dev/configure-debian -DCMAKE_C_COMPILER=/usr/src/afl/AFL-2.57b/afl-gcc -DCMAKE_CXX_COMPILER=/usr/src/afl/AFL-2.57b/afl-g++ ~e
+make -j 5
 ```
 
 Copy some import files to `testcase_dir`, for example:
 
 ```sh
 mkdir -p testcase_dir
-cp ~e/src/plugins/ini/ini/* testcase_dir
+cp ~e/src/plugins/toml/toml/* testcase_dir
 ```
 
 Fewer files is better. Then run, for example:
 
 ```sh
-LD_LIBRARY_PATH=`pwd`/lib /usr/src/afl/afl-2.52b/afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests ini
+LD_LIBRARY_PATH=`pwd`/lib /usr/src/afl/AFL-2.57b/afl-fuzz -i testcase_dir -o findings_dir bin/kdb import user/tests toml
 ```
 
 Check if something is happening with:
@@ -437,7 +438,7 @@ of the issues found in the whole project.
 
    ```sh
    cd ..
-   oclint -p build -no-analytics -enable-global-analysis -enable-clang-static-analyzer src/plugins/ini/*.c
+   oclint -p build -no-analytics -enable-global-analysis -enable-clang-static-analyzer src/plugins/toml/*.c
    ```
 
 #### scan-build
