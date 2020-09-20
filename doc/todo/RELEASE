@@ -130,7 +130,7 @@ commands below work for copy&paste:
 == Prepare Source Package ==
 
 Build tar.gz:
- export KDB_VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
+ export KDB_VERSION=`kdb get system:/elektra/version/constants/KDB_VERSION`
  # CMAKE_BINARY_DIR not working on my machine?
  export CMAKE_BINARY_DIR=/home/mpranj/workspace/libelektra/build
  cd ~build && make source-package

@@ -49,8 +49,8 @@ To view your full key database in Elektra’s `storage` format:<br>
 To backup your full key database in Elektra’s `storage` format to a file called `full-backup.ecf`:<br>
 `kdb export / > full-backup.ecf`<br>
 
-To backup a keyset stored in `user/keyset` in the `ini` format to a file called `keyset.ini`:<br>
-`kdb export user/keyset ini > keyset.ini`<br>
+To backup a keyset stored in `user:/keyset` in the `ini` format to a file called `keyset.ini`:<br>
+`kdb export user:/keyset ini > keyset.ini`<br>
 
 Change default format to `simpleini`:<br>
 `kdb set /sw/elektra/kdb/#0/current/format simpleini`

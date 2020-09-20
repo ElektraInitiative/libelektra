@@ -70,7 +70,7 @@ private:
 
 	/**
 	 * @brief This method is used to extract a group name of a full path.
-	 * E.g. given `system/group/subgroup/key.name` it returns `system/group/subgroup`
+	 * E.g. given `system:/group/subgroup/key.name` it returns `system:/group/subgroup`
 	 * @param leafKeyName This string contains the full path
 	 * @return This string contains the group name
 	 */
@@ -101,7 +101,7 @@ private:
 
 	/**
 	 * @brief This method will skip the common prefix that a key has with the parent key.
-	 * If the given iterator points to a key name `system/group/subgroup/key.name` and the parentKeyCount is 2, after this method is
+	 * If the given iterator points to a key name `system:/group/subgroup/key.name` and the parentKeyCount is 2, after this method is
 	 * executed the iterator will point to e key name `subgroup/key.name`
 	 *
 	 * @param it This CppKey::iterator contains the key that we are skipping

@@ -15,7 +15,7 @@
   * The version information in x.y.z format as string.
   *
   * To get the version at run-time, you can get the key
-  * system/elektra/version/constants/KDB_VERSION
+  * system:/elektra/version/constants/KDB_VERSION
   *
   * @see [VERSION.md](/doc/VERSION.md).
   * @see #KDB_VERSION_MAJOR
@@ -29,7 +29,7 @@
   * The version information of the major version as number.
   *
   * To get the version at run-time, you can get the key
-  * system/elektra/version/constants/KDB_VERSION_MAJOR
+  * system:/elektra/version/constants/KDB_VERSION_MAJOR
   *
   * @see [VERSION.md](/doc/VERSION.md).
   * @see #KDB_VERSION
@@ -41,7 +41,7 @@
   * The version information of the minor version as number.
   *
   * To get the version at run-time, you can get the key
-  * system/elektra/version/constants/KDB_VERSION_MINOR
+  * system:/elektra/version/constants/KDB_VERSION_MINOR
   *
   * @see [VERSION.md](/doc/VERSION.md).
   * @see #KDB_VERSION
@@ -53,7 +53,7 @@
   * The version information of the patch version as number.
   *
   * To get the version at run-time, you can get the key
-  * system/elektra/version/constants/KDB_VERSION_PATCH
+  * system:/elektra/version/constants/KDB_VERSION_PATCH
   *
   * @see [VERSION.md](/doc/VERSION.md).
   * @see #KDB_VERSION

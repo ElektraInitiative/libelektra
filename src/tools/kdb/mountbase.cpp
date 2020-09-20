@@ -135,14 +135,14 @@ void MountBaseCommand::doIt ()
 	}
 	catch (KDBException const & e)
 	{
-		throw KDBMountException (std::string (e.what ()) +
-					 "\n\n"
-					 "IMPORTANT: Sorry, I am unable to write your requested mountpoint to system/elektra/mountpoints.\n"
-					 "           You can get the problematic file name by reading the elektra system file (kdb file "
-					 "system:/elektra/mountpoints).\n" +
-					 getErrorColor (ANSI_COLOR::BOLD) + getErrorColor (ANSI_COLOR::YELLOW) +
-					 "           Usually you need to be root for this operation (try `sudo !!`)." +
-					 getErrorColor (ANSI_COLOR::RESET));
+		throw KDBMountException (
+			std::string (e.what ()) +
+			"\n\n"
+			"IMPORTANT: Sorry, I am unable to write your requested mountpoint to system:/elektra/mountpoints.\n"
+			"           You can get the problematic file name by reading the elektra system file (kdb file "
+			"system:/elektra/mountpoints).\n" +
+			getErrorColor (ANSI_COLOR::BOLD) + getErrorColor (ANSI_COLOR::YELLOW) +
+			"           Usually you need to be root for this operation (try `sudo !!`)." + getErrorColor (ANSI_COLOR::RESET));
 	}
 
 	printWarnings (cerr, parentKey, true, true);

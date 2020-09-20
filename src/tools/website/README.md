@@ -21,7 +21,7 @@ It will be installed in `@CMAKE_INSTALL_PREFIX@/share/elektra/tool_data/website/
 As next step, the website configuration needs to be copied and mounted:
 `@CMAKE_INSTALL_PREFIX@/lib/elektra/tool_exec/mount-website-config`
 
-The configuration will be mounted to `system/sw/elektra/website/#0/current` in Elektra
+The configuration will be mounted to `system:/sw/elektra/website/#0/current` in Elektra
 (`@config_root@/@config_default_profile@`)
 and contains the URL to the backend, some URLs for GitHub resources and translation,
 as well as logger settings. Usually, no changes are required there, see

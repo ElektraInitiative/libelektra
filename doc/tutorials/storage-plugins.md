@@ -175,7 +175,7 @@ user:/tests/storage/map/#0
 user:/tests/storage/map/#1
 ```
 
-. If we assume that only `user/tests/storage/array` stores the metakey `array`, then the keys
+. If we assume that only `user:/tests/storage/array` stores the metakey `array`, then the keys
 
 - `user:/tests/storage/array/#0`, and
 - `user:/tests/storage/array/#1`
