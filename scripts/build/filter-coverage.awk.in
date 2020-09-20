@@ -1,0 +1,31 @@
+#!/usr/bin/awk
+
+# Filter absolute paths from coverage data
+#
+# Copied from
+# http://stackoverflow.com/questions/3163364/excluding-certain-functions-from-gcov-lcov-coverage-results
+#
+
+BEGIN {
+    record=""
+}
+
+/^SF:/ {
+    if (match ($0, "@COVERAGE_PREFIX@")) {
+        doprint = 1
+    } else {
+        doprint = 0
+    }
+}
+
+/^end_of_record$/ {
+    if ( doprint ) {
+        print record $0
+    }
+    record = ""
+    next
+}
+
+{
+    record=record $0 "\n"
+}
