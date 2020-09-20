@@ -586,6 +586,10 @@ void GlobalPlugins::serialize (kdb::KeySet & ret)
 		serializeConf (ret, Key (i.getName () + "/config", KEY_VALUE, "", KEY_END), plugin.first->getConfig ());
 		ckdb::elektraArrayIncName (*i);
 	}
+	ret.append (Key ("system:/elektra/globalplugins/postgetcache", KEY_VALUE, "", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/postgetcache", KEY_VALUE, "", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/postgetcleanup", KEY_VALUE, "list", KEY_END));
+	ret.append (Key ("system:/elektra/globalplugins/presetcleanup", KEY_VALUE, "list", KEY_END));
 	ret.append (Key ("system:/elektra/globalplugins/postrollback", KEY_VALUE, "list", KEY_END));
 	ret.append (Key ("system:/elektra/globalplugins/precommit", KEY_VALUE, "list", KEY_END));
 	ret.append (Key ("system:/elektra/globalplugins/pregetstorage", KEY_VALUE, "list", KEY_END));
