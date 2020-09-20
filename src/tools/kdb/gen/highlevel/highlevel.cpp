@@ -272,7 +272,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 		specParentName = "spec:" + parentKey;
 		ks = cascadingToSpec (keySet);
 	}
-	else if (parentKey.substr (0, 5) == "spec:/")
+	else if (parentKey.substr (0, 6) == "spec:/")
 	{
 		cascadingParent = parentKey.substr (4);
 		specParentName = parentKey;
