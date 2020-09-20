@@ -407,7 +407,12 @@ int output_warnings (Key * warningKey)
 	Key * cutpoint = keyNew ("meta:/warnings", KEY_END);
 	KeySet * warnings = ksCut (keyMeta (warningKey), cutpoint);
 
-	if (!warningKey || ksGetSize (warnings) == 0) return 1;
+	if (!warningKey || ksGetSize (warnings) == 0)
+	{
+		ksDel (warnings);
+		keyDel (cutpoint);
+		return 1;
+	}
 
 	printf ("There are %zu warnings\n", ksGetSize (warnings));
 	elektraCursor i = 1;
@@ -423,6 +428,8 @@ int output_warnings (Key * warningKey)
 		}
 		printf ("\n");
 	}
+	ksDel (warnings);
+	keyDel (cutpoint);
 	//! [warnings]
 
 	return 0;

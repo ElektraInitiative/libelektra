@@ -506,11 +506,11 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 		}
 	}
 
-	if (newMetaString)
+	if (newMetaString != NULL)
 	{
 		/*Add the meta information to the key*/
 		metaStringDup = elektraStrNDup (newMetaString, metaStringSize);
-		if (!metaStringDup)
+		if (metaStringDup == NULL)
 		{
 			// TODO: actually we might already have changed
 			// the key

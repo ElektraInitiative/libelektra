@@ -550,6 +550,13 @@ memerror:
 	return -1;
 }
 
+static void keyClearNameValue (Key * key)
+{
+	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
+	if (key->ukey && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->ukey);
+	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
+}
+
 
 /**
  * A destructor for Key objects.
@@ -580,8 +587,6 @@ memerror:
  */
 int keyDel (Key * key)
 {
-	int rc;
-
 	if (!key) return -1;
 
 	if (key->ksReference > 0)
@@ -591,7 +596,7 @@ int keyDel (Key * key)
 
 	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
 
-	rc = keyClear (key);
+	keyClearNameValue (key);
 
 	ksDel (key->meta);
 
@@ -600,7 +605,7 @@ int keyDel (Key * key)
 		elektraFree (key);
 	}
 
-	return rc;
+	return 0;
 }
 
 /**
@@ -645,9 +650,7 @@ int keyClear (Key * key)
 
 	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
 
-	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
-	if (key->ukey && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->ukey);
-	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
+	keyClearNameValue (key);
 
 	ksDel (key->meta);
 

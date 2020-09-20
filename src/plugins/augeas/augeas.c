@@ -567,6 +567,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	ret = foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &convertToKey, conversionData);
 
+	keyDel (conversionData->parentKey);
 	elektraFree (conversionData);
 
 	if (ret < 0)

@@ -50,7 +50,7 @@ int elektraKeyNameReverseNext (keyNameReverseIterator * it)
 		}
 
 		size_t backslashes = 0;
-		while (*(real - backslashes - 1) == KDB_PATH_ESCAPE)
+		while (real - backslashes > it->rend && *(real - backslashes - 1) == KDB_PATH_ESCAPE)
 		{
 			++backslashes;
 		}

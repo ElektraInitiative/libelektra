@@ -338,7 +338,7 @@ ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
 		return -1;
 	}
 
-	memcpy (returnedName, key->key, maxSize);
+	memcpy (returnedName, key->key, key->keySize);
 
 	return key->keySize;
 }
@@ -1535,7 +1535,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 	{
 		// skip leading slashes
 		++newName;
-		if (*newName == '.' && (*(newName + 1) == '/' || *(newName + 1) == '\0'))
+		if (*newName == '.' && *(newName + 1) == '/')
 		{
 			// also skip /./ parts
 			newName += 2;
@@ -1620,7 +1620,7 @@ static const char * elektraKeyFindBaseNamePtr (Key * key)
 		}
 
 		size_t backslashes = 0;
-		while (*(cur - backslashes - 1) == '\\')
+		while (cur - backslashes > start && *(cur - backslashes - 1) == '\\')
 		{
 			++backslashes;
 		}
@@ -1832,7 +1832,8 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 	}
 
 	memcpy (key->key, newNamespace, newNamespaceLen);
-	key->keySize += newNamespaceLen - oldNamespaceLen;
+	key->keySize += newNamespaceLen;
+	key->keySize -= oldNamespaceLen;
 	key->key[key->keySize - 1] = '\0';
 
 	key->ukey[0] = ns;

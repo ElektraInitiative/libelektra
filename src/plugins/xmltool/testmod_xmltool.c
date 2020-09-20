@@ -241,13 +241,13 @@ static void test_ksCommonParentName (void)
 	ksDel (ks);
 
 	ks = ksNew (10, keyNew ("system:/some/thing", 0), keyNew ("system:/other/thing", 0), KS_END);
-	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 8, "could find correct parentname");
-	succeed_if_same_string (ret, "system:");
+	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 9, "could find correct parentname");
+	succeed_if_same_string (ret, "system:/");
 	ksDel (ks);
 
 	ks = ksNew (10, keyNew ("system:/some/thing", 0), keyNew ("system:/something", 0), KS_END);
-	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 13, "could find correct parentname");
-	succeed_if_same_string (ret, "system:/some"); // TODO (kodebach): wrong?
+	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 9, "could find correct parentname");
+	succeed_if_same_string (ret, "system:/");
 	ksDel (ks);
 
 	ks = ksNew (10, keyNew ("system:/here/in/deep/goes/ok/thing", 0), keyNew ("system:/here/in/deep/goes/ok/other/thing", 0), KS_END);

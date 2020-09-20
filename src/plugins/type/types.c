@@ -398,9 +398,9 @@ bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
 
 	keySetBaseName (valueKey, value);
 	Key * cur = ksLookup (validValues, valueKey, 0);
+	keyDel (valueKey);
 	if (cur == NULL)
 	{
-		keyDel (valueKey);
 		ksDel (validValues);
 		elektraFree (values);
 		return false;

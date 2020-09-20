@@ -770,6 +770,8 @@ static void copyMeta (Key * dest, Key * src)
 			keyCopyMeta (dest, src, name);
 		}
 	}
+
+	ksDel (metaKS);
 }
 
 /**

@@ -145,7 +145,7 @@ int elektraArrayIncName (Key * key)
 
 	kdb_long_long_t oldIndex = 0;
 	if (offsetIndex && elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
-	kdb_long_long_t newIndex = offsetIndex ? oldIndex + 1 : 0; // we increment by one or use 0 if the name contains no index yet
+	kdb_long_long_t newIndex = offsetIndex != 0 ? oldIndex + 1 : 0; // we increment by one or use 0 if the name contains no index yet
 
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 

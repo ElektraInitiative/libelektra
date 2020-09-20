@@ -1051,7 +1051,7 @@ static void test_ksLookup (void)
 			succeed_if (ksLookup (ks, k[j], 0) == k[j], "did not find key");
 		}
 		succeed_if (ksLookup (ks, k[23], 0) == 0, "found wrong key");
-		succeed_if (ksLookup (ks, k[24], 0) == 0, "found wrong key");
+		succeed_if (ksLookup (ks, k[26], 0) == 0, "found wrong key");
 		succeed_if (ksLookup (ks, k[28], 0) == k[6], "did not find key");
 		succeed_if (ksLookup (ks, k[32], 0) == k[6], "did not find key");
 		succeed_if (ksLookup (ks, k[33], 0) == 0, "found wrong key");

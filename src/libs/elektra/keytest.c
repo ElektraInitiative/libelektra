@@ -361,7 +361,7 @@ int keyIsInactive (const Key * key)
 
 	const char * cur = uname + 1; // skip namespace
 
-	while (cur != NULL && cur <= uname + size)
+	while (cur != NULL && cur + 1 < uname + size)
 	{
 		++cur;
 		if (cur[0] == '.')

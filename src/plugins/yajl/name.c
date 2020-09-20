@@ -71,15 +71,15 @@ ssize_t elektraKeyCountEqualLevel (const Key * cmp1, const Key * cmp2)
 		const char * next1 = strchr (cur1, '\0');
 		const char * next2 = strchr (cur2, '\0');
 
-		if (pcmp1 + size1 <= cur1 || pcmp2 + size2 <= cur2)
-		{
-			break;
-		}
-
 		++counter;
 
 		cur1 = next1 + 1;
 		cur2 = next2 + 1;
+
+		if (pcmp1 + size1 <= cur1 || pcmp2 + size2 <= cur2)
+		{
+			break;
+		}
 	}
 
 	return counter;
