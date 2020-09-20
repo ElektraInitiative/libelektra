@@ -101,7 +101,10 @@ module.exports = function(
           }
         ]
       },
-      ncyBreadcrumb: { label: "APP.BREADCRUMBS.MAIN.NEWS", parent: "main.home" }
+      ncyBreadcrumb: {
+        label: "APP.BREADCRUMBS.MAIN.NEWS",
+        parent: "main.home"
+      }
     })
     .state("main.dyn", {
       abstract: true,

@@ -9789,7 +9789,15 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               e(137), e(142);
               t.exports = r;
             },
-            { 103: 103, 112: 112, 119: 119, 137: 137, 142: 142, 33: 33, 57: 57 }
+            {
+              103: 103,
+              112: 112,
+              119: 119,
+              137: 137,
+              142: 142,
+              33: 33,
+              57: 57
+            }
           ],
           97: [
             function(e, t, n) {
@@ -10393,7 +10401,15 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 p = ":";
               t.exports = i;
             },
-            { 104: 104, 112: 112, 119: 119, 137: 137, 142: 142, 22: 22, 48: 48 }
+            {
+              104: 104,
+              112: 112,
+              119: 119,
+              137: 137,
+              142: 142,
+              22: 22,
+              48: 48
+            }
           ],
           118: [
             function(e, t, n) {
@@ -22607,12 +22623,22 @@ function registerAsciinemaPlayerElement() {
                       null
                     );
                   };
-                })(b, c, d, k)(ue(e));
+                })(
+                  b,
+                  c,
+                  d,
+                  k
+                )(ue(e));
               })()
             )
           : e;
       };
-    })(a, c, d, u(d) ? bf : v)(b);
+    })(
+      a,
+      c,
+      d,
+      u(d) ? bf : v
+    )(b);
   }
   function aj(b) {
     return (function(a) {
@@ -24525,7 +24551,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -1432036169 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -24640,7 +24669,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 2041221968 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -24767,7 +24799,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -1892592712 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -24904,7 +24939,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -805411239 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -25020,7 +25058,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 1418435858 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -25152,7 +25193,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -1508333161 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -25339,7 +25383,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -197981045 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -25501,7 +25548,12 @@ function registerAsciinemaPlayerElement() {
                 null
               );
             };
-          })(a, c, d, b)(c);
+          })(
+            a,
+            c,
+            d,
+            b
+          )(c);
         })(),
         u(d) ? new T(null, 1, 5, U, [No(d)], null) : null
       )
@@ -25582,7 +25634,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -1486476872 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -25735,7 +25790,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -2054647546 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -29009,7 +29067,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -1452363486 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -30841,7 +30902,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -156373259 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -31711,7 +31775,10 @@ function registerAsciinemaPlayerElement() {
                       return function(a) {
                         return 64 <= a && 95 >= a;
                       };
-                    })(c, a)(a);
+                    })(
+                      c,
+                      a
+                    )(a);
                   })()
                 )
               )
@@ -31981,7 +32048,10 @@ function registerAsciinemaPlayerElement() {
                           return function(a) {
                             return 16 > a;
                           };
-                        })(h, f)(a);
+                        })(
+                          h,
+                          f
+                        )(a);
                       })()
                     )
                   )
@@ -32351,7 +32421,12 @@ function registerAsciinemaPlayerElement() {
               )
             : e;
         };
-      })(a, c, d, u(d) ? bf : v)(b);
+      })(
+        a,
+        c,
+        d,
+        u(d) ? bf : v
+      )(b);
     }
     return null;
   }
@@ -32430,7 +32505,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 1528554851 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -34740,7 +34818,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 1082393681 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -34811,7 +34892,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -1020675721 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -34904,7 +34988,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -2136325183 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -34997,7 +35084,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 1945704126 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -35068,7 +35158,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 2001377313 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -35139,7 +35232,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 1662385780 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -35232,7 +35328,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 1380979759 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -35344,7 +35443,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -1875838466 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -35469,7 +35571,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 2110730596 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -35601,7 +35706,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 1609009220 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -35702,7 +35810,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -2119286176 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -35788,7 +35899,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -1080034109 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -35881,7 +35995,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return -1861248332 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -35996,7 +36113,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 463038319 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -37508,7 +37628,10 @@ function registerAsciinemaPlayerElement() {
               };
             })(a, b);
           };
-        })(a, a)(b)),
+        })(
+          a,
+          a
+        )(b)),
         a.h ? a.h(b) : a.call(null, b))
       : null;
   }
@@ -37821,7 +37944,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 1201370539 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -38442,7 +38568,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 1937333797 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
@@ -38951,7 +39080,10 @@ function registerAsciinemaPlayerElement() {
         return function(a) {
           return 187678783 ^ wd(a);
         };
-      })(a, b)(b);
+      })(
+        a,
+        b
+      )(b);
     })();
     return (this.w = c);
   };
