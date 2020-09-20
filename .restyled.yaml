@@ -4,9 +4,9 @@ restylers:
 
   - clang-format:
       image: restyled/restyler-clang-format:v9.0.0
-      exclude:
-        - "tests/shell/gen/**/*"
-        - "**/*.js"
+      include:
+        - "!tests/shell/gen/**/*"
+        - "!**/*.js"
 
   - prettier:
       image: restyled/restyler-prettier:1.19.1
