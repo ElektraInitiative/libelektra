@@ -530,8 +530,8 @@ static int keyCompareByOwner (const void * p1, const void * p2)
 {
 	Key * key1 = *(Key **) p1;
 	Key * key2 = *(Key **) p2;
-	const char * owner1 = keyValue (keyGetMeta (key1, "owner")); // TODO (kodebach): use keyString
-	const char * owner2 = keyValue (keyGetMeta (key2, "owner")); // TODO (kodebach): use keyString
+	const char * owner1 = keyValue (keyGetMeta (key1, "owner"));
+	const char * owner2 = keyValue (keyGetMeta (key2, "owner"));
 	if (!owner1 && !owner2) return 0;
 	if (!owner1) return -1;
 	if (!owner2) return 1;
@@ -1126,7 +1126,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 	if (!ks->array) return ksNew (0, KS_END);
 
 	char * name = cutpoint->key;
-	if (!name) return 0; // TODO (kodebach): not required?
+	if (!name) return 0;
 	if (strcmp (name, "") == 0) return 0;
 
 	elektraOpmphmInvalidate (ks);
@@ -1167,7 +1167,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		((Key *) cutpoint)->ukey[0] = KEY_NS_CASCADING;
 
 		// now look for cascading keys
-		// TODO (kodebach): (fix me) cascading keys shouldn't be allowed in KeySet anymore
+		// TODO (kodebach): cascading keys shouldn't be allowed in KeySet anymore
 	}
 
 	set_cursor = elektraKsFindCutpoint (ks, cutpoint, &it, &found);

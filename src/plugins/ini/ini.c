@@ -119,7 +119,6 @@ static int elektraKeyAppendLine (Key * target, const char * line)
 	return keyGetValueSize (target);
 }
 
-// TODO (kodebach): use something else
 static char * keyNameGetOneLevel (const char * name, size_t * size)
 {
 	char * real = (char *) name;

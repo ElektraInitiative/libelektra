@@ -71,7 +71,7 @@ TEST_F (test_contextual_update, syncCache)
 
 TEST_F (test_contextual_update, notifyAllEvents)
 {
-	/* TODO (kodebach): optimization doesn't work, default vs cascading names in updateContext
+	/* FIXME (kodebach): optimization doesn't work, default vs cascading names in updateContext
 	ks.append (Key ("default:/%/key", KEY_VALUE, "133", KEY_END));
 
 	c.notifyAllEvents ();

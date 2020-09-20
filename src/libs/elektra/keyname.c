@@ -1243,7 +1243,6 @@ ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
 
 size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 {
-	// TODO (kodebach): array parts
 	if (!part) return 0;
 
 	size_t partLen = strlen (part);
@@ -1747,7 +1746,7 @@ elektraNamespace keyGetNamespace (const Key * key)
 // TODO (kodebach): replace ssize_t with size_t?
 ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 {
-	// TODO (kodebach): document and correct escaped key, lock?
+	// TODO (kodebach): document
 	if (!key) return -1;
 	if (ns == KEY_NS_NONE || ns == KEY_NS_EMPTY) return -1;
 
