@@ -727,7 +727,7 @@ private:
 
 		Command::Func fun = [this, &evaluatedName, write] () -> Command::Pair {
 			std::string oldKey = m_key.getName ();
-			if (write && evaluatedName == oldKey)
+			if (write && "default:" + evaluatedName == oldKey)
 			{
 				// nothing changed, same name
 				return std::make_pair (evaluatedName, evaluatedName);

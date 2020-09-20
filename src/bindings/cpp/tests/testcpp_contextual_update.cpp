@@ -71,14 +71,12 @@ TEST_F (test_contextual_update, syncCache)
 
 TEST_F (test_contextual_update, notifyAllEvents)
 {
-	/* FIXME (kodebach): optimization doesn't work, default vs cascading names in updateContext
 	ks.append (Key ("default:/%/key", KEY_VALUE, "133", KEY_END));
 
 	c.notifyAllEvents ();
 	ASSERT_EQ (x.getName (), "default:/%/key");
 	ASSERT_EQ (x, 33) << "should not be changed (optimization)";
 	ASSERT_EQ (ks.lookup ("/%/key").getString (), "133") << "nothing done, so its not changed";
-	*/
 }
 
 TEST_F (test_contextual_update, notifyAllEventsChange)
