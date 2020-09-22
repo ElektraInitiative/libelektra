@@ -84,10 +84,8 @@ int elektraArrayValidateBaseNameString (const char * baseName)
 	{
 		return underscores + 1;
 	}
-	else
-	{
-		return -1;
-	}
+
+	return -1;
 }
 
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
