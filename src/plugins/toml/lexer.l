@@ -288,7 +288,7 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 		}
 		else if (!isMultiline && c == '\n') {
 			driverError (driver, ERROR_SYNTACTIC, yylineno,
-				     "Malformed Input: Found newline in non-multiline string, but is only allowed in multiline strings");
+				     "Malformed Input: Found newline while reading a non-multiline string, but newline is only allowed in multiline strings.");
 			return bufferConsume(buffer);
 		}
 		else if (validAscii (c))
@@ -406,7 +406,7 @@ static void handleEscapedSequence (Buffer * buffer, bool isMultiline, Driver * d
 		readHex (buffer, 4, driver);
 		if (!validUtf8FromUnicode (&buffer->data[buffer->index - 4], 4))
 		{
-			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape");
+			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape sequence");
 		}
 
 		break;
@@ -415,7 +415,7 @@ static void handleEscapedSequence (Buffer * buffer, bool isMultiline, Driver * d
 		readHex (buffer, 8, driver);
 		if (!validUtf8FromUnicode (&buffer->data[buffer->index - 8], 8))
 		{
-			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape");
+			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape sequence");
 		}
 		break;
 	default:
@@ -438,7 +438,7 @@ static void handlePossibleLineEndingBackslash (Buffer * buffer, Driver * driver)
 		if (c != '\n')
 		{
 			driverError (driver, ERROR_SYNTACTIC, yylineno,
-				     "Malformed Input: Invalid Line Ending sequence, expected NL after CR, but got 0x%02X", c);
+				     "Malformed Input: Invalid line ending sequence, expected newline after carriage return, but got 0x%02X", c);
 		}
 		else
 		{
@@ -464,7 +464,7 @@ static void readHex (Buffer * buffer, size_t count, Driver * driver)
 		if (!validHex (c))
 		{
 			driverError (driver, ERROR_SYNTACTIC, yylineno,
-				     "Malformed Input: Invalid unicode escape char, expected hex char, got : '%c'", c);
+				     "Malformed Input: Invalid unicode escape char, expected hexadecimal char, got : '%c'", c);
 		}
 		bufferAddChar (buffer, c, driver);
 	}
@@ -484,7 +484,10 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver)
 			c = (unsigned char) input ();
 			if (c < 0x80 || c >= 0xC0)
 			{
-				driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid utf8 sequence");
+				driverError (
+					driver, ERROR_SYNTACTIC, yylineno,
+					"Malformed Input: Invalid utf8 sequence, expected char to be in range 0x80-0xBF, but was 0x%02X",
+					c);
 			}
 			else
 			{
@@ -494,7 +497,9 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver)
 	}
 	else if (utfLen == 1)
 	{
-		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: No Ascii char allowed at this point, but foun: 0x%02X",
+		driverError (driver, ERROR_SYNTACTIC, yylineno,
+			     "Malformed input: Character '0x%02X' is not valid ascii, but utf-8 sequence is of len 1, expected length "
+			     "greater than 1.",
 			     c);
 	}
 	else
