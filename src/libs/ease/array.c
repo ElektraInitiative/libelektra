@@ -49,8 +49,14 @@ int elektraArrayValidateName (const Key * key)
 int elektraArrayValidateBaseNameString (const char * baseName)
 {
 	const char * current = baseName;
-	if (!current || *current != '#') return -1;
-	if (!strcmp (current, "#")) return 0;
+	if (current == NULL || *current != '#')
+	{
+		return -1;
+	}
+	if (strcmp (current, "#") == 0)
+	{
+		return 0;
+	}
 
 	current++;
 	int underscores = 0;
@@ -68,8 +74,7 @@ int elektraArrayValidateBaseNameString (const char * baseName)
 		digits++;
 	}
 
-	if (underscores != digits - 1) return -1;
-	if (underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
+	if (underscores != digits - 1 || underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
 	{
 		return -1;
 	}
@@ -145,7 +150,7 @@ int elektraArrayIncName (Key * key)
 
 	kdb_long_long_t oldIndex = 0;
 	if (offsetIndex && elektraReadArrayNumber (baseName, &oldIndex) == -1) return -1;
-	kdb_long_long_t newIndex = offsetIndex != 0 ? oldIndex + 1 : 0; // we increment by one or use 0 if the name contains no index yet
+	kdb_long_long_t newIndex = offsetIndex == 0 ? 0 : oldIndex + 1; // we increment by one or use 0 if the name contains no index yet
 
 	char newName[ELEKTRA_MAX_ARRAY_SIZE];
 
