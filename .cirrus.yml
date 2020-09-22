@@ -118,6 +118,7 @@ mac_task:
   install_script:
     - | # Install Homebrew formulas
       brew install openjdk
+      brew tap oclint/formulae
       brew install oclint
       brew install antlr
       brew install antlr4-cpp-runtime
