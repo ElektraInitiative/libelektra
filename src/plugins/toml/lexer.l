@@ -71,6 +71,7 @@ bin_char [01]
 decimal {dec_nzero}("_"?{dec_char})*
 decimal_leading_zeros {dec_char}("_"?{dec_char})*
 decimal_pm [+-]?{decimal}
+decimal_pm_leading_zeros [+-]?{decimal_leading_zeros}
 
 bare_char [-_]|{alnum}
 
@@ -172,12 +173,12 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 	return BINARY;
 }
 
-{decimal_pm}("."{decimal_leading_zeros})?([eE]{decimal_pm})?  {
+{decimal_pm}("."{decimal_leading_zeros})?([eE]{decimal_pm_leading_zeros})?  {
 	yylval.scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yylineno);
 	return FLOAT;
 }
 
-("+"|"-")?"0"("."{decimal_leading_zeros})?([eE]{decimal_pm})?  {
+("+"|"-")?"0"("."{decimal_leading_zeros})?([eE]{decimal_pm_leading_zeros})?  {
 	yylval.scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yylineno);
 	return FLOAT;
 }

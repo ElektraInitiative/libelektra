@@ -1026,6 +1026,17 @@ static void testWriteReadFloat (void)
 	SET_ORDER (8);
 	SET_TYPE ("double");
 
+	WRITE_KV ("float91", "-2e-003");
+	DUP_EXPECTED;
+	SET_ORDER (9);
+	SET_TYPE ("double");
+
+	WRITE_KV ("float92", "+2E+030");
+	DUP_EXPECTED;
+	SET_ORDER (10);
+	SET_TYPE ("double");
+
+
 	TEST_WR_FOOT;
 }
 
@@ -1267,7 +1278,7 @@ static void printError (Key * parent)
 	const Key * meta = keyGetMeta (parent, "error/reason");
 	if (meta != NULL)
 	{
-		ELEKTRA_LOG_DEBUG ("ERROR: %s\n", keyString (meta));
+		fprintf (stderr, "ERROR: %s\n", keyString (meta));
 	}
 }
 
