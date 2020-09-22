@@ -410,7 +410,6 @@ ssize_t keySetName (Key * key, const char * newName)
 
 int elektraKeyNameValidate (const char * name, const char * prefix, size_t * sizePtr, size_t * usizePtr)
 {
-	// TODO (kodebach): return required buffer size
 	if (name == NULL || (strlen (name) == 0 && prefix == NULL)) return 0;
 
 	size_t size = strlen (name) + 1;  // +1 for terminator at end or separator at beginning
