@@ -1,4 +1,5 @@
 remove_tool (pythongen "Deprecated and will be removed soon")
+return ()
 
 find_package (Python2Interp 2.7 QUIET)
 
