@@ -58,11 +58,11 @@ CppKeySet percentConfig ()
 
 void testEnocdingDecoding (Plugin * const plugin, CppKey const & parent, string const decodedString, string const encodedString = "")
 {
-	ckdb::KeySet * rawKeys = ksNew (20, keyNew ("user:/tests/ccode/key", KEY_VALUE, decodedString.c_str (), KEY_END), KS_END);
-	succeed_if_same (plugin->kdbSet (plugin, rawKeys, *parent), //! OCLint (empty if, too few branches switch)
+	ckdb::KeySet * ks = ksNew (20, keyNew ("user:/tests/ccode/key", KEY_VALUE, decodedString.c_str (), KEY_END), KS_END);
+	succeed_if_same (plugin->kdbSet (plugin, ks, *parent), //! OCLint (empty if, too few branches switch)
 			 ELEKTRA_PLUGIN_STATUS_SUCCESS, "Call of `kdbset` was not successful");
 
-	CppKeySet keys (rawKeys);
+	CppKeySet keys (ks);
 
 	if (!encodedString.empty ())
 	{
