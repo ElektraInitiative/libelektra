@@ -568,7 +568,7 @@ public class Key implements Iterable<String>
 		{
 			throw new IllegalArgumentException ("other should be a key, not null");
 		}
-		return Elektra.INSTANCE.keyCmp (get (), other.get ());
+		return Integer.signum (Elektra.INSTANCE.keyCmp (get (), other.get ()));
 	}
 
 	/**
