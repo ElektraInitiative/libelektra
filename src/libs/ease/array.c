@@ -53,12 +53,14 @@ int elektraArrayValidateBaseNameString (const char * baseName)
 	{
 		return -1;
 	}
-	if (strcmp (current, "#") == 0)
+
+	current++;
+
+	if (*current == '\0')
 	{
 		return 0;
 	}
 
-	current++;
 	int underscores = 0;
 	int digits = 0;
 
@@ -74,17 +76,18 @@ int elektraArrayValidateBaseNameString (const char * baseName)
 		digits++;
 	}
 
-	if (underscores != digits - 1 || underscores + digits > ELEKTRA_MAX_ARRAY_SIZE - 2)
+	bool underscoresCorrect = underscores == digits - 1;
+	bool totalLengthCorrect = underscores + digits <= ELEKTRA_MAX_ARRAY_SIZE - 2;
+	bool reachedEnd = *current == '\0' || *current == '/';
+
+	if (underscoresCorrect && totalLengthCorrect && reachedEnd)
+	{
+		return underscores + 1;
+	}
+	else
 	{
 		return -1;
 	}
-
-	if (*current != '\0' && *current != '/')
-	{
-		return -1;
-	}
-
-	return underscores + 1;
 }
 
 int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex)
