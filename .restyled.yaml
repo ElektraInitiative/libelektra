@@ -4,11 +4,17 @@ restylers:
 
   - clang-format:
       image: restyled/restyler-clang-format:v9.0.0
+      include:
+        - "!tests/shell/gen/**/*"
+        - "!**/*.js"
 
-  - prettier
+  - prettier:
+      image: restyled/restyler-prettier:v1.19.1
   - prettier-markdown:
+      image: restyled/restyler-prettier:v1.19.1
       arguments: []
   - shfmt:
+      image: restyled/restyler-shfmt:v2.4.0
       arguments:
         - -s
         - -sr

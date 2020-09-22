@@ -13,14 +13,19 @@ cd "$SOURCE"
 SHFMT="$(which shfmt)"
 SHFMT_VERSION="$(shfmt --version 2> /dev/null | sed s/^v//)"
 SHFMT_MAJOR_VERSION=$(printf "$SHFMT_VERSION" | sed -E 's/([1-9]+)\..*/\1/')
-if [ -z "${SHFMT}" ] || [ "$SHFMT_MAJOR_VERSION" -ge 3 ]; then
-	printf >&2 'shfmt:   %s\n' "$SHFMT"
-	printf >&2 'Version: %s\n' "$SHFMT_VERSION"
-	printf >&2 'Please install `shfmt` version 2\n'
-	exit 1
+if [ -z "${SHFMT}" ] || [ "$SHFMT_MAJOR_VERSION" = "(devel)" ] || [ "$SHFMT_MAJOR_VERSION" -ge 3 ]; then
+	SHFMT="$(which shfmt2)"
+	SHFMT_VERSION="$(shfmt2 --version 2> /dev/null | sed s/^v//)"
+	SHFMT_MAJOR_VERSION=$(printf "$SHFMT_VERSION" | sed -E 's/([1-9]+)\..*/\1/')
+	if [ -z "${SHFMT}" ] || [ "$SHFMT_MAJOR_VERSION" = "(devel)" ] || [ "$SHFMT_MAJOR_VERSION" -ge 3 ]; then
+		printf >&2 'shfmt:   %s\n' "$SHFMT"
+		printf >&2 'Version: %s\n' "$SHFMT_VERSION"
+		printf >&2 'Please install `shfmt` version 2\n'
+		exit 1
+	fi
 fi
 
-shell_files=$(shfmt -f 'scripts' 'src' 'tests/shell')
+shell_files=$("$SHFMT" -f 'scripts' 'src' 'tests/shell')
 additional_files=$(
 	for filepath in 'scripts/change-resolver-symlink.in' \
 		'scripts/change-storage-symlink.in' \
@@ -48,8 +53,8 @@ if [ $# -gt 0 ]; then
 fi
 
 non_ignored=$(printf "%s\n" "$shell_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs git check-ignore -vn | sed -nE 's/^::[[:blank:]]*(.*)$/\1/p')
-printf "%s\n" "$non_ignored" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs shfmt -s -sr -w
-shfmt -s -sr -w 'tests/shell/include_common.sh.in'
+printf "%s\n" "$non_ignored" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$SHFMT" -s -sr -w
+"$SHFMT" -s -sr -w 'tests/shell/include_common.sh.in'
 
 end_line=$(grep -n '^### END OF INCLUDE FILE ###$' 'tests/shell/include_common.sh.in' | cut -d':' -f1)
 

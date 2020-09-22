@@ -131,7 +131,11 @@ you up to date with the multi-language support provided by Elektra.
 
   with the tab key (<kbd>⇥</kbd>) (`‸` represents the current cursor position) should work correctly again. _(René Schwaiger)_
 
-- <<TODO>>
+- The formatting scripts using prettier now use [`npx`](https://www.npmjs.com/package/npx), which is included in `npm`
+  v5.2.0 or newer. This allows us to specify an exact version of prettier to use. _(Klemens Böswirth)_
+- The `reformat-shell` script now accepts the alias `shfmt2`, in case `shfmt` v3 is needed for another project. _(Klemens Böswirth)_
+- The config for restyled.io now specifies the image to use for each formatter. This clearly reflects the version used for
+  formatting. _(Klemens Böswirth)_
 
 ## Documentation
 
