@@ -171,6 +171,7 @@ you up to date with the multi-language support provided by Elektra.
 - Update FreeBSD images from version 11.3 to 11.4. _(Mihael Pranjić)_
 - Increase CPU count for containers to 4. _(Mihael Pranjić)_
 - Use ruby 2.7 on macOS. _(Mihael Pranjić)_
+- Do not use cask. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
