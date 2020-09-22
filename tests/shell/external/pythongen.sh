@@ -4,6 +4,9 @@ echo
 echo ELEKTRA CHECK PYTHONGEN
 echo
 
+echo "Deprecated and will be removed soon"
+exit
+
 if pkg-config elektra; then
 	echo "Installed Elektra will be used"
 else
