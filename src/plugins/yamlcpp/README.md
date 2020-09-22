@@ -471,8 +471,9 @@ directory/file       = Leaf Data
 . Consequently the YAML plugin will store the key set as
 
 ```yaml
-directory: ___dirdata = Directory Data
-  file       = Leaf Data
+directory:
+  ___dirdata: Directory Data
+  file: Leaf Data
 ```
 
 . A user of the YAML plugin will not notice this feature unless he edits the configuration file by hand, as the following example shows:
