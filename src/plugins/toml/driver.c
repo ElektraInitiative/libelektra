@@ -790,14 +790,11 @@ static void resetCurrKey (Driver * driver)
 
 static void extendCurrKey (Driver * driver, const char * name)
 {
+	ELEKTRA_ASSERT(name != NULL, "Name extension must not be NULL, but was");
 	if (driver->currKey == NULL)
 	{
 		driverError (driver, ERROR_INTERNAL, 0, "Wanted to extend current key, but current key is NULL.");
 		return;
-	}
-	if (elektraStrLen (name) == 1)
-	{
-		driverError (driver, ERROR_SYNTACTIC, 0, "Wanted to extend current key with empty name, but mustn't be empty.");
 	}
 	keyAddBaseName (driver->currKey, name);
 }

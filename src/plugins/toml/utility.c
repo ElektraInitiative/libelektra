@@ -246,7 +246,8 @@ char * getRelativeName (Key * parent, Key * key)
 		{
 			placeDot = true;
 		}
-		bool bare = isBareString (keyPart);
+		// Consider empty strings (only consisting of a zero terminator) non-bare, so that empty quotes get emitted
+		bool bare = *keyPart != 0 && isBareString (keyPart);
 		if (!bare)
 		{
 			if (pos == nameSize)

@@ -39,5 +39,4 @@ ksNew (16,
 		KEY_META, "type", "string",
 		KEY_META, "order", "6",
 	KEY_END),
-
 KS_END)

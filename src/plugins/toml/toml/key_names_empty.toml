@@ -1,0 +1,15 @@
+'' = "discouraged, but valid"
+""."" = "discouraged, but valid"
+''.weird."".very_weird.'' = "absolutely"
+discouraged.''.inline = { '' = "ouch", a."" = "oh no" }
+['a'.""]
+having_a_discouraged_super_table = 1
+[1337."".''.weird_table.""]
+horrible_super_table = 'yes'
+[[horrible_table_array.''.''.pew]]
+brutal = 1
+[[horrible_table_array.''.''.pew]]
+brutal = 2
+[[horrible_table_array.''.''.pew]]
+brutal = 3
+
