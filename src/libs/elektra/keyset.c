@@ -1166,7 +1166,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 		((Key *) cutpoint)->ukey[0] = KEY_NS_CASCADING;
 
 		// now look for cascading keys
-		// TODO (kodebach): cascading keys shouldn't be allowed in KeySet anymore
+		// TODO: cascading keys shouldn't be allowed in KeySet anymore
 	}
 
 	set_cursor = elektraKsFindCutpoint (ks, cutpoint, &it, &found);

@@ -237,7 +237,6 @@ ssize_t keyGetNameSize (const Key * key)
 {
 	if (!key) return -1;
 
-	// TODO (kodebach): change to return size_t
 	return key->keySize;
 }
 
@@ -283,7 +282,6 @@ ssize_t keyGetUnescapedNameSize (const Key * key)
 {
 	if (!key) return -1;
 
-	// TODO (kodebach): change to return size_t
 	return key->keyUSize;
 }
 
@@ -316,7 +314,6 @@ keyGetName(key, getBack, keyGetNameSize(key));
  */
 ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
 {
-	// TODO (kodebach): change to return size_t
 	if (!key) return -1;
 
 	if (!returnedName) return -1;
@@ -404,7 +401,6 @@ size_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSize
  */
 ssize_t keySetName (Key * key, const char * newName)
 {
-	// TODO (kodebach): change to return size_t
 	if (!key) return -1;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (newName == NULL || strlen (newName) == 0) return -1;
@@ -1203,33 +1199,28 @@ ssize_t keyGetBaseNameSize (const Key * key)
  */
 ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
 {
-	if (!key) return -1;
-	if (!returned) return -1;
-	if (!maxSize) return -1;
+	if (key == NULL || returned == NULL) return -1;
+	if (maxSize == 0 || maxSize > SSIZE_MAX) return -1;
 
-	if (maxSize > SSIZE_MAX) return -1;
-	ssize_t maxSSize = maxSize;
-
-	if (!key->key)
+	if (key->key == NULL)
 	{
-		returned[0] = 0;
+		*returned = '\0';
 		return 1;
 	}
 
-	ssize_t baseSize = keyGetBaseNameSize (key);
-	if (maxSSize < baseSize)
-	{
-		return -1;
-	}
-
 	const char * baseName = keyBaseName (key);
-
-	if (!baseName)
+	if (baseName == NULL)
 	{
 		return -1;
 	}
 
-	strncpy (returned, baseName, baseSize); // TODO (kodebach): memcpy
+	size_t baseSize = strlen (baseName);
+	if (baseSize >= maxSize)
+	{
+		return -1;
+	}
+
+	memcpy (returned, baseName, baseSize);
 	return baseSize;
 }
 
@@ -1472,7 +1463,6 @@ static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
  */
 ssize_t keyAddBaseName (Key * key, const char * baseName)
 {
-	// TODO (kodebach): change to return size_t
 	if (!key) return -1;
 	if (!baseName) return -1;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
@@ -1676,7 +1666,6 @@ static const char * elektraKeyFindBaseNamePtr (Key * key)
  */
 ssize_t keySetBaseName (Key * key, const char * baseName)
 {
-	// TODO (kodebach): change to return size_t
 	if (!key) return -1;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (!key->key) return -1;
@@ -1735,7 +1724,6 @@ elektraNamespace keyGetNamespace (const Key * key)
 	return (elektraNamespace) key->ukey[0];
 }
 
-// TODO (kodebach): replace ssize_t with size_t?
 ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 {
 	// TODO (kodebach): document
