@@ -191,6 +191,7 @@ ssize_t keySetBaseName(Key *key,const char *baseName);
 ssize_t keyAddBaseName(Key *key,const char *baseName);
 
 elektraNamespace keyGetNamespace(Key const* key);
+ssize_t keySetNamespace(Key * key, elektraNamespace ns);
 
 /* Value Manipulation Methods */
 const void *keyValue(const Key *key);

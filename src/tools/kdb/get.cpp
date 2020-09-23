@@ -149,7 +149,7 @@ int GetCommand::execute (Cmdline const & cl)
 	{
 		if (cl.verbose)
 		{
-			if (k.getNamespace () == "default")
+			if (k.getNamespace () == ElektraNamespace::DEFAULT)
 			{
 				cout << "The key was not found in any other namespace, taking the default" << std::endl;
 			}

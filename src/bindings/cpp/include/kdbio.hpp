@@ -60,7 +60,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 {
 	try
 	{
-		// TODO (kodebach): use C++ binding version of keyMeta
+		// TODO: use C++ binding version of keyMeta
 		KeySet meta (ckdb::ksDup (ckdb::keyMeta (error.getKey ())));
 		Key parent ("meta:/warnings", KEY_END);
 		auto warnings = meta.cut (parent);

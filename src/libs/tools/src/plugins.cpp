@@ -412,7 +412,7 @@ void serializeConfig (std::string name, KeySet const & ks, KeySet & ret)
 	for (KeySet::iterator i = ks.begin (); i != ks.end (); ++i)
 	{
 		Key k (i->dup ());
-		if (k.getNamespace () == "user") ret.append (kdb::tools::helper::rebaseKey (k, oldParent, newParent));
+		if (k.getNamespace () == ElektraNamespace::USER) ret.append (kdb::tools::helper::rebaseKey (k, oldParent, newParent));
 	}
 }
 } // namespace

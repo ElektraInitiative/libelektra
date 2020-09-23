@@ -66,7 +66,7 @@ TEST_F (ThreeWayMergeTest, CascadingParentsCauseNoCascadingKeys)
 	merged.rewind ();
 	while ((current = merged.next ()))
 	{
-		EXPECT_FALSE (current.getNamespace () == "/");
+		EXPECT_FALSE (current.getNamespace () == ElektraNamespace::CASCADING);
 	}
 }
 

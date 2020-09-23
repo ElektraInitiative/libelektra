@@ -23,22 +23,19 @@ namespace helper
 string rebasePath (const Key & key, const Key & oldParent, const Key & newParent)
 {
 	string oldKeyPath = key.getName ();
-	string ns = key.getNamespace ();
-	if (ns != "/")
-	{
-		ns = ns + ":";
-	}
 
 	Key actualOldParent = oldParent.dup ();
-	if (oldParent.getNamespace () == "/")
+	if (oldParent.getNamespace () == ElektraNamespace::CASCADING)
 	{
-		actualOldParent.setName (ns + oldParent.getName ());
+		actualOldParent.setName (oldParent.getName ());
+		actualOldParent.setNamespace (key.getNamespace ());
 	}
 
 	Key actualNewParent = newParent.dup ();
-	if (newParent.getNamespace () == "/")
+	if (newParent.getNamespace () == ElektraNamespace::CASCADING)
 	{
-		actualNewParent.setName (ns + newParent.getName ());
+		actualNewParent.setName (newParent.getName ());
+		actualNewParent.setNamespace (key.getNamespace ());
 	}
 
 	if (!key.isBelowOrSame (actualOldParent))
@@ -135,12 +132,9 @@ Key commonKeyName (Key key1, Key key2)
 	}
 
 	auto ns = key1.getNamespace ();
-	if (ns != "/")
-	{
-		ns += ":/";
-	}
 
-	Key ret (ns, KEY_END);
+	Key ret ("/", KEY_END);
+	ret.setNamespace (ns);
 	for (auto it1 = ++key1.begin (), it2 = ++key2.begin (); it1 != key1.end () && it2 != key2.end (); ++it1, ++it2)
 	{
 		if (*it1 != *it2) break;

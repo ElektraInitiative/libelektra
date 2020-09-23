@@ -1214,8 +1214,8 @@ ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
 		return -1;
 	}
 
-	size_t baseSize = strlen (baseName);
-	if (baseSize >= maxSize)
+	size_t baseSize = strlen (baseName) + 1;
+	if (baseSize > maxSize)
 	{
 		return -1;
 	}
@@ -1507,7 +1507,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
  */
 ssize_t keyAddName (Key * key, const char * newName)
 {
-	// TODO (kodebach): error codes
+	// TODO (kodebach): error codes documentation
 	if (!key) return -1;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (!newName) return -1;

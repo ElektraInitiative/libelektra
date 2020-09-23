@@ -363,7 +363,7 @@ class KdbKeySetTestCases < Test::Unit::TestCase
 
 
       # test Enumerable mixin
-      assert ks.all? { |e| e.namespace == "user" }
+      assert ks.all? { |e| e.namespace == Kdb::ElektraNamespace_USER }
       assert ks.all? { |e| e.has_meta? "owner" }
       assert ks.all? { |e| e.is_string? }
 

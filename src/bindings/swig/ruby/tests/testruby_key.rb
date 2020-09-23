@@ -211,7 +211,7 @@ class KdbKeyTestCases < Test::Unit::TestCase
       k.name = name
       assert_equal name, k.name
       assert_equal name.split('/').reverse[0], k.basename
-      assert_equal "user", k.namespace
+      assert_equal Kdb::ElektraNamespace_USER, k.namespace
 
       k.add_basename "b1"
       assert_equal "b1", k.basename

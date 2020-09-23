@@ -28,6 +28,19 @@ class NameIterator;
 class NameReverseIterator;
 #endif
 
+enum class ElektraNamespace : std::uint8_t
+{
+	NONE = 0,
+	CASCADING = 1,
+	META = 2,
+	SPEC = 3,
+	PROC = 4,
+	DIR = 5,
+	USER = 6,
+	SYSTEM = 7,
+	DEFAULT = 8,
+};
+
 /**
  * @copydoc key
  *
@@ -213,7 +226,8 @@ public:
 
 
 	inline bool isValid () const;
-	inline std::string getNamespace () const;
+	inline ElektraNamespace getNamespace () const;
+	inline ssize_t setNamespace (ElektraNamespace ns) const;
 	inline bool isCascading () const;
 	inline bool isSpec () const;
 	inline bool isProc () const;
@@ -239,7 +253,6 @@ private:
 
 	ckdb::Key * key; ///< holds an elektra key
 };
-
 
 #ifndef ELEKTRA_WITHOUT_ITERATOR
 /**
@@ -1454,19 +1467,23 @@ inline bool Key::isValid () const
 }
 
 /**
- * @return namespace as string
+ * @return namespace of the key
  *
- * Will return slash for cascading names.
- *
- * @see getName(), isUser(), isSystem()
+ * @see ElektraNamespace, keyGetNamespace
  */
-inline std::string Key::getNamespace () const
+inline ElektraNamespace Key::getNamespace () const
 {
-	// TODO (kodebach): enum?
-	std::string name = getName ();
-	size_t colon = name.find (':');
-	if (colon == std::string::npos) return "/";
-	return name.substr (0, colon);
+	return static_cast<ElektraNamespace> (ckdb::keyGetNamespace (key));
+}
+
+/**
+ * Set the namespace of the key
+ *
+ * @see ElektraNamespace, keySetNamespace
+ */
+inline ssize_t Key::setNamespace (ElektraNamespace ns) const
+{
+	return ckdb::keySetNamespace (key, static_cast<elektraNamespace> (ns));
 }
 
 

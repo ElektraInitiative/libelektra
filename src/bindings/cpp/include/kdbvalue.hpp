@@ -280,12 +280,7 @@ public:
 	static Key setWithNamespace (KeySet & ks, Key const & spec, std::string const & ns)
 	{
 		std::string const & name = spec.getName ();
-		size_t offset = spec.getNamespace ().length ();
-		if (offset != 1)
-		{
-			++offset;
-		}
-		kdb::Key k (ns + "/" + name.substr (offset), KEY_END);
+		kdb::Key k (ns + "/" + name.substr (name.find ('/')), KEY_END);
 		ks.append (k);
 
 		return k;
@@ -694,7 +689,7 @@ private:
 	 */
 	void unsafeSyncKeySet () const
 	{
-		if (m_hasChanged && m_key.getNamespace () == "default")
+		if (m_hasChanged && m_key.getNamespace () == ElektraNamespace::DEFAULT)
 		{
 			m_hasChanged = false;
 			Key spec (m_spec.dup ());

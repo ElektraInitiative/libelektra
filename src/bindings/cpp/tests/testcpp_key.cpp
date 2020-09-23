@@ -647,25 +647,25 @@ TEST (key, conversation)
 
 TEST (key, keynamespace)
 {
-	succeed_if (Key ("user:/", KEY_END).getNamespace () == "user", "namespace wrong");
-	succeed_if (Key ("user:/a", KEY_END).getNamespace () == "user", "namespace wrong");
+	succeed_if (Key ("user:/", KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
+	succeed_if (Key ("user:/a", KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
 	// std::cout << Key ("user:/a", KEY_END).getNamespace () << std::endl;
-	succeed_if (Key ("user:/a/b/c", KEY_END).getNamespace () == "user", "namespace wrong");
-	succeed_if (Key ("user:/a/..", KEY_END).getNamespace () == "user", "namespace wrong");
-	succeed_if (Key ("user:/a/../x/f/v", KEY_END).getNamespace () == "user", "namespace wrong");
+	succeed_if (Key ("user:/a/b/c", KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
+	succeed_if (Key ("user:/a/..", KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
+	succeed_if (Key ("user:/a/../x/f/v", KEY_END).getNamespace () == ElektraNamespace::USER, "namespace wrong");
 
-	succeed_if (Key ("dir:/", KEY_END).getNamespace () == "dir", "namespace wrong");
-	succeed_if (Key ("proc:/", KEY_END).getNamespace () == "proc", "namespace wrong");
-	succeed_if (Key ("spec:/", KEY_END).getNamespace () == "spec", "namespace wrong");
-	succeed_if (Key ("system:/", KEY_END).getNamespace () == "system", "namespace wrong");
+	succeed_if (Key ("dir:/", KEY_END).getNamespace () == ElektraNamespace::DIR, "namespace wrong");
+	succeed_if (Key ("proc:/", KEY_END).getNamespace () == ElektraNamespace::PROC, "namespace wrong");
+	succeed_if (Key ("spec:/", KEY_END).getNamespace () == ElektraNamespace::SPEC, "namespace wrong");
+	succeed_if (Key ("system:/", KEY_END).getNamespace () == ElektraNamespace::SYSTEM, "namespace wrong");
 
-	succeed_if (Key ("dir:/abc", KEY_END).getNamespace () == "dir", "namespace wrong");
-	succeed_if (Key ("proc:/abc", KEY_END).getNamespace () == "proc", "namespace wrong");
-	succeed_if (Key ("spec:/abc", KEY_END).getNamespace () == "spec", "namespace wrong");
-	succeed_if (Key ("system:/abc", KEY_END).getNamespace () == "system", "namespace wrong");
+	succeed_if (Key ("dir:/abc", KEY_END).getNamespace () == ElektraNamespace::DIR, "namespace wrong");
+	succeed_if (Key ("proc:/abc", KEY_END).getNamespace () == ElektraNamespace::PROC, "namespace wrong");
+	succeed_if (Key ("spec:/abc", KEY_END).getNamespace () == ElektraNamespace::SPEC, "namespace wrong");
+	succeed_if (Key ("system:/abc", KEY_END).getNamespace () == ElektraNamespace::SYSTEM, "namespace wrong");
 
-	succeed_if (Key ("/", KEY_END).getNamespace () == "/", "namespace wrong");
-	succeed_if (Key ("/abc", KEY_END).getNamespace () == "/", "namespace wrong");
+	succeed_if (Key ("/", KEY_END).getNamespace () == ElektraNamespace::CASCADING, "namespace wrong");
+	succeed_if (Key ("/abc", KEY_END).getNamespace () == ElektraNamespace::CASCADING, "namespace wrong");
 }
 
 TEST (key, comparision)

@@ -134,7 +134,7 @@ void Backend::setMountpoint (Key mountpoint, KeySet mountConf)
 	}
 
 	// STEP 2: check for wrong namespace (proc)
-	if (mountpoint.getNamespace () == "proc")
+	if (mountpoint.getNamespace () == ElektraNamespace::PROC)
 	{
 		throw MountpointAlreadyInUseException ("proc:/ mountpoint not allowed");
 	}

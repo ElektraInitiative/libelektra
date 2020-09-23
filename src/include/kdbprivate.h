@@ -598,8 +598,6 @@ int keyIsDir (const Key * key);
 int keyIsSystem (const Key * key);
 int keyIsUser (const Key * key);
 
-ssize_t keySetNamespace (Key * key, elektraNamespace ns);
-
 elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
 
 int elektraKeyNameValidate (const char * name, const char * prefix, size_t * size, size_t * usize);
