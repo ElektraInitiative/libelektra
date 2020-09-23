@@ -223,7 +223,7 @@ static void test_metaKeySet (void)
 	keySetMeta (key, "meta/test2", "value2");
 	keySetMeta (key, "meta/test3", "value3");
 
-	KeySet * metaKeys = elektraKeyGetMetaKeySet (key);
+	KeySet * metaKeys = ksDup (keyMeta (key));
 
 	/* test whether the metakeyset contains all keys */
 	Key * metaKey = ksLookupByName (metaKeys, "meta:/meta/test1", KDB_O_NONE);
@@ -246,7 +246,7 @@ static void test_metaKeySet (void)
 	succeed_if (!strcmp (keyString (deletedKey), "value3"), "key deleted from the metakeyset has a wrong value afterwards");
 
 	ksDel (metaKeys);
-	metaKeys = elektraKeyGetMetaKeySet (key);
+	metaKeys = ksDup (keyMeta (key));
 	ksRewind (metaKeys);
 	metaKey = ksNext (metaKeys);
 	keySetString (metaKey, "newvalue");

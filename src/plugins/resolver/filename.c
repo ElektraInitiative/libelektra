@@ -651,10 +651,6 @@ ElektraResolved * ELEKTRA_PLUGIN_FUNCTION (filename) (elektraNamespace namespace
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve proc");
 		rc = -1;
 		break;
-	case KEY_NS_EMPTY:
-		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve empty");
-		rc = -1;
-		break;
 	case KEY_NS_NONE:
 		ELEKTRA_ADD_INTERFACE_WARNING (warningsKey, "Resolver was not able to resolve a filename. Tried to resolve none");
 		rc = -1;

@@ -344,7 +344,7 @@ Backend * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 		ksNew (5, keyNew ("system:/module", KEY_VALUE, "1", KEY_END), keyNew ("user:/module", KEY_VALUE, "1", KEY_END), KS_END);
 	Key * cur = ksCurrent (modules);
 
-	elektraKeySetName (errorKey, keyName (cur), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
+	keySetName (errorKey, keyName (cur));
 
 	Plugin * plugin = elektraPluginOpen (keyBaseName (cur), modules, defaultConfig, errorKey);
 	if (!plugin)
@@ -436,7 +436,6 @@ int backendUpdateSize (Backend * backend, Key * parent, int size)
 		backend->systemsize = size;
 		break;
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
 	case KEY_NS_NONE:

@@ -78,7 +78,6 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentK
 	case KEY_NS_SYSTEM:
 		return &pks->system;
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
@@ -289,7 +288,6 @@ int elektraWresolverOpen (Plugin * handle, Key * errorKey)
 		elektraResolveSystem (&p->system, errorKey);
 	// FALLTHROUGH
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
@@ -319,7 +317,6 @@ int elektraWresolverClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		case KEY_NS_SYSTEM:
 			resolverClose (&ps->system); // FALLTHROUGH
 		case KEY_NS_PROC:
-		case KEY_NS_EMPTY:
 		case KEY_NS_NONE:
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:

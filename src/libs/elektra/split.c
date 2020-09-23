@@ -208,8 +208,6 @@ static ssize_t splitSearchBackend (Split * split, Backend * backend, Key * paren
 					break;
 				case KEY_NS_PROC:
 					return -1;
-				case KEY_NS_EMPTY:
-					return -1;
 				case KEY_NS_NONE:
 					return -1;
 				case KEY_NS_META:
@@ -256,7 +254,6 @@ static int elektraKeySetNameByNamespace (Key * parentKey, elektraNamespace ns)
 	case KEY_NS_SYSTEM:
 		keySetName (parentKey, "system:/");
 		break;
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
@@ -549,9 +546,6 @@ static int elektraSplitPostprocess (Split * split, int i, Key * warningKey, KDB 
 			case KEY_NS_PROC:
 				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a proc key name");
 				break;
-			case KEY_NS_EMPTY:
-				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has an empty name");
-				break;
 			case KEY_NS_META:
 				elektraDropCurrentKey (split->keysets[i], warningKey, curHandle, 0, "it has a metaname");
 				break;
@@ -646,7 +640,6 @@ int splitUpdateSize (Split * split)
 			split->handles[i]->systemsize = ksGetSize (split->keysets[i]);
 			break;
 		case KEY_NS_PROC:
-		case KEY_NS_EMPTY:
 		case KEY_NS_NONE:
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
@@ -782,7 +775,6 @@ int splitSync (Split * split)
 			}
 			break;
 		case KEY_NS_PROC:
-		case KEY_NS_EMPTY:
 		case KEY_NS_META:
 		case KEY_NS_CASCADING:
 		case KEY_NS_NONE:

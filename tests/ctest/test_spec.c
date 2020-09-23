@@ -156,7 +156,7 @@ static void test_lookupNoOverride (void)
 
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k1, "found wrong key");
 	succeed_if (ksLookup (ks, dup, KDB_O_SPEC) == k1, "found wrong key");
-	elektraKeySetName (dup, "/test/lift/limit", KEY_CASCADING_NAME);
+	keySetName (dup, "/test/lift/limit");
 	succeed_if (ksLookup (ks, dup, KDB_O_SPEC) == k1, "found wrong key");
 	succeed_if (ksLookup (ks, dup, KDB_O_SPEC | KDB_O_CREATE) == k1, "found wrong key");
 
@@ -334,7 +334,7 @@ static void test_lookupCascading (void)
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k, "did not find override key");
 	keySetMeta (specKey, "override/#0", "");
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
-	elektraKeySetName (specKey, "/else", KEY_CASCADING_NAME);
+	keySetName (specKey, "/else");
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k, "did not find key itself");
 
 	keyDel (specKey);

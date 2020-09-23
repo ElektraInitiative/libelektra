@@ -405,7 +405,62 @@ size_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSize
 ssize_t keySetName (Key * key, const char * newName)
 {
 	// TODO (kodebach): change to return size_t
-	return elektraKeySetName (key, newName, 0);
+	if (!key) return -1;
+	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (newName == NULL || strlen (newName) == 0) return -1;
+
+	size_t oldKeySize = key->keySize;
+	size_t oldKeyUSize = key->keyUSize;
+
+	if (!elektraKeyNameValidate (newName, NULL, &key->keySize, &key->keyUSize))
+	{
+		// error invalid name
+		return -1;
+	}
+
+	// from now on this function CANNOT fail -> we may modify the key
+
+	clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
+
+	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	{
+		// key was in mmap region, clear flag and set NULL to allow realloc
+		key->key = NULL;
+		key->ukey = NULL;
+		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
+	}
+
+	if (key->keySize > oldKeySize)
+	{
+		// buffer growing -> realloc first
+		elektraRealloc ((void **) &key->key, key->keySize);
+	}
+
+	if (key->keyUSize > oldKeyUSize)
+	{
+		// buffer growing -> realloc first
+		elektraRealloc ((void **) &key->ukey, key->keyUSize);
+	}
+
+	elektraKeyNameCanonicalize (newName, &key->key, key->keySize, 0);
+	elektraKeyNameUnescape (key->key, &key->ukey);
+
+	if (key->keySize < oldKeySize)
+	{
+		// buffer shrinking -> realloc after
+		elektraRealloc ((void **) &key->key, key->keySize);
+	}
+
+	if (key->keyUSize < oldKeyUSize)
+	{
+		// buffer shrinking -> realloc after
+		elektraRealloc ((void **) &key->ukey, key->keyUSize);
+	}
+
+	set_bit (key->flags, KEY_FLAG_SYNC);
+
+	if (keyGetNamespace (key) != KEY_NS_META) keySetOwner (key, NULL);
+	return key->keySize;
 }
 
 int elektraKeyNameValidate (const char * name, const char * prefix, size_t * sizePtr, size_t * usizePtr)
@@ -1057,68 +1112,6 @@ void elektraKeyNameUnescape (const char * canonicalName, char ** unescapedName)
 	*outPtr = '\0';
 }
 
-// TODO (kodebach): remove options
-ssize_t elektraKeySetName (Key * key, const char * newName, elektraKeyFlags options)
-{
-	// TODO (kodebach): change to return size_t
-	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
-	if (newName == NULL || strlen (newName) == 0) return -1;
-
-	size_t oldKeySize = key->keySize;
-	size_t oldKeyUSize = key->keyUSize;
-
-	if (!elektraKeyNameValidate (newName, NULL, &key->keySize, &key->keyUSize))
-	{
-		// error invalid name
-		return -1;
-	}
-
-	// from now on this function CANNOT fail -> we may modify the key
-
-	clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
-
-	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
-	{
-		// key was in mmap region, clear flag and set NULL to allow realloc
-		key->key = NULL;
-		key->ukey = NULL;
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
-	}
-
-	if (key->keySize > oldKeySize)
-	{
-		// buffer growing -> realloc first
-		elektraRealloc ((void **) &key->key, key->keySize);
-	}
-
-	if (key->keyUSize > oldKeyUSize)
-	{
-		// buffer growing -> realloc first
-		elektraRealloc ((void **) &key->ukey, key->keyUSize);
-	}
-
-	elektraKeyNameCanonicalize (newName, &key->key, key->keySize, 0);
-	elektraKeyNameUnescape (key->key, &key->ukey);
-
-	if (key->keySize < oldKeySize)
-	{
-		// buffer shrinking -> realloc after
-		elektraRealloc ((void **) &key->key, key->keySize);
-	}
-
-	if (key->keyUSize < oldKeyUSize)
-	{
-		// buffer shrinking -> realloc after
-		elektraRealloc ((void **) &key->ukey, key->keyUSize);
-	}
-
-	set_bit (key->flags, KEY_FLAG_SYNC);
-
-	if (!(options & KEY_META_NAME) && keyGetNamespace (key) != KEY_NS_META) keySetOwner (key, NULL);
-	return key->keySize;
-}
-
 /**
  * @brief Returns a pointer to the internal unescaped key name where the @p basename starts.
  *
@@ -1747,7 +1740,7 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 {
 	// TODO (kodebach): document
 	if (!key) return -1;
-	if (ns == KEY_NS_NONE || ns == KEY_NS_EMPTY) return -1;
+	if (ns == KEY_NS_NONE) return -1;
 
 	if (ns == key->ukey[0]) return key->keySize;
 

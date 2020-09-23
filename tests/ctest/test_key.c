@@ -396,89 +396,89 @@ static void test_keyComment (void)
 	keyDel (key);
 }
 
-static void test_elektraKeySetName (void)
+static void test_keySetName (void)
 {
-	printf ("test elektraKeySetName\n");
+	printf ("test keySetName\n");
 
 	Key * key = keyNew ("/", KEY_END);
 	Key * dup = 0;
 
-	succeed_if (elektraKeySetName (key, "/", 0) != -1, "could not set cascading name");
+	succeed_if (keySetName (key, "/") != -1, "could not set cascading name");
 	succeed_if_same_string (keyName (key), "/");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "/");
 	keyDel (dup);
 
-	elektraKeySetName (key, "/c", 0);
+	keySetName (key, "/c");
 	succeed_if_same_string (keyName (key), "/c");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "/c");
 	keyDel (dup);
 
-	succeed_if (elektraKeySetName (key, "/", 0) != -1, "could not set cascading name");
+	succeed_if (keySetName (key, "/") != -1, "could not set cascading name");
 	succeed_if_same_string (keyName (key), "/");
-	elektraKeySetName (key, "/cascading", 0);
+	keySetName (key, "/cascading");
 	succeed_if_same_string (keyName (key), "/cascading");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "/cascading");
 	keyDel (dup);
 
-	elektraKeySetName (key, "/cascading/s/deep/below", 0);
+	keySetName (key, "/cascading/s/deep/below");
 	succeed_if_same_string (keyName (key), "/cascading/s/deep/below");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "/cascading/s/deep/below");
 	keyDel (dup);
 
-	elektraKeySetName (key, "user:/cascading/s/deep/below", 0);
+	keySetName (key, "user:/cascading/s/deep/below");
 	succeed_if_same_string (keyName (key), "user:/cascading/s/deep/below");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "user:/cascading/s/deep/below");
 	keyDel (dup);
 
-	elektraKeySetName (key, "system:/cascading/s/deep/below", 0);
+	keySetName (key, "system:/cascading/s/deep/below");
 	succeed_if_same_string (keyName (key), "system:/cascading/s/deep/below");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "system:/cascading/s/deep/below");
 	keyDel (dup);
 
-	elektraKeySetName (key, "meta:/order", 0);
+	keySetName (key, "meta:/order");
 	succeed_if_same_string (keyName (key), "meta:/order");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "meta:/order");
 	keyDel (dup);
 
-	elektraKeySetName (key, "meta:/check/type", 0);
+	keySetName (key, "meta:/check/type");
 	succeed_if_same_string (keyName (key), "meta:/check/type");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "meta:/check/type");
 	keyDel (dup);
 
-	elektraKeySetName (key, "meta:/a", 0);
+	keySetName (key, "meta:/a");
 	succeed_if_same_string (keyName (key), "meta:/a");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "meta:/a");
 	keyDel (dup);
 
-	succeed_if (elektraKeySetName (key, "", 0) == -1, "setting emtpy name should fail");
+	succeed_if (keySetName (key, "") == -1, "setting emtpy name should fail");
 	succeed_if_same_string (keyName (key), "meta:/a");
 
 	succeed_if (keySetName (key, 0) == -1, "setting null name should fail");
 	succeed_if_same_string (keyName (key), "meta:/a");
 
-	elektraKeySetName (key, "/cascading", 0);
+	keySetName (key, "/cascading");
 	succeed_if_same_string (keyName (key), "/cascading");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "/cascading");
 	keyDel (dup);
 
-	elektraKeySetName (key, "meta:/", 0);
+	keySetName (key, "meta:/");
 	succeed_if_same_string (keyName (key), "meta:/");
 	succeed_if (key->key != 0, "null pointer?");
 	dup = keyDup (key);
 	succeed_if_same_string (keyName (dup), "meta:/");
 	keyDel (dup);
 
-	elektraKeySetName (key, "meta:/other", 0);
+	keySetName (key, "meta:/other");
 	succeed_if_same_string (keyName (key), "meta:/other");
 	succeed_if (key->key != 0, "null pointer?");
 	dup = keyDup (key);
@@ -487,36 +487,31 @@ static void test_elektraKeySetName (void)
 
 	for (int i = 0; i < 8; ++i)
 	{
-		int flags = 0;
-		if (i & 1) flags |= KEY_CASCADING_NAME;
-		if (i & 2) flags |= KEY_META_NAME;
-		if (i & 4) flags |= KEY_EMPTY_NAME;
-
-		elektraKeySetName (key, "spec:/test", flags);
+		keySetName (key, "spec:/test");
 		succeed_if_same_string (keyName (key), "spec:/test");
 		dup = keyDup (key);
 		succeed_if_same_string (keyName (dup), "spec:/test");
 		keyDel (dup);
 
-		elektraKeySetName (key, "proc:/test", flags);
+		keySetName (key, "proc:/test");
 		succeed_if_same_string (keyName (key), "proc:/test");
 		dup = keyDup (key);
 		succeed_if_same_string (keyName (dup), "proc:/test");
 		keyDel (dup);
 
-		elektraKeySetName (key, "dir:/test", flags);
+		keySetName (key, "dir:/test");
 		succeed_if_same_string (keyName (key), "dir:/test");
 		dup = keyDup (key);
 		succeed_if_same_string (keyName (dup), "dir:/test");
 		keyDel (dup);
 
-		elektraKeySetName (key, "user:/test", flags);
+		keySetName (key, "user:/test");
 		succeed_if_same_string (keyName (key), "user:/test");
 		dup = keyDup (key);
 		succeed_if_same_string (keyName (dup), "user:/test");
 		keyDel (dup);
 
-		elektraKeySetName (key, "system:/test", flags);
+		keySetName (key, "system:/test");
 		succeed_if_same_string (keyName (key), "system:/test");
 		dup = keyDup (key);
 		succeed_if_same_string (keyName (dup), "system:/test");
@@ -809,7 +804,7 @@ static void test_keyCopy (void)
 	succeed_if_same_string (keyName (k), "/");
 	succeed_if_same_string (keyName (c), "/");
 
-	succeed_if (elektraKeySetName (k, "/abc", KEY_CASCADING_NAME) != -1, "could not set cascading name");
+	succeed_if (keySetName (k, "/abc") != -1, "could not set cascading name");
 	succeed_if (keyCopy (c, k) != -1, "could not copy");
 	succeed_if_same_string (keyName (k), "/abc");
 	succeed_if_same_string (keyName (c), "/abc");
@@ -872,7 +867,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_keyNameUnescape ();
-	test_elektraKeySetName ();
+	test_keySetName ();
 	test_keyAddName ();
 
 	test_keyRefcounter ();

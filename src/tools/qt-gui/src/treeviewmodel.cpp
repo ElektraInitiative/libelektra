@@ -516,8 +516,6 @@ void TreeViewModel::populateModel (KeySet const & keySet)
 		case KEY_NS_SYSTEM:
 			toAdd = ConfigNodePtr (new ConfigNode ("system", "system", nullptr, this));
 			break;
-		case KEY_NS_EMPTY:
-			break;
 		case KEY_NS_NONE:
 			break;
 		case KEY_NS_META:

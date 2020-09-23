@@ -1149,7 +1149,6 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 			case KEY_NS_META:
 				((Key *) cutpoint)->ukey[0] = ns;
 				break;
-			case KEY_NS_EMPTY:
 			case KEY_NS_NONE:
 			case KEY_NS_CASCADING:
 			case KEY_NS_DEFAULT:
@@ -1648,7 +1647,7 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 			elektraCopyCallbackMeta (k, specKey);
 		}
 		else
-			elektraKeySetName (k, keyString (m), KEY_CASCADING_NAME);
+			keySetName (k, keyString (m));
 		ret = ksLookup (ks, k, KDB_O_NODEFAULT);
 		if (ret) break;
 		++i;
@@ -2300,7 +2299,7 @@ Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options
 	struct _Key key;
 	key.meta = NULL;
 	keyInit (&key);
-	elektraKeySetName (&key, name, KEY_META_NAME | KEY_CASCADING_NAME);
+	keySetName (&key, name);
 
 	found = ksLookup (ks, &key, options);
 	elektraFree (key.key);

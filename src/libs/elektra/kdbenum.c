@@ -131,16 +131,14 @@ enum elektraLockFlags
 enum elektraNamespace
 {
 	KEY_NS_NONE=0,          ///< no key given as parameter to keyGetNamespace()
-	KEY_NS_EMPTY=1,         ///< key name was empty, e.g. invalid key name
+	KEY_NS_CASCADING=1,     ///< cascading key, starts with /, abstract name for any of the namespaces below
 	KEY_NS_META=2,          ///< metakey, i.e. any key name not under other categories
-	KEY_NS_CASCADING=3,     ///< cascading key, starts with /, abstract name for any of the namespaces below
-	KEY_NS_FIRST=4,         ///< For iteration over namespaces (first element, inclusive)
-	KEY_NS_SPEC=4,          ///< spec contains the specification of the other namespaces
-	KEY_NS_PROC=5,          ///< proc contains process-specific configuration
-	KEY_NS_DIR=6,           ///< dir contains configuration from a specific directory
-	KEY_NS_USER=7,          ///< user key in the home directory of the current user
-	KEY_NS_SYSTEM=8,        ///< system key is shared for a computer system
-	KEY_NS_LAST=8           ///< For iteration over namespaces (last element, inclusive)
+	KEY_NS_SPEC=3,          ///< spec contains the specification of the other namespaces
+	KEY_NS_PROC=4,          ///< proc contains process-specific configuration
+	KEY_NS_DIR=5,           ///< dir contains configuration from a specific directory
+	KEY_NS_USER=6,          ///< user key in the home directory of the current user
+	KEY_NS_SYSTEM=7,        ///< system key is shared for a computer system
+  KEY_NS_DEFAULT=8,       ///< default key used as a fallback if no other key is found
 };
 
 /**

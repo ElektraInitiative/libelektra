@@ -1005,11 +1005,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	if (ns == KEY_NS_EMPTY)
-	{
-		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, "Empty namespace passed to kdbGet. Please use the cascading key / instead");
-	}
-
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
 
@@ -1550,12 +1545,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		keyDel (oldError);
 		ELEKTRA_LOG ("ns == KEY_NS_META");
 		return -1;
-	}
-
-	if (ns == KEY_NS_EMPTY)
-	{
-		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, "Invalid key name passed to kdbSet");
-		ELEKTRA_LOG ("ns == KEY_NS_EMPTY");
 	}
 
 	if (!handle || !ks)

@@ -49,7 +49,7 @@ static void test_cascadingLookup (void)
 	Key * found = ksLookup (ks, search, 0);
 	succeed_if (found == k0, "found wrong key");
 
-	elektraKeySetName (search, "/benchmark/override/#1", KEY_CASCADING_NAME);
+	keySetName (search, "/benchmark/override/#1");
 	found = ksLookup (ks, search, 0);
 	succeed_if (found == k1, "found wrong key");
 	keyDel (search);
@@ -58,7 +58,7 @@ static void test_cascadingLookup (void)
 	found = ksLookup (ks, search, 0);
 	succeed_if (found == k2, "found wrong key");
 
-	elektraKeySetName (search, "/benchmark/override/#3", KEY_CASCADING_NAME);
+	keySetName (search, "/benchmark/override/#3");
 	found = ksLookup (ks, search, 0);
 	succeed_if (found == k3, "found wrong key");
 	keyDel (search);

@@ -121,9 +121,6 @@ libelektra_0.8 {
 	ksSetCursor;
 	ksTail;
 	ksVNew;
-
-	# kdbproposal.h
-	elektraKeySetName;
 };
 
 libelektra_1.0 {

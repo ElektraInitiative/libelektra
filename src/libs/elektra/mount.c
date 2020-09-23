@@ -220,7 +220,6 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 				splitAppend (kdb->split, backend, keyNew ("user:/", KEY_VALUE, "default", KEY_END), 2);
 			}
 			break;
-		case KEY_NS_EMPTY:
 		case KEY_NS_PROC:
 		case KEY_NS_NONE:
 		case KEY_NS_META:
@@ -593,7 +592,6 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 				++backend->refcounter;
 				break;
 			case KEY_NS_PROC:
-			case KEY_NS_EMPTY:
 			case KEY_NS_NONE:
 			case KEY_NS_META:
 			case KEY_NS_CASCADING:
@@ -634,7 +632,6 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			case KEY_NS_SPEC:
 			// excluded on purpose because mounting spec is a separate step
 			// (see specmount)
-			case KEY_NS_EMPTY:
 			case KEY_NS_PROC:
 			case KEY_NS_NONE:
 			case KEY_NS_META:

@@ -342,10 +342,6 @@ void CompleteCommand::addNamespaces (map<Key, pair<int, int>> & hierarchy, Cmdli
 	for (const string & ns : namespaces)
 	{
 		const Key nsKey (ns, KEY_END);
-		if ((cl.debug || cl.verbose) && ckdb::keyGetNamespace (nsKey.getKey ()) == KEY_NS_EMPTY)
-		{ // Check for outdated namespaces, issue a warning in case
-			cerr << "Outdated namespace detected:" << ns << ".\nPlease report this issue." << endl;
-		}
 		hierarchy[nsKey] = pair<int, int> (1, 0);
 	}
 }

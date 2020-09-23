@@ -92,7 +92,6 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentK
 	case KEY_NS_SYSTEM:
 		return &pks->system;
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
@@ -299,7 +298,6 @@ static int needsMapping (Key * testKey, Key * errorKey)
 	elektraNamespace ns = keyGetNamespace (errorKey);
 
 	if (ns == KEY_NS_NONE) return 1;      // for unit tests
-	if (ns == KEY_NS_EMPTY) return 1;     // for default backend
 	if (ns == KEY_NS_CASCADING) return 1; // init all namespaces for cascading
 
 	return ns == keyGetNamespace (testKey); // otherwise only init if same ns
@@ -402,7 +400,6 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		}
 	// FALLTHROUGH
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:

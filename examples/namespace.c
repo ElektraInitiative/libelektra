@@ -32,9 +32,6 @@ case KEY_NS_USER:
 case KEY_NS_SYSTEM:
 	printf ("system namespace\n");
 	break;
-case KEY_NS_EMPTY:
-	printf ("empty name\n");
-	break;
 case KEY_NS_NONE:
 	printf ("no key\n");
 	break;

@@ -498,7 +498,7 @@ static void test_modules (void)
 	// output_trie (kdb->trie);
 
 	Key * rmp = keyNew ("/", KEY_VALUE, "root", KEY_END);
-	elektraKeySetName (rmp, "/", KEY_CASCADING_NAME);
+	keySetName (rmp, "/");
 	Backend * b2 = 0;
 
 	b2 = trieLookup (kdb->trie, "user:/");
