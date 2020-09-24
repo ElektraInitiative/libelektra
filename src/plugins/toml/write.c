@@ -74,8 +74,8 @@ static bool needsKeyAssignment (Node * node);
 static bool isListElement (Node * node);
 static bool isLastChild (Node * node);
 static bool hasInlineComment (Node * node);
-static bool isMultilineString (const char * str);
 static bool isTrue (const char * boolStr);
+static bool determineStringType (const char * str, char * quotes, int * quoteAmount);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
@@ -425,7 +425,21 @@ static int writeScalar (Key * key, Writer * writer)
 		}
 		else if (elektraStrCmp (keyString (type), "string") == 0)
 		{
-			result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
+			char quoteChar;
+			int quoteAmount;
+			if (determineStringType (valueStr, &quoteChar, &quoteAmount))
+			{
+				result |= writeQuoted (valueStr, quoteChar, quoteAmount, writer);
+			}
+			else
+			{
+				writerError (writer, ERROR_SYNTACTIC,
+					     "Wanted to write a string which cannot be quoted correctly, because it contains "
+					     "three or more consecutive single and double quotes.\nConsider adding escaping backslashes in "
+					     "front of "
+					     "the double quotes, to make this string writable.");
+				return 1;
+			}
 		}
 		else
 		{
@@ -438,7 +452,21 @@ static int writeScalar (Key * key, Writer * writer)
 	}
 	else
 	{
-		result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
+		char quoteChar;
+		int quoteAmount;
+		if (determineStringType (valueStr, &quoteChar, &quoteAmount))
+		{
+			result |= writeQuoted (valueStr, quoteChar, quoteAmount, writer);
+		}
+		else
+		{
+			writerError (writer, ERROR_SEMANTIC,
+				     "Wanted to write a string which cannot be quoted correctly, because it contains "
+				     "three or more consecutive single and double quotes.\nConsider adding escaping backslashes in front "
+				     "of the double "
+				     "quotes, to make this string writable.");
+			return 1;
+		}
 	}
 	return result;
 }
@@ -470,16 +498,87 @@ static bool isTrue (const char * boolStr)
 	}
 }
 
-static bool isMultilineString (const char * str)
+static bool determineStringType (const char * str, char * quotes, int * quoteAmount)
 {
+	bool hasNewline = false;
+	bool hasSingle = false;
+	bool hasDouble = false;
+	bool hasValidEscape = false;
+	bool hasInvalidEscape = false;
+	bool hasTripleSingleStreak = false;
+	bool hasTripleDoubleStreak = false;
 	while (*str != 0)
 	{
-		if (*str++ == '\n')
+		switch (*str)
 		{
-			return true;
+		case '\\':
+			if (isValidEscapeSequence (str))
+			{
+				hasValidEscape = true;
+				str++;
+			}
+			else
+			{
+				hasInvalidEscape = true;
+			}
+			break;
+		case '\'':
+			hasSingle = true;
+			if (*(str + 1) == '\'' && *(str + 2) == '\'')
+			{
+				hasTripleSingleStreak = true;
+			}
+			break;
+		case '"':
+			hasDouble = true;
+			if (*(str + 1) == '"' && *(str + 2) == '"')
+			{
+				hasTripleDoubleStreak = true;
+			}
+			break;
+		case '\n':
+			hasNewline = true;
+			break;
 		}
+		str++;
 	}
-	return false;
+	if (hasValidEscape && !hasInvalidEscape)
+	{
+		*quotes = '"';
+	}
+	else
+	{
+		*quotes = '\'';
+	}
+	if (hasNewline || (hasSingle && hasDouble))
+	{
+		if (hasTripleSingleStreak && hasTripleDoubleStreak)
+		{
+			return false;
+		}
+		else if (hasTripleSingleStreak)
+		{
+			*quotes = '"';
+		}
+		else if (hasTripleDoubleStreak)
+		{
+			*quotes = '\'';
+		}
+		*quoteAmount = 3;
+	}
+	else
+	{
+		if (hasSingle)
+		{
+			*quotes = '"';
+		}
+		else if (hasDouble)
+		{
+			*quotes = '\'';
+		}
+		*quoteAmount = 1;
+	}
+	return true;
 }
 
 
