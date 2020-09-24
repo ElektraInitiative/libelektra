@@ -41,6 +41,6 @@ KeySet * keysByPredicate (KeySet * ks, bool (*pred) (Key *));
 KeySet * collectSubKeys (KeySet * ks, Key * parent);
 KeySet * extractSubKeys (KeySet * ks, Key * parent);
 bool isLeaf (Key * leafCandidate, KeySet * ks);
-bool isValidEscapeSequence(const char * seq);
+bool isValidEscapeSequence (const char * seq);
 
 #endif // ELEKTRA_PLUGIN_TOML_UTILITY_H

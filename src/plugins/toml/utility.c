@@ -387,26 +387,31 @@ bool isLeaf (Key * leafCandidate, KeySet * ks)
 	return true;
 }
 
-bool isValidEscapeSequence(const char * seq) {
-	if (seq[0] == '\\') {
-		switch(seq[1]) {
-			case 'b':
-			case 't':
-			case 'n':
-			case 'f':
-			case 'r':
-			case '"':
-			case '\\':
-				return true;
-			case 'u':
-				return validUtf8FromUnicode(&seq[2], 4);
-			case 'U':
-				return validUtf8FromUnicode(&seq[2], 8);
-			default:
-				// TODO: Correctly identify handle line ending backslashes
-				return false;
+bool isValidEscapeSequence (const char * seq)
+{
+	if (seq[0] == '\\')
+	{
+		switch (seq[1])
+		{
+		case 'b':
+		case 't':
+		case 'n':
+		case 'f':
+		case 'r':
+		case '"':
+		case '\\':
+			return true;
+		case 'u':
+			return validUtf8FromUnicode (&seq[2], 4);
+		case 'U':
+			return validUtf8FromUnicode (&seq[2], 8);
+		default:
+			// TODO: Correctly identify handle line ending backslashes
+			return false;
 		}
-	} else {
+	}
+	else
+	{
 		return false;
 	}
 }
