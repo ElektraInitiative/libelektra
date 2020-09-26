@@ -497,6 +497,12 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 
 	while ((cur = ksNext (modules)) != 0)
 	{
+		if (!strcmp (keyName (cur), "system/elektra/modules/backend"))
+		{
+			// the backend plugin does not need its own backend
+			continue;
+		}
+
 		Plugin * backend = backendOpenModules (modules, kdb->global, errorKey);
 
 		if (!backend)
