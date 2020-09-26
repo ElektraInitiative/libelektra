@@ -100,6 +100,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
+### Errors
+
+- Improved error messages. _(Markus Raab)_
+
 ## Bindings
 
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
