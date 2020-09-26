@@ -1,6 +1,6 @@
 language: cpp
 dist: bionic
-osx_image: xcode11.6
+osx_image: xcode12
 
 #
 # Define the build matrix
@@ -279,7 +279,7 @@ before_script:
   - cmake ${CMAKE_OPT[@]}
 
 script:
-  - ninja
+  - travis_wait 20 ninja
   - output="$(ninja install 2>&1)" || printf '%s' "$output"
-  - ninja run_all
-  - kdb run_all
+  - travis_wait 20 ninja run_all
+  - travis_wait 20 kdb run_all
