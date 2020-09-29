@@ -14,7 +14,7 @@ function (swig_checks BINDING_NAME SUBDIRECTORY)
 	endif ()
 endfunction (swig_checks)
 
-set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable")
+set (SWIG_COMPILE_FLAGS "-Wno-error -Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-stringop-overflow")
 find_swig ()
 
 check_binding_included ("python" IS_INCLUDED SUBDIRECTORY "swig/python")
