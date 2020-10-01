@@ -147,12 +147,10 @@ macro (find_swig)
 
 		find_package (SWIG 4 QUIET)
 		if (NOT SWIG_FOUND)
-			message (STATUS "Search for swig3 instead")
 			find_package (SWIG 3 QUIET)
 		endif ()
 
 		if (NOT SWIG_FOUND)
-			message (STATUS "Search for swig2 instead")
 			find_package (SWIG 2 QUIET)
 		endif ()
 
