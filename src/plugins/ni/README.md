@@ -11,12 +11,11 @@
 ## Introduction
 
 This plugin uses the nickel library in order to read/write
-[metakeys](/doc/help/elektra-metadata.md) in the nickel ini format. It's purpose is to be
+[metakeys](/doc/help/elektra-metadata.md) in the nickel ini format. Its purpose is to be
 used in the `spec`-namespace or when any metadata should be
 stored.
 
-For other applications, e.g. modifying `smb.conf` you should prefer the
-[ini plugin](/src/plugins/ini).
+For configuration itself you should prefer the [toml plugin](/src/plugins/toml).
 
 ## Usage
 
