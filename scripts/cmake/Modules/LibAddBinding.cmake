@@ -117,7 +117,7 @@ function (add_binding BINDING_NAME)
 			CACHE STRING "${ADDED_BINDINGS_DOC}" FORCE)
 	endif ()
 
-	set (STATUS_MESSAGE "Include Binding ${BINDING_NAME}")
+	set (STATUS_MESSAGE "Include binding ${BINDING_NAME}")
 	if (ARG_ONLY_SHARED)
 		set (STATUS_MESSAGE "${STATUS_MESSAGE} for shared builds")
 	endif (ARG_ONLY_SHARED)
