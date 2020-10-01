@@ -152,7 +152,7 @@ function (exclude_binding name reason)
 		${ARGN})
 
 	if (NOT ${reason} STREQUAL "silent")
-		message (STATUS "Exclude Binding ${name} because ${reason}")
+		message (STATUS "Exclude binding ${name} because ${reason}")
 	endif ()
 	if (ARG_REMOVE)
 		if (ADDED_BINDINGS)
