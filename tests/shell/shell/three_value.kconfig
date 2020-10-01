@@ -1,3 +1,5 @@
-= root
+script=root
+key=value
+
 [key]
 subkey=another value

@@ -22,7 +22,7 @@ for PLUGIN in $PLUGINS; do
 		;;
 	"ini")
 		MOUNT_PLUGIN="$PLUGIN"
-		TESTS="basic string umlauts naming"
+		TESTS="basic string umlauts"
 		;;
 	"line")
 		TESTS="basic"

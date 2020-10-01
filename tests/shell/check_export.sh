@@ -10,6 +10,8 @@ ROOT=$USER_ROOT
 FILE="$(mktempfile_elektra)"
 PLUGIN=$PLUGIN
 
+RAN_ONCE=0
+
 cleanup() {
 	rm -f $FILE
 }
@@ -26,6 +28,8 @@ for PLUGIN in $PLUGINS; do
 		continue
 	fi
 
+	RAN_ONCE=1
+
 	echo -------- $PLUGIN -----------
 
 	"$KDB" set $ROOT "root" > /dev/null
@@ -40,7 +44,7 @@ for PLUGIN in $PLUGINS; do
 	diff "$DATADIR"/one_value.$PLUGIN $FILE
 	succeed_if "Export file one_value.$PLUGIN was not equal"
 
-	test "$("$KDB" set $ROOT/key "value")" = "Create a new key $ROOT/key with string value"
+	test "$("$KDB" set $ROOT/key "value")" = "Create a new key $ROOT/key with string \"value\""
 	succeed_if "Could not set $ROOT/key"
 
 	"$KDB" export $ROOT $PLUGIN > $FILE
@@ -71,5 +75,8 @@ for PLUGIN in $PLUGINS; do
 	succeed_if "Could not remove root"
 
 done
+
+test $RAN_ONCE != 0
+succeed_if "check_export should run for at least one plugin"
 
 end_script

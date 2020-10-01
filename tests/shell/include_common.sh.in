@@ -203,8 +203,12 @@ check_set_mv_rm() {
 #
 
 is_not_rw_storage() {
-	test ! "x$("$KDB" plugin-info $PLUGIN provides 2> /dev/null)" = "xstorage" \
-		-o "x$PLUGIN" = "xhosts" \
+	echo $("$KDB" plugin-info $PLUGIN provides 2> /dev/null) | fgrep -qw "storage"
+	if [ $? != 0 ]; then
+		return 0
+	fi
+
+	test "x$PLUGIN" = "xhosts" \
 		-o "x$PLUGIN" = "xfstab" \
 		-o "x$PLUGIN" = "xline" \
 		-o "x$PLUGIN" = "xuname" \
@@ -217,7 +221,26 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xsimplespeclang" \
 		-o "x$PLUGIN" = "xmozprefs" \
 		-o "x$PLUGIN" = "xfile" \
-		-o "x$PLUGIN" = "xruby"
+		-o "x$PLUGIN" = "xruby" \
+		-o "x$PLUGIN" = "xdesktop" \
+		-o "x$PLUGIN" = "xc" \
+		-o "x$PLUGIN" = "xcpptemplate" \
+		-o "x$PLUGIN" = "xspecload" \
+		-o "x$PLUGIN" = "xmmapstorage" \
+		-o "x$PLUGIN" = "xmmapstorage_crc" \
+		-o "x$PLUGIN" = "xmultifile" \
+		-o "x$PLUGIN" = "xcamel" \
+		-o "x$PLUGIN" = "xsimpleini" \
+		-o "x$PLUGIN" = "xyambi" \
+		-o "x$PLUGIN" = "xtcl" \
+		-o "x$PLUGIN" = "xmini" \
+		-o "x$PLUGIN" = "xyaypeg" \
+		-o "x$PLUGIN" = "xyamlcpp" \
+		-o "x$PLUGIN" = "xyanlr" \
+		-o "x$PLUGIN" = "xyawn" \
+		-o "x$PLUGIN" = "xkconfig" \
+		-o "x$PLUGIN" = "xtoml" \
+		-o "x$PLUGIN" = "xdini"
 }
 
 is_plugin_available() {
@@ -373,29 +396,6 @@ export_check() {
 }
 
 ### END OF INCLUDE FILE ###
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
 #
 #
 #
