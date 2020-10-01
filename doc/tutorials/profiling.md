@@ -143,7 +143,7 @@ We will analyze the [YAJL plugin][yajl] below. Please make sure that the CMake c
 
 ```
 …
--- Include Plugin yajl
+-- Include plugin yajl
 …
 ```
 
