@@ -101,14 +101,14 @@ string Coder::encodeString (string const & text)
 	for (unsigned char character : text)
 	{
 		const auto & encodedChar = encode[character];
-		if (encodedChar != '\0')
+		if (encodedChar == '\0')
 		{
-			encoded.push_back (escapeCharacter);
-			encoded.push_back (encodedChar);
+			encoded.push_back (character);
 		}
 		else
 		{
-			encoded.push_back (character);
+			encoded.push_back (escapeCharacter);
+			encoded.push_back (encodedChar);
 		}
 	}
 
