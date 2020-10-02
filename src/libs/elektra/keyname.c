@@ -515,15 +515,15 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 		}
 	}
 
-	// validate path in reverse because of ..
+	// need to validate path in reverse because of /../ parts
 	name = pathStart + pathLen - 1;
 
 	// check backslashes at end of name
+	// this ONLY checks for dangling escapes, size adjustments are done in the main loop
 	size_t backslashes = 0;
-	while (name >= pathStart && *name == '\\')
+	while (name - backslashes >= pathStart && *(name - backslashes) == '\\')
 	{
 		++backslashes;
-		--name;
 	}
 
 	if (backslashes % 2 != 0)
@@ -531,7 +531,6 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 		// dangling escape
 		return 0;
 	}
-	usize -= backslashes / 2;
 
 	enum
 	{
@@ -548,16 +547,37 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 	size_t skip = 0;
 	while (name >= pathStart)
 	{
-		char cur = *name;
+		size_t trailingSlashes = 0;
+		if (state == PART_END)
+		{
+			// count trailing slashes (the last one might be escaped)
+			while (name - trailingSlashes >= pathStart && *(name - trailingSlashes) == '/')
+			{
+				++trailingSlashes;
+			}
+		}
 
 		// count upcomming backslashes
 		backslashes = 0;
-		while (name - 1 - backslashes >= pathStart && *(name - 1 - backslashes) == '\\')
+		size_t backslashOffset = trailingSlashes == 0 ? 1 : trailingSlashes;
+		while (name - backslashOffset - backslashes >= pathStart && *(name - backslashOffset - backslashes) == '\\')
 		{
 			++backslashes;
 		}
 
 		int escaped = backslashes % 2 != 0;
+
+		// the last trailing slash is actually escaped
+		if (trailingSlashes > 0 && escaped)
+		{
+			--trailingSlashes;
+		}
+
+		name -= trailingSlashes;
+		size -= trailingSlashes;
+		usize -= trailingSlashes;
+
+		char cur = *name;
 
 		switch (state)
 		{
@@ -567,11 +587,6 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 				digits = 1;
 				partLen = 1;
 				state = DIGITS;
-			}
-			else if (cur == '/' && !escaped)
-			{
-				--size;
-				--usize;
 			}
 			else
 			{
@@ -763,7 +778,6 @@ int elektraKeyNameValidate (const char * name, const char * prefix, size_t * siz
 			{
 				++skip;
 			}
-
 
 			digits = 0;
 			underscores = 0;

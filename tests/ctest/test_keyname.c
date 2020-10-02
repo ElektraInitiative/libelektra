@@ -66,6 +66,60 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("/\\\\\\\\/", NULL, 0, 6, 5);
 	TEST_VALIDATE_OK ("/\\\\\\\\\\/", NULL, 0, 8, 6);
 
+	TEST_VALIDATE_OK ("/\\/", NULL, 0, 4, 4);
+	TEST_VALIDATE_OK ("/\\\\", NULL, 0, 4, 4);
+	TEST_VALIDATE_OK ("/\\\\\\/", NULL, 0, 6, 5);
+	TEST_VALIDATE_OK ("/\\\\\\\\", NULL, 0, 6, 5);
+	TEST_VALIDATE_OK ("/\\\\\\\\\\/", NULL, 0, 8, 6);
+
+	TEST_VALIDATE_OK ("/\\//", NULL, 0, 4, 4);
+	TEST_VALIDATE_OK ("/\\\\/", NULL, 0, 4, 4);
+	TEST_VALIDATE_OK ("/\\\\\\//", NULL, 0, 6, 5);
+	TEST_VALIDATE_OK ("/\\\\\\\\/", NULL, 0, 6, 5);
+	TEST_VALIDATE_OK ("/\\\\\\\\\\//", NULL, 0, 8, 6);
+
+	TEST_VALIDATE_OK ("user:/\\/", NULL, 0, 9, 4);
+	TEST_VALIDATE_OK ("user:/\\\\", NULL, 0, 9, 4);
+	TEST_VALIDATE_OK ("user:/\\\\\\/", NULL, 0, 11, 5);
+	TEST_VALIDATE_OK ("user:/\\\\\\\\", NULL, 0, 11, 5);
+	TEST_VALIDATE_OK ("user:/\\\\\\\\\\/", NULL, 0, 13, 6);
+
+	TEST_VALIDATE_OK ("user:/\\//", NULL, 0, 9, 4);
+	TEST_VALIDATE_OK ("user:/\\\\/", NULL, 0, 9, 4);
+	TEST_VALIDATE_OK ("user:/\\\\\\//", NULL, 0, 11, 5);
+	TEST_VALIDATE_OK ("user:/\\\\\\\\/", NULL, 0, 11, 5);
+	TEST_VALIDATE_OK ("user:/\\\\\\\\\\//", NULL, 0, 13, 6);
+
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\/", NULL, 0, 22, 17);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\", NULL, 0, 22, 17);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\\\/", NULL, 0, 24, 18);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\\\\\", NULL, 0, 24, 18);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\\\\\\\/", NULL, 0, 26, 19);
+
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\//", NULL, 0, 22, 17);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\/", NULL, 0, 22, 17);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\\\//", NULL, 0, 24, 18);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\\\\\/", NULL, 0, 24, 18);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\\\\\\\//", NULL, 0, 26, 19);
+
+	TEST_VALIDATE_OK ("/\\//abc", NULL, 0, 8, 8);
+	TEST_VALIDATE_OK ("/\\\\/abc", NULL, 0, 8, 8);
+	TEST_VALIDATE_OK ("/\\\\\\//abc", NULL, 0, 10, 9);
+	TEST_VALIDATE_OK ("/\\\\\\\\/abc", NULL, 0, 10, 9);
+	TEST_VALIDATE_OK ("/\\\\\\\\\\//abc", NULL, 0, 12, 10);
+
+	TEST_VALIDATE_OK ("user:/\\//abc", NULL, 0, 13, 8);
+	TEST_VALIDATE_OK ("user:/\\\\/abc", NULL, 0, 13, 8);
+	TEST_VALIDATE_OK ("user:/\\\\\\//abc", NULL, 0, 15, 9);
+	TEST_VALIDATE_OK ("user:/\\\\\\\\/abc", NULL, 0, 15, 9);
+	TEST_VALIDATE_OK ("user:/\\\\\\\\\\//abc", NULL, 0, 17, 10);
+
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\//abc", NULL, 0, 26, 21);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\/abc", NULL, 0, 26, 21);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\\\//abc", NULL, 0, 28, 22);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\\\\\/abc", NULL, 0, 28, 22);
+	TEST_VALIDATE_OK ("user:/tests/plugin/\\\\\\\\\\//abc", NULL, 0, 30, 23);
+
 	TEST_VALIDATE_OK ("/\\///", NULL, 0, 4, 4);
 	TEST_VALIDATE_OK ("/\\/\\/", NULL, 0, 6, 5);
 
@@ -80,6 +134,9 @@ static void test_validate (void)
 
 	TEST_VALIDATE_OK ("/////////", NULL, 0, 2, 3);
 	TEST_VALIDATE_OK ("user://///////", NULL, 0, 7, 3);
+
+	TEST_VALIDATE_OK ("/a////////", NULL, 0, 3, 4);
+	TEST_VALIDATE_OK ("user:/a////////", NULL, 0, 8, 4);
 
 	TEST_VALIDATE_OK ("/abc/%/def", NULL, 0, 11, 11);
 	TEST_VALIDATE_OK ("user:/abc/%/def", NULL, 0, 16, 11);
@@ -354,6 +411,9 @@ static void test_validate (void)
 	TEST_VALIDATE_ERROR ("/\\\\\\\\\\%", NULL, 0);
 }
 
+#undef TEST_VALIDATE_OK
+#undef TEST_VALIDATE_ERROR
+
 #define TEST_CANONICALIZE_OK(name, prefix, cname)                                                                                          \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
@@ -524,16 +584,48 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("/\\\\\\\\%", "", "/\\\\\\\\%");
 
 	TEST_CANONICALIZE_OK ("/\\/", "", "/\\/");
-	TEST_CANONICALIZE_OK ("/\\\\/", "", "/\\\\");
+	TEST_CANONICALIZE_OK ("/\\\\", "", "/\\\\");
 	TEST_CANONICALIZE_OK ("/\\\\\\/", "", "/\\\\\\/");
-	TEST_CANONICALIZE_OK ("/\\\\\\\\/", "", "/\\\\\\\\");
+	TEST_CANONICALIZE_OK ("/\\\\\\\\", "", "/\\\\\\\\");
 	TEST_CANONICALIZE_OK ("/\\\\\\\\\\/", "", "/\\\\\\\\\\/");
+
+	TEST_CANONICALIZE_OK ("/\\//", "", "/\\/");
+	TEST_CANONICALIZE_OK ("/\\\\/", "", "/\\\\");
+	TEST_CANONICALIZE_OK ("/\\\\\\//", "", "/\\\\\\/");
+	TEST_CANONICALIZE_OK ("/\\\\\\\\/", "", "/\\\\\\\\");
+	TEST_CANONICALIZE_OK ("/\\\\\\\\\\//", "", "/\\\\\\\\\\/");
+
+	TEST_CANONICALIZE_OK ("user:/\\/", "", "user:/\\/");
+	TEST_CANONICALIZE_OK ("user:/\\\\", "", "user:/\\\\");
+	TEST_CANONICALIZE_OK ("user:/\\\\\\/", "", "user:/\\\\\\/");
+	TEST_CANONICALIZE_OK ("user:/\\\\\\\\", "", "user:/\\\\\\\\");
+	TEST_CANONICALIZE_OK ("user:/\\\\\\\\\\/", "", "user:/\\\\\\\\\\/");
+
+	TEST_CANONICALIZE_OK ("user:/\\//", "", "user:/\\/");
+	TEST_CANONICALIZE_OK ("user:/\\\\/", "", "user:/\\\\");
+	TEST_CANONICALIZE_OK ("user:/\\\\\\//", "", "user:/\\\\\\/");
+	TEST_CANONICALIZE_OK ("user:/\\\\\\\\/", "", "user:/\\\\\\\\");
+	TEST_CANONICALIZE_OK ("user:/\\\\\\\\\\//", "", "user:/\\\\\\\\\\/");
+
+	TEST_CANONICALIZE_OK ("user:/tests/plugin/\\/", "", "user:/tests/plugin/\\/");
+	TEST_CANONICALIZE_OK ("user:/tests/plugin/\\\\", "", "user:/tests/plugin/\\\\");
+	TEST_CANONICALIZE_OK ("user:/tests/plugin/\\\\\\/", "", "user:/tests/plugin/\\\\\\/");
+	TEST_CANONICALIZE_OK ("user:/tests/plugin/\\\\\\\\", "", "user:/tests/plugin/\\\\\\\\");
+	TEST_CANONICALIZE_OK ("user:/tests/plugin/\\\\\\\\\\/", "", "user:/tests/plugin/\\\\\\\\\\/");
+
+	TEST_CANONICALIZE_OK ("user:/tests/plugin/\\//", "", "user:/tests/plugin/\\/");
+	TEST_CANONICALIZE_OK ("user:/tests/plugin/\\\\/", "", "user:/tests/plugin/\\\\");
+	TEST_CANONICALIZE_OK ("user:/tests/plugin/\\\\\\//", "", "user:/tests/plugin/\\\\\\/");
+	TEST_CANONICALIZE_OK ("user:/tests/plugin/\\\\\\\\/", "", "user:/tests/plugin/\\\\\\\\");
+	TEST_CANONICALIZE_OK ("user:/tests/plugin/\\\\\\\\\\//", "", "user:/tests/plugin/\\\\\\\\\\/");
 
 	TEST_CANONICALIZE_OK ("/abc/%def/ghi", "", "/abc/%def/ghi");
 	TEST_CANONICALIZE_OK ("/abc/%d%ef%/ghi", "", "/abc/%d%ef%/ghi");
 	TEST_CANONICALIZE_OK ("/abc/%def%/ghi", "", "/abc/%def%/ghi");
 	TEST_CANONICALIZE_OK ("/abc/d%ef/ghi", "", "/abc/d%ef/ghi");
 }
+
+#undef TEST_CANONICALIZE_OK
 
 static const char * keyNsNames[] = { "KEY_NS_NONE", "KEY_NS_CASCADING", "KEY_NS_META",	 "KEY_NS_SPEC",	  "KEY_NS_PROC",
 				     "KEY_NS_DIR",  "KEY_NS_USER",	"KEY_NS_SYSTEM", "KEY_NS_DEFAULT" };
@@ -675,11 +767,25 @@ static void test_unescape (void)
 	TEST_UNESCAPE_OK ("/\\\\\\\\", KEY_NS_CASCADING, "\0\\\\");
 	TEST_UNESCAPE_OK ("/\\\\\\\\\\/", KEY_NS_CASCADING, "\0\\\\/");
 
+	TEST_UNESCAPE_OK ("user:/\\/", KEY_NS_USER, "\0/");
+	TEST_UNESCAPE_OK ("user:/\\\\", KEY_NS_USER, "\0\\");
+	TEST_UNESCAPE_OK ("user:/\\\\\\/", KEY_NS_USER, "\0\\/");
+	TEST_UNESCAPE_OK ("user:/\\\\\\\\", KEY_NS_USER, "\0\\\\");
+	TEST_UNESCAPE_OK ("user:/\\\\\\\\\\/", KEY_NS_USER, "\0\\\\/");
+
+	TEST_UNESCAPE_OK ("user:/tests/plugin/\\/", KEY_NS_USER, "\0tests\0plugin\0/");
+	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\", KEY_NS_USER, "\0tests\0plugin\0\\");
+	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\\\/", KEY_NS_USER, "\0tests\0plugin\0\\/");
+	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\\\\\", KEY_NS_USER, "\0tests\0plugin\0\\\\");
+	TEST_UNESCAPE_OK ("user:/tests/plugin/\\\\\\\\\\/", KEY_NS_USER, "\0tests\0plugin\0\\\\/");
+
 	TEST_UNESCAPE_OK ("/abc/%def/ghi", KEY_NS_CASCADING, "\0abc\0%def\0ghi");
 	TEST_UNESCAPE_OK ("/abc/%d%ef%/ghi", KEY_NS_CASCADING, "\0abc\0%d%ef%\0ghi");
 	TEST_UNESCAPE_OK ("/abc/%def%/ghi", KEY_NS_CASCADING, "\0abc\0%def%\0ghi");
 	TEST_UNESCAPE_OK ("/abc/d%ef/ghi", KEY_NS_CASCADING, "\0abc\0d%ef\0ghi");
 }
+
+#undef TEST_UNESCAPE_OK
 
 #define TEST_ESCAPE_PART_OK(upart, part)                                                                                                   \
 	do                                                                                                                                 \
@@ -726,6 +832,7 @@ static void test_escapePart (void)
 	TEST_ESCAPE_PART_OK ("d\\a", "d\\\\a");
 }
 
+#undef TEST_ESCAPE_PART_OK
 
 int main (int argc, char ** argv)
 {

@@ -269,6 +269,7 @@ void TestCommand::doBinaryTest ()
 void TestCommand::doNamingTest ()
 {
 	vector<string> teststrings;
+	teststrings.push_back ("\\");
 	teststrings.push_back ("keyname");
 	teststrings.push_back ("deep/below/keyname");
 	teststrings.push_back ("keyname with spaces");
