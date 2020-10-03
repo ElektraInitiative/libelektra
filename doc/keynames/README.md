@@ -50,17 +50,17 @@ So without knowing anything about how Key Names are written, we could say that t
 
 ### 1.1. Key Hierarchy
 
-You may have already seen elsewhere, that in Elektra Keys commonly look a bit like UNIX paths:
+You may have already seen elsewhere, that in Elektra Keys commonly look a bit like Unix paths:
 
 ```
 /elektra/version/info
 ```
 
 > _Note:_ How this representation works exactly and how namespaces come into play, will be explained in the next section.
-> For now, we only care that there is some similarity to UNIX paths.
+> For now, we only care that there is some similarity to Unix paths.
 
 This is no mistake.
-Elektra's _Key Database (KDB)_ is designed to resemble a UNIX filesystem.
+Elektra's _Key Database (KDB)_ is designed to resemble a Unix filesystem.
 In particular, the KDB has a similar hierarchy.
 More generally, all Key Names exhibit this hierarchy.
 By going back to thinking about a Key Name as a Namespace and a series of Key Name Parts, we can define this _Key Hierarchy_.
@@ -69,9 +69,9 @@ Each Namespace has a separate hierarchy.
 The relation between these, will be explored in the next section.
 For now, we just look at a single Namespace.
 
-In a UNIX filesystems, we commonly talk about files and directories.
+In a Unix filesystems, we commonly talk about files and directories.
 We also say a file is located within a directory.
-But you might also know that in UNIX "everything is a file".
+But you might also know that in Unix "everything is a file".
 This applies to directories as well, but "a file is located within a file" is a bit clunky, so you might say "file `A` is located below file `B`", if `B` is a file within the directory `A`.
 What makes `A` a directory is just the fact that there are other files below `A` [[1]](#footnote-1).
 <a id="ref-footnote-1"></a>
@@ -84,7 +84,7 @@ Based on a Key `K` with `n` Key Name Parts, we say:
 - A Key `Km` is _below_ `K`, if `Km` has `n+m` Key Name Parts and the first `n` Key Name Parts of `Km` are equal to the Key Name Parts of `K` (in the same order).
 - A Key `K1` is _directly below_ `K`, if `K1` is below `K` and `K1` has `n+1` Key Name Parts.
 
-Here are a few examples to show how this works in practice (using the UNIX-path-like representation teased above):
+Here are a few examples to show how this works in practice (using the Unix-path-like representation teased above):
 
 | Key 1                   | Key 2                   | Relation                          |
 | ----------------------- | ----------------------- | --------------------------------- |
@@ -144,7 +144,7 @@ To recap, Elektra knows these Namespaces:
 - Default
 
 We mentioned above that there are Key Names with zero Key Name Parts, i.e. just Namespace.
-These are called _Root Keys_ (based on UNIX's filesystem root, as well as the root of a tree).
+These are called _Root Keys_ (based on Unix's filesystem root, as well as the root of a tree).
 
 Lets explore them one by one:
 
@@ -250,17 +250,17 @@ This can be deconstructed into:
 
 Because of this escaping mechanism, we call this the _Escaped Name_ of a Key.
 
-Elektra's Key Names are designed, to mimic UNIX paths to an extent.
+Elektra's Key Names are designed, to mimic Unix paths to an extent.
 To this end we support the commonly used `/.` and `/..`.
 This is one reason, why we need to differentiate between _Canonical_ Key Names and _Non-Canonical_ Key Names.
 
 ### 2.1. (Non-)Canonical (Escaped) Key Names
 
-Following the syntax of UNIX paths, in Elektra both `/elektra/./version` and `/elektra/version` refer to the same Key.
+Following the syntax of Unix paths, in Elektra both `/elektra/./version` and `/elektra/version` refer to the same Key.
 Similarly, `/elektra/../version` and `/version` refer to the same Key.
 
 To give each Key a unique Key Name, we need to introduce a _Canonical (Escaped) Key Name_.
-For UNIX paths, we could say that the canonical path is the shortest possible path that refers to a file.
+For Unix paths, we could say that the canonical path is the shortest possible path that refers to a file.
 In Elektra this doesn't quite work, but will use this definition for now.
 
 > _Note:_ Only Escaped Key Names can be Canonical or Non-Canonical, so we normally omit the "Escaped" specifier.
@@ -277,15 +277,15 @@ Let's look at a few examples to get a feeling for Canonical and Non-Canonical Ke
 | `/elektra/./../version` | `/elektra/version` |
 | `/elektra/version/`     | `/elektra/version` |
 
-So far this mostly follows, what we know from UNIX paths.
+So far this mostly follows, what we know from Unix paths.
 However, the last two examples are somewhat different.
 
-First, in UNIX `/elektra/./../version` would be the same as `/version`, because `.` is just skipped and `..` removes `elektra`.
+First, in Unix `/elektra/./../version` would be the same as `/version`, because `.` is just skipped and `..` removes `elektra`.
 But in Elektra, we evaluate `..` first and only then skip `.`.
 `/elektra/./../version` is the same as `/elektra/version`, because `..` remove `.`.
 
-The last example is not as different, in UNIX such paths would also refer to the same file.
-However, in some UNIX tools, a trailing slash alters the behaviour of the tool.
+The last example is not as different, in Unix such paths would also refer to the same file.
+However, in some Unix tools, a trailing slash alters the behavior of the tool.
 In Elektra this is never the case.
 `/elektra/version/` and `/elektra/version` refer to the same Key and are always treated as the same Key Name.
 The only exception are the Root Keys.
@@ -319,7 +319,7 @@ Similarly, `#10` would make a Key Name Non-Canonical, but `\#10` won't.
 Therefore, if you want a Canonical Key Name with a Key Name Part `#10` and not actually `#_10`,
 must use e.g. `/elektra/\#10/version`.
 
-<!-- TODO (kodebach): Unforunate escaping behaviour
+<!-- TODO (kodebach): Unforunate escaping behavior
         Unfortunately this means that both `/elektra/.version` and `/elektra/\.version` have the same unescaped form (`elektra`, `.version`).
         The same applies to `/elektra/%version` and `/elektra/\%version`.
         All of these are, however, Canonical Key Names.
@@ -457,7 +457,7 @@ These are Key Names with a Key Name Part that starts with a `.`.
 ---
 
 <a id="footnote-1">[1]:</a>
-This explanation of UNIX paths and UNIX filesystems, is not entirely accurate.
+This explanation of Unix paths and Unix filesystems, is not entirely accurate.
 But it is good enough for our purposes, so we will just ignore some details.
 [↑](#ref-footnote-1)
 
