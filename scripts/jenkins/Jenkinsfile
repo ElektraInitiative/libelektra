@@ -73,12 +73,6 @@ CMAKE_FLAGS_CLANG = [
   'CMAKE_CXX_COMPILER': 'clang++-9'
 ]
 
-CMAKE_FLAGS_INI = [
-  'KDB_DB_FILE': 'default.ini',
-  'KDB_DB_INIT': 'elektra.ini',
-  'KDB_DEFAULT_STORAGE': 'ini'
-]
-
 CMAKE_FLAGS_MMAP = [
   'KDB_DB_FILE': 'default.mmap',
   'KDB_DB_INIT': 'elektra.mmap',
@@ -652,20 +646,6 @@ def generateFullBuildStages() {
     [TEST.ALL]
   )
 
-  // Build Elektra with the ini backend instead of the default
-  // Cache disabled because of bug with ini https://github.com/ElektraInitiative/libelektra/issues/2592
-  tasks << buildAndTest(
-    "debian-stretch-full-ini",
-    DOCKER_IMAGES.stretch,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_INI +
-      CMAKE_FLAGS_COVERAGE + [
-      'PLUGINS': 'ALL;-DEPRECATED;-cache',
-      ],
-    [TEST.ALL, TEST.MEM]
-  )
-
   // Build Elektra without the cache plugin
   tasks << buildAndTest(
     "debian-buster-full-nocache",
@@ -692,7 +672,7 @@ def generateFullBuildStages() {
     "debian-buster-full-xdg",
     DOCKER_IMAGES.buster,
     [
-      'PLUGINS': "${xdgResolver};dump;sync;ini;dini;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
+      'PLUGINS': "${xdgResolver};dump;sync;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
       'KDB_DEFAULT_RESOLVER': xdgResolver
     ],
     [TEST.ALL, TEST.MEM]
