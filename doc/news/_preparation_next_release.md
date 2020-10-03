@@ -31,7 +31,20 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ### Important Changes to Keynames
 
-<!-- TODO (kodebach) -->
+There have been significant changes to Elektra's Keynames.
+The most important change is that you now need a `:` after the namespace.
+So instead of `system/elektra/version` you have to use `system:/elektra/version`.
+
+The second big change is to array elements.
+From now on `keyNew ("/array/#10", KEY_END)` will create a `Key` with name `/array/#_10`, to make arrays more user-friendly while preserving numerical ordering.
+
+The whole internal implementation for `keySetName`, `keyAddName`, etc. has been completely rewritten.
+It should now be more performant since we try to do more work with fewer iterations of the string.
+However, there are no benchmarks (yet), so your mileage may vary.
+
+If you rely on specific behaviour of Elektra's Keynames and have already taken the two changes above into account, please refer to the newly created [Keyname documentation](../keynames) and (easier to read) [Python reference implementation](../keynames/keynames.py).
+
+<!-- TODO (kodebach): finish -->
 
 ### <<HIGHLIGHT2>>
 

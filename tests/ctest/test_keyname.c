@@ -513,6 +513,9 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("/abc/\\../ghi", "", "/abc/\\../ghi");
 	TEST_CANONICALIZE_OK ("user:/abc/\\../ghi", "", "user:/abc/\\../ghi");
 
+	TEST_CANONICALIZE_OK ("/abc/\\.def/ghi", "", "/abc/\\.def/ghi");
+	TEST_CANONICALIZE_OK ("user:/abc/\\.def/ghi", "", "user:/abc/\\.def/ghi");
+
 	TEST_CANONICALIZE_OK ("/abc/\\#10/ghi", "", "/abc/\\#10/ghi");
 	TEST_CANONICALIZE_OK ("user:/abc/\\#10/ghi", "", "user:/abc/\\#10/ghi");
 
@@ -726,6 +729,9 @@ static void test_unescape (void)
 	TEST_UNESCAPE_OK ("/abc/\\../ghi", KEY_NS_CASCADING, "\0abc\0..\0ghi");
 	TEST_UNESCAPE_OK ("user:/abc/\\../ghi", KEY_NS_USER, "\0abc\0..\0ghi");
 
+	TEST_UNESCAPE_OK ("/abc/\\.def/ghi", KEY_NS_CASCADING, "\0abc\0.def\0ghi");
+	TEST_UNESCAPE_OK ("user:/abc/\\.def/ghi", KEY_NS_USER, "\0abc\0.def\0ghi");
+
 	TEST_UNESCAPE_OK ("/abc\\/def/ghi", KEY_NS_CASCADING, "\0abc/def\0ghi");
 	TEST_UNESCAPE_OK ("user:/abc\\/def/ghi", KEY_NS_USER, "\0abc/def\0ghi");
 
@@ -783,6 +789,10 @@ static void test_unescape (void)
 	TEST_UNESCAPE_OK ("/abc/%d%ef%/ghi", KEY_NS_CASCADING, "\0abc\0%d%ef%\0ghi");
 	TEST_UNESCAPE_OK ("/abc/%def%/ghi", KEY_NS_CASCADING, "\0abc\0%def%\0ghi");
 	TEST_UNESCAPE_OK ("/abc/d%ef/ghi", KEY_NS_CASCADING, "\0abc\0d%ef\0ghi");
+
+	TEST_UNESCAPE_OK ("/abc/\\%def/ghi", KEY_NS_CASCADING, "\0abc\0%def\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\%d%ef%/ghi", KEY_NS_CASCADING, "\0abc\0%d%ef%\0ghi");
+	TEST_UNESCAPE_OK ("/abc/\\%def%/ghi", KEY_NS_CASCADING, "\0abc\0%def%\0ghi");
 }
 
 #undef TEST_UNESCAPE_OK

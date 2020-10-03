@@ -137,7 +137,7 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
     if len(fullname) == 0 or fullname[0] != "/":
         raise KeyNameException(
             f"Key must start with '<NAMESPACE>:/' or just '/'. " +
-            f"Allowed namespaces: {NAMESPACES}"
+            f"Allowed values for <NAMESPACE>: {NAMESPACES}"
         )
 
     # Check if for dangling escapes
