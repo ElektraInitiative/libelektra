@@ -59,6 +59,7 @@ static void test_v1_oneValue (void)
 	}
 
 	elektraFree (infile);
+	elektraFree (v2file);
 	elektraFree (outfile);
 	ksDel (ks);
 }
@@ -105,6 +106,7 @@ static void test_v1_twoValue (void)
 	}
 
 	elektraFree (infile);
+	elektraFree (v2file);
 	elektraFree (outfile);
 	ksDel (ks);
 }
@@ -151,6 +153,7 @@ static void test_v1_threeValue (void)
 	}
 
 	elektraFree (infile);
+	elektraFree (v2file);
 	elektraFree (outfile);
 	ksDel (ks);
 }
@@ -197,6 +200,7 @@ static void test_v1_againTwoValue (void)
 	}
 
 	elektraFree (infile);
+	elektraFree (v2file);
 	elektraFree (outfile);
 	ksDel (ks);
 }
@@ -243,6 +247,7 @@ static void test_v1_metaData (void)
 	}
 
 	elektraFree (infile);
+	elektraFree (v2file);
 	elektraFree (outfile);
 	ksDel (ks);
 }

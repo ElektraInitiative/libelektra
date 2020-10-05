@@ -474,8 +474,10 @@ ElektraPluginProcess * elektraPluginProcessInit (Key * errorKey)
 	pp->childCommandPipeKey = NULL;
 	pp->childPayloadPipeKey = NULL;
 
-	pp->dump = elektraInvokeOpen ("dump", ksNew (2, keyNew ("user/fullname", KEY_END), keyNew ("user/markend", KEY_END), KS_END),
-				      errorKey);
+	KeySet * config = ksNew (2, keyNew ("user/fullname", KEY_END), keyNew ("user/markend", KEY_END), KS_END);
+	pp->dump = elektraInvokeOpen ("dump", config, errorKey);
+	ksDel (config);
+
 	if (!pp->dump)
 	{
 		cleanupPluginData (pp, errorKey, 0);
