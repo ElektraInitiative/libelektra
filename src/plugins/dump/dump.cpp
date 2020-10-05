@@ -24,52 +24,85 @@ using namespace ckdb;
 namespace dump
 {
 
-int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks)
+int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames, bool markEnd)
 {
-	ckdb::Key * cur;
+	os << "kdbOpen 2" << std::endl;
 
-	os << "kdbOpen 1" << std::endl;
+	size_t rootOffset = useFullNames ? 0 : keyGetNameSize (parentKey);
 
-	os << "ksNew " << ckdb::ksGetSize (ks) << std::endl;
-
-	ckdb::KeySet * metacopies = ckdb::ksNew (0, KS_END);
-
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != nullptr)
+	ckdb::KeySet * metacopies = ksNew (0, KS_END);
+	for (elektraCursor cursor = 0; cursor < ksGetSize (ks); ++cursor)
 	{
-		size_t namesize = ckdb::keyGetNameSize (cur);
-		size_t valuesize = ckdb::keyGetValueSize (cur);
-		os << "keyNew " << namesize << " " << valuesize << std::endl;
-		os.write (ckdb::keyName (cur), namesize);
-		os.write (static_cast<const char *> (ckdb::keyValue (cur)), valuesize);
+		ckdb::Key * cur = ksAtCursor (ks, cursor);
+
+		size_t namesize = keyGetNameSize (cur) - rootOffset;
+		if (namesize > 0)
+		{
+			namesize -= 1;
+		}
+
+		size_t valuesize = keyGetValueSize (cur);
+
+		bool binary = keyIsBinary (cur) == 1;
+
+		std::string type;
+		if (binary)
+		{
+			type = "binary";
+		}
+		else
+		{
+			type = "string";
+			valuesize -= 1;
+		}
+
+		os << "$key " << type << " " << namesize << " " << valuesize << std::endl;
+		if (namesize > 0)
+		{
+			os << &keyName (cur)[rootOffset];
+		}
 		os << std::endl;
 
-		const ckdb::Key * meta;
-		ckdb::keyRewindMeta (cur);
-		while ((meta = ckdb::keyNextMeta (cur)) != nullptr)
+		if (binary)
 		{
+			os.write (static_cast<const char *> (keyValue (cur)), valuesize);
+			os << std::endl;
+		}
+		else
+		{
+			os << keyString (cur) << std::endl;
+		}
+
+		ckdb::KeySet * metaKs = keyMeta (cur);
+		for (elektraCursor metaCursor = 0; metaCursor < ksGetSize (metaKs); ++metaCursor)
+		{
+			const ckdb::Key * meta = ksAtCursor (metaKs, metaCursor);
+
 			std::stringstream ss;
 			ss << "user/" << meta; // use the address of pointer as name
 
-			ckdb::Key * search = ckdb::keyNew (ss.str ().c_str (), KEY_END);
+			ckdb::Key * search = keyNew (ss.str ().c_str (), KEY_END);
 			ckdb::Key * ret = ksLookup (metacopies, search, 0);
 
 			if (!ret)
 			{
 				/* This metakey was not serialised up to now */
-				size_t metanamesize = ckdb::keyGetNameSize (meta);
-				size_t metavaluesize = ckdb::keyGetValueSize (meta);
+				size_t metanamesize = keyGetNameSize (meta) - 1;
+				size_t metavaluesize = keyGetValueSize (meta) - 1;
 
-				os << "keyMeta " << metanamesize << " " << metavaluesize << std::endl;
-				os.write (ckdb::keyName (meta), metanamesize);
-				os.write (static_cast<const char *> (ckdb::keyValue (meta)), metavaluesize);
-				os << std::endl;
+				os << "$meta " << metanamesize << " " << metavaluesize << std::endl;
+				os << keyName (meta) << std::endl;
+				os << keyString (meta) << std::endl;
 
 				std::stringstream ssv;
 				ssv << namesize << " " << metanamesize << std::endl;
-				ssv.write (ckdb::keyName (cur), namesize);
-				ssv.write (ckdb::keyName (meta), metanamesize);
-				ckdb::keySetRaw (search, ssv.str ().c_str (), ssv.str ().size ());
+				if (namesize > 0)
+				{
+					ssv << &keyName (cur)[rootOffset];
+				}
+				ssv << std::endl;
+				ssv << keyName (meta) << std::endl;
+				keySetString (search, ssv.str ().c_str ());
 
 				ksAppendKey (metacopies, search);
 			}
@@ -78,16 +111,20 @@ int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks)
 				/* Meta key already serialised, write out a reference to it */
 				keyDel (search);
 
-				os << "keyCopyMeta ";
-				os.write (static_cast<const char *> (ckdb::keyValue (ret)), ckdb::keyGetValueSize (ret));
-				os << std::endl;
+				os << "$copymeta " << keyString (ret);
 			}
 		}
-		os << "keyEnd" << std::endl;
-	}
-	os << "ksEnd" << std::endl;
 
+		os.flush ();
+	}
 	ksDel (metacopies);
+
+	if (markEnd)
+	{
+		os << "$end" << std::endl;
+	}
+
+	os.flush ();
 
 	return 1;
 }
@@ -221,7 +258,186 @@ int unserialiseVersion1 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int unserialise (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks)
+int unserialiseVersion2 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames)
+{
+	ckdb::Key * cur = nullptr;
+	std::string line;
+
+	std::string rootName (keyName (parentKey));
+	rootName += "/";
+
+	if (useFullNames)
+	{
+		rootName = "";
+	}
+
+	char newline;
+
+	while (std::getline (is, line))
+	{
+		std::stringstream ss (line);
+		std::string command;
+		ss >> command;
+
+		if (command == "$key")
+		{
+			std::string type;
+			size_t nameSize;
+			size_t valueSize;
+
+			ss >> type;
+			ss >> nameSize;
+			ss >> valueSize;
+
+			std::string name (nameSize, '\0');
+			is.read (&name[0], nameSize);
+
+			is.read (&newline, 1);
+			if (newline != '\n')
+			{
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+									 "Expected newline '\\n' but got '%c' at position %zd.\n", newline,
+									 static_cast<size_t> (is.tellg ()));
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+
+			if (type == "string")
+			{
+				std::string value (valueSize, '\0');
+				is.read (&value[0], valueSize);
+
+				is.read (&newline, 1);
+				if (newline != '\n')
+				{
+					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+										 "Expected newline '\\n' but got '%c' at position %zd.\n",
+										 newline, static_cast<size_t> (is.tellg ()));
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				cur = keyNew ((rootName + name).c_str (), KEY_VALUE, value.c_str (), KEY_END);
+			}
+			else if (type == "binary")
+			{
+				std::vector<char> value (valueSize);
+				is.read (value.data (), valueSize);
+
+				is.read (&newline, 1);
+				if (newline != '\n')
+				{
+					ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+										 "Expected newline '\\n' but got '%c' at position %zd.\n",
+										 newline, static_cast<size_t> (is.tellg ()));
+					return ELEKTRA_PLUGIN_STATUS_ERROR;
+				}
+
+				if (valueSize > 0)
+				{
+					cur = keyNew ((rootName + name).c_str (), KEY_BINARY, KEY_SIZE, valueSize, KEY_VALUE, value.data (),
+						      KEY_END);
+				}
+				else
+				{
+					cur = keyNew ((rootName + name).c_str (), KEY_BINARY, KEY_SIZE, valueSize, KEY_END);
+				}
+			}
+			else
+			{
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey, "Unknown key type detected in dumpfile: %s.\n",
+									 type.c_str ());
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+
+			ksAppendKey (ks, cur);
+		}
+		else if (command == "$meta")
+		{
+			size_t nameSize;
+			size_t valueSize;
+
+			ss >> nameSize;
+			ss >> valueSize;
+
+			std::string name (nameSize, '\0');
+			is.read (&name[0], nameSize);
+
+			is.read (&newline, 1);
+			if (newline != '\n')
+			{
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+									 "Expected newline '\\n' but got '%c' at position %zd.\n", newline,
+									 static_cast<size_t> (is.tellg ()));
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+
+			std::string value (valueSize, '\0');
+			is.read (&value[0], valueSize);
+
+			is.read (&newline, 1);
+			if (newline != '\n')
+			{
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+									 "Expected newline '\\n' but got '%c' at position %zd.\n", newline,
+									 static_cast<size_t> (is.tellg ()));
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+
+			keySetMeta (cur, name.c_str (), value.c_str ());
+		}
+		else if (command == "$copymeta")
+		{
+			size_t keyNameSize;
+			size_t metaNameSize;
+
+			ss >> keyNameSize;
+			ss >> metaNameSize;
+
+			std::string keyName (keyNameSize, '\0');
+			is.read (&keyName[0], keyNameSize);
+
+			is.read (&newline, 1);
+			if (newline != '\n')
+			{
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+									 "Expected newline '\\n' but got '%c' at position %zd.\n", newline,
+									 static_cast<size_t> (is.tellg ()));
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+
+			std::string metaName (metaNameSize, '\0');
+			is.read (&metaName[0], metaNameSize);
+
+			is.read (&newline, 1);
+			if (newline != '\n')
+			{
+				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (parentKey,
+									 "Expected newline '\\n' but got '%c' at position %zd.\n", newline,
+									 static_cast<size_t> (is.tellg ()));
+				return ELEKTRA_PLUGIN_STATUS_ERROR;
+			}
+
+			ckdb::Key * source = ckdb::ksLookupByName (ks, (rootName + keyName).c_str (), 0);
+			keyCopyMeta (cur, source, metaName.c_str ());
+		}
+		else if (command == "$end")
+		{
+			break;
+		}
+		else
+		{
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+				parentKey,
+				"Unknown command detected in dumpfile: %s.\nMaybe the file is not in dump configuration file format? "
+				"Try to remount with another plugin (eg. ini, ni, etc.)",
+				command.c_str ());
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+int unserialise (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames)
 {
 	std::string line;
 
@@ -229,8 +445,7 @@ int unserialise (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks)
 	{
 		if (line == "kdbOpen 2")
 		{
-			// not implemented
-			return -1;
+			return unserialiseVersion2 (is, parentKey, ks, useFullNames);
 		}
 
 		return unserialiseVersion1 (is, parentKey, ks, line);
@@ -269,7 +484,7 @@ public:
 
 extern "C" {
 
-int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int elektraDumpGet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	Key * root = ckdb::keyNew ("system/elektra/modules/dump", KEY_END);
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
@@ -291,6 +506,9 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 	keyDel (root);
 	int errnosave = errno;
 
+	// dirty workaround for pluginprocess
+	bool useFullNames = ksLookupByName (elektraPluginGetConfig (handle), "/fullname", 0) != NULL;
+
 	// We use dump for the pluginprocess library. Unfortunately on macOS reading from /dev/fd/<fd> via
 	// ifstream fails, thus we read directly from unnamed pipes using a custom buffer and read
 	const char pipe[] = "/dev/fd/";
@@ -299,7 +517,7 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 		int fd = std::stoi (std::string (keyString (parentKey) + strlen (pipe)));
 		dump::pipebuf pipebuf (fd);
 		std::istream is (&pipebuf);
-		return dump::unserialise (is, parentKey, returned);
+		return dump::unserialise (is, parentKey, returned, useFullNames);
 	}
 	else
 	{
@@ -313,11 +531,11 @@ int elektraDumpGet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 			return -1;
 		}
 
-		return dump::unserialise (is, parentKey, returned);
+		return dump::unserialise (is, parentKey, returned, useFullNames);
 	}
 }
 
-int elektraDumpSet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentKey)
+int elektraDumpSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * parentKey)
 {
 	int errnosave = errno;
 	// ELEKTRA_LOG (ELEKTRA_LOG_MODULE_DUMP, "opening file %s", keyString (parentKey));
@@ -329,7 +547,14 @@ int elektraDumpSet (ckdb::Plugin *, ckdb::KeySet * returned, ckdb::Key * parentK
 		return -1;
 	}
 
-	return dump::serialise (ofs, parentKey, returned);
+	// dirty workaround for pluginprocess
+	bool useFullNames = ksLookupByName (elektraPluginGetConfig (handle), "/fullname", 0) != NULL;
+
+	// another dirty workaround for pluginprocess
+	bool markEnd = ksLookupByName (elektraPluginGetConfig (handle), "/markend", 0) != NULL;
+
+
+	return dump::serialise (ofs, parentKey, returned, useFullNames, markEnd);
 }
 
 ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT

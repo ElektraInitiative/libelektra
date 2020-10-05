@@ -1560,7 +1560,7 @@ Key * ksAtCursor (KeySet * ks, elektraCursor pos)
 {
 	if (!ks) return 0;
 	if (pos < 0) return 0;
-	if (ks->size < (size_t) pos) return 0;
+	if (ks->size <= (size_t) pos) return 0;
 	return ks->array[pos];
 }
 

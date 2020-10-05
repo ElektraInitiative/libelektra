@@ -15,14 +15,15 @@
 
 #include <tests_plugin.h>
 
-#include "testdata_v1.h"
+#include "testdata.h"
 
-static void test_oneValue (void)
+static void test_v1_oneValue (void)
 {
-	printf ("test oneValue\n");
+	printf ("test v1 oneValue\n");
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/one_value.dump"));
+	char * v2file = elektraStrDup (srcdir_file ("dump/v2/one_value.dump"));
 	char * outfile = elektraStrDup (srcdir_file ("dump/v1/one_value.dump.out"));
 
 	{
@@ -31,7 +32,7 @@ static void test_oneValue (void)
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_v1_oneValue ();
+		KeySet * expected = testdata_oneValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -50,7 +51,7 @@ static void test_oneValue (void)
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 
-		succeed_if (compare_line_files (infile, outfile), "files differ");
+		succeed_if (compare_line_files (v2file, outfile), "files differ");
 		remove (outfile);
 
 		keyDel (setKey);
@@ -62,12 +63,13 @@ static void test_oneValue (void)
 	ksDel (ks);
 }
 
-static void test_twoValue (void)
+static void test_v1_twoValue (void)
 {
-	printf ("test twoValue\n");
+	printf ("test v1 twoValue\n");
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/two_value.dump"));
+	char * v2file = elektraStrDup (srcdir_file ("dump/v2/two_value.dump"));
 	char * outfile = elektraStrDup (srcdir_file ("dump/v1/two_value.dump.out"));
 
 	{
@@ -76,7 +78,7 @@ static void test_twoValue (void)
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_v1_twoValue ();
+		KeySet * expected = testdata_twoValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -95,7 +97,7 @@ static void test_twoValue (void)
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 
-		succeed_if (compare_line_files (infile, outfile), "files differ");
+		succeed_if (compare_line_files (v2file, outfile), "files differ");
 		remove (outfile);
 
 		keyDel (setKey);
@@ -107,12 +109,13 @@ static void test_twoValue (void)
 	ksDel (ks);
 }
 
-static void test_threeValue (void)
+static void test_v1_threeValue (void)
 {
-	printf ("test threeValue\n");
+	printf ("test v1 threeValue\n");
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/three_value.dump"));
+	char * v2file = elektraStrDup (srcdir_file ("dump/v2/three_value.dump"));
 	char * outfile = elektraStrDup (srcdir_file ("dump/v1/three_value.dump.out"));
 
 	{
@@ -121,7 +124,7 @@ static void test_threeValue (void)
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_v1_threeValue ();
+		KeySet * expected = testdata_threeValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -140,7 +143,7 @@ static void test_threeValue (void)
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
 
-		succeed_if (compare_line_files (infile, outfile), "files differ");
+		succeed_if (compare_line_files (v2file, outfile), "files differ");
 		remove (outfile);
 
 		keyDel (setKey);
@@ -152,12 +155,13 @@ static void test_threeValue (void)
 	ksDel (ks);
 }
 
-static void test_againTwoValue (void)
+static void test_v1_againTwoValue (void)
 {
-	printf ("test againTwoValue\n");
+	printf ("test v1 againTwoValue\n");
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/again_two_value.dump"));
+	char * v2file = elektraStrDup (srcdir_file ("dump/v2/again_two_value.dump"));
 	char * outfile = elektraStrDup (srcdir_file ("dump/v1/again_two_value.dump.out"));
 
 	{
@@ -166,7 +170,98 @@ static void test_againTwoValue (void)
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_v1_againTwoValue ();
+		KeySet * expected = testdata_againTwoValue ();
+
+		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, ks);
+
+		ksDel (expected);
+
+		keyDel (getKey);
+		PLUGIN_CLOSE ();
+	}
+
+	{
+		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+		succeed_if (compare_line_files (v2file, outfile), "files differ");
+		remove (outfile);
+
+		keyDel (setKey);
+		PLUGIN_CLOSE ();
+	}
+
+	elektraFree (infile);
+	elektraFree (outfile);
+	ksDel (ks);
+}
+
+static void test_v1_metaData (void)
+{
+	printf ("test v1 metaData\n");
+
+	KeySet * ks = ksNew (0, KS_END);
+	char * infile = elektraStrDup (srcdir_file ("dump/v1/meta_data.dump"));
+	char * v2file = elektraStrDup (srcdir_file ("dump/v2/meta_data.dump"));
+	char * outfile = elektraStrDup (srcdir_file ("dump/v1/meta_data.dump.out"));
+
+	{
+		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		KeySet * expected = testdata_metaData ();
+
+		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, ks);
+
+		ksDel (expected);
+
+		keyDel (getKey);
+		PLUGIN_CLOSE ();
+	}
+
+	{
+		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+		succeed_if (compare_line_files (v2file, outfile), "files differ");
+		remove (outfile);
+
+		keyDel (setKey);
+		PLUGIN_CLOSE ();
+	}
+
+	elektraFree (infile);
+	elektraFree (outfile);
+	ksDel (ks);
+}
+
+static void test_v2_oneValue (void)
+{
+	printf ("test v2 oneValue\n");
+
+	KeySet * ks = ksNew (0, KS_END);
+	char * infile = elektraStrDup (srcdir_file ("dump/v2/one_value.dump"));
+	char * outfile = elektraStrDup (srcdir_file ("dump/v2/one_value.dump.out"));
+
+	{
+		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		KeySet * expected = testdata_oneValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -197,13 +292,13 @@ static void test_againTwoValue (void)
 	ksDel (ks);
 }
 
-static void test_metaData (void)
+static void test_v2_twoValue (void)
 {
-	printf ("test metaData\n");
+	printf ("test v2 twoValue\n");
 
 	KeySet * ks = ksNew (0, KS_END);
-	char * infile = elektraStrDup (srcdir_file ("dump/v1/meta_data.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v1/meta_data.dump.out"));
+	char * infile = elektraStrDup (srcdir_file ("dump/v2/two_value.dump"));
+	char * outfile = elektraStrDup (srcdir_file ("dump/v2/two_value.dump.out"));
 
 	{
 		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
@@ -211,7 +306,7 @@ static void test_metaData (void)
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
 
-		KeySet * expected = testdata_v1_metaData ();
+		KeySet * expected = testdata_twoValue ();
 
 		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 		compare_keyset (expected, ks);
@@ -224,6 +319,231 @@ static void test_metaData (void)
 
 	{
 		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+		succeed_if (compare_line_files (infile, outfile), "files differ");
+		remove (outfile);
+
+		keyDel (setKey);
+		PLUGIN_CLOSE ();
+	}
+
+	elektraFree (infile);
+	elektraFree (outfile);
+	ksDel (ks);
+}
+
+static void test_v2_threeValue (void)
+{
+	printf ("test v2 threeValue\n");
+
+	KeySet * ks = ksNew (0, KS_END);
+	char * infile = elektraStrDup (srcdir_file ("dump/v2/three_value.dump"));
+	char * outfile = elektraStrDup (srcdir_file ("dump/v2/three_value.dump.out"));
+
+	{
+		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		KeySet * expected = testdata_threeValue ();
+
+		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, ks);
+
+		ksDel (expected);
+
+		keyDel (getKey);
+		PLUGIN_CLOSE ();
+	}
+
+	{
+		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+		succeed_if (compare_line_files (infile, outfile), "files differ");
+		remove (outfile);
+
+		keyDel (setKey);
+		PLUGIN_CLOSE ();
+	}
+
+	elektraFree (infile);
+	elektraFree (outfile);
+	ksDel (ks);
+}
+
+static void test_v2_againTwoValue (void)
+{
+	printf ("test v2 againTwoValue\n");
+
+	KeySet * ks = ksNew (0, KS_END);
+	char * infile = elektraStrDup (srcdir_file ("dump/v2/again_two_value.dump"));
+	char * outfile = elektraStrDup (srcdir_file ("dump/v2/again_two_value.dump.out"));
+
+	{
+		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		KeySet * expected = testdata_againTwoValue ();
+
+		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, ks);
+
+		ksDel (expected);
+
+		keyDel (getKey);
+		PLUGIN_CLOSE ();
+	}
+
+	{
+		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+		succeed_if (compare_line_files (infile, outfile), "files differ");
+		remove (outfile);
+
+		keyDel (setKey);
+		PLUGIN_CLOSE ();
+	}
+
+	elektraFree (infile);
+	elektraFree (outfile);
+	ksDel (ks);
+}
+
+static void test_v2_metaData (void)
+{
+	printf ("test v2 metaData\n");
+
+	KeySet * ks = ksNew (0, KS_END);
+	char * infile = elektraStrDup (srcdir_file ("dump/v2/meta_data.dump"));
+	char * outfile = elektraStrDup (srcdir_file ("dump/v2/meta_data.dump.out"));
+
+	{
+		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		KeySet * expected = testdata_metaData ();
+
+		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, ks);
+
+		ksDel (expected);
+
+		keyDel (getKey);
+		PLUGIN_CLOSE ();
+	}
+
+	{
+		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+		succeed_if (compare_line_files (infile, outfile), "files differ");
+		remove (outfile);
+
+		keyDel (setKey);
+		PLUGIN_CLOSE ();
+	}
+
+	elektraFree (infile);
+	elektraFree (outfile);
+	ksDel (ks);
+}
+
+static void test_v2_fullnames (void)
+{
+	printf ("test v2 fullnames\n");
+
+	KeySet * ks = ksNew (0, KS_END);
+	char * infile = elektraStrDup (srcdir_file ("dump/v2/fullnames.dump"));
+	char * outfile = elektraStrDup (srcdir_file ("dump/v2/fullnames.dump.out"));
+
+	{
+		Key * getKey = keyNew ("system/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
+
+		KeySet * conf = ksNew (1, keyNew ("user/fullname", KEY_END), KS_END);
+		PLUGIN_OPEN ("dump");
+
+		KeySet * expected = testdata_demo ();
+
+		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, ks);
+
+		ksDel (expected);
+
+		keyDel (getKey);
+		PLUGIN_CLOSE ();
+	}
+
+	{
+		Key * setKey = keyNew ("system/elektra/mountpoints", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (1, keyNew ("user/fullname", KEY_END), KS_END);
+		PLUGIN_OPEN ("dump");
+
+		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+		succeed_if (compare_line_files (infile, outfile), "files differ");
+		remove (outfile);
+
+		keyDel (setKey);
+		PLUGIN_CLOSE ();
+	}
+
+	elektraFree (infile);
+	elektraFree (outfile);
+	ksDel (ks);
+}
+
+static void test_v2_demo (void)
+{
+	printf ("test v2 demo\n");
+
+	KeySet * ks = ksNew (0, KS_END);
+	char * infile = elektraStrDup (srcdir_file ("dump/v2/demo.dump"));
+	char * outfile = elektraStrDup (srcdir_file ("dump/v2/demo.dump.out"));
+
+	{
+		Key * getKey = keyNew ("system/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		KeySet * expected = testdata_demo ();
+
+		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, ks);
+
+		ksDel (expected);
+
+		keyDel (getKey);
+		PLUGIN_CLOSE ();
+	}
+
+	{
+		Key * setKey = keyNew ("system/elektra/mountpoints", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -249,11 +569,19 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_oneValue ();
-	test_twoValue ();
-	test_threeValue ();
-	test_againTwoValue ();
-	test_metaData ();
+	test_v1_oneValue ();
+	test_v1_twoValue ();
+	test_v1_threeValue ();
+	test_v1_againTwoValue ();
+	test_v1_metaData ();
+
+	test_v2_oneValue ();
+	test_v2_twoValue ();
+	test_v2_threeValue ();
+	test_v2_againTwoValue ();
+	test_v2_metaData ();
+	test_v2_fullnames ();
+	test_v2_demo ();
 
 	print_result ("testmod_dump");
 

@@ -17,62 +17,114 @@ featured backend. No other plugins are needed.
 
 ## Format
 
-The file format edf (Elektra dump format) consists of a simple command language with
-arguments. When an argument is binary or string data the length needs to be
-passed first. Because the size is known in advance, any binary dump is
-accepted. Terminating characters present no problem. The commands are
-assembled similar to the ones present in Elektra’s API.
+The file starts with the magic word `kdbOpen` followed by a version number (currently `2`) and a newline.
+The plugin can read files of version `1` and `2`, but it only writes version `2`.
 
-The file starts with the magic word `kdbOpen` followed by a version
-number. Processing can be stopped immediately when it is not in
-Elektra’s dump format at all. A wrong version number most likely
-indicates that the version of the plugin is too old to recognize all
-commands in the file. The basic idea of the dump plugin is to write
-out the way that the KeySet needs to be constructed. The dump plugin
-interprets such a file. The file also looks similar to C code that
-would create the KeySet. Keys can contain any binary values and arbitrary
-metadata and are still stored and parsed correctly. The dump plugin can
-even reconstruct pointers to metadata to save memory. When a pointer
-to the same region of memory is found, a special command `keyCopyMeta`
-is written out that is able to reconstruct the data structure the way
-it was before. The commands were designed to make parsing of the file
-an easy task.
+After this first line, the format consists of a series of commands.
+The supported commands are `$key`, `$meta` and `$copymeta`.
+We use the `$` prefix to make the commands standout more.
+However, `$` does not always mean command.
+Keynames and values could also start with `$`, but since the plugin always knows whether a command or something else comes next, we do not need any kind of escaping.
+
+The `$key` command creates a new key.
+It takes 5 arguments.
+The first 3 are on the same line separated by a space.
+The other two are on separate lines:
+
+```
+$key <type> <nsize> <vsize>
+<name>
+<value>
+
+```
+
+`<type>` is either `string` or `binary` and indicates what kind of value the key contains.
+`<nsize>` and `<vsize>` are the name size and value size respectively.
+For the name and for string values, the size does not include the null-terminator present in C-strings.
+For binary keys all bytes (including any null-terminators) are counted.
+`<name>` and `<value>` are the keyname and key value.
+Because we know their length, they can contain arbitrary characters.
+Even newlines are allowed.
+The newlines between `<name>` and `<value>`, and after `<value>` are just to make the file more readable.
+The must be present, but they do not determine where `<name>` or `<value>` end.
+
+The `$meta` command adds a new metakey to the last key.
+It is very similar to the `$key` command, but it only takes 4 arguments.
+There is no type argument, because metakeys always have string values.
+
+```
+$meta <nsize> <vsize>
+<name>
+<value>
+
+```
+
+The arguments work just like they do for `$key`.
+
+Finally, there is `$copymeta`.
+It is needed, because a `keyCopyMeta` call results in two keys with the same metakey (equal pointers).
+To achieve this, we indicate which metakey should be copied from which key.
+The `$copymeta` command also takes 4 arguments:
+
+```
+$copymeta <knsize> <mnsize>
+<keyname>
+<metaname>
+
+```
+
+`<keyname>` is the name of the key from which the metadata is copied and `<knsize>` is its size (without the null-terminator).
+Similarly, `<metaname>` is the name of the metakey that is copied and `<mnsize>` is its size (without the null-terminator).
 
 ### Format Examples
 
-The serialized configuration can look like (0 bytes at end of strings are
-omitted):
+The following is an example `dump` file that was mounted at `system/elektra/mountpoints`:
 
 ```
-kdbOpen 1
-ksNew 207
-keyNew 27 1
-system/elektra/mountpoints
-keyMeta 8 27
-commentBelow are the mount points.
-keyEnd
-keyNew 32 19
-system/elektra/mountpoints/dbusserialized Backend
-keyEnd keyNew 39 1
-system/elektra/mountpoints/dbus/config
-keyMeta 8 72
-commentThis is a configuration for a backend, see subkeys for more information
-keyEnd
-keyNew 53 1
-system/elektra/mountpoints/fstab/config/struct/FStab
-keyCopyMeta 59 11
-system/elektra/mountpoints/file
-systems/config/struct/FStabcheck/type
-keyEnd
-ksEnd
+kdbOpen 2
+$key binary 0 0
+
+
+$meta 6 0
+binary
+
+$meta 7 27
+comment
+Below are the mount points.
+$key string 4 18
+dbus
+serialized Backend
+$key string 11 0
+dbus/config
+
+$meta 7 71
+comment
+This is a configuration for a backend,
+see subkeys for more information
+$key string 12 0
+fstab/config
+
+$copymeta 11 7
+dbus/config
+comment
+
 ```
+
+A few things you might have noticed:
+
+- The first key has an empty name, because it is the root key of this mountpoint.
+- The value size of `0` for the first key makes it a `NULL` key, but only because it is `binary`.
+  The third key (`$key string 11 0`) also has value size 0, but is a `string` key.
+  This means its value is an empty string `""`.
+- The empty lines after `$key binary 0 -1` and `dbus/config` are because the respective names/values are empty.
+- The comment above `$key string 25 0` shows that newlines in key values are completely fine, because we know what size the value has to be.
+- There is an empty line at the end, because the plugin expects a newline after every command.
 
 ## Limitations
 
 (status -1000)
 
 - It is quite slow
-- Files cannot easily edited by hand
 
 ## Examples
 
