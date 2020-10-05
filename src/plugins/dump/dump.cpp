@@ -92,111 +92,151 @@ int serialise (std::ostream & os, ckdb::Key *, ckdb::KeySet * ks)
 	return 1;
 }
 
-int unserialise (std::istream & is, ckdb::Key * errorKey, ckdb::KeySet * ks)
+static int decodeLine (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, std::string & line, ckdb::Key ** curPtr)
 {
-	ckdb::Key * cur = nullptr;
+	ckdb::Key * cur = *curPtr;
 
 	std::vector<char> namebuffer (4048);
 	std::vector<char> valuebuffer (4048);
-	std::string line;
 	std::string command;
 	size_t nrKeys;
 	size_t namesize;
 	size_t valuesize;
 
-	while (std::getline (is, line))
+	std::stringstream ss (line);
+	ss >> command;
+
+	if (command == "kdbOpen")
 	{
-		std::stringstream ss (line);
-		ss >> command;
-
-		if (command == "kdbOpen")
+		std::string version;
+		ss >> version;
+		if (version != "1")
 		{
-			std::string version;
-			ss >> version;
-			if (version != "1")
-			{
-				ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Wrong version detected in dumpfile: %s", version.c_str ());
-				return -1;
-			}
-		}
-		else if (command == "ksNew")
-		{
-			ss >> nrKeys;
-
-			ksClear (ks);
-		}
-		else if (command == "keyNew")
-		{
-			cur = ckdb::keyNew (nullptr);
-
-			ss >> namesize;
-			ss >> valuesize;
-
-			if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
-			is.read (&namebuffer[0], namesize);
-			namebuffer[namesize] = 0;
-			ckdb::keySetName (cur, &namebuffer[0]);
-
-			if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
-			is.read (&valuebuffer[0], valuesize);
-			valuebuffer[valuesize] = 0;
-
-			ckdb::keySetRaw (cur, &valuebuffer[0], valuesize);
-			std::getline (is, line);
-		}
-		else if (command == "keyMeta")
-		{
-			ss >> namesize;
-			ss >> valuesize;
-
-			if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
-			is.read (&namebuffer[0], namesize);
-			namebuffer[namesize] = 0;
-
-			if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
-			is.read (&valuebuffer[0], valuesize);
-			valuebuffer[valuesize] = 0;
-
-			keySetMeta (cur, &namebuffer[0], &valuebuffer[0]);
-			std::getline (is, line);
-		}
-		else if (command == "keyCopyMeta")
-		{
-			ss >> namesize;
-			ss >> valuesize;
-
-			if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
-			is.read (&namebuffer[0], namesize);
-			namebuffer[namesize] = 0;
-
-			if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
-			is.read (&valuebuffer[0], valuesize);
-			valuebuffer[valuesize] = 0;
-
-			ckdb::Key * search = ckdb::ksLookupByName (ks, &namebuffer[0], 0);
-			ckdb::keyCopyMeta (cur, search, &valuebuffer[0]);
-			std::getline (is, line);
-		}
-		else if (command == "keyEnd")
-		{
-			ckdb::ksAppendKey (ks, cur);
-			cur = nullptr;
-		}
-		else if (command == "ksEnd")
-		{
-			break;
-		}
-		else
-		{
-			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
-				errorKey,
-				"Unknown command detected in dumpfile: %s.\nMaybe the file is not in dump configuration file format? "
-				"Try to remount with another plugin (eg. ini, ni, etc.)",
-				command.c_str ());
+			ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Wrong version detected in dumpfile: %s", version.c_str ());
 			return -1;
 		}
 	}
-	return 1;
+	else if (command == "ksNew")
+	{
+		ss >> nrKeys;
+
+		ksClear (ks);
+	}
+	else if (command == "keyNew")
+	{
+		cur = ckdb::keyNew (nullptr);
+
+		ss >> namesize;
+		ss >> valuesize;
+
+		if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
+		is.read (&namebuffer[0], namesize);
+		namebuffer[namesize] = 0;
+		ckdb::keySetName (cur, &namebuffer[0]);
+
+		if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
+		is.read (&valuebuffer[0], valuesize);
+		valuebuffer[valuesize] = 0;
+
+		ckdb::keySetRaw (cur, &valuebuffer[0], valuesize);
+		std::getline (is, line);
+	}
+	else if (command == "keyMeta")
+	{
+		ss >> namesize;
+		ss >> valuesize;
+
+		if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
+		is.read (&namebuffer[0], namesize);
+		namebuffer[namesize] = 0;
+
+		if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
+		is.read (&valuebuffer[0], valuesize);
+		valuebuffer[valuesize] = 0;
+
+		keySetMeta (cur, &namebuffer[0], &valuebuffer[0]);
+		std::getline (is, line);
+	}
+	else if (command == "keyCopyMeta")
+	{
+		ss >> namesize;
+		ss >> valuesize;
+
+		if (namesize > namebuffer.size ()) namebuffer.resize (namesize + 1);
+		is.read (&namebuffer[0], namesize);
+		namebuffer[namesize] = 0;
+
+		if (valuesize > valuebuffer.size ()) valuebuffer.resize (valuesize + 1);
+		is.read (&valuebuffer[0], valuesize);
+		valuebuffer[valuesize] = 0;
+
+		ckdb::Key * search = ckdb::ksLookupByName (ks, &namebuffer[0], 0);
+		ckdb::keyCopyMeta (cur, search, &valuebuffer[0]);
+		std::getline (is, line);
+	}
+	else if (command == "keyEnd")
+	{
+		ckdb::ksAppendKey (ks, cur);
+		cur = nullptr;
+	}
+	else if (command == "ksEnd")
+	{
+		return 1;
+	}
+	else
+	{
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+			parentKey,
+			"Unknown command detected in dumpfile: %s.\nMaybe the file is not in dump configuration file format? "
+			"Try to remount with another plugin (eg. ini, ni, etc.)",
+			command.c_str ());
+		return -1;
+	}
+
+	*curPtr = cur;
+
+	return 0;
+}
+
+int unserialiseVersion1 (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks, const std::string & firstLine)
+{
+	ckdb::Key * cur = nullptr;
+	std::string line = firstLine;
+
+	do
+	{
+		int ret = decodeLine (is, parentKey, ks, line, &cur);
+
+		if (ret == -1)
+		{
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+
+		if (ret == 1)
+		{
+			break;
+		}
+	} while (std::getline (is, line));
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+int unserialise (std::istream & is, ckdb::Key * parentKey, ckdb::KeySet * ks)
+{
+	std::string line;
+
+	if (std::getline (is, line))
+	{
+		if (line == "kdbOpen 2")
+		{
+			// not implemented
+			return -1;
+		}
+
+		return unserialiseVersion1 (is, parentKey, ks, line);
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 class pipebuf : public std::streambuf
