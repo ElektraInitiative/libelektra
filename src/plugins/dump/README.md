@@ -40,7 +40,7 @@ $key <type> <nsize> <vsize>
 
 `<type>` is either `string` or `binary` and indicates what kind of value the key contains.
 `<nsize>` and `<vsize>` are the name size and value size respectively.
-For the name and for string values, the size does not include the null-terminator present in C-strings.
+For the name and for string values, the size does not include the null-terminator present in C strings.
 For binary keys all bytes (including any null-terminators) are counted.
 `<name>` and `<value>` are the keyname and key value.
 Because we know their length, they can contain arbitrary characters.
