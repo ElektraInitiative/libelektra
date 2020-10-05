@@ -1,5 +1,5 @@
 - infos = Information about the dump plugin is in keys below
-- infos/author = Markus Raab <elektra@libelektra.org>
+- infos/author = Markus Raab <elektra@libelektra.org>, Klemens Böswirth <k.boeswirth+git@gmail.com>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage/dump
