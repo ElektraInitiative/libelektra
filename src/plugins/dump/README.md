@@ -46,7 +46,7 @@ For binary keys all bytes (including any null-terminators) are counted.
 Because we know their length, they can contain arbitrary characters.
 Even newlines are allowed.
 The newlines between `<name>` and `<value>`, and after `<value>` are just to make the file more readable.
-The must be present, but they do not determine where `<name>` or `<value>` end.
+They must be present, but they do not determine where `<name>` or `<value>` end.
 
 The `$meta` command adds a new metakey to the last key.
 It is very similar to the `$key` command, but it only takes 4 arguments.
