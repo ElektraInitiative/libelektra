@@ -4,8 +4,8 @@
 #include "backendprivate.h"
 
 #include <kdberrors.h>
-#include <kdbprivate.h>
 #include <kdblogger.h>
+#include <kdbprivate.h>
 
 int setMountpoint (BackendHandle * bh, Key * root, KeySet * config, Key * errorKey)
 {
