@@ -5,6 +5,7 @@
 
 #include <kdberrors.h>
 #include <kdbprivate.h>
+#include <kdblogger.h>
 
 int setMountpoint (BackendHandle * bh, Key * root, KeySet * config, Key * errorKey)
 {
@@ -808,6 +809,14 @@ int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
 	if (bh->getposition == GET_GETRESOLVER)
 	{
 		Slot * resolver = bh->getplugins[GET_GETRESOLVER];
+
+		if (!resolver || !resolver->value)
+		{
+			ELEKTRA_LOG ("No resolver, continuing");
+
+			incrementGetPosition (bh);
+			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+		}
 
 		if (!resolver || !resolver->value || !resolver->value->kdbGet)
 		{
