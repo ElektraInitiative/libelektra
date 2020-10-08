@@ -76,6 +76,12 @@ $copymeta <knsize> <mnsize>
 `<keyname>` is the name of the key from which the metadata is copied and `<knsize>` is its size (without the null-terminator).
 Similarly, `<metaname>` is the name of the metakey that is copied and `<mnsize>` is its size (without the null-terminator).
 
+There is also `$end`.
+It is used to signal the end of the data to the plugin.
+The `$end` command is completely optional.
+Without it, the plugin will just read the file until the end.
+However, in streaming use `$end` is needed, because there is no end of the "file".
+
 ### Format Examples
 
 The following is an example `dump` file that was mounted at `system/elektra/mountpoints`:
@@ -107,7 +113,7 @@ fstab/config
 $copymeta 11 7
 dbus/config
 comment
-
+$end
 ```
 
 A few things you might have noticed:
@@ -118,7 +124,6 @@ A few things you might have noticed:
   This means its value is an empty string `""`.
 - The empty lines after `$key binary 0 -1` and `dbus/config` are because the respective names/values are empty.
 - The comment above `$key string 25 0` shows that newlines in key values are completely fine, because we know what size the value has to be.
-- There is an empty line at the end, because the plugin expects a newline after every command.
 
 ## Limitations
 

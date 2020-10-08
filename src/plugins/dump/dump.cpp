@@ -24,7 +24,7 @@ using namespace ckdb;
 namespace dump
 {
 
-int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames, bool markEnd)
+int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool useFullNames)
 {
 	os << "kdbOpen 2" << std::endl;
 
@@ -115,16 +115,12 @@ int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool
 			}
 		}
 
+		// flush after every key to speed up streaming
 		os.flush ();
 	}
 	ksDel (metacopies);
 
-	if (markEnd)
-	{
-		os << "$end" << std::endl;
-	}
-
-	os.flush ();
+	os << "$end" << std::endl;
 
 	return 1;
 }
@@ -550,11 +546,8 @@ int elektraDumpSet (ckdb::Plugin * handle, ckdb::KeySet * returned, ckdb::Key * 
 	// dirty workaround for pluginprocess
 	bool useFullNames = ksLookupByName (elektraPluginGetConfig (handle), "/fullname", 0) != NULL;
 
-	// another dirty workaround for pluginprocess
-	bool markEnd = ksLookupByName (elektraPluginGetConfig (handle), "/markend", 0) != NULL;
 
-
-	return dump::serialise (ofs, parentKey, returned, useFullNames, markEnd);
+	return dump::serialise (ofs, parentKey, returned, useFullNames);
 }
 
 ckdb::Plugin * ELEKTRA_PLUGIN_EXPORT
