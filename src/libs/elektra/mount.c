@@ -367,12 +367,12 @@ KeySet * elektraDefaultGlobalConfig (KeySet * keys)
 		keyNew ("system/elektra/globalplugins/presetstorage", KEY_VALUE, "list", KEY_END),
 		keyNew ("system/elektra/globalplugins/procgetstorage", KEY_VALUE, "list", KEY_END), KS_END);
 
-	Key * cacheEnabled = ksLookupByName (keys, "system/elektra/cache/enabled", 0);
-	if (!cacheEnabled || (cacheEnabled && !elektraStrCmp (keyString (cacheEnabled), "1")))
-	{
-		ksAppendKey (config, keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
-		ksAppendKey (config, keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
-	}
+	// Key * cacheEnabled = ksLookupByName (keys, "system/elektra/cache/enabled", 0);
+	// if (!cacheEnabled || (cacheEnabled && !elektraStrCmp (keyString (cacheEnabled), "1")))
+	// {
+	// 	ksAppendKey (config, keyNew ("system/elektra/globalplugins/postgetcache", KEY_VALUE, "cache", KEY_END));
+	// 	ksAppendKey (config, keyNew ("system/elektra/globalplugins/pregetcache", KEY_VALUE, "cache", KEY_END));
+	// }
 
 	return config;
 }
