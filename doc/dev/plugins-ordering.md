@@ -45,12 +45,12 @@ Another use case is logging after a failure has happened.
 
 ## Arrays of linked lists
 
-A disadvantage of using arrays is that they contain a fixed amount of slots. This means 
-that when a certain amount of slots is full, it is no longer possible to add more. 
-Therefore, the plugin arrays are structured as arrays of linked lists. 
+A disadvantage of using arrays is that they contain a fixed amount of slots. This means
+that when a certain amount of slots is full, it is no longer possible to add more.
+Therefore, the plugin arrays are structured as arrays of linked lists.
 
 Each plugin role is assigned its own slot in the array, which contains a linked list. Plugins
-fulfilling that role are added to the list. That way, much greater and more flexible plugin 
+fulfilling that role are added to the list. That way, much greater and more flexible plugin
 numbers can be added to a single role.
 
 ## Placements

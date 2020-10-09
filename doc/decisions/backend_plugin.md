@@ -4,7 +4,7 @@
 
 - Backends store plugins in arrays which have a fixed number of slots for each plugin role. The number of plugins which can be assigned is limited,
   making it easy to reach the limit if many plugins are in use.
-- As structs, backends are separate from the plugin interface and integrated into the core of Elektra. This makes it difficult to perform operations 
+- As structs, backends are separate from the plugin interface and integrated into the core of Elektra. This makes it difficult to perform operations
   such as nesting plugins, or to develop other implementations for backends.
 
 ## Constraints
@@ -21,9 +21,9 @@
 ## Decision
 
 - The current backend implementation will be redeveloped into a backend plugin. That way, the core of Elektra will only access backends through
-the standard plugin interface. 
+  the standard plugin interface.
 - The `getplugins`, `setplugins` and `errorplugins` arrays will be changed into arrays of linked lists. Each time a plugin is added to a specific
-slot, it will be added at the end of the linked list.
+  slot, it will be added at the end of the linked list.
 
 ## Rationale
 
@@ -93,26 +93,27 @@ system/elektra/mountpoints/\/hosts/set/storage/#0/reference (="hosts")
 The following changes have been made:
 
 - The mountpoint has been moved from `system/elektra/mountpoints/backendname/mountpoint`
-to `system/elektra/mountpoints/backendname/config/mountpoint`. That way, the mountpoint of 
-the backend can still be read out in the core from the backend plugin's plugin configuration.
+  to `system/elektra/mountpoints/backendname/config/mountpoint`. That way, the mountpoint of
+  the backend can still be read out in the core from the backend plugin's plugin configuration.
 - Plugin roles are no longer displayed as array slots, but actually by their names. In addition,
-the names of the roles and the plugin arrays have been shortened for redundancy. For example,
-`system/elektra/mountpoints/\/hosts/getplugins/#0` is now
-`system/elektra/mountpoints/\/hosts/get/resolver`. 
-- Each plugin role consists of a linked list containing the plugins fulfilling this role. In the 
-configuration, the position of the plugin in the linked list is shown using an array. For example, 
-the key `system/elektra/mountpoints/\/hosts/set/prestorage/#1` means that the plugin (in this 
-case `error`) belongs to the second position of the linked list belonging to the `prestorage` role
-in the `set` array.
-- The name, reference name and the label of a plugin are now stored in separate keys to avoid using 
-the `#` symbol for something other than arrays. An example from the `error` plugin:
+  the names of the roles and the plugin arrays have been shortened for redundancy. For example,
+  `system/elektra/mountpoints/\/hosts/getplugins/#0` is now
+  `system/elektra/mountpoints/\/hosts/get/resolver`.
+- Each plugin role consists of a linked list containing the plugins fulfilling this role. In the
+  configuration, the position of the plugin in the linked list is shown using an array. For example,
+  the key `system/elektra/mountpoints/\/hosts/set/prestorage/#1` means that the plugin (in this
+  case `error`) belongs to the second position of the linked list belonging to the `prestorage` role
+  in the `set` array.
+- The name, reference name and the label of a plugin are now stored in separate keys to avoid using
+  the `#` symbol for something other than arrays. An example from the `error` plugin:
 
 ```
 system/elektra/mountpoints/\/hosts/set/prestorage/#1
 system/elektra/mountpoints/\/hosts/set/prestorage/#1/label (="error")
 system/elektra/mountpoints/\/hosts/set/prestorage/#1/name (="error")
 ```
-That way, the `error` plugin is opened and stored for later use with the defined label. If it were to 
+
+That way, the `error` plugin is opened and stored for later use with the defined label. If it were to
 be used later, it would be referenced by adding `reference` instead of `label` and `name`.
 
 Another change that had to be made is adding the `modules` KeySet to the `Plugin` structure so that it

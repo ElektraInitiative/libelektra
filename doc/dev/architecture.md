@@ -260,9 +260,9 @@ Let us look at the subkeys below the key
 
 It is the place where configuration can be provided for every plugin
 of a backend. The contract checker deduces this configuration to
-satisfy the contract for a plugin. 
+satisfy the contract for a plugin.
 
-For example, `/hosts` recommends the use of the `glob` plugin. In this case, it is included. 
+For example, `/hosts` recommends the use of the `glob` plugin. In this case, it is included.
 To work properly, the `glob` plugin needs to receive certain configuration, which is provided
 by `/hosts`:
 
@@ -311,8 +311,8 @@ the one in this example.
 Each of the plugins inside the three lists may itself have the subkey
 `config`. The configuration below this subkey provides plugin specific
 configuration. This configuration appears in the user's configuration
-of the plugin. Configuration is renamed properly. For a fictional backend named 
-`backendname` and a plugin named `pluginname` containing configuration 
+of the plugin. Configuration is renamed properly. For a fictional backend named
+`backendname` and a plugin named `pluginname` containing configuration
 named `property`, the key
 
 ```
@@ -330,12 +330,13 @@ inside the `backendname` backend.
 
 ### Roles and Placements
 
-Expressions after `get`, `set` or `error` such as `poststorage`, `storage` or `resolver` 
+Expressions after `get`, `set` or `error` such as `poststorage`, `storage` or `resolver`
 describe the role that the plugin fulfills. For example, the key
 
 ```
 system/elektra/mountpoints/\/hosts/set/precommit/#0/name
-```  
+```
+
 belongs to a plugin fulfilling the `precommit` role.
 
 The cypher `#0` describes the placement of the plugin in relation to potential other plugins
@@ -354,32 +355,37 @@ executed twice in `kdbSet()`. In `kdbGet()` it is also used as shown
 above. Plugins can be defined in the following ways:
 
 - **Single use**:
-  
+
   Assuming that the following key contains the value `"pluginname"`,
+
   ```
   system/elektra/mountpoints/backendname/get/poststorage/#0/name
   ```
+
   introduces a new plugin from the module
-  `pluginname` which cannot be referenced later. 
-  
+  `pluginname` which cannot be referenced later.
+
 - **Labelling**:
-  
+
   Assuming that the key ending with `label` contains the value `"pluginlabel"`
   and the key ending with `name` stays the same,
+
   ```
   system/elektra/mountpoints/backendname/get/poststorage/#0/label
   system/elektra/mountpoints/backendname/get/poststorage/#0/name
   ```
-  
+
   also introduces a new plugin from the module `pluginname` and gives it the
   name `pluginlabel`. By using the introduced label, the plugin can be used later.
+
 - **Referencing**:
-  
+
   Assuming that the following key contains the value `"pluginlabel"`,
-  
+
   ```
-  system/elektra/mountpoints/backendname/get/poststorage/#0/reference  
+  system/elektra/mountpoints/backendname/get/poststorage/#0/reference
   ```
+
   references back to the label which was introduced before. That way,
   the same plugin which was created previously is used.
 
