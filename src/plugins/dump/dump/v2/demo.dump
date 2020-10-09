@@ -24,3 +24,4 @@ fstab/config
 $copymeta 11 7
 dbus/config
 comment
+$end

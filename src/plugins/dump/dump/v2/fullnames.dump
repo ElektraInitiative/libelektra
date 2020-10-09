@@ -24,3 +24,4 @@ system/elektra/mountpoints/fstab/config
 $copymeta 38 7
 system/elektra/mountpoints/dbus/config
 comment
+$end

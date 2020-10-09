@@ -5,3 +5,4 @@ root
 $key string 10 13
 key/subkey
 another value
+$end

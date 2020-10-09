@@ -2,3 +2,4 @@ kdbOpen 2
 $key string 0 4
 
 root
+$end
