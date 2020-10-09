@@ -1912,7 +1912,7 @@ static int ensurePluginUnmounted (KDB * handle ELEKTRA_UNUSED, const char * moun
 	//			{
 	//				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 	//					errorKey, "The plugin %s couldn't be closed (set, position: %d, mountpoint: %s)",
-	//pluginName, i, 					mountpoint); 				ret = 0;
+	// pluginName, i, 					mountpoint); 				ret = 0;
 	//			}
 	//			backend->setplugins[i] = NULL;
 	//		}
@@ -1923,7 +1923,7 @@ static int ensurePluginUnmounted (KDB * handle ELEKTRA_UNUSED, const char * moun
 	//			{
 	//				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 	//					errorKey, "The plugin %s couldn't be closed (get, position: %d, mountpoint: %s)",
-	//pluginName, i, 					mountpoint); 				ret = 0;
+	// pluginName, i, 					mountpoint); 				ret = 0;
 	//			}
 	//			backend->getplugins[i] = NULL;
 	//		}
@@ -1934,7 +1934,7 @@ static int ensurePluginUnmounted (KDB * handle ELEKTRA_UNUSED, const char * moun
 	//			{
 	//				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 	//					errorKey, "The plugin %s couldn't be closed (error, position: %d, mountpoint: %s)",
-	//pluginName, i, 					mountpoint); 				ret = 0;
+	// pluginName, i, 					mountpoint); 				ret = 0;
 	//			}
 	//			backend->errorplugins[i] = NULL;
 	//		}
