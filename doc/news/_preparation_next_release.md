@@ -164,6 +164,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - `make uninstall` also uninstalls symlinks. _(Markus Raab)_
 - `external-links.txt` and `extra_install_manifest.txt` are cleaned up at cmake runs. _(Markus Raab)_
+- Increased CTest timeout for `testscr_check_kdb_internal_suite` due to timouts reached on slow test machines. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
