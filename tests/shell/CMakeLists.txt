@@ -94,6 +94,12 @@ function (add_scripttest testname)
 					set_property (TEST testscr_${testname_we} PROPERTY ENVIRONMENT
 											   "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 
+					if (${testname_we} STREQUAL "check_kdb_internal_suite")
+						# the internal_suite test can take extremely long:
+						# https://github.com/ElektraInitiative/libelektra/issues/3510
+						set_tests_properties (testscr_${testname_we} PROPERTIES TIMEOUT 2400)
+					endif (${testname_we} STREQUAL "check_kdb_internal_suite")
+
 					set (parallel_tests check_bashisms check_doc check_formatting check_oclint check_plugins
 							    check_posix)
 					list (FIND parallel_tests "${testname_we}" index_parallel)
