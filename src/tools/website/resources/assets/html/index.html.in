@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="elektra.rest.angular">
+<html ng-app="elektra.rest.angular" ng-strict-di>
 
     <head>
 

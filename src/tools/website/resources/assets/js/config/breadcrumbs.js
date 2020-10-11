@@ -1,9 +1,12 @@
 "use strict";
 
-module.exports = function($breadcrumbProvider) {
-  // configure breadcrumbs
-  $breadcrumbProvider.setOptions({
-    templateUrl: "templates/breadcrumbs.html",
-    prefixStateName: "main"
-  });
-};
+module.exports = [
+  "$breadcrumbProvider",
+  function($breadcrumbProvider) {
+    // configure breadcrumbs
+    $breadcrumbProvider.setOptions({
+      templateUrl: "templates/breadcrumbs.html",
+      prefixStateName: "main"
+    });
+  }
+];
