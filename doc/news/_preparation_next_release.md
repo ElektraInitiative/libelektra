@@ -205,7 +205,8 @@ The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - Renamed [website](/src/tools/website) and removed its backend. _(Markus Raab)_
-- <<TODO>>
+- Use strict dependency injection for website modules. _(Marvin Mall)_
+- Added `package-lock.json` to ensure repeatable builds. _(Marvin Mall)_
 - <<TODO>>
 - <<TODO>>
 
