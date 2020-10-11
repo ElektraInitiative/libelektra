@@ -29,7 +29,9 @@ module.exports = [
     // build date
     $scope.builddate = {
       date: new Date(
-        document.querySelector('meta[name="build-date"]').getAttribute("content")
+        document
+          .querySelector('meta[name="build-date"]')
+          .getAttribute("content")
       )
     };
     $scope.builddate.timezoneOffset =

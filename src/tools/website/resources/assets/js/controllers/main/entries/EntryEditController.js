@@ -71,7 +71,8 @@ module.exports = [
           Logger.info("Update entry result: " + JSON.stringify(response.data));
           Notification.success({
             title: "APP.ENTRIES.EDIT.NOTIFICATION.HEADER",
-            message: "APP.ENTRIES.EDIT.NOTIFICATION.MESSAGE." + response.data.i18n
+            message:
+              "APP.ENTRIES.EDIT.NOTIFICATION.MESSAGE." + response.data.i18n
           });
 
           $state.go("main.entries.details", { entry: entry.key.full });
@@ -79,7 +80,8 @@ module.exports = [
         function(response) {
           Notification.error({
             title: "APP.ENTRIES.EDIT.NOTIFICATION.HEADER",
-            message: "APP.ENTRIES.EDIT.NOTIFICATION.MESSAGE." + response.data.i18n
+            message:
+              "APP.ENTRIES.EDIT.NOTIFICATION.MESSAGE." + response.data.i18n
           });
         }
       );

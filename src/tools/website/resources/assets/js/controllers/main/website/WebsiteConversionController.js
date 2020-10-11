@@ -67,14 +67,16 @@ module.exports = [
           $scope.parameters.output.validated = response.data.output.validated;
           Notification.success({
             title: "APP.CONVERSION.NOTIFICATION.HEADER",
-            message: "APP.CONVERSION.NOTIFICATION.MESSAGE." + response.data.i18n,
+            message:
+              "APP.CONVERSION.NOTIFICATION.MESSAGE." + response.data.i18n,
             delay: 10000
           });
         },
         function(response) {
           Notification.error({
             title: "APP.CONVERSION.NOTIFICATION.HEADER",
-            message: "APP.CONVERSION.NOTIFICATION.MESSAGE." + response.data.i18n,
+            message:
+              "APP.CONVERSION.NOTIFICATION.MESSAGE." + response.data.i18n,
             delay: 10000
           });
           $scope.lastError = response.data.i18n;

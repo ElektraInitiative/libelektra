@@ -28,7 +28,9 @@ module.exports = [
 
     this.saveConvertedConfiguration = function(config) {
       Logger.info("Configuration:" + config);
-      var blob = new Blob([config.value], { type: "text/plain;charset=utf-8;" });
+      var blob = new Blob([config.value], {
+        type: "text/plain;charset=utf-8;"
+      });
       FileSaver.saveAs(blob, $scope.entry.key.slug + "." + config.format, true);
     };
 
@@ -64,7 +66,8 @@ module.exports = [
               Notification.success({
                 title: "APP.ENTRIES.DELETE.NOTIFICATION.HEADER",
                 message:
-                  "APP.ENTRIES.DELETE.NOTIFICATION.MESSAGE." + response.data.i18n
+                  "APP.ENTRIES.DELETE.NOTIFICATION.MESSAGE." +
+                  response.data.i18n
               });
               $state.go("main.entries.search");
             },
@@ -72,7 +75,8 @@ module.exports = [
               Notification.error({
                 title: "APP.ENTRIES.DELETE.NOTIFICATION.HEADER",
                 message:
-                  "APP.ENTRIES.DELETE.NOTIFICATION.MESSAGE." + response.data.i18n
+                  "APP.ENTRIES.DELETE.NOTIFICATION.MESSAGE." +
+                  response.data.i18n
               });
             }
           );

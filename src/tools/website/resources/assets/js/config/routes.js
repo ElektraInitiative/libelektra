@@ -70,7 +70,14 @@ module.exports = [
             "$stateParams",
             "WebsiteService",
             "files",
-            function($q, $timeout, $state, $stateParams, WebsiteService, files) {
+            function(
+              $q,
+              $timeout,
+              $state,
+              $stateParams,
+              WebsiteService,
+              files
+            ) {
               var deferred = $q.defer();
 
               $timeout(function() {
@@ -106,7 +113,10 @@ module.exports = [
             }
           ]
         },
-        ncyBreadcrumb: { label: "APP.BREADCRUMBS.MAIN.NEWS", parent: "main.home" }
+        ncyBreadcrumb: {
+          label: "APP.BREADCRUMBS.MAIN.NEWS",
+          parent: "main.home"
+        }
       })
       .state("main.dyn", {
         abstract: true,
@@ -170,7 +180,8 @@ module.exports = [
                     } else {
                       var filtered = files.filter(function(elem) {
                         return (
-                          elem.type === "file" && elem.slug === $stateParams.file
+                          elem.type === "file" &&
+                          elem.slug === $stateParams.file
                         );
                       });
                       if (filtered.length === 0) {

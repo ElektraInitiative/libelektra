@@ -4,11 +4,7 @@ module.exports = [
   "$scope",
   "Logger",
   "news",
-  function(
-    $scope, 
-    Logger, 
-    news
-  ) {
+  function($scope, Logger, news) {
     var vm = this;
 
     news = news.filter(function(elem) {

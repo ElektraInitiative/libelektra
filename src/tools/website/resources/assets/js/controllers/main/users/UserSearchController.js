@@ -1,18 +1,12 @@
 "use strict";
 
 module.exports = [
-  "$rootScope", 
-  "$scope", 
-  "Logger", 
-  "$state", 
+  "$rootScope",
+  "$scope",
+  "Logger",
+  "$state",
   "UserService",
-  function(
-    $rootScope, 
-    $scope, 
-    Logger, 
-    $state, 
-    UserService
-  ) {
+  function($rootScope, $scope, Logger, $state, UserService) {
     var vm = this;
 
     $scope.is_loaded = false;
@@ -22,7 +16,10 @@ module.exports = [
       filterby: {
         options: [
           { id: "all", name: "APP.USERS.SEARCH.ADVANCED.FILTERBY.ALL" },
-          { id: "username", name: "APP.USERS.SEARCH.ADVANCED.FILTERBY.USERNAME" },
+          {
+            id: "username",
+            name: "APP.USERS.SEARCH.ADVANCED.FILTERBY.USERNAME"
+          },
           { id: "email", name: "APP.USERS.SEARCH.ADVANCED.FILTERBY.EMAIL" }
         ]
       },

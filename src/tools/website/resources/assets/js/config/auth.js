@@ -7,12 +7,7 @@ module.exports = [
   "$httpProvider",
   "$provide",
   "config",
-  function(
-    $authProvider, 
-    $httpProvider,
-    $provide,
-    config
-  ) {
+  function($authProvider, $httpProvider, $provide, config) {
     $authProvider.baseUrl = config.backend.root;
     $authProvider.loginUrl = "/auth";
 

@@ -6,11 +6,7 @@ module.exports = [
   "markedProvider",
   "config",
   "webStructure",
-  function(
-    markedProvider,
-    config,
-    webStructure
-  ) {
+  function(markedProvider, config, webStructure) {
     markedProvider.setOptions({
       gfm: true,
       tables: true,

@@ -6,13 +6,7 @@ module.exports = [
   "$state",
   "$auth",
   "Notification",
-  function(
-    $scope,
-    Logger,
-    $state,
-    $auth,
-    Notification
-  ) {
+  function($scope, Logger, $state, $auth, Notification) {
     var vm = this;
 
     $scope.user = {};

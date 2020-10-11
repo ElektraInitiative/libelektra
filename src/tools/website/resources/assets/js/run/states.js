@@ -7,14 +7,7 @@ module.exports = [
   "$auth",
   "$anchorScroll",
   "UserService",
-  function(
-    Logger,
-    $rootScope,
-    $state,
-    $auth,
-    $anchorScroll,
-    UserService
-  ) {
+  function(Logger, $rootScope, $state, $auth, $anchorScroll, UserService) {
     $rootScope.$on("$stateChangeError", console.log.bind(console));
 
     $rootScope.$on("$stateChangeStart", function(

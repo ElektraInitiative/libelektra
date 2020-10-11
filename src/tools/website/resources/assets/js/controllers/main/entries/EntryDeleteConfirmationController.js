@@ -5,12 +5,7 @@ module.exports = [
   "$scope",
   "Logger",
   "entry",
-  function(
-    $uibModalInstance,
-    $scope,
-    Logger,
-    entry
-  ) {
+  function($uibModalInstance, $scope, Logger, entry) {
     var vm = this;
 
     $scope.entry = entry;

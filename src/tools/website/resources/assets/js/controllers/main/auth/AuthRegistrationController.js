@@ -2,19 +2,12 @@
 
 module.exports = [
   "$scope",
-  "Logger", 
+  "Logger",
   "$state",
   "$http",
   "Notification",
   "config",
-  function(
-    $scope,
-    Logger, 
-    $state,
-    $http,
-    Notification,
-    config
-  ) {
+  function($scope, Logger, $state, $http, Notification, config) {
     var vm = this;
 
     $scope.user = {};
@@ -30,7 +23,8 @@ module.exports = [
             Notification.success({
               title: "APP.AUTH.REGISTRATION.NOTIFICATION.HEADER",
               message:
-                "APP.AUTH.REGISTRATION.NOTIFICATION.MESSAGE." + response.data.i18n
+                "APP.AUTH.REGISTRATION.NOTIFICATION.MESSAGE." +
+                response.data.i18n
             });
             $state.go("main.auth.login");
           },
@@ -39,7 +33,8 @@ module.exports = [
             Notification.error({
               title: "APP.AUTH.REGISTRATION.NOTIFICATION.HEADER",
               message:
-                "APP.AUTH.REGISTRATION.NOTIFICATION.MESSAGE." + response.data.i18n
+                "APP.AUTH.REGISTRATION.NOTIFICATION.MESSAGE." +
+                response.data.i18n
             });
           }
         );

@@ -6,13 +6,7 @@ module.exports = [
   "Logger",
   "$state",
   "EntryService",
-  function(
-    $rootScope,
-    $scope,
-    Logger,
-    $state,
-    EntryService
-  ) {
+  function($rootScope, $scope, Logger, $state, EntryService) {
     var vm = this;
 
     $scope.is_loaded = false;

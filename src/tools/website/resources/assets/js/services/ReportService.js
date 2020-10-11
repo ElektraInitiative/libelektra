@@ -4,11 +4,7 @@ module.exports = [
   "Logger",
   "$window",
   "config",
-  function(
-    Logger,
-    $window,
-    config
-  ) {
+  function(Logger, $window, config) {
     var service = this;
 
     this.reportIssue = function(title, message, labels) {

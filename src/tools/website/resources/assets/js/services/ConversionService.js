@@ -5,12 +5,7 @@ module.exports = [
   "$http",
   "$q",
   "config",
-  function(
-    Logger,
-    $http,
-    $q,
-    config
-  ) {
+  function(Logger, $http, $q, config) {
     var service = this;
 
     this.convert = function(parameters) {
