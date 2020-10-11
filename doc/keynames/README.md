@@ -284,6 +284,8 @@ First, in Unix `/elektra/./../version` would be the same as `/version`, because 
 But in Elektra, we evaluate `..` first and only then skip `.`.
 `/elektra/./../version` is the same as `/elektra/version`, because `..` remove `.`.
 
+<!-- TODO: change to match Unix -->
+
 The last example is not as different, in Unix such paths would also refer to the same file.
 However, in some Unix tools, a trailing slash alters the behavior of the tool.
 In Elektra this is never the case.
