@@ -219,7 +219,6 @@ TEST (key, keynew)
 	// Key with name + owner
 	Key key7 ("system:/sw/test", KEY_OWNER, "yl", KEY_END);
 	succeed_if (key7.getMeta<std::string> ("owner") == "yl", "key7 owner not set correctly");
-	succeed_if (!key7.isInactive (), "key should not be inactive");
 
 	Key key8 ("system:/valid/there", KEY_BINARY, KEY_SIZE, sizeof (array), KEY_VALUE, array, KEY_END);
 	succeed_if (key8.getName () == "system:/valid/there", "key8 has wrong name");
@@ -231,7 +230,6 @@ TEST (key, keynew)
 	succeed_if (key8.getBaseName () == "there", "wrong base name");
 
 	Key key9 ("system:/valid/.inactive", KEY_COMMENT, "inactive key", KEY_END);
-	succeed_if (key9.isInactive (), "key should be inactive");
 	succeed_if (key9.getMeta<std::string> ("comment") == "inactive key", "comment failed");
 	succeed_if (key9.getBaseName () == ".inactive", "wrong base name");
 

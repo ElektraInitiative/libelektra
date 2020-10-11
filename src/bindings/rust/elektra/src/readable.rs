@@ -201,25 +201,6 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
         unsafe { elektra_sys::keyIsDirectlyBelow(other.as_ref(), self.as_ref()) == 1 }
     }
 
-    /// Returns true if the key is inactive.
-    ///
-    /// In Elektra terminology a hierarchy of keys is inactive if the
-    /// rootkey's basename starts with '.'. So a key is also inactive
-    /// if it is below an inactive key.
-    /// # Examples
-    /// ```
-    /// # use elektra::{StringKey,WriteableKey,ReadableKey};
-    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key = StringKey::new("user:/key/.hidden")?;
-    /// assert!(key.is_inactive());
-    /// #
-    /// #     Ok(())
-    /// # }
-    /// ```
-    fn is_inactive(&self) -> bool {
-        unsafe { elektra_sys::keyIsInactive(self.as_ref()) == 1 }
-    }
-
     /// Returns the metadata with the given metaname
     ///
     /// # Errors

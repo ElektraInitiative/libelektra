@@ -183,7 +183,6 @@ The following variants are available:
 %predicate kdb::Key::isDir;
 %predicate kdb::Key::isString;
 %predicate kdb::Key::isBinary;
-%predicate kdb::Key::isInactive;
 %predicate kdb::Key::isBelow;
 %predicate kdb::Key::isBelowOrSame;
 %predicate kdb::Key::isDirectBelow;

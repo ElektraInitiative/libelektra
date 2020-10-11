@@ -167,8 +167,6 @@ int keyIsBelow(const Key *key, const Key *check);
 int keyIsBelowOrSame(const Key *key, const Key *check);
 int keyIsDirectlyBelow(const Key *key, const Key *check);
 
-int keyIsInactive(const Key *key);
-
 int keyIsBinary(const Key *key);
 int keyIsString(const Key *key);
 

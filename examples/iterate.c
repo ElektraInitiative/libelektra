@@ -69,13 +69,5 @@ int main (void)
 		printf ("%s\n", keyName (cur));
 	}
 
-	printf ("\nIterate over inactive keys:\n");
-	ksRewind (ks);
-	while ((cur = ksNext (ks)) != 0)
-	{ /* Iterates over inactive keys and prints their name */
-		if (keyIsInactive (cur) == 0) continue;
-		printf ("%s %s\n", keyName (cur), keyString (keyGetMeta (cur, "comment")));
-	}
-
 	return 0;
 }

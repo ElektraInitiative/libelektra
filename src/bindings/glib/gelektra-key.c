@@ -479,11 +479,6 @@ gboolean gelektra_key_isbinary (const GElektraKey * key)
 	return keyIsBinary (key->key);
 }
 
-gboolean gelektra_key_isinactive (const GElektraKey * key)
-{
-	return keyIsInactive (key->key);
-}
-
 gboolean gelektra_key_isbelow (const GElektraKey * key, const GElektraKey * other)
 {
 	return keyIsBelow (other->key, key->key);

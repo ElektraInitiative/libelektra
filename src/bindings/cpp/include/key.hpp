@@ -238,8 +238,6 @@ public:
 	inline bool isString () const;
 	inline bool isBinary () const;
 
-	inline bool isInactive () const;
-
 	inline bool isBelow (const Key & k) const;
 	inline bool isBelowOrSame (const Key & k) const;
 	inline bool isDirectBelow (const Key & k) const;
@@ -1567,14 +1565,6 @@ inline bool Key::isString () const
 inline bool Key::isBinary () const
 {
 	return ckdb::keyIsBinary (key);
-}
-
-/**
- * @copydoc keyIsInactive
- */
-inline bool Key::isInactive () const
-{
-	return ckdb::keyIsInactive (key);
 }
 
 /**

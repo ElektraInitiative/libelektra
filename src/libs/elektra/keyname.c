@@ -102,8 +102,6 @@
  * - Key name parts starting with @ are reserved for special purposes
  *   (if you use this within a plugin you still have to make sure @ is
  *   escaped properly)
- * - If any key name part starts with . (dot) it means the key is
- *   inactive, see keyIsInactive().
  *
  *
  * @par Escaping rules
@@ -1667,8 +1665,6 @@ static const char * elektraKeyFindBaseNamePtr (Key * key)
  * @see keyAddName() to add a name without escaping
  * @see keySetName() to set a completely new name
  *
- * To add an inactive key name, use:
- * @snippet testabi_key.c base1
  *
  * @param key the key object to work with
  * @param baseName the string used to overwrite the basename of the key

@@ -77,8 +77,6 @@ public interface Elektra extends Library {
 
 	int keyIsDirectlyBelow (Pointer key, Pointer check);
 
-	int keyIsInactive (Pointer key);
-
 	int keyIsBinary (Pointer key);
 
 	int keyIsString (Pointer key);

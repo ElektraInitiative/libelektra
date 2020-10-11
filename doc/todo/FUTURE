@@ -31,7 +31,6 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - keyIsBelow
 - keyIsBelowOrSame
 - keyIsDirectlyBelow
-- keyIsInactive
 - keyIsBinary
 - keyIsString
 - keyName

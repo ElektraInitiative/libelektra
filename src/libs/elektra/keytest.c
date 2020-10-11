@@ -330,51 +330,6 @@ int keyIsDirectlyBelow (const Key * key, const Key * check)
 	return memcmp (above, below, sizeAbove) == 0 && sizeAbove + nextPartSize + 1 == sizeBelow;
 }
 
-
-/**
- * Check whether a key is inactive.
- *
- * In Elektra terminology a hierarchy of keys is inactive if
- * the rootkey's basename starts with '.'. So a key is
- * also inactive if it is below an inactive key.
- * For example, user:/key/.hidden is inactive and so
- * is user:/.hidden/below.
- *
- * Inactive keys should not have any meaning to applications,
- * they are only a convention reserved for users and
- * administrators. To automatically remove all inactive keys
- * for an application, consider to use the hidden plugin.
- *
- * @param key the key object to work with
- * @retval 1 if the key is inactive
- * @retval 0 if the key is active
- * @retval -1 on NULL pointer or when key has no name
- * @ingroup keytest
- *
- */
-int keyIsInactive (const Key * key)
-{
-	if (!key) return -1;
-
-	const char * uname = keyUnescapedName (key);
-	size_t size = keyGetUnescapedNameSize (key);
-
-	const char * cur = uname + 1; // skip namespace
-
-	while (cur != NULL && cur + 1 < uname + size)
-	{
-		++cur;
-		if (cur[0] == '.')
-		{
-			return 1;
-		}
-		cur = strchr (cur, '\0');
-	}
-
-	return 0;
-}
-
-
 /**
  * Check if a key is binary type.
  *

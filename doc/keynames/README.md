@@ -445,14 +445,8 @@ If any of the following is true, a Key Name is a _Reserved Key Name_:
 - A Key Name Part starts with `@`.
 - A Key Name Part starts with `%` and the Key Name Part is more than one byte long.
 
-<!-- TODO (kodebach): Is keyIsInactive still relevant? -->
-
-There are also _Inactive Key Names_ (also _Hidden Key Names_).
-These are Key Names with a Key Name Part that starts with a `.`.
-
 > _Note:_ This rules apply to all Key Names.
 > An Unescaped Key Name with a Key Name Part `@part`, the Escaped Key Name `/elektra/@part` and the Escaped Key Name Part `/elektra/%abc` are **all** Reserved Key Names.
-> `/elektra/\./abc`, `/elektra/\.abc`, `/elektra/.abc` are all Inactive Key Names.
 
 ---
 

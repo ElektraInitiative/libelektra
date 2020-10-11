@@ -627,16 +627,6 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Helper function to check if key is set to inactive
-	 *
-	 * @return Boolean if this key is inactive
-	 */
-	public boolean isInactive ()
-	{
-		return Elektra.INSTANCE.keyIsInactive (get ()) == 1;
-	}
-
-	/**
 	 * Helper function to check if key is binary key
 	 *
 	 * @return Boolean if this key is a binary key

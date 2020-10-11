@@ -542,7 +542,6 @@ int keyOutput (const Key * k, FILE * stream, KDBStream options)
 		fprintf (stream, "Flags: ");
 		if (keyIsBinary (k)) fprintf (stream, "b");
 		if (keyIsString (k)) fprintf (stream, "s");
-		if (keyIsInactive (k)) fprintf (stream, "i");
 		if (keyNeedSync (k)) fprintf (stream, "s");
 	}
 

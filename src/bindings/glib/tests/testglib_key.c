@@ -250,7 +250,6 @@ static void test_validating (void)
 	succeed_if (!gelektra_key_issystem (g_key), "key is system");
 	succeed_if (gelektra_key_isstring (g_key), "key is not string");
 	succeed_if (!gelektra_key_isbinary (g_key), "key is binary");
-	succeed_if (!gelektra_key_isinactive (g_key), "key is inactive");
 
 	succeed_if (!gelektra_key_isuser (g_bkey), "key is user");
 	succeed_if (gelektra_key_issystem (g_bkey), "key is not system");

@@ -1108,60 +1108,6 @@ static void test_keyBinary (void)
 	keyDel (key);
 }
 
-static void test_keyInactive (void)
-{
-	Key * key = keyNew ("/", KEY_END);
-
-	succeed_if (keyIsInactive (0) == -1, "NULL pointer");
-
-	printf ("Test of active and inactive keys\n");
-	keySetName (key, "user:/valid");
-	succeed_if (!keyIsInactive (key), "Key should not be inactive");
-
-	keySetName (key, "user:/.hidden/valid");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/.hidden/€valid");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/..hidden/valid");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/hidden");
-	succeed_if (!keyIsInactive (key), "Key should not be inactive");
-
-	keySetName (key, "user:/.hidden");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/.valid/.hidden");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/.valid/.:hidden");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/.valid/.€hidden");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/.HiddenStringKey");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/.HiddenDirectoryKey");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/.HiddenDirectoryKey/StringKey");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/tests/file8xdLVS/filesys/.HiddenStringKey");
-	succeed_if (keyIsInactive (key), "Key should be inactive");
-
-	keySetName (key, "user:/.hidden/nothidden/hierarchy");
-	succeed_if (keyIsInactive (key) == 1, "Key should be inactive");
-
-	keySetName (key, "user:/.hidden/nothidden/hierarchy");
-	succeed_if (keyIsInactive (key) == 1, "Key should be inactive");
-	keyDel (key);
-}
-
 static void test_keyBelow (void)
 {
 	Key * key1 = keyNew ("/", KEY_END);
@@ -2566,7 +2512,6 @@ int main (int argc, char ** argv)
 	test_keyNameSlashes ();
 	test_keyValue ();
 	test_keyBinary ();
-	test_keyInactive ();
 	test_keyDup ();
 	test_keyCopy ();
 	test_binary ();
