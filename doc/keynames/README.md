@@ -50,7 +50,7 @@ So without knowing anything about how Key Names are written, we could say that t
 
 ### 1.1. Key Hierarchy
 
-You may have already seen elsewhere, that in Elektra Keys commonly look a bit like Unix paths:
+You may have already seen elsewhere, that in Elektra Keys commonly look like Unix paths:
 
 ```
 /elektra/version/info
@@ -73,7 +73,7 @@ In a Unix filesystems, we commonly talk about files and directories.
 We also say a file is located within a directory.
 But you might also know that in Unix "everything is a file".
 This applies to directories as well, but "a file is located within a file" is a bit clunky, so you might say "file `A` is located below file `B`", if `B` is a file within the directory `A`.
-What makes `A` a directory is just the fact that there are other files below `A` [[1]](#footnote-1).
+What makes `A` a directory is just the fact that there can be other files below `A` [[1]](#footnote-1).
 <a id="ref-footnote-1"></a>
 
 #### 1.1.1. The "is below" Relation
@@ -96,7 +96,7 @@ Here are a few examples to show how this works in practice (using the Unix-path-
 | `/elektra/data`         | `/elektra/version`      | "Key 1" and "Key 2" are siblings  |
 
 You can think of the Key Hierarchy (within a single Namespace) as a big tree of Keys.
-Each node in the tree is a single Key `K` and the children of the node are the Keys that directly below `K`.
+Each node in the tree is a single key `K` and the children of the nodes are the keys that are directly below `K`.
 
 ![Tree structure of a Key Hierarchy](tree.svg)
 
@@ -163,7 +163,7 @@ Lets explore them one by one:
 - The Namespace **"System"** is what makes Elektra global.
   Keys with Namespace "System" are the same for all users of the system, independent of context.
   They are stored in system level directory.
-- Keys with Namespace "Default" are special.
+- Keys with Namespace **"Default"** are special.
   While you could create them manually, you normally don't want to.
   It is used for Keys with default values for Namespace Resolution (explained below).
   Keys with this Namespace are also in-memory only.
@@ -176,7 +176,7 @@ Lets explore them one by one:
   This Namespace is used for Namespace Resolution (see below).
   It is the one that applications and end-users will use most commonly when interacting with Elektra.
   Keys with Namespace "Cascading" are never stored.
-  Not on disk and ideally also not in a `KeySet`.
+  Not on disk and normally also not in a `KeySet`.
 
 There is also a certain ranking between the Namespaces "Proc", "Dir", "User", "System" and "Default".
 Namely, that they override each other in exactly this order.
