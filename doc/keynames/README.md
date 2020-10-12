@@ -250,7 +250,7 @@ This can be deconstructed into:
 
 Because of this escaping mechanism, we call this the _Escaped Name_ of a Key.
 
-Elektra's Key Names are designed, to mimic Unix paths to an extent.
+Elektra's Key Names are designed to mimic Unix paths to some extent.
 To this end we support the commonly used `/.` and `/..`.
 This is one reason, why we need to differentiate between _Canonical_ Key Names and _Non-Canonical_ Key Names.
 
@@ -375,7 +375,7 @@ The Escaped Names from above correspond to the following Unescaped Names:
 > _Note:_ We use 0xZZ to represent a single byte in hexadecimal.
 > This form is only used when the context makes it clear that it represents a single byte and not a four character string.
 
-The process of turning an Escaped Name into the corresponding Unescaped Name is called _unescapding_.
+The process of turning an Escaped Name into the corresponding Unescaped Name is called _unescaping_.
 Turning an Unescaped Name back into an Escaped Name is called _escaping_.
 
 Unescaping works, by simply removing the backslashes `\` that are used as escapes.
@@ -404,7 +404,7 @@ An Escaped Key Name is considered an Invalid Key Name, if any of the following a
 
 - It is an empty string.
 - The last character before the invisible null terminator is a backslash `\`.
-  This called a "dangling escape", since we would expect another character after the escape character `\`.
+  This is a dangling escape as we expect another character after the escape character `\`.
 - It contains a Namespace (i.e. the Namespace is not "Cascading"), but the Namespace Separator `:` is not followed by a `/`.
   (This mainly applies to Root Keys.)
 - It contains a Namespace Separator `:`, but the substring before the first `:` is not one of: `meta`, `spec`, `proc`, `dir`, `user`, `system` and `default`.
