@@ -470,4 +470,4 @@ But this doesn't account for the fact that Key Names represent a hierarchy and t
 With `memcmp`, `/key` is first, because it is the shortest and otherwise equal.
 But then we would get `/key.1` not `/key/sub`, because `/ < .` in ASCII.
 This cannot happen with zero-bytes as the separator, because there is no byte with a smaller value.
-[↑](#ref-footnote-2)
+[↑](#ref-footnote-3)
