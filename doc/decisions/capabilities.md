@@ -3,10 +3,8 @@
 ## Problem
 
 Only plugins like `dump` and `quickdump` are able to represent any KeySet
-(as they are designed to do so). Limitations of any other storage plugins are:
-
-- that not every structure of configuration is allowed.
-- that they do not fully preserve syntax.
+(as they are designed to do so). Limitations of other storage plugins are
+e.g., that not every structure of configuration is allowed.
 
 Some of these limitations were documented `infos/status`, others were not.
 
