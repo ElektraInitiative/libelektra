@@ -78,7 +78,6 @@ endeavours where everyone using Elektra can benefit from.
 
 > Only pay for what you need.
 
-
 # Domain-Specific Goals
 
 These goals are specific to the Elektra's domain, again in order of importance.
