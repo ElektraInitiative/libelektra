@@ -16,7 +16,7 @@ Most file formats do not have support for that.
   this exposes internal meta-data into the comments and
   can drastically affect the readability of a storage file.
   Comments should never be touched by a parser.
-- 
+-
 
 ## Decision
 
