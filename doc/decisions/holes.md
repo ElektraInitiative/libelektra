@@ -7,7 +7,12 @@ some = value
 some/key/below = value
 ```
 
-`some` has a non-leaf value.
+`some` has a non-leaf value. Another example of a non-leaf value in XML (`abc`):
+`<abc>value<def>value2</def></abc>` interpreted by xerces plugin:
+```
+abc/def = value2
+abc = value
+```
 
 ## Problem
 
