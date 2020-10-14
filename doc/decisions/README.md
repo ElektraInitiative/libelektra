@@ -51,7 +51,7 @@ section here.
 - [Global Plugins](global_plugins.md)
 - [Vendor Spec](vendor_spec.md)
 - [Error codes](error_codes.md)
-- [Array for Warnings](warning-array.md)
+- [Array for Warnings](warning_array.md)
 
 ## Rejected
 
