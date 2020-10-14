@@ -7,6 +7,8 @@ encoded within a key name part.
 
 ## Constraints
 
+- keySetBaseName (key, keyBaseName (key)) should be a NOP
+
 ## Assumptions
 
 ## Considered Alternatives
