@@ -1,5 +1,15 @@
 # Holes and Non-leaf values in KeySets
 
+A hole is the absence of a key, which has keys below it, e.g. if `some/key` is missing in a property file:
+
+```ini
+some = value
+some/key/below = value
+```
+
+`some` has a non-leaf value.
+
+
 ## Problem
 
 Config files ideally do not copy any structure if they only want to
