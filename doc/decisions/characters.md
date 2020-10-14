@@ -8,8 +8,8 @@ Nor `keySetBaseName("#123")` should suddenly turn some keys to an array.
 
 It is not possible to allow all of following:
 
-- have any characters in key name parts for applications
-- being able to encode information in names
+- any characters in key name parts are safe to be used for applications (are a valid key name part)
+- being able to encode information in names to be interpreted and modified by plugins
 
 ## Constraints
 
