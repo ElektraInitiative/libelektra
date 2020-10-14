@@ -86,7 +86,8 @@ These goals are specific to the Elektra's domain, again in order of importance.
 ## Suitability for Applications
 
 Elektra must be easy and robust for application (developers) to store any configuration they
-need to store.
+need to store. After writing configuration settings (`kdbSet`) and reading them again (`kdbGet`)
+they get the same KeySet (aka "round trip").
 
 > This means, they must be able to store keys with any name, any string or any binary data
 > as needed for their purpose.
@@ -103,7 +104,6 @@ format.
 
 Administrators should be empowered to use their favourite tools and configuration file formats.
 
-> Note:
 > There are principal limitations of nearly all configuration file formats, so Elektra cannot
 > enable that any configuration file format can be used with any application.
 > If administrators or maintainers want to change the configuration file format of some application,

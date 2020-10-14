@@ -14,10 +14,8 @@ section here.
 
 ## Implemented
 
-- [Holes](holes.md)
 - [Unit Testing](unit_testing.md)
 - [Script Testing](script_testing.md)
-- [Capabilities](capabilities.md)
 - [Library Split](library_split.md)
 - [Bootstrap](bootstrap.md)
 - [Empty Files](empty_files.md)
@@ -28,7 +26,7 @@ section here.
 - [Cryptographic Key Handling](cryptograhic_key_handling.md)
 - [Relative Storages](relative.md)
 - [Deferred Plugin Calls](deferred_plugin_calls.md)
-- [High Level API](high_level_api.md)
+- [High-level API](high_level_api.md)
 - [High-level API Help Message](highlevel_help_message.md)
 - [Global KeySet](global_keyset.md)
 - [Rest API Documentation](rest_api_documentation.md)
@@ -38,11 +36,17 @@ section here.
 - [Default Values](default_values.md)
 - [High Level API](high_level_api.md)
 
+## TODOs for 1.0
+
+- [Base Name](base_name.md)
+- [Characters](characters.md)
+- [Holes and Non-leaf values](holes.md)
+- [Capabilities](capabilities.md)
+- [Array](array.md)
+- [Boolean](boolean.md)
+
 ## Decided
 
-- [Array](array.md)
-- [Relative Storages](relative.md)
-- [Definition of Boolean](boolean.md)
 - [Plugin Variants](plugin_variants.md)
 - [Error code implementation](error_code_implementation.md)
 

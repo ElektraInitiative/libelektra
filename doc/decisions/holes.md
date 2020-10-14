@@ -1,4 +1,4 @@
-# Holes in KeySets
+# Holes and Non-leaf values in KeySets
 
 ## Problem
 
@@ -13,17 +13,24 @@ set a single key.
 
 ## Considered Alternatives
 
-- data structure is always complete
-- to not allow "directory values" or "directory metadata"
+- data structure must be always complete
+- prohibit non-leaves values
 
 ## Decision
 
-- support holes in KeySet
-- See [hierarchy example](/src/bindings/cpp/examples/cpp_example_hierarchy.cpp)
-  for how to implement a hierarchy that gets rid of the problem that holes
-  might create when iterating over KeySet.
+Support holes and values for non-leaves in a KeySet if the underlying format allows it.
+
+If the underlying format does not support it and there is also not an obvious
+way how to circumvent it -- e.g., JSON which does not have comments -- holes and
+values in non-leaves are not supported.
 
 ## Rationale
+
+- It fits very good to the idea of key/value.
+- Some formats support it (e.g. XML supports non-leaves values; property-files support holes).
+- It can be useful for migration purposes, e.g. there is `/some/key`, and later
+  `/some/key/enable` gets added. Then it is beneficial if `/some/key` still can
+  hold a value.
 
 ## Implications
 
