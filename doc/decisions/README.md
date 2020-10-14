@@ -42,6 +42,7 @@ section here.
 - [Characters](characters.md)
 - [Holes and Non-leaf values](holes.md)
 - [Arbitrary Meta-Data](arbitrary_metadata.md)
+- [Multiple File Backends](multiple_file_backends.md)
 - [Capabilities](capabilities.md)
 - [Array](array.md)
 - [Boolean](boolean.md)
