@@ -16,7 +16,8 @@ encoded within a key name part.
 - restrict what `keySetBaseName` can accept is against:
   - easy to use of API: applications with some key names would suddenly fail
   - hard to use it wrong API: storage plugins that do not pre-process key names properly would fail to build up a KeySet
-    which would be against our goal to support any configuration file format (e.g. TOML supports empty key part names).
+    which would be against our goal to support any configuration file format (i.e., any valid file of some format can be transformed to a KeySet,
+    e.g. TOML supports empty key part names).
 
 ## Decision
 
