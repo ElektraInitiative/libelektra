@@ -41,6 +41,7 @@ section here.
 - [Base Name](base_name.md)
 - [Characters](characters.md)
 - [Holes and Non-leaf values](holes.md)
+- [Arbitrary Meta-Data](arbitrary_metadata.md)
 - [Capabilities](capabilities.md)
 - [Array](array.md)
 - [Boolean](boolean.md)
