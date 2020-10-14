@@ -13,7 +13,7 @@ set a single key.
 
 ## Considered Alternatives
 
-- data structure must be always complete
+- data structure must always be complete
 - prohibit non-leaves values
 
 ## Decision

@@ -26,7 +26,7 @@ See [array](array.md). So `#` does not need to be escaped.
 
 For extensibility of Elektra, however, at least one character needs a special meaning.
 We will use `@` for that.
-So `keySetBaseName("@BASE64abc")` will internally escape `@`.
+So `keySetBaseName(k, "@BASE64abc")` will internally escape `@`.
 
 ## Rationale
 
