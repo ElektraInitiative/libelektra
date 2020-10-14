@@ -9,7 +9,6 @@ some/key/below = value
 
 `some` has a non-leaf value.
 
-
 ## Problem
 
 Config files ideally do not copy any structure if they only want to
