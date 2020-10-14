@@ -2,7 +2,7 @@
 
 ## Problem
 
-Only the plugin `dump` and `quickdump` are able to represent any KeySet
+Only plugins like `dump` and `quickdump` are able to represent any KeySet
 (as they are designed to do so). Limitations of any other storage plugins are:
 
 - that not every structure of configuration is allowed.
