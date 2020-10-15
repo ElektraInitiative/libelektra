@@ -151,6 +151,7 @@ you up to date with the multi-language support provided by Elektra.
 - The Doxygen PDF documentation now also requires the packages
   - `stix` (part of `texlive-fonts-extra`) and
   - `stmaryrd` (part of `texlive-science` or `texlive-math-extra`). _(René Schwaiger)_
+- Write down some fundamental decisions, mostly about key names and key set structure. _(Markus Raab and Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 
