@@ -44,6 +44,7 @@ A cascading lookup on every individual child is also needed to make sure that ov
 elements are respected.
 
 For example:
+
 ```
 spec/myarray    # <- contains the specification for the array
 spec/myarray/#  # <- contains the specification for the array elements
