@@ -22,7 +22,7 @@ For example:
 
 - restrict what `keySetBaseName` can accept has the downside that:
   - applications would suddenly fail when trying to set some key base names
-  - 
+  -
 
 ## Decision
 
