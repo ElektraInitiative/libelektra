@@ -3,11 +3,8 @@
 ## Problem
 
 Currently it is inefficient to detect the length of an array and
-it is impossible to know if an key (without subkeys) should be
+it is impossible to know if a key (without subkeys) should be
 an array or not.
-
-For the latter problem different workarounds exist, such as
-`###empty_array` in `yajl`.
 
 ## Constraints
 
@@ -15,14 +12,15 @@ For the latter problem different workarounds exist, such as
 
 ## Assumptions
 
-- None
+- Meta-data arrays simply work by convention as they are not serialized in special ways nor they get validated.
+  The convention will be the same but without any metadata marker.
 
 ## Considered Alternatives
 
 - `###empty_array` as in `yajl`, problem: does not allow efficient access of first element
 - store length (and not last element), problem: needs prepending of `#_...`
-- store element after last element (C++-Style), problem: very unusual style
-- use value and not metadata array, problem: is ambiguous
+- store element after last element (C++-Style), would not fit nicely with key/value
+- use value and not the metadata `array`, problem: is ambiguous
 
 ## Decision
 
@@ -44,7 +42,7 @@ myarray/#5 = value5
 
 - Is very similar to `binary` metadata.
 - The key alone suffices to know if its an array
-- one can distinguish an array with keys that are called by chance #0
+- One can distinguish an array with keys that are called by chance e.g. `#0`
 
 ## Implications
 

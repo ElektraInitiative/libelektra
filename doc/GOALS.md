@@ -16,26 +16,50 @@ This helps in achieving the following goals:
   - Syntax of the configuration files (with limitations, see below).
 
 Elektra follows following goals, in order of preference.
+If goals conflict, the higher goal takes precedence.
+
+## 0. Stability
+
+People need to be able to rely on the API/ABI to be stable.
+They expect their configuration settings to continue working,
+with minimal maintenance burden. In particular following parts
+must be immutable:
+
+- The API: Within a major release, the core API can only be extended.
+  Every application that compiled with Elektra `x.0.0` must still
+  compile with any `x.y.z`.
+  Even with new major releases, only small adoptions in the source
+  of applications or plugins might be needed.
+- The ABI: Even across major releases, the core ABI must stay compatible.
+  Every application that links with Elektra `x.0.0` will continue to link
+  with any future version of Elektra.
+  We use [symbol versioning](/doc/dev/symbol-versioning.md) for that goal.
+- Key database and key names: Applications can rely on that whatever they once
+  wrote into the key database, they will continue to get identical key names
+  and values also with later versions of Elektra.
+  Future extensions of the key database (e.g. new plugins) will not interfere.
 
 ## 1. Goal: Simplicity
+
+Elektra is based on key-value pairs, the simplest form of what could
+be called a database. Elektra's key value pair uniformity allows
+with a single concept configuration settings and configuration
+specifications to be written and to be introspected.
 
 An overly complex system cannot be managed nor understood.
 Extensibility brings some complex issues,
 which need to be solved -- but in a way so that the user
 sees either nothing of it or only needs to understand very
-simple concepts so that it works flawlessly.
+simple concepts.
 Special care for simplicity is taken for the users:
 
 - Endusers when reconfiguring or upgrading
   should never take any notice of Elektra, except that
-  it works more robust, better integrated and with less problems.
+  it works more robust and better integrated.
 - Programmers should have multiple ways to take advantage of
   Elektra so that it flawlessly integrate with their system.
 - Plugin Programmers: it should be simple to extend Elektra
   in any desired way.
-- It should be easy for application's maintainers to correctly
-  setup and upgrade KDB.
-- Key-value uniformity that allows introspection.
 
 ## 2. Goal: Robustness
 
@@ -50,9 +74,9 @@ Configuration systems today suffer badly from:
 
 We tackle this problem by introducing an abstraction layer where
 these problems are dealt with. The goal is that for improvements in these areas only
-code changes within Elektra (and not within applications using
-Elektra) are needed. This makes your code not only portable towards more systems,
-but also enables global improvements in the configuration systems.
+code changes within Elektra are needed (and not within applications using
+Elektra). This makes the application's code not only portable towards more systems,
+but also enables global improvements in configuration systems.
 
 ## 3. Goal: Extensibility
 
@@ -71,7 +95,8 @@ them, everything else is an extension.
 
 ## 4. Goal: Performance
 
-Accessing configuration has impact on bootup and startup-time.
+Accessing configuration has impact on bootup and startup-time
+of applications.
 Elektra needs to be similar fast then current solutions.
 Ideally it should get faster because of centralized optimization
 endeavours where everyone using Elektra can benefit from.
@@ -81,6 +106,7 @@ endeavours where everyone using Elektra can benefit from.
 # Domain-Specific Goals
 
 These goals are specific to the Elektra's domain, again in order of importance.
+Again, lower goals need to be ignored if goals are in conflict.
 
 ## Suitability for Applications
 
