@@ -111,12 +111,12 @@ The following example shows you how you can use the TOML plugin together with Ba
 
 ```sh
 # Mount TOML and Base64 plugin (provides `binary`) with the configuration key `binary/meta`
-kdb mount test_config.toml user/tests/base64 toml base64 binary/meta=
+kdb mount test_config.toml user/tests/base64 ni base64 binary/meta=
 
 # Save base64 encoded data `"value"` (`0x76616c7565`)
 kdb set user/tests/base64/encoded dmFsdWUA
 kdb file user/tests/base64/encoded | xargs cat | grep encoded
-#> encoded = "dmFsdWUA"
+#> encoded = dmFsdWUA
 
 # Tell Base64 plugin to decode and encode key value
 kdb meta-set user/tests/base64/encoded type binary
