@@ -38,7 +38,7 @@ myarray/#5 = value5
   array = #5
 ```
 
-To lookup an array, first do `ksLookup(ks,"/myarray")` on the parent.
+To lookup an array, first do `ksLookupByName (ks, "/myarray", 0)` on the parent.
 With the last index you get from its metadata `array`, iterate over the children.
 A cascading lookup on every individual child is also needed to make sure that overrides on individual
 elements are respected.
