@@ -2,8 +2,8 @@
 
 ## Problem
 
-Both applications and configuration file formats might have arbitrary strings which need to be
-encoded within a key name part.
+A key name is made out of a sequence of key part names, and can be constructed with `keyAddBaseName/keySetBaseName`.
+Both applications and configuration file formats might need arbitrary strings to be encoded within a key name part.
 
 For example:
 
@@ -27,17 +27,19 @@ For example:
 
 ## Decision
 
-`keyAddBaseName/keySetBaseName` never fail with any argument.
+`keyAddBaseName/keySetBaseName` never fail with any argument, so any character sequence can be escaped except of NULL bytes.
+The argument goes unmodified to the unescaped key name.
+
+For arrays there is no escaping needed because an array is only an array if the meta-data `array` is appended to the direct parent key.
+See [array](array.md).
 
 ## Rationale
 
-- hard to use it wrong API: having only the functions `keyAddBaseName/keySetBaseName`
-- applications and storage plugins can pass any name to `keyAddBaseName/keySetBaseName` without any further consideration
+- hard to use it wrong API: having only the functions `keyAddBaseName/keySetBaseName`, without any size argument
+- applications and storage plugins can pass any c-string to `keyAddBaseName/keySetBaseName` without any further consideration
 
 ## Implications
 
 ## Related Decisions
-
-- [Characters](characters.md)
 
 ## Notes

@@ -42,7 +42,6 @@ they mount. They need to test the setup.
 ## Related Decisions
 
 - [Base Name](base_name.md)
-- [Characters](characters.md)
 
 ## Notes
 
