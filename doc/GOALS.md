@@ -124,7 +124,7 @@ format. We do not judge if a feature of a configuration file format is useful an
 the development of fully-conforming parsers and emitters.
 
 > This means, that given a correctly written storage plugin, a KeySet can be found
-> that represents the content of the configuration file.
+> that represents the content and the hierarchical structure of the configuration file.
 
 ## Flexibility of Administrators
 
