@@ -20,17 +20,19 @@ For example:
 
 ## Considered Alternatives
 
-- restrict what `keySetBaseName` can accept has the downside that:
-  - applications would suddenly fail when trying to set some key base names
-  -
+- restrict what `keyAddBaseName/keySetBaseName` can accept: has the downside that
+  applications would suddenly fail when trying to set some key base names
+- have additional `keySetBaseName*` functions that make strings safe to be accepted
+  in `keyAddBaseName/keySetBaseName`: seems to be a too big change in the storage plugins
 
 ## Decision
 
-`keySetBaseName` must be able to encode any string as base name.
+`keyAddBaseName/keySetBaseName` never fail with any argument.
 
 ## Rationale
 
-- hard to use it wrong API: having only a single function `keySetBaseName`
+- hard to use it wrong API: having only the functions `keyAddBaseName/keySetBaseName`
+- applications and storage plugins can pass any name to  `keyAddBaseName/keySetBaseName` without any further consideration
 
 ## Implications
 
