@@ -32,7 +32,7 @@ For example:
 ## Rationale
 
 - hard to use it wrong API: having only the functions `keyAddBaseName/keySetBaseName`
-- applications and storage plugins can pass any name to  `keyAddBaseName/keySetBaseName` without any further consideration
+- applications and storage plugins can pass any name to `keyAddBaseName/keySetBaseName` without any further consideration
 
 ## Implications
 
