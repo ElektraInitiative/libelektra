@@ -46,15 +46,15 @@ elements are respected.
 For example:
 
 ```
-spec/myarray    # <- contains the specification for the array
-spec/myarray/#  # <- contains the specification for the array elements
+spec:/myarray    # <- contains the specification for the array
+spec:/myarray/#  # <- contains the specification for the array elements
 
-dir/myarray/#0  # <- not an array, just an override for user/myarray/#
+dir:/myarray/#0  # <- not an array, just an override for user:/myarray/#
 
-user/myarray    # <- with metadata array=#0, this would be the array we get
-user/myarray/#0
+user:/myarray    # <- with metadata array=#0, this would be the array we get
+user:/myarray/#0
 
-system/myarray  # <- not found in cascading lookup, as user/myarray exists
+system:/myarray  # <- not found in cascading lookup, as user:/myarray exists
 ```
 
 ## Rationale
