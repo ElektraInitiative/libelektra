@@ -120,11 +120,11 @@ they get the same KeySet (aka "round trip").
 ## Possibility to Represent any Configuration File Format
 
 Elektra must be powerful and flexible enough to be able to represent any configuration file
-format. We do not judge if a feature of a configuration file format is useful and support
-the development of fully-conforming parsers and emitters.
+format. We support the development of fully-conforming parsers and emitters.
 
 > This means, that given a correctly written storage plugin, a KeySet can be found
-> that represents the content and the hierarchical structure of the configuration file.
+> that represents the configuration, its metadata and the hierarchical structure of
+> the configuration file.
 
 ## Flexibility of Administrators
 
