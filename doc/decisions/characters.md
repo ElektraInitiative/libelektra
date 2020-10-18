@@ -2,19 +2,15 @@
 
 ## Problem
 
-
 ## Constraints
 
 ## Assumptions
 
-- Applications and 
+- Applications and
 
 ## Considered Alternatives
 
 ## Decision
-
-
-
 
 ## Rationale
 
