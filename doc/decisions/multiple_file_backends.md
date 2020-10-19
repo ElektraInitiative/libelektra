@@ -20,7 +20,11 @@ In some situations a single mountpoint refers to more than one file per namespac
 ## Decision
 
 Multiple File Backends are not supported for now in the case of writing files.
-Read-only fallbacks should not be a problem.
+
+Multiple sources in one namespace only work, if the fallback KeySet is
+part of the mountpoint config.  That way any change to the fallback
+KeySet would essentially make the whole thing a different mountpoint
+and thereby invalidate all guarantees.
 
 ## Rationale
 
