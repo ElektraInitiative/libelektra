@@ -21,6 +21,7 @@ an array or not.
 - store length (and not last element), problem: needs prepending of `#_...`
 - store element after last element (C++-Style), would not fit nicely with key/value
 - use value and not the metadata `array`, problem: is ambiguous
+- use metadata on all children
 
 ## Decision
 

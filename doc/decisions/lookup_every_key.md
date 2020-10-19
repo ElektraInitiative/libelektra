@@ -23,8 +23,8 @@ behavior.
 
 ## Decision
 
-Every key that an application wants to use, should be looked up
-with `ksLookup`.
+Every key that an application wants to use, must be looked up
+with `ksLookup` using a cascading lookup key.
 
 ## Rationale
 
