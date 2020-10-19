@@ -39,6 +39,7 @@ section here.
 ## TODOs for 1.0
 
 - [Base Name](base_name.md)
+- [Lookup every key](lookup_every_key.md)
 - [Holes and Non-leaf values](holes.md)
 - [Arbitrary Meta-Data](arbitrary_metadata.md)
 - [Multiple File Backends](multiple_file_backends.md)
