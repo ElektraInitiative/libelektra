@@ -39,6 +39,9 @@ myarray/#5 = value5
   array = #5
 ```
 
+It is not allowed to have anything else than `#5` in the metadata `array`,
+e.g. even `#4` would be a malformed array.
+
 To lookup an array, first do `ksLookupByName (ks, "/myarray", 0)` on the parent.
 With the last index you get from its metadata `array`, iterate over the children.
 A cascading lookup on every individual child is also needed to make sure that overrides on individual
@@ -69,6 +72,8 @@ system:/myarray  # <- not found in cascading lookup, as user:/myarray exists
 - yajl needs to be fixed
 - metadata library needs to be adapted
 - spec plugin needs to be fixed
+- A `user:/` or `dir:/` key can change the semantics of a `system:/` array,
+  if not avoided by `spec`.
 
 ## Related Decisions
 
