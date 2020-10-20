@@ -117,7 +117,7 @@ ssize_t keyGetOwnerSize (const Key * key)
 	return size;
 }
 
-
+// TODO (kodebach): update docu
 /**
  * Return the owner of the key.
  * - Given @p user:someuser:/..... return @p someuser
