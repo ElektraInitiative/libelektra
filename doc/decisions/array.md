@@ -12,11 +12,10 @@ an array or not.
 
 ## Assumptions
 
-- Meta-data arrays simply work by convention as they are not serialized in special ways nor they get validated.
-  The convention will be the same but without any metadata marker.
 
 ## Considered Alternatives
 
+- Meta-data arrays simply work by convention as they are not serialized in special ways nor they get validated.
 - `###empty_array` as in `yajl`, problem: does not allow efficient access of first element
 - store length (and not last element), problem: needs prepending of `#_...`
 - store element after last element (C++-Style), would not fit nicely with key/value
@@ -41,6 +40,21 @@ myarray/#5 = value5
 
 It is not allowed to have anything else than `#5` in the metadata `array`,
 e.g. even `#4` would be a malformed array.
+
+The metadata `array` preferable should be in `spec` (specified configuration).
+Then the `spec` plugin will add the `array` marker with the correct length.
+
+For example:
+
+```
+spec:/myarray      # <- has array marker
+
+user:/myarray      # <- either has correct array marker or no array marker
+user:/myarray/#0
+user:/myarray/#1
+```
+
+Here, the `spec` plugin would add `array=#1` to `user:/myarray` if it was not there before.
 
 To lookup an array, first do `ksLookupByName (ks, "/myarray", 0)` on the parent.
 With the last index you get from its metadata `array`, iterate over the children.
