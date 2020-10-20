@@ -57,11 +57,15 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - Removed the `null` plugin dependency of the plugin. _(Jakob Fischer)_
 - The `type` metakey is now set for numbers on reading. _(Jakob Fischer)_
 
-### <<Plugin3>>
+### Dump
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The `dump` plugin got a major update. The new version can read old files, but only write new files.
+  The new files **cannot** be read by the old version of the plugin and will result in a "version error" message. _(Klemens Böswirth)_
+- The new version stores keynames relative to the mountpoint, so exported `dump` files can now be imported into a different mountpoint. _(Klemens Böswirth)_
+- `dump` no longer write unnecessary zero-bytes into files. This means that as long as all key-values are human-readable, so is the `dump` output.
+  This makes `dump` usable for tests and demo purposes, as it is a very simple format closely modelled after a KeySet's structure.
+  This also makes it much easier to manually fix broken `dump` files.
+  You only need a text editor most of the time. _(Klemens Böswirth)_
 
 ## Libraries
 
