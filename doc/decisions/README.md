@@ -46,6 +46,7 @@ section here.
 - [Capabilities](capabilities.md)
 - [Array](array.md)
 - [Boolean](boolean.md)
+- [Global Plugins](global_plugins.md)
 
 ## Decided
 
@@ -54,7 +55,6 @@ section here.
 
 ## In Discussion
 
-- [Global Plugins](global_plugins.md)
 - [Vendor Spec](vendor_spec.md)
 - [Error codes](error_codes.md)
 - [Array for Warnings](warning_array.md)
