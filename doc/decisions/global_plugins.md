@@ -17,11 +17,11 @@
 
 ## Assumptions
 
-Elektra is useful with only 3 types of global plugins:
-
-- mmap
-- spec
-- notification
+- Elektra is useful with only 3 types of global plugins:
+  - mmap
+  - spec
+  - notification
+- There are not too many types of global plugins, not more than 10
 
 ## Considered Alternatives
 
@@ -36,6 +36,12 @@ Elektra is useful with only 3 types of global plugins:
 
 Have hooks specific to mmap, spec and notification.
 These hooks are not shared, so no `list` plugin is needed.
+
+## Rationale
+
+- allows adding more types of plugins later, also post-1.0
+- much clearer semantics for each type, no need to compromise
+- easier to implement
 
 ## Implications
 
