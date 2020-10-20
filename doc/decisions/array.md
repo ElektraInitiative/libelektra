@@ -12,7 +12,6 @@ an array or not.
 
 ## Assumptions
 
-
 ## Considered Alternatives
 
 - Meta-data arrays simply work by convention as they are not serialized in special ways nor they get validated.
