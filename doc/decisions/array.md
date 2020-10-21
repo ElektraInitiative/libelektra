@@ -74,6 +74,13 @@ user:/myarray/#0
 system:/myarray  # <- not found in cascading lookup, as user:/myarray exists
 ```
 
+Guarantees we want from the spec plugin:
+
+- that the parent key always contain `array`.
+- that the correct length is in `array`
+- that the array only contains `#` children
+- that the children are numbered from 0 to n, without holes
+
 ## Rationale
 
 - Is very similar to `binary` metadata.
@@ -84,7 +91,9 @@ system:/myarray  # <- not found in cascading lookup, as user:/myarray exists
 
 - yajl needs to be fixed
 - metadata library needs to be adapted
-- spec plugin needs to be fixed
+- spec plugin needs to be fixed, a lot of work needed there.
+  Most amount of work is to detect misstructured nested arrays (`#` intermixed with non `#` keys)
+  which is a possibility also in all the alternatives of this decision.
 - A `user:/` or `dir:/` key can change the semantics of a `system:/` array,
   if not avoided by `spec`.
 

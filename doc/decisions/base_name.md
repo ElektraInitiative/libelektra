@@ -12,7 +12,9 @@ For example:
 
 ## Constraints
 
-- `keySetBaseName (key, keyBaseName (key))` should be a NOP
+- `keySetBaseName (key, keyBaseName (key))` should be a NOP,
+  which is needed for round-trips: If a storage plugin serializes what it gets with `keyBaseName`;
+  `keySetBaseName` must lead to the same key.
 - support any configuration file format (i.e., any valid file of some format can be transformed to a KeySet,
   e.g. TOML supports empty key part names).
 

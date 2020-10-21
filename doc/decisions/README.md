@@ -38,7 +38,10 @@ section here.
 
 ## TODOs for 1.0
 
+- [Semantics for Name](semantics_name.md)
 - [Base Name](base_name.md)
+- [Store the escaped and/or unescaped key name](store_name.md)
+- [Sources for Metadata](metadata_sources.md)
 - [Lookup every key](lookup_every_key.md)
 - [Holes and Non-leaf values](holes.md)
 - [Arbitrary Meta-Data](arbitrary_metadata.md)
