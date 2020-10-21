@@ -28,7 +28,7 @@ Only store one key name, suitable for comparing/searching/iterating over name.
 
 ## Implications
 
-- rename `keyUnescapedName` to  `keyName`
+- rename `keyUnescapedName` to `keyName`
 - To get the keyName you then would need something like `elektraEncodeKeyName(buffer, keyName(...
 
 ## Related Decisions
