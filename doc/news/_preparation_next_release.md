@@ -14,6 +14,8 @@ Please add your name at the end of every contribution.
 <<`scripts/generate-news-entry`>>
 
 We are proud to release Elektra 0.9.<<VERSION>>.
+This release again brings us a big step towards Elektra 1.0.
+In introduces the new soon-to-be-default storage plugin: TOML.
 
 ## What is Elektra?
 
@@ -23,23 +25,25 @@ For more information, visit [https://libelektra.org](https://libelektra.org).
 
 You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
-## Highlights
-
-- <<HIGHLIGHT1>>
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
-
-### <<HIGHLIGHT1>>
-
-### <<HIGHLIGHT2>>
-
-### <<HIGHLIGHT2>>
-
 ## Try out Elektra
 
 You can try out the latest Elektra release using our docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra). This is the quickest way to get started with Elektra without compiling and other obstacles.
 
 Get started with Elektra by running `docker run -it elektra/elektra`.
+
+## TOML
+
+The highlight of this release is the TOML plugin.
+The TOML plugin has a similar huge feature set as the INI plugin,
+but is written in a much cleaner and more maintainable way using flex and bison.
+
+It has nearly no run-time dependency, it only needs `base64`
+if binary values are needed.
+
+A huge thanks to Jakob Fischer for this amazing work!
+
+> Warning: In one of the following `0.9.*` releases, INI will be removed and TOML will become the
+> default plugin. Please export your INI configurations now.
 
 ## Plugins
 
@@ -66,6 +70,11 @@ The following section lists news about the [modules](https://www.libelektra.org/
   This makes `dump` usable for tests and demo purposes, as it is a very simple format closely modelled after a KeySet's structure.
   This also makes it much easier to manually fix broken `dump` files.
   You only need a text editor most of the time. _(Klemens Böswirth)_
+### <<Plugin3>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Libraries
 
