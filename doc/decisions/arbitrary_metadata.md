@@ -3,7 +3,7 @@
 ## Problem
 
 To make storage-plugins suitable for `spec` they need to be able to store
-all the meta-data as specified in [METADATA.ini](/doc/METADATA.ini).
+all the metadata as specified in [METADATA.ini](/doc/METADATA.ini).
 Most file formats do not have support for that.
 
 ## Constraints
@@ -13,7 +13,7 @@ Most file formats do not have support for that.
 ## Considered Alternatives
 
 - store metadata in the comments like the `ini` plugin:
-  this exposes internal meta-data into the comments and
+  this exposes internal metadata into the comments and
   can drastically affect the readability of a storage file.
   Comments should never be touched by a parser.
 

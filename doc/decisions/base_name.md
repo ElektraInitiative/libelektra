@@ -32,7 +32,7 @@ For example:
 `keyAddBaseName/keySetBaseName` never fail with any argument, so any character sequence can be escaped except of NULL bytes.
 The argument goes unmodified to the unescaped key name.
 
-For arrays there is no escaping needed because an array is only an array if the meta-data `array` is appended to the direct parent key.
+For arrays there is no escaping needed because an array is only an array if the metadata `array` is appended to the direct parent key.
 See [array](array.md).
 
 ## Rationale

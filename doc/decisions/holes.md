@@ -41,7 +41,7 @@ values in non-leaves are not supported.
 
 ## Rationale
 
-- It fits very good to the idea of key/value.
+- It fits very good to the idea of key-value.
 - Some formats support it (e.g. XML supports non-leaves values; property-files support holes).
 - It can be useful for migration purposes, e.g. there is `/some/key`, and later
   `/some/key/enable` gets added. Then it is beneficial if `/some/key` still can

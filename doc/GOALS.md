@@ -112,7 +112,7 @@ Again, lower goals need to be ignored if goals are in conflict.
 
 Elektra must be easy and robust for application (developers) to store any configuration they
 need to store. After writing configuration settings (`kdbSet`) and reading them again (`kdbGet`)
-they get the same KeySet (aka "round trip").
+they get the same KeySet (aka "round-trip").
 
 > This means, they must be able to store keys with any name, any string or any binary data
 > as needed for their purpose.
@@ -128,7 +128,7 @@ format. We support the development of fully-conforming parsers and emitters.
 
 ## Flexibility of Administrators
 
-Administrators should be empowered to use their favourite tools and configuration file formats.
+Administrators should be empowered to use their favorite tools and configuration file formats.
 
 > There are principal limitations of nearly all configuration file formats, so Elektra cannot
 > enable that any configuration file format can be used with any application.
@@ -140,7 +140,7 @@ Administrators should be empowered to use their favourite tools and configuratio
 - Support semantics that do not fit into the KeySet (key-value pairs) with an `kdbGet()`/`kdbSet()` interface.
 - Support for non-configuration issues, e.g., storing key-value data unrelated to configuration settings.
 - Elektra is not a distributed configuration management tool:
-  use your favourite configuration management tool on top or a distributed file system below Elektra.
+  use your favorite configuration management tool on top or a distributed file system below Elektra.
 
 ## Further Readings
 
