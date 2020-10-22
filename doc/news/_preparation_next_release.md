@@ -51,8 +51,6 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### xmltool
 
 - Values of KDBStream changed to fit with elektraKeyFlags: recompilation of application is needed. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
 
 ### TOML
 
@@ -69,11 +67,6 @@ The following section lists news about the [modules](https://www.libelektra.org/
   This makes `dump` usable for tests and demo purposes, as it is a very simple format closely modelled after a KeySet's structure.
   This also makes it much easier to manually fix broken `dump` files.
   You only need a text editor most of the time. _(Klemens Böswirth)_
-### <<Plugin3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Libraries
 
