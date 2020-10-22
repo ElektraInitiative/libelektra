@@ -35,8 +35,14 @@ section here.
 - [Error Message Format](error_message_format.md)
 - [Default Values](default_values.md)
 - [High Level API](high_level_api.md)
+- [Error codes](error_codes.md)
+- [Error code implementation](error_code_implementation.md)
 
-## TODOs for 1.0
+## Decided
+
+- [Array for Warnings](warning_array.md)
+
+## In Discussion
 
 - [Semantics for Name](semantics_name.md)
 - [Base Name](base_name.md)
@@ -50,26 +56,13 @@ section here.
 - [Array](array.md)
 - [Boolean](boolean.md)
 - [Global Plugins](global_plugins.md)
-
-## Decided
-
-- [Plugin Variants](plugin_variants.md)
-- [Error code implementation](error_code_implementation.md)
-
-## In Discussion
-
 - [Vendor Spec](vendor_spec.md)
-- [Error codes](error_codes.md)
-- [Array for Warnings](warning_array.md)
+- [Plugin Variants](plugin_variants.md)
+- [Global Validation](global_validation.md)
 
 ## Rejected
 
 - [CMake spec](cmake_spec.md)
 - [Null Pointer Checks](null_pointer_checks.md)
 - [Elektra Web Publish Subscribe](elektra_web_pubsub.md)
-
-## Drafts
-
-- [Specification](specification.md)
-- [Global Validation](global_validation.md)
 - [Internal Cache](internal_cache.md)
