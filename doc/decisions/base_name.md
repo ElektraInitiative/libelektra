@@ -44,4 +44,6 @@ See [array](array.md).
 
 ## Related Decisions
 
+- [Array](array.md)
+
 ## Notes

@@ -42,6 +42,8 @@ e.g. even `#4` would be a malformed array.
 
 The metadata `array` preferable should be in `spec` (specified configuration).
 Then the `spec` plugin will add the `array` marker with the correct length.
+This needs to be happen early, so that plugins can rely on having
+correct arrays.
 
 For example:
 
@@ -99,6 +101,7 @@ Guarantees we want from the spec plugin:
 
 ## Related Decisions
 
+- [Global Plugins](global_plugins.md)
 - [Global Validation](global_validation.md)
 
 ## Notes

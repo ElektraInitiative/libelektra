@@ -6,6 +6,9 @@
   plugin
 - Problems in spec plugin
 
+These problems can be traced back to the placement of the plugins.
+We need to cleanup and simplify the placement.
+
 ## Constraints
 
 - Plugin interface should be the same. Many plugins, e.g. dbus, should work
@@ -17,11 +20,12 @@
 
 ## Assumptions
 
-- Elektra is useful with only 4 types of global plugins:
+- Elektra is useful with following types of global plugins:
   - mmap
   - spec
   - gopts
-  - notification
+  - receiving of notifications (internalnotification)
+  - sending of notifications (dbus, ...)
 - There are not too many types of global plugins, not more than 10
 
 ## Considered Alternatives
@@ -35,7 +39,7 @@
 
 ## Decision
 
-Have hooks and API specific to mmap, spec, gopts and notification.
+Have hooks and API specific to the list of global plugins in assumptions.
 These hooks are not shared, so no `list` plugin is needed.
 
 ## Rationale
@@ -47,8 +51,11 @@ These hooks are not shared, so no `list` plugin is needed.
 ## Implications
 
 - remove `list` plugin
-- remove plugins that stop working, like internalnotification, or disallow global positioning for them
+- remove plugins that stop working or disallow global positioning for them
+- place `spec` very early
 
 ## Related Decisions
+
+- [Array](array.md)
 
 ## Notes
