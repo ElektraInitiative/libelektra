@@ -163,6 +163,16 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - Use strict dependency injection for website modules. _(Marvin Mall)_
 - Added `package-lock.json` to ensure repeatable builds. _(Marvin Mall)_
 
+## Decisions
+
+We are intensively working on Elektra 1.0.
+We decide about the last details of the semantics of Elektra 1.0.
+The decisions are [documented](/doc/decisions) but some of them
+are still in discussion.
+
+If you are interested in the discussion, please
+[subscribe](https://issues.libelektra.org/3520).
+
 ## Outlook
 
 We are currently working on following topics:
