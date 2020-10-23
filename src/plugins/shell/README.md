@@ -34,7 +34,7 @@ can be compared against the return values of the shell commandos.
 kdb set system/tests/tempfile $(mktemp)
 
 # Mount plugin and specify plugin configuration
-sudo kdb mount shell.ini system/tests/shell ini array= shell execute/set="echo set >> $(kdb get system/tests/tempfile)"
+sudo kdb mount shell.ini system/tests/shell ni array= shell execute/set="echo set >> $(kdb get system/tests/tempfile)"
 
 cat $(kdb get system/tests/tempfile)
 #>
