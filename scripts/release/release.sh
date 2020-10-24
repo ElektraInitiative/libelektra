@@ -22,7 +22,7 @@ run_updates() {
 	echo "Running updates..."
 	mkdir $BASE_DIR/$VERSION
 	# regenerate dot of plugins
-	$SRC_DIR/scripts/dev/draw-all-plugins > $BASE_DIR/$VERSION/draw-all-plugins # TODO: rename file
+	$SRC_DIR/scripts/dev/draw-all-plugins > $BASE_DIR/$VERSION/draw-all-plugins                         # TODO: rename file
 	# run link checker
 	cd $BUILD_DIR && $SRC_DIR/scripts/link-checker external-links.txt > $BASE_DIR/$VERSION/link-checker # TODO: rename file
 }
@@ -34,7 +34,6 @@ update_debian_version_number() {
 	git add debian/changelog
 	git commit -m "Debian Package $DVERSION (UNRELEASED)"
 }
-
 
 cleanup() {
 	echo "Running cleanup..."
@@ -75,8 +74,8 @@ run_checks() {
 
 	log_strace "strace-src"
 
-	ls -l /usr/local/lib/libelektra-core.so."$VERSION" > $BASE_DIR/"$VERSION"/size 
-	readelf -a /usr/local/lib/libelektra-core.so > $BASE_DIR/"$VERSION"/readelf-core 
+	ls -l /usr/local/lib/libelektra-core.so."$VERSION" > $BASE_DIR/"$VERSION"/size
+	readelf -a /usr/local/lib/libelektra-core.so > $BASE_DIR/"$VERSION"/readelf-core
 
 }
 
@@ -89,7 +88,7 @@ prepare_package() {
 	cd "$BUILD_DIR" && make source-package
 
 	# Check if tar is reproduceable + sign it:
-	gpg --sign elektra-$VERSION.tar.gz 
+	gpg --sign elektra-$VERSION.tar.gz
 
 	# Unpack + compile (with all available plugins) + test those sources:
 	tar xvzf elektra-$VERSION.tar.gz && mkdir builder
