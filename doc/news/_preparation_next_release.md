@@ -32,7 +32,7 @@ Get started with Elektra by running `docker run -it elektra/elektra`.
 
 ## TOML
 
-The highlight of this release is the TOML plugin.
+The highlight of this release is the [TOML plugin](https://www.libelektra.org/plugins/toml).
 The TOML plugin has a similar huge feature set as the INI plugin,
 but is written in a much cleaner and more maintainable way using flex and bison.
 Furthermore, it follows the popular TOML spec.
@@ -46,7 +46,7 @@ A huge thanks to Jakob Fischer for this amazing work!
 
 ## Plugins
 
-The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
+The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 ### xmltool
 
@@ -78,6 +78,10 @@ In this release, we did the following changes:
 - `keyswitch_t` renamed to elektraKeyFlags. _(Markus Raab)_
 - `option_t` renamed to elektraLockFlags and elektraLookupFlags. _(Markus Raab)_
 - `cursor_t` renamed to elektraCursor. _(Markus Raab)_
+
+> Note: we made this release on purpose before merging
+> larger changes. Please expect more fundamental changes
+> in the next releases.
 
 ### Errors
 
