@@ -57,6 +57,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 
 ### Dump
+
 ### <<Plugin3>>
 
 - <<TODO>>
