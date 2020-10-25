@@ -105,7 +105,7 @@ endeavours where everyone using Elektra can benefit from.
 
 # Domain-Specific Goals
 
-These goals are specific to the Elektra's domain, again in order of importance.
+These goals are specific to Elektra's domain, again in order of importance.
 Again, lower goals need to be ignored if goals are in conflict.
 
 ## Suitability for Applications
