@@ -53,19 +53,6 @@ three issues, and then users can easily **externally** manipulate
 file and getting feedback of the **semantics** (you might get validation
 errors and you can receive the value exactly as the application will get it).
 
-## Who Should use Elektra?
-
-Elektra targets different kinds of users:
-
-1. Developers to develop a better integrated free software ecosystem and
-   plugins for better validation/notification.
-   If you have an application that reads or writes configuration files,
-   you are in the target group.
-2. System administrators to have a higher-level view of their configuration
-   and enable them to better consider context.
-   If you want to specify or automate configuration tasks, you are in the
-   target group.
-
 ## Unique Features
 
 Features that rarely can be found elsewhere (at least in this combination):

@@ -103,21 +103,39 @@ endeavours where everyone using Elektra can benefit from.
 
 > Only pay for what you need.
 
-# Domain-Specific Goals
+# Users
 
-These goals are specific to Elektra's domain, again in order of importance.
+These goals are about Elektra's users, again in order of importance.
 Again, lower goals need to be ignored if goals are in conflict.
 
-## Suitability for Applications
+## 1. Application Developers
 
-Elektra must be easy and robust for application (developers) to store any configuration they
+Elektra must be easy and robust for application developers to store any configuration they
 need to store. After writing configuration settings (`kdbSet`) and reading them again (`kdbGet`)
 they get the same KeySet (aka "round-trip").
 
 > This means, they must be able to store keys with any name, any string or any binary data
 > as needed for their purpose.
 
-## Possibility to Represent any Configuration File Format
+## 2. Administrators
+
+Administrators should be empowered by good error messages and validation capabilities.
+Furthermore, they should be able to use their favorite tools and configuration file formats.
+
+> There are principal limitations of nearly all configuration file formats, so Elektra cannot
+> enable that any configuration file format can be used with any application.
+> If maintainers or administrators want to change the configuration file format of some application,
+> they need to carefully test if it works.
+
+## 3. Maintainers
+
+Elektra must be available everywhere and flexible enough, so that maintainers can integrate
+different applications by specifying and mounting.
+
+> There might be some restrictions that some applications require some plugins to be mounted
+> for their configuration.
+
+## 4. Possibility to Represent any Configuration File Format
 
 Elektra must be powerful and flexible enough to be able to represent any configuration file
 format. We support the development of fully-conforming parsers and emitters.
@@ -125,15 +143,6 @@ format. We support the development of fully-conforming parsers and emitters.
 > This means, that given a correctly written storage plugin, a KeySet can be found
 > that represents the configuration, its metadata and the hierarchical structure of
 > the configuration file.
-
-## Flexibility of Administrators
-
-Administrators should be empowered to use their favorite tools and configuration file formats.
-
-> There are principal limitations of nearly all configuration file formats, so Elektra cannot
-> enable that any configuration file format can be used with any application.
-> If administrators or maintainers want to change the configuration file format of some application,
-> they need to carefully test if it works.
 
 # Non-Goals:
 
