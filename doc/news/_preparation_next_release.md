@@ -14,6 +14,8 @@ Please add your name at the end of every contribution.
 <<`scripts/generate-news-entry`>>
 
 We are proud to release Elektra 0.9.<<VERSION>>.
+This release again brings us a big step towards Elektra 1.0.
+It introduces the new soon-to-be-default storage plugin: TOML.
 
 ## What is Elektra?
 
@@ -23,33 +25,32 @@ For more information, visit [https://libelektra.org](https://libelektra.org).
 
 You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
-## Highlights
-
-- <<HIGHLIGHT1>>
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
-
-### <<HIGHLIGHT1>>
-
-### <<HIGHLIGHT2>>
-
-### <<HIGHLIGHT2>>
-
-## Try out Elektra
-
-You can try out the latest Elektra release using our docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra). This is the quickest way to get started with Elektra without compiling and other obstacles.
+You can try out the latest Elektra release using our docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
+This is the quickest way to get started with Elektra without compiling and other obstacles.
 
 Get started with Elektra by running `docker run -it elektra/elektra`.
 
+## TOML
+
+The highlight of this release is the [TOML plugin](https://www.libelektra.org/plugins/toml).
+The TOML plugin has a similar huge feature set as the INI plugin,
+but is written in a much cleaner and more maintainable way using flex and bison.
+Furthermore, it follows the popular TOML spec.
+
+It has nearly no run-time dependency, it only needs `base64` if binary values are needed.
+
+A huge thanks to Jakob Fischer for this amazing work!
+
+> Warning: In one of the following `0.9.*` releases, INI will be removed and TOML will become the
+> default plugin. If you are using INI, please migrate to TOML now.
+
 ## Plugins
 
-The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
+The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 ### xmltool
 
 - Values of KDBStream changed to fit with elektraKeyFlags: recompilation of application is needed. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
 
 ### TOML
 
@@ -69,40 +70,18 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ## Libraries
 
-The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
+## Compatibility
 
-### Compatibility
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Core
+Elektra `0.9.*` does not make any compatibility promises, as we want a clean 1.0.0 release.
+In this release, we did the following changes:
 
 - `keyswitch_t` renamed to elektraKeyFlags. _(Markus Raab)_
 - `option_t` renamed to elektraLockFlags and elektraLookupFlags. _(Markus Raab)_
 - `cursor_t` renamed to elektraCursor. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
-### <<Library1>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library2>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+> Note: we made this release on purpose before merging
+> larger changes. Please expect more fundamental changes
+> in the next releases.
 
 ### Errors
 
@@ -116,16 +95,6 @@ you up to date with the multi-language support provided by Elektra.
 ### JNA
 
 - make examples work again _(Markus Raab)_
-
-### <<Binding2>>
-
-### <<Binding3>>
-
-## Tools
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Scripts
 
@@ -151,16 +120,12 @@ you up to date with the multi-language support provided by Elektra.
 - The Doxygen PDF documentation now also requires the packages
   - `stix` (part of `texlive-fonts-extra`) and
   - `stmaryrd` (part of `texlive-science` or `texlive-math-extra`). _(René Schwaiger)_
-- <<TODO>>
-- <<TODO>>
+- Write down some fundamental decisions, mostly about key names and key set structure. _(Markus Raab in discussions with Klemens Böswirth)_
 
 ## Tests
 
 - Fixed the `is_not_rw_storage` function. _(Lukas Kilian)_
 - We now ensure that the `check_import` and `check_export` tests run for at least one plugin. _(Lukas Kilian)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Build
 
@@ -169,15 +134,11 @@ you up to date with the multi-language support provided by Elektra.
 - `make uninstall` also uninstalls symlinks. _(Markus Raab)_
 - `external-links.txt` and `extra_install_manifest.txt` are cleaned up at cmake runs. _(Markus Raab)_
 - Increased CTest timeout for `testscr_check_kdb_internal_suite` due to timouts reached on slow test machines. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Docker
 
 - Added alpine linux docker image with latest elektra installed. This image is published on docker hub as [elektra/elektra](https://hub.docker.com/r/elektra/elektra). We will update the image for each elektra release such that novices can easily test elektra without compiling or installing. _(Mihael Pranjić)_
 - Remove unused `libgtest-dev` from docker images. _(Mihael Pranjić)_
-- <<TODO>>
 
 ## Infrastructure
 
@@ -187,21 +148,15 @@ you up to date with the multi-language support provided by Elektra.
 - Increase CPU count for containers to 4. _(Mihael Pranjić)_
 - Use ruby 2.7 on macOS. _(Mihael Pranjić)_
 - Do not use cask. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
 
 ### Jenkins
 
 - Temporarily resolve cyclic dependency between go-elektra and libelektra builds. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ### Travis
 
 - Update macOS builds to use GCC 10, Ruby 2.7.1 and Xcode 12. _(Mihael Pranjić)_
 - Increase wait time on builds to fix build timeout errors ("No output has been received in the last 10m0s"). _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Website
 
@@ -211,16 +166,32 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - Renamed [website](/src/tools/website) and removed its backend. _(Markus Raab)_
 - Use strict dependency injection for website modules. _(Marvin Mall)_
 - Added `package-lock.json` to ensure repeatable builds. _(Marvin Mall)_
-- <<TODO>>
-- <<TODO>>
+
+## Decisions
+
+We are intensively working on Elektra 1.0.
+We decide about the last details of the semantics of Elektra 1.0.
+The decisions are [documented](/doc/decisions) but some of them
+are still in discussion.
+
+If you are interested in the discussion, please
+[subscribe](https://issues.libelektra.org/3520).
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Elektrify KDE _(Dardan Haxhimustafa)_, _(Felix Resch)_ and _(Mihael Pranjić)_
+- Elektrify GNOME _(Mihael Pranjić)_
+- Default TOML plugin _(Jakob Fischer)_
+- Improve Plugin Framework _(Vid Leskovar)_
+- Keyname Overhaul _(Klemens Böswirth)_
+- Continious Releases _(Robert Sowula)_
+- FUSE Integration _(Alexander Firbas)_
+- Improve 3-way merge _(Dominic Jäger)_
+- Shell completion _(Ulrike Schäfer)_
+- Improve Elektra developer experience _(Hani Torabi)_
+- Ansible bindings _(Thomas Waser)_
 
 ## Statistics
 

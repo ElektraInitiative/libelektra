@@ -22,6 +22,9 @@ and deleted on `kdbClose()`.
 The global keyset handle is initialized and accessible for all plugins except
 manually created plugins (by calling e.g. `elektraPluginOpen()`).
 
+This decision removes the need to exchange information between plugins
+via the parentKey.
+
 ## Rationale
 
 The need for a global keyset arose when developing a global cache plugin.
