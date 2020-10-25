@@ -72,6 +72,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - The `type` metakey is now set for numbers on reading. _(Jakob Fischer)_
 
 ### Dump
+
 ### <<Plugin3>>
 
 - The `dump` plugin got a major update. The new version can read old files, but only write new files.
