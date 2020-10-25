@@ -52,7 +52,7 @@ These hooks are not shared, so no `list` plugin is needed.
 
 - remove `list` plugin
 - remove plugins that stop working or disallow global positioning for them
-- place `spec` very early
+- call `spec` as needed several times
 
 ## Related Decisions
 
