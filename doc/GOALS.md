@@ -55,7 +55,7 @@ Special care for simplicity is taken for the users:
 
 - Endusers when reconfiguring or upgrading
   should never take any notice of Elektra, except that
-  it works more robust and better integrated.
+  it works more robust and is better integrated.
 - Programmers should have multiple ways to take advantage of
   Elektra so that it flawlessly integrate with their system.
 - Plugin Programmers: it should be simple to extend Elektra
