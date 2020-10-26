@@ -187,7 +187,7 @@ We are currently working on following topics:
 - Keyname Overhaul _(Klemens Böswirth)_
 - Continious Releases _(Robert Sowula)_
 - FUSE Integration _(Alexander Firbas)_
-- 1.0 API_(Philipp Gackstatter)_
+- 1.0 API _(Philipp Gackstatter)_
 - Improve 3-way merge _(Dominic Jäger)_
 - Shell completion _(Ulrike Schäfer)_
 - Improve Elektra developer experience _(Hani Torabi)_

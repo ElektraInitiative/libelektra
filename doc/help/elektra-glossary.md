@@ -5,11 +5,12 @@
 - **Configuration settings**:
   customize applications towards the users'
   needs. It fulfills following properties:
+
   - It is provided by the execution environment.
   - It can be changed by the maintainer, user, or system administrator of the software.
   - It consists of a key name, a **configuration value**, and potentially **metadata**.
 
--  A **configuration file**:
+- A **configuration file**:
   is a file containing configuration settings.
 
 - **Configuration storage**:
