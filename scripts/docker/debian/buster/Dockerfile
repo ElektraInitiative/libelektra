@@ -28,6 +28,7 @@ RUN apt-get update \
         git \
         git-buildpackage \
         gobject-introspection \
+        ghostscript \
         graphviz \
         icheck \
         lcov \
