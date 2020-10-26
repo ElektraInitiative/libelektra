@@ -121,6 +121,7 @@ you up to date with the multi-language support provided by Elektra.
   - `stix` (part of `texlive-fonts-extra`) and
   - `stmaryrd` (part of `texlive-science` or `texlive-math-extra`). _(René Schwaiger)_
 - Write down some fundamental decisions, mostly about key names and key set structure. _(Markus Raab in discussions with Klemens Böswirth)_
+- Improve terminology. _(Markus Raab)_
 
 ## Tests
 
