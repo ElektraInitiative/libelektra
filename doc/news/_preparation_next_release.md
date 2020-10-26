@@ -113,6 +113,7 @@ you up to date with the multi-language support provided by Elektra.
 - The `reformat-shell` script now accepts the alias `shfmt2`, in case `shfmt` v3 is needed for another project. _(Klemens Böswirth)_
 - The config for restyled.io now specifies the image to use for each formatter. This clearly reflects the version used for
   formatting. _(Klemens Böswirth)_
+- Add a release script to automate the release process. _(Robert Sowula)_
 
 ## Documentation
 
@@ -152,6 +153,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Jenkins
 
 - Temporarily resolve cyclic dependency between go-elektra and libelektra builds. _(Mihael Pranjić)_
+- Add a new Jenkinsfile for release automation. _(Robert Sowula)_
 
 ### Travis
 
