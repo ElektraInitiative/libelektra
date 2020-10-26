@@ -1,17 +1,17 @@
 # Goals
 
-The goal of Elektra is to make it trivial to access and specify configuration by an API.
+The goal of Elektra is to make it trivial to access and specify configuration settings by an API.
 This helps in achieving the following goals:
 
 - Improve robustness of configuration systems by
   - Avoiding common programming errors through the usage of the API.
-  - Getting more guarantees when accessing configuration.
+  - Getting more guarantees when accessing configuration settings.
   - Rejecting invalid configurations.
   - Avoiding reimplementation of parsers for the same configuration file format.
-- Allow software to be better integrated and standardized on configuration level
+- Allow software to be better integrated via configuration settings
   (e.g. via [Freedesktop](https://www.freedesktop.org)).
 - Postpone some decisions from programmers to maintainers/administrators:
-  - Rejecting unwanted configuration.
+  - Rejecting unwanted configuration settings.
   - Uniformity of configuration access (logging, vcs commit, notifications).
   - Syntax of the configuration files (with limitations, see below).
 
@@ -95,7 +95,7 @@ them, everything else is an extension.
 
 ## 4. Goal: Performance
 
-Accessing configuration has impact on bootup and startup-time
+Accessing configuration settings has impact on bootup and startup-time
 of applications.
 Elektra needs to be similar fast then current solutions.
 Ideally it should get faster because of centralized optimization
@@ -110,8 +110,9 @@ Again, lower goals need to be ignored if goals are in conflict.
 
 ## 1. Application Developers
 
-Elektra must be easy and robust for application developers to store any configuration they
-need to store. After writing configuration settings (`kdbSet`) and reading them again (`kdbGet`)
+Elektra must be easy and robust for application developers to store any
+configuration settings referable by keys they need to store. After writing
+configuration settings (`kdbSet`) and reading them again (`kdbGet`)
 they get the same KeySet (aka "round-trip").
 
 > This means, they must be able to store keys with any name, any string or any binary data
@@ -133,7 +134,7 @@ Elektra must be available everywhere and flexible enough, so that maintainers ca
 different applications by specifying and mounting.
 
 > There might be some restrictions that some applications require some plugins to be mounted
-> for their configuration.
+> for their configuration settings.
 
 ## 4. Possibility to Represent any Configuration File Format
 
@@ -141,7 +142,7 @@ Elektra must be powerful and flexible enough to be able to represent any configu
 format. We support the development of fully-conforming parsers and emitters.
 
 > This means, that given a correctly written storage plugin, a KeySet can be found
-> that represents the configuration, its metadata and the hierarchical structure of
+> that represents the configuration settings, its metadata and the hierarchical structure of
 > the configuration file.
 
 # Non-Goals:
