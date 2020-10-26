@@ -16,9 +16,7 @@ install_elektra() {
 	mkdir $BUILD_DIR
 	cd $BUILD_DIR
 	cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=ON ..
-	cd ..
-	cmake --build build
-	cd $BUILD_DIR
+	make
 	make install
 	ldconfig
 	export VERSION=$(kdb get system/elektra/version/constants/KDB_VERSION)
