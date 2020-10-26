@@ -7,8 +7,8 @@ import java.text.SimpleDateFormat
 properties([
   buildDiscarder(
     logRotator(
-      artifactDaysToKeepStr: '31',  // Keep artifacts for max 31 days
-      artifactNumToKeepStr: '10'    // Keep artifacts for last 5 builds
+      artifactDaysToKeepStr: '31',
+      artifactNumToKeepStr: '10'
     )
   )
 ])
@@ -80,18 +80,24 @@ def buildRelease() {
     def stageName = "release"
     return [(stageName): {
       stage(stageName) {
-          withDockerEnv(DOCKER_IMAGES.buster, [DOCKER_OPTS.MOUNT_MIRROR]) {
-            withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
-                 file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
+        withDockerEnv(DOCKER_IMAGES.buster, [DOCKER_OPTS.MOUNT_MIRROR]) {
+          withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
+            file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
               sh "gpg --import $KEY"
               sh "gpg --import $SKEY"
-            sh "cd .."
-            sh "git clone https://github.com/ElektraInitiative/ftp.git"
-            sh "git clone https://github.com/ElektraInitiative/doc.git"
-            sh "libelektra/scripts/release/release.sh"
-            archive("release.tar.gz")
-            }
-          }
+
+              sh "git config --global user.name jenkins-release"
+              sh "git config --global user.email jenkins@libelektra.org"
+
+			  sh "cd .."
+			  sh "git clone https://github.com/ElektraInitiative/ftp.git"
+			  sh "git clone https://github.com/ElektraInitiative/doc.git"
+
+			  sh "libelektra/scripts/release/release.sh"
+
+		      archive("release.tar.gz")
+			}
+        }
       }
     }]
 }
