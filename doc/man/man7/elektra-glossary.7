@@ -1,52 +1,59 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-GLOSSARY" "7" "August 2019" "" ""
+.TH "ELEKTRA\-GLOSSARY" "7" "October 2020" "" ""
 .
 .SH "NAME"
 \fBelektra\-glossary\fR \- glossary of Elektra
 .
 .SH "Introduction"
 .
-.TP
-\fBConfiguration settings\fR
-customize applications towards the users needs\.
+.IP "\(bu" 4
+\fBConfiguration settings\fR: customize applications towards the users\' needs\. It fulfills following properties:
 .
-.TP
-\fBConfiguration storage\fR
-makes configuration settings persistent\. The application will read the configuration at every start from the configuration storage, but it is only stored if a user changes settings\.
+.IP "\(bu" 4
+It is provided by the execution environment\.
 .
-.TP
-\fBKey databases\fR
-are used for configuration storages because of these constraints\. They can do fast key lookups and the keys can be structured hierarchically by defining separators in the key names\.
+.IP "\(bu" 4
+It can be changed by the maintainer, user, or system administrator of the software\.
 .
-.TP
-\fBGlobal key database\fR
-provides global access to all configuration storages of all applications in a system\. Abbreviated as \fBKDB\fR\.
+.IP "\(bu" 4
+It consists of a key name, a \fBconfiguration value\fR, and potentially \fBmetadata\fR\.
 .
-.TP
-\fBLibElektra\fR
-is a set of libraries \fI/src/libs/\fR to access configuration parameters in a global, hierarchical key database\.
+.IP "" 0
+
 .
-.TP
-\fBSpecElektra\fR
-is a specification language \fI/doc/METADATA\.ini\fR that allows us to describe the content of the global key database\.
+.IP "\(bu" 4
+A \fBconfiguration file\fR: is a file containing configuration settings\.
 .
-.TP
-\fBElektra\fR
-is a framework consisting of LibElektra, SpecElektra, and a collection of tools\.
+.IP "\(bu" 4
+\fBConfiguration storage\fR: makes configuration settings persistent\. The application will read the configuration at every start from the configuration storage, but it is only stored if a user changes settings\.
 .
-.TP
-To \fBelektrify\fR an application
-to change the application so that it uses LibElektra afterwards\.
+.IP "\(bu" 4
+\fBKey databases\fR: are used for configuration storages because of these constraints\. They can do fast key lookups and the keys can be structured hierarchically by defining separators in the key names\.
 .
-.TP
-\fBElektra Initiative\fR
-is a community that develops LibElektra, expands SpecElektra, improves Elektra\'s tooling and helps to elektrify applications\.
+.IP "\(bu" 4
+\fBGlobal key database\fR: provides global access to all configuration storages of all applications in a system\. Abbreviated as \fBKDB\fR\.
 .
-.TP
-\fBOption\fR, more specifically \fBCommand\-line option\fR
-is a special argument passed on the command\-line\. \fBShort options\fR are single characters prefixed with \'\-\'; \fBLong options\fR are arbitrarily long and start with \'\-\-\'\.
+.IP "\(bu" 4
+\fBLibElektra\fR: is a set of libraries \fI/src/libs/\fR to access configuration parameters in a global, hierarchical key database\.
+.
+.IP "\(bu" 4
+\fBSpecElektra\fR: is a specification language \fI/doc/METADATA\.ini\fR that allows us to describe the content of the global key database\.
+.
+.IP "\(bu" 4
+\fBElektra\fR: is a framework consisting of LibElektra, SpecElektra, and a collection of tools\.
+.
+.IP "\(bu" 4
+To \fBelektrify\fR an application: to change the application so that it uses LibElektra afterwards\.
+.
+.IP "\(bu" 4
+\fBElektra Initiative\fR: is a community that develops LibElektra, expands SpecElektra, improves Elektra\'s tooling and helps to elektrify applications\.
+.
+.IP "\(bu" 4
+\fBOption\fR, more specifically \fBCommand\-line option\fR: is a special argument passed on the command\-line\. \fBShort options\fR are single characters prefixed with \'\-\'; \fBLong options\fR are arbitrarily long and start with \'\-\-\'\.
+.
+.IP "" 0
 .
 .SH "Technical Concepts"
 .
