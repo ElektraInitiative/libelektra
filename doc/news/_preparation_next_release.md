@@ -26,16 +26,15 @@ For more information, visit [https://libelektra.org](https://libelektra.org).
 You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
 You can try out the latest Elektra release using our docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
-This is the quickest way to get started with Elektra without compiling and other obstacles.
-
-Get started with Elektra by running `docker run -it elektra/elektra`.
+This is the quickest way to get started with Elektra without compiling and other obstacles, simply run
+`docker run -it elektra/elektra`.
 
 ## TOML
 
 The highlight of this release is the [TOML plugin](https://www.libelektra.org/plugins/toml).
 The TOML plugin has a similar huge feature set as the INI plugin,
 but is written in a much cleaner and more maintainable way using flex and bison.
-Furthermore, it follows the popular TOML spec.
+Furthermore, it follows the popular [TOML spec](https://toml.io).
 
 It has nearly no run-time dependency, it only needs `base64` if binary values are needed.
 
@@ -79,9 +78,8 @@ In this release, we did the following changes:
 - `option_t` renamed to elektraLockFlags and elektraLookupFlags. _(Markus Raab)_
 - `cursor_t` renamed to elektraCursor. _(Markus Raab)_
 
-> Note: we made this release on purpose before merging
-> larger changes. Please expect more fundamental changes
-> in the next releases.
+> Note: We made this release before merging larger changes.
+> Please expect more fundamental changes in the next releases.
 
 ### Errors
 
@@ -116,12 +114,12 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
+- Updated [GOALS.md](http://www.libelektra.org/docgettingstarted/goals). _(Markus Raab)_
 - Describe hierarchy and limitations of [hosts plugin](https://www.libelektra.org/plugins/hosts). _(Markus Raab)_
 - The Doxygen PDF documentation now also requires the packages
   - `stix` (part of `texlive-fonts-extra`) and
   - `stmaryrd` (part of `texlive-science` or `texlive-math-extra`). _(René Schwaiger)_
 - Write down some fundamental decisions, mostly about key names and key set structure. _(Markus Raab in discussions with Klemens Böswirth)_
-- Improve terminology. _(Markus Raab)_
 
 ## Tests
 
@@ -138,7 +136,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- Added alpine linux docker image with latest elektra installed. This image is published on docker hub as [elektra/elektra](https://hub.docker.com/r/elektra/elektra). We will update the image for each elektra release such that novices can easily test elektra without compiling or installing. _(Mihael Pranjić)_
+- Added alpine linux docker image with latest Elektra installed. This image is published on docker hub as [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
+  We will update the image for each Elektra release such that novices can easily test Elektra without compiling or installing. _(Mihael Pranjić)_
 - Remove unused `libgtest-dev` from docker images. _(Mihael Pranjić)_
 
 ## Infrastructure
@@ -148,7 +147,6 @@ you up to date with the multi-language support provided by Elektra.
 - Update FreeBSD images from version 11.3 to 11.4. _(Mihael Pranjić)_
 - Increase CPU count for containers to 4. _(Mihael Pranjić)_
 - Use ruby 2.7 on macOS. _(Mihael Pranjić)_
-- Do not use cask. _(Markus Raab)_
 
 ### Jenkins
 
@@ -189,6 +187,7 @@ We are currently working on following topics:
 - Keyname Overhaul _(Klemens Böswirth)_
 - Continious Releases _(Robert Sowula)_
 - FUSE Integration _(Alexander Firbas)_
+- 1.0 API_(Philipp Gackstatter)_
 - Improve 3-way merge _(Dominic Jäger)_
 - Shell completion _(Ulrike Schäfer)_
 - Improve Elektra developer experience _(Hani Torabi)_
