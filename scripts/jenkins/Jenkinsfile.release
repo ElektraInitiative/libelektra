@@ -24,6 +24,7 @@ enum DOCKER_OPTS {
   public DOCKER_OPTS()  {} // WORKAROUND see TEST
 }
 
+NOW = new Date()
 DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
                      // dockerInit()
 
