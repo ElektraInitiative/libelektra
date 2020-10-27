@@ -63,7 +63,18 @@ run_checks() {
 
 	# Rebuild cleanly, run all tests and also check for memleaks:
 	cd "$BUILD_DIR"
-	$SRC_DIR/scripts/dev/configure-debian $SRC_DIR
+	cmake -DPLUGINS="ALL" \
+		-DTOOLS="ALL" \
+		-DENABLE_DEBUG="OFF" \
+		-DENABLE_LOGGER="OFF" \
+		-DBUILD_SHARED=ON \
+		-DBUILD_FULL=ON \
+		-DBUILD_STATIC=ON \
+		-DKDB_DB_SYSTEM="${WORKSPACE}/config/kdb/system" \
+		-DKDB_DB_SPEC="${WORKSPACE}/config/kdb/spec" \
+		-DKDB_DB_HOME="${WORKSPACE}/config/kdb/home" \
+		-DCMAKE_INSTALL_PREFIX="${WORKSPACE}/system" \
+		..
 	make
 	make run_all
 	make run_memcheck
@@ -100,7 +111,18 @@ prepare_package() {
 	tar xvzf elektra-$VERSION.tar.gz
 	mkdir $BUILD_DIR/builder
 	cd $BUILD_DIR/builder
-	$SRC_DIR/scripts/dev/configure-debian ../elektra-$VERSION
+	cmake -DPLUGINS="ALL" \
+		-DTOOLS="ALL" \
+		-DENABLE_DEBUG="OFF" \
+		-DENABLE_LOGGER="OFF" \
+		-DBUILD_SHARED=ON \
+		-DBUILD_FULL=ON \
+		-DBUILD_STATIC=ON \
+		-DKDB_DB_SYSTEM="${WORKSPACE}/config/kdb/system" \
+		-DKDB_DB_SPEC="${WORKSPACE}/config/kdb/spec" \
+		-DKDB_DB_HOME="${WORKSPACE}/config/kdb/home" \
+		-DCMAKE_INSTALL_PREFIX="${WORKSPACE}/system" \
+		../elektra-$VERSION
 	make
 	make run_all
 	make run_memcheck
