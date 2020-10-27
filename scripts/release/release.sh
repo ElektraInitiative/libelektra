@@ -22,9 +22,6 @@ install_elektra() {
 	export PATH=${WORKSPACE}/system/bin:$PATH
 	export DBUS_SESSION_BUS_ADDRESS=$(dbus-daemon --session --fork --print-address)
 	export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
-
-	env
-	# ldconfig
 	export VERSION=$(kdb get system/elektra/version/constants/KDB_VERSION)
 	export DVERSION=$VERSION-1
 }
@@ -82,8 +79,8 @@ run_checks() {
 	DESTDIR=D make install
 	cd $BUILD_DIR/D && find . | sort > $BASE_DIR/"$VERSION"/installed_files
 
-	ls -l /usr/local/lib/libelektra*"$VERSION" > $BASE_DIR/"$VERSION"/size
-	readelf -a /usr/local/lib/libelektra-core.so > $BASE_DIR/"$VERSION"/readelf-core
+	ls -l ${WORKSPACE}/system/lib/libelektra*"$VERSION" > $BASE_DIR/"$VERSION"/size
+	readelf -a ${WORKSPACE}/system/lib/libelektra-core.so > $BASE_DIR/"$VERSION"/readelf-core
 
 }
 
