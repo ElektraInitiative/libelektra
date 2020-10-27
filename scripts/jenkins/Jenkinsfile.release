@@ -294,6 +294,12 @@ def maybeStage(String name, boolean expression, Closure body) {
   }
 }
 
+/* Get cpu count
+ */
+def cpuCount() {
+  return sh(returnStdout: true,
+            script: 'grep -c ^processor /proc/cpuinfo').trim() as Integer
+}
 
 /* Archives files located in paths
  *
