@@ -89,12 +89,21 @@ def buildRelease() {
 
               sh "git config --global user.name jenkins-release"
               sh "git config --global user.email jenkins@libelektra.org"
+              
+              dir('libelektra') {
+                deleteDir()
+                sh "git clone https://github.com/ElektraInitiative/libelektra.git ."
+              }
+              dir('ftp') {
+                deleteDir()
+                sh "git clone https://github.com/ElektraInitiative/ftp.git ."
+              }
+              dir('doc') {
+                deleteDir()
+                sh "git clone https://github.com/ElektraInitiative/doc.git ."
+              }
 
-              sh "cd .."
-              sh "git clone https://github.com/ElektraInitiative/ftp.git"
-              sh "git clone https://github.com/ElektraInitiative/doc.git"
-
-              sh "libelektra/scripts/release/release.sh"
+              sh "sh libelektra/scripts/release/release.sh"
 
               archive("release.tar.gz")
            }
