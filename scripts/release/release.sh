@@ -153,15 +153,15 @@ configure_debian_package() {
 	cd $BASE_DIR
 	mkdir -p $BASE_DIR/$VERSION/debian/$DVERSION
 	mv elektra_$DVERSION* *$DVERSION*.deb elektra_$VERSION.orig.tar.gz $BASE_DIR/$VERSION/debian/$DVERSION/
-	sudo dpkg -i $BASE_DIR/$VERSION/debian/$DVERSION/*$(dpkg-architecture -qDEB_BUILD_ARCH).deb
+	# sudo dpkg -i $BASE_DIR/$VERSION/debian/$DVERSION/*$(dpkg-architecture -qDEB_BUILD_ARCH).deb
 
-	kdb --version | tee ~elektra/$VERSION/debian/version
+	# kdb --version | tee ~elektra/$VERSION/debian/version
 
 	# trace kdb calls
-	log_strace "strace-debian-package"
+	# log_strace "strace-debian-package"
 
 	# run and log tests
-	run_log_tests "test-debian-package"
+	# run_log_tests "test-debian-package"
 
 }
 
