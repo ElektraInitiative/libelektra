@@ -233,4 +233,4 @@ run_checks
 prepare_package
 configure_debian_package
 tar -czvf release.tar.gz $BASE_DIR/$VERSION
-build_documentation
+# build_documentation
