@@ -47,7 +47,7 @@ maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) 
 
 stage("Release") {
     milestone label: "Release"
-    buildRelease()
+    parallel buildRelease()
 }
 
 /**************/
