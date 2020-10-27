@@ -18,7 +18,13 @@ install_elektra() {
 	cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=ON -DKDB_DB_SYSTEM="${WORKSPACE}/config/kdb/system" -DKDB_DB_SPEC="${WORKSPACE}/config/kdb/spec" -DKDB_DB_HOME="${WORKSPACE}/config/kdb/home" -DCMAKE_INSTALL_PREFIX="${WORKSPACE}/system" ..
 	make
 	make install
-	ldconfig
+	export LD_LIBRARY_PATH=${WORKSPACE}/system/lib:$LD_LIBRARY_PATH
+	export PATH=${WORKSPACE}/system/bin:$PATH
+	export DBUS_SESSION_BUS_ADDRESS=`dbus-daemon --session --fork --print-address`
+	export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
+
+	env
+	# ldconfig
 	export VERSION=$(kdb get system/elektra/version/constants/KDB_VERSION)
 	export DVERSION=$VERSION-1
 }
