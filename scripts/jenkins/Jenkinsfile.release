@@ -126,7 +126,12 @@ def buildRelease(testName, image) {
 
               archive(["${testName}-release.tar.gz"])
 
-              script{
+              dir('libelektra') {
+                sh "git bundle create libelektra.bundle --all"
+                archive(["libelektra.bundle"])
+              }
+
+              script {
                 RELEASE_VERSION = sh(script: 'sh scripts/release/get-installed-version.sh', returnStdout: true).trim()
               }
            }
