@@ -47,7 +47,7 @@ maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) 
 
 stage("Release") {
     milestone label: "Release"
-    parallel buildRelease()
+    parallel generateReleaseStages()
 }
 
 /**************/
@@ -65,10 +65,17 @@ def dockerInit() {
     checkout scm
 
     DOCKER_IMAGES.buster = createDockerImageDesc(
-    "debian-buster", this.&idTesting,
-    "./scripts/docker/debian/buster",
-    "./scripts/docker/debian/buster/Dockerfile"
+      "debian-buster", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/Dockerfile"
+    ) 
+
+    DOCKER_IMAGES.focalbui = createDockerImageDesc( 
+      "ubuntu-focal", this.&idTesting,
+      "./scripts/docker/ubuntu/focal",
+      "./scripts/docker/ubuntu/focal/Dockerfile"
     )
+
   }
 }
 
@@ -76,8 +83,11 @@ def dockerInit() {
  *
  * Imports the gpg keys and runs the release script.
  * All relevant artifacts (build and test infos, packages, etc) are archived
+ *
+ * testName: used to identify the release and name the stage
+ * image: which docker image should be used
  */
-def buildRelease() {
+def buildRelease(testName, image) {
     def stageName = "release"
     return [(stageName): {
       stage(stageName) {
@@ -104,14 +114,32 @@ def buildRelease() {
               }
 
               sh "sh libelektra/scripts/release/release.sh"
+              sh "mv release.tar.gz ${testName}-release.tar.gz"
 
-              archive(["release.tar.gz"])
+              archive(["${testName}-release.tar.gz"])
            }
         }
       }
     }]
 }
 
+/* Generate release stages for release automation
+ */
+def generateReleaseStages() {
+  def tasks = [:]
+
+  tasks << buildRelease(
+    "debian-buster-full",
+    DOCKER_IMAGES.buster
+  )
+
+  tasks << buildRelease(
+    "ubuntu-focal",
+    DOCKER_IMAGES.focal
+  )
+  
+  return tasks
+}
 
 /* Generate Stages to pull all docker images */
 def generateDockerPullStages() {
