@@ -140,6 +140,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added alpine linux docker image with latest Elektra installed. This image is published on docker hub as [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
   We will update the image for each Elektra release such that novices can easily test Elektra without compiling or installing. _(Mihael Pranjić)_
 - Remove unused `libgtest-dev` from docker images. _(Mihael Pranjić)_
+- Add ubuntu focal (20.04) docker image _(Robert Sowula)_
 
 ## Infrastructure
 
@@ -154,6 +155,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Temporarily resolve cyclic dependency between go-elektra and libelektra builds. _(Mihael Pranjić)_
 - Add a new Jenkinsfile for release automation. _(Robert Sowula)_
+- Our release pipeline now also builds deb packages for Ubuntu Focal (20.04). _(Robert Sowula)_
 
 ### Travis
 
