@@ -321,8 +321,14 @@ int elektraJniClose (Plugin * handle, Key * errorKey)
 {
 	Data * data = elektraPluginGetData (handle);
 
-	if (!data || data->module == 1)
+	if (!data)
 	{
+		return 0;
+	}
+
+	if (data->module == 1)
+	{
+		elektraFree (data);
 		return 0;
 	}
 
