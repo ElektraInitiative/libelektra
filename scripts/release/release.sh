@@ -18,7 +18,6 @@ install_elektra() {
 	cmake -DBUILD_SHARED=ON \
 		-DBUILD_FULL=ON \
 		-DBUILD_STATIC=ON \
-		-DBUILD_DOCUMENTATION=OFF \
 		-DKDB_DB_SYSTEM="${WORKSPACE}/config/kdb/system" \
 		-DKDB_DB_SPEC="${WORKSPACE}/config/kdb/spec" \
 		-DKDB_DB_HOME="${WORKSPACE}/config/kdb/home" \
