@@ -28,6 +28,9 @@ NOW = new Date()
 DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
                      // dockerInit()
 
+RELEASE_VERSION = '' // release version, set during release build and used
+                     // by the documentation stage
+
 
 
 // Stages
@@ -48,6 +51,11 @@ maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) 
 stage("Release") {
     milestone label: "Release"
     parallel generateReleaseStages()
+}
+
+stage("Build Documentation") {
+  milestone label: "Documentation"
+  parallel buildDoc()
 }
 
 /**************/
@@ -117,6 +125,10 @@ def buildRelease(testName, image) {
               sh "mv release.tar.gz ${testName}-release.tar.gz"
 
               archive(["${testName}-release.tar.gz"])
+
+              script{
+                RELEASE_VERSION = sh(script: 'sh scripts/release/get-installed-version.sh', returnStdout: true).trim()
+              }
            }
         }
       }
@@ -139,6 +151,46 @@ def generateReleaseStages() {
   )
   
   return tasks
+}
+
+/* Stage building and uploading the documentation */
+def buildDoc() {
+  def stageName = "doc"
+  cmakeFlags = [
+    'BUILD_PDF': 'ON',
+    'BUILD_FULL': 'OFF',
+    'BUILD_SHARED': 'OFF',
+    'BUILD_STATIC': 'OFF',
+    'BUILD_TESTING': 'OFF'
+  ]
+  return [(stageName): {
+    stage(stageName) {
+      withDockerEnv(DOCKER_IMAGES.stretch_doc) {
+        dir('build') {
+          deleteDir()
+          cmake(env.WORKSPACE, cmakeFlags)
+          sh "make html man"
+          sh "cp -ra doc/html doc/latex doc/man ../api/${RELEASE_VERSION}/"
+        }
+
+        dir('api') {
+          sh "rm current"
+          sh "ln -s ${RELEASE_VERSION} current"
+          sh "git add current ${RELEASE_VERSION}"
+        }
+        sh "git commit -a -m '${RELEASE_VERSION} Release'"
+
+        warnings parserConfigurations: [
+          [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
+        ]
+
+        sh "git bundle create docu.bundle --all"
+        archive(["docu.bundle"])
+
+        deleteDir()
+      }
+    }
+  }]
 }
 
 /* Generate Stages to pull all docker images */
