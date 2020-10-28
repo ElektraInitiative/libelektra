@@ -183,6 +183,7 @@ def buildDoc() {
           deleteDir()
           cmake(env.WORKSPACE, cmakeFlags)
           sh "make html man"
+          sh "mkdir ../api/${RELEASE_VERSION}"
           sh "cp -ra doc/html doc/latex doc/man ../api/${RELEASE_VERSION}/"
         }
 
