@@ -1,6 +1,6 @@
-FROM fedora:32
+FROM fedora:33
 
-RUN dnf upgrade -y && dnf install -y \
+RUN dnf upgrade --refresh -y && dnf install -y \
         augeas-devel \
         bison \
         boost-devel \
@@ -31,7 +31,7 @@ RUN dnf upgrade -y && dnf install -y \
         openssl-devel \
         procps-ng \
         python3-devel \
-        qt5-devel \
+        qt5-qtbase-devel \
         ruby-devel \
         rubygem-test-unit \
         swig \
@@ -51,3 +51,4 @@ RUN mkdir -p ${GTEST_ROOT} \
       -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
+
