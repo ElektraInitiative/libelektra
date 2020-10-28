@@ -105,9 +105,8 @@ def dockerInit() {
  * image: which docker image should be used
  */
 def buildRelease(testName, image) {
-    def stageName = "release"
-    return [(stageName): {
-      stage(stageName) {
+    return [(testName): {
+      stage(testName) {
         withDockerEnv(DOCKER_IMAGES.buster, [DOCKER_OPTS.MOUNT_MIRROR]) {
           withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
             file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
