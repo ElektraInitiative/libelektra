@@ -15,7 +15,15 @@ install_elektra() {
 	rm -rf $BUILD_DIR
 	mkdir $BUILD_DIR
 	cd $BUILD_DIR
-	cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=ON -DKDB_DB_SYSTEM="${WORKSPACE}/config/kdb/system" -DKDB_DB_SPEC="${WORKSPACE}/config/kdb/spec" -DKDB_DB_HOME="${WORKSPACE}/config/kdb/home" -DCMAKE_INSTALL_PREFIX="${WORKSPACE}/system" ..
+	cmake -DBUILD_SHARED=ON \
+		-DBUILD_FULL=ON \
+		-DBUILD_STATIC=ON \
+		-DBUILD_DOCUMENTATION=OFF \
+		-DKDB_DB_SYSTEM="${WORKSPACE}/config/kdb/system" \
+		-DKDB_DB_SPEC="${WORKSPACE}/config/kdb/spec" \
+		-DKDB_DB_HOME="${WORKSPACE}/config/kdb/home" \
+		-DCMAKE_INSTALL_PREFIX="${WORKSPACE}/system" \
+		..
 	make
 	make install
 	export LD_LIBRARY_PATH=${WORKSPACE}/system/lib:$LD_LIBRARY_PATH
