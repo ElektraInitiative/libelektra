@@ -176,6 +176,8 @@ you up to date with the multi-language support provided by Elektra.
 - Use Fedora 33 and 32, drop Fedora 31 use in Jenkins. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
+- Temporarily resolve cyclic dependency between `go-elektra` and `libelektra` builds. _(Mihael Pranjić)_
+- Add a new Jenkinsfile for release automation. _(Robert Sowula)_
 
 ### Travis
 
