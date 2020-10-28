@@ -204,6 +204,16 @@ def generateDockerPullStages() {
   return tasks
 }
 
+def generateDockerBuildStages() {
+  def tasks = [:]
+  DOCKER_IMAGES.each { key, image ->
+    if(image.autobuild && !image.exists) {
+      tasks << buildImageStage(image)
+    }
+  }
+  return tasks
+}
+
 /* Returns a stage that tries to pull an image
  *
  * Also sets IMAGES_TO_BUILD to true if an image can not be found
