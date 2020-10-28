@@ -354,6 +354,18 @@ def createDockerImageDesc(name, idFun, context, file, autobuild=true) {
   return idFun(map)
 }
 
+/* Run cmake
+ * @param directory Basedir for cmake
+ * @param argsMap Map of arguments for cmake
+ */
+def cmake(String directory, Map argsMap) {
+  def argsStr = ""
+  argsMap.each { key, value ->
+    argsStr += "-D$key=\"$value\" "
+  }
+  sh("cmake $argsStr $directory")
+}
+
 /* Build image ID of docker images used for tests
  *
  * We use identifiers in the form of name:yyyyMM-hash
