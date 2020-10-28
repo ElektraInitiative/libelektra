@@ -84,6 +84,15 @@ def dockerInit() {
       "./scripts/docker/ubuntu/focal/Dockerfile"
     )
 
+    /* Build Elektra's documentation with this image.
+     * Also contains latex for pdf creation.
+     */
+    DOCKER_IMAGES.buster_doc = createDockerImageDesc(
+      "debian-buster-doc", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/doc.Dockerfile"
+    )
+
   }
 }
 
@@ -170,7 +179,7 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.stretch_doc) {
+      withDockerEnv(DOCKER_IMAGES.buster_doc) {
         dir('build') {
           deleteDir()
           cmake(env.WORKSPACE, cmakeFlags)
