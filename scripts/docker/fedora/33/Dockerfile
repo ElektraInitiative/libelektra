@@ -1,6 +1,6 @@
 FROM fedora:33
 
-RUN dnf upgrade -y && dnf install -y \
+RUN dnf upgrade --refresh -y && dnf install -y \
         augeas-devel \
         bison \
         bison-devel \
@@ -37,7 +37,7 @@ RUN dnf upgrade -y && dnf install -y \
         openssl-devel \
         procps-ng \
         python3-devel \
-        qt5-devel \
+        qt5-qtbase-devel \
         ruby-devel \
         rubygem-test-unit \
         swig \
