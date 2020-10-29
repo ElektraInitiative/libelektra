@@ -255,9 +255,6 @@ before_script:
       export PATH=$PATH:"$PWD/install/bin"
       export LD_LIBRARY_PATH="$PWD/install/lib"
     fi
-    if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
-      export PATH="/usr/local/opt/python@3.9/bin:$PATH"
-    fi
     SYSTEM_DIR="$PWD/kdbsystem"
     mkdir build && cd build
     CMAKE_OPT+=(
