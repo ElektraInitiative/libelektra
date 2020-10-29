@@ -105,43 +105,47 @@ def dockerInit() {
  * image: which docker image should be used
  */
 def buildRelease(testName, image) {
-    return [(testName): {
-      stage(testName) {
-        withDockerEnv(DOCKER_IMAGES.buster, [DOCKER_OPTS.MOUNT_MIRROR]) {
-          withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
-            file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
-              sh "gpg --import $KEY"
-              sh "gpg --import $SKEY"
+  return [(testName): {
+    stage(testName) {
+      withDockerEnv(DOCKER_IMAGES.buster, [DOCKER_OPTS.MOUNT_MIRROR]) {
+        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
+                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
+          sh "gpg --import $KEY"
+          sh "gpg --import $SKEY"
+          withEnv(["DEBSIGN_PROGRAM=gpg",
+                   "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
+                   "DEBEMAIL=autobuilder@libelektra.org"]) {
+                
+            sh "git config --global user.name jenkins-release"
+            sh "git config --global user.email jenkins@libelektra.org"
+            
+            dir('libelektra') {
+              deleteDir()
+              sh "git clone https://github.com/ElektraInitiative/libelektra.git ."
+            }
+            dir('ftp') {
+              deleteDir()
+              sh "git clone https://github.com/ElektraInitiative/ftp.git ."
+            }
 
-              sh "git config --global user.name jenkins-release"
-              sh "git config --global user.email jenkins@libelektra.org"
-              
-              dir('libelektra') {
-                deleteDir()
-                sh "git clone https://github.com/ElektraInitiative/libelektra.git ."
-              }
-              dir('ftp') {
-                deleteDir()
-                sh "git clone https://github.com/ElektraInitiative/ftp.git ."
-              }
+            sh "sh libelektra/scripts/release/release.sh"
+            sh "mv release.tar.gz ${testName}-release.tar.gz"
 
-              sh "sh libelektra/scripts/release/release.sh"
-              sh "mv release.tar.gz ${testName}-release.tar.gz"
+            archive(["${testName}-release.tar.gz"])
 
-              archive(["${testName}-release.tar.gz"])
+            dir('libelektra') {
+              sh "git bundle create libelektra.bundle --all"
+              archive(["libelektra.bundle"])
+            }
 
-              dir('libelektra') {
-                sh "git bundle create libelektra.bundle --all"
-                archive(["libelektra.bundle"])
-              }
-
-              script {
-                RELEASE_VERSION = sh(script: 'sh scripts/release/get-installed-version.sh', returnStdout: true).trim()
-              }
-           }
+            script {
+              RELEASE_VERSION = sh(script: 'sh scripts/release/get-installed-version.sh', returnStdout: true).trim()
+            }
+          } 
         }
       }
-    }]
+    }
+  }]
 }
 
 /* Generate release stages for release automation
