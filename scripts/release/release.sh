@@ -103,9 +103,8 @@ run_checks() {
 
 	# readelf of all libs
 	mkdir $BASE_DIR/"$VERSION"/readelf
-	for file in *.so
-	do
-  		readelf -a "$file" > $BASE_DIR/"$VERSION"/readelf/readelf-"$file"
+	for file in *.so; do
+		readelf -a "$file" > $BASE_DIR/"$VERSION"/readelf/readelf-"$file"
 	done
 
 }
@@ -162,10 +161,10 @@ configure_debian_package() {
 
 	git clean -fdx
 	rm -rf $BUILD_DIR
-	gbp buildpackage -sa 
+	gbp buildpackage -sa
 
 	# get debian version codename
-	VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release |awk -F= {' print $2'}|sed s/\"//g)
+	VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 
 	# move and install
 	cd $BASE_DIR
@@ -202,10 +201,10 @@ run_log_tests() {
 	KDB=kdb kdb run_all -v 2>&1 | tee $BASE_DIR/$VERSION/$CONTEXT/run_all
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all
 
-	KDB=kdb-full kdb-full run_all > $BASE_DIR/$VERSION/$CONTEXT/run_all_full 2>&1 
+	KDB=kdb-full kdb-full run_all > $BASE_DIR/$VERSION/$CONTEXT/run_all_full 2>&1
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all_full
 
-	KDB=kdb-static kdb-static run_all > $BASE_DIR/$VERSION/$CONTEXT/run_all_static 2>&1 
+	KDB=kdb-static kdb-static run_all > $BASE_DIR/$VERSION/$CONTEXT/run_all_static 2>&1
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all_static
 }
 
