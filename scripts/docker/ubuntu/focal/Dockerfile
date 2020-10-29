@@ -36,6 +36,7 @@ RUN apt-get update && apt-get -y install \
         libxerces-c-dev \
         libxml2-dev \
         libyajl-dev \
+        libyaml-cpp-dev \
         libzmq3-dev \
         lintian \
         locales \
