@@ -94,10 +94,19 @@ run_checks() {
 	# Check which files changed
 	cd "$BUILD_DIR"
 	DESTDIR=D make install
-	cd $BUILD_DIR/D && find . | sort > $BASE_DIR/"$VERSION"/installed_files
+	DESTDIR_DEPTH=$(printf $BUILD_DIR/D | awk -F"/" '{print NF-1}')
+	cd $BUILD_DIR/D && find . | cut -sd / -f $DESTDIR_DEPTH- | sort > $BASE_DIR/"$VERSION"/installed_files
 
-	ls -l ${WORKSPACE}/system/lib/libelektra*"$VERSION" > $BASE_DIR/"$VERSION"/size
-	readelf -a ${WORKSPACE}/system/lib/libelektra-core.so > $BASE_DIR/"$VERSION"/readelf-core
+	# get size of libs
+	cd ${WORKSPACE}/system/lib/
+	ls -l libelektra*"$VERSION" > $BASE_DIR/"$VERSION"/size
+
+	# readelf of all libs
+	mkdir $BASE_DIR/"$VERSION"/readelf
+	for file in *.so
+	do
+  		readelf -a "$file" > $BASE_DIR/"$VERSION"/readelf/readelf-"$file"
+	done
 
 }
 
@@ -153,12 +162,15 @@ configure_debian_package() {
 
 	git clean -fdx
 	rm -rf $BUILD_DIR
-	gbp buildpackage -sa # TODO: use gpg key to sign debian package
+	gbp buildpackage -sa 
+
+	# get debian version codename
+	VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release |awk -F= {' print $2'}|sed s/\"//g)
 
 	# move and install
 	cd $BASE_DIR
-	mkdir -p $BASE_DIR/$VERSION/debian/$DVERSION
-	mv elektra_$DVERSION* *$DVERSION*.deb elektra_$VERSION.orig.tar.gz $BASE_DIR/$VERSION/debian/$DVERSION/
+	mkdir -p $BASE_DIR/$VERSION/debian/$VERSION_CODENAME
+	mv elektra_$DVERSION* *$DVERSION*.deb elektra_$VERSION.orig.tar.gz $BASE_DIR/$VERSION/debian/$VERSION_CODENAME/
 	# sudo dpkg -i $BASE_DIR/$VERSION/debian/$DVERSION/*$(dpkg-architecture -qDEB_BUILD_ARCH).deb
 
 	# kdb --version | tee ~elektra/$VERSION/debian/version
@@ -190,10 +202,10 @@ run_log_tests() {
 	KDB=kdb kdb run_all -v 2>&1 | tee $BASE_DIR/$VERSION/$CONTEXT/run_all
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all
 
-	KDB=kdb-full kdb-full run_all 2>&1 | tee $BASE_DIR/$VERSION/$CONTEXT/run_all_full
+	KDB=kdb-full kdb-full run_all > $BASE_DIR/$VERSION/$CONTEXT/run_all_full 2>&1 
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all_full
 
-	KDB=kdb-static kdb-static run_all 2>&1 | tee $BASE_DIR/$VERSION/$CONTEXT/run_all_static
+	KDB=kdb-static kdb-static run_all > $BASE_DIR/$VERSION/$CONTEXT/run_all_static 2>&1 
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all_static
 }
 
