@@ -39,6 +39,7 @@ Furthermore, it follows the popular [TOML spec](https://toml.io).
 It has nearly no run-time dependency, it only needs `base64` if binary values are needed.
 
 A huge thanks to Jakob Fischer for this amazing work!
+
 - TOML plugin
 - <<HIGHLIGHT>>
 - Cleanup
