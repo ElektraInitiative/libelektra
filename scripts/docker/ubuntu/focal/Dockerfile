@@ -103,6 +103,3 @@ USER ${JENKINS_USERID}
 # Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
     && git config --global user.name 'Jenkins'
-
-# TODO: remove next line
-CMD tail -f /dev/null
