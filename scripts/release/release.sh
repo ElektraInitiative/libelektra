@@ -4,7 +4,6 @@ BASE_DIR="$(pwd)"
 SRC_DIR="$BASE_DIR/libelektra"
 BUILD_DIR="$SRC_DIR/build"
 FTP_DIR="$BASE_DIR/ftp"
-DOC_DIR="$BASE_DIR/docu"
 
 # quit with error if any command fails
 #set -ex
@@ -172,30 +171,6 @@ configure_debian_package() {
 
 }
 
-# NOTE: generation of man pages will currently not work, since
-#	the buster docker image does not have ronn installed
-build_documentation() {
-	echo "Configuring docu..."
-
-	git clean -fdx
-	git checkout master
-	# Add the API docu:
-	mkdir $DOC_DIR/api/$VERSION/
-	mkdir $BUILD_DIR
-	cd $BUILD_DIR
-	cmake -DBUILD_PDF=ON ..
-	rm -rf doc
-	make html man
-	cp -ra doc/html doc/latex doc/man $DOC_DIR/api/$VERSION/
-
-	# Symlink current to latest version and add everything
-	cd $DOC_DIR/api/
-	rm current
-	ln -s $VERSION current
-	git add current $VERSION
-	git commit -a -m "$VERSION Release"
-}
-
 log_strace() {
 	CONTEXT=$1
 	mkdir $BASE_DIR/$VERSION/$CONTEXT
@@ -240,4 +215,3 @@ run_checks
 prepare_package
 configure_debian_package
 tar -czvf release.tar.gz $BASE_DIR/$VERSION
-# build_documentation
