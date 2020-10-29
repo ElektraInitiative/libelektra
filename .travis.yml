@@ -1,6 +1,6 @@
 language: cpp
 dist: bionic
-osx_image: xcode12
+osx_image: xcode12.2
 
 #
 # Define the build matrix
@@ -172,6 +172,7 @@ matrix:
             - lua
             - ninja
             - openssl
+            - python@3.8
             - qt
             - swig
             - yajl
@@ -255,6 +256,9 @@ before_script:
       CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
       export PATH=$PATH:"$PWD/install/bin"
       export LD_LIBRARY_PATH="$PWD/install/lib"
+    fi
+    if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
+      export PATH="/usr/local/opt/python@3.8/bin:$PATH"
     fi
     SYSTEM_DIR="$PWD/kdbsystem"
     mkdir build && cd build
