@@ -124,10 +124,6 @@ def buildRelease(testName, image) {
                 deleteDir()
                 sh "git clone https://github.com/ElektraInitiative/ftp.git ."
               }
-              dir('doc') {
-                deleteDir()
-                sh "git clone https://github.com/ElektraInitiative/doc.git ."
-              }
 
               sh "sh libelektra/scripts/release/release.sh"
               sh "mv release.tar.gz ${testName}-release.tar.gz"
@@ -179,28 +175,38 @@ def buildDoc() {
   return [(stageName): {
     stage(stageName) {
       withDockerEnv(DOCKER_IMAGES.buster_doc) {
+        sh "git config --global user.name jenkins-release"
+        sh "git config --global user.email jenkins@libelektra.org"
+
         dir('build') {
           deleteDir()
           cmake(env.WORKSPACE, cmakeFlags)
           sh "make html man"
-          sh "mkdir ../api/${RELEASE_VERSION}"
-          sh "cp -ra doc/html doc/latex doc/man ../api/${RELEASE_VERSION}/"
         }
 
-        dir('api') {
+        dir('doc') {
+          deleteDir()
+          sh "git clone https://github.com/ElektraInitiative/doc.git ."
+        }
+
+        dir('doc/api') {
+          sh "mkdir ${RELEASE_VERSION}"
+          sh "cp -a ${WORKSPACE}/build/doc/html ${WORKSPACE}/build/doc/latex ${WORKSPACE}/build/doc/man ${RELEASE_VERSION}/"
           sh "rm current"
           sh "ln -s ${RELEASE_VERSION} current"
           sh "git add current ${RELEASE_VERSION}"
         }
-        sh "git commit -a -m '${RELEASE_VERSION} Release'"
+
+        dir('doc') {
+          sh "git commit -a -m '${RELEASE_VERSION} Release'"
+          sh "git bundle create docu.bundle --all"
+          archive(["docu.bundle"])
+        }
 
         warnings parserConfigurations: [
           [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
         ]
-
-        sh "git bundle create docu.bundle --all"
-        archive(["docu.bundle"])
-
+        
         deleteDir()
       }
     }
