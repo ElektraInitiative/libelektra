@@ -172,7 +172,7 @@ matrix:
             - lua
             - ninja
             - openssl
-            - python@3.8
+            - python@3.9
             - qt
             - swig
             - yajl
@@ -258,7 +258,7 @@ before_script:
       export LD_LIBRARY_PATH="$PWD/install/lib"
     fi
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
-      export PATH="/usr/local/opt/python@3.8/bin:$PATH"
+      export PATH="/usr/local/opt/python@3.9/bin:$PATH"
     fi
     SYSTEM_DIR="$PWD/kdbsystem"
     mkdir build && cd build

@@ -159,7 +159,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Update macOS builds to use GCC 10, Ruby 2.7.1 and Xcode 12.2. _(Mihael Pranjić)_
 - Increase wait time on builds to fix build timeout errors ("No output has been received in the last 10m0s"). _(Mihael Pranjić)_
-- Export Python 3.8 path for macOS builds. _(Mihael Pranjić)_
+- Export Python 3.9 path for macOS builds. _(Mihael Pranjić)_
 
 ## Website
 
