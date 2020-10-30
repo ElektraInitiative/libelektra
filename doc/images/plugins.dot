@@ -187,6 +187,10 @@ strict digraph G {
 	template [shape=Mdiamond];
 	tracing [shape=Mdiamond];
 	timeofday -> tracing;
+	storage [shape=Mdiamond];
+	toml -> storage;
+	toml [shape=Mdiamond];
+	toml -> toml;
 	tracing [shape=Mdiamond];
 	tracer -> tracing;
 	check [shape=Mdiamond];
