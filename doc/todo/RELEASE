@@ -258,6 +258,16 @@ Push elektra-doc to github:
  cd ~elektra-doc && git push && git push github
 
 
+== Update Alpine Linux image on docker hub ==
+
+Now that the release is available to download, rebuild the Alpine release image.
+
+To do so, increment the Elektra version in e.g. `scripts/docker/alpine/3.12/release.Dockerfile`:
+```
+ELEKTRA_RELEASE=0.9.2
+```
+If the file does not exist, possibly the Alpine version was changed.
+
 == prep for next release ==
 
 cd ~e && cp doc/todo/NEWS.md doc/news/_preparation_next_release.md

@@ -92,7 +92,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### JNA
 
-- make examples work again _(Markus Raab)_
+- Made examples work again. _(Markus Raab)_
 
 ## Scripts
 
