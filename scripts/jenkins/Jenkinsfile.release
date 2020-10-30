@@ -115,6 +115,7 @@ def buildRelease(testName, image) {
           withEnv(["DEBSIGN_PROGRAM=gpg",
                    "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
                    "DEBEMAIL=autobuilder@libelektra.org"]) {
+            sh "rm -R ./*"
                 
             sh "git config --global user.name jenkins-release"
             sh "git config --global user.email jenkins@libelektra.org"
@@ -139,7 +140,7 @@ def buildRelease(testName, image) {
             }
 
             script {
-              RELEASE_VERSION = sh(script: 'sh scripts/release/get-installed-version.sh', returnStdout: true).trim()
+              RELEASE_VERSION = sh(script: 'sh libelektra/scripts/release/get-installed-version.sh', returnStdout: true).trim()
             }
           } 
         }
