@@ -24,8 +24,12 @@ enum DOCKER_OPTS {
   public DOCKER_OPTS()  {} // WORKAROUND see TEST
 }
 
+NOW = new Date()
 DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
                      // dockerInit()
+
+RELEASE_VERSION = '' // release version, set during release build and used
+                     // by the documentation stage
 
 
 
@@ -46,7 +50,12 @@ maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) 
 
 stage("Release") {
     milestone label: "Release"
-    buildRelease()
+    parallel generateReleaseStages()
+}
+
+stage("Build Documentation") {
+  milestone label: "Documentation"
+  parallel buildDoc()
 }
 
 /**************/
@@ -64,10 +73,26 @@ def dockerInit() {
     checkout scm
 
     DOCKER_IMAGES.buster = createDockerImageDesc(
-    "debian-buster", this.&idTesting,
-    "./scripts/docker/debian/buster",
-    "./scripts/docker/debian/buster/Dockerfile"
+      "debian-buster", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/Dockerfile"
+    ) 
+
+    DOCKER_IMAGES.focal = createDockerImageDesc( 
+      "ubuntu-focal", this.&idTesting,
+      "./scripts/docker/ubuntu/focal",
+      "./scripts/docker/ubuntu/focal/Dockerfile"
     )
+
+    /* Build Elektra's documentation with this image.
+     * Also contains latex for pdf creation.
+     */
+    DOCKER_IMAGES.buster_doc = createDockerImageDesc(
+      "debian-buster-doc", this.&idTesting,
+      "./scripts/docker/debian/buster",
+      "./scripts/docker/debian/buster/doc.Dockerfile"
+    )
+
   }
 }
 
@@ -75,33 +100,123 @@ def dockerInit() {
  *
  * Imports the gpg keys and runs the release script.
  * All relevant artifacts (build and test infos, packages, etc) are archived
+ *
+ * testName: used to identify the release and name the stage
+ * image: which docker image should be used
  */
-def buildRelease() {
-    def stageName = "release"
-    return [(stageName): {
-      stage(stageName) {
-        withDockerEnv(DOCKER_IMAGES.buster, [DOCKER_OPTS.MOUNT_MIRROR]) {
-          withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
-            file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
-              sh "gpg --import $KEY"
-              sh "gpg --import $SKEY"
+def buildRelease(testName, image) {
+  return [(testName): {
+    stage(testName) {
+      withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
+        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
+                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
+          sh "gpg --import $KEY"
+          sh "gpg --import $SKEY"
+          withEnv(["DEBSIGN_PROGRAM=gpg",
+                   "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
+                   "DEBEMAIL=autobuilder@libelektra.org"]) {
+            sh "rm -R ./*"
+                
+            sh "git config --global user.name jenkins-release"
+            sh "git config --global user.email jenkins@libelektra.org"
+            
+            dir('libelektra') {
+              deleteDir()
+              sh "git clone https://github.com/ElektraInitiative/libelektra.git ."
+            }
+            dir('ftp') {
+              deleteDir()
+              sh "git clone https://github.com/ElektraInitiative/ftp.git ."
+            }
 
-              sh "git config --global user.name jenkins-release"
-              sh "git config --global user.email jenkins@libelektra.org"
+            sh "sh libelektra/scripts/release/release.sh"
+            sh "mv release.tar.gz ${testName}-release.tar.gz"
 
-              sh "cd .."
-              sh "git clone https://github.com/ElektraInitiative/ftp.git"
-              sh "git clone https://github.com/ElektraInitiative/doc.git"
+            archive(["${testName}-release.tar.gz"])
 
-              sh "libelektra/scripts/release/release.sh"
+            dir('libelektra') {
+              sh "git bundle create libelektra.bundle --all"
+              archive(["libelektra.bundle"])
+            }
 
-              archive("release.tar.gz")
-           }
+            script {
+              RELEASE_VERSION = sh(script: 'sh libelektra/scripts/release/get-installed-version.sh', returnStdout: true).trim()
+            }
+          } 
         }
       }
-    }]
+    }
+  }]
 }
 
+/* Generate release stages for release automation
+ */
+def generateReleaseStages() {
+  def tasks = [:]
+
+  tasks << buildRelease(
+    "debian-buster-full",
+    DOCKER_IMAGES.buster
+  )
+
+  tasks << buildRelease(
+    "ubuntu-focal",
+    DOCKER_IMAGES.focal
+  )
+  
+  return tasks
+}
+
+/* Stage building and uploading the documentation */
+def buildDoc() {
+  def stageName = "doc"
+  cmakeFlags = [
+    'BUILD_PDF': 'ON',
+    'BUILD_FULL': 'OFF',
+    'BUILD_SHARED': 'OFF',
+    'BUILD_STATIC': 'OFF',
+    'BUILD_TESTING': 'OFF'
+  ]
+  return [(stageName): {
+    stage(stageName) {
+      withDockerEnv(DOCKER_IMAGES.buster_doc) {
+        sh "git config --global user.name jenkins-release"
+        sh "git config --global user.email jenkins@libelektra.org"
+
+        dir('build') {
+          deleteDir()
+          cmake(env.WORKSPACE, cmakeFlags)
+          sh "make html man"
+        }
+
+        dir('doc') {
+          deleteDir()
+          sh "git clone https://github.com/ElektraInitiative/doc.git ."
+        }
+
+        dir('doc/api') {
+          sh "mkdir ${RELEASE_VERSION}"
+          sh "cp -a ${WORKSPACE}/build/doc/html ${WORKSPACE}/build/doc/latex ${WORKSPACE}/build/doc/man ${RELEASE_VERSION}/"
+          sh "rm current"
+          sh "ln -s ${RELEASE_VERSION} current"
+          sh "git add current ${RELEASE_VERSION}"
+        }
+
+        dir('doc') {
+          sh "git commit -a -m '${RELEASE_VERSION} Release'"
+          sh "git bundle create docu.bundle --all"
+          archive(["docu.bundle"])
+        }
+
+        warnings parserConfigurations: [
+          [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
+        ]
+        
+        deleteDir()
+      }
+    }
+  }]
+}
 
 /* Generate Stages to pull all docker images */
 def generateDockerPullStages() {
@@ -109,6 +224,16 @@ def generateDockerPullStages() {
   DOCKER_IMAGES.each { key, image ->
     if(image.autobuild) {
       tasks << pullImageStage(image)
+    }
+  }
+  return tasks
+}
+
+def generateDockerBuildStages() {
+  def tasks = [:]
+  DOCKER_IMAGES.each { key, image ->
+    if(image.autobuild && !image.exists) {
+      tasks << buildImageStage(image)
     }
   }
   return tasks
@@ -241,6 +366,18 @@ def createDockerImageDesc(name, idFun, context, file, autobuild=true) {
   return idFun(map)
 }
 
+/* Run cmake
+ * @param directory Basedir for cmake
+ * @param argsMap Map of arguments for cmake
+ */
+def cmake(String directory, Map argsMap) {
+  def argsStr = ""
+  argsMap.each { key, value ->
+    argsStr += "-D$key=\"$value\" "
+  }
+  sh("cmake $argsStr $directory")
+}
+
 /* Build image ID of docker images used for tests
  *
  * We use identifiers in the form of name:yyyyMM-hash
@@ -293,6 +430,12 @@ def maybeStage(String name, boolean expression, Closure body) {
   }
 }
 
+/* Get cpu count
+ */
+def cpuCount() {
+  return sh(returnStdout: true,
+            script: 'grep -c ^processor /proc/cpuinfo').trim() as Integer
+}
 
 /* Archives files located in paths
  *

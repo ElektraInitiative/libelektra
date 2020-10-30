@@ -4,7 +4,6 @@ BASE_DIR="$(pwd)"
 SRC_DIR="$BASE_DIR/libelektra"
 BUILD_DIR="$SRC_DIR/build"
 FTP_DIR="$BASE_DIR/ftp"
-DOC_DIR="$BASE_DIR/docu"
 
 # quit with error if any command fails
 #set -ex
@@ -15,10 +14,20 @@ install_elektra() {
 	rm -rf $BUILD_DIR
 	mkdir $BUILD_DIR
 	cd $BUILD_DIR
-	cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=ON ..
+	cmake -DBUILD_SHARED=ON \
+		-DBUILD_FULL=ON \
+		-DBUILD_STATIC=ON \
+		-DKDB_DB_SYSTEM="${WORKSPACE}/config/kdb/system" \
+		-DKDB_DB_SPEC="${WORKSPACE}/config/kdb/spec" \
+		-DKDB_DB_HOME="${WORKSPACE}/config/kdb/home" \
+		-DCMAKE_INSTALL_PREFIX="${WORKSPACE}/system" \
+		..
 	make
 	make install
-	ldconfig
+	export LD_LIBRARY_PATH=${WORKSPACE}/system/lib:$LD_LIBRARY_PATH
+	export PATH=${WORKSPACE}/system/bin:$PATH
+	export DBUS_SESSION_BUS_ADDRESS=$(dbus-daemon --session --fork --print-address)
+	export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
 	export VERSION=$(kdb get system/elektra/version/constants/KDB_VERSION)
 	export DVERSION=$VERSION-1
 }
@@ -60,7 +69,18 @@ run_checks() {
 
 	# Rebuild cleanly, run all tests and also check for memleaks:
 	cd "$BUILD_DIR"
-	$SRC_DIR/scripts/dev/configure-debian $SRC_DIR
+	cmake -DPLUGINS="ALL" \
+		-DTOOLS="ALL" \
+		-DENABLE_DEBUG="OFF" \
+		-DENABLE_LOGGER="OFF" \
+		-DBUILD_SHARED=ON \
+		-DBUILD_FULL=ON \
+		-DBUILD_STATIC=ON \
+		-DKDB_DB_SYSTEM="${WORKSPACE}/config/kdb/system" \
+		-DKDB_DB_SPEC="${WORKSPACE}/config/kdb/spec" \
+		-DKDB_DB_HOME="${WORKSPACE}/config/kdb/home" \
+		-DCMAKE_INSTALL_PREFIX="${WORKSPACE}/system" \
+		..
 	make
 	make run_all
 	make run_memcheck
@@ -74,10 +94,18 @@ run_checks() {
 	# Check which files changed
 	cd "$BUILD_DIR"
 	DESTDIR=D make install
-	cd $BUILD_DIR/D && find . | sort > $BASE_DIR/"$VERSION"/installed_files
+	DESTDIR_DEPTH=$(printf $BUILD_DIR/D | awk -F"/" '{print NF-1}')
+	cd $BUILD_DIR/D && find . | cut -sd / -f $DESTDIR_DEPTH- | sort > $BASE_DIR/"$VERSION"/installed_files
 
-	ls -l /usr/local/lib/libelektra*"$VERSION" > $BASE_DIR/"$VERSION"/size
-	readelf -a /usr/local/lib/libelektra-core.so > $BASE_DIR/"$VERSION"/readelf-core
+	# get size of libs
+	cd ${WORKSPACE}/system/lib/
+	ls -l libelektra*"$VERSION" > $BASE_DIR/"$VERSION"/size
+
+	# readelf of all libs
+	mkdir $BASE_DIR/"$VERSION"/readelf
+	for file in *.so; do
+		readelf -a "$file" > $BASE_DIR/"$VERSION"/readelf/readelf-"$file"
+	done
 
 }
 
@@ -97,7 +125,18 @@ prepare_package() {
 	tar xvzf elektra-$VERSION.tar.gz
 	mkdir $BUILD_DIR/builder
 	cd $BUILD_DIR/builder
-	$SRC_DIR/scripts/dev/configure-debian ../elektra-$VERSION
+	cmake -DPLUGINS="ALL" \
+		-DTOOLS="ALL" \
+		-DENABLE_DEBUG="OFF" \
+		-DENABLE_LOGGER="OFF" \
+		-DBUILD_SHARED=ON \
+		-DBUILD_FULL=ON \
+		-DBUILD_STATIC=ON \
+		-DKDB_DB_SYSTEM="${WORKSPACE}/config/kdb/system" \
+		-DKDB_DB_SPEC="${WORKSPACE}/config/kdb/spec" \
+		-DKDB_DB_HOME="${WORKSPACE}/config/kdb/home" \
+		-DCMAKE_INSTALL_PREFIX="${WORKSPACE}/system" \
+		../elektra-$VERSION
 	make
 	make run_all
 	make run_memcheck
@@ -122,46 +161,25 @@ configure_debian_package() {
 
 	git clean -fdx
 	rm -rf $BUILD_DIR
-	gbp buildpackage -sa # TODO: use gpg key to sign debian package
+	gbp buildpackage -sa
+
+	# get debian version codename
+	VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 
 	# move and install
 	cd $BASE_DIR
-	mkdir -p $BASE_DIR/$VERSION/debian/$DVERSION
-	mv elektra_$DVERSION* *$DVERSION*.deb elektra_$VERSION.orig.tar.gz $BASE_DIR/$VERSION/debian/$DVERSION/
-	sudo dpkg -i $BASE_DIR/$VERSION/debian/$DVERSION/*$(dpkg-architecture -qDEB_BUILD_ARCH).deb
+	mkdir -p $BASE_DIR/$VERSION/debian/$VERSION_CODENAME
+	mv elektra_$DVERSION* *$DVERSION*.deb elektra_$VERSION.orig.tar.gz $BASE_DIR/$VERSION/debian/$VERSION_CODENAME/
+	# sudo dpkg -i $BASE_DIR/$VERSION/debian/$DVERSION/*$(dpkg-architecture -qDEB_BUILD_ARCH).deb
 
-	kdb --version | tee ~elektra/$VERSION/debian/version
+	# kdb --version | tee ~elektra/$VERSION/debian/version
 
 	# trace kdb calls
-	log_strace "strace-debian-package"
+	# log_strace "strace-debian-package"
 
 	# run and log tests
-	run_log_tests "test-debian-package"
+	# run_log_tests "test-debian-package"
 
-}
-
-# NOTE: generation of man pages will currently not work, since
-#	the buster docker image does not have ronn installed
-build_documentation() {
-	echo "Configuring docu..."
-
-	git clean -fdx
-	git checkout master
-	# Add the API docu:
-	mkdir $DOC_DIR/api/$VERSION/
-	mkdir $BUILD_DIR
-	cd $BUILD_DIR
-	cmake -DBUILD_PDF=ON ..
-	rm -rf doc
-	make html man
-	cp -ra doc/html doc/latex doc/man $DOC_DIR/api/$VERSION/
-
-	# Symlink current to latest version and add everything
-	cd $DOC_DIR/api/
-	rm current
-	ln -s $VERSION current
-	git add current $VERSION
-	git commit -a -m "$VERSION Release"
 }
 
 log_strace() {
@@ -183,10 +201,10 @@ run_log_tests() {
 	KDB=kdb kdb run_all -v 2>&1 | tee $BASE_DIR/$VERSION/$CONTEXT/run_all
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all
 
-	KDB=kdb-full kdb-full run_all 2>&1 | tee $BASE_DIR/$VERSION/$CONTEXT/run_all_full
+	KDB=kdb-full kdb-full run_all > $BASE_DIR/$VERSION/$CONTEXT/run_all_full 2>&1
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all_full
 
-	KDB=kdb-static kdb-static run_all 2>&1 | tee $BASE_DIR/$VERSION/$CONTEXT/run_all_static
+	KDB=kdb-static kdb-static run_all > $BASE_DIR/$VERSION/$CONTEXT/run_all_static 2>&1
 	check_test_amount $BASE_DIR/$VERSION/$CONTEXT/run_all_static
 }
 
@@ -208,4 +226,3 @@ run_checks
 prepare_package
 configure_debian_package
 tar -czvf release.tar.gz $BASE_DIR/$VERSION
-build_documentation
