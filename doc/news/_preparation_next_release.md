@@ -137,10 +137,11 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- Added alpine linux docker image with latest Elektra installed. This image is published on docker hub as [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
+- Added Alpine Linux docker image with latest Elektra installed. This image is published on docker hub as [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
   We will update the image for each Elektra release such that novices can easily test Elektra without compiling or installing. _(Mihael Pranjić)_
 - Remove unused `libgtest-dev` from docker images. _(Mihael Pranjić)_
 - Add Ubuntu Focal (20.04) docker image _(Robert Sowula)_
+- Update Alpine Linux docker image to 3.12.1. _(Mihael Pranjić)_
 
 ## Infrastructure
 
