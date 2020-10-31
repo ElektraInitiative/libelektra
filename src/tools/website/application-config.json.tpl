@@ -1,9 +1,6 @@
 {
-    "backend": {
-        "root": "http://localhost:8080/"
-    },
     "website": {
-        "url": "http://localhost:9000/",
+        "url": "https://www.libelektra.org",
         "content_root": "website/",
         "target_file_dir_links": ["README.md", "README", "readme.md", "readme"],
         "slogan": {

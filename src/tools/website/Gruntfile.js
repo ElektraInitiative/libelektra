@@ -49,7 +49,7 @@ module.exports = function(grunt) {
           description: "News around Elektra",
           feed_url:
             "<%= app.website.url %>rss/<%= grunt.config('create-website-news-rss.build.output.feed') %>",
-          post_url: "<%= app.website.url &>rss/",
+          post_url: "<%= app.website.url &>news/",
           site_url: "<%= app.website.url %>",
           language: "en",
           pubDate: new Date().toUTCString(),
