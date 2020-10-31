@@ -140,15 +140,15 @@ def main() {
     }
   }
 
-  // stage("Main builds") {
-  //   milestone label: "Main builds"
-  //   parallel generateMainBuildStages()
-  // }
+  stage("Main builds") {
+    milestone label: "Main builds"
+    parallel generateMainBuildStages()
+  }
 
-  // stage("Full builds") {
-  //   milestone label: "Full builds"
-  //   parallel generateFullBuildStages()
-  // }
+  stage("Full builds") {
+    milestone label: "Full builds"
+    parallel generateFullBuildStages()
+  }
 
   stage("Build artifacts") {
     milestone label: "Build artifacts"
@@ -1049,8 +1049,8 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
  */
 def generateArtifactStages() {
   def tasks = [:]
-  // tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
-  // tasks << buildDebianPackage("buildPackage/ubuntu/bionic", DOCKER_IMAGES.bionic)
+  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
+  tasks << buildDebianPackage("buildPackage/ubuntu/bionic", DOCKER_IMAGES.bionic)
   tasks << buildWebsite()
   // tasks << buildWebUI()
   return tasks
