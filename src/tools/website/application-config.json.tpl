@@ -3,7 +3,7 @@
         "root": "http://localhost:8080/"
     },
     "website": {
-        "url": "https://www.libelektra.org",
+        "url": "https://www.libelektra.org/",
         "content_root": "website/",
         "target_file_dir_links": ["README.md", "README", "readme.md", "readme"],
         "slogan": {
