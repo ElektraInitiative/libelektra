@@ -1,4 +1,7 @@
 {
+    "backend": {
+        "root": "http://localhost:8080/"
+    },
     "website": {
         "url": "https://www.libelektra.org",
         "content_root": "website/",
