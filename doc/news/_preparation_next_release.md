@@ -34,6 +34,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 ### <<HIGHLIGHT2>>
 
 ### <<HIGHLIGHT2>>
+
 A huge thanks to Jakob Fischer for this amazing work!
 
 - TOML plugin
