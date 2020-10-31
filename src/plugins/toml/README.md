@@ -14,11 +14,9 @@
 This plugin is a storage plugin for reading and writing TOML files. The plugin retains most of the file structure of a read TOML file such as comments, empty lines and TOML tables.
 It supports all kinds of TOML specific types and tables, including nested inline tables and multiline strings.
 
-For parsing TOML files, the plugins uses Flex and Bison.
-
 # Requirements
 
-The plugin needs Flex (>=2.6.2) and Bison (>=3).
+The plugin needs Flex (>=2.6.2) and Bison (>=3) for parsing TOML files.
 
 # Types
 
