@@ -62,6 +62,7 @@
   ```
 
   Optional you can also run tests, see [here for more information](/doc/TESTING.md):
+
   ```sh
   cmake --build build --target run_nokdbtests
   ```
@@ -76,6 +77,7 @@
   [Installation documentation](/doc/INSTALL.md) contains further information about available packages.
 
   Optional you can also run tests to verify the installed Elektra, see [here for more information](/doc/TESTING.md):
+
   ```sh
   kdb run_nokdbtests
   ```
