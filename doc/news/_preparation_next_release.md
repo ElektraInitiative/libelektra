@@ -147,7 +147,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- <<TODO>>
+- Finalize 1.0 decisions. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 
