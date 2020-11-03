@@ -19,8 +19,8 @@ application, that means, you want your application
 to participate in the global key database Elektra
 provides.
 
-- [Integration of your Application](application-integration.md)
-- [Hello, Elektra](hello-elektra.md)
+- [Hello, Elektra in C](hello-elektra.md)
+- [Integration of your C Application](application-integration.md)
 - [Plugins Introduction](plugins.md)
 - [Storage Plugins](storage-plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
