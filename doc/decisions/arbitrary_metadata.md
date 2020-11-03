@@ -6,6 +6,8 @@ To make storage-plugins suitable for `spec` they need to be able to store
 all the metadata as specified in [METADATA.ini](/doc/METADATA.ini).
 Most file formats do not have support for that.
 
+If metadata is merged from different sources, metadata from spec might end up somewhere else.
+
 ## Constraints
 
 ## Assumptions
@@ -18,6 +20,8 @@ Most file formats do not have support for that.
   Comments should never be touched by a parser.
 
 ## Decision
+
+Do not store metadata in any namespace but spec.
 
 Use different storage plugins, or plugins with different configurations,
 for the `spec` namespace:

@@ -51,8 +51,7 @@ section here.
 - [Store the escaped and/or unescaped key name](store_name.md)
 - [Lookup every key](lookup_every_key.md)
 - [Holes and Non-leaf values](holes.md)
-- [Sources for Metadata](metadata_sources.md)
-- [Arbitrary Meta-Data](arbitrary_metadata.md) merge with metadata_sources.md
+- [Arbitrary Meta-Data](arbitrary_metadata.md)
 - [Multiple File Backends](multiple_file_backends.md)
 - [Capabilities](capabilities.md)
 - [Array](array.md)
