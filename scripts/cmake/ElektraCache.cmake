@@ -423,6 +423,8 @@ mark_as_advanced (
 	pkgcfg_lib__LIBSYSTEMD_PC_syst
 	pkgcfg_lib__OPENSSL_crypto
 	pkgcfg_lib__OPENSSL_ssl
+	pkgcfg_lib_PC_yaml-cpp_yaml-cpp
+	pkgcfg_lib__LIBSYSTEMD_PC_systemd
 	SWIG_DIR
 	SWIG_VERSION
 	gtest_build_samples
