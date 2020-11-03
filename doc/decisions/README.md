@@ -41,24 +41,27 @@ section here.
 ## Decided
 
 - [Array for Warnings](warning_array.md)
+- [Vendor Spec](vendor_spec.md)
 
 ## In Discussion
 
 - [Semantics for Name](semantics_name.md)
 - [Base Name](base_name.md)
+- [Escaped Name](escaped_name.md)
 - [Store the escaped and/or unescaped key name](store_name.md)
-- [Sources for Metadata](metadata_sources.md)
 - [Lookup every key](lookup_every_key.md)
 - [Holes and Non-leaf values](holes.md)
-- [Arbitrary Meta-Data](arbitrary_metadata.md)
+- [Sources for Metadata](metadata_sources.md)
+- [Arbitrary Meta-Data](arbitrary_metadata.md) merge with metadata_sources.md
 - [Multiple File Backends](multiple_file_backends.md)
 - [Capabilities](capabilities.md)
 - [Array](array.md)
 - [Boolean](boolean.md)
 - [Global Plugins](global_plugins.md)
-- [Vendor Spec](vendor_spec.md)
+- [Ensure](ensure.md)
 - [Plugin Variants](plugin_variants.md)
 - [Global Validation](global_validation.md)
+- [Spec Expressiveness](spec_expressiveness.md)
 
 ## Rejected
 
