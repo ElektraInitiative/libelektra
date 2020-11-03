@@ -6,45 +6,46 @@ Inconsistent use of bool in various parts of Elektra.
 
 ## Constraints
 
+- needs to be string
+
 ## Assumptions
 
-- needs to be string
-- convenience plugins can convert anything to 0 or 1
 - type checker plugins can reject everything not 0 or 1
 
 ## Considered Alternatives
 
-- strictly only allow 0 and 1 (would move validation across the code)
 - only check presence or absence (no cascading override of already present key possible)
-- use as in CMake (would move convenience across the code)
+- use booleans as in CMake, which allows on/off, true/false, ... (would need convenience across the code)
 
 ## Decision
 
-Use, depending on what your default should be:
+Only the strings `0` and `1` are allowed in the `KeySet` for `type = boolean`.
+Everything else should lead to errors in checkers (in `kdbSet`).
 
-- 0 is false, everything else is true (default is true)
-- 1 is true, everything else is false (default is false)
+Storage plugins are allowed any representation as suitable.
 
-Example:
+In the absence of the key, the default can be either:
+
+- default is true:
+  `0` is false, everything else is true, or
+- default is false:
+  `1` is true, everything else is false.
+
+Example for implementation in C:
 
 ```c
 if ( strcmp(keyString(k), "0")) {/*true*/} else {/*false*/}
 if (!strcmp(keyString(k), "1")) {/*true*/} else {/*false*/}
 ```
 
-In the documentation it should mention that a bool is used
+In the spec/docu it should mention that a bool is used
 and which is the default.
 
 The type checker plugin should allow
 
-- non-presence (default)
+- non-presence (for default), if not required
 - the string "0"
 - the string "1"
-
-The convenience plugin should transform (it might be combined with a plugin that transforms everything lower-case):
-
-- "false", "off", "no" to "0"
-- "true", "on", "yes" to "1"
 
 ## Rationale
 
