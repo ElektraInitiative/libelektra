@@ -20,6 +20,7 @@ applications' configurations, leveraging easy application integration.
 
 ## Often Used Links
 
+- If you are new, start reading [Get Started](doc/GETSTARTED.md)
 - [Build server](https://build.libelektra.org/)
 - [Website](https://www.libelektra.org)
 - [API documentation](https://doc.libelektra.org/api/latest/html/)
