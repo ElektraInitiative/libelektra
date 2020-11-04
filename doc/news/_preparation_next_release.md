@@ -136,7 +136,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
+- Use Lua 5.4 when available. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
