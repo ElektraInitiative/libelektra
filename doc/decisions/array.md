@@ -24,6 +24,10 @@ an array or not.
 ## Decision
 
 Store length in metadata `array` of key, or keep metadata `array` empty if empty array.
+Only children that have `#` syntax are allowed.
+The index start with `#0`.
+Both `keyAddName("#12")` or `keyAddBaseName("#_12")` is allowed to add the 13th index.
+
 For example (`ni syntax`, sections used for metadata):
 
 ```
@@ -103,6 +107,7 @@ Guarantees we want from the spec plugin:
 
 - [Global Plugins](global_plugins.md)
 - [Global Validation](global_validation.md)
+- [Base Names](base_name.md)
 
 ## Notes
 

@@ -19,6 +19,16 @@ functions handling out the pointer).
 - store it twice
 - store it once but in one memory block
 
+## Open Points
+
+Clarify and reduce [terminology](/doc/help/elektra-glossary.md):
+
+- escaped name
+- full name
+- part name
+- base name
+- dir name
+
 ## Decision
 
 - remove the escaped name from `_Key`
@@ -28,7 +38,8 @@ functions handling out the pointer).
   the escaped name will be explicitly called "escaped key name".
   "full name" (a variant of the escaped name) will not be used anymore.
 - escaped name will be only present in `keyNew` and `keyGetEscapedName`
-- remove `keyAddName`
+- rename `keyAddName`, e.g. to `keyAddEscapedName`
+  (or `keyAddFullName` if we decide to call the escaped name full name)
 - `keyDup` with arguments to filter which parts are copied
   (to allow copy of keys where only the key name is copied)
 
