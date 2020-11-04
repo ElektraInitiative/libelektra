@@ -33,27 +33,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ### <<HIGHLIGHT2>>
 
-### <<HIGHLIGHT2>>
-
-A huge thanks to Jakob Fischer for this amazing work!
-
-- TOML plugin
-- <<HIGHLIGHT>>
-- Cleanup
-
-### TOML
-
-- Added the TOML plugin, which can read and write TOML files using flex and bison. _(Jakob Fischer)_
-- The `type` metakey is now set for numbers on reading. _(Jakob Fischer)_
-
-### <<HIGHLIGHT>>
-
-### Cleanup
-
-We removed the `ini` plugin (superseded by the TOML plugin) and the null plugin (superseded by the base64 plugin)
-
-> Warning: In one of the following `0.9.*` releases, INI will be removed and TOML will become the
-> default plugin. If you are using INI, please migrate to TOML now.
+### <<HIGHLIGHT3>>
 
 ### Cleanup
 
@@ -63,11 +43,9 @@ We removed the `ini` plugin (superseded by the TOML plugin), the `null` plugin (
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### jni
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Fix rare memleak when the `jni` plugin is closed. _(Mihael Pranjić)_
 
 ### <<Plugin2>>
 
@@ -75,7 +53,6 @@ The following section lists news about the [modules](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### Dump
 ### <<Plugin3>>
 
 - <<TODO>>
@@ -159,6 +136,8 @@ you up to date with the multi-language support provided by Elektra.
 
 - Use Lua 5.4 when available. _(Mihael Pranjić)_
 - <<TODO>>
+- <<TODO>>
+- Force `RTLD_NODELETE` on dlopen() when the `ENABLE_ASAN` CMake option is used. This enables ASAN to find symbols which otherwise might be unloaded. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Docker
