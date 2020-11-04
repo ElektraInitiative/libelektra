@@ -1,6 +1,6 @@
 include (LibAddMacros)
 
-message (STATUS "Include Binding io_doc")
+message (STATUS "Include binding io_doc")
 
 set (BINDING_VARIANT doc)
 

@@ -147,51 +147,10 @@ Elektra accomplishes this task with _storage plugins_.
 When you mount a file you can tell Elektra which plugins it should use for reading and
 writing to configuration files.
 
-Let us mount a projects git configuration into the dir namespace:
-
-```sh
-# create a directory for our demonstration
-mkdir -p example && cd $_
-
-# this creates the .git/config file
-git init
-
-# mount git’s configuration into Elektra
-sudo kdb mount /.git/config dir/git ini multiline=0
-```
-
-As git uses the `ini` format for its configuration we use the [ini plugin](/src/plugins/ini/README.md).
-You can pass parameters to plugins during the mount process. This is what
-we did with `multiline=0`. Git indents the entries in its configuration
-files and the default behavior of the `ini` plugin is to interpret these indented
-entries as values that span multiple lines. The passed parameter disables
-this behavior and makes the ini-plugin compatible with git configuration.
-
-Now let us see how smoothly the ini plugin sets and gets the git configuration.
-
-```sh
-# set a user name ...
-git config user.name "Rob Banks"
-
-# ... and read it with kdb
-kdb get dir/git/user/name
-#> Rob Banks
-
-# set a user email with kdb ...
-kdb set dir/git/user/email "rob.banks@dot.com"
-
-# and read it with git
-git config --get user.email
-#> rob.banks@dot.com
-```
-
 #### Meta Data
 
-Elektra is able to store [metadata](/doc/help/elektra-metadata.md) of keys, provided the format of the file that holds the configuration supports this feature.
-The ini plugin does support this feature, and so does the [ni](/src/plugins/ni/README.md) and the [dump](/src/plugins/dump/README.md) plugin among others.
-
-> Actually the ini plugin creates some metadata on its own. This metadata contains information about the ordering of keys or comments, if a key has some.
-> But unlike the ni and the dump plugin we can't store arbitrary metadata with the ini plugin.
+Elektra is able to store [metadata](/doc/help/elektra-metadata.md) of keys.
+The [ni](/src/plugins/ni/README.md) plugin and the [dump](/src/plugins/dump/README.md) plugin, among others, support this feature.
 
 Meta data comes in handy if we use other plugins, than just the ones that store and retrieve data.
 I chose the `ni` plugin for this demonstration, because it supports metadata and is human readable.

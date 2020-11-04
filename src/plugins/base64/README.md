@@ -40,7 +40,11 @@ sudo kdb umount /tests/base64/test
 @BASE64SGVsbG8gV29ybGQhCg==
 ```
 
-.
+. And for a null-key it will be:
+
+```
+@BASE64
+```
 
 ## Modes
 
@@ -55,15 +59,13 @@ The plugin supports two different modes:
 
 In order to identify the base64 encoded content, the values are marked with the prefix `@BASE64`. To distinguish between the `@` as character and `@` as Base64 marker, all strings starting with `@` will be modified so that they begin with `@@`.
 
-See the documentation of the [null plugin](../null/), as it uses the same pattern for masking `@`.
-
 #### Example
 
-The following example shows how you can use this plugin together with the INI plugin to store binary data.
+The following example shows how you can use this plugin together with the TOML plugin to store binary data.
 
 ```sh
-# Mount the INI and Base64 plugin
-kdb mount config.ini user/tests/base64 ini base64
+# Mount the TOML and Base64 plugin
+kdb mount test_config.toml user/tests/base64 toml base64
 
 # Copy binary data
 kdb cp system/elektra/modules/base64/exports/get user/tests/base64/binary
@@ -74,7 +76,7 @@ kdb get user/tests/base64/binary
 
 # The value inside the configuration file is encoded by the Base64 plugin
 kdb file user/tests/base64 | xargs cat
-# STDOUT-REGEX: binary="@BASE64[a-zA-Z0-9+/]+={0,2}"
+# STDOUT-REGEX: binary.*=.*'@BASE64[a-zA-Z0-9+/]+={0,2}'
 
 # Undo modifications
 kdb rm -r user/tests/base64
@@ -105,16 +107,16 @@ The diagram below shows how the Base64 conversion process works in conjunction w
 
 #### Example
 
-The following example shows you how you can use the INI plugin together with Base64’s meta mode.
+The following example shows you how you can use the TOML plugin together with Base64’s meta mode.
 
 ```sh
-# Mount INI and Base64 plugin (provides `binary`) with the configuration key `binary/meta`
-kdb mount config.ini user/tests/base64 ini base64 binary/meta=
+# Mount TOML and Base64 plugin (provides `binary`) with the configuration key `binary/meta`
+kdb mount test_config.toml user/tests/base64 ni base64 binary/meta=
 
 # Save base64 encoded data `"value"` (`0x76616c7565`)
 kdb set user/tests/base64/encoded dmFsdWUA
 kdb file user/tests/base64/encoded | xargs cat | grep encoded
-#> encoded=dmFsdWUA
+#> encoded = dmFsdWUA
 
 # Tell Base64 plugin to decode and encode key value
 kdb meta-set user/tests/base64/encoded type binary

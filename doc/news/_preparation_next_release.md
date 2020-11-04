@@ -35,6 +35,10 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ### <<HIGHLIGHT2>>
 
+### Cleanup
+
+We removed the `ini` plugin (superseded by the TOML plugin), the `null` plugin (superseded by the base64 plugin) and the `tcl` plugin _(Markus Raab, Philipp Gackstatter)_
+
 ## Plugins
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.

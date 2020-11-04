@@ -26,7 +26,7 @@ add_msr_test (tutorial_arrays "${CMAKE_SOURCE_DIR}/doc/tutorials/arrays.md")
 add_msr_test (tutorial_cascading "${CMAKE_SOURCE_DIR}/doc/tutorials/cascading.md")
 add_msr_test (
 	tutorial_install_config "${CMAKE_SOURCE_DIR}/doc/tutorials/install-config-files.md"
-	REQUIRED_PLUGINS ini resolver
+	REQUIRED_PLUGINS mini resolver
 	ENVIRONMENT KDB_EXEC_PATH=${CMAKE_SOURCE_DIR}/scripts/kdb)
 add_msr_test (tutorial_storage_plugins "${CMAKE_SOURCE_DIR}/doc/tutorials/storage-plugins.md" REQUIRED_PLUGINS type yamlcpp)
 add_msr_test (cmerge "${CMAKE_SOURCE_DIR}/doc/tutorials/cmerge.md" REQUIRED_PLUGINS hosts line PROPERTY LABELS memleak)
@@ -46,10 +46,9 @@ endif (ENABLE_ASAN)
 # = Misc =
 # ========
 
-add_msr_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md" REQUIRED_PLUGINS ini)
+add_msr_test (msr_syntax "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/SyntaxCheck.md" REQUIRED_PLUGINS mini)
 add_msr_test (readme_msr "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutorial_wrapper/README.md")
 add_msr_test (issue_template "${CMAKE_SOURCE_DIR}/.github/ISSUE_TEMPLATE.md")
-add_msr_test (ini_crash_test "${CMAKE_SOURCE_DIR}/src/plugins/ini/crash_test/crash_test.md" REQUIRED_PLUGINS ini)
 add_msr_test (mmapstorage_shelltests "${CMAKE_SOURCE_DIR}/src/plugins/mmapstorage/shelltests.md" REQUIRED_PLUGINS mmapstorage)
 add_msr_test (cache_shelltests "${CMAKE_SOURCE_DIR}/src/plugins/cache/shelltests.md" REQUIRED_PLUGINS cache mmapstorage dump resolver
 												      multifile)

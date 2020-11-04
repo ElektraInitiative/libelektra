@@ -12,7 +12,6 @@
 #include <dirent.h>
 #include <errno.h>
 #include <fnmatch.h>
-#include <fts.h>
 #include <glob.h>
 #include <kdbconfig.h>
 #include <kdbhelper.h>
@@ -33,7 +32,7 @@
 
 #define DEFAULT_RESOLVER "resolver"
 #define DEFAULT_PATTERN "*"
-#define DEFAULT_STORAGE "ini"
+#define DEFAULT_STORAGE "storage"
 
 typedef enum
 {
@@ -72,7 +71,6 @@ typedef struct
 	char * storage;
 	unsigned short stayAlive;
 	unsigned short hasDeleted;
-	unsigned short recursive;
 } MultiConfig;
 
 typedef struct
@@ -237,7 +235,6 @@ static MultiConfig * initialize (Plugin * handle, Key * parentKey)
 	Key * storageKey = ksLookupByName (config, "/storage", 0);
 	Key * resolverKey = ksLookupByName (config, "/resolver", 0);
 	Key * stayAliveKey = ksLookupByName (config, "/stayalive", 0);
-	Key * recursiveKey = ksLookupByName (config, "/recursive", 0);
 	MultiConfig * mc = elektraCalloc (sizeof (MultiConfig));
 	mc->directory = elektraStrDup (keyString (parentKey));
 	mc->originalPath = elektraStrDup (keyString (origPath));
@@ -266,7 +263,6 @@ static MultiConfig * initialize (Plugin * handle, Key * parentKey)
 		mc->pattern = elektraStrDup (DEFAULT_PATTERN);
 	}
 	if (stayAliveKey) mc->stayAlive = 1;
-	if (recursiveKey) mc->recursive = 1;
 	Key * cutKey = keyNew ("/child", KEY_END);
 	KeySet * childConfig = ksCut (config, cutKey);
 	keyDel (cutKey);
@@ -333,65 +329,6 @@ static Codes resolverGet (SingleConfig * s, KeySet * returned, Key * parentKey)
 	if (s->fullPath) elektraFree (s->fullPath);
 	s->fullPath = elektraStrDup (keyString (parentKey));
 	return s->rcResolver;
-}
-
-static Codes updateFilesRecursive (Plugin * handle, MultiConfig * mc, KeySet * found, Key * parentKey)
-{
-	Codes rc = NOUPDATE;
-	char * dirs[2];
-	dirs[0] = mc->directory;
-	dirs[1] = (void *) NULL;
-	FTS * fts = fts_open (dirs, FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR, NULL);
-	if (fts)
-	{
-		FTSENT * ent = NULL;
-		while ((ent = fts_read (fts)) != NULL)
-		{
-			if (ent->fts_info == FTS_F)
-			{
-				if (!fnmatch (mc->pattern, ent->fts_name, 0))
-				{
-					Key * lookup = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
-					keyAddBaseName (lookup, (ent->fts_path + strlen (mc->directory)));
-					Key * k;
-					if ((k = ksLookup (mc->childBackends, lookup, KDB_O_NONE)) != NULL)
-					{
-						ksAppendKey (found, k);
-					}
-					else
-					{
-						SingleConfig * s = elektraCalloc (sizeof (SingleConfig));
-						s->filename = elektraStrDup ((ent->fts_path) + strlen (mc->directory) + 1);
-						Codes r = initBackend (handle, mc, s, parentKey);
-						if (r == ERROR)
-						{
-							if (!mc->stayAlive)
-							{
-								keyDel (lookup);
-								fts_close (fts);
-								return ERROR;
-							}
-							else
-							{
-								closeBackend (s);
-							}
-						}
-						else
-						{
-							Key * childKey = keyNew (keyName (lookup), KEY_CASCADING_NAME, KEY_BINARY, KEY_SIZE,
-										 sizeof (SingleConfig *), KEY_VALUE, &s, KEY_END);
-							ksAppendKey (mc->childBackends, childKey);
-							ksAppendKey (found, childKey);
-							rc = SUCCESS;
-						}
-					}
-					keyDel (lookup);
-				}
-			}
-		}
-		fts_close (fts);
-	}
-	return rc;
 }
 
 static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, KeySet * found, Key * parentKey)
@@ -473,14 +410,7 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, KeySet * returned, 
 	KeySet * found = ksNew (0, KS_END);
 	Key * initialParent = keyDup (parentKey);
 
-	if (!mc->recursive)
-	{
-		rc = updateFilesGlob (handle, mc, found, parentKey);
-	}
-	else
-	{
-		rc = updateFilesRecursive (handle, mc, found, parentKey);
-	}
+	rc = updateFilesGlob (handle, mc, found, parentKey);
 	if (rc == ERROR)
 	{
 		ksDel (found);

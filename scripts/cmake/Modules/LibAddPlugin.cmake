@@ -547,7 +547,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		return ()
 	endif (ARG_ONLY_SHARED AND NOT BUILD_SHARED)
 
-	set (STATUS_MESSAGE "Include Plugin ${PLUGIN_SHORT_NAME}")
+	set (STATUS_MESSAGE "Include plugin ${PLUGIN_SHORT_NAME}")
 	if (ARG_ONLY_SHARED)
 
 		# also add it to the list of ONLY_SHARED plugins for exportsymbols.c configuration

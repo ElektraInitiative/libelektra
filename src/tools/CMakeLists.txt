@@ -1,5 +1,5 @@
 foreach (tool ${TOOLS})
-	message (STATUS "Include Tool ${tool}")
+	message (STATUS "Include tool ${tool}")
 
 	if (${tool} STREQUAL "web")
 		add_subdirectory ("elektrad")

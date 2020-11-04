@@ -106,7 +106,7 @@ kdb set user/tests/msr $(mktemp)
 kdb export system/elektra/globalplugins > $(kdb get user/tests/msr)
 
 sudo kdb mount main.ini /tests/conditionals ni
-sudo kdb mount sub.ini /tests/conditionals/sub ini
+sudo kdb mount sub.ini /tests/conditionals/sub ni
 
 # mount conditionals as global plugin
 sudo kdb global-mount conditionals || $(exit 0)
@@ -119,7 +119,7 @@ echo "check/condition=(./ == 'val1') ? (../sub/key == 'true')" >> `kdb file /tes
 echo "key=false" > `kdb file /tests/conditionals/sub`
 
 # should fail and yield an error
-kdb export /tests/conditionals ini
+kdb export /tests/conditionals ni
 # ERROR:C03200
 # Sorry, module conditionals issued the error C03200:
 # Validation failed: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
@@ -127,10 +127,7 @@ kdb export /tests/conditionals ini
 kdb set /tests/conditionals/sub/key true
 
 # should succeed
-kdb export /tests/conditionals ini
-#> sub/key=true
-#> #@META check/condition = (./ == 'val1') ? (../sub/key == 'true')
-#> key1=val1
+kdb export /tests/conditionals ni
 
 # cleanup
 kdb rm -r /tests/conditionals

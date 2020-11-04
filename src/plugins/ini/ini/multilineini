@@ -1,7 +1,0 @@
-[multilinesection]
-key1=value1
-	with continuation
-	lines
-[singlelinesection]
-key2=
-key3=value3

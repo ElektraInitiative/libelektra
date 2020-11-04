@@ -30,8 +30,8 @@ fi
 
 #echo "Use folder $FOLDER"
 
-$KDB mount "$FOLDER/METADATA.ini" "$MOUNTPOINT/metadata/#0" ini
-$KDB mount "$FOLDER/CONTRACT.ini" "$MOUNTPOINT/contract/#0" ini
+$KDB mount "$FOLDER/METADATA.ini" "$MOUNTPOINT/metadata/#0" ni
+$KDB mount "$FOLDER/CONTRACT.ini" "$MOUNTPOINT/contract/#0" ni
 
 $KDB mount --resolver noresolver none "$MOUNTPOINT/uname" uname
 $KDB mount --resolver noresolver none "$MOUNTPOINT/desktop" desktop

@@ -2,7 +2,7 @@
 - infos/author = Ian Donnelly <ian.s.donnelly@gmail.com>
 - infos/provides = storage/line
 - infos/licence = BSD
-- infos/needs = null
+- infos/needs = binary
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest nodep libc final limited
 - infos/description = storage plugin which stores each line from a file
@@ -67,7 +67,7 @@ kdb export -c "format=%s: %s" user/line simpleini
 ```sh
 # Backup-and-Restore:/tests/line
 
-sudo kdb mount line /tests/line line
+sudo kdb mount line /tests/line base64 line
 
 kdb set /tests/line/add something
 kdb set /tests/line/ignored huhu
@@ -98,7 +98,7 @@ sudo kdb umount /tests/line
 ```sh
 # Backup-and-Restore:/tests/line
 
-sudo kdb mount line /tests/line line
+sudo kdb mount line /tests/line base64 line
 
 # create and initialize testfile
 echo 'setting1 true'        >  `kdb file /tests/line`

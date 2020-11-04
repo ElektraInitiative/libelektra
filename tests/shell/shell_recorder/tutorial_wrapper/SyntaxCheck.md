@@ -28,7 +28,7 @@
   #> x
   kdb get /tests/msr/y
   #> y
-  kdb export /tests/msr ini
+  kdb export /tests/msr mini
   # STDOUT-REGEX: (\[\]⏎)?x=x⏎y=y
   kdb ls /tests/msr
   kdb rm -r /tests/msr

@@ -1,5 +1,5 @@
 if (DEPENDENCY_PHASE)
-	find_package (SystemdJournal)
+	find_package (SystemdJournal QUIET)
 
 	if (NOT LIBSYSTEMD_JOURNAL_FOUND)
 
