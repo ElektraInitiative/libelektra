@@ -31,10 +31,17 @@ The `spec` plugin guards these rules.
 
 ## Rationale
 
+- for consistency, whenever possible, meta-data should be preferred
+- no escaping of key base names necessary
+- it is very unlikely that the 9-byte UTF-8 sequence `®elektra` collides with a real key base name
+  a user wanted to have
+- `®elektra` makes very clear that there is a special reserved meaning
+
 ## Implications
 
 ## Related Decisions
 
 - [Arrays](array.md)
+- [Base Names](base_name.md)
 
 ## Notes
