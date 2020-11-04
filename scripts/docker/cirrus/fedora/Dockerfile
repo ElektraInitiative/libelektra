@@ -3,6 +3,7 @@ FROM fedora:33
 RUN dnf upgrade --refresh -y && dnf install -y \
         augeas-devel \
         bison \
+        bison-devel \
         boost-devel \
         cmake \
         curl \
@@ -11,19 +12,23 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         file \
         findutils \
         flex \
+        flex-devel \
         gcc-c++ \
         git \
         glib2 \
         gpgme-devel \
         java-1.8.0-openjdk-devel \
         jna \
+        libasan \
         libcurl-devel \
         libev-devel \
         libgcrypt-devel \
         libgit2-devel \
         libmarkdown-devel \
+        libubsan \
         libuv-devel \
         libxml2-devel \
+        llvm \
         lua-devel \
         make \
         maven \
