@@ -361,6 +361,16 @@
 %rename("_%s") kdb::KeySet::lookup;
 %rename("_lookup") kdb::KeySet::at;
 
+%fragment("LuaSTLIterator_T");
+%{
+  inline static void key_iterator_iter(lua_State *L,
+    myswig::LuaSTLIterator_T<kdb::KeySet::iterator>::reference val)
+  {
+    SWIG_NewPointerObj(L, (void *)new kdb::Key(val), SWIGTYPE_p_kdb__Key, 1);
+  }
+%}
+%LuaSTLIterator(kdb::KeySet::iterator, key_iterator_iter);
+
 %extend kdb::KeySet {
   KeySet(size_t alloc) {
     return new kdb::KeySet(alloc, KS_END);
@@ -369,46 +379,11 @@
   size_t __len(void *) {
     return self->size();
   }
+
+  myswig::LuaSTLIterator_T<kdb::KeySet::iterator> *iterator() {
+    return myswig::make_lua_iterator(self->begin(), self->begin(), self->end());
+  }
 };
-
-%{
-  static int _my_KeySet_ipairs_it(lua_State *L)
-  {
-    const KeySet *ks;
-    lua_Integer i;
-
-    if (!SWIG_IsOK(SWIG_ConvertPtr(L, 1, (void **)&ks, SWIGTYPE_p_kdb__KeySet, 0)))
-      SWIG_fail_ptr("ipairs_it", 1, SWIGTYPE_p_kdb__KeySet);
-
-    i = lua_tointeger(L, 2);
-    lua_pop(L, 2);
-    if (i == ks->size())
-      return 0;
-
-    lua_pushnumber(L, i + 1);
-    SWIG_NewPointerObj(L, (void *)new kdb::Key(ks->at(i)), SWIGTYPE_p_kdb__Key, 1);
-    return 2;
-
-  fail:
-    lua_error(L);
-    return 0;
-  }
-
-  /* simple cursor variant: use the index param as cursor position */
-  static int _my_KeySet_ipairs(lua_State *L)
-  {
-    lua_pushcfunction(L, _my_KeySet_ipairs_it); /* callback function */
-    lua_pushvalue(L, 1);  /* param (copy of Key) */
-    lua_pushnumber(L, 0); /* start value (index param) */
-    return 3;
-  }
-%}
-
-%init %{
-  SWIG_Lua_get_class_metatable(L, "KeySet");
-  SWIG_Lua_add_function(L, "__ipairs", _my_KeySet_ipairs);
-  lua_pop(L, 1);
-%}
 
 %luacode %{
   local orig_call = kdb.KeySet
