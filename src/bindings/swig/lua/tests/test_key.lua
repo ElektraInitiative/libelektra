@@ -120,7 +120,7 @@ assert(k:getMeta("foo").value == "bar")
 
 function item_cnt(...)
 	local cnt = 0
-	for i, v in ... do
+	for v in ... do
 		cnt = cnt + 1
 	end
 	return cnt
