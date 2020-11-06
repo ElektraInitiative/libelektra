@@ -103,6 +103,9 @@
 # define NDEBUG
 #endif
 
+/* ASAN enabled */
+#define ASAN @ASAN@
+
 /* disable output messages to stdout (to be migrated to logger) */
 #define VERBOSE 0
 

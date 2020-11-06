@@ -33,7 +33,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ### <<HIGHLIGHT2>>
 
-### <<HIGHLIGHT2>>
+### <<HIGHLIGHT3>>
 
 ### Cleanup
 
@@ -43,11 +43,9 @@ We removed the `ini` plugin (superseded by the TOML plugin), the `null` plugin (
 
 The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### jni
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Fix rare memleak when the `jni` plugin is closed. _(Mihael Pranjić)_
 
 ### <<Plugin2>>
 
@@ -138,6 +136,8 @@ you up to date with the multi-language support provided by Elektra.
 
 - Use Lua 5.4 when available. _(Mihael Pranjić)_
 - <<TODO>>
+- <<TODO>>
+- Force `RTLD_NODELETE` on dlopen() when the `ENABLE_ASAN` CMake option is used. This enables ASAN to find symbols which otherwise might be unloaded. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Docker

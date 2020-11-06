@@ -232,7 +232,12 @@ option (ENABLE_OPTIMIZATIONS "Turn on optimizations that trade memory for speed"
 # Developer builds
 #
 
-option (ENABLE_ASAN "Activate sanitizers, see doc/TESTING.md.")
+option (ENABLE_ASAN "Activate sanitizers and force RTLD_NODELETE, see doc/TESTING.md.")
+if (ENABLE_ASAN)
+	set (ASAN "1")
+else (ENABLE_ASAN)
+	set (ASAN "0")
+endif (ENABLE_ASAN)
 
 set (
 	ENABLE_COVERAGE
@@ -243,7 +248,7 @@ set (
 	"${PROJECT_SOURCE_DIR}"
 	CACHE FILEPATH "Full path to common prefix of build+source directory")
 
-option (ENABLE_DEBUG "Build with assertions and optimize for developing with Elektra.")
+option (ENABLE_DEBUG "Build with assertions and use RTLD_NODELETE. Intended for developing and debugging Elektra.")
 if (ENABLE_DEBUG)
 	set (DEBUG "1")
 else (ENABLE_DEBUG)
