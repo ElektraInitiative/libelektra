@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
 """
 This file contains a reference implementation of Elektra's Key Name processing.
@@ -36,7 +36,7 @@ class Namespace(Enum):
 
 
 # String names for the Namespaces
-NAMESPACES = set(["meta", "spec", "proc", "dir", "user", "system", "default"])
+NAMESPACES = {"meta", "spec", "proc", "dir", "user", "system", "default"}
 
 # Map between string Namespaces and enum values
 NAMESPACES_MAP = {
@@ -50,10 +50,10 @@ NAMESPACES_MAP = {
 }
 
 # Characters that can be escaped anywhere in a Key Name Part
-ESCAPES = set(["/", "\\"])
+ESCAPES = {"/", "\\"}
 
 # Characters that can ONLY be escaped at at the start of a Key Name Part
-ESCAPES_START = set(list(ESCAPES) + [".", "#", "%", "@"])
+ESCAPES_START = ESCAPES | {".", "#", "%", "@"}
 
 
 # This RegEx defines what a Key Name Part can be.
@@ -155,7 +155,7 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
     # The second element is either None, meaning this part will be skipped when creating the final Key Name or a str, i.e. a canonical Key Name Part.
     key_parts: List[Tuple[Match[str], Optional[str]]] = []
 
-    for (index, part) in enumerate(parts):
+    for index, part in enumerate(parts):
         full_part = part.group(0)
         leading_slashes = len(part.group('leadingSlashes'))
         actual_part = part.group('content')
@@ -171,7 +171,7 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
                 file=sys.stderr
             )
 
-        # If this is the last part and we have no content, we are done. A trailing slashes are explicitly allowed.
+        # If this is the last part and we have no content, we are done. A trailing slash is explicitly allowed.
         if index == part_count - 1:
             if len(actual_part) == 0:
                 if verbose:
@@ -216,7 +216,7 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
                 )
 
             if verbose:
-                (previous_part, _) = key_parts[-1]
+                previous_part, _ = key_parts[-1]
                 full_previous_part = previous_part.group(0)
                 previous_start = previous_part.start(0) + namespace_offset
                 previous_end = previous_part.end(0) + namespace_offset
@@ -440,7 +440,7 @@ if __name__ == "__main__":
             if args.verbose:
                 print(f"[DEBUG] canonical version of name: {key_canonical}")
 
-            (namespace, unescaped) = unescape(
+            namespace, unescaped = unescape(
                 key_canonical,
                 verbose=args.verbose
             )

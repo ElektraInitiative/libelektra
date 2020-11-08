@@ -184,7 +184,7 @@ Given two Key Names with identical Key Name Parts, but one with Namespace "Dir" 
 
 A special feature of Elektra is _Namespace Resolution_ (sometimes just Name Resolution, or Key Name Resolution).
 Namespace Resolution is the process of finding an appropriate Namespace for a Key based on a Key Name with Namespace "Cascading".
-It is most commonly used, when you to find which Key in the KDB should be used, based on a series of Key Name Parts.
+It is most commonly used, when you need to find which Key in the KDB should be used, based on a series of Key Name Parts.
 
 To resolve the namespace, we just look at each of the Namespaces in the ranking defined above.
 We then use the first Namespace where the Key actually exists.
@@ -310,7 +310,7 @@ A few examples for Array Parts:
 ### 2.2. Other Escape Sequences
 
 We already know, that `/` and `\` have to be escaped in an Escaped Key Name.
-In addition two these to, there are a few more characters that have to be escaped.
+In addition to these two, there are a few more characters that have to be escaped.
 However, these additional characters may **only** be escaped at the start of a Key Name Part.
 
 The characters in question are: `.`, `#`, `%`, `@`.
@@ -321,7 +321,7 @@ Similarly, `#10` would make a Key Name Non-Canonical, but `\#10` won't.
 Therefore, if you want a Canonical Key Name with a Key Name Part `#10` and not actually `#_10`,
 must use e.g. `/elektra/\#10/version`.
 
-<!-- TODO (kodebach): Unforunate escaping behavior
+<!-- TODO (kodebach): Unfortunate escaping behavior
         Unfortunately this means that both `/elektra/.version` and `/elektra/\.version` have the same unescaped form (`elektra`, `.version`).
         The same applies to `/elektra/%version` and `/elektra/\%version`.
         All of these are, however, Canonical Key Names.
