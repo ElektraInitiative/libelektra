@@ -426,8 +426,8 @@ An Escape Sequence is illegal, if (one of):
 An Array Part is valid, if (one of):
 
 - The whole Key Name Part is `#` or `#0`.
-- The Key Name Part is `#` followed by 1-19 digits, the first digit is not `0`, and the digits form a number less than or equal to `9223372036854775807` (= `2^64 - 1`).
-- The Key Name Part is `#` followed by `n` underscores, followed by `n+1` digits, where `n <= 18`, the first digit is not `0`, and the digits form a number less than or equal to `9223372036854775807` (= `2^64 - 1`).
+- The Key Name Part is `#` followed by 1-19 digits, the first digit is not `0`, and the digits form a number less than or equal to `9223372036854775807` (= `2^63 - 1`).
+- The Key Name Part is `#` followed by `n` underscores, followed by `n+1` digits, where `n <= 18`, the first digit is not `0`, and the digits form a number less than or equal to `9223372036854775807` (= `2^63 - 1`).
 
 Otherwise, Array Parts (i.e. Key Name Parts starting with `#`) are invalid.
 
