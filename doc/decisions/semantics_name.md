@@ -33,7 +33,7 @@ The `spec` plugin guards these rules.
 
 - for consistency, whenever possible, meta-data should be preferred
 - no escaping of key base names necessary
-- it is very unlikely that the 9-byte UTF-8 sequence `®elektra` collides with a real key base name
+- it is very unlikely that the UTF-8 sequence `®elektra` (i.e. the 9-byte sequence `C2 AE 65 6C 65 6B 74 72 61`) collides with a real key base name
   a user wanted to have
 - `®elektra` makes very clear that there is a special reserved meaning
 
