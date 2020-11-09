@@ -32,7 +32,7 @@ The `spec` plugin guards these rules.
 
 ## Rationale
 
-- for consistency, whenever possible, meta-data should be preferred
+- for consistency, whenever possible, metadata should be preferred
 - no escaping of key base names necessary
 - it is very unlikely that `®elektra` collides with a real key base name
   a user wanted to have
