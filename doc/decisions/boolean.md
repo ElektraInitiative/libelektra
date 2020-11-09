@@ -22,28 +22,20 @@ Inconsistent use of bool in various parts of Elektra.
 Only the strings `0` and `1` are allowed in the `KeySet` for `type = boolean`.
 Everything else should lead to errors in checkers (in `kdbSet`).
 
-Storage plugins are allowed any representation as suitable.
+The spec/docu should mention that a `boolean` is used and may specify the default.
+The absence of a non-required key without a specified default should be interpreted as false.
 
-In the absence of the key, the default can be either:
-
-- default is true:
-  `0` is false, everything else is true, or
-- default is false:
-  `1` is true, everything else is false.
-
-Example for implementation in C:
+Example for an implementation in C in an application:
 
 ```c
-if ( strcmp(keyString(k), "0")) {/*true*/} else {/*false*/}
 if (!strcmp(keyString(k), "1")) {/*true*/} else {/*false*/}
 ```
 
-In the spec/docu it should mention that a bool is used
-and which is the default.
+Storage plugins are allowed any representation as suitable, e.g., a JSON plugin might render `1` as `true`.
 
 The type checker plugin should allow
 
-- non-presence (for default), if not required
+- non-presence, if not required
 - the string "0"
 - the string "1"
 
