@@ -23,7 +23,15 @@ metadata from `spec:` might end up in `user:`.
 
 ## Decision
 
-Do not store metadata in any namespace but spec.
+Do not store arbitrary metadata in any namespace except spec.
+In other namespaces only store metadata that is handled by the `spec` plugin.
+E.g. for `array`, metadata might be stored in any namespace:
+
+- either the storage plugin does not support arrays, then the metadata will be discarded
+  on `kdbSet` but `spec` will keep on adding it for every `kdbGet`
+- if the storage plugin supports arrays, the data will be serialized as array
+  (even if the metadata comes from `spec`) and as such available in the next `kdbGet`
+  from the storage plugin to be validated by `spec`
 
 Use different storage plugins, or plugins with different configurations,
 for the `spec` namespace:
