@@ -6,7 +6,9 @@ To make storage-plugins suitable for `spec` they need to be able to store
 all the metadata as specified in [METADATA.ini](/doc/METADATA.ini).
 Most file formats do not have support for that.
 
-If metadata is merged from different sources, metadata from spec might end up somewhere else.
+If metadata is merged from different namespaces, e.g., `spec:` and `user:`,
+metadata from one namespace might end up in keys of other namespaces, e.g.,
+metadata from `spec:` might end up in `user:`.
 
 ## Constraints
 
