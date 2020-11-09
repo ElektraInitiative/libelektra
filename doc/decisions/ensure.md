@@ -14,9 +14,9 @@ is present in Elektra.
 ## Considered Alternatives
 
 - integrate in kdbOpen:
-  + can immediately build up correct plugin positioning
-  - cannot be called later easily (needs `kdbClose` and `kdbOpen` again)
-  - cannot be integrated with some APIs, e.g. `kdbDup` or current notification API
+  - can immediately build up correct plugin positioning
+  * cannot be called later easily (needs `kdbClose` and `kdbOpen` again)
+  * cannot be integrated with some APIs, e.g. `kdbDup` or current notification API
 - specific APIs per plugin
   - difficult for application developers
   - every plugin would need to design new APIs
