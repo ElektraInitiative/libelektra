@@ -25,7 +25,7 @@ Nevertheless, there are guidelines (without any checks in `keySetBaseName`):
 - `®` is used to indicate that some information was encoded in the key name.
   This is usually only needed internally in storage plugins.
 - the UTF-8 sequence `®elektra` (i.e. the 9-byte sequence `C2 AE 65 6C 65 6B 74 72 61`) is reserved,
-  key names should not start with that sequence.
+  key name parts should not start with that sequence.
 
 There are, however, rules and conventions which syntax to use for specific semantics.
 The `spec` plugin guards these rules.
