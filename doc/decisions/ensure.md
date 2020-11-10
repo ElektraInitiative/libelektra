@@ -59,7 +59,6 @@ elektraGOptsGetContract (contract, argc, argv, environ);
 KDB * kdb = kdbOpen (key, contract);
 ```
 
-
 The high-level API can make this more pretty, though.
 
 ## Related Decisions
