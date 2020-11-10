@@ -377,7 +377,7 @@ void elektraInvokeExecuteDeferredCalls (ElektraInvokeHandle * handle, ElektraDef
 }
 
 /**
- * Call a deferable function on a plugin handle.
+ * Call a deferrable function on a plugin handle.
  * If the function is exported by the plugin it is directly invoked,
  * if the plugin supports deferring calls, the call is deferred.
  * If both is possible (function is exported and deferred calls are supported),
