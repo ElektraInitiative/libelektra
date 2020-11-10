@@ -18,52 +18,49 @@ This describes what to do for a release:
 == Updates ==
 
 - Update doc/COMPILE.md to reflect actually tested setups
-- Write release notes
+- Run scripts/dev/update-infos-status with arguments for heuristics (--auto)
+- Write release notes without hash sums (move to final name, add links where to download release)
+- cp doc/todo/NEWS.md doc/news/_preparation_next_release.md
 
 == Increment Version Number ==
 
 - CMakeLists.txt
+- Increment version in output of doc/tutorials/hello-elektra.md
+- Increment <Version> of libelektra4j in examples/external/java/read-keys-example/pom.xml and src/bindings/jna/README.md
 - Change VERSION variable in build-server
 
 == Check ==
-
 - https://build.libelektra.org/job/libelektra/job/master/ must pass
-- Trigger release pipeline with dry run
+
+= When Source Code is considered ready =
+
+- Trigger release pipeline
 - Inspect the logs from the pipeline
   - [ ] Error logs (*.error) must be empty
-  - [ ] Check in the (test-*) folders if all tests passed
+  - [ ] Check in the (test-*) folders if the passed tests really were successful
   - [ ] Check if version is correct in the version file
-  - [ ] Check if the debian package build log was successfull (debian/<DEBIAN_CODENAME>/elektra_*.buildinfo)
+  - [ ] Check if the Debian package build log has warnings (debian/<DEBIAN_CODENAME>/elektra_*.buildinfo)
 - Check if all artifacts are present
-  - [ ] Check debian/<DEBIAN_CODENAME> if all debian packages were built
-  - [ ] Unarchive the elektra tarball and briefly verify if the correct version was archived
-- Inspect the changes to the libelektra git repository (*.bundle)
-  Inspect the git log of the master and debian branch with: git log -p --author="jenkins-release"
-  Master:
+  - [ ] Check debian/<DEBIAN_CODENAME> if all Debian packages were built
+- Inspect the changes to the libelektra git repository in git/
+  git/master.log
   - [ ] Check diff of commit "Regenerate dot of plugins for release <VERSION>" and if 
-        doc/images/plugins.pdf was generated correctly (Only if plugins were modified)
+        doc/images/plugins.pdf was generated correctly
   - [ ] Check diff of commit "Update contract for release <VERSION>": Plugin tags in the plugin 
         README.md should be sorted (Only if tags are not sorted)
-  Debian:
-  - [ ] Check if master is merged to debian branch (commit: "merge <VERSION>")
-  - [ ] Check diff of commit "Debian Package <VERSION>-1 (UNRELEASED)":
-        An entry for a new upstream version should have been created in debian/changelog
-  - [ ] Check diff of commit "Debian Package <VERSION>-1":
-        The previously created version entry in debian/changelog should have been updated from
-        UNRELEASED to unstable. 
-- Inspect the changes to the docu git repository (docu.bundle)
-  - [ ] Check diff of the latest commit "<VERSION> release" with: git log -p 
+  git/debian.log
+  - [ ] Check if master is merged to Debian branch (commit: "merge <VERSION>")
+- Inspect the changes to the docu git repository in git/docu.log
+  - [ ] Check diff of the latest commit "<VERSION> release" 
+- Inspect the changes to the ftp git repository in git/ftp.log
+  - [ ] Check diff of the latest commit "Release <VERSION>"
 - Inspect the website from the pipeline
-
-== Preperation ==
-
-- Finalize release notes without hash sums (move to final name, add links where to download release)
-- cp doc/todo/NEWS.md doc/news/_preparation_next_release.md
 
 = Publish =
 
-- Trigger release pipeline without dry run
-- Add hash sums to release notes and run linkchecker to verify that all download links are working:
+- Select "process" in the stage view to publish the package
+- Clean the git statistics in git/statistics and add them to the release notes (formatting, remove uninteresting data)
+- Add hash sums to release notes and run linkchecker to verify that all download links of the current release are working:
   mkdir build && cd build && make html && ../scripts/link-checker external-links.txt
 - (Possible) rebuilds from website for last changes in the release notes
 
@@ -71,8 +68,6 @@ This describes what to do for a release:
 
 - Increment CMPVERSION in scripts/build/run_icheck 
 - Cleanup tests/icheck.suppression (and add info to release notes)
-- Increment version in output of doc/tutorials/hello-elektra.md
-- Increment <Version> of libelektra4j in examples/external/java/read-keys-example/pom.xml and src/bindings/jna/README.md
 
 == Update Alpine Linux image on docker hub ==
 
