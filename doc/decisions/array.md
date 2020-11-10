@@ -102,6 +102,9 @@ The `spec` plugin should check if it is a valid array, i.e.:
   which is a possibility also in all the alternatives of this decision.
 - A `user:/` or `dir:/` key can change the semantics of a `system:/` array,
   if not avoided by `spec`.
+- user-facing documentation should contain a note like:
+  "Mixing array and non-array keys in arrays is not supported.
+  In many cases the trivial solution is to move the array part into a separate child-key."
 
 ## Related Decisions
 
