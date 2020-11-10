@@ -17,7 +17,7 @@ We need to find minimal requirements to implement a sane spec plugin.
 
 - no defaults for `sw/_/key` specifications
   (default will not work for `ksLookup(/sw/sthg/key)`)
-- plugins are not allowed to create keys
+- plugins are not allowed to create keys (may change in future; depends on plugin positions)
 
 The spec plugin should yield errors when it detects such situations.
 
