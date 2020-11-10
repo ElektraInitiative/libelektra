@@ -21,7 +21,7 @@ Inconsistent use of booleans in various parts of Elektra.
 Only the strings `0` and `1` are allowed in the `KeySet` for `type = boolean`, for both values and defaults.
 Everything else should lead to errors in checkers (in `kdbSet`).
 
-A spec with `type = boolean`  without a specified default should be interpreted as `default = 0`.
+A spec with `type = boolean` without a specified default should be interpreted as `default = 0`.
 
 Example for an implementation in C in an application:
 
