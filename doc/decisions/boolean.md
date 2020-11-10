@@ -28,7 +28,7 @@ The absence of a non-required key without a specified default should be interpre
 Example for an implementation in C in an application:
 
 ```c
-if (!strcmp(keyString(k), "1")) {/*true*/} else {/*false*/}
+if (k != NULL && strcmp(keyString(k), "1") == 0) {/*true*/} else {/*false*/}
 ```
 
 Storage plugins are allowed any representation as suitable, e.g., a JSON plugin might render `1` as `true`.
