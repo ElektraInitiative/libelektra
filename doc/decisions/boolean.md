@@ -45,7 +45,7 @@ The type checker plugin should allow
 
 ## Implications
 
-- Storage plugins are only allowed to emit `0` or `1`
+- Storage plugins are only allowed to emit `0` or `1` as key values
 - Applications either get `0` or `1`, or (without a key)
   can safely assume that false is meant
 
