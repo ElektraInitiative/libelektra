@@ -2,7 +2,7 @@
 
 ## Problem
 
-Inconsistent use of bool in various parts of Elektra.
+Inconsistent use of booleans in various parts of Elektra.
 
 ## Constraints
 
@@ -10,20 +10,18 @@ Inconsistent use of bool in various parts of Elektra.
 
 ## Assumptions
 
-- type checker plugins can reject everything not 0 or 1
-
 ## Considered Alternatives
 
 - only check presence or absence (no cascading override of already present key possible)
 - use booleans as in CMake, which allows on/off, true/false, ... (would need convenience across the code)
+- do not accept a specification with `type = boolean` without a default
 
 ## Decision
 
-Only the strings `0` and `1` are allowed in the `KeySet` for `type = boolean`.
+Only the strings `0` and `1` are allowed in the `KeySet` for `type = boolean`, for both values and defaults.
 Everything else should lead to errors in checkers (in `kdbSet`).
 
-The spec/docu should mention that a `boolean` is used and may specify the default.
-The absence of a non-required key without a specified default should be interpreted as false.
+A spec with `type = boolean`  without a specified default should be interpreted as `default = 0`.
 
 Example for an implementation in C in an application:
 
@@ -35,22 +33,22 @@ Storage plugins are allowed any representation as suitable, e.g., a JSON plugin 
 
 The type checker plugin should allow
 
-- non-presence, if not required
+- non-presence
 - the string "0"
 - the string "1"
 
 ## Rationale
 
 - most easy to implement
-- allows presence to be true
+- allows non-presence to be false
 - plugins allow us to convert to any other behavior
 
 ## Implications
 
-- change code with different behavior
+- Storage plugins are only allowed to emit `0` or `1`
+- Applications either get `0` or `1`, or (without a key)
+  can safely assume that false is meant
 
 ## Related Decisions
 
 ## Notes
-
-See [here](https://github.com/ElektraInitiative/libelektra/issues/308)
