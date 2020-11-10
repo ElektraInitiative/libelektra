@@ -44,8 +44,8 @@ myarray/#5 = value5
 It is not allowed to have anything else than `#5` in the metadata `array`,
 e.g. even `#4` would be a malformed array.
 
-The metadata `array` preferable should be in `spec` (specified configuration).
-Then the `spec` plugin will add the `array` marker with the correct length.
+With the metadata `array` in `spec:/` the `spec` plugin will add the
+`array` marker with the correct length.
 This needs to be happen early, so that plugins can rely on having
 correct arrays.
 
@@ -108,6 +108,8 @@ The `spec` plugin should check if it is a valid array, i.e.:
 - [Global Plugins](global_plugins.md)
 - [Global Validation](global_validation.md)
 - [Base Names](base_name.md)
+- [Metadata in Spec Namespace](spec_metadata.md)
+- [Spec Expressiveness](spec_expressiveness.md)
 
 ## Notes
 

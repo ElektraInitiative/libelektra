@@ -51,7 +51,7 @@ section here.
 - [Store the escaped and/or unescaped key name](store_name.md)
 - [Lookup every key](lookup_every_key.md)
 - [Holes and Non-leaf values](holes.md)
-- [Arbitrary Meta-Data](arbitrary_metadata.md)
+- [Metadata in Spec Namespace](spec_metadata.md)
 - [Multiple File Backends](multiple_file_backends.md)
 - [Capabilities](capabilities.md)
 - [Array](array.md)
