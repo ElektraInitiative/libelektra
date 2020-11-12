@@ -14,7 +14,6 @@
 #endif
 
 #include <kdbextension.h>
-#include <kdbproposal.h>
 
 static int keyCmpOrderWrapper (const void * a, const void * b)
 {
@@ -59,9 +58,8 @@ static const char * getMetaValue (Key * key, const char * metaName)
 
 static void writeLineComments (Key * key, FILE * fp)
 {
-	// TODO: this is really inefficient
 	KeySet * metaKeys = keyMeta (key);
-	Key * commentParent = keyNew ("comment", KEY_META_NAME, KEY_END);
+	Key * commentParent = keyNew ("meta:/comment", KEY_END);
 	KeySet * comments = elektraArrayGet (commentParent, metaKeys);
 	keyDel (commentParent);
 
@@ -69,7 +67,7 @@ static void writeLineComments (Key * key, FILE * fp)
 	Key * current;
 	while ((current = ksNext (comments)))
 	{
-		if (strcmp (keyName (current), "comment/#0"))
+		if (strcmp (keyName (current), "meta:/comment/#0") != 0)
 		{
 			Key * spaceKey = keyDup (current);
 			keyAddBaseName (spaceKey, "space");

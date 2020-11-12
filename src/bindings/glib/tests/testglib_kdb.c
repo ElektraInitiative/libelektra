@@ -10,7 +10,7 @@
 #include <glib-object.h>
 #include <tests.h>
 
-#define TEST_NS "user/tests/glib"
+#define TEST_NS "user:/tests/glib"
 
 static void test_open_close (void)
 {
@@ -20,11 +20,11 @@ static void test_open_close (void)
 	/* open */
 	kdb = gelektra_kdb_open (error);
 	succeed_if (kdb != NULL, "unable to open kdb");
-	succeed_if (!gelektra_key_isvalid (error), "unexpected error");
+	succeed_if (!gelektra_key_hasmeta (error, "error"), "unexpected error");
 
 	/* close */
 	gelektra_kdb_close (kdb, error);
-	succeed_if (!gelektra_key_isvalid (error), "unexpected error");
+	succeed_if (!gelektra_key_hasmeta (error, "error"), "unexpected error");
 	g_object_unref (kdb);
 
 	/* open + close */
@@ -50,11 +50,11 @@ static void test_get_set (void)
 
 	ks = gelektra_keyset_new (100, GELEKTRA_KEYSET_END);
 
-	/* fetch keys below user/MyApp */
+	/* fetch keys below user:/MyApp */
 	base = gelektra_key_new (TEST_NS, GELEKTRA_KEY_END);
 	gelektra_kdb_get (kdb, ks, base);
 
-	/* search for user/MyApp/mykey */
+	/* search for user:/MyApp/mykey */
 	key = gelektra_keyset_lookup_byname (ks, TEST_NS "/mykey", GELEKTRA_KDB_O_NONE);
 	if (!key)
 	{

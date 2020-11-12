@@ -117,21 +117,22 @@ int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 int elektraZeroMqRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/zeromqrecv"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/zeromqrecv"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/zeromqrecv", KEY_VALUE, "zeromqrecv plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/zeromqrecv/exports", KEY_END),
-			keyNew ("system/elektra/modules/zeromqrecv/exports/open", KEY_FUNC, elektraZeroMqRecvOpen, KEY_END),
-			keyNew ("system/elektra/modules/zeromqrecv/exports/get", KEY_FUNC, elektraZeroMqRecvGet, KEY_END),
-			keyNew ("system/elektra/modules/zeromqrecv/exports/close", KEY_FUNC, elektraZeroMqRecvClose, KEY_END),
-			keyNew ("system/elektra/modules/zeromqrecv/exports/setIoBinding", KEY_FUNC, elektraZeroMqRecvSetIoBinding, KEY_END),
-			keyNew ("system/elektra/modules/zeromqrecv/exports/openNotification", KEY_FUNC, elektraZeroMqRecvOpenNotification,
+			30, keyNew ("system:/elektra/modules/zeromqrecv", KEY_VALUE, "zeromqrecv plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/zeromqrecv/exports", KEY_END),
+			keyNew ("system:/elektra/modules/zeromqrecv/exports/open", KEY_FUNC, elektraZeroMqRecvOpen, KEY_END),
+			keyNew ("system:/elektra/modules/zeromqrecv/exports/get", KEY_FUNC, elektraZeroMqRecvGet, KEY_END),
+			keyNew ("system:/elektra/modules/zeromqrecv/exports/close", KEY_FUNC, elektraZeroMqRecvClose, KEY_END),
+			keyNew ("system:/elektra/modules/zeromqrecv/exports/setIoBinding", KEY_FUNC, elektraZeroMqRecvSetIoBinding,
 				KEY_END),
-			keyNew ("system/elektra/modules/zeromqrecv/exports/closeNotification", KEY_FUNC, elektraZeroMqRecvCloseNotification,
+			keyNew ("system:/elektra/modules/zeromqrecv/exports/openNotification", KEY_FUNC, elektraZeroMqRecvOpenNotification,
 				KEY_END),
+			keyNew ("system:/elektra/modules/zeromqrecv/exports/closeNotification", KEY_FUNC,
+				elektraZeroMqRecvCloseNotification, KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/zeromqrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/zeromqrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

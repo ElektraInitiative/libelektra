@@ -9,7 +9,7 @@ elseif (NOT NPM_EXECUTABLE)
 else ()
 
 	# define configuration path
-	set (config_root "user/sw/elektra/webd/#0/")
+	set (config_root "user:/sw/elektra/webd/#0/")
 	set (config_default_profile "current")
 
 	# find installation path

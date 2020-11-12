@@ -69,7 +69,7 @@ static Key * splitEnvValue (const Key * envKey);
 
 static KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName);
 
-char * generateUsageLine (const char * progname, const Key * command, const Key * commandArgs);
+char * generateUsageLine (const char * progname, Key * command, const Key * commandArgs);
 static char * generateOptionsList (KeySet * keysWithOpts, Key * commandKey);
 static char * generateCommandsList (KeySet * keysWithOpts, Key * commandKey);
 static char * generateArgsList (KeySet * keysWithOpts, Key * commandKey);
@@ -122,7 +122,7 @@ static int writeOptions (Key * command, Key * commandKey, Key * commandArgs, boo
  * 		    strings of the format 'KEY=VALUE'.
  * @param parentKey The parent key below which the function while search for option specifications.
  *                  Also used for error reporting. The key will be translated into the spec namespace
- *                  automatically, i.e. 'user/test/parent' will be translated into 'spec/test/parent',
+ *                  automatically, i.e. 'user:/test/parent' will be translated into 'spec:/test/parent',
  *                  before checking against spec keys.
  *
  * @retval 0	on success, this is the only case in which @p ks will be modified
@@ -188,7 +188,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				endArg += lastEndArg;
 
 				Key * commandSpec = ksLookup (spec.keys, commandKey, 0);
-				Key * commandLookup = keyNew ("command", KEY_META_NAME, KEY_END);
+				Key * commandLookup = keyNew ("meta:/command", KEY_END);
 				keyAddBaseName (commandLookup, argv[endArg]);
 				subCommand = ksLookup (keyMeta (commandSpec), commandLookup, KDB_O_DEL);
 			}
@@ -225,7 +225,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 				return -1;
 			}
 
-			Key * procKey = keyNew ("proc", KEY_VALUE, "", KEY_END);
+			Key * procKey = keyNew ("proc:/", KEY_VALUE, "", KEY_END);
 			keyAddName (procKey, strchr (keyName (commandKey), '/'));
 			ksAppendKey (ks, procKey);
 
@@ -320,7 +320,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 	Key * lookup;
 	if (usage == NULL)
 	{
-		lookup = keyNew ("internal/libopts/help/usage", KEY_META_NAME, KEY_END);
+		lookup = keyNew ("meta:/internal/libopts/help/usage", KEY_END);
 		keyAddBaseName (lookup, command);
 		usage = keyGetMetaStringByKey (errorKey, lookup);
 	}
@@ -330,7 +330,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 		return NULL;
 	}
 
-	lookup = keyNew ("internal/libopts/help/options", KEY_META_NAME, KEY_END);
+	lookup = keyNew ("meta:/internal/libopts/help/options", KEY_END);
 	keyAddBaseName (lookup, command);
 	const char * options = keyGetMetaStringByKey (errorKey, lookup);
 	if (options == NULL)
@@ -338,7 +338,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 		options = "";
 	}
 
-	lookup = keyNew ("internal/libopts/help/commands", KEY_META_NAME, KEY_END);
+	lookup = keyNew ("meta:/internal/libopts/help/commands", KEY_END);
 	keyAddBaseName (lookup, command);
 	const char * commands = keyGetMetaStringByKey (errorKey, lookup);
 	if (commands == NULL)
@@ -346,7 +346,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 		commands = "";
 	}
 
-	lookup = keyNew ("internal/libopts/help/args", KEY_META_NAME, KEY_END);
+	lookup = keyNew ("meta:/internal/libopts/help/args", KEY_END);
 	keyAddBaseName (lookup, command);
 	const char * args = keyGetMetaStringByKey (errorKey, lookup);
 	if (args == NULL)
@@ -354,7 +354,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 		args = "";
 	}
 
-	lookup = keyNew ("internal/libopts/help/envs", KEY_META_NAME, KEY_END);
+	lookup = keyNew ("meta:/internal/libopts/help/envs", KEY_END);
 	keyAddBaseName (lookup, command);
 	const char * envs = keyGetMetaStringByKey (errorKey, lookup);
 	if (envs == NULL)
@@ -520,7 +520,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 			{
 				// add sub-command to parent command
 				Key * parentCommand = ksLookup (spec->keys, maybeCommand, 0);
-				Key * subCommand = keyNew ("command", KEY_META_NAME, KEY_VALUE, keyBaseName (cur), KEY_END);
+				Key * subCommand = keyNew ("meta:/command", KEY_VALUE, keyBaseName (cur), KEY_END);
 				keyAddBaseName (subCommand, keyString (commandMeta));
 
 				if (ksLookup (keyMeta (parentCommand), subCommand, 0) != NULL)
@@ -657,7 +657,7 @@ bool processOptions (struct Specification * spec, Key * command, Key * specKey, 
 
 		// no other way to create Key with name "opt"
 		Key * k = keyNew ("/", KEY_META, "opt", "", KEY_END);
-		opts = ksNew (2, keyNew ("/#", KEY_END), keyGetMeta (k, "opt"), KS_END);
+		opts = ksNew (2, keyNew ("meta:/#", KEY_END), keyGetMeta (k, "opt"), KS_END);
 		keyDel (k);
 	}
 
@@ -751,7 +751,7 @@ bool processOptions (struct Specification * spec, Key * command, Key * specKey, 
 bool readOptionData (struct OptionData * optionData, Key * key, const char * metaKey, Key * errorKey)
 {
 	// two slashes in string because array index is inserted in-between
-	char metaBuffer[ELEKTRA_MAX_ARRAY_SIZE + sizeof ("opt//flagvalue") + 1];
+	char metaBuffer[ELEKTRA_MAX_ARRAY_SIZE + sizeof ("meta:/opt//flagvalue") + 1];
 	strncpy (metaBuffer, metaKey, ELEKTRA_MAX_ARRAY_SIZE + 3); // 3 = opt/ - null byte from ELEKTRA_MAX_SIZE
 	strncat (metaBuffer, "/arg", 11);			   // 11 = remaining space in metaBuffer
 
@@ -1325,7 +1325,7 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * argI
 		elektraCursor firstRemainingArg = argIndex == NULL ? 0 : ksGetSize (indices) - 1; // -1 because of parent
 		ksDel (indices);
 
-		Key * procKey = keyNew ("proc", KEY_END);
+		Key * procKey = keyNew ("proc:/", KEY_END);
 		keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
 
 		Key * insertKey = keyDup (procKey);
@@ -1370,7 +1370,7 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * argI
 			return -1;
 		}
 
-		Key * procKey = keyNew ("proc", KEY_END);
+		Key * procKey = keyNew ("proc:/", KEY_END);
 		keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
 		keySetString (procKey, keyString (arg));
 		ksAppendKey (ks, procKey);
@@ -1432,7 +1432,7 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 		return 1;
 	}
 
-	Key * procKey = keyNew ("proc", KEY_END);
+	Key * procKey = keyNew ("proc:/", KEY_END);
 	keyAddName (procKey, strchr (keyName (key), '/'));
 
 	bool isArrayKey = elektraStrCmp (keyBaseName (procKey), "#") == 0;
@@ -1874,7 +1874,7 @@ int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool write
 
 		if (keyGetMeta (keyWithOpt, "command") != NULL)
 		{
-			Key * procKey = keyNew ("proc", KEY_VALUE, "", KEY_END);
+			Key * procKey = keyNew ("proc:/", KEY_VALUE, "", KEY_END);
 			keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
 			ksAppendKey (ks, procKey);
 		}
@@ -1937,7 +1937,7 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
 	if (value[0] != '#')
 	{
 		// add dummy key to mimic elektraMetaArrayToKS
-		return ksNew (2, keyNew ("/#", KEY_END), k, KS_END);
+		return ksNew (2, keyNew ("meta:/#", KEY_END), k, KS_END);
 	}
 
 	Key * testKey = keyDup (k);
@@ -1949,7 +1949,7 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
 	if (test == NULL)
 	{
 		// add dummy key to mimic elektraMetaArrayToKS
-		return ksNew (2, keyNew ("/#", KEY_END), k, KS_END);
+		return ksNew (2, keyNew ("meta:/#", KEY_END), k, KS_END);
 	}
 
 	return elektraMetaArrayToKS (key, metaName);
@@ -1960,11 +1960,11 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
  *
  * @return a newly allocated string, must be freed with elektraFree()
  */
-char * generateUsageLine (const char * progname, const Key * command, const Key * commandArgs)
+char * generateUsageLine (const char * progname, Key * command, const Key * commandArgs)
 {
-	size_t commandStringSize = keyGetUnescapedNameSize (commandArgs);
+	size_t commandStringSize = keyGetUnescapedNameSize (commandArgs) - 2;
 	char * commandString = elektraMalloc (commandStringSize);
-	memcpy (commandString, keyUnescapedName (commandArgs), commandStringSize);
+	memcpy (commandString, ((const char *) keyUnescapedName (commandArgs)) + 2, commandStringSize);
 
 	for (char * p = commandString; p < commandString + commandStringSize; ++p)
 	{
@@ -2011,25 +2011,26 @@ char * generateUsageLine (const char * progname, const Key * command, const Key 
 		{
 			if (remainingArgs != NULL)
 			{
-				usage = elektraFormat ("Usage: %s%s [OPTION...] [COMMAND [...]|%s [<%s>...]]\n", progname, commandString,
-						       indexedArgs, remainingArgs);
+				usage = elektraFormat ("Usage: %s%s%s [OPTION...] [COMMAND [...]|%s [<%s>...]]\n", progname,
+						       commandStringSize > 1 ? " " : "", commandString, indexedArgs, remainingArgs);
 			}
 			else
 			{
-				usage = elektraFormat ("Usage: %s%s [OPTION...] [COMMAND [...]|%s]\n", progname, commandString,
-						       indexedArgs);
+				usage = elektraFormat ("Usage: %s%s%s [OPTION...] [COMMAND [...]|%s]\n", progname,
+						       commandStringSize > 1 ? " " : "", commandString, indexedArgs);
 			}
 		}
 		else
 		{
 			if (remainingArgs != NULL)
 			{
-				usage = elektraFormat ("Usage: %s%s [OPTION...] [COMMAND [...]|[<%s>...]]\n", progname, commandString,
-						       remainingArgs);
+				usage = elektraFormat ("Usage: %s%s%s [OPTION...] [COMMAND [...]|[<%s>...]]\n", progname,
+						       commandStringSize > 1 ? " " : "", commandString, remainingArgs);
 			}
 			else
 			{
-				usage = elektraFormat ("Usage: %s%s [OPTION...] [COMMAND [...]]\n", progname, commandString);
+				usage = elektraFormat ("Usage: %s%s%s [OPTION...] [COMMAND [...]]\n", progname,
+						       commandStringSize > 1 ? " " : "", commandString);
 			}
 		}
 	}
@@ -2039,23 +2040,26 @@ char * generateUsageLine (const char * progname, const Key * command, const Key 
 		{
 			if (remainingArgs != NULL)
 			{
-				usage = elektraFormat ("Usage: %s%s [OPTION...] %s [<%s>...]\n", progname, commandString, indexedArgs,
-						       remainingArgs);
+				usage = elektraFormat ("Usage: %s%s%s [OPTION...] %s [<%s>...]\n", progname,
+						       commandStringSize > 1 ? " " : "", commandString, indexedArgs, remainingArgs);
 			}
 			else
 			{
-				usage = elektraFormat ("Usage: %s%s [OPTION...] %s\n", progname, commandString, indexedArgs);
+				usage = elektraFormat ("Usage: %s%s%s [OPTION...] %s\n", progname, commandStringSize > 1 ? " " : "",
+						       commandString, indexedArgs);
 			}
 		}
 		else
 		{
 			if (remainingArgs != NULL)
 			{
-				usage = elektraFormat ("Usage: %s%s [OPTION...] [<%s>...]\n", progname, commandString, remainingArgs);
+				usage = elektraFormat ("Usage: %s%s%s [OPTION...] [<%s>...]\n", progname, commandStringSize > 1 ? " " : "",
+						       commandString, remainingArgs);
 			}
 			else
 			{
-				usage = elektraFormat ("Usage: %s%s [OPTION...]\n", progname, commandString);
+				usage = elektraFormat ("Usage: %s%s%s [OPTION...]\n", progname, commandStringSize > 1 ? " " : "",
+						       commandString);
 			}
 		}
 	}

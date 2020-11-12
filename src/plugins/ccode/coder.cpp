@@ -96,17 +96,19 @@ void Coder::readConfig (CppKeySet const & config, CppKey const & root)
 string Coder::encodeString (string const & text)
 {
 	vector<unsigned char> encoded;
+	encoded.reserve (text.size ());
 
 	for (unsigned char character : text)
 	{
-		if (encode[character])
+		const auto & encodedChar = encode[character];
+		if (encodedChar == '\0')
 		{
-			encoded.push_back (escapeCharacter);
-			encoded.push_back (encode[character]);
+			encoded.push_back (character);
 		}
 		else
 		{
-			encoded.push_back (character);
+			encoded.push_back (escapeCharacter);
+			encoded.push_back (encodedChar);
 		}
 	}
 
@@ -123,6 +125,7 @@ string Coder::encodeString (string const & text)
 string Coder::decodeString (string const & text)
 {
 	vector<char> decoded;
+	decoded.reserve (text.size () / 2); // minimum required size, if everything is escaped
 
 	auto character = text.begin ();
 
@@ -176,8 +179,10 @@ void Coder::decodeValue (CppKey & key)
  */
 CppKey Coder::encodeName (CppKey const & key)
 {
-	CppKey escaped{ key.dup () };
-	escaped.setName (key.getNamespace ());
+	CppKey escaped = key.dup ();
+	auto nspace = key.getNamespace ();
+	escaped.setName ("/");
+	escaped.setNamespace (nspace);
 	auto keyIterator = key.begin ();
 
 	while (++keyIterator != key.end ())
@@ -197,8 +202,10 @@ CppKey Coder::encodeName (CppKey const & key)
  */
 CppKey Coder::decodeName (CppKey const & key)
 {
-	CppKey unescaped{ key.dup () };
-	unescaped.setName (key.getNamespace ());
+	CppKey unescaped = key.dup ();
+	auto nspace = key.getNamespace ();
+	unescaped.setName ("/");
+	unescaped.setNamespace (nspace);
 	auto keyIterator = key.begin ();
 
 	while (++keyIterator != key.end ())

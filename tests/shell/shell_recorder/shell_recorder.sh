@@ -178,7 +178,7 @@ run_script() {
 		case "$cmd" in
 		Mountpoint:)
 			Mountpoint=$(second "$line")
-			MountpointRoot=$(printf "$Mountpoint" | sed -E 's~(/?[^/]+).*~\1~')
+			MountpointRoot=$(printf "$Mountpoint" | sed -E 's~(/?[^/]+).*~\1/~')
 			;;
 		File:)
 			DBFile=$(second "$line")

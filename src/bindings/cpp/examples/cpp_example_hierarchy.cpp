@@ -22,8 +22,8 @@ namespace kdb
  * @param k the key to search in
  * @param n the level
  *
- * nth_level_of_name(Key("user/hello", KEY_END), 0) -> "user"
- * nth_level_of_name(Key("user/hello", KEY_END), 1) -> "hello"
+ * nth_level_of_name(Key("user:/hello", KEY_END), 0) -> "user:"
+ * nth_level_of_name(Key("user:/hello", KEY_END), 1) -> "hello"
  *
  * @return the searched string (without slashes)
  */
@@ -201,11 +201,11 @@ public:
 	void add (Key k)
 	{
 		// update root nodes
-		if (k.getName () == "user")
+		if (k.getName () == "user:/")
 		{
 			m_userRootNode.m_self = k;
 		}
-		else if (k.getName () == "system")
+		else if (k.getName () == "system:/")
 		{
 			m_systemRootNode.m_self = k;
 		}
@@ -231,9 +231,9 @@ public:
 	 */
 	void accept (Visitor & visitor)
 	{
-		visitor.visit ("user", 0, m_userRootNode.m_self);
+		visitor.visit ("user:/", 0, m_userRootNode.m_self);
 		m_userRootNode.accept (visitor);
-		visitor.visit ("system", 0, m_systemRootNode.m_self);
+		visitor.visit ("system:/", 0, m_systemRootNode.m_self);
 		m_systemRootNode.accept (visitor);
 	}
 
@@ -275,19 +275,19 @@ int main ()
 	using namespace kdb;
 	KeySet ks;
 	KeyHierarchy kh (ks);
-	kh.add (Key ("user/hello", KEY_VALUE, "Hello world", KEY_END));
+	kh.add (Key ("user:/hello", KEY_VALUE, "Hello world", KEY_END));
 	PrintVisitor pv;
 	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add (Key ("system/b/s/t", KEY_VALUE, "Below", KEY_END));
+	kh.add (Key ("system:/b/s/t", KEY_VALUE, "Below", KEY_END));
 	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add (Key ("system/b/s/t", KEY_VALUE, "Updated", KEY_END));
+	kh.add (Key ("system:/b/s/t", KEY_VALUE, "Updated", KEY_END));
 	kh.accept (pv);
 	std::cout << std::endl;
 
-	kh.add (Key ("system", KEY_VALUE, "root value", KEY_END));
+	kh.add (Key ("system:/", KEY_VALUE, "root value", KEY_END));
 	kh.accept (pv);
 }

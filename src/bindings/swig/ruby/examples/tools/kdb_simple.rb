@@ -49,7 +49,7 @@ end
 #
 # similar to $> kdb plugin-info <plugin>
 #
-# fetches plugin info from system/elektra/modules path
+# fetches plugin info from system:/elektra/modules path
 # if plugin is not loaded yet, load it and fetch info
 # directly from plugin
 #
@@ -63,7 +63,7 @@ Cmdline.define :info do
   # open the kdb
   Kdb.open do |kdb|
     # this is the path where plugin info can be found
-    plugin_key_path = "system/elektra/modules/#{plugin_name}"
+    plugin_key_path = "system:/elektra/modules/#{plugin_name}"
 
     # fetch the info from the database
     conf = Kdb::KeySet.new
@@ -176,7 +176,7 @@ Cmdline.define :mount do
     backend.set_mountpoint mpk, mountconf
 
     # config settings for all plugins
-    #config = Kdbtools.parse_plugin_arguments "", "system/"
+    #config = Kdbtools.parse_plugin_arguments "", "system:/"
     #backend.set_backend_config config
 
     # add the resolver plugin
@@ -277,9 +277,9 @@ examples:
 
     #{__FILE__} mount /tmp/myconfig.ini /myconfig/file ini conf1=a,conf2=b
 
-    #{__FILE__} mount /tmp/file system/file ini sync
+    #{__FILE__} mount /tmp/file system:/file ini sync
 
-    #{__FILE__} umount system/file
+    #{__FILE__} umount system:/file
 
 EOF
   end

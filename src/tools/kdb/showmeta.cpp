@@ -41,7 +41,7 @@ int ShowMetaCommand::execute (Cmdline const & cl)
 	Key metaKey = k.nextMeta ();
 	while (!metaKey.isNull ())
 	{
-		cout << metaKey.getName () << ": " << metaKey.getString () << endl;
+		cout << metaKey.getName ().substr (sizeof ("meta:/") - 1) << ": " << metaKey.getString () << endl;
 		metaKey = k.nextMeta ();
 	}
 	return 0;

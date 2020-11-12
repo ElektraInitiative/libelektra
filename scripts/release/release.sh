@@ -28,7 +28,7 @@ install_elektra() {
 	export PATH=${WORKSPACE}/system/bin:$PATH
 	export DBUS_SESSION_BUS_ADDRESS=$(dbus-daemon --session --fork --print-address)
 	export LUA_CPATH="${WORKSPACE}/system/lib/lua/5.2/?.so;"
-	export VERSION=$(kdb get system/elektra/version/constants/KDB_VERSION)
+	export VERSION=$(kdb get system:/elektra/version/constants/KDB_VERSION)
 	export DVERSION=$VERSION-1
 }
 
@@ -112,7 +112,7 @@ run_checks() {
 prepare_package() {
 	echo "Preparing package..."
 
-	export KDB_VERSION=$(kdb get system/elektra/version/constants/KDB_VERSION)
+	export KDB_VERSION=$(kdb get system:/elektra/version/constants/KDB_VERSION)
 	export CMAKE_BINARY_DIR=$BUILD_DIR
 
 	cd $BUILD_DIR
@@ -186,12 +186,12 @@ log_strace() {
 	CONTEXT=$1
 	mkdir $BASE_DIR/$VERSION/$CONTEXT
 
-	strace -o $BASE_DIR/$VERSION/$CONTEXT/mount.strace kdb mount file.ecf user/release_test
-	strace -o $BASE_DIR/$VERSION/$CONTEXT/file.strace kdb file user/release_test/b
-	strace -o $BASE_DIR/$VERSION/$CONTEXT/set.strace kdb set user/release_test/b
-	strace -o $BASE_DIR/$VERSION/$CONTEXT/get.strace kdb get user/release_test/b
-	strace -o $BASE_DIR/$VERSION/$CONTEXT/rm.strace kdb rm user/release_test/b
-	strace -o $BASE_DIR/$VERSION/$CONTEXT/umount.strace kdb umount user/release_test
+	strace -o $BASE_DIR/$VERSION/$CONTEXT/mount.strace kdb mount file.ecf user:/release_test
+	strace -o $BASE_DIR/$VERSION/$CONTEXT/file.strace kdb file user:/release_test/b
+	strace -o $BASE_DIR/$VERSION/$CONTEXT/set.strace kdb set user:/release_test/b
+	strace -o $BASE_DIR/$VERSION/$CONTEXT/get.strace kdb get user:/release_test/b
+	strace -o $BASE_DIR/$VERSION/$CONTEXT/rm.strace kdb rm user:/release_test/b
+	strace -o $BASE_DIR/$VERSION/$CONTEXT/umount.strace kdb umount user:/release_test
 }
 
 run_log_tests() {

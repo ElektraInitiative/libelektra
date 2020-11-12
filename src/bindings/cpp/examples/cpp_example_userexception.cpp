@@ -25,6 +25,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "kdbmacros.h"
 #include <stdexcept>
 
 class UserException : public std::exception
@@ -83,6 +84,10 @@ public:
 class KeyInvalidName : public KeyException
 {
 public:
+	KeyInvalidName (const std::string & name ELEKTRA_UNUSED, const std::string & more ELEKTRA_UNUSED)
+	{
+	}
+
 	virtual const char * what () const throw () override
 	{
 		return "User Exception: Invalid Keyname";

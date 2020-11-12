@@ -6,8 +6,8 @@ import (
 )
 
 func TestPostMove(t *testing.T) {
-	keyNameFrom := "user/tests/elektrad/kdbmv/post/from"
-	keyNameTo := "user/tests/elektrad/kdbmv/post/to"
+	keyNameFrom := "user:/tests/elektrad/kdbmv/post/from"
+	keyNameTo := "user:/tests/elektrad/kdbmv/post/to"
 
 	setupKey(t, keyNameFrom)
 	removeKey(t, keyNameTo)

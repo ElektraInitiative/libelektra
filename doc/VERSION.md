@@ -8,10 +8,10 @@ numbers for the publicly announced versions.
 The version can also be retrieved at run-time from KDB:
 
 ```
-system/elektra/version/constants/KDB_VERSION
-system/elektra/version/constants/KDB_VERSION_MAJOR
-system/elektra/version/constants/KDB_VERSION_MINOR
-system/elektra/version/constants/KDB_VERSION_PATCH
+system:/elektra/version/constants/KDB_VERSION
+system:/elektra/version/constants/KDB_VERSION_MAJOR
+system:/elektra/version/constants/KDB_VERSION_MICRO
+system:/elektra/version/constants/KDB_VERSION_MINOR
 ```
 
 ## Scope
@@ -136,7 +136,7 @@ know about which bug fixes are included.
 
 The patch level might also be used to fix bugs within bindings.
 This means that applications can only introspect the patch
-level of Elektra by getting `system/elektra/version/constants/KDB_VERSION_PATCH`
+level of Elektra by getting `system:/elektra/version/constants/KDB_VERSION_PATCH`
 but not by static patch levels the binding might provide.
 This should be no problem, as the patch level is supposed
 to not change the behavior.

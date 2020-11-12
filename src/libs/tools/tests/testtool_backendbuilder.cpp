@@ -150,7 +150,7 @@ TEST (GTEST_DISABLE_ASAN (MountBackendBuilder), allSort)
 		b.addPlugin (PluginSpec ("augeas"));
 		// b.addPlugin (PluginSpec ("type"));
 		// b.addPlugin (PluginSpec ("validation"));
-		// b.addPlugin (PluginSpec ("struct", KeySet(5, *Key("user/module", KEY_END), KS_END)));
+		// b.addPlugin (PluginSpec ("struct", KeySet(5, *Key("user:/module", KEY_END), KS_END)));
 	}
 	catch (std::exception const & e)
 	{
@@ -264,13 +264,13 @@ TEST (BackendBuilder, doubleAddWithConf)
 	BackendBuilder bb (bbi);
 	bb.addPlugin (PluginSpec ("resolver"));
 	bb.addPlugin (PluginSpec ("a"));
-	bb.addPlugin (PluginSpec ("c", KeySet (2, *Key ("user/abc", KEY_END), KS_END)));
-	bb.addPlugin (PluginSpec ("v", KeySet (2, *Key ("user/vef", KEY_END), KS_END)));
+	bb.addPlugin (PluginSpec ("c", KeySet (2, *Key ("user:/abc", KEY_END), KS_END)));
+	bb.addPlugin (PluginSpec ("v", KeySet (2, *Key ("user:/vef", KEY_END), KS_END)));
 	EXPECT_EQ (std::distance (bb.cbegin (), bb.cend ()), 4);
 	EXPECT_EQ (bb.cbegin ()[0], PluginSpec ("resolver"));
 	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("a"));
-	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c", KeySet (2, *Key ("user/abc", KEY_END), KS_END)));
-	EXPECT_EQ (bb.cbegin ()[3], PluginSpec ("c", "v", KeySet (2, *Key ("user/vef", KEY_END), KS_END))) << "remember it was virtual";
+	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c", KeySet (2, *Key ("user:/abc", KEY_END), KS_END)));
+	EXPECT_EQ (bb.cbegin ()[3], PluginSpec ("c", "v", KeySet (2, *Key ("user:/vef", KEY_END), KS_END))) << "remember it was virtual";
 	bb.resolveNeeds ();
 	EXPECT_EQ (std::distance (bb.cbegin (), bb.cend ()), 4);
 }
@@ -288,13 +288,13 @@ TEST (BackendBuilder, doubleAddWithConfVirtual)
 	BackendBuilder bb (bbi);
 	bb.addPlugin (PluginSpec ("resolver"));
 	bb.addPlugin (PluginSpec ("a"));
-	bb.addPlugin (PluginSpec ("v", KeySet (2, *Key ("user/vef", KEY_END), KS_END)));
-	bb.addPlugin (PluginSpec ("c", KeySet (2, *Key ("user/abc", KEY_END), KS_END)));
+	bb.addPlugin (PluginSpec ("v", KeySet (2, *Key ("user:/vef", KEY_END), KS_END)));
+	bb.addPlugin (PluginSpec ("c", KeySet (2, *Key ("user:/abc", KEY_END), KS_END)));
 	ASSERT_EQ (std::distance (bb.cbegin (), bb.cend ()), 4);
 	EXPECT_EQ (bb.cbegin ()[0], PluginSpec ("noresolver", "resolver"));
 	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("a"));
-	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c", "v", KeySet (2, *Key ("user/vef", KEY_END), KS_END)));
-	EXPECT_EQ (bb.cbegin ()[3], PluginSpec ("c", KeySet (2, *Key ("user/abc", KEY_END), KS_END)));
+	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("c", "v", KeySet (2, *Key ("user:/vef", KEY_END), KS_END)));
+	EXPECT_EQ (bb.cbegin ()[3], PluginSpec ("c", KeySet (2, *Key ("user:/abc", KEY_END), KS_END)));
 	bb.resolveNeeds ();
 	EXPECT_EQ (std::distance (bb.cbegin (), bb.cend ()), 4);
 }
@@ -316,7 +316,7 @@ TEST (BackendBuilder, directPluginLoading)
 	bb.resolveNeeds ();
 	EXPECT_EQ (std::distance (bb.cbegin (), bb.cend ()), 3);
 	EXPECT_EQ (bb.cbegin ()[0], PluginSpec ("a"));
-	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("x", KeySet (2, *Key ("user/a", KEY_VALUE, "b", KEY_END), KS_END)));
+	EXPECT_EQ (bb.cbegin ()[1], PluginSpec ("x", KeySet (2, *Key ("user:/a", KEY_VALUE, "b", KEY_END), KS_END)));
 	EXPECT_EQ (bb.cbegin ()[2], PluginSpec ("noresolver", "resolver"));
 }
 
@@ -576,7 +576,7 @@ TEST (BackendBuilder, checkconfOkNoChange)
 	PluginSpec spec ("checkconf1");
 	KeySet pluginConfig;
 	Key a;
-	a.setName ("user/a");
+	a.setName ("user:/a");
 	a.setString ("abc");
 	pluginConfig.append (a);
 	spec.appendConfig (pluginConfig);
@@ -597,7 +597,7 @@ TEST (BackendBuilder, checkconfNotOKmissing)
 
 static int checkconfAppend (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
 {
-	ckdb::ksAppendKey (config, ckdb::keyNew ("user/b", KEY_VALUE, "test", KEY_END));
+	ckdb::ksAppendKey (config, ckdb::keyNew ("user:/b", KEY_VALUE, "test", KEY_END));
 	return 1;
 }
 
@@ -616,7 +616,7 @@ TEST (BackendBuilder, checkconfOkChanged)
 	bb.addPlugin (spec);
 	// we expect b to be added now
 	spec = *bb.begin ();
-	EXPECT_EQ (spec.getConfig ().get<std::string> ("user/b"), "test");
+	EXPECT_EQ (spec.getConfig ().get<std::string> ("user:/b"), "test");
 }
 
 static int checkconfDelete (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
@@ -637,14 +637,14 @@ TEST (BackendBuilder, checkconfOkRemovedPluginConfig)
 	PluginSpec spec ("checkconf1");
 	KeySet pluginConfig;
 	Key a;
-	a.setName ("user/a");
+	a.setName ("user:/a");
 	a.setString ("abc");
 	pluginConfig.append (a);
 	spec.appendConfig (pluginConfig);
 	bb.addPlugin (spec);
 	// we expect a to be removed now
 	spec = *bb.begin ();
-	EXPECT_THROW (spec.getConfig ().get<std::string> ("user/a"), KeyNotFoundException);
+	EXPECT_THROW (spec.getConfig ().get<std::string> ("user:/a"), KeyNotFoundException);
 }
 
 TEST (BackendBuilder, checkconfOkRemovedBackendConfig)
@@ -661,19 +661,19 @@ TEST (BackendBuilder, checkconfOkRemovedBackendConfig)
 	spec.appendConfig (pluginConfig);
 	KeySet backendConfig;
 	Key b;
-	b.setName ("system/b");
+	b.setName ("system:/b");
 	b.setString ("xyz");
 	backendConfig.append (b);
 	bb.setBackendConfig (backendConfig);
 	bb.addPlugin (spec);
 	// we expect b to be removed now
 	spec = *bb.begin ();
-	EXPECT_THROW (bb.getBackendConfig ().get<std::string> ("system/b"), KeyNotFoundException);
+	EXPECT_THROW (bb.getBackendConfig ().get<std::string> ("system:/b"), KeyNotFoundException);
 }
 
 static int checkconfAppendBackendConf (ckdb::Key * errorKey ELEKTRA_UNUSED, ckdb::KeySet * config)
 {
-	ckdb::ksAppendKey (config, ckdb::keyNew ("system/a", KEY_VALUE, "abc", KEY_END));
+	ckdb::ksAppendKey (config, ckdb::keyNew ("system:/a", KEY_VALUE, "abc", KEY_END));
 	return 1;
 }
 
@@ -692,5 +692,5 @@ TEST (BackendBuilder, checkconfOkAppendBackendConfig)
 	bb.addPlugin (spec);
 	// we expect b to be added now
 	spec = *bb.begin ();
-	EXPECT_EQ (bb.getBackendConfig ().get<std::string> ("system/a"), "abc");
+	EXPECT_EQ (bb.getBackendConfig ().get<std::string> ("system:/a"), "abc");
 }

@@ -24,16 +24,16 @@ With the default Elektra installation only an administrator can update configura
 # Backup-and-Restore:/tests/tutorial
 
 # Backup old override specification
-kdb set user/tests/overrides $(mktemp)
-kdb export system/tests/overrides dump > $(kdb get user/tests/overrides)
+kdb set user:/tests/overrides $(mktemp)
+kdb export system:/tests/overrides dump > $(kdb get user:/tests/overrides)
 
 kdb get /tests/tutorial/cascading/#0/current/test
 # RET: 11
 # STDERR: Did not find key '/tests/tutorial/cascading/#0/current/test'
 
 # Now add the key ...
-sudo kdb set system/tests/tutorial/cascading/#0/current/test "hello world"
-#> Create a new key system/tests/tutorial/cascading/#0/current/test with string "hello world"
+sudo kdb set system:/tests/tutorial/cascading/#0/current/test "hello world"
+#> Create a new key system:/tests/tutorial/cascading/#0/current/test with string "hello world"
 
 # ... and verify that it exists
 kdb get /tests/tutorial/cascading/#0/current/test
@@ -45,8 +45,8 @@ kdb get /tests/tutorial/cascading/#0/current/test
 A user may now want to override the configuration in **system**, so he/she sets a key in the **user** namespace:
 
 ```sh
-kdb set user/tests/tutorial/cascading/#0/current/test "hello galaxy"
-#> Create a new key user/tests/tutorial/cascading/#0/current/test with string "hello galaxy"
+kdb set user:/tests/tutorial/cascading/#0/current/test "hello galaxy"
+#> Create a new key user:/tests/tutorial/cascading/#0/current/test with string "hello galaxy"
 
 # This key masks the key in the system namespace
 kdb get /tests/tutorial/cascading/#0/current/test
@@ -69,8 +69,8 @@ cd kdbtutorial
 
 # ... and create a key in this directories dir-namespace
 # By default this data will be saved in the directory `.dir`.
-kdb set dir/tests/tutorial/cascading/#0/current/test "hello universe"
-#> Create a new key dir/tests/tutorial/cascading/#0/current/test with string "hello universe"
+kdb set dir:/tests/tutorial/cascading/#0/current/test "hello universe"
+#> Create a new key dir:/tests/tutorial/cascading/#0/current/test with string "hello universe"
 
 # This key masks the key in the system namespace
 kdb get /tests/tutorial/cascading/#0/current/test
@@ -119,14 +119,14 @@ Consider the following example:
 First, we create a target key to demonstrate the override link mechanism:
 
 ```sh
-sudo kdb set system/tests/overrides/test "hello override"
-#> Create a new key system/tests/overrides/test with string "hello override"
+sudo kdb set system:/tests/overrides/test "hello override"
+#> Create a new key system:/tests/overrides/test with string "hello override"
 ```
 
 Override links can be defined by adding them to the `override/#` metadata array key of the corresponding `spec-key`:
 
 ```sh
-sudo kdb meta-set spec/tests/tutorial/cascading/#0/current/test override/#0 /tests/overrides/test
+sudo kdb meta-set spec:/tests/tutorial/cascading/#0/current/test override/#0 /tests/overrides/test
 ```
 
 Now when doing a cascading lookup, we get the value of our target key instead of the specified one:
@@ -136,7 +136,7 @@ kdb get /tests/tutorial/cascading/#0/current/test
 #> hello override
 ```
 
-As we used a cascading key for our override link (`/tests/overrides/test`) we can use this to allow users to provide their own `tests/overrides/test` keys. If a user sets the `/tests/overrides/test` key, the **user** namespace will be used (for a non-root user) and therefore the new target for our `/tests/tutorial/cascading/#0/current/test` key will be `user/tests/overrides/test` instead of `system/tests/overrides/test`.
+As we used a cascading key for our override link (`/tests/overrides/test`) we can use this to allow users to provide their own `tests/overrides/test` keys. If a user sets the `/tests/overrides/test` key, the **user** namespace will be used (for a non-root user) and therefore the new target for our `/tests/tutorial/cascading/#0/current/test` key will be `user:/tests/overrides/test` instead of `system:/tests/overrides/test`.
 
 ```sh
 kdb set /tests/overrides/test "hello user"
@@ -153,14 +153,14 @@ keys and more. For more information, read the [`elektra-spec` help page](/doc/he
 As last part in this tutorial we remove the modifications to the database we made previously.
 
 ```sh
-kdb rm -r user/tests/tutorial/
-kdb rm -r system/tests/tutorial
-kdb rm -r system/tests/overrides
-kdb import system/tests/overrides dump < $(kdb get user/tests/overrides)
-rm $(kdb get user/tests/overrides)
-kdb rm user/tests/overrides
+kdb rm -r user:/tests/tutorial/
+kdb rm -r system:/tests/tutorial
+kdb rm -r system:/tests/overrides
+kdb import system:/tests/overrides dump < $(kdb get user:/tests/overrides)
+rm $(kdb get user:/tests/overrides)
+kdb rm user:/tests/overrides
 
-kdb rm -r spec/tests/tutorial/
+kdb rm -r spec:/tests/tutorial/
 
 rm -r .dir/
 rmdir kdbtutorial

@@ -37,7 +37,7 @@ static void cleanupEnvp (char ** envp);
 
 /**
  * Detects whether we are in help mode or not.
- * DOES NOT set 'proc/elektra/gopts/help' for use with elektraGetOptsHelpMessage().
+ * DOES NOT set 'proc:/elektra/gopts/help' for use with elektraGetOptsHelpMessage().
  *
  * @retval 1 if --help is part of argv
  * @retval 0 otherwise
@@ -67,15 +67,15 @@ int elektraGOptsIsHelpMode (void)
 
 int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/gopts"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/gopts"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/gopts", KEY_VALUE, "gopts plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/gopts/exports", KEY_END),
-			       keyNew ("system/elektra/modules/gopts/exports/get", KEY_FUNC, elektraGOptsGet, KEY_END),
-			       keyNew ("system/elektra/modules/gopts/exports/ishelpmode", KEY_FUNC, elektraGOptsIsHelpMode, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/gopts", KEY_VALUE, "gopts plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/gopts/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/gopts/exports/get", KEY_FUNC, elektraGOptsGet, KEY_END),
+			       keyNew ("system:/elektra/modules/gopts/exports/ishelpmode", KEY_FUNC, elektraGOptsIsHelpMode, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/gopts/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/gopts/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -124,7 +124,7 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 	else if (ret == 1)
 	{
-		Key * helpKey = keyNew ("proc/elektra/gopts/help", KEY_VALUE, "1", KEY_END);
+		Key * helpKey = keyNew ("proc:/elektra/gopts/help", KEY_VALUE, "1", KEY_END);
 		keyCopyAllMeta (helpKey, parentKey);
 		ksAppendKey (returned, helpKey);
 
@@ -132,7 +132,7 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		const char * prefix = prefixKey == NULL ? NULL : keyString (prefixKey);
 
 		char * message = elektraGetOptsHelpMessage (parentKey, usage, prefix);
-		Key * messageKey = keyNew ("proc/elektra/gopts/help/message", KEY_VALUE, message, KEY_END);
+		Key * messageKey = keyNew ("proc:/elektra/gopts/help/message", KEY_VALUE, message, KEY_END);
 		elektraFree (message);
 		ksAppendKey (returned, messageKey);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;

@@ -114,7 +114,6 @@ the original C++ class in the following aspects:
 
 /* define which methods are throwing which exceptions */
 %catches (kdb::KeyException) kdb::Key::getName;
-%catches (kdb::KeyException) kdb::Key::getFullName;
 
 %catches (kdb::KeyInvalidName) kdb::Key::setName;
 %catches (kdb::KeyInvalidName) kdb::Key::addName;
@@ -139,7 +138,7 @@ The following variants are available:
 
   k = Kdb::Key.new
 
-  k = Kdb::Key.new('user/myapp/config1',
+  k = Kdb::Key.new('user:/myapp/config1',
                    value: 'hello',
                    owner: 'me',
                    meta-data1: 'meta')
@@ -170,7 +169,6 @@ The following variants are available:
  * (size + 1) size info */
 %ignore kdb::Key::getNameSize;
 %ignore kdb::Key::getBaseNameSize;
-%ignore kdb::Key::getFullNameSize;
 %ignore kdb::Key::getStringSize;
 /* kdb::Key::getBinarySize could be useful */
 
@@ -185,7 +183,6 @@ The following variants are available:
 %predicate kdb::Key::isDir;
 %predicate kdb::Key::isString;
 %predicate kdb::Key::isBinary;
-%predicate kdb::Key::isInactive;
 %predicate kdb::Key::isBelow;
 %predicate kdb::Key::isBelowOrSame;
 %predicate kdb::Key::isDirectBelow;
@@ -219,8 +216,6 @@ namespace kdb {
 %rename("basename=") kdb::Key::setBaseName;
 
 %rename("add_basename") kdb::Key::addBaseName;
-
-%rename("fullname") kdb::Key::getFullName;
 
 %rename("namespace") kdb::Key::getNamespace;
 

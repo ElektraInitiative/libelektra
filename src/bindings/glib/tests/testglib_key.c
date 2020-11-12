@@ -16,25 +16,23 @@ static void test_ctor (void)
 
 	key = gelektra_key_new (NULL);
 	succeed_if (key != NULL, "unable to create key");
-	succeed_if (!gelektra_key_isvalid (key), "key should be invalid");
+	succeed_if (gelektra_key_isvalid (key), "key should be valid");
 	g_object_unref (key);
 
 	key = g_object_new (GELEKTRA_TYPE_KEY, NULL);
 	succeed_if (key != NULL, "unable to create key");
-	succeed_if (!gelektra_key_isvalid (key), "key should be invalid");
+	succeed_if (gelektra_key_isvalid (key), "key should be valid");
 	g_object_unref (key);
 
 	key = gelektra_key_new ("wrongname", GELEKTRA_KEY_END);
-	succeed_if (key != NULL, "unable to create key");
-	succeed_if (!gelektra_key_isvalid (key), "key should be invalid");
-	g_object_unref (key);
+	succeed_if (key == NULL, "created invalid key");
 
-	Key * ckey = keyNew (NULL);
+	Key * ckey = keyNew ("/", KEY_END);
 	key = gelektra_key_make (ckey);
 	succeed_if (key->key == ckey, "new key not wrapped");
 	g_object_unref (key);
 
-	key = gelektra_key_new ("user/foo", GELEKTRA_KEY_END);
+	key = gelektra_key_new ("user:/foo", GELEKTRA_KEY_END);
 	succeed_if (key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (key), "key should be valid");
 	succeed_if (gelektra_key_getref (key) == 1, "refcount should be 1");
@@ -46,31 +44,31 @@ static void test_ctor (void)
 	succeed_if (gelektra_key_getref (key) == 1, "refcount should be 1");
 	g_object_unref (key);
 
-	key = gelektra_key_new ("spec/key", GELEKTRA_KEY_END);
+	key = gelektra_key_new ("spec:/key", GELEKTRA_KEY_END);
 	succeed_if (key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (key), "key should be valid");
 	succeed_if (gelektra_key_getref (key) == 1, "refcount should be 1");
 	g_object_unref (key);
 
-	key = gelektra_key_new ("proc/key", GELEKTRA_KEY_END);
+	key = gelektra_key_new ("proc:/key", GELEKTRA_KEY_END);
 	succeed_if (key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (key), "key should be valid");
 	succeed_if (gelektra_key_getref (key) == 1, "refcount should be 1");
 	g_object_unref (key);
 
-	key = gelektra_key_new ("dir/key", GELEKTRA_KEY_END);
+	key = gelektra_key_new ("dir:/key", GELEKTRA_KEY_END);
 	succeed_if (key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (key), "key should be valid");
 	succeed_if (gelektra_key_getref (key) == 1, "refcount should be 1");
 	g_object_unref (key);
 
-	key = gelektra_key_new ("user/key", GELEKTRA_KEY_END);
+	key = gelektra_key_new ("user:/key", GELEKTRA_KEY_END);
 	succeed_if (key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (key), "key should be valid");
 	succeed_if (gelektra_key_getref (key) == 1, "refcount should be 1");
 	g_object_unref (key);
 
-	key = gelektra_key_new ("system/key", GELEKTRA_KEY_END);
+	key = gelektra_key_new ("system:/key", GELEKTRA_KEY_END);
 	succeed_if (key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (key), "key should be valid");
 	succeed_if (gelektra_key_getref (key) == 1, "refcount should be 1");
@@ -82,15 +80,15 @@ static GElektraKey * g_bkey = NULL;
 
 static void create_global_keys (void)
 {
-	g_key = gelektra_key_new ("user/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_OWNER, "myowner", GELEKTRA_KEY_COMMENT, "mycomment",
-				  GELEKTRA_KEY_UID, "123", GELEKTRA_KEY_GID, 456, GELEKTRA_KEY_MODE, 0644, GELEKTRA_KEY_ATIME, 123,
-				  GELEKTRA_KEY_MTIME, "456", GELEKTRA_KEY_CTIME, 789, GELEKTRA_KEY_DIR, GELEKTRA_KEY_META, "by", "manuel",
-				  GELEKTRA_KEY_END);
+	g_key = gelektra_key_new ("user:/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_OWNER, "myowner", GELEKTRA_KEY_COMMENT,
+				  "mycomment", GELEKTRA_KEY_UID, "123", GELEKTRA_KEY_GID, 456, GELEKTRA_KEY_MODE, 0644, GELEKTRA_KEY_ATIME,
+				  123, GELEKTRA_KEY_MTIME, "456", GELEKTRA_KEY_CTIME, 789, GELEKTRA_KEY_DIR, GELEKTRA_KEY_META, "by",
+				  "manuel", GELEKTRA_KEY_END);
 	succeed_if (g_key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (g_key), "key should be valid");
 	succeed_if (gelektra_key_getref (g_key) == 1, "refcount should be 1");
 
-	g_bkey = gelektra_key_new ("system/bkey", GELEKTRA_KEY_BINARY, GELEKTRA_KEY_VALUE, "bvalue\0\0", GELEKTRA_KEY_END);
+	g_bkey = gelektra_key_new ("system:/bkey", GELEKTRA_KEY_BINARY, GELEKTRA_KEY_VALUE, "bvalue\0\0", GELEKTRA_KEY_END);
 	succeed_if (g_bkey != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (g_bkey), "key should be valid");
 	succeed_if (gelektra_key_getref (g_bkey) == 1, "refcount should be 1");
@@ -98,20 +96,18 @@ static void create_global_keys (void)
 
 static void test_props (void)
 {
-	gchar *name, *basename, *fullname;
-	g_object_get (g_key, "name", &name, "basename", &basename, "fullname", &fullname, NULL);
-	succeed_if (!strcmp (name, "user/key"), "wrong value");
+	gchar *name, *basename;
+	g_object_get (g_key, "name", &name, "basename", &basename, NULL);
+	succeed_if (!strcmp (name, "user:/key"), "wrong value");
 	succeed_if (!strcmp (basename, "key"), "wrong value");
-	succeed_if (!strcmp (fullname, "user:myowner/key"), "wrong value");
 	g_free (name);
 	g_free (basename);
-	g_free (fullname);
 
 	GElektraKey * key = g_object_new (GELEKTRA_TYPE_KEY, NULL);
-	gelektra_key_setname (key, "user/foo");
+	gelektra_key_setname (key, "user:/foo");
 	gelektra_key_setbasename (key, "bar");
 	g_object_get (key, "name", &name, NULL);
-	succeed_if (!strcmp (name, "user/bar"), "wrong value");
+	succeed_if (!strcmp (name, "user:/bar"), "wrong value");
 	g_free (name);
 	g_object_unref (key);
 }
@@ -129,15 +125,15 @@ static void test_basic (void)
 	g_object_unref (key);
 
 	gchar * name;
-	key = gelektra_key_new ("user/bar", GELEKTRA_KEY_END);
+	key = gelektra_key_new ("user:/bar", GELEKTRA_KEY_END);
 	gelektra_key_copy (g_key, key);
 	g_object_get (key, "name", &name, NULL);
-	succeed_if (!strcmp (name, "user/key"), "wrong value");
+	succeed_if (!strcmp (name, "user:/key"), "wrong value");
 	g_free (name);
 
 	gelektra_key_clear (key);
 	g_object_get (key, "name", &name, NULL);
-	succeed_if (!strcmp (name, ""), "wrong value");
+	succeed_if (!strcmp (name, "/"), "wrong value");
 	g_free (name);
 
 	g_object_unref (key);
@@ -156,9 +152,8 @@ static void test_operators (void)
 
 static void test_name_manipulation (void)
 {
-	succeed_if (gelektra_key_getnamesize (g_key) == sizeof ("user/key"), "wrong size");
+	succeed_if (gelektra_key_getnamesize (g_key) == sizeof ("user:/key"), "wrong size");
 	succeed_if (gelektra_key_getbasenamesize (g_key) == sizeof ("key"), "wrong size");
-	succeed_if (gelektra_key_getfullnamesize (g_key) == sizeof ("user:myowner/key"), "wrong size");
 }
 
 
@@ -255,14 +250,13 @@ static void test_validating (void)
 	succeed_if (!gelektra_key_issystem (g_key), "key is system");
 	succeed_if (gelektra_key_isstring (g_key), "key is not string");
 	succeed_if (!gelektra_key_isbinary (g_key), "key is binary");
-	succeed_if (!gelektra_key_isinactive (g_key), "key is inactive");
 
 	succeed_if (!gelektra_key_isuser (g_bkey), "key is user");
 	succeed_if (gelektra_key_issystem (g_bkey), "key is not system");
 	succeed_if (!gelektra_key_isstring (g_bkey), "key is string");
 	succeed_if (gelektra_key_isbinary (g_bkey), "key is not binary");
 
-	GElektraKey * key = gelektra_key_new ("user/key/glib/edy", GELEKTRA_KEY_END);
+	GElektraKey * key = gelektra_key_new ("user:/key/glib/edy", GELEKTRA_KEY_END);
 	succeed_if (gelektra_key_isbelow (key, g_key), "key not below g_key");
 	succeed_if (gelektra_key_isbeloworsame (key, g_key), "key not below g_key");
 	succeed_if (gelektra_key_isbeloworsame (g_key, g_key), "key is not key :)");

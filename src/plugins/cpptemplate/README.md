@@ -24,19 +24,19 @@ scripts/dev/copy-template -p pluginname
 ## Example
 
 ```sh
-sudo kdb mount -R noresolver none user/tests/cpptemplate cpptemplate some=thing config=value
+sudo kdb mount -R noresolver none user:/tests/cpptemplate cpptemplate some=thing config=value
 
 # This example plugin adds configuration values at the mount point
-kdb ls user/tests/cpptemplate
-#> user/tests/cpptemplate/config
-#> user/tests/cpptemplate/path
-#> user/tests/cpptemplate/some
+kdb ls user:/tests/cpptemplate
+#> user:/tests/cpptemplate/config
+#> user:/tests/cpptemplate/path
+#> user:/tests/cpptemplate/some
 
-kdb get user/tests/cpptemplate/config
+kdb get user:/tests/cpptemplate/config
 #> value
 
-kdb get user/tests/cpptemplate/path
+kdb get user:/tests/cpptemplate/path
 #> none
 
-sudo kdb umount user/tests/cpptemplate
+sudo kdb umount user:/tests/cpptemplate
 ```

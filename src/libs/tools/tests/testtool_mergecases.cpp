@@ -66,14 +66,14 @@ TEST_F (ThreeWayMergeTest, CascadingParentsCauseNoCascadingKeys)
 	merged.rewind ();
 	while ((current = merged.next ()))
 	{
-		EXPECT_FALSE (current.getNamespace () == "/");
+		EXPECT_FALSE (current.getNamespace () == ElektraNamespace::CASCADING);
 	}
 }
 
 TEST_F (ThreeWayMergeTest, SameDeletedKeyMerge)
 {
-	ours.lookup ("user/parento/config/key1", KDB_O_POP);
-	theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
+	ours.lookup ("user:/parento/config/key1", KDB_O_POP);
+	theirs.lookup ("user:/parentt/config/key1", KDB_O_POP);
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 
@@ -85,8 +85,8 @@ TEST_F (ThreeWayMergeTest, SameDeletedKeyMerge)
 
 TEST_F (ThreeWayMergeTest, DeleteModifyConflict)
 {
-	ours.lookup ("user/parento/config/key1", KDB_O_POP);
-	theirs.lookup ("user/parentt/config/key1").setString ("modifiedvalue");
+	ours.lookup ("user:/parento/config/key1", KDB_O_POP);
+	theirs.lookup ("user:/parentt/config/key1").setString ("modifiedvalue");
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 
@@ -101,8 +101,8 @@ TEST_F (ThreeWayMergeTest, DeleteModifyConflict)
 
 TEST_F (ThreeWayMergeTest, ModifyDeleteConflict)
 {
-	ours.lookup ("user/parento/config/key1").setString ("modifiedvalue");
-	theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
+	ours.lookup ("user:/parento/config/key1").setString ("modifiedvalue");
+	theirs.lookup ("user:/parentt/config/key1", KDB_O_POP);
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 	ASSERT_TRUE (result.hasConflicts ()) << "No conflict detected although conflicts should exist";
@@ -118,8 +118,8 @@ TEST_F (ThreeWayMergeTest, ModifyDeleteConflict)
 
 TEST_F (ThreeWayMergeTest, SameModifyConflict)
 {
-	ours.lookup ("user/parento/config/key1").setString ("modifiedvalueours");
-	theirs.lookup ("user/parentt/config/key1").setString ("modifiedvaluetheirs");
+	ours.lookup ("user:/parento/config/key1").setString ("modifiedvalueours");
+	theirs.lookup ("user:/parentt/config/key1").setString ("modifiedvaluetheirs");
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 	ASSERT_TRUE (result.hasConflicts ()) << "No conflict detected although conflicts should exist";
@@ -136,8 +136,8 @@ TEST_F (ThreeWayMergeTest, SameModifyConflict)
 
 TEST_F (ThreeWayMergeTest, SameAddedEqualValueMerges)
 {
-	ours.append (Key ("user/parento/config/key5", KEY_VALUE, "newvalue", KEY_END));
-	theirs.append (Key ("user/parentt/config/key5", KEY_VALUE, "newvalue", KEY_END));
+	ours.append (Key ("user:/parento/config/key5", KEY_VALUE, "newvalue", KEY_END));
+	theirs.append (Key ("user:/parentt/config/key5", KEY_VALUE, "newvalue", KEY_END));
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 	EXPECT_FALSE (result.hasConflicts ()) << "Invalid conflict detected";
@@ -147,13 +147,13 @@ TEST_F (ThreeWayMergeTest, SameAddedEqualValueMerges)
 	EXPECT_EQ (6, merged.size ());
 	compareAllKeys (merged);
 
-	compareKeys (Key ("user/parentm/config/key5", KEY_VALUE, "newvalue", KEY_END), merged.lookup (mk5));
+	compareKeys (Key ("user:/parentm/config/key5", KEY_VALUE, "newvalue", KEY_END), merged.lookup (mk5));
 }
 
 TEST_F (ThreeWayMergeTest, SameAddedDifferentValueConflict)
 {
-	ours.append (Key ("user/parento/config/key5", KEY_VALUE, "newvalueours", KEY_END));
-	theirs.append (Key ("user/parentt/config/key5", KEY_VALUE, "newvaluetheirs", KEY_END));
+	ours.append (Key ("user:/parento/config/key5", KEY_VALUE, "newvalueours", KEY_END));
+	theirs.append (Key ("user:/parentt/config/key5", KEY_VALUE, "newvaluetheirs", KEY_END));
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 
@@ -172,8 +172,8 @@ TEST_F (ThreeWayMergeTest, SameAddedDifferentValueConflict)
 
 TEST_F (ThreeWayMergeTest, SameMetaKeyModifyConflict)
 {
-	ours.lookup ("user/parento/config/key1").setMeta<std::string> ("testmeta", "ourvalue");
-	theirs.lookup ("user/parentt/config/key1").setMeta<std::string> ("testmeta", "theirvalue");
+	ours.lookup ("user:/parento/config/key1").setMeta<std::string> ("testmeta", "ourvalue");
+	theirs.lookup ("user:/parentt/config/key1").setMeta<std::string> ("testmeta", "theirvalue");
 
 	MergeResult result = merger.mergeKeySet (base, ours, theirs, mergeParent);
 

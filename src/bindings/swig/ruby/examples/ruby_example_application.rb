@@ -112,7 +112,7 @@ if user_wants "update #{KEY_BASENAME}?"
         # clone the key
         setting1 = setting1.clone
         # update its name
-        setting1.name = "user/#{APP_NS}/#{KEY_BASENAME}"
+        setting1.name = "user:/#{APP_NS}/#{KEY_BASENAME}"
         # and finally add it to our keyset
         ks << setting1
     end

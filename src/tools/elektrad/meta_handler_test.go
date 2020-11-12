@@ -6,7 +6,7 @@ import (
 )
 
 func TestPostMeta(t *testing.T) {
-	keyName := "user/tests/elektrad/kdbmeta/post"
+	keyName := "user:/tests/elektrad/kdbmeta/post"
 	value := "i'm a test value"
 	meta := keyValueBody{
 		Key:   "postmeta",
@@ -28,7 +28,7 @@ func TestPostMeta(t *testing.T) {
 }
 
 func TestDeleteMetaHandler(t *testing.T) {
-	keyName := "user/tests/elektrad/kdbmeta/delete/test"
+	keyName := "user:/tests/elektrad/kdbmeta/delete/test"
 	value := "value"
 	meta := keyValueBody{
 		Key:   "postmeta",

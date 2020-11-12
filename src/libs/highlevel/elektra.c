@@ -75,12 +75,12 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	if (contract != NULL)
 	{
-		Key * contractCut = keyNew ("system/elektra/highlevel", KEY_END);
+		Key * contractCut = keyNew ("system:/elektra/highlevel", KEY_END);
 		KeySet * highlevelContract = ksCut (contract, contractCut);
 
 		if (ksGetSize (highlevelContract) > 0)
 		{
-			if (ksLookupByName (highlevelContract, "system/elektra/highlevel/helpmode/ignore/require", 0) != NULL)
+			if (ksLookupByName (highlevelContract, "system:/elektra/highlevel/helpmode/ignore/require", 0) != NULL)
 			{
 				ignoreRequireInHelpMode = 1;
 			}
@@ -101,12 +101,12 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		keyDel (contractCut);
 		ksDel (highlevelContract);
 
-		ksAppendKey (contract, keyNew ("system/elektra/ensure/plugins/global/spec", KEY_VALUE, "remount", KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/ensure/plugins/global/spec", KEY_VALUE, "remount", KEY_END));
 		ksAppendKey (contract,
-			     keyNew ("system/elektra/ensure/plugins/global/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
+			     keyNew ("system:/elektra/ensure/plugins/global/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
 		ksAppendKey (contract,
-			     keyNew ("system/elektra/ensure/plugins/global/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
-		ksAppendKey (contract, keyNew ("system/elektra/ensure/plugins/global/spec/config/missing/log", KEY_VALUE, "1", KEY_END));
+			     keyNew ("system:/elektra/ensure/plugins/global/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/ensure/plugins/global/spec/config/missing/log", KEY_VALUE, "1", KEY_END));
 
 		const int kdbEnsureResult = kdbEnsure (kdb, contract, parentKey);
 
@@ -139,11 +139,11 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	if (kdbGetResult == -1)
 	{
-		Key * helpKey = ksLookupByName (config, "proc/elektra/gopts/help", 0);
+		Key * helpKey = ksLookupByName (config, "proc:/elektra/gopts/help", 0);
 		const Key * missingKeys = keyGetMeta (parentKey, "logs/spec/missing");
 		if (ignoreRequireInHelpMode == 1 && helpKey != NULL && missingKeys != NULL)
 		{
-			// proc/elektra/gopts/help was set -> we are in help mode
+			// proc:/elektra/gopts/help was set -> we are in help mode
 			// logs/spec/missing exists on parentKey -> spec detected missing keys
 			// we ensured that spec uses conflict/get = ERROR -> the error in kdbGet must be from spec
 			// --> we are in the error case that should be ignored
@@ -171,7 +171,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 	elektra->parentKey = parentKey;
 	elektra->parentKeyLength = keyGetNameSize (parentKey) - 1;
 	elektra->config = config;
-	elektra->lookupKey = keyNew (NULL, KEY_END);
+	elektra->lookupKey = keyNew ("/", KEY_END);
 	elektra->fatalErrorHandler = &defaultFatalErrorHandler;
 	elektra->defaults = ksDup (defaults);
 
@@ -199,7 +199,7 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
 /**
  * This function is only intended for use with code-generation.
  *
- * It looks for the key proc/elektra/gopts/help (absolute name) created by gopts,
+ * It looks for the key proc:/elektra/gopts/help (absolute name) created by gopts,
  * and returns it if found.
  *
  * @param elektra The Elektra instance to check
@@ -211,7 +211,7 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
  */
 Key * elektraHelpKey (Elektra * elektra)
 {
-	return ksLookupByName (elektra->config, "proc/elektra/gopts/help", 0);
+	return ksLookupByName (elektra->config, "proc:/elektra/gopts/help", 0);
 }
 
 /**
@@ -347,7 +347,7 @@ void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
 
 static bool minimalValidation (const char * application)
 {
-	Key * parent = keyNew ("system/elektra/mountpoints", KEY_END);
+	Key * parent = keyNew ("system:/elektra/mountpoints", KEY_END);
 	KDB * kdb = kdbOpen (parent);
 	KeySet * mountpoints = ksNew (0, KS_END);
 	if (kdbGet (kdb, mountpoints, parent) < 0)
@@ -359,7 +359,7 @@ static bool minimalValidation (const char * application)
 	}
 
 	char * specName = elektraFormat ("spec%s", application);
-	Key * lookup = keyNew ("system/elektra/mountpoints", KEY_END);
+	Key * lookup = keyNew ("system:/elektra/mountpoints", KEY_END);
 	keyAddBaseName (lookup, specName);
 	elektraFree (specName);
 
@@ -375,7 +375,7 @@ static bool minimalValidation (const char * application)
 
 	keyDel (lookup);
 
-	lookup = keyNew ("system/elektra/mountpoints", KEY_END);
+	lookup = keyNew ("system:/elektra/mountpoints", KEY_END);
 	keyAddBaseName (lookup, application);
 
 	if (ksLookup (mountpoints, lookup, 0) == NULL)
@@ -398,7 +398,7 @@ static bool minimalValidation (const char * application)
 
 bool checkHighlevelContract (const char * application, KeySet * contract, ElektraError ** error)
 {
-	Key * validationKey = ksLookupByName (contract, "system/elektra/highlevel/validation", 0);
+	Key * validationKey = ksLookupByName (contract, "system:/elektra/highlevel/validation", 0);
 	if (validationKey != NULL)
 	{
 		if (strcmp (keyString (validationKey), "minimal") == 0 && !minimalValidation (application))

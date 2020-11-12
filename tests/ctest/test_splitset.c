@@ -14,42 +14,42 @@
 
 KeySet * set_us (void)
 {
-	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/user", KEY_END),
-		      keyNew ("system/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user", KEY_END),
-		      keyNew ("system/elektra/mountpoints/system", KEY_END),
-		      keyNew ("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END), KS_END);
+	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/user", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/user/mountpoint", KEY_VALUE, "user:/", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system:/", KEY_END), KS_END);
 }
 
 
 KeySet * set_three (void)
 {
-	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/system", KEY_END),
-		      keyNew ("system/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system", KEY_END),
-		      keyNew ("system/elektra/mountpoints/userin", KEY_END),
-		      keyNew ("system/elektra/mountpoints/userin/mountpoint", KEY_VALUE, "user/invalid", KEY_END),
-		      keyNew ("system/elektra/mountpoints/userva", KEY_END),
-		      keyNew ("system/elektra/mountpoints/userva/mountpoint", KEY_VALUE, "user/valid", KEY_END), KS_END);
+	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/system", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/system/mountpoint", KEY_VALUE, "system:/", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/userin", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/userin/mountpoint", KEY_VALUE, "user:/invalid", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/userva", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/userva/mountpoint", KEY_VALUE, "user:/valid", KEY_END), KS_END);
 }
 
 
 KeySet * set_realworld (void)
 {
-	return ksNew (50, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/root", KEY_END),
-		      keyNew ("system/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END),
-		      keyNew ("system/elektra/mountpoints/default", KEY_END),
-		      keyNew ("system/elektra/mountpoints/default/mountpoint", KEY_VALUE, "system/elektra", KEY_END),
-		      keyNew ("system/elektra/mountpoints/users", KEY_END),
-		      keyNew ("system/elektra/mountpoints/users/mountpoint", KEY_VALUE, "system/users", KEY_END),
-		      keyNew ("system/elektra/mountpoints/groups", KEY_END),
-		      keyNew ("system/elektra/mountpoints/groups/mountpoint", KEY_VALUE, "system/groups", KEY_END),
-		      keyNew ("system/elektra/mountpoints/hosts", KEY_END),
-		      keyNew ("system/elektra/mountpoints/hosts/mountpoint", KEY_VALUE, "system/hosts", KEY_END),
-		      keyNew ("system/elektra/mountpoints/kde", KEY_END),
-		      keyNew ("system/elektra/mountpoints/kde/mountpoint", KEY_VALUE, "user/sw/kde/default", KEY_END),
-		      keyNew ("system/elektra/mountpoints/app1", KEY_END),
-		      keyNew ("system/elektra/mountpoints/app1/mountpoint", KEY_VALUE, "user/sw/apps/app1/default", KEY_END),
-		      keyNew ("system/elektra/mountpoints/app2", KEY_END),
-		      keyNew ("system/elektra/mountpoints/app2/mountpoint", KEY_VALUE, "user/sw/apps/app2", KEY_END), KS_END);
+	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/root", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/root/mountpoint", KEY_VALUE, "/", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/default", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/default/mountpoint", KEY_VALUE, "system:/elektra", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/users", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/users/mountpoint", KEY_VALUE, "system:/users", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/groups", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/groups/mountpoint", KEY_VALUE, "system:/groups", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/hosts", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/hosts/mountpoint", KEY_VALUE, "system:/hosts", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/kde", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/kde/mountpoint", KEY_VALUE, "user:/sw/kde/default", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/app1", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/app1/mountpoint", KEY_VALUE, "user:/sw/apps/app1/default", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/app2", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/app2/mountpoint", KEY_VALUE, "user:/sw/apps/app2", KEY_END), KS_END);
 }
 
 KDB * kdb_open (void)
@@ -85,10 +85,10 @@ static void test_needsync (void)
 	KDB * handle = kdb_open ();
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not mount default backends");
 
-	KeySet * ks = ksNew (5, keyNew ("user/abc", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/abc", KEY_END), KS_END);
 	Split * split = splitNew ();
 
-	Key * parent = keyNew ("user", KEY_VALUE, "parent", KEY_END);
+	Key * parent = keyNew ("user:/", KEY_VALUE, "parent", KEY_END);
 
 	succeed_if (split->size == 0, "size should be zero");
 	succeed_if (split->alloc == APPROXIMATE_NR_OF_BACKENDS, "initial size not correct");
@@ -126,11 +126,11 @@ static void test_needsync (void)
 
 	split = splitNew ();
 
-	ksAppendKey (ks, keyNew ("user/key1", KEY_END));
-	ksAppendKey (ks, keyNew ("user/key2", KEY_END));
-	ksAppendKey (ks, keyNew ("user/key3", KEY_END));
-	ksAppendKey (ks, keyNew ("user/key4", KEY_END));
-	ksAppendKey (ks, keyNew ("user/key5", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/key1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/key2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/key3", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/key4", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/key5", KEY_END));
 
 	succeed_if (splitBuildup (split, handle, parent) == 1, "buildup failure");
 	succeed_if (splitDivide (split, handle, ks) == 1, "there should be a need sync");
@@ -155,10 +155,10 @@ static void test_mount (void)
 	succeed_if (mountOpen (handle, set_us (), handle->modules, 0) == 0, "could not open mountpoints");
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	KeySet * ks = ksNew (5, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END),
-			     keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END), KS_END);
-	KeySet * split1 = ksNew (3, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END), KS_END);
-	KeySet * split2 = ksNew (3, keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
+			     keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
+	KeySet * split1 = ksNew (3, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END), KS_END);
+	KeySet * split2 = ksNew (3, keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
 
 
 	Split * split = splitNew ();
@@ -171,7 +171,7 @@ static void test_mount (void)
 	succeed_if (split->syncbits[1] == 1, "mounted user part need to by synced");
 	succeed_if (split->syncbits[2] == 2, "spec part need to by synced");
 	succeed_if (split->syncbits[3] == 2, "dir part need to by synced");
-	succeed_if (split->syncbits[4] == 2, "system/elektra part need to by synced");
+	succeed_if (split->syncbits[4] == 2, "system:/elektra part need to by synced");
 	if (split->keysets)
 	{
 		succeed_if (ksGetSize (split->keysets[0]) == 2, "size of keyset not correct");
@@ -205,7 +205,7 @@ static void test_mount (void)
 	splitDel (split);
 
 	split = splitNew ();
-	keySetString (ksLookupByName (ks, "user/valid/key2", 0), "value");
+	keySetString (ksLookupByName (ks, "user:/valid/key2", 0), "value");
 	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -224,7 +224,7 @@ static void test_mount (void)
 	splitDel (split);
 
 	split = splitNew ();
-	keySetString (ksLookupByName (ks, "system/valid/key2", 0), "value");
+	keySetString (ksLookupByName (ks, "system:/valid/key2", 0), "value");
 	succeed_if (splitBuildup (split, handle, 0) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
 	succeed_if (split->keysets, "did not alloc keysets array");
@@ -255,18 +255,18 @@ static void test_easyparent (void)
 
 	KDB * handle = kdb_open ();
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
-	KeySet * ks = ksNew (8, keyNew ("user/valid", KEY_END), keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END),
-			     keyNew ("system/valid", KEY_END), keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END),
-			     KS_END);
-	KeySet * split1 = ksNew (5, keyNew ("system/valid", KEY_END), keyNew ("system/valid/key1", KEY_END),
-				 keyNew ("system/valid/key2", KEY_END), KS_END);
-	KeySet * split2 =
-		ksNew (5, keyNew ("user/valid", KEY_END), keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END), KS_END);
+	KeySet * ks = ksNew (8, keyNew ("user:/valid", KEY_END), keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
+			     keyNew ("system:/valid", KEY_END), keyNew ("system:/valid/key1", KEY_END),
+			     keyNew ("system:/valid/key2", KEY_END), KS_END);
+	KeySet * split1 = ksNew (5, keyNew ("system:/valid", KEY_END), keyNew ("system:/valid/key1", KEY_END),
+				 keyNew ("system:/valid/key2", KEY_END), KS_END);
+	KeySet * split2 = ksNew (5, keyNew ("user:/valid", KEY_END), keyNew ("user:/valid/key1", KEY_END),
+				 keyNew ("user:/valid/key2", KEY_END), KS_END);
 	Key * parentKey;
 	Split * split;
 
 
-	parentKey = keyNew ("user", KEY_END);
+	parentKey = keyNew ("user:/", KEY_END);
 	split = splitNew ();
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
@@ -275,7 +275,7 @@ static void test_easyparent (void)
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "not split by parent");
 	succeed_if (split->syncbits[0] == 3, "user part need not to by synced");
-	succeed_if_same_string (keyName (split->parents[0]), "user");
+	succeed_if_same_string (keyName (split->parents[0]), "user:/");
 	if (split->keysets)
 	{
 		compare_keyset (split->keysets[0], split2);
@@ -284,7 +284,7 @@ static void test_easyparent (void)
 	splitDel (split);
 	keyDel (parentKey);
 
-	parentKey = keyNew ("system", KEY_END);
+	parentKey = keyNew ("system:/", KEY_END);
 	split = splitNew ();
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
@@ -293,7 +293,7 @@ static void test_easyparent (void)
 	succeed_if (split->handles, "did not alloc handles array");
 	succeed_if (split->size == 1, "not split by parent");
 	succeed_if (split->syncbits[0] == 3, "system part need to by synced");
-	succeed_if_same_string (keyName (split->parents[0]), "system");
+	succeed_if_same_string (keyName (split->parents[0]), "system:/");
 	if (split->keysets)
 	{
 		compare_keyset (split->keysets[0], split1);
@@ -317,10 +317,10 @@ static void test_optimize (void)
 	succeed_if (mountOpen (handle, set_us (), handle->modules, 0) == 0, "could not open mountpoints");
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	KeySet * ks = ksNew (5, keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END),
-			     keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END), KS_END);
-	KeySet * split1 = ksNew (3, keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END), KS_END);
-	KeySet * split2 = ksNew (3, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END),
+			     keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END), KS_END);
+	KeySet * split1 = ksNew (3, keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
+	KeySet * split2 = ksNew (3, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END), KS_END);
 	Split * split = splitNew ();
 	Key * key;
 
@@ -341,7 +341,7 @@ static void test_optimize (void)
 	succeed_if (split->syncbits[1] == 0, "user part need to by synced");
 	succeed_if (split->syncbits[2] == 2, "spec part need to by synced");
 	succeed_if (split->syncbits[3] == 2, "dir part need to by synced");
-	succeed_if (split->syncbits[4] == 2, "system/elektra part need to by synced");
+	succeed_if (split->syncbits[4] == 2, "system:/elektra part need to by synced");
 	compare_keyset (split->keysets[0], split1);
 	compare_keyset (split->keysets[1], split2);
 	if (split->keysets)
@@ -366,7 +366,7 @@ static void test_optimize (void)
 	succeed_if (split->syncbits[1] == 0, "user part need to by synced");
 	succeed_if (split->syncbits[2] == 2, "spec part need to by synced");
 	succeed_if (split->syncbits[3] == 2, "dir part need to by synced");
-	succeed_if (split->syncbits[4] == 2, "system/elektra part need to by synced");
+	succeed_if (split->syncbits[4] == 2, "system:/elektra part need to by synced");
 	if (split->keysets)
 	{
 		compare_keyset (split->keysets[0], split1);
@@ -396,7 +396,7 @@ static void test_optimize (void)
 	succeed_if (split->syncbits[1] == 1, "user part need to by synced");
 	succeed_if (split->syncbits[2] == 2, "spec part need to by synced");
 	succeed_if (split->syncbits[3] == 2, "dir part need to by synced");
-	succeed_if (split->syncbits[4] == 2, "system/elektra part need to by synced");
+	succeed_if (split->syncbits[4] == 2, "system:/elektra part need to by synced");
 	if (split->keysets)
 	{
 		compare_keyset (split->keysets[0], split1);
@@ -424,16 +424,17 @@ static void test_three (void)
 	succeed_if (mountOpen (handle, set_three (), handle->modules, 0) == 0, "could not open mountpoints");
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	KeySet * ks = ksNew (18, keyNew ("system/valid", KEY_END), keyNew ("system/valid/key1", KEY_END),
-			     keyNew ("system/valid/key2", KEY_END), keyNew ("system/valid/key3", KEY_END), keyNew ("user/invalid", KEY_END),
-			     keyNew ("user/invalid/key1", KEY_END), keyNew ("user/invalid/key2", KEY_END), keyNew ("user/valid", KEY_END),
-			     keyNew ("user/valid/key1", KEY_END), keyNew ("user/outside", KEY_END), KS_END);
-	KeySet * split0 = ksNew (9, keyNew ("system/valid", KEY_END), keyNew ("system/valid/key1", KEY_END),
-				 keyNew ("system/valid/key2", KEY_END), keyNew ("system/valid/key3", KEY_END), KS_END);
-	KeySet * split1 = ksNew (9, keyNew ("user/invalid", KEY_END), keyNew ("user/invalid/key1", KEY_END),
-				 keyNew ("user/invalid/key2", KEY_END), KS_END);
-	KeySet * split2 = ksNew (9, keyNew ("user/valid", KEY_END), keyNew ("user/valid/key1", KEY_END), KS_END);
-	KeySet * split5 = ksNew (9, keyNew ("user/outside", KEY_END), KS_END);
+	KeySet * ks =
+		ksNew (18, keyNew ("system:/valid", KEY_END), keyNew ("system:/valid/key1", KEY_END),
+		       keyNew ("system:/valid/key2", KEY_END), keyNew ("system:/valid/key3", KEY_END), keyNew ("user:/invalid", KEY_END),
+		       keyNew ("user:/invalid/key1", KEY_END), keyNew ("user:/invalid/key2", KEY_END), keyNew ("user:/valid", KEY_END),
+		       keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/outside", KEY_END), KS_END);
+	KeySet * split0 = ksNew (9, keyNew ("system:/valid", KEY_END), keyNew ("system:/valid/key1", KEY_END),
+				 keyNew ("system:/valid/key2", KEY_END), keyNew ("system:/valid/key3", KEY_END), KS_END);
+	KeySet * split1 = ksNew (9, keyNew ("user:/invalid", KEY_END), keyNew ("user:/invalid/key1", KEY_END),
+				 keyNew ("user:/invalid/key2", KEY_END), KS_END);
+	KeySet * split2 = ksNew (9, keyNew ("user:/valid", KEY_END), keyNew ("user:/valid/key1", KEY_END), KS_END);
+	KeySet * split5 = ksNew (9, keyNew ("user:/outside", KEY_END), KS_END);
 
 
 	Split * split = splitNew ();
@@ -449,7 +450,7 @@ static void test_three (void)
 	succeed_if (split->syncbits[3] == 2, "spec part need to by synced");
 	succeed_if (split->syncbits[4] == 2, "dirpart need to by synced");
 	succeed_if (split->syncbits[5] == 3, "user default part need to by synced");
-	succeed_if (split->syncbits[6] == 2, "system/elektra default part need to by synced");
+	succeed_if (split->syncbits[6] == 2, "system:/elektra default part need to by synced");
 	if (split->keysets)
 	{
 		succeed_if (ksGetSize (split->keysets[0]) == 4, "size of keyset not correct");
@@ -505,7 +506,7 @@ static void test_userremove (void)
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 	/* So we had 2 keys before in the keyset */
 
-	KeySet * ks = ksNew (3, keyNew ("user/valid/key", KEY_END), KS_END);
+	KeySet * ks = ksNew (3, keyNew ("user:/valid/key", KEY_END), KS_END);
 
 
 	Split * split = splitNew ();
@@ -533,7 +534,7 @@ static void test_userremove (void)
 
 	split = splitNew ();
 
-	parent = keyNew ("user/valid", KEY_END);
+	parent = keyNew ("user:/valid", KEY_END);
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
 	succeed_if (splitSync (split) == 1, "should need sync");
@@ -554,7 +555,7 @@ static void test_userremove (void)
 
 	split = splitNew ();
 
-	parent = keyNew ("system/valid", KEY_END);
+	parent = keyNew ("system:/valid", KEY_END);
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 0, "should need sync");
 	succeed_if (splitSync (split) == 0, "should need sync");
@@ -597,7 +598,7 @@ static void test_userremove (void)
 
 	split = splitNew ();
 
-	parent = keyNew ("user/valid", KEY_END);
+	parent = keyNew ("user:/valid", KEY_END);
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 0, "should need sync");
 	succeed_if (splitSync (split) == 1, "should need sync");
@@ -618,7 +619,7 @@ static void test_userremove (void)
 
 	split = splitNew ();
 
-	parent = keyNew ("system/valid", KEY_END);
+	parent = keyNew ("system:/valid", KEY_END);
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
 	succeed_if (splitSync (split) == 0, "should not need sync");
@@ -652,7 +653,7 @@ static void test_systemremove (void)
 
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	KeySet * ks = ksNew (3, keyNew ("system/valid/key", KEY_END), KS_END);
+	KeySet * ks = ksNew (3, keyNew ("system:/valid/key", KEY_END), KS_END);
 
 
 	Split * split = splitNew ();
@@ -681,7 +682,7 @@ static void test_systemremove (void)
 
 	split = splitNew ();
 
-	parent = keyNew ("system/valid", KEY_END);
+	parent = keyNew ("system:/valid", KEY_END);
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 1, "should need sync");
 	succeed_if (splitSync (split) == 1, "should need sync");
@@ -702,7 +703,7 @@ static void test_systemremove (void)
 
 	split = splitNew ();
 
-	parent = keyNew ("user/valid", KEY_END);
+	parent = keyNew ("user:/valid", KEY_END);
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
 	simulateGet (split);
@@ -746,7 +747,7 @@ static void test_systemremove (void)
 
 	split = splitNew ();
 
-	parent = keyNew ("system/valid", KEY_END);
+	parent = keyNew ("system:/valid", KEY_END);
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
 	succeed_if (splitSync (split) == 1, "should need sync");
@@ -767,7 +768,7 @@ static void test_systemremove (void)
 
 	split = splitNew ();
 
-	parent = keyNew ("user/valid", KEY_END);
+	parent = keyNew ("user:/valid", KEY_END);
 	succeed_if (splitBuildup (split, handle, parent) == 1, "should need sync");
 	succeed_if (splitDivide (split, handle, ks) == 0, "should not need sync");
 	succeed_if (splitSync (split) == 0, "should not need sync");
@@ -868,7 +869,7 @@ static void test_emptyremove (void)
 	}
 	splitPrepare (split);
 	succeed_if (split->size == 1, "there is an empty keset");
-	succeed_if_same_string (keyName (split->parents[0]), "user");
+	succeed_if_same_string (keyName (split->parents[0]), "user:/");
 	succeed_if_same_string (keyValue (split->parents[0]), "default");
 
 	splitDel (split);
@@ -889,22 +890,22 @@ static void test_realworld (void)
 	succeed_if (mountOpen (handle, set_realworld (), handle->modules, 0) == 0, "could not open mountpoints");
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
-	KeySet * split0 = ksNew (9, keyNew ("system/elektra/mountpoints", KEY_END), keyNew ("system/elektra/mountpoints/new", KEY_END),
-				 keyNew ("system/elektra/mountpoints/new/mountpoint", KEY_VALUE, "something", KEY_END), KS_END);
-	KeySet * split2 = ksNew (9, keyNew ("system/hosts", KEY_END), keyNew ("system/hosts/markusbyte", KEY_VALUE, "127.0.0.1", KEY_END),
-				 keyNew ("system/hosts/mobilebyte", KEY_END), keyNew ("system/hosts/n900", KEY_END), KS_END);
-	KeySet * split3 = ksNew (9, keyNew ("system/users", KEY_END), keyNew ("system/users/markus", KEY_END),
-				 keyNew ("system/users/harald", KEY_END), keyNew ("system/users/n", KEY_END),
-				 keyNew ("system/users/albert", KEY_END), KS_END);
-	KeySet * split4 = ksNew (9, keyNew ("user/sw/apps/app1/default", KEY_END),
-				 keyNew ("user/sw/apps/app1/default/maximize", KEY_VALUE, "1", KEY_END),
-				 keyNew ("user/sw/apps/app1/default/download", KEY_VALUE, "0", KEY_END),
-				 keyNew ("user/sw/apps/app1/default/keys/a", KEY_VALUE, "a", KEY_END),
-				 keyNew ("user/sw/apps/app1/default/keys/b", KEY_VALUE, "b", KEY_END),
-				 keyNew ("user/sw/apps/app1/default/keys/c", KEY_VALUE, "c", KEY_END), KS_END);
-	KeySet * split7 = ksNew (3, keyNew ("user/outside", KEY_VALUE, "test", KEY_END), KS_END);
-	KeySet * splitX = ksNew (3, keyNew ("spec/testS", KEY_VALUE, "testS", KEY_END), KS_END);
-	KeySet * splitY = ksNew (3, keyNew ("dir/testD", KEY_VALUE, "testD", KEY_END), KS_END);
+	KeySet * split0 = ksNew (9, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/new", KEY_END),
+				 keyNew ("system:/elektra/mountpoints/new/mountpoint", KEY_VALUE, "something", KEY_END), KS_END);
+	KeySet * split2 = ksNew (9, keyNew ("system:/hosts", KEY_END), keyNew ("system:/hosts/markusbyte", KEY_VALUE, "127.0.0.1", KEY_END),
+				 keyNew ("system:/hosts/mobilebyte", KEY_END), keyNew ("system:/hosts/n900", KEY_END), KS_END);
+	KeySet * split3 = ksNew (9, keyNew ("system:/users", KEY_END), keyNew ("system:/users/markus", KEY_END),
+				 keyNew ("system:/users/harald", KEY_END), keyNew ("system:/users/n", KEY_END),
+				 keyNew ("system:/users/albert", KEY_END), KS_END);
+	KeySet * split4 = ksNew (9, keyNew ("user:/sw/apps/app1/default", KEY_END),
+				 keyNew ("user:/sw/apps/app1/default/maximize", KEY_VALUE, "1", KEY_END),
+				 keyNew ("user:/sw/apps/app1/default/download", KEY_VALUE, "0", KEY_END),
+				 keyNew ("user:/sw/apps/app1/default/keys/a", KEY_VALUE, "a", KEY_END),
+				 keyNew ("user:/sw/apps/app1/default/keys/b", KEY_VALUE, "b", KEY_END),
+				 keyNew ("user:/sw/apps/app1/default/keys/c", KEY_VALUE, "c", KEY_END), KS_END);
+	KeySet * split7 = ksNew (3, keyNew ("user:/outside", KEY_VALUE, "test", KEY_END), KS_END);
+	KeySet * splitX = ksNew (3, keyNew ("spec:/testS", KEY_VALUE, "testS", KEY_END), KS_END);
+	KeySet * splitY = ksNew (3, keyNew ("dir:/testD", KEY_VALUE, "testD", KEY_END), KS_END);
 	KeySet * tmp = ksNew (30, KS_END);
 	ksAppend (tmp, split0);
 	ksAppend (tmp, split2);
@@ -1124,8 +1125,8 @@ static void test_realworld (void)
 	succeed_if (splitSync (split) == 1, "sync needed because one size not correct");
 
 	splitPrepare (split);
-	succeed_if (split->size == 1, "should be 1, only system/hosts to sync");
-	succeed_if_same_string (keyName (split->parents[0]), "system/hosts");
+	succeed_if (split->size == 1, "should be 1, only system:/hosts to sync");
+	succeed_if_same_string (keyName (split->parents[0]), "system:/hosts");
 	succeed_if_same_string (keyValue (split->parents[0]), "hosts");
 
 	splitDel (split);
@@ -1169,19 +1170,19 @@ static void test_emptysplit (void)
 	succeed_if (split->syncbits[3] == 2, "size of split not correct");
 	succeed_if (ksGetSize (split->keysets[3]) == 0, "wrong size");
 
-	parentKey = keyNew ("spec", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("spec:/", KEY_VALUE, "default", KEY_END);
 	compare_key (split->parents[0], parentKey);
 	keyDel (parentKey);
 
-	parentKey = keyNew ("dir", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("dir:/", KEY_VALUE, "default", KEY_END);
 	compare_key (split->parents[1], parentKey);
 	keyDel (parentKey);
 
-	parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 	compare_key (split->parents[2], parentKey);
 	keyDel (parentKey);
 
-	parentKey = keyNew ("system", KEY_VALUE, "default", KEY_END);
+	parentKey = keyNew ("system:/", KEY_VALUE, "default", KEY_END);
 	compare_key (split->parents[3], parentKey);
 	keyDel (parentKey);
 
@@ -1214,7 +1215,7 @@ static void test_nothingsync (void)
 	KeySet * ks = ksNew (0, KS_END);
 
 	Split * split = splitNew ();
-	Key * parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	Key * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 
@@ -1244,10 +1245,10 @@ static void test_state (void)
 	succeed_if (mountDefault (handle, handle->modules, 1, 0) == 0, "could not open default backend");
 
 	Key * k;
-	KeySet * ks = ksNew (2, k = keyNew ("user/abc", KEY_END), KS_END);
+	KeySet * ks = ksNew (2, k = keyNew ("user:/abc", KEY_END), KS_END);
 
 	Split * split = splitNew ();
-	Key * parentKey = keyNew ("user", KEY_VALUE, "default", KEY_END);
+	Key * parentKey = keyNew ("user:/", KEY_VALUE, "default", KEY_END);
 
 	succeed_if (splitBuildup (split, handle, parentKey) == 1, "we add the default backend for user");
 

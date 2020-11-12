@@ -28,7 +28,7 @@ kdb mount file.dump /important dump sync
 Then when you observe the change of a value, e.g.
 
 ```sh
-strace kdb set user/important/key value
+strace kdb set user:/important/key value
 ```
 
 you can see, done by storage:
@@ -39,7 +39,7 @@ open("/home/markus/.kdb/file.dump.16874:1409592592.95084.tmp",
 write(4, "kdbOpen 1\n", 10)             = 10
 write(4, "ksNew 1\n", 8)                = 8
 write(4, "keyNew 19 6\n", 12)           = 12
-write(4, "user/important/key\0value\0\n", 26) = 26
+write(4, "user:/important/key\0value\0\n", 26) = 26
 write(4, "keyEnd\n", 7)                 = 7
 write(4, "ksEnd\n", 6)                  = 6
 close(4)                                = 0

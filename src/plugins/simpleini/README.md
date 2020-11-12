@@ -22,7 +22,7 @@ without sections or metadata.
 (Thus +3000 in status)
 
 ```sh
-kdb export system/samba simpleini
+kdb export system:/samba simpleini
 ```
 
 ## Configuration
@@ -40,7 +40,7 @@ The default is `% = %`.
 For example, if you want every key to be marked `%:key value` you would use:
 
 ```sh
-kdb export -c "format=%%:% %" system/samba simpleini
+kdb export -c "format=%%:% %" system:/samba simpleini
 #> %:key value
 #> %:key2 value2
 ```
@@ -62,7 +62,7 @@ kdb export -c "format=%%:% %" system/samba simpleini
 Mount the plugin:
 
 ```sh
-kdb mount -d /etc/samba/smb.conf system/samba ccode simpleini
+kdb mount -d /etc/samba/smb.conf system:/samba ccode simpleini
 ```
 
 ## Limitations

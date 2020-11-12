@@ -42,7 +42,7 @@ void printOptions (elektraLookupFlags options)
 
 ckdb::Key * warnOnMeta (ELEKTRA_UNUSED ckdb::KeySet * ks, ELEKTRA_UNUSED ckdb::Key * key, ckdb::Key * found, elektraLookupFlags options)
 {
-	if (found && !strncmp (keyName (found), "spec/", 5) && options == ckdb::KDB_O_CALLBACK)
+	if (found && !strncmp (keyName (found), "spec:/", 5) && options == ckdb::KDB_O_CALLBACK)
 	{
 		const ckdb::Key * meta = keyGetMeta (found, "context");
 		if (meta)
@@ -85,7 +85,7 @@ ckdb::Key * printTrace (ELEKTRA_UNUSED ckdb::KeySet * ks, ckdb::Key * key, ckdb:
 	}
 	std::cout << std::endl;
 
-	if (k.getName ().substr (0, 5) == "spec/" && (options & ckdb::KDB_O_CALLBACK))
+	if (k.getName ().substr (0, 6) == "spec:/" && (options & ckdb::KDB_O_CALLBACK))
 	{
 		depth += 4;
 		k.setMeta<int> ("callback/print_trace/depth", depth);
@@ -149,9 +149,9 @@ int GetCommand::execute (Cmdline const & cl)
 	{
 		if (cl.verbose)
 		{
-			if (k.getName ()[0] == '/')
+			if (k.getNamespace () == ElektraNamespace::DEFAULT)
 			{
-				cout << "The key was not found in any other namespace, taking the default from the metadata" << std::endl;
+				cout << "The key was not found in any other namespace, taking the default" << std::endl;
 			}
 			cout << "The resulting keyname is " << k.getName () << std::endl;
 			cout << "The resulting value size is " << k.getStringSize () << std::endl;

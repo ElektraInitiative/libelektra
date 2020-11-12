@@ -4,6 +4,9 @@ echo
 echo ELEKTRA CHECK PYTHONGEN
 echo
 
+echo "Deprecated and will be removed soon"
+exit
+
 if pkg-config elektra; then
 	echo "Installed Elektra will be used"
 else
@@ -57,8 +60,8 @@ else
 fi
 
 LIFT_FILE=test_lift.ini
-LIFT_USERROOT=user/test/lift
-LIFT_SYSTEMROOT=system/test/lift
+LIFT_USERROOT=user:/test/lift
+LIFT_SYSTEMROOT=system:/test/lift
 LIFT_MOUNTPOINT=/test/lift
 "$KDB" mount $LIFT_FILE $LIFT_MOUNTPOINT ni 1> /dev/null
 succeed_if "could not mount: $LIFT_FILE at $LIFT_MOUNTPOINT"
@@ -197,7 +200,7 @@ succeed_if "cannot rm $UKEY"
 echo "test override with limit"
 
 UKEY=$LIFT_USERROOT/limit
-OKEY=system/test/material_lift/limit
+OKEY=system:/test/material_lift/limit
 VALUE=33
 "$KDB" get $UKEY 1> /dev/null
 [ $? != "0" ]
@@ -283,10 +286,10 @@ succeed_if "default of height #3 not correct"
 
 VALUE=8.5
 #the concrete (user) key
-KKEY=user/test/lift/floor/#3/height
+KKEY=user:/test/lift/floor/#3/height
 #the fallback keys (user+system
-UKEY=user/test/lift/floor/height
-SKEY=system/test/lift/floor/height
+UKEY=user:/test/lift/floor/height
+SKEY=system:/test/lift/floor/height
 
 "$KDB" set "$SKEY" "$VALUE" 1> /dev/null
 succeed_if "could not set $SKEY to value $VALUE"

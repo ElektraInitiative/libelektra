@@ -33,19 +33,19 @@ You can mount the plugin like this:
 kdb mount test.ecf /t gpgme "encrypt/key=DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 ```
 
-Now you can specify a key `user/t/a` and protect its content by using:
+Now you can specify a key `user:/t/a` and protect its content by using:
 
 ```sh
-kdb set user/t/a
-kdb meta-set user/t/a crypt/encrypt 1
-kdb set user/t/a "secret"
+kdb set user:/t/a
+kdb meta-set user:/t/a crypt/encrypt 1
+kdb set user:/t/a "secret"
 ```
 
-The value of `user/t/a` (for this example: "secret") will be stored encrypted.
+The value of `user:/t/a` (for this example: "secret") will be stored encrypted.
 You can still access the original value by using `kdb get`:
 
 ```sh
-kdb get user/t/a
+kdb get user:/t/a
 ```
 
 ## Configuration

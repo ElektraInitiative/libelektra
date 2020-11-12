@@ -107,7 +107,7 @@ kdb meta-get /tests/yajl/number type
 
 # Add another key-value pair
 kdb set /tests/yajl/key value
-# STDOUT-REGEX: .*Create a new key (user|system)/tests/yajl/key with string "value"
+# STDOUT-REGEX: .*Create a new key (user|system):/tests/yajl/key with string "value"
 
 # Retrieve the new value
 kdb get /tests/yajl/key
@@ -151,54 +151,54 @@ sudo kdb umount /tests/yajl
 The YAJL plugin support values in directory keys via the [Directory Value](../directoryvalue/) plugin.
 
 ```sh
-# Mount the plugin to `user/tests/yajl`
-sudo kdb mount config.json user/tests/yajl yajl
+# Mount the plugin to `user:/tests/yajl`
+sudo kdb mount config.json user:/tests/yajl yajl
 
 # Add two directory keys and one leaf key
-kdb set user/tests/yajl/roots 'Things Fall Apart'
-kdb set user/tests/yajl/roots/bloody 'Radical Face'
-kdb set user/tests/yajl/roots/bloody/roots 'No Roots'
+kdb set user:/tests/yajl/roots 'Things Fall Apart'
+kdb set user:/tests/yajl/roots/bloody 'Radical Face'
+kdb set user:/tests/yajl/roots/bloody/roots 'No Roots'
 
 # Add an array containing two elements
-kdb set user/tests/yajl/now ', Now'
+kdb set user:/tests/yajl/now ', Now'
 # Elektra arrays require the metakey `array` to the parent.
-# Otherwise the keys below `user/tests/yajl/now` would be
+# Otherwise the keys below `user:/tests/yajl/now` would be
 # interpreted as normal key-value pairs.
-kdb meta-set user/tests/yajl/now array ''
-kdb set user/tests/yajl/now/#0 'Neighbors'
-kdb set user/tests/yajl/now/#1 'Threads'
+kdb meta-set user:/tests/yajl/now array ''
+kdb set user:/tests/yajl/now/#0 'Neighbors'
+kdb set user:/tests/yajl/now/#1 'Threads'
 
-kdb ls user/tests/yajl
-#> user/tests/yajl/now
-#> user/tests/yajl/now/#0
-#> user/tests/yajl/now/#1
-#> user/tests/yajl/roots
-#> user/tests/yajl/roots/bloody
-#> user/tests/yajl/roots/bloody/roots
+kdb ls user:/tests/yajl
+#> user:/tests/yajl/now
+#> user:/tests/yajl/now/#0
+#> user:/tests/yajl/now/#1
+#> user:/tests/yajl/roots
+#> user:/tests/yajl/roots/bloody
+#> user:/tests/yajl/roots/bloody/roots
 
 # Retrieve directory values
-kdb get user/tests/yajl/roots
+kdb get user:/tests/yajl/roots
 #> Things Fall Apart
-kdb get user/tests/yajl/roots/bloody
+kdb get user:/tests/yajl/roots/bloody
 #> Radical Face
 
 # Retrieve leaf value
-kdb get user/tests/yajl/roots/bloody/roots
+kdb get user:/tests/yajl/roots/bloody/roots
 #> No Roots
 
 # Check array
-kdb get user/tests/yajl/now
+kdb get user:/tests/yajl/now
 #> , Now
-kdb meta-get user/tests/yajl/now array
+kdb meta-get user:/tests/yajl/now array
 #> #1
-kdb get user/tests/yajl/now/#0
+kdb get user:/tests/yajl/now/#0
 #> Neighbors
-kdb get user/tests/yajl/now/#1
+kdb get user:/tests/yajl/now/#1
 #> Threads
 
 # Undo modifications to the database
-kdb rm -r user/tests/yajl
-sudo kdb umount user/tests/yajl
+kdb rm -r user:/tests/yajl
+sudo kdb umount user:/tests/yajl
 ```
 
 ### Booleans
@@ -210,22 +210,22 @@ You can take advantage of the [type](../type/README.md) plugin to map arbitrary 
 
 ```sh
 # Type plugin is automatically mounted since yajl depends on it
-kdb mount conf.json user/tests/yajl yajl
-kdb set user/tests/yajl 1
-kdb get user/tests/yajl
+kdb mount conf.json user:/tests/yajl yajl
+kdb set user:/tests/yajl 1
+kdb get user:/tests/yajl
 #> 1
-kdb meta-set user/tests/yajl type boolean
-kdb set user/tests/yajl on
-kdb get user/tests/yajl
+kdb meta-set user:/tests/yajl type boolean
+kdb set user:/tests/yajl on
+kdb get user:/tests/yajl
 #> 1
-kdb set user/tests/yajl/subkey disable
-kdb meta-set user/tests/yajl/subkey type boolean
-kdb get user/tests/yajl/subkey
+kdb set user:/tests/yajl/subkey disable
+kdb meta-set user:/tests/yajl/subkey type boolean
+kdb get user:/tests/yajl/subkey
 #> 0
 
 # Undo modifications to the database
-kdb rm -r user/tests/yajl
-sudo kdb umount user/tests/yajl
+kdb rm -r user:/tests/yajl
+sudo kdb umount user:/tests/yajl
 ```
 
 ## OpenICC Device Config
@@ -254,13 +254,13 @@ to systemwide or user config, e.g.
 cp src/plugins/yajl/examples/OpenICC_device_config_DB.json /etc/xdg
 cp src/plugins/yajl/examples/OpenICC_device_config_DB.json ~/.config
 
-kdb ls system/org/freedesktop/openicc
+kdb ls system:/org/freedesktop/openicc
 ```
 
 prints out then all device entries available in the config
 
 ```bash
-kdb get system/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
+kdb get system:/org/freedesktop/openicc/device/camera/0/EXIF_manufacturer
 ```
 
 prints out "Glasshuette" with the example config in source
@@ -268,11 +268,11 @@ prints out "Glasshuette" with the example config in source
 You can export the whole system openicc config to ini with:
 
 ```bash
-kdb export system/org/freedesktop/openicc simpleini > dump.ini
+kdb export system:/org/freedesktop/openicc simpleini > dump.ini
 ```
 
 or import it:
 
 ```bash
-kdb import system/org/freedesktop/openicc ini < dump.ini
+kdb import system:/org/freedesktop/openicc ini < dump.ini
 ```

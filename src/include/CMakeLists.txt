@@ -140,15 +140,18 @@ if (ENABLE_ASAN)
 		set (ELEKTRA_NO_SANITIZE_INTEGER "__attribute__ ((no_sanitize (\"integer\")))")
 		set (ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW "__attribute__ ((no_sanitize (\"unsigned-integer-overflow\")))")
 		set (ELEKTRA_NO_SANITIZE_UNDEFINED "__attribute__ ((no_sanitize (\"undefined\")))")
+		set (ELEKTRA_NO_SANITIZE_ADDRESS "__attribute__ ((no_sanitize (\"address\")))")
 	elseif (CMAKE_C_COMPILER_ID MATCHES "GNU") # others section
 		set (ELEKTRA_NO_SANITIZE_INTEGER "")
 		set (ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW "")
 		set (ELEKTRA_NO_SANITIZE_UNDEFINED "__attribute__ ((no_sanitize_undefined))")
+		set (ELEKTRA_NO_SANITIZE_ADDRESS "__attribute__ ((no_sanitize_address))")
 	endif (CMAKE_C_COMPILER_ID MATCHES "Clang")
 else (ENABLE_ASAN)
 	set (ELEKTRA_NO_SANITIZE_INTEGER "")
 	set (ELEKTRA_NO_SANITIZE_UNSIGNED_INTEGER_OVERFLOW "")
 	set (ELEKTRA_NO_SANITIZE_UNDEFINED "")
+	set (ELEKTRA_NO_SANITIZE_ADDRESS "")
 endif (ENABLE_ASAN)
 
 if (ENABLE_OPTIMIZATIONS)
@@ -177,7 +180,6 @@ install (
 	      kdbplugin.h
 	      kdbpluginprocess.h
 	      kdbprivate.h
-	      kdbproposal.h
 	      kdbinvoke.h
 	      kdbutility.h
 	      kdbio.h

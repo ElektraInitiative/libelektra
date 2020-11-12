@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-PLUGIN\-INFO" "1" "October 2019" "" ""
+.TH "KDB\-PLUGIN\-INFO" "1" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-plugin\-info\fR \- Print information about an Elektra plugin
@@ -26,7 +26,7 @@ This command will print out all the information about an Elektra plugin except i
 This command will also print out any functions that are exported by the plugin\.
 .
 .br
-Information about a plugin will be read from \fBsystem/elektra/modules/\fR\. If the information could not be located there, such as when a plugin is not mounted, the module will be loaded dynamically and then the information will be requested directly from the plugin\.
+Information about a plugin will be read from \fBsystem:/elektra/modules/\fR\. If the information could not be located there, such as when a plugin is not mounted, the module will be loaded dynamically and then the information will be requested directly from the plugin\.
 .
 .br
 If a user wishes to load the information directly from the plugin, they can force that by using the \fB\-l\fR option\.
@@ -78,7 +78,7 @@ Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-l\fR, \fB\-\-load\fR
-Load plugin even if system/elektra is available\.
+Load plugin even if system:/elektra is available\.
 .
 .TP
 \fB\-c\fR, \fB\-\-plugins\-config <plugins\-config>\fR

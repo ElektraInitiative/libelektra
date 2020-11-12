@@ -23,7 +23,7 @@ protected:
 	testing::Namespaces namespaces;
 	testing::MountpointPtr mpRoot;
 
-	Ensure () : specRoot (std::string ("spec") + testRoot), userRoot (std::string ("user") + testRoot), namespaces ()
+	Ensure () : specRoot (std::string ("spec:") + testRoot), userRoot (std::string ("user:") + testRoot), namespaces ()
 	{
 	}
 
@@ -71,7 +71,7 @@ TEST_F (Ensure, GlobalUnmount)
 
 	{
 		KeySet contract;
-		contract.append (Key ("system/elektra/ensure/plugins/global/spec", KEY_VALUE, "unmounted", KEY_END));
+		contract.append (Key ("system:/elektra/ensure/plugins/global/spec", KEY_VALUE, "unmounted", KEY_END));
 		Key root (specRoot, KEY_END);
 		kdb.ensure (contract, root);
 
@@ -102,9 +102,9 @@ TEST_F (Ensure, GlobalRemount)
 	{
 		KDB kdb;
 		KeySet contract;
-		contract.append (Key ("system/elektra/ensure/plugins/global/spec", KEY_VALUE, "remount", KEY_END));
-		contract.append (Key ("system/elektra/ensure/plugins/global/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
-		contract.append (Key ("system/elektra/ensure/plugins/global/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
+		contract.append (Key ("system:/elektra/ensure/plugins/global/spec", KEY_VALUE, "remount", KEY_END));
+		contract.append (Key ("system:/elektra/ensure/plugins/global/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
+		contract.append (Key ("system:/elektra/ensure/plugins/global/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
 		Key root (specRoot, KEY_END);
 		kdb.ensure (contract, root);
 
@@ -128,12 +128,12 @@ TEST_F (Ensure, Unmount)
 		kdb.get (ks, root);
 		kdb.set (ks, root);
 
-		EXPECT_EQ (root.getMeta<std::string> ("warnings/#00/number"), "C01310") << "error plugin didn't run";
+		EXPECT_EQ (root.getMeta<std::string> ("warnings/#0/number"), "C01310") << "error plugin didn't run";
 	}
 
 	{
 		KeySet contract;
-		contract.append (Key ("system/elektra/ensure/plugins/parent/error", KEY_VALUE, "unmounted", KEY_END));
+		contract.append (Key ("system:/elektra/ensure/plugins/parent/error", KEY_VALUE, "unmounted", KEY_END));
 		Key uroot (userRoot, KEY_END);
 		kdb.ensure (contract, uroot);
 
@@ -189,7 +189,7 @@ TEST_F (Ensure, GlobalMount)
 
 	{
 		KeySet contract;
-		contract.append (Key ("system/elektra/ensure/plugins/global/tracer", KEY_VALUE, "mounted", KEY_END));
+		contract.append (Key ("system:/elektra/ensure/plugins/global/tracer", KEY_VALUE, "mounted", KEY_END));
 		Key root (specRoot, KEY_END);
 		kdb.ensure (contract, root);
 

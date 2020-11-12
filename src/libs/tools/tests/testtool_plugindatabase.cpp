@@ -46,8 +46,8 @@ TEST (PluginVariantsDatabase, listAllPluginsWithDisabled)
 	using namespace kdb;
 	using namespace kdb::tools;
 
-	KeySet conf (2, *Key ("system/elektra/plugins/dump/disable", KEY_VALUE, "1", KEY_END),
-		     *Key ("system/elektra/plugins/simpleini/disable", KEY_VALUE, "1", KEY_END), KS_END);
+	KeySet conf (2, *Key ("system:/elektra/plugins/dump/disable", KEY_VALUE, "1", KEY_END),
+		     *Key ("system:/elektra/plugins/simpleini/disable", KEY_VALUE, "1", KEY_END), KS_END);
 	PluginVariantDatabase db (conf);
 	std::vector<std::string> plugins (db.listAllPlugins ());
 

@@ -11,21 +11,21 @@ if ! [ -f "$SPEC_FILE" ]; then
 fi
 
 error_other_mp() {
-	echo "ERROR: another mountpoint already exists on spec/tests/script/gen/highlevel/externalwithdefaults. Please umount first." 1>&2
+	echo "ERROR: another mountpoint already exists on spec:/tests/script/gen/highlevel/externalwithdefaults. Please umount first." 1>&2
 	exit 1
 }
 
-if kdb mount -13 | grep -Fxq 'spec/tests/script/gen/highlevel/externalwithdefaults'; then
-	if ! kdb mount | grep -Fxq 'tests_script_gen_highlevel_externalwithdefaults.overlay.spec.eqd on spec/tests/script/gen/highlevel/externalwithdefaults with name spec/tests/script/gen/highlevel/externalwithdefaults'; then
+if kdb mount -13 | grep -Fxq 'spec:/tests/script/gen/highlevel/externalwithdefaults'; then
+	if ! kdb mount | grep -Fxq 'tests_script_gen_highlevel_externalwithdefaults.overlay.spec.eqd on spec:/tests/script/gen/highlevel/externalwithdefaults with name spec:/tests/script/gen/highlevel/externalwithdefaults'; then
 		error_other_mp
 	fi
 
-	MP=$(echo "spec/tests/script/gen/highlevel/externalwithdefaults" | sed 's:\\:\\\\:g' | sed 's:/:\\/:g')
-	if [ "$(kdb get "system/elektra/mountpoints/$MP/getplugins/#5#specload#specload#/config/file")" != "$SPEC_FILE" ]; then
+	MP=$(echo "spec:/tests/script/gen/highlevel/externalwithdefaults" | sed 's:\\:\\\\:g' | sed 's:/:\\/:g')
+	if [ "$(kdb get "system:/elektra/mountpoints/$MP/getplugins/#5#specload#specload#/config/file")" != "$SPEC_FILE" ]; then
 		error_other_mp
 	fi
 else
-	sudo kdb mount -R noresolver "tests_script_gen_highlevel_externalwithdefaults.overlay.spec.eqd" "spec/tests/script/gen/highlevel/externalwithdefaults" specload "file=$SPEC_FILE"
+	sudo kdb mount -R noresolver "tests_script_gen_highlevel_externalwithdefaults.overlay.spec.eqd" "spec:/tests/script/gen/highlevel/externalwithdefaults" specload "file=$SPEC_FILE"
 fi
 
 if kdb mount -13 | grep -Fxq '/tests/script/gen/highlevel/externalwithdefaults'; then

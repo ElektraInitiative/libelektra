@@ -28,6 +28,19 @@ class NameIterator;
 class NameReverseIterator;
 #endif
 
+enum class ElektraNamespace : std::uint8_t
+{
+	NONE = 0,
+	CASCADING = 1,
+	META = 2,
+	SPEC = 3,
+	PROC = 4,
+	DIR = 5,
+	USER = 6,
+	SYSTEM = 7,
+	DEFAULT = 8,
+};
+
 /**
  * @copydoc key
  *
@@ -125,9 +138,6 @@ public:
 	inline void addBaseName (const std::string & baseName);
 	inline void delBaseName ();
 
-	inline ssize_t getFullNameSize () const;
-	inline std::string getFullName () const;
-
 #ifndef ELEKTRA_WITHOUT_ITERATOR
 	typedef NameIterator iterator;
 	typedef NameIterator const_iterator;
@@ -216,7 +226,8 @@ public:
 
 
 	inline bool isValid () const;
-	inline std::string getNamespace () const;
+	inline ElektraNamespace getNamespace () const;
+	inline ssize_t setNamespace (ElektraNamespace ns) const;
 	inline bool isCascading () const;
 	inline bool isSpec () const;
 	inline bool isProc () const;
@@ -226,8 +237,6 @@ public:
 
 	inline bool isString () const;
 	inline bool isBinary () const;
-
-	inline bool isInactive () const;
 
 	inline bool isBelow (const Key & k) const;
 	inline bool isBelowOrSame (const Key & k) const;
@@ -242,7 +251,6 @@ private:
 
 	ckdb::Key * key; ///< holds an elektra key
 };
-
 
 #ifndef ELEKTRA_WITHOUT_ITERATOR
 /**
@@ -547,7 +555,7 @@ inline Key::const_reverse_iterator Key::crend () const noexcept
  *
  * @see isValid(), isNull()
  */
-inline Key::Key () : key (ckdb::keyNew (nullptr))
+inline Key::Key () : key (ckdb::keyNew ("/", KEY_END))
 {
 	operator++ ();
 }
@@ -608,7 +616,7 @@ inline Key::Key (const char * keyName, ...)
 	key = ckdb::keyVNew (keyName, ap);
 	va_end (ap);
 
-	if (!key) throw std::bad_alloc ();
+	if (!key) throw KeyInvalidName (keyName, "");
 
 	operator++ ();
 }
@@ -878,7 +886,7 @@ inline void Key::setName (const std::string & newName)
 {
 	if (ckdb::keySetName (getKey (), newName.c_str ()) == -1)
 	{
-		throw KeyInvalidName ();
+		throw KeyInvalidName (newName, "");
 	}
 }
 
@@ -886,7 +894,7 @@ inline void Key::addName (const std::string & addedName)
 {
 	if (ckdb::keyAddName (getKey (), addedName.c_str ()) == -1)
 	{
-		throw KeyInvalidName ();
+		throw KeyInvalidName (addedName, "(added to end)");
 	}
 }
 
@@ -900,7 +908,7 @@ inline void Key::setBaseName (const std::string & baseName)
 {
 	if (ckdb::keySetBaseName (getKey (), baseName.c_str ()) == -1)
 	{
-		throw KeyInvalidName ();
+		throw KeyInvalidName (baseName, "(as base name)");
 	}
 }
 
@@ -914,7 +922,7 @@ inline void Key::addBaseName (const std::string & baseName)
 {
 	if (ckdb::keyAddBaseName (getKey (), baseName.c_str ()) == -1)
 	{
-		throw KeyInvalidName ();
+		throw KeyInvalidName (baseName, "(as base name)");
 	}
 }
 
@@ -926,39 +934,8 @@ inline void Key::delBaseName ()
 {
 	if (ckdb::keySetBaseName (getKey (), 0) == -1)
 	{
-		throw KeyInvalidName ();
+		throw KeyInvalidName ("", "(removing base name)");
 	}
-}
-
-/**
- * @copydoc keyGetFullNameSize
- */
-inline ssize_t Key::getFullNameSize () const
-{
-	return ckdb::keyGetFullNameSize (getKey ());
-}
-
-/**
- * @copydoc keyGetFullName
- *
- * @throw KeyException if key is null
- */
-inline std::string Key::getFullName () const
-{
-	ssize_t csize = getFullNameSize ();
-	if (csize == -1)
-	{
-		throw KeyException ();
-	}
-
-	if (csize == 0)
-	{
-		return "";
-	}
-
-	std::string str (static_cast<size_t> (csize - 1), '\0');
-	ckdb::keyGetFullName (getKey (), &str[0], static_cast<size_t> (csize));
-	return str;
 }
 
 /**
@@ -1484,23 +1461,27 @@ inline const Key Key::currentMeta () const
  */
 inline bool Key::isValid () const
 {
-	return ckdb::keyGetNameSize (getKey ()) > 1;
+	return key != nullptr;
 }
 
 /**
- * @return namespace as string
+ * @return namespace of the key
  *
- * Will return slash for cascading names.
- *
- * @see getName(), isUser(), isSystem()
+ * @see ElektraNamespace, keyGetNamespace
  */
-inline std::string Key::getNamespace () const
+inline ElektraNamespace Key::getNamespace () const
 {
-	std::string name = getName ();
-	size_t slash = name.find ('/');
-	if (slash == 0) return "/";
-	if (slash != std::string::npos) return name.substr (0, slash);
-	return name;
+	return static_cast<ElektraNamespace> (ckdb::keyGetNamespace (key));
+}
+
+/**
+ * Set the namespace of the key
+ *
+ * @see ElektraNamespace, keySetNamespace
+ */
+inline ssize_t Key::setNamespace (ElektraNamespace ns) const
+{
+	return ckdb::keySetNamespace (key, static_cast<elektraNamespace> (ns));
 }
 
 
@@ -1584,14 +1565,6 @@ inline bool Key::isString () const
 inline bool Key::isBinary () const
 {
 	return ckdb::keyIsBinary (key);
-}
-
-/**
- * @copydoc keyIsInactive
- */
-inline bool Key::isInactive () const
-{
-	return ckdb::keyIsInactive (key);
 }
 
 /**

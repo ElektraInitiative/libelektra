@@ -155,7 +155,7 @@ static std::string keySetToCCode (kdb::KeySet & set)
 	PluginPtr plugin = modules.load ("c", KeySet ());
 
 	auto file = "/tmp/elektra.highlevelgen." + std::to_string (std::time (nullptr));
-	Key errorKey ("", KEY_VALUE, file.c_str (), KEY_END);
+	Key errorKey ("/", KEY_VALUE, file.c_str (), KEY_END);
 	if (plugin->set (set, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		throw CommandAbortException ("c (plugin) failed");
@@ -180,7 +180,7 @@ static void keySetToQuickdump (kdb::KeySet & set, const std::string & path, cons
 
 	Modules modules;
 	KeySet config;
-	config.append (Key ("system/noparent", KEY_END));
+	config.append (Key ("system:/noparent", KEY_END));
 	PluginPtr plugin = modules.load ("quickdump", config);
 
 	Key parentKey (parent.c_str (), KEY_VALUE, path.c_str (), KEY_END);
@@ -198,7 +198,7 @@ static kdb::KeySet cascadingToSpec (const kdb::KeySet & ks)
 		if (it->isCascading ())
 		{
 			auto specKey = kdb::Key (it->dup ());
-			specKey.setName ("spec" + specKey.getName ());
+			specKey.setName ("spec:" + specKey.getName ());
 			result.append (specKey);
 		}
 		if (it->isSpec ())
@@ -269,18 +269,18 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	if (parentKey[0] == '/')
 	{
 		cascadingParent = parentKey;
-		specParentName = "spec" + parentKey;
+		specParentName = "spec:" + parentKey;
 		ks = cascadingToSpec (keySet);
 	}
-	else if (parentKey.substr (0, 5) == "spec/")
+	else if (parentKey.substr (0, 6) == "spec:/")
 	{
-		cascadingParent = parentKey.substr (4);
+		cascadingParent = parentKey.substr (5);
 		specParentName = parentKey;
 		ks = keySet;
 	}
 	else
 	{
-		throw CommandAbortException ("parentKey has to start with spec/ or /");
+		throw CommandAbortException ("parentKey has to start with spec:/ or /");
 	}
 
 	auto data = object{ { "header_file", headerFile },
@@ -321,7 +321,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	specWithParent.append (ks.lookup (specParent));
 
 	kdb::Key parent = ks.lookup (specParent).dup ();
-	parent.setName ("");
+	parent.setName ("/");
 	spec.append (parent);
 
 	if (useCommands)
@@ -407,7 +407,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 
 		auto type = getType (key);
 		auto name = key.getName ();
-		name.erase (0, sizeof ("spec") - 1);
+		name.erase (0, sizeof ("spec:") - 1);
 
 		if (useCommands && key.hasMeta ("command"))
 		{
@@ -625,14 +625,14 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	}
 
 	kdb::KeySet contract;
-	contract.append (kdb::Key ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
 
 	// make elektraOpen() succeed, if there are missing required keys, but we are in helpMode
-	contract.append (kdb::Key ("system/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
 
 	if (specValidation == SpecValidation::Minimal)
 	{
-		contract.append (kdb::Key ("system/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
+		contract.append (kdb::Key ("system:/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
 	}
 
 	data["keys_count"] = std::to_string (keys.size ());

@@ -44,13 +44,13 @@ namespace
 CppKeySet contractYamlsmith ()
 {
 	return CppKeySet{ 30,
-			  keyNew ("system/elektra/modules/yamlsmith", KEY_VALUE, "yamlsmith plugin waits for your orders", KEY_END),
-			  keyNew ("system/elektra/modules/yamlsmith/exports", KEY_END),
-			  keyNew ("system/elektra/modules/yamlsmith/exports/get", KEY_FUNC, elektraYamlsmithGet, KEY_END),
-			  keyNew ("system/elektra/modules/yamlsmith/exports/set", KEY_FUNC, elektraYamlsmithSet, KEY_END),
+			  keyNew ("system:/elektra/modules/yamlsmith", KEY_VALUE, "yamlsmith plugin waits for your orders", KEY_END),
+			  keyNew ("system:/elektra/modules/yamlsmith/exports", KEY_END),
+			  keyNew ("system:/elektra/modules/yamlsmith/exports/get", KEY_FUNC, elektraYamlsmithGet, KEY_END),
+			  keyNew ("system:/elektra/modules/yamlsmith/exports/set", KEY_FUNC, elektraYamlsmithSet, KEY_END),
 #include ELEKTRA_README
-			  keyNew ("system/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
-			  keyNew ("system/elektra/modules/yamlcpp/config/needs/boolean/restore", KEY_VALUE, "#1", KEY_END),
+			  keyNew ("system:/elektra/modules/yamlsmith/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			  keyNew ("system:/elektra/modules/yamlcpp/config/needs/boolean/restore", KEY_VALUE, "#1", KEY_END),
 			  KS_END };
 }
 
@@ -207,7 +207,7 @@ void writeYAML (ofstream & output, CppKeySet && keys, CppKey const & parent)
 
 		// Add YAML mapping key for each part of the key we did not already write into the file
 		auto endCurrent = keys.current ().end ();
-		CppKey current{ "user", KEY_END };
+		CppKey current{ "user:/", KEY_END };
 
 		while (relative != endCurrent)
 		{
@@ -237,7 +237,7 @@ int elektraYamlsmithGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	CppKey parent{ parentKey };
 	CppKeySet keys{ returned };
 
-	if (parent.getName () == "system/elektra/modules/yamlsmith")
+	if (parent.getName () == "system:/elektra/modules/yamlsmith")
 	{
 		keys.append (contractYamlsmith ());
 		parent.release ();

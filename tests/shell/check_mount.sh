@@ -49,15 +49,15 @@ if is_plugin_available hosts; then
 		[ $? != 0 ]
 		succeed_if "could remount the same backend"
 
-		"$KDB" mount $ROOT_FILE dir$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
+		"$KDB" mount $ROOT_FILE dir:$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could remount the dir backend, even though cascading already mounted"
 
-		"$KDB" mount $ROOT_FILE user$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
+		"$KDB" mount $ROOT_FILE user:$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could remount the user backend, even though cascading already mounted"
 
-		"$KDB" mount $ROOT_FILE system$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
+		"$KDB" mount $ROOT_FILE system:$ROOT_MOUNTPOINT glob hosts 1> /dev/null 2> /dev/null
 		[ $? != 0 ]
 		succeed_if "could remount the system backend, even though cascading already mounted"
 
@@ -69,10 +69,10 @@ if is_plugin_available hosts; then
 		"$KDB" mount -c "test1=testvalue1" $ROOT_FILE $ROOT_MOUNTPOINT glob "test1=testvalue1" hosts 1> /dev/null
 		succeed_if "could not mount glob and hosts plugin together"
 
-		#"$KDB" ls "system/elektra/mountpoints/$ROOT_MOUNTPOINTN"
+		#"$KDB" ls "system:/elektra/mountpoints/$ROOT_MOUNTPOINTN"
 
 		# TODO: check correcly + reenable
-		configvalue=$("$KDB" get "system/elektra/mountpoints/$ROOT_MOUNTPOINTN/config/test1")
+		configvalue=$("$KDB" get "system:/elektra/mountpoints/$ROOT_MOUNTPOINTN/config/test1")
 		test "$configvalue" = "testvalue1"
 		succeed_if "config key was not set correctly"
 
@@ -85,7 +85,7 @@ if is_plugin_available hosts; then
 		succeed_if "could not mount glob and hosts plugin together"
 
 		# TODO: reenable
-		configvalue=$("$KDB" get "system/elektra/mountpoints/$ROOT_MOUNTPOINTN/config/test2")
+		configvalue=$("$KDB" get "system:/elektra/mountpoints/$ROOT_MOUNTPOINTN/config/test2")
 		test "$configvalue" = "test value2"
 		succeed_if "config key was not set correctly"
 
@@ -94,24 +94,24 @@ if is_plugin_available hosts; then
 		"$KDB" remount "testfile" $ROOT_MOUNTPOINT2 $ROOT_MOUNTPOINT
 		succeed_if "could not remount previous mountpoint"
 
-		#$KDB ls "system/elektra/mountpoints"
+		#$KDB ls "system:/elektra/mountpoints"
 		#$KDB mount
 
 		"$KDB" umount $ROOT_MOUNTPOINT
 		succeed_if "could not unmount previously mounted mountpoint"
 
-		"$KDB" ls "system/elektra/mountpoints/$ROOT_MOUNTPOINT2N/" | grep glob 1> /dev/null
+		"$KDB" ls "system:/elektra/mountpoints/$ROOT_MOUNTPOINT2N/" | grep glob 1> /dev/null
 		succeed_if "glob plugin does not exist in the remounted mountpoint"
 
-		"$KDB" ls "system/elektra/mountpoints/$ROOT_MOUNTPOINT2N/" | grep hosts 1> /dev/null
+		"$KDB" ls "system:/elektra/mountpoints/$ROOT_MOUNTPOINT2N/" | grep hosts 1> /dev/null
 		succeed_if "hosts plugin does not exist in the remounted mountpoint"
 
 		# TODO: reenable
-		#configvalue=$($KDB get "system/elektra/mountpoints/$ROOT_MOUNTPOINT2N/config/test2")
+		#configvalue=$($KDB get "system:/elektra/mountpoints/$ROOT_MOUNTPOINT2N/config/test2")
 		#test "$configvalue" = "test value2"
 		#succeed_if "config key was not copied correctly"
 
-		#configvalue=$($KDB get "system/elektra/mountpoints/$ROOT_MOUNTPOINT2N/config/path")
+		#configvalue=$($KDB get "system:/elektra/mountpoints/$ROOT_MOUNTPOINT2N/config/path")
 		#test "$configvalue" = "testfile"
 		#succeed_if "path was not set correctly"
 

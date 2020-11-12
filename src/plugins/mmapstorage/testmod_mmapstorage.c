@@ -35,25 +35,25 @@
 #define NUM_DIR 10
 #define NUM_KEY 100
 
-#define TEST_ROOT_KEY "user/tests/mmapstorage"
+#define TEST_ROOT_KEY "user:/tests/mmapstorage"
 
 /* -- KeySet test data ------------------------------------------------------------------------------------------------------------------ */
 
 static KeySet * simpleTestKeySet (void)
 {
-	return ksNew (10, keyNew ("user/tests/mmapstorage/simpleKey", KEY_VALUE, "root key", KEY_END),
-		      keyNew ("user/tests/mmapstorage/simpleKey/a", KEY_VALUE, "a value", KEY_END),
-		      keyNew ("user/tests/mmapstorage/simpleKey/b", KEY_VALUE, "b value", KEY_END), KS_END);
+	return ksNew (10, keyNew ("user:/tests/mmapstorage/simpleKey", KEY_VALUE, "root key", KEY_END),
+		      keyNew ("user:/tests/mmapstorage/simpleKey/a", KEY_VALUE, "a value", KEY_END),
+		      keyNew ("user:/tests/mmapstorage/simpleKey/b", KEY_VALUE, "b value", KEY_END), KS_END);
 }
 
 static KeySet * metaTestKeySet (void)
 {
 	return ksNew (10,
-		      keyNew ("user/tests/mmapstorage", KEY_VALUE, "root key", KEY_META, "a",
+		      keyNew ("user:/tests/mmapstorage", KEY_VALUE, "root key", KEY_META, "a",
 			      "b aksdjfh aksjdhf aklsjdhf aksljdhf aklsjdhf aksljdhf ", KEY_END),
-		      keyNew ("user/tests/mmapstorage/a", KEY_VALUE, "a value", KEY_META, "ab",
+		      keyNew ("user:/tests/mmapstorage/a", KEY_VALUE, "a value", KEY_META, "ab",
 			      "cd oiahsdkfhga sdjkfhgsuzdgf kashgdf aszgdf uashdf ", KEY_END),
-		      keyNew ("user/tests/mmapstorage/b", KEY_VALUE, "b value", KEY_META, "longer val",
+		      keyNew ("user:/tests/mmapstorage/b", KEY_VALUE, "b value", KEY_META, "longer val",
 			      "here some even more with ugly €@\\1¹²³¼ chars", KEY_END),
 		      KS_END);
 }
@@ -68,13 +68,14 @@ static BinaryTest binaryTestA = { .A_size = SIZE_MAX, .B_ssize = -1 };
 static KeySet * otherMetaTestKeySet (void)
 {
 	return ksNew (
-		10, keyNew ("user/tests/mmapstorage", KEY_VALUE, "root key", KEY_META, "e", "other meta root", KEY_END),
-		keyNew ("user/tests/mmapstorage/f", KEY_VALUE, "f value", KEY_META, "foo", "some other key in the other meta keyset",
+		10, keyNew ("user:/tests/mmapstorage", KEY_VALUE, "root key", KEY_META, "e", "other meta root", KEY_END),
+		keyNew ("user:/tests/mmapstorage/f", KEY_VALUE, "f value", KEY_META, "foo", "some other key in the other meta keyset",
 			KEY_END),
-		keyNew ("user/tests/mmapstorage/i", KEY_VALUE, "i value", KEY_META, "i is quite valuable", "happy data is happy :)",
+		keyNew ("user:/tests/mmapstorage/i", KEY_VALUE, "i value", KEY_META, "i is quite valuable", "happy data is happy :)",
 			KEY_END),
-		keyNew ("user/tests/mmapstorage/j/k/l", KEY_VALUE, "jkl value", KEY_META, "where is everyone?", "don't panic", KEY_END),
-		keyNew ("user/tests/mmapstorage/m", KEY_BINARY, KEY_SIZE, sizeof (BinaryTest), KEY_VALUE, &(binaryTestA), KEY_END), KS_END);
+		keyNew ("user:/tests/mmapstorage/j/k/l", KEY_VALUE, "jkl value", KEY_META, "where is everyone?", "don't panic", KEY_END),
+		keyNew ("user:/tests/mmapstorage/m", KEY_BINARY, KEY_SIZE, sizeof (BinaryTest), KEY_VALUE, &(binaryTestA), KEY_END),
+		KS_END);
 }
 
 static KeySet * largeTestKeySet (void)
@@ -554,7 +555,7 @@ static void test_mmap_set_get_large_keyset (const char * tmpFile)
 	KeySet * ks = largeTestKeySet ();
 	KeySet * expected = ksDeepDup (ks);
 
-	const char * name = "user/tests/mmapstorage/dir7/key3";
+	const char * name = "user:/tests/mmapstorage/dir7/key3";
 	Key * found = ksLookupByName (ks, name, KDB_O_OPMPHM);
 	if (!found)
 	{
@@ -705,7 +706,7 @@ static void test_mmap_metacopy (const char * tmpFile)
 	PLUGIN_OPEN ("mmapstorage");
 	KeySet * ks = metaTestKeySet ();
 
-	Key * shareMeta = keyNew (0);
+	Key * shareMeta = keyNew ("/", KEY_END);
 	keySetMeta (shareMeta, "sharedmeta", "shared meta key test");
 
 	Key * current;
@@ -776,7 +777,7 @@ static void test_mmap_opmphm (const char * tmpFile)
 	ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 
-	const char * name = "user/tests/mmapstorage/dir7/key3";
+	const char * name = "user:/tests/mmapstorage/dir7/key3";
 	Key * found = ksLookupByName (ks, name, KDB_O_OPMPHM);
 
 	if (!found)
@@ -821,7 +822,7 @@ static void test_mmap_opmphm (const char * tmpFile)
 
 	// force re-generate the OPMPHM, tests cleanup and re-allocation after mmap
 	// i.e. tests if we broke the standard cleanup functions with our mmap flags
-	Key * key = keyNew ("user/tests/mmapstorage/breakOpmphm", KEY_VALUE, "bad key", KEY_META, "e", "other meta root", KEY_END);
+	Key * key = keyNew ("user:/tests/mmapstorage/breakOpmphm", KEY_VALUE, "bad key", KEY_META, "e", "other meta root", KEY_END);
 	ksAppendKey (returned, key);
 	found = ksLookupByName (returned, name, KDB_O_OPMPHM);
 	if (!found)

@@ -29,7 +29,7 @@ int needsSharedData (Key * k)
 void o (KeySet * ks)
 {
 	Key * current;
-	Key * shared = keyNew (0);
+	Key * shared = keyNew ("/", KEY_END);
 	keySetMeta (shared, "shared1", "this metadata should be shared among many keys");
 	keySetMeta (shared, "shared2", "this metadata should be shared among many keys also");
 	keySetMeta (shared, "shared3", "this metadata should be shared among many keys too");
@@ -46,8 +46,8 @@ void o (KeySet * ks)
 
 int main (void)
 {
-	Key * k = keyNew ("user/key", KEY_END);
-	copy = keyNew ("user/copy", KEY_END);
+	Key * k = keyNew ("user:/key", KEY_END);
+	copy = keyNew ("user:/copy", KEY_END);
 	l (k);
 	keyDel (k);
 	keyDel (copy);

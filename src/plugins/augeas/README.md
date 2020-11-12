@@ -39,7 +39,7 @@ In order to mount the hosts file with the augeas plugin, issue the
 following command:
 
 ```sh
-kdb mount /etc/hosts system/hosts augeas lens=Hosts.lns
+kdb mount /etc/hosts system:/hosts augeas lens=Hosts.lns
 ```
 
 The value of the plugin configuration option "lens" should be the
@@ -54,7 +54,7 @@ Note that, without configuring the plugin to use a lens, the plugin
 will print an error message on the first usage:
 
 ```sh
-kdb ls system/hosts
+kdb ls system:/hosts
 #> Sorry, module storage issued the error C03100:
 #> Validation Syntactic: Lens not found
 ```
@@ -70,7 +70,7 @@ Currently no Augeas lens supports values for inner nodes.
 Unfortunately no validation plugin exists yet that would prevent such modifications early:
 
 ```sh
-kdb set system/hosts/1 somevalue
+kdb set system:/hosts/1 somevalue
 #> The command set terminated unsuccessfully with the info: Error (#85) occurred!
 #> Description: an Augeas error occurred
 #> Module: storage
@@ -88,16 +88,16 @@ order. Therefore the correct order must be ensured via order metakeys. Otherwise
 consider the following kdb shell script:
 
 ```
-kdbGet system/hosts
-keySetName system/hosts/6
+kdbGet system:/hosts
+keySetName system:/hosts/6
 ksAppendKey
-keySetName system/hosts/6/ipaddr
+keySetName system:/hosts/6/ipaddr
 keySetString 14.14.14.14
 ksAppendKey
-keySetName system/hosts/6/canonical
+keySetName system:/hosts/6/canonical
 keySetString newhost
 ksAppendKey
-kdbSet system/hosts
+kdbSet system:/hosts
 ```
 
 This fails with an error similar to this
@@ -113,18 +113,18 @@ with tree
 Whereas the following script succeeds due to the correct order
 
 ```
-kdbGet system/hosts
-keySetName system/hosts/6
+kdbGet system:/hosts
+keySetName system:/hosts/6
 ksAppendKey
-keySetName system/hosts/6/ipaddr
+keySetName system:/hosts/6/ipaddr
 keySetString 14.14.14.14
 keySetMeta order 100
 ksAppendKey
-keySetName system/hosts/6/canonical
+keySetName system:/hosts/6/canonical
 keySetString newhost
 keySetMeta order 110
 ksAppendKey
-kdbSet system/hosts
+kdbSet system:/hosts
 ```
 
 ## Planned Improvements

@@ -50,14 +50,14 @@ So an error and warnings can be injected directly with the kdb tool.
 E.g. the warning number C01330:
 
 ```sh
-kdb meta-set system/error/key trigger/warnings C01330
+kdb meta-set system:/error/key trigger/warnings C01330
 ```
 
 or the error number C01200 (will not modify the KDB because `kdbSet()` will
 fail for the error plugin then):
 
 ```sh
-kdb meta-set user/error/key trigger/error C01200
+kdb meta-set user:/error/key trigger/error C01200
 ```
 
 ### By config
@@ -81,14 +81,14 @@ kdb mount error.dump /error error on_open/error=C03100 dump
 Then you get an error on any access, e.g.:
 
 ```sh
-kdb ls system/error
+kdb ls system:/error
 ```
 
 Will yield error C01200:
 
 ```
 Description: Tried to get a key from a missing backend
-Mountpoint: system/error
+Mountpoint: system:/error
 ```
 
 because the opening of the plugin failed (resulting to a missing

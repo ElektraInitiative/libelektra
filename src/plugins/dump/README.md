@@ -84,7 +84,7 @@ However, in streaming use `$end` is needed, because there is no end of the "file
 
 ### Format Examples
 
-The following is an example `dump` file that was mounted at `system/elektra/mountpoints`:
+The following is an example `dump` file that was mounted at `system:/elektra/mountpoints`:
 
 ```
 kdbOpen 2
@@ -136,13 +136,13 @@ A few things you might have noticed:
 Export a KeySet using `dump`:
 
 ```sh
-kdb export system/example dump > example.ecf
+kdb export system:/example dump > example.ecf
 ```
 
 Import a KeySet using `dump`:
 
 ```sh
-cat example.ecf | kdb import system/example dump
+cat example.ecf | kdb import system:/example dump
 ```
 
 Using grep/diff or other Unix tools on the dump file. Make sure that you

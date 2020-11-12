@@ -184,8 +184,8 @@ static void test_commit (void)
 {
 	printf ("test commit notification\n");
 
-	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
-	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
+	Key * parentKey = keyNew ("system:/tests/foo", KEY_END);
+	Key * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
 	KeySet * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
@@ -224,8 +224,8 @@ static void test_timeoutConnect (void)
 {
 	printf ("test connect timeout\n");
 
-	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
-	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
+	Key * parentKey = keyNew ("system:/tests/foo", KEY_END);
+	Key * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
 	KeySet * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),
@@ -243,7 +243,7 @@ static void test_timeoutConnect (void)
 
 	char * expectedWarningNumber = elektraFormat ("%s", ELEKTRA_ERROR_INSTALLATION);
 	succeed_if (keyGetMeta (parentKey, "warnings"), "warning meta key was not set");
-	succeed_if_same_string (expectedWarningNumber, keyValue (keyGetMeta (parentKey, "warnings/#00/number")));
+	succeed_if_same_string (expectedWarningNumber, keyValue (keyGetMeta (parentKey, "warnings/#0/number")));
 
 	ksDel (ks);
 	keyDel (parentKey);
@@ -255,8 +255,8 @@ static void test_timeoutSubscribe (void)
 {
 	printf ("test subscribe message timeout\n");
 
-	Key * parentKey = keyNew ("system/tests/foo", KEY_END);
-	Key * toAdd = keyNew ("system/tests/foo/bar", KEY_END);
+	Key * parentKey = keyNew ("system:/tests/foo", KEY_END);
+	Key * toAdd = keyNew ("system:/tests/foo/bar", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
 	KeySet * conf = ksNew (3, keyNew ("/endpoint", KEY_VALUE, TEST_ENDPOINT, KEY_END),

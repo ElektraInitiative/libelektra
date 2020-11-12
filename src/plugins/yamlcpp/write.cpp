@@ -121,12 +121,12 @@ Node createMetaNode (Key & key)
 	key.rewindMeta ();
 	while (Key meta = key.nextMeta ())
 	{
-		if (meta.getName () == "array" || meta.getName () == "binary" ||
-		    (meta.getName () == "type" && (meta.getString () == "boolean" || meta.getString () == "binary")))
+		if (meta.getName () == "meta:/array" || meta.getName () == "meta:/binary" ||
+		    (meta.getName () == "meta:/type" && (meta.getString () == "boolean" || meta.getString () == "binary")))
 		{
 			continue;
 		}
-		metaNode[meta.getName ()] = meta.getString ();
+		metaNode[meta.getName ().substr (sizeof ("meta:/") - 1)] = meta.getString ();
 		ELEKTRA_LOG_DEBUG ("Add metakey “%s: %s”", meta.getName ().c_str (), meta.getString ().c_str ());
 	}
 

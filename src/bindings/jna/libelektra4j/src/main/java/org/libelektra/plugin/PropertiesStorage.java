@@ -24,7 +24,7 @@ public class PropertiesStorage implements Plugin
 
 	@Override public int get (final KeySet ks, final Key parentKey)
 	{
-		final String root = "system/elektra/modules/jni";
+		final String root = "system:/elektra/modules/jni";
 		if (parentKey.isBelowOrSame (Key.create (root, Key.KEY_END)))
 		{
 			ks.append (Key.create (root + "/infos/provides", "storage"));

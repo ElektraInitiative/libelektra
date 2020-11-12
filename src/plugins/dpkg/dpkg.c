@@ -94,15 +94,15 @@ static KeySet * readFile (Key * parentKey)
 }
 int elektraDpkgGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/dpkg"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/dpkg"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/dpkg", KEY_VALUE, "dpkg plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/dpkg/exports", KEY_END),
-			       keyNew ("system/elektra/modules/dpkg/exports/get", KEY_FUNC, elektraDpkgGet, KEY_END),
-			       keyNew ("system/elektra/modules/dpkg/exports/set", KEY_FUNC, elektraDpkgSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/dpkg", KEY_VALUE, "dpkg plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/dpkg/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/dpkg/exports/get", KEY_FUNC, elektraDpkgGet, KEY_END),
+			       keyNew ("system:/elektra/modules/dpkg/exports/set", KEY_FUNC, elektraDpkgSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/dpkg/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/dpkg/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

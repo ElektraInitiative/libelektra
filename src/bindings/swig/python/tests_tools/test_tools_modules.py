@@ -3,7 +3,7 @@ import kdb, kdb.tools, unittest
 class Modules(unittest.TestCase):
 	def test_load(self):
 		modules = kdb.tools.Modules()
-		config = kdb.KeySet(1, kdb.Key("system/module", "without config"))
+		config = kdb.KeySet(1, kdb.Key("system:/module", "without config"))
 		spec = kdb.tools.PluginSpec("dump", config)
 		plugin = modules.load(spec)
 		self.assertIsInstance(plugin, kdb.tools.Plugin)

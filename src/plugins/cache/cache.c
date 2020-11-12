@@ -68,14 +68,14 @@ static int resolveCacheDirectory (Plugin * handle, CacheHandle * ch, Key * error
 	if (cacheDir)
 	{
 		cacheDir = elektraStrConcat (cacheDir, "/elektra");
-		ch->cachePath = keyNew ("system/elektracache", KEY_END);
-		resolverConfig = ksNew (5, keyNew ("system/path", KEY_VALUE, cacheDir, KEY_END), KS_END);
+		ch->cachePath = keyNew ("system:/elektracache", KEY_END);
+		resolverConfig = ksNew (5, keyNew ("system:/path", KEY_VALUE, cacheDir, KEY_END), KS_END);
 		elektraFree (cacheDir);
 	}
 	else
 	{
-		ch->cachePath = keyNew ("user/elektracache", KEY_END);
-		resolverConfig = ksNew (5, keyNew ("user/path", KEY_VALUE, "/.cache/elektra", KEY_END), KS_END);
+		ch->cachePath = keyNew ("user:/elektracache", KEY_END);
+		resolverConfig = ksNew (5, keyNew ("user:/path", KEY_VALUE, "/.cache/elektra", KEY_END), KS_END);
 	}
 
 	ch->resolver = elektraPluginOpen (KDB_RESOLVER, ch->modules, resolverConfig, ch->cachePath);
@@ -195,23 +195,23 @@ static char * kdbCacheFileName (CacheHandle * ch, Key * parentKey, PathMode mode
 	if (mode == modeDirectory) return elektraStrDup (directory);
 
 	const char * name = keyName (parentKey);
-	const char * value = keyString (parentKey);
+	elektraNamespace ns = keyGetNamespace (parentKey);
 	ELEKTRA_LOG_DEBUG ("mountpoint name: %s", name);
-	if (strlen (name) != 0)
+	if (ns != KEY_NS_DEFAULT)
 	{
 		cacheFileName = elektraStrConcat (directory, "/backend");
 		char * tmp = cacheFileName;
 		cacheFileName = elektraStrConcat (cacheFileName, name);
 		elektraFree (tmp);
 	}
-	else if (elektraStrCmp (value, "default") == 0)
+	else if (elektraStrCmp (keyString (parentKey), "default") == 0)
 	{
 		cacheFileName = elektraStrConcat (directory, "/default");
 	}
 	else
 	{
-		ELEKTRA_LOG_DEBUG ("mountpoint empty, invalid cache file name");
-		ELEKTRA_ASSERT (0 != 0, "mountpoint empty, invalid cache file name");
+		ELEKTRA_LOG_WARNING ("invalid mountpoint for caching: %s", name);
+		ELEKTRA_ASSERT (0 != 0, "invalid mountpoint for caching");
 	}
 
 	if (cacheFileName)
@@ -285,17 +285,17 @@ int elektraCacheClose (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 
 int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/cache"))
+	if (elektraStrCmp (keyName (parentKey), "system:/elektra/modules/cache") == 0)
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/cache", KEY_VALUE, "cache plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports", KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/open", KEY_FUNC, elektraCacheOpen, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/close", KEY_FUNC, elektraCacheClose, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/get", KEY_FUNC, elektraCacheGet, KEY_END),
-			       keyNew ("system/elektra/modules/cache/exports/set", KEY_FUNC, elektraCacheSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/cache", KEY_VALUE, "cache plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/open", KEY_FUNC, elektraCacheOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/close", KEY_FUNC, elektraCacheClose, KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/get", KEY_FUNC, elektraCacheGet, KEY_END),
+			       keyNew ("system:/elektra/modules/cache/exports/set", KEY_FUNC, elektraCacheSet, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/cache/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/cache/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

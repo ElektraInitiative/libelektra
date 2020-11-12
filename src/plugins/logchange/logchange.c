@@ -29,16 +29,16 @@ static void logKeys (KeySet * ks, const char * message)
 
 int elektraLogchangeGet (Plugin * handle, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/logchange"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/logchange"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/logchange", KEY_VALUE, "logchange plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/logchange/exports", KEY_END),
-			keyNew ("system/elektra/modules/logchange/exports/get", KEY_FUNC, elektraLogchangeGet, KEY_END),
-			keyNew ("system/elektra/modules/logchange/exports/set", KEY_FUNC, elektraLogchangeSet, KEY_END),
-			keyNew ("system/elektra/modules/logchange/exports/close", KEY_FUNC, elektraLogchangeClose, KEY_END),
+			30, keyNew ("system:/elektra/modules/logchange", KEY_VALUE, "logchange plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports", KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports/get", KEY_FUNC, elektraLogchangeGet, KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports/set", KEY_FUNC, elektraLogchangeSet, KEY_END),
+			keyNew ("system:/elektra/modules/logchange/exports/close", KEY_FUNC, elektraLogchangeClose, KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/logchange/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/logchange/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

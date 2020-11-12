@@ -1,5 +1,6 @@
 package org.libelektra.exception.model;
 
+import java.util.Arrays;
 import org.libelektra.Key;
 
 public class WarningEntry
@@ -15,11 +16,14 @@ public class WarningEntry
 	/**
 	 * Extracts warning information from the errorKey
 	 * @param key the errorkey containing the warnings/* metakeys
-	 * @param current The current entry you want to parse, e.g., (key, 0) will search for entries with "warnings/#00"
+	 * @param current The current entry you want to parse, e.g., (key, 0) will search for entries with "warnings/#0"
 	 */
 	public WarningEntry (Key key, int current)
 	{
-		final String warningKeyName = String.format ("warnings/#%02d", current);
+		final String warningIndex = Integer.toString (current);
+		char[] underscores = new char[warningIndex.length () - 1];
+		Arrays.fill (underscores, '_');
+		final String warningKeyName = "warnings/#" + new String (underscores) + warningIndex;
 		warningNumber = key.getMeta (warningKeyName + "/number").getString ();
 		reason = key.getMeta (warningKeyName + "/reason").getString ();
 		module = key.getMeta (warningKeyName + "/module").getString ();

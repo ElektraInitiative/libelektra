@@ -206,46 +206,7 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 	keySetName (errorKey, KDB_SYSTEM_ELEKTRA);
 	keySetString (errorKey, "kdbOpen(): get");
 
-	int funret = 1;
-	int ret = kdbGet (handle, keys, errorKey);
-	int fallbackret = 0;
-	if (ret == 0 || ret == -1)
-	{
-		// could not get KDB_DB_INIT, try KDB_DB_FILE
-		// first cleanup:
-		ksClear (keys);
-		backendClose (handle->defaultBackend, errorKey);
-		splitDel (handle->split);
-
-		// then create new setup:
-		handle->defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_FILE, errorKey);
-		if (!handle->defaultBackend)
-		{
-			elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()
-			return -1;
-		}
-		handle->split = splitNew ();
-		splitAppend (handle->split, handle->defaultBackend, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
-
-		keySetName (errorKey, KDB_SYSTEM_ELEKTRA);
-		keySetString (errorKey, "kdbOpen(): get fallback");
-		fallbackret = kdbGet (handle, keys, errorKey);
-		keySetName (errorKey, "system/elektra/mountpoints");
-
-		KeySet * cutKeys = ksCut (keys, errorKey);
-		if (fallbackret == 1 && ksGetSize (cutKeys) != 0)
-		{
-			funret = 2;
-		}
-		ksAppend (keys, cutKeys);
-		ksDel (cutKeys);
-	}
-
-	if (ret == -1 && fallbackret == -1)
-	{
-		funret = 0;
-	}
-
+	int funret = kdbGet (handle, keys, errorKey) != -1;
 	elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()
 	return funret;
 }
@@ -258,7 +219,7 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
  *
  * The method will bootstrap itself the following way.
  * The first step is to open the default backend. With it
- * system/elektra/mountpoints will be loaded and all needed
+ * system:/elektra/mountpoints will be loaded and all needed
  * libraries and mountpoints will be determined.
  * These libraries for backends will be loaded and with it the
  * @p KDB data structure will be initialized.
@@ -610,7 +571,7 @@ static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 	Key * cutKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
 	keyAddName (cutKey, strchr (keyName (parentKey), '/'));
 	KeySet * cutKS = ksCut (ks, cutKey);
-	Key * specCutKey = keyNew ("spec", KEY_END);
+	Key * specCutKey = keyNew ("spec:/", KEY_END);
 	KeySet * specCut = ksCut (cutKS, specCutKey);
 	ksRewind (specCut);
 	Key * cur;
@@ -770,16 +731,20 @@ static void clearError (Key * key)
 
 static int elektraCacheCheckParent (KeySet * global, Key * cacheParent, Key * initialParent)
 {
+	const char * cacheName = keyGetNamespace (cacheParent) == KEY_NS_DEFAULT ? "" : keyName (cacheParent);
+
 	// first check if parentkey matches
 	Key * lastParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentName", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT name: %s", keyString (lastParentName));
-	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", keyName (cacheParent));
-	if (!lastParentName || elektraStrCmp (keyString (lastParentName), keyName (cacheParent))) return -1;
+	ELEKTRA_LOG_DEBUG ("KDBG PARENT name: %s", cacheName);
+	if (!lastParentName || elektraStrCmp (keyString (lastParentName), cacheName)) return -1;
+
+	const char * cacheValue = keyGetNamespace (cacheParent) == KEY_NS_DEFAULT ? "default" : keyString (cacheParent);
 
 	Key * lastParentValue = ksLookupByName (global, KDB_CACHE_PREFIX "/lastParentValue", KDB_O_NONE);
 	ELEKTRA_LOG_DEBUG ("LAST PARENT value: %s", keyString (lastParentValue));
-	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", keyString (cacheParent));
-	if (!lastParentValue || elektraStrCmp (keyString (lastParentValue), keyString (cacheParent))) return -1;
+	ELEKTRA_LOG_DEBUG ("KDBG PARENT value: %s", cacheValue);
+	if (!lastParentValue || elektraStrCmp (keyString (lastParentValue), cacheValue)) return -1;
 
 	Key * lastInitalParentName = ksLookupByName (global, KDB_CACHE_PREFIX "/lastInitialParentName", KDB_O_NONE);
 	Key * lastInitialParent = keyNew (keyString (lastInitalParentName), KEY_END);
@@ -806,7 +771,7 @@ static void elektraCacheCutMeta (KDB * handle)
 
 KeySet * elektraCutProc (KeySet * ks)
 {
-	Key * parentKey = keyNew ("proc", KEY_END);
+	Key * parentKey = keyNew ("proc:/", KEY_END);
 	KeySet * ret = ksCut (ks, parentKey);
 	keyDel (parentKey);
 	return ret;
@@ -973,11 +938,11 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  *     otherwise they will be lost. This stems from the fact that the
  *     user has the only copy of the whole configuration and backends
  *     only write configuration that was passed to them.
- *     For example, if you kdbGet() "system/mountpoint/interest"
- *     you will not only get all keys below system/mountpoint/interest,
- *     but also all keys below system/mountpoint (if system/mountpoint
+ *     For example, if you kdbGet() "system:/mountpoint/interest"
+ *     you will not only get all keys below system:/mountpoint/interest,
+ *     but also all keys below system:/mountpoint (if system:/mountpoint
  *     is a mountpoint as the name suggests, but
- *     system/mountpoint/interest is not a mountpoint).
+ *     system:/mountpoint/interest is not a mountpoint).
  *     Make sure to not touch or remove keys outside the keys of interest,
  *     because others may need them!
  *
@@ -1040,11 +1005,6 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	if (ns == KEY_NS_EMPTY)
-	{
-		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, "Empty namespace passed to kdbGet. Please use the cascading key / instead");
-	}
-
 	int errnosave = errno;
 	Key * initialParent = keyDup (parentKey);
 
@@ -1078,7 +1038,11 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	cache = ksNew (0, KS_END);
-	cacheParent = keyDup (mountGetMountpoint (handle, initialParent));
+	cacheParent = keyDup (mountGetMountpoint (handle, keyName (initialParent)));
+	if (cacheParent == NULL)
+	{
+		cacheParent = keyNew ("default:/", KEY_VALUE, "default", KEY_END);
+	}
 	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
 	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
 	{
@@ -1583,12 +1547,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	if (ns == KEY_NS_EMPTY)
-	{
-		ELEKTRA_ADD_INTERFACE_WARNING (parentKey, "Invalid key name passed to kdbSet");
-		ELEKTRA_LOG ("ns == KEY_NS_EMPTY");
-	}
-
 	if (!handle || !ks)
 	{
 		clearError (parentKey); // clear previous error to set new one
@@ -1888,8 +1846,7 @@ static int ensureGlobalPluginUnmounted (KDB * handle, const char * pluginName, K
  */
 static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const char * pluginName, Key * errorKey)
 {
-	Key * mountpointKey = keyNew (mountpoint, KEY_END);
-	Backend * backend = mountGetBackend (handle, mountpointKey);
+	Backend * backend = mountGetBackend (handle, mountpoint);
 
 	int ret = 1;
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)
@@ -1935,7 +1892,6 @@ static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const c
 		}
 	}
 
-	keyDel (mountpointKey);
 	return ret;
 }
 
@@ -2025,7 +1981,7 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
  * This function can be used to ensure the given KDB @p handle meets certain clauses,
  * specified in @p contract. Currently the following clauses are supported:
  *
- * - `system/elektra/ensure/plugins/<mountpoint>/<pluginname>` defines the state of the plugin
+ * - `system:/elektra/ensure/plugins/<mountpoint>/<pluginname>` defines the state of the plugin
  *   `<pluginname>` for the mountpoint `<mountpoint>`:
  * 	- The value `unmounted` ensures the plugin is not mounted, at this mountpoint.
  * 	- The value `mounted` ensures the plugin is mounted, at this mountpoint.
@@ -2033,8 +1989,8 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
  * 	- The value `remount` always mounts the plugin, at this mountpoint.
  * 	  If it was already mounted, it will me unmounted and mounted again.
  * 	  This can be used to ensure the plugin is mounted with a certain configuration.
- * - Keys below `system/elektra/ensure/plugins/<mountpoint>/<pluginname>/config` are extracted and used
- *   as the plugins config KeySet during mounting. `system/elektra/ensure/plugins/<mountpoint>/<pluginname>`
+ * - Keys below `system:/elektra/ensure/plugins/<mountpoint>/<pluginname>/config` are extracted and used
+ *   as the plugins config KeySet during mounting. `system:/elektra/ensure/plugins/<mountpoint>/<pluginname>`
  *   will be replaced by `user` in the keynames. If no keys are given, an empty KeySet is used.
  *
  * There are a few special values for `<mountpoint>`:
@@ -2074,7 +2030,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		return -1;
 	}
 
-	Key * cutpoint = keyNew ("system/elektra/ensure/plugins", KEY_END);
+	Key * cutpoint = keyNew ("system:/elektra/ensure/plugins", KEY_END);
 	KeySet * pluginsContract = ksCut (contract, cutpoint);
 
 	// delete unused part of contract immediately
@@ -2084,10 +2040,10 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 	Key * clause = NULL;
 	while ((clause = ksNext (pluginsContract)) != NULL)
 	{
-		// only handle 'system/elektra/ensure/plugins/<mountpoint>/<pluginname>' keys
+		// only handle 'system:/elektra/ensure/plugins/<mountpoint>/<pluginname>' keys
 		const char * condUNameBase = keyUnescapedName (clause);
 		const char * condUName = condUNameBase;
-		condUName += sizeof ("system\0elektra\0ensure\0plugins"); // skip known common part
+		condUName += sizeof ("\0\0elektra\0ensure\0plugins"); // skip known common part
 
 		size_t condUSize = keyGetUnescapedNameSize (clause);
 		if (condUNameBase + condUSize <= condUName)
@@ -2104,11 +2060,11 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		condUName += strlen (condUName) + 1; // skip pluginname
 		if (condUNameBase + condUSize > condUName)
 		{
-			continue; // key below 'system/elektra/ensure/plugins/<mountpoint>/<pluginname>'
+			continue; // key below 'system:/elektra/ensure/plugins/<mountpoint>/<pluginname>'
 		}
 
 		const char * mountpoint = keyUnescapedName (clause);
-		mountpoint += sizeof ("system\0elektra\0ensure\0plugins");
+		mountpoint += sizeof ("\0\0elektra\0ensure\0plugins");
 		const char * pluginName = keyBaseName (clause);
 		const char * pluginStateString = keyString (clause);
 
@@ -2149,7 +2105,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 		KeySet * pluginConfig = ksCut (pluginsContract, pluginCutpoint);
 		ksAppendKey (pluginConfig, pluginCutpoint);
 		{
-			KeySet * newPluginConfig = ksRenameKeys (pluginConfig, "user");
+			KeySet * newPluginConfig = ksRenameKeys (pluginConfig, "user:/");
 			ksDel (pluginConfig);
 			pluginConfig = newPluginConfig;
 		}

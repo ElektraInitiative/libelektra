@@ -88,8 +88,8 @@ setupSpec()
 with kdb.KDB() as db:
 	error_key = kdb.Key(spec_base_key)
 	rc = db.ensure(kdb.KeySet(2,
-			kdb.Key("system/elektra/ensure/plugins/global/gopts", kdb.KEY_VALUE, "remount"), 
-			kdb.Key("system/elektra/ensure/plugins/global/gopts/config/offset", kdb.KEY_VALUE, str(argv_offset))
+			kdb.Key("system:/elektra/ensure/plugins/global/gopts", kdb.KEY_VALUE, "remount"), 
+			kdb.Key("system:/elektra/ensure/plugins/global/gopts/config/offset", kdb.KEY_VALUE, str(argv_offset))
 			), error_key)
 	if rc == 1:
 		print("ERROR: Contract could not be ensured!\n", error_key.getMeta("error/reason").value, file=sys.stderr)
@@ -103,8 +103,8 @@ with kdb.KDB() as db:
 	ks = kdb.KeySet(0)
 	db.get(ks, spec_base_key)
 	
-	if "proc/elektra/gopts/help" in ks and ks["proc/elektra/gopts/help"].value == "1":
-		print (ks["proc/elektra/gopts/help/message"].value)
+	if "proc:/elektra/gopts/help" in ks and ks["proc:/elektra/gopts/help"].value == "1":
+		print (ks["proc:/elektra/gopts/help/message"].value)
 		removeSpec()
 		exit(0)
 	

@@ -6,8 +6,7 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <kdbproposal.h>
-
+#include <kdb.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -31,9 +30,6 @@ case KEY_NS_USER:
 	break;
 case KEY_NS_SYSTEM:
 	printf ("system namespace\n");
-	break;
-case KEY_NS_EMPTY:
-	printf ("empty name\n");
 	break;
 case KEY_NS_NONE:
 	printf ("no key\n");
@@ -67,7 +63,7 @@ int main (void)
 		return EXIT_FAILURE;
 	}
 
-	Key * k = keyNew (s, KEY_CASCADING_NAME, KEY_META_NAME, KEY_END);
+	Key * k = keyNew (s, KEY_END);
 	printNamespace (k);
 	keyDel (k);
 }

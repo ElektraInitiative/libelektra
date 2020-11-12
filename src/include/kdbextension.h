@@ -11,6 +11,5 @@
 
 #include <kdbease.h>
 #include <kdbmeta.h>
-#include <kdbproposal.h>
 
 #endif

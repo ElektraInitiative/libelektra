@@ -13,9 +13,6 @@
 #include "iterator.h"
 #include "yajl.h"
 
-// TODO defined privately in keyhelpers.c, API break possible..
-char * keyNameGetOneLevel (const char * name, size_t * size);
-
 /**
  * @brief Count number of levels in name of key
  *
@@ -60,21 +57,29 @@ ssize_t elektraKeyCountEqualLevel (const Key * cmp1, const Key * cmp2)
 		return 0;
 	}
 
-	const char * pcmp1 = keyName (cmp1);
-	const char * pcmp2 = keyName (cmp2);
-	size_t size1 = 0;
-	size_t size2 = 0;
-	ssize_t counter = 0;
+	const char * pcmp1 = keyUnescapedName (cmp1);
+	const char * pcmp2 = keyUnescapedName (cmp2);
 
-	while (*(pcmp1 = keyNameGetOneLevel (pcmp1 + size1, &size1)) && *(pcmp2 = keyNameGetOneLevel (pcmp2 + size2, &size2)) &&
-	       size1 == size2 && !strncmp (pcmp1, pcmp2, size1))
+	size_t size1 = keyGetUnescapedNameSize (cmp1);
+	size_t size2 = keyGetUnescapedNameSize (cmp2);
+
+	size_t counter = 0;
+	const char * cur1 = pcmp1;
+	const char * cur2 = pcmp2;
+	while (strcmp (cur1, cur2) == 0)
 	{
+		const char * next1 = strchr (cur1, '\0');
+		const char * next2 = strchr (cur2, '\0');
+
 		++counter;
-	}
 
-	if (counter < 0)
-	{
-		counter = -1;
+		cur1 = next1 + 1;
+		cur2 = next2 + 1;
+
+		if (pcmp1 + size1 <= cur1 || pcmp2 + size2 <= cur2)
+		{
+			break;
+		}
 	}
 
 	return counter;

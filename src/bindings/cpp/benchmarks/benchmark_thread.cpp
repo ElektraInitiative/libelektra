@@ -323,18 +323,18 @@ __attribute__ ((noinline)) void benchmark_contextual_noif_sum (kdb::Environment 
 __attribute__ ((noinline)) void benchmark_hashmap ()
 {
 	std::unordered_map<std::string, kdb::ThreadInteger::type> hashmap;
-	hashmap["user/abc/test/hello"] = 5;
-	hashmap["user/abc/test/h1"] = 6;
-	hashmap["user/abc/test/h2"] = 7;
-	hashmap["user/abc/test/test"] = 9;
-	hashmap["user/abc/nested/hello"] = 12;
+	hashmap["user:/abc/test/hello"] = 5;
+	hashmap["user:/abc/test/h1"] = 6;
+	hashmap["user:/abc/test/h2"] = 7;
+	hashmap["user:/abc/test/test"] = 9;
+	hashmap["user:/abc/nested/hello"] = 12;
 	kdb::ThreadInteger::type x = 0;
 
 	static Timer t ("hashmap");
 	t.start ();
 	for (long long i = 0; i < iterations; ++i)
 	{
-		x ^= hashmap["user/abc/nested/notav"];
+		x ^= hashmap["user:/abc/nested/notav"];
 	}
 	t.stop ();
 	std::cout << t;
@@ -344,18 +344,18 @@ __attribute__ ((noinline)) void benchmark_hashmap ()
 __attribute__ ((noinline)) void benchmark_hashmap_find ()
 {
 	std::unordered_map<std::string, kdb::ThreadInteger::type> hashmap;
-	hashmap["user/abc/test/hello"] = 5;
-	hashmap["user/abc/test/h1"] = 6;
-	hashmap["user/abc/test/h2"] = 7;
-	hashmap["user/abc/test/test"] = 9;
-	hashmap["user/abc/nested/hello"] = 12;
+	hashmap["user:/abc/test/hello"] = 5;
+	hashmap["user:/abc/test/h1"] = 6;
+	hashmap["user:/abc/test/h2"] = 7;
+	hashmap["user:/abc/test/test"] = 9;
+	hashmap["user:/abc/nested/hello"] = 12;
 	kdb::ThreadInteger::type x = 0;
 
 	static Timer t ("hashmap find");
 	t.start ();
 	for (long long i = 0; i < iterations; ++i)
 	{
-		auto it = hashmap.find ("user/abc/nested/hello");
+		auto it = hashmap.find ("user:/abc/nested/hello");
 		if (it != hashmap.end ())
 		{
 			x ^= it->second;
@@ -467,13 +467,13 @@ __attribute__ ((noinline)) void benchmark_kslookup ()
 {
 	static Timer t ("kslookup");
 	using namespace kdb; // needed for KS_END
-	kdb::KeySet ks (100, *kdb::Key ("user/hello/some", KEY_END), *kdb::Key ("user/hello/a/key", KEY_END),
-			*kdb::Key ("user/hello/b/key", KEY_END), *kdb::Key ("user/hello/c/key", KEY_END),
-			*kdb::Key ("user/hello/d/key", KEY_END), *kdb::Key ("user/other", KEY_END), KS_END);
+	kdb::KeySet ks (100, *kdb::Key ("user:/hello/some", KEY_END), *kdb::Key ("user:/hello/a/key", KEY_END),
+			*kdb::Key ("user:/hello/b/key", KEY_END), *kdb::Key ("user:/hello/c/key", KEY_END),
+			*kdb::Key ("user:/hello/d/key", KEY_END), *kdb::Key ("user:/other", KEY_END), KS_END);
 	t.start ();
 	for (long long i = 0; i < iterations; ++i)
 	{
-		ks.lookup ("user/notfound");
+		ks.lookup ("user:/notfound");
 	}
 	t.stop ();
 	std::cout << t;

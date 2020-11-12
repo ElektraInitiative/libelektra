@@ -35,7 +35,7 @@ writeBlock() {
 		MATCH_SEPARATION='[ \t]+[''"]?'
 		MATCH_NAMESPACE='(/[^/]+|[^/]+/[^/]+)'
 		NAMESPACE=$(printf '%s' "$cmd" | sed -nE "s~.*$MATCH_COMMAND$MATCH_OPTIONS$MATCH_SEPARATION$MATCH_NAMESPACE.*~\5~p")
-		if [ -n "$NAMESPACE" ] && printf '%s' "$NAMESPACE" | egrep -vq '(dir|system|spec|user)?/(tests|elektra)'; then
+		if [ -n "$NAMESPACE" ] && printf '%s' "$NAMESPACE" | egrep -vq '(dir:|system:|spec:|user:)?/(tests|elektra)'; then
 			printerr 'The command “%s” stores data outside of `/tests` at “%s”!\n' "$COMMAND" "$NAMESPACE"
 			SHELL_RECORDER_ERROR=1
 		fi
@@ -49,7 +49,7 @@ translate() {
 	TMPFILE=$(mktemp)
 	MOUNTPOINT=$(printf '%s' "$BUF" | head -n 1)
 	if printf '%s' "$MOUNTPOINT" | grep -Eq 'Backup-and-Restore:'; then
-		printf 'Mountpoint: %s\n' "$(printf '%s' "$MOUNTPOINT" | cut -d ':' -f2 | sed 's/^[[:space:]]*//')" >> "$TMPFILE"
+		printf 'Mountpoint: %s\n' "$(printf '%s' "$MOUNTPOINT" | cut -d ':' -f2- | sed 's/^[[:space:]]*//')" >> "$TMPFILE"
 		BUF=$(printf '%s\n' "$BUF" | sed '1d')
 	else
 		printf 'Mountpoint: /tests\n' >> "$TMPFILE"

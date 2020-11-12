@@ -67,7 +67,8 @@ The following example shows you how you can read data using this plugin.
 sudo kdb mount configrc /tests/kconfig kconfig
 
 # Manually add a key-value pair to the database
-echo 'key=Value' > `kdb file /tests/kconfig`
+mkdir -p "$(dirname "$(kdb file /tests/kconfig)")"
+echo 'key=Value' > "$(kdb file /tests/kconfig)"
 
 # Retrieve the new value
 kdb get /tests/kconfig/key
@@ -81,10 +82,10 @@ cat `kdb file /tests/kconfig`
 #> key=Example
 
 # Manually add a gorup to the database
-echo '[group][subgroup]' >> `kdb file /tests/kconfig`
+echo '[group][subgroup]' >> "$(kdb file /tests/kconfig)"
 
 # Manually add a key that contains metas to that group
-echo 'key.name[$a][$i]=New Value' >> `kdb file /tests/kconfig`
+echo 'key.name[$a][$i]=New Value' >> "$(kdb file /tests/kconfig)"
 
 # Retrieve the new value
 kdb get /tests/kconfig/group/subgroup/key.name

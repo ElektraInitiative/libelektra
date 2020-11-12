@@ -20,7 +20,7 @@ static void test_openclose (void)
 {
 	printf ("test open & close\n");
 
-	Key * key = keyNew ("system/sw/tests/testlib_notification", KEY_END);
+	Key * key = keyNew ("system:/sw/tests/testlib_notification", KEY_END);
 	KDB * kdb = kdbOpen (key);
 	exit_if_fail (kdb, "opening kdb failed");
 
@@ -42,8 +42,8 @@ static void test_registerInt (void)
 {
 	printf ("test elektraNotificationRegisterInt\n");
 
-	Key * key = keyNew ("system/elektra/version/constants", KEY_END);
-	Key * valueKey = keyNew ("system/elektra/version/constants/KDB_VERSION_MAJOR", KEY_END);
+	Key * key = keyNew ("system:/elektra/version/constants", KEY_END);
+	Key * valueKey = keyNew ("system:/elektra/version/constants/KDB_VERSION_MAJOR", KEY_END);
 
 	int startValue = -1;
 	int value = startValue;
@@ -79,8 +79,8 @@ static void test_registerCallback (void)
 {
 	printf ("test elektraNotificationRegisterCallback\n");
 
-	Key * key = keyNew ("system/elektra/version/constants", KEY_END);
-	Key * valueKey = keyNew ("system/elektra/version/constants/KDB_VERSION_MAJOR", KEY_END);
+	Key * key = keyNew ("system:/elektra/version/constants", KEY_END);
+	Key * valueKey = keyNew ("system:/elektra/version/constants/KDB_VERSION_MAJOR", KEY_END);
 	callback_called = 0;
 
 	KDB * kdb = kdbOpen (key);

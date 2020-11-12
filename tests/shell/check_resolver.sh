@@ -53,7 +53,7 @@ check_resolver() {
 		return
 	fi
 
-	MOUNTPOINT=$1$ROOT_MOUNTPOINT
+	MOUNTPOINT=$1:$ROOT_MOUNTPOINT
 
 	"$KDB" mount --resolver $PLUGIN "$3" $MOUNTPOINT dump 1> /dev/null
 	succeed_if "could not mount root using: "$KDB" mount --resolver $PLUGIN $3 $MOUNTPOINT dump"

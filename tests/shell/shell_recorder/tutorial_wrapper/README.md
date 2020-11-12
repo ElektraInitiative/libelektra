@@ -9,10 +9,10 @@ Snippets are shell commands inside a syntax block with additional checks (such a
 Let us look at a simple example first:
 
 ```sh
-kdb set user/tests/markdown/napalm death
-#> Create a new key user/tests/markdown/napalm with string "death"
+kdb set user:/tests/markdown/napalm death
+#> Create a new key user:/tests/markdown/napalm with string "death"
 
-kdb rm user/tests/markdown/napalm
+kdb rm user:/tests/markdown/napalm
 
 kdb rm /tests/markdown/babymetal
 # RET: 11
@@ -20,17 +20,17 @@ kdb rm /tests/markdown/babymetal
 ```
 
 . The test above invokes three commands. The first command stores the value `death` in the key with the name
-`user/tests/markdown/napalm`. The special comment `#>` below the command specifies the expected output to the standard
+`user:/tests/markdown/napalm`. The special comment `#>` below the command specifies the expected output to the standard
 output. This means the Markdown Shell Recorder expects the command
 
 ```
-kdb set user/tests/markdown/napalm death
+kdb set user:/tests/markdown/napalm death
 ```
 
 to print the text
 
 ```
-Create a new key user/tests/markdown/napalm with string "death"
+Create a new key user:/tests/markdown/napalm with string "death"
 ```
 
 to the standard output. The second command in our test (`kdb rm /tests/markdown/napalm`) deletes the key we just created. Although there
@@ -87,17 +87,17 @@ echo Babymetal Death | \
   grep -o Death
 #> Death
 
-kdb set user/tests/tempfile $(mktemp)
-cat > $(kdb get user/tests/tempfile) << EOF \
+kdb set user:/tests/tempfile $(mktemp)
+cat > $(kdb get user:/tests/tempfile) << EOF \
 line 1\
 line 2\
 EOF
-cat $(kdb get user/tests/tempfile)
+cat $(kdb get user:/tests/tempfile)
 #> line 1
 #> line 2
 
-rm $(kdb get user/tests/tempfile)
-kdb rm user/tests/tempfile
+rm $(kdb get user:/tests/tempfile)
+kdb rm user:/tests/tempfile
 ```
 
 ### Checks

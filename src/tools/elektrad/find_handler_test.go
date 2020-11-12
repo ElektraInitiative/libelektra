@@ -7,8 +7,8 @@ import (
 
 func TestGetFind(t *testing.T) {
 	keyNames := []string{
-		"user/tests/elektrad/kdbfind/get/result1",
-		"user/tests/elektrad/kdbfind/get/result2",
+		"user:/tests/elektrad/kdbfind/get/result1",
+		"user:/tests/elektrad/kdbfind/get/result2",
 	}
 
 	for _, keyName := range keyNames {

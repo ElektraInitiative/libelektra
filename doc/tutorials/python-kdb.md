@@ -78,7 +78,7 @@ Here an example of how you can easily check if a key exists:
 import kdb
 
 with kdb.KDB() as k:
-    namespace = "user"
+    namespace = "user:/"
     path = '{}/test'.format(namespace)
 
     ks = kdb.KeySet()
@@ -211,13 +211,13 @@ with KDB() as data:
     data.get(keyset, 'user')
     print(describe(keyset, "Initial Keyset"))
 
-    new_key = key('user/sw/pk/key_name', 'key_value')
+    new_key = key('user:/sw/pk/key_name', 'key_value')
     # adding new_key to the existing key-set,
     # ks['/user/sw/pk/key_name'].value == 'key_value'
     keyset.append(new_key)
     print(describe(keyset, "Add New Key"))
 
-    newer_key = key('user/sw/pk/key_name', 'other_key_value')
+    newer_key = key('user:/sw/pk/key_name', 'other_key_value')
     # adding newer_key to the existing key-set, by doing so replacing new_key,
     # ks['/user/sw/pk/key_name'].value == 'other_key_value'
     keyset.append(newer_key)

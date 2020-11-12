@@ -645,6 +645,7 @@ void opmphmClear (Opmphm * opmphm)
 // sanitize a hash function is silly, so ignore it!
 ELEKTRA_NO_SANITIZE_UNDEFINED
 ELEKTRA_NO_SANITIZE_INTEGER
+ELEKTRA_NO_SANITIZE_ADDRESS
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;
@@ -720,6 +721,7 @@ uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 // sanitize a hash function is silly, so ignore it!
 ELEKTRA_NO_SANITIZE_UNDEFINED
 ELEKTRA_NO_SANITIZE_INTEGER
+ELEKTRA_NO_SANITIZE_ADDRESS
 uint32_t opmphmHashfunction (const void * key, size_t length, uint32_t initval)
 {
 	uint32_t a, b, c;

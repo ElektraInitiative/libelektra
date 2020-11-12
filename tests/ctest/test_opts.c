@@ -11,8 +11,8 @@
 
 #include "tests.h"
 
-#define PROC_BASE_KEY "proc/tests/opts"
-#define SPEC_BASE_KEY "spec/tests/opts"
+#define PROC_BASE_KEY "proc:/tests/opts"
+#define SPEC_BASE_KEY "spec:/tests/opts"
 
 #define NUMARGS(...) (sizeof ((void *[]){ __VA_ARGS__ }) / sizeof (void *))
 #define ARGS(...) NUMARGS ("prog", __VA_ARGS__), ((const char *[]){ "prog", __VA_ARGS__, NULL })
@@ -1141,7 +1141,7 @@ static void test_stop (void)
 	clearValues (ks);
 
 
-	Key * errorKey = keyNew ("spec/tests/opts", KEY_META, "posixly", "1", KEY_END);
+	Key * errorKey = keyNew ("spec:/tests/opts", KEY_META, "posixly", "1", KEY_END);
 	if (elektraGetOpts (ks, ARGS ("-ashort", "other", "-a", "short2"), NO_ENVP, errorKey) != 0)
 	{
 		yield_error ("error found");

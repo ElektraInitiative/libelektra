@@ -12,7 +12,6 @@
 #include <git2.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>
-#include <kdbproposal.h>
 #include <libgen.h>
 #include <openssl/md5.h>
 #include <stdio.h>
@@ -615,21 +614,21 @@ PULL_CLEANUP:
 
 int elektraGitresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/gitresolver"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/gitresolver"))
 	{
 		KeySet * contract = ksNew (
-			30, keyNew ("system/elektra/modules/gitresolver", KEY_VALUE, "gitresolver plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/gitresolver/exports", KEY_END),
-			keyNew ("system/elektra/modules/gitresolver/exports/open", KEY_FUNC, elektraGitresolverOpen, KEY_END),
-			keyNew ("system/elektra/modules/gitresolver/exports/close", KEY_FUNC, elektraGitresolverClose, KEY_END),
-			keyNew ("system/elektra/modules/gitresolver/exports/get", KEY_FUNC, elektraGitresolverGet, KEY_END),
-			keyNew ("system/elektra/modules/gitresolver/exports/set", KEY_FUNC, elektraGitresolverSet, KEY_END),
-			keyNew ("system/elektra/modules/gitresolver/exports/commit", KEY_FUNC, elektraGitresolverCommit, KEY_END),
-			keyNew ("system/elektra/modules/gitresolver/exports/error", KEY_FUNC, elektraGitresolverError, KEY_END),
-			keyNew ("system/elektra/modules/gitresolver/exports/checkfile", KEY_FUNC, elektraGitresolverCheckFile, KEY_END),
+			30, keyNew ("system:/elektra/modules/gitresolver", KEY_VALUE, "gitresolver plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports", KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/open", KEY_FUNC, elektraGitresolverOpen, KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/close", KEY_FUNC, elektraGitresolverClose, KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/get", KEY_FUNC, elektraGitresolverGet, KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/set", KEY_FUNC, elektraGitresolverSet, KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/commit", KEY_FUNC, elektraGitresolverCommit, KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/error", KEY_FUNC, elektraGitresolverError, KEY_END),
+			keyNew ("system:/elektra/modules/gitresolver/exports/checkfile", KEY_FUNC, elektraGitresolverCheckFile, KEY_END),
 
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/gitresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/gitresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

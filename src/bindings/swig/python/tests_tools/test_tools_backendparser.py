@@ -2,7 +2,7 @@ import kdb, kdb.tools, unittest
 
 class ParseArguments(unittest.TestCase):
 	def setUp(self):
-		self.ks = kdb.KeySet(2, kdb.Key("user/c1", "v1"), kdb.Key("user/c2", "v2"))
+		self.ks = kdb.KeySet(2, kdb.Key("user:/c1", "v1"), kdb.Key("user:/c2", "v2"))
 
 	def test_parse_arguments(self):
 		args = kdb.tools.parseArguments("plugin c1=v1 c2=v2")

@@ -58,7 +58,7 @@ public:
 	 * (please sort by getopt short name, small letters first)*/
 	bool debug;	    /*!< To debug the commands. */
 	bool force;	    /*!< Force the action. */
-	bool load;	    /*!< Load plugins instead of using system/elektra. */
+	bool load;	    /*!< Load plugins instead of using system:/elektra. */
 	bool humanReadable; /*!< Human readable values are preferred. */
 	bool help;	    /*!< Display help instead of the normal action.. */
 	bool interactive;   /*!< Interactive mode. */
@@ -95,7 +95,7 @@ public:
 	kdb::Key createKey (int pos, bool allowCascading = true) const;
 	kdb::Key resolveBookmark (std::string name) const;
 
-	kdb::KeySet getPluginsConfig (std::string basepath = "user/") const;
+	kdb::KeySet getPluginsConfig (std::string basepath = "user:/") const;
 
 	/** The path to the kdb exectuable. */
 	std::string executable;

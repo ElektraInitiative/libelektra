@@ -139,8 +139,8 @@ kdb::KeySet convertArrayLeaves (kdb::KeySet const & arrayLeaves)
 /**
  * @brief This function returns a modified copy of `child`, where child is directly below `parent`.
  *
- * For example, if `child` has the name `user/parent/level1/level2/level3` and parent has the name `user/parent`, then the function will
- * return a key with the name `user/parent/level1`.
+ * For example, if `child` has the name `user:/parent/level1/level2/level3` and parent has the name `user:/parent`, then the function will
+ * return a key with the name `user:/parent/level1`.
  *
  * @pre The key `child` has to be below `parent`.
  *

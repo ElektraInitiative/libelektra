@@ -61,8 +61,6 @@ libelektra_0.8 {
 	keyGetBaseName;
 	keyGetBaseNameSize;
 	keyGetBinary;
-	keyGetFullName;
-	keyGetFullNameSize;
 	keyGetMeta;
 	keyGetName;
 	keyGetNameSize;
@@ -76,7 +74,6 @@ libelektra_0.8 {
 	keyIsBelowOrSame;
 	keyIsBinary;
 	keyIsDirectlyBelow;
-	keyIsInactive;
 	keyIsString;
 	keyName;
 	keyNeedSync;
@@ -123,12 +120,6 @@ libelektra_0.8 {
 	ksSetCursor;
 	ksTail;
 	ksVNew;
-
-	# kdbobsolete.h
-	keyNameGetOneLevel;
-
-	# kdbproposal.h
-	elektraKeySetName;
 };
 
 libelektra_1.0 {
@@ -161,14 +152,15 @@ libelektra_1.0 {
 libelektraprivate_1.0 {
 	# kdbprivate.h
 	elektraAbort;
-	elektraEscapeKeyNamePart;
+	elektraKeyNameEscapePart;
 	elektraGlobalError;
 	elektraGlobalGet;
 	elektraGlobalSet;
 	elektraKsPopAtCursor;
-	elektraUnescapeKeyName;
-	elektraUnescapeKeyNamePart;
-	elektraValidateKeyName;
+	elektraRenameKeys;
+	elektraKeyNameUnescape;
+	elektraKeyNameValidate;
+	elektraKeyNameCanonicalize;
 	ksRenameKeys;
 	keyClearSync;
 	keyIsDir;
@@ -176,17 +168,13 @@ libelektraprivate_1.0 {
 	keyIsSpec;
 	keyIsSystem;
 	keyIsUser;
-	keyNameIsDir;
-	keyNameIsProc;
-	keyNameIsSpec;
-	keyNameIsSystem;
-	keyNameIsUser;
 	keySetRaw;
 	elektraPluginFindGlobal;
 	elektraPluginMissing;
 	elektraPluginVersion;
 	elektraProcessPlugin;
 	elektraProcessPlugins;
+	keySetNamespace;
 
 	# kdblogger.h
 	elektraLog;

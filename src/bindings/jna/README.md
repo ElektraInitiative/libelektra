@@ -91,7 +91,7 @@ Plugin errorPlugin = pluginLoader.loadElektraPlugin("error");
 Now you can pass a KeySet and let the Plugin do its work. E.g., the code below tests if the `error` plugin.
 
 ```java
-Key errorKey = Key.create("user/tests/myError");
+Key errorKey = Key.create("user:/tests/myError");
 errorKey.setMeta(errorMeta, OutOfMemoryException.errorNumber());
 final KeySet ks = KeySet.create(10, KeySet.KS_END);
 ks.append(errorKey);
@@ -104,15 +104,15 @@ Another example is the `range` plugin which throws the equivalent Java exception
 ```java
 PluginLoader pluginLoader = new PluginLoader();
 Plugin rangePlugin = pluginLoader.loadElektraPlugin("range");
-Key rangeKey = Key.create("user/tests/myError", "30");
+Key rangeKey = Key.create("user:/tests/myError", "30");
 rangeKey.setMeta("check/range", "1-20");
 final KeySet ks = KeySet.create(10, KeySet.KS_END);
 ks.append(rangeKey);
 rangePlugin.kdbSet(ks, parentKey);
 //org.libelektra.exception.SemanticValidationException: Sorry, module range issued error C03200:
-//Value '30' of key 'user/tests/myError' not within range 1-20
-//Configfile: user/tests/javabinding
-//Mountpoint: user/tests/javabinding
+//Value '30' of key 'user:/tests/myError' not within range 1-20
+//Configfile: user:/tests/javabinding
+//Mountpoint: user:/tests/javabinding
 //At: .../elektra/src/plugins/range/range.c:447
 ```
 

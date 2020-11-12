@@ -568,7 +568,7 @@ public class Key implements Iterable<String>
 		{
 			throw new IllegalArgumentException ("other should be a key, not null");
 		}
-		return Elektra.INSTANCE.keyCmp (get (), other.get ());
+		return Integer.signum (Elektra.INSTANCE.keyCmp (get (), other.get ()));
 	}
 
 	/**
@@ -624,16 +624,6 @@ public class Key implements Iterable<String>
 			throw new IllegalArgumentException ("other should be a key, not null");
 		}
 		return Elektra.INSTANCE.keyIsDirectlyBelow (other.get (), get ()) == 1;
-	}
-
-	/**
-	 * Helper function to check if key is set to inactive
-	 *
-	 * @return Boolean if this key is inactive
-	 */
-	public boolean isInactive ()
-	{
-		return Elektra.INSTANCE.keyIsInactive (get ()) == 1;
 	}
 
 	/**

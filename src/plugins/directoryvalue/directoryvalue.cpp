@@ -33,15 +33,15 @@ namespace
 kdb::KeySet getContract ()
 {
 	return kdb::KeySet{ 30,
-			    keyNew ("system/elektra/modules/directoryvalue", KEY_VALUE, "directoryvalue plugin waits for your orders",
+			    keyNew ("system:/elektra/modules/directoryvalue", KEY_VALUE, "directoryvalue plugin waits for your orders",
 				    KEY_END),
-			    keyNew ("system/elektra/modules/directoryvalue/exports", KEY_END),
-			    keyNew ("system/elektra/modules/directoryvalue/exports/open", KEY_FUNC, elektraDirectoryValueOpen, KEY_END),
-			    keyNew ("system/elektra/modules/directoryvalue/exports/close", KEY_FUNC, elektraDirectoryValueClose, KEY_END),
-			    keyNew ("system/elektra/modules/directoryvalue/exports/get", KEY_FUNC, elektraDirectoryValueGet, KEY_END),
-			    keyNew ("system/elektra/modules/directoryvalue/exports/set", KEY_FUNC, elektraDirectoryValueSet, KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/exports", KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/exports/open", KEY_FUNC, elektraDirectoryValueOpen, KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/exports/close", KEY_FUNC, elektraDirectoryValueClose, KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/exports/get", KEY_FUNC, elektraDirectoryValueGet, KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/exports/set", KEY_FUNC, elektraDirectoryValueSet, KEY_END),
 #include ELEKTRA_README
-			    keyNew ("system/elektra/modules/directoryvalue/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
+			    keyNew ("system:/elektra/modules/directoryvalue/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END),
 			    KS_END };
 }
 
@@ -69,7 +69,7 @@ int elektraDirectoryValueGet (Plugin * handle, KeySet * returned, Key * parentKe
 	kdb::KeySet keys{ returned };
 	kdb::Key parent{ parentKey };
 
-	if (parent.getName () == "system/elektra/modules/directoryvalue")
+	if (parent.getName () == "system:/elektra/modules/directoryvalue")
 	{
 		keys.append (getContract ());
 		parent.release ();

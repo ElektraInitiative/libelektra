@@ -46,7 +46,7 @@ Increment version numbers in
 - Change VERSION variable in build-server
 
 
-export VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
+export VERSION=`kdb get system:/elektra/version/constants/KDB_VERSION`
 export DVERSION=$VERSION-1
  dch --newversion $DVERSION "New upstream version."
  git add debian/changelog
@@ -119,7 +119,7 @@ Check if [doc/todo/API] is fulfilled
 Set environment variable VERSION to current version (assumed its already locally installed) to make the
 commands below work for copy&paste:
 
- export VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
+ export VERSION=`kdb get system:/elektra/version/constants/KDB_VERSION`
 
 
 == Tag the version ==
@@ -130,7 +130,7 @@ commands below work for copy&paste:
 == Prepare Source Package ==
 
 Build tar.gz:
- export KDB_VERSION=`kdb get system/elektra/version/constants/KDB_VERSION`
+ export KDB_VERSION=`kdb get system:/elektra/version/constants/KDB_VERSION`
  # CMAKE_BINARY_DIR not working on my machine?
  export CMAKE_BINARY_DIR=/home/mpranj/workspace/libelektra/build
  cd ~build && make source-package
@@ -178,12 +178,12 @@ Run some basic commands, at least:
 
 Strace what tools are doing:
 
- strace -o ~elektra/$VERSION/mount.strace kdb mount file.ecf user/release_test
- strace -o ~elektra/$VERSION/file.strace kdb file user/release_test/b
- strace -o ~elektra/$VERSION/set.strace kdb set user/release_test/b
- strace -o ~elektra/$VERSION/get.strace kdb get user/release_test/b
- strace -o ~elektra/$VERSION/rm.strace kdb rm user/release_test/b
- strace -o ~elektra/$VERSION/umount.strace kdb umount user/release_test
+ strace -o ~elektra/$VERSION/mount.strace kdb mount file.ecf user:/release_test
+ strace -o ~elektra/$VERSION/file.strace kdb file user:/release_test/b
+ strace -o ~elektra/$VERSION/set.strace kdb set user:/release_test/b
+ strace -o ~elektra/$VERSION/get.strace kdb get user:/release_test/b
+ strace -o ~elektra/$VERSION/rm.strace kdb rm user:/release_test/b
+ strace -o ~elektra/$VERSION/umount.strace kdb umount user:/release_test
 
 Run tests:
 

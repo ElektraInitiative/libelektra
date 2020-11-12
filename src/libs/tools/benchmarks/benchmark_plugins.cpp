@@ -47,14 +47,14 @@ __attribute__ ((noinline)) void benchmark_backend ()
 	using namespace kdb::tools;
 	static Timer t (std::to_string (PLUGINS) + " mountpoint(s)");
 
-	Key mp ("system/iterate/" + std::to_string (PLUGINS), KEY_END);
+	Key mp ("system:/iterate/" + std::to_string (PLUGINS), KEY_END);
 	std::string cf = "/tmp/file" + std::to_string (PLUGINS) + ".ecf";
 	unlink (cf.c_str ());
 
 	{
 		KDB kdb;
 		KeySet mountConfig;
-		kdb.get (mountConfig, "system/elektra/mountpoints");
+		kdb.get (mountConfig, "system:/elektra/mountpoints");
 
 		Backend b;
 		b.setMountpoint (mp, KeySet (0, KS_END));
@@ -65,7 +65,7 @@ __attribute__ ((noinline)) void benchmark_backend ()
 
 		b.serialize (mountConfig);
 
-		kdb.set (mountConfig, "system/elektra/mountpoints");
+		kdb.set (mountConfig, "system:/elektra/mountpoints");
 	}
 
 	{
@@ -75,7 +75,7 @@ __attribute__ ((noinline)) void benchmark_backend ()
 		for (int i = 0; i < nr_keys; ++i)
 		{
 			// clang-format off
-			ks.append (Key ("system/iterate/" + std::to_string (i%10) + "/" + std::to_string (i/10),
+			ks.append (Key ("system:/iterate/" + std::to_string (i%10) + "/" + std::to_string (i/10),
 					KEY_VALUE, "value",
 					KEY_META, "iterate", "value",
 					KEY_META, "iterate0", "value",

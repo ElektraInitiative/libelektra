@@ -36,25 +36,25 @@ if is_plugin_available hosts; then
 fi
 
 UNAME_FILE=${FILE_SUFFIX}_uname
-UNAME_MOUNTPOINT=system/test/script/sys/uname
+UNAME_MOUNTPOINT=system:/test/script/sys/uname
 if is_plugin_available uname; then
 	touch "$SYSTEM_FOLDER/$UNAME_FILE"
 	"$KDB" mount $UNAME_FILE $UNAME_MOUNTPOINT uname
 	succeed_if "could not mount uname: $UNAME_FILE at $UNAME_MOUNTPOINT"
 
 	# following keys must exist:
-	"$KDB" ls $UNAME_MOUNTPOINT | grep "system/test/script/sys/uname/machine"
+	"$KDB" ls $UNAME_MOUNTPOINT | grep "system:/test/script/sys/uname/machine"
 	succeed_if "machine key missing"
-	"$KDB" ls $UNAME_MOUNTPOINT | grep "system/test/script/sys/uname/nodename"
+	"$KDB" ls $UNAME_MOUNTPOINT | grep "system:/test/script/sys/uname/nodename"
 	succeed_if "nodename key missing"
-	"$KDB" ls $UNAME_MOUNTPOINT | grep "system/test/script/sys/uname/release"
+	"$KDB" ls $UNAME_MOUNTPOINT | grep "system:/test/script/sys/uname/release"
 	succeed_if "release key missing"
-	"$KDB" ls $UNAME_MOUNTPOINT | grep "system/test/script/sys/uname/sysname"
+	"$KDB" ls $UNAME_MOUNTPOINT | grep "system:/test/script/sys/uname/sysname"
 	succeed_if "sysname key missing"
-	"$KDB" ls $UNAME_MOUNTPOINT | grep "system/test/script/sys/uname/version"
+	"$KDB" ls $UNAME_MOUNTPOINT | grep "system:/test/script/sys/uname/version"
 	succeed_if "version key missing"
 
-	"$KDB" get "system/test/script/sys/uname/machine"
+	"$KDB" get "system:/test/script/sys/uname/machine"
 	succeed_if "could not get machine key"
 fi
 
@@ -71,53 +71,53 @@ if is_plugin_available yajl && is_plugin_available directoryvalue; then
 	"$KDB" mount $DESKTOP_FILE $DESKTOP_MOUNTPOINT yajl
 	succeed_if "could not mount DESKTOP: $DESKTOP_FILE at $DESKTOP_MOUNTPOINT"
 
-	check_set_rm system/test/script/apps/desktop/x y
-	check_set_rm user/test/script/apps/desktop/x y
+	check_set_rm system:/test/script/apps/desktop/x y
+	check_set_rm user:/test/script/apps/desktop/x y
 fi
 
 if is_plugin_available dump; then
 	"$KDB" mount | grep "test_real_world_root.ecf on /test/script"
 	succeed_if "mountpoint $ROOT_MOUNTPOINT missing"
 
-	check_set_rm system/test/script/next/key value
-	check_set_rm user/test/script/next/key value
+	check_set_rm system:/test/script/next/key value
+	check_set_rm user:/test/script/next/key value
 fi
 
 if is_plugin_available ni; then
 	"$KDB" mount | grep "test_real_world_sys.ni on /test/script/sys"
 	succeed_if "mountpoint $SYS_MOUNTPOINT missing"
 
-	check_set_rm system/test/script/sys/next/key value
-	check_set_rm user/test/script/sys/next/key value
+	check_set_rm system:/test/script/sys/next/key value
+	check_set_rm user:/test/script/sys/next/key value
 
-	check_set_mv_rm system/test/script/sys/next/key user/test/script/next/key myvalue
+	check_set_mv_rm system:/test/script/sys/next/key user:/test/script/next/key myvalue
 fi
 
 if is_plugin_available hosts; then
 	"$KDB" mount | grep "test_real_world_hosts on /test/script/sys/hosts"
 	succeed_if "mountpoint $HOSTS_MOUNTPOINT missing"
 
-	check_set_rm system/test/script/sys/hosts/ipv4/localhost 127.0.0.1
-	check_set_rm user/test/script/sys/hosts/ipv4/localhost 127.0.0.1
+	check_set_rm system:/test/script/sys/hosts/ipv4/localhost 127.0.0.1
+	check_set_rm user:/test/script/sys/hosts/ipv4/localhost 127.0.0.1
 
-	check_set_rm system/test/script/sys/hosts/ipv6/localhost ::1
-	check_set_rm user/test/script/sys/hosts/ipv6/localhost ::1
+	check_set_rm system:/test/script/sys/hosts/ipv6/localhost ::1
+	check_set_rm user:/test/script/sys/hosts/ipv6/localhost ::1
 
-	check_set_mv_rm user/test/script/sys/hosts/ipv4/localhost system/test/script/sys/hosts/ipv4/localhost 127.0.0.1
+	check_set_mv_rm user:/test/script/sys/hosts/ipv4/localhost system:/test/script/sys/hosts/ipv4/localhost 127.0.0.1
 
-	check_set_mv_rm user/test/script/sys/hosts/ipv4/localhost system/test/script/sys/next/key 127.0.0.1
+	check_set_mv_rm user:/test/script/sys/hosts/ipv4/localhost system:/test/script/sys/next/key 127.0.0.1
 fi
 
 if is_plugin_available simpleini; then
 	"$KDB" mount | grep "test_real_world_apps.ini on /test/script/apps"
 	succeed_if "mountpoint $APPS_MOUNTPOINT missing"
 
-	check_set_rm system/test/script/apps/next/x y
-	check_set_rm user/test/script/apps/next/x y
-	check_set_mv_rm user/test/script/apps/next/x/x/y system/test/script/sys/hosts/ipv4/localhost 127.0.0.1
+	check_set_rm system:/test/script/apps/next/x y
+	check_set_rm user:/test/script/apps/next/x y
+	check_set_mv_rm user:/test/script/apps/next/x/x/y system:/test/script/sys/hosts/ipv4/localhost 127.0.0.1
 
-	check_set_rm system/test/script/apps/next/x/a/b y
-	check_set_rm user/test/script/apps/next/x/x/y y
+	check_set_rm system:/test/script/apps/next/x/a/b y
+	check_set_rm user:/test/script/apps/next/x/x/y y
 fi
 
 if is_plugin_available yajl && is_plugin_available directoryvalue; then

@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-MOUNT" "1" "October 2019" "" ""
+.TH "KDB\-MOUNT" "1" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-mount\fR \- Mount a file to the key database
@@ -38,7 +38,7 @@ This command allows a user to persistently mount a new \fIbackend\fR\. Mounting 
 A backend acts as a worker to allow Elektra to interpret configuration files as keys in the central key database such that any edits to the keys are reflected in the file and vice versa\. Additionally, the user can use this command to list the currently mounted backends by running the command with no arguments\. More about mounting is explained in elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.
 .
 .SH "IMPORTANT"
-This command writes into the \fB/etc\fR directory to make the mounting persistent\. As such it requires root permissions\. Use \fBkdb file system/elektra/mountpoints\fR to find out where exactly it will write to\.
+This command writes into the \fB/etc\fR directory to make the mounting persistent\. As such it requires root permissions\. Use \fBkdb file system:/elektra/mountpoints\fR to find out where exactly it will write to\.
 .
 .P
 Absolute paths are still relative to their namespace (see \fBkdb plugin\-info resolver\fR)\. Only system+spec mount points are actually absolute\. Read elektra\-namespaces(7) \fIelektra\-namespaces\.md\fR for further information\.
@@ -125,7 +125,7 @@ To list the currently mounted backends:
 To mount a system configuration file using the ini format:
 .
 .br
-\fBkdb mount /etc/configuration\.ini system/example ini\fR
+\fBkdb mount /etc/configuration\.ini system:/example ini\fR
 .
 .P
 Print a null\-terminated output of paths and backend names:
@@ -137,19 +137,19 @@ Print a null\-terminated output of paths and backend names:
 To mount the /etc/file system file with two plugins with a respective configuration option each:
 .
 .br
-\fBkdb mount /etc/file system/file plugin1 plugin1config=config1 plugin2 plugin2config=config2\fR
+\fBkdb mount /etc/file system:/file plugin1 plugin1config=config1 plugin2 plugin2config=config2\fR
 .
 .P
 To mount the /etc/file system file with two plugins and setting both to be verbose:
 .
 .br
-\fBkdb mount \-c verbose=1 /etc/file system/file plugin1 plugin2\fR
+\fBkdb mount \-c verbose=1 /etc/file system:/file plugin1 plugin2\fR
 .
 .P
 To recode and rename a configuration file using Elektra:
 .
 .br
-\fBkdb mount recode\.txt dir/recode ni rename cut=path iconv to=utf8,from=latin1\fR
+\fBkdb mount recode\.txt dir:/recode ni rename cut=path iconv to=utf8,from=latin1\fR
 .
 .SH "SEE ALSO"
 .

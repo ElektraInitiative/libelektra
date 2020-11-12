@@ -16,15 +16,15 @@
 
 #include "hexnumber.h"
 
-#define CREATE_TEST_KEY(HEX) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", "long", KEY_END))
-#define CREATE_TEST_KEY_UNITBASE(HEX) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "unit/base", "hex", KEY_END))
-#define CREATE_TEST_KEY_CUSTOM(HEX, TYPE) (keyNew ("user/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", TYPE, KEY_END))
-#define CHECK_TEST_KEY(HEX, DEC) succeed_if_same_string (keyString (ksLookupByName (ks, "user/tests/hexnumber/" #HEX, 0)), #DEC)
+#define CREATE_TEST_KEY(HEX) (keyNew ("user:/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", "long", KEY_END))
+#define CREATE_TEST_KEY_UNITBASE(HEX) (keyNew ("user:/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "unit/base", "hex", KEY_END))
+#define CREATE_TEST_KEY_CUSTOM(HEX, TYPE) (keyNew ("user:/tests/hexnumber/" #HEX, KEY_VALUE, #HEX, KEY_META, "type", TYPE, KEY_END))
+#define CHECK_TEST_KEY(HEX, DEC) succeed_if_same_string (keyString (ksLookupByName (ks, "user:/tests/hexnumber/" #HEX, 0)), #DEC)
 
 
 static void test_basics (void)
 {
-	Key * parentKey = keyNew ("user/tests/hexnumber", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hexnumber", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("hexnumber");
 
@@ -42,7 +42,7 @@ static void test_basics (void)
 
 static void test_default (void)
 {
-	Key * parentKey = keyNew ("user/tests/hexnumber", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hexnumber", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("hexnumber");
 	KeySet * ks = ksNew (30, CREATE_TEST_KEY (0xF), CREATE_TEST_KEY (0xf), CREATE_TEST_KEY (0x14), CREATE_TEST_KEY (0xFFFFFFFFFFFFFFFF),
@@ -67,9 +67,9 @@ static void test_default (void)
 
 static void test_customint (void)
 {
-	Key * parentKey = keyNew ("user/tests/hexnumber", KEY_END);
-	KeySet * conf = ksNew (10, keyNew ("system/accept/type/#0", KEY_VALUE, "customint", KEY_END),
-			       keyNew ("system/accept/type/#1", KEY_VALUE, "othercustomint", KEY_END), KS_END);
+	Key * parentKey = keyNew ("user:/tests/hexnumber", KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("system:/accept/type/#0", KEY_VALUE, "customint", KEY_END),
+			       keyNew ("system:/accept/type/#1", KEY_VALUE, "othercustomint", KEY_END), KS_END);
 	PLUGIN_OPEN ("hexnumber");
 	KeySet * ks = ksNew (30, CREATE_TEST_KEY_CUSTOM (0x1F, "customint"), CREATE_TEST_KEY_CUSTOM (0xFF, "othercustomint"),
 			     CREATE_TEST_KEY_CUSTOM (0x22, "string"), CREATE_TEST_KEY_CUSTOM (0x11, "long"), KS_END);
@@ -87,7 +87,7 @@ static void test_customint (void)
 
 static void test_unitbase (void)
 {
-	Key * parentKey = keyNew ("user/tests/hexnumber", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/hexnumber", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("hexnumber");
 	KeySet * ks = ksNew (30, CREATE_TEST_KEY_UNITBASE (0x1F), CREATE_TEST_KEY_UNITBASE (0xFF), KS_END);
@@ -103,9 +103,9 @@ static void test_unitbase (void)
 
 static void test_force (void)
 {
-	Key * parentKey = keyNew ("user/tests/hexnumber", KEY_END);
-	KeySet * conf = ksNew (10, keyNew ("system/integertypes", KEY_VALUE, "customint;othercustomint", KEY_END),
-			       keyNew ("system/force", KEY_VALUE, "1", KEY_END), KS_END);
+	Key * parentKey = keyNew ("user:/tests/hexnumber", KEY_END);
+	KeySet * conf = ksNew (10, keyNew ("system:/integertypes", KEY_VALUE, "customint;othercustomint", KEY_END),
+			       keyNew ("system:/force", KEY_VALUE, "1", KEY_END), KS_END);
 	PLUGIN_OPEN ("hexnumber");
 	KeySet * ks = ksNew (30, CREATE_TEST_KEY_CUSTOM (0x1F, "customint"), CREATE_TEST_KEY_CUSTOM (0xFF, "othercustomint"),
 			     CREATE_TEST_KEY_CUSTOM (0x22, "string"), KS_END);

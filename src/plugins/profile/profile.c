@@ -44,19 +44,25 @@ static Key * keyDupWithNS (const Key * origKey, elektraNamespace ns)
 	switch (ns)
 	{
 	case KEY_NS_SPEC:
-		newKey = keyNew ("spec", KEY_END);
+		newKey = keyNew ("spec:/", KEY_END);
 		break;
 	case KEY_NS_DIR:
-		newKey = keyNew ("dir", KEY_END);
+		newKey = keyNew ("dir:/", KEY_END);
 		break;
 	case KEY_NS_USER:
-		newKey = keyNew ("user", KEY_END);
+		newKey = keyNew ("user:/", KEY_END);
 		break;
 	case KEY_NS_SYSTEM:
-		newKey = keyNew ("system", KEY_END);
+		newKey = keyNew ("system:/", KEY_END);
 		break;
 	case KEY_NS_PROC:
-		newKey = keyNew ("proc", KEY_END);
+		newKey = keyNew ("proc:/", KEY_END);
+		break;
+	case KEY_NS_META:
+		newKey = keyNew ("meta:/", KEY_END);
+		break;
+	case KEY_NS_DEFAULT:
+		newKey = keyNew ("default:/", KEY_END);
 		break;
 	case KEY_NS_CASCADING:
 	default:
@@ -160,18 +166,18 @@ static void linkDefaultKeys (KeySet * swKS, KeySet * profileParents, KeySet * ap
 
 int elektraProfileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/profile"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/profile"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/profile", KEY_VALUE, "profile plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/profile/exports", KEY_END),
-			       keyNew ("system/elektra/modules/profile/exports/open", KEY_FUNC, elektraProfileOpen, KEY_END),
-			       keyNew ("system/elektra/modules/profile/exports/close", KEY_FUNC, elektraProfileClose, KEY_END),
-			       keyNew ("system/elektra/modules/profile/exports/get", KEY_FUNC, elektraProfileGet, KEY_END),
-			       keyNew ("system/elektra/modules/profile/exports/set", KEY_FUNC, elektraProfileSet, KEY_END),
-			       keyNew ("system/elektra/modules/profile/exports/error", KEY_FUNC, elektraProfileError, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/profile", KEY_VALUE, "profile plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports/open", KEY_FUNC, elektraProfileOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports/close", KEY_FUNC, elektraProfileClose, KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports/get", KEY_FUNC, elektraProfileGet, KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports/set", KEY_FUNC, elektraProfileSet, KEY_END),
+			       keyNew ("system:/elektra/modules/profile/exports/error", KEY_FUNC, elektraProfileError, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system/elektra/modules/profile/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/profile/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

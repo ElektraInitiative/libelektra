@@ -340,7 +340,7 @@ First you need to mount your specification itself into the KDB. Mounting is basi
 the KDB, similar to how mounting an external hard drive informs the OS about a new part of the file system.
 
 ```sh
-sudo kdb mount -R noresolver /etc/myapp_spec.eqd "spec/sw/example/myapp/#0/current" specload app="$PWD/myapp"
+sudo kdb mount -R noresolver /etc/myapp_spec.eqd "spec:/sw/example/myapp/#0/current" specload app="$PWD/myapp"
 ```
 
 The command above assumes that you also used the `kdb gen` command from [above](#invoking-the-code-generator) and that the `myapp` executable

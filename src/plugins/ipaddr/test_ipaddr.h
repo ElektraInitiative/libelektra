@@ -34,9 +34,9 @@
 
 static void testIP (char const * const ip, const int ret, char const * const version)
 {
-	Key * parentKey = keyNew ("user/tests/ipaddr", KEY_VALUE, "", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/ipaddr", KEY_VALUE, "", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (10, keyNew ("user/test/ipaddr/totest", KEY_VALUE, ip, KEY_META, "check/ipaddr", version, KEY_END), KS_END);
+	KeySet * ks = ksNew (10, keyNew ("user:/test/ipaddr/totest", KEY_VALUE, ip, KEY_META, "check/ipaddr", version, KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	const int pluginStatus = plugin->kdbSet (plugin, ks, parentKey);
 	char message[200];

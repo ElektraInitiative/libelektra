@@ -70,45 +70,45 @@ The other strategies are implemented by the merge framework and are documented i
 
 ## EXAMPLES
 
-To import a configuration stored in the XML format in a file called `example.xml` below `user/keyset`:<br>
-`kdb import user/keyset xmltool < example.xml`
+To import a configuration stored in the XML format in a file called `example.xml` below `user:/keyset`:<br>
+`kdb import user:/keyset xmltool < example.xml`
 
-To import a configuration stored in the `ini` format in a file called `example.ini` below `user/keyset` replacing any previous keys stored there:<br>
-`cat example.ini | kdb import -s cut user/keyset ini`
+To import a configuration stored in the `ini` format in a file called `example.ini` below `user:/keyset` replacing any previous keys stored there:<br>
+`cat example.ini | kdb import -s cut user:/keyset ini`
 
-To import a configuration stored in the `ini` format in a file called `example.ini` below `user/keyset` keeping any previous keys stored there that aren't present in the newly imported configuration:<br>
-`cat example.ini | kdb import -s import user/keyset ini`
+To import a configuration stored in the `ini` format in a file called `example.ini` below `user:/keyset` keeping any previous keys stored there that aren't present in the newly imported configuration:<br>
+`cat example.ini | kdb import -s import user:/keyset ini`
 
-To restore a backup (stored as `sw.ecf`) of a user's configuration below `system/sw`:<br>
-`cat sw.ecf | kdb import system/sw`
+To restore a backup (stored as `sw.ecf`) of a user's configuration below `system:/sw`:<br>
+`cat sw.ecf | kdb import system:/sw`
 
 To import a sample `xml` content with the `xerces` plugin:
 
 ```sh
 # import two keys from a xml string
-kdb import user/tests/kdb-import/ xerces <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
+kdb import user:/tests/kdb-import/ xerces <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/kdb-import/one
+kdb get user:/tests/kdb-import/one
 #> one
-kdb get user/tests/kdb-import/two
+kdb get user:/tests/kdb-import/two
 #> two
-kdb rm -r user/tests/kdb-import
+kdb rm -r user:/tests/kdb-import
 ```
 
 To import a sample `xml` content via specifying the file format directly:
 
 ```sh
 # import two keys from a xml string
-kdb import user/tests/kdb-import/ xml <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
+kdb import user:/tests/kdb-import/ xml <<< "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?><kdb-import><one>one</one><two>two</two></kdb-import>"
 
 # get the values and verify they got imported correctly
-kdb get user/tests/kdb-import/one
+kdb get user:/tests/kdb-import/one
 #> one
-kdb get user/tests/kdb-import/two
+kdb get user:/tests/kdb-import/two
 #> two
 
-kdb rm -r user/tests/kdb-import
+kdb rm -r user:/tests/kdb-import
 ```
 
 ## SEE ALSO

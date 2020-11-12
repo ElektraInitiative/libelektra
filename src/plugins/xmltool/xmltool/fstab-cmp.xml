@@ -1,23 +1,23 @@
 <keyset>
-<key name="user/tests/fstab/rootfs"
+<key name="user:/tests/fstab/rootfs"
         mode="0775"/>
 
-<key name="user/tests/fstab/rootfs/device"
+<key name="user:/tests/fstab/rootfs/device"
         mode="0664"
 	value="LABEL=/"/>
-<key name="user/tests/fstab/rootfs/dumpfreq"
+<key name="user:/tests/fstab/rootfs/dumpfreq"
         mode="0664"
 	value="1"/>
-<key name="user/tests/fstab/rootfs/mpoint"
+<key name="user:/tests/fstab/rootfs/mpoint"
         mode="0664"
 	value="/"/>
-<key name="user/tests/fstab/rootfs/options"
+<key name="user:/tests/fstab/rootfs/options"
         mode="0664"
 	value="defaults"/>
-<key name="user/tests/fstab/rootfs/passno"
+<key name="user:/tests/fstab/rootfs/passno"
         mode="0664"
 	value="1"/>
-<key name="user/tests/fstab/rootfs/type"
+<key name="user:/tests/fstab/rootfs/type"
         mode="0664"
 	value="ext3"/>
 </keyset>

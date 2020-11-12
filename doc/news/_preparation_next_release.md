@@ -25,11 +25,23 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- Important Changes to Keynames
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-### <<HIGHLIGHT1>>
+### Important Changes to Keynames
+
+There have been significant changes to Elektra's Keynames.
+The most important change is that you now need a `:` after the namespace.
+So instead of `system/elektra/version` you have to use `system:/elektra/version`.
+
+The second big change is to array elements.
+From now on `keyNew ("/array/#10", KEY_END)` will create a `Key` with name `/array/#_10`, to make arrays more user-friendly while preserving numerical ordering.
+
+The whole internal implementation for `keySetName`, `keyAddName`, etc. has been completely rewritten.
+If you rely on specific behaviour of Elektra's Keynames and have already taken the two changes above into account, please refer to the newly created [Keyname documentation](../keynames) and (easier to read) [Python reference implementation](../keynames/keynames.py).
+
+<!-- TODO (kodebach): finish -->
 
 ### <<HIGHLIGHT2>>
 
@@ -47,11 +59,9 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Fix rare memleak when the `jni` plugin is closed. _(Mihael Pranjić)_
 
-### <<Plugin2>>
+### Quickdump
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Support for the old quickdump v1 and v2 formats has been removed. _(Klemens Böswirth)_
 
 ### <<Plugin3>>
 

@@ -58,7 +58,7 @@ To build Elektra with the elektra-web tool:
 
 If you do not want to configure multiple instances, you can set the `INSTANCE`
 environment variable to the server you want to configure. You can also set
-`user/sw/elektra/web/#0/current/instance` to the host. Make sure to enter a full
+`user:/sw/elektra/web/#0/current/instance` to the host. Make sure to enter a full
 HTTP URL, e.g. `http://localhost:33333`.
 
 If this configuration option is set, elektra-web will load the configuration
@@ -137,18 +137,18 @@ After that, the created shell script can be executed from any directory.
 
 Examples:
 
-let's create the new key-value pair `user/test` and set its value to 5. You can do it next way:
+let's create the new key-value pair `user:/test` and set its value to 5. You can do it next way:
 
 - through the command terminal
   ```sh
-  kdb set user/test 5
+  kdb set user:/test 5
   ```
 - through the rest api using curl
   ```sh
   curl -X PUT -H "Content-Type: text/plain" --data "5" http://localhost:33333/kdb/user/test
   ```
 
-The output of the commandline tool will be: `Set string to "5"`. If the specified key didn't exist before, then the output will be `Create a new key user/test with string "5"`. Elektrad will respond with code `200`.
+The output of the commandline tool will be: `Set string to "5"`. If the specified key didn't exist before, then the output will be `Create a new key user:/test with string "5"`. Elektrad will respond with code `200`.
 
 Now, the command
 
@@ -156,7 +156,7 @@ Now, the command
 curl http://localhost:33333/kdb/user/test
 ```
 
-will return us the value of the specified key `user/test`, which is stored in the database right now
+will return us the value of the specified key `user:/test`, which is stored in the database right now
 
 <!-- prettier-ignore-start -->
 
@@ -164,9 +164,9 @@ will return us the value of the specified key `user/test`, which is stored in th
 {
     "exists": true,
     "name": "test",
-    "path": "user/test",
+    "path": "user:/test",
     "ls": [
-        "user/test"
+        "user:/test"
     ],
     "value": "5",
     "meta": ""

@@ -2,7 +2,7 @@
 <keyset xmlns="https://www.libelektra.org"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://www.libelektra.org elektra.xsd"
-	parent = "user/tests/fstab"
+	parent = "user:/tests/fstab"
 	>
 
 	<key basename="rootfs">
