@@ -1,4 +1,4 @@
-#!/bin/python3
+#!/usr/bin/env python3
 
 """
 This file contains a reference implementation of Elektra's Key Name processing.
@@ -21,10 +21,39 @@ from enum import Enum
 
 import argparse
 
-# Enum for Elektra's Namespaces. Values are used as the first byte in Unescaped Names.
+
+def check_array_part(part: str) -> Tuple[bool, Optional[str]]:
+    """
+    Checks whether `part` is a valid Array Part.
+
+    If so, the tuple `(True, digits)` is returned where `digits` is a string
+    containing the digits part of the Array Part, i.e. the part after the `#` and any `_`.
+    Otherwise the tuple `(False, None)` is returned.
+    """
+    underscores = sum(
+        1 for _ in takewhile(lambda x: x == "_", part[1:])
+    )
+    digits = part[underscores + 1:]
+
+    if any(not x.isdigit() for x in digits):
+        return False, None
+
+    if underscores > 0 and underscores != len(digits) - 1:
+        return False, None
+
+    if len(digits) > 19 or (len(digits) == 19 and digits > "9223372036854775807"):
+        return False, None
+
+    if len(digits) > 1 and digits[0] == "0":
+        return False, None
+
+    return True, digits
 
 
 class Namespace(Enum):
+    """
+    Enum for Elektra's Namespaces. Values are used as the first byte in Unescaped Names.
+    """
     CASCADING = 1
     META = 2
     SPEC = 3
@@ -36,7 +65,7 @@ class Namespace(Enum):
 
 
 # String names for the Namespaces
-NAMESPACES = set(["meta", "spec", "proc", "dir", "user", "system", "default"])
+NAMESPACES = {"meta", "spec", "proc", "dir", "user", "system", "default"}
 
 # Map between string Namespaces and enum values
 NAMESPACES_MAP = {
@@ -50,10 +79,17 @@ NAMESPACES_MAP = {
 }
 
 # Characters that can be escaped anywhere in a Key Name Part
-ESCAPES = set(["/", "\\"])
+ESCAPES = {"/", "\\"}
 
-# Characters that can ONLY be escaped at at the start of a Key Name Part
-ESCAPES_START = set(list(ESCAPES) + [".", "#", "%", "@"])
+# Characters that can be escaped under special conditions
+# The value in the dictionary is a function that will be called
+# with the Key Name Part that contained the escape sequence.
+# The function should return True, iff the escape sequence is valid.
+ESCAPES_SPECIAL = {
+    ".": lambda part: re.match(r"^\\\.{1,2}$", part),
+    "#": lambda part: part[0] == "\\" and check_array_part(part[1:])[0],
+    "%": lambda part: re.match(r"^\\%$", part),
+}
 
 
 # This RegEx defines what a Key Name Part can be.
@@ -155,7 +191,7 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
     # The second element is either None, meaning this part will be skipped when creating the final Key Name or a str, i.e. a canonical Key Name Part.
     key_parts: List[Tuple[Match[str], Optional[str]]] = []
 
-    for (index, part) in enumerate(parts):
+    for index, part in enumerate(parts):
         full_part = part.group(0)
         leading_slashes = len(part.group('leadingSlashes'))
         actual_part = part.group('content')
@@ -171,7 +207,7 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
                 file=sys.stderr
             )
 
-        # If this is the last part and we have no content, we are done. A trailing slashes are explicitly allowed.
+        # If this is the last part and we have no content, we are done. A trailing slash is explicitly allowed.
         if index == part_count - 1:
             if len(actual_part) == 0:
                 if verbose:
@@ -185,16 +221,13 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
         for esc in ESCAPE_REGEX.finditer(actual_part):
             escape = esc.group(1)
 
-            # At the start of the Key Name Part, different characters can be escaped.
-            if esc.start(0) == 0:
-                if escape not in ESCAPES_START:
-                    raise KeyNameException(
-                        f"Illegal escape sequence '{escape}' at start of part. " +
-                        f"Invalid part '{full_part}' ({part_start}:{part_end})."
-                    )
-            elif escape not in ESCAPES:
+            escape_valid = escape in ESCAPES or (
+                escape in ESCAPES_SPECIAL and
+                ESCAPES_SPECIAL[escape](actual_part)
+            )
+            if not escape_valid:
                 raise KeyNameException(
-                    f"Illegal escape sequence '{escape}' (inside part). " +
+                    f"Illegal escape sequence '\\{escape}'. " +
                     f"Invalid part '{full_part}' ({part_start}:{part_end})."
                 )
 
@@ -205,18 +238,18 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
                     f"[DEBUG] skipping part '.' ({part_start}:{part_end})",
                     file=sys.stderr
                 )
-
-            # But we need to keep it for know, because `..` parts can remove `.` as well.
-            key_parts.append((part, None))
         elif actual_part == "..":
             # A `..` removes a part from the canonical Key Name, so we need to check if there is a part left.
+            # If there is no part left, `..` behaves like `.`
             if len(key_parts) == 0:
-                raise KeyNameException(
-                    "Found part '..' but no more parts left to remove."
+                print(
+                    f"[DEBUG] ignoring additional part '..' ({part_start}:{part_end})",
+                    file=sys.stderr
                 )
+                continue
 
             if verbose:
-                (previous_part, _) = key_parts[-1]
+                previous_part, _ = key_parts[-1]
                 full_previous_part = previous_part.group(0)
                 previous_start = previous_part.start(0) + namespace_offset
                 previous_end = previous_part.end(0) + namespace_offset
@@ -227,69 +260,31 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
                 )
 
             key_parts.pop()
-        elif actual_part[0] == "@":
-            # Key Name Parts starting with `@` are reserved and make Key Names invalid.
-            raise KeyNameException(
-                f"Parts starting with '@' are reserved and makes the name invalid. " +
-                f"Invalid part: '{full_part}' ({part_start}:{part_end})"
-            )
         elif actual_part[0] == "#":
-            # This is an Array part, so we need to validate the structure.
-            # For more details, look at the KeyNameException messages.
-            underscores = sum(1 for _ in takewhile(
-                lambda x: x == "_", actual_part[1:]))
-            digits = actual_part[underscores + 1:]
+            # This may be an Array part, so we need to check the structure.
+            valid, digits = check_array_part(actual_part)
 
-            if any(not x.isdigit() for x in digits):
-                raise KeyNameException(
-                    f"Array parts (starting with '#') may only contain underscores ('_') and digits ('0'-'9'). " +
-                    f"Invalid part: '{full_part}' ({part_start}:{part_end})"
-                )
-
-            if underscores > 0 and underscores != len(digits) - 1:
-                raise KeyNameException(
-                    f"Array parts (starting with '#') must consist of either only digits ('0'-'9') or " +
-                    f"exactly N underscores ('_') followed by exactly N-1 digits ('0'-'9'). " +
-                    f"Invalid part: '{full_part}' ({part_start}:{part_end})"
-                )
-
-            if len(digits) > 19 or (len(digits) == 19 and digits > "9223372036854775807"):
-                raise KeyNameException(
-                    f"The maximum array index is 9223372036854775807 (2^64 - 1). " +
-                    f"Invalid part: '{full_part}' ({part_start}:{part_end})"
-                )
-
-            if len(digits) > 1 and digits[0] == "0":
-                raise KeyNameException(
-                    f"Array indices cannot start with a '0'. " +
-                    f"Invalid part: '{full_part}' ({part_start}:{part_end})"
-                )
+            if not valid:
+                key_parts.append((part, actual_part))
+                continue
 
             # The canonical version of an Array Part always has the underscores.
-            key_parts.append((part, f"#{'_' * (len(digits) - 1)}{digits}"))
-        elif actual_part[0] == "_":
-            # Parts starting with `_` are reserved, ...
+            canonical_part = f"#{'_' * (len(digits) - 1)}{digits}"
+
             if verbose:
                 print(
-                    f"[DEBUG] part starting with '_' is reserved for special use. " +
-                    f"The part may have unintended meaning '{full_previous_part}' ({part_start}:{part_end})",
+                    f"[DEBUG] found array part '{full_part}'" +
+                    f" canoncalized to '{canonical_part}' ({part_start}:{part_end})",
                     file=sys.stderr
                 )
 
-            # ... but do not make Key Names invalid.
-            key_parts.append((part, actual_part))
+            key_parts.append((part, canonical_part))
         elif actual_part[0] == "%":
             # Parts starting with `%` are reserved, ...
             if verbose:
                 if len(actual_part) == 1:
                     print(
                         f"[DEBUG] part '%' represents empty part ({part_start}:{part_end})",
-                        file=sys.stderr
-                    )
-                else:
-                    print(
-                        f"[DEBUG] part starting with '%' is reserved for special use. " +
-                        f"The part may have unintended meaning '{full_previous_part}' ({part_start}:{part_end})",
                         file=sys.stderr
                     )
 
@@ -440,21 +435,21 @@ if __name__ == "__main__":
             if args.verbose:
                 print(f"[DEBUG] canonical version of name: {key_canonical}")
 
-            (namespace, unescaped) = unescape(
+            namespace, unescaped = unescape(
                 key_canonical,
                 verbose=args.verbose
             )
 
             if args.raw:
                 sys.stdout.buffer.write(
-                    bytes(namespace.value) +
+                    bytes([namespace.value]) +
                     b"\0" +
                     b"\0".join(bytes(p, encoding="utf-8") for p in unescaped) +
                     b"\0"
                 )
             elif args.python_bytes:
                 print(
-                    bytes(namespace.value) +
+                    bytes([namespace.value]) +
                     b"\0" +
                     b"\0".join(bytes(p, encoding="utf-8") for p in unescaped) +
                     b"\0"

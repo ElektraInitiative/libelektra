@@ -38,6 +38,7 @@ nbproject/
 
 #ignore pyc files
 *.pyc
+__pycache__
 
 #ignore CLion project files
 ## User-specific stuff

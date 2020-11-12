@@ -184,7 +184,7 @@ Given two Key Names with identical Key Name Parts, but one with Namespace "Dir" 
 
 A special feature of Elektra is _Namespace Resolution_ (sometimes just Name Resolution, or Key Name Resolution).
 Namespace Resolution is the process of finding an appropriate Namespace for a Key based on a Key Name with Namespace "Cascading".
-It is most commonly used, when you to find which Key in the KDB should be used, based on a series of Key Name Parts.
+It is most commonly used, when you need to find which Key in the KDB should be used, based on a series of Key Name Parts.
 
 To resolve the namespace, we just look at each of the Namespaces in the ranking defined above.
 We then use the first Namespace where the Key actually exists.
@@ -235,15 +235,16 @@ This means "elektra/version" is a Key Name Part as well.
 Since the slash `/` would conflict with the Part Separator, we can escape it with a backslash `\` (and `\` can be escaped with another `\`):
 
 ```
-/elektra\/version\\/info
+/elektra\/version/info/back\\slash
 ```
 
 This can be deconstructed into:
 
 - A Part Separator: `/`
-- A Key Name Part: `elektra/version\`
+- A Key Name Part: `elektra/version`
 - A Part Separator: `/`
 - A Key Name Part: `info`
+- A Key Name Part: `back\slash`
 - An invisible null terminator
 
 > _Note:_ When talking about a single Key Name Part `/` and `\` are never escaped.
@@ -274,22 +275,19 @@ Let's look at a few examples to get a feeling for Canonical and Non-Canonical Ke
 | `/elektra/.././version` | `/version`         |
 | `/elektra///version`    | `/elektra/version` |
 | `/elektra//../version`  | `/version`         |
-| `/elektra/./../version` | `/elektra/version` |
+| `/elektra/./../version` | `/version`         |
+| `/elektra/../../`       | `/`                |
+| `user:/elektra/../../`  | `user:/`           |
 | `/elektra/version/`     | `/elektra/version` |
 
-So far this mostly follows, what we know from Unix paths.
-However, the last two examples are somewhat different.
+As you can see, the behaviour of `.` and `..` matches that of Unix paths as long as we are using the Namesapce "Cascading".
+The Namespace of a Key Name can never be changed via `..`, so `user:/..` is equivalent to `user:/`.
 
-First, in Unix `/elektra/./../version` would be the same as `/version`, because `.` is just skipped and `..` removes `elektra`.
-But in Elektra, we evaluate `..` first and only then skip `.`.
-`/elektra/./../version` is the same as `/elektra/version`, because `..` remove `.`.
-
-<!-- TODO: change to match Unix -->
-
-The last example is not as different, in Unix such paths would also refer to the same file.
-However, in some Unix tools, a trailing slash alters the behavior of the tool.
+There is also a small difference in the last example.
+In Unix such paths would also refer to the same file, but in some Unix tools a trailing slash alters the behavior of the tool.
 In Elektra this is never the case.
 `/elektra/version/` and `/elektra/version` refer to the same Key and are always treated as the same Key Name.
+
 The only exception are the Root Keys.
 The Canonical Key Names for the Root Keys always end with a `/`.
 In fact, we will see [later](#4-valid-and-invalid-key-names), that removing the `/` makes the Key Name invalid.
@@ -310,23 +308,11 @@ A few examples for Array Parts:
 ### 2.2. Other Escape Sequences
 
 We already know, that `/` and `\` have to be escaped in an Escaped Key Name.
-In addition two these to, there are a few more characters that have to be escaped.
-However, these additional characters may **only** be escaped at the start of a Key Name Part.
+In addition to these two, there are a few more characters that have to be escaped.
+However, these additional characters may **only** be escaped under certain conditions.
 
-The characters in question are: `.`, `#`, `%`, `@`.
-For example the Canonical Escaped Key Name for the Key with Namespace "Cascading" and Key Name Parts `elektra`, `.` and `version` is: `/elektra/\./version`.
-The `\.` is the escaped form of `.`.
-Using just `.` would make it a Non-Canonical Key Name, whose Canonical counterpart is `/elektra/version`, which does not have the wanted Key Name Part `.`.
-Similarly, `#10` would make a Key Name Non-Canonical, but `\#10` won't.
-Therefore, if you want a Canonical Key Name with a Key Name Part `#10` and not actually `#_10`,
-must use e.g. `/elektra/\#10/version`.
-
-<!-- TODO (kodebach): Unforunate escaping behavior
-        Unfortunately this means that both `/elektra/.version` and `/elektra/\.version` have the same unescaped form (`elektra`, `.version`).
-        The same applies to `/elektra/%version` and `/elektra/\%version`.
-        All of these are, however, Canonical Key Names.
-        So the Key (CASCADING, `elektra`, `.version`) actually has two canonical forms....
--->
+The characters in question are: `.`, `#`, `%`.
+The conditions under which these characters can be escaped can be found [below](#4.1.-illegal-escape-sequences).
 
 ## 3. Unescaped Names
 
@@ -410,45 +396,92 @@ An Escaped Key Name is considered an Invalid Key Name, if any of the following a
 - It contains a Namespace (i.e. the Namespace is not "Cascading"), but the Namespace Separator `:` is not followed by a `/`.
   (This mainly applies to Root Keys.)
 - It contains a Namespace Separator `:`, but the substring before the first `:` is not one of: `meta`, `spec`, `proc`, `dir`, `user`, `system` and `default`.
-- One of the Key Name Parts starts with an unescaped `@`.
-  For example `/elektra/@version` is an invalid Escaped Key Name.
-  Only `/elektra/\@version` would be valid.
 - It contains an Illegal Escape Sequence (see below).
-- It contains an Invalid Array Part (see below).
-- Going from left to right one Key Name Part at a time, at any point, the number of Key Name Parts that are `..` is bigger than the number of other Key Name Parts.
-  In Non-Canonical Key Names, the `.` Key Name Parts contribute to the number of other Key Name Parts.
-
-An Escape Sequence is illegal, if (one of):
-
-- It appears at the start of a Key Name Part and the escaped character is not one of: `/`, `\`, `.`, `#`, `%` or `@`.
-- It appears anywhere else and the escaped character is not one of: `/` or `\`.
-
-An Array Part is valid, if (one of):
-
-- The whole Key Name Part is `#` or `#0`.
-- The Key Name Part is `#` followed by 1-19 digits, the first digit is not `0`, and the digits form a number less than or equal to `9223372036854775807` (= `2^64 - 1`).
-- The Key Name Part is `#` followed by `n` underscores, followed by `n+1` digits, where `n <= 18`, the first digit is not `0`, and the digits form a number less than or equal to `9223372036854775807` (= `2^64 - 1`).
-
-Otherwise, Array Parts (i.e. Key Name Parts starting with `#`) are invalid.
 
 > _Note:_ The C-API does not allow you to construct a `Key` with an Invalid Key Name; for example `keyNew` (and `keyVNew`) will return `NULL`.
 
-## 4.1. Special Key Names
+### 4.1. Illegal Escape Sequences
+
+The escape sequences `\\` and `\/` are always valid.
+For the other escape sequences certain conditions must be fulfilled:
+
+- `\.`: can be used at the start of a Key Name Part, if the whole Key Name Part is `\.` or `\..`.
+  In other words, `\` can be used to escape the behaviour of `.` and `..`.
+- `\#`: can be used at the start of a Key Name Part, if the Key Name Part would be a valid Array Part without the `\`.
+  Meaning, `\` can be used to avoid Array Part canonicalization.
+  See [below](#4.2.-array-parts) for a definition of valid Array Parts.
+- `\%`: can be used, if the whole Key Name Part is `\%`.
+  That is `\%` is the escaped version of `%` (the empty Key Name Part).
+
+It may seem weird that some escape sequences have such specific requirements.
+This is necessary to create a 1:1 mapping between Escaped Names and Unescaped Names (explained below).
+Without the restrictions, e.g. `/\%abc` would be the same as `/%abc`.
+
+### 4.2. Array Parts
+
+As mentioned above, Elektra has a notion of Array Parts.
+More specifically, certain Key Name Parts will be interpreted as array indices under certain circumstances (see [documentation for arrays]()).
+
+<!-- TODO (kodebach): link to array documentation -->
+
+We already mentioned above, that Array Parts have canonical and non-canoncial forms.
+
+A canonical array part is a hash-sign `#` followed by `n` underscores (`_`) followed by `n+1` digits.
+Additionally, the digits must form a number greater than or equal to `0` and less than or equal to 9223372036854775807 (= `2^63 - 1`).
+The number must not have any leading `0`s (except for the number zero itself).
+
+In Non-Canonical Key Names, the underscores (`_`) are optional.
+That is, either the correct number of underscores is used or no underscores at all.
+
+Any other Key Name Part that starts with a `#` is never an Array Part.
+
+**All** Key Name Parts starting with `#` are valid.
+It does not matter, if the Key Name Part is an Array Part or not.
+However, some parts of Elektra may expect Array Parts under certain circumstances.
+Providing other Key Name Parts under such circumstances, may cause problems.
+If the context doesn't call for an Array Part, then Array Parts behave no different and are treated as plain string just like any other Key Name Part.
+
+Finally, some examples:
+
+| Key Name Part | Behaviour in array     | Behaviour elsewhere  |
+| ------------- | ---------------------- | -------------------- |
+| `#0`          | Index of first element | Child named `#0`     |
+| `#_10`        | Index of 11th element  | Child named `#_10`   |
+| `#_99`        | Index of 100th element | Child named `#_99`   |
+| `#__100`      | Index of 101st element | Child named `#__100` |
+| `#abc`        | Possible error         | Child named `#abc`   |
+| `#_100`       | Possible error         | Child named `#_100`  |
+| `#__10`       | Possible error         | Child named `#__10`  |
+| `#10a`        | Possible error         | Child named `#10a`   |
+
+## 4.3. Reserved Key Names
 
 Apart from Invalid Key Names, which cannot be constructed via the C-API, there are also _Reserved Key Names_.
-These can be used with the C-API (`keyNew` returns a valid `Key *`), but there might be situations, in which `Key`s with such Key Names are treated differently.
+These can be used with the C-API (`keyNew` returns a valid `Key *`), but there might be situations, in which `Key`s with such Key Names are treated differently or rejected entirely.
 
-A simple example is `/somewhere/_/below`.
-If used with the globbing functionality, the Key Name Part `_` will be interpreted as "match anything that is not an array element".
+Generally speaking, any part of Elektra may define that some Key Names have special meaning, are not allowed, etc.
+However, sometimes guaranteed compatibility with other parts of Elektra is required.
+A good example are storage plugins.
+A storage plugins should strive to be compatible with as much of Elektra as possible.
+But since the storage plugin doesn't know anything about other plugins or even the application using Elektra, it is hard to attribute special meaning to certain Key Names.
 
-If any of the following is true, a Key Name is a _Reserved Key Name_:
+This is why there are two types of _Reserved Key Name_:
 
-- A Key Name Part starts with `_`.
-- A Key Name Part starts with `@`.
-- A Key Name Part starts with `%` and the Key Name Part is more than one byte long.
+1. Any Key Name that is below `system:/elektra`:
+   These Key Names are reserved for Elektra's internals.
+   Each of these Keys has a very specific purpose that is defined globally for all of Elektra.
+   Using such a Key Name automatically caries this meaning.
+   Even outside the context in which Elektra uses these directly, you should never use `system:/eletkra` Keys for other purposes.
+2. Any Key Name contains the Key Name Part `®elektra`:
+   These Key Names are reserved, but their meaning depends on the context.
+   Similar to the [METADATA.ini](../METADATA.ini) file for metadata, some conventions for these Key Names are defined in [reserved name document]().
 
-> _Note:_ This rules apply to all Key Names.
-> An Unescaped Key Name with a Key Name Part `@part`, the Escaped Key Name `/elektra/@part` and the Escaped Key Name Part `/elektra/%abc` are **all** Reserved Key Names.
+   > _Note:_ We use UTF-8 here, so `®elektra` is specifically the 9-byte sequence `C2 AE 65 6C 65 6B 74 72 61`.
+
+   `Key`s with such Key Names will _never_ be used in the interface between storage plugins and the rest of Elektra.
+   This allows storage plugins to use `®elektra` to encode things that otherwise wouldn't be possible (e.g. values of non-leaf Keys).
+
+<!-- TODO (kodebach): link to ®elektra document -->
 
 ---
 
