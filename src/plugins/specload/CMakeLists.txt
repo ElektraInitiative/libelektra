@@ -3,7 +3,7 @@ include (LibAddMacros)
 add_plugin (
 	specload
 	SOURCES specload.h specload.c
-	LINK_ELEKTRA elektra-ease elektra-invoke elektra-proposal
+	LINK_ELEKTRA elektra-ease elektra-invoke
 	TEST_README)
 
 if (DEPENDENCY_PHASE AND BUILD_SHARED)

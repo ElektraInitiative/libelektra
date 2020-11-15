@@ -223,49 +223,6 @@ static void test_mode (void)
 	keyDel (key);
 }
 
-static void test_metaKeySet (void)
-{
-	Key * key = keyNew ("user/test", KEY_END);
-	keySetMeta (key, "meta/test1", "value1");
-	keySetMeta (key, "meta/test2", "value2");
-	keySetMeta (key, "meta/test3", "value3");
-
-	KeySet * metaKeys = elektraKeyGetMetaKeySet (key);
-
-	/* test whether the metakeyset contains all keys */
-	Key * metaKey = ksLookupByName (metaKeys, "meta/test1", KDB_O_NONE);
-	exit_if_fail (metaKey, "the first metakey was not found in the metakeyset");
-	succeed_if (!strcmp (keyString (metaKey), "value1"), "the first metakey in the metakeyset has a wrong value");
-
-	metaKey = ksLookupByName (metaKeys, "meta/test2", KDB_O_NONE);
-	exit_if_fail (metaKey, "the second metakey was not found in the metakeyset");
-	succeed_if (!strcmp (keyString (metaKey), "value2"), "the second metakey in the metakeyset has a wrong value");
-
-	metaKey = ksLookupByName (metaKeys, "meta/test3", KDB_O_NONE);
-	exit_if_fail (metaKey, "the third metakey was not found in the metakeyset");
-	succeed_if (!strcmp (keyString (metaKey), "value3"), "the third metakey in the metakeyset has a wrong value");
-
-	/* test whether the metakeyset is affected by deletions */
-	ksPop (metaKeys);
-
-	const Key * deletedKey = keyGetMeta (key, "meta/test3");
-	exit_if_fail (deletedKey, "key deleted from the metakeyset is not present on the original key anymore");
-	succeed_if (!strcmp (keyString (deletedKey), "value3"), "key deleted from the metakeyset has a wrong value afterwards");
-
-	ksDel (metaKeys);
-	metaKeys = elektraKeyGetMetaKeySet (key);
-	ksRewind (metaKeys);
-	metaKey = ksNext (metaKeys);
-	keySetString (metaKey, "newvalue");
-
-	const Key * modifiedKey = keyGetMeta (key, "meta/test1");
-	succeed_if (!strcmp (keyString (modifiedKey), "value1"),
-		    "metakey has incorrect value after a key from the metakeyset was modified");
-
-	ksDel (metaKeys);
-	keyDel (key);
-}
-
 static void test_metaArrayToKS (void)
 {
 	Key * test = keyNew ("/a", KEY_META, "dep", "#1", KEY_META, "dep/#0", "/b", KEY_META, "dep/#1", "/c", KEY_END);
@@ -520,7 +477,6 @@ int main (int argc, char ** argv)
 	test_comment ();
 	test_owner ();
 	test_mode ();
-	test_metaKeySet ();
 
 	test_metaArrayToKS ();
 	test_top ();

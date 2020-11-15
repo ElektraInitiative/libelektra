@@ -141,78 +141,6 @@ static void test_search (void)
 	ksDel (a);
 }
 
-static void test_format (void)
-{
-	printf ("Test key format\n");
-
-	Key * k = keyNew (0);
-	keySetString (k, "huhu");
-	succeed_if_same_string (keyString (k), "huhu");
-
-	keySetStringF (k, "huhu");
-	succeed_if_same_string (keyString (k), "huhu");
-
-	keySetStringF (k, "huhu %d", 20);
-	succeed_if_same_string (keyString (k), "huhu 20");
-
-	char c1[] = "huhu %d something";
-	keySetStringF (k, c1, 20);
-	c1[5] = '2';
-	c1[6] = '0';
-	succeed_if_same_string (keyString (k), c1);
-	succeed_if (keyGetValueSize (k) == sizeof (c1), "size wrong");
-
-
-	char c2[] =
-		"An extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something!";
-	keySetStringF (k, c2);
-	succeed_if_same_string (keyString (k), c2);
-	succeed_if (keyGetValueSize (k) == sizeof (c2), "size wrong");
-
-
-	char c3[] =
-		"%s extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something!";
-	keySetStringF (k, c3, "AN");
-	c3[0] = 'A';
-	c3[1] = 'N';
-	succeed_if_same_string (keyString (k), c3);
-	// printf ("%s\n\nXXX\n%s\n", keyString(k), c3);
-	// printf ("%d - %d\n", keyGetValueSize(k), sizeof(c3));
-	succeed_if (keyGetValueSize (k) == sizeof (c3), "size wrong");
-
-
-	char c4[] =
-		"%d extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something."
-		"an extremely long string that is way longer then default capture size of 512 or something!";
-	keySetStringF (k, c4, 20);
-	c4[0] = '2';
-	c4[1] = '0';
-	succeed_if_same_string (keyString (k), c4);
-	succeed_if (keyGetValueSize (k) == sizeof (c4), "size wrong");
-
-	keyDel (k);
-}
-
 int main (int argc, char ** argv)
 {
 	printf ("OPERATION    TESTS\n");
@@ -222,7 +150,6 @@ int main (int argc, char ** argv)
 
 	test_search ();
 	test_cmpOrder ();
-	test_format ();
 
 	printf ("\ntest_operation RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

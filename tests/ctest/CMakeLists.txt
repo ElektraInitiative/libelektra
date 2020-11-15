@@ -22,15 +22,10 @@ target_link_elektra (test_splitget elektra-plugin)
 target_link_elektra (test_splitset elektra-plugin)
 
 target_link_elektra (test_meta elektra-meta)
-target_link_elektra (test_meta elektra-proposal)
 target_link_elektra (test_ks elektra-ease)
 target_link_elektra (test_key elektra-meta)
-target_link_elektra (test_key elektra-proposal)
 
 target_link_elektra (test_operation elektra-meta)
-target_link_elektra (test_operation elektra-proposal)
-
-target_link_elektra (test_proposal elektra-proposal)
 
 target_link_elektra (test_utility elektra-utility)
 

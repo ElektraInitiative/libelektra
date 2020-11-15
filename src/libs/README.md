@@ -76,15 +76,6 @@ libelektra-plugin.so
 
 **[libplugin](plugin/)** contains `elektraPlugin*` symbols to be used by plugins.
 
-### Libproposal
-
-```
-libelektra-proposal.so
-```
-
-**[libproposal](proposal/)** contains functions that are proposed for libcore. Depends on internals of libcore and as
-such must always fit to the exact same version.
-
 ### Libmeta
 
 ```

@@ -87,10 +87,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 
-### <<Library3>>
+### Proposal
 
-- <<TODO>>
-- <<TODO>>
+- Removed `elektraKeyGetMetaKeySet` and moved `keySetStringF` to the hosts plugin. _(Philipp Gackstatter)_
+- Removed `ksPopAtCursor`. _(Philipp Gackstatter)_
 - <<TODO>>
 
 ## Bindings
