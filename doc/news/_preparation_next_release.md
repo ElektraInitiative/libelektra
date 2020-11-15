@@ -150,7 +150,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Cirrus
 
-- <<TODO>>
+- Check if Ruby works. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
