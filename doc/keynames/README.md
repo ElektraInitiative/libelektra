@@ -2,7 +2,7 @@
 
 ## Preface
 
-This document is a full explanation of how Key Names work in Elektra.
+This document is a full explanation of how _key names_ work in Elektra.
 In addition to this document, a reference Python implementation can be found in [keynames.py](keynames.py).
 The goal this Python implementation is not to be fast, or to be used in any way other than as a reference.
 If there are any discrepancies between this document, the Python implementation and the actual C implementation in [src/libs/elektra/keyname.c](../../src/libs/elektra/keyname.c), you should consider them as follows:
@@ -17,40 +17,40 @@ If there are any discrepancies between this document, the Python implementation 
 In any case: If you find a discrepancy, please file a bug report at https://issues.libelektra.org/new.
 
 > _Note:_ Mistakes happen.
-> So there is no 100% always correct specification for Elektra's Key Names.
+> So there is no 100% always correct specification for Elektra's key names.
 > The goal is only to provide a reference that has a very high likelihood of being correct.
 
-_To Elektra Developers:_ Feel free to add any unclear or previous incorrect examples to the test cases in [tests/ctest/test_keyname.c](../../tests/ctest/test_keyname.c).
+_To Elektra developers:_ Feel free to add any unclear or previous incorrect examples to the test cases in [tests/ctest/test_keyname.c](../../tests/ctest/test_keyname.c).
 These tests are very fast (1000+ test cases per second) and the more tests the better.
 
 ## 1. Key Name Parts and Namespaces
 
-Before we get to Key Names proper, we need to talk about Key Name Parts and Namespaces.
+Before we get to key names proper, we need to talk about key name parts and namespaces.
 
-Each Key is part of one of these _Namespaces_:
+Each key is part of one of these _namespaces_:
 
-- Cascading
-- Meta
-- Spec
-- Proc
-- Dir
-- User
-- System
-- Default
+- cascading
+- meta
+- spec
+- proc
+- dir
+- user
+- system
+- default
 
-Each of these Namespaces has a very specific meaning, explained in [another section below](#12-namespaces-and-root-keys).
+Each of these namespaces has a very specific meaning, explained in [another section below](#12-namespaces-and-root-keys).
 
-Apart from the Namespace, a Key Name is just a series of zero or more _Key Name Parts_.
-Each Key Name Part is just an arbitrary (possibly empty) sequence of non-zero bytes.
+Apart from the namespace, a key name is just a series of zero or more _key name parts_.
+Each key name part is just an arbitrary (possibly empty) sequence of non-zero bytes.
 
-So without knowing anything about how Key Names are written, we could say that there is a Key in the Namespace "System" with the Key Name Parts "elektra", "version" and "info".
+So without knowing anything about how key names are written, we could say that there is a key in the namespace "system" with the key name parts "elektra", "version" and "info".
 
-> _Note:_ Not every such sequence, is a valid Key Name.
+> _Note:_ Not every such sequence, is a valid key name.
 > For more information see [section 4](#4-valid-and-invalid-key-names)
 
 ### 1.1. Key Hierarchy
 
-You may have already seen elsewhere, that in Elektra Keys commonly look like Unix paths:
+You may have already seen elsewhere, that in Elektra keys commonly look like Unix paths:
 
 ```
 /elektra/version/info
@@ -60,14 +60,14 @@ You may have already seen elsewhere, that in Elektra Keys commonly look like Uni
 > For now, we only care that there is some similarity to Unix paths.
 
 This is no mistake.
-Elektra's _Key Database (KDB)_ is designed to resemble a Unix filesystem.
+Elektra's _key database (KDB)_ is designed to resemble a Unix filesystem.
 In particular, the KDB has a similar hierarchy.
-More generally, all Key Names exhibit this hierarchy.
-By going back to thinking about a Key Name as a Namespace and a series of Key Name Parts, we can define this _Key Hierarchy_.
+More generally, all key names exhibit this hierarchy.
+By going back to thinking about a key name as a namespace and a series of key name parts, we can define this _key hierarchy_.
 
-Each Namespace has a separate hierarchy.
+Each namespace has a separate hierarchy.
 The relation between these, will be explored in the next section.
-For now, we just look at a single Namespace.
+For now, we just look at a single namespace.
 
 In a Unix filesystems, we commonly talk about files and directories.
 We also say a file is located within a directory.
@@ -78,11 +78,11 @@ What makes `A` a directory is just the fact that there can be other files below 
 
 #### 1.1.1. The "is below" Relation
 
-This relation of "is below" is also what defines Elektra's Key Hierarchy.
-Based on a Key `K` with `n` Key Name Parts, we say:
+This relation of "is below" is also what defines Elektra's key hierarchy.
+Based on a key `K` with `n` key name parts, we say:
 
-- A Key `Km` is _below_ `K`, if `Km` has `n+m` Key Name Parts and the first `n` Key Name Parts of `Km` are equal to the Key Name Parts of `K` (in the same order).
-- A Key `K1` is _directly below_ `K`, if `K1` is below `K` and `K1` has `n+1` Key Name Parts.
+- A key `Km` is _below_ `K`, if `Km` has `n+m` key name parts and the first `n` key name parts of `Km` are equal to the key name parts of `K` (in the same order).
+- A key `K1` is _directly below_ `K`, if `K1` is below `K` and `K1` has `n+1` key name parts.
 
 Here are a few examples to show how this works in practice (using the Unix-path-like representation teased above):
 
@@ -95,22 +95,22 @@ Here are a few examples to show how this works in practice (using the Unix-path-
 | `/elektra/version/info` | `/elektra/data`         | no relation                       |
 | `/elektra/data`         | `/elektra/version`      | "Key 1" and "Key 2" are siblings  |
 
-You can think of the Key Hierarchy (within a single Namespace) as a big tree of Keys.
+You can think of the key hierarchy (within a single namespace) as a big tree of keys.
 Each node in the tree is a single key `K` and the children of the nodes are the keys that are directly below `K`.
 
-![Tree structure of a Key Hierarchy](tree.svg)
+![Tree structure of a key hierarchy](tree.svg)
 
-The diagram above shows the Key Hierarchy of the Keys in the table above (`A` -> `B` denotes `A` is directly below `B`).
+The diagram above shows the key hierarchy of the keys in the table above (`A` -> `B` denotes `A` is directly below `B`).
 
 > _Note:_ While we could use the directory vs. file terminology for Elektra as well, it is recommended to avoid it.
-> This is because in Elektra, every Key may have an associated value.
-> In particular a Key may have a value, even if there are other Keys below it.
-> This value is **not**, as a beginner might suspect, the set of Keys below it, like you could say the value of a directory is the set of files (and directories) within.
+> This is because in Elektra, every key may have an associated value.
+> In particular a key may have a value, even if there are other keys below it.
+> This value is **not**, as a beginner might suspect, the set of keys below it, like you could say the value of a directory is the set of files (and directories) within.
 > The value is just another value, like any other key would have.
 >
-> Instead, we recommend the terms _leaf Key_ and _non-leaf Key_, as these are commonly used for tree-like structures and their definitions fit perfectly.
+> Instead, we recommend the terms _leaf key_ and _non-leaf key_, as these are commonly used for tree-like structures and their definitions fit perfectly.
 
-#### 1.1.2. The "parent" confusion
+#### 1.1.2. The "parent" Confusion
 
 As an inverse to "is below" we sometimes use "parent".
 For example:
@@ -123,78 +123,78 @@ This terminology can be easy to confuse, as "parent" is used for multiple differ
 If the context doesn't make it clear what "parent" means, you might consider more clear terms, e.g. other common terms for tree-like structures.
 For example, you could use "ancestor" and "direct parent" as a clear differentiation.
 
-There is also the term "(the) Parent Key".
-In many cases, this is refers to a very specific Key in the given context that is a "common parent" to a certain set of Keys.
-If you are working within such a context, be careful about "a parent Key" vs. "the Parent Key".
+There is also the term "(the) parent key".
+In many cases, this is refers to a very specific key in the given context that is a "common parent" to a certain set of keys.
+If you are working within such a context, be careful about "a parent key" vs. "the parent key".
 
 ### 1.2. Namespaces and Root Keys
 
-We mentioned above that there are different Namespaces in Elektra.
+We mentioned above that there are different namespaces in Elektra.
 Now we will explain their meaning.
 
-To recap, Elektra knows these Namespaces:
+To recap, Elektra knows these namespaces:
 
-- Cascading
-- Meta
-- Spec
-- Proc
-- Dir
-- User
-- System
-- Default
+- cascading
+- meta
+- spec
+- proc
+- dir
+- user
+- system
+- default
 
-We mentioned above that there are Key Names with zero Key Name Parts, i.e. just Namespace.
-These are called _Root Keys_ (based on Unix's filesystem root, as well as the root of a tree).
+We mentioned above that there are key names with zero key name parts, i.e. just namespace.
+These are called _root keys_ (based on Unix's filesystem root, as well as the root of a tree).
 
 Lets explore them one by one:
 
-- The simplest Namespace is the **"Meta"**.
-  The Namespace "Meta" is used exclusively for Meta Keys, i.e. Keys that are attached to another Key as metadata.
-  The Key Hierarchy of the Namespace "Meta" is entirely separate from the Key Hierarchies in the other Namespaces.
-  Without external information, you cannot determine from a Key Name with Namespace "Meta", which Key this Meta Key is attached to.
-- Keys with Namespace **"Proc"** only exist in memory and are scoped to the current <b>Proc</b>ess.
-- Keys with Namespace **"Dir"** are scoped to a single filesystem <b>Dir</b>ectory.
+- The simplest namespace is the **"meta"**.
+  The namespace "meta" is used exclusively for meta keys, i.e. keys that are attached to another key as metadata.
+  The key hierarchy of the namespace "meta" is entirely separate from the key hierarchies in the other namespaces.
+  Without external information, you cannot determine from a key name with namespace "meta", which key this meta key is attached to.
+- keys with namespace **"proc"** only exist in memory and are scoped to the current <b>proc</b>ess.
+- keys with namespace **"dir"** are scoped to a single filesystem <b>dir</b>ectory.
   They will (normally) be stored somewhere within this directory.
-  Currently, there is no way of knowing which filesystem directory a Key with Namespace "Dir" is scoped to.
-  Elektra only uses Keys scoped to the Current Working Directory.
-- Similarly, Keys with Namespace **"User"** are scoped to a single **User**.
-  They will (normally) be stored somewhere within the User's home directory.
-  Again, there is no way of knowing which user a Key is scoped to and Elektra only uses Keys scoped to the current user, i.e. the one that executed the application.
-- The Namespace **"System"** is what makes Elektra global.
-  Keys with Namespace "System" are the same for all users of the system, independent of context.
+  Currently, there is no way of knowing which filesystem directory a key with namespace "dir" is scoped to.
+  Elektra only uses keys scoped to the current working directory.
+- Similarly, keys with namespace **"user"** are scoped to a single **user**.
+  They will (normally) be stored somewhere within the user's home directory.
+  Again, there is no way of knowing which user a key is scoped to and Elektra only uses keys scoped to the current user, i.e. the one that executed the application.
+- The namespace **"system"** is what makes Elektra global.
+  keys with namespace "system" are the same for all users of the system, independent of context.
   They are stored in system level directory.
-- Keys with Namespace **"Default"** are special.
+- keys with namespace **"default"** are special.
   While you could create them manually, you normally don't want to.
-  It is used for Keys with default values for Namespace Resolution (explained below).
-  Keys with this Namespace are also in-memory only.
-- Then there is **"Spec"**.
-  This Namespace, like "Meta", is separate from the rest.
-  We use it for Keys that are part of a specification used to describe other Keys.
-  The Metadata of every Key with Namespace "Spec" describes a specification for the Keys that have the same Key Name Part but a different Namespace (except "Meta").
-  So the Namespace "Spec" has a closer relation to the others than "Meta".
-- Now just the Namespace **"Cascading"** remains.
-  This Namespace is used for Namespace Resolution (see below).
+  It is used for keys with default values for namespace resolution (explained below).
+  keys with this namespace are also in-memory only.
+- Then there is **"spec"**.
+  This namespace, like "meta", is separate from the rest.
+  We use it for keys that are part of a specification used to describe other keys.
+  The metadata of every key with namespace "spec" describes a specification for the keys that have the same key name part but a different namespace (except "meta").
+  So the namespace "spec" has a closer relation to the others than "meta".
+- Now just the namespace **"cascading"** remains.
+  This namespace is used for namespace resolution (see below).
   It is the one that applications and end-users will use most commonly when interacting with Elektra.
-  Keys with Namespace "Cascading" are never stored.
+  keys with namespace "cascading" are never stored.
   Not on disk and normally also not in a `KeySet`.
 
-There is also a certain ranking between the Namespaces "Proc", "Dir", "User", "System" and "Default".
+There is also a certain ranking between the namespaces "proc", "dir", "user", "system" and "default".
 Namely, that they override each other in exactly this order.
-Given two Key Names with identical Key Name Parts, but one with Namespace "Dir" and one with Namespace "User", the one with Namespace "Dir" should be considered more specific and should be preferred.
+Given two key names with identical key name parts, but one with namespace "dir" and one with namespace "user", the one with namespace "dir" should be considered more specific and should be preferred.
 
-A special feature of Elektra is _Namespace Resolution_ (sometimes just Name Resolution, or Key Name Resolution).
-Namespace Resolution is the process of finding an appropriate Namespace for a Key based on a Key Name with Namespace "Cascading".
-It is most commonly used, when you need to find which Key in the KDB should be used, based on a series of Key Name Parts.
+A special feature of Elektra is _namespace resolution_.
+namespace resolution is the process of finding an appropriate namespace for a key based on a key name with namespace "cascading".
+It is most commonly used, when you need to find which key in the KDB should be used, based on a series of key name parts.
 
-To resolve the namespace, we just look at each of the Namespaces in the ranking defined above.
-We then use the first Namespace where the Key actually exists.
-Namespace Resolution is performed, when `ksLookup`/`ksLookupByName` is called with a Key Name with Namespace "Cascading" [[2]](#footnote-2).
+To resolve the namespace, we just look at each of the namespaces in the ranking defined above.
+We then use the first namespace where the key actually exists.
+namespace resolution is performed, when `ksLookup`/`ksLookupByName` is called with a key name with namespace "cascading" [[2]](#footnote-2).
 <a id="ref-footnote-2"></a>
-This is also done, if you call `kdb get` or `kdb set` with a Key Name with Namespace "Cascading".
+This is also done, if you call `kdb get` or `kdb set` with a key name with namespace "cascading".
 
 ## 2. Escaped Names
 
-The standard way to represent a Key Name in Elektra is this:
+The standard way to represent a key name in Elektra is this:
 
 ```
 system:/elektra/version/info
@@ -202,37 +202,37 @@ system:/elektra/version/info
 
 This can be deconstructed into:
 
-- The Namespace: `system`
-- The Namespace Separator: `:`
-- A Part Separator: `/`
-- A Key Name Part: `elektra`
-- A Part Separator: `/`
-- A Key Name Part: `version`
-- A Part Separator: `/`
-- A Key Name Part: `info`
+- The namespace: `system`
+- The namespace separator: `:`
+- A part separator: `/`
+- A key name part: `elektra`
+- A part separator: `/`
+- A key name part: `version`
+- A part separator: `/`
+- A key name part: `info`
 - The invisible null terminator
 
 > _Note:_ It might seem strange, that there is a part **separator** before the first part.
-> This makes sense, because then the Part Separator always introduces a new part.
+> This makes sense, because then the part separator always introduces a new part.
 > A better fitting description would be "part introducer".
 > But since we commonly call `/` a separator, we will stick to this terminology.
 
-For Keys in the Namespace "Cascading", we omit both the Namespace itself and as well as the Namespace separator:
+For keys in the namespace "cascading", we omit both the namespace itself and as well as the namespace separator:
 
 ```
 /elektra/version/info
 ```
 
-We also have a special rule for the Root Keys, i.e. the Key Names with zero Key Name Parts and just a Namespace.
-According to above rules `system:` would be the Escaped Name of the Root Key for the Namespace "System" and the Escaped Name for the Root Key of the Namespace "Cascading" would be an empty string.
+We also have a special rule for the root keys, i.e. the key names with zero key name parts and just a namespace.
+According to above rules `system:` would be the escaped name of the root key for the namespace "system" and the escaped name for the root key of the namespace "cascading" would be an empty string.
 But this is not the case.
 We use `system:/` and `/` instead.
-The exact details will be explored later, but for now just remember, that an (Escaped) Key Name **always** contains at least one Part Separator (`/`).
+The exact details will be explored later, but for now just remember, that an (escaped) key name **always** contains at least one part separator (`/`).
 
 But there is a problem.
-We said a Key Name part is "an arbitrary sequence of non-zero bytes".
-This means "elektra/version" is a Key Name Part as well.
-Since the slash `/` would conflict with the Part Separator, we can escape it with a backslash `\` (and `\` can be escaped with another `\`):
+We said a key name part is "an arbitrary sequence of non-zero bytes".
+This means "elektra/version" is a key name part as well.
+Since the slash `/` would conflict with the part separator, we can escape it with a backslash `\` (and `\` can be escaped with another `\`):
 
 ```
 /elektra\/version/info/back\\slash
@@ -240,35 +240,35 @@ Since the slash `/` would conflict with the Part Separator, we can escape it wit
 
 This can be deconstructed into:
 
-- A Part Separator: `/`
-- A Key Name Part: `elektra/version`
-- A Part Separator: `/`
-- A Key Name Part: `info`
-- A Key Name Part: `back\slash`
+- A part separator: `/`
+- A key name part: `elektra/version`
+- A part separator: `/`
+- A key name part: `info`
+- A key name part: `back\slash`
 - An invisible null terminator
 
-> _Note:_ When talking about a single Key Name Part `/` and `\` are never escaped.
+> _Note:_ When talking about a single key name part `/` and `\` are never escaped.
 
-Because of this escaping mechanism, we call this the _Escaped Name_ of a Key.
+Because of this escaping mechanism, we call this the _escaped name_ of a key.
 
-Elektra's Key Names are designed to mimic Unix paths to some extent.
+Elektra's key names are designed to mimic Unix paths to some extent.
 To this end we support the commonly used `/.` and `/..`.
-This is one reason, why we need to differentiate between _Canonical_ Key Names and _Non-Canonical_ Key Names.
+This is one reason, why we need to differentiate between _canonical_ key names and _non-canonical_ key names.
 
 ### 2.1. (Non-)Canonical (Escaped) Key Names
 
-Following the syntax of Unix paths, in Elektra both `/elektra/./version` and `/elektra/version` refer to the same Key.
-Similarly, `/elektra/../version` and `/version` refer to the same Key.
+Following the syntax of Unix paths, in Elektra both `/elektra/./version` and `/elektra/version` refer to the same key.
+Similarly, `/elektra/../version` and `/version` refer to the same key.
 
-To give each Key a unique Key Name, we need to introduce a _Canonical (Escaped) Key Name_.
+To give each key a unique key name, we need to introduce a _canonical (escaped) key name_.
 For Unix paths, we could say that the canonical path is the shortest possible path that refers to a file.
 In Elektra this doesn't quite work, but will use this definition for now.
 
-> _Note:_ Only Escaped Key Names can be Canonical or Non-Canonical, so we normally omit the "Escaped" specifier.
+> _Note:_ Only escaped key names can be canonical or non-canonical, so we normally omit the "escaped" specifier.
 
-Let's look at a few examples to get a feeling for Canonical and Non-Canonical Key Names.
+Let's look at a few examples to get a feeling for canonical and non-canonical key names.
 
-| Non-Canonical           | Canonical          |
+| Non-canonical           | Canonical          |
 | ----------------------- | ------------------ |
 | `/elektra/./version`    | `/elektra/version` |
 | `/elektra/../version`   | `/version`         |
@@ -280,34 +280,34 @@ Let's look at a few examples to get a feeling for Canonical and Non-Canonical Ke
 | `user:/elektra/../../`  | `user:/`           |
 | `/elektra/version/`     | `/elektra/version` |
 
-As you can see, the behaviour of `.` and `..` matches that of Unix paths as long as we are using the Namesapce "Cascading".
-The Namespace of a Key Name can never be changed via `..`, so `user:/..` is equivalent to `user:/`.
+As you can see, the behaviour of `.` and `..` matches that of Unix paths as long as we are using the namesapce "cascading".
+The namespace of a key name can never be changed via `..`, so `user:/..` is equivalent to `user:/`.
 
 There is also a small difference in the last example.
 In Unix such paths would also refer to the same file, but in some Unix tools a trailing slash alters the behavior of the tool.
 In Elektra this is never the case.
-`/elektra/version/` and `/elektra/version` refer to the same Key and are always treated as the same Key Name.
+`/elektra/version/` and `/elektra/version` refer to the same key and are always treated as the same key name.
 
-The only exception are the Root Keys.
-The Canonical Key Names for the Root Keys always end with a `/`.
-In fact, we will see [later](#4-valid-and-invalid-key-names), that removing the `/` makes the Key Name invalid.
+The only exception are the root keys.
+The canonical key names for the root keys always end with a `/`.
+In fact, we will see [later](#4-valid-and-invalid-key-names), that removing the `/` makes the key name invalid.
 
 There also is a completely new addition in Elektra.
-Elektra has a notion of _Array Parts_.
-These are Key Name Parts that denote an array index.
+Elektra has a notion of _array parts_.
+These are key name parts that denote an array index.
 How exactly these work, will be explored [later](#4-valid-and-invalid-key-names).
 For now, we only need to know that they start with an `#` and their canonical form has `n` underscores followed by `n+1` digits.
 
-A few examples for Array Parts:
+A few examples for array parts:
 
-| Non-Canonical    | Canonical           |
+| Non-canonical    | Canonical           |
 | ---------------- | ------------------- |
 | `/elektra/#10`   | `/elektra/#_10`     |
 | `/elektra/#1234` | `/elektra/#___1234` |
 
 ### 2.2. Other Escape Sequences
 
-We already know, that `/` and `\` have to be escaped in an Escaped Key Name.
+We already know, that `/` and `\` have to be escaped in an escaped key name.
 In addition to these two, there are a few more characters that have to be escaped.
 However, these additional characters may **only** be escaped under certain conditions.
 
@@ -316,138 +316,138 @@ The conditions under which these characters can be escaped can be found [below](
 
 ## 3. Unescaped Names
 
-While the Escaped Name of a Key is nice for humans, it is not very well suited for machines.
-The escaping of path separators makes it hard to find the Key Name Parts of a given Key Name.
-The Escaped Name is also not well suited for sorting [[3]](#footnote-3).
+While the escaped name of a key is nice for humans, it is not very well suited for machines.
+The escaping of path separators makes it hard to find the key name parts of a given key name.
+The escaped name is also not well suited for sorting [[3]](#footnote-3).
 <a id="ref-footnote-3"></a>
 
-Both of these flaws are solved by the _Unescaped Name_.
-In Unescaped Names we use a zero-byte as the Part Separator.
-Since a Key Name Part cannot contain a zero-byte, we do not need an escaping mechanism for the path separator.
+Both of these flaws are solved by the _unescaped name_.
+In unescaped names we use a zero-byte as the part separator.
+Since a key name part cannot contain a zero-byte, we do not need an escaping mechanism for the path separator.
 
-However, these zero-bytes mean that the Unescaped Name is not a printable string and therefore not human-readable.
-This why we will only describe the Unescaped Name in the deconstructed form.
+However, these zero-bytes mean that the unescaped name is not a printable string and therefore not human-readable.
+This why we will only describe the unescaped name in the deconstructed form.
 
-The Escaped Names from above correspond to the following Unescaped Names:
+The escaped names from above correspond to the following unescaped names:
 
 1. `system:/elektra/version/info`
-   - The byte representing the Namespace "System": `0x07`
-   - A Part Separator: `0x00`
-   - A Key Name Part: `elektra`
-   - A Part Separator: `0x00`
-   - A Key Name Part: `version`
-   - A Part Separator: `0x00`
-   - A Key Name Part: `info`
+   - The byte representing the namespace "system": `0x07`
+   - A part separator: `0x00`
+   - A key name part: `elektra`
+   - A part separator: `0x00`
+   - A key name part: `version`
+   - A part separator: `0x00`
+   - A key name part: `info`
    - The terminator byte: `0x00`
 2. `/elektra/version/info`
-   - The byte representing the Namespace "Cascading": `0x01`
-   - A Part Separator: `0x00`
-   - A Key Name Part: `elektra`
-   - A Part Separator: `0x00`
-   - A Key Name Part: `version`
-   - A Part Separator: `0x00`
-   - A Key Name Part: `info`
+   - The byte representing the namespace "cascading": `0x01`
+   - A part separator: `0x00`
+   - A key name part: `elektra`
+   - A part separator: `0x00`
+   - A key name part: `version`
+   - A part separator: `0x00`
+   - A key name part: `info`
    - The terminator byte: `0x00`
 3. `/elektra\/version\\/info`
-   - The byte representing the Namespace "Cascading": `0x01`
-   - A Part Separator: `0x00`
-   - A Key Name Part: `elektra/version\`
-   - A Part Separator: `0x00`
-   - A Key Name Part: `info`
+   - The byte representing the namespace "cascading": `0x01`
+   - A part separator: `0x00`
+   - A key name part: `elektra/version\`
+   - A part separator: `0x00`
+   - A key name part: `info`
    - The terminator byte: `0x00`
 4. `/`:
-   - The byte representing the Namespace "Cascading": `0x01`
-   - A Part Separator: `0x00`
+   - The byte representing the namespace "cascading": `0x01`
+   - A part separator: `0x00`
    - The terminator byte: `0x00`
 
 > _Note:_ We use 0xZZ to represent a single byte in hexadecimal.
 > This form is only used when the context makes it clear that it represents a single byte and not a four character string.
 
-The process of turning an Escaped Name into the corresponding Unescaped Name is called _unescaping_.
-Turning an Unescaped Name back into an Escaped Name is called _escaping_.
+The process of turning an escaped name into the corresponding unescaped name is called _unescaping_.
+Turning an unescaped name back into an escaped name is called _escaping_.
 
 Unescaping works, by simply removing the backslashes `\` that are used as escapes.
-This applies both to `\/` and `\\` anywhere in Key Name Parts, as well as to the escape sequences that are only used at the start of Key Name Parts, e.g. `\#`.
+This applies both to `\/` and `\\` anywhere in key name parts, as well as to the escape sequences that are only used at the start of key name parts, e.g. `\#`.
 
 ## 4. Valid and Invalid Key Names
 
-Not all of the Key Names described by the above sections are valid under all circumstances.
-You might also say, that a Key Name as defined above does not necessarily refer to a Key in the KDB.
-So while it might be a Key Name, there is no Key that actually uses this name.
-Only _Valid Key Names_ refer to a Key in the KDB and may be used by a Key as its name.
-The remaining Key Names are referred to as _Invalid Key Names_.
+Not all of the key names described by the above sections are valid under all circumstances.
+You might also say, that a key name as defined above does not necessarily refer to a key in the KDB.
+So while it might be a key name, there is no key that actually uses this name.
+Only _valid key names_ refer to a key in the KDB and may be used by a key as its name.
+The remaining key names are referred to as _invalid key names_.
 
-For Unescaped Key Names, it is pretty simple:
-Unescaped Key Names are Valid Key Names, if all of the following are true:
+For unescaped key names, it is pretty simple:
+Unescaped key names are valid key names, if all of the following are true:
 
-- The first byte is a valid Namespace Byte, i.e. `0x01` - `0x08`.
+- The first byte is a valid namespace byte, i.e. `0x01` - `0x08`.
 - The second byte is a zero-byte `0x00`.
 - The last byte is a zero-byte `0x00`.
 
-For this reason Unescaped Names for Root Keys are 3 bytes long, with the last two bytes being zero-byte.
-Between the second and the last byte, we find the Key Name Parts separated by a zero-byte `0x00`.
+For this reason unescaped names for root keys are 3 bytes long, with the last two bytes being zero-byte.
+Between the second and the last byte, we find the key name parts separated by a zero-byte `0x00`.
 
-For Escaped Key Names it is easier to define, what makes an Invalid Key Name, than what makes a Valid Key Name, so we will go this route.
-An Escaped Key Name is considered an Invalid Key Name, if any of the following are true:
+For escaped key names it is easier to define, what makes an invalid key name, than what makes a valid key name, so we will go this route.
+An escaped key name is considered an invalid key name, if any of the following are true:
 
 - It is an empty string.
 - The last character before the invisible null terminator is a backslash `\`.
   This is a dangling escape as we expect another character after the escape character `\`.
-- It contains a Namespace (i.e. the Namespace is not "Cascading"), but the Namespace Separator `:` is not followed by a `/`.
-  (This mainly applies to Root Keys.)
-- It contains a Namespace Separator `:`, but the substring before the first `:` is not one of: `meta`, `spec`, `proc`, `dir`, `user`, `system` and `default`.
-- It contains an Illegal Escape Sequence (see below).
+- It contains a namespace (i.e. the namespace is not "cascading"), but the namespace separator `:` is not followed by a `/`.
+  (This mainly applies to root keys.)
+- It contains a namespace separator `:`, but the substring before the first `:` is not one of: `meta`, `spec`, `proc`, `dir`, `user`, `system` and `default`.
+- It contains an illegal escape sequence (see below).
 
-> _Note:_ The C-API does not allow you to construct a `Key` with an Invalid Key Name; for example `keyNew` (and `keyVNew`) will return `NULL`.
+> _Note:_ The C-API does not allow you to construct a `Key` with an invalid key name; for example `keyNew` (and `keyVNew`) will return `NULL`.
 
 ### 4.1. Illegal Escape Sequences
 
 The escape sequences `\\` and `\/` are always valid.
 For the other escape sequences certain conditions must be fulfilled:
 
-- `\.`: can be used at the start of a Key Name Part, if the whole Key Name Part is `\.` or `\..`.
+- `\.`: can be used at the start of a key name part, if the whole key name part is `\.` or `\..`.
   In other words, `\` can be used to escape the behaviour of `.` and `..`.
-- `\#`: can be used at the start of a Key Name Part, if the Key Name Part would be a Non-Canonical Array Part without the `\`.
-  Specifically, `\#` can be used, if the Key Name Part matches the regular expression `\\#[1-9][0-9]+` and the digits form a number less than or equal to 9223372036854775807 (= `2^63 - 1`).
-  Meaning, `\` can be used to avoid Array Part canonicalization.
-- `\%`: can be used, if the whole Key Name Part is `\%`.
-  That is `\%` is the escaped version of `%` (the empty Key Name Part).
+- `\#`: can be used at the start of a key name part, if the key name part would be a non-canonical array part without the `\`.
+  specifically, `\#` can be used, if the key name part matches the regular expression `\\#[1-9][0-9]+` and the digits form a number less than or equal to 9223372036854775807 (= `2^63 - 1`).
+  Meaning, `\` can be used to avoid array part canonicalization.
+- `\%`: can be used, if the whole key name part is `\%`.
+  That is `\%` is the escaped version of `%` (the empty key name part).
 
 It may seem weird that some escape sequences have such specific requirements.
-This is necessary to create a 1:1 mapping between (Canonical) Escaped Names and Unescaped Names.
+This is necessary to create a 1:1 mapping between (canonical) escaped names and unescaped names.
 Without the restrictions, e.g. both `\%abc` and `%abc` would be unescaped as `%abc`.
 In addition, the conditions for `\#` have to be so specific, because `\` must only be allowed, if it affects unescaping.
 For example, we cannot allow `\#abc`, because that would unescape into `#abc`, just like `#abc`.
 
 ### 4.2. Array Parts
 
-As mentioned above, Elektra has a notion of Array Parts.
-More specifically, certain Key Name Parts will be interpreted as array indices under certain circumstances (see also [documentation for arrays]()).
+As mentioned above, Elektra has a notion of array parts.
+More specifically, certain key name parts will be interpreted as array indices under certain circumstances (see also [documentation for arrays]()).
 
 <!-- TODO (kodebach): link to array documentation -->
 
-We already mentioned above, that Array Parts have canonical and non-canoncial forms.
+We already mentioned above, that array parts have canonical and non-canoncial forms.
 
 A canonical array part is a hash-sign `#` followed by `n` underscores (`_`) followed by `n+1` digits.
 Additionally, the digits must form a number greater than or equal to `0` and less than or equal to 9223372036854775807 (= `2^63 - 1`).
 The number must not have any leading `0`s (except for the number zero itself).
 
-In Non-Canonical Key Names, the underscores (`_`) are omitted.
+In non-canonical key names, the underscores (`_`) are omitted.
 That is, either the correct number of underscores is used or no underscores at all.
 
-Any other Key Name Part that starts with a `#` is never an Array Part.
+Any other key name part that starts with a `#` is never an array part.
 
-**All** Key Name Parts starting with `#` are valid.
-It does not matter, if the Key Name Part is an Array Part or not.
-However, some parts of Elektra may expect Array Parts under certain circumstances.
-Providing other Key Name Parts under such circumstances, may cause problems.
-If the context doesn't call for an Array Part, then Array Parts behave no different and are treated as plain string just like any other Key Name Part.
+**All** key name parts starting with `#` are valid.
+It does not matter, if the key name part is an array part or not.
+However, some parts of Elektra may expect array parts under certain circumstances.
+Providing other key name parts under such circumstances, may cause problems.
+If the context doesn't call for an array part, then array parts behave no different and are treated as plain string just like any other key name part.
 
 Finally, some examples:
 
 <a id="ref-footnote-4"></a>
 
-| Key Name Part | Behaviour in array                | Behaviour elsewhere  |
+| Key name part | Behaviour in array                | Behaviour elsewhere  |
 | ------------- | --------------------------------- | -------------------- |
 | `#0`          | Index of first element            | Child named `#0`     |
 | `#_10`        | Index of 11th element             | Child named `#_10`   |
@@ -460,30 +460,30 @@ Finally, some examples:
 
 ## 4.3. Reserved Key Names
 
-Apart from Invalid Key Names, which cannot be constructed via the C-API, there are also _Reserved Key Names_.
-These can be used with the C-API (`keyNew` returns a valid `Key *`), but there might be situations, in which `Key`s with such Key Names are treated differently or rejected entirely.
+Apart from invalid key names, which cannot be constructed via the C-API, there are also _reserved key names_.
+These can be used with the C-API (`keyNew` returns a valid `Key *`), but there might be situations, in which `Key`s with such key names are treated differently or rejected entirely.
 
-Generally speaking, any part of Elektra may define that some Key Names have special meaning, are not allowed, etc.
+Generally speaking, any part of Elektra may define that some key names have special meaning, are not allowed, etc.
 However, sometimes guaranteed compatibility with other parts of Elektra is required.
 A good example are storage plugins.
 A storage plugins should strive to be compatible with as much of Elektra as possible.
-But since the storage plugin doesn't know anything about other plugins or even the application using Elektra, it is hard to attribute special meaning to certain Key Names.
+But since the storage plugin doesn't know anything about other plugins or even the application using Elektra, it is hard to attribute special meaning to certain key names.
 
-This is why there are two types of _Reserved Key Name_:
+This is why there are two types of reserved key name:
 
-1. Any Key Name that is below `system:/elektra`:
-   These Key Names are reserved for Elektra's internals.
-   Each of these Keys has a very specific purpose that is defined globally for all of Elektra.
-   Using such a Key Name automatically caries this meaning.
-   Even outside the context in which Elektra uses these directly, you should never use `system:/eletkra` Keys for other purposes.
-2. Any Key Name contains the Key Name Part `®elektra`:
-   These Key Names are reserved, but their meaning depends on the context.
-   Similar to the [METADATA.ini](../METADATA.ini) file for metadata, some conventions for these Key Names are defined in [reserved name document]().
+1. Any key name that is below `system:/elektra`:
+   These key names are reserved for Elektra's internals.
+   Each of these keys has a very specific purpose that is defined globally for all of Elektra.
+   Using such a key name automatically caries this meaning.
+   Even outside the context in which Elektra uses these directly, you should never use `system:/eletkra` keys for other purposes.
+2. Any key name contains the key name part `®elektra`:
+   These key names are reserved, but their meaning depends on the context.
+   Similar to the [METADATA.ini](../METADATA.ini) file for metadata, some conventions for these key names are defined in [reserved name document]().
 
    > _Note:_ We use UTF-8 here, so `®elektra` is specifically the 9-byte sequence `C2 AE 65 6C 65 6B 74 72 61`.
 
-   `Key`s with such Key Names will _never_ be used in the interface between storage plugins and the rest of Elektra.
-   This allows storage plugins to use `®elektra` to encode things that otherwise wouldn't be possible (e.g. values of non-leaf Keys).
+   `Key`s with such key names will _never_ be used in the interface between storage plugins and the rest of Elektra.
+   This allows storage plugins to use `®elektra` to encode things that otherwise wouldn't be possible (e.g. values of non-leaf keys).
 
 <!-- TODO (kodebach): link to ®elektra document -->
 
@@ -496,13 +496,13 @@ But it is good enough for our purposes, so we will just ignore some details.
 
 <a id="footnote-2">[2]:</a>
 The actual process of resolution process that happens in `ksLookupByName` and `ksLookup` is a bit more complicated.
-It may involve some Keys with Namespace "Spec" as well.
+It may involve some keys with namespace "spec" as well.
 [↑](#ref-footnote-2)
 
 <a id="footnote-3">[3]:</a>
-For performance reasons, we want to make the comparison between to Key Names as fast as possible.
+For performance reasons, we want to make the comparison between to key names as fast as possible.
 A good solution is a single `memcmp`.
-But this doesn't account for the fact that Key Names represent a hierarchy and that `/` has a special meaning:
+But this doesn't account for the fact that key names represent a hierarchy and that `/` has a special meaning:
 `/key/sub` should always be sorted after `/key` and before `/key.1`.
 With `memcmp`, `/key` is first, because it is the shortest and otherwise equal.
 But then we would get `/key.1` not `/key/sub`, because `/ < .` in ASCII.
