@@ -87,7 +87,7 @@ ESCAPES = {"/", "\\"}
 # The function should return True, iff the escape sequence is valid.
 ESCAPES_SPECIAL = {
     ".": lambda part: re.match(r"^\\\.{1,2}$", part),
-    "#": lambda part: part[0] == "\\" and check_array_part(part[1:])[0],
+    "#": lambda part: (len(part) < 21 or part[2:] <= "9223372036854775807") and re.match(r"^\\#[1-9][0-9]{1,18}$", part),
     "%": lambda part: re.match(r"^\\%$", part),
 }
 

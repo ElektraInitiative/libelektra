@@ -407,20 +407,22 @@ For the other escape sequences certain conditions must be fulfilled:
 
 - `\.`: can be used at the start of a Key Name Part, if the whole Key Name Part is `\.` or `\..`.
   In other words, `\` can be used to escape the behaviour of `.` and `..`.
-- `\#`: can be used at the start of a Key Name Part, if the Key Name Part would be a valid Array Part without the `\`.
+- `\#`: can be used at the start of a Key Name Part, if the Key Name Part would be a Non-Canonical Array Part without the `\`.
+  Specifically, `\#` can be used, if the Key Name Part matches the regular expression `\\#[1-9][0-9]+` and the digits form a number less than or equal to 9223372036854775807 (= `2^63 - 1`).
   Meaning, `\` can be used to avoid Array Part canonicalization.
-  See [below](#4.2.-array-parts) for a definition of valid Array Parts.
 - `\%`: can be used, if the whole Key Name Part is `\%`.
   That is `\%` is the escaped version of `%` (the empty Key Name Part).
 
 It may seem weird that some escape sequences have such specific requirements.
-This is necessary to create a 1:1 mapping between Escaped Names and Unescaped Names (explained below).
-Without the restrictions, e.g. `/\%abc` would be the same as `/%abc`.
+This is necessary to create a 1:1 mapping between (Canonical) Escaped Names and Unescaped Names.
+Without the restrictions, e.g. both `\%abc` and `%abc` would be unescaped as `%abc`.
+In addition, the conditions for `\#` have to be so specific, because `\` must only be allowed, if it affects unescaping.
+For example, we cannot allow `\#abc`, because that would unescape into `#abc`, just like `#abc`.
 
 ### 4.2. Array Parts
 
 As mentioned above, Elektra has a notion of Array Parts.
-More specifically, certain Key Name Parts will be interpreted as array indices under certain circumstances (see [documentation for arrays]()).
+More specifically, certain Key Name Parts will be interpreted as array indices under certain circumstances (see also [documentation for arrays]()).
 
 <!-- TODO (kodebach): link to array documentation -->
 
@@ -430,7 +432,7 @@ A canonical array part is a hash-sign `#` followed by `n` underscores (`_`) foll
 Additionally, the digits must form a number greater than or equal to `0` and less than or equal to 9223372036854775807 (= `2^63 - 1`).
 The number must not have any leading `0`s (except for the number zero itself).
 
-In Non-Canonical Key Names, the underscores (`_`) are optional.
+In Non-Canonical Key Names, the underscores (`_`) are omitted.
 That is, either the correct number of underscores is used or no underscores at all.
 
 Any other Key Name Part that starts with a `#` is never an Array Part.
@@ -443,16 +445,18 @@ If the context doesn't call for an Array Part, then Array Parts behave no differ
 
 Finally, some examples:
 
-| Key Name Part | Behaviour in array     | Behaviour elsewhere  |
-| ------------- | ---------------------- | -------------------- |
-| `#0`          | Index of first element | Child named `#0`     |
-| `#_10`        | Index of 11th element  | Child named `#_10`   |
-| `#_99`        | Index of 100th element | Child named `#_99`   |
-| `#__100`      | Index of 101st element | Child named `#__100` |
-| `#abc`        | Possible error         | Child named `#abc`   |
-| `#_100`       | Possible error         | Child named `#_100`  |
-| `#__10`       | Possible error         | Child named `#__10`  |
-| `#10a`        | Possible error         | Child named `#10a`   |
+<a id="ref-footnote-4"></a>
+
+| Key Name Part | Behaviour in array                | Behaviour elsewhere  |
+| ------------- | --------------------------------- | -------------------- |
+| `#0`          | Index of first element            | Child named `#0`     |
+| `#_10`        | Index of 11th element             | Child named `#_10`   |
+| `#_99`        | Index of 100th element            | Child named `#_99`   |
+| `#__100`      | Index of 101st element            | Child named `#__100` |
+| `#abc`        | Possible error [[4]](#footnote-4) | Child named `#abc`   |
+| `#_100`       | Possible error [[4]](#footnote-4) | Child named `#_100`  |
+| `#__10`       | Possible error [[4]](#footnote-4) | Child named `#__10`  |
+| `#10a`        | Possible error [[4]](#footnote-4) | Child named `#10a`   |
 
 ## 4.3. Reserved Key Names
 
@@ -504,3 +508,12 @@ With `memcmp`, `/key` is first, because it is the shortest and otherwise equal.
 But then we would get `/key.1` not `/key/sub`, because `/ < .` in ASCII.
 This cannot happen with zero-bytes as the separator, because there is no byte with a smaller value.
 [↑](#ref-footnote-3)
+
+<a id="footnote-4">[4]:</a>
+We classify this as a "possible error", because not all parts of Elektra will fully validate all conventions and rules around arrays.
+In particular, a standard `KeySet` itself imposes no restrictions.
+Therefore, you can use any `KeySet` locally in your application.
+As soon as you pass the `KeySet` into an external function (e.g. `kdbSet`), however, errors may occur since the `KeySet` may pass through a function that requires `KeySet` which are properly validated against array rules.
+For more details what conventions and rules exist around arrays, see [documentation for arrays](). [↑](#ref-footnote-4)
+
+<!-- TODO (kodebach): link to array documentation -->
