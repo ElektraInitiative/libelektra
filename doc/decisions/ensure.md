@@ -52,7 +52,7 @@ elektraNotificationContract (contract, iobinding);
 The same for gopts:
 
 ```c
-elektraGOptsContract (contract, argc, argv, environ));
+elektraGOptsContract (contract, argc, argv, environ);
 ```
 
 Finally, we create `KDB` with the contracts we got before:
