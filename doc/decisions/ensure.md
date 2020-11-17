@@ -42,24 +42,36 @@ Integrate `kdbEnsure` in `kdbOpen(Key *errorKey, KeySet *contract)` but only all
 
 ## Implications
 
-`elektraNotificationOpen` needs to be removed and instead we need a new API:
+`elektraNotificationOpen` will only return a contract KeySet:
 
 ```c
 KeySet * contract = ksNew (0, KS_END);
-elektraNotificationGetContract (contract);
-KDB * kdb = kdbOpen (key, contract); // contract contains notification config
-elektraIoSetBinding (kdb, binding);
+elektraNotificationContract (contract, iobinding);
 ```
 
-Similar contract getters need to be introduced for other functionality, like gopts:
+The same for gopts:
 
 ```c
-KeySet * contract = ksNew (0, KS_END);
-elektraGOptsGetContract (contract, argc, argv, environ);
+elektraGOptsContract (contract, argc, argv, environ));
+```
+
+Finally, we create `KDB` with the contracts we got before:
+
+```c
 KDB * kdb = kdbOpen (key, contract);
 ```
 
-The high-level API can make this more pretty, though.
+Opening `KDB` will fail if any of the contracts cannot be ensured.
+
+The cleanup happens within:
+
+```c
+kdbClose (kdb, errorKey);
+ksDel (contract);
+```
+
+It is save to use the contract `KeySet` also for `kdbGet` and `kdbSet`
+invocations.
 
 ## Related Decisions
 
