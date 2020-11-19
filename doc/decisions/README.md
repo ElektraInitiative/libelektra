@@ -61,6 +61,7 @@ section here.
 - [Plugin Variants](plugin_variants.md)
 - [Global Validation](global_validation.md)
 - [Spec Expressiveness](spec_expressiveness.md)
+- [Storage Plugin Semantics](error_semantics.md)
 
 ## Rejected
 
