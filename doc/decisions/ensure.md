@@ -63,11 +63,17 @@ KDB * kdb = kdbOpen (key, contract);
 
 Opening `KDB` will fail if any of the contracts cannot be ensured.
 
-The cleanup happens within:
+As the `contract` gets copied, at any point after `kdbOpen` the
+contract can be safely deleted:
+
+```
+ksDel (contract);
+```
+
+The cleanup of the global plugins happens within:
 
 ```c
 kdbClose (kdb, errorKey);
-ksDel (contract);
 ```
 
 It is save to use the contract `KeySet` also for `kdbGet` and `kdbSet`
