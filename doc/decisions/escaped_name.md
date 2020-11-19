@@ -19,6 +19,10 @@ functions handling out the pointer).
 - store it twice
 - store it once but in one memory block
 
+## Decision
+
+Remove the escaped name from `struct _Key` and use it only when necessary.
+
 ## Open Points
 
 Clarify and reduce [terminology](/doc/help/elektra-glossary.md):
@@ -29,9 +33,8 @@ Clarify and reduce [terminology](/doc/help/elektra-glossary.md):
 - base name
 - dir name
 
-## Decision
+API Changes:
 
-- remove the escaped name from `_Key`
 - `keyName` returns the unescaped name
 - remove `keyUnescapedName`, `keyGetUnescapedNameSize`, `keyGetFullName`.
 - reverse terminology: with "key name" we will refer to the unescaped (base) name,
@@ -39,7 +42,6 @@ Clarify and reduce [terminology](/doc/help/elektra-glossary.md):
   "full name" (a variant of the escaped name) will not be used anymore.
 - escaped name will be only present in `keyNew` and `keyGetEscapedName`
 - rename `keyAddName`, e.g. to `keyAddEscapedName`
-  (or `keyAddFullName` if we decide to call the escaped name full name)
 - `keyDup` with arguments to filter which parts are copied
   (to allow copy of keys where only the key name is copied)
 
