@@ -30,7 +30,7 @@ metadata from `spec:` might end up in `user:`.
   for restoring configuration file formats.
   Rename metadata `<type>` in `spec:/` to `check/<type>`
   or `make/array`.
-  This way no merging of meta-data would be needed and
+  This way no merging of metadata would be needed and
   by the name alone it would be clear to which namespace
   it belongs.
 - Do not support `array` or `type` if the underlying
