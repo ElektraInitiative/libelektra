@@ -491,6 +491,90 @@ ssize_t keySetName (Key * key, const char * newName)
 }
 
 /**
+ * @brief Add an already escaped name to the keyname.
+ *
+ * The same way as in keySetName() this method finds the canonical pathname:
+ * - it will ignore /./
+ * - it will remove a level when /../ is used
+ * - it will remove multiple slashes ////
+ *
+ * For example:
+ * @snippet keyName.c add name
+ *
+ * Unlike keySetName() it adds relative to the previous name and
+ * cannot change the namespace of a key.
+ * For example:
+ * @snippet keyName.c namespace
+ *
+ * The passed name needs to be valid according the @link keyname key name rules @endlink.
+ * It is not allowed to:
+ * - be empty
+ * - end with unequal number of \\
+ *
+ * @param key the key where a name should be added
+ * @param newName the new name to append
+ *
+ * @pre @p key MUST be a valid #Key
+ *
+ * @since 0.8.11
+ *
+ * @retval -1 if `key == NULL`, @p key is read-only, `newName == NULL` or @p newName is not a valid escaped name
+ * @returns new size of the escaped name of @p key
+ *
+ * @ingroup keyname
+ */
+ssize_t keyAddName (Key * key, const char * newName)
+{
+	if (!key) return -1;
+	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (!newName) return -1;
+
+	while (*newName == '/')
+	{
+		// skip leading slashes
+		++newName;
+		if (*newName == '.' && *(newName + 1) == '/')
+		{
+			// also skip /./ parts
+			newName += 2;
+		}
+	}
+
+	if (strlen (newName) == 0) return key->keySize;
+
+	if (!elektraKeyNameValidate (newName, false))
+	{
+		// error invalid name suffix
+		return -1;
+	}
+
+	// from now on this function CANNOT fail -> we may modify the key
+
+	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	{
+		// key was in mmap region, clear flag and copy to malloced buffer
+		char * tmp = elektraMalloc (key->keySize);
+		memcpy (tmp, key->key, key->keySize);
+		key->key = tmp;
+
+		tmp = elektraMalloc (key->keyUSize);
+		memcpy (tmp, key->ukey, key->keyUSize);
+		key->ukey = tmp;
+
+		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
+	}
+
+	elektraKeyNameCanonicalize (newName, &key->key, &key->keySize, key->keySize, &key->keyUSize);
+
+	elektraRealloc ((void **) &key->ukey, key->keyUSize);
+
+	elektraKeyNameUnescape (key->key, key->ukey);
+
+	set_bit (key->flags, KEY_FLAG_SYNC);
+	return key->keySize;
+}
+
+/**
  * Takes an escaped key name and validates it.
  * Complete key names must inlcude a namespace or a leading slash.
  *
@@ -1329,90 +1413,6 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 	if (!key->key) return -1;
 
 	return keyAddBaseNameInternal (key, baseName);
-}
-
-/**
- * @brief Add an already escaped name to the keyname.
- *
- * The same way as in keySetName() this method finds the canonical pathname:
- * - it will ignore /./
- * - it will remove a level when /../ is used
- * - it will remove multiple slashes ////
- *
- * For example:
- * @snippet keyName.c add name
- *
- * Unlike keySetName() it adds relative to the previous name and
- * cannot change the namespace of a key.
- * For example:
- * @snippet keyName.c namespace
- *
- * The passed name needs to be valid according the @link keyname key name rules @endlink.
- * It is not allowed to:
- * - be empty
- * - end with unequal number of \\
- *
- * @param key the key where a name should be added
- * @param newName the new name to append
- *
- * @pre @p key MUST be a valid #Key
- *
- * @since 0.8.11
- *
- * @retval -1 if `key == NULL`, @p key is read-only, `newName == NULL` or @p newName is not a valid escaped name
- * @returns new size of the escaped name of @p key
- *
- * @ingroup keyname
- */
-ssize_t keyAddName (Key * key, const char * newName)
-{
-	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
-	if (!newName) return -1;
-
-	while (*newName == '/')
-	{
-		// skip leading slashes
-		++newName;
-		if (*newName == '.' && *(newName + 1) == '/')
-		{
-			// also skip /./ parts
-			newName += 2;
-		}
-	}
-
-	if (strlen (newName) == 0) return key->keySize;
-
-	if (!elektraKeyNameValidate (newName, false))
-	{
-		// error invalid name suffix
-		return -1;
-	}
-
-	// from now on this function CANNOT fail -> we may modify the key
-
-	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
-	{
-		// key was in mmap region, clear flag and copy to malloced buffer
-		char * tmp = elektraMalloc (key->keySize);
-		memcpy (tmp, key->key, key->keySize);
-		key->key = tmp;
-
-		tmp = elektraMalloc (key->keyUSize);
-		memcpy (tmp, key->ukey, key->keyUSize);
-		key->ukey = tmp;
-
-		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
-	}
-
-	elektraKeyNameCanonicalize (newName, &key->key, &key->keySize, key->keySize, &key->keyUSize);
-
-	elektraRealloc ((void **) &key->ukey, key->keyUSize);
-
-	elektraKeyNameUnescape (key->key, key->ukey);
-
-	set_bit (key->flags, KEY_FLAG_SYNC);
-	return key->keySize;
 }
 
 /**
