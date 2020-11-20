@@ -5,6 +5,7 @@
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
+// TODO (kodebach): remove?
 
 #include <kdb.h>
 #include <kdbconfig.h>
@@ -117,7 +118,6 @@ ssize_t keyGetOwnerSize (const Key * key)
 	return size;
 }
 
-// TODO (kodebach): update docu
 /**
  * Return the owner of the key.
  * - Given @p user:someuser:/..... return @p someuser

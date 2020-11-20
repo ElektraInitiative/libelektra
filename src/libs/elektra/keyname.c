@@ -170,6 +170,8 @@
  *
  * @param name a canonical key name
  * @param len the length of the key name
+ *
+ * @returns pointer to the start of the last part within @p name
  */
 static char * findStartOfLastPart (char * name, size_t len)
 {
@@ -377,11 +379,27 @@ ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
 	return key->keySize;
 }
 
-// TODO (kodebach): document
-size_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSize)
+/**
+ * Copies the unescaped name of a key into provided buffer.
+ * We will only copy the full name, if the buffer is to small an error code is returned.
+ *
+ * To ensure your buffer is big enough, you can use keyGetUnescapedNameSize() find the correct size.
+ *
+ * @param key          the Key to extract the unescaped name from
+ * @param returnedName output buffer
+ * @param maxSize      maximum bytes that can be copied into @p returnedName
+ *
+ * @pre @p key MUST be a valid #Key and `key != NULL`
+ * @pre @p returnedName MUST be allocated to be at least @p maxSize bytes big and `returnedName != NULL`
+ *
+ * @retval -1 precondition error
+ * @retval -2 the size of the unescaped name is bigger then @p maxSize
+ * @returns otherwise, the actual size of the unescaped name, i.e. the number of bytes copied into @p returnedName
+ */
+ssize_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSize)
 {
-	if (!key) return 0;
-	if (!returnedName) return 0;
+	if (!key) return -1;
+	if (!returnedName) return -1;
 
 	if (!key->ukey)
 	{
@@ -389,14 +407,14 @@ size_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSize
 		return 1;
 	}
 
-	if (key->keySize > maxSize)
+	if (key->keyUSize > maxSize)
 	{
-		return -1;
+		return -2;
 	}
 
 	memcpy (returnedName, key->ukey, maxSize);
 
-	return key->keySize;
+	return key->keyUSize;
 }
 
 /**
@@ -1166,6 +1184,9 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 	return outPtr - *escapedPart;
 }
 
+/**
+ * Internal helper for keyAddBaseName() and keySetBaseName()
+ */
 static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
 {
 	size_t unescapedSize;
@@ -1334,19 +1355,17 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
  * @param key the key where a name should be added
  * @param newName the new name to append
  *
+ * @pre @p key MUST be a valid #Key
+ *
  * @since 0.8.11
  *
- * @retval size of the new key
- * @retval -1 if key is a null pointer or the key has an empty name
- * @retval -1 if newName is not a valid escaped name
- * @retval -1 on allocation errors
- * @retval -1 if key was inserted to a keyset before
- * @retval 0 if nothing was done because newName had only slashes, is too short, is empty or is null
+ * @retval -1 if `key == NULL`, @p key is read-only, `newName == NULL` or @p newName is not a valid escaped name
+ * @returns new size of the escaped name of @p key
+ *
  * @ingroup keyname
  */
 ssize_t keyAddName (Key * key, const char * newName)
 {
-	// TODO (kodebach): error codes documentation
 	if (!key) return -1;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (!newName) return -1;
@@ -1493,6 +1512,8 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
  *
  * @param key the key object to work with
  * @return the namespace of a key.
+ *
+ * @ingroup keyname
  */
 elektraNamespace keyGetNamespace (const Key * key)
 {
@@ -1500,9 +1521,22 @@ elektraNamespace keyGetNamespace (const Key * key)
 	return (elektraNamespace) key->ukey[0];
 }
 
+/**
+ * Changes the namespace of a key. The rest of the name remains unchanged.
+ *
+ * @param key The #Key whose namespace will be changed
+ * @param ns  The new namespace of for @p key
+ *
+ * @pre @p ns MUST be a valid namespace and not #KEY_NS_NONE
+ * @pre @p key MUST be a valid #Key, especially `key != NULL`
+ *
+ * @retval -1 precondition error
+ * @returns the new size the @p{key}'s escaped name
+ *
+ * @ingroup keyname
+ */
 ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 {
-	// TODO (kodebach): document
 	if (!key) return -1;
 	if (ns == KEY_NS_NONE) return -1;
 
