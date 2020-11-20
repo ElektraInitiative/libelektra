@@ -1188,7 +1188,8 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 	if (partLen == 0)
 	{
 		// actually empty part
-		*escapedPart = elektraStrDup ("%");
+		elektraRealloc ((void **) escapedPart, 2);
+		strcpy (*escapedPart, "%");
 		return 1;
 	}
 
@@ -1198,7 +1199,8 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 		if (partLen == 1)
 		{
 			// escaped empty part
-			*escapedPart = elektraStrDup ("\\%");
+			elektraRealloc ((void **) escapedPart, 3);
+			strcpy (*escapedPart, "\\%");
 			return 2;
 		}
 		break;
@@ -1207,13 +1209,15 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 		{
 		case '\0':
 			// dot part
-			*escapedPart = elektraStrDup ("\\.");
+			elektraRealloc ((void **) escapedPart, 3);
+			strcpy (*escapedPart, "\\.");
 			return 2;
 		case '.':
 			if (partLen == 2)
 			{
 				// dot-dot part
-				*escapedPart = elektraStrDup ("\\..");
+				elektraRealloc ((void **) escapedPart, 4);
+				strcpy (*escapedPart, "\\..");
 				return 3;
 			}
 			break;
