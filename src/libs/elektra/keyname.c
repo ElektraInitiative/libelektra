@@ -165,6 +165,45 @@
 #include "kdbhelper.h"
 #include "kdbinternal.h"
 
+/**
+ * Helper method: returns a pointer to the start of the last part of the given key name
+ *
+ * @param name a canonical key name
+ * @param len the length of the key name
+ */
+static char * findStartOfLastPart (char * name, size_t len)
+{
+	char * colon = strchr (name, ':');
+	char * start = colon == NULL ? name : colon + 1;
+	++start; // start after first slash
+
+	char * cur = start + len - (start - name) - 1;
+
+	if (cur == start) return NULL; // no base name
+
+	while (cur >= start)
+	{
+		--cur;
+		while (cur >= start && *cur != '/')
+		{
+			--cur;
+		}
+
+		size_t backslashes = 0;
+		while (cur - backslashes > start && *(cur - backslashes - 1) == '\\')
+		{
+			++backslashes;
+		}
+
+		if (backslashes % 2 == 0)
+		{
+			break;
+		}
+	}
+
+	return cur < start - 1 ? NULL : cur;
+}
+
 
 /*******************************************
  *    General name manipulation methods    *
@@ -403,10 +442,7 @@ ssize_t keySetName (Key * key, const char * newName)
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (newName == NULL || strlen (newName) == 0) return -1;
 
-	size_t oldKeySize = key->keySize;
-	size_t oldKeyUSize = key->keyUSize;
-
-	if (!elektraKeyNameValidate (newName, NULL, &key->keySize, &key->keyUSize))
+	if (!elektraKeyNameValidate (newName, true))
 	{
 		// error invalid name
 		return -1;
@@ -424,32 +460,11 @@ ssize_t keySetName (Key * key, const char * newName)
 		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 
-	if (key->keySize > oldKeySize)
-	{
-		// buffer growing -> realloc first
-		elektraRealloc ((void **) &key->key, key->keySize);
-	}
+	elektraKeyNameCanonicalize (newName, &key->key, &key->keySize, 0, &key->keyUSize);
 
-	if (key->keyUSize > oldKeyUSize)
-	{
-		// buffer growing -> realloc first
-		elektraRealloc ((void **) &key->ukey, key->keyUSize);
-	}
+	elektraRealloc ((void **) &key->ukey, key->keyUSize);
 
-	elektraKeyNameCanonicalize (newName, &key->key, key->keySize, 0);
-	elektraKeyNameUnescape (key->key, &key->ukey);
-
-	if (key->keySize < oldKeySize)
-	{
-		// buffer shrinking -> realloc after
-		elektraRealloc ((void **) &key->key, key->keySize);
-	}
-
-	if (key->keyUSize < oldKeyUSize)
-	{
-		// buffer shrinking -> realloc after
-		elektraRealloc ((void **) &key->ukey, key->keyUSize);
-	}
+	elektraKeyNameUnescape (key->key, key->ukey);
 
 	set_bit (key->flags, KEY_FLAG_SYNC);
 
@@ -457,662 +472,463 @@ ssize_t keySetName (Key * key, const char * newName)
 	return key->keySize;
 }
 
-int elektraKeyNameValidate (const char * name, const char * prefix, size_t * sizePtr, size_t * usizePtr)
+/**
+ * Takes an escaped key name and validates it.
+ * Complete key names must inlcude a namespace or a leading slash.
+ *
+ * @param name       The escaped key name to check
+ * @param isComplete Whether or not @p name is supposed to be a complete key name
+ *
+ * @retval #true If @p name is a valid key name.
+ * @retval #false Otherwise
+ *
+ * @ingroup keyname
+ */
+bool elektraKeyNameValidate (const char * name, bool isComplete)
 {
-	if (name == NULL || (strlen (name) == 0 && prefix == NULL)) return 0;
+	if (name == NULL || (strlen (name) == 0 && isComplete)) return 0;
 
-	size_t size = strlen (name) + 1;  // +1 for terminator at end or separator at beginning
-	size_t usize = strlen (name) + 1; // +1 for terminator at end or separator at beginning
-
-	if (prefix == NULL)
+	if (isComplete)
 	{
-		if (*name != '/')
+		const char * colon = strchr (name, ':');
+		if (colon != NULL)
 		{
-			// check namespace
-			const char * colon = strchr (name, ':');
+			if (elektraReadNamespace (name, colon - name - 1) == KEY_NS_NONE)
+			{
+				ELEKTRA_LOG_DEBUG ("Illegal namespace '%.*s': %s", (int) (colon - name - 1), name, name);
+				return 0;
+			}
 
-			if (colon == NULL) return 0;
-			if (elektraReadNamespace (name, colon - name - 1) == KEY_NS_NONE) return 0;
+			if (*(colon + 1) != '/')
+			{
+				ELEKTRA_LOG_DEBUG ("Missing slash after namespace: %s", name);
+				return 0;
+			}
 
-			usize -= colon - name; // unescaped namespace is always 1 long
 			name = colon + 1;
 		}
-		else
+
+		if (*name != '/')
 		{
-			++usize; // unescaped namespace is always 1 long
-		}
-
-		if (*name != '/') return 0;
-		++name;
-	}
-
-	while (*name == '/')
-	{
-		// ignore additional leading slashes
-		++name;
-		--size;
-		--usize;
-	}
-
-	const char * pathStart = name;
-	size_t pathLen = strlen (pathStart);
-
-	if (pathLen == 0)
-	{
-		if (prefix == NULL)
-		{
-			// root key (cascading or with namespace)
-			*sizePtr = size;
-			*usizePtr = usize;
-			return 1;
-		}
-		else
-		{
-			// nothing to add
-			return 1;
+			ELEKTRA_LOG_DEBUG ("Illegal name start; expected (namespace +) slash: %s", name);
+			return 0;
 		}
 	}
 
-	// need to validate path in reverse because of /../ parts
-	name = pathStart + pathLen - 1;
-
-	// check backslashes at end of name
-	// this ONLY checks for dangling escapes, size adjustments are done in the main loop
-	size_t backslashes = 0;
-	while (name - backslashes >= pathStart && *(name - backslashes) == '\\')
+	const char * cur = name;
+	while ((cur = strchr (cur, '\\')) != NULL)
 	{
-		++backslashes;
-	}
+		++cur;
+		switch (*cur)
+		{
+		case '\0':
+			ELEKTRA_LOG_DEBUG ("Dangling escape: %s", name);
+			return 0;
+		case '\\':
+		case '/':
+			++cur;
+			// allowed anywhere
+			continue;
+		case '%':
+			if (*(cur - 2) == '/' && (*(cur + 1) == '/' || *(cur + 1) == '\0')) continue;
 
-	if (backslashes % 2 != 0)
-	{
-		// dangling escape
+			break;
+		case '.':
+			if (*(cur - 2) == '/' && (*(cur + 1) == '/' || *(cur + 1) == '\0')) continue;
+			if (*(cur - 2) == '/' && *(cur + 1) == '.' && (*(cur + 2) == '/' || *(cur + 2) == '\0')) continue;
+
+			break;
+		case '#': {
+			const char * end = cur + 1;
+			while (isdigit (*end))
+			{
+				++end;
+			}
+			size_t len = end - cur;
+
+			bool check1 = *end == '/' || *end == '\0';
+			bool check2 = len < 20 || strncmp (cur + 1, "9223372036854775807", 19) <= 0;
+			bool check3 = *(cur + 1) != '0';
+
+			if (check1 && check2 && check3) continue;
+
+			break;
+		}
+		}
+
+
+		ELEKTRA_LOG_DEBUG ("Illegal escape '\\%c': %s", *cur, name);
 		return 0;
 	}
 
-	enum
-	{
-		PART_END,
-		DIGITS,
-		UNDERSCORES,
-		OTHER
-	} state = PART_END;
-
-	char prev = '\0';
-	size_t partLen = 0;
-	size_t digits = 0;
-	size_t underscores = 0;
-	size_t skip = 0;
-	while (name >= pathStart)
-	{
-		size_t trailingSlashes = 0;
-		if (state == PART_END)
-		{
-			// count trailing slashes (the last one might be escaped)
-			while (name - trailingSlashes >= pathStart && *(name - trailingSlashes) == '/')
-			{
-				++trailingSlashes;
-			}
-		}
-
-		// count upcomming backslashes
-		backslashes = 0;
-		size_t backslashOffset = trailingSlashes == 0 ? 1 : trailingSlashes;
-		while (name - backslashOffset - backslashes >= pathStart && *(name - backslashOffset - backslashes) == '\\')
-		{
-			++backslashes;
-		}
-
-		int escaped = backslashes % 2 != 0;
-
-		// the last trailing slash is actually escaped
-		if (trailingSlashes > 0 && escaped)
-		{
-			--trailingSlashes;
-		}
-
-		name -= trailingSlashes;
-		size -= trailingSlashes;
-		usize -= trailingSlashes;
-
-		char cur = *name;
-
-		switch (state)
-		{
-		case PART_END:
-			if (isdigit (cur))
-			{
-				digits = 1;
-				partLen = 1;
-				state = DIGITS;
-			}
-			else
-			{
-				partLen = 1;
-				state = OTHER;
-			}
-			break;
-		case DIGITS:
-			if (isdigit (cur))
-			{
-				++digits;
-			}
-			else
-			{
-				if (cur == '_')
-				{
-					underscores = 1;
-					state = UNDERSCORES;
-				}
-				else
-				{
-					state = OTHER;
-				}
-			}
-			break;
-		case UNDERSCORES:
-			if (cur == '_')
-			{
-				++underscores;
-				state = UNDERSCORES;
-			}
-			else
-			{
-				state = OTHER;
-			}
-			break;
-		case OTHER:
-			digits = 0;
-			underscores = 0;
-			break;
-		}
-
-		// move past cur
-		--name;
-
-		// move past upcomming backslashes
-		name -= backslashes;
-		if (skip == 0)
-		{
-			usize -= backslashes / 2;
-		}
-		partLen += backslashes;
-
-		if (escaped)
-		{
-			if (skip == 0)
-			{
-				--usize;
-			}
-
-			// uneven number of backslashes -> check escape sequence
-			if (backslashes == 1 && (name < pathStart || *name == '/'))
-			{
-				if (cur != '\\' && cur != '/' && cur != '.' && cur != '#' && cur != '%' && cur != '@')
-				{
-					// illegal escape sequence (at start of part)
-					return 0;
-				}
-			}
-			else
-			{
-				if (cur != '\\' && cur != '/')
-				{
-					// illegal escape sequence (in middle of part)
-					return 0;
-				}
-			}
-		}
-		else if (backslashes > 0)
-		{
-			// even number of backslashes -> cur is '\\' after moving past backslashes
-			cur = '\\';
-		}
-
-		int partStart = 0;
-		if (name < pathStart || *name == '/')
-		{
-			size_t count = 0;
-			while (name - 1 - count >= pathStart && *(name - 1 - count) == '\\')
-			{
-				++count;
-			}
-
-			if (count % 2 == 0)
-			{
-				partStart = 1;
-			}
-		}
-
-		if (state != PART_END && partStart)
-		{
-			// reached start of part, cur is first char in part, name points to char left of cur starting the part
-			// escaped indicates whether cur is escaped
-			int isSkip = 0;
-			if (!escaped)
-			{
-				switch (cur)
-				{
-				case '#':
-					if (partLen == 1) break;
-
-					if (digits == 0 || (underscores > 0 && underscores != digits - 1) || digits > 19 ||
-					    (digits == 19 && strncmp (&name[2 + underscores], "9223372036854775807", 19) > 0) ||
-					    (name[2 + underscores] == '0' && digits != 1))
-					{
-						// invalid array part
-						return 0;
-					}
-
-					if (skip == 0)
-					{
-						// account for potentially missing underscores
-						size += (digits - 1) - underscores;  // digits - 1 or 0
-						usize += (digits - 1) - underscores; // digits - 1 or 0
-					}
-
-					break;
-				case '%':
-					if (partLen == 1 && skip == 0)
-					{
-						--usize;
-					}
-					break;
-				case '@':
-					// reserved
-					return 0;
-				case '.':
-					if (partLen == 1 && skip == 0)
-					{
-						// part was '/./'
-						--size;
-						--usize;
-
-						if (usize > 3 || prefix != NULL)
-						{
-							--size;
-							--usize;
-						}
-					}
-					else if (partLen == 2 && prev == '.')
-					{
-						// part was '/../'
-						// size updated below
-						isSkip = 1;
-					}
-					break;
-				default:
-					break;
-				}
-			}
-
-			if (name >= pathStart)
-			{
-				// move past slash
-				--name;
-			}
-
-			if (skip > 0 || isSkip)
-			{
-				// subtract part
-				size -= partLen;
-				usize -= partLen;
-
-				if (usize > 3 || prefix != NULL)
-				{
-					// subtract slash
-					--size;
-					--usize;
-				}
-
-				if (!isSkip)
-				{
-					// finished skipping a part
-					--skip;
-				}
-			}
-
-			if (isSkip)
-			{
-				++skip;
-			}
-
-			digits = 0;
-			underscores = 0;
-
-			state = PART_END;
-		}
-
-		++partLen;
-		prev = cur;
-	}
-
-	if (prefix == NULL)
-	{
-		if (skip > 0) return 0; // too many .. parts
-	}
-	else
-	{
-		size_t psize = *sizePtr;
-		size_t pusize = *usizePtr;
-
-		if (skip > 0)
-		{
-			// some .. parts left to handle
-			while (skip > 0)
-			{
-				// still some .. parts left to handle
-				do
-				{
-					// subtract slash
-					--psize;
-					--pusize;
-
-					if (pusize < 3) return 0; // reached namespace
-
-					while (pusize >= 3 && prefix[psize - 1] != '/')
-					{
-						--psize;
-						--pusize;
-					}
-				} while (pusize >= 3 && prefix[psize - 2] == '\\');
-
-				--skip;
-			}
-
-			if (pusize == 2)
-			{
-				// re-add terminator
-				++psize;
-				++pusize;
-			}
-		}
-
-		if (pusize == 3 && size > 0)
-		{
-			// namespace root key already has slash at end
-			--psize;
-			--pusize;
-		}
-
-		size += psize;
-		usize += pusize;
-	}
-
-	*sizePtr = size;
-	*usizePtr = usize;
 	return 1;
 }
 
-// assume name is validated with elektraKeyNameValidate, otherwise behaviour undef
-// return size including zero terminator -> 0 is error
-void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t canonicalSize, size_t offset)
+/**
+ * Takes a valid (non-)canonical key name and produces its canonical form.
+ * As a side-effect it can also calculate the size of the corresponding unescaped key name.
+ *
+ * @param name          The key name that is processed
+ * @param canonicalName Output buffer for the canonical name
+ * @param canonicalSizePtr Pointer to size of @p canonicalName
+ * @param offset        Offset into @p canonicalName
+ * @param usizePtr      Output variable for the size of the unescaped name
+ *
+ * @pre @p name MUST be a valid (non-)canonical key name. If it is not, the result is undefined
+ * @pre @p canonicalName MUST be a valid first argument for elektraRealloc() when cast to void**
+ * @pre @p canonicalSizePtr >= @p offset
+ * @pre @p offset MUST be 0 or `*canonicalName + offset` MUST point to the zero-termintor of a valid canonical key name that starts at
+ * `*canonicalName`
+ * @pre if @p offset is 0 then `*usizePtr` MUST 0, otherwise `*usizePtr` MUST be the correct unescaped size of the existing canonical name
+ * in `*canonicalName`
+ *
+ * @see elektraKeyNameValidate
+ *
+ * @ingroup keyname
+ */
+void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t * canonicalSizePtr, size_t offset, size_t * usizePtr)
 {
-	// TODO (kodebach): check and document
-	char * cname = *canonicalName + offset;
-	char * outPtr = cname;
+	size_t nameLen = strlen (name) + 1;
 
+	// ensure output is at least as big as input
+	// output buffer will be enlarged when needed
+	// at the end we shrink to the correct size
+	if (offset + nameLen + 1 > *canonicalSizePtr)
+	{
+		*canonicalSizePtr = offset + nameLen;
+		elektraRealloc ((void **) canonicalName, *canonicalSizePtr);
+	}
+
+	char * outPtr;
+	size_t usize;
+
+	// stores start of first part
+	size_t rootOffset;
 	if (offset == 0)
 	{
-		if (name[0] != '/')
+		// namespace byte
+		usize = 1;
+		outPtr = *canonicalName;
+
+		if (*name != '/')
 		{
-			// handle namespace
-			const char * colonSlash = strstr (name, ":/");
-			size_t len = colonSlash - name;
-			memcpy (outPtr, name, len);
-			outPtr += len;
-			*outPtr++ = ':';
-			name = colonSlash + 1;
+			// find end of namespace
+			const char * colon = strchr (name, ':');
+
+			// copy namespace
+			memcpy (outPtr, name, colon - name + 1);
+			outPtr += colon - name + 1;
+			name = colon + 1;
 		}
+
+		rootOffset = outPtr - *canonicalName;
+
+		// handle root slash
 		*outPtr++ = '/';
-		++name;
-	}
-
-	while (*name == '/')
-	{
-		// ignore additional leading slashes
-		++name;
-	}
-
-	const char * pathStart = name;
-	size_t pathLen = strlen (pathStart);
-
-	if (pathLen == 0)
-	{
-		// no path -> just terminate
-		*outPtr = '\0';
-		return;
-	}
-
-	// canonicalize path in reverse because of ..
-	name = pathStart + pathLen - 1;
-	outPtr = *canonicalName + canonicalSize - 1;
-
-	// terminate
-	*outPtr = '\0';
-
-	enum
-	{
-		PART_END,
-		DIGITS,
-		UNDERSCORES,
-		OTHER
-	} state = PART_END;
-
-	char prev = '\0';
-	size_t skip = 0;
-	size_t digits = 0;
-	size_t underscores = 0;
-	size_t partLen = 0;
-	while (name >= pathStart)
-	{
-		char cur = *name;
-
-		// count upcomming backslashes
-		size_t backslashes = 0;
-		while (name - 1 - backslashes >= pathStart && *(name - 1 - backslashes) == '\\')
-		{
-			++backslashes;
-		}
-
-		int escaped = backslashes % 2 != 0;
-
-		switch (state)
-		{
-		case PART_END:
-			if (isdigit (cur))
-			{
-				digits = 1;
-				partLen = 1;
-				state = DIGITS;
-			}
-			else if (cur != '/' || escaped)
-			{
-				partLen = 1;
-				state = OTHER;
-			}
-			break;
-		case DIGITS:
-			if (isdigit (cur))
-			{
-				++digits;
-			}
-			else
-			{
-				if (cur == '_')
-				{
-					underscores = 1;
-					state = UNDERSCORES;
-				}
-				else
-				{
-					state = OTHER;
-				}
-			}
-			break;
-		case UNDERSCORES:
-			if (cur == '_')
-			{
-				++underscores;
-				state = UNDERSCORES;
-			}
-			else
-			{
-				state = OTHER;
-			}
-			break;
-		case OTHER:
-			digits = 0;
-			underscores = 0;
-			break;
-		}
-
-		// move past cur
-		--name;
-
-		if (state != PART_END && (name < pathStart || (*name == '/' && *(name - 1) != '\\')))
-		{
-			// reached start of part, cur is first char in part, name points to char left of cur starting the part
-			int isSkip = 0;
-			switch (cur)
-			{
-			case '#':
-				if (skip == 0)
-				{
-					if (digits > 0)
-					{
-						outPtr -= digits;
-						memcpy (outPtr, name + 2 + underscores, digits);
-						outPtr -= digits - 1;
-						memset (outPtr, '_', digits - 1);
-					}
-					*--outPtr = '#';
-					*--outPtr = '/';
-				}
-				break;
-			case '.':
-				if (partLen == 1)
-				{
-					// part was '/./' -> ignored
-				}
-				else if (partLen == 2 && prev == '.')
-				{
-					// part was '/../'
-					isSkip = 1;
-				}
-				else if (skip == 0)
-				{
-					// other part starting with .
-					outPtr -= partLen;
-					memcpy (outPtr, name + 1, partLen);
-					*--outPtr = '/';
-				}
-				break;
-			default:
-				if (skip == 0)
-				{
-					outPtr -= partLen;
-					memcpy (outPtr, name + 1, partLen);
-					*--outPtr = '/';
-				}
-				break;
-			}
-
-			if (name >= pathStart)
-			{
-				// move past slash
-				--name;
-			}
-
-			if (skip > 0 && !isSkip)
-			{
-				// finished skipping a part
-				--skip;
-			}
-
-			if (isSkip)
-			{
-				++skip;
-			}
-
-			digits = 0;
-			underscores = 0;
-
-			state = PART_END;
-		}
-
-		++partLen;
-		prev = cur;
-	}
-}
-
-// assumes name is canonical
-void elektraKeyNameUnescape (const char * canonicalName, char ** unescapedName)
-{
-	// TODO (kodebach): check and document
-
-	char * uname = *unescapedName;
-	char * outPtr = uname;
-
-	const char * lastSpecial = canonicalName;
-
-	if (canonicalName[0] != '/')
-	{
-		const char * colonSlash = strstr (canonicalName, ":/");
-		*outPtr++ = elektraReadNamespace (canonicalName, colonSlash - canonicalName);
-		lastSpecial = colonSlash + 1;
+		usize += 1;
 	}
 	else
 	{
+		usize = *usizePtr;
+		outPtr = *canonicalName + offset - 2;
+
+		if (usize == 3)
+		{
+			// root key -> re-use trailing slash
+			--usize;
+			++outPtr;
+		}
+		else
+		{
+			// not root key -> add trailing slash
+			*++outPtr = '/';
+			++outPtr;
+		}
+
+		// find root slash
+		if (**canonicalName == '/')
+		{
+			rootOffset = 0;
+		}
+		else
+		{
+			rootOffset = strchr (*canonicalName, ':') - *canonicalName + 1;
+		}
+	}
+
+	while (*name != '\0')
+	{
+		// STATE: name -- on part separator or first char of part
+		//        outPtr -- start of new part
+		//        usize -- namespace + separator + previous parts + separator
+		//     -> skip part separator
+		if (*name == '/')
+		{
+			++name;
+		}
+
+		// STATE: name -- first char of part
+		//        outPtr -- start of new part
+		//        usize -- namespace + separator + previous parts + separator
+		//     -> skip all leading slashes ...
+		while (*name == '/')
+		{
+			++name;
+		}
+
+		// ... then check for special part
+		switch (*name)
+		{
+		case '\0':
+			// STATE: name -- end of string
+			//        outPtr -- trailing slash
+			//        usize -- namespace + separator + previous parts + separator
+			//     -> next iteration: loop will end, trailing slash will be replaced with terminator
+			continue;
+		case '.':
+			switch (*(name + 1))
+			{
+			case '/':
+			case '\0':
+				// dot-part -> skip
+				++name;
+				// STATE: name -- part separator
+				//        outPtr -- trailing slash
+				//        usize -- namespace + separator + previous parts + separator
+				//     -> next iteration: trailing slash will be overwritten
+				continue;
+			case '.':
+				if (*(name + 2) == '/' || *(name + 2) == '\0')
+				{
+					// dot-dot-part -> go back one part
+
+					// 1. terminate outPtr so that findStartOfLastPart works
+					*outPtr = '\0';
+
+					// 2. find start of previous part
+					char * newOutPtr = findStartOfLastPart (*canonicalName, outPtr - *canonicalName);
+
+					// 3. calculate unescaped length of part, including separator
+					size_t ulen = outPtr - newOutPtr - 1;
+
+					// 4. adjust pointers
+					name += 2;
+					outPtr = newOutPtr + 1;
+
+					// 5. if previous part is empty ('%') ...
+					if (ulen == 2 && *newOutPtr + 1 == '%')
+					{
+						// 5a. ... then adjust len
+						ulen = 1;
+					}
+					else
+					{
+						// 5b. ... else account of backslahes
+						size_t backslashes = 0;
+						for (size_t i = 1; i + 1 < ulen; ++i)
+						{
+							if (*(newOutPtr + i) == '\\')
+							{
+								++backslashes;
+							}
+						}
+						ulen -= (backslashes + 1) / 2;
+					}
+
+					// 6. adjust usize
+					ELEKTRA_ASSERT (ulen <= usize - 2, "usize underflow");
+					usize -= ulen;
+
+					// STATE: name -- part separator
+					//        outPtr -- start of this part
+					//        usize -- namespace + separator + parts before previous part + separator
+					//     -> next iteration: part will be overwritten
+					continue;
+				}
+				break;
+			}
+			break;
+		case '%':
+			if (*(name + 1) == '/' || *(name + 1) == '\0')
+			{
+				// empty part -> copy but only count / in usize
+				++name;
+				*outPtr++ = '%';
+				*outPtr++ = '/';
+				usize++;
+
+				// STATE: name -- on part separator or end of string
+				//        outPtr -- after last part
+				//        usize -- namespace + separator + previous parts + separator + (empty part) + separator
+				continue;
+			}
+			break;
+		case '#': {
+			// find end of digits
+			const char * end = name + 1;
+			while (isdigit (*end))
+			{
+				++end;
+			}
+			size_t len = end - name - 1;
+
+			bool check1 = *end == '/' || *end == '\0';
+			bool check2 = *(name + 1) != '0';
+
+			if (len > 0 && check1 && check2 && (len < 19 || (len == 19 && strncmp (name + 1, "9223372036854775807", 19) <= 0)))
+			{
+				// non-canonical array part -> add underscores
+
+				// but first update buffer
+				size_t pos = outPtr - *canonicalName;
+
+				*canonicalSizePtr += offset + len - 1;
+				elektraRealloc ((void **) canonicalName, *canonicalSizePtr);
+				outPtr = *canonicalName + pos;
+
+				*outPtr = '#';
+				memset (outPtr + 1, '_', len - 1);
+				memcpy (outPtr + len, name + 1, len);
+				outPtr += 2 * len;
+				*outPtr++ = '/';
+				usize += 2 * len + 1;
+				name = end;
+
+				// STATE: name -- part separator
+				//        outPtr -- after this part
+				//        usize -- namespace + separator + previous parts + separator + current part + separator
+				//     -> next iteration: new part will be started
+				continue;
+			}
+			break;
+		}
+		}
+
+		// STATE: name -- first char of non-special part
+		//        outPtr -- start of new part
+		//        usize -- previous parts + separator
+		//     -> find end of part
+		const char * end = name;
+		while (*end != '\0')
+		{
+			size_t backslashes = 0;
+			while (*end == '\\')
+			{
+				++backslashes;
+				++end;
+			}
+
+			usize += backslashes / 2;
+			if (*end == '\0' || (*end == '/' && backslashes % 2 == 0))
+			{
+				break;
+			}
+
+			++end;
+			usize += 1;
+		}
+
+		size_t len = end - name;
+
+		// STATE: name -- start of part
+		//        end -- end of part
+		//        outPtr -- start of new part
+		//        usize -- previous parts + separator + current part
+		//     -> copy part +  part separator
+		memcpy (outPtr, name, len);
+		outPtr += len;
+		*outPtr++ = '/';
+		usize += 1;
+		name += len;
+
+		// STATE: name -- on part separator or end of string
+		//        outPtr -- after last part
+		//        usize -- namespace + separator + previous parts + separator + current part + separator
+	}
+
+	// terminate
+	if (outPtr > *canonicalName + rootOffset + 1)
+	{
+		// not a root key -> need to replace trailing slash
+		--outPtr;
+	}
+	else if (offset == 0 || usize == 2)
+	{
+		// root key -> don't replace slash, need to adjust usize
+		++usize;
+	}
+	*outPtr = '\0';
+
+	// output size and shrink buffer
+	*canonicalSizePtr = outPtr - *canonicalName + 1;
+	elektraRealloc ((void **) canonicalName, *canonicalSizePtr);
+
+	// output unescape size if requested
+	if (usizePtr != NULL)
+	{
+		*usizePtr = usize;
+	}
+}
+
+/**
+ * Takes a canonical key name and unescapes it.
+ *
+ * @param canonicalName The canonical name to unescape
+ * @param unescapedName Output buffer for the unescaped name
+ *
+ * @pre @p canonicalName MUST be a canonical key name. If this is not the case, the result is undefined.
+ * @pre @p unescapedName MUST be allocated to the correct size.
+ *
+ * @see elektraKeyNameCanonicalize
+ *
+ * @ingroup keyname
+ */
+void elektraKeyNameUnescape (const char * canonicalName, char * unescapedName)
+{
+	char * outPtr = unescapedName;
+
+	if (canonicalName[0] != '/')
+	{
+		// translate namespace
+		const char * colon = strchr (canonicalName, ':');
+		*outPtr++ = elektraReadNamespace (canonicalName, colon - canonicalName);
+		canonicalName = colon + 1;
+	}
+	else
+	{
+		// set cascading namespace
 		*outPtr++ = KEY_NS_CASCADING;
 	}
 
-
-	// copy piecewise between special characters
-	const char * nextSpecial;
-	while ((nextSpecial = strpbrk (lastSpecial, "%\\")) != NULL)
+	while (*canonicalName != '\0')
 	{
-		// copy stuff before special
-		if (nextSpecial > lastSpecial)
+		switch (*canonicalName)
 		{
-			size_t len = nextSpecial - lastSpecial;
-			memcpy (outPtr, lastSpecial, len);
+		case '\\':
+			// escape sequence: skip backslash ...
+			++canonicalName;
 
-			// replace / with \0
-			for (size_t i = 0; i < len; ++i, ++outPtr)
+			// ... and output escaped char
+			*outPtr++ = *canonicalName;
+			++canonicalName;
+			break;
+		case '/':
+			// new part: output zero-byte part separator and ...
+			*outPtr++ = '\0';
+			++canonicalName;
+
+			// ... check for empty part
+			if (*canonicalName == '%' && (*(canonicalName + 1) == '/' || *(canonicalName + 1) == '\0'))
 			{
-				if (*outPtr == '/')
-				{
-					*outPtr = '\0';
-				}
+				// skip percent
+				++canonicalName;
 			}
-		}
-
-		if (*nextSpecial == '\\')
-		{
-			*outPtr++ = *++nextSpecial;
-		}
-		else if (*nextSpecial == '%')
-		{
-			if (*(nextSpecial - 1) != '/' || (*(nextSpecial + 1) != '/' && *(nextSpecial + 1) != '\0'))
-			{
-				*outPtr++ = '%';
-			}
-		}
-
-		lastSpecial = nextSpecial + 1;
-	}
-
-	// copy rest of name
-	size_t len = strlen (lastSpecial);
-	memcpy (outPtr, lastSpecial, len);
-
-	// replace / with \0
-	for (size_t i = 0; i < len; ++i, ++outPtr)
-	{
-		if (*outPtr == '/')
-		{
-			*outPtr = '\0';
+			break;
+		default:
+			// nothing special, just output
+			*outPtr++ = *canonicalName;
+			++canonicalName;
+			break;
 		}
 	}
 
@@ -1236,69 +1052,83 @@ ssize_t keyGetBaseName (const Key * key, char * returned, size_t maxSize)
 	return baseSize;
 }
 
+/**
+ * Takes a single key name part and produces its escaped form.
+ *
+ * @param part A single key name part, i.e. contained '/' will be escaped, '\0' terminates part
+ * @param escapedPart Output buffer for the escaped form
+ *
+ * @pre @p escapedPart MUST be a valid first argument for elektraRealloc() when cast to `void**`
+ *
+ * @returns The size of the escaped form excluding the zero terminator
+ */
 size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 {
 	if (!part) return 0;
 
 	size_t partLen = strlen (part);
+
+	// first check for special parts
 	if (partLen == 0)
 	{
-		elektraRealloc ((void **) escapedPart, 2);
-		**escapedPart = '%';
-		*(*escapedPart + 1) = '\0';
+		// actually empty part
+		*escapedPart = elektraStrDup ("%");
 		return 1;
 	}
 
-	if (partLen == 1 && part[0] == '.')
+	switch (part[0])
 	{
-		elektraRealloc ((void **) escapedPart, 3);
-		**escapedPart = '\\';
-		*(*escapedPart + 1) = '.';
-		*(*escapedPart + 2) = '\0';
-		return 2;
+	case '%':
+		if (partLen == 1)
+		{
+			// escaped empty part
+			*escapedPart = elektraStrDup ("\\%");
+			return 2;
+		}
+		break;
+	case '.':
+		switch (part[1])
+		{
+		case '\0':
+			// dot part
+			*escapedPart = elektraStrDup ("\\.");
+			return 2;
+		case '.':
+			if (partLen == 2)
+			{
+				// dot-dot part
+				*escapedPart = elektraStrDup ("\\..");
+				return 3;
+			}
+			break;
+		}
+		break;
+	case '#':
+		if (partLen > 1)
+		{
+			// possibly (non-)canonical array part
+			size_t digits = 0;
+			while (isdigit (part[1 + digits]))
+			{
+				++digits;
+			}
+
+			if (digits > 1 && part[1] != '0' &&
+			    (digits < 19 || (digits == 19 && strncmp (&part[1], "9223372036854775807", 19) <= 0)))
+			{
+				// non-canonical array part -> need to escape
+				elektraRealloc ((void **) escapedPart, partLen + 2);
+				**escapedPart = '\\';
+				memcpy (*escapedPart + 1, part, partLen + 1);
+				return partLen + 1;
+			}
+		}
+		break;
 	}
 
-	if (partLen == 2 && part[0] == '.' && part[1] == '.')
-	{
-		elektraRealloc ((void **) escapedPart, 4);
-		**escapedPart = '\\';
-		*(*escapedPart + 1) = '.';
-		*(*escapedPart + 2) = '.';
-		*(*escapedPart + 3) = '\0';
-		return 3;
-	}
-
-	if (part[0] == '#' && partLen != 1)
-	{
-		size_t underscores = 0;
-		while (part[1 + underscores] == '_')
-		{
-			++underscores;
-		}
-
-		size_t digits = 0;
-		while (isdigit (part[1 + underscores + digits]))
-		{
-			++digits;
-		}
-
-		if (partLen != 1 + underscores + digits || digits == 0 || underscores != digits - 1 || digits > 19 ||
-		    (digits == 19 && strncmp (&part[1 + underscores], "9223372036854775807", 19) > 0) ||
-		    (part[1 + underscores] == '0' && digits > 1))
-		{
-			// not a correct array part -> need to escape
-			elektraRealloc ((void **) escapedPart, partLen + 2);
-			**escapedPart = '\\';
-			memcpy (*escapedPart + 1, part, partLen);
-			*(*escapedPart + partLen + 1) = '\0';
-			return partLen + 1;
-		}
-	}
-
-	int specialStart = strchr ("%@/\\", part[0]) != NULL;
-	size_t special = specialStart ? 1 : 0;
-
-	const char * cur = part + 1;
+	// not a special part -> just escape backslash and slash
+	size_t special = 0;
+	const char * cur = part;
 	while ((cur = strpbrk (cur, "/\\")) != NULL)
 	{
 		++special;
@@ -1307,36 +1137,19 @@ size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart)
 
 	elektraRealloc ((void **) escapedPart, partLen + special + 1);
 
+	cur = part;
 	char * outPtr = *escapedPart;
-
-	if (specialStart)
+	while (*cur != '\0')
 	{
-		*outPtr++ = '\\';
-	}
-
-	const char * last = part;
-	while ((cur = strpbrk (last, "/\\")) != NULL)
-	{
-		size_t len = cur - last;
-		memcpy (outPtr, last, len);
-		outPtr += len;
-
-		if (cur > part)
+		if (*cur == '/' || *cur == '\\')
 		{
-			// start backslash already added above
 			*outPtr++ = '\\';
 		}
-		*outPtr++ = *cur;
-
-		last = cur + 1;
+		*outPtr++ = *cur++;
 	}
+	*outPtr = '\0';
 
-	size_t len = strlen (last);
-	memcpy (outPtr, last, len);
-	outPtr += len;
-	*outPtr++ = '\0';
-
-	return outPtr - *escapedPart - 1;
+	return outPtr - *escapedPart;
 }
 
 static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
@@ -1537,10 +1350,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 	if (strlen (newName) == 0) return key->keySize;
 
-	size_t oldKeySize = key->keySize;
-	size_t oldKeyUSize = key->keyUSize;
-
-	if (!elektraKeyNameValidate (newName, key->key, &key->keySize, &key->keyUSize))
+	if (!elektraKeyNameValidate (newName, false))
 	{
 		// error invalid name suffix
 		return -1;
@@ -1562,69 +1372,14 @@ ssize_t keyAddName (Key * key, const char * newName)
 		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 
-	if (key->keySize > oldKeySize)
-	{
-		// buffer growing -> realloc first
-		elektraRealloc ((void **) &key->key, key->keySize);
-	}
+	elektraKeyNameCanonicalize (newName, &key->key, &key->keySize, key->keySize, &key->keyUSize);
 
-	if (key->keyUSize > oldKeyUSize)
-	{
-		// buffer growing -> realloc first
-		elektraRealloc ((void **) &key->ukey, key->keyUSize);
-	}
+	elektraRealloc ((void **) &key->ukey, key->keyUSize);
 
-	elektraKeyNameCanonicalize (newName, &key->key, key->keySize, oldKeySize);
-	elektraKeyNameUnescape (key->key, &key->ukey);
-
-	if (key->keySize < oldKeySize)
-	{
-		// buffer shrinking -> realloc after
-		elektraRealloc ((void **) &key->key, key->keySize);
-	}
-
-	if (key->keyUSize < oldKeyUSize)
-	{
-		// buffer shrinking -> realloc after
-		elektraRealloc ((void **) &key->ukey, key->keyUSize);
-	}
+	elektraKeyNameUnescape (key->key, key->ukey);
 
 	set_bit (key->flags, KEY_FLAG_SYNC);
 	return key->keySize;
-}
-
-static const char * elektraKeyFindBaseNamePtr (Key * key)
-{
-	// TODO (kodebach): document
-	const char * colon = strchr (key->key, ':');
-	const char * start = colon == NULL ? key->key : colon + 1;
-	++start; // start after first slash
-
-	const char * cur = start + key->keySize - (start - key->key) - 1;
-
-	if (cur == start) return NULL; // no base name
-
-	while (cur >= start)
-	{
-		--cur;
-		while (cur >= start && *cur != '/')
-		{
-			--cur;
-		}
-
-		size_t backslashes = 0;
-		while (cur - backslashes > start && *(cur - backslashes - 1) == '\\')
-		{
-			++backslashes;
-		}
-
-		if (backslashes % 2 == 0)
-		{
-			break;
-		}
-	}
-
-	return cur < start - 1 ? NULL : cur;
 }
 
 /**
@@ -1681,7 +1436,7 @@ ssize_t keySetBaseName (Key * key, const char * baseName)
 	if (!key->key) return -1;
 
 	// adjust sizes to exclude base name
-	const char * baseNamePtr = elektraKeyFindBaseNamePtr (key);
+	const char * baseNamePtr = findStartOfLastPart (key->key, key->keySize);
 	if (baseNamePtr == NULL)
 	{
 		return -1;

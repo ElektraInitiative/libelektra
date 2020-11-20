@@ -64,15 +64,13 @@ static void test_elektraStrLen (void)
 #define TEST_VALIDATE_NAME_OK(NAME, MSG)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		size_t s = 2, u = 3;                                                                                                       \
-		succeed_if (elektraKeyNameValidate (NAME, "/", &s, &u), MSG " ok");                                                        \
+		succeed_if (elektraKeyNameValidate (NAME, false), MSG " ok");                                                              \
 	} while (0)
 
 #define TEST_VALIDATE_NAME_NOK(NAME, MSG)                                                                                                  \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		size_t s = 2, u = 3;                                                                                                       \
-		succeed_if (!elektraKeyNameValidate (NAME, "/", &s, &u), MSG "not ok");                                                    \
+		succeed_if (!elektraKeyNameValidate (NAME, false), MSG "not ok");                                                          \
 	} while (0)
 
 static void test_elektraKeyNameValidate (void)
@@ -141,23 +139,23 @@ static void test_elektraKeyNameUnescape (void)
 	char * dest = buf;
 	char * p = NULL;
 
-	elektraKeyNameUnescape ("/abc", &dest);
+	elektraKeyNameUnescape ("/abc", dest);
 	succeed_if_same_string ("abc", dest + 2);
 
-	elektraKeyNameUnescape ("/\\\\.", &dest);
+	elektraKeyNameUnescape ("/\\\\.", dest);
 	succeed_if_same_string ("\\.", dest + 2);
 
-	elektraKeyNameUnescape ("/abc/def", &dest);
+	elektraKeyNameUnescape ("/abc/def", dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("/abc\\/def", &dest);
+	elektraKeyNameUnescape ("/abc\\/def", dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc/def", p);
 
-	elektraKeyNameUnescape ("/abc/%/def", &dest);
+	elektraKeyNameUnescape ("/abc/%/def", dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
@@ -165,7 +163,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 1;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("/abc/\\%/def", &dest);
+	elektraKeyNameUnescape ("/abc/\\%/def", dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
@@ -173,7 +171,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 2;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("/abc/\\./def", &dest);
+	elektraKeyNameUnescape ("/abc/\\./def", dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
@@ -181,7 +179,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 2;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("/abc/\\../def", &dest);
+	elektraKeyNameUnescape ("/abc/\\../def", dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
@@ -189,7 +187,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 3;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("/abc/\\\\../def", &dest);
+	elektraKeyNameUnescape ("/abc/\\\\../def", dest);
 	p = dest + 2;
 	succeed_if_same_string ("abc", p);
 	p += 4;
@@ -197,7 +195,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 4;
 	succeed_if_same_string ("def", p);
 
-	elektraKeyNameUnescape ("/a\\\\c/\\../d\\\\f", &dest);
+	elektraKeyNameUnescape ("/a\\\\c/\\../d\\\\f", dest);
 	p = dest + 2;
 	succeed_if_same_string ("a\\c", p);
 	p += 4;
@@ -205,7 +203,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 3;
 	succeed_if_same_string ("d\\f", p);
 
-	elektraKeyNameUnescape ("/\\\\bc/\\%/\\\\ef", &dest);
+	elektraKeyNameUnescape ("/\\\\bc/\\%/\\\\ef", dest);
 	p = dest + 2;
 	succeed_if_same_string ("\\bc", p);
 	p += 4;
@@ -213,7 +211,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 2;
 	succeed_if_same_string ("\\ef", p);
 
-	elektraKeyNameUnescape ("/\\\\b/\\%/\\\\e", &dest);
+	elektraKeyNameUnescape ("/\\\\b/\\%/\\\\e", dest);
 	p = dest + 2;
 	succeed_if_same_string ("\\b", p);
 	p += 3;
@@ -221,7 +219,7 @@ static void test_elektraKeyNameUnescape (void)
 	p += 2;
 	succeed_if_same_string ("\\e", p);
 
-	elektraKeyNameUnescape ("/\\\\b/\\\\%/\\\\e", &dest);
+	elektraKeyNameUnescape ("/\\\\b/\\\\%/\\\\e", dest);
 	p = dest + 2;
 	succeed_if_same_string ("\\b", p);
 	p += 3;
@@ -229,31 +227,31 @@ static void test_elektraKeyNameUnescape (void)
 	p += 3;
 	succeed_if_same_string ("\\e", p);
 
-	elektraKeyNameUnescape ("/a\\/\\/def", &dest);
+	elektraKeyNameUnescape ("/a\\/\\/def", dest);
 	p = dest + 2;
 	succeed_if_same_string ("a//def", p);
 
-	elektraKeyNameUnescape ("/\\/\\/\\/def", &dest);
+	elektraKeyNameUnescape ("/\\/\\/\\/def", dest);
 	p = dest + 2;
 	succeed_if_same_string ("///def", p);
 
-	elektraKeyNameUnescape ("/\\/\\/\\/def", &dest);
+	elektraKeyNameUnescape ("/\\/\\/\\/def", dest);
 	p = dest + 2;
 	succeed_if_same_string ("///def", p);
 
-	elektraKeyNameUnescape ("/\\/\\/\\/\\/\\/\\/", &dest);
+	elektraKeyNameUnescape ("/\\/\\/\\/\\/\\/\\/", dest);
 	p = dest + 2;
 	succeed_if_same_string ("//////", p);
 
-	elektraKeyNameUnescape ("/\\/\\/%\\/\\/\\/", &dest);
+	elektraKeyNameUnescape ("/\\/\\/%\\/\\/\\/", dest);
 	p = dest + 2;
 	succeed_if_same_string ("//%///", p);
 
-	elektraKeyNameUnescape ("/\\/\\/..\\/\\/", &dest);
+	elektraKeyNameUnescape ("/\\/\\/..\\/\\/", dest);
 	p = dest + 2;
 	succeed_if_same_string ("//..//", p);
 
-	elektraKeyNameUnescape ("/bar\\/foo_bar\\/", &dest);
+	elektraKeyNameUnescape ("/bar\\/foo_bar\\/", dest);
 	p = dest + 2;
 	succeed_if_same_string ("bar/foo_bar/", p);
 }

@@ -1738,20 +1738,20 @@ static void test_keyNameSpecial (void)
 	succeed_if_same_string (keyName (k), "system:/");
 
 
-	succeed_if (keySetName (k, "system:/../something"), "could set key name with too many ..");
-	succeed_if_same_string (keyName (k), "system:/");
+	succeed_if (keySetName (k, "system:/../something"), "could not set key name with too many ..");
+	succeed_if_same_string (keyName (k), "system:/something");
 
 	succeed_if (keySetName (k, "system:/../../something"), "could not set key name with too many ..");
-	succeed_if_same_string (keyName (k), "system:/");
+	succeed_if_same_string (keyName (k), "system:/something");
 
 	succeed_if (keySetName (k, "system:/../../../something"), "could not set key name with too many ..");
-	succeed_if_same_string (keyName (k), "system:/");
+	succeed_if_same_string (keyName (k), "system:/something");
 
 	succeed_if (keySetName (k, "system:/../../../../something"), "could not set key name with too many ..");
-	succeed_if_same_string (keyName (k), "system:/");
+	succeed_if_same_string (keyName (k), "system:/something");
 
 	succeed_if (keySetName (k, "system:/../../../../../something"), "could not set key name with too many ..");
-	succeed_if_same_string (keyName (k), "system:/");
+	succeed_if_same_string (keyName (k), "system:/something");
 
 
 	succeed_if (keySetName (k, "system:/a/b/c/.."), "could not set key name with ..");
@@ -1771,19 +1771,19 @@ static void test_keyNameSpecial (void)
 
 
 	succeed_if (keySetName (k, "system:/../a/b/c"), "could not set key name with too many ..");
-	succeed_if_same_string (keyName (k), "system:/");
+	succeed_if_same_string (keyName (k), "system:/a/b/c");
 
 	succeed_if (keySetName (k, "system:/../../a/b/c"), "could not set key name with too many ..");
-	succeed_if_same_string (keyName (k), "system:/");
+	succeed_if_same_string (keyName (k), "system:/a/b/c");
 
 	succeed_if (keySetName (k, "system:/../../../a/b/c"), "could not set key name with too many ..");
-	succeed_if_same_string (keyName (k), "system:/");
+	succeed_if_same_string (keyName (k), "system:/a/b/c");
 
 	succeed_if (keySetName (k, "system:/../../../../a/b/c"), "could not set key name with too many ..");
-	succeed_if_same_string (keyName (k), "system:/");
+	succeed_if_same_string (keyName (k), "system:/a/b/c");
 
 	succeed_if (keySetName (k, "system:/../../../../../a/b/c"), "could not set key name with too many ..");
-	succeed_if_same_string (keyName (k), "system:/");
+	succeed_if_same_string (keyName (k), "system:/a/b/c");
 
 
 	keyDel (k);
@@ -2462,17 +2462,17 @@ void test_keyCascading (void)
 
 	keySetName (k, "/");
 	succeed_if (keyGetNameSize (k) == 2, "size not correct");
-	succeed_if (keyAddName (k, "/////..") < 0, "try to substract root with ..");
+	succeed_if (keyAddName (k, "/////..") == 2, "could not add nothing with ..");
 	succeed_if (keyGetNameSize (k) == 2, "size not correct");
 	succeed_if_same_string (keyName (k), "/");
 	succeed_if_same_string (keyBaseName (k), "");
 
 	keySetName (k, "/");
 	succeed_if (keyGetNameSize (k) == 2, "size not correct");
-	succeed_if (keyAddName (k, "/////../more") < 0, "try to substract root with ..");
-	succeed_if (keyGetNameSize (k) == sizeof ("/"), "size not correct");
-	succeed_if_same_string (keyName (k), "/");
-	succeed_if_same_string (keyBaseName (k), "");
+	succeed_if (keyAddName (k, "/////../more") == 6, "could not add more with ..");
+	succeed_if (keyGetNameSize (k) == 6, "size not correct");
+	succeed_if_same_string (keyName (k), "/more");
+	succeed_if_same_string (keyBaseName (k), "more");
 
 
 	keySetName (k, "/");

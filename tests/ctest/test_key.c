@@ -165,7 +165,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "/\\\\a";
 		char s[] = "\0\0\\a";
 		s[0] = KEY_NS_CASCADING;
-		elektraKeyNameUnescape (a, &buffer);
+		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -173,7 +173,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "/a\\/test";
 		char s[] = "\0\0a/test";
 		s[0] = KEY_NS_CASCADING;
-		elektraKeyNameUnescape (a, &buffer);
+		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -181,7 +181,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "/a\\\\\\/test";
 		char s[] = "\0\0a\\/test";
 		s[0] = KEY_NS_CASCADING;
-		elektraKeyNameUnescape (a, &buffer);
+		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -189,7 +189,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "/a\\\\\\\\\\/test";
 		char s[] = "\0\0a\\\\/test";
 		s[0] = KEY_NS_CASCADING;
-		elektraKeyNameUnescape (a, &buffer);
+		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -199,7 +199,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "user:/a/test";
 		char s[] = "\0\0a\0test";
 		s[0] = KEY_NS_USER;
-		elektraKeyNameUnescape (a, &buffer);
+		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -207,7 +207,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "user:/a\\/test";
 		char s[] = "\0\0a/test";
 		s[0] = KEY_NS_USER;
-		elektraKeyNameUnescape (a, &buffer);
+		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -215,7 +215,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "user:/a\\\\/test";
 		char s[] = "\0\0a\\\0test";
 		s[0] = KEY_NS_USER;
-		elektraKeyNameUnescape (a, &buffer);
+		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 
@@ -223,7 +223,7 @@ static void test_keyNameUnescape (void)
 		char a[] = "user:/\\\\/test";
 		char s[] = "\0\0\\\0test";
 		s[0] = KEY_NS_USER;
-		elektraKeyNameUnescape (a, &buffer);
+		elektraKeyNameUnescape (a, buffer);
 		succeed_if (!memcmp (buffer, s, sizeof (s)), "unescaped name wrong");
 	}
 }
@@ -627,7 +627,7 @@ static void test_keyAddName (void)
 	TEST_ADD_NAME ("user:/", "./user", "user:/user");
 	TEST_ADD_NAME ("user:/", "/./user", "user:/user");
 	TEST_ADD_NAME ("user:/", "/////./user", "user:/user");
-	TEST_ADD_NAME_ERROR ("user:/", "../user");
+	TEST_ADD_NAME ("user:/", "../user", "user:/user");
 
 	TEST_ADD_NAME ("user:/verylongstringtoremove", "../x", "user:/x");
 	TEST_ADD_NAME ("user:/huhu", "../x", "user:/x");
@@ -644,11 +644,6 @@ static void test_keyAddName (void)
 	TEST_ADD_NAME ("/s", "..//user", "/user");
 	TEST_ADD_NAME ("/more/level", "../..//user", "/user");
 	TEST_ADD_NAME ("/much/more/level/1/2/3", "../../../../../..//user", "/user");
-
-	TEST_ADD_NAME_ERROR ("/much/more/level/1/2/3", "../../../../../../..//user");
-	TEST_ADD_NAME_ERROR ("/much/more/level/1/2/3", "..///../../../../../../..//user");
-	TEST_ADD_NAME_ERROR ("/much/more/level/1/2/3", "..///../../..////../../../..//user");
-	TEST_ADD_NAME_ERROR ("/much/more/level/1/2/3", "../../....///../../..////../../../..//user");
 
 	TEST_ADD_NAME ("/s", ".../user", "/s/.../user");
 	TEST_ADD_NAME ("/s", "..a/user", "/s/..a/user");

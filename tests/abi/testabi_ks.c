@@ -2051,7 +2051,7 @@ static void test_ksOrder (void)
 	ks = ksNew (20, keyNew ("user:/x", KEY_END), keyNew ("user:/x/%", KEY_END), keyNew ("user:/x/%/a", KEY_END),
 		    keyNew ("user:/x/%/b", KEY_END), keyNew ("user:/x/\\%", KEY_END), keyNew ("user:/x/\\%/a", KEY_END),
 		    keyNew ("user:/x/\\%/b", KEY_END), keyNew ("user:/x/A", KEY_END), keyNew ("user:/x/A/a", KEY_END),
-		    keyNew ("user:/x/A/b", KEY_END), keyNew ("user:/x/\\%a", KEY_END), keyNew ("user:/x/\\%b", KEY_END),
+		    keyNew ("user:/x/A/b", KEY_END), keyNew ("user:/x/%a", KEY_END), keyNew ("user:/x/%b", KEY_END),
 		    keyNew ("user:/x/a\\/", KEY_END), keyNew ("user:/x/a\\/b", KEY_END), keyNew ("user:/x/a\\/b/a", KEY_END),
 		    keyNew ("user:/x/a\\/b/b", KEY_END), keyNew ("user:/x/aA", KEY_END), keyNew ("user:/x/aA/a", KEY_END),
 		    keyNew ("user:/x/aA/b", KEY_END), keyNew ("user:/x/aa", KEY_END), keyNew ("user:/x/aa/a", KEY_END),
@@ -2073,9 +2073,9 @@ static void test_ksOrder (void)
 	ksNext (ks);
 	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/\\%/b");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/\\%a");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/%a");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/\\%b");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/%b");
 	ksNext (ks);
 	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/A");
 	ksNext (ks);
@@ -2523,18 +2523,18 @@ KeySet * set_simple (void)
 		      keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END),
 
 		      keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer", KEY_VALUE, "tracer", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config/more", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config/more/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config/more/config/below", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
 
 		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
 
 		      keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/simple/setplugins/\\#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
+		      keyNew ("system:/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
 }
 
 static void test_simple (void)
@@ -2549,16 +2549,16 @@ static void test_simple (void)
 	KeySet * result_config =
 		ksNew (22, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 		       keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer", KEY_VALUE, "tracer", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config/more", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config/more/config", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config/more/config/below", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1tracer/config/path", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
 		       keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
 		       keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
-		       keyNew ("system:/elektra/mountpoints/simple/setplugins/\\#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
+		       keyNew ("system:/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
 	Key * key = ksLookup (config, keyNew ("system:/elektra/mountpoints/simple/config", KEY_END), KDB_O_DEL);
 	succeed_if (ksGetCursor (config) == 1, "cursor not set correctly");
 	KeySet * res = ksCut (config, key);

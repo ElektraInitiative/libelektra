@@ -411,7 +411,7 @@ static int saveTree (augeas * augeasHandle, KeySet * ks, const char * lensPath, 
 
 		if (strcmp (keyBaseName (key), "#comment") == 0)
 		{
-			size_t offset = strlen (nodeName) - sizeof ("\\#comment") + 1;
+			size_t offset = strlen (nodeName) - sizeof ("#comment") + 1;
 			strcpy (nodeName + offset, "#comment");
 		}
 

@@ -12,7 +12,7 @@ static void test_process (void)
 {
 	printf ("Test processing of plugin name\n");
 
-	Key * k = keyNew ("system:/elektra/\\#0name", KEY_END);
+	Key * k = keyNew ("system:/elektra/#0name", KEY_END);
 	int pluginNumber = -1;
 	char * pluginName = 0;
 	char * referenceName = 0;
@@ -24,7 +24,7 @@ static void test_process (void)
 	elektraFree (pluginName);
 	pluginName = 0;
 
-	keySetName (k, "system:/e/\\#2dump");
+	keySetName (k, "system:/e/#2dump");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == 1, "process plugin error");
 	succeed_if (pluginNumber == 2, "number not correct");
 	succeed_if_same_string (pluginName, "dump");
@@ -32,7 +32,7 @@ static void test_process (void)
 	elektraFree (pluginName);
 	pluginName = 0;
 
-	keySetName (k, "system:/e/\\#9default");
+	keySetName (k, "system:/e/#9default");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == 1, "process plugin error");
 	succeed_if (pluginNumber == 9, "number not correct");
 	succeed_if_same_string (pluginName, "default");
@@ -43,10 +43,10 @@ static void test_process (void)
 	keySetName (k, "system:/e/1default");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == -1, "should be error");
 
-	keySetName (k, "system:/e/\\#xdefault");
+	keySetName (k, "system:/e/#xdefault");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == -1, "should be error");
 
-	keySetName (k, "system:/e/\\#1#name");
+	keySetName (k, "system:/e/#1#name");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == 2, "process plugin error");
 	succeed_if (pluginNumber == 1, "number not correct");
 	succeed_if (pluginName == 0, "plugin name not correct");
@@ -54,7 +54,7 @@ static void test_process (void)
 	elektraFree (referenceName);
 	referenceName = 0;
 
-	keySetName (k, "system:/e/\\#5#dump");
+	keySetName (k, "system:/e/#5#dump");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == 2, "process plugin error");
 	succeed_if (pluginNumber == 5, "number not correct");
 	succeed_if (pluginName == 0, "plugin name not correct");
@@ -62,7 +62,7 @@ static void test_process (void)
 	elektraFree (referenceName);
 	referenceName = 0;
 
-	keySetName (k, "system:/e/\\#0#very_long_name with space");
+	keySetName (k, "system:/e/#0#very_long_name with space");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == 2, "process plugin error");
 	succeed_if (pluginNumber == 0, "number not correct");
 	succeed_if (pluginName == 0, "plugin name not correct");
@@ -70,7 +70,7 @@ static void test_process (void)
 	elektraFree (referenceName);
 	referenceName = 0;
 
-	keySetName (k, "system:/e/\\#1#plugname#refname#");
+	keySetName (k, "system:/e/#1#plugname#refname#");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == 3, "process plugin error");
 	succeed_if (pluginNumber == 1, "number not correct");
 	succeed_if_same_string (pluginName, "plugname");
@@ -80,7 +80,7 @@ static void test_process (void)
 	elektraFree (referenceName);
 	referenceName = 0;
 
-	keySetName (k, "system:/e/\\#0#dump#dumpy#");
+	keySetName (k, "system:/e/#0#dump#dumpy#");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == 3, "process plugin error");
 	succeed_if (pluginNumber == 0, "number not correct");
 	succeed_if_same_string (pluginName, "dump");
@@ -90,7 +90,7 @@ static void test_process (void)
 	elektraFree (referenceName);
 	referenceName = 0;
 
-	keySetName (k, "system:/e/\\#9#default#default#");
+	keySetName (k, "system:/e/#9#default#default#");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == 3, "process plugin error");
 	succeed_if (pluginNumber == 9, "number not correct");
 	succeed_if_same_string (pluginName, "default");
@@ -100,7 +100,7 @@ static void test_process (void)
 	elektraFree (referenceName);
 	referenceName = 0;
 
-	keySetName (k, "system:/e/\\#8#a_very long name with $ sthg#also a long name_()#");
+	keySetName (k, "system:/e/#8#a_very long name with $ sthg#also a long name_()#");
 	succeed_if (elektraProcessPlugin (k, &pluginNumber, &pluginName, &referenceName, 0) == 3, "process plugin error");
 	succeed_if (pluginNumber == 8, "number not correct");
 	succeed_if_same_string (pluginName, "a_very long name with $ sthg");

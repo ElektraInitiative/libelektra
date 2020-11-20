@@ -105,7 +105,7 @@ kdb set user:/tests/yamlcpp/sunny/#4 Mac
 kdb set user:/tests/yamlcpp/sunny/#_10 'The Waitress'
 kdb meta-get user:/tests/yamlcpp/sunny array
 #> #_10
-kdb get user:/tests/yamlcpp/sunny/\\#_9
+kdb get user:/tests/yamlcpp/sunny/#_9
 # RET: 11
 
 # Retrieve the last array entry

@@ -145,20 +145,10 @@ bool Backends::umount (std::string const & mountPath, KeySet & mountConf)
  */
 std::string Backends::getBasePath (std::string mp)
 {
-	if (mp[0] == '/')
-	{
-		Key k (Backends::mountpointsPath, KEY_END);
-		Key kmp (mp, KEY_END);		// canonify name
-		k.addBaseName (kmp.getName ()); // escape name
-		return k.getName ();
-	}
-	else
-	{
-		Key k (Backends::mountpointsPath, KEY_END);
-		Key kmp ("/" + mp, KEY_END);		   // canonify name
-		k.addBaseName (kmp.getName ().substr (1)); // escape name
-		return k.getName ();
-	}
+	Key k (Backends::mountpointsPath, KEY_END);
+	Key kmp (mp, KEY_END);		// canonify name
+	k.addBaseName (kmp.getName ()); // escape name
+	return k.getName ();
 }
 
 /**

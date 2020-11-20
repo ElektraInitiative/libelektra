@@ -88,9 +88,9 @@ static void test_hostLensWrite (char * fileName)
 					KEY_META, "order", "10", KEY_END),
 			keyNew ("user:/tests/augeas-hosts/1/canonical", KEY_VALUE,
 					"localhost", KEY_META, "order", "20", KEY_END),
-			keyNew ("user:/tests/augeas-hosts/1/\\#comment", KEY_VALUE,
+			keyNew ("user:/tests/augeas-hosts/1/#comment", KEY_VALUE,
 					"hostcomment", KEY_META, "order", "21", KEY_END),
-			keyNew ("user:/tests/augeas-hosts/\\#comment", KEY_VALUE,
+			keyNew ("user:/tests/augeas-hosts/#comment", KEY_VALUE,
 					"linecomment", KEY_META, "order", "22", KEY_END),
 			keyNew ("user:/tests/augeas-hosts/2/ipaddr", KEY_VALUE,
 					"192.168.0.1", KEY_META, "order", "30", KEY_END),
@@ -152,7 +152,7 @@ static void test_hostLensDelete (char * sourceFile, char * compFile)
 	elektraKsPopAtCursor (ks, ksGetCursor (ks));
 	keyDel (key);
 
-	key = ksLookupByName (ks, "user:/tests/augeas-hosts/1/\\#comment", 0);
+	key = ksLookupByName (ks, "user:/tests/augeas-hosts/1/#comment", 0);
 	return_if_fail (key, "comment of localhost not found");
 	elektraKsPopAtCursor (ks, ksGetCursor (ks));
 	keyDel (key);
@@ -193,7 +193,7 @@ static void test_hostLensModify (char * sourceFile, char * compFile)
 	return_if_fail (key, "ip address of host2 not found");
 	keySetString (key, "fd00::4711:4712:2::2");
 
-	key = ksLookupByName (ks, "user:/tests/augeas-hosts/\\#comment", 0);
+	key = ksLookupByName (ks, "user:/tests/augeas-hosts/#comment", 0);
 	return_if_fail (key, "line comment not found");
 	keySetString (key, "line comment modified");
 

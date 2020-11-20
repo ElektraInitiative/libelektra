@@ -158,36 +158,35 @@ static void test_simple (void)
 
 KeySet * set_simple (void)
 {
-	return ksNew (
-		50, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
+	return ksNew (50, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/config/more", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/config/more/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/simple/errorplugins", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/errorplugins/\\#1" KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/errorplugins", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/errorplugins/#1" KDB_DEFAULT_STORAGE, KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE, KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/anything", KEY_VALUE, "plugin",
-			KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/more", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/more/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/more/config/below", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config/anything", KEY_VALUE,
+			      "plugin", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config/more", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config/more/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config/more/config/below", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config/path", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/setplugins/\\#1" KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/setplugins/#1" KDB_DEFAULT_STORAGE, KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/simple/errorplugins", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/errorplugins/\\#1" KDB_DEFAULT_STORAGE, KEY_END), KS_END);
+		      keyNew ("system:/elektra/mountpoints/simple/errorplugins", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/errorplugins/#1" KDB_DEFAULT_STORAGE, KEY_END), KS_END);
 }
 
 
@@ -250,56 +249,55 @@ static void test_simpletrie (void)
 
 KeySet * set_two (void)
 {
-	return ksNew (
-		50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/simple", KEY_END),
+	return ksNew (50, keyNew ("system:/elektra/mountpoints", KEY_END), keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/config/more", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/config/more/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE, KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/anything", KEY_VALUE, "plugin",
-			KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/more", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/more/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/more/config/below", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config/anything", KEY_VALUE,
+			      "plugin", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config/more", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config/more/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config/more/config/below", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1" KDB_DEFAULT_STORAGE "/config/path", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
-		keyNew ("system:/elektra/mountpoints/simple/setplugins/\\#1" KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/setplugins/#1" KDB_DEFAULT_STORAGE, KEY_END),
 
 
-		keyNew ("system:/elektra/mountpoints/two", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/two/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/config/anything", KEY_VALUE, "backend", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/config/more", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/config/more/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/config/more/config/below", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/config/anything", KEY_VALUE, "backend", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/config/more", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/config/more/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/config/more/config/below", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/config/path", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/two/getplugins", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/getplugins/\\#1" KDB_DEFAULT_STORAGE, KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/anything", KEY_VALUE, "plugin",
-			KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/more", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/more/config", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/more/config/below", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/getplugins/\\#1" KDB_DEFAULT_STORAGE "/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/getplugins", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/getplugins/#1" KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/getplugins/#1" KDB_DEFAULT_STORAGE "/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/getplugins/#1" KDB_DEFAULT_STORAGE "/config/anything", KEY_VALUE, "plugin",
+			      KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/getplugins/#1" KDB_DEFAULT_STORAGE "/config/more", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/getplugins/#1" KDB_DEFAULT_STORAGE "/config/more/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/getplugins/#1" KDB_DEFAULT_STORAGE "/config/more/config/below", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/getplugins/#1" KDB_DEFAULT_STORAGE "/config/path", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/two/mountpoint", KEY_VALUE, "user:/tests/backend/two", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/mountpoint", KEY_VALUE, "user:/tests/backend/two", KEY_END),
 
-		keyNew ("system:/elektra/mountpoints/two/setplugins", KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/setplugins/\\#1" KDB_DEFAULT_STORAGE, KEY_END),
-		keyNew ("system:/elektra/mountpoints/two/setplugins/\\#2" KDB_DEFAULT_STORAGE, KEY_END), KS_END);
+		      keyNew ("system:/elektra/mountpoints/two/setplugins", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/setplugins/#1" KDB_DEFAULT_STORAGE, KEY_END),
+		      keyNew ("system:/elektra/mountpoints/two/setplugins/#2" KDB_DEFAULT_STORAGE, KEY_END), KS_END);
 }
 
 static void test_two (void)
