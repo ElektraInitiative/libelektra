@@ -416,7 +416,7 @@ static void test_format (void)
 {
 	printf ("Test key format\n");
 
-	Key * k = keyNew (0);
+	Key * k = keyNew ("/", KEY_END);
 	keySetString (k, "huhu");
 	succeed_if_same_string (keyString (k), "huhu");
 

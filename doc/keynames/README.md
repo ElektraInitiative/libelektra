@@ -151,7 +151,7 @@ Lets explore them one by one:
 - The simplest namespace is the **"meta"**.
   The namespace "meta" is used exclusively for meta keys, i.e. keys that are attached to another key as metadata.
   The key hierarchy of the namespace "meta" is entirely separate from the key hierarchies in the other namespaces.
-  Without external information, you cannot determine from a key name with namespace "meta", which key this meta key is attached to.
+  Without external information, you cannot determine from a key name with namespace "meta", which key this metakey is attached to.
 - keys with namespace **"proc"** only exist in memory and are scoped to the current <b>proc</b>ess.
 - keys with namespace **"dir"** are scoped to a single filesystem <b>dir</b>ectory.
   They will (normally) be stored somewhere within this directory.
@@ -280,7 +280,7 @@ Let's look at a few examples to get a feeling for canonical and non-canonical ke
 | `user:/elektra/../../`  | `user:/`           |
 | `/elektra/version/`     | `/elektra/version` |
 
-As you can see, the behaviour of `.` and `..` matches that of Unix paths as long as we are using the namesapce "cascading".
+As you can see, the behavior of `.` and `..` matches that of Unix paths as long as we are using the namesapce "cascading".
 The namespace of a key name can never be changed via `..`, so `user:/..` is equivalent to `user:/`.
 
 There is also a small difference in the last example.
@@ -409,7 +409,7 @@ The escape sequences `\\` and `\/` are always valid.
 For the other escape sequences certain conditions must be fulfilled:
 
 - `\.`: can be used at the start of a key name part, if the whole key name part is `\.` or `\..`.
-  In other words, `\` can be used to escape the behaviour of `.` and `..`.
+  In other words, `\` can be used to escape the behavior of `.` and `..`.
 - `\#`: can be used at the start of a key name part, if the key name part would be a non-canonical array part without the `\`.
   specifically, `\#` can be used, if the key name part matches the regular expression `\\#[1-9][0-9]+` and the digits form a number less than or equal to 9223372036854775807 (= `2^63 - 1`).
   Meaning, `\` can be used to avoid array part canonicalization.
@@ -450,7 +450,7 @@ Finally, some examples:
 
 <a id="ref-footnote-4"></a>
 
-| Key name part | Behaviour in array                | Behaviour elsewhere  |
+| Key name part | Behavior in array                 | Behavior elsewhere   |
 | ------------- | --------------------------------- | -------------------- |
 | `#0`          | Index of first element            | Child named `#0`     |
 | `#_10`        | Index of 11th element             | Child named `#_10`   |
