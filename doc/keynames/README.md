@@ -397,6 +397,9 @@ An escaped key name is considered an invalid key name, if any of the following a
   (This mainly applies to root keys.)
 - It contains a namespace separator `:`, but the substring before the first `:` is not one of: `meta`, `spec`, `proc`, `dir`, `user`, `system` and `default`.
 - It contains an illegal escape sequence (see below).
+- It is the string `/%` or consists of a namespace followed by the namespace separator `:` followed by `/%`.
+  In other words, the first escaped part is translated into an empty unescaped part.
+  The unescaped names for these keys would collide with the root keys `/`, `user:/`, etc.
 
 > _Note:_ The C-API does not allow you to construct a `Key` with an invalid key name; for example `keyNew` (and `keyVNew`) will return `NULL`.
 

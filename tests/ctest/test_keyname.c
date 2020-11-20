@@ -43,7 +43,6 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("/ab", NULL);
 	TEST_VALIDATE_OK ("/abc", NULL);
 
-	TEST_VALIDATE_OK ("/%", NULL);
 	TEST_VALIDATE_OK ("/\\%", NULL);
 	TEST_VALIDATE_OK ("/\\\\%", NULL);
 	TEST_VALIDATE_OK ("/\\\\\\\\%", NULL);
@@ -238,7 +237,6 @@ static void test_validate (void)
 
 	TEST_VALIDATE_OK ("", "/abc");
 	TEST_VALIDATE_OK ("/", "/abc");
-	TEST_VALIDATE_OK ("%", "/abc");
 
 	TEST_VALIDATE_OK ("/abc/def/ghi", "/abc");
 	TEST_VALIDATE_OK ("/abc/def/ghi/", "/abc");
@@ -343,6 +341,11 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("..///../../..////../../../..//user", "/much/more/level/1/2/3");
 	TEST_VALIDATE_OK ("../../....///../../..////../../../..//user", "/much/more/level/1/2/3");
 
+	TEST_VALIDATE_OK ("/%a", NULL);
+	TEST_VALIDATE_OK ("user:/%a", NULL);
+	TEST_VALIDATE_OK ("%a", "/");
+	TEST_VALIDATE_OK ("%a", "user:/");
+
 	succeed_if (!elektraKeyNameValidate (NULL, true), "(NULL) SHOULD NOT BE a valid complete key name");
 
 	TEST_VALIDATE_ERROR ("", NULL);
@@ -398,6 +401,11 @@ static void test_validate (void)
 
 	TEST_VALIDATE_ERROR ("/\\#0/\\#1", NULL);
 	TEST_VALIDATE_ERROR ("/\\#0/..", "/");
+
+	TEST_VALIDATE_ERROR ("/%", NULL);
+	TEST_VALIDATE_ERROR ("user:/%", NULL);
+	TEST_VALIDATE_ERROR ("%", "/");
+	TEST_VALIDATE_ERROR ("%", "user:/");
 }
 
 #undef TEST_VALIDATE_OK
@@ -545,11 +553,9 @@ static void test_canonicalize (void)
 
 	TEST_CANONICALIZE_OK ("", "/", "/", 3, 3);
 	TEST_CANONICALIZE_OK ("/", "/", "/", 3, 3);
-	TEST_CANONICALIZE_OK ("%", "/", "/%", 3, 3); // FIXME: 1:1 mapping -> make illegal
 
 	TEST_CANONICALIZE_OK ("", "user:/", "user:/", 3, 3);
 	TEST_CANONICALIZE_OK ("/", "user:/", "user:/", 3, 3);
-	TEST_CANONICALIZE_OK ("%", "user:/", "user:/%", 3, 3); // FIXME: 1:1 mapping -> make illegal
 
 	TEST_CANONICALIZE_OK ("/abc/def/ghi", "/abc", "/abc/abc/def/ghi", 6, 18);
 	TEST_CANONICALIZE_OK ("/abc/def/ghi/", "/abc", "/abc/abc/def/ghi", 6, 18);
@@ -574,12 +580,10 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("abc/..", "user:/", "user:/", 3, 3);
 	TEST_CANONICALIZE_OK ("user:/abc/..", NULL, "user:/", 0, 3);
 
-	TEST_CANONICALIZE_OK ("/%", NULL, "/%", 0, 3); // FIXME: 1:1 mapping -> make illegal
 	TEST_CANONICALIZE_OK ("/\\%", NULL, "/\\%", 0, 4);
 	TEST_CANONICALIZE_OK ("/\\\\%", NULL, "/\\\\%", 0, 5);
 	TEST_CANONICALIZE_OK ("/\\\\\\\\%", NULL, "/\\\\\\\\%", 0, 6);
 
-	TEST_CANONICALIZE_OK ("user:/%", NULL, "user:/%", 0, 3); // FIXME: 1:1 mapping -> make illegal
 	TEST_CANONICALIZE_OK ("user:/\\%", NULL, "user:/\\%", 0, 4);
 	TEST_CANONICALIZE_OK ("user:/\\\\%", NULL, "user:/\\\\%", 0, 5);
 	TEST_CANONICALIZE_OK ("user:/\\\\\\\\%", NULL, "user:/\\\\\\\\%", 0, 6);

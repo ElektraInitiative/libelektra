@@ -513,6 +513,20 @@ bool elektraKeyNameValidate (const char * name, bool isComplete)
 			ELEKTRA_LOG_DEBUG ("Illegal name start; expected (namespace +) slash: %s", name);
 			return 0;
 		}
+
+		if (*(name + 1) == '%' && *(name + 2) == '\0')
+		{
+			ELEKTRA_LOG_DEBUG ("Illegal escaped part; first part cannot be empty (collides with root key): %s", name);
+			return 0;
+		}
+	}
+	else
+	{
+		if (*name == '%' && *(name + 1) == '\0')
+		{
+			ELEKTRA_LOG_DEBUG ("Illegal escaped part; first part cannot be empty (collides with root key): %s", name);
+			return 0;
+		}
 	}
 
 	const char * cur = name;

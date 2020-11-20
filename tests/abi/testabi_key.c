@@ -2366,6 +2366,15 @@ static void test_keyEscape (void)
 	keyDel (k);
 }
 
+static void test_keyAdd_test (Key * k, const char * escaped, const char * unescaped)
+{
+	char buffer[500];
+	succeed_if_fmt (keyAddName (k, escaped) != -1, "keyAddName returned an error for '%s'", escaped);
+	succeed_if_same_string (keyBaseName (k), unescaped);
+	succeed_if (keyGetBaseName (k, buffer, 499) != -1, "keyGetBaseName returned an error");
+	succeed_if_same_string (buffer, unescaped);
+}
+
 static void test_keyAdd (void)
 {
 	printf ("test keyAdd\n");
@@ -2391,22 +2400,25 @@ static void test_keyAdd (void)
 	succeed_if (keyAddName (k, "invalid\\") < 0, "added invalid name");
 	succeed_if (keyAddName (k, "valid") == sizeof ("user:/valid"), "added valid name");
 
-#undef TEST_NOESCAPE_PART
-#define TEST_NOESCAPE_PART(A, S)                                                                                                           \
-	do                                                                                                                                 \
-	{                                                                                                                                  \
-		succeed_if (keyAddName (k, A) != -1, "keyAddName returned an error");                                                      \
-		succeed_if_same_string (keyBaseName (k), S);                                                                               \
-		succeed_if (keyGetBaseName (k, buffer, 499) != -1, "keyGetBaseName returned an error");                                    \
-		succeed_if_same_string (buffer, S);                                                                                        \
-	} while (0)
-	char buffer[500];
-
 	for (int i = 0; i < NUMBER_OF_NAMESPACES; ++i)
 	{
 		keySetName (k, namespaces[i]);
 
-#include <data_noescape.c>
+		test_keyAdd_test (k, "a", "a");
+		test_keyAdd_test (k, "$", "$");
+		test_keyAdd_test (k, "€", "€");
+		test_keyAdd_test (k, "\x01", "\x01");
+		test_keyAdd_test (k, "\xFF", "\xFF");
+		test_keyAdd_test (k, "\xFF\xFF\xFF\xFF", "\xFF\xFF\xFF\xFF");
+		test_keyAdd_test (k, "\xFF\xFF/\xFF\xFF", "\xFF\xFF");
+		test_keyAdd_test (k, "test", "test");
+		test_keyAdd_test (k, "test/name", "name");
+		test_keyAdd_test (k, "a/b/c/d/e/f/g/h/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z", "z");
+		test_keyAdd_test (k, "a\\/b\\/c\\/d\\/e\\/f\\/g\\/h\\/j\\/k\\/l\\/m\\/n\\/o\\/p\\/q\\/r\\/s\\/t\\/u\\/v\\/w\\/x\\/y\\/z",
+				  "a/b/c/d/e/f/g/h/j/k/l/m/n/o/p/q/r/s/t/u/v/w/x/y/z");
+		test_keyAdd_test (k, "\\\\%", "\\%");
+		test_keyAdd_test (k, "a/test", "test");
+		test_keyAdd_test (k, "a\\/test", "a/test");
 	}
 
 	keyDel (k);

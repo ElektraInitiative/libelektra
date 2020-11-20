@@ -176,6 +176,13 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
             f"Allowed values for <NAMESPACE>: {NAMESPACES}"
         )
 
+    # Check if Key Name starts correctly after Namespace
+    if fullname == "/%":
+        raise KeyNameException(
+            f"Key must NOT be '<NAMESPACE>:/%' or just '/%' (collides with root key). " +
+            f"Allowed values for <NAMESPACE>: {NAMESPACES}"
+        )
+
     # Check if for dangling escapes
     if sum(1 for _ in takewhile(lambda x: x == "\\", reversed(fullname))) % 2 != 0:
         raise KeyNameException(

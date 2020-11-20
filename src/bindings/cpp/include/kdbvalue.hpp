@@ -448,7 +448,9 @@ public:
 		assert (m_spec.getName ()[0] == '/' && "spec keys are not yet supported");
 		m_context.attachByName (m_spec.getName (), *this);
 		Command::Func fun = [this] () -> Command::Pair {
-			this->unsafeUpdateKeyUsingContext (m_context.evaluate (m_spec.getName ()));
+			auto evaluatedName = m_context.evaluate (m_spec.getName ());
+			evaluatedName = evaluatedName == "/%" ? "/" : evaluatedName;
+			this->unsafeUpdateKeyUsingContext (evaluatedName);
 			this->unsafeSyncCache (); // set m_cache
 			return std::make_pair ("", m_key.getName ());
 		};
