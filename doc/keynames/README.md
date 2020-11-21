@@ -479,16 +479,16 @@ This is why there are two types of reserved key name:
    Each of these keys has a very specific purpose that is defined globally for all of Elektra.
    Using such a key name automatically caries this meaning.
    Even outside the context in which Elektra uses these directly, you should never use `system:/eletkra` keys for other purposes.
-2. Any key name contains the key name part <code>&reg;elektra</code>:
+2. Any key name contains the key name part `®elektra`:
    These key names are reserved, but their meaning depends on the context.
    Similar to the [METADATA.ini](../METADATA.ini) file for metadata, some conventions for these key names are defined in [reserved name document]().
 
-   > _Note:_ We use UTF-8 here, so <code>&reg;elektra</code> is specifically the 9-byte sequence `C2 AE 65 6C 65 6B 74 72 61`.
+   > _Note:_ We use UTF-8 here, so `®elektra` is specifically the 9-byte sequence `C2 AE 65 6C 65 6B 74 72 61`.
 
    `Key`s with such key names will _never_ be used in the interface between storage plugins and the rest of Elektra.
-   This allows storage plugins to use <code>&reg;elektra</code> to encode things that otherwise wouldn't be possible (e.g. values of non-leaf keys).
+   This allows storage plugins to use `®elektra` to encode things that otherwise wouldn't be possible (e.g. values of non-leaf keys).
 
-<!-- TODO (kodebach): link to &reg;elektra document -->
+<!-- TODO (kodebach): link to ®elektra document -->
 
 ---
 
