@@ -43,7 +43,7 @@ This command will return the following values as an exit status:<br>
 ```sh
 # Backup-and-Restore: user:/tests/examples
 
-# We use `dump` as storage format here, since storage plugins such as INI
+# We use `dump` as storage format here
 sudo kdb mount ls.ecf user:/tests/examples dump
 
 # Create the keys we use for the examples

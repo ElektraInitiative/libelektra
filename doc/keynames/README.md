@@ -4,7 +4,7 @@
 
 This document is a full explanation of how _key names_ work in Elektra.
 In addition to this document, a reference Python implementation can be found in [keynames.py](keynames.py).
-The goal this Python implementation is not to be fast, or to be used in any way other than as a reference.
+The goal of the Python implementation is not to be fast, or to be used in any way other than as a reference.
 If there are any discrepancies between this document, the Python implementation and the actual C implementation in [src/libs/elektra/keyname.c](../../src/libs/elektra/keyname.c), you should consider them as follows:
 
 1. The C implementation is optimized for speed and much harder to maintain.
@@ -25,7 +25,7 @@ These tests are very fast (1000+ test cases per second) and the more tests the b
 
 ## 1. Key Name Parts and Namespaces
 
-Before we get to key names proper, we need to talk about key name parts and namespaces.
+Before we dive into key names, we need to talk about key name parts and namespaces.
 
 Each key is part of one of these _namespaces_:
 
@@ -38,7 +38,7 @@ Each key is part of one of these _namespaces_:
 - system
 - default
 
-Each of these namespaces has a very specific meaning, explained in [another section below](#12-namespaces-and-root-keys).
+Each of these namespaces has a very specific meaning, explained in [section 1.2](#12-namespaces-and-root-keys).
 
 Apart from the namespace, a key name is just a series of zero or more _key name parts_.
 Each key name part is just an arbitrary (possibly empty) sequence of non-zero bytes.
@@ -50,7 +50,7 @@ So without knowing anything about how key names are written, we could say that t
 
 ### 1.1. Key Hierarchy
 
-You may have already seen elsewhere, that in Elektra keys commonly look like Unix paths:
+Elektra's keys commonly look like Unix paths:
 
 ```
 /elektra/version/info
@@ -183,12 +183,12 @@ Namely, that they override each other in exactly this order.
 Given two key names with identical key name parts, but one with namespace "dir" and one with namespace "user", the one with namespace "dir" should be considered more specific and should be preferred.
 
 A special feature of Elektra is _namespace resolution_.
-namespace resolution is the process of finding an appropriate namespace for a key based on a key name with namespace "cascading".
+Namespace resolution is the process of finding an appropriate namespace for a key based on a key name with namespace "cascading".
 It is most commonly used, when you need to find which key in the KDB should be used, based on a series of key name parts.
 
 To resolve the namespace, we just look at each of the namespaces in the ranking defined above.
 We then use the first namespace where the key actually exists.
-namespace resolution is performed, when `ksLookup`/`ksLookupByName` is called with a key name with namespace "cascading" [[2]](#footnote-2).
+Namespace resolution is performed, when `ksLookup`/`ksLookupByName` is called with a key name with namespace "cascading" [[2]](#footnote-2).
 <a id="ref-footnote-2"></a>
 This is also done, if you call `kdb get` or `kdb set` with a key name with namespace "cascading".
 
@@ -477,9 +477,9 @@ This is why there are two types of reserved key name:
 1. Any key name that is below `system:/elektra`:
    These key names are reserved for Elektra's internals.
    Each of these keys has a very specific purpose that is defined globally for all of Elektra.
-   Using such a key name automatically caries this meaning.
-   Even outside the context in which Elektra uses these directly, you should never use `system:/eletkra` keys for other purposes.
-2. Any key name contains the key name part `®elektra`:
+   Using such a key name automatically carries this meaning.
+   Even outside the context in which Elektra uses these directly, you should never use `system:/elektra` keys for other purposes.
+2. Any key name containing the key name part `®elektra`:
    These key names are reserved, but their meaning depends on the context.
    Similar to the [METADATA.ini](../METADATA.ini) file for metadata, some conventions for these key names are defined in [reserved name document]().
 

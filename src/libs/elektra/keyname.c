@@ -383,7 +383,7 @@ ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
  * Copies the unescaped name of a key into provided buffer.
  * We will only copy the full name, if the buffer is to small an error code is returned.
  *
- * To ensure your buffer is big enough, you can use keyGetUnescapedNameSize() find the correct size.
+ * To ensure your buffer is big enough, you can use keyGetUnescapedNameSize() to find the correct size.
  *
  * @param key          the Key to extract the unescaped name from
  * @param returnedName output buffer
@@ -467,8 +467,6 @@ ssize_t keySetName (Key * key, const char * newName)
 	}
 
 	// from now on this function CANNOT fail -> we may modify the key
-
-	clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
 	{

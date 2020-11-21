@@ -4,7 +4,7 @@
 This file contains a reference implementation of Elektra's Key Name processing.
 
 It contains commented functions for:
-  - Checking, wether a string is a valid Key Name and if so turning it into its canonical form.
+  - Checking, whether a string is a valid Key Name and if so turning it into its canonical form.
   - Splitting (canonical) Key Names into a Namespace and a list of (unescaped) Key Name Parts.
 
 In addition, we provide a command line interface to experiment with the implementation.
@@ -41,7 +41,7 @@ def check_array_part(part: str) -> Tuple[bool, Optional[str]]:
     if underscores > 0 and underscores != len(digits) - 1:
         return False, None
 
-    if len(digits) > 19 or (len(digits) == 19 and digits > "9223372036854775807"):
+    if len(digits) > 19 or (len(digits) == 19 and digits > str(2**63-1)):
         return False, None
 
     if len(digits) > 1 and digits[0] == "0":
@@ -87,7 +87,7 @@ ESCAPES = {"/", "\\"}
 # The function should return True, iff the escape sequence is valid.
 ESCAPES_SPECIAL = {
     ".": lambda part: re.match(r"^\\\.{1,2}$", part),
-    "#": lambda part: (len(part) < 21 or part[2:] <= "9223372036854775807") and re.match(r"^\\#[1-9][0-9]{1,18}$", part),
+    "#": lambda part: (len(part) < 21 or part[2:] <= str(2**63-1)) and re.match(r"^\\#[1-9][0-9]{1,18}$", part),
     "%": lambda part: re.match(r"^\\%$", part),
 }
 
@@ -183,7 +183,7 @@ def canonicalize(name: str, prefix: str = "", verbose: bool = False) -> str:
             f"Allowed values for <NAMESPACE>: {NAMESPACES}"
         )
 
-    # Check if for dangling escapes
+    # Check for dangling escapes
     if sum(1 for _ in takewhile(lambda x: x == "\\", reversed(fullname))) % 2 != 0:
         raise KeyNameException(
             f"The key must not end with an unescaped backslash '\\'."
@@ -348,7 +348,7 @@ def unescape(canonical: str, verbose: bool = False) -> Tuple[Namespace, Iterator
 
             return ""
         else:
-            # Simple remove the backslashes `\` from the escape sequences
+            # Simply remove the backslashes `\` from the escape sequences
             return ESCAPE_REGEX.sub("\\1", actual_part)
 
     # Use the RegEx to separate the parts and then unescape each one individually
@@ -365,7 +365,7 @@ START OF MAIN FUNCTION
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Check an convert Elektra Key Names."
+        description="Check and convert Elektra Key Names."
     )
     parser.add_argument(
         "--verbose", "-v",
