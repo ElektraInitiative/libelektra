@@ -4,7 +4,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="https://www.libelektra.org elektra.xsd"
 >
-<key name="user/tests/filesys/.HiddenBinaryKey"
+<key name="user:/tests/filesys/.HiddenBinaryKey"
         mode="0440">
 
      <value>
@@ -14,21 +14,21 @@
      <comment><![CDATA[Binary key with hidden name]]></comment>
 </key>
 
-<key name="user/tests/filesys/.HiddenDirectoryKey"
+<key name="user:/tests/filesys/.HiddenDirectoryKey"
         mode="0775"
 	value="DirectoryValue">
 
      <comment><![CDATA[Directory key with hidden name]]></comment>
 </key>
 
-<key name="user/tests/filesys/.HiddenStringKey"
+<key name="user:/tests/filesys/.HiddenStringKey"
         uid="0" gid="20" mode="0664"
 	value="StringValue">
 
      <comment><![CDATA[String key with hidden name]]></comment>
 </key>
 
-<key name="user/tests/filesys/PerfectBinaryKey"
+<key name="user:/tests/filesys/PerfectBinaryKey"
         gid="40" mode="0664">
 
      <value>
@@ -38,14 +38,14 @@
      <comment><![CDATA[Binary key with standard name]]></comment>
 </key>
 
-<key name="user/tests/filesys/PerfectDirectoryKey"
+<key name="user:/tests/filesys/PerfectDirectoryKey"
         mode="0775"
 	value="DirectoryValue">
 
      <comment><![CDATA[Directory key with standard name]]></comment>
 </key>
 
-<key name="user/tests/filesys/PerfectStringKey"
+<key name="user:/tests/filesys/PerfectStringKey"
         uid="20" mode="0664"
 	value="StringValue">
 
@@ -53,19 +53,19 @@
 standard name]]></comment>
 </key>
 
-<key name="user/tests/filesys/Ug.ly:Bin@a€ry Key"
+<key name="user:/tests/filesys/Ug.ly:Bin@a€ry Key"
         mode="0346">
 
      <comment><![CDATA[Binary key with ugly name]]></comment>
 </key>
 
-<key name="user/tests/filesys/Ug.ly:Dir@ect€ory Key"
+<key name="user:/tests/filesys/Ug.ly:Dir@ect€ory Key"
         mode="0775">
 
      <comment><![CDATA[Directory with ugly name]]></comment>
 </key>
 
-<key name="user/tests/filesys/Ug.ly:St@ri€n.g Key"
+<key name="user:/tests/filesys/Ug.ly:St@ri€n.g Key"
         mode="0664">
 
      <value><![CDATA[With a string value]]></value>

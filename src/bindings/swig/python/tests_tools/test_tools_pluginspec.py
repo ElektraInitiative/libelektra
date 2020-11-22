@@ -2,7 +2,7 @@ import kdb, kdb.tools, unittest
 
 class PluginSpec(unittest.TestCase):
 	def test_properties(self):
-		config = kdb.KeySet(1, kdb.Key("system/module", "without config"))
+		config = kdb.KeySet(1, kdb.Key("system:/module", "without config"))
 		spec = kdb.tools.PluginSpec("somename", config)
 		self.assertEqual(spec.name,     "somename")
 		self.assertEqual(spec.fullname, "somename#somename")
@@ -22,7 +22,7 @@ class PluginSpec(unittest.TestCase):
 		spec.refNumber = 5
 		self.assertTrue(spec.refNumber)
 
-		config.append(kdb.Key("system/modules/2"))
+		config.append(kdb.Key("system:/modules/2"))
 		self.assertNotEqual(spec.config, config)
 		spec.config = config
 		self.assertEqual(spec.config, config)

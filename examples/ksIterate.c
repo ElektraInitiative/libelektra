@@ -38,7 +38,7 @@ void iterate_while (KeySet * ks)
 
 int main (void)
 {
-	KeySet * ks = ksNew (20, keyNew ("user/name1", 0), keyNew ("user/name2", 0), keyNew ("user/name3", 0), KS_END);
+	KeySet * ks = ksNew (20, keyNew ("user:/name1", 0), keyNew ("user:/name2", 0), keyNew ("user:/name3", 0), KS_END);
 	iterate_while (ks);
 	iterate_for (ks);
 }

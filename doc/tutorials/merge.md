@@ -67,7 +67,7 @@ strategy (`ours`, `theirs`, or `base`) for the resulting Key.
 Basic Usage:
 
 ```sh
-kdb merge system/hosts/ours system/hosts/theirs system/hosts/base system/hosts/result
+kdb merge system:/hosts/ours system:/hosts/theirs system:/hosts/base system:/hosts/result
 ```
 
 ## Examples Using Strategies
@@ -76,7 +76,7 @@ Here are examples of the same KeySets being merged using different strategies.
 The KeySets are mounted using a property format, the left side of '=' is the name of
 the Key, the right side is its string value.
 
-We start with the base KeySet, `system/base`:
+We start with the base KeySet, `system:/base`:
 
 ```ini
 key1=1
@@ -86,7 +86,7 @@ key4=4
 key5=5
 ```
 
-Here is our KeySet, `system/ours`:
+Here is our KeySet, `system:/ours`:
 
 ```ini
 key1=apple
@@ -95,7 +95,7 @@ key3=3
 key5=fish
 ```
 
-Here is their KeySet, `system/theirs`:
+Here is their KeySet, `system:/theirs`:
 
 ```ini
 key1=1
@@ -109,7 +109,7 @@ Now we will examine the result KeySet with the different strategies.
 ### Preserve
 
 ```sh
-kdb merge -s preserve system/ours system/theirs system/base system/result
+kdb merge -s preserve system:/ours system:/theirs system:/base system:/result
 ```
 
 The merge will fail because of a conflict for `key4` since `key4` was deleted in our KeySet and
@@ -118,10 +118,10 @@ edited in their KeySet. Since we used preserve, the merge fails and the result K
 ### Ours
 
 ```sh
-kdb merge -s ours system/ours system/theirs system/base system/result
+kdb merge -s ours system:/ours system:/theirs system:/base system:/result
 ```
 
-The result KeySet, system/result will be:
+The result KeySet, system:/result will be:
 
 ```ini
 key1=apple
@@ -135,10 +135,10 @@ thus deleting the key.
 ### Theirs
 
 ```sh
-kdb merge -s theirs system/ours system/theirs system/base system/result
+kdb merge -s theirs system:/ours system:/theirs system:/base system:/result
 ```
 
-The result KeySet, `system/result` will be:
+The result KeySet, `system:/result` will be:
 
 ```ini
 key1=apple
@@ -152,10 +152,10 @@ Here, the conflict of `key4` is solved by using their copy, thus `key4=banana`.
 ### Base
 
 ```sh
-kdb merge -s base system/ours system/theirs system/base system/result
+kdb merge -s base system:/ours system:/theirs system:/base system:/result
 ```
 
-The result KeySet, `system/result` will be:
+The result KeySet, `system:/result` will be:
 
 ```ini
 key1=apple

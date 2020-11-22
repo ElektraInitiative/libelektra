@@ -43,77 +43,77 @@ The multifile-resolver does so by calling resolver and storage plugins for each 
 ## Examples
 
 ```sh
-rm -rf $(dirname $(kdb file user))/multitest || $(exit 0)
-mkdir -p $(dirname $(kdb file user))/multitest || $(exit 0)
+rm -rf $(dirname $(kdb file user:/))/multitest || $(exit 0)
+mkdir -p $(dirname $(kdb file user:/))/multitest || $(exit 0)
 
-cat > $(dirname $(kdb file user))/multitest/lo.toml << EOF \
+cat > $(dirname $(kdb file user:/))/multitest/lo.toml << EOF \
 [lo]\
 addr = "127.0.0.1"\
 encap = "Loopback"\
 EOF
 
-cat > $(dirname $(kdb file user))/multitest/lan.toml << EOF \
+cat > $(dirname $(kdb file user:/))/multitest/lan.toml << EOF \
 [eth0]\
 addr = "192.168.1.216"\
 encap = "Ethernet"\
 EOF
 
-cat > $(dirname $(kdb file user))/multitest/wlan.toml << EOF \
+cat > $(dirname $(kdb file user:/))/multitest/wlan.toml << EOF \
 [wlan0]\
 addr = "192.168.1.125"\
 encap = "Ethernet"\
 EOF
 
-sudo kdb mount -R multifile -c storage="toml",pattern="*.toml",resolver="resolver" multitest user/tests/multifile
+sudo kdb mount -R multifile -c storage="toml",pattern="*.toml",resolver="resolver" multitest user:/tests/multifile
 
-kdb ls user/tests/multifile
-#> user/tests/multifile/lan.toml/eth0
-#> user/tests/multifile/lan.toml/eth0/addr
-#> user/tests/multifile/lan.toml/eth0/encap
-#> user/tests/multifile/lo.toml/lo
-#> user/tests/multifile/lo.toml/lo/addr
-#> user/tests/multifile/lo.toml/lo/encap
-#> user/tests/multifile/wlan.toml/wlan0
-#> user/tests/multifile/wlan.toml/wlan0/addr
-#> user/tests/multifile/wlan.toml/wlan0/encap
+kdb ls user:/tests/multifile
+#> user:/tests/multifile/lan.toml/eth0
+#> user:/tests/multifile/lan.toml/eth0/addr
+#> user:/tests/multifile/lan.toml/eth0/encap
+#> user:/tests/multifile/lo.toml/lo
+#> user:/tests/multifile/lo.toml/lo/addr
+#> user:/tests/multifile/lo.toml/lo/encap
+#> user:/tests/multifile/wlan.toml/wlan0
+#> user:/tests/multifile/wlan.toml/wlan0/addr
+#> user:/tests/multifile/wlan.toml/wlan0/encap
 
-kdb set user/tests/multifile/lan.toml/eth0/addr 10.0.0.2
+kdb set user:/tests/multifile/lan.toml/eth0/addr 10.0.0.2
 
-kdb get user/tests/multifile/lan.toml/eth0/addr
+kdb get user:/tests/multifile/lan.toml/eth0/addr
 #> 10.0.0.2
 
-kdb get user/tests/multifile/lan.toml/eth0/encap
+kdb get user:/tests/multifile/lan.toml/eth0/encap
 #> Ethernet
 
-cat > $(dirname $(kdb file user))/multitest/test.toml << EOF \
+cat > $(dirname $(kdb file user:/))/multitest/test.toml << EOF \
 [testsection]\
 key = "val"\
 EOF
 
-kdb ls user/tests/multifile/test.toml
-#> user/tests/multifile/test.toml/testsection
-#> user/tests/multifile/test.toml/testsection/key
+kdb ls user:/tests/multifile/test.toml
+#> user:/tests/multifile/test.toml/testsection
+#> user:/tests/multifile/test.toml/testsection/key
 
-kdb ls user/tests/multifile
-#> user/tests/multifile/lan.toml/eth0
-#> user/tests/multifile/lan.toml/eth0/addr
-#> user/tests/multifile/lan.toml/eth0/encap
-#> user/tests/multifile/lo.toml/lo
-#> user/tests/multifile/lo.toml/lo/addr
-#> user/tests/multifile/lo.toml/lo/encap
-#> user/tests/multifile/test.toml/testsection
-#> user/tests/multifile/test.toml/testsection/key
-#> user/tests/multifile/wlan.toml/wlan0
-#> user/tests/multifile/wlan.toml/wlan0/addr
-#> user/tests/multifile/wlan.toml/wlan0/encap
+kdb ls user:/tests/multifile
+#> user:/tests/multifile/lan.toml/eth0
+#> user:/tests/multifile/lan.toml/eth0/addr
+#> user:/tests/multifile/lan.toml/eth0/encap
+#> user:/tests/multifile/lo.toml/lo
+#> user:/tests/multifile/lo.toml/lo/addr
+#> user:/tests/multifile/lo.toml/lo/encap
+#> user:/tests/multifile/test.toml/testsection
+#> user:/tests/multifile/test.toml/testsection/key
+#> user:/tests/multifile/wlan.toml/wlan0
+#> user:/tests/multifile/wlan.toml/wlan0/addr
+#> user:/tests/multifile/wlan.toml/wlan0/encap
 
-kdb rm -r user/tests/multifile/test.toml
+kdb rm -r user:/tests/multifile/test.toml
 
-stat $(dirname $(kdb file user))/multifile/test.toml
+stat $(dirname $(kdb file user:/))/multifile/test.toml
 # RET:1
 
-sudo kdb umount user/tests/multifile
-rm -rf $(dirname $(kdb file user))/multitest || $(exit 0)
+sudo kdb umount user:/tests/multifile
+rm -rf $(dirname $(kdb file user:/))/multitest || $(exit 0)
 ```
 
 ## Limitations

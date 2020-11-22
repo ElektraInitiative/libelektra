@@ -13,11 +13,11 @@ import org.libelektra.exception.KDBException;
 public class KDBTest
 {
 
-	private static final String PARENT_KEY_NAME = "user/sw/tests/jna/1/";
-	private static final String KEY_1_NAME = "user/sw/tests/jna/1/key_name";
+	private static final String PARENT_KEY_NAME = "user:/sw/tests/jna/1/";
+	private static final String KEY_1_NAME = "user:/sw/tests/jna/1/key_name";
 	private static final String KEY_1_VALUE = "key_value_1";
 
-	private static final String KEY_2_NAME = "user/sw/tests/jna/1/key_name/2";
+	private static final String KEY_2_NAME = "user:/sw/tests/jna/1/key_name/2";
 	private static final String KEY_2_VALUE = "key_value_2";
 
 	private Key key, key2, parentKey;

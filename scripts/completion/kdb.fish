@@ -416,7 +416,7 @@ __fish_kdb_add_option '__fish_kdb_subcommand_supports_common_options' 'help' 'H'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes merge mount remount smount spec-mount' 'interactive' 'i' 'Ask the user interactively'
 
 # --load -l
-__fish_kdb_add_option '__fish_kdb_subcommand_includes info' 'load' 'l' 'Load plugin even if system/elektra is available'
+__fish_kdb_add_option '__fish_kdb_subcommand_includes info' 'load' 'l' 'Load plugin even if system:/elektra is available'
 
 # --max-depth -M
 set -l description 'Specify the maximum depth (unlimited by default, 1 to show only the next level), exclusive and relative to the name'

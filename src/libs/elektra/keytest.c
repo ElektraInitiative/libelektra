@@ -102,33 +102,18 @@ int keyNeedSync (const Key * key)
 
 int keyIsSpec (const Key * key)
 {
-	if (!key) return -1;
-
-	if (key->key)
-		return keyNameIsSpec (key->key);
-	else
-		return 0;
+	return keyGetNamespace (key) == KEY_NS_SPEC;
 }
 
 int keyIsProc (const Key * key)
 {
-	if (!key) return -1;
-
-	if (key->key)
-		return keyNameIsProc (key->key);
-	else
-		return 0;
+	return keyGetNamespace (key) == KEY_NS_PROC;
 }
 
 
 int keyIsDir (const Key * key)
 {
-	if (!key) return -1;
-
-	if (key->key)
-		return keyNameIsDir (key->key);
-	else
-		return 0;
+	return keyGetNamespace (key) == KEY_NS_DIR;
 }
 
 
@@ -139,19 +124,13 @@ int keyIsDir (const Key * key)
  *
  * @param key the key object to work with
  * @retval 1 if key name begins with @p system, 0 otherwise
- * @retval -1 on NULL pointer
  * @see keyIsUser(), keySetName(), keyName()
  * @ingroup keytest
  *
  */
 int keyIsSystem (const Key * key)
 {
-	if (!key) return -1;
-
-	if (key->key)
-		return keyNameIsSystem (key->key);
-	else
-		return 0;
+	return keyGetNamespace (key) == KEY_NS_SYSTEM;
 }
 
 
@@ -162,19 +141,13 @@ int keyIsSystem (const Key * key)
  *
  * @param key the key object to work with
  * @retval 1 if key name begins with @p user, 0 otherwise
- * @retval -1 on NULL pointer
  * @see keyIsSystem(), keySetName(), keyName()
  * @ingroup keytest
  *
  */
 int keyIsUser (const Key * key)
 {
-	if (!key) return -1;
-
-	if (key->key)
-		return keyNameIsUser (key->key);
-	else
-		return 0;
+	return keyGetNamespace (key) == KEY_NS_USER;
 }
 
 /**
@@ -182,16 +155,16 @@ int keyIsUser (const Key * key)
  *
  * Example:
  @verbatim
- key user/sw/app
- check user/sw/app/key
+ key user:/sw/app
+ check user:/sw/app/key
  @endverbatim
  *
  * returns true because check is below key
  *
  * Example:
  @verbatim
- key user/sw/app
- check user/sw/app/folder/key
+ key user:/sw/app
+ check user:/sw/app/folder/key
  @endverbatim
  *
  * returns also true because check is indirect below key
@@ -222,8 +195,9 @@ int keyIsBelow (const Key * key, const Key * check)
 
 	// same key, only if namespace and size are equal
 	// size alone could be equal with cascading keys
-	return keyIsBelowOrSame (key, check) &&
-	       (keyGetNamespace (key) != keyGetNamespace (check) || keyGetUnescapedNameSize (key) != keyGetUnescapedNameSize (check));
+	return keyIsBelowOrSame (key, check) && keyGetUnescapedNameSize (key) != keyGetUnescapedNameSize (check) &&
+	       (keyGetNamespace (key) == keyGetNamespace (check) || keyGetNamespace (check) == KEY_NS_CASCADING ||
+		keyGetNamespace (key) == KEY_NS_CASCADING);
 }
 
 
@@ -246,32 +220,35 @@ int keyIsBelowOrSame (const Key * key, const Key * check)
 	size_t sizeAbove = keyGetUnescapedNameSize (key);
 	size_t sizeBelow = keyGetUnescapedNameSize (check);
 
-	if (sizeAbove == 1 && above[0] == '\0' && below[0] != '\0' && sizeBelow == strlen (below) + 1)
+	if ((sizeAbove == 3 && above[0] == KEY_NS_CASCADING && sizeBelow == 3 && below[0] != KEY_NS_CASCADING) ||
+	    (sizeBelow == 3 && below[0] == KEY_NS_CASCADING && sizeAbove == 3 && above[0] != KEY_NS_CASCADING))
 	{
-		// cascading root compared against other root
+		// cascading root compared to other root
 		return 0;
 	}
 
-	if (sizeBelow == 1 && below[0] == '\0' && above[0] != '\0' && sizeAbove == strlen (above) + 1)
+
+	if (sizeAbove == 3)
 	{
-		// cascading root compared against other root
-		return 0;
+		// root key, ignore trailing slash
+		sizeAbove -= 1;
 	}
 
-	if (above[0] != '\0' && below[0] == '\0')
+	if (sizeBelow == 3)
 	{
-		// cascading
-		size_t len = strlen (above);
-		above += len;
-		sizeAbove -= len;
+		// root key, ignore trailing slash
+		sizeBelow -= 1;
 	}
 
-	if (below[0] != '\0' && above[0] == '\0')
+	if ((above[0] != KEY_NS_CASCADING && below[0] == KEY_NS_CASCADING) ||
+	    (below[0] != KEY_NS_CASCADING && above[0] == KEY_NS_CASCADING))
 	{
-		// cascading
-		size_t len = strlen (below);
-		below += len;
-		sizeBelow -= len;
+		// cascading, ignore namespaces
+		++above;
+		--sizeAbove;
+
+		++below;
+		--sizeBelow;
 	}
 
 	if (sizeAbove > sizeBelow)
@@ -288,14 +265,14 @@ int keyIsBelowOrSame (const Key * key, const Key * check)
  *
  @verbatim
 Example:
-key user/sw/app
-check user/sw/app/key
+key user:/sw/app
+check user:/sw/app/key
 
 returns true because check is below key
 
 Example:
-key user/sw/app
-check user/sw/app/folder/key
+key user:/sw/app
+check user:/sw/app/folder/key
 
 does not return true, because there is only an indirect relation
 @endverbatim
@@ -322,22 +299,28 @@ int keyIsDirectlyBelow (const Key * key, const Key * check)
 	size_t sizeAbove = keyGetUnescapedNameSize (key);
 	size_t sizeBelow = keyGetUnescapedNameSize (check);
 
-	if (above[0] != '\0' && below[0] == '\0')
+	if (sizeAbove == 3)
 	{
-		// cascading
-		size_t len = strlen (above);
-		above += len;
-		sizeAbove -= len;
+		// root key, ignore trailing slash
+		sizeAbove -= 1;
 	}
 
-	if (below[0] != '\0' && above[0] == '\0')
+	if (sizeBelow == 3)
 	{
-		// cascading
-		size_t len = strlen (below);
-		below += len;
-		sizeBelow -= len;
+		// root key, ignore trailing slash
+		sizeBelow -= 1;
 	}
 
+	if ((above[0] != KEY_NS_CASCADING && below[0] == KEY_NS_CASCADING) ||
+	    (below[0] != KEY_NS_CASCADING && above[0] == KEY_NS_CASCADING))
+	{
+		// cascading, ignore namespaces
+		++above;
+		--sizeAbove;
+
+		++below;
+		--sizeBelow;
+	}
 	if (sizeAbove >= sizeBelow)
 	{
 		return 0;
@@ -346,53 +329,6 @@ int keyIsDirectlyBelow (const Key * key, const Key * check)
 	size_t nextPartSize = strlen (below + sizeAbove);
 	return memcmp (above, below, sizeAbove) == 0 && sizeAbove + nextPartSize + 1 == sizeBelow;
 }
-
-
-/**
- * Check whether a key is inactive.
- *
- * In Elektra terminology a hierarchy of keys is inactive if
- * the rootkey's basename starts with '.'. So a key is
- * also inactive if it is below an inactive key.
- * For example, user/key/.hidden is inactive and so
- * is user/.hidden/below.
- *
- * Inactive keys should not have any meaning to applications,
- * they are only a convention reserved for users and
- * administrators. To automatically remove all inactive keys
- * for an application, consider to use the hidden plugin.
- *
- * @param key the key object to work with
- * @retval 1 if the key is inactive
- * @retval 0 if the key is active
- * @retval -1 on NULL pointer or when key has no name
- * @ingroup keytest
- *
- */
-int keyIsInactive (const Key * key)
-{
-	if (!key) return -1;
-
-	const char * p = keyName (key);
-	if (!p) return -1;
-	if (p[0] == '\0') return -1;
-
-	size_t size = 0;
-
-	while (*(p = keyNameGetOneLevel (p + size, &size)))
-	{
-		if (size > 0)
-		{
-			if (p[0] == '.')
-			{
-				return 1;
-			}
-		}
-	}
-
-	return 0;
-}
-
 
 /**
  * Check if a key is binary type.

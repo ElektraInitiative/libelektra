@@ -13,7 +13,7 @@
 int main (void)
 {
 	KeySet * config = ksNew (0, KS_END);
-	Key * root = keyNew ("user/test", KEY_END);
+	Key * root = keyNew ("user:/test", KEY_END);
 
 	printf ("Open key database\n");
 	KDB * handle = kdbOpen (root);
@@ -23,7 +23,7 @@ int main (void)
 
 	printf ("Number of key-value pairs: %zd\n", ksGetSize (config));
 
-	Key * key = keyNew ("user/test/hello", KEY_VALUE, "elektra", KEY_END);
+	Key * key = keyNew ("user:/test/hello", KEY_VALUE, "elektra", KEY_END);
 	printf ("Add key %s\n", keyName (key));
 	ksAppendKey (config, key);
 	printf ("Number of key-value pairs: %zd\n", ksGetSize (config));

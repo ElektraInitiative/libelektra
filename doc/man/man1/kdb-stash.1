@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-STASH" "" "August 2019" "" ""
+.TH "KDB\-STASH" "" "September 2020" "" ""
 .
 .SH "NAME"
 \fBkdb\-stash\fR \- Stash away KDB to be restored later
@@ -19,39 +19,39 @@ The backup will be done in the \fB/var/tmp\fR directory, so make sure the backup
 .
 .nf
 
-kdb set user/x foo
+kdb set user:/x foo
 #>
-#> Create a new key user/x with string "foo"
+#> Create a new key user:/x with string "foo"
 
 kdb mount a\.ini /a
 kdb mount
 #> a\.ini on /a with name /a
-#> none on system/info/elektra/constants with name system/info/elektra/constants
-#> /usr/local/share/doc/elektra/CONTRACT\.ini on system/info/elektra/contract/#0 with name system/info/elektra/contract/#0
-#> none on system/info/elektra/desktop with name system/info/elektra/desktop
-#> /usr/local/share/doc/elektra/METADATA\.ini on system/info/elektra/metadata/#0 with name system/info/elektra/metadata/#0
-#> none on system/info/elektra/uname with name system/info/elektra/uname
+#> none on system:/info/elektra/constants with name system:/info/elektra/constants
+#> /usr/local/share/doc/elektra/CONTRACT\.ini on system:/info/elektra/contract/#0 with name system:/info/elektra/contract/#0
+#> none on system:/info/elektra/desktop with name system:/info/elektra/desktop
+#> /usr/local/share/doc/elektra/METADATA\.ini on system:/info/elektra/metadata/#0 with name system:/info/elektra/metadata/#0
+#> none on system:/info/elektra/uname with name system:/info/elektra/uname
 
 kdb backup
 #> kdb restore 1500000000
 
-kdb get user/x
+kdb get user:/x
 #> Did not find key
 
 kdb mount
 
 kdb restore 1500000000
 
-kdb get user/x
+kdb get user:/x
 #> foo
 
 kdb mount
 #> a\.ini on /a with name /a
-#> none on system/info/elektra/constants with name system/info/elektra/constants
-#> /usr/local/share/doc/elektra/CONTRACT\.ini on system/info/elektra/contract/#0 with name system/info/elektra/contract/#0
-#> none on system/info/elektra/desktop with name system/info/elektra/desktop
-#> /usr/local/share/doc/elektra/METADATA\.ini on system/info/elektra/metadata/#0 with name system/info/elektra/metadata/#0
-#> none on system/info/elektra/uname with name system/info/elektra/uname
+#> none on system:/info/elektra/constants with name system:/info/elektra/constants
+#> /usr/local/share/doc/elektra/CONTRACT\.ini on system:/info/elektra/contract/#0 with name system:/info/elektra/contract/#0
+#> none on system:/info/elektra/desktop with name system:/info/elektra/desktop
+#> /usr/local/share/doc/elektra/METADATA\.ini on system:/info/elektra/metadata/#0 with name system:/info/elektra/metadata/#0
+#> none on system:/info/elektra/uname with name system:/info/elektra/uname
 .
 .fi
 .

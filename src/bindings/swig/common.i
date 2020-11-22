@@ -109,7 +109,6 @@
 // name manipulation
 %rename("_%s") kdb::Key::getNameSize;
 %rename("_%s") kdb::Key::getBaseNameSize;
-%rename("_%s") kdb::Key::getFullNameSize;
 
 // value operations
 %rename("_%s") kdb::Key::getString;

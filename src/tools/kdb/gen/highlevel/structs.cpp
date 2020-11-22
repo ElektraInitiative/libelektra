@@ -547,7 +547,7 @@ kainjow::mustache::object StructProcessor::process (const kdb::Key & key, const 
 	using namespace kainjow::mustache;
 
 	auto name = key.getName ();
-	name.erase (0, sizeof ("spec") - 1);
+	name.erase (0, sizeof ("spec:") - 1);
 
 	bool genType;
 	auto structType = getType (key, tagName, genType);

@@ -92,7 +92,7 @@
  * stored.
  *
  * The "owner" is the user that owns the key. It only
- * works for the user/ hierarchy. It rather says where
+ * works for the user:/ hierarchy. It rather says where
  * the key is stored and says nothing about the
  * filesystem properties.
  *
@@ -253,7 +253,7 @@ void l(Key *k)
 void o(KeySet *ks)
 {
 	Key *current;
-	Key *shared = keyNew (0);
+	Key *shared = keyNew ("/", KEY_END);
 	keySetMeta(shared, "shared", "this metadata should be shared among many keys");
 
 	ksRewind(ks);
@@ -405,6 +405,7 @@ int f(Key *k)
  *
  * @param key the key object to work with
  * @param metaName the name of the meta information you want the value from
+ *                 If the name does not start with 'meta:/', we will prefix it with 'meta:/'.
  * @retval 0 if the key or metaName is 0
  * @retval 0 if no such metaName is found
  * @return value of meta-information if meta-information is found
@@ -420,8 +421,15 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
 	if (!metaName) return 0;
 	if (!key->meta) return 0;
 
-	search = keyNew (0);
-	elektraKeySetName (search, metaName, KEY_META_NAME | KEY_EMPTY_NAME);
+	if (strncmp (metaName, "meta:/", sizeof ("meta:/") - 1) == 0)
+	{
+		search = keyNew (metaName, KEY_END);
+	}
+	else
+	{
+		search = keyNew ("meta:/", KEY_END);
+		keyAddName (search, metaName);
+	}
 
 	ret = ksLookup (key->meta, search, 0);
 
@@ -447,6 +455,7 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  * @param key the key object to work with
  * @param metaName the name of the meta information where you
  *                 want to change the value
+ *                 If the name does not start with 'meta:/', we will prefix it with 'meta:/'.
  * @param newMetaString the new value for the meta information
  * @retval -1 on error if key or metaName is 0, out of memory
  *         or names are not valid
@@ -473,10 +482,16 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	// optimization: we have nothing and want to remove something:
 	if (!key->meta && !newMetaString) return 0;
 
-	toSet = keyNew (0);
+	if (strncmp (metaName, "meta:/", sizeof ("meta:/") - 1) == 0)
+	{
+		toSet = keyNew (metaName, KEY_END);
+	}
+	else
+	{
+		toSet = keyNew ("meta:/", KEY_END);
+		keyAddName (toSet, metaName);
+	}
 	if (!toSet) return -1;
-
-	elektraKeySetName (toSet, metaName, KEY_META_NAME | KEY_EMPTY_NAME);
 
 	/*Lets have a look if the key is already inserted.*/
 	if (key->meta)
@@ -491,11 +506,11 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 		}
 	}
 
-	if (newMetaString)
+	if (newMetaString != NULL)
 	{
 		/*Add the meta information to the key*/
 		metaStringDup = elektraStrNDup (newMetaString, metaStringSize);
-		if (!metaStringDup)
+		if (metaStringDup == NULL)
 		{
 			// TODO: actually we might already have changed
 			// the key

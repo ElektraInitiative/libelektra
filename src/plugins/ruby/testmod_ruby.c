@@ -29,24 +29,24 @@ static void test_plugin_open_without_script (void)
 
 static void test_plugin_open (void)
 {
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "simple.rb"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "simple.rb"), KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 	PLUGIN_CLOSE ();
 }
 
 static void test_plugin_open_script_not_found (void)
 {
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "does_not_eXiSt.rb"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "does_not_eXiSt.rb"), KEY_END), KS_END);
 
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey);
 
-	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#00/description")), "Plugin Misbehavior");
+	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#0/description")), "Plugin Misbehavior");
 
 	const char * exp_warning_msg = "Ruby Exception: LoadError: cannot load such file -- ";
-	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#00/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
+	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#0/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
 		    "unexpected warning message");
 
 	keyDel (errorKey);
@@ -55,17 +55,17 @@ static void test_plugin_open_script_not_found (void)
 
 static void test_plugin_open_invalid_script (void)
 {
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "invalid.rb"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "invalid.rb"), KEY_END), KS_END);
 
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey);
 
-	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#00/description")), "Plugin Misbehavior");
+	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#0/description")), "Plugin Misbehavior");
 
 	const char * exp_warning_msg = "Error in Ruby-plugin, didn't call Kdb::Plugin.define";
-	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#00/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
+	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#0/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
 		    "unexpected warning message");
 
 	keyDel (errorKey);
@@ -74,16 +74,16 @@ static void test_plugin_open_invalid_script (void)
 
 static void test_plugin_open_not_a_script (void)
 {
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "not_a_ruby_script.txt"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "not_a_ruby_script.txt"), KEY_END), KS_END);
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey = keyNew ("", KEY_END);
+	Key * errorKey = keyNew ("/", KEY_END);
 	Plugin * plugin = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey);
 
-	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#00/description")), "Plugin Misbehavior");
+	succeed_if_same_string (keyString (keyGetMeta (errorKey, "warnings/#0/description")), "Plugin Misbehavior");
 
 	const char * exp_warning_msg = "Ruby Exception: SyntaxError:";
-	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#00/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
+	succeed_if (strncmp (keyString (keyGetMeta (errorKey, "warnings/#0/reason")), exp_warning_msg, strlen (exp_warning_msg)) == 0,
 		    "unexpected warning message");
 
 	keyDel (errorKey);
@@ -92,10 +92,10 @@ static void test_plugin_open_not_a_script (void)
 
 static void test_simple_get (void)
 {
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "simple_get.rb"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "simple_get.rb"), KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 
-	Key * parentKey = keyNew ("user/rubytest", KEY_END);
+	Key * parentKey = keyNew ("user:/rubytest", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 0, "call to kdbGet was not successful");
 
@@ -116,10 +116,10 @@ static void test_simple_get (void)
 
 static void test_get_with_exception (void)
 {
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "get_with_exception.rb"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "get_with_exception.rb"), KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 
-	Key * parentKey = keyNew ("user/rubytest", KEY_END);
+	Key * parentKey = keyNew ("user:/rubytest", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) < 0, "call to kdbGet was successful but it should not");
 
@@ -142,15 +142,15 @@ static void test_get_with_exception (void)
 
 static void test_simple_set (void)
 {
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "simple_set.rb"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "simple_set.rb"), KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 
-	Key * parentKey = keyNew ("user/rubytest", KEY_END);
-	KeySet * ks = ksNew (5, keyNew ("user/rubytest/key1", KEY_VALUE, "myvalue1", KEY_END),
-			     keyNew ("user/rubytest/key2", KEY_VALUE, "myvalue2", KEY_END),
-			     keyNew ("user/rubytest/key3", KEY_VALUE, "myvalue3", KEY_END),
-			     keyNew ("user/rubytest/key4", KEY_VALUE, "myvalue4", KEY_END),
-			     keyNew ("user/rubytest/key5", KEY_VALUE, "myvalue5", KEY_END), KS_END);
+	Key * parentKey = keyNew ("user:/rubytest", KEY_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/rubytest/key1", KEY_VALUE, "myvalue1", KEY_END),
+			     keyNew ("user:/rubytest/key2", KEY_VALUE, "myvalue2", KEY_END),
+			     keyNew ("user:/rubytest/key3", KEY_VALUE, "myvalue3", KEY_END),
+			     keyNew ("user:/rubytest/key4", KEY_VALUE, "myvalue4", KEY_END),
+			     keyNew ("user:/rubytest/key5", KEY_VALUE, "myvalue5", KEY_END), KS_END);
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 5, "call to kdbSet was not successful");
 
 	output_warnings (parentKey);
@@ -163,7 +163,7 @@ static void test_simple_set (void)
 
 static void set_and_test_state (Plugin * plugin, KeySet * ksSet, KeySet * ksGet)
 {
-	Key * parentKey = keyNew ("user/rubytest", KEY_END);
+	Key * parentKey = keyNew ("user:/rubytest", KEY_END);
 	succeed_if (plugin->kdbSet (plugin, ksSet, parentKey) == 1, "call to kdbSet was not successful");
 
 	output_warnings (parentKey);
@@ -178,14 +178,14 @@ static void set_and_test_state (Plugin * plugin, KeySet * ksSet, KeySet * ksGet)
 
 static void test_statefull (void)
 {
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "statefull.rb"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "statefull.rb"), KEY_END), KS_END);
 	PLUGIN_OPEN (PLUGIN_NAME);
 
-	KeySet * ksSet = ksNew (5, keyNew ("user/rubytest/key1", KEY_VALUE, "myvalue1", KEY_END),
-				keyNew ("user/rubytest/key2", KEY_VALUE, "myvalue2", KEY_END),
-				keyNew ("user/rubytest/key3", KEY_VALUE, "myvalue3", KEY_END),
-				keyNew ("user/rubytest/key4", KEY_VALUE, "myvalue4", KEY_END),
-				keyNew ("user/rubytest/key5", KEY_VALUE, "myvalue5", KEY_END), KS_END);
+	KeySet * ksSet = ksNew (5, keyNew ("user:/rubytest/key1", KEY_VALUE, "myvalue1", KEY_END),
+				keyNew ("user:/rubytest/key2", KEY_VALUE, "myvalue2", KEY_END),
+				keyNew ("user:/rubytest/key3", KEY_VALUE, "myvalue3", KEY_END),
+				keyNew ("user:/rubytest/key4", KEY_VALUE, "myvalue4", KEY_END),
+				keyNew ("user:/rubytest/key5", KEY_VALUE, "myvalue5", KEY_END), KS_END);
 
 	KeySet * ksGet = ksNew (0, KS_END);
 
@@ -207,25 +207,25 @@ static void test_statefull (void)
 
 static void test_two_plugin_instances (void)
 {
-	KeySet * conf = ksNew (1, keyNew ("user/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "statefull.rb"), KEY_END), KS_END);
+	KeySet * conf = ksNew (1, keyNew ("user:/script", KEY_VALUE, srcdir_file (SCRIPTS_DIR "statefull.rb"), KEY_END), KS_END);
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Key * errorKey1 = keyNew ("", KEY_END);
+	Key * errorKey1 = keyNew ("/", KEY_END);
 	Plugin * plugin1 = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey1);
 
 	succeed_if (plugin1 != NULL, "could not open plugin instance 1");
 
-	Key * errorKey2 = keyNew ("", KEY_END);
+	Key * errorKey2 = keyNew ("/", KEY_END);
 	Plugin * plugin2 = elektraPluginOpen (PLUGIN_NAME, modules, conf, errorKey2);
 
 	succeed_if (plugin2 != NULL, "could not open plugin instance 1");
 
 	// Set and test state for plugin1
-	KeySet * ksSet1 = ksNew (5, keyNew ("user/rubytest/key1", KEY_VALUE, "myvalue1", KEY_END),
-				 keyNew ("user/rubytest/key2", KEY_VALUE, "myvalue2", KEY_END),
-				 keyNew ("user/rubytest/key3", KEY_VALUE, "myvalue3", KEY_END),
-				 keyNew ("user/rubytest/key4", KEY_VALUE, "myvalue4", KEY_END),
-				 keyNew ("user/rubytest/key5", KEY_VALUE, "myvalue5", KEY_END), KS_END);
+	KeySet * ksSet1 = ksNew (5, keyNew ("user:/rubytest/key1", KEY_VALUE, "myvalue1", KEY_END),
+				 keyNew ("user:/rubytest/key2", KEY_VALUE, "myvalue2", KEY_END),
+				 keyNew ("user:/rubytest/key3", KEY_VALUE, "myvalue3", KEY_END),
+				 keyNew ("user:/rubytest/key4", KEY_VALUE, "myvalue4", KEY_END),
+				 keyNew ("user:/rubytest/key5", KEY_VALUE, "myvalue5", KEY_END), KS_END);
 
 	KeySet * ksGet1 = ksNew (0, KS_END);
 
@@ -239,12 +239,12 @@ static void test_two_plugin_instances (void)
 	succeed_if_same_string (keyString (tail1), "myvalue5");
 
 	// Set and test state for plugin2
-	KeySet * ksSet2 = ksNew (5, keyNew ("user/rubytest/key1", KEY_VALUE, "myvalue_1", KEY_END),
-				 keyNew ("user/rubytest/key2", KEY_VALUE, "myvalue_2", KEY_END),
-				 keyNew ("user/rubytest/key3", KEY_VALUE, "myvalue_3", KEY_END),
-				 keyNew ("user/rubytest/key4", KEY_VALUE, "myvalue_4", KEY_END),
-				 keyNew ("user/rubytest/key5", KEY_VALUE, "myvalue_5", KEY_END),
-				 keyNew ("user/rubytest/key6", KEY_VALUE, "myvalue_6", KEY_END), KS_END);
+	KeySet * ksSet2 = ksNew (5, keyNew ("user:/rubytest/key1", KEY_VALUE, "myvalue_1", KEY_END),
+				 keyNew ("user:/rubytest/key2", KEY_VALUE, "myvalue_2", KEY_END),
+				 keyNew ("user:/rubytest/key3", KEY_VALUE, "myvalue_3", KEY_END),
+				 keyNew ("user:/rubytest/key4", KEY_VALUE, "myvalue_4", KEY_END),
+				 keyNew ("user:/rubytest/key5", KEY_VALUE, "myvalue_5", KEY_END),
+				 keyNew ("user:/rubytest/key6", KEY_VALUE, "myvalue_6", KEY_END), KS_END);
 
 	KeySet * ksGet2 = ksNew (0, KS_END);
 

@@ -18,7 +18,7 @@ Syntax:
 ```
 /elektra/intercept/open/path\/to\/realfile = path/to/myfile
 /elektra/intercept/open/path\/to\/realfile/readonly = 1
-/elektra/intercept/open/path\/to\/realfile/generate = system/info
+/elektra/intercept/open/path\/to\/realfile/generate = system:/info
 /preload/open/path/\to\/realfile/generate/plugin = ini
 ```
 
@@ -41,7 +41,7 @@ If the `/generate` and `/generate/plugin` keys are set, the library will generat
 testreplacement
 
 % kdb mount-info
-% kdb set /elektra/intercept/open/\~\\/testfile/generate "system/info/uname"
+% kdb set /elektra/intercept/open/\~\\/testfile/generate "system:/info/uname"
 % kdb set /elektra/intercept/open/\~\\/testfile/generate/plugin ini
 
 % kdb elektrify-open cat ~/testfile

@@ -57,9 +57,9 @@ Best implementation candidate was:
 1. Provide a function `int genconf (KeySet * ks, Key * errorKey)` where `ks`
    is filled with a list of all variants with the essential configuration (subkeys `config`)
    and the changed parts of the contract (subkeys `infos`).
-2. Keys defined in `system/elektra/plugins/<plugin>/variants/<variantname>` have the same content,
+2. Keys defined in `system:/elektra/plugins/<plugin>/variants/<variantname>` have the same content,
    but take precedence. If a variant with the same name is defined, only `config` or `infos`
-   from `genconf` are considered if they are not mentioned in `system/elektra/plugins/variants`.
+   from `genconf` are considered if they are not mentioned in `system:/elektra/plugins/variants`.
 3. If the bool key `override` (for a plugin or a variant) is true, it will be overwritten (content
    of `genconf` ignored, but instead a plugin or variant as given is created).
 4. If the bool key `disable` (for a plugin or a variant) is true the plugin or a variant of the
@@ -75,38 +75,38 @@ Best implementation candidate was:
 `genconf` for augeas yields:
 
 ```
-system/access
-system/access/config
-system/access/config/lens = Access.lns
-system/access/infos
-system/access/infos/provides = storage/access
-system/aliases
-system/aliases/config
-system/aliases/config/lens = Aliases.lns
-system/aliases/infos
-system/aliases/infos/provides = storage/aliases
+system:/access
+system:/access/config
+system:/access/config/lens = Access.lns
+system:/access/infos
+system:/access/infos/provides = storage/access
+system:/aliases
+system:/aliases/config
+system:/aliases/config/lens = Aliases.lns
+system:/aliases/infos
+system:/aliases/infos/provides = storage/aliases
 ```
 
 `genconf` for python might yield:
 
 ```
-user/configparser/config
-user/configparser/config/script = python_configparser.py
+user:/configparser/config
+user:/configparser/config/script = python_configparser.py
 ```
 
-The user/admin specifies:
+The user:/admin specifies:
 
 ```
-system/elektra/plugins/jni/disable = 1
-system/elektra/plugins/augeas/variants/access
-system/elektra/plugins/augeas/variants/access/disable = 1
-system/elektra/plugins/augeas/variants/aliases
-system/elektra/plugins/augeas/variants/aliases/infos
-system/elektra/plugins/augeas/variants/aliases/infos/status = 10000
-system/elektra/plugins/python/variants/configparser
-system/elektra/plugins/python/variants/configparser/override = 1
-system/elektra/plugins/python/variants/configparser/config
-system/elektra/plugins/python/variants/configparser/config/script = mybetter_configparser.py
+system:/elektra/plugins/jni/disable = 1
+system:/elektra/plugins/augeas/variants/access
+system:/elektra/plugins/augeas/variants/access/disable = 1
+system:/elektra/plugins/augeas/variants/aliases
+system:/elektra/plugins/augeas/variants/aliases/infos
+system:/elektra/plugins/augeas/variants/aliases/infos/status = 10000
+system:/elektra/plugins/python/variants/configparser
+system:/elektra/plugins/python/variants/configparser/override = 1
+system:/elektra/plugins/python/variants/configparser/config
+system:/elektra/plugins/python/variants/configparser/config/script = mybetter_configparser.py
 ```
 
 As result we get:
@@ -120,9 +120,9 @@ As result we get:
 To have a space-separated simpleini one would use:
 
 ```
-system/elektra/plugins/simpleini/variants/spacesep
-system/elektra/plugins/simpleini/variants/spacesep/config
-system/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
+system:/elektra/plugins/simpleini/variants/spacesep
+system:/elektra/plugins/simpleini/variants/spacesep/config
+system:/elektra/plugins/simpleini/variants/spacesep/config/format = "% %"
 ```
 
 ## Rationale
@@ -154,19 +154,19 @@ It is also not possible to add additional information to a variant,
 only overrides work. E.g.
 
 ```
-system/elektra/plugins/augeas/variants/aliases
-system/elektra/plugins/augeas/variants/aliases/override = 1
-system/elektra/plugins/augeas/variants/aliases/config
-system/elektra/plugins/augeas/variants/aliases/config/lens = Aliases.lns
-system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
+system:/elektra/plugins/augeas/variants/aliases
+system:/elektra/plugins/augeas/variants/aliases/override = 1
+system:/elektra/plugins/augeas/variants/aliases/config
+system:/elektra/plugins/augeas/variants/aliases/config/lens = Aliases.lns
+system:/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
 ```
 
 works, while
 
 ```
-system/elektra/plugins/augeas/variants/aliases
-system/elektra/plugins/augeas/variants/aliases/config
-system/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
+system:/elektra/plugins/augeas/variants/aliases
+system:/elektra/plugins/augeas/variants/aliases/config
+system:/elektra/plugins/augeas/variants/aliases/config/otherparam = 0
 ```
 
 gets ignored.

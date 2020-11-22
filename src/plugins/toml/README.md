@@ -34,16 +34,16 @@ When writing a key, the value of that metakey will be written instead, in order 
 Note that the `origvalue` metakey gets removed if the value of the key changes.
 
 ```sh
-sudo kdb mount test.toml user/tests/storage/types toml type
+sudo kdb mount test.toml user:/tests/storage/types toml type
 
 # Create a TOML file with 4 keys
-echo 'plain_decimal = 1000' >> `kdb file user/tests/storage/types`
-echo 'file_permissions = 0o777' >> `kdb file user/tests/storage/types`
-echo 'pi = 3.1415' >> `kdb file user/tests/storage/types`
-echo 'division_gone_wrong = -inf' >> `kdb file user/tests/storage/types`
+echo 'plain_decimal = 1000' >> `kdb file user:/tests/storage/types`
+echo 'file_permissions = 0o777' >> `kdb file user:/tests/storage/types`
+echo 'pi = 3.1415' >> `kdb file user:/tests/storage/types`
+echo 'division_gone_wrong = -inf' >> `kdb file user:/tests/storage/types`
 
 # Print the content of the toml file
-cat `kdb file user/tests/storage/types`
+cat `kdb file user:/tests/storage/types`
 # > plain_decimal = 1000
 # > file_permissions = 0o777
 # > pi = 3.1415
@@ -51,30 +51,30 @@ cat `kdb file user/tests/storage/types`
 
 # Print types and values of the keys with `kdb`
 
-kdb meta-get 'user/tests/storage/types/plain_decimal' 'type'
+kdb meta-get 'user:/tests/storage/types/plain_decimal' 'type'
 # > long_long
-kdb get 'user/tests/storage/types/plain_decimal'
+kdb get 'user:/tests/storage/types/plain_decimal'
 # > 1000
 
-kdb meta-get 'user/tests/storage/types/file_permissions' 'type'
+kdb meta-get 'user:/tests/storage/types/file_permissions' 'type'
 # > unsigned_long_long
 # The octal value will be converted to decimal
-kdb get 'user/tests/storage/types/file_permissions'
+kdb get 'user:/tests/storage/types/file_permissions'
 # > 511
 
-kdb meta-get 'user/tests/storage/types/pi' 'type'
+kdb meta-get 'user:/tests/storage/types/pi' 'type'
 # > double
-kdb get 'user/tests/storage/types/pi'
+kdb get 'user:/tests/storage/types/pi'
 # > 3.1415
 
-kdb meta-get 'user/tests/storage/types/division_gone_wrong' 'type'
+kdb meta-get 'user:/tests/storage/types/division_gone_wrong' 'type'
 # > double
-kdb get 'user/tests/storage/types/division_gone_wrong'
+kdb get 'user:/tests/storage/types/division_gone_wrong'
 # > -inf
 
 # Cleanup
-kdb rm -r user/tests/storage/types
-sudo kdb umount user/tests/storage/types
+kdb rm -r user:/tests/storage/types
+sudo kdb umount user:/tests/storage/types
 ```
 
 ## Writing
@@ -92,36 +92,36 @@ Otherwise, no conversion to the TOML boolean values will take place.
 Per default, Elektra uses 0/1 to represent boolean values.
 
 ```sh
-sudo kdb mount test.toml user/tests/storage/types toml type
+sudo kdb mount test.toml user:/tests/storage/types toml type
 
 # Create a key, which may be a integer, boolean or string
-kdb set 'user/tests/storage/types/value' '1'
+kdb set 'user:/tests/storage/types/value' '1'
 
 # The plugin infers `long_long` for this value
-kdb meta-get 'user/tests/storage/types/value' 'type'
+kdb meta-get 'user:/tests/storage/types/value' 'type'
 # > long_long
 
 # The value is written as an integer
-cat `kdb file user/tests/storage/types`
+cat `kdb file user:/tests/storage/types`
 # > value = 1
 
 # Manually set the `type` metakey to boolean
-kdb meta-set 'user/tests/storage/types/value' 'type' 'boolean'
+kdb meta-set 'user:/tests/storage/types/value' 'type' 'boolean'
 
 # The value is written as a boolean
-cat `kdb file user/tests/storage/types`
+cat `kdb file user:/tests/storage/types`
 # > value = true
 
 # Manually set the `type` metakey to string
-kdb meta-set 'user/tests/storage/types/value' 'type' 'string'
+kdb meta-set 'user:/tests/storage/types/value' 'type' 'string'
 
 # The value is written as a string
-cat `kdb file user/tests/storage/types`
+cat `kdb file user:/tests/storage/types`
 # > value = "1"
 
 # Cleanup
-kdb rm -r user/tests/storage/types
-sudo kdb umount user/tests/storage/types
+kdb rm -r user:/tests/storage/types
+sudo kdb umount user:/tests/storage/types
 ```
 
 # Numbers
@@ -136,40 +136,40 @@ you have to change the value of `origvalue` instead of the key value. Otherwise 
 
 ```sh
 # Mount a new TOML file
-sudo kdb mount test.toml user/tests/storage/numbers toml type
+sudo kdb mount test.toml user:/tests/storage/numbers toml type
 
 # Write an octal value
-kdb set 'user/tests/storage/numbers/a' '0o777'
+kdb set 'user:/tests/storage/numbers/a' '0o777'
 
 # Get the converted decimal value
-kdb get 'user/tests/storage/numbers/a'
+kdb get 'user:/tests/storage/numbers/a'
 # > 511
 
 # Get the original octal value
-kdb meta-get 'user/tests/storage/numbers/a' 'origvalue'
+kdb meta-get 'user:/tests/storage/numbers/a' 'origvalue'
 # > 0o777
 
 # Get the type of the number; since it's originally octal, we get `unsigned_long_long`
-kdb meta-get 'user/tests/storage/numbers/a' 'type'
+kdb meta-get 'user:/tests/storage/numbers/a' 'type'
 # > unsigned_long_long
 
 # Change the value by changing the `origvalue` metakey
-kdb meta-set 'user/tests/storage/numbers/a' 'origvalue' '0o666'
+kdb meta-set 'user:/tests/storage/numbers/a' 'origvalue' '0o666'
 
 # Get the new value as decimal
-kdb get 'user/tests/storage/numbers/a'
+kdb get 'user:/tests/storage/numbers/a'
 # > 438
 
 # Change the value to an invalid octal value.
-kdb meta-set 'user/tests/storage/numbers/a' 'origvalue' '0o888'
+kdb meta-set 'user:/tests/storage/numbers/a' 'origvalue' '0o888'
 
 # The key value is no longer considered a number
-kdb meta-get 'user/tests/storage/numbers/a' 'type'
+kdb meta-get 'user:/tests/storage/numbers/a' 'type'
 # > string
 
 # Cleanup
-kdb rm -r user/tests/storage/numbers
-sudo kdb umount user/tests/storage/numbers
+kdb rm -r user:/tests/storage/numbers
+sudo kdb umount user:/tests/storage/numbers
 ```
 
 # Strings
@@ -180,24 +180,24 @@ Therefore, any string set with `kdb set` must be treated as a basic string and p
 
 ```sh
 # Mount TOML file
-sudo kdb mount test_strings.toml user/tests/storage toml type
+sudo kdb mount test_strings.toml user:/tests/storage toml type
 
 # setting a string containing a newline escape sequence
-kdb set 'user/tests/storage/string' 'I am a basic string\not a literal one.'
+kdb set 'user:/tests/storage/string' 'I am a basic string\not a literal one.'
 
-kdb get 'user/tests/storage/string'
+kdb get 'user:/tests/storage/string'
 # > I am a basic string
 # > ot a literal one
 
 # setting the string again, but escape the backslash with another backslash
-kdb set 'user/tests/storage/string' 'I am a basic string\\not a literal one.'
+kdb set 'user:/tests/storage/string' 'I am a basic string\\not a literal one.'
 
-kdb get 'user/tests/storage/string'
+kdb get 'user:/tests/storage/string'
 # > I am a basic string\not a literal one
 
 # Cleanup
-kdb rm -r user/tests/storage
-sudo kdb umount user/tests/storage
+kdb rm -r user:/tests/storage
+sudo kdb umount user:/tests/storage
 ```
 
 The plugin supports all kinds of escape sequences used by TOML in basic and basic multiline strings, like `\n`, `\r`, `\t` and
@@ -211,30 +211,30 @@ As a result, binary values get written as base64 encoded strings, which start wi
 
 ```
 # Mount TOML file
-sudo kdb mount test_binary.toml user/tests/storage toml type
+sudo kdb mount test_binary.toml user:/tests/storage toml type
 
 # Creating a key with a NULL value
-kdb set 'user/tests/storage/nullkey'
-# > Create a new key user/test/nullkey with null value
+kdb set 'user:/tests/storage/nullkey'
+# > Create a new key user:/test/nullkey with null value
 
 # Print file content
-cat `kdb file user/tests/storage`
+cat `kdb file user:/tests/storage`
 # > nullkey = '@NULL'
 
 # Write base64 encoded data to the file
-echo "base64 = '@BASE64SSBhbSBiYXNlIDY0IGVuY29kZWQgZm9yIG5vIHJlYXNvbi4='" > `kdb file user/test`
+echo "base64 = '@BASE64SSBhbSBiYXNlIDY0IGVuY29kZWQgZm9yIG5vIHJlYXNvbi4='" > `kdb file user:/test`
 
 # Print the value of the key, which is a binary value
-kdb get 'user/test/base64'
+kdb get 'user:/test/base64'
 #> \x49\x20\x61\x6d\x20\x62\x61\x73\x65\x20\x36\x34\x20\x65\x6e\x63\x6f\x64\x65\x64\x20\x66\x6f\x72\x20\x6e\x6f\x20\x72\x65\x61\x73\x6f\x6e\x2e
 
 # Print the value again, but apply the escape codes
-echo -e `kdb get 'user/test/base64'`
+echo -e `kdb get 'user:/test/base64'`
 #> I am base 64 encoded for no reason.
 
 # Cleanup
-kdb rm -r user/tests/storage
-sudo kdb umount user/tests/storage
+kdb rm -r user:/tests/storage
+sudo kdb umount user:/tests/storage
 ```
 
 # TOML specific structures
@@ -249,33 +249,33 @@ TOML's simple tables are represented by setting the `tomltype` metakey to `simpl
 
 ```sh
 # Mount TOML file
-sudo kdb mount test_table.toml user/tests/storage toml type
+sudo kdb mount test_table.toml user:/tests/storage toml type
 
 # Create three keys, which are all a subkey of 'common',
 # but we have no 'common' simple table key yet
-kdb set 'user/tests/storage/common/a' '0'
-kdb set 'user/tests/storage/common/b' '1'
-kdb set 'user/tests/storage/common/c' '2'
+kdb set 'user:/tests/storage/common/a' '0'
+kdb set 'user:/tests/storage/common/b' '1'
+kdb set 'user:/tests/storage/common/c' '2'
 
 # Print the content of the resulting TOML file
-cat `kdb file user/tests/storage`
+cat `kdb file user:/tests/storage`
 #> common.a = 0
 #> common.b = 1
 #> common.c = 2
 
 # Create a simple table key
-kdb meta-set 'user/tests/storage/common' 'tomltype' 'simpletable'
+kdb meta-set 'user:/tests/storage/common' 'tomltype' 'simpletable'
 
 # Print the content of the resulting TOML file
-cat `kdb file user/tests/storage`
+cat `kdb file user:/tests/storage`
 #> [common]
 #> a = 0
 #> b = 1
 #> c = 2
 
 # Cleanup
-kdb rm -r user/tests/storage
-sudo kdb umount user/tests/storage
+kdb rm -r user:/tests/storage
+sudo kdb umount user:/tests/storage
 ```
 
 ## Table Arrays
@@ -284,22 +284,22 @@ Table arrays are represented by setting the `tomltype` metakey to `tablearray`. 
 
 ```sh
 # Mount TOML file
-sudo kdb mount test_table_array.toml user/tests/storage toml type
+sudo kdb mount test_table_array.toml user:/tests/storage toml type
 
 # Create a table array containing two entries, each with a key 'a' and 'b'
-kdb meta-set 'user/tests/storage/tablearray' 'tomltype' 'tablearray'
-kdb set 'user/tests/storage/tablearray/#0/a' '1'
-kdb set 'user/tests/storage/tablearray/#0/b' '2'
+kdb meta-set 'user:/tests/storage/tablearray' 'tomltype' 'tablearray'
+kdb set 'user:/tests/storage/tablearray/#0/a' '1'
+kdb set 'user:/tests/storage/tablearray/#0/b' '2'
 
-kdb set 'user/tests/storage/tablearray/#1/a' '3'
-kdb set 'user/tests/storage/tablearray/#1/b' '4'
+kdb set 'user:/tests/storage/tablearray/#1/a' '3'
+kdb set 'user:/tests/storage/tablearray/#1/b' '4'
 
 # Print the highest index of the table array
-kdb meta-get 'user/tests/storage/tablearray' 'array'
+kdb meta-get 'user:/tests/storage/tablearray' 'array'
 #> #1
 
 # Print the content of the resulting TOML file
-cat `kdb file user/tests/storage`
+cat `kdb file user:/tests/storage`
 #> [[tablearray]]
 #> a = 1
 #> b = 2
@@ -308,8 +308,8 @@ cat `kdb file user/tests/storage`
 #> b = 4
 
 # Cleanup
-kdb rm -r user/tests/storage
-sudo kdb umount user/tests/storage
+kdb rm -r user:/tests/storage
+sudo kdb umount user:/tests/storage
 ```
 
 ## Inline Tables
@@ -318,23 +318,23 @@ Inline tables are represented by setting the `tomltype` metakey to `inlinetable`
 
 ```sh
 # Mount TOML file
-sudo kdb mount test_inline_table.toml user/tests/storage toml type
+sudo kdb mount test_inline_table.toml user:/tests/storage toml type
 
 # Create a table array containing two entries, each with a key 'a' and 'b'
-kdb meta-set 'user/tests/storage/inlinetable' 'tomltype' 'inlinetable'
-kdb set 'user/tests/storage/inlinetable/a' '1'
-kdb set 'user/tests/storage/inlinetable/b' '2'
-kdb meta-set 'user/tests/storage/inlinetable/nested' 'tomltype' 'inlinetable'
-kdb set 'user/tests/storage/inlinetable/nested/x' '3'
-kdb set 'user/tests/storage/inlinetable/nested/y' '4'
+kdb meta-set 'user:/tests/storage/inlinetable' 'tomltype' 'inlinetable'
+kdb set 'user:/tests/storage/inlinetable/a' '1'
+kdb set 'user:/tests/storage/inlinetable/b' '2'
+kdb meta-set 'user:/tests/storage/inlinetable/nested' 'tomltype' 'inlinetable'
+kdb set 'user:/tests/storage/inlinetable/nested/x' '3'
+kdb set 'user:/tests/storage/inlinetable/nested/y' '4'
 
 # Print the content of the resulting TOML file
-cat `kdb file user/tests/storage`
+cat `kdb file user:/tests/storage`
 #> inlinetable = { a = 1, b = 2, nested = { x = 3, y = 4 } }
 
 # Cleanup
-kdb rm -r user/tests/storage
-sudo kdb umount user/tests/storage
+kdb rm -r user:/tests/storage
+sudo kdb umount user:/tests/storage
 ```
 
 ## Arrays
@@ -343,25 +343,25 @@ Arrays are recognized by the `array` metakey. On writing, the plugin will detect
 
 ```sh
 # Mount TOML file
-sudo kdb mount test_array.toml user/tests/storage toml type
+sudo kdb mount test_array.toml user:/tests/storage toml type
 
 # Create array elements
-kdb set 'user/tests/storage/array/#0' '1'
-kdb set 'user/tests/storage/array/#1' '2'
-kdb set 'user/tests/storage/array/#2' '3'
+kdb set 'user:/tests/storage/array/#0' '1'
+kdb set 'user:/tests/storage/array/#1' '2'
+kdb set 'user:/tests/storage/array/#2' '3'
 
 # Print the highest index of the array
-kdb meta-get 'user/tests/storage/array' 'array'
+kdb meta-get 'user:/tests/storage/array' 'array'
 #> #2
 
 # Print the content of the resulting TOML file
-cat `kdb file user/tests/storage`
+cat `kdb file user:/tests/storage`
 #> array = [1, 2, 3]
 
 
 # Cleanup
-kdb rm -r user/tests/storage
-sudo kdb umount user/tests/storage
+kdb rm -r user:/tests/storage
+sudo kdb umount user:/tests/storage
 ```
 
 # Comments and Empty Lines
@@ -382,28 +382,28 @@ Empty lines in front of a key can be created by adding an empty `comment/#n/star
 
 ```sh
 # Mount TOML file
-sudo kdb mount test_comments.toml user/tests/storage toml type
+sudo kdb mount test_comments.toml user:/tests/storage toml type
 
 # create a key-value pair, ready for comment decoration
 
-kdb set 'user/tests/storage/key' '1'
+kdb set 'user:/tests/storage/key' '1'
 
 # add an inline comment with 4 leading spaces
-kdb meta-set 'user/tests/storage/key' 'comment/#0' ' This value is very interesting'
-kdb meta-set 'user/tests/storage/key' 'comment/#0/space' '4'
+kdb meta-set 'user:/tests/storage/key' 'comment/#0' ' This value is very interesting'
+kdb meta-set 'user:/tests/storage/key' 'comment/#0/space' '4'
 
 # add some comments preceding the key
-kdb meta-set 'user/tests/storage/key' 'comment/#1' ' I am the top-most comment relative to my key.'
-kdb meta-set 'user/tests/storage/key' 'comment/#2' ' I am in the middle. Just boring.'
-kdb meta-set 'user/tests/storage/key' 'comment/#3' ' I am in the line right above my key.'
+kdb meta-set 'user:/tests/storage/key' 'comment/#1' ' I am the top-most comment relative to my key.'
+kdb meta-set 'user:/tests/storage/key' 'comment/#2' ' I am in the middle. Just boring.'
+kdb meta-set 'user:/tests/storage/key' 'comment/#3' ' I am in the line right above my key.'
 
 # add file ending comments and empty lines
-kdb meta-set 'user/tests/storage' 'comment/#1' ' First file-ending comment'
-kdb meta-set 'user/tests/storage' 'comment/#2/start' ''
-kdb meta-set 'user/tests/storage' 'comment/#3' ' Second file-ending comment. I am the last line of the file.'
+kdb meta-set 'user:/tests/storage' 'comment/#1' ' First file-ending comment'
+kdb meta-set 'user:/tests/storage' 'comment/#2/start' ''
+kdb meta-set 'user:/tests/storage' 'comment/#3' ' Second file-ending comment. I am the last line of the file.'
 
 # Print the content of the resulting TOML file
-cat `kdb file user/tests/storage`
+cat `kdb file user:/tests/storage`
 #> # I am the top-most comment relative to my key.
 #> # I am in the middle. Just boring.
 #> # I am in the line right above my key.
@@ -413,8 +413,8 @@ cat `kdb file user/tests/storage`
 #> # Second file-ending comment. I am the last line of the file.
 
 # Cleanup
-kdb rm -r user/tests/storage
-sudo kdb umount user/tests/storage
+kdb rm -r user:/tests/storage
+sudo kdb umount user:/tests/storage
 ```
 
 ## Comments in Arrays
@@ -426,45 +426,45 @@ On reading, the plugin discards any non-inline comments between the last element
 
 ```sh
 # Mount TOML file
-sudo kdb mount test_array_comments.toml user/tests/storage toml type
+sudo kdb mount test_array_comments.toml user:/tests/storage toml type
 
 # Create array elements
-kdb set 'user/tests/storage/array/#0' '1'
-kdb set 'user/tests/storage/array/#1' '2'
-kdb set 'user/tests/storage/array/#2' '3'
+kdb set 'user:/tests/storage/array/#0' '1'
+kdb set 'user:/tests/storage/array/#1' '2'
+kdb set 'user:/tests/storage/array/#2' '3'
 
 # Add inline comment after the array
-kdb meta-set 'user/tests/storage/array' 'comment/#0' ' Inline comment after the array'
-kdb meta-set 'user/tests/storage/array' 'comment/#0/start' '#'
-kdb meta-set 'user/tests/storage/array' 'comment/#0/space' '5'
+kdb meta-set 'user:/tests/storage/array' 'comment/#0' ' Inline comment after the array'
+kdb meta-set 'user:/tests/storage/array' 'comment/#0/start' '#'
+kdb meta-set 'user:/tests/storage/array' 'comment/#0/space' '5'
 
 # Add comments for array elements
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#0' ' Inline comment of first element'
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#0/start' '#'
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#0/space' '4'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0' ' Inline comment of first element'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/start' '#'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/space' '4'
 
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#1' ' Comment preceding the first element'
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#1/start' '#'
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#1/space' '4'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1' ' Comment preceding the first element'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1/start' '#'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1/space' '4'
 
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#2' ' Another comment preceding the first element'
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#2/start' '#'
-kdb meta-set 'user/tests/storage/array/#0' 'comment/#2/space' '6'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2' ' Another comment preceding the first element'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2/start' '#'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2/space' '6'
 
-kdb meta-set 'user/tests/storage/array/#1' 'comment/#0' ' Inline comment of second element'
-kdb meta-set 'user/tests/storage/array/#1' 'comment/#0/start' '#'
-kdb meta-set 'user/tests/storage/array/#1' 'comment/#0/space' '4'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0' ' Inline comment of second element'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0/start' '#'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0/space' '4'
 
-kdb meta-set 'user/tests/storage/array/#1' 'comment/#1' ' Comment preceding the second element'
-kdb meta-set 'user/tests/storage/array/#1' 'comment/#1/start' '#'
-kdb meta-set 'user/tests/storage/array/#1' 'comment/#1/space' '6'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1' ' Comment preceding the second element'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1/start' '#'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1/space' '6'
 
-kdb meta-set 'user/tests/storage/array/#2' 'comment/#0' ' Inline comment of the last element'
-kdb meta-set 'user/tests/storage/array/#2' 'comment/#0/start' '#'
-kdb meta-set 'user/tests/storage/array/#2' 'comment/#0/space' '5'
+kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0' ' Inline comment of the last element'
+kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0/start' '#'
+kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0/space' '5'
 
 # Print the content of the resulting TOML file
-cat `kdb file user/tests/storage`
+cat `kdb file user:/tests/storage`
 #> array = [    # Comment preceding the first element
 #>       # Another comment preceding the first element
 #> 1,    # Inline comment of first element
@@ -474,8 +474,8 @@ cat `kdb file user/tests/storage`
 #> ]     # Inline comment after the array
 
 # Cleanup
-kdb rm -r user/tests/storage
-sudo kdb umount user/tests/storage
+kdb rm -r user:/tests/storage
+sudo kdb umount user:/tests/storage
 ```
 
 # Order
@@ -490,30 +490,30 @@ With this limitation, we prevent that a newly set key, that is not part of a cer
 
 ```sh
 # Mount TOML file
-sudo kdb mount test_order.toml user/tests/storage toml type
+sudo kdb mount test_order.toml user:/tests/storage toml type
 
 # Create three keys in reverse alphabetical order under the subkey common
 # Additionally, create one key not in the common subkey space
 
-kdb set 'user/tests/storage/common/c' '0'
-kdb set 'user/tests/storage/common/b' '1'
-kdb set 'user/tests/storage/common/a' '2'
-kdb set 'user/tests/storage/d' '3'
+kdb set 'user:/tests/storage/common/c' '0'
+kdb set 'user:/tests/storage/common/b' '1'
+kdb set 'user:/tests/storage/common/a' '2'
+kdb set 'user:/tests/storage/d' '3'
 
 # Print the content of the resulting TOML file
 # The keys are ordered as they were set
 
-cat `kdb file user/tests/storage`
+cat `kdb file user:/tests/storage`
 #> common.c = 0
 #> common.b = 1
 #> common.a = 2
 #> d = 3
 
 # Create a simple table for the three keys under `common`
-kdb meta-set 'user/tests/storage/common' 'tomltype' 'simpletable'
+kdb meta-set 'user:/tests/storage/common' 'tomltype' 'simpletable'
 
 # Print the content of the resulting TOML file
-cat `kdb file user/tests/storage`
+cat `kdb file user:/tests/storage`
 #> d = 3
 #> [common]
 #> c = 0
@@ -521,8 +521,8 @@ cat `kdb file user/tests/storage`
 #> a = 2
 
 # Cleanup
-kdb rm -r user/tests/storage
-sudo kdb umount user/tests/storage
+kdb rm -r user:/tests/storage
+sudo kdb umount user:/tests/storage
 ```
 
 In this example, `d` and `common` have the same parent, the file root. This means, they need to be sorted with each other. `d` would be placed before `common` by it's order, since it was set before, and thus, has lesser order.

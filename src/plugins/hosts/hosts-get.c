@@ -19,7 +19,6 @@
 #include "kdbconfig.h"
 #endif
 
-#include <kdbproposal.h>
 
 typedef void CommentConstructor (KeySet *, size_t, const char *, const char *);
 
@@ -206,7 +205,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	int errnosave = errno;
 	char readBuffer[HOSTS_KDB_BUFFER_SIZE];
 
-	if (!strcmp (keyName (parentKey), "system/elektra/modules/hosts"))
+	if (!strcmp (keyName (parentKey), "system:/elektra/modules/hosts"))
 	{
 		KeySet * moduleConfig =
 #include "contract.h"

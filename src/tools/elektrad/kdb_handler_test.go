@@ -6,8 +6,8 @@ import (
 )
 
 func TestGetKdb(t *testing.T) {
-	keyName := "user/tests/elektrad/kdb/get"
-	keyNameChild := "user/tests/elektrad/kdb/get/child"
+	keyName := "user:/tests/elektrad/kdb/get"
+	keyNameChild := "user:/tests/elektrad/kdb/get/child"
 
 	setupKey(t, keyName, keyNameChild)
 
@@ -26,7 +26,7 @@ func TestGetKdb(t *testing.T) {
 }
 
 func TestPutKdb(t *testing.T) {
-	keyName := "user/tests/elektrad/kdb/put"
+	keyName := "user:/tests/elektrad/kdb/put"
 	value := "test me"
 
 	w := testPut(t, "/kdb/"+keyName, value)
@@ -41,7 +41,7 @@ func TestPutKdb(t *testing.T) {
 }
 
 func TestDeleteKdb(t *testing.T) {
-	keyName := "user/tests/elektrad/kdb/delete"
+	keyName := "user:/tests/elektrad/kdb/delete"
 
 	setupKey(t, keyName)
 

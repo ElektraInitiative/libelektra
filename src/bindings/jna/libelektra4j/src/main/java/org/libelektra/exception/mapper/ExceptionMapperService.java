@@ -53,7 +53,7 @@ public class ExceptionMapperService
 		}
 		else
 		{
-			Key temporaryError = Key.create ("user/temporary/errorkey");
+			Key temporaryError = Key.create ("user:/temporary/errorkey");
 			temporaryError.setMeta ("error/number", InternalException.errorNumber ());
 			temporaryError.setMeta ("error/reason", "Sorry, could not map error number '" + errorNumber +
 									"'. Please report this incident at https://issues.libelektra.org/");

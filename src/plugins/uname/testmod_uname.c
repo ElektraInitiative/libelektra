@@ -24,7 +24,7 @@ void test_structure (void)
 {
 	printf ("Test structure of keys returned from uname plugin");
 
-	Key * parentKey = keyNew ("user/test/key", KEY_END);
+	Key * parentKey = keyNew ("user:/test/key", KEY_END);
 	KeySet * keys = ksNew (0, KS_END);
 	KeySet * conf = 0;
 
@@ -33,12 +33,12 @@ void test_structure (void)
 	succeed_if (plugin->kdbGet (plugin, keys, parentKey) == 1, "could not call kdbGet");
 
 	succeed_if (ksGetSize (keys) == 6, "size not correct");
-	succeed_if (ksLookupByName (keys, "user/test/key", 0), "parentkey not found");
-	succeed_if (ksLookupByName (keys, "user/test/key/sysname", 0), "sysname key not found");
-	succeed_if (ksLookupByName (keys, "user/test/key/nodename", 0), "nodename key not found");
-	succeed_if (ksLookupByName (keys, "user/test/key/release", 0), "release key not found");
-	succeed_if (ksLookupByName (keys, "user/test/key/version", 0), "version key not found");
-	succeed_if (ksLookupByName (keys, "user/test/key/machine", 0), "machine key not found");
+	succeed_if (ksLookupByName (keys, "user:/test/key", 0), "parentkey not found");
+	succeed_if (ksLookupByName (keys, "user:/test/key/sysname", 0), "sysname key not found");
+	succeed_if (ksLookupByName (keys, "user:/test/key/nodename", 0), "nodename key not found");
+	succeed_if (ksLookupByName (keys, "user:/test/key/release", 0), "release key not found");
+	succeed_if (ksLookupByName (keys, "user:/test/key/version", 0), "version key not found");
+	succeed_if (ksLookupByName (keys, "user:/test/key/machine", 0), "machine key not found");
 
 	ksDel (keys);
 	keyDel (parentKey);

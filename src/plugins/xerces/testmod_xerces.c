@@ -20,8 +20,8 @@ static void test_basics (void)
 	printf ("test basics\n");
 	fflush (stdout);
 
-	Key * parentKey = keyNew ("system/elektra/modules/xerces", KEY_END);
-	Key * invalidKey = keyNew (0, KEY_END);
+	Key * parentKey = keyNew ("system:/elektra/modules/xerces", KEY_END);
+	Key * invalidKey = keyNew ("/", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("xerces");
 
@@ -78,7 +78,7 @@ static void test_simple_read (void)
 		succeed_if (meta = keyGetMeta (current, "buzz"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "buzz") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/buzz") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "fizzBuzz") == 0, "wrong metadata value");
 		}
 	}
@@ -97,7 +97,7 @@ static void test_simple_read (void)
 		succeed_if (meta = keyGetMeta (current, "without"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "without") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/without") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "buzz") == 0, "wrong metadata value");
 		}
 	}
@@ -112,7 +112,7 @@ static void test_simple_read (void)
 		succeed_if (meta = keyGetMeta (current, "user"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "user") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/user") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "key") == 0, "wrong metadata value");
 		}
 	}
@@ -127,13 +127,13 @@ static void test_simple_read (void)
 		succeed_if (meta = keyGetMeta (current, "attr"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "attr") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/attr") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "\"") == 0, "wrong metadata value");
 		}
 		succeed_if (meta = keyGetMeta (current, "attr2"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "attr2") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/attr2") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "$%(){}``äüö²[/\\'>\"<'&") == 0, "wrong metadata value");
 		}
 	}
@@ -149,7 +149,7 @@ static void test_simple_read (void)
 		succeed_if (meta = keyGetMeta (current, "more-s_päcials"), "no metadata exists");
 		if (meta)
 		{
-			succeed_if (strcmp (keyName (meta), "more-s_päcials") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyName (meta), "meta:/more-s_päcials") == 0, "wrong metadata name");
 			succeed_if (strcmp (keyValue (meta), "1 & 2 are < 3 \n") == 0, "wrong metadata value");
 		}
 	}

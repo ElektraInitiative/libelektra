@@ -27,16 +27,13 @@ lookahead_t elektraLookahead (const char * pnext, size_t size)
 	if (*(pnext + size) == '/')
 	{
 		// we are not at end, so we can look one further
-		if (*(pnext + size + 1) == '#')
+		if (strcmp (pnext + size + 1, "###empty_array") == 0)
 		{
-			if (!strcmp (pnext + size + 1, "###empty_array"))
-			{
-				lookahead = LOOKAHEAD_EMPTY_ARRAY;
-			}
-			else
-			{
-				lookahead = LOOKAHEAD_ARRAY;
-			}
+			lookahead = LOOKAHEAD_EMPTY_ARRAY;
+		}
+		else if (*(pnext + size + 1) == '#')
+		{
+			lookahead = LOOKAHEAD_ARRAY;
 		}
 		else
 		{
@@ -92,7 +89,7 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
 
 	ELEKTRA_LOG_DEBUG ("next: \"%.*s\"", (int) last.size, last.current);
 
-	if (!strcmp (last.current, "###empty_array"))
+	if (strcmp (last.current, "###empty_array") == 0)
 	{
 		ELEKTRA_LOG_DEBUG ("GEN empty array in value");
 		yajl_gen_array_open (g);
@@ -109,7 +106,7 @@ static int elektraGenOpenValue (yajl_gen g, const Key * next)
 	else if (last.current[0] != '#')
 	{
 		ELEKTRA_LOG_DEBUG ("GEN string (L1,3)");
-		yajl_gen_string (g, (const unsigned char *) last.current, last.size - 1);
+		yajl_gen_string (g, (const unsigned char *) last.current, last.size);
 	}
 
 	return valueNeeded;

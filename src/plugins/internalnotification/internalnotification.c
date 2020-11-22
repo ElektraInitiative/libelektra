@@ -506,23 +506,23 @@ int elektraInternalnotificationRegisterCallbackSameOrBelow (Plugin * handle, Key
  */
 int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/internalnotification"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/internalnotification"))
 	{
 		KeySet * contract = ksNew (
 			30,
-			keyNew ("system/elektra/modules/internalnotification", KEY_VALUE,
+			keyNew ("system:/elektra/modules/internalnotification", KEY_VALUE,
 				"internalnotification plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports", KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/get", KEY_FUNC, elektraInternalnotificationGet,
+			keyNew ("system:/elektra/modules/internalnotification/exports", KEY_END),
+			keyNew ("system:/elektra/modules/internalnotification/exports/get", KEY_FUNC, elektraInternalnotificationGet,
 				KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/set", KEY_FUNC, elektraInternalnotificationSet,
+			keyNew ("system:/elektra/modules/internalnotification/exports/set", KEY_FUNC, elektraInternalnotificationSet,
 				KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/open", KEY_FUNC, elektraInternalnotificationOpen,
+			keyNew ("system:/elektra/modules/internalnotification/exports/open", KEY_FUNC, elektraInternalnotificationOpen,
 				KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose,
+			keyNew ("system:/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose,
 				KEY_END),
 
-			keyNew ("system/elektra/modules/internalnotification/exports/notificationCallback", KEY_FUNC,
+			keyNew ("system:/elektra/modules/internalnotification/exports/notificationCallback", KEY_FUNC,
 				elektraInternalnotificationDoUpdate, KEY_END),
 
 			// Export register* functions
@@ -539,16 +539,16 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbUnsignedLongLong), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbFloat),
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbDouble), INTERNALNOTIFICATION_EXPORT_FUNCTION (KdbLongDouble),
 
-			keyNew ("system/elektra/modules/internalnotification/exports/registerCallback", KEY_FUNC,
+			keyNew ("system:/elektra/modules/internalnotification/exports/registerCallback", KEY_FUNC,
 				elektraInternalnotificationRegisterCallback, KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/registerCallbackSameOrBelow", KEY_FUNC,
+			keyNew ("system:/elektra/modules/internalnotification/exports/registerCallbackSameOrBelow", KEY_FUNC,
 				elektraInternalnotificationRegisterCallbackSameOrBelow, KEY_END),
-			keyNew ("system/elektra/modules/internalnotification/exports/setConversionErrorCallback", KEY_FUNC,
+			keyNew ("system:/elektra/modules/internalnotification/exports/setConversionErrorCallback", KEY_FUNC,
 				elektraInternalnotificationSetConversionErrorCallback, KEY_END),
 
 #include ELEKTRA_README
 
-			keyNew ("system/elektra/modules/internalnotification/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/internalnotification/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

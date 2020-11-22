@@ -35,24 +35,24 @@ Currently the identifier must be unique.
 ## Example
 
 ```sh
-# Backup-and-Restore:system/tests/blockresolver
+# Backup-and-Restore: system:/tests/blockresolver
 
 # create testfile
-kdb set system/tests/blockfile $(mktemp)
-echo 'text'                   >  $(kdb get system/tests/blockfile)
-echo 'more text'              >> $(kdb get system/tests/blockfile)
-echo 'some more text'         >> $(kdb get system/tests/blockfile)
-echo '>>> block config start' >> $(kdb get system/tests/blockfile)
-echo 'key1=val1'            >> $(kdb get system/tests/blockfile)
-echo '>>> block config stop'  >> $(kdb get system/tests/blockfile)
-echo 'text again'             >> $(kdb get system/tests/blockfile)
-echo 'and more text'          >> $(kdb get system/tests/blockfile)
-echo 'text'                   >> $(kdb get system/tests/blockfile)
+kdb set system:/tests/blockfile $(mktemp)
+echo 'text'                   >  $(kdb get system:/tests/blockfile)
+echo 'more text'              >> $(kdb get system:/tests/blockfile)
+echo 'some more text'         >> $(kdb get system:/tests/blockfile)
+echo '>>> block config start' >> $(kdb get system:/tests/blockfile)
+echo 'key1=val1'            >> $(kdb get system:/tests/blockfile)
+echo '>>> block config stop'  >> $(kdb get system:/tests/blockfile)
+echo 'text again'             >> $(kdb get system:/tests/blockfile)
+echo 'and more text'          >> $(kdb get system:/tests/blockfile)
+echo 'text'                   >> $(kdb get system:/tests/blockfile)
 
-sudo kdb mount -R blockresolver $(kdb get system/tests/blockfile) system/tests/blockresolver -c identifier=">>> block config" mini
+sudo kdb mount -R blockresolver $(kdb get system:/tests/blockfile) system:/tests/blockresolver -c identifier=">>> block config" mini
 
 # check testfile
-cat $(kdb get system/tests/blockfile)
+cat $(kdb get system:/tests/blockfile)
 #> text
 #> more text
 #> some more text
@@ -64,13 +64,13 @@ cat $(kdb get system/tests/blockfile)
 #> text
 
 # only the block between the tags is read!
-kdb export system/tests/blockresolver mini
+kdb export system:/tests/blockresolver mini
 # STDOUT-REGEX: key1.*=.*val1
 
 # add a new key to the resolved block
-kdb set system/tests/blockresolver/key12 val12
+kdb set system:/tests/blockresolver/key12 val12
 
-cat $(kdb get system/tests/blockfile)
+cat $(kdb get system:/tests/blockfile)
 #> text
 #> more text
 #> some more text
@@ -83,8 +83,8 @@ cat $(kdb get system/tests/blockfile)
 #> text
 
 # cleanup
-kdb rm -r system/tests/blockresolver
-rm $(kdb get system/tests/blockfile)
-kdb rm system/tests/blockfile
-sudo kdb umount system/tests/blockresolver
+kdb rm -r system:/tests/blockresolver
+rm $(kdb get system:/tests/blockfile)
+kdb rm system:/tests/blockfile
+sudo kdb umount system:/tests/blockresolver
 ```

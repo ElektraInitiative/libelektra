@@ -27,10 +27,10 @@
 
 #define TEST_KEY_ID "DDEBEF9EE2DC931701338212DAF635B17F230E8D"
 #define GPGME_PLUGIN_NAME "gpgme"
-#define KEYNAME_UNCHANGED "user/crypto/test/nochange"
-#define KEYNAME_NULL "user/crypto/test/mynull"
-#define KEYNAME_STRING "user/crypto/test/mystring"
-#define KEYNAME_BIN "user/crypto/test/mybin"
+#define KEYNAME_UNCHANGED "user:/crypto/test/nochange"
+#define KEYNAME_NULL "user:/crypto/test/mynull"
+#define KEYNAME_STRING "user:/crypto/test/mystring"
+#define KEYNAME_BIN "user:/crypto/test/mybin"
 
 static const char strVal[] = "gpgme test value";
 static const kdb_octet_t binVal[] = { 0xCA, 0xFE, 0xBA, 0xBE };
@@ -112,7 +112,7 @@ static void test_import_key (void)
 static void test_init (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * configKs = newPluginConfiguration ();
 	elektraModulesInit (modules, 0);
@@ -147,7 +147,7 @@ static void test_init (void)
 static void test_incomplete_config (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * configKs = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
@@ -170,7 +170,7 @@ static void test_incomplete_config (void)
 static void test_encryption_decryption (void)
 {
 	Plugin * plugin = NULL;
-	Key * parentKey = keyNew ("system", KEY_END);
+	Key * parentKey = keyNew ("system:/", KEY_END);
 	KeySet * modules = ksNew (0, KS_END);
 	KeySet * config = newPluginConfiguration ();
 

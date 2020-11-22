@@ -48,22 +48,18 @@ static Backend * elektraTriePrefixLookup (Trie * trie, const char * name);
  * @param key the name of this key will be looked up
  * @ingroup trie
  */
-Backend * trieLookup (Trie * trie, const Key * key)
+Backend * trieLookup (Trie * trie, const char * name)
 {
-	char * where = 0;
-	Backend * ret = 0;
-	size_t len = 0;
-
-	if (!key) return 0;
+	if (!name) return 0;
 	if (!trie) return 0;
 
-	len = keyGetNameSize (key) + 1;
+	size_t len = strlen (name) + 2;
 	if (len <= 1) return 0; // would crash otherwise
-	where = elektraMalloc (len);
-	strncpy (where, keyName (key), len);
+	char * where = elektraMalloc (len);
+	strncpy (where, name, len);
 	where[len - 2] = '/';
 
-	ret = elektraTriePrefixLookup (trie, where);
+	Backend * ret = elektraTriePrefixLookup (trie, where);
 	elektraFree (where);
 
 	return ret;
@@ -113,7 +109,7 @@ Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 {
 	unsigned char idx;
 
-	if (name == 0)
+	if (name == NULL)
 	{
 		name = "";
 	}
@@ -123,7 +119,7 @@ Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 	{
 		trie = elektraCalloc (sizeof (Trie));
 
-		if (!strcmp ("", name))
+		if (strcmp ("", name) == 0)
 		{
 			trie->empty_value = value;
 			return trie;
@@ -137,7 +133,7 @@ Trie * trieInsert (Trie * trie, const char * name, Backend * value)
 		return trie;
 	}
 
-	if (!strcmp ("", name))
+	if (strcmp ("", name) == 0)
 	{
 		trie->empty_value = value;
 		return trie;

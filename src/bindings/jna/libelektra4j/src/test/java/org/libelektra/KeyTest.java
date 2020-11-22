@@ -11,7 +11,7 @@ public class KeyTest
 {
 
 	static final String KEY_1_NAME = "/key_test/1/key_name";
-	static final String KEY_1_NAME_PART_1 = "";
+	static final String KEY_1_NAME_PART_1 = "\u0001";
 	static final String KEY_1_NAME_PART_2 = "key_test";
 	static final String KEY_1_NAME_PART_3 = "1";
 	static final String KEY_1_NAME_PART_4 = "key_name";
@@ -22,7 +22,7 @@ public class KeyTest
 	static final String KEY_1_META_2_VALUE = "meta_2_value";
 
 	static final String KEY_2_NAME = "/key_test/2/key_name";
-	static final String KEY_2_NAME_PART_1 = "";
+	static final String KEY_2_NAME_PART_1 = "\u0001";
 	static final String KEY_2_NAME_PART_2 = "key_test";
 	static final String KEY_2_NAME_PART_3 = "2";
 	static final String KEY_2_NAME_PART_4 = "key_name";
@@ -195,10 +195,10 @@ public class KeyTest
 
 		// check meta
 		final Key meta_1 = key.currentMeta ();
-		assertEquals (KEY_1_META_1_NAME, meta_1.getName ());
+		assertEquals ("meta:" + KEY_1_META_1_NAME, meta_1.getName ());
 		assertEquals (KEY_1_META_1_VALUE, meta_1.getString ());
 		final Key meta_2 = key.nextMeta ();
-		assertEquals (KEY_1_META_2_NAME, meta_2.getName ());
+		assertEquals ("meta:" + KEY_1_META_2_NAME, meta_2.getName ());
 		assertEquals (KEY_1_META_2_VALUE, meta_2.getString ());
 
 		// setup another key
@@ -208,10 +208,10 @@ public class KeyTest
 
 		// check meta for second key
 		final Key meta_1_2 = key2.currentMeta ();
-		assertEquals (KEY_1_META_1_NAME, meta_1_2.getName ());
+		assertEquals ("meta:" + KEY_1_META_1_NAME, meta_1_2.getName ());
 		assertEquals (KEY_1_META_1_VALUE, meta_1_2.getString ());
 		final Key meta_2_2 = key2.nextMeta ();
-		assertEquals (KEY_1_META_2_NAME, meta_2_2.getName ());
+		assertEquals ("meta:" + KEY_1_META_2_NAME, meta_2_2.getName ());
 		assertEquals (KEY_1_META_2_VALUE, meta_2_2.getString ());
 	}
 

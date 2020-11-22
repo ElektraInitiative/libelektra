@@ -251,7 +251,7 @@ func create(b testing.TB, ks elektra.KeySet, keyName string, count int) {
 }
 
 var (
-	namespace = "user/tests/go/elektrad/benchmark"
+	namespace = "user:/tests/go/elektrad/benchmark"
 	data      = "/get"
 	dataSize  = 100000
 )

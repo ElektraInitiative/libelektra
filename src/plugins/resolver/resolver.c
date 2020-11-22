@@ -12,7 +12,6 @@
 #include <kdbconfig.h>
 #include <kdbhelper.h>	// elektraStrDup
 #include <kdbprivate.h> // KDB_CACHE_PREFIX
-#include <kdbproposal.h>
 
 #include "kdbos.h"
 
@@ -92,10 +91,10 @@ static resolverHandle * elektraGetResolverHandle (Plugin * handle, Key * parentK
 	case KEY_NS_SYSTEM:
 		return &pks->system;
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		return 0;
 	}
 
@@ -298,7 +297,6 @@ static int needsMapping (Key * testKey, Key * errorKey)
 	elektraNamespace ns = keyGetNamespace (errorKey);
 
 	if (ns == KEY_NS_NONE) return 1;      // for unit tests
-	if (ns == KEY_NS_EMPTY) return 1;     // for default backend
 	if (ns == KEY_NS_CASCADING) return 1; // init all namespaces for cascading
 
 	return ns == keyGetNamespace (testKey); // otherwise only init if same ns
@@ -306,7 +304,7 @@ static int needsMapping (Key * testKey, Key * errorKey)
 
 static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 {
-	Key * testKey = keyNew ("", KEY_END);
+	Key * testKey = keyNew ("/", KEY_END);
 	// switch is only present to forget no namespace and to get
 	// a warning whenever a new namespace is present.
 	// In fact its linear code executed:
@@ -314,7 +312,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 	switch (KEY_NS_SPEC)
 	{
 	case KEY_NS_SPEC:
-		keySetName (testKey, "spec");
+		keySetName (testKey, "spec:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_SPEC, (p->spec).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
@@ -336,7 +334,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		// FALLTHROUGH
 
 	case KEY_NS_DIR:
-		keySetName (testKey, "dir");
+		keySetName (testKey, "dir:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_DIR, (p->dir).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
@@ -357,7 +355,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		}
 	// FALLTHROUGH
 	case KEY_NS_USER:
-		keySetName (testKey, "user");
+		keySetName (testKey, "user:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_USER, (p->user).path, ELEKTRA_RESOLVER_TEMPFILE_SAMEDIR,
@@ -379,7 +377,7 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		}
 	// FALLTHROUGH
 	case KEY_NS_SYSTEM:
-		keySetName (testKey, "system");
+		keySetName (testKey, "system:/");
 		if (needsMapping (testKey, errorKey))
 		{
 			if ((resolved = ELEKTRA_PLUGIN_FUNCTION (filename) (KEY_NS_SYSTEM, (p->system).path,
@@ -401,10 +399,10 @@ static int mapFilesForNamespaces (resolverHandles * p, Key * errorKey)
 		}
 	// FALLTHROUGH
 	case KEY_NS_PROC:
-	case KEY_NS_EMPTY:
 	case KEY_NS_NONE:
 	case KEY_NS_META:
 	case KEY_NS_CASCADING:
+	case KEY_NS_DEFAULT:
 		break;
 	}
 	keyDel (testKey);
@@ -518,7 +516,7 @@ int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNU
 
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * parentKey)
 {
-	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+	Key * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{

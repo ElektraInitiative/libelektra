@@ -5,12 +5,12 @@
 //! # use elektra::{KeyBuilder,StringKey,WriteableKey,ReadableKey};
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! let key: StringKey = 
-//!     KeyBuilder::new("user/test/newkey")?
+//!     KeyBuilder::new("user:/test/newkey")?
 //!         .value("0xff")
 //!         .meta("type", "octet")?
 //!         .meta("unit/base", "hex")?
 //!         .build();
-//! assert_eq!(key.name(), "user/test/newkey");
+//! assert_eq!(key.name(), "user:/test/newkey");
 //! assert_eq!(key.value(), "0xff");
 //! assert_eq!(key.meta("type")?.value(), "octet");
 //! assert_eq!(key.meta("unit/base")?.value(), "hex");
@@ -23,7 +23,7 @@
 //! # use elektra::{KeyBuilder,keyset,KeySet,StringKey,WriteableKey,ReadableKey};
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
 //! let ks = keyset![ 
-//!     KeyBuilder::<StringKey>::new("user/test/newkey")?
+//!     KeyBuilder::<StringKey>::new("user:/test/newkey")?
 //!         .value("0xff")
 //!         .build()
 //! ];
@@ -88,10 +88,10 @@ impl<T: WriteableKey> KeyBuilder<T> {
     /// ```
     /// # use elektra::{KeyBuilder,StringKey,WriteableKey,ReadableKey};
     /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
-    /// let key: StringKey = KeyBuilder::new("user/test/newkey")?
+    /// let key: StringKey = KeyBuilder::new("user:/test/newkey")?
     ///     .value("key_value")
     ///     .build();
-    /// assert_eq!(key.name(), "user/test/newkey");
+    /// assert_eq!(key.name(), "user:/test/newkey");
     /// assert_eq!(key.value(), "key_value");
     /// #
     /// #     Ok(())
@@ -109,7 +109,7 @@ mod test {
 
     #[test]
     fn can_build_string_key() -> Result<(), KeyNameInvalidError> {
-        let name = "user/test/newkey";
+        let name = "user:/test/newkey";
         let val = "key_value";
         let key: StringKey = KeyBuilder::new(name)?.value(val).build();
         assert_eq!(key.name(), name);
@@ -119,7 +119,7 @@ mod test {
 
     #[test]
     fn can_build_binary_key() -> Result<(), KeyNameInvalidError> {
-        let name = "user/test/binarykey";
+        let name = "user:/test/binarykey";
         let overwrite = "overwrite me";
         let val = "😎";
         let key: BinaryKey = KeyBuilder::new(name)?
@@ -133,7 +133,7 @@ mod test {
 
     #[test]
     fn can_build_key_with_meta() -> Result<(), KeyNameInvalidError> {
-        let name = "user/test/metatest";
+        let name = "user:/test/metatest";
         let key: StringKey = KeyBuilder::new(name)?
             .meta("metaname", "metavalue")?
             .meta("OWNER", "me")?

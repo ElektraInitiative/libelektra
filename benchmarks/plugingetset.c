@@ -45,7 +45,7 @@ int main (int argc, char ** argv)
 		KeySet * conf = ksNew (0, KS_END);
 		KeySet * modules = ksNew (0, KS_END);
 		elektraModulesInit (modules, 0);
-		Key * errorKey = keyNew ("", KEY_END);
+		Key * errorKey = keyNew ("/", KEY_END);
 		Plugin * plugin = elektraPluginOpen (pluginname, modules, conf, errorKey);
 		keyDel (errorKey);
 
@@ -69,7 +69,7 @@ int main (int argc, char ** argv)
 		KeySet * conf = ksNew (0, KS_END);
 		KeySet * modules = ksNew (0, KS_END);
 		elektraModulesInit (modules, 0);
-		Key * errorKey = keyNew ("", KEY_END);
+		Key * errorKey = keyNew ("/", KEY_END);
 		Plugin * plugin = elektraPluginOpen (pluginname, modules, conf, errorKey);
 		keyDel (errorKey);
 		plugin->kdbSet (plugin, ks, setKey);

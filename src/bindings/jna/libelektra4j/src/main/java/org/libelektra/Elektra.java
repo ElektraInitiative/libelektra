@@ -77,8 +77,6 @@ public interface Elektra extends Library {
 
 	int keyIsDirectlyBelow (Pointer key, Pointer check);
 
-	int keyIsInactive (Pointer key);
-
 	int keyIsBinary (Pointer key);
 
 	int keyIsString (Pointer key);
@@ -95,10 +93,6 @@ public interface Elektra extends Library {
 	Pointer keyUnescapedName (Pointer key);
 
 	int keyGetUnescapedNameSize (Pointer key);
-
-	int keyGetFullNameSize (Pointer key); // not implemented
-
-	int keyGetFullName (Pointer key, String returnedName, int maxSize); // not implemented
 
 	String keyBaseName (Pointer key); // not implemented
 

@@ -10,7 +10,7 @@
 
 #include "tests.h"
 
-#define BASE_KEY "user/tests/globbing"
+#define BASE_KEY "user:/tests/globbing"
 
 #define should_match(k, p) succeed_if (check_key (k, p) == 0, p " does not match " k)
 #define should_not_match(KEY_NAME, PATTERN)                                                                                                \
@@ -69,7 +69,7 @@ static void test_underscore (void)
 	should_match (BASE_KEY "/key", BASE_KEY "/_");
 	should_match (BASE_KEY "/longkey123__31", BASE_KEY "/_");
 	should_match (BASE_KEY "/1231412", BASE_KEY "/_");
-	should_match (BASE_KEY "/#1231231", BASE_KEY "/_");
+	should_match (BASE_KEY "/\\#1231231", BASE_KEY "/_");
 	should_match (BASE_KEY "/#__1234", BASE_KEY "/_");
 	should_match (BASE_KEY "/????aased12355", BASE_KEY "/_");
 	should_match (BASE_KEY "/***", BASE_KEY "/_");
@@ -100,7 +100,7 @@ static void test_hash (void)
 	should_not_match (BASE_KEY "/key", BASE_KEY "/#");
 	should_not_match (BASE_KEY "/longkey123__31", BASE_KEY "/#");
 	should_not_match (BASE_KEY "/1231412", BASE_KEY "/#");
-	should_not_match (BASE_KEY "/#1231231", BASE_KEY "/#");
+	should_not_match (BASE_KEY "/\\#1231231", BASE_KEY "/#");
 	should_not_match (BASE_KEY "/#__1234", BASE_KEY "/#");
 	should_not_match (BASE_KEY "/????aased12355", BASE_KEY "/#");
 	should_not_match (BASE_KEY "/***", BASE_KEY "/#");

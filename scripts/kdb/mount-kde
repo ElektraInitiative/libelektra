@@ -13,5 +13,5 @@ cd ~
 
 for file in $(find .kde/share/config -name '*rc' -type f); do
 	f=$(basename $file rc)
-	$KDB mount /$file user/org/kde/$f ni
+	$KDB mount /$file user:/org/kde/$f ni
 done

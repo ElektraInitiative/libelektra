@@ -128,17 +128,17 @@ int validateMac (Key * key)
 
 int elektraMacaddrGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/macaddr"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/macaddr"))
 	{
 		KeySet * contract =
-			ksNew (30, keyNew ("system/elektra/modules/macaddr", KEY_VALUE, "macaddr plugin waits for your orders", KEY_END),
-			       keyNew ("system/elektra/modules/macaddr/exports", KEY_END),
-			       keyNew ("system/elektra/modules/macaddr/exports/get", KEY_FUNC, elektraMacaddrGet, KEY_END),
-			       keyNew ("system/elektra/modules/macaddr/exports/set", KEY_FUNC, elektraMacaddrSet, KEY_END),
+			ksNew (30, keyNew ("system:/elektra/modules/macaddr", KEY_VALUE, "macaddr plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/macaddr/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/macaddr/exports/get", KEY_FUNC, elektraMacaddrGet, KEY_END),
+			       keyNew ("system:/elektra/modules/macaddr/exports/set", KEY_FUNC, elektraMacaddrSet, KEY_END),
 
 #include ELEKTRA_README
 
-			       keyNew ("system/elektra/modules/macaddr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/macaddr/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

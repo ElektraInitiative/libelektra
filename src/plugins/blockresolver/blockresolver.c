@@ -11,7 +11,6 @@
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
-#include <kdbproposal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -222,20 +221,21 @@ static const char * getBlock (FILE * fp, const long startPos, const long endPos)
 
 int elektraBlockresolverGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
-	if (!elektraStrCmp (keyName (parentKey), "system/elektra/modules/blockresolver"))
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/blockresolver"))
 	{
 		KeySet * contract = ksNew (
 			30,
-			keyNew ("system/elektra/modules/blockresolver", KEY_VALUE, "blockresolver plugin waits for your orders", KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports", KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/close", KEY_FUNC, elektraBlockresolverClose, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/error", KEY_FUNC, elektraBlockresolverError, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/get", KEY_FUNC, elektraBlockresolverGet, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/set", KEY_FUNC, elektraBlockresolverSet, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/commit", KEY_FUNC, elektraBlockresolverCommit, KEY_END),
-			keyNew ("system/elektra/modules/blockresolver/exports/checkfile", KEY_FUNC, elektraBlockresolverCheckFile, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver", KEY_VALUE, "blockresolver plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports", KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/close", KEY_FUNC, elektraBlockresolverClose, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/error", KEY_FUNC, elektraBlockresolverError, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/get", KEY_FUNC, elektraBlockresolverGet, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/set", KEY_FUNC, elektraBlockresolverSet, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/commit", KEY_FUNC, elektraBlockresolverCommit, KEY_END),
+			keyNew ("system:/elektra/modules/blockresolver/exports/checkfile", KEY_FUNC, elektraBlockresolverCheckFile,
+				KEY_END),
 #include ELEKTRA_README
-			keyNew ("system/elektra/modules/blockresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/blockresolver/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 

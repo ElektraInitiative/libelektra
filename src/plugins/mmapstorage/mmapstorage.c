@@ -423,6 +423,7 @@ static void initMagicKey (const uintptr_t magicNumber)
 	magicKey.data.v = (void *) ~magicNumber;
 	magicKey.dataSize = SIZE_MAX;
 	magicKey.key = (char *) magicNumber;
+	magicKey.ukey = 0;
 	magicKey.keySize = UINT16_MAX;
 	magicKey.keyUSize = 0;
 	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
@@ -749,10 +750,18 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 		// move Key name
 		if (curMeta->key)
 		{
-			size_t keyNameSize = curMeta->keySize + curMeta->keyUSize;
-			memcpy (mmapAddr->dataPtr, curMeta->key, keyNameSize);
+			memcpy (mmapAddr->dataPtr, curMeta->key, curMeta->keySize);
 			mmapMetaKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
-			mmapAddr->dataPtr += keyNameSize;
+			mmapAddr->dataPtr += curMeta->keySize;
+			mmapMetaKey->flags |= KEY_FLAG_MMAP_KEY;
+		}
+
+		// move Key unescaped name
+		if (curMeta->ukey)
+		{
+			memcpy (mmapAddr->dataPtr, curMeta->ukey, curMeta->keyUSize);
+			mmapMetaKey->ukey = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
+			mmapAddr->dataPtr += curMeta->keyUSize;
 			mmapMetaKey->flags |= KEY_FLAG_MMAP_KEY;
 		}
 
@@ -853,10 +862,18 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 		// move Key name
 		if (cur->key)
 		{
-			size_t keyNameSize = cur->keySize + cur->keyUSize;
-			memcpy (mmapAddr->dataPtr, cur->key, keyNameSize);
+			memcpy (mmapAddr->dataPtr, cur->key, cur->keySize);
 			mmapKey->key = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
-			mmapAddr->dataPtr += keyNameSize;
+			mmapAddr->dataPtr += cur->keySize;
+			mmapKey->flags |= KEY_FLAG_MMAP_KEY;
+		}
+
+		// move Key unescaped name
+		if (cur->ukey)
+		{
+			memcpy (mmapAddr->dataPtr, cur->ukey, cur->keyUSize);
+			mmapKey->ukey = mmapAddr->dataPtr - mmapAddr->mmapAddrInt;
+			mmapAddr->dataPtr += cur->keyUSize;
 			mmapKey->flags |= KEY_FLAG_MMAP_KEY;
 		}
 
@@ -1197,6 +1214,10 @@ static void updatePointers (MmapMetaData * mmapMetaData, char * dest)
 		{
 			key->key = key->key + destInt;
 		}
+		if (key->ukey)
+		{
+			key->ukey = key->ukey + destInt;
+		}
 		if (key->meta)
 		{
 			key->meta = (KeySet *) ((char *) (key->meta) + destInt);
@@ -1292,7 +1313,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 		mode = MODE_GLOBALCACHE;
 	}
 
-	Key * root = keyNew ("system/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
+	Key * root = keyNew ("system:/elektra/modules/" ELEKTRA_PLUGIN_NAME, KEY_END);
 	if (keyCmp (root, parentKey) == 0 || keyIsBelow (root, parentKey) == 1)
 	{
 		keyDel (root);

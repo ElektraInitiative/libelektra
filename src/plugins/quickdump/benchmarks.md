@@ -21,7 +21,7 @@ A script was used to generate KeySets with `2`, `200`, `2,000`, `200,000` and `2
 increasing numbers (prefixed with `_` to keep correct order), each key had a randomized value of 15 characters.
 Additionally we added 4 metakeys to each key. The names and values of these were created similarly.
 
-The parent key used was `dir/tests/bench`.
+The parent key used was `dir:/tests/bench`.
 
 We then used [`hyperfine`](https://github.com/sharkdp/hyperfine) to compare the performance of `dump` and `quickdump`.
 

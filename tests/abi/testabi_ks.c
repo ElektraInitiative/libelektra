@@ -10,7 +10,7 @@
 
 #define NUMBER_OF_NAMESPACES 5
 
-char * namespaces[] = { "spec", "proc", "dir", "user", "system", 0 };
+char * namespaces[] = { "spec:/", "proc:/", "dir:/", "user:/", "system:/", 0 };
 
 static void test_ksNew (void)
 {
@@ -21,18 +21,18 @@ static void test_ksNew (void)
 	printf ("Test ks creation\n");
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
 
-	succeed_if (ksAppendKey (ks, keyNew ("user/a", KEY_END)) == 1, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/b", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/c", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/a", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/b", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/c", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksGetSize (ks) == 3, "size not correct after 3 keys");
 
 	KeySet * ks2 = ksNew (0, KS_END);
 	ksCopy (ks2, ks);
 	compare_keyset (ks, ks2);
 
-	succeed_if (ksAppendKey (ks, keyNew ("user/d", KEY_END)) == 4, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/e", KEY_END)) == 5, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/f", KEY_END)) == 6, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/d", KEY_END)) == 4, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/e", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/f", KEY_END)) == 6, "could not append a key");
 	succeed_if (ksGetSize (ks) == 6, "could not append 3 more keys");
 
 	ksCopy (ks2, ks);
@@ -49,9 +49,9 @@ static void test_ksNew (void)
 	// succeed_if(ksGetAlloc(keys) == 15, "allocation size wrong");
 	succeed_if (ksDel (keys) == 0, "could not delete keyset");
 
-	config = ksNew (100, keyNew ("user/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
-			keyNew ("user/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
-			keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", 0), KS_END);
+	config = ksNew (100, keyNew ("user:/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
+			keyNew ("user:/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
+			keyNew ("user:/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", 0), KS_END);
 	succeed_if (ksGetSize (config) == 3, "could not append 3 keys in keyNew");
 	// this behaviour might change, do not build on it,
 	// and there is no compatible way to get the alloc info
@@ -64,14 +64,14 @@ static void test_ksNew (void)
 	// succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
 	succeed_if (ksDel (config) == 0, "could not delete keyset");
 
-	config = ksNew (10, keyNew ("user/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
-			keyNew ("user/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
-			keyNew ("user/sw/app/fixedConfiguration/key3", KEY_VALUE, "value1", 0),
-			keyNew ("user/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0), KS_END);
+	config = ksNew (10, keyNew ("user:/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
+			keyNew ("user:/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
+			keyNew ("user:/sw/app/fixedConfiguration/key3", KEY_VALUE, "value1", 0),
+			keyNew ("user:/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0), KS_END);
 
 	succeed_if (ksGetSize (config) == 4, "could not append 5 keys in keyNew");
 	// succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
-	ksAppendKey (config, keyNew ("user/sw/app/fixedConfiguration/key6", KEY_VALUE, "value4", 0));
+	ksAppendKey (config, keyNew ("user:/sw/app/fixedConfiguration/key6", KEY_VALUE, "value4", 0));
 
 	ksClear (ks2);
 	ksCopy (ks2, config);
@@ -80,8 +80,8 @@ static void test_ksNew (void)
 	succeed_if (ksDel (config) == 0, "could not delete keyset");
 	succeed_if (ksDel (ks2) == 0, "could not delete keyset");
 
-	KeySet * ks_c = ksNew (5, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END),
-			       keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END), KS_END);
+	KeySet * ks_c = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
+			       keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
 
 	succeed_if (ksCurrent (ks_c) == 0, "should be rewinded");
 	ksDel (ks_c);
@@ -100,7 +100,7 @@ static void test_ksEmpty (void)
 	succeed_if (ksGetSize (ks) == 0, "size not correct");
 	ksDel (ks);
 
-	ks = ksNew (1, current = keyNew ("user/test", KEY_END), KS_END);
+	ks = ksNew (1, current = keyNew ("user:/test", KEY_END), KS_END);
 	succeed_if (ksGetSize (ks) == 1, "size not correct");
 	succeed_if (ksPop (ks) == current, "pop empty keyset");
 	succeed_if (ksGetSize (ks) == 0, "size not correct");
@@ -119,7 +119,7 @@ static void test_ksEmpty (void)
 	ksDel (ks);
 	ksDel (ks2);
 
-	ks = ksNew (1, current = keyNew ("user/test", KEY_END), KS_END);
+	ks = ksNew (1, current = keyNew ("user:/test", KEY_END), KS_END);
 	ks2 = ksNew (0, KS_END);
 	succeed_if (ksGetSize (ks) == 1, "empty keyset does not have correct size");
 	succeed_if (ksGetSize (ks2) == 0, "empty keyset does not have correct size");
@@ -139,7 +139,7 @@ static void test_ksEmpty (void)
 
 
 	ks = ksNew (0, KS_END);
-	ks2 = ksNew (1, current = keyNew ("user/test", KEY_END), KS_END);
+	ks2 = ksNew (1, current = keyNew ("user:/test", KEY_END), KS_END);
 	succeed_if (ksGetSize (ks) == 0, "empty keyset does not have correct size");
 	succeed_if (ksGetSize (ks2) == 1, "empty keyset does not have correct size");
 	succeed_if (ksAppend (ks, ks2) == 1, "could not append empty keyset");
@@ -170,7 +170,7 @@ static void test_ksReference (void)
 	printf ("Test reference of key\n");
 
 	ks = ksNew (0, KS_END);
-	k1 = keyNew ("user/aname", KEY_END);
+	k1 = keyNew ("user:/aname", KEY_END);
 	succeed_if (keyGetRef (k1) == 0, "reference counter of new key");
 	succeed_if (ksAppendKey (ks, k1) == 1, "size should be one");
 	succeed_if (keyGetRef (k1) == 1, "reference counter of inserted key");
@@ -192,10 +192,10 @@ static void test_ksReference (void)
 
 	ksDel (ks);
 
-	ks = ksNew (5, keyNew ("user/key", KEY_END), keyNew ("system/key", KEY_END), KS_END);
+	ks = ksNew (5, keyNew ("user:/key", KEY_END), keyNew ("system:/key", KEY_END), KS_END);
 
-	k1 = ksLookupByName (ks, "user/key", 0);
-	k2 = ksLookupByName (ks, "system/key", 0);
+	k1 = ksLookupByName (ks, "system:/key", 0);
+	k2 = ksLookupByName (ks, "user:/key", 0);
 	succeed_if (keyGetRef (k1) == 1, "reference counter of new inserted key");
 	succeed_if (keyGetRef (k2) == 1, "reference counter of new inserted key");
 	succeed_if (ksHead (ks) == k2, "head wrong");
@@ -203,10 +203,10 @@ static void test_ksReference (void)
 
 	ksDel (ks);
 
-	ks = ksNew (5, keyNew ("user/key", KEY_END), keyNew ("system/key", KEY_END), KS_END);
+	ks = ksNew (5, keyNew ("user:/key", KEY_END), keyNew ("system:/key", KEY_END), KS_END);
 
-	k1 = ksLookupByName (ks, "user/key", 0);
-	k2 = ksLookupByName (ks, "system/key", 0);
+	k1 = ksLookupByName (ks, "system:/key", 0);
+	k2 = ksLookupByName (ks, "user:/key", 0);
 	succeed_if (keyGetRef (k1) == 1, "reference counter of new inserted key");
 	succeed_if (keyGetRef (k2) == 1, "reference counter of new inserted key");
 	ks1 = ksDup (ks);
@@ -227,7 +227,7 @@ static void test_ksReference (void)
 	ksDel (ks1); // k1 and k2 deleted
 
 	ks1 = ksNew (0, KS_END);
-	k1 = keyNew ("user/k1", KEY_END);
+	k1 = keyNew ("user:/k1", KEY_END);
 	succeed_if (keyGetRef (k1) == 0, "reference counter of new inserted key");
 	succeed_if (ksAppendKey (ks1, k1) == 1, "appending did not work");
 	succeed_if (ksGetSize (ks1) == 1, "size did not match");
@@ -243,14 +243,14 @@ static void test_ksReference (void)
 	succeed_if (ksDel (ks1) == 0, "could not delete key");
 
 
-	kss[0] = ksNew (5, k1 = keyNew ("system/key", KEY_END), k2 = keyNew ("user/key", KEY_END), KS_END);
+	kss[0] = ksNew (5, k1 = keyNew ("user:/key", KEY_END), k2 = keyNew ("system:/key", KEY_END), KS_END);
 	for (i = 1; i < NR_KEYSETS; i++)
 	{
 		succeed_if (keyGetRef (k1) == i, "reference counter");
 		succeed_if (keyGetRef (k2) == 1, "reference counter");
 		kss[i] = ksDup (kss[i - 1]);
 		succeed_if (keyGetRef (k2) == 2, "reference counter");
-		succeed_if_same_string (keyName (ksPop (kss[i - 1])), "user/key");
+		succeed_if_same_string (keyName (ksPop (kss[i - 1])), "system:/key");
 		succeed_if (keyGetRef (k2) == 1, "reference counter");
 		succeed_if (keyDel (k2) == 1, "delete key");
 		succeed_if (keyGetRef (k2) == 1, "reference counter");
@@ -280,7 +280,7 @@ static void test_ksDup (void)
 	ksDel (other);
 	ksDel (ks);
 
-	exit_if_fail ((ks = ksNew (1, keyNew ("user/anything", KEY_END), KS_END)) != 0, "could not create new keyset");
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/anything", KEY_END), KS_END)) != 0, "could not create new keyset");
 	other = ksDup (ks);
 	succeed_if (other, "other creation failed");
 	succeed_if (ksGetSize (ks) == 1, "ks has no keys");
@@ -288,10 +288,10 @@ static void test_ksDup (void)
 	ksDel (other);
 	ksDel (ks);
 
-	exit_if_fail ((ks = ksNew (1, keyNew ("system/some", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test3", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("system:/some", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
 	other = ksDup (ks);
 	succeed_if (other, "other creation failed");
 	succeed_if (ksGetSize (ks) == 4, "ks has no keys");
@@ -299,10 +299,10 @@ static void test_ksDup (void)
 	ksDel (other);
 	ksDel (ks);
 
-	exit_if_fail ((ks = ksNew (1, keyNew ("user/any123", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test3", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/any123", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
 	other = ksDup (ks);
 	succeed_if (other, "other creation failed");
 	keyDel (ksPop (other));
@@ -311,14 +311,14 @@ static void test_ksDup (void)
 	ksDel (other);
 	ksDel (ks);
 
-	exit_if_fail ((ks = ksNew (1, keyNew ("system/test", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test3", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("system:/test", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
 	other = ksDup (ks);
 	succeed_if (other, "other creation failed");
 	keyDel (ksPop (other));
-	succeed_if (ksAppendKey (ks, keyNew ("user/test4", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test4", KEY_END)) == 5, "could not append a key");
 	succeed_if (ksGetSize (ks) == 5, "ks has no keys");
 	succeed_if (ksGetSize (other) == 3, "other has no keys");
 	ksDel (other);
@@ -342,7 +342,7 @@ static void test_ksCopy (void)
 	ksDel (ks);
 
 	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (1, keyNew ("user/test3", KEY_END), KS_END)) != 0, "could not create new keyset");
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/test3", KEY_END), KS_END)) != 0, "could not create new keyset");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	succeed_if (ksGetSize (ks) == 1, "ks has no keys");
@@ -351,10 +351,10 @@ static void test_ksCopy (void)
 	ksDel (ks);
 
 	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (1, keyNew ("user/testro", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test3", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/testro", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	succeed_if (ksGetSize (ks) == 4, "ks has no keys");
@@ -363,10 +363,10 @@ static void test_ksCopy (void)
 	ksDel (ks);
 
 	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (1, keyNew ("system/test", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test3", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("system:/test", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	keyDel (ksPop (other));
@@ -376,28 +376,28 @@ static void test_ksCopy (void)
 	ksDel (ks);
 
 	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (1, keyNew ("user/mykeys", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test1", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test2", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/test3", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/mykeys", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	keyDel (ksPop (other));
-	succeed_if (ksAppendKey (ks, keyNew ("user/test", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test", KEY_END)) == 5, "could not append a key");
 	succeed_if (ksGetSize (ks) == 5, "ks has no keys");
 	succeed_if (ksGetSize (other) == 3, "other has no keys");
 	ksDel (other);
 	ksDel (ks);
 
 	other = ksNew (0, KS_END);
-	exit_if_fail ((ks = ksNew (1, keyNew ("user/a/b/c", KEY_END), KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, keyNew ("user/a/test", KEY_END)) == 2, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/a/b/test", KEY_END)) == 3, "could not append a key");
-	succeed_if (ksAppendKey (ks, keyNew ("user/a/b/ctest", KEY_END)) == 4, "could not append a key");
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/a/b/c", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/a/test", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/a/b/test", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/a/b/ctest", KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCopy (other, ks) == 1, "Copy failed");
 	succeed_if (other, "other creation failed");
 	keyDel (ksPop (other));
-	succeed_if (ksAppendKey (ks, keyNew ("user/test", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test", KEY_END)) == 5, "could not append a key");
 	succeed_if (ksGetSize (ks) == 5, "ks has no keys");
 	succeed_if (ksGetSize (other) == 3, "other has no keys");
 
@@ -411,7 +411,7 @@ static void test_ksCopy (void)
 
 
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user/abc", KEY_META, "def", "egh", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/abc", KEY_META, "def", "egh", KEY_END));
 
 	other = ksNew (0, KS_END);
 	ksCopy (other, ks);
@@ -427,33 +427,33 @@ static void test_ksIterate (void)
 	KeySet * other = ksNew (0, KS_END);
 	Key * key;
 	int i;
-	char name[] = "user/n";
+	char name[] = "user:/n";
 
 	printf ("Test keyset iterate\n");
-	ksAppendKey (ks, keyNew ("user/1", KEY_END));
-	ksAppendKey (ks, keyNew ("user/2", KEY_END));
-	ksAppendKey (ks, keyNew ("user/3", KEY_END));
-	ksAppendKey (ks, keyNew ("user/4", KEY_END));
-	ksAppendKey (ks, keyNew ("user/5", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/3", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/4", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/5", KEY_END));
 	succeed_if (ksGetSize (ks) == 5, "could not append 5 keys");
 
 	succeed_if (ksRewind (ks) == 0, "Could not rewind keyset");
 	succeed_if (ksRewind (ks) == 0, "Could not rewind keyset twice");
 
 	succeed_if (ksNext (ks) != 0, "Could not get first key");
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/1");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/1");
 
 	succeed_if (ksNext (ks) != 0, "Could not get second key");
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/2");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/2");
 
 	succeed_if (ksNext (ks) != 0, "Could not get third key");
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/3");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/3");
 
 	succeed_if (ksNext (ks) != 0, "Could not get fourth key");
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/4");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/4");
 
 	succeed_if (ksNext (ks) != 0, "Could not get fifth key");
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/5");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/5");
 
 	succeed_if (ksNext (ks) == 0, "Could not iterate over last");
 	succeed_if (ksCurrent (ks) == 0, "This is not the beyond last key");
@@ -462,7 +462,7 @@ static void test_ksIterate (void)
 	succeed_if (ksCurrent (ks) == 0, "This is not the beyond last key (again)");
 
 	key = ksPop (ks);
-	succeed_if_same_string (keyName (key), "user/5");
+	succeed_if_same_string (keyName (key), "user:/5");
 	succeed_if (keyDel (key) == 0, "could not del popped key");
 
 	succeed_if (ksAppend (other, ks) == 4, "could not append keys");
@@ -471,24 +471,24 @@ static void test_ksIterate (void)
 	{
 		key = ksPop (other);
 		succeed_if (key != 0, "got null pointer key");
-		name[5] = '0' + i;
+		name[6] = '0' + i;
 		succeed_if_same_string (keyName (key), name);
 		keyDel (key);
 	}
 
-	succeed_if (ksAppendKey (other, keyNew ("user/3", KEY_END)) == 1, "could not append one key");
+	succeed_if (ksAppendKey (other, keyNew ("user:/3", KEY_END)) == 1, "could not append one key");
 	key = ksPop (other);
 	succeed_if (key != 0, "got null pointer key");
-	succeed_if_same_string (keyName (key), "user/3");
+	succeed_if_same_string (keyName (key), "user:/3");
 	succeed_if (keyDel (key) == 0, "could not del popped key");
 	ksDel (other);
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("user/0", KEY_END), keyNew ("user/1", KEY_END), keyNew ("user/2", KEY_END), keyNew ("user/3", KEY_END),
+	ks = ksNew (10, keyNew ("user:/0", KEY_END), keyNew ("user:/1", KEY_END), keyNew ("user:/2", KEY_END), keyNew ("user:/3", KEY_END),
 		    KS_END);
 
-	other = ksNew (10, keyNew ("user/4", KEY_END), keyNew ("user/5", KEY_END), keyNew ("user/6", KEY_END), keyNew ("user/7", KEY_END),
-		       KS_END);
+	other = ksNew (10, keyNew ("user:/4", KEY_END), keyNew ("user:/5", KEY_END), keyNew ("user:/6", KEY_END),
+		       keyNew ("user:/7", KEY_END), KS_END);
 
 	succeed_if (ksAppend (ks, other) == 8, "could not append keys");
 
@@ -496,7 +496,7 @@ static void test_ksIterate (void)
 	{
 		key = ksPop (ks);
 		succeed_if (key != 0, "got null pointer key");
-		name[5] = '0' + i;
+		name[6] = '0' + i;
 		succeed_if_same_string (keyName (key), name);
 		keyDel (key);
 	}
@@ -511,35 +511,35 @@ static void test_ksCursor (void)
 	elektraCursor cursor;
 	Key * cur;
 	int i;
-	char name[] = "user/n";
+	char name[] = "user:/n";
 
 	printf ("Test keyset cursor\n");
 
-	ksAppendKey (ks, cur = keyNew ("user/1", KEY_END));
+	ksAppendKey (ks, cur = keyNew ("user:/1", KEY_END));
 	succeed_if (ksCurrent (ks) == cur, "cursor not set after append key");
-	ksAppendKey (ks, cur = keyNew ("user/2", KEY_END));
+	ksAppendKey (ks, cur = keyNew ("user:/2", KEY_END));
 	succeed_if (ksCurrent (ks) == cur, "cursor not set after append key");
-	ksAppendKey (ks, cur = keyNew ("user/3", KEY_END));
+	ksAppendKey (ks, cur = keyNew ("user:/3", KEY_END));
 	succeed_if (ksCurrent (ks) == cur, "cursor not set after append key");
 	cursor = ksGetCursor (ks);
-	succeed_if_same_string (keyName (ksAtCursor (ks, cursor)), "user/3");
-	ksAppendKey (ks, cur = keyNew ("user/4", KEY_END));
+	succeed_if_same_string (keyName (ksAtCursor (ks, cursor)), "user:/3");
+	ksAppendKey (ks, cur = keyNew ("user:/4", KEY_END));
 	succeed_if (ksCurrent (ks) == cur, "cursor not set after append key");
-	ksAppendKey (ks, cur = keyNew ("user/5", KEY_END));
+	ksAppendKey (ks, cur = keyNew ("user:/5", KEY_END));
 	succeed_if (ksCurrent (ks) == cur, "cursor not set after append key");
 	succeed_if (ksGetSize (ks) == 5, "could not append 5 keys");
 
-	succeed_if_same_string (keyName (ksAtCursor (ks, cursor)), "user/3");
+	succeed_if_same_string (keyName (ksAtCursor (ks, cursor)), "user:/3");
 	ksSetCursor (ks, cursor);
 	succeed_if (cursor == ksGetCursor (ks), "cursor not set to 3");
-	succeed_if_same_string (keyName (ksAtCursor (ks, cursor)), "user/3");
+	succeed_if_same_string (keyName (ksAtCursor (ks, cursor)), "user:/3");
 	ksSetCursor (ks, cursor);
 	succeed_if (cursor == ksGetCursor (ks), "cursor not set to 3 (again)");
 
 	cursor = ksGetCursor (ks);
 	key = ksPop (ks);
 	succeed_if (cursor == ksGetCursor (ks), "cursor should stay the same");
-	succeed_if_same_string (keyName (key), "user/5");
+	succeed_if_same_string (keyName (key), "user:/5");
 	succeed_if (keyDel (key) == 0, "could not del popped key");
 
 	ksRewind (ks);
@@ -549,7 +549,7 @@ static void test_ksCursor (void)
 		if (i == 1)
 		{
 			cursor = ksGetCursor (ks);
-			name[5] = '0' + i;
+			name[6] = '0' + i;
 		}
 	}
 	ksSetCursor (ks, cursor);
@@ -557,7 +557,7 @@ static void test_ksCursor (void)
 
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("user/0", KEY_END), keyNew ("user/1", KEY_END), keyNew ("user/2", KEY_END), keyNew ("user/3", KEY_END),
+	ks = ksNew (10, keyNew ("user:/0", KEY_END), keyNew ("user:/1", KEY_END), keyNew ("user:/2", KEY_END), keyNew ("user:/3", KEY_END),
 		    KS_END);
 
 	ksRewind (ks);
@@ -567,7 +567,7 @@ static void test_ksCursor (void)
 		if (i == 1)
 		{
 			cursor = ksGetCursor (ks);
-			name[5] = '0' + i;
+			name[6] = '0' + i;
 		}
 	}
 
@@ -577,7 +577,7 @@ static void test_ksCursor (void)
 
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("user/0", KEY_END), keyNew ("user/1", KEY_END), keyNew ("user/2", KEY_END), keyNew ("user/3", KEY_END),
+	ks = ksNew (10, keyNew ("user:/0", KEY_END), keyNew ("user:/1", KEY_END), keyNew ("user:/2", KEY_END), keyNew ("user:/3", KEY_END),
 		    KS_END);
 
 	ksRewind (ks);
@@ -585,14 +585,14 @@ static void test_ksCursor (void)
 	{
 		ksNext (ks);
 		cursor = ksGetCursor (ks);
-		name[5] = '0' + i;
+		name[6] = '0' + i;
 		succeed_if_same_string (keyName (ksAtCursor (ks, cursor)), name);
 	}
 
-	succeed_if_same_string (keyName (ksAtCursor (ks, 0)), "user/0");
-	succeed_if_same_string (keyName (ksAtCursor (ks, 1)), "user/1");
-	succeed_if_same_string (keyName (ksAtCursor (ks, 2)), "user/2");
-	succeed_if_same_string (keyName (ksAtCursor (ks, 3)), "user/3");
+	succeed_if_same_string (keyName (ksAtCursor (ks, 0)), "user:/0");
+	succeed_if_same_string (keyName (ksAtCursor (ks, 1)), "user:/1");
+	succeed_if_same_string (keyName (ksAtCursor (ks, 2)), "user:/2");
+	succeed_if_same_string (keyName (ksAtCursor (ks, 3)), "user:/3");
 	succeed_if (ksAtCursor (ks, -1) == 0, "bounds check not correct");
 	succeed_if (ksAtCursor (ks, 4) == 0, "bounds check not correct");
 
@@ -606,11 +606,11 @@ static void test_ksAtCursor (void)
 	Key * testKeys[5];
 	ks = ksNew (0, KS_END);
 
-	testKeys[0] = keyNew ("user/test1", KEY_END);
-	testKeys[1] = keyNew ("user/test2", KEY_END);
-	testKeys[2] = keyNew ("user/test3", KEY_END);
-	testKeys[3] = keyNew ("user/test4", KEY_END);
-	testKeys[4] = keyNew ("user/test5", KEY_END);
+	testKeys[0] = keyNew ("user:/test1", KEY_END);
+	testKeys[1] = keyNew ("user:/test2", KEY_END);
+	testKeys[2] = keyNew ("user:/test3", KEY_END);
+	testKeys[3] = keyNew ("user:/test4", KEY_END);
+	testKeys[4] = keyNew ("user:/test5", KEY_END);
 
 	for (size_t index = 0; index < 5; index++)
 	{
@@ -639,7 +639,7 @@ static void test_ksAtCursor (void)
 	ksNext (ks);
 	ksNext (ks);
 	current = ksAtCursor (ks, cursor);
-	succeed_if_same_string (keyName (current), "user/test1");
+	succeed_if_same_string (keyName (current), "user:/test1");
 
 	/* test whether the internal cursor is modified */
 	ksRewind (ks);
@@ -647,9 +647,9 @@ static void test_ksAtCursor (void)
 	cursor = ksGetCursor (ks);
 	ksNext (ks);
 	current = ksAtCursor (ks, cursor);
-	succeed_if_same_string (keyName (current), "user/test1");
+	succeed_if_same_string (keyName (current), "user:/test1");
 	current = ksNext (ks);
-	succeed_if_same_string (keyName (current), "user/test3");
+	succeed_if_same_string (keyName (current), "user:/test3");
 
 	/* test postconditions */
 	succeed_if (!ksAtCursor (0, cursor), "did not return NULL on NULL keyset");
@@ -668,36 +668,36 @@ static void test_ksSort (void)
 	printf ("Test ks sort\n");
 
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user/bname", KEY_END));
-	ksAppendKey (ks, keyNew ("user/aname", KEY_END));
-	ksAppendKey (ks, keyNew ("user/cname", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/bname", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/aname", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/cname", KEY_END));
 
 	ksRewind (ks);
 	key = ksNext (ks);
-	succeed_if_same_string (keyName (key), "user/aname");
+	succeed_if_same_string (keyName (key), "user:/aname");
 
 	key = ksNext (ks);
-	succeed_if_same_string (keyName (key), "user/bname");
+	succeed_if_same_string (keyName (key), "user:/bname");
 
 	key = ksNext (ks);
-	succeed_if_same_string (keyName (key), "user/cname");
+	succeed_if_same_string (keyName (key), "user:/cname");
 	ksDel (ks);
 
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/e", KEY_END));
-	ksAppendKey (ks, keyNew ("user/b1", KEY_END));
-	ksAppendKey (ks, keyNew ("user/h2", KEY_END));
-	ksAppendKey (ks, keyNew ("user/b2", KEY_END));
-	ksAppendKey (ks, keyNew ("user/d", KEY_END));
-	ksAppendKey (ks, keyNew ("user/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/g", KEY_END));
-	ksAppendKey (ks, keyNew ("user/g", KEY_END));
-	ksAppendKey (ks, keyNew ("user/c2", KEY_END));
-	ksAppendKey (ks, keyNew ("user/c1", KEY_END));
-	ksAppendKey (ks, keyNew ("user/g", KEY_END));
-	ksAppendKey (ks, keyNew ("user/h1", KEY_END));
-	ksAppendKey (ks, keyNew ("user/f", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/a", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/e", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/d", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/a", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/g", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/g", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/g", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/f", KEY_END));
 
 	ksRewind (ks);
 	for (i = 0; (key = ksNext (ks)) != 0; i++)
@@ -705,37 +705,37 @@ static void test_ksSort (void)
 		switch (i)
 		{
 		case 0:
-			succeed_if_same_string (keyName (key), "user/a");
+			succeed_if_same_string (keyName (key), "user:/a");
 			break;
 		case 1:
-			succeed_if_same_string (keyName (key), "user/b1");
+			succeed_if_same_string (keyName (key), "user:/b1");
 			break;
 		case 2:
-			succeed_if_same_string (keyName (key), "user/b2");
+			succeed_if_same_string (keyName (key), "user:/b2");
 			break;
 		case 3:
-			succeed_if_same_string (keyName (key), "user/c1");
+			succeed_if_same_string (keyName (key), "user:/c1");
 			break;
 		case 4:
-			succeed_if_same_string (keyName (key), "user/c2");
+			succeed_if_same_string (keyName (key), "user:/c2");
 			break;
 		case 5:
-			succeed_if_same_string (keyName (key), "user/d");
+			succeed_if_same_string (keyName (key), "user:/d");
 			break;
 		case 6:
-			succeed_if_same_string (keyName (key), "user/e");
+			succeed_if_same_string (keyName (key), "user:/e");
 			break;
 		case 7:
-			succeed_if_same_string (keyName (key), "user/f");
+			succeed_if_same_string (keyName (key), "user:/f");
 			break;
 		case 8:
-			succeed_if_same_string (keyName (key), "user/g");
+			succeed_if_same_string (keyName (key), "user:/g");
 			break;
 		case 9:
-			succeed_if_same_string (keyName (key), "user/h1");
+			succeed_if_same_string (keyName (key), "user:/h1");
 			break;
 		case 10:
-			succeed_if_same_string (keyName (key), "user/h2");
+			succeed_if_same_string (keyName (key), "user:/h2");
 			break;
 		default:
 			succeed_if (0, "should not reach");
@@ -745,7 +745,7 @@ static void test_ksSort (void)
 	ksDel (ks);
 
 	ks = ksNew (0, KS_END);
-	k1 = keyNew ("user/xname", KEY_END);
+	k1 = keyNew ("user:/xname", KEY_END);
 	ksAppendKey (ks, k1);
 
 	k2 = keyDup (k1);
@@ -759,7 +759,7 @@ static void test_ksSort (void)
 	ksDel (ks);
 
 	ks = ksNew (0, KS_END);
-	k1 = keyNew ("user/yname", KEY_END);
+	k1 = keyNew ("user:/yname", KEY_END);
 	k2 = keyDup (k1);
 	ksAppendKey (ks, k2);
 	ksAppendKey (ks, k1);
@@ -769,17 +769,17 @@ static void test_ksSort (void)
 	ksDel (ks);
 
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/e", KEY_END));
-	ksAppendKey (ks, keyNew ("user/b", KEY_END));
-	ksAppendKey (ks, keyNew ("user/b", KEY_END));
-	ksAppendKey (ks, keyNew ("user/d", KEY_END));
-	ksAppendKey (ks, keyNew ("user/c", KEY_END));
-	ksAppendKey (ks, keyNew ("user/c", KEY_END));
-	ksAppendKey (ks, keyNew ("user/g", KEY_END));
-	ksAppendKey (ks, keyNew ("user/h", KEY_END));
-	ksAppendKey (ks, keyNew ("user/h", KEY_END));
-	ksAppendKey (ks, keyNew ("user/f", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/a", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/e", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/d", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/g", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/f", KEY_END));
 
 	ksRewind (ks);
 	for (i = 0; (key = ksNext (ks)) != 0; i++)
@@ -787,28 +787,28 @@ static void test_ksSort (void)
 		switch (i)
 		{
 		case 0:
-			succeed_if_same_string (keyName (key), "user/a");
+			succeed_if_same_string (keyName (key), "user:/a");
 			break;
 		case 1:
-			succeed_if_same_string (keyName (key), "user/b");
+			succeed_if_same_string (keyName (key), "user:/b");
 			break;
 		case 2:
-			succeed_if_same_string (keyName (key), "user/c");
+			succeed_if_same_string (keyName (key), "user:/c");
 			break;
 		case 3:
-			succeed_if_same_string (keyName (key), "user/d");
+			succeed_if_same_string (keyName (key), "user:/d");
 			break;
 		case 4:
-			succeed_if_same_string (keyName (key), "user/e");
+			succeed_if_same_string (keyName (key), "user:/e");
 			break;
 		case 5:
-			succeed_if_same_string (keyName (key), "user/f");
+			succeed_if_same_string (keyName (key), "user:/f");
 			break;
 		case 6:
-			succeed_if_same_string (keyName (key), "user/g");
+			succeed_if_same_string (keyName (key), "user:/g");
 			break;
 		case 7:
-			succeed_if_same_string (keyName (key), "user/h");
+			succeed_if_same_string (keyName (key), "user:/h");
 			break;
 		default:
 			succeed_if (0, "should not reach");
@@ -819,17 +819,17 @@ static void test_ksSort (void)
 
 
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/e", KEY_END));
-	ksAppendKey (ks, keyNew ("user/b/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/b", KEY_END));
-	ksAppendKey (ks, keyNew ("user/d", KEY_END));
-	ksAppendKey (ks, keyNew ("user/c", KEY_END));
-	ksAppendKey (ks, keyNew ("user/c/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/g", KEY_END));
-	ksAppendKey (ks, keyNew ("user/h/a", KEY_END));
-	ksAppendKey (ks, keyNew ("user/h", KEY_END));
-	ksAppendKey (ks, keyNew ("user/f", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/a", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/e", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b/a", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/b", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/d", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/c/a", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/g", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h/a", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/h", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/f", KEY_END));
 
 	ksRewind (ks);
 	// output_keyset(ks,0);
@@ -838,37 +838,37 @@ static void test_ksSort (void)
 		switch (i)
 		{
 		case 10:
-			succeed_if_same_string (keyName (key), "user/h/a");
+			succeed_if_same_string (keyName (key), "user:/h/a");
 			break;
 		case 9:
-			succeed_if_same_string (keyName (key), "user/h");
+			succeed_if_same_string (keyName (key), "user:/h");
 			break;
 		case 8:
-			succeed_if_same_string (keyName (key), "user/g");
+			succeed_if_same_string (keyName (key), "user:/g");
 			break;
 		case 7:
-			succeed_if_same_string (keyName (key), "user/f");
+			succeed_if_same_string (keyName (key), "user:/f");
 			break;
 		case 6:
-			succeed_if_same_string (keyName (key), "user/e");
+			succeed_if_same_string (keyName (key), "user:/e");
 			break;
 		case 5:
-			succeed_if_same_string (keyName (key), "user/d");
+			succeed_if_same_string (keyName (key), "user:/d");
 			break;
 		case 4:
-			succeed_if_same_string (keyName (key), "user/c/a");
+			succeed_if_same_string (keyName (key), "user:/c/a");
 			break;
 		case 3:
-			succeed_if_same_string (keyName (key), "user/c");
+			succeed_if_same_string (keyName (key), "user:/c");
 			break;
 		case 2:
-			succeed_if_same_string (keyName (key), "user/b/a");
+			succeed_if_same_string (keyName (key), "user:/b/a");
 			break;
 		case 1:
-			succeed_if_same_string (keyName (key), "user/b");
+			succeed_if_same_string (keyName (key), "user:/b");
 			break;
 		case 0:
-			succeed_if_same_string (keyName (key), "user/a");
+			succeed_if_same_string (keyName (key), "user:/a");
 			break;
 		default:
 			succeed_if (0, "should not reach");
@@ -878,17 +878,17 @@ static void test_ksSort (void)
 	ksDel (ks);
 
 	ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user/dir1/key1", KEY_END));
-	ksAppendKey (ks, keyNew ("user/dir1/key2", KEY_END));
-	ksAppendKey (ks, keyNew ("user/dir1/key3", KEY_END));
-	ksAppendKey (ks, keyNew ("user/dir2", KEY_END));
-	ksAppendKey (ks, keyNew ("user/dir2/key1", KEY_END));
-	ksAppendKey (ks, keyNew ("user/dir3/key1", KEY_END));
-	ksAppendKey (ks, keyNew ("user/dir3", KEY_END));
-	ksAppendKey (ks, keyNew ("user/dir3/key2", KEY_END));
-	ksAppendKey (ks, keyNew ("user/dir4", KEY_END));
-	ksAppendKey (ks, keyNew ("user/dir5/key1", KEY_END));
-	ksAppendKey (ks, keyNew ("user/dir6/key1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir1/key1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir1/key2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir1/key3", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir2/key1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir3/key1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir3", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir3/key2", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir4", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir5/key1", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/dir6/key1", KEY_END));
 
 	ksRewind (ks);
 	// output_keyset(ks,0);
@@ -897,37 +897,37 @@ static void test_ksSort (void)
 		switch (i)
 		{
 		case 9:
-			succeed_if_same_string (keyName (key), "user/dir5/key1");
+			succeed_if_same_string (keyName (key), "user:/dir5/key1");
 			break;
 		case 4:
-			succeed_if_same_string (keyName (key), "user/dir2/key1");
+			succeed_if_same_string (keyName (key), "user:/dir2/key1");
 			break;
 		case 3:
-			succeed_if_same_string (keyName (key), "user/dir2");
+			succeed_if_same_string (keyName (key), "user:/dir2");
 			break;
 		case 2:
-			succeed_if_same_string (keyName (key), "user/dir1/key3");
+			succeed_if_same_string (keyName (key), "user:/dir1/key3");
 			break;
 		case 0:
-			succeed_if_same_string (keyName (key), "user/dir1/key1");
+			succeed_if_same_string (keyName (key), "user:/dir1/key1");
 			break;
 		case 1:
-			succeed_if_same_string (keyName (key), "user/dir1/key2");
+			succeed_if_same_string (keyName (key), "user:/dir1/key2");
 			break;
 		case 5:
-			succeed_if_same_string (keyName (key), "user/dir3");
+			succeed_if_same_string (keyName (key), "user:/dir3");
 			break;
 		case 6:
-			succeed_if_same_string (keyName (key), "user/dir3/key1");
+			succeed_if_same_string (keyName (key), "user:/dir3/key1");
 			break;
 		case 7:
-			succeed_if_same_string (keyName (key), "user/dir3/key2");
+			succeed_if_same_string (keyName (key), "user:/dir3/key2");
 			break;
 		case 8:
-			succeed_if_same_string (keyName (key), "user/dir4");
+			succeed_if_same_string (keyName (key), "user:/dir4");
 			break;
 		case 10:
-			succeed_if_same_string (keyName (key), "user/dir6/key1");
+			succeed_if_same_string (keyName (key), "user:/dir6/key1");
 			break;
 		default:
 			succeed_if (0, "should not reach");
@@ -970,13 +970,13 @@ static void test_ksLookup (void)
 {
 	printf ("Test lookup\n");
 
-	Key * simpleKey = keyNew ("user/find_me", KEY_END);
+	Key * simpleKey = keyNew ("user:/find_me", KEY_END);
 	KeySet * simple = ksNew (5, simpleKey, KS_END);
 
 	Key * foundKey = ksLookup (simple, simpleKey, 0);
 	succeed_if (foundKey == simpleKey, "could not find key in keyset");
 
-	Key * simpleKey2 = keyNew ("user/find_me/a", KEY_END);
+	Key * simpleKey2 = keyNew ("user:/find_me/a", KEY_END);
 	ksAppendKey (simple, simpleKey2);
 
 	foundKey = ksLookup (simple, simpleKey, 0);
@@ -990,36 +990,51 @@ static void test_ksLookup (void)
 
 	int i, j;
 	Key * k[1000];
-	KeySet * ks = ksNew (
-		30,
-		/* keys that are searched */
-		k[0] = keyNew ("user/rem3", KEY_DIR, KEY_END), k[1] = keyNew ("user/rem2", KEY_DIR, KEY_END),
-		k[2] = keyNew ("user/rem1/key2", KEY_END), k[3] = keyNew ("user/rem1/key1", KEY_END),
-		k[4] = keyNew ("user/rem1", KEY_DIR, KEY_END), k[5] = keyNew ("user/dir1", KEY_DIR, KEY_END),
-		k[6] = keyNew ("user/dir1/key1", KEY_VALUE, "value1", KEY_END),
-		k[7] = keyNew ("user/dir1/key2", KEY_VALUE, "value2", KEY_END),
-		k[8] = keyNew ("user/dir1/key3", KEY_VALUE, "value3", KEY_END),
-		k[9] = keyNew ("user/dir1/key4", KEY_VALUE, "value4", KEY_END),
-		k[10] = keyNew ("user/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		k[11] = keyNew ("user/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END),
-		k[12] = keyNew ("user:max/dir2", KEY_DIR, KEY_END), k[13] = keyNew ("user:max/dir2/key1", KEY_VALUE, "value1", KEY_END),
-		k[14] = keyNew ("user/dir2/key2", KEY_VALUE, "value2", KEY_END),
-		k[15] = keyNew ("user/dir2/key3", KEY_VALUE, "value3", KEY_END),
-		k[16] = keyNew ("user:hugo/dir2/key4", KEY_VALUE, "value4", KEY_END), k[17] = keyNew ("user/dir3", KEY_DIR, KEY_END),
-		k[18] = keyNew ("user/dir3/key1", KEY_VALUE, "value1", KEY_END),
-		k[19] = keyNew ("user:sb/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		k[20] = keyNew ("user/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END),
-		k[21] = keyNew ("user/dir4", KEY_DIR, KEY_END), k[22] = keyNew ("user/dir5", KEY_DIR, KEY_END), KS_END);
+	KeySet * ks = ksNew (30,
+			     // clang-format off
+		       /* keys that are searched */
+		       k[0] = keyNew ("user:/rem3", KEY_END),
+		       k[1] = keyNew ("user:/rem2", KEY_END),
+		       k[2] = keyNew ("user:/rem1/key2", KEY_END),
+		       k[3] = keyNew ("user:/rem1/key1", KEY_END),
+		       k[4] = keyNew ("user:/rem1", KEY_END),
+		       k[5] = keyNew ("user:/dir1", KEY_END),
+		       k[6] = keyNew ("user:/dir1/key1", KEY_VALUE, "value1", KEY_END),
+		       k[7] = keyNew ("user:/dir1/key2", KEY_VALUE, "value2", KEY_END),
+		       k[8] = keyNew ("user:/dir1/key3", KEY_VALUE, "value3", KEY_END),
+		       k[9] = keyNew ("user:/dir1/key4", KEY_VALUE, "value4", KEY_END),
+		       k[10] = keyNew ("user:/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
+		       k[11] = keyNew ("user:/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END),
+		       k[12] = keyNew ("user:/dir2", KEY_END),
+		       k[13] = keyNew ("user:/dir2/key1", KEY_VALUE, "value1", KEY_END),
+		       k[14] = keyNew ("user:/dir2/key2", KEY_VALUE, "value2", KEY_END),
+		       k[15] = keyNew ("user:/dir2/key3", KEY_VALUE, "value3", KEY_END),
+		       k[16] = keyNew ("user:/dir2/key4", KEY_VALUE, "value4", KEY_END),
+		       k[17] = keyNew ("user:/dir3", KEY_END),
+		       k[18] = keyNew ("user:/dir3/key1", KEY_VALUE, "value1", KEY_END),
+		       k[19] = keyNew ("user:/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
+		       k[20] = keyNew ("user:/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END),
+		       k[21] = keyNew ("user:/dir4", KEY_END),
+		       k[22] = keyNew ("user:/dir5", KEY_END),
+			     // clang-format on
+			     KS_END);
 
-	KeySet * lookupKeys =
-		ksNew (30,
-		       /* lookup keys, keyset only for ksDel */
-		       k[23] = keyNew ("user/DiR1", KEY_END), k[24] = keyNew ("user/DiR1/KEY1", KEY_END),
-		       k[25] = keyNew ("user:wrongowner/DiR1/KEY1", KEY_END), k[26] = keyNew ("user:nop/DiR1/KEY1", KEY_END),
-		       k[27] = keyNew ("user:wrongowner/dir1/key1", KEY_END), k[28] = keyNew ("user:nop/dir1/key1", KEY_END),
-		       k[29] = keyNew ("user:wrongowner/dir2/key1", KEY_END), k[30] = keyNew ("user/dir2/key1", KEY_END),
-		       k[31] = keyNew ("user:max/dir2/key1", KEY_END), k[32] = keyNew ("/dir1/key1", KEY_CASCADING_NAME, KEY_END),
-		       k[33] = keyNew ("/dirX/keyY", KEY_CASCADING_NAME, KEY_END), KS_END);
+	KeySet * lookupKeys = ksNew (30,
+				     /* lookup keys, keyset only for ksDel */
+				     // clang-format off
+				     k[23] = keyNew ("user:/DiR1", KEY_END),
+				     k[24] = keyNew ("user:/DiR1/KEY1", KEY_END),
+				     k[25] = keyNew ("user:/DiR1/KEY1", KEY_END),
+				     k[26] = keyNew ("user:/DiR1/KEY1", KEY_END),
+				     k[27] = keyNew ("user:/dir1/key1", KEY_END),
+				     k[28] = keyNew ("user:/dir1/key1", KEY_END),
+				     k[29] = keyNew ("user:/dir2/key1", KEY_END),
+				     k[30] = keyNew ("user:/dir2/key1", KEY_END),
+				     k[31] = keyNew ("user:/dir2/key1", KEY_END),
+				     k[32] = keyNew ("/dir1/key1", KEY_END),
+				     k[33] = keyNew ("/dirX/keyY", KEY_END),
+				     // clang-format on
+				     KS_END);
 	succeed_if (keyGetNameSize (k[32]) == 11, "initial size of name wrong");
 	succeed_if (keyGetNameSize (k[33]) == 11, "initial size of name wrong");
 
@@ -1032,9 +1047,11 @@ static void test_ksLookup (void)
 	{
 		ksUnsort (ks);
 		for (j = 0; j < 23; j++)
+		{
 			succeed_if (ksLookup (ks, k[j], 0) == k[j], "did not find key");
+		}
 		succeed_if (ksLookup (ks, k[23], 0) == 0, "found wrong key");
-		succeed_if (ksLookup (ks, k[24], 0) == 0, "found wrong key");
+		succeed_if (ksLookup (ks, k[26], 0) == 0, "found wrong key");
 		succeed_if (ksLookup (ks, k[28], 0) == k[6], "did not find key");
 		succeed_if (ksLookup (ks, k[32], 0) == k[6], "did not find key");
 		succeed_if (ksLookup (ks, k[33], 0) == 0, "found wrong key");
@@ -1058,43 +1075,41 @@ static void test_ksLookupByName (void)
 	int i, j;
 	char * name[1000];
 	Key * k[1000];
-	KeySet * ks =
-		ksNew (30, k[0] = keyNew (name[0] = "user/rem3", KEY_DIR, KEY_END), k[1] = keyNew (name[1] = "user/rem2", KEY_DIR, KEY_END),
-		       k[2] = keyNew (name[2] = "user/rem1/key2", KEY_END), k[3] = keyNew (name[3] = "user/rem1/key1", KEY_END),
-		       k[4] = keyNew (name[4] = "user/rem1", KEY_DIR, KEY_END), k[5] = keyNew (name[5] = "user/dir1", KEY_DIR, KEY_END),
-		       k[6] = keyNew (name[6] = "user/dir1/key1", KEY_VALUE, "value1", KEY_END),
-		       k[7] = keyNew (name[7] = "user/dir1/key2", KEY_VALUE, "value2", KEY_END),
-		       k[8] = keyNew (name[8] = "user/dir1/key3", KEY_VALUE, "value3", KEY_END),
-		       k[9] = keyNew (name[9] = "user/dir1/key4", KEY_VALUE, "value4", KEY_END),
-		       k[10] = keyNew (name[10] = "user/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		       k[11] = keyNew (name[11] = "user/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END),
-		       k[12] = keyNew (name[12] = "user:max/dir2", KEY_DIR, KEY_END),
-		       k[13] = keyNew (name[13] = "user:max/dir2/key1", KEY_VALUE, "value1", KEY_END),
-		       k[14] = keyNew (name[14] = "user/dir2/key2", KEY_VALUE, "value2", KEY_END),
-		       k[15] = keyNew (name[15] = "user/dir2/key3", KEY_VALUE, "value3", KEY_END),
-		       k[16] = keyNew (name[16] = "user:hugo/dir2/key4", KEY_VALUE, "value4", KEY_END),
-		       k[17] = keyNew (name[17] = "user/dir3", KEY_DIR, KEY_END),
-		       k[18] = keyNew (name[18] = "user/dir3/key1", KEY_VALUE, "value1", KEY_END),
-		       k[19] = keyNew (name[19] = "user:sb/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		       k[20] = keyNew (name[20] = "user/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END),
-		       k[21] = keyNew (name[21] = "user/dir4", KEY_DIR, KEY_END), k[22] = keyNew (name[22] = "user/dir5", KEY_DIR, KEY_END),
-		       KS_END);
+	KeySet * ks = ksNew (30, k[0] = keyNew (name[0] = "user:/rem3", KEY_END), k[1] = keyNew (name[1] = "user:/rem2", KEY_END),
+			     k[2] = keyNew (name[2] = "user:/rem1/key2", KEY_END), k[3] = keyNew (name[3] = "user:/rem1/key1", KEY_END),
+			     k[4] = keyNew (name[4] = "user:/rem1", KEY_END), k[5] = keyNew (name[5] = "user:/dir1", KEY_END),
+			     k[6] = keyNew (name[6] = "user:/dir1/key1", KEY_VALUE, "value1", KEY_END),
+			     k[7] = keyNew (name[7] = "user:/dir1/key2", KEY_VALUE, "value2", KEY_END),
+			     k[8] = keyNew (name[8] = "user:/dir1/key3", KEY_VALUE, "value3", KEY_END),
+			     k[9] = keyNew (name[9] = "user:/dir1/key4", KEY_VALUE, "value4", KEY_END),
+			     k[10] = keyNew (name[10] = "user:/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
+			     k[11] = keyNew (name[11] = "user:/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END),
+			     k[12] = keyNew (name[12] = "user:/dir2", KEY_END),
+			     k[13] = keyNew (name[13] = "user:/dir2/key1", KEY_VALUE, "value1", KEY_END),
+			     k[14] = keyNew (name[14] = "user:/dir2/key2", KEY_VALUE, "value2", KEY_END),
+			     k[15] = keyNew (name[15] = "user:/dir2/key3", KEY_VALUE, "value3", KEY_END),
+			     k[16] = keyNew (name[16] = "user:/dir2/key4", KEY_VALUE, "value4", KEY_END),
+			     k[17] = keyNew (name[17] = "user:/dir3", KEY_END),
+			     k[18] = keyNew (name[18] = "user:/dir3/key1", KEY_VALUE, "value1", KEY_END),
+			     k[19] = keyNew (name[19] = "user:/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
+			     k[20] = keyNew (name[20] = "user:/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END),
+			     k[21] = keyNew (name[21] = "user:/dir4", KEY_END), k[22] = keyNew (name[22] = "user:/dir5", KEY_END), KS_END);
 
-	name[23] = "user/DiR1";
-	name[24] = "user/DiR1/KEY1";
-	name[25] = "user:wrongowner/DiR1/KEY1";
-	name[26] = "user:nop/DiR1/KEY1";
-	name[27] = "user:wrongowner/dir1/key1";
-	name[28] = "user:nop/dir1/key1";
-	name[29] = "user:wrongowner/dir2/key1";
-	name[30] = "user/dir2/key1";
-	name[31] = "user:max/dir2/key1";
-	name[32] = "user//dir1";
-	name[33] = "user///dir1";
-	name[34] = "user///./dir1";
-	name[35] = "user///./../dir1";
-	name[36] = "user///./../dir1/";
-	name[37] = "user///./../dir1//";
+	name[23] = "user:/DiR1";
+	name[24] = "user:/DiR1/KEY1";
+	name[25] = "user:/DiR1/KEY1";
+	name[26] = "user:/DiR1/KEY1";
+	name[27] = "user:/dir1/key1";
+	name[28] = "user:/dir1/key1";
+	name[29] = "user:/dir2/key1";
+	name[30] = "user:/dir2/key1";
+	name[31] = "user:/dir2/key1";
+	name[32] = "user://dir1";
+	name[33] = "user:///dir1";
+	name[34] = "user:///./dir1";
+	name[35] = "user:///./../dir1";
+	name[36] = "user:///./../dir1/";
+	name[37] = "user:///./../dir1//";
 
 	srand (23);
 
@@ -1131,49 +1146,49 @@ static void test_ksLookupName (void)
 
 	printf ("Test lookup functions\n");
 
-	ksAppendKey (ks, keyNew ("user/domain/key", KEY_VALUE, "domainvalue", KEY_OWNER, "markus", KEY_END));
-	ksAppendKey (ks, keyNew ("user/single/key", KEY_VALUE, "singlevalue", KEY_END));
-	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/syskey", KEY_VALUE, "syskey", KEY_END));
-	ksAppendKey (ks, keyNew ("system/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
-	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, strlen ("binary\1\2data"), KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, strlen ("sys\1bin\2"), KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/domain/key", KEY_VALUE, "domainvalue", KEY_OWNER, "markus", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/syskey", KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/bin", KEY_BINARY, KEY_SIZE, strlen ("binary\1\2data"), KEY_VALUE, "binary\1\2data", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/bin", KEY_BINARY, KEY_SIZE, strlen ("sys\1bin\2"), KEY_VALUE, "sys\1bin\2", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
 	// a positive test case
-	found = ksLookupByName (ks, "user/named/key", 0);
+	found = ksLookupByName (ks, "user:/named/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 
 	succeed_if (found != 0, "did not find correct name");
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
-	succeed_if_same_string (keyName (found), "user/named/key");
+	succeed_if_same_string (keyName (found), "user:/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
 
-	ksAppendKey (ks, found = keyNew ("user/single/key", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, found = keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
 	succeed_if (ksCurrent (ks) == found, "current update after append");
-	succeed_if_same_string (keyName (found), "user/single/key");
+	succeed_if_same_string (keyName (found), "user:/single/key");
 	succeed_if_same_string (keyValue (found), "singlevalue");
 
 	// here you can't find the keys
 	succeed_if (ksLookupByName (ks, "named/key", 0) == 0, "not valid keyname");
 	succeed_if (ksLookupByName (ks, "u/named/key", 0) == 0, "not valid keyname");
 	succeed_if (ksLookupByName (ks, "usea/named/key", 0) == 0, "not valid keyname");
-	succeed_if (ksLookupByName (ks, " user/named/key", 0) == 0, "found key with bad prefix");
+	succeed_if (ksLookupByName (ks, " user:/named/key", 0) == 0, "found key with bad prefix");
 
-	succeed_if (ksLookupByName (ks, "user/named/Key", 0) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "User/Named/key", 0) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "User/named/key", 0) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "user/NAMED/key", 0) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "USER/NAMED/KEY", 0) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "user:/named/Key", 0) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "User:/Named/key", 0) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "User:/named/key", 0) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "user:/NAMED/key", 0) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "USER:/NAMED/KEY", 0) == 0, "found wrong case key");
 
-	succeed_if (ksLookupByName (ks, "user/named/keys", 0) == 0, "wrong postfix");
-	succeed_if (ksLookupByName (ks, "user/named/key_", 0) == 0, "wrong postfix");
+	succeed_if (ksLookupByName (ks, "user:/named/keys", 0) == 0, "wrong postfix");
+	succeed_if (ksLookupByName (ks, "user:/named/key_", 0) == 0, "wrong postfix");
 
-	succeed_if (ksLookupByName (ks, "user/named/k/ey", 0) == 0, "seperation that should be");
-	succeed_if (ksLookupByName (ks, "user/na/med/key", 0) == 0, "seperation that should be");
+	succeed_if (ksLookupByName (ks, "user:/named/k/ey", 0) == 0, "seperation that should be");
+	succeed_if (ksLookupByName (ks, "user:/na/med/key", 0) == 0, "seperation that should be");
 
-	succeed_if (ksLookupByName (ks, "system/domain/key", 0) == 0, "found key in wrong domain");
+	succeed_if (ksLookupByName (ks, "system:/domain/key", 0) == 0, "found key in wrong domain");
 
 	// broken names
 	succeed_if (ksLookupByName (ks, "sys", 0) == 0, "found key with broken entry");
@@ -1186,34 +1201,34 @@ static void test_ksLookupName (void)
 	succeed_if (ksLookupByName (ks, "\\/", 0) == 0, "found key with broken entry");
 
 	// now try to find them, and compare value
-	found = ksLookupByName (ks, "user/domain/key", 0);
+	found = ksLookupByName (ks, "user:/domain/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	exit_if_fail (found != 0, "did not find correct name");
-	succeed_if_same_string (keyName (found), "user/domain/key");
+	succeed_if_same_string (keyName (found), "user:/domain/key");
 	succeed_if_same_string (keyValue (found), "domainvalue");
 
-	found = ksLookupByName (ks, "user/single/key", 0);
+	found = ksLookupByName (ks, "user:/single/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
-	succeed_if_same_string (keyName (found), "user/single/key");
+	succeed_if_same_string (keyName (found), "user:/single/key");
 	succeed_if_same_string (keyValue (found), "singlevalue");
 
-	found = ksLookupByName (ks, "system/named/key", 0);
+	found = ksLookupByName (ks, "system:/named/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
-	succeed_if_same_string (keyName (found), "system/named/key");
+	succeed_if_same_string (keyName (found), "system:/named/key");
 	succeed_if (strncmp (keyValue (found), "syskey", strlen ("syskey")) == 0, "not correct value in found key");
 
-	found = ksLookupByName (ks, "user/named/bin", 0);
+	found = ksLookupByName (ks, "user:/named/bin", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
-	succeed_if_same_string (keyName (found), "user/named/bin");
+	succeed_if_same_string (keyName (found), "user:/named/bin");
 	succeed_if (strncmp (keyValue (found), "binary\1\2data", strlen ("binary\1\2data")) == 0, "not correct value in found key");
 
-	found = ksLookupByName (ks, "user/named/key", 0);
+	found = ksLookupByName (ks, "user:/named/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "could not find same key again");
-	succeed_if_same_string (keyName (found), "user/named/key");
+	succeed_if_same_string (keyName (found), "user:/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
 
 	ksDel (ks);
@@ -1231,22 +1246,22 @@ static void test_ksLookupNameCascading (void)
 	succeed_if (ksLookupByName (ks, "////named/", 0) == 0, "found in empty keyset");
 	succeed_if (ksLookupByName (ks, "//Person/Visits", 0) == 0, "found in empty keyset");
 
-	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/key", KEY_VALUE, "wrong value", KEY_END));
-	ksAppendKey (ks, keyNew ("user/single/key", KEY_VALUE, "singlevalue", KEY_END));
-	ksAppendKey (ks, keyNew ("system/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
-	ksAppendKey (ks, keyNew ("user/named/otherkey", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/key", KEY_VALUE, "wrong value", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/otherkey", KEY_VALUE, "singlevalue", KEY_END));
 
 	found = ksLookupByName (ks, "/named/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "cascading search failed");
-	succeed_if_same_string (keyName (found), "user/named/key");
+	succeed_if_same_string (keyName (found), "user:/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
 
 	found = ksLookupByName (ks, "/sysonly/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if_same_string (keyName (found), "system/sysonly/key");
+	succeed_if_same_string (keyName (found), "system:/sysonly/key");
 	succeed_if_same_string (keyValue (found), "sysonlykey");
 
 	succeed_if (ksLookupByName (ks, "/named/", 0) == 0, "found part of key with cascading");
@@ -1258,25 +1273,25 @@ static void test_ksLookupNameCascading (void)
 	found = ksLookupByName (ks, "///named/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "cascading search failed");
-	succeed_if_same_string (keyName (found), "user/named/key");
+	succeed_if_same_string (keyName (found), "user:/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
 
 	found = ksLookupByName (ks, "//sysonly/key", 0);
 	succeed_if (ksCurrent (ks) == found, "current not set correctly");
 	succeed_if (found != 0, "could not find same key again, nocase used");
-	succeed_if_same_string (keyName (found), "system/sysonly/key");
+	succeed_if_same_string (keyName (found), "system:/sysonly/key");
 	succeed_if_same_string (keyValue (found), "sysonlykey");
 
 	succeed_if (ksLookupByName (ks, "//Person/Visits", 0) == 0, "found part of key with cascading");
 	succeed_if (ksLookupByName (ks, "////named/", 0) == 0, "found part of key with cascading");
 	succeed_if (ksLookupByName (ks, "/////named/keyd", 0) == 0, "found part of key with cascading, bad postfix");
 
-	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
 	found = ksLookupByName (ks, "//named/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 4, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "cascading search failed");
-	succeed_if_same_string (keyName (found), "user/named/key");
+	succeed_if_same_string (keyName (found), "user:/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
@@ -1284,8 +1299,8 @@ static void test_ksLookupNameCascading (void)
 
 
 	ks = ksNew (10, KS_END);
-	ksAppendKey (ks, keyNew ("system/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
-	ksAppendKey (ks, keyNew ("user/test/myapp/key", KEY_VALUE, "correct", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
 
 	succeed_if_same_string (keyString (ksLookupByName (ks, "/test/myapp/key", 0)), "correct");
 	Key * s = 0;
@@ -1299,9 +1314,9 @@ static void test_ksLookupNameCascading (void)
 	ks = ksNew (10, KS_END);
 	Key * k1;
 	Key * k2;
-	ksAppendKey (ks, k1 = keyNew ("system/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
-	ksAppendKey (ks, k2 = keyNew ("user/test/myapp/key", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (ks, keyDup ((s = keyNew ("/test/myapp/key", KEY_CASCADING_NAME, KEY_END))));
+	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
+	ksAppendKey (ks, keyDup ((s = keyNew ("/test/myapp/key", KEY_END))));
 	succeed_if (ksGetSize (ks) == 3, "initial size of keyset");
 	succeed_if (keyGetNameSize (s) == 16, "initial name size");
 
@@ -1329,8 +1344,8 @@ static void test_ksLookupNameCascading (void)
 
 
 	ks = ksNew (10, KS_END);
-	ksAppendKey (ks, k1 = keyNew ("system/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
-	ksAppendKey (ks, k2 = keyNew ("user/test/myapp/key", KEY_VALUE, "correct", KEY_END));
+	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
 
 	succeed_if_same_string (keyString (ksLookup (ks, k2, KDB_O_POP)), "correct");
 	succeed_if_same_string (keyString (ksLookup (ks, k1, KDB_O_POP)), "wrong");
@@ -1341,8 +1356,8 @@ static void test_ksLookupNameCascading (void)
 
 
 	ks = ksNew (10, KS_END);
-	ksAppendKey (ks, k1 = keyNew ("system/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
-	ksAppendKey (ks, k2 = keyNew ("user/test/myapp/key", KEY_VALUE, "correct", KEY_END));
+	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
+	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
 
 	succeed_if_same_string (keyString (ksLookup (ks, k1, KDB_O_POP)), "wrong");
 	succeed_if_same_string (keyString (ksLookup (ks, k2, KDB_O_POP)), "correct");
@@ -1357,19 +1372,19 @@ static void test_ksExample (void)
 	KeySet * ks = ksNew (0, KS_END);
 	Key * key;
 
-	ksAppendKey (ks, keyNew ("user/test", KEY_END)); // an empty key
+	ksAppendKey (ks, keyNew ("user:/test", KEY_END)); // an empty key
 
-	ksAppendKey (ks, keyNew ("user/sw", // the name of the key
-				 KEY_END)); // no more args
+	ksAppendKey (ks, keyNew ("user:/sw", // the name of the key
+				 KEY_END));  // no more args
 
-	ksAppendKey (ks, keyNew ("user/tmp/ex1", KEY_VALUE, "some data", // set a string value
-				 KEY_END));				 // end of args
+	ksAppendKey (ks, keyNew ("user:/tmp/ex1", KEY_VALUE, "some data", // set a string value
+				 KEY_END));				  // end of args
 
-	ksAppendKey (ks, keyNew ("user/tmp/ex2", KEY_VALUE, "some data", // with a simple value
-				 KEY_MODE, 0777,			 // permissions
-				 KEY_END));				 // end of args
+	ksAppendKey (ks, keyNew ("user:/tmp/ex2", KEY_VALUE, "some data", // with a simple value
+				 KEY_MODE, 0777,			  // permissions
+				 KEY_END));				  // end of args
 
-	ksAppendKey (ks, keyNew ("user/tmp/ex4",
+	ksAppendKey (ks, keyNew ("user:/tmp/ex4",
 				 KEY_BINARY,					       // key type
 				 KEY_SIZE, 7,					       // assume binary length 7
 				 KEY_VALUE, "some data",			       // value that will be truncated in 7 bytes
@@ -1377,7 +1392,7 @@ static void test_ksExample (void)
 				 KEY_UID, 0,					       // root uid
 				 KEY_END));					       // end of args
 
-	ksAppendKey (ks, keyNew ("user/tmp/ex5",
+	ksAppendKey (ks, keyNew ("user:/tmp/ex5",
 				 KEY_BINARY,					       // binary value
 				 KEY_SIZE, 7, KEY_VALUE, "some data",		       // value that will be truncated in 7 bytes
 				 KEY_COMMENT, "value is truncated", KEY_OWNER, "root", // owner (not uid) is root
@@ -1388,27 +1403,27 @@ static void test_ksExample (void)
 
 	key = ksNext (ks);
 	succeed_if (key != NULL, "no next key");
-	succeed_if_same_string (keyName (key), "user/sw");
+	succeed_if_same_string (keyName (key), "user:/sw");
 
 	key = ksNext (ks);
 	succeed_if (key != NULL, "no next key");
-	succeed_if_same_string (keyName (key), "user/test");
+	succeed_if_same_string (keyName (key), "user:/test");
 
 	key = ksNext (ks);
 	succeed_if (key != NULL, "no next key");
-	succeed_if_same_string (keyName (key), "user/tmp/ex1");
+	succeed_if_same_string (keyName (key), "user:/tmp/ex1");
 
 	key = ksNext (ks);
 	succeed_if (key != NULL, "no next key");
-	succeed_if_same_string (keyName (key), "user/tmp/ex2");
+	succeed_if_same_string (keyName (key), "user:/tmp/ex2");
 
 	key = ksNext (ks);
 	succeed_if (key != NULL, "no next key");
-	succeed_if_same_string (keyName (key), "user/tmp/ex4");
+	succeed_if_same_string (keyName (key), "user:/tmp/ex4");
 
 	key = ksNext (ks);
 	succeed_if (key != NULL, "no next key");
-	succeed_if_same_string (keyName (key), "user/tmp/ex5");
+	succeed_if_same_string (keyName (key), "user:/tmp/ex5");
 
 	ksDel (ks);
 }
@@ -1426,8 +1441,8 @@ static void test_ksAppend (void)
 			KeySet * testReturned =
 #include "data_others.c"
 				Key * parentKey[2];
-	parentKey[0] = keyNew ("user/test/keyset", KEY_END);
-	parentKey[1] = keyNew ("user/test/keyset/dir1", KEY_END);
+	parentKey[0] = keyNew ("user:/test/keyset", KEY_END);
+	parentKey[1] = keyNew ("user:/test/keyset/dir1", KEY_END);
 
 	/* A real world example out in kdb.c */
 	for (i = 0; i < 2; i++)
@@ -1486,7 +1501,7 @@ static void test_ksAppend (void)
 	ksDel (returned);
 
 	KeySet * ks = ksNew (0, KS_END);
-	ksAppendKey (ks, keyNew ("user/abc", KEY_META, "xyz", "egh", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/abc", KEY_META, "xyz", "egh", KEY_END));
 
 	KeySet * other = ksNew (0, KS_END);
 	ksAppend (other, ks);
@@ -1583,7 +1598,7 @@ int add_string (Key * check)
 // int add_comment (Key *check) { return keySetComment (check, "comment"); }
 int has_a (Key * check)
 {
-	return keyName (check)[5] == 'a';
+	return keyName (check)[6] == 'a';
 }
 int below_a (Key * check)
 {
@@ -1613,10 +1628,10 @@ static void test_ksFunctional (void)
 	Key * found;
 	Key * current;
 	KeySet * out;
-	KeySet * ks = ksNew (64, keyNew ("user/a/1", KEY_END), keyNew ("user/a/2", KEY_END), keyNew ("user/a/b/1", KEY_END),
-			     keyNew ("user/a/b/2", KEY_END), keyNew ("user/ab/2", KEY_END), keyNew ("user/b/1", KEY_END),
-			     keyNew ("user/b/2", KEY_END), KS_END);
-	global_a = keyNew ("user/a", KEY_END);
+	KeySet * ks = ksNew (64, keyNew ("user:/a/1", KEY_END), keyNew ("user:/a/2", KEY_END), keyNew ("user:/a/b/1", KEY_END),
+			     keyNew ("user:/a/b/2", KEY_END), keyNew ("user:/ab/2", KEY_END), keyNew ("user:/b/1", KEY_END),
+			     keyNew ("user:/b/2", KEY_END), KS_END);
+	global_a = keyNew ("user:/a", KEY_END);
 
 	printf ("Test functional style\n");
 
@@ -1634,27 +1649,27 @@ static void test_ksFunctional (void)
 	succeed_if (ksGetSize (ks) == 7, "initial size wrong");
 	succeed_if (ksGetSize (out) == 0, "initial size wrong");
 	ksFilter (out, ks, has_a);
-	succeed_if (ksGetSize (out) == 5, "has_a cut more than the user/b");
+	succeed_if (ksGetSize (out) == 5, "has_a cut more than the user:/b");
 	ksDel (out);
 
 	out = ksNew (0, KS_END);
 	ksFilter (out, ks, below_a);
-	succeed_if (ksGetSize (out) == 4, "below_a cut more than the user/ab/2");
+	succeed_if (ksGetSize (out) == 4, "below_a cut more than the user:/ab/2");
 	ksDel (out);
 
 	out = ksNew (0, KS_END);
 	ksFilter (out, ks, direct_below_a);
-	succeed_if (ksGetSize (out) == 2, "direct_below_a cut more than the user/a/b/*");
+	succeed_if (ksGetSize (out) == 2, "direct_below_a cut more than the user:/a/b/*");
 	ksDel (out);
 
 	ksDel (ks);
 	keyDel (global_a);
 	global_a = 0;
 
-	KeySet * values = ksNew (64, keyNew ("user/a", KEY_VALUE, "40", KEY_END), keyNew ("user/b", KEY_VALUE, "20", KEY_END),
-				 keyNew ("user/c", KEY_VALUE, "80", KEY_END), keyNew ("user/d", KEY_VALUE, "24", KEY_END),
-				 keyNew ("user/e", KEY_VALUE, "32", KEY_END), keyNew ("user/f", KEY_VALUE, "12", KEY_END),
-				 keyNew ("user/g", KEY_VALUE, "43", KEY_END), KS_END);
+	KeySet * values = ksNew (64, keyNew ("user:/a", KEY_VALUE, "40", KEY_END), keyNew ("user:/b", KEY_VALUE, "20", KEY_END),
+				 keyNew ("user:/c", KEY_VALUE, "80", KEY_END), keyNew ("user:/d", KEY_VALUE, "24", KEY_END),
+				 keyNew ("user:/e", KEY_VALUE, "32", KEY_END), keyNew ("user:/f", KEY_VALUE, "12", KEY_END),
+				 keyNew ("user:/g", KEY_VALUE, "43", KEY_END), KS_END);
 
 	succeed_if (ksForEach (values, sum_helper) == 251, "could not sum up");
 
@@ -1665,7 +1680,7 @@ static void test_ksFunctional (void)
 
 	succeed_if (ksForEach (values, find_80) == -1, "did not find 80");
 	found = ksCurrent (values);
-	succeed_if (ksLookupByName (values, "user/c", 0) == found, "did not find 80");
+	succeed_if (ksLookupByName (values, "user:/c", 0) == found, "did not find 80");
 	/*succeed_if (ksLookupByString (values, "80", 0) == found, "lookup by value did not find 80");*/
 	ksDel (values);
 	ksDel (values_below_30);
@@ -1680,16 +1695,17 @@ static void test_ksLookupPop (void)
 
 	Key * found;
 	Key *a, *b, *c;
-	KeySet * small = ksNew (5, a = keyNew ("user/a", KEY_END), b = keyNew ("user/b", KEY_END), c = keyNew ("user/c", KEY_END), KS_END);
+	KeySet * small =
+		ksNew (5, a = keyNew ("user:/a", KEY_END), b = keyNew ("user:/b", KEY_END), c = keyNew ("user:/c", KEY_END), KS_END);
 
 	ksRewind (small);
 	ksNext (small);
 	succeed_if (ksCurrent (small) == a, "current not set correctly");
 
 	succeed_if (ksGetSize (small) == 3, "could not append all keys");
-	found = ksLookupByName (small, "user/a", KDB_O_POP);
+	found = ksLookupByName (small, "user:/a", KDB_O_POP);
 	succeed_if (found == a, "not correct key");
-	succeed_if_same_string (keyName (found), "user/a");
+	succeed_if_same_string (keyName (found), "user:/a");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
@@ -1698,26 +1714,26 @@ static void test_ksLookupPop (void)
 	succeed_if (ksCurrent (small) == c, "current not set correctly");
 
 	succeed_if (ksGetSize (small) == 2, "could not append all keys");
-	found = ksLookupByName (small, "user/b", KDB_O_POP);
+	found = ksLookupByName (small, "user:/b", KDB_O_POP);
 	succeed_if (found == b, "not correct key");
-	succeed_if_same_string (keyName (found), "user/b");
+	succeed_if_same_string (keyName (found), "user:/b");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
 	succeed_if (ksGetSize (small) == 1, "could not append all keys");
-	found = ksLookupByName (small, "user/b", KDB_O_POP);
+	found = ksLookupByName (small, "user:/b", KDB_O_POP);
 	succeed_if (found == 0, "found something, but should not");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 
 	succeed_if (ksGetSize (small) == 1, "could not append all keys");
-	found = ksLookupByName (small, "user/c", KDB_O_POP);
+	found = ksLookupByName (small, "user:/c", KDB_O_POP);
 	succeed_if (found == c, "not correct key");
-	succeed_if_same_string (keyName (found), "user/c");
+	succeed_if_same_string (keyName (found), "user:/c");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
 	succeed_if (ksGetSize (small) == 0, "could not append all keys");
-	found = ksLookupByName (small, "user/d", KDB_O_POP);
+	found = ksLookupByName (small, "user:/d", KDB_O_POP);
 	succeed_if (found == 0, "found something, but should not");
 	succeed_if (ksCurrent (small) == 0, "current not set correctly");
 
@@ -1725,109 +1741,109 @@ static void test_ksLookupPop (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	ksAppendKey (ks, keyNew ("user/domain/key", KEY_VALUE, "domainvalue", KEY_OWNER, "markus", KEY_END));
-	ksAppendKey (ks, keyNew ("user/single/key", KEY_VALUE, "singlevalue", KEY_END));
-	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/skey", KEY_VALUE, "syskey", KEY_END));
-	ksAppendKey (ks, keyNew ("system/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
-	ksAppendKey (ks, keyNew ("user/named/bin", KEY_BINARY, KEY_SIZE, strlen ("binary\1\2data"), KEY_VALUE, "binary\1\2data", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/bin", KEY_BINARY, KEY_SIZE, strlen ("sys\1bin\2"), KEY_VALUE, "sys\1bin\2", KEY_END));
-	ksAppendKey (ks, keyNew ("system/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/domain/key", KEY_VALUE, "domainvalue", KEY_OWNER, "markus", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/skey", KEY_VALUE, "syskey", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/sysonly/key", KEY_VALUE, "sysonlykey", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/bin", KEY_BINARY, KEY_SIZE, strlen ("binary\1\2data"), KEY_VALUE, "binary\1\2data", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/bin", KEY_BINARY, KEY_SIZE, strlen ("sys\1bin\2"), KEY_VALUE, "sys\1bin\2", KEY_END));
+	ksAppendKey (ks, keyNew ("system:/named/key", KEY_BINARY, KEY_SIZE, strlen ("syskey"), KEY_VALUE, "syskey", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "could not append all keys");
 
 	// a positive test case
-	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/named/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 7, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if_same_string (keyName (found), "user/named/key");
+	succeed_if_same_string (keyName (found), "user:/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "singlevalue", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "did not append key");
 
 	// here you can't find the keys
 	succeed_if (ksLookupByName (ks, "named/key", KDB_O_POP) == 0, "not valid keyname");
 	succeed_if (ksLookupByName (ks, "u/named/key", KDB_O_POP) == 0, "not valid keyname");
 	succeed_if (ksLookupByName (ks, "usea/named/key", KDB_O_POP) == 0, "not valid keyname");
-	succeed_if (ksLookupByName (ks, " user/named/key", KDB_O_POP) == 0, "found key with bad prefix");
+	succeed_if (ksLookupByName (ks, " user:/named/key", KDB_O_POP) == 0, "found key with bad prefix");
 
-	succeed_if (ksLookupByName (ks, "user/named/Key", KDB_O_POP) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "User/Named/key", KDB_O_POP) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "User/named/key", KDB_O_POP) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "user/NAMED/key", KDB_O_POP) == 0, "found wrong case key");
-	succeed_if (ksLookupByName (ks, "USER/NAMED/KEY", KDB_O_POP) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "user:/named/Key", KDB_O_POP) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "User:/Named/key", KDB_O_POP) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "User:/named/key", KDB_O_POP) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "user:/NAMED/key", KDB_O_POP) == 0, "found wrong case key");
+	succeed_if (ksLookupByName (ks, "USER:/NAMED/KEY", KDB_O_POP) == 0, "found wrong case key");
 
-	succeed_if (ksLookupByName (ks, "user/named/keys", KDB_O_POP) == 0, "wrong postfix");
-	succeed_if (ksLookupByName (ks, "user/named/key_", KDB_O_POP) == 0, "wrong postfix");
+	succeed_if (ksLookupByName (ks, "user:/named/keys", KDB_O_POP) == 0, "wrong postfix");
+	succeed_if (ksLookupByName (ks, "user:/named/key_", KDB_O_POP) == 0, "wrong postfix");
 
-	succeed_if (ksLookupByName (ks, "user/named/k/ey", KDB_O_POP) == 0, "seperation that should be");
-	succeed_if (ksLookupByName (ks, "user/na/med/key", KDB_O_POP) == 0, "seperation that should be");
+	succeed_if (ksLookupByName (ks, "user:/named/k/ey", KDB_O_POP) == 0, "seperation that should be");
+	succeed_if (ksLookupByName (ks, "user:/na/med/key", KDB_O_POP) == 0, "seperation that should be");
 
 	// a positive test case
-	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/named/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 7, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
-	succeed_if_same_string (keyName (found), "user/named/key");
+	succeed_if_same_string (keyName (found), "user:/named/key");
 	succeed_if_same_string (keyValue (found), "singlevalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	ksAppendKey (ks, keyNew ("user/named/otherkey", KEY_VALUE, "singlevalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/otherkey", KEY_VALUE, "singlevalue", KEY_END));
 	succeed_if (ksGetSize (ks) == 8, "did not append key");
 
-	succeed_if (ksLookupByName (ks, "system/domain/key", KDB_O_POP) == 0, "found key in wrong domain");
+	succeed_if (ksLookupByName (ks, "system:/domain/key", KDB_O_POP) == 0, "found key in wrong domain");
 
 	// now try to find them, and compare value
-	found = ksLookupByName (ks, "user/domain/key", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/domain/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 7, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
-	succeed_if_same_string (keyName (found), "user/domain/key");
+	succeed_if_same_string (keyName (found), "user:/domain/key");
 	succeed_if_same_string (keyValue (found), "domainvalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	found = ksLookupByName (ks, "user/single/key", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/single/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 6, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
-	succeed_if_same_string (keyName (found), "user/single/key");
+	succeed_if_same_string (keyName (found), "user:/single/key");
 	succeed_if_same_string (keyValue (found), "singlevalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	found = ksLookupByName (ks, "system/named/key", KDB_O_POP);
+	found = ksLookupByName (ks, "system:/named/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 5, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
-	succeed_if_same_string (keyName (found), "system/named/key");
+	succeed_if_same_string (keyName (found), "system:/named/key");
 	succeed_if (strncmp (keyValue (found), "syskey", strlen ("syskey")) == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	found = ksLookupByName (ks, "user/named/bin", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/named/bin", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 4, "pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "did not find correct name");
-	succeed_if_same_string (keyName (found), "user/named/bin");
+	succeed_if_same_string (keyName (found), "user:/named/bin");
 	succeed_if (strncmp (keyValue (found), "binary\1\2data", strlen ("binary\1\2data")) == 0, "not correct value in found key");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
-	found = ksLookupByName (ks, "user/named/key", KDB_O_POP);
+	found = ksLookupByName (ks, "user:/named/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 4, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found == 0, "could find same key again");
 
 	// cascading
 
-	ksAppendKey (ks, keyNew ("user/named/key", KEY_VALUE, "myvalue", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
 	printf ("Test cascading lookup functions\n");
 	found = ksLookupByName (ks, "/named/key", KDB_O_POP);
 	succeed_if (ksGetSize (ks) == 4, "did not pop key");
 	succeed_if (ksCurrent (ks) == 0, "current not set correctly");
 	succeed_if (found != 0, "cascading search failed");
-	succeed_if_same_string (keyName (found), "user/named/key");
+	succeed_if_same_string (keyName (found), "user:/named/key");
 	succeed_if_same_string (keyValue (found), "myvalue");
 	succeed_if (keyDel (found) == 0, "could not del popped key");
 
@@ -1852,7 +1868,7 @@ static void test_ksSync (void)
 	ks = ksNew (0, KS_END);
 	succeed_if (ksNeedSync (ks) == 0, "need sync after creation");
 
-	ksAppendKey (ks, keyNew ("user/key", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/key", KEY_END));
 	succeed_if (ksNeedSync (ks) == 0, "need sync after new key");
 
 	keyDel (ksPop (ks));
@@ -1863,13 +1879,13 @@ static void test_ksSync (void)
 	ks = ksNew (0, KS_END);
 	succeed_if (ksNeedSync (ks) == 0, "need sync after creation");
 
-	ksAppendKey (ks, keyNew ("user/key", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/key", KEY_END));
 	succeed_if (ksNeedSync (ks) == 0, "need sync after new key");
 
-	ksLookupByName (ks, "user/key", 0);
+	ksLookupByName (ks, "user:/key", 0);
 	succeed_if (ksNeedSync (ks) == 0, "need sync after new key");
 
-	key = ksLookupByName (ks, "user/key", KDB_O_POP);
+	key = ksLookupByName (ks, "user:/key", KDB_O_POP);
 	succeed_if (ksNeedSync (ks) == 1, "need sync after new key");
 	keyDel (key);
 
@@ -1879,11 +1895,11 @@ static void test_ksSync (void)
 static void test_ksDoubleFree (void)
 {
 	/* Valgrind only test */
-	KeySet * ks1 = ksNew (5, keyNew ("user/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user/abc2", KEY_VALUE, "abc1", KEY_END),
-			      keyNew ("user/abc3", KEY_VALUE, "abc1", KEY_END), KS_END);
+	KeySet * ks1 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc1", KEY_END),
+			      keyNew ("user:/abc3", KEY_VALUE, "abc1", KEY_END), KS_END);
 
-	KeySet * ks2 = ksNew (5, keyNew ("user/abc1", KEY_VALUE, "abc2", KEY_END), keyNew ("user/abc2", KEY_VALUE, "abc2", KEY_END),
-			      keyNew ("user/abc3", KEY_VALUE, "abc2", KEY_END), KS_END);
+	KeySet * ks2 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc2", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc2", KEY_END),
+			      keyNew ("user:/abc3", KEY_VALUE, "abc2", KEY_END), KS_END);
 
 	Key * cur;
 	ksRewind (ks1);
@@ -1900,11 +1916,11 @@ static void test_ksDoubleAppend (void)
 {
 	printf ("Test double appending\n");
 
-	KeySet * ks1 = ksNew (5, keyNew ("user/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user/abc2", KEY_VALUE, "abc1", KEY_END),
-			      keyNew ("user/abc3", KEY_VALUE, "abc1", KEY_END), KS_END);
+	KeySet * ks1 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc1", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc1", KEY_END),
+			      keyNew ("user:/abc3", KEY_VALUE, "abc1", KEY_END), KS_END);
 
-	KeySet * ks2 = ksNew (5, keyNew ("user/abc1", KEY_VALUE, "abc2", KEY_END), keyNew ("user/abc2", KEY_VALUE, "abc2", KEY_END),
-			      keyNew ("user/abc3", KEY_VALUE, "abc2", KEY_END), KS_END);
+	KeySet * ks2 = ksNew (5, keyNew ("user:/abc1", KEY_VALUE, "abc2", KEY_END), keyNew ("user:/abc2", KEY_VALUE, "abc2", KEY_END),
+			      keyNew ("user:/abc3", KEY_VALUE, "abc2", KEY_END), KS_END);
 
 	ksAppend (ks1, ks2);
 	succeed_if (ksGetSize (ks1) == 3, "size not correct");
@@ -1918,7 +1934,7 @@ static void test_ksDoubleAppendKey (void)
 {
 	printf ("Test double appending of key\n");
 
-	Key * k = keyNew ("user/my_double_key", KEY_END);
+	Key * k = keyNew ("user:/my_double_key", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
 	ksAppendKey (ks, k);
@@ -1930,7 +1946,7 @@ static void test_ksDoubleAppendKey (void)
 	ksAppendKey (ks, k);
 	succeed_if (ksGetSize (ks) == 1, "size not correct");
 
-	Key * k2 = keyNew ("user:owner/my_double_key", KEY_END);
+	Key * k2 = keyNew ("user:/other", KEY_END);
 
 	ksAppendKey (ks, k2);
 	succeed_if (ksGetSize (ks) == 2, "size not correct");
@@ -1949,42 +1965,42 @@ static void test_ksAppendKey (void)
 
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user/a", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/a", KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user/b", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/b", KEY_END)) == 2, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user/x", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/x", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 3, "size not correct after 3 keys");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user/b", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/b", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position (same key)");
 	succeed_if (ksGetSize (ks) == 3, "size not correct after double append");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user/0", KEY_END)) == 4, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/0", KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position (front key)");
 	succeed_if (ksGetSize (ks) == 4, "size not correct after 4 keys");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user/c", KEY_END)) == 5, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/c", KEY_END)) == 5, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position (key in between)");
 	succeed_if (ksGetSize (ks) == 5, "size not correct after 5 keys");
 
 	ksDel (ks);
 
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/", KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 1, "size not correct after 1 keys");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user/tests", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/tests", KEY_END)) == 2, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 2, "size not correct after 2 keys");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user/tests/folder", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/tests/folder", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 3, "size not correct after 3 keys");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user/tests/folder/bool_key", KEY_END)) == 4, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/tests/folder/bool_key", KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 4, "size not correct after 4 keys");
 
@@ -2006,9 +2022,9 @@ static void test_ksModifyKey (void)
 
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
 
-	succeed_if (ksAppendKey (ks, cur = keyNew ("user/a", KEY_END)) == 1, "could not append a key");
+	succeed_if (ksAppendKey (ks, cur = keyNew ("user:/a", KEY_END)) == 1, "could not append a key");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
-	succeed_if (keySetName (cur, "user/b") == -1, "set name with appended key should be disallowed");
+	succeed_if (keySetName (cur, "user:/b") == -1, "set name with appended key should be disallowed");
 	succeed_if (keySetString (cur, "x") > 0, "changing value is ok");
 	succeed_if (keySetMeta (cur, "x", "y") > 0, "changing meta is ok");
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
@@ -2018,78 +2034,99 @@ static void test_ksModifyKey (void)
 
 static void test_ksOrder (void)
 {
-	KeySet * ks = ksNew (20, keyNew ("user/test/test", KEY_END), keyNew ("user/test/test/bar", KEY_END),
-			     keyNew ("user/test/test/foo", KEY_END), keyNew ("user/test/test-foo", KEY_END), KS_END);
+	KeySet * ks = ksNew (20, keyNew ("user:/test/test", KEY_END), keyNew ("user:/test/test/bar", KEY_END),
+			     keyNew ("user:/test/test/foo", KEY_END), keyNew ("user:/test/test-foo", KEY_END), KS_END);
 
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/test/test");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/test/test");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/test/test/bar");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/test/test/bar");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/test/test/foo");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/test/test/foo");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/test/test-foo");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/test/test-foo");
 
 	ksDel (ks);
 
-	ks = ksNew (20, keyNew ("user/x", KEY_END), keyNew ("user/x/%", KEY_END), keyNew ("user/x/%/a", KEY_END),
-		    keyNew ("user/x/%/b", KEY_END), keyNew ("user/x/\\%", KEY_END), keyNew ("user/x/\\%/a", KEY_END),
-		    keyNew ("user/x/\\%/b", KEY_END), keyNew ("user/x/%a", KEY_END), keyNew ("user/x/%b", KEY_END),
-		    keyNew ("user/x/A", KEY_END), keyNew ("user/x/A/a", KEY_END), keyNew ("user/x/A/b", KEY_END),
-		    keyNew ("user/x/\\%a", KEY_END), keyNew ("user/x/\\%b", KEY_END), keyNew ("user/x/a\\/", KEY_END),
-		    keyNew ("user/x/a\\/b", KEY_END), keyNew ("user/x/a\\/b/a", KEY_END), keyNew ("user/x/a\\/b/b", KEY_END),
-		    keyNew ("user/x/aA", KEY_END), keyNew ("user/x/aA/a", KEY_END), keyNew ("user/x/aA/b", KEY_END),
-		    keyNew ("user/x/aa", KEY_END), keyNew ("user/x/aa/a", KEY_END), keyNew ("user/x/aa/b", KEY_END), KS_END);
+	ks = ksNew (20, keyNew ("user:/x", KEY_END), keyNew ("user:/x/%", KEY_END), keyNew ("user:/x/%/a", KEY_END),
+		    keyNew ("user:/x/%/b", KEY_END), keyNew ("user:/x/\\%", KEY_END), keyNew ("user:/x/\\%/a", KEY_END),
+		    keyNew ("user:/x/\\%/b", KEY_END), keyNew ("user:/x/A", KEY_END), keyNew ("user:/x/A/a", KEY_END),
+		    keyNew ("user:/x/A/b", KEY_END), keyNew ("user:/x/%a", KEY_END), keyNew ("user:/x/%b", KEY_END),
+		    keyNew ("user:/x/a\\/", KEY_END), keyNew ("user:/x/a\\/b", KEY_END), keyNew ("user:/x/a\\/b/a", KEY_END),
+		    keyNew ("user:/x/a\\/b/b", KEY_END), keyNew ("user:/x/aA", KEY_END), keyNew ("user:/x/aA/a", KEY_END),
+		    keyNew ("user:/x/aA/b", KEY_END), keyNew ("user:/x/aa", KEY_END), keyNew ("user:/x/aa/a", KEY_END),
+		    keyNew ("user:/x/aa/b", KEY_END), KS_END);
 
 	succeed_if (ksCurrent (ks) == 0, "not rewinded");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/%");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/%");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/%/a");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/%/a");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/%/b");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/%/b");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/\\%");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/\\%");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/\\%/a");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/\\%/a");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/\\%/b");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/\\%/b");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/%a");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/%a");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/%b");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/%b");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/A");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/A");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/A/a");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/A/a");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/A/b");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/A/b");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/\\%a");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/a\\/");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/\\%b");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/a\\/b");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/a\\/");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/a\\/b/a");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/a\\/b");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/a\\/b/b");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/a\\/b/a");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/aA");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/a\\/b/b");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/aA/a");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/aA");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/aA/b");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/aA/a");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/aa");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/aA/b");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/aa/a");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/aa");
-	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/aa/a");
-	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/x/aa/b");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/x/aa/b");
+	ksDel (ks);
+}
+
+static void test_ksOrderNs (void)
+{
+	Key * cascadingKey = keyNew ("/key", KEY_END);
+	Key * metaKey = keyNew ("meta:/key", KEY_END);
+	Key * specKey = keyNew ("spec:/key", KEY_END);
+	Key * procKey = keyNew ("proc:/key", KEY_END);
+	Key * dirKey = keyNew ("dir:/key", KEY_END);
+	Key * userKey = keyNew ("user:/key", KEY_END);
+	Key * systemKey = keyNew ("system:/key", KEY_END);
+	Key * defaultKey = keyNew ("default:/key", KEY_END);
+
+	KeySet * ks = ksNew (8, systemKey, userKey, metaKey, defaultKey, cascadingKey, specKey, procKey, dirKey, KS_END);
+
+	succeed_if (ksAtCursor (ks, 0) == cascadingKey, "cascading not first");
+	succeed_if (ksAtCursor (ks, 1) == metaKey, "meta not second");
+	succeed_if (ksAtCursor (ks, 2) == specKey, "spec not third");
+	succeed_if (ksAtCursor (ks, 3) == procKey, "proc not fourth");
+	succeed_if (ksAtCursor (ks, 4) == dirKey, "dir not fifth");
+	succeed_if (ksAtCursor (ks, 5) == userKey, "user not sixth");
+	succeed_if (ksAtCursor (ks, 6) == systemKey, "system not seventh");
+	succeed_if (ksAtCursor (ks, 7) == defaultKey, "default not last");
+
 	ksDel (ks);
 }
 
@@ -2120,31 +2157,31 @@ static void test_keyVNew (void)
 		ksDel(ks);
 	*/
 
-	ks = fill_vaargs (20, keyNew ("user/a", KEY_END), KS_END);
+	ks = fill_vaargs (20, keyNew ("user:/a", KEY_END), KS_END);
 	succeed_if (ks != 0, "did not create KeySet");
 	succeed_if (ksGetSize (ks) == 1, "KeySet wrong size");
-	succeed_if (ksLookupByName (ks, "user/a", 0) != 0, "could not lookup key");
+	succeed_if (ksLookupByName (ks, "user:/a", 0) != 0, "could not lookup key");
 	ksDel (ks);
 }
 
 
 static KeySet * set_a (void)
 {
-	return ksNew (16, keyNew ("user/0", KEY_END), keyNew ("user/a", KEY_END), keyNew ("user/a/a", KEY_END),
-		      keyNew ("user/a/a/a", KEY_END), keyNew ("user/a/a/b", KEY_END), keyNew ("user/a/b", KEY_END),
-		      keyNew ("user/a/b/a", KEY_END), keyNew ("user/a/b/b", KEY_END), keyNew ("user/a/c", KEY_END),
-		      keyNew ("user/a/d", KEY_END), keyNew ("user/a/x/a", KEY_END), keyNew ("user/a/x/b", KEY_END),
-		      keyNew ("user/a/x/c", KEY_END), keyNew ("user/a/x/c/a", KEY_END), keyNew ("user/a/x/c/b", KEY_END),
-		      keyNew ("user/x", KEY_END), KS_END);
+	return ksNew (16, keyNew ("user:/0", KEY_END), keyNew ("user:/a", KEY_END), keyNew ("user:/a/a", KEY_END),
+		      keyNew ("user:/a/a/a", KEY_END), keyNew ("user:/a/a/b", KEY_END), keyNew ("user:/a/b", KEY_END),
+		      keyNew ("user:/a/b/a", KEY_END), keyNew ("user:/a/b/b", KEY_END), keyNew ("user:/a/c", KEY_END),
+		      keyNew ("user:/a/d", KEY_END), keyNew ("user:/a/x/a", KEY_END), keyNew ("user:/a/x/b", KEY_END),
+		      keyNew ("user:/a/x/c", KEY_END), keyNew ("user:/a/x/c/a", KEY_END), keyNew ("user:/a/x/c/b", KEY_END),
+		      keyNew ("user:/x", KEY_END), KS_END);
 }
 
 static KeySet * set_oa (void)
 {
-	return ksNew (14, keyNew ("user/a", KEY_END), keyNew ("user/a/a", KEY_END), keyNew ("user/a/a/a", KEY_END),
-		      keyNew ("user/a/a/b", KEY_END), keyNew ("user/a/b", KEY_END), keyNew ("user/a/b/a", KEY_END),
-		      keyNew ("user/a/b/b", KEY_END), keyNew ("user/a/c", KEY_END), keyNew ("user/a/d", KEY_END),
-		      keyNew ("user/a/x/a", KEY_END), keyNew ("user/a/x/b", KEY_END), keyNew ("user/a/x/c", KEY_END),
-		      keyNew ("user/a/x/c/a", KEY_END), keyNew ("user/a/x/c/b", KEY_END), KS_END);
+	return ksNew (14, keyNew ("user:/a", KEY_END), keyNew ("user:/a/a", KEY_END), keyNew ("user:/a/a/a", KEY_END),
+		      keyNew ("user:/a/a/b", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/a", KEY_END),
+		      keyNew ("user:/a/b/b", KEY_END), keyNew ("user:/a/c", KEY_END), keyNew ("user:/a/d", KEY_END),
+		      keyNew ("user:/a/x/a", KEY_END), keyNew ("user:/a/x/b", KEY_END), keyNew ("user:/a/x/c", KEY_END),
+		      keyNew ("user:/a/x/c/a", KEY_END), keyNew ("user:/a/x/c/b", KEY_END), KS_END);
 }
 
 
@@ -2158,7 +2195,7 @@ static void test_cut (void)
 	KeySet * real_orig;
 
 	orig = ksNew (0, KS_END);
-	cutpoint = keyNew ("user/b", KEY_END);
+	cutpoint = keyNew ("user:/b", KEY_END);
 	result = ksCut (orig, cutpoint);
 	succeed_if (result, "result is null");
 	succeed_if (ksGetSize (result) == 0, "result not empty");
@@ -2167,7 +2204,7 @@ static void test_cut (void)
 	keyDel (cutpoint);
 
 	orig = set_oa ();
-	cutpoint = keyNew ("user/a", KEY_END);
+	cutpoint = keyNew ("user:/a", KEY_END);
 	result = ksCut (orig, cutpoint);
 	succeed_if (ksGetSize (orig) == 0, "orig not empty");
 	real_orig = set_oa ();
@@ -2214,27 +2251,27 @@ static void test_cutpoint (void)
 {
 	printf ("Testing operation cut point\n");
 
-	Key * cutpoint = keyNew ("user/a/b/c", KEY_END);
+	Key * cutpoint = keyNew ("user:/a/b/c", KEY_END);
 	KeySet * orig =
-		ksNew (30, keyNew ("user/a", KEY_END), keyNew ("user/a/b", KEY_END), cutpoint, keyNew ("user/a/b/c/d", KEY_END),
-		       keyNew ("user/a/b/c/d/e", KEY_END), keyNew ("user/a/b/c/e", KEY_END), keyNew ("user/a/b/c/e/d", KEY_END), KS_END);
+		ksNew (30, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), cutpoint, keyNew ("user:/a/b/c/d", KEY_END),
+		       keyNew ("user:/a/b/c/d/e", KEY_END), keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	ksRewind (orig);
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "user/a");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a");
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "user/a/b");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b");
 
 	KeySet * part = ksCut (orig, cutpoint);
 
-	succeed_if_same_string (keyName (ksCurrent (orig)), "user/a/b");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("user/a", KEY_END), keyNew ("user/a/b", KEY_END), KS_END);
+	KeySet * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part = ksNew (15, cutpoint, keyNew ("user/a/b/c/d", KEY_END), keyNew ("user/a/b/c/d/e", KEY_END),
-				   keyNew ("user/a/b/c/e", KEY_END), keyNew ("user/a/b/c/e/d", KEY_END), KS_END);
+	KeySet * cmp_part = ksNew (15, cutpoint, keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
+				   keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2249,43 +2286,43 @@ static void test_cascadingCutpoint (void)
 #include <data_nscut.c>
 		ksRewind (orig);
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "dir/a");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a");
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "dir/a/b");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a/b");
 
 	KeySet * part = ksCut (orig, cutpoint);
 
-	succeed_if_same_string (keyName (ksCurrent (orig)), "dir/a/b");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a/b");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("spec/a", KEY_END), keyNew ("spec/a/b", KEY_END),
+	KeySet * cmp_orig = ksNew (15, keyNew ("spec:/a", KEY_END), keyNew ("spec:/a/b", KEY_END),
 
-				   keyNew ("proc/a", KEY_END), keyNew ("proc/a/b", KEY_END),
+				   keyNew ("proc:/a", KEY_END), keyNew ("proc:/a/b", KEY_END),
 
-				   keyNew ("dir/a", KEY_END), keyNew ("dir/a/b", KEY_END),
+				   keyNew ("dir:/a", KEY_END), keyNew ("dir:/a/b", KEY_END),
 
-				   keyNew ("user/a", KEY_END), keyNew ("user/a/b", KEY_END),
+				   keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END),
 
-				   keyNew ("system/a", KEY_END), keyNew ("system/a/b", KEY_END), KS_END);
+				   keyNew ("system:/a", KEY_END), keyNew ("system:/a/b", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	// output_keyset(orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
 	KeySet * cmp_part =
-		ksNew (25, keyNew ("spec/a/b/c", KEY_END), keyNew ("spec/a/b/c/d", KEY_END), keyNew ("spec/a/b/c/d/e", KEY_END),
-		       keyNew ("spec/a/b/c/e", KEY_END), keyNew ("spec/a/b/c/e/d", KEY_END),
+		ksNew (25, keyNew ("spec:/a/b/c", KEY_END), keyNew ("spec:/a/b/c/d", KEY_END), keyNew ("spec:/a/b/c/d/e", KEY_END),
+		       keyNew ("spec:/a/b/c/e", KEY_END), keyNew ("spec:/a/b/c/e/d", KEY_END),
 
-		       keyNew ("proc/a/b/c", KEY_END), keyNew ("proc/a/b/c/d", KEY_END), keyNew ("proc/a/b/c/d/e", KEY_END),
-		       keyNew ("proc/a/b/c/e", KEY_END), keyNew ("proc/a/b/c/e/d", KEY_END),
+		       keyNew ("proc:/a/b/c", KEY_END), keyNew ("proc:/a/b/c/d", KEY_END), keyNew ("proc:/a/b/c/d/e", KEY_END),
+		       keyNew ("proc:/a/b/c/e", KEY_END), keyNew ("proc:/a/b/c/e/d", KEY_END),
 
-		       keyNew ("dir/a/b/c", KEY_END), keyNew ("dir/a/b/c/d", KEY_END), keyNew ("dir/a/b/c/d/e", KEY_END),
-		       keyNew ("dir/a/b/c/e", KEY_END), keyNew ("dir/a/b/c/e/d", KEY_END),
+		       keyNew ("dir:/a/b/c", KEY_END), keyNew ("dir:/a/b/c/d", KEY_END), keyNew ("dir:/a/b/c/d/e", KEY_END),
+		       keyNew ("dir:/a/b/c/e", KEY_END), keyNew ("dir:/a/b/c/e/d", KEY_END),
 
-		       keyNew ("user/a/b/c", KEY_END), keyNew ("user/a/b/c/d", KEY_END), keyNew ("user/a/b/c/d/e", KEY_END),
-		       keyNew ("user/a/b/c/e", KEY_END), keyNew ("user/a/b/c/e/d", KEY_END),
+		       keyNew ("user:/a/b/c", KEY_END), keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
+		       keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END),
 
-		       keyNew ("system/a/b/c", KEY_END), keyNew ("system/a/b/c/d", KEY_END), keyNew ("system/a/b/c/d/e", KEY_END),
-		       keyNew ("system/a/b/c/e", KEY_END), keyNew ("system/a/b/c/e/d", KEY_END), KS_END);
+		       keyNew ("system:/a/b/c", KEY_END), keyNew ("system:/a/b/c/d", KEY_END), keyNew ("system:/a/b/c/d/e", KEY_END),
+		       keyNew ("system:/a/b/c/e", KEY_END), keyNew ("system:/a/b/c/e/d", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
 	// output_keyset(part);
 	ksDel (part);
@@ -2302,9 +2339,9 @@ static void test_cascadingRootCutpoint (void)
 #include <data_nscut.c>
 		ksRewind (orig);
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "dir/a");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a");
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "dir/a/b");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "spec:/a/b");
 
 	KeySet * part = ksCut (orig, cutpoint);
 
@@ -2325,26 +2362,27 @@ static void test_cutpointRoot (void)
 {
 	printf ("Testing operation cut root point\n");
 
-	Key * cutpoint = keyNew ("user", KEY_END);
-	KeySet * orig = ksNew (30, keyNew ("system/a", KEY_END), keyNew ("user/a", KEY_END), keyNew ("user/a/b", KEY_END),
-			       keyNew ("user/a/b/c", KEY_END), keyNew ("user/a/b/c/d", KEY_END), keyNew ("user/a/b/c/d/e", KEY_END),
-			       keyNew ("user/a/b/c/e", KEY_END), keyNew ("user/a/b/c/e/d", KEY_END), KS_END);
+	Key * cutpoint = keyNew ("user:/", KEY_END);
+	KeySet * orig = ksNew (30, keyNew ("dir:/a", KEY_END), keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END),
+			       keyNew ("user:/a/b/c", KEY_END), keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
+			       keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	ksRewind (orig);
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "system/a");
+	ksNext (orig);
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a");
 
 	KeySet * part = ksCut (orig, cutpoint);
 
-	succeed_if_same_string (keyName (ksCurrent (orig)), "system/a");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "dir:/a");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("system/a", KEY_END), KS_END);
+	KeySet * cmp_orig = ksNew (15, keyNew ("dir:/a", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part = ksNew (15, keyNew ("user/a", KEY_END), keyNew ("user/a/b", KEY_END), keyNew ("user/a/b/c", KEY_END),
-				   keyNew ("user/a/b/c/d", KEY_END), keyNew ("user/a/b/c/d/e", KEY_END), keyNew ("user/a/b/c/e", KEY_END),
-				   keyNew ("user/a/b/c/e/d", KEY_END), KS_END);
+	KeySet * cmp_part = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/c", KEY_END),
+				   keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
+				   keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2356,29 +2394,29 @@ static void test_cutpoint_1 (void)
 {
 	printf ("Testing operation cut point 1\n");
 
-	Key * cutpoint = keyNew ("user/a/b/c", KEY_END);
+	Key * cutpoint = keyNew ("user:/a/b/c", KEY_END);
 	KeySet * orig =
-		ksNew (30, keyNew ("user/a", KEY_END), keyNew ("user/a/b", KEY_END), cutpoint, keyNew ("user/a/b/c/d", KEY_END),
-		       keyNew ("user/a/b/c/d/e", KEY_END), keyNew ("user/a/b/c/e", KEY_END), keyNew ("user/a/b/c/e/d", KEY_END), KS_END);
+		ksNew (30, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), cutpoint, keyNew ("user:/a/b/c/d", KEY_END),
+		       keyNew ("user:/a/b/c/d/e", KEY_END), keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	ksRewind (orig);
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "user/a");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a");
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "user/a/b");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b");
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "user/a/b/c");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b/c");
 
 	KeySet * part = ksCut (orig, cutpoint);
 
-	succeed_if_same_string (keyName (ksCurrent (orig)), "user/a/b");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/a/b");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("user/a", KEY_END), keyNew ("user/a/b", KEY_END), KS_END);
+	KeySet * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part = ksNew (15, cutpoint, keyNew ("user/a/b/c/d", KEY_END), keyNew ("user/a/b/c/d/e", KEY_END),
-				   keyNew ("user/a/b/c/e", KEY_END), keyNew ("user/a/b/c/e/d", KEY_END), KS_END);
+	KeySet * cmp_part = ksNew (15, cutpoint, keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
+				   keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2388,20 +2426,21 @@ static void test_unique_cutpoint (void)
 {
 	printf ("Testing operation cut with unique cutpoint\n");
 
-	Key * cutpoint = keyNew ("user/a/b/c", KEY_END);
-	KeySet * orig = ksNew (30, keyNew ("user/a", KEY_END), keyNew ("user/a/b", KEY_END), keyNew ("user/a/b/c", KEY_END),
-			       keyNew ("user/a/b/c/d", KEY_END), keyNew ("user/a/b/c/d/e", KEY_END), keyNew ("user/a/b/c/e", KEY_END),
-			       keyNew ("user/a/b/c/e/d", KEY_END), KS_END);
+	Key * cutpoint = keyNew ("user:/a/b/c", KEY_END);
+	KeySet * orig = ksNew (30, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), keyNew ("user:/a/b/c", KEY_END),
+			       keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END), keyNew ("user:/a/b/c/e", KEY_END),
+			       keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 
 	KeySet * part = ksCut (orig, cutpoint);
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("user/a", KEY_END), keyNew ("user/a/b", KEY_END), KS_END);
+	KeySet * cmp_orig = ksNew (15, keyNew ("user:/a", KEY_END), keyNew ("user:/a/b", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
-	KeySet * cmp_part = ksNew (15, keyNew ("user/a/b/c", KEY_END), keyNew ("user/a/b/c/d", KEY_END), keyNew ("user/a/b/c/d/e", KEY_END),
-				   keyNew ("user/a/b/c/e", KEY_END), keyNew ("user/a/b/c/e/d", KEY_END), KS_END);
+	KeySet * cmp_part =
+		ksNew (15, keyNew ("user:/a/b/c", KEY_END), keyNew ("user:/a/b/c/d", KEY_END), keyNew ("user:/a/b/c/d/e", KEY_END),
+		       keyNew ("user:/a/b/c/e", KEY_END), keyNew ("user:/a/b/c/e/d", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2412,29 +2451,29 @@ static void test_cutbelow (void)
 {
 	printf ("Testing cutting below some keys\n");
 
-	Key * cutpoint = keyNew ("user/export", KEY_END);
+	Key * cutpoint = keyNew ("user:/export", KEY_END);
 	KeySet * orig =
-		ksNew (30, keyNew ("user/export/a", KEY_END), keyNew ("user/export/c", KEY_END), keyNew ("user/export/c/x", KEY_END),
-		       keyNew ("user/export/c/x/b/blah", KEY_END), keyNew ("user/export/xyz", KEY_END),
-		       keyNew ("user/export-backup/b", KEY_END), keyNew ("user/export-backup-2/x", KEY_END), KS_END);
+		ksNew (30, keyNew ("user:/export/a", KEY_END), keyNew ("user:/export/c", KEY_END), keyNew ("user:/export/c/x", KEY_END),
+		       keyNew ("user:/export/c/x/b/blah", KEY_END), keyNew ("user:/export/xyz", KEY_END),
+		       keyNew ("user:/export-backup/b", KEY_END), keyNew ("user:/export-backup-2/x", KEY_END), KS_END);
 	ksRewind (orig);
 	ksNext (orig);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "user/export/a");
-	ksLookupByName (orig, "user/export-backup/b", 0);
-	succeed_if_same_string (keyName (ksCurrent (orig)), "user/export-backup/b");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/export/a");
+	ksLookupByName (orig, "user:/export-backup/b", 0);
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/export-backup/b");
 
 	KeySet * part = ksCut (orig, cutpoint);
 
-	succeed_if_same_string (keyName (ksCurrent (orig)), "user/export-backup/b");
+	succeed_if_same_string (keyName (ksCurrent (orig)), "user:/export-backup/b");
 
-	KeySet * cmp_orig = ksNew (15, keyNew ("user/export-backup-2/x", KEY_END), keyNew ("user/export-backup/b", KEY_END), KS_END);
+	KeySet * cmp_orig = ksNew (15, keyNew ("user:/export-backup-2/x", KEY_END), keyNew ("user:/export-backup/b", KEY_END), KS_END);
 	compare_keyset (orig, cmp_orig);
 	ksDel (orig);
 	ksDel (cmp_orig);
 
 	KeySet * cmp_part =
-		ksNew (15, keyNew ("user/export/a", KEY_END), keyNew ("user/export/c", KEY_END), keyNew ("user/export/c/x", KEY_END),
-		       keyNew ("user/export/c/x/b/blah", KEY_END), keyNew ("user/export/xyz", KEY_END), KS_END);
+		ksNew (15, keyNew ("user:/export/a", KEY_END), keyNew ("user:/export/c", KEY_END), keyNew ("user:/export/c/x", KEY_END),
+		       keyNew ("user:/export/c/x/b/blah", KEY_END), keyNew ("user:/export/xyz", KEY_END), KS_END);
 	compare_keyset (part, cmp_part);
 	ksDel (part);
 	ksDel (cmp_part);
@@ -2474,52 +2513,53 @@ static void test_cascading_cutbelow (void)
 
 KeySet * set_simple (void)
 {
-	return ksNew (50, keyNew ("system/elektra/mountpoints/simple", KEY_END),
+	return ksNew (50, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
 
-		      keyNew ("system/elektra/mountpoints/simple/config", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/config/more", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/config/more/config", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/config/more/config/below", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END),
 
-		      keyNew ("system/elektra/mountpoints/simple/getplugins", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
 
-		      keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
 
-		      keyNew ("system/elektra/mountpoints/simple/setplugins", KEY_END),
-		      keyNew ("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
+		      keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
+		      keyNew ("system:/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
 }
 
 static void test_simple (void)
 {
 	KeySet * config = set_simple ();
-	KeySet * result_res = ksNew (16, keyNew ("system/elektra/mountpoints/simple/config", KEY_END),
-				     keyNew ("system/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
-				     keyNew ("system/elektra/mountpoints/simple/config/more", KEY_END),
-				     keyNew ("system/elektra/mountpoints/simple/config/more/config", KEY_END),
-				     keyNew ("system/elektra/mountpoints/simple/config/more/config/below", KEY_END),
-				     keyNew ("system/elektra/mountpoints/simple/config/path", KEY_END), KS_END);
-	KeySet * result_config = ksNew (
-		22, keyNew ("system/elektra/mountpoints/simple", KEY_END), keyNew ("system/elektra/mountpoints/simple/getplugins", KEY_END),
-		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
-		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
-		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
-		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
-		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
-		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
-		keyNew ("system/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
-		keyNew ("system/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user/tests/backend/simple", KEY_END),
-		keyNew ("system/elektra/mountpoints/simple/setplugins", KEY_END),
-		keyNew ("system/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
-	Key * key = ksLookup (config, keyNew ("system/elektra/mountpoints/simple/config", KEY_END), KDB_O_DEL);
+	KeySet * result_res = ksNew (16, keyNew ("system:/elektra/mountpoints/simple/config", KEY_END),
+				     keyNew ("system:/elektra/mountpoints/simple/config/anything", KEY_VALUE, "backend", KEY_END),
+				     keyNew ("system:/elektra/mountpoints/simple/config/more", KEY_END),
+				     keyNew ("system:/elektra/mountpoints/simple/config/more/config", KEY_END),
+				     keyNew ("system:/elektra/mountpoints/simple/config/more/config/below", KEY_END),
+				     keyNew ("system:/elektra/mountpoints/simple/config/path", KEY_END), KS_END);
+	KeySet * result_config =
+		ksNew (22, keyNew ("system:/elektra/mountpoints/simple", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer", KEY_VALUE, "tracer", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/anything", KEY_VALUE, "plugin", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/more/config/below", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/getplugins/#1tracer/config/path", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/mountpoint", KEY_VALUE, "user:/tests/backend/simple", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/setplugins", KEY_END),
+		       keyNew ("system:/elektra/mountpoints/simple/setplugins/#1tracer", KEY_VALUE, "tracer", KEY_END), KS_END);
+	Key * key = ksLookup (config, keyNew ("system:/elektra/mountpoints/simple/config", KEY_END), KDB_O_DEL);
 	succeed_if (ksGetCursor (config) == 1, "cursor not set correctly");
 	KeySet * res = ksCut (config, key);
 	succeed_if (ksGetCursor (config) == 0, "cursor should stay as is");
@@ -2542,18 +2582,18 @@ static void test_cursor (void)
 	succeed_if (ksGetCursor (config) == -1, "should be invalid cursor");
 	succeed_if (ksNext (config) != 0, "should be root key");
 	succeed_if (ksGetCursor (config) == 0, "cursor on first position");
-	succeed_if_same_string (keyName (ksCurrent (config)), "system/elektra/mountpoints/simple");
+	succeed_if_same_string (keyName (ksCurrent (config)), "system:/elektra/mountpoints/simple");
 	succeed_if (ksNext (config) != 0, "should be on config");
 	succeed_if (ksGetCursor (config) == 1, "cursor on config");
-	succeed_if_same_string (keyName (ksCurrent (config)), "system/elektra/mountpoints/simple/config");
+	succeed_if_same_string (keyName (ksCurrent (config)), "system:/elektra/mountpoints/simple/config");
 
 	KeySet * res = ksCut (config, ksCurrent (config));
 	succeed_if (ksGetCursor (config) == 0, "cursor on first position");
-	succeed_if_same_string (keyName (ksCurrent (config)), "system/elektra/mountpoints/simple");
+	succeed_if_same_string (keyName (ksCurrent (config)), "system:/elektra/mountpoints/simple");
 
 	succeed_if (ksNext (config) != 0, "should be on config");
 	succeed_if (ksGetCursor (config) == 1, "cursor on getplugins");
-	succeed_if_same_string (keyName (ksCurrent (config)), "system/elektra/mountpoints/simple/getplugins");
+	succeed_if_same_string (keyName (ksCurrent (config)), "system:/elektra/mountpoints/simple/getplugins");
 
 	KeySet * getplugins = ksCut (config, ksCurrent (config));
 	succeed_if (ksGetCursor (getplugins) == -1, "should be invalid cursor");
@@ -2568,16 +2608,16 @@ static void test_cursor (void)
 
 	succeed_if (ksNext (config) != 0, "next did not work");
 	succeed_if (ksGetCursor (config) == 1, "cursor not correct");
-	succeed_if_same_string (keyName (ksCurrent (config)), "system/elektra/mountpoints/simple/mountpoint");
+	succeed_if_same_string (keyName (ksCurrent (config)), "system:/elektra/mountpoints/simple/mountpoint");
 
 	succeed_if (ksNext (config) != 0, "next did not work");
 	succeed_if (ksGetCursor (config) == 2, "cursor not correct");
-	succeed_if_same_string (keyName (ksCurrent (config)), "system/elektra/mountpoints/simple/setplugins");
+	succeed_if_same_string (keyName (ksCurrent (config)), "system:/elektra/mountpoints/simple/setplugins");
 
 	KeySet * setplugins = ksCut (config, ksCurrent (config));
 	succeed_if (ksNext (config) == 0, "should be no more config");
 	succeed_if (ksNext (setplugins) != 0, "ksnext did not work");
-	succeed_if_same_string (keyName (ksCurrent (setplugins)), "system/elektra/mountpoints/simple/setplugins");
+	succeed_if_same_string (keyName (ksCurrent (setplugins)), "system:/elektra/mountpoints/simple/setplugins");
 	succeed_if (ksNext (setplugins) != 0, "ksnext did not work");
 
 	KeySet * settracer = ksCut (setplugins, ksCurrent (setplugins));
@@ -2599,22 +2639,22 @@ static void test_morecut (void)
 {
 	printf ("More cut test cases\n");
 
-	KeySet * ks = ksNew (5, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END),
-			     keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END),
+			     keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
 	succeed_if (ksCurrent (ks) == 0, "should be rewinded");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "system/valid/key1");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/valid/key1");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "system/valid/key2");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/valid/key2");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/valid/key1");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "system:/valid/key1");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/valid/key2");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "system:/valid/key2");
 
-	KeySet * split1 = ksNew (3, keyNew ("user/valid/key1", KEY_END), keyNew ("user/valid/key2", KEY_END), KS_END);
-	KeySet * split2 = ksNew (3, keyNew ("system/valid/key1", KEY_END), keyNew ("system/valid/key2", KEY_END), KS_END);
+	KeySet * split1 = ksNew (3, keyNew ("user:/valid/key1", KEY_END), keyNew ("user:/valid/key2", KEY_END), KS_END);
+	KeySet * split2 = ksNew (3, keyNew ("system:/valid/key1", KEY_END), keyNew ("system:/valid/key2", KEY_END), KS_END);
 
-	Key * userKey = keyNew ("user", KEY_END);
+	Key * userKey = keyNew ("user:/", KEY_END);
 
 	KeySet * cut = ksCut (ks, userKey);
 
@@ -2633,31 +2673,31 @@ static void test_cutafter (void)
 {
 	printf ("More cut after\n");
 
-	KeySet * ks = ksNew (5, keyNew ("user/a/valid/key", KEY_END), keyNew ("user/a/x/valid/key", KEY_END),
-			     keyNew ("user/b/valid/key", KEY_END), keyNew ("user/b/x/valid/key", KEY_END),
-			     keyNew ("user/c/valid/key", KEY_END), keyNew ("user/c/x/valid/key", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/a/valid/key", KEY_END), keyNew ("user:/a/x/valid/key", KEY_END),
+			     keyNew ("user:/b/valid/key", KEY_END), keyNew ("user:/b/x/valid/key", KEY_END),
+			     keyNew ("user:/c/valid/key", KEY_END), keyNew ("user:/c/x/valid/key", KEY_END), KS_END);
 	ksRewind (ks);
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/a/valid/key");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/a/valid/key");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/a/x/valid/key");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/a/x/valid/key");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/b/valid/key");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/b/valid/key");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/b/x/valid/key");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/b/x/valid/key");
 	ksNext (ks);
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/c/valid/key");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/c/valid/key");
 	// printf ("%s\n", keyName(ksCurrent(ks)));
 
-	KeySet * split1 = ksNew (8, keyNew ("user/b/valid/key", KEY_END), keyNew ("user/b/x/valid/key", KEY_END), KS_END);
-	KeySet * split2 = ksNew (8, keyNew ("user/a/valid/key", KEY_END), keyNew ("user/a/x/valid/key", KEY_END),
-				 keyNew ("user/c/valid/key", KEY_END), keyNew ("user/c/x/valid/key", KEY_END), KS_END);
+	KeySet * split1 = ksNew (8, keyNew ("user:/b/valid/key", KEY_END), keyNew ("user:/b/x/valid/key", KEY_END), KS_END);
+	KeySet * split2 = ksNew (8, keyNew ("user:/a/valid/key", KEY_END), keyNew ("user:/a/x/valid/key", KEY_END),
+				 keyNew ("user:/c/valid/key", KEY_END), keyNew ("user:/c/x/valid/key", KEY_END), KS_END);
 
-	Key * userKey = keyNew ("user/b", KEY_END);
+	Key * userKey = keyNew ("user:/b", KEY_END);
 
 	KeySet * cut = ksCut (ks, userKey);
 	// printf ("%s\n", keyName(ksCurrent(ks)));
-	succeed_if_same_string (keyName (ksCurrent (ks)), "user/c/valid/key");
+	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/c/valid/key");
 
 	compare_keyset (cut, split1);
 	compare_keyset (ks, split2);
@@ -2676,12 +2716,12 @@ static void test_simpleLookup (void)
 
 	KeySet * ks = ksNew (10, KS_END);
 
-	Key * searchKey = keyNew ("user/something", KEY_VALUE, "a value", KEY_END);
+	Key * searchKey = keyNew ("user:/something", KEY_VALUE, "a value", KEY_END);
 	Key * k0 = ksLookup (ks, searchKey, 0);
 	succeed_if (!k0, "we have a problem: found not inserted key");
 
 	Key * dup = keyDup (searchKey);
-	succeed_if_same_string (keyName (dup), "user/something");
+	succeed_if_same_string (keyName (dup), "user:/something");
 	succeed_if_same_string (keyString (dup), "a value");
 	ksAppendKey (ks, dup);
 	// output_keyset(ks);
@@ -2689,7 +2729,7 @@ static void test_simpleLookup (void)
 	Key * k1 = ksLookup (ks, searchKey, 0);
 	succeed_if (k1, "we have a problem: did not find key");
 	succeed_if (k1 != searchKey, "same key, even though dup was used");
-	succeed_if_same_string (keyName (k1), "user/something");
+	succeed_if_same_string (keyName (k1), "user:/something");
 	succeed_if_same_string (keyString (k1), "a value");
 
 	keyDel (searchKey);
@@ -2719,9 +2759,9 @@ static void test_nsLookup (void)
 		compare_key (k1, searchKey);
 
 		keySetName (lookupKey, "/test/keyset/dir7/key1");
-		if (!strcmp (namespaces[i], "spec"))
+		if (strcmp (namespaces[i], "spec:/") == 0)
 		{
-			keySetName (searchKey, "proc");
+			keySetName (searchKey, "proc:/");
 			keyAddName (searchKey, "test/keyset/dir7/key1");
 			Key * k2 = ksLookup (ks, lookupKey, 0);
 			compare_key (k2, searchKey);
@@ -2750,7 +2790,7 @@ static void test_ksAppend2 (void)
 {
 	printf ("Test more involved appending\n");
 
-	Key * inks = keyNew ("user/key_with_meta_data", KEY_END);
+	Key * inks = keyNew ("user:/key_with_meta_data", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 	ksAppendKey (ks, inks);
 
@@ -2785,7 +2825,7 @@ static void test_ksAppend2 (void)
 	keyDel (dup);
 	ksDel (ks2);
 
-	Key * parent = keyNew ("user/test/rename", KEY_END);
+	Key * parent = keyNew ("user:/test/rename", KEY_END);
 	succeed_if (keyGetRef (parent) == 0, "ref wrong");
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, parent);
@@ -2813,10 +2853,10 @@ static void test_ksAppend2 (void)
 	keyDel (key);
 	ksDel (iter);
 	// parent+key removed!
-	succeed_if (ksLookupByName (ks, "user/test/rename/cut", 0) != 0, "did not find key");
+	succeed_if (ksLookupByName (ks, "user:/test/rename/cut", 0) != 0, "did not find key");
 	succeed_if (ksGetSize (ks) == 1, "only result in it") ksDel (ks);
 
-	parent = keyNew ("user/test/rename", KEY_END);
+	parent = keyNew ("user:/test/rename", KEY_END);
 	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, parent);
 	Key * lk = ksLookup (ks, parent, KDB_O_POP);
@@ -2828,13 +2868,13 @@ static void test_ksAppend3 (void)
 {
 	printf ("Test appending same key\n");
 
-	Key * key = keyNew ("user/key", KEY_END);
+	Key * key = keyNew ("user:/key", KEY_END);
 	KeySet * ks = ksNew (0, KS_END);
 
 	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
-	succeed_if (ksLookupByName (ks, "user/key", 0) == key, "did not find key");
+	succeed_if (ksLookupByName (ks, "user:/key", 0) == key, "did not find key");
 	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
-	succeed_if (ksLookupByName (ks, "user/key", 0) == key, "did not find key again");
+	succeed_if (ksLookupByName (ks, "user:/key", 0) == key, "did not find key again");
 
 	ksDel (ks);
 }
@@ -2893,6 +2933,7 @@ int main (int argc, char ** argv)
 	test_nsLookup ();
 	test_ksAppend2 ();
 	test_ksAppend3 ();
+	test_ksOrderNs ();
 
 	printf ("\ntestabi_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

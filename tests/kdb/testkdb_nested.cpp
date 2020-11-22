@@ -70,7 +70,7 @@ TEST_F (Nested, GetSetRoot)
 	KDB kdb;
 	KeySet ks;
 
-	std::string name = "system" + testRoot + "key";
+	std::string name = "system:" + testRoot + "key";
 	Key k (name, KEY_END);
 	EXPECT_EQ (k.getName (), name);
 	ks.append (k);
@@ -107,19 +107,19 @@ TEST_F (Nested, GetSetBelow)
 	KDB kdb;
 	KeySet ks;
 
-	std::string name = "system" + testRoot + "below/key";
+	std::string name = "system:" + testRoot + "below/key";
 	Key k (name, KEY_END);
 	EXPECT_EQ (k.getName (), name);
 	ks.append (k);
 	ks.append (getAll ());
 
 	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
-	ASSERT_EQ (ks.size (), 715) << "did not keep key at get" << ks;
+	ASSERT_EQ (ks.size (), 817) << "did not keep key at get" << ks;
 	struct stat buf;
 	ASSERT_EQ (stat (mpRoot->systemConfigFile.c_str (), &buf), -1) << "found wrong file";
 	ASSERT_EQ (stat (mpBelow->systemConfigFile.c_str (), &buf), -1) << "found wrong file";
 	ASSERT_EQ (kdb.set (ks, testRoot), 1);
-	ASSERT_EQ (ks.size (), 715) << "did not keep key at set" << ks;
+	ASSERT_EQ (ks.size (), 817) << "did not keep key at set" << ks;
 	ASSERT_EQ (stat (mpRoot->systemConfigFile.c_str (), &buf), -1) << "root file created?";
 	ASSERT_EQ (stat (mpBelow->systemConfigFile.c_str (), &buf), 0) << "below file not created";
 
@@ -138,8 +138,8 @@ TEST_F (Nested, RemoveFiles)
 	KDB kdb;
 	KeySet ks;
 
-	ks.append (Key ("system" + testRoot + "key", KEY_END));
-	ks.append (Key ("system" + testRoot + "below/key", KEY_END));
+	ks.append (Key ("system:" + testRoot + "key", KEY_END));
+	ks.append (Key ("system:" + testRoot + "below/key", KEY_END));
 
 	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
 	ASSERT_EQ (ks.size (), 2) << "did not keep key at get" << ks;
@@ -168,19 +168,19 @@ TEST_F (Nested, GetSetRemoveBoth)
 	KDB kdb;
 	KeySet ks;
 
-	ks.append (Key ("system" + testRoot + "key", KEY_END));
-	ks.append (Key ("system" + testRoot + "key/subkey", KEY_END));
-	ks.append (Key ("system" + testRoot + "below/key", KEY_END));
-	ks.append (Key ("system" + testRoot + "below/key/subkey", KEY_END));
+	ks.append (Key ("system:" + testRoot + "key", KEY_END));
+	ks.append (Key ("system:" + testRoot + "key/subkey", KEY_END));
+	ks.append (Key ("system:" + testRoot + "below/key", KEY_END));
+	ks.append (Key ("system:" + testRoot + "below/key/subkey", KEY_END));
 	ks.append (getAll ());
 
 	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
-	ASSERT_EQ (ks.size (), 718) << "did not keep key at get" << ks;
+	ASSERT_EQ (ks.size (), 820) << "did not keep key at get" << ks;
 	struct stat buf;
 	ASSERT_EQ (stat (mpRoot->systemConfigFile.c_str (), &buf), -1) << "found wrong file";
 	ASSERT_EQ (stat (mpBelow->systemConfigFile.c_str (), &buf), -1) << "found wrong file";
 	ASSERT_EQ (kdb.set (ks, testRoot), 1);
-	ASSERT_EQ (ks.size (), 718) << "did not keep key at set" << ks;
+	ASSERT_EQ (ks.size (), 820) << "did not keep key at set" << ks;
 	ASSERT_EQ (stat (mpRoot->systemConfigFile.c_str (), &buf), 0) << "root file not created";
 	ASSERT_EQ (stat (mpBelow->systemConfigFile.c_str (), &buf), 0) << "below file not created";
 
@@ -205,12 +205,12 @@ TEST_F (Nested, ErrorBelow)
 	KDB kdb;
 	KeySet ks;
 
-	ks.append (Key ("system" + testRoot + "a", KEY_END));
-	ks.append (Key ("system" + testRoot + "k", KEY_END));
-	ks.append (Key ("system" + testRoot + "7", KEY_END));
-	ks.append (Key ("system" + testBelow + "a", KEY_END));
-	ks.append (Key ("system" + testBelow + "k", KEY_META, "trigger/error", "10", KEY_END));
-	ks.append (Key ("system" + testBelow + "z", KEY_END));
+	ks.append (Key ("system:" + testRoot + "a", KEY_END));
+	ks.append (Key ("system:" + testRoot + "k", KEY_END));
+	ks.append (Key ("system:" + testRoot + "7", KEY_END));
+	ks.append (Key ("system:" + testBelow + "a", KEY_END));
+	ks.append (Key ("system:" + testBelow + "k", KEY_META, "trigger/error", "10", KEY_END));
+	ks.append (Key ("system:" + testBelow + "z", KEY_END));
 
 	ASSERT_EQ (kdb.get (ks, testRoot), 0) << "should be nothing to update";
 	ASSERT_EQ (ks.size (), 6) << "did not keep key at get" << ks;

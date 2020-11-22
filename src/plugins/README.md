@@ -160,7 +160,6 @@ Other filters:
 - [crypto](crypto/) encrypts / decrypts confidential values
 - [fcrypt](fcrypt/) encrypts / decrypts entire files
 - [gpgme](gpgme/) encrypts / decrypts confidential values (with GPGME)
-- [hidden](hidden/) hides keys whose names start with a `.`.
 - [iconv](iconv/) makes sure the configuration will have correct
   character encoding
 

@@ -33,7 +33,7 @@ protected:
 
 TEST_F (AutoMergeStrategyTest, DeleteEqualsMerges)
 {
-	task.ours.lookup ("user/parento/config/key1", KDB_O_POP);
+	task.ours.lookup ("user:/parento/config/key1", KDB_O_POP);
 	Key conflictKey = mergeKeys.lookup (mk1);
 	result.addConflict (conflictKey, CONFLICT_DELETE, CONFLICT_SAME);
 	conflictKey = result.getConflictSet ().at (0);
@@ -51,7 +51,7 @@ TEST_F (AutoMergeStrategyTest, DeleteEqualsMerges)
 
 TEST_F (AutoMergeStrategyTest, EqualsDeleteMerges)
 {
-	task.theirs.lookup ("user/parentt/config/key1", KDB_O_POP);
+	task.theirs.lookup ("user:/parentt/config/key1", KDB_O_POP);
 	Key conflictKey = mergeKeys.lookup (mk1);
 	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_DELETE);
 	conflictKey = result.getConflictSet ().at (0);
@@ -68,7 +68,7 @@ TEST_F (AutoMergeStrategyTest, EqualsDeleteMerges)
 
 TEST_F (AutoMergeStrategyTest, EqualsModifyMerges)
 {
-	task.theirs.lookup ("user/parentt/config/key1").setString ("modifiedvalue");
+	task.theirs.lookup ("user:/parentt/config/key1").setString ("modifiedvalue");
 	Key conflictKey = mergeKeys.lookup (mk1);
 	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_MODIFY);
 	conflictKey = result.getConflictSet ().at (0);
@@ -88,7 +88,7 @@ TEST_F (AutoMergeStrategyTest, EqualsModifyMerges)
 // the expected behaviour is the same for EqualsModify, EqualsDelete and EqualsAdd
 TEST_F (AutoMergeStrategyTest, EqualsModifyRespectsBinaryData)
 {
-	task.theirs.lookup ("user/parentt/config/key1").setBinary ("modifiedvalue", 13);
+	task.theirs.lookup ("user:/parentt/config/key1").setBinary ("modifiedvalue", 13);
 	Key conflictKey = mergeKeys.lookup (mk1);
 	result.addConflict (conflictKey, CONFLICT_SAME, CONFLICT_MODIFY);
 	conflictKey = result.getConflictSet ().at (0);
@@ -100,7 +100,7 @@ TEST_F (AutoMergeStrategyTest, EqualsModifyRespectsBinaryData)
 
 TEST_F (AutoMergeStrategyTest, EqualsModifyRespectsNullData)
 {
-	Key l = task.theirs.lookup ("user/parentt/config/key1");
+	Key l = task.theirs.lookup ("user:/parentt/config/key1");
 	l.setBinary (nullptr, 0);
 	EXPECT_TRUE (l.isBinary ());
 	EXPECT_EQ (l.getValue (), nullptr);
@@ -118,7 +118,7 @@ TEST_F (AutoMergeStrategyTest, EqualsModifyRespectsNullData)
 
 TEST_F (AutoMergeStrategyTest, ModifyEqualsMerges)
 {
-	task.ours.lookup ("user/parento/config/key1").setString ("modifiedvalue");
+	task.ours.lookup ("user:/parento/config/key1").setString ("modifiedvalue");
 	Key conflictKey = mergeKeys.lookup (mk1);
 	result.addConflict (conflictKey, CONFLICT_MODIFY, CONFLICT_SAME);
 	conflictKey = result.getConflictSet ().at (0);
@@ -138,7 +138,7 @@ TEST_F (AutoMergeStrategyTest, ModifyEqualsMerges)
 // the expected behaviour is the same for ModifyEquals, DeleteEquals and AddEquals
 TEST_F (AutoMergeStrategyTest, ModifyEqualsRespectsBinaryData)
 {
-	task.ours.lookup ("user/parento/config/key1").setBinary ("modifiedvalue", 13);
+	task.ours.lookup ("user:/parento/config/key1").setBinary ("modifiedvalue", 13);
 	Key conflictKey = mergeKeys.lookup (mk1);
 	result.addConflict (conflictKey, CONFLICT_MODIFY, CONFLICT_SAME);
 	conflictKey = result.getConflictSet ().at (0);
@@ -150,7 +150,7 @@ TEST_F (AutoMergeStrategyTest, ModifyEqualsRespectsBinaryData)
 
 TEST_F (AutoMergeStrategyTest, AddEqualsKeyMerge)
 {
-	Key addedKey = Key ("user/parento/config/key5", KEY_VALUE, "value5", KEY_END);
+	Key addedKey = Key ("user:/parento/config/key5", KEY_VALUE, "value5", KEY_END);
 	task.ours.append (addedKey);
 	mergeKeys.append (mk5);
 	Key conflictKey = mergeKeys.lookup (mk5);
@@ -167,7 +167,7 @@ TEST_F (AutoMergeStrategyTest, AddEqualsKeyMerge)
 
 TEST_F (AutoMergeStrategyTest, EqualsAddKeyMerge)
 {
-	Key addedKey = Key ("user/parentt/config/key5", KEY_VALUE, "value5", KEY_END);
+	Key addedKey = Key ("user:/parentt/config/key5", KEY_VALUE, "value5", KEY_END);
 	task.theirs.append (addedKey);
 	mergeKeys.append (mk5);
 	Key conflictKey = mergeKeys.lookup (mk5);

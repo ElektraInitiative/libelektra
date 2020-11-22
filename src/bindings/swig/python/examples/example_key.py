@@ -1,6 +1,6 @@
 import kdb
 
-key1 = kdb.Key("user/key1", kdb.KEY_VALUE, "some_value")
+key1 = kdb.Key("user:/key1", kdb.KEY_VALUE, "some_value")
 print("Key1 name=\"{0}\" value=\"{1}\"".format(key1.name, key1.value))
 print("")
 
@@ -21,7 +21,7 @@ key2 = kdb.Key(key1.dup())
 print("Key2 is a copy of Key1. Do they match? {0}".format(key1 == key2))
 print("")
 
-key1.name = "system/key1"
+key1.name = "system:/key1"
 print("We changed name of Key1. New name is \"{0}\"".format(key1.name))
 print("Do they still match? {0}".format(key1 == key2))
 print("")

@@ -12,7 +12,7 @@ In order to use `kdb` you need to include the dependency in your project. [Here]
 After that you can start loading a `KDB` object as follows:
 
 ```java
-Key key = Key.create("user/kdbsession/javabinding");
+Key key = Key.create("user:/kdbsession/javabinding");
 try (KDB kdb = KDB.open(key)) {
     //Your code to manipulate keys
 } catch (KDB.KDBException e) {
@@ -22,7 +22,7 @@ try (KDB kdb = KDB.open(key)) {
 
 Note that `KDB` implements `AutoClosable` which allows [try-with-resouces](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
 
-You can also pass a `Key` object with an empty string on the first line. The passed key (`user/kdbsession/javabinding` in this case) is being used for the session and stores warnings and error information.
+You can also pass a `Key` object with an empty string on the first line. The passed key (`user:/kdbsession/javabinding` in this case) is being used for the session and stores warnings and error information.
 
 ## Fetching keys
 
@@ -35,17 +35,17 @@ KeySet set = KeySet.create();
 Now we load all keys and provide a parent key from which all keys below will be loaded
 
 ```java
-kdb.get(set, Key.create("user"));
+kdb.get(set, Key.create("user:/"));
 ```
 
 Now we can simply fetch the desired key's value as follows:
 
 ```java
-String str = set.lookup("user/my/presaved/key").getString()
+String str = set.lookup("user:/my/presaved/key").getString()
 ```
 
-So for example if you have executed before the application starts `kdb set user/my/test it_works!`,
-the method call `set.lookup("user/my/test").getString()` would return `it_works!`.
+So for example if you have executed before the application starts `kdb set user:/my/test it_works!`,
+the method call `set.lookup("user:/my/test").getString()` would return `it_works!`.
 
 ## Saving Keys
 
@@ -53,9 +53,9 @@ Next I will show you how to save a new key into the database. First we need need
 
 ```java
 KeySet set = KeySet.create();
-Key namespace = Key.create("user");
+Key namespace = Key.create("user:/");
 kdb.get(set, namespace);    //Fetch all keys for the namespace
-set.append(Key.create("user/somekey", "myValue"));
+set.append(Key.create("user:/somekey", "myValue"));
 kdb.set(set, key);
 ```
 
@@ -70,10 +70,10 @@ environments though as it is not intended for productive systems.
 ### Traversing Keys in a `KeySet`
 
 ```java
-Key key = Key.create("user/errors");
+Key key = Key.create("user:/errors");
 try (KDB kdb = KDB.open(key)) {
     KeySet set = KeySet.create();
-    Key namespace = Key.create("user");       //Select a namespace from which all keys should be fetched
+    Key namespace = Key.create("user:/");       //Select a namespace from which all keys should be fetched
     kdb.get(set, namespace);                  //Fetch all keys into the set object
     for (int i = 0; i < set.length(); i++) {  //Traverse the set
         String keyAndValue = String.format("%s: %s",

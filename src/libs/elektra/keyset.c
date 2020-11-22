@@ -6,6 +6,8 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include "kdbprivate.h"
+#include <kdb.h>
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -506,37 +508,17 @@ int ksClear (KeySet * ks)
  */
 static int keyCompareByName (const void * p1, const void * p2)
 {
-	Key * key1 = *(Key **) p1;
-	Key * key2 = *(Key **) p2;
-	const void * name1 = key1->key + key1->keySize;
-	const void * name2 = key2->key + key2->keySize;
-	size_t const nameSize1 = key1->keyUSize;
-	size_t const nameSize2 = key2->keyUSize;
-	int ret = 0;
-	if (nameSize1 == nameSize2)
+	Key * k1 = *(Key **) p1;
+	Key * k2 = *(Key **) p2;
+
+	int k1Shorter = k1->keyUSize < k2->keyUSize;
+	size_t size = k1Shorter ? k1->keyUSize : k2->keyUSize;
+	int cmp = memcmp (k1->ukey, k2->ukey, size);
+	if (cmp != 0 || k1->keyUSize == k2->keyUSize)
 	{
-		ret = memcmp (name1, name2, nameSize2);
+		return cmp;
 	}
-	else
-	{
-		if (nameSize1 < nameSize2)
-		{
-			ret = memcmp (name1, name2, nameSize1);
-			if (ret == 0)
-			{
-				ret = -1;
-			}
-		}
-		else
-		{
-			ret = memcmp (name1, name2, nameSize2);
-			if (ret == 0)
-			{
-				ret = 1;
-			}
-		}
-	}
-	return ret;
+	return k1Shorter ? -1 : 1;
 }
 
 /**
@@ -578,7 +560,6 @@ static int keyCompareByNameOwner (const void * p1, const void * p2)
 	return ret;
 }
 
-
 /**
  * Compare the name of two keys.
  *
@@ -616,8 +597,8 @@ static int keyCompareByNameOwner (const void * p1, const void * p2)
  *
  * Here are some more examples:
  * @code
-Key *k1 = keyNew("user/a", KEY_END);
-Key *k2 = keyNew("user/b", KEY_END);
+Key *k1 = keyNew("user:/a", KEY_END);
+Key *k2 = keyNew("user:/b", KEY_END);
 
 // keyCmp(k1,k2) < 0
 // keyCmp(k2,k1) > 0
@@ -625,8 +606,8 @@ Key *k2 = keyNew("user/b", KEY_END);
  *
  * And even more:
  * @code
-Key *k1 = keyNew("user/a", KEY_OWNER, "markus", KEY_END);
-Key *k2 = keyNew("user/a", KEY_OWNER, "max", KEY_END);
+Key *k1 = keyNew("user:/a", KEY_OWNER, "markus", KEY_END);
+Key *k2 = keyNew("user:/a", KEY_OWNER, "max", KEY_END);
 
 // keyCmp(k1,k2) < 0
 // keyCmp(k2,k1) > 0
@@ -1096,26 +1077,26 @@ static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * fr
  * @par Example:
  *
  * You have the keyset @p ks:
- * - @p system/mountpoint/interest
- * - @p system/mountpoint/interest/folder
- * - @p system/mountpoint/interest/folder/key1
- * - @p system/mountpoint/interest/folder/key2
- * - @p system/mountpoint/other/key1
+ * - @p system:/mountpoint/interest
+ * - @p system:/mountpoint/interest/folder
+ * - @p system:/mountpoint/interest/folder/key1
+ * - @p system:/mountpoint/interest/folder/key2
+ * - @p system:/mountpoint/other/key1
  *
  * When you use
  * @snippet ksCut.c cut
  *
  * Then in @p returned are:
- * - @p system/mountpoint/interest
- * - @p system/mountpoint/interest/folder
- * - @p system/mountpoint/interest/folder/key1
- * - @p system/mountpoint/interest/folder/key2
+ * - @p system:/mountpoint/interest
+ * - @p system:/mountpoint/interest/folder
+ * - @p system:/mountpoint/interest/folder/key1
+ * - @p system:/mountpoint/interest/folder/key2
  *
  * And in @p ks are:
- * - @p system/mountpoint/other/key1
+ * - @p system:/mountpoint/other/key1
  *
  * So kdbSet() permanently removes all keys below
- * @p system/mountpoint/interest.
+ * @p system:/mountpoint/interest.
  *
  * @see kdbGet() for explanation why you might get more keys than you
  * requested.
@@ -1146,85 +1127,46 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 
 	char * name = cutpoint->key;
 	if (!name) return 0;
-	// if (strcmp(name, "")) return 0;
+	if (strcmp (name, "") == 0) return 0;
 
 	elektraOpmphmInvalidate (ks);
 
-	if (name[0] == '/')
+	if (cutpoint->ukey[0] == KEY_NS_CASCADING)
 	{
-		Key * key = (Key *) cutpoint;
-		size_t size = key->keySize;
-		size_t usize = key->keyUSize;
-		size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
-		char newname[length * 2];
-
 		ret = ksNew (0, KS_END);
 
+		// HACK: ksCut does not use escaped name (key->key), so we don't need to change it
 		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 		{
 			int validNS = 1;
 			switch (ns)
 			{
 			case KEY_NS_SPEC:
-				strncpy (newname + 2, "spec", 5);
-				strcpy (newname + 6, name);
-				key->key = newname + 2;
-				key->keySize = length - 2;
-				if (!strcmp (name, "/")) key->keySize = 5;
-				elektraFinalizeName (key);
-				break;
 			case KEY_NS_PROC:
-				strncpy (newname + 2, "proc", 5);
-				strcpy (newname + 6, name);
-				key->key = newname + 2;
-				key->keySize = length - 2;
-				if (!strcmp (name, "/")) key->keySize = 5;
-				elektraFinalizeName (key);
-				break;
 			case KEY_NS_DIR:
-				strncpy (newname + 3, "dir", 4);
-				strcpy (newname + 6, name);
-				key->key = newname + 3;
-				key->keySize = length - 3;
-				if (!strcmp (name, "/")) key->keySize = 4;
-				elektraFinalizeName (key);
-				break;
 			case KEY_NS_USER:
-				strncpy (newname + 2, "user", 5);
-				strcpy (newname + 6, name);
-				key->key = newname + 2;
-				key->keySize = length - 2;
-				if (!strcmp (name, "/")) key->keySize = 5;
-				elektraFinalizeName (key);
-				break;
 			case KEY_NS_SYSTEM:
-				strncpy (newname, "system", 7);
-				strcpy (newname + 6, name);
-				key->key = newname;
-				key->keySize = length;
-				if (!strcmp (name, "/")) key->keySize = 7;
-				elektraFinalizeName (key);
-				break;
-			case KEY_NS_EMPTY:
-			case KEY_NS_NONE:
 			case KEY_NS_META:
+				((Key *) cutpoint)->ukey[0] = ns;
+				break;
+			case KEY_NS_NONE:
 			case KEY_NS_CASCADING:
+			case KEY_NS_DEFAULT:
 				validNS = 0;
 			}
 			if (validNS)
 			{
-				KeySet * n = ksCut (ks, key);
+				KeySet * n = ksCut (ks, cutpoint);
 				ksAppend (ret, n);
 				ksDel (n);
 			}
 		}
 
 		// restore old cascading name
-		key->key = name;
-		key->keySize = size;
-		key->keyUSize = usize;
+		((Key *) cutpoint)->ukey[0] = KEY_NS_CASCADING;
 
 		// now look for cascading keys
+		// TODO: cascading keys shouldn't be allowed in KeySet anymore
 	}
 
 	set_cursor = elektraKsFindCutpoint (ks, cutpoint, &it, &found);
@@ -1268,7 +1210,7 @@ KeySet * ksCut (KeySet * ks, const Key * cutpoint)
 ks1=ksNew(0, KS_END);
 ks2=ksNew(0, KS_END);
 
-k1=keyNew("user/name", KEY_END); // ref counter 0
+k1=keyNew("user:/name", KEY_END); // ref counter 0
 ksAppendKey(ks1, k1); // ref counter 1
 ksAppendKey(ks2, k1); // ref counter 2
 
@@ -1696,7 +1638,7 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 	{
 		elektraWriteArrayNumber (&buffer[prefixSize], i);
 		m = keyGetMeta (specKey, buffer);
-		if (!m) break;
+		if (!m || keyGetValueSize (m) == 1) break;
 		// optimization: lazy instanziation of k
 		if (!k)
 		{
@@ -1705,7 +1647,7 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 			elektraCopyCallbackMeta (k, specKey);
 		}
 		else
-			elektraKeySetName (k, keyString (m), KEY_CASCADING_NAME);
+			keySetName (k, keyString (m));
 		ret = ksLookup (ks, k, KDB_O_NODEFAULT);
 		if (ret) break;
 		++i;
@@ -1731,13 +1673,17 @@ static Key * elektraLookupBySpecDefault (KeySet * ks, Key * specKey)
 	Key * ret = 0;
 	const Key * m = 0;
 
-	ret = ksLookup (ks, specKey, KDB_O_NOCASCADING);
+	keySetNamespace (specKey, KEY_NS_DEFAULT);
+	ret = ksLookup (ks, specKey, 0);
+
 	if (ret) return ret; // return previous added default key
 
 	m = keyGetMeta (specKey, "default");
 	if (!m) return ret;
-	ret = keyNew (keyName (specKey), KEY_CASCADING_NAME, KEY_VALUE, keyString (m), KEY_END);
+	ret = keyNew (keyName (specKey), KEY_VALUE, keyString (m), KEY_END);
 	ksAppendKey (ks, ret);
+
+	keySetNamespace (specKey, KEY_NS_CASCADING);
 
 	return ret;
 }
@@ -1766,24 +1712,12 @@ static Key * elektraLookupBySpecNamespaces (KeySet * ks, Key * specKey, char * b
 	// (obviously w/o spec)
 	if (!m) return elektraLookupByCascading (ks, specKey, KDB_O_NOSPEC | KDB_O_NODEFAULT);
 
-	// store old name of specKey
-	char * name = specKey->key;
-	size_t size = specKey->keySize;
-	size_t usize = specKey->keyUSize;
-	size_t nameLength = strlen (name);
-	size_t maxSize = nameLength + ELEKTRA_MAX_NAMESPACE_SIZE;
-	char newname[maxSize * 2]; // buffer for all new names (namespace + cascading key name)
-
 	do
 	{
 		// lookup with given namespace
-		size_t namespaceSize = keyGetValueSize (m);
-		char * startOfName = newname + ELEKTRA_MAX_NAMESPACE_SIZE - namespaceSize;
-		strncpy (startOfName, keyString (m), namespaceSize);
-		strcpy (newname + ELEKTRA_MAX_NAMESPACE_SIZE - 1, name); // name starts with /
-		specKey->key = startOfName;
-		specKey->keySize = nameLength + namespaceSize;
-		elektraFinalizeName (specKey);
+		elektraNamespace ns = elektraReadNamespace (keyString (m), keyGetValueSize (m) - 1);
+		if (ns == KEY_NS_NONE) break;
+		keySetNamespace (specKey, ns);
 		ret = ksLookup (ks, specKey, 0);
 		if (ret) break;
 		++i; // start with 1 (#0 was already in buffer)
@@ -1793,9 +1727,7 @@ static Key * elektraLookupBySpecNamespaces (KeySet * ks, Key * specKey, char * b
 	} while (m);
 
 	// restore old cascading name
-	specKey->key = name;
-	specKey->keySize = size;
-	specKey->keyUSize = usize;
+	keySetNamespace (specKey, KEY_NS_CASCADING);
 	return ret;
 }
 
@@ -1807,14 +1739,9 @@ static Key * elektraLookupBySpecNamespaces (KeySet * ks, Key * specKey, char * b
 static Key * elektraLookupBySpec (KeySet * ks, Key * specKey, elektraLookupFlags options)
 {
 	Key * ret = 0;
+	elektraNamespace oldNS = keyGetNamespace (specKey);
 	// strip away beginning of specKey
-	char * name = specKey->key;
-	// stays same if already cascading and
-	// root must not be cascaded, so the usage of strchr is safe.
-	specKey->key = strchr (name, '/');
-	size_t size = specKey->keySize;
-	specKey->keySize = size - (specKey->key - name);
-	elektraFinalizeName (specKey);
+	keySetNamespace (specKey, KEY_NS_CASCADING);
 
 	// lookup by override
 	char buffer[ELEKTRA_MAX_PREFIX_SIZE + ELEKTRA_MAX_ARRAY_SIZE] = "override/";
@@ -1837,9 +1764,7 @@ static Key * elektraLookupBySpec (KeySet * ks, Key * specKey, elektraLookupFlags
 	}
 
 finished:
-	specKey->key = name;
-	specKey->keySize = size;
-	elektraFinalizeName (specKey);
+	keySetNamespace (specKey, oldNS);
 
 	return ret;
 }
@@ -1850,32 +1775,22 @@ finished:
  */
 static Key * elektraLookupByCascading (KeySet * ks, Key * key, elektraLookupFlags options)
 {
-	char * name = key->key;
-	size_t size = key->keySize;
-	size_t usize = key->keyUSize;
-	size_t length = strlen (name) + ELEKTRA_MAX_NAMESPACE_SIZE;
-	char newname[length * 2];
+	elektraNamespace oldNS = keyGetNamespace (key);
 	Key * found = 0;
 	Key * specKey = 0;
 
 	if (!(options & KDB_O_NOSPEC))
 	{
-		strncpy (newname + 2, "spec", 5);
-		strcpy (newname + 6, name);
-		key->key = newname + 2;
-		key->keySize = length - 2;
-		elektraFinalizeName (key);
+		keySetNamespace (key, KEY_NS_SPEC);
 		specKey = ksLookup (ks, key, (options & ~KDB_O_DEL) | KDB_O_CALLBACK);
 	}
 
 	if (specKey)
 	{
 		// restore old name
-		key->key = name;
-		key->keySize = size;
-		key->keyUSize = usize;
+		keySetNamespace (key, oldNS);
 
-		if (strncmp (keyName (specKey), "spec/", 5))
+		if (strncmp (keyName (specKey), "spec:/", 5))
 		{ // the search was modified in a way that not a spec Key was returned
 			return specKey;
 		}
@@ -1891,47 +1806,35 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, elektraLookupFlag
 	}
 
 	// default cascading:
-	strncpy (newname + 2, "proc", 5);
-	strcpy (newname + 6, name);
-	key->key = newname + 2;
-	key->keySize = length - 2;
-	elektraFinalizeName (key);
+	keySetNamespace (key, KEY_NS_PROC);
 	found = ksLookup (ks, key, options & ~KDB_O_DEL);
 
 	if (!found)
 	{
-		strncpy (newname + 3, "dir", 4);
-		strcpy (newname + 6, name);
-		key->key = newname + 3;
-		key->keySize = length - 3;
-		elektraFinalizeName (key);
+		keySetNamespace (key, KEY_NS_DIR);
 		found = ksLookup (ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (!found)
 	{
-		strncpy (newname + 2, "user", 5);
-		strcpy (newname + 6, name);
-		key->key = newname + 2;
-		key->keySize = length - 2;
-		elektraFinalizeName (key);
+		keySetNamespace (key, KEY_NS_USER);
 		found = ksLookup (ks, key, options & ~KDB_O_DEL);
 	}
 
 	if (!found)
 	{
-		strncpy (newname, "system", 7);
-		strcpy (newname + 6, name);
-		key->key = newname;
-		key->keySize = length;
-		elektraFinalizeName (key);
+		keySetNamespace (key, KEY_NS_SYSTEM);
+		found = ksLookup (ks, key, options & ~KDB_O_DEL);
+	}
+
+	if (!found)
+	{
+		keySetNamespace (key, KEY_NS_DEFAULT);
 		found = ksLookup (ks, key, options & ~KDB_O_DEL);
 	}
 
 	// restore old cascading name
-	key->key = name;
-	key->keySize = size;
-	key->keyUSize = usize;
+	keySetNamespace (key, KEY_NS_CASCADING);
 
 	if (!found && !(options & KDB_O_NODEFAULT))
 	{
@@ -2267,8 +2170,8 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elek
  * returned.
  *
  * Cascading lookups will by default search in
- * all namespaces (proc/, dir/, user/ and system/), but will also correctly consider
- * the specification (=metadata) in spec/:
+ * all namespaces (proc:/, dir:/, user:/ and system:/), but will also correctly consider
+ * the specification (=metadata) in spec:/:
  *
  * - @p override/# will make sure that another key is considered before
  * - @p namespace/# will change the number and/or order in which the
@@ -2396,10 +2299,11 @@ Key * ksLookupByName (KeySet * ks, const char * name, elektraLookupFlags options
 	struct _Key key;
 	key.meta = NULL;
 	keyInit (&key);
-	elektraKeySetName (&key, name, KEY_META_NAME | KEY_CASCADING_NAME);
+	keySetName (&key, name);
 
 	found = ksLookup (ks, &key, options);
 	elektraFree (key.key);
+	elektraFree (key.ukey);
 	ksDel (key.meta); // sometimes owner is set
 	return found;
 }

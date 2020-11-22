@@ -13,20 +13,20 @@
 
 static void test_unit_normalization (const char * unitstring, const char * unitexpected)
 {
-	Key * parentKey = keyNew ("user/tests/unit", KEY_END);
-	Key * hexkey = keyNew ("user/test/unit/unittestval", KEY_VALUE, unitstring, KEY_META, "check/unit", "any", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/unit", KEY_END);
+	Key * hexkey = keyNew ("user:/test/unit/unittestval", KEY_VALUE, unitstring, KEY_META, "check/unit", "any", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (20, hexkey, KS_END);
 
 	PLUGIN_OPEN ("unit");
 
 	succeed_if ((plugin->kdbGet (plugin, ks, parentKey) >= 1), "kdbGet did not succeed");
-	Key * foundKey = ksLookupByName (ks, "user/test/unit/unittestval", 0);
+	Key * foundKey = ksLookupByName (ks, "user:/test/unit/unittestval", 0);
 	succeed_if (!strcmp (keyString (foundKey), unitexpected), "Values dont match");
 	printf ("test unit plugin normalization test - returned value: %s, expected value: %s\n", keyString (foundKey), unitexpected);
 
 	succeed_if ((plugin->kdbSet (plugin, ks, parentKey) >= 1), "kdbSet did not succeed");
-	foundKey = ksLookupByName (ks, "user/test/unit/unittestval", 0);
+	foundKey = ksLookupByName (ks, "user:/test/unit/unittestval", 0);
 	succeed_if (!strcmp (keyString (foundKey), unitstring), "Values dont match");
 	printf ("test unit plugin restoration test - returned value: %s, expected value: %s\n", keyString (foundKey), unitstring);
 
@@ -39,8 +39,8 @@ static void test_unit_normalization (const char * unitstring, const char * unite
 
 static void test_unit_normalization_error_expected (const char * unitstring, const char * unitexpected)
 {
-	Key * parentKey = keyNew ("user/tests/unit", KEY_END);
-	Key * hexkey = keyNew ("user/test/unit/unittestval", KEY_VALUE, unitstring, KEY_META, "check/unit", "any", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/unit", KEY_END);
+	Key * hexkey = keyNew ("user:/test/unit/unittestval", KEY_VALUE, unitstring, KEY_META, "check/unit", "any", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (20, hexkey, KS_END);
 
@@ -63,8 +63,8 @@ static void test_unit_normalization_error_expected (const char * unitstring, con
 
 static void test_unit_validation (const char * unit, const short e_ret)
 {
-	Key * parentKey = keyNew ("user/tests/unit", KEY_END);
-	Key * hexkey = keyNew ("user/test/unit/testvalue", KEY_VALUE, unit, KEY_META, "check/unit", "any", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/unit", KEY_END);
+	Key * hexkey = keyNew ("user:/test/unit/testvalue", KEY_VALUE, unit, KEY_META, "check/unit", "any", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (20, hexkey, KS_END);
 

@@ -267,21 +267,20 @@ public:
 };
 
 /**
- * @brief Implements creating user/ key when key is not found.
+ * @brief Implements creating user:/ key when key is not found.
  */
 class DefaultSetPolicy
 {
 public:
 	static Key set (KeySet & ks, Key const & spec)
 	{
-		return setWithNamespace (ks, spec, "user");
+		return setWithNamespace (ks, spec, "user:");
 	}
 
 	static Key setWithNamespace (KeySet & ks, Key const & spec, std::string const & ns)
 	{
 		std::string const & name = spec.getName ();
-
-		kdb::Key k (ns + "/" + name, KEY_END);
+		kdb::Key k (ns + "/" + name.substr (name.find ('/')), KEY_END);
 		ks.append (k);
 
 		return k;
@@ -449,7 +448,9 @@ public:
 		assert (m_spec.getName ()[0] == '/' && "spec keys are not yet supported");
 		m_context.attachByName (m_spec.getName (), *this);
 		Command::Func fun = [this] () -> Command::Pair {
-			this->unsafeUpdateKeyUsingContext (m_context.evaluate (m_spec.getName ()));
+			auto evaluatedName = m_context.evaluate (m_spec.getName ());
+			evaluatedName = evaluatedName == "/%" ? "/" : evaluatedName;
+			this->unsafeUpdateKeyUsingContext (evaluatedName);
 			this->unsafeSyncCache (); // set m_cache
 			return std::make_pair ("", m_key.getName ());
 		};
@@ -690,7 +691,7 @@ private:
 	 */
 	void unsafeSyncKeySet () const
 	{
-		if (m_hasChanged && m_key.getName ().at (0) == '/')
+		if (m_hasChanged && m_key.getNamespace () == ElektraNamespace::DEFAULT)
 		{
 			m_hasChanged = false;
 			Key spec (m_spec.dup ());
@@ -723,7 +724,7 @@ private:
 
 		Command::Func fun = [this, &evaluatedName, write] () -> Command::Pair {
 			std::string oldKey = m_key.getName ();
-			if (write && evaluatedName == oldKey)
+			if (write && "default:" + evaluatedName == oldKey)
 			{
 				// nothing changed, same name
 				return std::make_pair (evaluatedName, evaluatedName);
@@ -796,7 +797,7 @@ private:
 	 *
 	 * Is only read and will not be changed.
 	 *
-	 * Might start with / or with spec/ (not implemented yet)
+	 * Might start with / or with spec:/ (not implemented yet)
 	 */
 	Key m_spec;
 

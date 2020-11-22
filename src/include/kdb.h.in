@@ -81,18 +81,19 @@ typedef int elektraLookupFlags;
 
 enum {
 	KEY_NS_NONE=0,
-	KEY_NS_EMPTY=1,
+	KEY_NS_CASCADING=1,
 	KEY_NS_META=2,
-	KEY_NS_CASCADING=3,
-	KEY_NS_FIRST=4,
-	KEY_NS_SPEC=4,
-	KEY_NS_PROC=5,
-	KEY_NS_DIR=6,
-	KEY_NS_USER=7,
-	KEY_NS_SYSTEM=8,
-	KEY_NS_LAST=8
+	KEY_NS_SPEC=3,
+	KEY_NS_PROC=4,
+	KEY_NS_DIR=5,
+	KEY_NS_USER=6,
+	KEY_NS_SYSTEM=7,
+	KEY_NS_DEFAULT=8,
 };
 typedef int elektraNamespace;
+
+static const elektraNamespace KEY_NS_FIRST = KEY_NS_META;
+static const elektraNamespace KEY_NS_LAST = KEY_NS_DEFAULT;
 
 typedef ssize_t elektraCursor;
 
@@ -166,8 +167,6 @@ int keyIsBelow(const Key *key, const Key *check);
 int keyIsBelowOrSame(const Key *key, const Key *check);
 int keyIsDirectlyBelow(const Key *key, const Key *check);
 
-int keyIsInactive(const Key *key);
-
 int keyIsBinary(const Key *key);
 int keyIsString(const Key *key);
 
@@ -182,9 +181,6 @@ ssize_t keyAddName(Key *key, const char *addName);
 const void *keyUnescapedName(const Key *key);
 ssize_t keyGetUnescapedNameSize(const Key *key);
 
-ssize_t keyGetFullNameSize(const Key *key);
-ssize_t keyGetFullName(const Key *key, char *returnedName, size_t maxSize);
-
 const char *keyBaseName(const Key *key);
 ssize_t keyGetBaseNameSize(const Key *key);
 ssize_t keyGetBaseName(const Key *key, char *returned, size_t maxSize);
@@ -193,6 +189,7 @@ ssize_t keySetBaseName(Key *key,const char *baseName);
 ssize_t keyAddBaseName(Key *key,const char *baseName);
 
 elektraNamespace keyGetNamespace(Key const* key);
+ssize_t keySetNamespace(Key * key, elektraNamespace ns);
 
 /* Value Manipulation Methods */
 const void *keyValue(const Key *key);

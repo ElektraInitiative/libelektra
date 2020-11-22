@@ -192,7 +192,7 @@ QString GUIBackend::mountPoints () const
 
 	Backends::BackendInfoVector vec = Backends::getBackendInfo (mountConf);
 	QStringList mPoints;
-	mPoints.append ("system/elektra");
+	mPoints.append ("system:/elektra");
 
 	foreach (BackendInfo info, vec)
 	{
@@ -226,7 +226,7 @@ QString GUIBackend::pluginInfo (QString pluginName) const
 	info = plugin->getInfo ();
 
 	Key root;
-	root.setName (std::string ("system/elektra/modules/") + plugin->name () + "/infos");
+	root.setName (std::string ("system:/elektra/modules/") + plugin->name () + "/infos");
 	Key k = info.lookup (root);
 
 	if (k)

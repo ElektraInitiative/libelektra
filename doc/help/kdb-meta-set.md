@@ -50,10 +50,10 @@ that is the place where you usually want to set metadata.
 
 ## EXAMPLES
 
-To set a metakey called `description` associated with the key `user/example/key` to the value `Hello World!`:<br>
-`kdb meta-set spec/example/key description "Hello World!"`
+To set a metakey called `description` associated with the key `user:/example/key` to the value `Hello World!`:<br>
+`kdb meta-set spec:/example/key description "Hello World!"`
 
-To create a new key `spec/example/newkey` with a null value (if it did not exist before)
+To create a new key `spec:/example/newkey` with a null value (if it did not exist before)
 and a metakey `namespace/#0` associated with it to the value `system`:<br>
 `kdb meta-set /example/newkey "namespace/#0" system`
 
@@ -61,13 +61,13 @@ To create an override link for a `/test` key:
 
 ```sh
 kdb set /overrides/test "example override"
-sudo kdb meta-set spec/test override/#0 /overrides/test
+sudo kdb meta-set spec:/test override/#0 /overrides/test
 ```
 
 To remove it:
 
 ```sh
-sudo kdb meta-set spec/test override/#0
+sudo kdb meta-set spec:/test override/#0
 ```
 
 ## SEE ALSO

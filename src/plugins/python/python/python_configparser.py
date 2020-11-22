@@ -11,7 +11,7 @@ class ElektraPlugin(object):
 
 	def get(self, returned, parentKey):
 		print("[CLASS-PYTHON-C] get")
-		mod = "system/elektra/modules/python"
+		mod = "system:/elektra/modules/python"
 		if parentKey.name == mod:
 			returned.append(kdb.Key(mod, kdb.KEY_VALUE, "contract below"))
 			returned.append(kdb.Key(mod+"/infos", kdb.KEY_VALUE, "contract below"))

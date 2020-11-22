@@ -24,7 +24,7 @@ formatted files. It uses a general format which:
 To mount an XML file we use:
 
 ```bash
-kdb mount file.xml user/test/file xerces
+kdb mount file.xml user:/test/file xerces
 ```
 
 The strength and usage of this plugin is that it supports arbitrary XML files and
@@ -44,18 +44,18 @@ of the root element gets mapped to the mount point.
 We can observe the following result after mounting:
 
 ```bash
-kdb get user/test/file
+kdb get user:/test/file
 #> foo
-kdb get user/test/file/bar
+kdb get user:/test/file/bar
 #> bar
-kdb meta-get user/test/file/bar meta
+kdb meta-get user:/test/file/bar meta
 #> da_ta
 ```
 
 To export an existing keyset to the XML format:
 
 ```bash
-kdb export user/test/xerces xerces > example.xml
+kdb export user:/test/xerces xerces > example.xml
 ```
 
 The root element of the resulting XML file will be "xerces" again, restored via the
@@ -94,24 +94,24 @@ XSD transformations, schemas or DTDs are not supported yet.
 ### Mounting, setting a key and exporting
 
 ```sh
-# Backup-and-Restore:user/tests/xercesfile
+# Backup-and-Restore:user:/tests/xercesfile
 
-sudo kdb mount xerces.xml user/tests/xercesfile xerces
+sudo kdb mount xerces.xml user:/tests/xercesfile xerces
 
-kdb set user/tests/xercesfile foo
-kdb meta-set user/tests/xercesfile xerces/rootname xerces
-kdb set user/tests/xercesfile/bar bar
-kdb meta-set user/tests/xercesfile/bar meta "da_ta"
+kdb set user:/tests/xercesfile foo
+kdb meta-set user:/tests/xercesfile xerces/rootname xerces
+kdb set user:/tests/xercesfile/bar bar
+kdb meta-set user:/tests/xercesfile/bar meta "da_ta"
 
-kdb meta-get user/tests/xercesfile xerces/rootname
+kdb meta-get user:/tests/xercesfile xerces/rootname
 #> xerces
 
-kdb get user/tests/xercesfile/bar
+kdb get user:/tests/xercesfile/bar
 #> bar
 
-kdb export user/tests/xercesfile xerces
+kdb export user:/tests/xercesfile xerces
 # STDOUT-REGEX: <bar meta="da_ta">bar</bar>
 
-sudo kdb rm -r user/tests/xercesfile
-sudo kdb umount user/tests/xercesfile
+sudo kdb rm -r user:/tests/xercesfile
+sudo kdb umount user:/tests/xercesfile
 ```

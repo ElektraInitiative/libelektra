@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "ELEKTRA\-GRANULARITY" "7" "June 2019" "" ""
+.TH "ELEKTRA\-GRANULARITY" "7" "September 2020" "" ""
 .
 .SH "NAME"
 \fBelektra\-granularity\fR \- relation of keys to files
@@ -16,7 +16,7 @@ This restriction simplifies storage plugins while it does not limit the user\. O
 It is problematic to have too many keys in one backend\. The applications would need memory for unnecessary configuration data\. Instead we recommend introducing several mount points to split up the keys into different backends\. Splitting up key sets makes sense if any application requests only a part of the configuration\. No benefits arise if every application requests all keys anyway\.
 .
 .P
-Let us assume that many keys reside in \fBuser/sw\fR and an application only needs the keys in \fBuser/sw/org/app\fR\. To save memory and get better startup\-times for the application, a new backend can be mounted at \fBuser/sw/org/app\fR\. On the other hand, every mounted backend causes a small run\-time overhead in the overall configuration system\.
+Let us assume that many keys reside in \fBuser:/sw\fR and an application only needs the keys in \fBuser:/sw/org/app\fR\. To save memory and get better startup\-times for the application, a new backend can be mounted at \fBuser:/sw/org/app\fR\. On the other hand, every mounted backend causes a small run\-time overhead in the overall configuration system\.
 .
 .P
 The solution in Elektra is flexible, because the user decides the granularity\. It is possible to mount a backend on every single key, so that every key can be requested for itself\. If no backends are mounted, all keys reside in the default backend\.

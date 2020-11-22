@@ -24,10 +24,10 @@
 
 static void test_helloWorld (void)
 {
-	Key * parentKey = keyNew ("user/tests/jni", KEY_VALUE, "", KEY_END);
+	Key * parentKey = keyNew ("user:/tests/jni", KEY_VALUE, "", KEY_END);
 	KeySet * conf =
-		ksNew (20, keyNew ("system/classpath", KEY_VALUE, CLASSPATH, KEY_END), keyNew ("system/print", KEY_VALUE, "ON", KEY_END),
-		       keyNew ("system/classname", KEY_VALUE, "org/libelektra/plugin/Return", KEY_END), KS_END);
+		ksNew (20, keyNew ("system:/classpath", KEY_VALUE, CLASSPATH, KEY_END), keyNew ("system:/print", KEY_VALUE, "ON", KEY_END),
+		       keyNew ("system:/classname", KEY_VALUE, "org/libelektra/plugin/Return", KEY_END), KS_END);
 	PLUGIN_OPEN ("jni");
 
 	KeySet * ks = ksNew (20, KS_END);

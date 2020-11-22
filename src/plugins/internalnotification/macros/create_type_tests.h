@@ -60,7 +60,7 @@ TEST_CASE_UPDATE_SIGNATURE (TYPE_NAME)
 	TYPE value = 0;
 	succeed_if (REGISTER_FUNC_NAME (TYPE_NAME) (plugin, registeredKey, &value) == 1, "registration was not successful");
 	char * valueStr = elektraFormat (FORMAT_STRING, TEST_VALUE);
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_VALUE, valueStr, KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_VALUE, valueStr, KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 	elektraInternalnotificationUpdateRegisteredKeys (plugin, ks);
 	succeed_if (CHECK_VALUE, "registered value was not updated");
@@ -76,7 +76,7 @@ TEST_CASE_NO_UPDATE_SIGNATURE (TYPE_NAME)
 	printf ("test no update with invalid value\n");
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("internalnotification");
-	Key * valueKey = keyNew ("user/test/internalnotification/value", KEY_END);
+	Key * valueKey = keyNew ("user:/test/internalnotification/value", KEY_END);
 	KeySet * ks = ksNew (1, valueKey, KS_END);
 	TYPE value = 0;
 	succeed_if (REGISTER_FUNC_NAME (TYPE_NAME) (plugin, valueKey, &value) == 1, "registration was not successful");

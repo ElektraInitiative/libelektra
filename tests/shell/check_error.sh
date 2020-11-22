@@ -10,7 +10,7 @@ FILE_SUFFIX=test_error
 
 check_remaining_files $FILE_SUFFIX
 
-ROOT=user/test/script
+ROOT=user:/test/script
 ROOT_FILE=${FILE_SUFFIX}_root.ecf
 ROOT_MOUNTPOINT=/test/script
 if ! is_plugin_available dump || ! is_plugin_available sync; then
@@ -98,7 +98,7 @@ if is_plugin_available error; then
 	#[ $? -ne 0 ]
 	#succeed_if "Was able to get from missing backend"
 	#
-	#$KDB get system$ERROR_MOUNTPOINT > $TMPFILE 2>&1
+	#$KDB get system:$ERROR_MOUNTPOINT > $TMPFILE 2>&1
 	#[ $? -ne 0 ]
 	#succeed_if "Was able to get from missing backend"
 	#

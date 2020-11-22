@@ -51,7 +51,7 @@ Print never/auto(default)/always colored output\.
 .
 .TP
 \fB\-E\fR, \fB\-\-without\-elektra\fR
-Omit the \fBsystem/elektra\fR directory\.
+Omit the \fBsystem:/elektra\fR directory\.
 .
 .TP
 \fB\-c\fR, \fB\-\-plugins\-config <plugins\-config>\fR
@@ -89,10 +89,10 @@ To backup your full key database in Elektra’s \fBstorage\fR format to a file c
 .br
 .
 .P
-To backup a keyset stored in \fBuser/keyset\fR in the \fBini\fR format to a file called \fBkeyset\.ini\fR:
+To backup a keyset stored in \fBuser:/keyset\fR in the \fBini\fR format to a file called \fBkeyset\.ini\fR:
 .
 .br
-\fBkdb export user/keyset ini > keyset\.ini\fR
+\fBkdb export user:/keyset ini > keyset\.ini\fR
 .
 .br
 .
@@ -109,10 +109,10 @@ Create two key values and export them as \fBxml\fR:
 .
 .nf
 
-kdb set user/tests/kdb\-export/one one
-kdb set user/tests/kdb\-export/two two
+kdb set user:/tests/kdb\-export/one one
+kdb set user:/tests/kdb\-export/two two
 
-kdb export user/tests/kdb\-export/ xml
+kdb export user:/tests/kdb\-export/ xml
 #> <?xml version="1\.0" encoding="UTF\-8" standalone="no" ?>
 #> <kdb\-export>
 #>
@@ -123,7 +123,7 @@ kdb export user/tests/kdb\-export/ xml
 #> </kdb\-export>
 
 
-kdb rm \-r user/tests
+kdb rm \-r user:/tests
 # cleanup
 .
 .fi
@@ -137,10 +137,10 @@ Create two key values and export them with the \fBxerces\fR plugin:
 .
 .nf
 
-kdb set user/tests/kdb\-export/one one
-kdb set user/tests/kdb\-export/two two
+kdb set user:/tests/kdb\-export/one one
+kdb set user:/tests/kdb\-export/two two
 
-kdb export user/tests/kdb\-export/ xerces
+kdb export user:/tests/kdb\-export/ xerces
 #> <?xml version="1\.0" encoding="UTF\-8" standalone="no" ?>
 #> <kdb\-export>
 #>
@@ -150,7 +150,7 @@ kdb export user/tests/kdb\-export/ xerces
 #>
 #> </kdb\-export>
 
-kdb rm \-r user/tests
+kdb rm \-r user:/tests
 # cleanup
 .
 .fi

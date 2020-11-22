@@ -24,25 +24,25 @@ TEST (MountBackendBuilder, parsePluginArguments)
 {
 	using namespace kdb;
 	using namespace kdb::tools;
-	EXPECT_EQ (KeySet (5, *Key ("user/a", KEY_VALUE, "5", KEY_END), KS_END), parsePluginArguments ("a=5"));
-	EXPECT_EQ (KeySet (5, *Key ("user", KEY_END), KS_END), parsePluginArguments ("="));
-	EXPECT_EQ (KeySet (5, *Key ("user/a", KEY_VALUE, "5", KEY_END), *Key ("user/ax", KEY_VALUE, "a", KEY_END),
-			   *Key ("user/ax/bx", KEY_VALUE, "8", KEY_END), KS_END),
+	EXPECT_EQ (KeySet (5, *Key ("user:/a", KEY_VALUE, "5", KEY_END), KS_END), parsePluginArguments ("a=5"));
+	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_END), KS_END), parsePluginArguments ("="));
+	EXPECT_EQ (KeySet (5, *Key ("user:/a", KEY_VALUE, "5", KEY_END), *Key ("user:/ax", KEY_VALUE, "a", KEY_END),
+			   *Key ("user:/ax/bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("a=5,ax=a,ax/bx=8"));
-	EXPECT_EQ (KeySet (5, *Key ("user", KEY_VALUE, "5", KEY_END), *Key ("user/ax", KEY_END, KEY_END),
-			   *Key ("user/ax/bx", KEY_VALUE, "8", KEY_END), KS_END),
+	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_VALUE, "5", KEY_END), *Key ("user:/ax", KEY_END, KEY_END),
+			   *Key ("user:/ax/bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("=5,ax=,ax/bx=8"));
-	EXPECT_EQ (KeySet (5, *Key ("user", KEY_VALUE, "5", KEY_END), *Key ("user/ ax", KEY_END, KEY_END),
-			   *Key ("user/ ax/ bx", KEY_VALUE, "8", KEY_END), KS_END),
+	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_VALUE, "5", KEY_END), *Key ("user:/ ax", KEY_END, KEY_END),
+			   *Key ("user:/ ax/ bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("=5, ax=, ax/ bx=8"));
-	EXPECT_EQ (KeySet (5, *Key ("user", KEY_VALUE, "5", KEY_END), *Key ("user/	ax", KEY_END, KEY_END),
-			   *Key ("user/	ax/	bx", KEY_VALUE, "8", KEY_END), KS_END),
+	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_VALUE, "5", KEY_END), *Key ("user:/	ax", KEY_END, KEY_END),
+			   *Key ("user:/	ax/	bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("=5,	ax=,	ax/	bx=8"));
-	EXPECT_EQ (KeySet (5, *Key ("user", KEY_VALUE, "5", KEY_END), *Key ("user/ax", KEY_END, KEY_END),
-			   *Key ("user/ax\\/bx", KEY_VALUE, "8", KEY_END), KS_END),
+	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_VALUE, "5", KEY_END), *Key ("user:/ax", KEY_END, KEY_END),
+			   *Key ("user:/ax\\/bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("=5,ax=,ax\\/bx=8"));
-	EXPECT_EQ (KeySet (5, *Key ("user", KEY_END), *Key ("user/ax", KEY_END, KEY_END), *Key ("user/ax\\/bx", KEY_VALUE, "8", KEY_END),
-			   KS_END),
+	EXPECT_EQ (KeySet (5, *Key ("user:/", KEY_END), *Key ("user:/ax", KEY_END, KEY_END),
+			   *Key ("user:/ax\\/bx", KEY_VALUE, "8", KEY_END), KS_END),
 		   parsePluginArguments ("=,ax=,ax\\/bx=8"));
 }
 
@@ -64,7 +64,7 @@ TEST (MountBackendBuilder, parseArguments)
 	using namespace kdb;
 	using namespace kdb::tools;
 	PluginSpecVector psv1;
-	psv1.push_back (PluginSpec ("a", KeySet (5, *Key ("user/a", KEY_VALUE, "5", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("a", KeySet (5, *Key ("user:/a", KEY_VALUE, "5", KEY_END), KS_END)));
 	psv1.push_back (PluginSpec ("b"));
 	psv1.push_back (PluginSpec ("c"));
 	PluginSpecVector psv2 = parseArguments ("a a=5 b c");
@@ -83,10 +83,10 @@ TEST (MountBackendBuilder, parseVectorArguments)
 	using namespace kdb::tools;
 	PluginSpecVector psv1;
 	psv1.push_back (
-		PluginSpec ("a", KeySet (5, *Key ("user/a", KEY_VALUE, "5", KEY_END), *Key ("user/b", KEY_VALUE, "3", KEY_END), KS_END)));
+		PluginSpec ("a", KeySet (5, *Key ("user:/a", KEY_VALUE, "5", KEY_END), *Key ("user:/b", KEY_VALUE, "3", KEY_END), KS_END)));
 	psv1.push_back (PluginSpec ("b"));
 	psv1.push_back (
-		PluginSpec ("c", KeySet (5, *Key ("user/a", KEY_VALUE, "5", KEY_END), *Key ("user/b", KEY_VALUE, "3", KEY_END), KS_END)));
+		PluginSpec ("c", KeySet (5, *Key ("user:/a", KEY_VALUE, "5", KEY_END), *Key ("user:/b", KEY_VALUE, "3", KEY_END), KS_END)));
 	PluginSpecVector psv2 = parseArguments ({ "a", "a=5,b=3", "b", "c", "a=5,b=3" });
 	CMP_PSV (psv1, psv2);
 	psv2 = parseArguments ({ "a", "a=5,b=3", "b", "c", "a=5,b=3" });
@@ -138,10 +138,10 @@ TEST (MountBackendBuilder, parseArgumentsDoubleOccur)
 	using namespace kdb;
 	using namespace kdb::tools;
 	PluginSpecVector psv1;
-	psv1.push_back (PluginSpec ("a", 0, KeySet (5, *Key ("user/a", KEY_VALUE, "5", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("a", 0, KeySet (5, *Key ("user:/a", KEY_VALUE, "5", KEY_END), KS_END)));
 	psv1.push_back (PluginSpec ("b"));
 	psv1.push_back (PluginSpec ("c"));
-	psv1.push_back (PluginSpec ("a", 1, KeySet (5, *Key ("user/b", KEY_VALUE, "c", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("a", 1, KeySet (5, *Key ("user:/b", KEY_VALUE, "c", KEY_END), KS_END)));
 	PluginSpecVector psv2 = parseArguments ("a a=5 b c a b=c");
 	CMP_PSV (psv1, psv2);
 	psv2 = parseArguments ("  a  a=5  b c a b=c   ");
@@ -159,10 +159,10 @@ TEST (MountBackendBuilder, parseArgumentsRef)
 	using namespace kdb;
 	using namespace kdb::tools;
 	PluginSpecVector psv1;
-	psv1.push_back (PluginSpec ("a", "mya", KeySet (5, *Key ("user/a", KEY_VALUE, "5", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("a", "mya", KeySet (5, *Key ("user:/a", KEY_VALUE, "5", KEY_END), KS_END)));
 	psv1.push_back (PluginSpec ("b", "myb"));
 	psv1.push_back (PluginSpec ("c", "myc"));
-	psv1.push_back (PluginSpec ("a", "othera", KeySet (5, *Key ("user/b", KEY_VALUE, "c", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("a", "othera", KeySet (5, *Key ("user:/b", KEY_VALUE, "c", KEY_END), KS_END)));
 	PluginSpecVector psv2 = parseArguments ("a#mya a=5 b#myb c#myc a#othera b=c");
 	CMP_PSV (psv1, psv2);
 	psv2 = parseArguments ("  a#mya  a=5  b#myb c#myc a#othera b=c   ");
@@ -177,10 +177,10 @@ TEST (MountBackendBuilder, parseArgumentsProvider)
 	using namespace kdb;
 	using namespace kdb::tools;
 	PluginSpecVector psv1;
-	psv1.push_back (PluginSpec ("augeas", "aaa", KeySet (5, *Key ("user/a", KEY_VALUE, "5", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("augeas", "aaa", KeySet (5, *Key ("user:/a", KEY_VALUE, "5", KEY_END), KS_END)));
 	psv1.push_back (PluginSpec ("logging", "logg"));
-	psv1.push_back (PluginSpec ("code", "nee", KeySet (5, *Key ("user/escape", KEY_VALUE, "-", KEY_END), KS_END))),
-		psv1.push_back (PluginSpec ("hexcode", "hexcode", KeySet (5, *Key ("user/escape", KEY_VALUE, "%", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("code", "nee", KeySet (5, *Key ("user:/escape", KEY_VALUE, "-", KEY_END), KS_END))),
+		psv1.push_back (PluginSpec ("hexcode", "hexcode", KeySet (5, *Key ("user:/escape", KEY_VALUE, "%", KEY_END), KS_END)));
 	PluginSpecVector psv2 = parseArguments ("augeas#aaa a=5 logging#logg code#nee escape=% hexcode escape=-");
 	CMP_PSV (psv1, psv2);
 
@@ -197,10 +197,10 @@ TEST (MountBackendBuilder, parseArgumentsProvider)
 		bb.addPlugin (p);
 	}
 	PluginSpecVector psv3;
-	psv3.push_back (PluginSpec ("augeas", "aaa", KeySet (5, *Key ("user/a", KEY_VALUE, "5", KEY_END), KS_END)));
+	psv3.push_back (PluginSpec ("augeas", "aaa", KeySet (5, *Key ("user:/a", KEY_VALUE, "5", KEY_END), KS_END)));
 	psv3.push_back (PluginSpec ("syslog", "logg"));
-	psv3.push_back (PluginSpec ("ccode", "nee", KeySet (5, *Key ("user/escape", KEY_VALUE, "-", KEY_END), KS_END)));
-	psv3.push_back (PluginSpec ("hexcode", "hexcode", KeySet (5, *Key ("user/escape", KEY_VALUE, "%", KEY_END), KS_END)));
+	psv3.push_back (PluginSpec ("ccode", "nee", KeySet (5, *Key ("user:/escape", KEY_VALUE, "-", KEY_END), KS_END)));
+	psv3.push_back (PluginSpec ("hexcode", "hexcode", KeySet (5, *Key ("user:/escape", KEY_VALUE, "%", KEY_END), KS_END)));
 	PluginSpecVector psv4 (bb.begin (), bb.end ());
 	CMP_PSV (psv3, psv4);
 }
@@ -212,8 +212,8 @@ TEST (MountBackendBuilder, parseArgumentsSameProvider)
 	PluginSpecVector psv1;
 	psv1.push_back (PluginSpec ("augeas", "a1"));
 	psv1.push_back (PluginSpec ("logging", "a2"));
-	psv1.push_back (PluginSpec ("code", "a3", KeySet (5, *Key ("user/escape", KEY_VALUE, "%", KEY_END), KS_END)));
-	psv1.push_back (PluginSpec ("code", "a4", KeySet (5, *Key ("user/escape", KEY_VALUE, "-", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("code", "a3", KeySet (5, *Key ("user:/escape", KEY_VALUE, "%", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("code", "a4", KeySet (5, *Key ("user:/escape", KEY_VALUE, "-", KEY_END), KS_END)));
 	psv1.push_back (PluginSpec ("code", "a5"));
 	PluginSpecVector psv2 = parseArguments ("augeas#a1 logging#a2 code#a3 escape=% code#a4 escape=- code#a5");
 	CMP_PSV (psv1, psv2);
@@ -234,8 +234,8 @@ TEST (MountBackendBuilder, parseArgumentsSameProvider)
 	PluginSpecVector psv4 (bb.begin (), bb.end ());
 	psv3.push_back (PluginSpec ("augeas", "a1"));
 	psv3.push_back (PluginSpec ("syslog", "a2"));
-	psv3.push_back (PluginSpec ("ccode", "a3", KeySet (5, *Key ("user/escape", KEY_VALUE, "%", KEY_END), KS_END)));
-	psv3.push_back (PluginSpec ("ccode", "a4", KeySet (5, *Key ("user/escape", KEY_VALUE, "-", KEY_END), KS_END)));
+	psv3.push_back (PluginSpec ("ccode", "a3", KeySet (5, *Key ("user:/escape", KEY_VALUE, "%", KEY_END), KS_END)));
+	psv3.push_back (PluginSpec ("ccode", "a4", KeySet (5, *Key ("user:/escape", KEY_VALUE, "-", KEY_END), KS_END)));
 	psv3.push_back (PluginSpec ("ccode", "a5"));
 	CMP_PSV (psv3, psv4);
 }
@@ -248,8 +248,8 @@ TEST (MountBackendBuilder, parseArgumentsSameProviderAgain)
 	PluginSpecVector psv1;
 	psv1.push_back (PluginSpec ("augeas", "same1"));
 	psv1.push_back (PluginSpec ("logging", "same2"));
-	psv1.push_back (PluginSpec ("code", "same3", KeySet (5, *Key ("user/escape", KEY_VALUE, "%", KEY_END), KS_END)));
-	psv1.push_back (PluginSpec ("code", "same4", KeySet (5, *Key ("user/escape", KEY_VALUE, "-", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("code", "same3", KeySet (5, *Key ("user:/escape", KEY_VALUE, "%", KEY_END), KS_END)));
+	psv1.push_back (PluginSpec ("code", "same4", KeySet (5, *Key ("user:/escape", KEY_VALUE, "-", KEY_END), KS_END)));
 	PluginSpecVector psv2 = parseArguments ("augeas#same1 logging#same2 code#same3 escape=% code#same4 escape=- ");
 	CMP_PSV (psv1, psv2);
 
@@ -269,7 +269,7 @@ TEST (MountBackendBuilder, parseArgumentsSameProviderAgain)
 	PluginSpecVector psv4 (bb.begin (), bb.end ());
 	psv3.push_back (PluginSpec ("augeas", "same1"));
 	psv3.push_back (PluginSpec ("syslog", "same2"));
-	psv3.push_back (PluginSpec ("ccode", "same3", KeySet (5, *Key ("user/escape", KEY_VALUE, "%", KEY_END), KS_END)));
-	psv3.push_back (PluginSpec ("ccode", "same4", KeySet (5, *Key ("user/escape", KEY_VALUE, "-", KEY_END), KS_END)));
+	psv3.push_back (PluginSpec ("ccode", "same3", KeySet (5, *Key ("user:/escape", KEY_VALUE, "%", KEY_END), KS_END)));
+	psv3.push_back (PluginSpec ("ccode", "same4", KeySet (5, *Key ("user:/escape", KEY_VALUE, "-", KEY_END), KS_END)));
 	CMP_PSV (psv3, psv4);
 }

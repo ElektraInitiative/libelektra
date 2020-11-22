@@ -47,32 +47,32 @@ _not_ preserved.
 Mount the plugin:
 
 ```bash
-sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
+sudo kdb mount --with-recommends /etc/hosts system:/hosts hosts
 ```
 
 Print out all known hosts and their aliases:
 
 ```bash
-kdb ls system/hosts
+kdb ls system:/hosts
 ```
 
 Get IP address of ipv4 host "localhost":
 
 ```bash
-kdb get system/hosts/ipv4/localhost
+kdb get system:/hosts/ipv4/localhost
 ```
 
 Check if a comment is belonging to host "localhost":
 
 ```bash
-kdb meta-ls system/hosts/ipv4/localhost
+kdb meta-ls system:/hosts/ipv4/localhost
 ```
 
 Try to change the host "localhost", should fail because it is not an
 IPv4 address:
 
 ```bash
-sudo kdb set system/hosts/ipv4/localhost ::1
+sudo kdb set system:/hosts/ipv4/localhost ::1
 ```
 
 ```sh

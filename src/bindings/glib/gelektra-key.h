@@ -96,7 +96,6 @@ gssize gelektra_key_addbasename (GElektraKey * key, const char * basename);
 
 gssize gelektra_key_getnamesize (const GElektraKey * key);
 gssize gelektra_key_getbasenamesize (const GElektraKey * key);
-gssize gelektra_key_getfullnamesize (const GElektraKey * key);
 
 /* value operations */
 gssize gelektra_key_setstring (GElektraKey * key, const gchar * value);
@@ -130,7 +129,6 @@ gboolean gelektra_key_issystem (const GElektraKey * key);
 gboolean gelektra_key_isuser (const GElektraKey * key);
 gboolean gelektra_key_isstring (const GElektraKey * key);
 gboolean gelektra_key_isbinary (const GElektraKey * key);
-gboolean gelektra_key_isinactive (const GElektraKey * key);
 gboolean gelektra_key_isbelow (const GElektraKey * key, const GElektraKey * other);
 gboolean gelektra_key_isbeloworsame (const GElektraKey * key, const GElektraKey * other);
 gboolean gelektra_key_isdirectbelow (const GElektraKey * key, const GElektraKey * other);

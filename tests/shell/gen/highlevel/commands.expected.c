@@ -41,7 +41,7 @@
 static KeySet * embeddedSpec (void)
 {
 	return ksNew (13,
-	keyNew("", KEY_META, "command", "", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdb", KEY_META, "mountpoint", "tests_gen_elektra_commands.ini", KEY_META, "type", "string", KEY_END),
+	keyNew ("/", KEY_META, "command", "", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdb", KEY_META, "mountpoint", "tests_gen_elektra_commands.ini", KEY_META, "type", "string", KEY_END),
 	keyNew ("/dynamic/#", KEY_META, "args", "remaining", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
 	keyNew ("/get", KEY_META, "command", "get", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdbGet", KEY_META, "type", "string", KEY_END),
 	keyNew ("/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
@@ -100,8 +100,8 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	
 
 	KeySet * contract = ksNew (2,
-	keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
-	keyNew ("system/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
+	keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
+	keyNew ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
 	KS_END);
 ;
 
@@ -149,9 +149,9 @@ void exitForSpecload (int argc, const char ** argv)
 
 	KeySet * spec = embeddedSpec ();
 
-	Key * parentKey = keyNew ("spec/tests/script/gen/highlevel/commands", KEY_META, "system/elektra/quickdump/noparent", "", KEY_END);
+	Key * parentKey = keyNew ("spec:/tests/script/gen/highlevel/commands", KEY_META, "system:/elektra/quickdump/noparent", "", KEY_END);
 
-	KeySet * specloadConf = ksNew (1, keyNew ("system/sendspec", KEY_END), KS_END);
+	KeySet * specloadConf = ksNew (1, keyNew ("system:/sendspec", KEY_END), KS_END);
 	ElektraInvokeHandle * specload = elektraInvokeOpen ("specload", specloadConf, parentKey);
 
 	int result = elektraInvoke2Args (specload, "sendspec", spec, parentKey);

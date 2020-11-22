@@ -14,13 +14,13 @@ public class KDBExceptionTest
 	{
 		String errorNumber = InstallationException.errorNumber ();
 		String configFile = "file.conf";
-		String mountpoint = "system/test";
+		String mountpoint = "system:/test";
 		String file = "kdb.c";
 		String line = "50";
 		String module = "kdb";
 		String reason = "This is a testerror";
 
-		Key errorKey = Key.create ("user/temporary/errorkey");
+		Key errorKey = Key.create ("user:/temporary/errorkey");
 		errorKey.setMeta ("error/number", errorNumber);
 		errorKey.setMeta ("error/configfile", configFile);
 		errorKey.setMeta ("error/mountpoint", mountpoint);
@@ -57,7 +57,7 @@ public class KDBExceptionTest
 	{
 		String errorNumber = InstallationException.errorNumber ();
 		String reason = "This is a testerror";
-		String errorKeyName = "user/temporary/errorkey";
+		String errorKeyName = "user:/temporary/errorkey";
 
 		Key errorKey = Key.create (errorKeyName);
 		errorKey.setMeta ("error/number", errorNumber);

@@ -16,7 +16,7 @@ class MyStaticGetPolicy
 public:
 	static kdb::Key get (ELEKTRA_UNUSED kdb::KeySet & ks, ELEKTRA_UNUSED kdb::Key const & spec)
 	{
-		return kdb::Key ("user/something", KEY_VALUE, "23", KEY_END);
+		return kdb::Key ("user:/something", KEY_VALUE, "23", KEY_END);
 	}
 };
 
@@ -97,7 +97,7 @@ public:
 	typedef T type;
 	static kdb::Key set (kdb::KeySet & ks, kdb::Key const & spec)
 	{
-		return kdb::DefaultSetPolicy::setWithNamespace (ks, spec, "dir");
+		return kdb::DefaultSetPolicy::setWithNamespace (ks, spec, "dir:");
 	}
 };
 
@@ -117,13 +117,13 @@ TEST (test_contextual_policy, setPolicy)
 	EXPECT_EQ (cv, 88);
 	EXPECT_EQ (cv, 88);
 	EXPECT_TRUE (ks.lookup ("/test")) << "did not find /test";
-	EXPECT_FALSE (ks.lookup ("dir/test")) << "found dir/test wrongly";
+	EXPECT_FALSE (ks.lookup ("dir:/test")) << "found dir:/test wrongly";
 	cv = 40;
 	EXPECT_EQ (cv, 40);
 	cv.syncKeySet ();
 	EXPECT_EQ (cv, 40);
 	EXPECT_TRUE (ks.lookup ("/test")) << "did not find /test";
-	EXPECT_TRUE (ks.lookup ("dir/test")) << "could not find dir/test";
+	EXPECT_TRUE (ks.lookup ("dir:/test")) << "could not find dir:/test";
 }
 
 TEST (test_contextual_policy, readonlyPolicy)
@@ -152,14 +152,14 @@ TEST (test_contextual_policy, dynamicGetPolicy)
 {
 	using namespace kdb;
 	KeySet ks;
-	ks.append (Key ("user/available", KEY_VALUE, "12", KEY_END));
+	ks.append (Key ("user:/available", KEY_VALUE, "12", KEY_END));
 	Context c;
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
 		(ks, c, Key("/test",
 			KEY_CASCADING_NAME,
 			KEY_META, "default", "88",
-			KEY_META, "override/#0", "user/available",
+			KEY_META, "override/#0", "user:/available",
 			KEY_END));
 	// clang-format on
 
@@ -188,14 +188,14 @@ TEST (test_contextual_policy, root)
 {
 	using namespace kdb;
 	KeySet ks;
-	ks.append (Key ("user/available", KEY_VALUE, "12", KEY_END));
+	ks.append (Key ("user:/available", KEY_VALUE, "12", KEY_END));
 	Context c;
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
 		(ks, c, Key("/",
 			KEY_CASCADING_NAME,
 			KEY_META, "default", "88",
-			KEY_META, "override/#0", "user/available",
+			KEY_META, "override/#0", "user:/available",
 			KEY_END));
 	// clang-format on
 

@@ -1,0 +1,43 @@
+<svg width="159pt" height="188pt" viewBox="0.00 0.00 159.00 188.00" xmlns="http://www.w3.org/2000/svg"
+        xmlns:xlink="http://www.w3.org/1999/xlink">
+        <rect width="100%" height="100%" fill="white"/>
+        <g id="graph1" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
+                <g id="node1" class="node">
+                        <ellipse fill="none" stroke="black" cx="81" cy="-162" rx="36.9627" ry="18"></ellipse>
+                        <text text-anchor="middle" x="81" y="-157.8" font-family="Times,serif"
+                                font-size="14.00">elektra</text>
+                </g>
+                <g id="node3" class="node">
+                        <ellipse fill="none" stroke="black" cx="39" cy="-90" rx="39.1943" ry="18"></ellipse>
+                        <text text-anchor="middle" x="39" y="-85.8" font-family="Times,serif"
+                                font-size="14.00">version</text>
+                </g>
+                <g id="edge2" class="edge">
+                        <path fill="none" stroke="black"
+                                d="M65.8734,-135.789C60.2178,-126.363 53.9443,-115.907 48.882,-107.47"></path>
+                        <polygon fill="black" stroke="black"
+                                points="62.9004,-137.637 71.0466,-144.411 68.9028,-134.035 62.9004,-137.637"></polygon>
+                </g>
+                <g id="node5" class="node">
+                        <ellipse fill="none" stroke="black" cx="124" cy="-90" rx="27.1834" ry="18"></ellipse>
+                        <text text-anchor="middle" x="124" y="-85.8" font-family="Times,serif"
+                                font-size="14.00">data</text>
+                </g>
+                <g id="edge4" class="edge">
+                        <path fill="none" stroke="black"
+                                d="M96.5673,-135.658C102.447,-126.086 108.97,-115.468 114.179,-106.988"></path>
+                        <polygon fill="black" stroke="black"
+                                points="93.4424,-134.058 91.1904,-144.411 99.4069,-137.722 93.4424,-134.058"></polygon>
+                </g>
+                <g id="node7" class="node">
+                        <ellipse fill="none" stroke="black" cx="39" cy="-18" rx="27" ry="18"></ellipse>
+                        <text text-anchor="middle" x="39" y="-13.8" font-family="Times,serif"
+                                font-size="14.00">info</text>
+                </g>
+                <g id="edge6" class="edge">
+                        <path fill="none" stroke="black" d="M39,-61.6651C39,-53.0537 39,-43.7913 39,-36.1043"></path>
+                        <polygon fill="black" stroke="black"
+                                points="35.5001,-61.6966 39,-71.6966 42.5001,-61.6967 35.5001,-61.6966"></polygon>
+                </g>
+        </g>
+</svg>

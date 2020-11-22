@@ -22,6 +22,7 @@
 #include "ansicolors.hpp"
 
 #include <key.hpp>
+#include <keyset.hpp>
 
 #include <iomanip>
 #include <ostream>
@@ -72,39 +73,44 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 {
 	try
 	{
-		if (!error.getMeta<const kdb::Key> ("warnings"))
+		// TODO: use C++ binding version of keyMeta
+		KeySet meta (ckdb::ksDup (ckdb::keyMeta (error.getKey ())));
+		Key parent ("meta:/warnings", KEY_END);
+		auto warnings = meta.cut (parent);
+
+		int nr = warnings.size ();
+		if (nr == 0)
 		{
-			// no warnings were issued
 			return os;
 		}
 
-		int nr = error.getMeta<int> ("warnings");
 		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Sorry, " << nr + 1 << " warning"
 		   << (!nr ? " was" : "s were") << " issued ;(" << getErrorColor (ANSI_COLOR::RESET) << std::endl;
 
-		for (int i = 0; i <= nr; i++)
+		for (auto it = warnings.begin () + 1; it != warnings.end (); ++it)
 		{
-			std::ostringstream name;
-			name << "warnings/#" << std::setfill ('0') << std::setw (2) << i;
-			// os << "\t" << name.str() << ": " << error.getMeta<std::string>(name.str()) << std::endl;
-			os << "\tSorry, module " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::BLUE)
-			   << error.getMeta<std::string> (name.str () + "/module") << getErrorColor (ANSI_COLOR::RESET)
-			   << " issued the warning " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::RED)
-			   << error.getMeta<std::string> (name.str () + "/number") << getErrorColor (ANSI_COLOR::RESET) << ":" << std::endl;
-			os << "\t" << error.getMeta<std::string> (name.str () + "/description") << ": "
-			   << error.getMeta<std::string> (name.str () + "/reason") << std::endl;
-			if (printVerbose)
+			auto name = it->getName ();
+			if (it->isDirectBelow (parent))
 			{
-				os << getErrorColor (ANSI_COLOR::BOLD) << "\tMountpoint: " << getErrorColor (ANSI_COLOR::RESET)
-				   << error.getMeta<std::string> (name.str () + "/mountpoint") << std::endl;
-				os << getErrorColor (ANSI_COLOR::BOLD) << "\tConfigfile: " << getErrorColor (ANSI_COLOR::RESET)
-				   << error.getMeta<std::string> (name.str () + "/configfile") << std::endl;
-			}
-			if (printDebug)
-			{
-				os << getErrorColor (ANSI_COLOR::BOLD) << "\tAt: " << getErrorColor (ANSI_COLOR::RESET)
-				   << error.getMeta<std::string> (name.str () + "/file") << ":"
-				   << error.getMeta<std::string> (name.str () + "/line") << std::endl;
+				os << "\tSorry, module " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::BLUE)
+				   << warnings.get<std::string> (name + "/module") << getErrorColor (ANSI_COLOR::RESET)
+				   << " issued the warning " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::RED)
+				   << warnings.get<std::string> (name + "/number") << getErrorColor (ANSI_COLOR::RESET) << ":" << std::endl;
+				os << "\t" << warnings.get<std::string> (name + "/description") << ": "
+				   << warnings.get<std::string> (name + "/reason") << std::endl;
+				if (printVerbose)
+				{
+					os << getErrorColor (ANSI_COLOR::BOLD) << "\tMountpoint: " << getErrorColor (ANSI_COLOR::RESET)
+					   << warnings.get<std::string> (name + "/mountpoint") << std::endl;
+					os << getErrorColor (ANSI_COLOR::BOLD) << "\tConfigfile: " << getErrorColor (ANSI_COLOR::RESET)
+					   << warnings.get<std::string> (name + "/configfile") << std::endl;
+				}
+				if (printDebug)
+				{
+					os << getErrorColor (ANSI_COLOR::BOLD) << "\tAt: " << getErrorColor (ANSI_COLOR::RESET)
+					   << warnings.get<std::string> (name + "/file") << ":"
+					   << warnings.get<std::string> (name + "/line") << std::endl;
+				}
 			}
 		}
 	}

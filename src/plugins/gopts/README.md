@@ -24,7 +24,7 @@ The preferred way of using this plugin is via `kdbEnsure`:
 ```c
 KDB * kdb = kdbOpen (parentKey);
 
-KeySet * contract = ksNew (1, keyNew ("system/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
+KeySet * contract = ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
 int rc = kdbEnsure (kdb, contract, parentKey);
 if (rc != 0)
 {
@@ -39,6 +39,6 @@ kdbGet (kdb, ks, parentKey);
 ## Help message
 
 If `elektraGetOpts` determined that the application is in help mode (i.e. `--help` was used), `gopts` will set the key
-`proc/elektra/gopts/help` to `1`. It will also invoke `elektraGetOptsHelpMessage` and write the result into the key
-`proc/elektra/gopts/help/message`. The `usage` and `prefix` values used for this call can be configured, via the
+`proc:/elektra/gopts/help` to `1`. It will also invoke `elektraGetOptsHelpMessage` and write the result into the key
+`proc:/elektra/gopts/help/message`. The `usage` and `prefix` values used for this call can be configured, via the
 `/help/usage` and `/help/prefix` config keys.

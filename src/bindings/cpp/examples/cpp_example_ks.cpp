@@ -12,7 +12,7 @@
 
 int main ()
 {
-	kdb::KeySet ks (2, *kdb::Key ("user/1", KEY_END), *kdb::Key ("user/2", KEY_END), KS_END);
+	kdb::KeySet ks (2, *kdb::Key ("user:/1", KEY_END), *kdb::Key ("user:/2", KEY_END), KS_END);
 
 	ks.rewind ();
 	while (ks.next ())

@@ -54,13 +54,13 @@ class KdbtoolsPluginSpecTestCases < Test::Unit::TestCase
       assert_equal "5", p.refname
       assert_equal true, p.is_refnumber?
 
-      key = Kdb::Key.new "system/modules", value: "nothing"
+      key = Kdb::Key.new "system:/modules", value: "nothing"
       config = Kdb::KeySet.new key
 
       p.config= config
       assert_equal config, p.config
 
-      key2 = Kdb::Key.new "system/modules/2", value: "nothing2"
+      key2 = Kdb::Key.new "system:/modules/2", value: "nothing2"
       config2 = Kdb::KeySet.new key2
       p.append_config config2
       config << config2

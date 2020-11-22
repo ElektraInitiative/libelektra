@@ -17,30 +17,30 @@ Let us start with a motivating example first:
 We mount the lookup table with the following command:
 
 ```sh
-sudo kdb mount --with-recommends /etc/hosts system/hosts hosts
+sudo kdb mount --with-recommends /etc/hosts system:/hosts hosts
 ```
 
 1. `/etc/hosts` is the configuration file we want to mount
-2. `system/hosts` is the path it should have in the key database, also known as **mount point**
+2. `system:/hosts` is the path it should have in the key database, also known as **mount point**
 3. `hosts` is the _storage plugin_ that can read and write this configuration format.
 
 > Consider using mount with the option `--with-recommends`, which loads all plugins recommended by the _hosts_ plugin.
 > You can see the recommended plugins of _hosts_ if you look at the output of `kdb plugin-info hosts`.
 > Hosts recommends the _glob_, _network_ and _error_ plugins.
-> Using `--with-recommends`, more validation is done when modifying keys in `system/hosts`.
+> Using `--with-recommends`, more validation is done when modifying keys in `system:/hosts`.
 
-Now we use `kdb file`, to verify that all configuration below `system/hosts` is stored in `/etc/hosts`:
+Now we use `kdb file`, to verify that all configuration below `system:/hosts` is stored in `/etc/hosts`:
 
 ```sh
-kdb file system/hosts
+kdb file system:/hosts
 #> /etc/hosts
 ```
 
-After mounting a file, we can modify keys below `system/hosts`.
+After mounting a file, we can modify keys below `system:/hosts`.
 We need to be root, because we modify `/etc/hosts`.
 
 ```sh
-sudo kdb set system/hosts/ipv4/mylocalhost 127.0.0.33
+sudo kdb set system:/hosts/ipv4/mylocalhost 127.0.0.33
 ```
 
 These changes are reflected in `/etc/hosts` instantly:
@@ -60,10 +60,10 @@ ping -c 1 mylocalhost
 We are also safe against wrong changes:
 
 ```sh
-sudo kdb set system/hosts/ipv4/mylocalhost ::1
+sudo kdb set system:/hosts/ipv4/mylocalhost ::1
 # RET:5
 # ERROR:51
-sudo kdb set system/hosts/ipv4/mylocalhost 300.0.0.1
+sudo kdb set system:/hosts/ipv4/mylocalhost 300.0.0.1
 # RET:5
 # ERROR:51
 ```
@@ -72,19 +72,19 @@ We can undo these changes with:
 
 ```sh
 # remove the key ...
-sudo kdb rm system/hosts/ipv4/mylocalhost
+sudo kdb rm system:/hosts/ipv4/mylocalhost
 
 # ... and unmount
-sudo kdb umount system/hosts
+sudo kdb umount system:/hosts
 ```
 
 ###### Why do you Need Superuser Privileges to Mount Files?
 
-Elektra manages its mount points in configuration below **system/elektra/mountpoints**.
+Elektra manages its mount points in configuration below **system:/elektra/mountpoints**.
 The file that holds this configuration is, in the same way as `/etc/hosts` before, only writable by administrators:
 
 ```sh
-kdb file system/elektra/mountpoints
+kdb file system:/elektra/mountpoints
 #> /etc/kdb/elektra.ecf
 ```
 
@@ -158,28 +158,28 @@ So let us have a look at the [type](/src/plugins/type/README.md) and [mathcheck]
 
 ```sh
 # mount the backend with the plugins ...
-kdb mount example.ni user/example ni type
+kdb mount example.ni user:/example ni type
 
 # ... and set a value for the demonstration
-kdb set user/example/enumtest/fruit apple
-#> Create a new key user/example/enumtest/fruit with string "apple"
+kdb set user:/example/enumtest/fruit apple
+#> Create a new key user:/example/enumtest/fruit with string "apple"
 ```
 
 By entering `kdb plugin-info type` in the commandline, we can find out how to use this plugin.
 It turns out that this plugin allows us to define a list of valid values for our keys via the metavalue `check/enum`.
 
 ```sh
-kdb meta-set user/example/enumtest/fruit check/type enum
-kdb meta-set user/example/enumtest/fruit check/enum "#2"
-kdb meta-set user/example/enumtest/fruit check/enum/#0 apple
-kdb meta-set user/example/enumtest/fruit check/enum/#1 banana
-kdb meta-set user/example/enumtest/fruit check/enum/#2 grape
-kdb set user/example/enumtest/fruit tomato
+kdb meta-set user:/example/enumtest/fruit check/type enum
+kdb meta-set user:/example/enumtest/fruit check/enum "#2"
+kdb meta-set user:/example/enumtest/fruit check/enum/#0 apple
+kdb meta-set user:/example/enumtest/fruit check/enum/#1 banana
+kdb meta-set user:/example/enumtest/fruit check/enum/#2 grape
+kdb set user:/example/enumtest/fruit tomato
 # RET:5
 # this fails because tomato is not in the list of valid values
 ```
 
-You can have a look or even edit the configuration file with `kdb editor user/example ni` to see how the value and metadata is stored:
+You can have a look or even edit the configuration file with `kdb editor user:/example ni` to see how the value and metadata is stored:
 
 ```ini
 enumtest/fruit = apple
@@ -203,13 +203,13 @@ If you want to find out more about validation I recommend reading [this](/doc/tu
 #### Backends
 
 The plugins together with the configuration file form a _backend_. The backend determines how Elektra stores data below a mount point.
-You can examine every mount points backend by looking at the configuration below `system/elektra/mountpoints/<mount point>/`.
+You can examine every mount points backend by looking at the configuration below `system:/elektra/mountpoints/<mount point>/`.
 
 ## Limitations
 
 One drawback of this approach is, that an application can bypass Elektra and change configuration files directly. If for example Elektra is configured to [validate](/doc/tutorials/validation.md) new configuration values before updating them, this is something you do not want to happen.
 
-Another drawback is that mounting is static. In a previous example we mounted the `/.git/config` file into `dir/git`. Now the `dir` namespace of every directory stores the configuration below `dir/git` in this directories `/.git/config` file. And this mount point is the same for all users and all directories.
+Another drawback is that mounting is static. In a previous example we mounted the `/.git/config` file into `dir:/git`. Now the `dir` namespace of every directory stores the configuration below `dir:/git` in this directories `/.git/config` file. And this mount point is the same for all users and all directories.
 So you can't have different configuration files for the same mount points in other directories.
 Because of the same reason you cannot have different configuration file names or syntax for the same mount point in the `user` namespace.
 

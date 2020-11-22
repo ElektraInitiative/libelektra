@@ -103,7 +103,7 @@ int init (int argc, char ** argv)
  * @return an allocated root key */
 Key * create_root_key (const char * backendName)
 {
-	Key * root = keyNew ("user/tests", KEY_END);
+	Key * root = keyNew ("user:/tests", KEY_END);
 	/*Make mountpoint beneath root, and do all tests here*/
 	keyAddBaseName (root, backendName);
 	keySetString (root, backendName);
@@ -116,7 +116,7 @@ Key * create_root_key (const char * backendName)
  * @return an allocated configuration keyset for a backend*/
 KeySet * create_conf (const char * filename)
 {
-	return ksNew (2, keyNew ("system/path", KEY_VALUE, filename, KEY_END), KS_END);
+	return ksNew (2, keyNew ("system:/path", KEY_VALUE, filename, KEY_END), KS_END);
 }
 
 
@@ -404,48 +404,32 @@ void generate_split (Split * split)
 int output_warnings (Key * warningKey)
 {
 	//! [warnings]
-	const Key * metaWarnings = keyGetMeta (warningKey, "warnings");
-	if (!metaWarnings) return 1; /* There are no current warnings */
+	Key * cutpoint = keyNew ("meta:/warnings", KEY_END);
+	KeySet * warnings = ksCut (keyMeta (warningKey), cutpoint);
 
-	int nrWarnings = atoi (keyString (metaWarnings));
-
-	printf ("There are %d warnings\n", nrWarnings + 1);
-	for (int i = 0; i <= nrWarnings; ++i)
+	if (!warningKey || ksGetSize (warnings) == 0)
 	{
-		char buffer[] = "warnings/#00\0description";
-		buffer[10] = i / 10 % 10 + '0';
-		buffer[11] = i % 10 + '0';
-		printf ("buffer is: %s\n", buffer);
-		strncat (buffer, "/number", sizeof (buffer) - strlen (buffer) - 1);
-		printf ("number: %s\n", keyString (keyGetMeta (warningKey, buffer)));
-		buffer[12] = '\0';
-		strncat (buffer, "/description", sizeof (buffer) - strlen (buffer) - 1);
-		printf ("description: %s\n", keyString (keyGetMeta (warningKey, buffer)));
-		buffer[12] = '\0';
-		strncat (buffer, "/module", sizeof (buffer) - strlen (buffer) - 1);
-		keyGetMeta (warningKey, buffer);
-		printf ("module: %s\n", keyString (keyGetMeta (warningKey, buffer)));
-		buffer[12] = '\0';
-		strncat (buffer, "/file", sizeof (buffer) - strlen (buffer) - 1);
-		keyGetMeta (warningKey, buffer);
-		printf ("file: %s\n", keyString (keyGetMeta (warningKey, buffer)));
-		buffer[12] = '\0';
-		strncat (buffer, "/line", sizeof (buffer) - strlen (buffer) - 1);
-		keyGetMeta (warningKey, buffer);
-		printf ("line: %s\n", keyString (keyGetMeta (warningKey, buffer)));
-		buffer[12] = '\0';
-		strncat (buffer, "/reason", sizeof (buffer) - strlen (buffer) - 1);
-		keyGetMeta (warningKey, buffer);
-		printf ("reason: %s\n", keyString (keyGetMeta (warningKey, buffer)));
-		buffer[12] = '\0';
-		strncat (buffer, "/mountpoint", sizeof (buffer) - strlen (buffer) - 1);
-		keyGetMeta (warningKey, buffer);
-		printf ("reason: %s\n", keyString (keyGetMeta (warningKey, buffer)));
-		buffer[12] = '\0';
-		strncat (buffer, "/configfile", sizeof (buffer) - strlen (buffer) - 1);
-		keyGetMeta (warningKey, buffer);
-		printf ("reason: %s\n", keyString (keyGetMeta (warningKey, buffer)));
+		ksDel (warnings);
+		keyDel (cutpoint);
+		return 1;
 	}
+
+	printf ("There are %zu warnings\n", ksGetSize (warnings));
+	elektraCursor i = 1;
+	while (i < ksGetSize (warnings))
+	{
+		++i;
+		Key * cur = ksAtCursor (warnings, i);
+		while (!keyIsDirectlyBelow (cutpoint, cur))
+		{
+			printf ("%s: %s\n", keyName (cur) + keyGetNameSize (cutpoint), keyString (cur));
+			++i;
+			cur = ksAtCursor (warnings, i);
+		}
+		printf ("\n");
+	}
+	ksDel (warnings);
+	keyDel (cutpoint);
 	//! [warnings]
 
 	return 0;

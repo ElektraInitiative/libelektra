@@ -13,6 +13,7 @@
 #ignore all build directories of cmake
 build*/
 cmake-build*/
+!scripts/build/
 
 #ignore ctags + gdb history files
 .ctags
@@ -37,6 +38,7 @@ nbproject/
 
 #ignore pyc files
 *.pyc
+__pycache__
 
 #ignore CLion project files
 ## User-specific stuff

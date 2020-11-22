@@ -1,4 +1,4 @@
-Mountpoint: user/tests/db
+Mountpoint: user:/tests/db
 File: dbtest.ecf
 
 < kdb mount $File $Mountpoint dump
@@ -7,7 +7,7 @@ File: dbtest.ecf
 
 < kdb set $Mountpoint/key3 val2
 
-STDOUT: user/tests/db/key⏎user/tests/db/key3
+STDOUT: user:/tests/db/key⏎user:/tests/db/key3
 < kdb ls $Mountpoint
 
 RET: 0

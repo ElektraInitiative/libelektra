@@ -470,9 +470,9 @@ mod test {
     use super::*;
     use crate::{KeyBuilder, LookupOption};
 
-    const PARENT_KEY: &str = "user/sw/tests/rust/1/";
-    const KEY_1_NAME: &str = "user/sw/tests/rust/1/key_name";
-    const KEY_2_NAME: &str = "user/sw/tests/rust/1/key_name/2";
+    const PARENT_KEY: &str = "user:/sw/tests/rust/1/";
+    const KEY_1_NAME: &str = "user:/sw/tests/rust/1/key_name";
+    const KEY_2_NAME: &str = "user:/sw/tests/rust/1/key_name/2";
 
     const KEY_1_VALUE: &str = "key_value_1";
     const KEY_2_VALUE: &str = "key_value_2";

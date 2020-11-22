@@ -7,6 +7,7 @@
  */
 
 
+#include "kdblogger.h"
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
@@ -166,19 +167,12 @@
  */
 Key * keyNew (const char * name, ...)
 {
-	Key * k;
+	if (!name) return NULL;
 
-	if (!name)
-	{
-		k = elektraCalloc (sizeof (Key));
-	}
-	else
-	{
-		va_list va;
-		va_start (va, name);
-		k = keyVNew (name, va);
-		va_end (va);
-	}
+	va_list va;
+	va_start (va, name);
+	Key * k = keyVNew (name, va);
+	va_end (va);
 
 	return k;
 }
@@ -224,113 +218,121 @@ static int elektraSetMode (Key * key, mode_t mode)
  */
 Key * keyVNew (const char * name, va_list va)
 {
+	if (!name) return NULL;
+
 	Key * key = elektraCalloc (sizeof (Key));
 
-	keyInit (key);
-	if (name)
+	elektraKeyFlags action = 0;
+	size_t value_size = 0;
+	void * value = 0;
+	void (*func) (void) = 0;
+	int flags = 0;
+	char * owner = 0;
+	int mode = 0;
+	int hasMode = 0;
+
+	while ((action = va_arg (va, elektraKeyFlags)))
 	{
-		elektraKeyFlags action = 0;
-		size_t value_size = 0;
-		void * value = 0;
-		void (*func) (void) = 0;
-		int flags = 0;
-		char * owner = 0;
-		int mode = 0;
-		int hasMode = 0;
-
-		while ((action = va_arg (va, elektraKeyFlags)))
+		switch (action)
 		{
-			switch (action)
-			{
-			/* flags with an argument */
-			case KEY_SIZE:
-				value_size = va_arg (va, size_t);
-				break;
-			case KEY_VALUE:
-				value = va_arg (va, void *);
-				if (value_size && keyIsBinary (key))
-					keySetBinary (key, value, value_size);
-				else if (keyIsBinary (key))
-					keySetBinary (key, value, elektraStrLen (value));
-				else
-					keySetString (key, value);
-				break;
-			case KEY_FUNC:
-				func = va_arg (va, void (*) (void));
-				keySetBinary (key, &func, sizeof (func));
-				break;
-			case KEY_META:
-				value = va_arg (va, char *);
-				/* First parameter is name */
-				keySetMeta (key, value, va_arg (va, char *));
-				break;
+		/* flags with an argument */
+		case KEY_SIZE:
+			value_size = va_arg (va, size_t);
+			break;
+		case KEY_VALUE:
+			value = va_arg (va, void *);
+			if (value_size && keyIsBinary (key))
+				keySetBinary (key, value, value_size);
+			else if (keyIsBinary (key))
+				keySetBinary (key, value, elektraStrLen (value));
+			else
+				keySetString (key, value);
+			break;
+		case KEY_FUNC:
+			func = va_arg (va, void (*) (void));
+			keySetBinary (key, &func, sizeof (func));
+			break;
+		case KEY_META:
+			value = va_arg (va, char *);
+			/* First parameter is name */
+			keySetMeta (key, value, va_arg (va, char *));
+			break;
 
-			/* flags without an argument */
-			case KEY_FLAGS:
-				flags |= va_arg (va, int); // FALLTHROUGH
-			case KEY_BINARY:
-			case KEY_LOCK_NAME:
-			case KEY_LOCK_VALUE:
-			case KEY_LOCK_META:
-			case KEY_CASCADING_NAME:
-			case KEY_META_NAME:
-			case KEY_EMPTY_NAME:
-				if (action != KEY_FLAGS) flags |= action;
-				if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
-				break;
+		/* flags without an argument */
+		case KEY_FLAGS:
+			flags |= va_arg (va, int); // FALLTHROUGH
+		case KEY_BINARY:
+		case KEY_LOCK_NAME:
+		case KEY_LOCK_VALUE:
+		case KEY_LOCK_META:
+		case KEY_CASCADING_NAME:
+		case KEY_META_NAME:
+		case KEY_EMPTY_NAME:
+			if (action != KEY_FLAGS) flags |= action;
+			if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
+			break;
 
-			/* deprecated flags */
-			case KEY_NAME:
-				name = va_arg (va, char *);
-				break;
-			case KEY_OWNER:
-				owner = va_arg (va, char *);
-				break;
-			case KEY_COMMENT:
-				keySetMeta (key, "comment", va_arg (va, char *));
-				break;
-			case KEY_UID:
-				elektraSetMetaInt (key, "uid", va_arg (va, int));
-				break;
-			case KEY_GID:
-				elektraSetMetaInt (key, "gid", va_arg (va, int));
-				break;
-			case KEY_DIR:
-				mode |= KDB_DIR_MODE;
-				break;
-			case KEY_MODE:
-				hasMode = 1;
-				mode |= va_arg (va, int);
-				break;
-			case KEY_ATIME:
-				elektraSetMetaInt (key, "atime", va_arg (va, time_t));
-				break;
-			case KEY_MTIME:
-				elektraSetMetaInt (key, "mtime", va_arg (va, time_t));
-				break;
-			case KEY_CTIME:
-				elektraSetMetaInt (key, "ctime", va_arg (va, time_t));
-				break;
+		/* deprecated flags */
+		case KEY_NAME:
+			name = va_arg (va, char *);
+			break;
+		case KEY_OWNER:
+			owner = va_arg (va, char *);
+			break;
+		case KEY_COMMENT:
+			keySetMeta (key, "comment", va_arg (va, char *));
+			break;
+		case KEY_UID:
+			elektraSetMetaInt (key, "uid", va_arg (va, int));
+			break;
+		case KEY_GID:
+			elektraSetMetaInt (key, "gid", va_arg (va, int));
+			break;
+		case KEY_DIR:
+			mode |= KDB_DIR_MODE;
+			break;
+		case KEY_MODE:
+			hasMode = 1;
+			mode |= va_arg (va, int);
+			break;
+		case KEY_ATIME:
+			elektraSetMetaInt (key, "atime", va_arg (va, time_t));
+			break;
+		case KEY_MTIME:
+			elektraSetMetaInt (key, "mtime", va_arg (va, time_t));
+			break;
+		case KEY_CTIME:
+			elektraSetMetaInt (key, "ctime", va_arg (va, time_t));
+			break;
 
-			default:
-				ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyNew",
-						(kdb_unsigned_long_long_t) action);
-				break;
-			}
+		default:
+			ELEKTRA_ASSERT (0, "Unknown option " ELEKTRA_UNSIGNED_LONG_LONG_F " in keyNew", (kdb_unsigned_long_long_t) action);
+			break;
 		}
-
-		elektraKeyFlags name_options = flags & (KEY_CASCADING_NAME | KEY_META_NAME | KEY_EMPTY_NAME);
-		elektraKeySetName (key, name, name_options);
-
-		if (!hasMode && mode == KDB_DIR_MODE)
-			elektraSetMode (key, KDB_FILE_MODE | KDB_DIR_MODE);
-		else if (mode != 0)
-			elektraSetMode (key, mode);
-
-		if (owner) keySetOwner (key, owner);
-
-		(void) keyLock (key, flags);
 	}
+
+	if (keySetName (key, name) < 0)
+	{
+		ELEKTRA_LOG_WARNING ("Invalid name: %s", name);
+		elektraFree (key);
+		return NULL;
+	}
+
+	if (!hasMode && mode == KDB_DIR_MODE)
+	{
+		elektraSetMode (key, KDB_FILE_MODE | KDB_DIR_MODE);
+	}
+	else if (mode != 0)
+	{
+		elektraSetMode (key, mode);
+	}
+
+	if (owner)
+	{
+		keySetOwner (key, owner);
+	}
+
+	keyLock (key, flags);
 	return key;
 }
 
@@ -382,11 +384,9 @@ int g (const Key * source, KeySet * ks)
  */
 Key * keyDup (const Key * source)
 {
-	Key * dest = 0;
-
 	if (!source) return 0;
 
-	dest = keyNew (0, KEY_END);
+	Key * dest = elektraCalloc (sizeof (Key));
 	if (!dest) return 0;
 
 	/* Copy the struct data */
@@ -397,7 +397,7 @@ Key * keyDup (const Key * source)
 	dest->flags = KEY_FLAG_SYNC;
 
 	/* prepare to set dynamic properties */
-	dest->key = dest->data.v = dest->meta = 0;
+	dest->key = dest->ukey = dest->data.v = dest->meta = 0;
 
 	/* copy dynamic properties */
 	if (keyCopy (dest, source) == -1)
@@ -477,19 +477,31 @@ int keyCopy (Key * dest, const Key * source)
 
 	// remember dynamic memory to be removed
 	char * destKey = dest->key;
+	char * destUKey = dest->ukey;
 	void * destData = dest->data.c;
 	KeySet * destMeta = dest->meta;
 
 	// duplicate dynamic properties
 	if (source->key)
 	{
-		dest->key = elektraStrNDup (source->key, source->keySize + source->keyUSize);
+		dest->key = elektraStrNDup (source->key, source->keySize);
 		if (!dest->key) goto memerror;
 	}
 	else
 	{
 		dest->key = 0;
 	}
+
+	if (source->ukey)
+	{
+		dest->ukey = elektraStrNDup (source->ukey, source->keyUSize);
+		if (!dest->ukey) goto memerror;
+	}
+	else
+	{
+		dest->ukey = 0;
+	}
+
 
 	if (source->data.v)
 	{
@@ -521,6 +533,7 @@ int keyCopy (Key * dest, const Key * source)
 
 	// free old resources of destination
 	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (destKey);
+	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (destUKey);
 	if (!test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (destData);
 	ksDel (destMeta);
 
@@ -535,6 +548,13 @@ memerror:
 	dest->data.v = destData;
 	dest->meta = destMeta;
 	return -1;
+}
+
+static void keyClearNameValue (Key * key)
+{
+	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
+	if (key->ukey && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->ukey);
+	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
 }
 
 
@@ -567,8 +587,6 @@ memerror:
  */
 int keyDel (Key * key)
 {
-	int rc;
-
 	if (!key) return -1;
 
 	if (key->ksReference > 0)
@@ -578,7 +596,7 @@ int keyDel (Key * key)
 
 	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
 
-	rc = keyClear (key);
+	keyClearNameValue (key);
 
 	ksDel (key->meta);
 
@@ -587,7 +605,7 @@ int keyDel (Key * key)
 		elektraFree (key);
 	}
 
-	return rc;
+	return 0;
 }
 
 /**
@@ -632,14 +650,14 @@ int keyClear (Key * key)
 
 	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
 
-	if (key->key && !test_bit (key->flags, KEY_FLAG_MMAP_KEY)) elektraFree (key->key);
-	if (key->data.v && !test_bit (key->flags, KEY_FLAG_MMAP_DATA)) elektraFree (key->data.v);
+	keyClearNameValue (key);
 
 	ksDel (key->meta);
 
 	keyInit (key);
-
 	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
+
+	keySetName (key, "/");
 
 	/* Set reference properties */
 	key->ksReference = ref;

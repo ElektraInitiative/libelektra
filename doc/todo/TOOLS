@@ -94,14 +94,14 @@ generic fstab:
 	allows kdb mset fstab <args> to be the same as kdb fstab
 
 kdb tool should work with arrays (add_entry, remove_entry)
-	or also kdb meta-set user/abc check/enum -a "first enum" "second enum" "third enum"
-	or also kdb set user/abc -a "first array entry" "second" "third array entry"
+	or also kdb meta-set user:/abc check/enum -a "first enum" "second enum" "third enum"
+	or also kdb set user:/abc -a "first array entry" "second" "third array entry"
 	allow key array increments with kdb tool
 
 easier handling for comments (special case of array), maybe with generic meta-template that supports arrays?
 
 kdb tool should work with files (read in as value)
-	kdb set user/abc -F filename.txt
+	kdb set user:/abc -F filename.txt
 
 cascading export, e.g. for nickel?
 	+ remember what was exported
@@ -123,7 +123,7 @@ export should be able to export only configuration that was changed
 install config (mount+preload system config) by using meta struct
 
 kdb tool:
-	request -f for rm, mv in system/elektra
+	request -f for rm, mv in system:/elektra
 
 
 

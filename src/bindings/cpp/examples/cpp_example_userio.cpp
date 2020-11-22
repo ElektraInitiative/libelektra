@@ -21,6 +21,7 @@
 #include <iostream>
 
 #include <key.hpp>
+#include <keyset.hpp>
 
 inline std::ostream & printError (std::ostream & os, kdb::Key const & error, bool printVerbose, bool printDebug)
 {
@@ -62,40 +63,44 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 
 	try
 	{
-		if (!error.getMeta<const kdb::Key> ("warnings"))
+		// TODO: use C++ binding version of keyMeta
+		kdb::KeySet meta (ckdb::ksDup (ckdb::keyMeta (error.getKey ())));
+		kdb::Key parent ("meta:/warnings", KEY_END);
+		auto warnings = meta.cut (parent);
+
+		if (warnings.size () == 0)
 		{
-			// no warnings were issued
 			return os;
 		}
-
-		int nr = error.getMeta<int> ("warnings");
-		if (!nr)
+		else if (warnings.size () == 1)
 		{
 			os << "1 Warning was issued:" << std::endl;
 		}
 		else
 		{
-			os << nr + 1 << " Warnings were issued:" << std::endl;
+			os << warnings.size () << " Warnings were issued:" << std::endl;
 		}
 
-		for (int i = 0; i <= nr; i++)
+		for (auto it = warnings.begin () + 1; it != warnings.end (); ++it)
 		{
-			std::ostringstream name;
-			name << "warnings/#" << std::setfill ('0') << std::setw (2) << i;
-			// os << "\t" << name.str() << ": " << error.getMeta<std::string>(name.str()) << std::endl;
-			os << "\tSorry, module " << error.getMeta<std::string> (name.str () + "/module") << " issued the warning "
-			   << error.getMeta<std::string> (name.str () + "/number") << ":" << std::endl;
-			os << "\t" << error.getMeta<std::string> (name.str () + "/description") << ": "
-			   << error.getMeta<std::string> (name.str () + "/reason") << std::endl;
-			if (printVerbose)
+			auto name = it->getName ();
+			if (it->isDirectBelow (parent))
 			{
-				os << "\tMountpoint: " << error.getMeta<std::string> (name.str () + "/mountpoint") << std::endl;
-				os << "\tConfigfile: " << error.getMeta<std::string> (name.str () + "/configfile") << std::endl;
-			}
-			if (printDebug)
-			{
-				os << "\tAt: " << error.getMeta<std::string> (name.str () + "/file") << ":"
-				   << error.getMeta<std::string> (name.str () + "/line") << std::endl;
+				os << "\tSorry, module " << warnings.get<std::string> (name + "/module") << " issued the warning "
+				   << warnings.get<std::string> (name + "/number") << ":" << std::endl;
+				os << "\t" << warnings.get<std::string> (name + "/description") << ": "
+				   << warnings.get<std::string> (name + "/reason") << std::endl;
+				// os << "\t" << name << ": " << warnings.get<std::string>(name) << std::endl;
+				if (printVerbose)
+				{
+					os << "\tMountpoint: " << warnings.get<std::string> (name + "/mountpoint") << std::endl;
+					os << "\tConfigfile: " << warnings.get<std::string> (name + "/configfile") << std::endl;
+				}
+				if (printDebug)
+				{
+					os << "\tAt: " << warnings.get<std::string> (name + "/file") << ":"
+					   << warnings.get<std::string> (name + "/line") << std::endl;
+				}
 			}
 		}
 	}
@@ -115,7 +120,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 
 int main ()
 {
-	kdb::Key k ("user/sw/MyApp", KEY_END);
+	kdb::Key k ("user:/sw/MyApp", KEY_END);
 	std::cout << k << std::endl;
 
 	kdb::KeySet ks;

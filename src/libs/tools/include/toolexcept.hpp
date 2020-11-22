@@ -106,7 +106,7 @@ struct MountpointInvalidException : public BackendCheckException
 	virtual const char * what () const throw () ELEKTRA_OVERRIDE
 	{
 		return "Given mountpoint is not a valid keyname, will abort\n"
-		       "Examples: system/hosts or user/sw/app";
+		       "Examples: system:/hosts or user:/sw/app";
 	}
 };
 

@@ -27,7 +27,7 @@ static void test_v1_oneValue (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v1/one_value.dump.out"));
 
 	{
-		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -44,7 +44,7 @@ static void test_v1_oneValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -74,7 +74,7 @@ static void test_v1_twoValue (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v1/two_value.dump.out"));
 
 	{
-		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -91,7 +91,7 @@ static void test_v1_twoValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -121,7 +121,7 @@ static void test_v1_threeValue (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v1/three_value.dump.out"));
 
 	{
-		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -138,7 +138,7 @@ static void test_v1_threeValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -168,7 +168,7 @@ static void test_v1_againTwoValue (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v1/again_two_value.dump.out"));
 
 	{
-		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -185,7 +185,7 @@ static void test_v1_againTwoValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -215,7 +215,7 @@ static void test_v1_metaData (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v1/meta_data.dump.out"));
 
 	{
-		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -232,7 +232,7 @@ static void test_v1_metaData (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -261,7 +261,7 @@ static void test_v2_oneValue (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v2/one_value.dump.out"));
 
 	{
-		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -278,7 +278,7 @@ static void test_v2_oneValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -306,7 +306,7 @@ static void test_v2_twoValue (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v2/two_value.dump.out"));
 
 	{
-		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -323,7 +323,7 @@ static void test_v2_twoValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -351,7 +351,7 @@ static void test_v2_threeValue (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v2/three_value.dump.out"));
 
 	{
-		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -368,7 +368,7 @@ static void test_v2_threeValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -396,7 +396,7 @@ static void test_v2_againTwoValue (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v2/again_two_value.dump.out"));
 
 	{
-		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -413,7 +413,7 @@ static void test_v2_againTwoValue (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -441,7 +441,7 @@ static void test_v2_metaData (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v2/meta_data.dump.out"));
 
 	{
-		Key * getKey = keyNew ("user/tests/script", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -458,7 +458,7 @@ static void test_v2_metaData (void)
 	}
 
 	{
-		Key * setKey = keyNew ("user/tests/script", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("user:/tests/script", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -486,9 +486,9 @@ static void test_v2_fullnames (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v2/fullnames.dump.out"));
 
 	{
-		Key * getKey = keyNew ("system/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
 
-		KeySet * conf = ksNew (1, keyNew ("user/fullname", KEY_END), KS_END);
+		KeySet * conf = ksNew (1, keyNew ("user:/fullname", KEY_END), KS_END);
 		PLUGIN_OPEN ("dump");
 
 		KeySet * expected = testdata_demo ();
@@ -503,9 +503,9 @@ static void test_v2_fullnames (void)
 	}
 
 	{
-		Key * setKey = keyNew ("system/elektra/mountpoints", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, outfile, KEY_END);
 
-		KeySet * conf = ksNew (1, keyNew ("user/fullname", KEY_END), KS_END);
+		KeySet * conf = ksNew (1, keyNew ("user:/fullname", KEY_END), KS_END);
 		PLUGIN_OPEN ("dump");
 
 		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
@@ -531,7 +531,7 @@ static void test_v2_demo (void)
 	char * outfile = elektraStrDup (srcdir_file ("dump/v2/demo.dump.out"));
 
 	{
-		Key * getKey = keyNew ("system/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
+		Key * getKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -548,7 +548,52 @@ static void test_v2_demo (void)
 	}
 
 	{
-		Key * setKey = keyNew ("system/elektra/mountpoints", KEY_VALUE, outfile, KEY_END);
+		Key * setKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, outfile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		succeed_if (plugin->kdbSet (plugin, ks, setKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");
+
+		succeed_if (compare_line_files (infile, outfile), "files differ");
+		remove (outfile);
+
+		keyDel (setKey);
+		PLUGIN_CLOSE ();
+	}
+
+	elektraFree (infile);
+	elektraFree (outfile);
+	ksDel (ks);
+}
+
+static void test_v2_demo_root (void)
+{
+	printf ("test v2 demo\n");
+
+	KeySet * ks = ksNew (0, KS_END);
+	char * infile = elektraStrDup (srcdir_file ("dump/v2/demo.dump"));
+	char * outfile = elektraStrDup (srcdir_file ("dump/v2/demo.dump.out"));
+
+	{
+		Key * getKey = keyNew ("system:/", KEY_VALUE, infile, KEY_END);
+
+		KeySet * conf = ksNew (0, KS_END);
+		PLUGIN_OPEN ("dump");
+
+		KeySet * expected = testdata_demo_root ();
+
+		succeed_if (plugin->kdbGet (plugin, ks, getKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
+		compare_keyset (expected, ks);
+
+		ksDel (expected);
+
+		keyDel (getKey);
+		PLUGIN_CLOSE ();
+	}
+
+	{
+		Key * setKey = keyNew ("system:/", KEY_VALUE, outfile, KEY_END);
 
 		KeySet * conf = ksNew (0, KS_END);
 		PLUGIN_OPEN ("dump");
@@ -587,6 +632,7 @@ int main (int argc, char ** argv)
 	test_v2_metaData ();
 	test_v2_fullnames ();
 	test_v2_demo ();
+	test_v2_demo_root ();
 
 	print_result ("testmod_dump");
 

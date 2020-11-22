@@ -13,21 +13,21 @@ public class WarningEntryTest
 	{
 		String errorNumber = InstallationException.errorNumber ();
 		String configFile = "file.conf";
-		String mountpoint = "system/test";
+		String mountpoint = "system:/test";
 		String file = "kdb.c";
 		String line = "50";
 		String module = "kdb";
 		String reason = "This is a testerror";
 
-		final String warningKeyName = String.format ("warnings/#00", 0);
-		Key warningKey = Key.create ("user/temporary/errorkey");
-		warningKey.setMeta ("warnings/#00/number", errorNumber);
-		warningKey.setMeta ("warnings/#00/configfile", configFile);
-		warningKey.setMeta ("warnings/#00/mountpoint", mountpoint);
-		warningKey.setMeta ("warnings/#00/file", file);
-		warningKey.setMeta ("warnings/#00/line", line);
-		warningKey.setMeta ("warnings/#00/module", module);
-		warningKey.setMeta ("warnings/#00/reason", reason);
+		final String warningKeyName = String.format ("warnings/#0", 0);
+		Key warningKey = Key.create ("user:/temporary/errorkey");
+		warningKey.setMeta ("warnings/#0/number", errorNumber);
+		warningKey.setMeta ("warnings/#0/configfile", configFile);
+		warningKey.setMeta ("warnings/#0/mountpoint", mountpoint);
+		warningKey.setMeta ("warnings/#0/file", file);
+		warningKey.setMeta ("warnings/#0/line", line);
+		warningKey.setMeta ("warnings/#0/module", module);
+		warningKey.setMeta ("warnings/#0/reason", reason);
 
 		WarningEntry warningEntry = new WarningEntry (warningKey, 0);
 

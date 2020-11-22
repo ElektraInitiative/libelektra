@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 
-ssize_t ksGetCommonParentName (const KeySet * ks, char * returnedCommonParent, size_t maxSize);
+size_t ksGetCommonParentName (KeySet * ks, char * returnedCommonParent, size_t maxSize);
 size_t elektraStrLen (const char * s);
 
 int elektraXmltoolOpen (Plugin * handle, Key * errorKey);

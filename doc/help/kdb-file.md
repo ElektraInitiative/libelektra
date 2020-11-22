@@ -41,7 +41,7 @@ This command makes use of Elektra’s `resolver` plugin which the uer can learn 
 ## EXAMPLES
 
 To find which file a key is stored in:<br>
-`kdb file user/example/key`<br>
+`kdb file user:/example/key`<br>
 
 ## SEE ALSO
 
