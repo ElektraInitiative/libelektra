@@ -36,7 +36,7 @@
 
 using namespace ckdb;
 
-typedef struct
+typedef struct _moduleData
 {
 	VALUE rbInstance = Qnil;
 
