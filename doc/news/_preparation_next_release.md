@@ -63,6 +63,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Support for the old quickdump v1 and v2 formats has been removed. _(Klemens Böswirth)_
 
+### YAML CPP
+
+- We fixed an [use after free bug in the plugin](https://issues.libelektra.org/3561). _(René Schwaiger)_
+
 ### <<Plugin3>>
 
 - <<TODO>>
