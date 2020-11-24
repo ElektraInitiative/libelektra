@@ -15,7 +15,7 @@ CLANG_FORMAT=$(command -v clang-format-$REQUIRED_VERSION || command -v clang-for
 if [ -n "$CLANG_FORMAT" ]; then
 	LOCATION="$CLANG_FORMAT"
 	VERSION=$("$CLANG_FORMAT" --version 2> /dev/null)
-	MAJOR_VERSION=$(printf '%s' "$VERSION" | sed -E 's/.* ([0-9]+)\.[0-9].[0-9][ -].*/\1/')
+	MAJOR_VERSION=$(printf '%s' "$VERSION" | sed -E 's/.* ([0-9]+)\.[0-9].[0-9][ -]?.*/\1/')
 	if [ "${MAJOR_VERSION:-0}" -ne $REQUIRED_VERSION ]; then
 		unset CLANG_FORMAT
 	fi
