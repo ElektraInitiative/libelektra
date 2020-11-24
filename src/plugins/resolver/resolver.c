@@ -928,7 +928,7 @@ static void elektraModifyFileTime (resolverHandle * pk)
 #else
 	// otherwise use simple time toggling schema of seconds
 	pk->mtime.tv_sec += pk->timeFix;
-	pk->timeFix *= -1;								    // toggle timefix
+	pk->timeFix *= -1; // toggle timefix
 #endif
 }
 

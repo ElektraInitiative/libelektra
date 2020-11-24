@@ -63,7 +63,7 @@ public:
 
 	kdb::ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5> value;
 
-	using kdb::ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5>::operator= ;
+	using kdb::ContextualValue<T, PolicySetter1, PolicySetter2, PolicySetter3, PolicySetter4, PolicySetter5>::operator=;
 };
 
 TEST (test_contextual_policy, ValueWrapper)

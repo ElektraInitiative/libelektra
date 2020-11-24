@@ -150,8 +150,9 @@ Node createLeafNode (Key & key)
 
 	if (metaNode.size () <= 0)
 	{
-		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”",
-				   dataNode.IsNull () ? "~" : dataNode.IsSequence () ? "[]" : dataNode.as<string> ().c_str ());
+		ELEKTRA_LOG_DEBUG ("Return leaf node with value “%s”", dataNode.IsNull ()     ? "~" :
+								       dataNode.IsSequence () ? "[]" :
+												      dataNode.as<string> ().c_str ());
 		return dataNode;
 	}
 
@@ -242,7 +243,9 @@ void addKeys (Node & data, KeySet const & mappings, Key const & parent)
 	for (auto key : mappings)
 	{
 		ELEKTRA_LOG_DEBUG ("Convert key “%s”: “%s”", key.getName ().c_str (),
-				   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
+				   key.getBinarySize () == 0 ? "NULL" :
+				   key.isString ()	     ? key.getString ().c_str () :
+								     "binary value!");
 
 		if (key.hasMeta ("array"))
 		{

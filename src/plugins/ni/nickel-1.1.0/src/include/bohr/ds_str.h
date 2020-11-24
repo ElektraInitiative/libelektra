@@ -108,7 +108,7 @@ Ds_STR_INLINE int Ds_StrCat (Ds_str * restrict dest, const char * restrict sourc
 #if (Ds_STR_BEHAVIOR == 4)
 		new_size <<= 2; // the same as *= 4
 #else
-		new_size <<= 1;		// the same as *= 2
+		new_size <<= 1; // the same as *= 2
 #endif
 #endif
 	if (new_size > dest->size)

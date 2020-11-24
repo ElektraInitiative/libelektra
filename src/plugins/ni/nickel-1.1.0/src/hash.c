@@ -256,7 +256,7 @@ both be initialized with seeds.  If you pass in (*pb)==0, the output
 (*pc) will be the same as the return value from hashword().
 --------------------------------------------------------------------
 */
-#if (0)						    // not used here
+#if (0) // not used here
 static void hashword2 (const uint32_t * restrict k, /* the key, an array of uint32_t values */
 		       size_t length,		    /* the length of the key, in uint32_ts */
 		       uint32_t * restrict pc,	    /* IN: seed OUT: primary hash value */
@@ -601,7 +601,7 @@ static uint32_t hashlittle (const void * restrict key, size_t length, uint32_t i
  * the key.  *pc is better mixed than *pb, so use *pc first.  If you want
  * a 64-bit value do something like "*pc + (((uint64_t)*pb)<<32)".
  */
-#if (0)						    // not used here
+#if (0) // not used here
 static void hashlittle2 (const void * restrict key, /* the key to hash */
 			 size_t length,		    /* length of the key */
 			 uint32_t * restrict pc,    /* IN: primary initval, OUT: primary hash */

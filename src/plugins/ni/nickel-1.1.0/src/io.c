@@ -92,16 +92,16 @@ static int PutUtf8Char (FILE * restrict f, const unsigned char * restrict str, i
 elektraNi_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict idfr_out, int * restrict len_out, int * restrict level_out)
 {
 // State values for the FSM.
-#define ST_DONE 0	  // stop parsing
-#define ST_START 1	  // at start of line, skipping whitespace
-#define ST_COMMENT 2	  // invalid character, ignore whole line
-#define ST_SKIP 3	  // valid line found, skip rest of line
-#define ST_IN_BRACKET 4	  // found [, look for section name identifier
-#define ST_IN_SEC_ID 5	  // found identifier after [, put it into idfr_out
-#define ST_IN_Q_SEC_ID 6  // found quotes inside [
-#define ST_AFTER_Q_SEC 7  // after ["" before ]
-#define ST_IN_KEY_ID 8	  // found key identifier as first non-space char, put it into idfr_out
-#define ST_IN_Q_KEY_ID 9  // found quotes on the beginning of the line
+#define ST_DONE 0 // stop parsing
+#define ST_START 1 // at start of line, skipping whitespace
+#define ST_COMMENT 2 // invalid character, ignore whole line
+#define ST_SKIP 3 // valid line found, skip rest of line
+#define ST_IN_BRACKET 4 // found [, look for section name identifier
+#define ST_IN_SEC_ID 5 // found identifier after [, put it into idfr_out
+#define ST_IN_Q_SEC_ID 6 // found quotes inside [
+#define ST_AFTER_Q_SEC 7 // after ["" before ]
+#define ST_IN_KEY_ID 8 // found key identifier as first non-space char, put it into idfr_out
+#define ST_IN_Q_KEY_ID 9 // found quotes on the beginning of the line
 #define ST_AFTER_Q_KEY 10 // after "" before =
 
 	int rc = 0; // return code, initially set to "we got nothing"
@@ -412,12 +412,12 @@ elektraNi_PRIVATE int GetNextIdentifier (file_buf * restrict fb, char * restrict
 elektraNi_PRIVATE int GetValue (file_buf * restrict fb, Ds_str * restrict value_out)
 {
 // State values for the FSM.
-#define ST_DONE 0    // done parsing
-#define ST_START 1   // at the start of a value, or on a new line of a continued value
-#define ST_IGNORE 2  // ignoring till eol
-#define ST_IN_Q 3    // inside the quotes of a quoted value, saving to output
+#define ST_DONE 0 // done parsing
+#define ST_START 1 // at the start of a value, or on a new line of a continued value
+#define ST_IGNORE 2 // ignoring till eol
+#define ST_IN_Q 3 // inside the quotes of a quoted value, saving to output
 #define ST_AFTER_Q 4 // after the end quote of quoted value, ignoring things (mostly)
-#define ST_IN_U 5    // inside unquoted value, saving to output
+#define ST_IN_U 5 // inside unquoted value, saving to output
 
 	int rc = 1; // return code--default to ok
 

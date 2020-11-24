@@ -903,7 +903,7 @@ private:
 			const bool tag_is_unescaped_var{ current_delimiter_is_brace && tag_location_start != (input_size - 2) &&
 							 input.at (tag_contents_location) == ctx.delim_set.begin.at (0) };
 			const string_type & current_tag_delimiter_end{ tag_is_unescaped_var ? brace_delimiter_end_unescaped :
-											      ctx.delim_set.end };
+												    ctx.delim_set.end };
 			const auto current_tag_delimiter_end_size = current_tag_delimiter_end.size ();
 			if (tag_is_unescaped_var)
 			{
@@ -970,7 +970,7 @@ private:
 		process_current_text ();
 
 		// Check for sections without an ending tag
-		root_component.walk_children ([&error_message](component<string_type> & comp) ->
+		root_component.walk_children ([&error_message] (component<string_type> & comp) ->
 					      typename component<string_type>::walk_control {
 						      if (!comp.tag.is_section_begin ())
 						      {
@@ -1178,7 +1178,7 @@ private:
 	void render (const render_handler & handler, context_internal<string_type> & ctx)
 	{
 		root_component_.walk_children (
-			[&handler, &ctx, this](component<string_type> & comp) ->
+			[&handler, &ctx, this] (component<string_type> & comp) ->
 			typename component<string_type>::walk_control { return render_component (handler, ctx, comp); });
 		// process the last line
 		render_current_line (handler, ctx, nullptr);
@@ -1390,10 +1390,8 @@ private:
 	void render_section (const render_handler & handler, context_internal<string_type> & ctx, component<string_type> & incomp,
 			     const basic_data<string_type> * var)
 	{
-		const auto callback = [&handler, &ctx, this](component<string_type> & comp) -> typename component<string_type>::walk_control
-		{
-			return render_component (handler, ctx, comp);
-		};
+		const auto callback = [&handler, &ctx, this] (component<string_type> & comp) ->
+			typename component<string_type>::walk_control { return render_component (handler, ctx, comp); };
 		if (var && var->is_non_empty_list ())
 		{
 			for (const auto & item : var->list_value ())

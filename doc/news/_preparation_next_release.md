@@ -57,7 +57,7 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 ### jni
 
-- Fix rare memleak when the `jni` plugin is closed. _(Mihael Pranjić)_
+- Fix a rare memleak when the `jni` plugin is closed. _(Mihael Pranjić)_
 
 ### Quickdump
 
