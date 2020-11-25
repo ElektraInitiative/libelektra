@@ -156,8 +156,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
-- <<TODO>>
+- We added a Docker image for [building the documentation on Debian sid](../../scripts/docker/debian/sid/doc.Dockerfile). _(René Schwaiger)_
+- We removed the Docker image for building the documentation on Debian Stretch. _(René Schwaiger)_
 - <<TODO>>
 
 ## Infrastructure
@@ -170,7 +170,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- <<TODO>>
+- We now use Debian sid to build the documentation instead of Debian stretch. The Doxygen version in Debian stretch [contains a bug](https://github.com/doxygen/doxygen/issues/6456) that causes the generation of the PDF documentation to fail. _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 

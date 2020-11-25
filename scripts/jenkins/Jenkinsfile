@@ -228,6 +228,15 @@ def dockerInit() {
       "./scripts/docker/debian/sid/Dockerfile"
     )
 
+    /* Build Elektra's documentation with this image.
+     * Also contains latex for pdf creation.
+     */
+    DOCKER_IMAGES.sid_doc = createDockerImageDesc(
+      "debian-sid-doc", this.&idTesting,
+      "./scripts/docker/debian/sid",
+      "./scripts/docker/debian/sid/doc.Dockerfile"
+    )
+
     /* Our main target for compatibility is Debian stable
      * (currently buster).
      * Hence we try to build all parts of Elektra via this image.
@@ -292,15 +301,6 @@ def dockerInit() {
       "debian-stretch-i386", this.&idTesting,
       "./scripts/docker/debian/stretch",
       "./scripts/docker/debian/stretch/i386.Dockerfile"
-    )
-
-    /* Build Elektra's documentation with this image.
-     * Also contains latex for pdf creation.
-     */
-    DOCKER_IMAGES.stretch_doc = createDockerImageDesc(
-      "debian-stretch-doc", this.&idTesting,
-      "./scripts/docker/debian/stretch",
-      "./scripts/docker/debian/stretch/doc.Dockerfile"
     )
 
     /* Ubuntu xenial image used to test compatibility with Ubuntu.
@@ -730,7 +730,7 @@ def buildTodo() {
 '''
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.stretch_doc) {
+      withDockerEnv(DOCKER_IMAGES.buster_doc) {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
         openTasks pattern: openTaskPatterns,
@@ -795,7 +795,7 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.stretch_doc) {
+      withDockerEnv(DOCKER_IMAGES.sid_doc) {
         dir('build') {
           deleteDir()
           cmake(env.WORKSPACE, cmakeFlags)
