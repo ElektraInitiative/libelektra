@@ -54,6 +54,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         glibc \
         gpgme \
         libgcrypt \
+        ruby-libs \
     && dnf clean all -y
 
 # Google Test
