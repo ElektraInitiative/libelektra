@@ -1,24 +1,24 @@
 # Key Names in Elektra
 
-## Preface
-
 This document is a full explanation of how _key names_ work in Elektra.
+
+## 0. Reference Implementation
+
 In addition to this document, a reference Python implementation can be found in [keynames.py](keynames.py).
 The goal of the Python implementation is not to be fast, or to be used in any way other than as a reference.
-If there are any discrepancies between this document, the Python implementation and the actual C implementation in [src/libs/elektra/keyname.c](../../src/libs/elektra/keyname.c), you should consider them as follows:
+If there are any discrepancies between this document, the Python implementation and the actual C implementation in
+[src/libs/elektra/keyname.c](../../src/libs/elektra/keyname.c), you should consider the source of the problem as follows:
 
-1. The C implementation is optimized for speed and much harder to maintain.
-   It is mostly likely to be incorrect.
+1. The C implementation is optimized for speed and thus much harder to implement correctly.
 2. In most cases, this document outranks the Python implementation.
    There may, however, be cases where the language in this document was too vague and the Python implementation is actually correct.
 3. If two of the sources agree, the third one is probably incorrect.
    Although again, if one of the agreeing sources is the C implementation it could still be the case that there is a mistake.
 
-In any case: If you find a discrepancy, please file a bug report at https://issues.libelektra.org/new.
+In any case: If you find any discrepancy, please file a bug report at https://issues.libelektra.org/new.
 
 > _Note:_ Mistakes happen.
-> So there is no 100% always correct specification for Elektra's key names.
-> The goal is only to provide a reference that has a very high likelihood of being correct.
+> The goal of the Python implementation was to provide a reference that has a very high likelihood of being correct.
 
 _To Elektra developers:_ Feel free to add any unclear or previous incorrect examples to the test cases in [tests/ctest/test_keyname.c](../../tests/ctest/test_keyname.c).
 These tests are very fast (1000+ test cases per second) and the more tests the better.
@@ -38,7 +38,7 @@ Each key is part of one of these _namespaces_:
 - system
 - default
 
-Each of these namespaces has a very specific meaning, explained in [section 1.2](#12-namespaces-and-root-keys).
+Each of these namespaces has a very specific meaning, explained in [Section 1.2](#12-namespaces-and-root-keys).
 
 Apart from the namespace, a key name is just a series of zero or more _key name parts_.
 Each key name part is just an arbitrary (possibly empty) sequence of non-zero bytes.
@@ -46,7 +46,7 @@ Each key name part is just an arbitrary (possibly empty) sequence of non-zero by
 So without knowing anything about how key names are written, we could say that there is a key in the namespace "system" with the key name parts "elektra", "version" and "info".
 
 > _Note:_ Not every such sequence, is a valid key name.
-> For more information see [section 4](#4-valid-and-invalid-key-names)
+> For more information see [Section 4](#4-valid-and-invalid-key-names)
 
 ### 1.1. Key Hierarchy
 
@@ -59,8 +59,8 @@ Elektra's keys commonly look like Unix paths:
 > _Note:_ How this representation works exactly and how namespaces come into play, will be explained in the next section.
 > For now, we only care that there is some similarity to Unix paths.
 
-This is no mistake.
-Elektra's _key database (KDB)_ is designed to resemble a Unix filesystem.
+This is on purpose.
+Elektra's _key database (KDB)_ is designed to resemble a Unix filesystem as much as possible.
 In particular, the KDB has a similar hierarchy.
 More generally, all key names exhibit this hierarchy.
 By going back to thinking about a key name as a namespace and a series of key name parts, we can define this _key hierarchy_.
@@ -266,7 +266,7 @@ In Elektra this doesn't quite work, but will use this definition for now.
 
 > _Note:_ Only escaped key names can be canonical or non-canonical, so we normally omit the "escaped" specifier.
 
-Let's look at a few examples to get a feeling for canonical and non-canonical key names.
+Let us look at a few examples to get a feeling for canonical and non-canonical key names.
 
 | Non-canonical           | Canonical          |
 | ----------------------- | ------------------ |
