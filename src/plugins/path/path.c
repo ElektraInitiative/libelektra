@@ -69,6 +69,7 @@ static int validateKey (Key * key, Key * parentKey)
 	{
 		char * errmsg = elektraMalloc (ERRORMSG_LENGTH + 1 + keyGetNameSize (key) + keyGetValueSize (key) +
 					       sizeof ("name:  value:  message: "));
+		if (!errmsg) return -1;
 		if (strerror_r (errno, errmsg, ERRORMSG_LENGTH) != 0)
 		{
 			strcpy (errmsg, "Unknown error");
