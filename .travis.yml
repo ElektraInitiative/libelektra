@@ -268,7 +268,7 @@ before_script:
       -DBUILD_FULL="${BUILD_FULL:-OFF}"
       -DBUILD_SHARED="${BUILD_SHARED:-ON}"
       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-      -DCOMMON_FLAGS="${COMMON_FLAGS--Werror}"
+      -DCOMMON_FLAGS="${COMMON_FLAGS:--Werror}"
       -DENABLE_DEBUG=ON
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
       -DKDB_DB_SYSTEM="$SYSTEM_DIR"
@@ -283,7 +283,7 @@ before_script:
   - cmake ${CMAKE_OPT[@]}
 
 script:
-  - travis_wait 20 ninja
+  - travis_wait 30 ninja
   - output="$(ninja install 2>&1)" || printf '%s' "$output"
-  - travis_wait 20 ninja run_all
-  - travis_wait 20 kdb run_all
+  - travis_wait 30 ninja run_all
+  - travis_wait 30 kdb run_all
