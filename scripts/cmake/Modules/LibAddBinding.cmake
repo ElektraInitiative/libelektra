@@ -173,7 +173,7 @@ endfunction (exclude_binding)
 
 # ~~~
 # - Check if a binding will be built.
-#   Can only be used run after bindins have been processed (e.g. in
+#   Can only be used run after bindings have been processed (e.g. in
 #   ADDTESTING_PHASE of plugins)
 #   This is function can be used anywhere.
 #
