@@ -23,6 +23,7 @@ using std::ostringstream;
 using std::string;
 using std::to_string;
 
+using YAML::convert;
 using YAML::Node;
 
 using kdb::Key;
@@ -115,17 +116,16 @@ Key createLeafKey (Node const & node, string const & name)
 
 	if (!node.IsNull ())
 	{
-		// The following code is certainly not ideal from a performance perspective, since it will throw and catch an exception
-		// in the usual case (when the current key does not store boolean data). However the statements more or less reproduces the
-		// steps the main author of yaml-cpp suggest to check for types (see also: https://stackoverflow.com/questions/19994312).
-		try
+		// Check if the node contains a boolean value: https://stackoverflow.com/questions/19994312
+		bool boolean_value;
+		if (convert<bool>::decode (node, boolean_value))
 		{
-			key.set<bool> (node.as<bool> ());
+			key.set<bool> (boolean_value);
 			key.setMeta ("type", "boolean");
 		}
-		catch (YAML::BadConversion const &)
+		else
 		{
-			key.set<string> (node.as<string> ()); // Save value as string, if `node` is a quoted scalar
+			key.set<string> (node.as<string> ());
 		}
 	}
 	if (node.Tag () == "tag:yaml.org,2002:binary")
