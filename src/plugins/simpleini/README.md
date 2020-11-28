@@ -1,11 +1,11 @@
 - infos = Information about simpleini plugin is in keys below
 - infos/author = Markus Raab <elektra@libelektra.org>
 - infos/licence = BSD
-- infos/provides = storage/ini
+- infos/provides = storage/properties
 - infos/needs = code binary
 - infos/placements = getstorage setstorage
 - infos/status = maintained unittest nodep concept obsolete 3000
-- infos/description = Very simple storage which writes out in a basic ini format.
+- infos/description = Very simple storage plugin which stores data in a basic properties file format
 
 ## Introduction
 

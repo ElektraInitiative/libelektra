@@ -70,6 +70,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Support for the old quickdump v1 and v2 formats has been removed. _(Klemens Böswirth)_
 
+### Simple INI
+
+- The plugin contract now correctly states that the plugin offers support for the [properties format][]. Before it would state that the plugin offered support for the INI file format. This is not true, since the plugin does not support the [section syntax][] of the INI file format.
+
 ### YAML CPP
 
 - We fixed an [use after free bug in the plugin](https://issues.libelektra.org/3561). _(René Schwaiger)_
