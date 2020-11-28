@@ -59,6 +59,13 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - Fix rare memleak when the `jni` plugin is closed. _(Mihael Pranjić)_
 
+### mINI
+
+- We changed the `provides` clause in the plugin contract. Now mINI offers support for the [properties format][] (`storage/properties`) instead of the INI file format (`storage/ini`). This makes sense, since the plugin never supported the [section syntax][] of INI files. _(René Schwaiger)_
+
+[properties format]: https://en.wikipedia.org/wiki/.properties
+[section syntax]: https://en.m.wikipedia.org/wiki/INI_file#Sections
+
 ### Quickdump
 
 - Support for the old quickdump v1 and v2 formats has been removed. _(Klemens Böswirth)_
