@@ -1,4 +1,4 @@
-- infos =
+- infos = Information about Python bindings below
 - infos/author = Manuel Mausz <manuel-elektra@mausz.at>
 - infos/status = maintained
 - infos/provides = swig

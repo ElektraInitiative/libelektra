@@ -1,4 +1,4 @@
-- infos = Information about elektrify getenv below
+- infos = Information about Lua bindings below
 - infos/author = Manuel Mausz <manuel-elektra@mausz.at>
 - infos/status = maintained
 - infos/provides = swig

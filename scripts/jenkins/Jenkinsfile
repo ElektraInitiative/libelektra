@@ -326,18 +326,18 @@ def dockerInit() {
       "./scripts/docker/ubuntu/bionic/Dockerfile"
     )
 
-    /* Fedora 31 image*/
-    DOCKER_IMAGES.fedora_31 = createDockerImageDesc(
-      "fedora-31", this.&idTesting,
-      "./scripts/docker/fedora/31",
-      "./scripts/docker/fedora/31/Dockerfile"
-    )
-
     /* Fedora 32 image*/
     DOCKER_IMAGES.fedora_32 = createDockerImageDesc(
       "fedora-32", this.&idTesting,
       "./scripts/docker/fedora/32",
       "./scripts/docker/fedora/32/Dockerfile"
+    )
+
+    /* Fedora 33 image*/
+    DOCKER_IMAGES.fedora_33 = createDockerImageDesc(
+      "fedora-33", this.&idTesting,
+      "./scripts/docker/fedora/33",
+      "./scripts/docker/fedora/33/Dockerfile"
     )
 
     /* Image building the libelektra.org website */
@@ -466,8 +466,8 @@ def generateMainBuildStages() {
   tasks.failFast = true
 
   tasks << buildAndTest(
-    "fedora-32-full",
-    DOCKER_IMAGES.fedora_32,
+    "fedora-33-full",
+    DOCKER_IMAGES.fedora_33,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -513,8 +513,8 @@ def generateFullBuildStages() {
   tasks << buildDoc()
 
   tasks << buildAndTest(
-    "fedora-31-full",
-    DOCKER_IMAGES.fedora_31,
+    "fedora-32-full",
+    DOCKER_IMAGES.fedora_32,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -525,8 +525,8 @@ def generateFullBuildStages() {
   // Build Elektra with clang and ASAN
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
-    "fedora-32-asan",
-    DOCKER_IMAGES.fedora_32,
+    "fedora-33-asan",
+    DOCKER_IMAGES.fedora_33,
     CMAKE_FLAGS_BUILD_ALL
   )
 
