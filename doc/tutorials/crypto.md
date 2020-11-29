@@ -59,8 +59,8 @@ _Step 2:_ Set the password at `user:/tests/password` and display the contents of
 
 ```sh
 kdb set user:/tests/password 1234
-kdb file user:/tests/password | xargs cat
-#> password=1234
+kdb file user:/tests/password | xargs cat | tail -n1
+#> password = 1234
 ```
 
 _Step 3:_ (Optional) Cleanup

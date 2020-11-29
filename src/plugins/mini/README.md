@@ -2,12 +2,12 @@
 - infos/author = René Schwaiger <sanssecours@me.com>
 - infos/licence = BSD
 - infos/needs = ccode
-- infos/provides = storage/ini
+- infos/provides = storage/properties
 - infos/recommends =
 - infos/placements = getstorage setstorage
 - infos/status = maintained shelltest unittest nodep limited
 - infos/metadata =
-- infos/description = A minimal plugin for simple INI files
+- infos/description = A minimal plugin for properties files
 
 # mINI
 
