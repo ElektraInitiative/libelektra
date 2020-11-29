@@ -837,16 +837,17 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 					}
 					else
 					{
-						// 5b. ... else account of backslahes
-						size_t backslashes = 0;
+						// 5b. ... else account of escape sequences
+						size_t escapes = 0;
 						for (size_t i = 1; i + 1 < ulen; ++i)
 						{
 							if (*(newOutPtr + i) == '\\')
 							{
-								++backslashes;
+								++escapes;
+								++i; // skip next character
 							}
 						}
-						ulen -= (backslashes + 1) / 2;
+						ulen -= escapes;
 					}
 
 					// 6. adjust usize
