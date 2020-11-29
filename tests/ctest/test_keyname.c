@@ -345,6 +345,9 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("user:/%a", NULL);
 	TEST_VALIDATE_OK ("%a", "/");
 	TEST_VALIDATE_OK ("%a", "user:/");
+	TEST_VALIDATE_OK ("..", "system:/elektra/mountpoints/system:\\/info\\/elektra\\/constants");
+	TEST_VALIDATE_OK ("..", "system:/elektra/mountpoints");
+	TEST_VALIDATE_OK ("..", "system:/elektra");
 
 	succeed_if (!elektraKeyNameValidate (NULL, true), "(NULL) SHOULD NOT BE a valid complete key name");
 
@@ -683,6 +686,11 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("..///../../../../../../..//user", "/much/more/level/1/2/3", "/user", 24, 7);
 	TEST_CANONICALIZE_OK ("..///../../..////../../../..//user", "/much/more/level/1/2/3", "/user", 24, 7);
 	TEST_CANONICALIZE_OK ("../../....///../../..////../../../..//user", "/much/more/level/1/2/3", "/user", 24, 7);
+
+	TEST_CANONICALIZE_OK ("..", "system:/elektra/mountpoints/system:\\/info\\/elektra\\/constants", "system:/elektra/mountpoints", 53,
+			      22);
+	TEST_CANONICALIZE_OK ("..", "system:/elektra/mountpoints", "system:/elektra", 22, 10);
+	TEST_CANONICALIZE_OK ("..", "system:/elektra", "system:/", 10, 3);
 }
 
 #undef TEST_CANONICALIZE_OK
