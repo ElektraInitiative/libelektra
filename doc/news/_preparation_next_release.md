@@ -43,7 +43,7 @@ If you rely on specific behaviour of Elektra's Keynames and have already taken t
 
 <!-- TODO (kodebach): finish -->
 
-. _(Klemens Böswirth)_
+.. _(Klemens Böswirth)_
 
 ### <<HIGHLIGHT2>>
 

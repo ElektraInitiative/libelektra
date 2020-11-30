@@ -41,9 +41,10 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 		return;
 	}
 
-	char buffer[64] = "warnings/#0\0\0";
+	char buffer[64] = "warnings/#0\0\0\0";
 	const Key * meta = keyGetMeta (key, "warnings");
 	const char * old = meta == NULL ? NULL : keyString (meta);
+	char * end = &buffer[11];
 	if (old && strcmp (old, "#_99") < 0)
 	{
 		int i = old[1] == '_' ? ((old[2] - '0') * 10 + (old[3] - '0')) : (old[1] - '0');
@@ -52,39 +53,34 @@ static void addWarning (Key * key, const char * code, const char * name, const c
 		if (i < 10)
 		{
 			buffer[10] = '0' + i;
+			end = &buffer[11];
 		}
 		else
 		{
 			buffer[10] = '_';
 			buffer[11] = '0' + (i / 10);
 			buffer[12] = '0' + (i % 10);
+			end = &buffer[13];
 		}
 	}
 	keySetMeta (key, "warnings", &buffer[9]);
 
 	keySetMeta (key, buffer, "number description  module file line mountpoint configfile reason");
-	strcat (buffer, "/number");
+	strcpy (end, "/number");
 	keySetMeta (key, buffer, code);
-	buffer[12] = '\0';
-	strcat (buffer, "/description");
+	strcpy (end, "/description");
 	keySetMeta (key, buffer, name);
-	buffer[12] = '\0';
-	strcat (buffer, "/module");
+	strcpy (end, "/module");
 	keySetMeta (key, buffer, module);
-	buffer[12] = '\0';
-	strcat (buffer, "/file");
+	strcpy (end, "/file");
 	keySetMeta (key, buffer, file);
-	buffer[12] = '\0';
-	strcat (buffer, "/line");
+	strcpy (end, "/line");
 	keySetMeta (key, buffer, line);
-	buffer[12] = '\0';
-	strcat (buffer, "/mountpoint");
+	strcpy (end, "/mountpoint");
 	keySetMeta (key, buffer, keyName (key));
-	buffer[12] = '\0';
-	strcat (buffer, "/configfile");
+	strcpy (end, "/configfile");
 	keySetMeta (key, buffer, keyString (key));
-	buffer[12] = '\0';
-	strcat (buffer, "/reason");
+	strcpy (end, "/reason");
 	char * reason = elektraVFormat (reasonFmt, va);
 	keySetMeta (key, buffer, reason);
 	elektraFree (reason);
