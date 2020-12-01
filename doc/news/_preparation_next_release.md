@@ -43,7 +43,8 @@ If you rely on specific behaviour of Elektra's Keynames and have already taken t
 
 <!-- TODO (kodebach): finish -->
 
-.. _(Klemens Böswirth)_
+- Fix combining dot-dot parts and escapes in key names.  _(Klemens Böswirth)_
+- Fix adding more than 10 warnings to a key. _(Klemens Böswirth)_
 
 ### <<HIGHLIGHT2>>
 
