@@ -854,6 +854,57 @@ static void test_keyFlags (void)
 	keyDel (key2);
 }
 
+static void test_warnings (void)
+{
+	printf ("Test ADD_WARNING\n");
+
+	Key * key = keyNew ("user:/bar", KEY_VALUE, "config", KEY_END);
+	for (int i = 0; i < 200; i++)
+	{
+		ELEKTRA_ADD_INTERFACE_WARNING (key, "reason reason reason");
+
+		char index[ELEKTRA_MAX_ARRAY_SIZE];
+		elektraWriteArrayNumber (index, i % 100);
+
+		printf ("  -- warning %d -> %s\n", i, index);
+		succeed_if_same_string (keyString (keyGetMeta (key, "meta:/warnings")), index);
+
+		Key * k = keyNew ("meta:/warnings", KEY_END);
+		keyAddBaseName (k, index);
+
+		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))),
+					"number description  module file line mountpoint configfile reason");
+
+		keyAddBaseName (k, "number");
+		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), "C01320");
+
+		keySetBaseName (k, "description");
+		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), "Interface");
+
+		keySetBaseName (k, "module");
+		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), ELEKTRA_STRINGIFY (ELEKTRA_MODULE_NAME));
+
+		keySetBaseName (k, "file");
+		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), __FILE__);
+
+		keySetBaseName (k, "line");
+		// must be line number of ELEKTRA_ADD_INTERFACE_WARNING
+		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), "864");
+
+		keySetBaseName (k, "mountpoint");
+		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), "user:/bar");
+
+		keySetBaseName (k, "configfile");
+		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), "config");
+
+		keySetBaseName (k, "reason");
+		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), "reason reason reason");
+
+		keyDel (k);
+	}
+	keyDel (key);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KEY      TESTS\n");
@@ -876,6 +927,7 @@ int main (int argc, char ** argv)
 	test_keyCopy ();
 	test_keyFixedNew ();
 	test_keyFlags ();
+	test_warnings ();
 
 	print_result ("test_key");
 	return nbError;
