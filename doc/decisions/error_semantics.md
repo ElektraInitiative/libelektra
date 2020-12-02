@@ -22,13 +22,13 @@ unclear when plugins actually should emit errors and warnings.
 
 Provide guidelines in the form as tutorials, covering:
 
+- prefer errors to warnings
 - that any not understood metadata (e.g. types), should lead to an error
 - that wrong specifications, like `kdb meta-set /tests/ipaddr/ipv4 check/ipaddr ipv8` should be rejected
 - if the value does not confirm **exactly** to the specified type, an error should be emitted
   (e.g. only `0` or `1` as boolean)
-- anything else that is beyond the capabilities of a plugin, should lead to an error, e.g.:
-  - not supported structure
-  - not supported (meta) key names
+- anything else that is beyond the capabilities of a plugin (not implemented),
+  should lead to an error
 
 Violations against these guidelines can be reported as bug and then either:
 

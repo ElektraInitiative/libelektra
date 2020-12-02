@@ -25,7 +25,6 @@ and being administer friendly.
 As found out during implementation of [specload](/src/plugins/specload), only a very limited subset can be modified safely, e.g.:
 
 - add/edit/remove `description`, `opt/help` and `comment`
-- add/edit `default`
 
 ## Rationale
 

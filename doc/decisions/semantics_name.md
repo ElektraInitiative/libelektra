@@ -24,8 +24,8 @@ Nevertheless, there are guidelines (without any checks in `keySetBaseName`):
 - `#` is used to indicate that array numbers follow.
 - `®` is used to indicate that some information was encoded in the key name.
   This is usually only needed internally in storage plugins.
-- the UTF-8 sequence `®elektra` (i.e. the 9-byte sequence `C2 AE 65 6C 65 6B 74 72 61`) is reserved,
-  key name parts should not start with that sequence.
+- The UTF-8 sequence `®elektra` (i.e. the 9-byte sequence `C2 AE 65 6C 65 6B 74 72 61`) is reserved,
+  see key name docu.
 
 There are, however, rules and conventions which syntax to use for specific semantics.
 The `spec` plugin guards these rules.

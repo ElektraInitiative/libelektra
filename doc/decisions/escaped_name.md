@@ -23,26 +23,20 @@ functions handling out the pointer).
 
 Remove the escaped name from `struct _Key` and use it only when necessary.
 
-## Open Points
-
-Clarify and reduce [terminology](/doc/help/elektra-glossary.md):
-
-- escaped name
-- full name
-- part name
-- base name
-- dir name
+Clarify and reduce [terminology](/doc/help/elektra-glossary.md).
 
 API Changes:
 
 - `keyName` returns the unescaped name
-- remove `keyUnescapedName`, `keyGetUnescapedNameSize`, `keyGetFullName`.
+  (temporary some other name for PR: `keyUnescapedName(Size)`)
+- remove `keyUnescapedName`, `keyGetUnescapedNameSize`.
 - reverse terminology: with "key name" we will refer to the unescaped (base) name,
   the escaped name will be explicitly called "escaped key name".
-  "full name" (a variant of the escaped name) will not be used anymore.
-- escaped name will be only present in `keyNew` and `keyGetEscapedName`
-- rename `keyAddName`, e.g. to `keyAddEscapedName`
-- `keyDup` with arguments to filter which parts are copied
+- escaped name will be only present in
+  - `keyNew` (+ arguments for adding key names) [unclear: maybe not needed]
+  - `elektraEscapeName` (operating on chars)
+  - rename `keyAddName`, e.g. to `keyAddEscapedName`
+- `keyDup(.., int)` with options to filter which parts are copied
   (to allow copy of keys where only the key name is copied)
 
 ## Rationale
