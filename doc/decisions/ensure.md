@@ -76,7 +76,7 @@ The cleanup of the global plugins happens within:
 kdbClose (kdb, errorKey);
 ```
 
-It is save to use the contract `KeySet` also for `kdbGet` and `kdbSet`
+It is safe to use the contract `KeySet` also for `kdbGet` and `kdbSet`
 invocations.
 
 ## Related Decisions

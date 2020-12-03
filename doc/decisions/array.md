@@ -82,7 +82,7 @@ system:/myarray  # <- not found in cascading lookup, as user:/myarray exists
 
 The `spec` plugin should check if it is a valid array, i.e.:
 
-- that the parent key always contain the metadata `array`,
+- that the parent key always contains the metadata `array`,
 - that the correct length is in `array`,
 - that the array only contains `#` children, and
 - that the children are numbered from `#0` to `#n`, without holes.
