@@ -37,26 +37,34 @@ section here.
 - [High Level API](high_level_api.md)
 - [Error codes](error_codes.md)
 - [Error code implementation](error_code_implementation.md)
+- [Semantics for Name](semantics_name.md)
+- [Base Name](base_name.md)
+- [Lookup every key](lookup_every_key.md)
+- [Holes and Non-leaf values](holes.md)
+- [Multiple File Backends](multiple_file_backends.md)
+- [Boolean](boolean.md)
+
+## In Progress
+
+- [Global Plugins](global_plugins.md) (@mpranj)
+- [Ensure](ensure.md) (@kodebach)
+- [Capabilities](capabilities.md) (@markus2330)
+- [Error Semantics](error_semantics.md) (API)
 
 ## Decided
 
 - [Array for Warnings](warning_array.md)
+- [Array](array.md)
 
 ## In Discussion
 
-- [Semantics for Name](semantics_name.md)
-- [Base Name](base_name.md)
+- [Escaped Name](escaped_name.md) merge with:
 - [Store the escaped and/or unescaped key name](store_name.md)
-- [Sources for Metadata](metadata_sources.md)
-- [Lookup every key](lookup_every_key.md)
-- [Holes and Non-leaf values](holes.md)
-- [Arbitrary Meta-Data](arbitrary_metadata.md)
-- [Multiple File Backends](multiple_file_backends.md)
-- [Capabilities](capabilities.md)
-- [Array](array.md)
-- [Boolean](boolean.md)
-- [Global Plugins](global_plugins.md)
-- [Vendor Spec](vendor_spec.md)
+- [Spec Expressiveness](spec_expressiveness.md)
+- [Metadata in Spec Namespace](spec_metadata.md)
+
+## Delayed
+
 - [Plugin Variants](plugin_variants.md)
 - [Global Validation](global_validation.md)
 
@@ -66,3 +74,4 @@ section here.
 - [Null Pointer Checks](null_pointer_checks.md)
 - [Elektra Web Publish Subscribe](elektra_web_pubsub.md)
 - [Internal Cache](internal_cache.md)
+- [Vendor Spec](vendor_spec.md)

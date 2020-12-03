@@ -42,6 +42,8 @@ We need to cleanup and simplify the placement.
 Have hooks and API specific to the list of global plugins in assumptions.
 These hooks are not shared, so no `list` plugin is needed.
 
+Installed plugins will be used.
+
 ## Rationale
 
 - allows adding more types of plugins later, also post-1.0
@@ -50,6 +52,8 @@ These hooks are not shared, so no `list` plugin is needed.
 
 ## Implications
 
+- remove `global-mount` command
+- command for mmap/notification/... enable disable (like current `kdb cache` tool)
 - remove `list` plugin
 - remove plugins that stop working or disallow global positioning for them
 - call `spec` as needed several times

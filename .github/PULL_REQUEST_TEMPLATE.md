@@ -9,7 +9,11 @@ These points need to be fulfilled for every PR:
 - [ ] Details of what you changed are in commit messages
       (first line should have `module: short statement` syntax)
 - [ ] References to issues, e.g. `close #X`, are in the commit messages.
-- [ ] The buildservers are happy.
+- [ ] The buildservers are happy. If not, fix **in this order**:
+  - [ ] add a line in `doc/news/_preparation_next_release.md`
+  - [ ] reformat the code with `scripts/dev/reformat-all`
+  - [ ] make all unit tests pass
+  - [ ] fix all memleaks
 - [ ] The PR is rebased with current master.
 
 If you have any troubles fulfilling these criteria, please write

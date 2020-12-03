@@ -24,6 +24,10 @@ an array or not.
 ## Decision
 
 Store length in metadata `array` of key, or keep metadata `array` empty if empty array.
+Only children that have `#` syntax are allowed in a valid array.
+The index start with `#0`.
+Both `keyAddName("#12")` or `keyAddBaseName("#_12")` is allowed to add the 13th index.
+
 For example (`ni syntax`, sections used for metadata):
 
 ```
@@ -40,8 +44,8 @@ myarray/#5 = value5
 It is not allowed to have anything else than `#5` in the metadata `array`,
 e.g. even `#4` would be a malformed array.
 
-The metadata `array` preferable should be in `spec` (specified configuration).
-Then the `spec` plugin will add the `array` marker with the correct length.
+With the metadata `array` in `spec:/` the `spec` plugin will add the
+`array` marker with the correct length.
 This needs to be happen early, so that plugins can rely on having
 correct arrays.
 
@@ -76,12 +80,12 @@ user:/myarray/#0
 system:/myarray  # <- not found in cascading lookup, as user:/myarray exists
 ```
 
-Guarantees we want from the spec plugin:
+The `spec` plugin should check if it is a valid array, i.e.:
 
-- that the parent key always contain `array`.
-- that the correct length is in `array`
-- that the array only contains `#` children
-- that the children are numbered from 0 to n, without holes
+- that the parent key always contains the metadata `array`,
+- that the correct length is in `array`,
+- that the array only contains `#` children, and
+- that the children are numbered from `#0` to `#n`, without holes.
 
 ## Rationale
 
@@ -98,11 +102,17 @@ Guarantees we want from the spec plugin:
   which is a possibility also in all the alternatives of this decision.
 - A `user:/` or `dir:/` key can change the semantics of a `system:/` array,
   if not avoided by `spec`.
+- user-facing documentation should contain a note like:
+  "Mixing array and non-array keys in arrays is not supported.
+  In many cases the trivial solution is to move the array part into a separate child-key."
 
 ## Related Decisions
 
 - [Global Plugins](global_plugins.md)
 - [Global Validation](global_validation.md)
+- [Base Names](base_name.md)
+- [Metadata in Spec Namespace](spec_metadata.md)
+- [Spec Expressiveness](spec_expressiveness.md)
 
 ## Notes
 

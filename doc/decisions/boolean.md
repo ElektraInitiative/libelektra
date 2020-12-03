@@ -2,62 +2,53 @@
 
 ## Problem
 
-Inconsistent use of bool in various parts of Elektra.
+Inconsistent use of booleans in various parts of Elektra.
 
 ## Constraints
 
-## Assumptions
-
 - needs to be string
-- convenience plugins can convert anything to 0 or 1
-- type checker plugins can reject everything not 0 or 1
+
+## Assumptions
 
 ## Considered Alternatives
 
-- strictly only allow 0 and 1 (would move validation across the code)
 - only check presence or absence (no cascading override of already present key possible)
-- use as in CMake (would move convenience across the code)
+- use booleans as in CMake, which allows on/off, true/false, ... (would need convenience across the code)
+- do not accept a specification with `type = boolean` without a default
 
 ## Decision
 
-Use, depending on what your default should be:
+Only the strings `0` and `1` are allowed in the `KeySet` for `type = boolean`, for both values and defaults.
+Everything else should lead to errors in checkers (in `kdbSet`).
 
-- 0 is false, everything else is true (default is true)
-- 1 is true, everything else is false (default is false)
+A spec with `type = boolean` without a specified default should be interpreted as `default = 0`.
 
-Example:
+Example for an implementation in C in an application:
 
 ```c
-if ( strcmp(keyString(k), "0")) {/*true*/} else {/*false*/}
-if (!strcmp(keyString(k), "1")) {/*true*/} else {/*false*/}
+if (k != NULL && strcmp(keyString(k), "1") == 0) {/*true*/} else {/*false*/}
 ```
 
-In the documentation it should mention that a bool is used
-and which is the default.
+Storage plugins are allowed any representation as suitable, e.g., a JSON plugin might render `1` as `true`.
 
 The type checker plugin should allow
 
-- non-presence (default)
+- non-presence
 - the string "0"
 - the string "1"
-
-The convenience plugin should transform (it might be combined with a plugin that transforms everything lower-case):
-
-- "false", "off", "no" to "0"
-- "true", "on", "yes" to "1"
 
 ## Rationale
 
 - most easy to implement
-- allows presence to be true
+- allows non-presence to be false
 - plugins allow us to convert to any other behavior
 
 ## Implications
 
-- change code with different behavior
+- Storage plugins are only allowed to emit `0` or `1` as key values
+- Applications either get `0` or `1`, or (without a key)
+  can safely assume that false is meant
 
 ## Related Decisions
 
 ## Notes
-
-See [here](https://github.com/ElektraInitiative/libelektra/issues/308)

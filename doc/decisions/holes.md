@@ -37,7 +37,7 @@ Support holes and values for non-leaves in a KeySet if the underlying format all
 
 If the underlying format does not support it and there is also not an obvious
 way how to circumvent it -- e.g., JSON which does not have comments -- holes and
-values in non-leaves are not supported.
+values in non-leaves can be supported with key names starting with ®elektra.
 
 ## Rationale
 

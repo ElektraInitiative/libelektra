@@ -24,9 +24,13 @@ with the respective `kdbGet`.
 
 ## Decision
 
-- always load everything (with mmap)
+Not supported, admins/maintainers need to stay with their spec within what applications request by `kdbGet`.
 
 ## Rationale
+
+- it is too expensive to always load all keys (@mpranj: is this true?)
+- problems in implementing to always get everything
+- it makes the parameter to `kdbGet` basically useless
 
 ## Implications
 
