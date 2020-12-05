@@ -14,7 +14,7 @@ function (add_lib name)
 	cmake_parse_arguments (
 		ARG
 		"CPP" # optional keywords
-		"" # one value keywords
+		"COMPONENT" # one value keywords
 		"SOURCES;LINK_LIBRARIES;LINK_ELEKTRA;INCLUDE_DIRECTORIES;INCLUDE_SYSTEM_DIRECTORIES;COMPILE_DEFINITIONS" # multi value
 		# keywords
 		${ARGN})
@@ -58,6 +58,7 @@ function (add_lib name)
 		install (
 			TARGETS elektra-${name}
 			DESTINATION lib${LIB_SUFFIX}
+			COMPONENT "${ARG_COMPONENT}"
 			EXPORT ElektraTargetsLibelektra)
 	endif (BUILD_SHARED)
 

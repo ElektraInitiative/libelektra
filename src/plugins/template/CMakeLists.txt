@@ -3,4 +3,5 @@ include (LibAddMacros)
 add_plugin (
 	template
 	SOURCES template.h template.c
-	ADD_TEST TEST_README)
+	ADD_TEST TEST_README
+	COMPONENT libelektra4-experimental)

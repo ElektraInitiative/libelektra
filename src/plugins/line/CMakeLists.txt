@@ -10,7 +10,8 @@ add_plugin (
 	line
 	SOURCES line.h line.c
 	LINK_ELEKTRA elektra-ease
-	INSTALL_TEST_DATA TEST_README)
+	INSTALL_TEST_DATA TEST_README
+	COMPONENT libelektra4)
 
 if (ADDTESTING_PHASE)
 	add_plugintest (line INSTALL_TEST_DATA)

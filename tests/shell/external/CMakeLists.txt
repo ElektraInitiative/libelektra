@@ -31,7 +31,8 @@ function (add_externaltest testname)
 				GROUP_EXECUTE
 				WORLD_READ
 				WORLD_EXECUTE
-			RENAME "check_external_${testname_we}")
+			RENAME "check_external_${testname_we}"
+			COMPONENT elektra-tests)
 	endif (ENABLE_KDB_TESTING AND INSTALL_TESTING)
 endfunction (add_externaltest)
 

@@ -60,6 +60,13 @@ foreach (plugin ${RESOLVERS})
 
 		set (SOURCES resolver.h resolver.c filename.c)
 
+		set (HAS_COMPONENT "")
+		if (plugin MATCHES "resolver_fm_hpu_b")
+			set (HAS_COMPONENT "libelektra4")
+		else()
+			set (HAS_COMPONENT "libelektra4-extra")
+		endif()
+
 		add_plugin (
 			${plugin}
 			SOURCES ${SOURCES}
@@ -67,7 +74,8 @@ foreach (plugin ${RESOLVERS})
 			COMPILE_DEFINITIONS
 				ELEKTRA_VARIANT_BASE=\"${variant_base}\" ELEKTRA_VARIANT_USER=\"${variant_user}\"
 				ELEKTRA_VARIANT_SYSTEM=\"${variant_system}\" ELEKTRA_VARIANT=${variant} ELEKTRA_PLUGIN_NAME=\"${plugin}\"
-				${FURTHER_DEFINITIONS})
+				${FURTHER_DEFINITIONS}
+			COMPONENT "${HAS_COMPONENT}")
 
 		if (variant MATCHES "fm_hpu_b")
 			add_plugintest (

@@ -1,3 +1,4 @@
 include (LibAddMacros)
 
-add_plugin (sync SOURCES sync.h sync.c)
+add_plugin (sync SOURCES sync.h sync.c
+    COMPONENT libelektra4)

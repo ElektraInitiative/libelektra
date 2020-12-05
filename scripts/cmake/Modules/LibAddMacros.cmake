@@ -17,7 +17,7 @@ endmacro (copy_file)
 #
 # create_lib_symlink src dest - create a symbolic link from src -> dest
 # ~~~
-macro (create_lib_symlink src dest)
+macro (create_lib_symlink src dest component)
 
 	cmake_parse_arguments (
 		ARG
@@ -64,8 +64,9 @@ macro (create_lib_symlink src dest)
 		if (RET)
 			message (WARNING \"Could not install symlink\")
 		endif ()
-		")
-endmacro (create_lib_symlink src dest)
+		"
+		COMPONENT "${component}")
+endmacro (create_lib_symlink src dest component)
 
 # ~~~
 # Make a directory
@@ -561,7 +562,7 @@ function (generate_manpage NAME)
 		cmake_parse_arguments (
 			ARG
 			"" # optional keywords
-			"SECTION;FILENAME" # one value keywords
+			"SECTION;FILENAME;COMPONENT" # one value keywords
 			"" # multi value keywords
 			${ARGN})
 
@@ -603,7 +604,7 @@ If you do not add this file, then installing Elektra will fail!\n")
 		endif (NOT EXISTS "${OUTFILE}")
 
 		if (INSTALL_DOCUMENTATION)
-			install (FILES ${OUTFILE} DESTINATION share/man/man${SECTION})
+			install (FILES ${OUTFILE} DESTINATION share/man/man${SECTION} COMPONENT "${ARG_COMPONENT}")
 		endif ()
 	endif (BUILD_DOCUMENTATION)
 endfunction ()

@@ -48,7 +48,7 @@ macro (add_gtest source)
 		include_directories (${CMAKE_SOURCE_DIR}/tests/gtest-framework)
 
 		if (INSTALL_TESTING)
-			install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+			install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER} COMPONENT elektra-tests)
 		endif (INSTALL_TESTING)
 
 		set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)

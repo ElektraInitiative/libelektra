@@ -10,4 +10,5 @@ add_plugin (
 	constants
 	SOURCES ${CMAKE_CURRENT_BINARY_DIR}/constants.c
 	TEST_README
-	TEST_REQUIRED_PLUGINS noresolver)
+	TEST_REQUIRED_PLUGINS noresolver
+	COMPONENT libelektra4)

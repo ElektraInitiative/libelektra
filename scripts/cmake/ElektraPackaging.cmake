@@ -8,6 +8,37 @@ set (CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set (CPACK_DEBIAN_PACKAGE_VERSION "${PROJECT_VERSION}")
 
 set (
+	CPACK_COMPONENTS_ALL 
+	libelektra4
+	libelektra4-all
+	libelektra4-full
+	libelektra4-experimental
+	libelektra4-extra
+	libelektra4-augeas 
+	libelektra4-crypto 
+	libelektra4-curl 
+	libelektra4-dbus 
+	libelektra-dev
+	libelektra4-journald 
+	libelektra4-lua
+	libelektra4-python
+	libelektra4-xerces 
+	libelektra4-xmltool 
+	libelektra4-yajl 
+	libelektra4-zeromq 
+	lua-elektra
+	python3-elektra
+	elektra-bin
+	elektra-bin-extra
+	elektra-doc
+	elektra-qt-gui
+	elektra-tests)
+
+set (CMAKE_BUILD_WITH_INSTALL_RPATH 1)
+
+list(APPEND CMAKE_INSTALL_RPATH "${CMAKE_CURRENT_BINARY_DIR}")
+
+set (
 	PACKAGE_DESCRIPTION
 	"Elektra provides a universal and secure framework to store configuration parameters in a global, hierarchical key database. The core is a small library implemented in C. The plugin-based framework fulfills many configuration-related tasks to avoid any unnecessary code duplication across applications while it still allows the core to stay without any external dependency.  Elektra abstracts from cross-platform-related issues with an consistent API, and allows applications to be aware of other applications' configurations, leveraging easy application integration."
 )
@@ -63,7 +94,142 @@ if (UNIX)
 		set (CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 		set (CPACK_DEBIAN_PACKAGE_SECTION "libs")
 		set (CPACK_DEBIAN_PACKAGE_RECOMMENDS "")
-		set (CPACK_DEBIAN_PACKAGE_DEPENDS " ") # no dependencies without any PLUGINS
+		set (CPACK_DEBIAN_PACKAGE_DEPENDS "") # no dependencies without any PLUGINS
+
+		set (CPACK_DEB_COMPONENT_INSTALL "ON")
+		set (CPACK_DEB_PACKAGE_COMPONENT "ON")
+		set (CPACK_DEBIAN_ENABLE_COMPONENT_DEPENDS "ON")
+		set (CPACK_DEBIAN_RUNTIME_DEBUGINFO_PACKAGE "ON")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_NAME "libelektra4")
+		set (CPACK_COMPONENT_LIBELEKTRA4_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4_DESCRIPTION "")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_NAME "libelektra4-full")
+		set (CPACK_COMPONENT_LIBELEKTRA4-FULL_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-FULL_DESCRIPTION "")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-EXPERIMENTAL_PACKAGE_NAME "libelektra4-experimental")
+		set (CPACK_COMPONENT_LIBELEKTRA4-EXPERIMENTAL_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-EXPERIMENTAL_DESCRIPTION "")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-EXTRA_PACKAGE_NAME "libelektra4-extra")
+		set (CPACK_COMPONENT_LIBELEKTRA4-EXTRA_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-EXTRA_DESCRIPTION "")
+
+		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_NAME "elektra-bin")
+		set (CPACK_COMPONENT_ELEKTRA-BIN_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_ELEKTRA-BIN_DESCRIPTION "")
+		set (CPACK_COMPONENT_ELEKTRA-BIN_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-AUGEAS_PACKAGE_NAME "libelektra4-augeas")
+		set (CPACK_COMPONENT_LIBELEKTRA4-AUGEAS_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-AUGEAS_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-AUGEAS_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-DBUS_PACKAGE_NAME "libelektra4-dbus")
+		set (CPACK_COMPONENT_LIBELEKTRA4-DBUS_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-DBUS_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-DBUS_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA-DEV_PACKAGE_NAME "libelektra-dev")
+		set (CPACK_COMPONENT_LIBELEKTRA-DEV_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA-DEV_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-DBUS_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-ZEROMQ_PACKAGE_NAME "libelektra4-zeromq")
+		set (CPACK_COMPONENT_LIBELEKTRA4-ZEROMQ_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-ZEROMQ_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-ZEROMQ_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-XMLTOOL_PACKAGE_NAME "libelektra4-xmltool")
+		set (CPACK_COMPONENT_LIBELEKTRA4-XMLTOOL_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-XMLTOOL_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-XMLTOOL_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-XERCES_PACKAGE_NAME "libelektra4-xerces")
+		set (CPACK_COMPONENT_LIBELEKTRA4-XERCES_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-XERCES_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-XERCES_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-YAJL_PACKAGE_NAME "libelektra4-yajl")
+		set (CPACK_COMPONENT_LIBELEKTRA4-YAJL_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-YAJL_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-YAJL_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-CRYPTO_PACKAGE_NAME "libelektra4-crypto")
+		set (CPACK_COMPONENT_LIBELEKTRA4-CRYPTO_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-CRYPTO_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-CRYPTO_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-CURL_PACKAGE_NAME "libelektra4-curl")
+		set (CPACK_COMPONENT_LIBELEKTRA4-CURL_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-CURL_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-CURL_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-JOURNALD_PACKAGE_NAME "libelektra4-journald")
+		set (CPACK_COMPONENT_LIBELEKTRA4-JOURNALD_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-JOURNALD_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-JOURNALD_DEPENDS "libelektra4")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-LUA_PACKAGE_NAME "libelektra4-lua")
+		set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DEPENDS "libelektra4")
+		
+		set (CPACK_DEBIAN_LUA-ELEKTRA_PACKAGE_NAME "lua-elektra")
+		set (CPACK_COMPONENT_LUA-ELEKTRA_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LUA-ELEKTRA_DESCRIPTION "")
+		set (CPACK_COMPONENT_LUA-ELEKTRA_DEPENDS "libelektra4")
+
+		# maybe add python3:depends? (see control file)
+		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_NAME "python3-elektra")
+		set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DESCRIPTION "")
+		set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DEPENDS "libelektra4")
+		
+		set (CPACK_DEBIAN_LIBELEKTRA4-PYTHON_PACKAGE_NAME "libelektra4-python")
+		set (CPACK_COMPONENT_LIBELEKTRA4-PYTHON_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-PYTHON_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-PYTHON_DEPENDS "libelektra4" "python3-elektra")
+		
+		set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_PACKAGE_NAME "elektra-bin-extra")
+		set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LEKTRA-BIN-EXTRA_DESCRIPTION "")
+		set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DEPENDS "libelektra4")
+		set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_PACKAGE_DEPENDS "python-all")
+
+		set (CPACK_DEBIAN_ELEKTRA-QT-GUI_PACKAGE_NAME "elektra-qt-gui")
+		set (CPACK_COMPONENT_ELEKTRA-QT-GUI_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_ELEKTRA-QT-GUI_DESCRIPTION "")
+		set (CPACK_COMPONENT_ELEKTRA-QT-GUI_DEPENDS "libelektra4")
+		# TODO: add condition for debian and ubuntu
+		set (CPACK_DEBIAN_ELEKTRA-QT-GUI_PACKAGE_DEPENDS "qml-module-qtquick2, qml-module-qtquick-window2, qml-module-qtquick-dialogs, qml-module-qt-labs-folderlistmodel, qml-module-qt-labs-settings")
+
+		set (CPACK_DEBIAN_ELEKTRA-TESTS_PACKAGE_NAME "elektra-tests")
+		set (CPACK_COMPONENT_ELEKTRA-TESTS_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_ELEKTRA-TESTS_DESCRIPTION "")
+		set (CPACK_COMPONENT_ELEKTRA-TESTS_DEPENDS "libelektra4-full" "elektra-bin")
+
+		set (CPACK_DEBIAN_ELEKTRA-DOC_PACKAGE_NAME "elektra-doc")
+		set (CPACK_COMPONENT_ELEKTRA-DOC_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_ELEKTRA-DOC_DESCRIPTION "")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_NAME "libelektra4-all")
+		set (CPACK_COMPONENT_LIBELEKTRA4-ALL_DISPLAY_NAME "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-ALL_DESCRIPTION "")
+		set (CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS "libelektra4" "libelektra4-experimental" "libelektra4-augeas" "libelektra4-dbus" "libelektra4-zeromq" "libelektra4-lua" "libelektra4-python" "libelektra4-xmltool" "libelektra4-xerces" "libelektra4-yajl" "lua-elektra" "elektra-bin" "elektra-qt-gui" "libelektra4-crypto" "libelektra4-curl" "libelektra4-journald" "libelektra4-extra")
+
+		# build debug package for each component
+		set (CPACK_DEBIAN_DEBUGINFO_PACKAGE "ON")
+
+		set (CPACK_DEBIAN_PACKAGE_SHLIBDEPS "ON")
+		set (CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS "ON")
+
+
+
+		#set (CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS_POLICY ">=") # Defaults to "="
+		#set (CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS "ON")
 
 		# We need to alter the architecture names as per distro rules
 		if ("${CPACK_PACKAGE_ARCHITECTURE}" MATCHES "i[3-6]86")

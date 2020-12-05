@@ -48,6 +48,11 @@ function (add_scripttest testname)
 		message (SEND_ERROR "add_scripttest: given file ${filename} does not exists")
 	endif (NOT EXISTS ${filename})
 
+	set (
+		COMPONENT_BIN_EXTRA_FILES
+		generate_data
+	)
+
 	foreach (TARGET true false)
 		if (TARGET)
 			if (INSTALL_TESTING)
@@ -61,6 +66,12 @@ function (add_scripttest testname)
 					check_oclint
 					check_plugins
 					check_spelling)
+
+				if ("${testname_we}" IN_LIST COMPONENT_BIN_EXTRA_FILES)
+					set(HAS_COMPONENT elektra-bin-extra)
+				else()
+					set(HAS_COMPONENT elektra-tests)
+				endif()
 
 				list (FIND excluded_tests "${testname_we}" index_excluded)
 				if (index_excluded EQUAL -1)
@@ -78,7 +89,8 @@ function (add_scripttest testname)
 							GROUP_EXECUTE
 							WORLD_READ
 							WORLD_EXECUTE
-						RENAME ${testname_we})
+						RENAME ${testname_we}
+						COMPONENT ${HAS_COMPONENT})
 				endif (index_excluded EQUAL -1)
 
 			endif (INSTALL_TESTING)
@@ -115,7 +127,7 @@ function (add_scripttest testname)
 endfunction (add_scripttest)
 
 if (INSTALL_TESTING)
-	install (DIRECTORY "shell" DESTINATION ${TARGET_TEST_DATA_FOLDER})
+	install (DIRECTORY "shell" DESTINATION ${TARGET_TEST_DATA_FOLDER} COMPONENT elektra-tests)
 endif (INSTALL_TESTING)
 
 file (GLOB SCRIPT_TESTS *.sh)

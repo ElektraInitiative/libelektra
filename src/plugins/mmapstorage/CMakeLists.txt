@@ -9,7 +9,6 @@ endif (DEPENDENCY_PHASE)
 
 set (MMAPSTORAGE_SOURCES dynarray.h dynarray.c mmapstorage.h mmapstorage.c)
 
-# Plugin variant: mmapstorage_crc
 add_plugin (
 	mmapstorage_crc
 	SOURCES ${MMAPSTORAGE_SOURCES}
@@ -17,6 +16,7 @@ add_plugin (
 	LINK_LIBRARIES ${ZLIB_LIBRARIES}
 	LINK_ELEKTRA elektra-core
 	ADD_TEST
+	COMPONENT libelektra4-extra
 	COMPILE_DEFINITIONS ELEKTRA_VARIANT=crc ELEKTRA_MMAP_CHECKSUM)
 
 # Plugin variant: mmapstorage
@@ -24,4 +24,5 @@ add_plugin (
 	mmapstorage
 	SOURCES ${MMAPSTORAGE_SOURCES}
 	LINK_ELEKTRA elektra-core
-	ADD_TEST TEST_README)
+	ADD_TEST TEST_README
+    COMPONENT libelektra4)

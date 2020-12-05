@@ -10,7 +10,7 @@ find_package (Doxygen QUIET)
 # file    is the file name to set a dependency to
 # install is where it should be installed
 # ~~~
-macro (do_doc target folder file install)
+macro (do_doc target folder file install target_component)
 
 	# sometimes doxygen is too slow and fails with "Could not create output directory .../doc/html"
 	file (MAKE_DIRECTORY ${folder})
@@ -20,7 +20,7 @@ macro (do_doc target folder file install)
 	add_custom_target (${target} ALL DEPENDS ${folder}/${file})
 
 	if (INSTALL_DOCUMENTATION)
-		install (DIRECTORY ${folder} DESTINATION ${install})
+		install (DIRECTORY ${folder} COMPONENT ${target_component} DESTINATION ${install})
 	endif (INSTALL_DOCUMENTATION)
 endmacro (do_doc)
 
@@ -74,8 +74,8 @@ if (DOXYGEN_FOUND)
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 		INPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
-	do_doc (html ${OUTPUT_DIRECTORY}/html/ index.html ${TARGET_DOCUMENTATION_HTML_FOLDER})
-	do_doc (man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra "${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE")
+	do_doc (html ${OUTPUT_DIRECTORY}/html/ index.html ${TARGET_DOCUMENTATION_HTML_FOLDER} elektra-doc)
+	do_doc (man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra "${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE" elektra-doc)
 	add_dependencies (man3 html)
 	set (outputs ${OUTPUT_DIRECTORY}/html/index.html ${OUTPUT_DIRECTORY}/man/man3elektra/kdb.3elektra)
 
@@ -123,12 +123,12 @@ else (DOXYGEN_FOUND)
 endif (DOXYGEN_FOUND)
 
 if (INSTALL_DOCUMENTATION)
-	install (FILES BIGPICTURE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES GOALS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES METADATA.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES SECURITY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES AUTHORS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES CONTRACT.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES BIGPICTURE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER} COMPONENT libelektra4)
+	install (FILES GOALS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER} COMPONENT libelektra4)
+	install (FILES METADATA.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER} COMPONENT libelektra4)
+	install (FILES SECURITY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER} COMPONENT libelektra4)
+	install (FILES AUTHORS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER} COMPONENT libelektra4)
+	install (FILES CONTRACT.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER} COMPONENT libelektra4)
 	set (news ${CMAKE_CURRENT_BINARY_DIR}/NEWS.md)
 	file (GLOB files "news/*.md")
 	file (REMOVE ${news})
@@ -136,8 +136,8 @@ if (INSTALL_DOCUMENTATION)
 		file (READ ${file} content)
 		file (APPEND ${news} "\n\n\n\n\n${content}")
 	endforeach ()
-	install (FILES ${news} DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES WHY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (FILES ${news} DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER} COMPONENT libelektra4)
+	install (FILES WHY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER} COMPONENT libelektra4)
 
 endif ()
 

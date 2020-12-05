@@ -5,4 +5,5 @@ add_plugin (
 	SOURCES multifile.h multifile.c
 	LINK_ELEKTRA elektra-kdb elektra-invoke
 	TEST_README
-	TEST_REQUIRED_PLUGINS toml)
+	TEST_REQUIRED_PLUGINS toml
+    COMPONENT libelektra4)
