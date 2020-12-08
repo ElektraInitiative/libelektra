@@ -6,6 +6,8 @@ set (PACKAGE_BUGREPORT "https://bugs.libelektra.org/")
 set (PROJECT_VERSION "${KDB_VERSION}")
 set (CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set (CPACK_DEBIAN_PACKAGE_VERSION "${PROJECT_VERSION}")
+set (CPACK_DEBIAN_PACKAGE_RELEASE "1")
+set (CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 
 set (
 	CPACK_COMPONENTS_ALL 
@@ -44,7 +46,7 @@ list(APPEND CMAKE_INSTALL_RPATH "${CMAKE_CURRENT_BINARY_DIR}")
 
 set (
 	PACKAGE_DESCRIPTION
-	"Elektra provides a universal and secure framework to store configuration parameters in a global, hierarchical key database. The core is a small library implemented in C. The plugin-based framework fulfills many configuration-related tasks to avoid any unnecessary code duplication across applications while it still allows the core to stay without any external dependency.  Elektra abstracts from cross-platform-related issues with an consistent API, and allows applications to be aware of other applications' configurations, leveraging easy application integration."
+	"Elektra provides a universal and secure framework to store configuration parameters in a global, hierarchical key database. The core is a small library implemented in C. The plugin-based framework fulfills many configuration-related tasks to avoid any unnecessary code duplication across applications while it still allows the core to stay without any external dependency.  Elektra abstracts from cross-platform-related issues with an consistent API, and allows applications to be aware of other applications' configurations, leveraging easy application integration.\n."
 )
 set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PACKAGE_DESCRIPTION}")
 set (CPACK_PACKAGE_CONTACT "${PACKAGE_URL}")
@@ -152,6 +154,11 @@ if (UNIX)
 		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_BREAKS "elektra-bin (<< 0.8.14-5~),libelektra-full4 (<< 0.8.19-1)")
 		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_REPLACES "elektra-bin (<< 0.8.14-5~), libelektra-full4 (<< 0.8.19-1)")
 		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_CONFLICTS "kernel-patch-kdb")
+		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
+		file (GLOB CONTROL_FILES_ELEKTRA-BIN "${CMAKE_SOURCE_DIR}/scripts/packaging/debian-control/elektra-bin/*")
+		file (COPY ${CONTROL_FILES_ELEKTRA-BIN} DESTINATION "${CMAKE_BINARY_DIR}/scripts/packaging/debian-control/elektra-bin/")
+		file (GLOB CONTROL_FILES_ELEKTRA-BIN_BINARY "${CMAKE_BINARY_DIR}/scripts/packaging/debian-control/elektra-bin/*")
+		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_CONTROL_EXTRA "${CONTROL_FILES_ELEKTRA-BIN_BINARY}")
 
 		set (CPACK_DEBIAN_LIBELEKTRA4-AUGEAS_PACKAGE_NAME "libelektra4-augeas")
 		set (CPACK_COMPONENT_LIBELEKTRA4-AUGEAS_DISPLAY_NAME "libelektra4-augeas")
@@ -241,6 +248,11 @@ if (UNIX)
 		set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DESCRIPTION "This package contains the Python 3 bindings.")
 		set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DEPENDS "libelektra4")
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_SECTION "python")
+		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
+		file (GLOB CONTROL_FILES_PYTHON3-ELEKTRA "${CMAKE_SOURCE_DIR}/scripts/packaging/debian-control/python3-elektra/*")
+		file (COPY ${CONTROL_FILES_PYTHON3-ELEKTRA} DESTINATION "${CMAKE_BINARY_DIR}/scripts/packaging/debian-control/python3-elektra/")
+		file (GLOB CONTROL_FILES_PYTHON3-ELEKTRA_BINARY "${CMAKE_BINARY_DIR}/scripts/packaging/debian-control/python3-elektra/*")
+		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_CONTROL_EXTRA "${CONTROL_FILES_PYTHON3-ELEKTRA_BINARY}")
 		
 		set (CPACK_DEBIAN_LIBELEKTRA4-PYTHON_PACKAGE_NAME "libelektra4-python")
 		set (CPACK_COMPONENT_LIBELEKTRA4-PYTHON_DISPLAY_NAME "libelektra4-python")
@@ -253,12 +265,12 @@ if (UNIX)
 		set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_PACKAGE_NAME "elektra-bin-extra")
 		set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DISPLAY_NAME "elektra-bin-extra")
 		set (
-			CPACK_COMPONENT_LEKTRA-BIN-EXTRA_DESCRIPTION 
+			CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DESCRIPTION 
 			"This package contains extra command line utilities for Elektra written in non-shell languages like python.")
 		set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DEPENDS "libelektra4")
 		set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_PACKAGE_DEPENDS "python-all")
 		set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_PACKAGE_SECTION "misc")
-		set (CPACK_DEBIAN_LIBELEKTRA4-EXTRA_PACKAGE_CONFLICTS "elektra-bin (<< ${CPACK_DEBIAN_PACKAGE_VERSION})")
+		set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_PACKAGE_CONFLICTS "elektra-bin (<< ${CPACK_DEBIAN_PACKAGE_VERSION})")
 
 		set (CPACK_DEBIAN_ELEKTRA-QT-GUI_PACKAGE_NAME "elektra-qt-gui")
 		set (CPACK_COMPONENT_ELEKTRA-QT-GUI_DISPLAY_NAME "elektra-qt-gui")
@@ -288,6 +300,7 @@ if (UNIX)
 		set (CPACK_DEBIAN_ELEKTRA-DOC_PACKAGE_SECTION "doc")
 		set (CPACK_DEBIAN_ELEKTRA-DOC_PACKAGE_BREAKS "libelektra-doc (<< 0.8.19-1)")
 		set (CPACK_DEBIAN_ELEKTRA-DOC_PACKAGE_REPLACES "libelektra-doc (<< 0.8.19-1)")
+		install (FILES "${CMAKE_SOURCE_DIR}/scripts/packaging/doc-base/elektra-doc" COMPONENT elektra-doc DESTINATION ${TARGET_DOCUMENTATION_DOC-BASE_FOLDER})
 
 		set (CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_NAME "libelektra4-all")
 		set (CPACK_COMPONENT_LIBELEKTRA4-ALL_DISPLAY_NAME "libelektra4-all")
