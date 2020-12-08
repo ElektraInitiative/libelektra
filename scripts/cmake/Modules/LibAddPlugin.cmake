@@ -410,8 +410,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	set (PLUGIN_OBJS ${PLUGIN_NAME}-objects)
 	set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:${PLUGIN_OBJS}>")
 
-	message (STATUS "add_plugin component: ${COMPONENT}")
-
 	restore_variable (${PLUGIN_NAME} ARG_LINK_LIBRARIES)
 	restore_variable (${PLUGIN_NAME} ARG_SOURCES)
 	restore_variable (${PLUGIN_NAME} ARG_OBJECT_SOURCES)
@@ -427,8 +425,6 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
 	restore_variable (${PLUGIN_NAME} ARG_ONLY_SHARED)
 	restore_variable (${PLUGIN_NAME} ARG_COMPONENT)
-
-	message (STATUS "add_plugin restore_variable: ${ARG_COMPONENT}")
 
 	if (ARG_UNPARSED_ARGUMENTS)
 		message (FATAL_ERROR "Parsed a wrong argument to plugin ${PLUGIN_SHORT_NAME}: ${ARG_UNPARSED_ARGUMENTS}")
