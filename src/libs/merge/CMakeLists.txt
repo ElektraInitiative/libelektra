@@ -25,7 +25,8 @@ add_lib (
 	elektra-ease
 	LINK_LIBRARIES
 	${CMERGE_LIBRARY_DIRS}
-	COMPONENT elektra-bin)
+	COMPONENT
+	elektra-bin)
 
 set (LIBRARY_NAME elektra-merge)
 

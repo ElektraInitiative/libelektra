@@ -18,7 +18,14 @@ if (ADDTESTING_PHASE)
 	return ()
 endif ()
 
-generate_manpage (elektra-plugins FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7 COMPONENT elektra-doc)
+generate_manpage (
+	elektra-plugins
+	FILENAME
+	${CMAKE_CURRENT_SOURCE_DIR}/README.md
+	SECTION
+	7
+	COMPONENT
+	elektra-doc)
 
 set (COLLECTION_PHASE ON)
 set (DEPENDENCY_PHASE OFF)

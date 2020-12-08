@@ -1,4 +1,3 @@
 include (LibAddMacros)
 
-add_plugin (wresolver SOURCES wresolver.h wresolver.c
-    COMPONENT libelektra4)
+add_plugin (wresolver SOURCES wresolver.h wresolver.c COMPONENT libelektra4)

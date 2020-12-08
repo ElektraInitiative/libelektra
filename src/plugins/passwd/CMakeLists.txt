@@ -27,5 +27,4 @@ add_plugin (
 	passwd
 	SOURCES passwd.h passwd.c
 	COMPILE_DEFINITIONS ${PASSWD_COMPILE_DEFS}
-	ADD_TEST INSTALL_TEST_DATA
-	COMPONENT libelektra4-experimental)
+	ADD_TEST INSTALL_TEST_DATA COMPONENT libelektra4-experimental)

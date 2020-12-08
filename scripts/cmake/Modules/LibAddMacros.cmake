@@ -604,7 +604,10 @@ If you do not add this file, then installing Elektra will fail!\n")
 		endif (NOT EXISTS "${OUTFILE}")
 
 		if (INSTALL_DOCUMENTATION)
-			install (FILES ${OUTFILE} DESTINATION share/man/man${SECTION} COMPONENT "${ARG_COMPONENT}")
+			install (
+				FILES ${OUTFILE}
+				DESTINATION share/man/man${SECTION}
+				COMPONENT "${ARG_COMPONENT}")
 		endif ()
 	endif (BUILD_DOCUMENTATION)
 endfunction ()

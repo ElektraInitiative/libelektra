@@ -35,7 +35,10 @@ if (BUILD_SHARED)
 		set_target_properties (elektratools PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
-	install (TARGETS elektratools DESTINATION lib${LIB_SUFFIX} COMPONENT elektra-bin)
+	install (
+		TARGETS elektratools
+		DESTINATION lib${LIB_SUFFIX}
+		COMPONENT elektra-bin)
 endif (BUILD_SHARED)
 
 if (BUILD_FULL)
@@ -53,7 +56,10 @@ if (BUILD_FULL)
 		set_target_properties (elektratools-full PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
-	install (TARGETS elektratools-full DESTINATION lib${LIB_SUFFIX} COMPONENT libelektra4-full)
+	install (
+		TARGETS elektratools-full
+		DESTINATION lib${LIB_SUFFIX}
+		COMPONENT libelektra4-full)
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)
@@ -72,5 +78,8 @@ if (BUILD_STATIC)
 		set_target_properties (elektratools-static PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
 
-	install (TARGETS elektratools-static DESTINATION lib${LIB_SUFFIX} COMPONENT elektra-bin)
+	install (
+		TARGETS elektratools-static
+		DESTINATION lib${LIB_SUFFIX}
+		COMPONENT elektra-bin)
 endif (BUILD_STATIC)

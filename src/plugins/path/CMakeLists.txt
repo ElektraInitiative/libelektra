@@ -42,5 +42,4 @@ endif ()
 add_plugin (
 	path
 	SOURCES path.h path.c
-	TEST_README
-	COMPONENT libelektra4-extra)
+	TEST_README COMPONENT libelektra4-extra)

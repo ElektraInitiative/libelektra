@@ -14,8 +14,7 @@ add_plugin (
 	OBJECT_SOURCES $<TARGET_OBJECTS:io-adapter-zeromq>
 	INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIR}
 	LINK_ELEKTRA elektra-io
-	LINK_LIBRARIES ${ZeroMQ_LIBRARIES}
-	COMPONENT libelektra4-zeromq)
+	LINK_LIBRARIES ${ZeroMQ_LIBRARIES} COMPONENT libelektra4-zeromq)
 
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("io_uv" IS_INCLUDED)

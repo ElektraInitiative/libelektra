@@ -16,8 +16,7 @@ add_plugin (
 	SOURCES ${GPGME_SOURCE_FILES}
 	INCLUDE_DIRECTORIES ${LIBGPGME_INCLUDE_DIRS}
 	LINK_LIBRARIES ${LIBGPGME_LIBRARIES}
-	ADD_TEST
-	COMPONENT libelektra4-experimental)
+	ADD_TEST COMPONENT libelektra4-experimental)
 
 if (ADDTESTING_PHASE)
 	set_property (TEST "testmod_gpgme" PROPERTY LABELS memleak)

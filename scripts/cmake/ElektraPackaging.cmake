@@ -10,24 +10,24 @@ set (CPACK_DEBIAN_PACKAGE_RELEASE "1")
 set (CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 
 set (
-	CPACK_COMPONENTS_ALL 
+	CPACK_COMPONENTS_ALL
 	libelektra4
 	libelektra4-all
 	libelektra4-full
 	libelektra4-experimental
 	libelektra4-extra
-	libelektra4-augeas 
-	libelektra4-crypto 
-	libelektra4-curl 
-	libelektra4-dbus 
+	libelektra4-augeas
+	libelektra4-crypto
+	libelektra4-curl
+	libelektra4-dbus
 	libelektra-dev
-	libelektra4-journald 
+	libelektra4-journald
 	libelektra4-lua
 	libelektra4-python
-	libelektra4-xerces 
-	libelektra4-xmltool 
-	libelektra4-yajl 
-	libelektra4-zeromq 
+	libelektra4-xerces
+	libelektra4-xmltool
+	libelektra4-yajl
+	libelektra4-zeromq
 	lua-elektra
 	python3-elektra
 	elektra-bin
@@ -37,7 +37,7 @@ set (
 	elektra-tests)
 
 set (ALL_PLUGINS ${CPACK_COMPONENTS_ALL})
-list(FILTER ALL_PLUGINS INCLUDE REGEX "^libelektra4-.*")
+list (FILTER ALL_PLUGINS INCLUDE REGEX "^libelektra4-.*")
 string (REPLACE ";" ", " ALL_PLUGINS_STR "${ALL_PLUGINS}")
 
 set (
@@ -106,24 +106,26 @@ if (UNIX)
 
 		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_NAME "libelektra4")
 		set (CPACK_COMPONENT_LIBELEKTRA4_DISPLAY_NAME "libelektra4")
-		set (
-			CPACK_COMPONENT_LIBELEKTRA4_DESCRIPTION 
-			"This package contains the main elektra library, and most of the core plugins")
+		set (CPACK_COMPONENT_LIBELEKTRA4_DESCRIPTION "This package contains the main elektra library, and most of the core plugins")
 		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_SECTION "libs")
-		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_BREAKS "elektra-bin (<< 0.8.14-5~), libelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)")
-		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_REPLACES "elektra-bin (<< 0.8.14-5~), libelelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)")
+		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_BREAKS
+		     "elektra-bin (<< 0.8.14-5~), libelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)")
+		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_REPLACES
+		     "elektra-bin (<< 0.8.14-5~), libelelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)")
 		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_SUGGESTS "elektra-doc, ${ALL_PLUGINS_STR}")
 
 		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_NAME "libelektra4-full")
 		set (CPACK_COMPONENT_LIBELEKTRA4-FULL_DISPLAY_NAME "libelektra4-full")
-		set (
-			CPACK_COMPONENT_LIBELEKTRA4-FULL_DESCRIPTION 
-			"This package contains an variant of the Elektra library in which all plugins
+		set (CPACK_COMPONENT_LIBELEKTRA4-FULL_DESCRIPTION
+		     "This package contains an variant of the Elektra library in which all plugins
 			are linked together to a full library. The package is only needed for testing.")
 		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_SECTION "libs")
-		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_BREAKS "elektra-bin (<< 0.8.14-5~), libelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)")
-		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_REPLACES "elektra-bin (<< 0.8.14-5~), libelelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)")
-		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_CONFLICTS "libelektra4 (<< ${CPACK_DEBIAN_PACKAGE_VERSION}), elektra-tests (<< ${CPACK_DEBIAN_PACKAGE_VERSION})")
+		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_BREAKS
+		     "elektra-bin (<< 0.8.14-5~), libelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)")
+		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_REPLACES
+		     "elektra-bin (<< 0.8.14-5~), libelelektra-core4 (<< 0.8.19-1), libelektra-full4 (<< 0.8.19-1)")
+		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_CONFLICTS
+		     "libelektra4 (<< ${CPACK_DEBIAN_PACKAGE_VERSION}), elektra-tests (<< ${CPACK_DEBIAN_PACKAGE_VERSION})")
 		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_SUGGESTS "elektra-doc, ${ALL_PLUGINS_STR}")
 
 		set (CPACK_DEBIAN_LIBELEKTRA4-EXPERIMENTAL_PACKAGE_NAME "libelektra4-experimental")
@@ -231,7 +233,7 @@ if (UNIX)
 		set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DESCRIPTION "This package contains the 'lua' plugin.")
 		set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DEPENDS "libelektra4")
 		set (CPACK_DEBIAN_LIBELEKTRA4-LUA_PACKAGE_SECTION "libs")
-		
+
 		set (CPACK_DEBIAN_LUA-ELEKTRA_PACKAGE_NAME "lua-elektra")
 		set (CPACK_COMPONENT_LUA-ELEKTRA_DISPLAY_NAME "lua-elektra")
 		set (CPACK_COMPONENT_LUA-ELEKTRA_DESCRIPTION "This package contains the Lua bindings.")
@@ -246,10 +248,11 @@ if (UNIX)
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_SECTION "python")
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
 		file (GLOB CONTROL_FILES_PYTHON3-ELEKTRA "${CMAKE_SOURCE_DIR}/scripts/packaging/debian-control/python3-elektra/*")
-		file (COPY ${CONTROL_FILES_PYTHON3-ELEKTRA} DESTINATION "${CMAKE_BINARY_DIR}/scripts/packaging/debian-control/python3-elektra/")
+		file (COPY ${CONTROL_FILES_PYTHON3-ELEKTRA}
+		      DESTINATION "${CMAKE_BINARY_DIR}/scripts/packaging/debian-control/python3-elektra/")
 		file (GLOB CONTROL_FILES_PYTHON3-ELEKTRA_BINARY "${CMAKE_BINARY_DIR}/scripts/packaging/debian-control/python3-elektra/*")
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_CONTROL_EXTRA "${CONTROL_FILES_PYTHON3-ELEKTRA_BINARY}")
-		
+
 		set (CPACK_DEBIAN_LIBELEKTRA4-PYTHON_PACKAGE_NAME "libelektra4-python")
 		set (CPACK_COMPONENT_LIBELEKTRA4-PYTHON_DISPLAY_NAME "libelektra4-python")
 		set (CPACK_COMPONENT_LIBELEKTRA4-PYTHON_DESCRIPTION "This package contains the 'python' plugin.")
@@ -257,12 +260,11 @@ if (UNIX)
 		set (CPACK_DEBIAN_LIBELEKTRA4-PYTHON_PACKAGE_SECTION "libs")
 		set (CPACK_DEBIAN_LIBELEKTRA4-PYTHON_PACKAGE_BREAKS "libelelektra-python4 (<< 0.8.19-1)")
 		set (CPACK_DEBIAN_LIBELEKTRA4-PYTHON_PACKAGE_REPLACES "libelelektra-python4 (<< 0.8.19-1)")
-		
+
 		set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_PACKAGE_NAME "elektra-bin-extra")
 		set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DISPLAY_NAME "elektra-bin-extra")
-		set (
-			CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DESCRIPTION 
-			"This package contains extra command line utilities for Elektra written in non-shell languages like python.")
+		set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DESCRIPTION
+		     "This package contains extra command line utilities for Elektra written in non-shell languages like python.")
 		set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DEPENDS "libelektra4")
 		set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_PACKAGE_DEPENDS "python-all")
 		set (CPACK_DEBIAN_ELEKTRA-BIN-EXTRA_PACKAGE_SECTION "misc")
@@ -274,10 +276,16 @@ if (UNIX)
 		set (CPACK_COMPONENT_ELEKTRA-QT-GUI_DEPENDS "libelektra4")
 		if ("${LSB_DISTRIB}" MATCHES "Ubuntu20.04")
 			# qml-module-qtquick-controls-styles-breeze not available on ubuntu focal
-			set (CPACK_DEBIAN_ELEKTRA-QT-GUI_PACKAGE_DEPENDS "qml-module-qtquick2, qml-module-qtquick-window2, qml-module-qtquick-dialogs, qml-module-qt-labs-folderlistmodel, qml-module-qt-labs-settings")
-		else()
-			set (CPACK_DEBIAN_ELEKTRA-QT-GUI_PACKAGE_DEPENDS "qml-module-qtquick2, qml-module-qtquick-window2, qml-module-qtquick-dialogs, qml-module-qt-labs-folderlistmodel, qml-module-qt-labs-settings, qml-module-qtquick-controls-styles-breeze")
-		endif()
+			set (
+				CPACK_DEBIAN_ELEKTRA-QT-GUI_PACKAGE_DEPENDS
+				"qml-module-qtquick2, qml-module-qtquick-window2, qml-module-qtquick-dialogs, qml-module-qt-labs-folderlistmodel, qml-module-qt-labs-settings"
+			)
+		else ()
+			set (
+				CPACK_DEBIAN_ELEKTRA-QT-GUI_PACKAGE_DEPENDS
+				"qml-module-qtquick2, qml-module-qtquick-window2, qml-module-qtquick-dialogs, qml-module-qt-labs-folderlistmodel, qml-module-qt-labs-settings, qml-module-qtquick-controls-styles-breeze"
+			)
+		endif ()
 		set (CPACK_DEBIAN_ELEKTRA-QT-GUI_PACKAGE_SECTION "misc")
 
 		set (CPACK_DEBIAN_ELEKTRA-TESTS_PACKAGE_NAME "elektra-tests")
@@ -296,14 +304,39 @@ if (UNIX)
 		set (CPACK_DEBIAN_ELEKTRA-DOC_PACKAGE_SECTION "doc")
 		set (CPACK_DEBIAN_ELEKTRA-DOC_PACKAGE_BREAKS "libelektra-doc (<< 0.8.19-1)")
 		set (CPACK_DEBIAN_ELEKTRA-DOC_PACKAGE_REPLACES "libelektra-doc (<< 0.8.19-1)")
-		install (FILES "${CMAKE_SOURCE_DIR}/scripts/packaging/doc-base/elektra-doc" COMPONENT elektra-doc DESTINATION ${TARGET_DOCUMENTATION_DOC-BASE_FOLDER})
+		install (
+			FILES "${CMAKE_SOURCE_DIR}/scripts/packaging/doc-base/elektra-doc"
+			COMPONENT elektra-doc
+			DESTINATION ${TARGET_DOCUMENTATION_DOC-BASE_FOLDER})
 
 		set (CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_NAME "libelektra4-all")
 		set (CPACK_COMPONENT_LIBELEKTRA4-ALL_DISPLAY_NAME "libelektra4-all")
-		set (CPACK_COMPONENT_LIBELEKTRA4-ALL_DESCRIPTION "This package contains extra command line utilities for Elektra written in non-shell languages like python.")
-		set (CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS "libelektra4" "libelektra4-experimental" "libelektra4-augeas" "libelektra4-dbus" "libelektra4-zeromq" "libelektra4-lua" "libelektra4-python" "libelektra4-xmltool" "libelektra4-xerces" "libelektra4-yajl" "lua-elektra" "elektra-bin" "elektra-qt-gui" "libelektra4-crypto" "libelektra4-curl" "libelektra4-journald" "libelektra4-extra")
+		set (CPACK_COMPONENT_LIBELEKTRA4-ALL_DESCRIPTION
+		     "This package contains extra command line utilities for Elektra written in non-shell languages like python.")
+		set (
+			CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS
+			"libelektra4"
+			"libelektra4-experimental"
+			"libelektra4-augeas"
+			"libelektra4-dbus"
+			"libelektra4-zeromq"
+			"libelektra4-lua"
+			"libelektra4-python"
+			"libelektra4-xmltool"
+			"libelektra4-xerces"
+			"libelektra4-yajl"
+			"lua-elektra"
+			"elektra-bin"
+			"elektra-qt-gui"
+			"libelektra4-crypto"
+			"libelektra4-curl"
+			"libelektra4-journald"
+			"libelektra4-extra")
 		set (CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_SECTION "misc")
-		set (CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_DEPENDS "libelektra4, libelektra4-experimental, libelektra4-augeas, libelektra4-dbus, libelektra4-zeromq, libelektra4-lua, libelektra4-python, libelektra4-xmltool, libelektra4-xerces, libelektra4-yajl, lua-elektra, elektra-bin, elektra-qt-gui, libelektra4-crypto, libelektra4-curl, libelektra4-journald, libelektra4-extra")
+		set (
+			CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_DEPENDS
+			"libelektra4, libelektra4-experimental, libelektra4-augeas, libelektra4-dbus, libelektra4-zeromq, libelektra4-lua, libelektra4-python, libelektra4-xmltool, libelektra4-xerces, libelektra4-yajl, lua-elektra, elektra-bin, elektra-qt-gui, libelektra4-crypto, libelektra4-curl, libelektra4-journald, libelektra4-extra"
+		)
 		set (CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_RECOMMENDS "elektra-tests, elektra-doc, libelektra-dev") # add all .ddeb packages?
 
 		# build debug package for each component

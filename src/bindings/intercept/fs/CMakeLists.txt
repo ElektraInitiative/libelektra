@@ -13,7 +13,10 @@ else ()
 	set_source_files_properties (intercept.c PROPERTIES COMPILE_FLAGS "-Wno-unused-result")
 	add_library (elektraintercept-fs SHARED "intercept.c")
 	target_link_libraries (elektraintercept-fs elektra-kdb elektra-meta)
-	install (TARGETS elektraintercept-fs DESTINATION lib${LIB_SUFFIX} COMPONENT libelektra4)
+	install (
+		TARGETS elektraintercept-fs
+		DESTINATION lib${LIB_SUFFIX}
+		COMPONENT libelektra4)
 
 	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 	create_lib_symlink (libelektraintercept-fs.so libelektraintercept.so libelektra4)

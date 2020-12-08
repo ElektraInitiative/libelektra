@@ -26,8 +26,10 @@ write_basic_package_version_file (
 	VERSION ${KDB_VERSION}
 	COMPATIBILITY AnyNewerVersion)
 
-install (FILES "${CMAKE_CURRENT_BINARY_DIR}/ElektraConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/ElektraConfigVersion.cmake"
-	 DESTINATION ${TARGET_CMAKE_FOLDER} COMPONENT libelektra-dev)
+install (
+	FILES "${CMAKE_CURRENT_BINARY_DIR}/ElektraConfig.cmake" "${CMAKE_CURRENT_BINARY_DIR}/ElektraConfigVersion.cmake"
+	DESTINATION ${TARGET_CMAKE_FOLDER}
+	COMPONENT libelektra-dev)
 
 # pkg-config files
 if (BUILD_SHARED)
@@ -42,7 +44,10 @@ elseif (BUILD_STATIC)
 endif ()
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra.pc" @ONLY)
 
-install (FILES "${CMAKE_CURRENT_BINARY_DIR}/elektra.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER} COMPONENT libelektra-dev)
+install (
+	FILES "${CMAKE_CURRENT_BINARY_DIR}/elektra.pc"
+	DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
+	COMPONENT libelektra-dev)
 
 add_custom_target (
 	uninstall

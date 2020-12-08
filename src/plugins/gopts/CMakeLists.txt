@@ -33,8 +33,7 @@ if (gopts_source)
 		gopts
 		SOURCES gopts.h gopts.c ${gopts_source}
 		LINK_ELEKTRA elektra-opts
-		TEST_README
-		COMPONENT libelektra4-experimental)
+		TEST_README COMPONENT libelektra4-experimental)
 
 	if (ADDTESTING_PHASE)
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})

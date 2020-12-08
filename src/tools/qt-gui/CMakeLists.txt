@@ -80,11 +80,23 @@ else ()
 		${Qt5DBus_LIBRARIES})
 	tool_link_elektratools (qt-gui elektra-ease)
 
-	install (TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER} COMPONENT elektra-qt-gui)
+	install (
+		TARGETS qt-gui
+		DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
+		COMPONENT elektra-qt-gui)
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra-qt-editor.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor")
-	install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor" DESTINATION bin COMPONENT elektra-qt-gui)
-	install (FILES org.libelektra.elektra-qt-editor.desktop DESTINATION share/applications COMPONENT elektra-qt-gui)
-	install (FILES org.libelektra.elektra-qt-editor.appdata.xml DESTINATION share/appdata COMPONENT elektra-qt-gui)
+	install (
+		PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor"
+		DESTINATION bin
+		COMPONENT elektra-qt-gui)
+	install (
+		FILES org.libelektra.elektra-qt-editor.desktop
+		DESTINATION share/applications
+		COMPONENT elektra-qt-gui)
+	install (
+		FILES org.libelektra.elektra-qt-editor.appdata.xml
+		DESTINATION share/appdata
+		COMPONENT elektra-qt-gui)
 	install (
 		FILES ../../../doc/images/logo/logo_color.svg
 		DESTINATION share/icons/hicolor/scalable/apps

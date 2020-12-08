@@ -28,8 +28,7 @@ add_plugin (
 	cache
 	SOURCES cache.h cache.c
 	LINK_ELEKTRA elektra-kdb
-	ADD_TEST TEST_README
-	COMPONENT libelektra4)
+	ADD_TEST TEST_README COMPONENT libelektra4)
 
 if (CACHE_DEPENDENCIES_OK AND BUILD_SHARED)
 	add_dependencies (elektra-cache elektra-resolver_fm_hpu_b elektra-mmapstorage)

@@ -16,5 +16,4 @@ add_plugin (
 	SOURCES conv.h iconv.c
 	INCLUDE_DIRECTORIES ${Iconv_INCLUDE_DIRS}
 	LINK_LIBRARIES ${Iconv_LIBRARIES}
-	ADD_TEST TEST_README
-	COMPONENT libelektra4-extra)
+	ADD_TEST TEST_README COMPONENT libelektra4-extra)

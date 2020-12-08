@@ -3,7 +3,14 @@ file (GLOB SOURCES *.c)
 safe_check_symbol_exists ("fnmatch" "fnmatch.h" HAVE_FNMATCH)
 
 if (HAVE_FNMATCH)
-	add_lib (globbing SOURCES ${SOURCES} LINK_ELEKTRA elektra-ease COMPONENT libelektra4)
+	add_lib (
+		globbing
+		SOURCES
+		${SOURCES}
+		LINK_ELEKTRA
+		elektra-ease
+		COMPONENT
+		libelektra4)
 else ()
 	message ("Excluding lib-globbing, because fnmatch was not found.")
 endif ()

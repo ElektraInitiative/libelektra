@@ -18,5 +18,8 @@ else ()
 	target_link_libraries (race ${CMAKE_THREAD_LIBS_INIT})
 	target_link_libraries (race ${LIBRT_LIBRARIES})
 
-	install (TARGETS race DESTINATION ${TARGET_TOOL_EXEC_FOLDER} COMPONENT elektra-tests)
+	install (
+		TARGETS race
+		DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
+		COMPONENT elektra-tests)
 endif ()

@@ -175,9 +175,15 @@ function (add_plugintest testname)
 		# ~~~
 
 		if (INSTALL_TESTING)
-			install (TARGETS ${testexename} DESTINATION "${TARGET_TOOL_EXEC_FOLDER}" COMPONENT elektra-tests)
+			install (
+				TARGETS ${testexename}
+				DESTINATION "${TARGET_TOOL_EXEC_FOLDER}"
+				COMPONENT elektra-tests)
 			if (ARG_INSTALL_TEST_DATA)
-				install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${testname}" DESTINATION "${TARGET_TEST_DATA_FOLDER}" COMPONENT elektra-tests)
+				install (
+					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${testname}"
+					DESTINATION "${TARGET_TEST_DATA_FOLDER}"
+					COMPONENT elektra-tests)
 			endif ()
 		endif (INSTALL_TESTING)
 
@@ -433,9 +439,10 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	if (ADDTESTING_PHASE)
 		if (ARG_INSTALL_TEST_DATA AND NOT ARG_ADD_TEST)
 			if (INSTALL_TESTING)
-				install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
-					 DESTINATION "${TARGET_TEST_DATA_FOLDER}"
-					 COMPONENT elektra-tests)
+				install (
+					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
+					DESTINATION "${TARGET_TEST_DATA_FOLDER}"
+					COMPONENT elektra-tests)
 			endif (INSTALL_TESTING)
 		endif ()
 
@@ -618,7 +625,10 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			target_link_libraries (${PLUGIN_NAME} elektra-plugin)
 		endif ()
 		target_link_libraries (${PLUGIN_NAME} ${ARG_LINK_LIBRARIES})
-		install (TARGETS ${PLUGIN_NAME} DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER} COMPONENT "${ARG_COMPONENT}")
+		install (
+			TARGETS ${PLUGIN_NAME}
+			DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}
+			COMPONENT "${ARG_COMPONENT}")
 		set_property (
 			TARGET ${PLUGIN_NAME}
 			APPEND

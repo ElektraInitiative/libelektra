@@ -25,7 +25,10 @@ endforeach ()
 unset (C_FLAG_32BIT)
 
 if (INSTALL_TESTING)
-	install (DIRECTORY "." DESTINATION "${TARGET_TEST_DATA_FOLDER}/gen" COMPONENT elektra-tests)
+	install (
+		DIRECTORY "."
+		DESTINATION "${TARGET_TEST_DATA_FOLDER}/gen"
+		COMPONENT elektra-tests)
 	install (
 		DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 		DESTINATION "${TARGET_TEST_DATA_FOLDER}/gen"
