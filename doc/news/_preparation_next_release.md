@@ -162,7 +162,7 @@ you up to date with the multi-language support provided by Elektra.
 ### CMake
 
 - Use Lua 5.4 when available. _(Mihael Pranjić)_
-- <<TODO>>
+- We now use CPack to build modular Debian and Ubuntu packages. _(Robert Sowula)_
 - <<TODO>>
 - Force `RTLD_NODELETE` on dlopen() when the `ENABLE_ASAN` CMake option is used. This enables ASAN to find symbols which otherwise might be unloaded. _(Mihael Pranjić)_
 - <<TODO>>
