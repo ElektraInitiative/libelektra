@@ -41,5 +41,4 @@ CMAKE_ARGS="-DTARGET_PLUGIN_FOLDER='elektra4' \
   -DCMAKE_SHARED_LINKER_FLAGS=$LDFLAGS"
 
 cmake $CMAKE_ARGS ..
-# TODO: change to relative path ./lib:.... instead of full path
 LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
