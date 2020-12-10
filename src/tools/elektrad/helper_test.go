@@ -78,6 +78,9 @@ func setupKey(t *testing.T, keyNames ...string) {
 func removeKey(t *testing.T, keyName string) {
 	t.Helper()
 
+	errKey, err := elektra.NewKey(keyName)
+	Checkf(t, err, "could not create key: %v", err)
+
 	parentKey, err := elektra.NewKey(keyName)
 	Checkf(t, err, "could not create key: %v", err)
 
@@ -86,7 +89,7 @@ func removeKey(t *testing.T, keyName string) {
 	Checkf(t, err, "could not open kdb: %v", err)
 
 	ks := elektra.NewKeySet()
-	_, err = kdb.Get(ks, parentKey)
+	_, err = kdb.Get(ks, errKey)
 	Checkf(t, err, "could not create key: %v", err)
 
 	k := ks.Lookup(parentKey)
@@ -99,12 +102,15 @@ func removeKey(t *testing.T, keyName string) {
 	ks.Remove(k)
 	Checkf(t, err, "could not remove key %s: %v", keyName, err)
 
-	_, err = kdb.Set(ks, parentKey)
+	_, err = kdb.Set(ks, errKey)
 	Checkf(t, err, "could not save removal of key %s: %v", keyName, err)
 }
 
 func setupKeyWithMeta(t *testing.T, keyName string, meta ...keyValueBody) {
 	t.Helper()
+
+	errKey, err := elektra.NewKey(keyName)
+	Checkf(t, err, "could not create key: %v", err)
 
 	parentKey, err := elektra.NewKey(keyName)
 	Checkf(t, err, "could not create key: %v", err)
@@ -114,7 +120,7 @@ func setupKeyWithMeta(t *testing.T, keyName string, meta ...keyValueBody) {
 	Checkf(t, err, "could not open kdb: %v", err)
 
 	ks := elektra.NewKeySet()
-	_, err = kdb.Get(ks, parentKey)
+	_, err = kdb.Get(ks, errKey)
 	Checkf(t, err, "could not get KeySet: %v", err)
 
 	k := ks.Lookup(parentKey)
@@ -131,7 +137,7 @@ func setupKeyWithMeta(t *testing.T, keyName string, meta ...keyValueBody) {
 		Checkf(t, err, "could not set meta %s = %s: %v", m.Key, *m.Value, err)
 	}
 
-	_, err = kdb.Set(ks, parentKey)
+	_, err = kdb.Set(ks, errKey)
 	Checkf(t, err, "could not save key %s: %v", keyName, err)
 }
 

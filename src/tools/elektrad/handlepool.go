@@ -75,7 +75,7 @@ func (p *handlePool) refillLoop() {
 			h, err := newHandle()
 
 			if err != nil {
-				panic("could not create new handle")
+				panic("could not create new handle: " + err.Error())
 			}
 
 			p.handles <- h

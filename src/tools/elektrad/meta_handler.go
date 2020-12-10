@@ -41,6 +41,15 @@ func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	errKey, err := elektra.NewKey(keyName)
+
+	if err != nil {
+		internalServerError(w)
+		return
+	}
+
+	defer errKey.Close()
+
 	parentKey, err := elektra.NewKey(keyName)
 
 	if err != nil {
@@ -51,6 +60,13 @@ func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
 	defer parentKey.Close()
 
 	handle, ks := getHandle(r)
+
+	_, err = handle.Get(ks, errKey)
+
+	if err != nil {
+		writeError(w, err)
+		return
+	}
 
 	k := ks.LookupByName(keyName)
 
@@ -70,7 +86,7 @@ func (s *server) postMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = set(handle, ks, parentKey)
+	err = set(handle, ks, errKey)
 
 	if err != nil {
 		writeError(w, err)
@@ -112,9 +128,18 @@ func (s *server) deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer key.Close()
 
+	errKey, err := elektra.NewKey(keyName)
+
+	if err != nil {
+		internalServerError(w)
+		return
+	}
+
+	defer errKey.Close()
+
 	handle, ks := getHandle(r)
 
-	_, err = handle.Get(ks, key)
+	_, err = handle.Get(ks, errKey)
 
 	if err != nil {
 		writeError(w, err)
@@ -135,7 +160,7 @@ func (s *server) deleteMetaHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = set(handle, ks, key)
+	err = set(handle, ks, errKey)
 
 	if err != nil {
 		writeError(w, err)

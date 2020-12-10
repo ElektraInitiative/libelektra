@@ -15,7 +15,7 @@ func TestGetFind(t *testing.T) {
 		setupKey(t, keyName)
 	}
 
-	w := testGet(t, "/kdbFind/user/tests/elektrad/kdbfind/get")
+	w := testGet(t, "/kdbFind/user:/tests/elektrad/kdbfind/get")
 
 	code := w.Result().StatusCode
 	Assertf(t, code == http.StatusOK, "wrong status code: %v", code)
@@ -24,4 +24,8 @@ func TestGetFind(t *testing.T) {
 	parseBody(t, w, &result)
 	Assertf(t, len(result) == 2, "result of kdbFind should haven len() 2 but has %d", len(result))
 	Assertf(t, keyNames[0] == result[0] && keyNames[1] == result[1], "the result of kdbFind is unexpected")
+
+	for _, keyName := range keyNames {
+		removeKey(t, keyName)
+	}
 }
