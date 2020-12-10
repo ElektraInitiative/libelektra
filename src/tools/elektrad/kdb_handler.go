@@ -47,7 +47,16 @@ func (s *server) getKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 	handle, ks := getHandle(r)
 
-	_, err = handle.Get(ks, key)
+	errKey, err := elektra.NewKey(keyName)
+
+	if err != nil {
+		internalServerError(w)
+		return
+	}
+
+	defer errKey.Close()
+
+	_, err = handle.Get(ks, errKey)
 
 	if err != nil {
 		writeError(w, err)
@@ -98,9 +107,18 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer key.Close()
 
+	errKey, err := elektra.NewKey(keyName)
+
+	if err != nil {
+		internalServerError(w)
+		return
+	}
+
+	defer errKey.Close()
+
 	handle, ks := getHandle(r)
 
-	_, err = handle.Get(ks, key)
+	_, err = handle.Get(ks, errKey)
 
 	if err != nil {
 		writeError(w, err)
@@ -127,7 +145,7 @@ func (s *server) putKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = set(handle, ks, key)
+	err = set(handle, ks, errKey)
 
 	if err != nil {
 		writeError(w, err)
@@ -162,9 +180,18 @@ func (s *server) deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 
 	defer key.Close()
 
+	errKey, err := elektra.NewKey(keyName)
+
+	if err != nil {
+		internalServerError(w)
+		return
+	}
+
+	defer errKey.Close()
+
 	handle, ks := getHandle(r)
 
-	_, err = handle.Get(ks, key)
+	_, err = handle.Get(ks, errKey)
 
 	if err != nil {
 		writeError(w, err)
@@ -178,7 +205,7 @@ func (s *server) deleteKdbHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = set(handle, ks, key)
+	err = set(handle, ks, errKey)
 
 	if err != nil {
 		writeError(w, err)

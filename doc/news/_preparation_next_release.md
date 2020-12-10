@@ -135,7 +135,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- <<TODO>>
+- There have been a few bugfixes for elektrad. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 
