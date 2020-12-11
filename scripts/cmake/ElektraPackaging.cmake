@@ -339,6 +339,14 @@ if (UNIX)
 		)
 		set (CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_RECOMMENDS "elektra-tests, elektra-doc, libelektra-dev") # add all .ddeb packages?
 
+		# install copyright file
+		foreach(component ${CPACK_COMPONENTS_ALL})
+			install (
+				FILES "${CMAKE_SOURCE_DIR}/scripts/packaging/copyright"
+				COMPONENT ${component}
+				DESTINATION "share/doc/${component}/")
+		endforeach()
+
 		# build debug package for each component
 		set (CPACK_DEBIAN_DEBUGINFO_PACKAGE "ON")
 
