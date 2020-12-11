@@ -107,13 +107,14 @@ if (UNIX)
 		set (CPACK_GENERATOR "DEB")
 		set (CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 		set (CPACK_DEBIAN_PACKAGE_SOURCE "elektra")
-		# set (CPACK_DEBIAN_PACKAGE_SECTION "libs")
 		set (CPACK_DEBIAN_PACKAGE_RECOMMENDS "")
 		set (CPACK_DEBIAN_PACKAGE_DEPENDS "") # no dependencies without any PLUGINS
 
 		set (CPACK_DEB_COMPONENT_INSTALL "ON")
 		set (CPACK_DEB_PACKAGE_COMPONENT "ON")
 		set (CPACK_DEBIAN_ENABLE_COMPONENT_DEPENDS "ON")
+		set (CPACK_DEBIAN_PACKAGE_SHLIBDEPS "ON")
+		set (CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS "ON")
 
 		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_NAME "libelektra4")
 		set (CPACK_COMPONENT_LIBELEKTRA4_DISPLAY_NAME "libelektra4")
@@ -378,15 +379,13 @@ if (UNIX)
 		set (CPACK_DEBIAN_ELEKTRA-DBG_PACKAGE_SECTION "debug")
 
 		# install copyright file
+		configure_file ("${CMAKE_SOURCE_DIR}/doc/THIRD-PARTY-LICENSES" "${CMAKE_BINARY_DIR}/doc/copyright" COPYONLY)
 		foreach(component ${CPACK_COMPONENTS_ALL})
 			install (
-				FILES "${CMAKE_SOURCE_DIR}/scripts/packaging/copyright"
+				FILES "${CMAKE_BINARY_DIR}/doc/copyright"
 				COMPONENT ${component}
 				DESTINATION "share/doc/${component}/")
 		endforeach()
-
-		set (CPACK_DEBIAN_PACKAGE_SHLIBDEPS "ON")
-		set (CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS "ON")
 
 		# We need to alter the architecture names as per distro rules
 		if ("${CPACK_PACKAGE_ARCHITECTURE}" MATCHES "i[3-6]86")
