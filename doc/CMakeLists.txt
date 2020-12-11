@@ -85,7 +85,8 @@ if (DOXYGEN_FOUND)
 		INPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
 	do_doc (html ${OUTPUT_DIRECTORY}/html/ index.html ${TARGET_DOCUMENTATION_HTML_FOLDER} COMPONENT elektra-doc)
-	do_doc (man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra "${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE" COMPONENT elektra-doc)
+	do_doc (man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra "${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE" COMPONENT
+		elektra-doc)
 	add_dependencies (man3 html)
 	set (outputs ${OUTPUT_DIRECTORY}/html/index.html ${OUTPUT_DIRECTORY}/man/man3elektra/kdb.3elektra)
 

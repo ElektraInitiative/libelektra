@@ -41,13 +41,12 @@ set (
 set (COMPONENTS_WITHOUT_DBGSYM elektra-doc elektra-dbg libelektra-dev libelektra4-all elektra-bin-extra)
 
 set (ALL_PLUGINS "")
-foreach(component ${CPACK_COMPONENTS_ALL})
+foreach (component ${CPACK_COMPONENTS_ALL})
 	if (component MATCHES "^libelektra4-.*")
 		list (APPEND ALL_PLUGINS "${component}")
-	endif()
-endforeach()
+	endif ()
+endforeach ()
 string (REPLACE ";" ", " ALL_PLUGINS_STR "${ALL_PLUGINS}")
-message(STATUS "ALL_PLUGINS_STR: ${ALL_PLUGINS_STR}")
 
 set (DBG_PACKAGE_NAMES "")
 foreach (component ${CPACK_COMPONENTS_ALL})
@@ -56,7 +55,6 @@ foreach (component ${CPACK_COMPONENTS_ALL})
 	endif ()
 endforeach ()
 string (REPLACE ";" ", " DBG_PACKAGE_NAMES_STR "${DBG_PACKAGE_NAMES}")
-message(STATUS "DBG_PACKAGE_NAMES_STR: ${DBG_PACKAGE_NAMES_STR}")
 
 set (
 	PACKAGE_DESCRIPTION
