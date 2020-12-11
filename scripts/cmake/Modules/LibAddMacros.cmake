@@ -68,7 +68,6 @@ macro (create_lib_symlink src dest component)
 		COMPONENT "${component}")
 endmacro (create_lib_symlink src dest component)
 
-
 # ~~~
 # Create a symlink for man1 files at installation
 #
@@ -655,8 +654,8 @@ If you do not add this file, then installing Elektra will fail!\n")
 
 			if (BUILD_STATIC)
 				if (SECTION EQUAL 1)
-					create_doc_symlink("kdb.${SECTION}" "kdb-static.${SECTION}" "${ARG_COMPONENT}")
-				endif()
+					create_doc_symlink ("kdb.${SECTION}" "kdb-static.${SECTION}" "${ARG_COMPONENT}")
+				endif ()
 			endif ()
 		endif ()
 	endif (BUILD_DOCUMENTATION)

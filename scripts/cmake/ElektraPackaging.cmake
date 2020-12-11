@@ -43,12 +43,12 @@ list (FILTER ALL_PLUGINS INCLUDE REGEX "^libelektra4-.*")
 string (REPLACE ";" ", " ALL_PLUGINS_STR "${ALL_PLUGINS}")
 
 set (DBG_PACKAGE_NAMES "")
-foreach(component ${CPACK_COMPONENTS_ALL})
-	list(APPEND DBG_PACKAGE_NAMES "${component}-dbgsym")
-endforeach()
+foreach (component ${CPACK_COMPONENTS_ALL})
+	list (APPEND DBG_PACKAGE_NAMES "${component}-dbgsym")
+endforeach ()
 # exclude all packages without dbgsym
-list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^elektra-doc.*") 
-list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^elektra-dbg.*") 
+list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^elektra-doc.*")
+list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^elektra-dbg.*")
 list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^libelektra-dev.*")
 list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^libelektra4-all.*")
 list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^elektra-bin-extra.*")
@@ -372,7 +372,7 @@ if (UNIX)
 			CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_DEPENDS
 			"libelektra4, libelektra4-experimental, libelektra4-augeas, libelektra4-dbus, libelektra4-zeromq, libelektra4-lua, libelektra4-python, libelektra4-xmltool, libelektra4-xerces, libelektra4-yajl, lua-elektra, elektra-bin, elektra-qt-gui, libelektra4-crypto, libelektra4-curl, libelektra4-journald, libelektra4-extra"
 		)
-		set (CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_RECOMMENDS "elektra-tests, elektra-doc, elektra-dbg, libelektra-dev") 
+		set (CPACK_DEBIAN_LIBELEKTRA4-ALL_PACKAGE_RECOMMENDS "elektra-tests, elektra-doc, elektra-dbg, libelektra-dev")
 
 		set (CPACK_DEBIAN_ELEKTRA-DBG_PACKAGE_NAME "elektra-dbg")
 		set (CPACK_COMPONENT_ELEKTRA-DBG_DISPLAY_NAME "elektra-dbg")
@@ -382,12 +382,12 @@ if (UNIX)
 
 		# install copyright file
 		configure_file ("${CMAKE_SOURCE_DIR}/doc/THIRD-PARTY-LICENSES" "${CMAKE_BINARY_DIR}/doc/copyright" COPYONLY)
-		foreach(component ${CPACK_COMPONENTS_ALL})
+		foreach (component ${CPACK_COMPONENTS_ALL})
 			install (
 				FILES "${CMAKE_BINARY_DIR}/doc/copyright"
 				COMPONENT ${component}
 				DESTINATION "share/doc/${component}/")
-		endforeach()
+		endforeach ()
 
 		# We need to alter the architecture names as per distro rules
 		if ("${CPACK_PACKAGE_ARCHITECTURE}" MATCHES "i[3-6]86")
