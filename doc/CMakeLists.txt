@@ -9,9 +9,15 @@ find_package (Doxygen QUIET)
 # folder  is the folder where it will be built
 # file    is the file name to set a dependency to
 # install is where it should be installed
-# target_component is the component name for component-specifc installation
 # ~~~
-macro (do_doc target folder file install target_component)
+macro (do_doc target folder file install)
+
+	cmake_parse_arguments (
+		ARG
+		"" # optional keywords
+		"COMPONENT" # one value keywords
+		"" # multi value keywords
+		${ARGN})
 
 	# sometimes doxygen is too slow and fails with "Could not create output directory .../doc/html"
 	file (MAKE_DIRECTORY ${folder})
@@ -23,7 +29,7 @@ macro (do_doc target folder file install target_component)
 	if (INSTALL_DOCUMENTATION)
 		install (
 			DIRECTORY ${folder}
-			COMPONENT ${target_component}
+			COMPONENT "${ARG_COMPONENT}"
 			DESTINATION ${install})
 	endif (INSTALL_DOCUMENTATION)
 endmacro (do_doc)
@@ -78,8 +84,8 @@ if (DOXYGEN_FOUND)
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 		INPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
-	do_doc (html ${OUTPUT_DIRECTORY}/html/ index.html ${TARGET_DOCUMENTATION_HTML_FOLDER} elektra-doc)
-	do_doc (man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra "${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE" elektra-doc)
+	do_doc (html ${OUTPUT_DIRECTORY}/html/ index.html ${TARGET_DOCUMENTATION_HTML_FOLDER} COMPONENT elektra-doc)
+	do_doc (man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra "${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE" COMPONENT elektra-doc)
 	add_dependencies (man3 html)
 	set (outputs ${OUTPUT_DIRECTORY}/html/index.html ${OUTPUT_DIRECTORY}/man/man3elektra/kdb.3elektra)
 
