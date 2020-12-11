@@ -8,6 +8,7 @@ set (CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set (CPACK_DEBIAN_PACKAGE_VERSION "${PROJECT_VERSION}")
 set (CPACK_DEBIAN_PACKAGE_RELEASE "1")
 set (CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Pino Toscano <pino@debian.org>")
 
 set (
 	CPACK_COMPONENTS_ALL
@@ -45,7 +46,8 @@ set (DBG_PACKAGE_NAMES "")
 foreach(component ${CPACK_COMPONENTS_ALL})
 	list(APPEND DBG_PACKAGE_NAMES "${component}-dbgsym")
 endforeach()
-list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^elektra-doc.*") # elektra-doc doesn't contain dbgsym
+# exclude all packages without dbgsym
+list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^elektra-doc.*") 
 list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^elektra-dbg.*") 
 list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^libelektra-dev.*")
 list (FILTER DBG_PACKAGE_NAMES EXCLUDE REGEX "^libelektra4-all.*")
@@ -268,11 +270,11 @@ if (UNIX)
 		set (CPACK_DEBIAN_LUA-ELEKTRA_PACKAGE_SECTION "interpreters")
 		set (CPACK_DEBIAN_LUA-ELEKTRA_DEBUGINFO_PACKAGE "ON")
 
-		# maybe add python3:depends? (see control file)
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_NAME "python3-elektra")
 		set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DISPLAY_NAME "python3-elektra")
 		set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DESCRIPTION "This package contains the Python 3 bindings.")
 		set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DEPENDS "libelektra4")
+		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_DEPENDS "python3")
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_SECTION "python")
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
 		file (GLOB CONTROL_FILES_PYTHON3-ELEKTRA "${CMAKE_SOURCE_DIR}/scripts/packaging/debian-control/python3-elektra/*")
