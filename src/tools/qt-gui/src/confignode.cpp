@@ -11,9 +11,9 @@
 
 using namespace kdb;
 
-ConfigNode::ConfigNode (QString name, QString path, const Key & key, TreeViewModel * parentModel)
+ConfigNode::ConfigNode (QString name, QString path, const Key & key, TreeViewModel * parentModel, bool root)
 : m_name (std::move (name)), m_path (std::move (path)), m_key (key), m_children (new TreeViewModel), m_metaData (nullptr),
-  m_parentModel (parentModel), m_isExpanded (false), m_isDirty (false)
+  m_parentModel (parentModel), m_isExpanded (false), m_isDirty (false), m_root (root)
 {
 	setValue ();
 
@@ -247,6 +247,11 @@ void ConfigNode::updateNode (Key key)
 void ConfigNode::setIsExpanded (bool value)
 {
 	m_isExpanded = value;
+}
+
+bool ConfigNode::isRoot () const
+{
+	return m_root;
 }
 
 void ConfigNode::populateMetaModel ()

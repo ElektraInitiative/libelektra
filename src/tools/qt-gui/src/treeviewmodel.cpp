@@ -81,7 +81,16 @@ QVariant TreeViewModel::data (const QModelIndex & idx, int role) const
 
 	// TODO: document fallthrough if it was desired
 	case NameRole:
-		return QVariant::fromValue (node->getName ());
+		if (node->isRoot ())
+		{
+			kdb::Key k;
+			k.setNamespace (static_cast<ElektraNamespace> (node->getName ().at (0).unicode ()));
+			return QVariant::fromValue (QString::fromStdString (k.getName ()));
+		}
+		else
+		{
+			return QVariant::fromValue (node->getName ());
+		}
 
 	case PathRole:
 		return QVariant::fromValue (node->getPath ());
@@ -489,43 +498,26 @@ void TreeViewModel::populateModel ()
 	populateModel (config);
 }
 
+void TreeViewModel::addRootNode (ElektraNamespace ns)
+{
+	kdb::Key k;
+	k.setNamespace (ns);
+
+	auto name = k.getName ();
+	name = name.substr (0, name.length () - 1);
+
+	m_model << ConfigNodePtr (new ConfigNode (QString::fromStdString (std::string{ static_cast<char> (ns) }),
+						  QString::fromStdString (name), nullptr, this, true));
+}
+
 void TreeViewModel::populateModel (KeySet const & keySet)
 {
 	m_model.clear ();
 
-	using namespace ckdb; // for namespaces
-	for (int i = KEY_NS_FIRST; i <= KEY_NS_LAST; ++i)
-	{
-		elektraNamespace ns = static_cast<elektraNamespace> (i);
-		ConfigNodePtr toAdd;
-		switch (ns)
-		{
-		case KEY_NS_SPEC:
-			toAdd = ConfigNodePtr (new ConfigNode ("spec", "spec", nullptr, this));
-			break;
-		case KEY_NS_PROC:
-			// TODO: add generic commandline parsing
-			break;
-		case KEY_NS_DIR:
-			toAdd = ConfigNodePtr (new ConfigNode ("dir", "dir", nullptr, this));
-			break;
-		case KEY_NS_USER:
-			toAdd = ConfigNodePtr (new ConfigNode ("user", "user", nullptr, this));
-			break;
-		case KEY_NS_SYSTEM:
-			toAdd = ConfigNodePtr (new ConfigNode ("system", "system", nullptr, this));
-			break;
-		case KEY_NS_NONE:
-			break;
-		case KEY_NS_META:
-			break;
-		case KEY_NS_CASCADING:
-			break;
-		case KEY_NS_DEFAULT:
-			break;
-		}
-		if (toAdd) m_model << toAdd;
-	}
+	addRootNode (ElektraNamespace::SPEC);
+	addRootNode (ElektraNamespace::DIR);
+	addRootNode (ElektraNamespace::USER);
+	addRootNode (ElektraNamespace::SYSTEM);
 
 	createNewNodes (keySet);
 }
@@ -542,7 +534,10 @@ void TreeViewModel::createNewNodes (KeySet keySet)
 
 		for (int i = 0; i < m_model.count (); i++)
 		{
-			if (root == m_model.at (i)->getName ()) sink (m_model.at (i), keys, k);
+			if (root == m_model.at (i)->getName ())
+			{
+				sink (m_model.at (i), keys, k);
+			}
 		}
 	}
 }

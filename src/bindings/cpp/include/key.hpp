@@ -30,15 +30,20 @@ class NameReverseIterator;
 
 enum class ElektraNamespace : std::uint8_t
 {
-	NONE = 0,
-	CASCADING = 1,
-	META = 2,
-	SPEC = 3,
-	PROC = 4,
-	DIR = 5,
-	USER = 6,
-	SYSTEM = 7,
-	DEFAULT = 8,
+	NONE = KEY_NS_NONE,
+	CASCADING = KEY_NS_CASCADING,
+	META = KEY_NS_META,
+	SPEC = KEY_NS_SPEC,
+	PROC = KEY_NS_PROC,
+	DIR = KEY_NS_DIR,
+	USER = KEY_NS_USER,
+	SYSTEM = KEY_NS_SYSTEM,
+	DEFAULT = KEY_NS_DEFAULT,
+};
+
+static const ElektraNamespace ELEKTRA_NAMESPACES[] = {
+	ElektraNamespace::CASCADING, ElektraNamespace::META, ElektraNamespace::SPEC,   ElektraNamespace::PROC,
+	ElektraNamespace::DIR,	     ElektraNamespace::USER, ElektraNamespace::SYSTEM, ElektraNamespace::DEFAULT,
 };
 
 /**

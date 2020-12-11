@@ -313,6 +313,11 @@ private:
 	 */
 	QMap<QString, QString> getErrorMessage (kdb::KDBException const & e);
 
+	/**
+	 * @brief add a root node
+	 */
+	void addRootNode (kdb::ElektraNamespace ns);
+
 protected:
 	QHash<int, QByteArray> roleNames () const override;
 

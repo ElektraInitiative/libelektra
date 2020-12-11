@@ -37,7 +37,7 @@ public:
 	 * @param key
 	 * @param parentModel
 	 */
-	explicit ConfigNode (QString name, QString path, const kdb::Key & key, TreeViewModel * parentModel);
+	explicit ConfigNode (QString name, QString path, const kdb::Key & key, TreeViewModel * parentModel, bool root = false);
 	/// Needed by Qt. This copy constructor is supposed to create a DEEP COPY.
 	ConfigNode (const ConfigNode & other);
 	/// Needed by Qt/QSharedPtr
@@ -240,6 +240,11 @@ public:
 	void setIsDirty (bool dirty);
 	void updateNode (kdb::Key key);
 
+	/**
+	 * @return true if this is ConfigNode is a root node
+	 */
+	bool isRoot () const;
+
 private:
 	QString m_name;
 	QString m_path;
@@ -252,6 +257,7 @@ private:
 
 	bool m_isExpanded;
 	bool m_isDirty;
+	bool m_root;
 
 	/**
 	 * @brief Populates the TreeViewModel which holds the metakeys of this ConfigNode.
