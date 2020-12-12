@@ -1,4 +1,0 @@
-#!/bin/sh
-set -e
-
-dpkg-maintscript-helper rm_conffile /etc/bash_completion.d/kdb 0.8.11-1~ -- "$@"
