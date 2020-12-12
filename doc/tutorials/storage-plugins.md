@@ -41,6 +41,8 @@ sudo kdb umount user:/tests/storage
 
 . For more information on why we allow “holes” in the hierarchy, please take a look [here](../decisions/5_implemented/holes.md).
 
+Use the `directory/holes` tag in `infos/features/storage` to indicate that your storage plugin supports this feature.
+
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ## Differentiate Between Empty Keys and Keys Containing an Empty String
@@ -100,6 +102,8 @@ kdb rm -r user:/tests/storage
 sudo kdb umount user:/tests/storage
 ```
 
+Use the `type` tag in `infos/features/storage` to indicate that your storage plugin supports this feature.
+
 ## Support Values Inside Non-Leaf Keys
 
 Sometimes the most “natural” mapping of key-value pairs to a file format might cause a storage plugin to not be able to store values in so-called directory (non-leaf) keys.
@@ -157,6 +161,8 @@ sudo kdb umount user:/tests/storage
 ```
 
 . To make sure that your storage plugin works correctly, please just replace `yamlcpp` with the name of your plugin and verify that the test above still works.
+
+Use the `directory/value` tag in `infos/features/storage` to indicate that your storage plugin supports this feature.
 
 ## Support Array And Non-Array Data Properly
 
@@ -302,6 +308,8 @@ sudo kdb umount user:/tests/hosts
 ```
 
 As you can see by setting the order metakey in the respective KDB entries, we can manipulate the order in which entries get written to the hosts file. Also when importing from the initial hosts file, the plugin stores the correct order in the meta KeySet.
+
+Use the `array` tag in `infos/features/storage` to indicate that your storage plugin supports this feature.
 
 <!--
 TODO: Add section about relative keys (See also: https://issues.libelektra.org/51)

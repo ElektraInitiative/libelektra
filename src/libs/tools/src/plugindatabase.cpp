@@ -140,43 +140,8 @@ bool hasProvides (PluginDatabase const & pd, std::string which)
 } // namespace
 
 
-// TODO: directly use data from CONTRACT.ini
 const std::map<std::string, int> PluginDatabase::statusMap = {
-	// clang-format off
-   {"default",      64000},
-   {"recommended",  32000},
-   {"productive",    8000},
-   {"maintained",    4000},
-   {"reviewed",      4000},
-   {"conformant",    2000},
-   {"compatible",    2000},
-   {"coverage",      2000},
-   {"specific",      1000},
-
-   {"unittest",      1000},
-   {"shelltest",     1000},
-   {"tested",         500},
-   {"nodep",          250},
-   {"libc",           250},
-   {"configurable",    50},
-   {"final",           50},
-   {"global",           1},
-   {"readonly",         0},
-   {"writeonly",        0},
-   {"preview",        -50},
-   {"memleak",       -250},
-   {"experimental",  -500},
-   {"difficult",     -500},
-   {"limited",       -750},
-   {"unfinished",   -1000},
-   {"old",          -1000},
-   {"nodoc",        -1000},
-   {"concept",      -2000},
-   {"orphan",       -4000},
-   {"obsolete",     -4000},
-   {"discouraged", -32000},
-
-	// clang-format on
+#include <plugincontract.h>
 };
 
 
