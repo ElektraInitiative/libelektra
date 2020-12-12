@@ -56,7 +56,25 @@ We removed the `ini` plugin (superseded by the TOML plugin), the `null` plugin (
 
 ## Plugins
 
-The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
+The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
+
+### Contract
+
+We simplified and extended the plugin's contract, mostly related to `infos/status`.
+`infos/status` describes the development status of a plugin.
+It is used for automatic selection of the best plugin during mounting.
+
+- many redundant tags were removed
+- tags that are actually features (like `readonly`) were moved to `infos/features/storage`
+  (currently not used by any tools but we intend to use this for the test framework and advanced mounting features)
+- tag `nodep` replaced by `infos/dependencies/_`
+- introduced `infos/environment` to indicate if environment variables can influence the plugin (or mountpoint)
+- tag `nodoc` renamed to `documented`
+- to avoid duplication, the tags are now described in header files:
+  - src/libs/tools/include/plugincontract.h
+  - src/libs/tools/include/pluginfeatures.h
+
+Done in collaboration with _(Markus Raab, Klemens Böswirth, René Schwaiger, <add name>)_.
 
 ### jni
 

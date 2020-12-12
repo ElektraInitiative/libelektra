@@ -41,6 +41,8 @@ sudo kdb umount user:/tests/storage
 
 . For more information on why we allow “holes” in the hierarchy, please take a look [here](../decisions/holes.md).
 
+Use the `directory/holes` tag in `infos/features/storage` to indicate that your storage plugin supports this feature.
+
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ## Differentiate Between Empty Keys and Keys Containing an Empty String
@@ -104,6 +106,8 @@ kdb rm -r user:/tests/storage
 sudo kdb umount user:/tests/storage
 ```
 
+Use the `type` tag in `infos/features/storage` to indicate that your storage plugin supports this feature.
+
 ## Support Values Inside Non-Leaf Keys
 
 Sometimes the most “natural” mapping of key-value pairs to a file format might cause a storage plugin to not be able to store values in so called directory (non-leaf) keys.
@@ -162,6 +166,8 @@ sudo kdb umount user:/tests/storage
 
 . To make sure that your storage plugin works correctly, please just replace `yamlcpp` with the name of your plugin and verify that the test above still works.
 
+Use the `directory/value` tag in `infos/features/storage` to indicate that your storage plugin supports this feature.
+
 ## Support Array And Non-Array Data Properly
 
 You already learned about the array syntax and the mandatory `array` metakey in the [array tutorial](arrays.md). Now it is time to check, if your storage plugin supports array and non-array keys properly. Let us look at a concrete example. We use a key set that contains the following keys as example:
@@ -215,6 +221,8 @@ sudo kdb umount user:/tests/storage
 ```
 
 .
+
+Use the `array` tag in `infos/features/storage` to indicate that your storage plugin supports this feature.
 
 <!--
 TODO: Add information on how plugins should store comment (meta)data
