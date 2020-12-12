@@ -386,6 +386,23 @@ if (UNIX)
 				DESTINATION "share/doc/${component}/")
 		endforeach ()
 
+		# compress and install changelog
+		add_custom_command(
+			OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/changelog.Debian.gz"
+			COMMAND gzip -cn9 "debian/changelog" > "${CMAKE_CURRENT_BINARY_DIR}/changelog.Debian.gz"
+			WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/scripts/packaging"
+			COMMENT "Compressing changelog"
+		)
+
+		add_custom_target(changelog ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/changelog.Debian.gz")
+
+		foreach (component ${CPACK_COMPONENTS_ALL})
+			install (
+				FILES "${CMAKE_CURRENT_BINARY_DIR}/changelog.Debian.gz"
+				COMPONENT ${component}
+				DESTINATION "share/doc/${component}/")
+		endforeach ()
+
 		# We need to alter the architecture names as per distro rules
 		if ("${CPACK_PACKAGE_ARCHITECTURE}" MATCHES "i[3-6]86")
 			set (CPACK_PACKAGE_ARCHITECTURE i386)
