@@ -274,10 +274,10 @@ if (UNIX)
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_DEPENDS "python3")
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_SECTION "python")
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
-		file (GLOB CONTROL_FILES_PYTHON3-ELEKTRA "${CMAKE_SOURCE_DIR}/scripts/packaging/debian-control/python3-elektra/*")
+		file (GLOB CONTROL_FILES_PYTHON3-ELEKTRA "${CMAKE_SOURCE_DIR}/scripts/packaging/debian/control/python3-elektra/*")
 		file (COPY ${CONTROL_FILES_PYTHON3-ELEKTRA}
-		      DESTINATION "${CMAKE_BINARY_DIR}/scripts/packaging/debian-control/python3-elektra/")
-		file (GLOB CONTROL_FILES_PYTHON3-ELEKTRA_BINARY "${CMAKE_BINARY_DIR}/scripts/packaging/debian-control/python3-elektra/*")
+		      DESTINATION "${CMAKE_BINARY_DIR}/scripts/packaging/debian/control/python3-elektra/")
+		file (GLOB CONTROL_FILES_PYTHON3-ELEKTRA_BINARY "${CMAKE_BINARY_DIR}/scripts/packaging/debian/control/python3-elektra/*")
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_PACKAGE_CONTROL_EXTRA "${CONTROL_FILES_PYTHON3-ELEKTRA_BINARY}")
 		set (CPACK_DEBIAN_PYTHON3-ELEKTRA_DEBUGINFO_PACKAGE "ON")
 
@@ -337,7 +337,7 @@ if (UNIX)
 		set (CPACK_DEBIAN_ELEKTRA-DOC_PACKAGE_BREAKS "libelektra-doc (<< ${DEBIAN_VERSION_RELEASE})")
 		set (CPACK_DEBIAN_ELEKTRA-DOC_PACKAGE_REPLACES "libelektra-doc (<< ${DEBIAN_VERSION_RELEASE})")
 		install (
-			FILES "${CMAKE_SOURCE_DIR}/scripts/packaging/doc-base/elektra-doc"
+			FILES "${CMAKE_SOURCE_DIR}/scripts/packaging/debian/doc-base/elektra-doc"
 			COMPONENT elektra-doc
 			DESTINATION ${TARGET_DOCUMENTATION_DOC-BASE_FOLDER})
 
