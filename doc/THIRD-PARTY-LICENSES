@@ -1,16 +1,10 @@
-Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Elektra
 Upstream-Contact: Markus Raab <elektra@markus-raab.org>
-Source: http://www.libelektra.org/ftp/elektra/releases/
+Source: https://www.libelektra.org/ftp/elektra/releases/
 
 Files: *
-Copyright: 2003-2004, 2006-2008, 2010, 2013-2014 Markus Raab <elektra@markus-raab.org>
-           2003-2005 Avi Alkalay <avi@unix.sh>
-           2004 Vladimir Shabanov <virl@mail.ru>
-           2006 Yannick Lecaillez <sizon5@gmail.com>
-           2007 Patrick Sabin <patricksabin@gmx.at>
-           2013 Christian Loose <christian.loose@hamburg.de>
-           2014-2015 Felix Berlakovich <elektra@berlakovich.net>
+Copyright: Elektra contributors (https://www.libelektra.org/developers/authors)
 License: BSD-3-clause
 
 Files: cmake/Modules/DownloadProject*
