@@ -26,7 +26,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 ## Highlights
 
 - Important Changes to Keynames
-- <<HIGHLIGHT2>>
+- Debian Packaging with CPack
 - <<HIGHLIGHT3>>
 
 ### Important Changes to Keynames
@@ -46,7 +46,9 @@ If you rely on specific behaviour of Elektra's Keynames and have already taken t
 - Fix combining dot-dot parts and escapes in key names. _(Klemens Böswirth)_
 - Fix adding more than 10 warnings to a key. _(Klemens Böswirth)_
 
-### <<HIGHLIGHT2>>
+### Debian Packaging with CPack
+
+We are now using CPack to generate modular Debian and Ubuntu packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specifc dependencies with CPack, which is needed for some packages. _Robert Sowula_
 
 ### <<HIGHLIGHT3>>
 
@@ -162,7 +164,6 @@ you up to date with the multi-language support provided by Elektra.
 ### CMake
 
 - Use Lua 5.4 when available. _(Mihael Pranjić)_
-- We now use CPack to build modular Debian and Ubuntu packages. _(Robert Sowula)_
 - <<TODO>>
 - Force `RTLD_NODELETE` on dlopen() when the `ENABLE_ASAN` CMake option is used. This enables ASAN to find symbols which otherwise might be unloaded. _(Mihael Pranjić)_
 - <<TODO>>
