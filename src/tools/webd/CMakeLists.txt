@@ -24,24 +24,22 @@ else ()
 	install (
 		DIRECTORY .
 		DESTINATION ${install_directory}
+		COMPONENT elektra-misc
 		PATTERN "node_modules" EXCLUDE
 		PATTERN "build" EXCLUDE)
 
-	install (FILES README.md DESTINATION ${install_directory})
+	install (FILES README.md DESTINATION ${install_directory} COMPONENT elektra-misc)
 	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-webd ${CMAKE_CURRENT_BINARY_DIR}/build-webd
-		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER} COMPONENT elektra-misc)
 
 	# build elektra-web
-	install (CODE "message (\"-- Installing: elektra-web > webd\")")
+	install (CODE "message (\"-- Installing: elektra-web > webd\")" COMPONENT elektra-misc)
 	install (
-		CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
-	)
+		CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)" COMPONENT elektra-misc)
 	install (
-		CODE "execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
-	)
+		CODE "execute_process (COMMAND npm run build --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)" COMPONENT elektra-misc)
 	install (
-		CODE "execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
-	)
+		CODE "execute_process (COMMAND npm prune --production --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)" COMPONENT elektra-misc)
 
 	# generate manpages
 	generate_manpage (kdb-run-webd FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)

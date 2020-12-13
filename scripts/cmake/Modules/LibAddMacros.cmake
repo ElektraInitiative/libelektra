@@ -621,6 +621,12 @@ function (generate_manpage NAME)
 			set (MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
 		endif ()
 
+		if (ARG_COMPONENT)
+			set (HAS_COMPONENT ${ARG_COMPONENT})
+		else ()
+			set (HAS_COMPONENT "elektra-misc")
+		endif ()
+
 		set (MAN_PAGE_LOCATION "doc/man/man${SECTION}/${NAME}.${SECTION}")
 		set (OUTFILE "${CMAKE_SOURCE_DIR}/${MAN_PAGE_LOCATION}")
 
@@ -650,11 +656,11 @@ If you do not add this file, then installing Elektra will fail!\n")
 			install (
 				FILES ${OUTFILE}
 				DESTINATION share/man/man${SECTION}
-				COMPONENT "${ARG_COMPONENT}")
+				COMPONENT "${HAS_COMPONENT}")
 
 			if (BUILD_STATIC)
 				if (SECTION EQUAL 1)
-					create_doc_symlink ("kdb.${SECTION}" "kdb-static.${SECTION}" "${ARG_COMPONENT}")
+					create_doc_symlink ("kdb.${SECTION}" "kdb-static.${SECTION}" "${HAS_COMPONENT}")
 				endif ()
 			endif ()
 		endif ()

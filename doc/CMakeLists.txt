@@ -19,6 +19,12 @@ macro (do_doc target folder file install)
 		"" # multi value keywords
 		${ARGN})
 
+	if (ARG_COMPONENT)
+		set (HAS_COMPONENT ${ARG_COMPONENT})
+	else ()
+		set (HAS_COMPONENT "elektra-misc")
+	endif ()
+
 	# sometimes doxygen is too slow and fails with "Could not create output directory .../doc/html"
 	file (MAKE_DIRECTORY ${folder})
 
@@ -29,7 +35,7 @@ macro (do_doc target folder file install)
 	if (INSTALL_DOCUMENTATION)
 		install (
 			DIRECTORY ${folder}
-			COMPONENT "${ARG_COMPONENT}"
+			COMPONENT "${HAS_COMPONENT}"
 			DESTINATION ${install})
 	endif (INSTALL_DOCUMENTATION)
 endmacro (do_doc)

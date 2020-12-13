@@ -25,11 +25,11 @@ else () # find installation path
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/run.sh" "${CMAKE_CURRENT_BINARY_DIR}/run-${tool}")
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/stop.sh" "${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}")
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/README.md" "${CMAKE_CURRENT_BINARY_DIR}/README.md") # copy hub binary
-	install (TARGETS ${HUB} DESTINATION ${install_directory})
+	install (TARGETS ${HUB} DESTINATION ${install_directory} COMPONENT elektra-misc)
 
 	# install files to destination
 	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
-		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER} COMPONENT elektra-misc)
 
 	generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 endif ()

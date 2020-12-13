@@ -23,6 +23,12 @@ function (add_lib name)
 		add_cppheaders (ARG_SOURCES)
 	endif (ARG_CPP)
 
+	if (ARG_COMPONENT)
+		set (HAS_COMPONENT ${ARG_COMPONENT})
+	else ()
+		set (HAS_COMPONENT "elektra-misc")
+	endif ()
+
 	add_library (elektra-${name}-objects OBJECT ${ARG_SOURCES})
 	add_dependencies (elektra-${name}-objects generate_version_script)
 	target_include_directories (elektra-${name}-objects PUBLIC ${ARG_INCLUDE_DIRECTORIES})
@@ -58,7 +64,7 @@ function (add_lib name)
 		install (
 			TARGETS elektra-${name}
 			DESTINATION lib${LIB_SUFFIX}
-			COMPONENT "${ARG_COMPONENT}"
+			COMPONENT "${HAS_COMPONENT}"
 			EXPORT ElektraTargetsLibelektra)
 	endif (BUILD_SHARED)
 

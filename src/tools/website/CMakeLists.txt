@@ -26,17 +26,16 @@ else ()
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/README.md" "${CMAKE_CURRENT_BINARY_DIR}/README.md")
 
 	# install files to destination
-	install (DIRECTORY public resources DESTINATION ${install_directory})
+	install (DIRECTORY public resources DESTINATION ${install_directory} COMPONENT elektra-misc)
 	install (FILES package.json README.md ${CMAKE_CURRENT_BINARY_DIR}/Gruntfile.js application-config.json.tpl
-		 DESTINATION ${install_directory})
+		 DESTINATION ${install_directory} COMPONENT elektra-misc)
 	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-${tool} ${CMAKE_CURRENT_BINARY_DIR}/stop-${tool}
 			  ${CMAKE_CURRENT_BINARY_DIR}/build-${tool} ${CMAKE_CURRENT_BINARY_DIR}/mount-${tool}-config
-		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+		 DESTINATION ${TARGET_TOOL_EXEC_FOLDER} COMPONENT elektra-misc)
 
 	# attempt to install npm dependencies
 	install (
-		CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
-	)
+		CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)" COMPONENT elektra-misc)
 
 	generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
 

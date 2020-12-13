@@ -436,6 +436,12 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		message (FATAL_ERROR "Parsed a wrong argument to plugin ${PLUGIN_SHORT_NAME}: ${ARG_UNPARSED_ARGUMENTS}")
 	endif ()
 
+	if (ARG_COMPONENT)
+		set (HAS_COMPONENT ${ARG_COMPONENT})
+	else ()
+		set (HAS_COMPONENT "elektra-misc")
+	endif ()
+
 	if (ADDTESTING_PHASE)
 		if (ARG_INSTALL_TEST_DATA AND NOT ARG_ADD_TEST)
 			if (INSTALL_TESTING)
@@ -628,7 +634,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		install (
 			TARGETS ${PLUGIN_NAME}
 			DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}
-			COMPONENT "${ARG_COMPONENT}")
+			COMPONENT "${HAS_COMPONENT}")
 		set_property (
 			TARGET ${PLUGIN_NAME}
 			APPEND

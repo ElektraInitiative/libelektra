@@ -39,7 +39,8 @@ set (
 	elektra-doc
 	elektra-qt-gui
 	elektra-tests
-	elektra-dbg)
+	elektra-dbg
+	elektra-misc)
 
 set (COMPONENTS_WITHOUT_DBGSYM elektra-doc elektra-dbg libelektra-dev libelektra4-all elektra-bin-extra)
 
@@ -53,7 +54,7 @@ string (REPLACE ";" ", " ALL_PLUGINS_STR "${ALL_PLUGINS}")
 
 set (DBG_PACKAGE_NAMES "")
 foreach (component ${CPACK_COMPONENTS_ALL})
-	if (NOT component IN_LIST COMPONENTS_WITHOUT_DBGSYM)
+	if (NOT component IN_LIST COMPONENTS_WITHOUT_DBGSYM AND NOT component STREQUAL "elektra-misc")
 		list (APPEND DBG_PACKAGE_NAMES "${component}-dbgsym")
 	endif ()
 endforeach ()
@@ -376,6 +377,13 @@ if (UNIX)
 		set (CPACK_COMPONENT_ELEKTRA-DBG_DESCRIPTION "This package contains the dependencies to all dbgsym packages of Elektra.")
 		set (CPACK_DEBIAN_ELEKTRA-DBG_PACKAGE_DEPENDS "${DBG_PACKAGE_NAMES_STR}")
 		set (CPACK_DEBIAN_ELEKTRA-DBG_PACKAGE_SECTION "debug")
+
+		set (CPACK_DEBIAN_ELEKTRA-MISC_PACKAGE_NAME "elektra-misc")
+		set (CPACK_COMPONENT_ELEKTRA-MISC_DISPLAY_NAME "elektra-misc")
+		set (CPACK_COMPONENT_ELEKTRA-MISC_DESCRIPTION "This package contains all files not part of any of the released Elektra packages.")
+		set (CPACK_DEBIAN_ELEKTRA-MISC_PACKAGE_ARCHITECTURE "all")
+		set (CPACK_DEBIAN_ELEKTRA-MISC_PACKAGE_SECTION "misc")
+		set (CPACK_DEBIAN_ELEKTRA-MISC_DEBUGINFO_PACKAGE "ON")
 
 		# install copyright file
 		configure_file ("${CMAKE_SOURCE_DIR}/doc/THIRD-PARTY-LICENSES" "${CMAKE_BINARY_DIR}/doc/copyright" COPYONLY)
