@@ -108,9 +108,11 @@ if (Java_JAVAC_EXECUTABLE)
 			add_custom_target (jna ALL
 					   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
 
-			install (FILES "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
-				       "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/libelektra4j-${KDB_VERSION}.pom.xml"
-				 DESTINATION "share/java" COMPONENT elektra-misc)
+			install (
+				FILES "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
+				      "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/libelektra4j-${KDB_VERSION}.pom.xml"
+				DESTINATION "share/java"
+				COMPONENT elektra-misc)
 
 			# and add maven test to execute with ctest in the testing phase
 			if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15))

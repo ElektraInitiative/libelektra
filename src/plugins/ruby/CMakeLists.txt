@@ -76,7 +76,10 @@ if (ADDTESTING_PHASE)
 				ENVIRONMENT "RUBYLIB=${CMAKE_BINARY_DIR}/src/bindings/swig/ruby:${CMAKE_SOURCE_DIR}/src/bindings/swig/ruby")
 
 		if (INSTALL_TESTING)
-			install (DIRECTORY ruby/ruby_test_scripts DESTINATION ${TARGET_TEST_DATA_FOLDER} COMPONENT elektra-misc)
+			install (
+				DIRECTORY ruby/ruby_test_scripts
+				DESTINATION ${TARGET_TEST_DATA_FOLDER}
+				COMPONENT elektra-misc)
 		endif ()
 	else ()
 		message (WARNING "ruby bindings are required for testing, test deactivated")

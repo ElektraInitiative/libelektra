@@ -7,7 +7,7 @@ set (PROJECT_VERSION "${KDB_VERSION}")
 set (CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set (CPACK_DEBIAN_PACKAGE_VERSION "${PROJECT_VERSION}")
 set (CPACK_DEBIAN_PACKAGE_RELEASE "1")
-set (DEBIAN_VERSION_RELEASE "${CPACK_DEBIAN_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}") 
+set (DEBIAN_VERSION_RELEASE "${CPACK_DEBIAN_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}")
 set (CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
 set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Robert Sowula <robert@sowula.at>")
 
@@ -125,10 +125,14 @@ if (UNIX)
 		set (CPACK_COMPONENT_LIBELEKTRA4_DISPLAY_NAME "libelektra4")
 		set (CPACK_COMPONENT_LIBELEKTRA4_DESCRIPTION "This package contains the main elektra library, and most of the core plugins")
 		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_SECTION "libs")
-		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_BREAKS
-		     "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelektra-core4 (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
-		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_REPLACES
-		     "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelelektra-core4 (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
+		set (
+			CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_BREAKS
+			"elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelektra-core4 (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})"
+		)
+		set (
+			CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_REPLACES
+			"elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelelektra-core4 (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})"
+		)
 		set (CPACK_DEBIAN_LIBELEKTRA4_PACKAGE_SUGGESTS "elektra-doc, ${ALL_PLUGINS_STR}")
 		set (CPACK_DEBIAN_LIBELEKTRA4_DEBUGINFO_PACKAGE "ON")
 
@@ -138,10 +142,14 @@ if (UNIX)
 		     "This package contains an variant of the Elektra library in which all plugins
 			are linked together to a full library. The package is only needed for testing.")
 		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_SECTION "libs")
-		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_BREAKS
-		     "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelektra-core4 (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
-		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_REPLACES
-		     "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelelektra-core4 (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
+		set (
+			CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_BREAKS
+			"elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelektra-core4 (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})"
+		)
+		set (
+			CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_REPLACES
+			"elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelelektra-core4 (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})"
+		)
 		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_CONFLICTS
 		     "libelektra4 (<< ${CPACK_DEBIAN_PACKAGE_VERSION}), elektra-tests (<< ${CPACK_DEBIAN_PACKAGE_VERSION})")
 		set (CPACK_DEBIAN_LIBELEKTRA4-FULL_PACKAGE_SUGGESTS "elektra-doc, ${ALL_PLUGINS_STR}")
@@ -151,8 +159,10 @@ if (UNIX)
 		set (CPACK_COMPONENT_LIBELEKTRA4-EXPERIMENTAL_DISPLAY_NAME "libelektra4-experimental")
 		set (CPACK_COMPONENT_LIBELEKTRA4-EXPERIMENTAL_DESCRIPTION "This package contains experimental plugins.")
 		set (CPACK_DEBIAN_LIBELEKTRA4-EXPERIMENTAL_PACKAGE_SECTION "libs")
-		set (CPACK_DEBIAN_LIBELEKTRA4-EXPERIMENTAL_PACKAGE_BREAKS "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelektra-core4 (<< ${DEBIAN_VERSION_RELEASE})")
-		set (CPACK_DEBIAN_LIBELEKTRA4-EXPERIMENTAL_PACKAGE_REPLACES "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelelektra-core4 (<< ${DEBIAN_VERSION_RELEASE})")
+		set (CPACK_DEBIAN_LIBELEKTRA4-EXPERIMENTAL_PACKAGE_BREAKS
+		     "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelektra-core4 (<< ${DEBIAN_VERSION_RELEASE})")
+		set (CPACK_DEBIAN_LIBELEKTRA4-EXPERIMENTAL_PACKAGE_REPLACES
+		     "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelelektra-core4 (<< ${DEBIAN_VERSION_RELEASE})")
 		set (CPACK_DEBIAN_LIBELEKTRA4-EXPERIMENTAL_PACKAGE_SUGGESTS "elektra-doc, ${ALL_PLUGINS_STR}")
 		set (CPACK_DEBIAN_LIBELEKTRA4-EXPERIMENTAL_DEBUGINFO_PACKAGE "ON")
 
@@ -160,8 +170,10 @@ if (UNIX)
 		set (CPACK_COMPONENT_LIBELEKTRA4-EXTRA_DISPLAY_NAME "libelektra4-extra")
 		set (CPACK_COMPONENT_LIBELEKTRA4-EXTRA_DESCRIPTION "This package contains extra plugins.")
 		set (CPACK_DEBIAN_LIBELEKTRA4-EXTRA_PACKAGE_SECTION "libs")
-		set (CPACK_DEBIAN_LIBELEKTRA4-EXTRA_PACKAGE_BREAKS "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelektra-core4 (<< ${DEBIAN_VERSION_RELEASE})")
-		set (CPACK_DEBIAN_LIBELEKTRA4-EXTRA_PACKAGE_REPLACES "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelelektra-core4 (<< ${DEBIAN_VERSION_RELEASE})")
+		set (CPACK_DEBIAN_LIBELEKTRA4-EXTRA_PACKAGE_BREAKS
+		     "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelektra-core4 (<< ${DEBIAN_VERSION_RELEASE})")
+		set (CPACK_DEBIAN_LIBELEKTRA4-EXTRA_PACKAGE_REPLACES
+		     "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelelektra-core4 (<< ${DEBIAN_VERSION_RELEASE})")
 		set (CPACK_DEBIAN_LIBELEKTRA4-EXTRA_PACKAGE_SUGGESTS "elektra-doc, ${ALL_PLUGINS_STR}")
 		set (CPACK_DEBIAN_LIBELEKTRA4-EXTRA_DEBUGINFO_PACKAGE "ON")
 
@@ -170,8 +182,10 @@ if (UNIX)
 		set (CPACK_COMPONENT_ELEKTRA-BIN_DESCRIPTION "This package contains command line utilities for Elektra.")
 		set (CPACK_COMPONENT_ELEKTRA-BIN_DEPENDS "libelektra4")
 		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_SECTION "misc")
-		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_BREAKS "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}),libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
-		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_REPLACES "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
+		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_BREAKS
+		     "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}),libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
+		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_REPLACES
+		     "elektra-bin (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
 		set (CPACK_DEBIAN_ELEKTRA-BIN_PACKAGE_CONFLICTS "kernel-patch-kdb")
 		set (CPACK_DEBIAN_ELEKTRA-BIN_DEBUGINFO_PACKAGE "ON")
 
@@ -326,8 +340,10 @@ if (UNIX)
 		set (CPACK_COMPONENT_ELEKTRA-TESTS_DEPENDS "libelektra4-full" "elektra-bin")
 		set (CPACK_DEBIAN_ELEKTRA-TESTS_PACKAGE_SECTION "misc")
 		set (CPACK_DEBIAN_ELEKTRA-TESTS_PACKAGE_PRIORITY "extra")
-		set (CPACK_DEBIAN_ELEKTRA-TESTS_PACKAGE_BREAKS "libelektra-test (<<${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
-		set (CPACK_DEBIAN_ELEKTRA-TESTS_PACKAGE_REPLACES "libelektra-test (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
+		set (CPACK_DEBIAN_ELEKTRA-TESTS_PACKAGE_BREAKS
+		     "libelektra-test (<<${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
+		set (CPACK_DEBIAN_ELEKTRA-TESTS_PACKAGE_REPLACES
+		     "libelektra-test (<< ${DEBIAN_VERSION_RELEASE}), libelektra-full4 (<< ${DEBIAN_VERSION_RELEASE})")
 		set (CPACK_DEBIAN_ELEKTRA-TESTS_DEBUGINFO_PACKAGE "ON")
 
 		set (CPACK_DEBIAN_ELEKTRA-DOC_PACKAGE_NAME "elektra-doc")
@@ -380,7 +396,8 @@ if (UNIX)
 
 		set (CPACK_DEBIAN_ELEKTRA-MISC_PACKAGE_NAME "elektra-misc")
 		set (CPACK_COMPONENT_ELEKTRA-MISC_DISPLAY_NAME "elektra-misc")
-		set (CPACK_COMPONENT_ELEKTRA-MISC_DESCRIPTION "This package contains all files not part of any of the released Elektra packages.")
+		set (CPACK_COMPONENT_ELEKTRA-MISC_DESCRIPTION
+		     "This package contains all files not part of any of the released Elektra packages.")
 		set (CPACK_DEBIAN_ELEKTRA-MISC_PACKAGE_ARCHITECTURE "all")
 		set (CPACK_DEBIAN_ELEKTRA-MISC_PACKAGE_SECTION "misc")
 		set (CPACK_DEBIAN_ELEKTRA-MISC_DEBUGINFO_PACKAGE "ON")
@@ -395,14 +412,13 @@ if (UNIX)
 		endforeach ()
 
 		# compress and install changelog
-		add_custom_command(
+		add_custom_command (
 			OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/changelog.Debian.gz"
 			COMMAND gzip -cn9 "debian/changelog" > "${CMAKE_CURRENT_BINARY_DIR}/changelog.Debian.gz"
 			WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}/scripts/packaging"
-			COMMENT "Compressing changelog"
-		)
+			COMMENT "Compressing changelog")
 
-		add_custom_target(changelog ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/changelog.Debian.gz")
+		add_custom_target (changelog ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/changelog.Debian.gz")
 
 		foreach (component ${CPACK_COMPONENTS_ALL})
 			install (
