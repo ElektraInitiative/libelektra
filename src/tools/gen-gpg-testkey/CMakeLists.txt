@@ -10,7 +10,7 @@ else ()
 		install (
 			TARGETS gen-gpg-testkey
 			DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
-			COMPONENT elektra-misc)
+			COMPONENT elektra-tests)
 	else ()
 		remove_tool (gen-gpg-testkey "libgpgme version ${LIBGPGME_VERSION} is too old - minimum version required is 1.10")
 	endif ()

@@ -1,5 +1,4 @@
 set (PACKAGE_NAME "elektra")
-set (CPACK_PACKAGE_NAME "${PACKAGE_NAME}")
 set (PACKAGE_URL "https://www.libelektra.org/")
 set (PACKAGE_BUGREPORT "https://bugs.libelektra.org/")
 
@@ -14,7 +13,7 @@ set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Robert Sowula <robert@sowula.at>")
 set (CPACK_OUTPUT_FILE_PREFIX "packages")
 
 set (
-	CPACK_COMPONENTS_ALL
+	DEBIAN_PACKAGES
 	libelektra4
 	libelektra4-all
 	libelektra4-full
@@ -25,13 +24,16 @@ set (
 	libelektra4-curl
 	libelektra4-dbus
 	libelektra-dev
+	libelektra4-java
 	libelektra4-journald
 	libelektra4-lua
 	libelektra4-python
 	libelektra4-xerces
 	libelektra4-xmltool
 	libelektra4-yajl
+	libelektra4-yamlcpp
 	libelektra4-zeromq
+	java-elektra
 	lua-elektra
 	python3-elektra
 	elektra-bin
@@ -40,12 +42,21 @@ set (
 	elektra-qt-gui
 	elektra-tests
 	elektra-dbg
-	elektra-misc)
+	${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 
-set (COMPONENTS_WITHOUT_DBGSYM elektra-doc elektra-dbg libelektra-dev libelektra4-all elektra-bin-extra)
+set (
+	COMPONENTS_WITHOUT_DBGSYM
+	elektra-doc
+	elektra-dbg
+	libelektra-dev
+	libelektra4-all
+	libelektra4-yamlcpp
+	elektra-bin-extra
+	java-elektra
+	${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 
 set (ALL_PLUGINS "")
-foreach (component ${CPACK_COMPONENTS_ALL})
+foreach (component ${DEBIAN_PACKAGES})
 	if (component MATCHES "^libelektra4-.*")
 		list (APPEND ALL_PLUGINS "${component}")
 	endif ()
@@ -53,8 +64,8 @@ endforeach ()
 string (REPLACE ";" ", " ALL_PLUGINS_STR "${ALL_PLUGINS}")
 
 set (DBG_PACKAGE_NAMES "")
-foreach (component ${CPACK_COMPONENTS_ALL})
-	if (NOT component IN_LIST COMPONENTS_WITHOUT_DBGSYM AND NOT component STREQUAL "elektra-misc")
+foreach (component ${DEBIAN_PACKAGES})
+	if (NOT component IN_LIST COMPONENTS_WITHOUT_DBGSYM)
 		list (APPEND DBG_PACKAGE_NAMES "${component}-dbgsym")
 	endif ()
 endforeach ()
@@ -108,6 +119,7 @@ if (UNIX)
 	if (NOT LSB_DISTRIB)
 		set (LSB_DISTRIB "unix")
 	endif (NOT LSB_DISTRIB)
+	message (STATUS "CMAKE_INSTALL_DEFAULT_COMPONENT_NAME: ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME}")
 
 	# For Debian-based distros we want to create DEB packages.
 	if ("${LSB_DISTRIB}" MATCHES "Ubuntu|Debian")
@@ -268,12 +280,33 @@ if (UNIX)
 		set (CPACK_DEBIAN_LIBELEKTRA4-JOURNALD_PACKAGE_SECTION "libs")
 		set (CPACK_DEBIAN_LIBELEKTRA4-JOURNALD_DEBUGINFO_PACKAGE "ON")
 
+		set (CPACK_DEBIAN_LIBELEKTRA4-YAMLCPP_PACKAGE_NAME "libelektra4-yamlcpp")
+		set (CPACK_COMPONENT_LIBELEKTRA4-YAMLCPP_DISPLAY_NAME "libelektra4-yamlcpp")
+		set (CPACK_COMPONENT_LIBELEKTRA4-YAMLCPP_DESCRIPTION "This package contains the 'yamlcpp' plugin.")
+		set (CPACK_COMPONENT_LIBELEKTRA4-YAMLCPP_DEPENDS "libelektra4")
+		set (CPACK_DEBIAN_LIBELEKTRA4-YAMLCPP_PACKAGE_SECTION "libs")
+
 		set (CPACK_DEBIAN_LIBELEKTRA4-LUA_PACKAGE_NAME "libelektra4-lua")
 		set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DISPLAY_NAME "libelektra4-lua")
 		set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DESCRIPTION "This package contains the 'lua' plugin.")
 		set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DEPENDS "libelektra4")
 		set (CPACK_DEBIAN_LIBELEKTRA4-LUA_PACKAGE_SECTION "libs")
 		set (CPACK_DEBIAN_LIBELEKTRA4-LUA_DEBUGINFO_PACKAGE "ON")
+
+		set (CPACK_DEBIAN_LIBELEKTRA4-JAVA_PACKAGE_NAME "libelektra4-java")
+		set (CPACK_COMPONENT_LIBELEKTRA4-JAVA_DISPLAY_NAME "libelektra4-java")
+		set (CPACK_COMPONENT_LIBELEKTRA4-JAVA_DESCRIPTION "This package contains the 'jni' plugin.")
+		set (CPACK_COMPONENT_LIBELEKTRA4-JAVA_DEPENDS "libelektra4" "java-elektra")
+		set (CPACK_DEBIAN_LIBELEKTRA4-JAVA_PACKAGE_DEPENDS "default-jdk")
+		set (CPACK_DEBIAN_LIBELEKTRA4-JAVA_PACKAGE_SECTION "libs")
+		set (CPACK_DEBIAN_LIBELEKTRA4-JAVA_DEBUGINFO_PACKAGE "ON")
+
+		set (CPACK_DEBIAN_JAVA-ELEKTRA_PACKAGE_NAME "java-elektra")
+		set (CPACK_COMPONENT_JAVA-ELEKTRA_DISPLAY_NAME "java-elektra")
+		set (CPACK_COMPONENT_JAVA-ELEKTRA_DESCRIPTION "This package contains the Java bindings.")
+		set (CPACK_COMPONENT_JAVA-ELEKTRA_DEPENDS "libelektra4")
+		set (CPACK_DEBIAN_JAVA-ELEKTRA_PACKAGE_DEPENDS "default-jdk")
+		set (CPACK_DEBIAN_JAVA-ELEKTRA_PACKAGE_SECTION "java")
 
 		set (CPACK_DEBIAN_LUA-ELEKTRA_PACKAGE_NAME "lua-elektra")
 		set (CPACK_COMPONENT_LUA-ELEKTRA_DISPLAY_NAME "lua-elektra")
@@ -369,11 +402,13 @@ if (UNIX)
 			"libelektra4-augeas"
 			"libelektra4-dbus"
 			"libelektra4-zeromq"
+			"libelektra4-java"
 			"libelektra4-lua"
 			"libelektra4-python"
 			"libelektra4-xmltool"
 			"libelektra4-xerces"
 			"libelektra4-yajl"
+			"libelektra4-yamlcpp"
 			"lua-elektra"
 			"elektra-bin"
 			"elektra-qt-gui"
@@ -400,11 +435,10 @@ if (UNIX)
 		     "This package contains all files not part of any of the released Elektra packages.")
 		set (CPACK_DEBIAN_ELEKTRA-MISC_PACKAGE_ARCHITECTURE "all")
 		set (CPACK_DEBIAN_ELEKTRA-MISC_PACKAGE_SECTION "misc")
-		set (CPACK_DEBIAN_ELEKTRA-MISC_DEBUGINFO_PACKAGE "ON")
 
 		# install copyright file
 		configure_file ("${CMAKE_SOURCE_DIR}/doc/THIRD-PARTY-LICENSES" "${CMAKE_BINARY_DIR}/doc/copyright" COPYONLY)
-		foreach (component ${CPACK_COMPONENTS_ALL})
+		foreach (component ${DEBIAN_PACKAGES})
 			install (
 				FILES "${CMAKE_BINARY_DIR}/doc/copyright"
 				COMPONENT ${component}
@@ -420,7 +454,7 @@ if (UNIX)
 
 		add_custom_target (changelog ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/changelog.Debian.gz")
 
-		foreach (component ${CPACK_COMPONENTS_ALL})
+		foreach (component ${DEBIAN_PACKAGES})
 			install (
 				FILES "${CMAKE_CURRENT_BINARY_DIR}/changelog.Debian.gz"
 				COMPONENT ${component}
@@ -473,3 +507,10 @@ set (
 	"%ignore /usr/share/man")
 
 include (CPack)
+
+foreach (component ${CPACK_COMPONENTS_ALL})
+	if (NOT component IN_LIST DEBIAN_PACKAGES)
+		message (SEND_ERROR "Component ${component} is not
+part of DEBIAN_PACKAGES (ElektraPackaging.cmake). Please add it to this list, so the dependencies can be derived correctly.")
+	endif ()
+endforeach ()

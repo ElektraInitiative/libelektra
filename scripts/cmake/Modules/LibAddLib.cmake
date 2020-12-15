@@ -26,7 +26,7 @@ function (add_lib name)
 	if (ARG_COMPONENT)
 		set (HAS_COMPONENT ${ARG_COMPONENT})
 	else ()
-		set (HAS_COMPONENT "elektra-misc")
+		set (HAS_COMPONENT "${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME}")
 	endif ()
 
 	add_library (elektra-${name}-objects OBJECT ${ARG_SOURCES})

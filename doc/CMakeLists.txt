@@ -22,7 +22,7 @@ macro (do_doc target folder file install)
 	if (ARG_COMPONENT)
 		set (HAS_COMPONENT ${ARG_COMPONENT})
 	else ()
-		set (HAS_COMPONENT "elektra-misc")
+		set (HAS_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 	endif ()
 
 	# sometimes doxygen is too slow and fails with "Could not create output directory .../doc/html"
@@ -97,7 +97,7 @@ if (DOXYGEN_FOUND)
 	set (outputs ${OUTPUT_DIRECTORY}/html/index.html ${OUTPUT_DIRECTORY}/man/man3elektra/kdb.3elektra)
 
 	if (WITH_LATEX)
-		do_doc (latex ${OUTPUT_DIRECTORY}/latex/ refman.tex ${TARGET_DOCUMENTATION_LATEX_FOLDER})
+		do_doc (latex ${OUTPUT_DIRECTORY}/latex/ refman.tex ${TARGET_DOCUMENTATION_LATEX_FOLDER} COMPONENT elektra-doc)
 		add_dependencies (latex man3 html)
 		list (APPEND outputs ${OUTPUT_DIRECTORY}/latex/refman.tex)
 

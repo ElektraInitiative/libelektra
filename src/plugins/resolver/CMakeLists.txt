@@ -60,7 +60,6 @@ foreach (plugin ${RESOLVERS})
 
 		set (SOURCES resolver.h resolver.c filename.c)
 
-		set (HAS_COMPONENT "")
 		if (plugin MATCHES "resolver_fm_hpu_b")
 			set (HAS_COMPONENT "libelektra4")
 		else ()

@@ -19,11 +19,8 @@ else ()
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/temp-elektra.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra.pc" @ONLY)
 
 	# install files to destination
-	install (
-		PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad
-			 ${CMAKE_CURRENT_BINARY_DIR}/build-elektrad
-		DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
-		COMPONENT elektra-misc)
+	install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad ${CMAKE_CURRENT_BINARY_DIR}/run-elektrad
+			  ${CMAKE_CURRENT_BINARY_DIR}/build-elektrad DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
 
 	if (BUILD_SHARED)
 		set (ELEKTRA_LIBS_ELEKTRAD elektra-core elektra-kdb elektra-plugin elektra-ease elektra-meta)
@@ -46,11 +43,8 @@ else ()
 	add_custom_target (elektrad ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad")
 
 	# build elektra-web
-	install (CODE "message (\"-- Installing: elektra-web > elektrad\")" COMPONENT elektra-misc)
-	install (
-		PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad"
-		DESTINATION "${install_directory}"
-		COMPONENT elektra-misc)
+	install (CODE "message (\"-- Installing: elektra-web > elektrad\")")
+	install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektrad/elektrad" DESTINATION "${install_directory}")
 
 	# generate manpages
 	generate_manpage (kdb-run-elektrad FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)

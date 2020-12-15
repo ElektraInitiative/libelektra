@@ -1,8 +1,8 @@
 #!/bin/sh
 
-ELEKTRA_PLUGINS='ALL;mozprefs;multifile;-gitresolver;-jni;-ruby;-haskell;-yamlcpp;toml'
+ELEKTRA_PLUGINS='ALL;mozprefs;multifile;-gitresolver;jni;-ruby;-haskell;yamlcpp;toml'
 ELEKTRA_TOOLS='ALL'
-ELEKTRA_BINDINGS='cpp;lua;python;INTERCEPT'
+ELEKTRA_BINDINGS='cpp;lua;python;jna;INTERCEPT'
 
 # workaround for hardening flags
 CPPFLAGS=$(dpkg-buildflags --get CPPFLAGS)

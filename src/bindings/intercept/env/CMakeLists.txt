@@ -14,7 +14,7 @@ else ()
 	set (NAME elektrify-getenv)
 
 	generate_readme (${NAME})
-	generate_manpage (kdb-${NAME} FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+	generate_manpage (kdb-${NAME} FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md COMPONENT elektra-bin)
 	include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 	add_subdirectory (src)

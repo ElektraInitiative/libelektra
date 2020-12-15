@@ -53,4 +53,4 @@ add_plugin (
 		log.hpp
 	INCLUDE_SYSTEM_DIRECTORIES ${yaml-cpp_INCLUDE_DIRS}
 	LINK_LIBRARIES ${yaml-cpp_LIBRARIES}
-	LINK_ELEKTRA elektra-ease)
+	LINK_ELEKTRA elektra-ease COMPONENT libelektra4-yamlcpp)

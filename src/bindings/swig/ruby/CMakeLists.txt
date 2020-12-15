@@ -151,11 +151,8 @@ else ()
 		message (STATUS "Ruby module install path: ${RUBY_MODULE_INSTALL_DIR}")
 	endif ()
 
-	install (TARGETS swig-ruby swig-ruby-tools LIBRARY DESTINATION ${RUBY_LIB_INSTALL_DIR} COMPONENT elektra-misc)
-	install (
-		FILES ${CMAKE_CURRENT_SOURCE_DIR}/kdb.rb ${CMAKE_CURRENT_SOURCE_DIR}/kdbtools.rb
-		DESTINATION ${RUBY_MODULE_INSTALL_DIR}
-		COMPONENT elektra-misc)
+	install (TARGETS swig-ruby swig-ruby-tools LIBRARY DESTINATION ${RUBY_LIB_INSTALL_DIR})
+	install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/kdb.rb ${CMAKE_CURRENT_SOURCE_DIR}/kdbtools.rb DESTINATION ${RUBY_MODULE_INSTALL_DIR})
 
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 	if (BUILD_TESTING)

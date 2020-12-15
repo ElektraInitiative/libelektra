@@ -102,8 +102,8 @@ if (Java_JAVAC_EXECUTABLE)
 				WORKING_DIRECTORY libelektra4j
 				DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml" ${JNA_BINDING_SOURCE_FILES})
 
-			create_lib_symlink (libelektra4j-${KDB_VERSION}.jar libelektra4j.jar JAVA)
-			create_lib_symlink (libelektra4j-${KDB_VERSION}.pom.xml libelektra4j.pom.xml JAVA)
+			create_lib_symlink (libelektra4j-${KDB_VERSION}.jar libelektra4j.jar java-elektra JAVA)
+			create_lib_symlink (libelektra4j-${KDB_VERSION}.pom.xml libelektra4j.pom.xml java-elektra JAVA)
 
 			add_custom_target (jna ALL
 					   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
@@ -112,7 +112,7 @@ if (Java_JAVAC_EXECUTABLE)
 				FILES "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
 				      "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/libelektra4j-${KDB_VERSION}.pom.xml"
 				DESTINATION "share/java"
-				COMPONENT elektra-misc)
+				COMPONENT java-elektra)
 
 			# and add maven test to execute with ctest in the testing phase
 			if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15))

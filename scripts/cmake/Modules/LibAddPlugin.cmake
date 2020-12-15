@@ -439,7 +439,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	if (ARG_COMPONENT)
 		set (HAS_COMPONENT ${ARG_COMPONENT})
 	else ()
-		set (HAS_COMPONENT "elektra-misc")
+		set (HAS_COMPONENT "${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME}")
 	endif ()
 
 	if (ADDTESTING_PHASE)

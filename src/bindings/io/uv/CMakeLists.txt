@@ -45,7 +45,7 @@ else ()
 	install (
 		FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_UV_LIBRARY}.pc"
 		DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
-		COMPONENT elektra-misc)
+		COMPONENT libelektra-dev)
 
 	# Build test
 	set (TESTEXENAME testio_${BINDING_VARIANT})
