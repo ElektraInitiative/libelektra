@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 """
-This file contains a reference implementation of Elektra's Key Name processing.
+This file contains a reference implementation of Elektra's key name processing.
 
 It contains commented functions for:
   - Checking, whether a string is a valid Key Name and if so turning it into its canonical form.
-  - Splitting (canonical) Key Names into a Namespace and a list of (unescaped) Key Name Parts.
+  - Splitting (canonical) Key Names into a Namespace and a list of (unescaped) key name parts.
 
 In addition, we provide a command line interface to experiment with the implementation.
 Execute the file with the argument '--help' to find out more about the CLI.
@@ -24,7 +24,7 @@ import argparse
 
 def check_array_part(part: str) -> Tuple[bool, Optional[str]]:
     """
-    Checks whether `part` is a valid Array Part.
+    Checks whether `part` is a valid array part.
 
     If so, the tuple `(True, digits)` is returned where `digits` is a string
     containing the digits part of the Array Part, i.e. the part after the `#` and any `_`.
@@ -52,7 +52,7 @@ def check_array_part(part: str) -> Tuple[bool, Optional[str]]:
 
 class Namespace(Enum):
     """
-    Enum for Elektra's Namespaces. Values are used as the first byte in Unescaped Names.
+    Enum for Elektra's namespaces. Values are used as the first byte in unescaped names.
     """
     CASCADING = 1
     META = 2
@@ -64,10 +64,10 @@ class Namespace(Enum):
     DEFAULT = 8
 
 
-# String names for the Namespaces
+# String names for the namespaces
 NAMESPACES = {"meta", "spec", "proc", "dir", "user", "system", "default"}
 
-# Map between string Namespaces and enum values
+# Map between string namespaces and enum values
 NAMESPACES_MAP = {
     "meta": Namespace.META,
     "spec": Namespace.SPEC,
