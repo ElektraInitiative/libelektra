@@ -427,7 +427,7 @@ For example, we cannot allow `\#abc`, because that would unescape into `#abc`, j
 As mentioned above, Elektra has a notion of array parts.
 More specifically, certain key name parts will be interpreted as array indices under certain circumstances (see also [documentation for arrays]()).
 
-<!-- TODO (kodebach): link to array documentation -->
+<!-- TODO: link to detailed array documentation -->
 
 We already mentioned above, that array parts have canonical and non-canoncial forms.
 
@@ -488,7 +488,7 @@ This is why there are two types of reserved key name:
    `Key`s with such key names will _never_ be used in the interface between storage plugins and the rest of Elektra.
    This allows storage plugins to use `®elektra` to encode things that otherwise wouldn't be possible (e.g. values of non-leaf keys).
 
-<!-- TODO (kodebach): link to ®elektra document -->
+<!-- TODO: link to detailed ®elektra document -->
 
 ---
 
@@ -519,4 +519,4 @@ Therefore, you can use any `KeySet` locally in your application.
 As soon as you pass the `KeySet` into an external function (e.g. `kdbSet`), however, errors may occur since the `KeySet` may pass through a function that requires `KeySet` which are properly validated against array rules.
 For more details what conventions and rules exist around arrays, see [documentation for arrays](). [↑](#ref-footnote-4)
 
-<!-- TODO (kodebach): link to array documentation -->
+<!-- TODO: link to detailed array documentation -->
