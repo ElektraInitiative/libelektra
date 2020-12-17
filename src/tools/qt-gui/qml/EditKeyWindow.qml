@@ -56,8 +56,8 @@ KeyWindow {
 
 			visible = false
 			accessFromSearchResults = false
-			nameTextField.readOnly = selectedNode.isNamespaceRoot
-			nameTextField.textColor = selectedNode.isNamespaceRoot ? disabledPalette.text : activePalette.text
+			nameTextField.readOnly = false
+			nameTextField.textColor = activePalette.text
 
 			qmlMetaKeyModel.clear()
 
