@@ -128,6 +128,7 @@ else ()
 	install (
 		DIRECTORY ${CMAKE_SWIG_OUTDIR}
 		DESTINATION ${PYTHON_SITE_PACKAGES}
+		COMPONENT python3-elektra
 		FILES_MATCHING
 		REGEX "\\.(py|so)$")
 

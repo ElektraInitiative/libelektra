@@ -1,3 +1,3 @@
 include (LibAddMacros)
 
-add_plugin (c SOURCES c.h c.c)
+add_plugin (c SOURCES c.h c.c COMPONENT libelektra4)

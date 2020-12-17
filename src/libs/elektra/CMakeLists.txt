@@ -109,7 +109,8 @@ if (BUILD_SHARED)
 	install (
 		TARGETS elektra-core elektra-kdb
 		DESTINATION lib${LIB_SUFFIX}
-		EXPORT ElektraTargetsLibelektra)
+		EXPORT ElektraTargetsLibelektra
+		COMPONENT libelektra4)
 
 	list (APPEND targets_built ${elektra-all_LIBRARIES})
 endif (BUILD_SHARED)
@@ -147,7 +148,8 @@ if (BUILD_FULL)
 	install (
 		TARGETS elektra-full
 		DESTINATION lib${LIB_SUFFIX}
-		EXPORT ElektraTargetsLibelektra)
+		EXPORT ElektraTargetsLibelektra
+		COMPONENT libelektra4-full)
 
 	list (APPEND targets_built elektra-full)
 endif (BUILD_FULL)
@@ -171,13 +173,17 @@ if (BUILD_STATIC)
 	install (
 		TARGETS elektra-static
 		DESTINATION lib${LIB_SUFFIX}
-		EXPORT ElektraTargetsLibelektra)
+		EXPORT ElektraTargetsLibelektra
+		COMPONENT libelektra4)
 
 	list (APPEND targets_built elektra-static)
 endif (BUILD_STATIC)
 
 export (TARGETS ${targets_built} FILE "${CMAKE_CURRENT_BINARY_DIR}/ElektraTargetsLibelektra.cmake")
-install (EXPORT ElektraTargetsLibelektra DESTINATION "${TARGET_CMAKE_FOLDER}")
+install (
+	EXPORT ElektraTargetsLibelektra
+	DESTINATION "${TARGET_CMAKE_FOLDER}"
+	COMPONENT libelektra-dev)
 
 # if you want the same name for those 3 libraries, here is how to do it:
 # http://www.itk.org/Wiki/CMake_FAQ#How_do_I_make_my_shared_and_static_libraries_have_the_same_root_name.2C_but_different_suffixes.3F

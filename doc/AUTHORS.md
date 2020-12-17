@@ -211,3 +211,11 @@ development of KConfig plugin and changes on qt-gui
 - email: mail@dardan.im
 - github user: [darddan](https://github.com/darddan)
 - devel/test on: Arch Linux
+
+## Robert Sowula
+
+debian packaging, release automation
+
+- email: robert@sowula.at
+- github user: [robaerd](https://github.com/robaerd)
+- devel/test on: Debian, Ubuntu

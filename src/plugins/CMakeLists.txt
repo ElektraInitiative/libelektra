@@ -18,7 +18,14 @@ if (ADDTESTING_PHASE)
 	return ()
 endif ()
 
-generate_manpage (elektra-plugins FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md SECTION 7)
+generate_manpage (
+	elektra-plugins
+	FILENAME
+	${CMAKE_CURRENT_SOURCE_DIR}/README.md
+	SECTION
+	7
+	COMPONENT
+	elektra-doc)
 
 set (COLLECTION_PHASE ON)
 set (DEPENDENCY_PHASE OFF)
@@ -94,7 +101,7 @@ endif ()
 
 if (BUILD_SHARED)
 	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-	create_lib_symlink (libelektra-${KDB_DEFAULT_STORAGE}.so libelektra-storage.so PLUGIN)
+	create_lib_symlink (libelektra-${KDB_DEFAULT_STORAGE}.so libelektra-storage.so libelektra4 PLUGIN)
 
-	create_lib_symlink (libelektra-${KDB_DEFAULT_RESOLVER}.so libelektra-resolver.so PLUGIN)
+	create_lib_symlink (libelektra-${KDB_DEFAULT_RESOLVER}.so libelektra-resolver.so libelektra4 PLUGIN)
 endif (BUILD_SHARED)

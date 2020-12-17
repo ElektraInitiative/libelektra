@@ -175,9 +175,15 @@ function (add_plugintest testname)
 		# ~~~
 
 		if (INSTALL_TESTING)
-			install (TARGETS ${testexename} DESTINATION "${TARGET_TOOL_EXEC_FOLDER}")
+			install (
+				TARGETS ${testexename}
+				DESTINATION "${TARGET_TOOL_EXEC_FOLDER}"
+				COMPONENT elektra-tests)
 			if (ARG_INSTALL_TEST_DATA)
-				install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${testname}" DESTINATION "${TARGET_TEST_DATA_FOLDER}")
+				install (
+					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${testname}"
+					DESTINATION "${TARGET_TEST_DATA_FOLDER}"
+					COMPONENT elektra-tests)
 			endif ()
 		endif (INSTALL_TESTING)
 
@@ -402,7 +408,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	cmake_parse_arguments (
 		ARG
 		"CPP;CPP_TEST;ADD_TEST;TEST_README;INSTALL_TEST_DATA;ONLY_SHARED" # optional keywords
-		"" # one value keywords
+		"COMPONENT" # one value keywords
 		"${MULTI_VALUE_KEYWORDS}" # multi value keywords
 		${ARGN})
 
@@ -424,16 +430,25 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_REQUIRED_PLUGINS)
 	restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
 	restore_variable (${PLUGIN_NAME} ARG_ONLY_SHARED)
+	restore_variable (${PLUGIN_NAME} ARG_COMPONENT)
 
 	if (ARG_UNPARSED_ARGUMENTS)
 		message (FATAL_ERROR "Parsed a wrong argument to plugin ${PLUGIN_SHORT_NAME}: ${ARG_UNPARSED_ARGUMENTS}")
 	endif ()
 
+	if (ARG_COMPONENT)
+		set (HAS_COMPONENT ${ARG_COMPONENT})
+	else ()
+		set (HAS_COMPONENT "${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME}")
+	endif ()
+
 	if (ADDTESTING_PHASE)
 		if (ARG_INSTALL_TEST_DATA AND NOT ARG_ADD_TEST)
 			if (INSTALL_TESTING)
-				install (DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
-					 DESTINATION "${TARGET_TEST_DATA_FOLDER}")
+				install (
+					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN_SHORT_NAME}"
+					DESTINATION "${TARGET_TEST_DATA_FOLDER}"
+					COMPONENT elektra-tests)
 			endif (INSTALL_TESTING)
 		endif ()
 
@@ -616,7 +631,10 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			target_link_libraries (${PLUGIN_NAME} elektra-plugin)
 		endif ()
 		target_link_libraries (${PLUGIN_NAME} ${ARG_LINK_LIBRARIES})
-		install (TARGETS ${PLUGIN_NAME} DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER})
+		install (
+			TARGETS ${PLUGIN_NAME}
+			DESTINATION lib${LIB_SUFFIX}/${TARGET_PLUGIN_FOLDER}
+			COMPONENT "${HAS_COMPONENT}")
 		set_property (
 			TARGET ${PLUGIN_NAME}
 			APPEND

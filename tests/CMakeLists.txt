@@ -51,7 +51,10 @@ macro (do_test source)
 	add_executable (${source} ${SOURCES})
 
 	if (INSTALL_TESTING)
-		install (TARGETS ${source} DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+		install (
+			TARGETS ${source}
+			DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
+			COMPONENT elektra-tests)
 	endif (INSTALL_TESTING)
 
 	target_link_elektra (${source})

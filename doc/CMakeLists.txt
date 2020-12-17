@@ -12,6 +12,19 @@ find_package (Doxygen QUIET)
 # ~~~
 macro (do_doc target folder file install)
 
+	cmake_parse_arguments (
+		ARG
+		"" # optional keywords
+		"COMPONENT" # one value keywords
+		"" # multi value keywords
+		${ARGN})
+
+	if (ARG_COMPONENT)
+		set (HAS_COMPONENT ${ARG_COMPONENT})
+	else ()
+		set (HAS_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
+	endif ()
+
 	# sometimes doxygen is too slow and fails with "Could not create output directory .../doc/html"
 	file (MAKE_DIRECTORY ${folder})
 
@@ -20,7 +33,10 @@ macro (do_doc target folder file install)
 	add_custom_target (${target} ALL DEPENDS ${folder}/${file})
 
 	if (INSTALL_DOCUMENTATION)
-		install (DIRECTORY ${folder} DESTINATION ${install})
+		install (
+			DIRECTORY ${folder}
+			COMPONENT "${HAS_COMPONENT}"
+			DESTINATION ${install})
 	endif (INSTALL_DOCUMENTATION)
 endmacro (do_doc)
 
@@ -74,13 +90,14 @@ if (DOXYGEN_FOUND)
 		OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
 		INPUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 
-	do_doc (html ${OUTPUT_DIRECTORY}/html/ index.html ${TARGET_DOCUMENTATION_HTML_FOLDER})
-	do_doc (man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra "${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE")
+	do_doc (html ${OUTPUT_DIRECTORY}/html/ index.html ${TARGET_DOCUMENTATION_HTML_FOLDER} COMPONENT elektra-doc)
+	do_doc (man3 ${OUTPUT_DIRECTORY}/man/man3elektra/ kdb.3elektra "${TARGET_DOCUMENTATION_MAN_FOLDER};PATTERN;_*;EXCLUDE" COMPONENT
+		elektra-doc)
 	add_dependencies (man3 html)
 	set (outputs ${OUTPUT_DIRECTORY}/html/index.html ${OUTPUT_DIRECTORY}/man/man3elektra/kdb.3elektra)
 
 	if (WITH_LATEX)
-		do_doc (latex ${OUTPUT_DIRECTORY}/latex/ refman.tex ${TARGET_DOCUMENTATION_LATEX_FOLDER})
+		do_doc (latex ${OUTPUT_DIRECTORY}/latex/ refman.tex ${TARGET_DOCUMENTATION_LATEX_FOLDER} COMPONENT elektra-doc)
 		add_dependencies (latex man3 html)
 		list (APPEND outputs ${OUTPUT_DIRECTORY}/latex/refman.tex)
 
@@ -123,12 +140,30 @@ else (DOXYGEN_FOUND)
 endif (DOXYGEN_FOUND)
 
 if (INSTALL_DOCUMENTATION)
-	install (FILES BIGPICTURE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES GOALS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES METADATA.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES SECURITY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES AUTHORS.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES CONTRACT.ini DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (
+		FILES BIGPICTURE.md
+		DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
+		COMPONENT libelektra4)
+	install (
+		FILES GOALS.md
+		DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
+		COMPONENT libelektra4)
+	install (
+		FILES METADATA.ini
+		DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
+		COMPONENT libelektra4)
+	install (
+		FILES SECURITY.md
+		DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
+		COMPONENT libelektra4)
+	install (
+		FILES AUTHORS.md
+		DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
+		COMPONENT libelektra4)
+	install (
+		FILES CONTRACT.ini
+		DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
+		COMPONENT libelektra4)
 	set (news ${CMAKE_CURRENT_BINARY_DIR}/NEWS.md)
 	file (GLOB files "news/*.md")
 	file (REMOVE ${news})
@@ -136,8 +171,14 @@ if (INSTALL_DOCUMENTATION)
 		file (READ ${file} content)
 		file (APPEND ${news} "\n\n\n\n\n${content}")
 	endforeach ()
-	install (FILES ${news} DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
-	install (FILES WHY.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+	install (
+		FILES ${news}
+		DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
+		COMPONENT libelektra4)
+	install (
+		FILES WHY.md
+		DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
+		COMPONENT libelektra4)
 
 endif ()
 

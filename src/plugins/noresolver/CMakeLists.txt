@@ -1,3 +1,3 @@
 include (LibAddMacros)
 
-add_plugin (noresolver SOURCES noresolver.h noresolver.c)
+add_plugin (noresolver SOURCES noresolver.h noresolver.c COMPONENT libelektra4)

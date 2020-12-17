@@ -80,20 +80,34 @@ else ()
 		${Qt5DBus_LIBRARIES})
 	tool_link_elektratools (qt-gui elektra-ease)
 
-	install (TARGETS qt-gui DESTINATION ${TARGET_TOOL_EXEC_FOLDER})
+	install (
+		TARGETS qt-gui
+		DESTINATION ${TARGET_TOOL_EXEC_FOLDER}
+		COMPONENT elektra-qt-gui)
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra-qt-editor.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor")
-	install (PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor" DESTINATION bin)
-	install (FILES org.libelektra.elektra-qt-editor.desktop DESTINATION share/applications)
-	install (FILES org.libelektra.elektra-qt-editor.appdata.xml DESTINATION share/appdata)
+	install (
+		PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/elektra-qt-editor"
+		DESTINATION bin
+		COMPONENT elektra-qt-gui)
+	install (
+		FILES org.libelektra.elektra-qt-editor.desktop
+		DESTINATION share/applications
+		COMPONENT elektra-qt-gui)
+	install (
+		FILES org.libelektra.elektra-qt-editor.appdata.xml
+		DESTINATION share/appdata
+		COMPONENT elektra-qt-gui)
 	install (
 		FILES ../../../doc/images/logo/logo_color.svg
 		DESTINATION share/icons/hicolor/scalable/apps
-		RENAME elektra.svg)
+		RENAME elektra.svg
+		COMPONENT elektra-qt-gui)
 	install (
 		FILES ../../../doc/images/logo/logo_gray.svg
 		DESTINATION share/icons/hicolor/scalable/apps
-		RENAME elektra-symbolic.svg)
+		RENAME elektra-symbolic.svg
+		COMPONENT elektra-qt-gui)
 
-	generate_manpage (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
+	generate_manpage (kdb-qt-gui FILENAME ${CMAKE_CURRENT_SOURCE_DIR}/README.md COMPONENT elektra-qt-gui)
 
 endif ()

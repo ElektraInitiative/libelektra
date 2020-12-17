@@ -14,7 +14,7 @@ add_plugin (
 	OBJECT_SOURCES $<TARGET_OBJECTS:io-adapter-dbus>
 	INCLUDE_DIRECTORIES ${DBUS_INCLUDE_DIR} ${DBUS_ARCH_INCLUDE_DIR}
 	LINK_ELEKTRA elektra-io elektra-invoke
-	LINK_LIBRARIES ${DBUS_LIBRARIES})
+	LINK_LIBRARIES ${DBUS_LIBRARIES} COMPONENT libelektra4-dbus)
 
 set (NOT_INCLUDED "")
 plugin_check_if_included ("${PLUGIN_SHORT_NAME}")
@@ -51,7 +51,10 @@ if (ADDTESTING_PHASE)
 			dbusrecv
 			TEST_LINK_LIBRARIES ${STATIC_LIBRARIES}
 			TEST_LINK_ELEKTRA elektra-io-uv
-			INCLUDE_SYSTEM_DIRECTORIES ${libuv_INCLUDE_DIRS})
+			INCLUDE_SYSTEM_DIRECTORIES
+				${libuv_INCLUDE_DIRS}
+				COMPONENT
+				libelektra4-dbus)
 
 		# add sources manually because add_plugintest does not support generator expressions for additional source files
 		if (BUILD_FULL OR BUILD_STATIC)

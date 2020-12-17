@@ -10,7 +10,7 @@ add_plugin (
 	zeromqsend
 	SOURCES zeromqsend.h zeromqsend.c publish.c
 	INCLUDE_DIRECTORIES ${ZeroMQ_INCLUDE_DIR}
-	LINK_LIBRARIES ${ZeroMQ_LIBRARIES})
+	LINK_LIBRARIES ${ZeroMQ_LIBRARIES} COMPONENT libelektra4-zeromq)
 
 if (ADDTESTING_PHASE) # the test requires pthread
 	find_package (Threads QUIET)

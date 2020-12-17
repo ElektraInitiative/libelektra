@@ -43,7 +43,7 @@ else ()
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-ignored-qualifiers")
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -DSWIG_TYPE_TABLE=kdb")
 
-	install (TARGETS swig-lua LIBRARY DESTINATION ${TARGET_LUA_CMOD_FOLDER})
+	install (TARGETS swig-lua LIBRARY DESTINATION ${TARGET_LUA_CMOD_FOLDER} COMPONENT lua-elektra)
 
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 	include_directories (${CMAKE_SOURCE_DIR}/src/swig/)

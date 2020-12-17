@@ -7,7 +7,7 @@ if (HAVE_GLIBC)
 	add_plugin (
 		simpleini
 		SOURCES simpleini.h simpleini.c
-		LINK_ELEKTRA elektra-ease elektra-utility
+		LINK_ELEKTRA elektra-ease elektra-utility COMPONENT libelektra4
 		ADD_TEST)
 else ()
 	remove_plugin (simpleini "simpleini needs glibc to work, use the mini plugin instead")

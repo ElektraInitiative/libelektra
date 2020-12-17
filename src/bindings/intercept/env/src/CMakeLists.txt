@@ -18,8 +18,11 @@ set_target_properties (
 
 		   LINKER_LANGUAGE CXX)
 
-install (TARGETS elektraintercept-env DESTINATION lib${LIB_SUFFIX})
+install (
+	TARGETS elektraintercept-env
+	DESTINATION lib${LIB_SUFFIX}
+	COMPONENT libelektra4)
 
 mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-create_lib_symlink (libelektraintercept-env.so libelektragetenv.so)
-create_lib_symlink (libelektraintercept-env.so libelektragetenv.so.0)
+create_lib_symlink (libelektraintercept-env.so libelektragetenv.so libelektra4)
+create_lib_symlink (libelektraintercept-env.so libelektragetenv.so.0 libelektra4)

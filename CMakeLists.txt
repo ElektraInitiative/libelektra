@@ -31,6 +31,11 @@ endif (CMAKE_VERSION VERSION_LESS 3.9)
 set (CMAKE_MACOSX_RPATH 1)
 set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
+set (
+	CMAKE_INSTALL_DEFAULT_COMPONENT_NAME
+	"elektra-misc"
+	CACHE STRING "Default component name" FORCE)
+
 # additional modules for loading libraries
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/scripts/cmake/Modules/")
 
@@ -85,9 +90,6 @@ set (SO_VERSION 4)
 set (SO_VERSION_TOOLS 2)
 set (SO_VERSION_GETENV 0)
 
-# needs version above
-include (scripts/cmake/ElektraPackaging.cmake)
-
 # ensure KDB_DB_SYSTEM is an absolute path
 if (NOT IS_ABSOLUTE "${KDB_DB_SYSTEM}")
 	set (KDB_DB_SYSTEM "${CMAKE_INSTALL_PREFIX}/${KDB_DB_SYSTEM}")
@@ -125,4 +127,10 @@ if (BUILD_FULL
 	endif (BUILD_TESTING)
 endif ()
 
-install (FILES LICENSE.md DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER})
+install (
+	FILES LICENSE.md
+	DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
+	COMPONENT libelektra4)
+
+# needs to be included last to collect all install components
+include (scripts/cmake/ElektraPackaging.cmake)

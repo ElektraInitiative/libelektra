@@ -307,6 +307,11 @@ set (
 	CACHE STRING "The folder (below prefix) where to install latex api documentation files.")
 
 set (
+	TARGET_DOCUMENTATION_DOC-BASE_FOLDER
+	"share/doc-base/"
+	CACHE STRING "The folder (below prefix) where to install doc-base documentation files for debian packaging.")
+
+set (
 	TARGET_TOOL_EXEC_FOLDER
 	"lib${LIB_SUFFIX}/elektra/tool_exec"
 	CACHE STRING "This folder (below prefix) will be used to install additional kdb-tools")

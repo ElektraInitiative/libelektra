@@ -3,4 +3,4 @@ include (LibAddMacros)
 add_plugin (
 	hexcode
 	SOURCES hexcode.h hexcode.c
-	ADD_TEST)
+	ADD_TEST COMPONENT libelektra4-extra)

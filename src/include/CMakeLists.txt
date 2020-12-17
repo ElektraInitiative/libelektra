@@ -190,7 +190,8 @@ install (
 	      kdbendian.h
 	      kdbmacros.h
 	      kdbmerge.h
-	DESTINATION include/${TARGET_INCLUDE_FOLDER})
+	DESTINATION include/${TARGET_INCLUDE_FOLDER}
+	COMPONENT libelektra-dev)
 
 add_custom_target (elektra_config_headers ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/kdb.h ${CMAKE_CURRENT_BINARY_DIR}/kdbconfig.h
 						      ${CMAKE_CURRENT_BINARY_DIR}/kdbversion.h)

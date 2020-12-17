@@ -1,6 +1,14 @@
 file (GLOB SOURCES *.c)
 
-add_lib (highlevel SOURCES ${SOURCES} LINK_ELEKTRA elektra-kdb elektra-ease)
+add_lib (
+	highlevel
+	SOURCES
+	${SOURCES}
+	LINK_ELEKTRA
+	elektra-kdb
+	elektra-ease
+	COMPONENT
+	libelektra4)
 
 if (BUILD_SHARED)
 	set (LIBRARIES "-lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core")
@@ -14,7 +22,13 @@ else (BUILD_STATIC)
 endif ()
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra-highlevel.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra-highlevel.pc" @ONLY)
-install (FILES "${CMAKE_CURRENT_BINARY_DIR}/elektra-highlevel.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
+install (
+	FILES "${CMAKE_CURRENT_BINARY_DIR}/elektra-highlevel.pc"
+	DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
+	COMPONENT libelektra-dev)
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/elektra-codegen.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/elektra-codegen.pc" @ONLY)
-install (FILES "${CMAKE_CURRENT_BINARY_DIR}/elektra-codegen.pc" DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER})
+install (
+	FILES "${CMAKE_CURRENT_BINARY_DIR}/elektra-codegen.pc"
+	DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
+	COMPONENT libelektra-dev)

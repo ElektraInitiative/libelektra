@@ -15,9 +15,9 @@ endmacro (copy_file)
 # - JAVA: install symlink for Java in share/java
 # - otherwise: install symlink for normal libraries
 #
-# create_lib_symlink src dest - create a symbolic link from src -> dest
+# create_lib_symlink src dest component - create a symbolic link from src -> dest
 # ~~~
-macro (create_lib_symlink src dest)
+macro (create_lib_symlink src dest component)
 
 	cmake_parse_arguments (
 		ARG
@@ -64,8 +64,52 @@ macro (create_lib_symlink src dest)
 		if (RET)
 			message (WARNING \"Could not install symlink\")
 		endif ()
-		")
-endmacro (create_lib_symlink src dest)
+		"
+		COMPONENT "${component}")
+endmacro (create_lib_symlink src dest component)
+
+# ~~~
+# Create a symlink for man1 files at installation
+#
+# create_lib_symlink src dest component - create a symbolic link from src -> dest
+# ~~~
+macro (create_doc_symlink src dest component)
+
+	cmake_parse_arguments (
+		ARG
+		"" # optional keywords
+		"" # one value keywords
+		"" # multi value keywords
+		${ARGN})
+
+	set (DOC_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/share/man/man1")
+
+	install (
+		CODE "
+		message (STATUS \"Installing symlink: \$ENV{DESTDIR}${DOC_INSTALL_DIR}/${dest} -> ${src}\")
+		execute_process (COMMAND \"${CMAKE_COMMAND}\" -E make_directory
+			\"\$ENV{DESTDIR}${DOC_INSTALL_DIR}\"
+			RESULT_VARIABLE RET
+			)
+		if (RET)
+			message (WARNING \"Could not create directory\")
+		endif ()
+		execute_process (COMMAND \"${CMAKE_COMMAND}\" -E create_symlink
+			\"${src}\"
+			\"${dest}\"
+			WORKING_DIRECTORY \"\$ENV{DESTDIR}${DOC_INSTALL_DIR}\"
+			RESULT_VARIABLE RET
+			)
+
+		# for uninstall:
+		file (APPEND \"${CMAKE_BINARY_DIR}/extra_install_manifest.txt\" \"\$ENV{DESTDIR}${DOC_INSTALL_DIR}/${dest}\\n\")
+
+		if (RET)
+			message (WARNING \"Could not install symlink\")
+		endif ()
+		"
+		COMPONENT "${component}")
+endmacro (create_doc_symlink src dest component)
 
 # ~~~
 # Make a directory
@@ -561,7 +605,7 @@ function (generate_manpage NAME)
 		cmake_parse_arguments (
 			ARG
 			"" # optional keywords
-			"SECTION;FILENAME" # one value keywords
+			"SECTION;FILENAME;COMPONENT" # one value keywords
 			"" # multi value keywords
 			${ARGN})
 
@@ -575,6 +619,12 @@ function (generate_manpage NAME)
 			set (MDFILE ${ARG_FILENAME})
 		else ()
 			set (MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
+		endif ()
+
+		if (ARG_COMPONENT)
+			set (HAS_COMPONENT ${ARG_COMPONENT})
+		else ()
+			set (HAS_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 		endif ()
 
 		set (MAN_PAGE_LOCATION "doc/man/man${SECTION}/${NAME}.${SECTION}")
@@ -603,7 +653,16 @@ If you do not add this file, then installing Elektra will fail!\n")
 		endif (NOT EXISTS "${OUTFILE}")
 
 		if (INSTALL_DOCUMENTATION)
-			install (FILES ${OUTFILE} DESTINATION share/man/man${SECTION})
+			install (
+				FILES ${OUTFILE}
+				DESTINATION share/man/man${SECTION}
+				COMPONENT "${HAS_COMPONENT}")
+
+			if (BUILD_STATIC)
+				if (SECTION EQUAL 1)
+					create_doc_symlink ("kdb.${SECTION}" "kdb-static.${SECTION}" "${HAS_COMPONENT}")
+				endif ()
+			endif ()
 		endif ()
 	endif (BUILD_DOCUMENTATION)
 endfunction ()
