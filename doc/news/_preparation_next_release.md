@@ -100,7 +100,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
-- <<TODO>>
+- `kdbSet` now properly handles, if the given `parentKey` is `NULL` or has read-only name, value or metadata. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 
