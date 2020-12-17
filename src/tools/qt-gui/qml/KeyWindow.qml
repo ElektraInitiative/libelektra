@@ -18,7 +18,8 @@ BasicWindow {
 	property string valuePlaceHolder: "Meta Key Value ..."
 	property int    modelIndex: 0
 	property bool   isArray: false
-	property string path: !visible || selectedNode === null ? "" : selectedNode.path.lastIndexOf("/") === -1 ? selectedNode.path : selectedNode.path.slice(0, selectedNode.path.lastIndexOf("/"))
+	property string parentPath: selectedNode === null ? "" : selectedNode.isNamespaceRoot ? (selectedNode.path + "/") : (selectedNode.path.slice(0, selectedNode.path.lastIndexOf("/")) + (selectedNode.path.indexOf("/") === selectedNode.path.lastIndexOf("/") ? "/" : ""))
+	property string path: !visible || selectedNode === null ? "" : parentPath
 	property string keyName: ""
 	property string keyValue: ""
 	property bool   isEdited: false

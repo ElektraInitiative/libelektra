@@ -41,6 +41,7 @@ ScrollView {
 
 			text: rowLoaderModel === null || rowLoaderModel === undefined ? "" : rowLoaderModel.name
 			color: rowLoaderModel === null || rowLoaderModel === undefined ? "transparent" : (rowLoaderModel.isNull ? guiSettings.nodeWithoutKeyColor : guiSettings.nodeWithKeyColor)
+			font.weight: rowLoaderModel.isNamespaceRoot ? Font.Bold : Font.Normal
 			onColorChanged: indicator.updateIndicator()
 		}
 		Indicator {

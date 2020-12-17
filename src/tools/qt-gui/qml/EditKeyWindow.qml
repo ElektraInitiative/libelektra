@@ -4,7 +4,7 @@ KeyWindow {
 
 	title: qsTr("Edit Key")
 
-    keyName: (selectedNode === null || selectedNode.name === undefined) ? "" : selectedNode.name
+    	keyName: (selectedNode === null || selectedNode.name === undefined) ? "" : selectedNode.isNamespaceRoot ? selectedNode.name + "/" : selectedNode.name
 	keyValue: (selectedNode === null || selectedNode.value === undefined) ? "" : selectedNode.value
 
 	function populateMetaArea() {
@@ -56,8 +56,8 @@ KeyWindow {
 
 			visible = false
 			accessFromSearchResults = false
-			nameTextField.readOnly = false
-			nameTextField.textColor = activePalette.text
+			nameTextField.readOnly = selectedNode.isNamespaceRoot
+			nameTextField.textColor = selectedNode.isNamespaceRoot ? disabledPalette.text : activePalette.text
 
 			qmlMetaKeyModel.clear()
 

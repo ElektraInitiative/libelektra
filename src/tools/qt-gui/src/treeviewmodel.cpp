@@ -81,11 +81,12 @@ QVariant TreeViewModel::data (const QModelIndex & idx, int role) const
 
 	// TODO: document fallthrough if it was desired
 	case NameRole:
-		if (node->isRoot ())
+		if (node->isNamespaceRoot ())
 		{
 			kdb::Key k;
 			k.setNamespace (static_cast<ElektraNamespace> (node->getName ().at (0).unicode ()));
-			return QVariant::fromValue (QString::fromStdString (k.getName ()));
+			std::string name = k.getName ();
+			return QVariant::fromValue (QString::fromStdString (name.substr (0, name.length () - 1)));
 		}
 		else
 		{
@@ -128,6 +129,9 @@ QVariant TreeViewModel::data (const QModelIndex & idx, int role) const
 
 	case IsExpandedRole:
 		return QVariant::fromValue (node->isExpanded ());
+
+	case IsNamespaceRootRole:
+		return QVariant::fromValue (node->isNamespaceRoot ());
 
 	default:
 		emit showMessage (tr ("Error"), tr ("Unknown role: %1").arg (role), "TreeViewModel::data");
@@ -498,26 +502,23 @@ void TreeViewModel::populateModel ()
 	populateModel (config);
 }
 
-void TreeViewModel::addRootNode (ElektraNamespace ns)
-{
-	kdb::Key k;
-	k.setNamespace (ns);
-
-	auto name = k.getName ();
-	name = name.substr (0, name.length () - 1);
-
-	m_model << ConfigNodePtr (new ConfigNode (QString::fromStdString (std::string{ static_cast<char> (ns) }),
-						  QString::fromStdString (name), nullptr, this, true));
-}
-
 void TreeViewModel::populateModel (KeySet const & keySet)
 {
 	m_model.clear ();
 
-	addRootNode (ElektraNamespace::SPEC);
-	addRootNode (ElektraNamespace::DIR);
-	addRootNode (ElektraNamespace::USER);
-	addRootNode (ElektraNamespace::SYSTEM);
+	auto nsToShow = { ElektraNamespace::SPEC, ElektraNamespace::DIR, ElektraNamespace::USER, ElektraNamespace::SYSTEM };
+
+	for (auto & ns : nsToShow)
+	{
+		kdb::Key k;
+		k.setNamespace (ns);
+
+		auto name = k.getName ();
+		name = name.substr (0, name.length () - 1);
+
+		m_model << ConfigNodePtr (new ConfigNode (QString::fromStdString (std::string{ static_cast<char> (ns) }),
+							  QString::fromStdString (name), nullptr, this));
+	}
 
 	createNewNodes (keySet);
 }
@@ -865,6 +866,7 @@ QHash<int, QByteArray> TreeViewModel::roleNames () const
 	roles[IndexRole] = "index";
 	roles[IsNullRole] = "isNull";
 	roles[IsExpandedRole] = "isExpanded";
+	roles[IsNamespaceRootRole] = "isNamespaceRoot";
 
 	return roles;
 }
