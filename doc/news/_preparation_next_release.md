@@ -39,7 +39,7 @@ The second big change is to array elements.
 From now on `keyNew ("/array/#10", KEY_END)` will create a `Key` with name `/array/#_10`, to make arrays more user-friendly while preserving numerical ordering.
 
 The whole internal implementation for `keySetName`, `keyAddName`, etc. has been completely rewritten.
-If you rely on specific behaviour of Elektra's Keynames and have already taken the two changes above into account, please refer to the newly created [Keyname documentation](../keynames) and (easier to read) [Python reference implementation](../keynames/keynames.py).
+If you rely on specific behaviour of Elektra's Keynames and have already taken the two changes above into account, please refer to the newly created [Keyname documentation](../keynames) and [Python reference implementation](../keynames/keynames.py).
 
 **Other keyname-related changes**
 
@@ -69,7 +69,7 @@ If you rely on specific behaviour of Elektra's Keynames and have already taken t
   Note: The `spec` plugin already generates `default:/` keys.
 
 - The function `keyInactive` has been removed.
-  The concept of inactive keys no longer exists.
+  The concept of inactive keys no longer exists, use [comment/#](/doc/METADATA.ini) instead.
 
 - `ElektraNamespace` is the new C++ `enum class` for the Elektra's namespaces.
   You should prefer it to using `KEY_NS_SYSTEM` et al. directly, if you use C++.
