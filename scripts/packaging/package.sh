@@ -73,5 +73,3 @@ fi
 
 cmake $CMAKE_ARGS ..
 LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
-
-# TODO: change swig back to swig3.0 and add some kind of version handling for differnet distribitions
