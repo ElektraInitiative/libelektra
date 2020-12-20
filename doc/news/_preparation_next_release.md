@@ -193,7 +193,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- <<TODO>>
+- Use pre-installed Ruby version to reduce build-time and timeouts. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
