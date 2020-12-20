@@ -31,10 +31,7 @@ endif (CMAKE_VERSION VERSION_LESS 3.9)
 set (CMAKE_MACOSX_RPATH 1)
 set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
-set (
-	CMAKE_INSTALL_DEFAULT_COMPONENT_NAME
-	"elektra-misc"
-	CACHE STRING "Default component name" FORCE)
+set (CMAKE_INSTALL_DEFAULT_COMPONENT_NAME "elektra-misc")
 
 # additional modules for loading libraries
 set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/scripts/cmake/Modules/")
