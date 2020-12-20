@@ -10,6 +10,8 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         dbus-devel \
         diffutils \
         dnf-plugins-core \
+        discount \
+        fedora-packager \
         file \
         findutils \
         flex \
@@ -22,10 +24,12 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         jna \
         libasan \
         libcurl-devel \
+        libdrm-devel \
         libev-devel \
         libgcrypt-devel \
         libgit2-devel \
         libmarkdown-devel \
+        qt5-qtsvg-devel \
         libubsan \
         libuv-devel \
         libxml2-devel \
@@ -38,13 +42,17 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         procps-ng \
         python3-devel \
         qt5-qtbase-devel \
+        qt5-qtdeclarative-devel \
+        rpmdevtools \
         ruby-devel \
         rubygem-test-unit \
         swig \
+        systemd-devel \
         valgrind \
         xerces-c-devel \
         yajl-devel \
         yaml-cpp-devel \
+        zeromq-devel \
         zlib-devel \
     && dnf debuginfo-install -y \
         bison \
