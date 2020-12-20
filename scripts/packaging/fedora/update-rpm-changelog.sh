@@ -54,7 +54,7 @@ while getopts "ha:m:v:f:" opt; do
 done
 
 if [ -z ${var+x} ]; then
-    AUTHOR="$(git config user.email)"
+	AUTHOR="$(git config user.email)"
 fi
 
 DATE=$(date "+%a %b %d %Y")
