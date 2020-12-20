@@ -26,7 +26,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 ## Highlights
 
 - Important Changes to Keynames
-- Debian Packaging with CPack
+- Debian and Fedora Packaging with CPack
 - <<HIGHLIGHT3>>
 
 ### Important Changes to Keynames
@@ -46,9 +46,10 @@ If you rely on specific behaviour of Elektra's Keynames and have already taken t
 - Fix combining dot-dot parts and escapes in key names. _(Klemens Böswirth)_
 - Fix adding more than 10 warnings to a key. _(Klemens Böswirth)_
 
-### Debian Packaging with CPack
+### Debian and Fedora Packaging with CPack
 
 - We are now using CPack to generate modular Debian and Ubuntu packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specifc dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
+- We now also generate RPM packages for Fedora. _(Robert Sowula)_
 
 ### <<HIGHLIGHT3>>
 
