@@ -50,7 +50,7 @@ There have been significant changes to Elektra's Keynames.
   From now on `keyNew ("/array/#10", KEY_END)` will create a `Key` with name `/array/#_10`, to make arrays more user-friendly while preserving numerical ordering.
 
 - The whole internal implementation for `keySetName`, `keyAddName`, etc. has been completely rewritten.
-  If you rely on specific behaviour of Elektra's Keynames and have already taken the two changes above into account, please refer to the newly created [Keyname documentation](../keynames) and [Python reference implementation](../keynames/keynames.py).
+  If you rely on specific behaviour of Elektra's Keynames and have already taken the two changes above into account, please refer to the newly created [Keyname documentation](../KEYNAMES.md) and [Python reference implementation](../../scripts/keynames.py).
 
 - Metakeys now use the namespace `meta:/`.
   The accessor function `keyGetMeta` and `keySetMeta` automatically add this namespace to preserve compatibility.
