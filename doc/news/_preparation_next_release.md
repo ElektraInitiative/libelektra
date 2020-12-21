@@ -131,7 +131,9 @@ you up to date with the multi-language support provided by Elektra.
 
 - Remove ipairs support and add our own iterator to add support for Lua 5.4, since `__ipairs` was deprecated. _(Manuel Mausz)_
 
-### <<Binding2>>
+### JNA
+
+- Fixed allocation not correctly conveyed on key set initialization _(Michael Tucek)_
 
 ### <<Binding3>>
 
