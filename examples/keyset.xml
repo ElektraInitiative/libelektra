@@ -61,39 +61,11 @@
 <key name="user:/tmp/key with user-defined binary type"
      type="25" mode="0664">
 
- 
-<!--
-	Created with command:
-	kdb set -t 25 \
-		-c "User defined, semanticfull binary types are between KEY_TYPE_BINARY (>=20) and KEY_TYPE_STRING (<40)" \
-		"user:/tmp/key with user-defined binary type" \
-		"binary-semantic value"
-  -->
-  
-     <value>
-62696e61 72792d73 656d616e 74696320 76616c75 65
-
-</value>
-     <comment><![CDATA[User defined, semanticfull binary types are between KEY_TYPE_BINARY (>=20) and KEY_TYPE_STRING (<40)]]></comment>
-</key>
-
-
 
 
 
 <key name="user:/tmp/key with user-defined type"
      type="45" mode="0664">
-
-<!--
-	Created with command:
-	kdb set -t 45 \
-		-c "User defined, semanticfull string types are bigger then KEY_TYPE_STRING, or 40" \
-		"user:/tmp/key with user-defined type" \
-		"a semanticfull value"
-  -->
-  
-     <value><![CDATA[a semanticfull value]]></value>
-</key>
 
 
 

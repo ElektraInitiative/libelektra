@@ -29,7 +29,6 @@ TEST (test_contextual_policy, staticGetPolicy)
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyStaticGetPolicy>> cv
 		(ks, c, Key("/test",
-			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
 			KEY_META, "default", "88",
 			KEY_END));
@@ -74,7 +73,6 @@ TEST (test_contextual_policy, ValueWrapper)
 	// clang-format off
 	ValueWrapper<int, WritePolicyIs<DefaultWritePolicy>> cv
 		(ks, c, Key("/test",
-			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
 			KEY_META, "default", "88",
 			KEY_END));
@@ -109,7 +107,6 @@ TEST (test_contextual_policy, setPolicy)
 	// clang-format off
 	ContextualValue<int, SetPolicyIs<MySetPolicy<int>>> cv
 		(ks, c, Key("/test",
-			KEY_CASCADING_NAME,
 			KEY_VALUE, "/test",
 			KEY_META, "default", "88",
 			KEY_END));
@@ -131,8 +128,8 @@ TEST (test_contextual_policy, readonlyPolicy)
 	using namespace kdb;
 	KeySet ks;
 	Context c;
-	ContextualValue<int, WritePolicyIs<ReadOnlyPolicy>> cv (
-		ks, c, Key ("/test", KEY_CASCADING_NAME, KEY_VALUE, "/test", KEY_META, "default", "88", KEY_END));
+	ContextualValue<int, WritePolicyIs<ReadOnlyPolicy>> cv (ks, c,
+								Key ("/test", KEY_VALUE, "/test", KEY_META, "default", "88", KEY_END));
 	EXPECT_EQ (cv, 88);
 	EXPECT_EQ (cv, 88);
 	// cv = 40; // read only, so this is a compile error
@@ -157,7 +154,6 @@ TEST (test_contextual_policy, dynamicGetPolicy)
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
 		(ks, c, Key("/test",
-			KEY_CASCADING_NAME,
 			KEY_META, "default", "88",
 			KEY_META, "override/#0", "user:/available",
 			KEY_END));
@@ -193,7 +189,6 @@ TEST (test_contextual_policy, root)
 	// clang-format off
 	ContextualValue<int, GetPolicyIs<MyDynamicGetPolicy>> cv
 		(ks, c, Key("/",
-			KEY_CASCADING_NAME,
 			KEY_META, "default", "88",
 			KEY_META, "override/#0", "user:/available",
 			KEY_END));
@@ -215,8 +210,7 @@ template <typename T, typename P = kdb::GetPolicyIs<MyStaticGetPolicy>>
 class MyCV : public kdb::ContextualValue<T, P>
 {
 public:
-	MyCV<T, P> (kdb::KeySet & ks_, kdb::Context & context_)
-	: kdb::ContextualValue<T, P> (ks_, context_, kdb::Key ("/", KEY_CASCADING_NAME, KEY_END))
+	MyCV<T, P> (kdb::KeySet & ks_, kdb::Context & context_) : kdb::ContextualValue<T, P> (ks_, context_, kdb::Key ("/", KEY_END))
 	{
 	}
 };
@@ -245,8 +239,7 @@ class MyCV2 : public kdb::ContextualValue<kdb::none_t, kdb::GetPolicyIs<MyNoneGe
 {
 public:
 	MyCV2 (kdb::KeySet & ks_, kdb::Context & context_)
-	: kdb::ContextualValue<kdb::none_t, kdb::GetPolicyIs<MyNoneGetPolicy>> (ks_, context_, kdb::Key ("/", KEY_CASCADING_NAME, KEY_END)),
-	  m_m (ks_, context_)
+	: kdb::ContextualValue<kdb::none_t, kdb::GetPolicyIs<MyNoneGetPolicy>> (ks_, context_, kdb::Key ("/", KEY_END)), m_m (ks_, context_)
 	{
 	}
 

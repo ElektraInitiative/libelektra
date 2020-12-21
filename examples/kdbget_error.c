@@ -19,7 +19,7 @@ void printWarnings (Key * key);
 int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
-	Key * key = keyNew ("/sw/MyApp", KEY_CASCADING_NAME, KEY_END);
+	Key * key = keyNew ("/sw/MyApp", KEY_END);
 	KDB * handle = kdbOpen (key);
 
 	if (!handle) printError (key);

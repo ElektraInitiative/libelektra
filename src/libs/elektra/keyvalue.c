@@ -113,7 +113,7 @@ keyDel(key);
  * value. Use keySetString() or keySetBinary() instead.
  *
  * @warning Binary keys will return a NULL pointer when there is no data in contrast
- * to keyName(), keyBaseName(), keyOwner() and keyComment(). For string value the
+ * to keyName(), keyBaseName() and keyComment(). For string value the
  * behaviour is the same.
  *
  * @par Example:
@@ -337,8 +337,6 @@ ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
  * called, in UTF-8 universal encoding, regardless of the program's current
  * encoding, when iconv plugin is present.
  *
- * @note The type will be set to KEY_TYPE_STRING.
- * When the type of the key is already a string type it won't be changed.
  *
  * @param key the key to set the string value
  * @param newStringValue NULL-terminated text string to be set as @p key's
@@ -386,7 +384,7 @@ ssize_t keySetString (Key * key, const char * newStringValue)
  *
  * @par Example:
  * @code
-Key *key = keyNew ("user:/keyname", KEY_TYPE, KEY_TYPE_BINARY, KEY_END);
+Key *key = keyNew ("user:/keyname", KEY_BINARY, KEY_END);
 char buffer[300];
 
 if (keyGetBinary(key,buffer,sizeof(buffer)) == -1)

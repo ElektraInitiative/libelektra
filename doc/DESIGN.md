@@ -219,7 +219,6 @@ The following functions return an internal string:
 ```c
 const char *keyName(const Key *key);
 const char *keyBaseName(const Key *key);
-const char *keyOwner(const Key *key);
 const char *keyComment(const Key *key);
 ```
 
@@ -262,8 +261,7 @@ databases. For allocation/deallocation we use C++ styled names (e.g
 `*New`, `*Del`).
 
 Macros and Enums are written in capital letters. Options start with
-`KDB_O`, errors with `KDB_ERR`, namespaces with `KEY_NS` and key types
-with `KEY_TYPE`.
+`KDB_O`, errors with `KDB_ERR` and namespaces with `KEY_NS`.
 
 Data structures start with a capital letter for every part of the word:
 

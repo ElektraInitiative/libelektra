@@ -59,7 +59,7 @@ TEST (Backend, backendName)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint (Key ("user:/a", KEY_CASCADING_NAME, KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("user:/a", KEY_END), KeySet (0, KS_END));
 	EXPECT_EQ (b.getMountpoint (), "user:/a");
 }
 
@@ -68,7 +68,7 @@ TEST (Backend, SimpleBackend)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint (Key ("/", KEY_CASCADING_NAME, KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("/", KEY_END), KeySet (0, KS_END));
 	EXPECT_EQ (b.getMountpoint (), "/");
 	b.addPlugin (PluginSpec ("resolver"));
 	b.addPlugin (PluginSpec ("dump"));
@@ -138,7 +138,7 @@ TEST (Backend, CrazyName)
 	using namespace kdb;
 	using namespace kdb::tools;
 	Backend b;
-	b.setMountpoint (Key ("/crazy///.//name/../a..__.b/._.///._c__d", KEY_CASCADING_NAME, KEY_END), KeySet (0, KS_END));
+	b.setMountpoint (Key ("/crazy///.//name/../a..__.b/._.///._c__d", KEY_END), KeySet (0, KS_END));
 	b.addPlugin (PluginSpec ("resolver"));
 	b.addPlugin (PluginSpec ("dump"));
 	EXPECT_TRUE (b.validated ());

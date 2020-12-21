@@ -245,7 +245,6 @@ keyDel(key);
  * @retval 0 on NULL pointer
  * @see keyGetNameSize() for the string length
  * @see keyGetName() as alternative to get a copy
- * @see keyOwner() to get a pointer to owner
  * @see keyUnescapedName to get an unescaped key name
  * @ingroup keyname
  */
@@ -449,7 +448,7 @@ ssize_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSiz
  * @retval -1 if key was inserted to a keyset before
  * @param key the key object to work with
  * @param newName the new key name
- * @see keyNew(), keySetOwner()
+ * @see keyNew()
  * @see keyGetName(), keyName()
  * @see keySetBaseName(), keyAddBaseName() to manipulate a name
  * @ingroup keyname
@@ -484,7 +483,6 @@ ssize_t keySetName (Key * key, const char * newName)
 
 	set_bit (key->flags, KEY_FLAG_SYNC);
 
-	if (keyGetNamespace (key) != KEY_NS_META) keySetOwner (key, NULL);
 	return key->keySize;
 }
 
@@ -1078,7 +1076,6 @@ void elektraKeyNameUnescape (const char * canonicalName, char * unescapedName)
  * @retval 0 on NULL pointer
  * @see keyGetBaseName(), keyGetBaseNameSize()
  * @see keyName() to get a pointer to the name
- * @see keyOwner() to get a pointer to the owner
  * @ingroup keyname
  */
 const char * keyBaseName (const Key * key)

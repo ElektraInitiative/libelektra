@@ -26,12 +26,6 @@ libelektra_0.8 {
 	elektraVFormat;
 	elektraWriteArrayNumber;
 
-	# kdbmeta.h
-	keyGetOwner;
-	keyGetOwnerSize;
-	keyOwner;
-	keySetOwner;
-
 	# kdbease.h
 	keyCompare;
 	keyCompareMeta;

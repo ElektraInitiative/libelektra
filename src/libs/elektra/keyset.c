@@ -604,14 +604,6 @@ Key *k2 = keyNew("user:/b", KEY_END);
 // keyCmp(k2,k1) > 0
  * @endcode
  *
- * And even more:
- * @code
-Key *k1 = keyNew("user:/a", KEY_OWNER, "markus", KEY_END);
-Key *k2 = keyNew("user:/a", KEY_OWNER, "max", KEY_END);
-
-// keyCmp(k1,k2) < 0
-// keyCmp(k2,k1) > 0
- * @endcode
  *
  * Do not strcmp the keyName() yourself because
  * the result differs from simple ascii comparison.
@@ -1642,7 +1634,7 @@ static Key * elektraLookupBySpecLinks (KeySet * ks, Key * specKey, char * buffer
 		// optimization: lazy instanziation of k
 		if (!k)
 		{
-			k = keyNew (keyString (m), KEY_CASCADING_NAME, KEY_END);
+			k = keyNew (keyString (m), KEY_END);
 			keySetBinary (k, keyValue (specKey), keyGetValueSize (specKey));
 			elektraCopyCallbackMeta (k, specKey);
 		}

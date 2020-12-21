@@ -362,7 +362,7 @@ static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, KeySet * found,
 		ret = stat (results.gl_pathv[i], &sb);
 		if (S_ISREG (sb.st_mode))
 		{
-			Key * lookup = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+			Key * lookup = keyNew ("/", KEY_END);
 			keyAddBaseName (lookup, (results.gl_pathv[i]) + strlen (mc->directory));
 			Key * k;
 			if ((k = ksLookup (mc->childBackends, lookup, KDB_O_NONE)) != NULL)
@@ -389,8 +389,8 @@ static Codes updateFilesGlob (Plugin * handle, MultiConfig * mc, KeySet * found,
 				}
 				else
 				{
-					Key * childKey = keyNew (keyName (lookup), KEY_CASCADING_NAME, KEY_BINARY, KEY_SIZE,
-								 sizeof (SingleConfig *), KEY_VALUE, &s, KEY_END);
+					Key * childKey = keyNew (keyName (lookup), KEY_BINARY, KEY_SIZE, sizeof (SingleConfig *), KEY_VALUE,
+								 &s, KEY_END);
 					ksAppendKey (mc->childBackends, childKey);
 					ksAppendKey (found, childKey);
 					rc = SUCCESS;

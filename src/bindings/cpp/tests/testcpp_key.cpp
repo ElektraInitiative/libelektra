@@ -200,26 +200,6 @@ TEST (key, keynew)
 	succeed_if (key4.getBinary () == s, "key4 has wrong binary value");
 	succeed_if (key4.getBinarySize () == 3, "key4 has wrong value size");
 
-#ifndef _WIN32
-	// Key with name + UID/GID
-	Key key5 ("system:/sw/test", KEY_UID, 123, KEY_GID, 456, KEY_END);
-	succeed_if (key5.getMeta<uid_t> ("uid") == 123, "key5 UID no set correctly");
-	succeed_if (key5.getMeta<gid_t> ("gid") == 456, "key5 UID no set correctly");
-	succeed_if (key5.getName () == "system:/sw/test", "key5 has wrong name");
-
-	// Key with name + MODE
-	Key key6 ("system:/sw/test", KEY_MODE, 0642, KEY_END);
-	succeed_if (key6.getMeta<mode_t> ("mode") == 642, "key6 mode no set correctly");
-	succeed_if (key6.getName () == "system:/sw/test", "key6 has wrong name");
-	key6.setString ("a very long string");
-	succeed_if (key6.getString () == "a very long string", "key6 has wrong value");
-	succeed_if (key6.get<string> () == "a very long string", "key6 has wrong value");
-#endif
-
-	// Key with name + owner
-	Key key7 ("system:/sw/test", KEY_OWNER, "yl", KEY_END);
-	succeed_if (key7.getMeta<std::string> ("owner") == "yl", "key7 owner not set correctly");
-
 	Key key8 ("system:/valid/there", KEY_BINARY, KEY_SIZE, sizeof (array), KEY_VALUE, array, KEY_END);
 	succeed_if (key8.getName () == "system:/valid/there", "key8 has wrong name");
 	succeed_if (key8.isBinary (), "Key should be binary");
@@ -691,32 +671,6 @@ TEST (key, comparision)
 	succeed_if (!(k1 >= k2), "compare key user:/a with user:/b");
 	succeed_if (k1 != k2, "compare key user:/a with user:/b");
 	succeed_if (!(k1 == k2), "compare key user:/a with user:/b");
-
-	Key ko1 ("user:/a", KEY_OWNER, "markus", KEY_END), ko2 ("user:/b", KEY_OWNER, "max", KEY_END);
-
-	succeed_if (ko1 > k1, "compare key with user:/a");
-	succeed_if (ko1 >= k1, "compare key with user:/a");
-	succeed_if (!(ko1 < k1), "compare key with user:/a");
-	succeed_if (!(ko1 <= k1), "compare key with user:/a");
-
-	succeed_if (ko2 > k2, "compare key with user:/b");
-	succeed_if (ko2 >= k2, "compare key with user:/b");
-	succeed_if (!(ko2 < k2), "compare key with user:/b");
-	succeed_if (!(ko2 <= k2), "compare key with user:/b");
-
-	Key ko ("user:/a", KEY_OWNER, "max", KEY_END);
-
-	succeed_if (ko1 < ko, "compare key with user:/b");
-	succeed_if (ko1 <= ko, "compare key with user:/b");
-	succeed_if (!(ko1 > ko), "compare key with user:/b");
-	succeed_if (!(ko1 >= ko), "compare key with user:/b");
-
-	succeed_if (ko1 < ko2, "compare key user:/a with     user:/a owner max");
-	succeed_if (ko1 <= ko2, "compare key user:/a with    user:/a owner max");
-	succeed_if (!(ko1 > ko2), "compare key user:/a with  user:/a owner max");
-	succeed_if (!(ko1 >= ko2), "compare key user:/a with user:/a owner max");
-	succeed_if (ko1 != ko2, "compare key user:/a with    user:/a owner max");
-	succeed_if (!(ko1 == ko2), "compare key user:/a with user:/a owner max");
 }
 
 

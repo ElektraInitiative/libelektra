@@ -95,7 +95,7 @@ void MountCommand::buildBackend (Cmdline const & cl)
 {
 	MountBackendBuilder backend;
 
-	Key mpk (mp, KEY_CASCADING_NAME, KEY_END);
+	Key mpk (mp, KEY_END);
 
 	if (!mpk.isValid ())
 	{

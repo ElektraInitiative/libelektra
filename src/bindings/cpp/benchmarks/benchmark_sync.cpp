@@ -52,8 +52,8 @@ std::vector<std::shared_ptr<kdb::ThreadInteger>> createCV (kdb::KeySet & ks, kdb
 		*/
 		os << "/" << i;
 		// std::cout << os.str().c_str() << std::endl;
-		vi.push_back (std::make_shared<kdb::ThreadInteger> (
-			ks, tc, kdb::Key (os.str ().c_str (), KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END)));
+		vi.push_back (std::make_shared<kdb::ThreadInteger> (ks, tc,
+								    kdb::Key (os.str ().c_str (), KEY_META, "default", s_value, KEY_END)));
 	}
 	return vi;
 }
@@ -64,7 +64,7 @@ __attribute__ ((noinline)) void benchmark_layer_syncN (long long N)
 	kdb::Coordinator c;
 	kdb::ThreadContext tc (c);
 	kdb::KeySet ks;
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
@@ -106,7 +106,7 @@ __attribute__ ((noinline)) void benchmark_kdb_reloadN (long long N)
 	ks.append (kdb::Key ("system:/test/key2", KEY_VALUE, "value2", KEY_END));
 	// kdb2.set (ks, "/test");
 
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
@@ -164,7 +164,7 @@ __attribute__ ((noinline)) void benchmark_layer_switchN (long long N)
 	kdb::Coordinator c;
 	kdb::ThreadContext tc (c);
 	kdb::KeySet ks;
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
@@ -202,7 +202,7 @@ __attribute__ ((noinline)) void benchmark_cv_switchN (long long N)
 	kdb::Coordinator c;
 	kdb::ThreadContext tc (c);
 	kdb::KeySet ks;
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 

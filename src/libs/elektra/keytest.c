@@ -388,7 +388,6 @@ int keyIsString (const Key * key)
  * meta info compared, that can be logically ORed using @c #elektraKeyFlags flags.
  * @link elektraKeyFlags::KEY_NAME KEY_NAME @endlink,
  * @link elektraKeyFlags::KEY_VALUE KEY_VALUE @endlink,
- * @link elektraKeyFlags::KEY_OWNER KEY_OWNER @endlink,
  * @link elektraKeyFlags::KEY_COMMENT KEY_COMMENT @endlink,
  * @link elektraKeyFlags::KEY_META KEY_META @endlink (will be set in addition to owner and comment),
  *
@@ -406,9 +405,6 @@ if (changes == 0) printf("key1 and key2 are identicall\n");
 if (changes & KEY_VALUE)
 printf("key1 and key2 have different values\n");
 
-if (changes & KEY_UID)
-printf("key1 and key2 have different UID\n");
-
  *
  * @endcode
  *
@@ -425,23 +421,9 @@ printf("key1 and key2 have different UID\n");
 
  kdbGet(handle, ks, base);
 
-// we are interested only in key type and access permissions
-interests=(KEY_TYPE | KEY_MODE);
-
-ksRewind(ks);	// put cursor in the beginning
-while ((curren=ksNext(ks))) {
-match=keyCompare(current,base);
-
-if ((~match & interests) == interests)
-printf("Key %s has same type and permissions of base key",keyName(current));
-
-// continue walking in the KeySet....
-}
-
-// now we want same name and/or value
+// we are interested only in name and/or value
 interests=(KEY_NAME | KEY_VALUE);
 
-// we don't really need ksRewind(), since previous loop achieved end of KeySet
 ksRewind(ks);
 while ((current=ksNext(ks))) {
 match=keyCompare(current,base);
@@ -476,8 +458,6 @@ elektraKeyFlags keyCompare (const Key * key1, const Key * key2)
 	const char * name2 = keyName (key2);
 	const Key * comment1 = keyGetMeta (key1, "comment");
 	const Key * comment2 = keyGetMeta (key2, "comment");
-	const char * owner1 = keyOwner (key1);
-	const char * owner2 = keyOwner (key2);
 	const void * value1 = keyValue (key1);
 	const void * value2 = keyValue (key2);
 	ssize_t size1 = keyGetValueSize (key1);
@@ -485,8 +465,6 @@ elektraKeyFlags keyCompare (const Key * key1, const Key * key2)
 
 	// TODO: might be (binary) by chance
 	if (strcmp (keyString (comment1), keyString (comment2))) ret |= KEY_COMMENT;
-
-	if (strcmp (owner1, owner2)) ret |= KEY_OWNER;
 
 	if (keyCompareMeta (key1, key2)) ret |= KEY_META;
 

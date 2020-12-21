@@ -38,7 +38,7 @@ class Person : public ThreadString
 {
 public:
 	Person (KeySet & ks, ThreadContext & context_)
-	: ThreadString (ks, context_, Key ("/%layer1%/person", KEY_CASCADING_NAME, KEY_META, "default", "no name", KEY_END))
+	: ThreadString (ks, context_, Key ("/%layer1%/person", KEY_META, "default", "no name", KEY_END))
 	{
 	}
 	using ThreadString::operator= ;
@@ -53,8 +53,7 @@ class Nested : public ThreadInteger
 {
 public:
 	Nested (KeySet & ks, ThreadContext & context_)
-	: ThreadInteger (ks, context_,
-			 Key ("/test/%layer1%/%thread%/%layer2%/nested", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END))
+	: ThreadInteger (ks, context_, Key ("/test/%layer1%/%thread%/%layer2%/nested", KEY_META, "default", s_value, KEY_END))
 	{
 	}
 	using ThreadInteger::operator= ;
@@ -64,12 +63,11 @@ class Environment : public ThreadBoolean
 {
 public:
 	Environment (KeySet & ks, ThreadContext & context_)
-	: ThreadBoolean (ks, context_, Key ("/test/%layer1%", KEY_CASCADING_NAME, KEY_META, "default", "1", KEY_END)),
-	  nested (ks, context_), person (ks, context_),
-	  profile (ks, context_, Key ("/%layer1%/profile", KEY_CASCADING_NAME, KEY_META, "default", "default", KEY_END)),
+	: ThreadBoolean (ks, context_, Key ("/test/%layer1%", KEY_META, "default", "1", KEY_END)), nested (ks, context_),
+	  person (ks, context_), profile (ks, context_, Key ("/%layer1%/profile", KEY_META, "default", "default", KEY_END)),
 	  bm (ks, context_,
-	      Key ("/%layer1%/%layer2%/%layer3%/%layer4%/%layer5%/%layer6%/%layer7%/%layer8%/%layer9%/", KEY_CASCADING_NAME, KEY_META,
-		   "default", s_value, KEY_END))
+	      Key ("/%layer1%/%layer2%/%layer3%/%layer4%/%layer5%/%layer6%/%layer7%/%layer8%/%layer9%/", KEY_META, "default", s_value,
+		   KEY_END))
 	{
 	}
 
@@ -1085,7 +1083,7 @@ __attribute__ ((noinline)) void benchmark_layer_withN (kdb::Environment &, long 
 	kdb::Coordinator c;
 	kdb::ThreadContext tc (c);
 	kdb::KeySet ks;
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
@@ -1097,8 +1095,8 @@ __attribute__ ((noinline)) void benchmark_layer_withN (kdb::Environment &, long 
 		os << "/test/%layer1%/";
 		os << i;
 		// std::cout << os.str().c_str() << std::endl;
-		vi.push_back (std::make_shared<kdb::ThreadInteger> (
-			ks, tc, kdb::Key (os.str ().c_str (), KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END)));
+		vi.push_back (std::make_shared<kdb::ThreadInteger> (ks, tc,
+								    kdb::Key (os.str ().c_str (), KEY_META, "default", s_value, KEY_END)));
 	}
 
 	static Timer * ts[10]{ new Timer ("layer with0"), new Timer ("layer with1"), new Timer ("layer with2"), new Timer ("layer with3"),
@@ -1144,7 +1142,7 @@ __attribute__ ((noinline)) void benchmark_layer_switchN (kdb::Environment &, lon
 	kdb::Coordinator c;
 	kdb::ThreadContext tc (c);
 	kdb::KeySet ks;
-	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END));
+	kdb::ThreadInteger ti (ks, tc, kdb::Key ("/test/nolayer", KEY_META, "default", s_value, KEY_END));
 	ti = 5;
 	kdb::ThreadInteger::type x = ti;
 
@@ -1156,8 +1154,8 @@ __attribute__ ((noinline)) void benchmark_layer_switchN (kdb::Environment &, lon
 		os << "/test/%layer1%/";
 		os << i;
 		// std::cout << os.str().c_str() << std::endl;
-		vi.push_back (std::make_shared<kdb::ThreadInteger> (
-			ks, tc, kdb::Key (os.str ().c_str (), KEY_CASCADING_NAME, KEY_META, "default", s_value, KEY_END)));
+		vi.push_back (std::make_shared<kdb::ThreadInteger> (ks, tc,
+								    kdb::Key (os.str ().c_str (), KEY_META, "default", s_value, KEY_END)));
 	}
 
 	static Timer * ts[10]{ new Timer ("layer switch0"), new Timer ("layer switch1"), new Timer ("layer switch2"),
