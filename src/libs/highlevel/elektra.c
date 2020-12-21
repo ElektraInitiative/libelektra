@@ -151,7 +151,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 			// BUT: anything other than helpKey may be incorrect
 			// and only helpKey should be used anyway
 			// so create a new config KeySet
-			Key * helpKeyDup = keyDup (helpKey);
+			Key * helpKeyDup = keyDupOld (helpKey);
 			ksClear (config);
 			ksAppendKey (config, helpKeyDup);
 		}
@@ -316,7 +316,7 @@ void elektraSaveKey (Elektra * elektra, Key * key, ElektraError ** error)
 				ELEKTRA_LOG_DEBUG ("problemKey: %s\n", keyName (problemKey));
 			}
 
-			key = keyDup (key);
+			key = keyDupOld (key);
 			kdbGet (elektra->kdb, elektra->config, elektra->parentKey);
 		}
 	} while (ret == -1);
@@ -327,7 +327,7 @@ void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
 	ksRewind (defaults);
 	for (Key * key = ksNext (defaults); key != NULL; key = ksNext (defaults))
 	{
-		Key * const dup = keyDup (key);
+		Key * const dup = keyDupOld (key);
 		const char * name = keyName (key);
 		keySetName (dup, keyName (parentKey));
 		keyAddName (dup, name);

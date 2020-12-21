@@ -146,7 +146,7 @@ static void test_lookupNoOverride (void)
 			KEY_META, "override/#2", "/test/heavy_material_lift/limit",
 			KEY_END);
 	// clang-format on
-	Key * dup = keyDup (specKey);
+	Key * dup = keyDupOld (specKey);
 
 	Key * k1 = 0;
 	Key * k2 = 0;
@@ -199,7 +199,7 @@ static void test_lookupNoascading (void)
 
 	Key * specKey = keyNew ("/abc", KEY_END);
 
-	Key * d = keyDup (specKey);
+	Key * d = keyDupOld (specKey);
 	keySetString (d, "dup");
 	succeed_if_same_string (keyName (specKey), "/abc");
 	succeed_if_same_string (keyName (d), "/abc");

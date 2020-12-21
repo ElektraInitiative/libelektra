@@ -114,7 +114,7 @@ public:
 	inline Key & operator= (ckdb::Key * k);
 	inline Key & operator= (const Key & k);
 
-	inline void copy (const Key & other);
+	inline void copy (const Key & other, int flags = 0);
 	inline void clear ();
 	inline ckdb::Key * operator-> () const;
 
@@ -732,9 +732,9 @@ inline Key & Key::operator= (const Key & k)
 /**
  * @copydoc keyCopy
  */
-inline void Key::copy (const Key & other)
+inline void Key::copy (const Key & other, int flags)
 {
-	ckdb::keyCopy (key, other.key);
+	ckdb::keyCopy (key, other.key, flags);
 }
 
 /**
@@ -815,7 +815,7 @@ ckdb::Key * Key::release ()
  */
 ckdb::Key * Key::dup () const
 {
-	return ckdb::keyDup (getKey ());
+	return ckdb::keyDupOld (getKey ());
 }
 
 /**

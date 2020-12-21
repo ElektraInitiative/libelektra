@@ -195,7 +195,7 @@ gssize gelektra_key_getref (const GElektraKey * key)
  */
 GElektraKey * gelektra_key_dup (const GElektraKey * key)
 {
-	return gelektra_key_make (keyDup (key->key));
+	return gelektra_key_make (keyDupOld (key->key));
 }
 
 /**
@@ -204,7 +204,8 @@ GElektraKey * gelektra_key_dup (const GElektraKey * key)
  */
 gint gelektra_key_copy (const GElektraKey * key, GElektraKey * dest)
 {
-	return keyCopy (dest->key, key->key);
+	// TODO (kodebach): binding
+	return keyCopyOld (dest->key, key->key);
 }
 
 gint gelektra_key_clear (GElektraKey * key)

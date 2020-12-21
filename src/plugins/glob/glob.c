@@ -62,7 +62,7 @@ enum GlobDirection
 
 static const char * getGlobFlags (KeySet * keys, Key * globKey)
 {
-	Key * flagKey = keyDup (globKey);
+	Key * flagKey = keyDupOld (globKey);
 	keyAddBaseName (flagKey, "flags");
 	Key * flagResult = ksLookup (keys, flagKey, KDB_O_NONE);
 	keyDel (flagKey);
@@ -114,7 +114,7 @@ static KeySet * getGlobKeys (Key * parentKey, KeySet * keys, enum GlobDirection 
 
 			/* We now know we want that key.
 			 Dup it to not change the configuration. */
-			Key * ins = keyDup (k);
+			Key * ins = keyDupOld (k);
 			/* Now look if we want cascading for the key */
 			if (keyString (k)[0] == '/')
 			{

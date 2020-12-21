@@ -181,7 +181,7 @@ static void test_keyAdded (void)
 	keyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	Key * toAdd = keyDup (parentKey);
+	Key * toAdd = keyDupOld (parentKey);
 	keyAddName (toAdd, "bar");
 	keySetString (toAdd, "test");
 
@@ -226,7 +226,7 @@ static void test_keyChanged (void)
 	keyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	Key * toChange = keyDup (parentKey);
+	Key * toChange = keyDupOld (parentKey);
 	keyAddName (toChange, "bar");
 	keySetString (toChange, "test");
 
@@ -267,11 +267,11 @@ static void test_keyDeleted (void)
 	keyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	Key * toDelete = keyDup (parentKey);
+	Key * toDelete = keyDupOld (parentKey);
 	keyAddName (toDelete, "bar");
 	keySetString (toDelete, "test");
 
-	KeySet * ks = ksNew (1, keyDup (toDelete), KS_END);
+	KeySet * ks = ksNew (1, keyDupOld (toDelete), KS_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("dbus");
@@ -310,16 +310,16 @@ static void test_announceOnce (void)
 	keyAddName (parentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar/#0
-	Key * toAdd1 = keyDup (parentKey);
+	Key * toAdd1 = keyDupOld (parentKey);
 	keyAddName (toAdd1, "bar/#0");
 	keySetString (toAdd1, "test");
 
 	// (namespace)/tests/foo/bar/#1
-	Key * toAdd2 = keyDup (toAdd1);
+	Key * toAdd2 = keyDupOld (toAdd1);
 	keySetBaseName (toAdd2, "#1");
 
 	// (namespace)/tests/foo/bar
-	Key * toChange = keyDup (parentKey);
+	Key * toChange = keyDupOld (parentKey);
 	keyAddName (toChange, "bar");
 	keySetString (toChange, "test");
 
@@ -364,7 +364,7 @@ static void test_cascadedChangeNotification (void)
 	keyAddName (completeParentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	Key * toAdd = keyDup (completeParentKey);
+	Key * toAdd = keyDupOld (completeParentKey);
 	keyAddName (toAdd, "bar");
 	keySetString (toAdd, "test");
 
@@ -407,7 +407,7 @@ static void test_cascadedAnnounceOnce (void)
 	keyAddName (completeParentKey, "tests/foo");
 
 	// (namespace)/tests/foo/bar
-	Key * toAdd = keyDup (completeParentKey);
+	Key * toAdd = keyDupOld (completeParentKey);
 	keyAddName (toAdd, "bar");
 	keySetString (toAdd, "test");
 

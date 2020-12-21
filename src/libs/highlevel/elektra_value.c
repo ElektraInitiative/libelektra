@@ -161,7 +161,7 @@ void elektraSetRawString (Elektra * elektra, const char * name, const char * val
 {
 	CHECK_ERROR (elektra, error);
 	elektraSetLookupKey (elektra, name);
-	Key * const key = keyDup (elektra->lookupKey);
+	Key * const key = keyDupOld (elektra->lookupKey);
 	keySetMeta (key, "type", type);
 	keySetString (key, value);
 	elektraSaveKey (elektra, key, error);

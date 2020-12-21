@@ -128,7 +128,7 @@ static KeySet * pwentToKS (struct passwd * pwd, Key * parentKey, SortBy index)
 		snprintf (id, sizeof (id), "%u", pwd->pw_uid);
 		keyAddBaseName (append, id);
 		keySetBinary (append, 0, 0);
-		ksAppendKey (ks, keyDup (append));
+		ksAppendKey (ks, keyDupOld (append));
 		keyAddBaseName (append, "name");
 		keySetString (append, pwd->pw_name);
 	}
@@ -136,33 +136,33 @@ static KeySet * pwentToKS (struct passwd * pwd, Key * parentKey, SortBy index)
 	{
 		keyAddBaseName (append, pwd->pw_name);
 		keySetBinary (append, 0, 0);
-		ksAppendKey (ks, keyDup (append));
+		ksAppendKey (ks, keyDupOld (append));
 		snprintf (id, sizeof (id), "%u", pwd->pw_uid);
 		keyAddBaseName (append, "uid");
 		keySetString (append, id);
 	}
-	ksAppendKey (ks, keyDup (append));
+	ksAppendKey (ks, keyDupOld (append));
 	keySetString (append, 0);
 	keySetBaseName (append, "shell");
 	keySetString (append, pwd->pw_shell);
-	ksAppendKey (ks, keyDup (append));
+	ksAppendKey (ks, keyDupOld (append));
 	keySetString (append, 0);
 	keySetBaseName (append, "home");
 	keySetString (append, pwd->pw_dir);
-	ksAppendKey (ks, keyDup (append));
+	ksAppendKey (ks, keyDupOld (append));
 	keySetString (append, 0);
 	keySetBaseName (append, "gid");
 	snprintf (id, sizeof (id), "%u", pwd->pw_gid);
 	keySetString (append, id);
-	ksAppendKey (ks, keyDup (append));
+	ksAppendKey (ks, keyDupOld (append));
 	keySetString (append, 0);
 	keySetBaseName (append, "passwd");
 	keySetString (append, pwd->pw_passwd);
-	ksAppendKey (ks, keyDup (append));
+	ksAppendKey (ks, keyDupOld (append));
 	keySetString (append, 0);
 	keySetBaseName (append, "gecos");
 	keySetString (append, pwd->pw_gecos);
-	ksAppendKey (ks, keyDup (append));
+	ksAppendKey (ks, keyDupOld (append));
 	keyDel (append);
 	return ks;
 }
@@ -227,7 +227,7 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 	struct passwd * pwd = elektraMalloc (sizeof (struct passwd));
 	ksRewind (ks);
 	Key * parent = ksNext (ks);
-	Key * lookup = keyDup (parent);
+	Key * lookup = keyDupOld (parent);
 	Key * found = NULL;
 	if (index == UID)
 	{

@@ -134,7 +134,7 @@ void init (void)
 		else
 			tmp->value = createAbsolutePath (keyString (key), cwd);
 		tmp->oflags = (unsigned short) -1;
-		Key * lookupKey = keyDup (key);
+		Key * lookupKey = keyDupOld (key);
 		keyAddBaseName (lookupKey, "readonly");
 		Key * found = ksLookup (ks, lookupKey, 0);
 		if (found)

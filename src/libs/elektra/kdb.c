@@ -171,7 +171,7 @@ KeySet * ksRenameKeys (KeySet * config, const char * name)
 
 	while ((cur = ksPop (config)) != 0)
 	{
-		Key * dupKey = keyDup (cur);
+		Key * dupKey = keyDupOld (cur);
 		keySetName (dupKey, name);
 		keyAddName (dupKey, keyName (cur) + rootSize - 1);
 		ksAppendKey (newConfig, dupKey);
@@ -260,7 +260,7 @@ KDB * kdbOpen (Key * errorKey)
 
 	int errnosave = errno;
 	KDB * handle = elektraCalloc (sizeof (struct _KDB));
-	Key * initialParent = keyDup (errorKey);
+	Key * initialParent = keyDupOld (errorKey);
 
 	handle->global = ksNew (0, KS_END);
 	handle->modules = ksNew (0, KS_END);
@@ -404,7 +404,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 		return -1;
 	}
 
-	Key * initialParent = keyDup (errorKey);
+	Key * initialParent = keyDupOld (errorKey);
 	int errnosave = errno;
 	splitDel (handle->split);
 
@@ -1006,7 +1006,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	int errnosave = errno;
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDupOld (parentKey);
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
@@ -1038,7 +1038,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	cache = ksNew (0, KS_END);
-	cacheParent = keyDup (mountGetMountpoint (handle, keyName (initialParent)));
+	cacheParent = keyDupOld (mountGetMountpoint (handle, keyName (initialParent)));
 	if (cacheParent == NULL)
 	{
 		cacheParent = keyNew ("default:/", KEY_VALUE, "default", KEY_END);
@@ -1588,7 +1588,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	int errnosave = errno;
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDupOld (parentKey);
 
 	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 

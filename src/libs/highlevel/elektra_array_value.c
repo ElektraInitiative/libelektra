@@ -36,7 +36,7 @@ extern "C" {
 static void elektraArraySetSize (Elektra * elektra, const char * name, kdb_long_long_t size, ElektraError ** error)
 {
 	elektraSetLookupKey (elektra, name);
-	Key * arrayParent = keyDup (elektra->lookupKey);
+	Key * arrayParent = keyDupOld (elektra->lookupKey);
 
 	char sizeString[ELEKTRA_MAX_ARRAY_SIZE];
 	elektraWriteArrayNumber (sizeString, size - 1);
@@ -236,7 +236,7 @@ void elektraSetRawStringArrayElement (Elektra * elektra, const char * name, kdb_
 	Key * key = ksLookup (elektra->config, elektra->lookupKey, 0);
 	if (key == NULL)
 	{
-		key = keyDup (elektra->lookupKey);
+		key = keyDupOld (elektra->lookupKey);
 	}
 	keySetMeta (key, "type", type);
 	keySetString (key, value);

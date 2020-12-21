@@ -37,7 +37,7 @@ public interface Elektra extends Library {
 
 	Pointer keyNew (String name, Object... args);
 
-	Pointer keyDup (Pointer source);
+	Pointer keyDupOld (Pointer source);
 
 	int keyCopy (Pointer dest, Pointer source);
 

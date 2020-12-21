@@ -90,9 +90,9 @@ static void linkProfileKeys (KeySet * swKS, KeySet * profileKeys, KeySet * appen
 		profileString = keyString (profileKey);
 		if (profileString)
 		{
-			profileCutKey = keyDup (profileKey);
+			profileCutKey = keyDupOld (profileKey);
 			keyAddName (profileCutKey, "..");
-			Key * currentProfileKey = keyDup (profileCutKey);
+			Key * currentProfileKey = keyDupOld (profileCutKey);
 			keyAddBaseName (currentProfileKey, "current");
 			keyAddBaseName (profileCutKey, profileString);
 			KeySet * profileKS = ksCut (swKS, profileCutKey);
@@ -113,8 +113,8 @@ static void linkProfileKeys (KeySet * swKS, KeySet * profileKeys, KeySet * appen
 				}
 				keyDel (lookupKey);
 				keySetMeta (overrideKey, "override/#0", keyName (cur));
-				ksAppendKey (swKS, keyDup (overrideKey));
-				ksAppendKey (appendedKeys, keyDup (overrideKey));
+				ksAppendKey (swKS, keyDupOld (overrideKey));
+				ksAppendKey (appendedKeys, keyDupOld (overrideKey));
 				keyDel (overrideKey);
 			}
 			keyDel (currentProfileKey);
@@ -131,12 +131,12 @@ static void linkDefaultKeys (KeySet * swKS, KeySet * profileParents, KeySet * ap
 	Key * profileParent = NULL;
 	while ((profileParent = ksNext (profileParents)) != NULL)
 	{
-		Key * defaultCutKey = keyDup (profileParent);
+		Key * defaultCutKey = keyDupOld (profileParent);
 		keyAddName (defaultCutKey, "%");
 		KeySet * defaultKS = ksCut (swKS, defaultCutKey);
 		ksRewind (defaultKS);
 		Key * cur;
-		Key * currentProfileKey = keyDup (profileParent);
+		Key * currentProfileKey = keyDupOld (profileParent);
 		keyAddName (currentProfileKey, "current");
 		while ((cur = ksNext (defaultKS)) != NULL)
 		{
@@ -153,8 +153,8 @@ static void linkDefaultKeys (KeySet * swKS, KeySet * profileParents, KeySet * ap
 			}
 			keyDel (existingKey);
 			keySetMeta (overrideKey, "override/#0", keyName (cur));
-			ksAppendKey (swKS, keyDup (overrideKey));
-			ksAppendKey (appendedKeys, keyDup (overrideKey));
+			ksAppendKey (swKS, keyDupOld (overrideKey));
+			ksAppendKey (appendedKeys, keyDupOld (overrideKey));
 			keyDel (overrideKey);
 		}
 		keyDel (currentProfileKey);
@@ -209,9 +209,9 @@ int elektraProfileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 	{
 		if (!fnmatch (CURRENTPATH, keyName (cur), FNM_PATHNAME))
 		{
-			Key * profileParent = keyDup (cur);
+			Key * profileParent = keyDupOld (cur);
 			keyAddName (profileParent, "..");
-			ksAppendKey (profileParents, keyDup (profileParent));
+			ksAppendKey (profileParents, keyDupOld (profileParent));
 			keyDel (profileParent);
 		}
 	}

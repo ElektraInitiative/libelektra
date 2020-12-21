@@ -437,7 +437,7 @@ static void test_keyDup (const size_t storagePlugin, const char * tmpFile)
 	Key * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	Key * duplicate = keyDup (found);
+	Key * duplicate = keyDupOld (found);
 
 	// check that keyDup has not changed KeySet
 	KeySet * expected = metaTestKeySet ();
@@ -467,7 +467,7 @@ static void test_keyCopy_newKey (const size_t storagePlugin, const char * tmpFil
 	succeed_if (found, "did not find key");
 
 	Key * copy = keyNew ("/", KEY_END);
-	succeed_if (keyCopy (copy, found) != -1, "keyCopy failed");
+	succeed_if (keyCopyOld (copy, found) != -1, "keyCopy failed");
 
 	compare_key (found, copy);
 
@@ -507,8 +507,8 @@ static void test_keyCopy_clearOverwriteKey (const size_t storagePlugin, const ch
 	}
 
 	// overwrite Key
-	succeed_if (keyCopy (found, 0) == 0, "keyCopy: clear destination failed");
-	succeed_if (keyCopy (found, toCopy) == 1, "keyCopy failed");
+	succeed_if (keyCopyOld (found, 0) == 0, "keyCopy: clear destination failed");
+	succeed_if (keyCopyOld (found, toCopy) == 1, "keyCopy failed");
 	compare_key (found, toCopy);
 	keyDel (toCopy);
 
@@ -615,7 +615,7 @@ static void test_keySetName (const size_t storagePlugin, const char * tmpFile)
 	Key * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	Key * duplicate = keyDup (found);
+	Key * duplicate = keyDupOld (found);
 	keySetName (duplicate, "user:/tests/storage/z");
 	keySetString (duplicate, "zzz");
 
@@ -681,7 +681,7 @@ static void test_keyValue (const size_t storagePlugin, const char * tmpFile)
 
 	Key * key = keyNew (name, KEY_END);
 	keySetBinary (key, value, valueSize);
-	ksAppendKey (ks, keyDup (key));
+	ksAppendKey (ks, keyDupOld (key));
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 

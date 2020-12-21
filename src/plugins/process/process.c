@@ -151,7 +151,7 @@ static void adjustContract (KeySet * pluginContract, KeySet * contract)
 	Key * cur;
 	while ((cur = ksNext (pluginContract)) != NULL)
 	{
-		Key * cpy = keyDup (cur);
+		Key * cpy = keyDupOld (cur);
 		keySetBaseName (cpy, NULL);
 		if (!elektraStrCmp ("infos", keyBaseName (cpy)))
 		{
@@ -196,7 +196,7 @@ int elektraProcessGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 		if (!validPluginName (pluginName, parentKey) || !process->plugin) return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 
-		Key * pluginParentKey = keyDup (parentKey);
+		Key * pluginParentKey = keyDupOld (parentKey);
 		keySetBaseName (pluginParentKey, keyString (pluginName));
 
 		KeySet * pluginContract = ksNew (30, KS_END);

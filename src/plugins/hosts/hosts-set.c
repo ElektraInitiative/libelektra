@@ -69,9 +69,9 @@ static void writeLineComments (Key * key, FILE * fp)
 	{
 		if (strcmp (keyName (current), "meta:/comment/#0") != 0)
 		{
-			Key * spaceKey = keyDup (current);
+			Key * spaceKey = keyDupOld (current);
 			keyAddBaseName (spaceKey, "space");
-			Key * startKey = keyDup (current);
+			Key * startKey = keyDupOld (current);
 			keyAddBaseName (startKey, "start");
 			const char * spaces = getMetaValue (key, keyName (spaceKey));
 			const char * start = getMetaValue (key, keyName (startKey));
@@ -143,9 +143,9 @@ int elektraHostsSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 	qsort (keyArray, arraySize, sizeof (Key *), keyCmpOrderWrapper);
 
-	Key * ipv4Base = keyDup (parentKey);
+	Key * ipv4Base = keyDupOld (parentKey);
 	keyAddBaseName (ipv4Base, "ipv4");
-	Key * ipv6Base = keyDup (parentKey);
+	Key * ipv6Base = keyDupOld (parentKey);
 	keyAddBaseName (ipv6Base, "ipv6");
 
 	/* now write the hosts file */

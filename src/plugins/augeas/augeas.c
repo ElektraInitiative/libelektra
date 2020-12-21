@@ -77,11 +77,11 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 				p[l - 4] = '\0';
 				Key * k = keyNew ("system:/", KEY_END);
 				keyAddBaseName (k, p);
-				ksAppendKey (ks, keyDup (k));
+				ksAppendKey (ks, keyDupOld (k));
 
-				Key * b = keyDup (k);
+				Key * b = keyDupOld (k);
 				keyAddBaseName (b, "infos");
-				ksAppendKey (ks, keyDup (b));
+				ksAppendKey (ks, keyDupOld (b));
 				keyAddBaseName (b, "provides");
 				char * s = elektraFormat ("storage/%s", p);
 				keySetString (b, s);
@@ -89,7 +89,7 @@ int elektraAugeasGenConf (KeySet * ks, Key * errorKey ELEKTRA_UNUSED)
 				ksAppendKey (ks, b);
 
 				keyAddBaseName (k, "config");
-				ksAppendKey (ks, keyDup (k));
+				ksAppendKey (ks, keyDupOld (k));
 				keyAddBaseName (k, "lens");
 				p[0] = (char) toupper (p[0]);
 				p[l - 1] = 's';
@@ -165,7 +165,7 @@ static const char * getAugeasError (augeas * augeasHandle, const char * lensPath
 
 static Key * createKeyFromPath (Key * parentKey, const char * treePath)
 {
-	Key * key = keyDup (parentKey);
+	Key * key = keyDupOld (parentKey);
 	char * baseName = elektraStrDup (treePath + strlen (AUGEAS_TREE_ROOT) + 1);
 	char * lastSlash = strrchr (baseName, '/');
 	const char * lastPart = lastSlash != NULL ? lastSlash + 1 : baseName;
@@ -549,7 +549,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	ksClear (returned);
 	KeySet * append = ksNew ((size_t) ksGetSize (returned) * 2, KS_END);
 
-	Key * key = keyDup (parentKey);
+	Key * key = keyDupOld (parentKey);
 	ksAppendKey (append, key);
 
 	struct KeyConversion * conversionData = elektraMalloc (sizeof (struct KeyConversion));
@@ -562,7 +562,7 @@ int elektraAugeasGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	conversionData->currentOrder = 0;
-	conversionData->parentKey = keyDup (key);
+	conversionData->parentKey = keyDupOld (key);
 	conversionData->ks = append;
 
 	ret = foreachAugeasNode (augeasHandle, AUGEAS_TREE_ROOT, &convertToKey, conversionData);

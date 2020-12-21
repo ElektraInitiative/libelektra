@@ -180,7 +180,12 @@ impl<'a> StringKey<'a> {
 
     /// Returns a deep copy of the key.
     pub fn duplicate<'b>(&'a self) -> StringKey<'b> {
-        let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
+        // TODO: binding
+        let dup_ptr = unsafe { 
+            let dup = elektra_sys::keyDup(self.as_ref(), 0);
+            elektra_sys::keyCopyAllMeta(dup, self.as_ref());
+            dup
+        };
         unsafe { StringKey::from_ptr(dup_ptr) }
     }
 
@@ -245,7 +250,12 @@ impl<'a> BinaryKey<'a> {
 
     /// Returns a deep copy of the key.
     pub fn duplicate<'b>(&'a self) -> BinaryKey<'b> {
-        let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
+        // TODO: binding
+        let dup_ptr = unsafe { 
+            let dup = elektra_sys::keyDup(self.as_ref(), 0);
+            elektra_sys::keyCopyAllMeta(dup, self.as_ref());
+            dup
+        };
         unsafe { BinaryKey::from_ptr(dup_ptr) }
     }
 

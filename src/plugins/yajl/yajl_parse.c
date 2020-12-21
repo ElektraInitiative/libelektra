@@ -265,7 +265,7 @@ static void elektraYajlParseSuppressNonLeafKeys (KeySet * returned)
 
 		if (ksNext (returned) == NULL) break;
 
-		Key * peekDup = keyDup (ksCurrent (returned));
+		Key * peekDup = keyDupOld (ksCurrent (returned));
 		keySetBaseName (peekDup, 0);
 
 		if (!strcmp (keyName (peekDup), keyName (cur)))
@@ -301,7 +301,7 @@ static void elektraYajlParseSuppressEmptyMap (KeySet * returned, Key * parentKey
 
 	if (ksGetSize (returned) == 2)
 	{
-		Key * lookupKey = keyDup (parentKey);
+		Key * lookupKey = keyDupOld (parentKey);
 		keyAddBaseName (lookupKey, "___empty_map");
 		Key * toRemove = ksLookup (returned, lookupKey, KDB_O_POP);
 

@@ -16,7 +16,7 @@ Key * copy;
 void h (Key * k)
 {
 	// receive key c
-	keyCopy (k, copy);
+	keyCopyOld (k, copy);
 	// the caller will see the changed key k
 }
 //! [Basic Usage]
@@ -24,7 +24,7 @@ void h (Key * k)
 //! [Clear]
 void g (Key * k)
 {
-	keyCopy (k, 0);
+	keyCopyOld (k, 0);
 	// k is now an empty and fresh key
 }
 //! [Clear]
@@ -38,7 +38,7 @@ void j (Key * k)
 
 	// receive key c
 	memcpy (value, keyValue (k), size);
-	keyCopy (k, copy);
+	keyCopyOld (k, copy);
 	if (bstring)
 		keySetString (k, value);
 	else

@@ -235,9 +235,9 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 KeySet * elektraMountGlobalsGetConfig (Key * cur, KeySet * global)
 {
 	// putting together the plugins configuration KeySet.
-	Key * sysConfigCutKey = keyDup (cur);
+	Key * sysConfigCutKey = keyDupOld (cur);
 	keyAddBaseName (sysConfigCutKey, "system");
-	Key * usrConfigCutKey = keyDup (cur);
+	Key * usrConfigCutKey = keyDupOld (cur);
 	keyAddBaseName (usrConfigCutKey, "user");
 	KeySet * sysConfigKS = ksCut (global, sysConfigCutKey);
 	KeySet * usrConfigKS = ksCut (global, usrConfigCutKey);
@@ -277,7 +277,7 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 				   KeySet * modules, Key * errorKey)
 {
 	Key * refKey = elektraMountGlobalsFindPlugin (referencePlugins, cur);
-	Key * openKey = keyDup (errorKey);
+	Key * openKey = keyDupOld (errorKey);
 
 	if (refKey)
 	{
@@ -651,7 +651,7 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			mountpoint[nameSize] = '\0';
 		}
 		kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-		splitAppend (kdb->split, backend, keyDup (backend->mountpoint), 0);
+		splitAppend (kdb->split, backend, keyDupOld (backend->mountpoint), 0);
 		backend->refcounter = 1;
 	}
 

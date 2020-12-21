@@ -322,7 +322,7 @@ static int handleErrors (Key * key, Key * parentKey, KeySet * ks, Key * specKey,
 
 	parseLocalConfig (specKey, &localCh, isKdbGet);
 
-	Key * parentLookup = keyDup (key);
+	Key * parentLookup = keyDupOld (key);
 	keySetBaseName (parentLookup, NULL);
 
 	elektraCursor cursor = ksGetCursor (ks);
@@ -612,7 +612,7 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 
 				while (strcmp (elem, arraySize) <= 0)
 				{
-					Key * new = keyDup (k);
+					Key * new = keyDupOld (k);
 					keyAddBaseName (new, elem);
 					ksAppendKey (curNew, new);
 
@@ -631,7 +631,7 @@ static KeySet * instantiateArraySpec (KeySet * ks, Key * arraySpec, Key * parent
 			ksRewind (newKeys);
 			while ((k = ksNext (newKeys)) != NULL)
 			{
-				Key * new = keyDup (k);
+				Key * new = keyDupOld (k);
 				keyAddBaseName (new, cur);
 				ksAppendKey (curNew, new);
 			}
@@ -704,7 +704,7 @@ static bool isWildcardSpec (const Key * key)
  */
 static void validateWildcardSubs (KeySet * ks, Key * key)
 {
-	Key * parent = keyDup (key);
+	Key * parent = keyDupOld (key);
 	keySetBaseName (parent, NULL);
 
 	// TODO: [improvement] ksExtract?, like ksCut, but doesn't remove -> no need for ksDup

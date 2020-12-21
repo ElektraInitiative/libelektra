@@ -1327,7 +1327,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDupOld (parentKey);
 
 	if (elektraStrCmp (keyString (parentKey), STDIN_FILENAME) == 0)
 	{
@@ -1504,7 +1504,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle ELEKTRA_UNUSED, KeySet * ks, 
 	int fd = -1;
 	char * mappedRegion = MAP_FAILED;
 	DynArray * dynArray = 0;
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDupOld (parentKey);
 
 	if (elektraStrCmp (keyString (parentKey), STDOUT_FILENAME) == 0)
 	{

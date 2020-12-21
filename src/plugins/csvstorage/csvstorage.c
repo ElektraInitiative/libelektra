@@ -269,7 +269,7 @@ static KeySet * createHeaders (Key * parentKey, int columns, const char ** colNa
 	KeySet * header = ksNew (0, KS_END);
 	int colCounter = 0;
 	// if no headerline exists name the columns 0..N where N is the number of columns
-	Key * orderKey = keyDup (parentKey);
+	Key * orderKey = keyDupOld (parentKey);
 	keyAddName (orderKey, "#");
 	while (colCounter < columns)
 	{
@@ -279,7 +279,7 @@ static KeySet * createHeaders (Key * parentKey, int columns, const char ** colNa
 			ksDel (header);
 			return NULL;
 		}
-		Key * key = keyDup (orderKey);
+		Key * key = keyDupOld (orderKey);
 		if (colNames && (colNames + colCounter))
 			keySetString (key, colNames[colCounter]);
 		else
@@ -298,7 +298,7 @@ static KeySet * readHeaders (Key * parentKey, char * lineBuffer, char delim, int
 	unsigned long offset = 0;
 	char * col;
 	offset = 0;
-	Key * orderKey = keyDup (parentKey);
+	Key * orderKey = keyDupOld (parentKey);
 	keyAddName (orderKey, "#");
 	KeySet * header = ksNew (0, KS_END);
 	while ((col = parseLine (lineBuffer, delim, offset, parentKey, lineCounter, lastLine)) != NULL)
@@ -311,7 +311,7 @@ static KeySet * readHeaders (Key * parentKey, char * lineBuffer, char delim, int
 			ksDel (header);
 			return NULL;
 		}
-		Key * key = keyDup (orderKey);
+		Key * key = keyDupOld (orderKey);
 		if (colNames && (colNames + colCounter))
 		{
 			keySetString (key, colNames[colCounter]);
@@ -394,7 +394,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 	}
 	Key * dirKey;
 	Key * cur;
-	dirKey = keyDup (parentKey);
+	dirKey = keyDupOld (parentKey);
 	keyAddName (dirKey, "#");
 	elektraFree (lineBuffer);
 	ksRewind (header);
@@ -428,7 +428,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 		{
 			cur = ksNext (header);
 			offset += elektraStrLen (col);
-			key = keyDup (dirKey);
+			key = keyDupOld (dirKey);
 			if (col[0] == '"')
 			{
 				if (col[elektraStrLen (col) - 2] == '"')
@@ -450,7 +450,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 			if (!(lineCounter <= 1 && useHeader))
 			{
 				keySetString (dirKey, lastIndex);
-				ksAppendKey (tmpKs, keyDup (dirKey));
+				ksAppendKey (tmpKs, keyDupOld (dirKey));
 				Key * lookupKey = keyNew (keyName (dirKey), KEY_END);
 				keyAddName (lookupKey, keyString (colAsParent));
 				Key * indexKey = ksLookupByName (tmpKs, keyName (lookupKey), 0);
@@ -458,7 +458,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 				keySetBaseName (renameKey, keyString (indexKey));
 				ksRewind (tmpKs);
 				KeySet * renamedKs = ksRenameKeys (tmpKs, keyName (renameKey));
-				ksAppendKey (renamedKs, keyDup (renameKey));
+				ksAppendKey (renamedKs, keyDupOld (renameKey));
 				ksRewind (renamedKs);
 				keyDel (lookupKey);
 				keyDel (renameKey);
@@ -472,7 +472,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 		{
 			keySetString (dirKey, lastIndex);
 			ksAppend (returned, tmpKs);
-			ksAppendKey (returned, keyDup (dirKey));
+			ksAppendKey (returned, keyDupOld (dirKey));
 		}
 		ksDel (tmpKs);
 		tmpKs = NULL;
@@ -495,7 +495,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 		elektraFree (lineBuffer);
 		ksDel (tmpKs);
 	}
-	key = keyDup (parentKey);
+	key = keyDupOld (parentKey);
 	keySetString (key, keyBaseName (dirKey));
 	ksAppendKey (returned, key);
 	keyDel (dirKey);

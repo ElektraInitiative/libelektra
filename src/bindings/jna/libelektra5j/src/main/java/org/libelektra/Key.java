@@ -412,7 +412,7 @@ public class Key implements Iterable<String>
 	 */
 	public Key dup ()
 	{
-		return new Key (Elektra.INSTANCE.keyDup (get ()));
+		return new Key (Elektra.INSTANCE.keyDupOld (get ()));
 	}
 
 	/**

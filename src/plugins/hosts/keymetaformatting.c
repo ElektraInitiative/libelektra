@@ -58,7 +58,7 @@ static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t 
 	if (commentStart)
 	{
 		/* this comment contains actual comment data */
-		Key * commentStartKey = keyDup (commentBase);
+		Key * commentStartKey = keyDupOld (commentBase);
 		keyAddBaseName (commentStartKey, "start");
 		keySetString (commentStartKey, commentStart);
 		ksAppendKey (comments, commentStartKey);
@@ -71,7 +71,7 @@ static void elektraAddCommentInfo (KeySet * comments, Key * commentBase, size_t 
 	 */
 	if (commentStart || spaces > 0)
 	{
-		Key * commentSpaceKey = keyDup (commentBase);
+		Key * commentSpaceKey = keyDupOld (commentBase);
 		keyAddBaseName (commentSpaceKey, "space");
 		keySetStringF (commentSpaceKey, "%d", spaces);
 		ksAppendKey (comments, commentSpaceKey);

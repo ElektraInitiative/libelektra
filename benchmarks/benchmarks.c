@@ -455,7 +455,7 @@ static void recGenerateKeySet (KeySet * ks, Key * key, KsTreeVertex * vertex)
 	// add if Key
 	if (vertex->isKey)
 	{
-		Key * dupKey = keyDup (key);
+		Key * dupKey = keyDupOld (key);
 		if (!dupKey)
 		{
 			printExit ("recGenerateKeySet: Can not dup Key");
@@ -473,7 +473,7 @@ static void recGenerateKeySet (KeySet * ks, Key * key, KsTreeVertex * vertex)
 	// go to children
 	for (size_t i = 0; i < vertex->numberofChildren; ++i)
 	{
-		Key * dupKey = keyDup (key);
+		Key * dupKey = keyDupOld (key);
 		if (!dupKey)
 		{
 			printExit ("recGenerateKeySet: Can not dup Key");

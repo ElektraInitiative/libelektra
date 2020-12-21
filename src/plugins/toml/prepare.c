@@ -226,7 +226,7 @@ static ArrayInfo * updateArrayInfo (ArrayInfo * root, Key * name, size_t index)
 	{
 		return NULL;
 	}
-	element->name = keyDup (name);
+	element->name = keyDupOld (name);
 	element->maxIndex = index;
 	element->next = root;
 	return element;

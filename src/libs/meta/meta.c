@@ -298,13 +298,13 @@ void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
 	if (!meta)
 	{
 		keySetMeta (key, metaName, "#0");
-		arrayKey = keyDup (keyGetMeta (key, metaName));
+		arrayKey = keyDupOld (keyGetMeta (key, metaName));
 		keySetString (arrayKey, 0);
 		keyAddBaseName (arrayKey, "#");
 	}
 	else
 	{
-		arrayKey = keyDup (meta);
+		arrayKey = keyDupOld (meta);
 		keyAddBaseName (arrayKey, keyString (meta));
 	}
 	elektraArrayIncName (arrayKey);
@@ -500,7 +500,7 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 		resolveDep (j, adjMatrix, size);
 		keySetMeta (adjMatrix[j].key, "order", keyBaseName (orderCounter));
 		elektraArrayIncName (orderCounter);
-		ksAppendKey (done, keyDup (adjMatrix[j].key));
+		ksAppendKey (done, keyDupOld (adjMatrix[j].key));
 		return 1;
 	}
 	unsigned int max_loops = todo;
@@ -522,7 +522,7 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 			resolveDep (i, adjMatrix, size);
 			keySetMeta (adjMatrix[i].key, "order", keyBaseName (orderCounter));
 			elektraArrayIncName (orderCounter);
-			ksAppendKey (done, keyDup (adjMatrix[i].key));
+			ksAppendKey (done, keyDupOld (adjMatrix[i].key));
 		}
 	}
 	return 1;
@@ -606,7 +606,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			// key has no dependencies, give it an order number and add it to list of resolved dependencies
 			keySetMeta (cur, "order", keyBaseName (orderCounter));
 			elektraArrayIncName (orderCounter);
-			ksAppendKey (done, keyDup (cur));
+			ksAppendKey (done, keyDupOld (cur));
 			adjMatrix[j].isResolved = 1;
 			ksDel (deps);
 			break;
@@ -619,7 +619,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			{
 				keySetMeta (cur, "order", keyBaseName (orderCounter));
 				elektraArrayIncName (orderCounter);
-				ksAppendKey (done, keyDup (cur));
+				ksAppendKey (done, keyDupOld (cur));
 				adjMatrix[j].isResolved = 1;
 				ksDel (deps);
 				break;
@@ -736,7 +736,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 					resolveDep (j, adjMatrix, size);
 					keySetMeta (localArray[j], "order", keyBaseName (orderCounter));
 					elektraArrayIncName (orderCounter);
-					ksAppendKey (done, keyDup (localArray[j]));
+					ksAppendKey (done, keyDupOld (localArray[j]));
 					found = 1;
 				}
 			}
@@ -780,7 +780,7 @@ TopSortCleanup:
 char * elektraMetaArrayToString (const Key * key, const char * metaName, const char * delim)
 {
 	char * result = NULL;
-	Key * lookupElem = keyDup (keyGetMeta (key, metaName));
+	Key * lookupElem = keyDupOld (keyGetMeta (key, metaName));
 	keyAddBaseName (lookupElem, "#0");
 	Key * elem = (Key *) keyGetMeta (key, keyName (lookupElem));
 	if (elem != NULL)
