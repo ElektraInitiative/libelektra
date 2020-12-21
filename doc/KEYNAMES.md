@@ -97,7 +97,7 @@ Here are a few examples to show how this works in practice (using the Unix-path-
 You can think of the key hierarchy (within a single namespace) as a big tree of keys.
 Each node in the tree is a single key `K` and the children of the nodes are the keys that are directly below `K`.
 
-![Tree structure of a key hierarchy](images/keynames_tree.svg)
+<img src="https://cdn.rawgit.com/ElektraInitiative/libelektra/master/doc/images/keynames_tree.svg" alt="Tree structure of a key hierarchy" />
 
 The diagram above shows the key hierarchy of the keys in the table above (`A` -> `B` denotes `A` is directly below `B`).
 
