@@ -8,7 +8,7 @@ OS_NAME=$(grep "^NAME=" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g')
 
 echo "DIST: $OS_NAME"
 
-if [[ $OS_NAME == "Fedora" ]]; then
+if [ $OS_NAME = "Fedora" ]; then
 
 	CMAKE_ARGS="-DTARGET_PLUGIN_FOLDER='elektra4' \
     -DBUILD_STATIC=OFF \
