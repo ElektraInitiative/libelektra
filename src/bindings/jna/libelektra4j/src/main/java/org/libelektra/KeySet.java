@@ -48,7 +48,7 @@ public class KeySet implements Iterable<Key>
 	 * <p>
 	 * Example: KeySet keySet = KeySet.create(10, Key.create("A"), Key.create("B"));
 	 *
-	 * @param alloc Length of key set (key count) to be allocated
+	 * @param alloc Hint indicating the expected size of the key set
 	 * @param args  List of initial arguments for the key set. Example:<br>
 	 *              new Key(...), new Key(...), existing_key_reference, KeySet.KS_END
 	 * @return New key set with the given initial data
@@ -69,7 +69,7 @@ public class KeySet implements Iterable<Key>
 		{
 			final Object[] sanitized = Arrays.copyOf (args, args.length + 1);
 			sanitized[i] = KeySet.KS_END;
-			return new KeySet (Elektra.INSTANCE.ksNew (alloc < sanitized.length ? alloc + 1 : sanitized.length, sanitized));
+			return new KeySet (Elektra.INSTANCE.ksNew (alloc > sanitized.length ? alloc : sanitized.length, sanitized));
 		}
 		return new KeySet (Elektra.INSTANCE.ksNew (alloc, args));
 	}
