@@ -43,7 +43,6 @@ set (
 	elektra-dbg
 	libelektra-dev
 	libelektra4-all
-	libelektra4-yamlcpp
 	elektra-bin-extra
 	java-elektra
 	${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
