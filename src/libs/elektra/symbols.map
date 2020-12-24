@@ -177,7 +177,7 @@ libelektraprivate_1.0 {
 	elektraRand;
 	elektraRandGetInitSeed;
 
-	#kdberrors.h
+	# kdberrors.h
 	elektraSetErrorRESOURCE;
 	elektraSetErrorOUT_OF_MEMORY;
 	elektraSetErrorINSTALLATION;
@@ -201,4 +201,7 @@ libelektraprivate_1.0 {
 	elektraErrorSpecification;
 	elektraTriggerError;
 	elektraTriggerWarnings;
+
+	# kdbopts.h
+	elektraGOptsSetup;
 };

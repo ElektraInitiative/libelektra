@@ -135,16 +135,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	elektraCursor initial = ksGetCursor (ks);
 
 	Key * specParent = keyDup (parentKey);
-	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
-	{
-		keySetName (specParent, "spec");
-
-		const char * parent = strchr (keyName (parentKey), '/');
-		if (parent != NULL)
-		{
-			keyAddName (specParent, parent + 1);
-		}
-	}
+	keySetNamespace (specParent, KEY_NS_SPEC);
 
 	struct Specification spec;
 	if (!processSpec (&spec, ks, specParent, parentKey))

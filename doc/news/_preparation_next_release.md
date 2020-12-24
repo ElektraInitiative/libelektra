@@ -162,6 +162,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### Yan LR
 
 - The plugin now works (with and) requires [ANTLR `4.9`](https://github.com/antlr/antlr4/releases/tag/4.9). _(René Schwaiger)_
+### GOpts
+
+- The `gopts` plugin can now be configured to use custom `argv` and `envp` values. _(Klemens Böswirth)_
+  WARNING: This feature is experimental and may be removed, replaced or otherwise changed in a future release.
 
 ### <<Plugin3>>
 

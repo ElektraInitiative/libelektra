@@ -4,7 +4,7 @@ import sys
 import kdb
 
 base_key = "/sw/org/kdbdummy/#0/current"
-spec_base_key = "spec" + base_key
+spec_base_key = "spec:" + base_key
 
 spec = kdb.KeySet(10, kdb.Key(spec_base_key, kdb.KEY_META, "command", ""),
 		  kdb.Key(spec_base_key + "/printversion",
