@@ -16,6 +16,7 @@
 #include <keyset.hpp>
 
 #include <kdb.h>
+#include <kdbopts.h>
 
 
 /**
@@ -57,6 +58,8 @@ public:
 	virtual inline int set (KeySet & returned, Key & parentKey);
 
 	inline int ensure (const KeySet & contract, Key & parentKey);
+
+	inline int setupGOpts (Key & parentKey, int argc, const char * const * argv, const char * const * envp);
 
 private:
 	ckdb::KDB * handle; ///< holds an kdb handle
@@ -258,6 +261,11 @@ int KDB::ensure (const KeySet & contract, Key & parentKey)
 		throw ContractException (parentKey);
 	}
 	return ret;
+}
+
+int KDB::setupGOpts (Key & parentKey, int argc, const char * const * argv, const char * const * envp)
+{
+	return ckdb::elektraGOptsSetup (handle, parentKey.getKey (), argc, argv, envp);
 }
 
 
