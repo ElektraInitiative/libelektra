@@ -129,6 +129,13 @@ string (REPLACE ";" ", " ALL_PLUGINS_STR "${ALL_PLUGINS}")
 
 set (EXCLUDED_COMPONENTS "")
 
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+	set (PACKAGE_DEBUGINFO "OFF")
+	list (REMOVE_ITEM PACKAGES elektra-dbg)
+else ()
+	set (PACKAGE_DEBUGINFO "ON")
+endif ()
+
 set (
 	PACKAGE_DESCRIPTION
 	"Elektra provides a universal and secure framework to store configuration parameters in a global, hierarchical key database. The core is a small library implemented in C. The plugin-based framework fulfills many configuration-related tasks to avoid any unnecessary code duplication across applications while it still allows the core to stay without any external dependency.  Elektra abstracts from cross-platform-related issues with an consistent API, and allows applications to be aware of other applications' configurations, leveraging easy application integration."
