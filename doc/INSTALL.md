@@ -123,7 +123,8 @@ Then use:
 ```sh
 make package
 ```
-which will create a package for distributions where a Generator is implemented. 
+
+which will create a package for distributions where a Generator is implemented.
 
 You can find the generated packages in the `packages` directory of the build directory.
 
@@ -151,8 +152,6 @@ To install the packages run this in the `packages` directory:
 ```sh
 rpm -U *
 ```
-
-
 
 ### make
 
