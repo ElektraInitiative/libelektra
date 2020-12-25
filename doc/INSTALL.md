@@ -88,10 +88,8 @@ apt-get source -b elektra
 To build Debian Packages from the source you might want to use:
 
 ```sh
-dpkg-buildpackage -us -uc -sa
+make package
 ```
-
-(You need to be in the Debian branch, see [GIT](GIT.md))
 
 ## macOS
 
@@ -111,7 +109,50 @@ Please refer to the section OS Independent below.
 
 First follow the steps in [COMPILE](COMPILE.md).
 
-After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or cPack tools.
+After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or CPack tools.
+We recommend that you generate your own packages with CPack so ensure compatibility with future releases.
+
+### CPack
+
+The current supported systems are: Debian, Ubuntu and Fedora.
+
+First follow the steps in [COMPILE](COMPILE.md).
+
+Then use:
+
+```sh
+make package
+```
+which will create a package for distributions where a Generator is implemented. 
+
+You can find the generated packages in the `packages` directory of the build directory.
+
+> NOTE: If all plugins/bindings/tools a package includes are excluded, the package will be not generated.
+
+#### Debian/Ubuntu
+
+On Debian based distributions you will need to set LD_LIBRARY_PATH before generating the package.
+Simply `cd` into the build directory and run following command:
+
+```sh
+LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
+```
+
+To install the packages run this in the `packages` directory:
+
+```sh
+dpkg -i *
+```
+
+#### Fedora
+
+To install the packages run this in the `packages` directory:
+
+```sh
+rpm -U *
+```
+
+
 
 ### make
 
@@ -133,20 +174,6 @@ or in the build directory (will not honor `DESTDIR`!):
 ```sh
 xargs rm < install_manifest.txt
 ```
-
-### CPack
-
-First follow the steps in [COMPILE](COMPILE.md).
-
-Then use:
-
-```sh
-cpack
-```
-
-which should create a package for distributions where a Generator is
-implemented. See [this cmake file](/scripts/cmake/ElektraPackaging.cmake) for available Generators
-and send a merge request for your system.
 
 ## Troubleshooting
 
