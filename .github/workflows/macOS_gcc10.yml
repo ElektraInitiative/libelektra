@@ -11,6 +11,8 @@ env:
   PLUGINS: 'ALL;-xerces;-curlget'
   # Skip homebrew cleanup to avoid issues with removal of packages
   HOMEBREW_NO_INSTALL_CLEANUP: 1
+  CC: gcc-10
+  CXX: g++-10
 
 jobs:
   build:
@@ -45,8 +47,6 @@ jobs:
     - name: Setup Build Environment
       run: |
         gem install test-unit --no-document
-        export CC=gcc-10
-        export CXX=g++-10
         pip2 install cheetah # Required by kdb-gen
         brew services start dbus
         cmake -E make_directory ${{runner.workspace}}/build
