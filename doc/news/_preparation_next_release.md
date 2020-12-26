@@ -193,7 +193,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- <<TODO>>
+- Move macOS GCC 10 build job to Github Actions. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
