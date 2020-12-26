@@ -350,7 +350,7 @@ if (UNIX)
 	if (EXCLUDED_COMPONENTS)
 		list (REMOVE_ITEM PACKAGES libelektra4-all)
 		string (REPLACE ";" ", " EXCLUDED_COMPONENTS_STR "${EXCLUDED_COMPONENTS}")
-		message (STATUS "Excluding libelektra4-all because following components are excluded: ${EXCLUDED_COMPONENTS_STR}".)
+		message (STATUS "Excluding libelektra4-all because following components are excluded: ${EXCLUDED_COMPONENTS_STR}")
 		list (APPEND EXCLUDED_COMPONENTS libelektra4-all)
 	endif ()
 	# For Debian-based distros we want to create DEB packages.
