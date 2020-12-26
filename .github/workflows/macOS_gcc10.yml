@@ -9,6 +9,7 @@ env:
   # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
   # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
   PLUGINS: 'ALL;-xerces;-curlget'
+  BINDINGS: 'ALL;-rust'
   # Skip homebrew cleanup to avoid issues with removal of packages
   HOMEBREW_NO_INSTALL_CLEANUP: 1
   CC: gcc-10
