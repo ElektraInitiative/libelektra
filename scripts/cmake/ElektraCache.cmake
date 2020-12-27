@@ -355,6 +355,20 @@ if (CMAKE_SKIP_BUILD_RPATH AND BUILD_TESTING)
 endif ()
 
 #
+# Packaging options
+#
+
+set (
+	CPACK_DEBIAN_PACKAGE_RELEASE
+	"1"
+	CACHE STRING "Revision number of the DEB package.")
+
+set (
+	CPACK_RPM_PACKAGE_RELEASE
+	"1"
+	CACHE STRING "Revision number of the RPM package.")
+
+#
 # Misc.
 #
 
