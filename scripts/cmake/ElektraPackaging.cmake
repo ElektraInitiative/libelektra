@@ -347,10 +347,20 @@ if (UNIX)
 		list (REMOVE_ITEM PACKAGES ${component})
 	endforeach (component)
 	# remove libelektra4-all package if a component is excluded
-	if (EXCLUDED_COMPONENTS)
+	set (MISSING_COMPONENTS_LIBELEKTRA4-ALL "")
+	foreach (component ${CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS})
+		if (component IN_LIST EXCLUDED_COMPONENTS)
+			list (APPEND MISSING_COMPONENTS_LIBELEKTRA4-ALL "${component}")
+		endif ()
+	endforeach (component)
+
+	if (MISSING_COMPONENTS_LIBELEKTRA4-ALL)
+		string (REPLACE ";" ", " MISSING_COMPONENTS_LIBELEKTRA4-ALL_STR "${MISSING_COMPONENTS_LIBELEKTRA4-ALL}")
+		message (
+			STATUS
+				"Excluding libelektra4-all because following components are excluded: ${MISSING_COMPONENTS_LIBELEKTRA4-ALL_STR}"
+		)
 		list (REMOVE_ITEM PACKAGES libelektra4-all)
-		string (REPLACE ";" ", " EXCLUDED_COMPONENTS_STR "${EXCLUDED_COMPONENTS}")
-		message (STATUS "Excluding libelektra4-all because following components are excluded: ${EXCLUDED_COMPONENTS_STR}")
 		list (APPEND EXCLUDED_COMPONENTS libelektra4-all)
 	endif ()
 	# For Debian-based distros we want to create DEB packages.
