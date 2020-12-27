@@ -61,6 +61,8 @@ jobs:
       # and build directories, but this is only available with CMake 3.13 and higher.  
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: |
+        PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
+        PATH="/usr/local/opt/python@3.9/bin:$PATH"
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(
           -GNinja
