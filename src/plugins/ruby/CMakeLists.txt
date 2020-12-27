@@ -43,7 +43,7 @@ if (DEPENDENCY_PHASE)
 		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -external-runtime runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
-		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-parameter -fdeclspec")
+		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-parameter")
 
 		# Disable warnings produced by generated code
 		if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -51,6 +51,7 @@ if (DEPENDENCY_PHASE)
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-macro-redefined")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-reserved-user-defined-literal")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-gnu-zero-variadic-macro-arguments")
+			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -fdeclspec")
 		elseif (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-literal-suffix")
 			set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-attributes")

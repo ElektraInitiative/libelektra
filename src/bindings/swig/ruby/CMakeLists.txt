@@ -69,7 +69,6 @@ else ()
 	# disable certain compiler warnings for SWIG generated files
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-parameter")
 	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-sign-compare")
-	set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -fdeclspec")
 	if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-unused-but-set-variable")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-catch-value")
@@ -92,6 +91,7 @@ else ()
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-deprecated-register")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-gnu-zero-variadic-macro-arguments")
 		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -Wno-zero-length-array")
+		set (SWIG_COMPILE_FLAGS "${SWIG_COMPILE_FLAGS} -fdeclspec")
 	endif ()
 
 	# add 'kdb' module
