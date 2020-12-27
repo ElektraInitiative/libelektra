@@ -131,7 +131,9 @@ you up to date with the multi-language support provided by Elektra.
 
 - Remove ipairs support and add our own iterator to add support for Lua 5.4, since `__ipairs` was deprecated. _(Manuel Mausz)_
 
-### <<Binding2>>
+### Ruby
+
+- Enable `__declspec` attributes for Ruby 3.0. _(Mihael Pranjić)_
 
 ### <<Binding3>>
 
@@ -181,7 +183,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Cirrus
 
 - Upgrade Cirrus Fedora docker image to Fedora 33. _(Mihael Pranjić)_
-- <<TODO>>
+- Upgrade to Ruby 3.0 for macOS builds. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Jenkins

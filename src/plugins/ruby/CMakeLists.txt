@@ -43,7 +43,7 @@ if (DEPENDENCY_PHASE)
 		add_custom_command (OUTPUT runtime.h COMMAND ${SWIG_EXECUTABLE} -c++ -ruby -external-runtime runtime.h)
 
 		# we call this SWIG_COMPILE_FLAGS because we have the same variable in our swig bindings
-		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-parameter")
+		set (SWIG_COMPILE_FLAGS "-Wno-shadow -Wno-old-style-cast -Wno-unused-variable -Wno-unused-parameter -fdeclspec")
 
 		# Disable warnings produced by generated code
 		if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
