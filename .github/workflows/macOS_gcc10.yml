@@ -49,7 +49,9 @@ jobs:
       run: |
         gem install test-unit --no-document
         pip2 install cheetah # Required by kdb-gen
-        brew services start dbus
+        brew tap homebrew/services
+        brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
+        brew services restart dbus
         cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
