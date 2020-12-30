@@ -154,7 +154,7 @@ void YAMLLexer::setTokenFactory (TokenFactory<T1> * tokenFactory)
  *
  * @return The factory the scanner uses to create tokens
  */
-Ref<TokenFactory<CommonToken>> YAMLLexer::getTokenFactory ()
+TokenFactory<CommonToken> * YAMLLexer::getTokenFactory ()
 {
 	return factory;
 }
@@ -398,8 +398,8 @@ void YAMLLexer::addBlockEnd (size_t const lineIndex)
 		ELEKTRA_LOG_DEBUG ("Add block end");
 		size_t index = input->index ();
 		tokens.push_back (levels.top ().type == Level::Type::MAP ?
-					  commonToken (MAP_END, getPosition (), index, "end of map") :
-					  commonToken (SEQUENCE_END, getPosition (), index, "end of sequence"));
+						commonToken (MAP_END, getPosition (), index, "end of map") :
+						commonToken (SEQUENCE_END, getPosition (), index, "end of sequence"));
 		levels.pop ();
 	}
 }

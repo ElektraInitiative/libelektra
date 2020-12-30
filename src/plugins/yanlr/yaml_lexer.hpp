@@ -91,7 +91,7 @@ class YAMLLexer : public antlr4::TokenSource
 	deque<unique_ptr<antlr4::CommonToken>> tokens;
 
 	/** The lexer uses this factory to produce tokens. */
-	Ref<antlr4::TokenFactory<antlr4::CommonToken>> factory = antlr4::CommonTokenFactory::DEFAULT;
+	antlr4::TokenFactory<antlr4::CommonToken> * factory = antlr4::CommonTokenFactory::DEFAULT.get ();
 
 	/** This pair stores the token source (this lexer) and the current `input`. */
 	pair<antlr4::TokenSource *, antlr4::CharStream *> source;
@@ -400,6 +400,6 @@ public:
 	 *
 	 * @return The factory the scanner uses to create tokens
 	 */
-	Ref<antlr4::TokenFactory<antlr4::CommonToken>> getTokenFactory () override;
+	antlr4::TokenFactory<antlr4::CommonToken> * getTokenFactory () override;
 };
 }

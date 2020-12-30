@@ -82,6 +82,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - We fixed an [use after free bug in the plugin](https://issues.libelektra.org/3561). _(René Schwaiger)_
 
+### Yan LR
+
+- The plugin now works (with and) requires [ANTLR `4.9`](https://github.com/antlr/antlr4/releases/tag/4.9). _(René Schwaiger)_
+
 ### <<Plugin3>>
 
 - <<TODO>>
