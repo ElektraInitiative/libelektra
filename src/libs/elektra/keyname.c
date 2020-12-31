@@ -362,14 +362,12 @@ ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
 
 	if (!key->key)
 	{
-		/*errno=KDB_ERR_NOKEY;*/
 		returnedName[0] = 0;
 		return 1;
 	}
 
 	if (key->keySize > maxSize)
 	{
-		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 
