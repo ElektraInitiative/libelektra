@@ -23,26 +23,28 @@ For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
 
 ### Ubuntu-Bionic
+
 ---
+
 To use the Ubuntu Bionic repository of the latest builds from master following steps need to be made:
 
 1. Run `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D919CE8B27A64C16656FCA9FF1532673651F9C6C` to obtain the key.
 
 2. Add `deb https://ubuntu-bionic-repo.libelektra.org/ bionic main` into `/etc/apt/sources.list`
 
-	Which can also be done using:
+   Which can also be done using:
 
-	```sh
-	apt-get install software-properties-common apt-transport-https
-	echo "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main" | sudo tee /etc/apt/sources.list.d/elektra.list
-	```
+   ```sh
+   apt-get install software-properties-common apt-transport-https
+   echo "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main" | sudo tee /etc/apt/sources.list.d/elektra.list
+   ```
 
-	Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
+   Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
 
-	```sh
-	sudo apt-get install software-properties-common apt-transport-https
-	sudo add-apt-repository "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main"
-	```
+   ```sh
+   sudo apt-get install software-properties-common apt-transport-https
+   sudo add-apt-repository "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main"
+   ```
 
 ### Debian-Buster
 
