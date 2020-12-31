@@ -97,7 +97,6 @@ const char * keyComment (const Key * key)
 
 	if (!comment)
 	{
-		/*errno=KDB_ERR_NOKEY;*/
 		return "";
 	}
 
@@ -139,7 +138,6 @@ ssize_t keyGetCommentSize (const Key * key)
 
 	if (!size || size == -1)
 	{
-		/*errno=KDB_ERR_NODESC;*/
 		return 1;
 	}
 
@@ -187,7 +185,6 @@ ssize_t keyGetComment (const Key * key, char * returnedComment, size_t maxSize)
 
 	if (!comment)
 	{
-		/*errno=KDB_ERR_NODESC;*/
 		returnedComment[0] = 0;
 		return 1;
 	}
@@ -195,7 +192,6 @@ ssize_t keyGetComment (const Key * key, char * returnedComment, size_t maxSize)
 	strncpy (returnedComment, comment, maxSize);
 	if (maxSize < commentSize)
 	{
-		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 	return commentSize;

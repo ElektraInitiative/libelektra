@@ -162,7 +162,6 @@ const void * keyValue (const Key * key)
 
 	if (!key->data.v)
 	{
-		/*errno=KDB_ERR_NOKEY;*/
 		if (keyIsBinary (key))
 			return 0;
 		else
@@ -246,7 +245,6 @@ ssize_t keyGetValueSize (const Key * key)
 
 	if (!key->data.v)
 	{
-		/*errno=KDB_ERR_NODATA;*/
 		if (keyIsBinary (key))
 			return 0;
 		else
@@ -305,7 +303,6 @@ ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
 
 	if (!keyIsString (key))
 	{
-		/*errno=KDB_ERR_TYPEMISMATCH;*/
 		return -1;
 	}
 
@@ -317,7 +314,6 @@ ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
 
 	if (key->dataSize > maxSize)
 	{
-		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 
@@ -420,7 +416,6 @@ ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
 
 	if (!keyIsBinary (key))
 	{
-		/*errno=KDB_ERR_TYPEMISMATCH;*/
 		return -1;
 	}
 
@@ -431,7 +426,6 @@ ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
 
 	if (key->dataSize > maxSize)
 	{
-		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 

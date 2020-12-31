@@ -251,7 +251,6 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	keyset = (KeySet *) elektraMalloc (sizeof (KeySet));
 	if (!keyset)
 	{
-		/*errno = KDB_ERR_NOMEM;*/
 		return 0;
 	}
 
@@ -268,7 +267,6 @@ KeySet * ksVNew (size_t alloc, va_list va)
 	keyset->array = elektraMalloc (sizeof (struct _Key *) * keyset->alloc);
 	if (!keyset->array)
 	{
-		/*errno = KDB_ERR_NOMEM;*/
 		return 0;
 	}
 	keyset->array[0] = 0;
@@ -485,7 +483,6 @@ int ksClear (KeySet * ks)
 
 	if ((ks->array = elektraMalloc (sizeof (struct _Key *) * KEYSET_SIZE)) == 0)
 	{
-		/*errno = KDB_ERR_NOMEM;*/
 		ks->size = 0;
 		return -1;
 	}
@@ -2361,7 +2358,6 @@ int ksResize (KeySet * ks, size_t alloc)
 		clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 		if (!ks->array)
 		{
-			/*errno = KDB_ERR_NOMEM;*/
 			return -1;
 		}
 	}
@@ -2373,7 +2369,6 @@ int ksResize (KeySet * ks, size_t alloc)
 		Key ** new = elektraMalloc (sizeof (struct _Key *) * ks->alloc);
 		if (!new)
 		{
-			/*errno = KDB_ERR_NOMEM;*/
 			return -1;
 		}
 		elektraMemcpy (new, ks->array, ks->size + 1); // copy including ending NULL
@@ -2385,7 +2380,6 @@ int ksResize (KeySet * ks, size_t alloc)
 	{
 		elektraFree (ks->array);
 		ks->array = 0;
-		/*errno = KDB_ERR_NOMEM;*/
 		return -1;
 	}
 

@@ -111,7 +111,6 @@ ssize_t keyGetOwnerSize (const Key * key)
 
 	if (!size || size == -1)
 	{
-		/*errno=KDB_ERR_NODESC;*/
 		return 1;
 	}
 
@@ -156,7 +155,6 @@ ssize_t keyGetOwner (const Key * key, char * returnedOwner, size_t maxSize)
 
 	if (!owner)
 	{
-		/*errno=KDB_ERR_NODESC;*/
 		returnedOwner[0] = 0;
 		return 1;
 	}
@@ -164,7 +162,6 @@ ssize_t keyGetOwner (const Key * key, char * returnedOwner, size_t maxSize)
 	strncpy (returnedOwner, owner, maxSize);
 	if (maxSize < ownerSize)
 	{
-		/*errno=KDB_ERR_TRUNC;*/
 		return -1;
 	}
 	return ownerSize;
