@@ -79,7 +79,7 @@ set (PACKAGE_BUGREPORT "https://bugs.libelektra.org/")
 set (PROJECT_VERSION "${KDB_VERSION}")
 set (CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 
-set (CPACK_OUTPUT_FILE_PREFIX "packages")
+set (CPACK_OUTPUT_FILE_PREFIX "package")
 
 set (
 	PACKAGES
