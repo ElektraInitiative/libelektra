@@ -126,7 +126,7 @@ make package
 
 which will create packages for distributions where a Generator is implemented.
 
-You can find the generated packages in the `packages` directory of the build directory.
+You can find the generated packages in the `package` directory of the build directory.
 
 > NOTE: If all plugins/bindings/tools a package includes are excluded, the package will be not generated.
 
@@ -139,7 +139,7 @@ Simply `cd` into the build directory and run following command:
 LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
 ```
 
-To install the packages run this in the `packages` directory:
+To install the packages run this in the `package` directory:
 
 ```sh
 dpkg -i *
@@ -155,7 +155,7 @@ apt-get -f install
 
 To install RPM packages we recommend using `yum localinstall` since installing with `rpm` doesn't resolve missing dependencies.
 
-Run following command in the `packages` directory:
+Run following command in the `package` directory:
 
 ```sh
 yum localinstall *
