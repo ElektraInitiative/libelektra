@@ -230,11 +230,11 @@ value `'\0'` in the first byte is perfectly legal binary data.
 
 For `KDB` functions the user does not only get the return value but
 also a more elaborate error information, including an error message,
-in the metadata of the `parentKey` or `errorKey`.  Furthermore, it is
+in the metadata of the `parentKey` or `errorKey`. Furthermore, it is
 also possible to get warnings, even if the calls succeeded.
 
 Using different error categories, the user of the API can have suitable
-reactions on specific error situations.  Additional information about
+reactions on specific error situations. Additional information about
 error handling is available [here](/doc/dev/error-handling.md).
 
 Elektra does not set `errno`. If a function you call sets `errno`, make
