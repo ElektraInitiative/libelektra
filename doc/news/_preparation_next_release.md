@@ -150,6 +150,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - Finalize 1.0 decisions. _(Markus Raab)_
+- Update [API design document](/doc/DESIGN.md) _(Markus Raab and Stefan Hanreich)_
 - <<TODO>>
 - <<TODO>>
 
