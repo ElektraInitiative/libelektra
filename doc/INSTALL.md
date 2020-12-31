@@ -124,7 +124,7 @@ Then use:
 make package
 ```
 
-which will create a package for distributions where a Generator is implemented.
+which will create packages for distributions where a Generator is implemented.
 
 You can find the generated packages in the `packages` directory of the build directory.
 
@@ -145,12 +145,20 @@ To install the packages run this in the `packages` directory:
 dpkg -i *
 ```
 
-#### Fedora
-
-To install the packages run this in the `packages` directory:
+If any dependency problems appear, run following command to install the missing dependencies:
 
 ```sh
-rpm -U *
+apt-get -f install
+```
+
+#### Fedora
+
+To install RPM packages we recommend using `yum localinstall` since installing with `rpm` doesn't resolve missing dependencies.
+
+Run following command in the `packages` directory:
+
+```sh
+yum localinstall *
 ```
 
 ### make
