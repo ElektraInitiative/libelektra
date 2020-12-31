@@ -119,8 +119,6 @@ mac_task:
   install_script:
     - | # Install Homebrew formulas
       brew install openjdk
-      brew tap oclint/formulae
-      brew install oclint
       brew install antlr
       brew install antlr4-cpp-runtime
       brew install augeas
@@ -143,6 +141,7 @@ mac_task:
       brew install maven
       brew install moreutils
       brew install ninja
+      brew install oclint/formulae/oclint
       brew install npm
       brew install openssl
       brew install pkg-config
