@@ -48,7 +48,7 @@ If you rely on specific behaviour of Elektra's Keynames and have already taken t
 
 ### Debian Packaging with CPack
 
-- We are now using CPack to generate modular Debian and Ubuntu packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specifc dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
+- We are now using CPack to generate modular Debian and Ubuntu packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specific dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
 
 ### <<HIGHLIGHT3>>
 
