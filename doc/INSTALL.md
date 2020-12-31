@@ -23,21 +23,31 @@ For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
 
 ### Ubuntu-Bionic
-
-To use the Ubuntu-Bionic packages, the following steps need to be made:
+---
+To use the Ubuntu Bionic repository of the latest builds from master following steps need to be made:
 
 1. Run `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D919CE8B27A64C16656FCA9FF1532673651F9C6C` to obtain the key.
 
 2. Add `deb https://ubuntu-bionic-repo.libelektra.org/ bionic main` into `/etc/apt/sources.list`
 
-3. `sudo apt-get update`
+	Which can also be done using:
 
-### Debian
+	```sh
+	apt-get install software-properties-common apt-transport-https
+	echo "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main" | sudo tee /etc/apt/sources.list.d/elektra.list
+	```
 
-To use the debian repository of the latest builds from master put following lines in
+	Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
+
+	```sh
+	sudo apt-get install software-properties-common apt-transport-https
+	sudo add-apt-repository "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main"
+	```
+
+### Debian-Buster
+
+To use the Debian Buster repository of the latest builds from master put following lines in
 `/etc/apt/sources.list`:
-
-For Stretch:
 
 ```
 deb     [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main
@@ -47,7 +57,7 @@ deb-src [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main
 Which can also be done using:
 
 ```sh
-sudo apt-get install apt-transport-https
+sudo apt-get install software-properties-common apt-transport-https
 echo "deb     [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main" | sudo tee /etc/apt/sources.list.d/elektra.list
 ```
 
@@ -58,12 +68,15 @@ sudo apt-get install software-properties-common apt-transport-https
 sudo add-apt-repository "deb     [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main"
 ```
 
-For Jessie (not updated anymore, contains 0.8.24 packages which were created shortly before 0.8.25 release)
+If you want to rebuild Elektra from Debian unstable or
+our repositories, add a `deb-src` entry to `/etc/apt/sources.list`
+and then run:
 
+```sh
+apt-get source -b elektra
 ```
-deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
-deb-src [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
-```
+
+### Install
 
 To get all packaged plugins, bindings and tools install:
 
@@ -77,18 +90,10 @@ For a small installation with command-line tools available use:
 apt-get install elektra-bin
 ```
 
-If you want to rebuild Elektra from Debian unstable or
-our repositories, add a `deb-src` entry to `/etc/apt/sources.list`
-and then run:
+To build Debian/Ubuntu Packages from the source you might want to use:
 
 ```sh
-apt-get source -b elektra
-```
-
-To build Debian Packages from the source you might want to use:
-
-```sh
-make package
+make package # See CPack below
 ```
 
 ## macOS
@@ -115,8 +120,6 @@ We recommend that you generate your own packages with CPack so ensure compatibil
 ### CPack
 
 The current supported systems are: Debian, Ubuntu and Fedora.
-
-First follow the steps in [COMPILE](COMPILE.md).
 
 Then use:
 
