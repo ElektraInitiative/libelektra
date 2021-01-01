@@ -25,8 +25,7 @@ oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-an
 	"src/plugins/directoryvalue/"*.cpp \
 	"src/plugins/mini/mini.c" \
 	"src/plugins/yamlcpp/"*.cpp \
-	"src/plugins/yamlsmith/"*.cpp \
-	"src/plugins/yanlr/"*.cpp
+	"src/plugins/yamlsmith/"*.cpp
 exit_if_fail "OCLint found problematic code"
 
 end_script
