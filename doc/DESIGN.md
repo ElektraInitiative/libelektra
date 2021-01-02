@@ -12,14 +12,14 @@ Elektra [aims](GOALS.md) at following design principles:
 3. to make the API easy to use for programmers reading and writing
    configuration.
 
-The idea is, that the KDB API does not only have one implementation.
-Elektra provides a full blown architecture to support modern Systems.
-This document describes the `KDB` API.
+The C-API is suitable to be reimplemented, also in non-C-languages, like Rust.
+Elektra provides a full blown architecture to support configuring systems, and
+the C-API is the core of this endeavour.
 
 ## Data Structures
 
 The `Key`, `KeySet` and `KDB` data structures are defined in
-`kdbprivate.h` to remain ABI compatible even if one of them is changed.
+`kdbprivate.h` to allow ABI compatibility.
 This means, it is not possible to put one of Elektra’s data structures
 on the stack. You must use the memory management facilities mentioned
 in the next section.
@@ -61,7 +61,7 @@ does not provide a string library. There are 2 ways to access the
 mentioned attributes. The function
 
 ```c
-char *keyString(const Key *key);
+const char *keyString(const Key *key);
 ```
 
 returns a string. You are not allowed to change the returned string.
