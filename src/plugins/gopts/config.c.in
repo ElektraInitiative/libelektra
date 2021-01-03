@@ -7,4 +7,4 @@
  *
  */
 
-#define TESTAPP_PATH "@TESTAPP_PATH@"
+#define TESTAPP_NAME "@TESTAPP_NAME@"

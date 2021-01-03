@@ -22,10 +22,10 @@
 
 #include "testdata.h"
 
-#define ARGS(NAME, ...) ((const char *[]){ TESTAPP_PATH, NAME, __VA_ARGS__, NULL })
+#define ARGS(NAME, ...) ((const char *[]){ TESTAPP_NAME, NAME, __VA_ARGS__, NULL })
 #define ENVP(LD_LIB_PATH, ...) ((const char *[]){ LD_LIB_PATH, __VA_ARGS__, NULL })
 
-#define NO_ARGS(NAME) ((const char *[]){ TESTAPP_PATH, NAME, NULL })
+#define NO_ARGS(NAME) ((const char *[]){ TESTAPP_NAME, NAME, NULL })
 #define NO_ENVP(LD_LIB_PATH) ((const char *[]){ LD_LIB_PATH, NULL })
 
 static void run_test (const char ** argv, const char ** envp)
@@ -45,7 +45,7 @@ static void run_test (const char ** argv, const char ** envp)
 	if (pid == 0)
 	{
 		/* child */
-		execve (TESTAPP_PATH, (char * const *) argv, (char * const *) envp);
+		execve (bindir_file (TESTAPP_NAME), (char * const *) argv, (char * const *) envp);
 
 		exit (EXIT_FAILURE);
 	}
@@ -73,43 +73,6 @@ static void run_test (const char ** argv, const char ** envp)
 		nbError += WEXITSTATUS (status);
 		yield_error ("child process test failed");
 	}
-}
-
-void test_global (void)
-{
-	Key * parentKey = keyNew ("/tests/gopts", KEY_END);
-	KeySet * conf = ksNew (0, KS_END);
-
-	PLUGIN_OPEN ("gopts");
-
-	int argc = 4;
-	char ** argv = (char **) (char *[]){ "gopts-test", "-capple", "--longopt=banana", "raspberry", NULL };
-	char ** envp = (char **) (char *[]){ "ENV_VAR=carrot", "OTHER_ENV_VAR=strawberry", NULL };
-
-	plugin->global =
-		ksNew (4, keyNew ("system:/elektra/gopts/parent", KEY_VALUE, keyName (parentKey), KEY_END),
-		       keyNew ("system:/elektra/gopts/argc", KEY_BINARY, KEY_SIZE, sizeof (int), KEY_VALUE, &argc, KEY_END),
-		       keyNew ("system:/elektra/gopts/argv", KEY_BINARY, KEY_SIZE, sizeof (char **), KEY_VALUE, &argv, KEY_END),
-		       keyNew ("system:/elektra/gopts/envp", KEY_BINARY, KEY_SIZE, sizeof (char **), KEY_VALUE, &envp, KEY_END), KS_END);
-
-	KeySet * ks = ksNew (5, keyNew ("spec:/tests/gopts/apple", KEY_META, "opt", "c", KEY_END),
-			     keyNew ("spec:/tests/gopts/banana", KEY_META, "opt/long", "longopt", KEY_END),
-			     keyNew ("spec:/tests/gopts/raspberry", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_END),
-			     keyNew ("spec:/tests/gopts/carrot", KEY_META, "env", "ENV_VAR", KEY_END),
-			     keyNew ("spec:/tests/gopts/strawberry", KEY_META, "env", "OTHER_ENV_VAR", KEY_END), KS_END);
-	succeed_if (plugin->kdbGet (plugin, ks, parentKey) >= 1, "call to kdbGet was not successful");
-	output_error (parentKey);
-
-	succeed_if_same_string (keyString (ksLookupByName (ks, "/tests/gopts/apple", 0)), "apple");
-	succeed_if_same_string (keyString (ksLookupByName (ks, "/tests/gopts/banana", 0)), "banana");
-	succeed_if_same_string (keyString (ksLookupByName (ks, "/tests/gopts/raspberry", 0)), "raspberry");
-	succeed_if_same_string (keyString (ksLookupByName (ks, "/tests/gopts/carrot", 0)), "carrot");
-	succeed_if_same_string (keyString (ksLookupByName (ks, "/tests/gopts/strawberry", 0)), "strawberry");
-
-	ksDel (plugin->global);
-	ksDel (ks);
-	keyDel (parentKey);
-	PLUGIN_CLOSE ();
 }
 
 
@@ -176,8 +139,6 @@ int main (int argc, char ** argv)
 	run_test (ARGS (TEST_MIXED, "--longopt", "apple"), ENVP (ldLibPath, "OTHER_ENV_VAR=apple"));
 
 	elektraFree (ldLibPath);
-
-	test_global ();
 
 	print_result ("testmod_gopts");
 

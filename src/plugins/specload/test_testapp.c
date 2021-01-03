@@ -30,7 +30,7 @@
 
 #define START_TESTAPP(...)                                                                                                                 \
 	BACKUP_STDIN ();                                                                                                                   \
-	startTestApp (TESTAPP_PATH, ((char * const[]){ TESTAPP_PATH, __VA_ARGS__, NULL }));
+	startTestApp (bindir_file (TESTAPP_NAME), ((char * const[]){ TESTAPP_NAME, __VA_ARGS__, NULL }));
 
 void startTestApp (const char * app, char * const argv[])
 {

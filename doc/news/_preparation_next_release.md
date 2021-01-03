@@ -256,7 +256,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- Tests that use additional executables can now be installed and run via `kdb <testname>`.
+  Existing tests have been update to support this. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 

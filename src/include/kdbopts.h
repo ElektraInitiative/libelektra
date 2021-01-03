@@ -21,8 +21,6 @@ extern "C" {
 int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * parentKey);
 char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char * prefix);
 
-int elektraGOptsSetup (KDB * handle, Key * parentKey, int argc, const char * const * argv, const char * const * envp);
-
 #ifdef __cplusplus
 }
 }

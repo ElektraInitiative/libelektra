@@ -14,7 +14,7 @@ if (ADDTESTING_PHASE)
 	add_executable (elektra-specload-testapp "${CMAKE_CURRENT_SOURCE_DIR}/testapp.c")
 	target_link_elektra (elektra-specload-testapp elektra-core elektra-invoke)
 
-	set (TESTAPP_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/elektra-specload-testapp")
+	set (TESTAPP_NAME "elektra-specload-testapp")
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/config.c.in" "${CMAKE_CURRENT_BINARY_DIR}/config.c" @ONLY)
 
 	set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
@@ -36,6 +36,7 @@ if (ADDTESTING_PHASE)
 	add_plugintest (
 		specload INSTALL_TEST_DATA
 		INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}
+		EXTRA_EXECUTABLES elektra-specload-testapp
 		TIMEOUT 120)
 
 	if (BUILD_SHARED)
