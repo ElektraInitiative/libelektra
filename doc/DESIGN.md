@@ -293,13 +293,9 @@ following 2 checklists:
 
 ## Checklist for overall API
 
-### Naming
-
-- [ ] Inconsistent naming of functions or variables
-
 ### Consistency
 
-- [ ] Consistent naming schemes
+- [ ] Consistent naming schemes for enums, macros, typedefs and functions
 - [ ] Similar things are named similarly
 - [ ] Different things are named differently
 - [ ] The order of arguments should be consistent across similar functions
@@ -320,17 +316,22 @@ following 2 checklists:
 
 ## Checklist for each function
 
+
 ### Documentation
 
-- [ ] Doxygen Documentation is complete
-      (covers all parameters, brief/short summary, examples)
 - [ ] Change is mentioned in the Compatibility section of the release notes
 - [ ] Inconsistencies between documentation and code
 - [ ] Inconsistencies between documentation and tests
-- [ ] Proper Documentation of all side effects
 - [ ] Proper Documentation of thread-safety of function
 - [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
       is correct for breaking changes
+
+#### Doxygen
+
+- [ ] Return Value
+- [ ] Precondition / Postcondition / Invariant
+- [ ] `@see`
+- [ ] `@since`
 
 ### Naming
 
@@ -342,7 +343,6 @@ following 2 checklists:
 
 - [ ] ABI/API forward-compatible (breaking backwards-compatibility
       to add new symbols is fine)
-- [ ] #ifdef present for experimental features
 
 ### Parameter & Return Types
 
@@ -352,27 +352,25 @@ following 2 checklists:
 - [ ] Functions should use constant types instead of boolean types
       sensible
 - [ ] Wherever possible, function parameters should be `const`
-- [ ] Functions should not have a long list of parameters (>8)
 
 ### Error Handling
 
 - [ ] When an error occurs, a clear error message should be provided
 - [ ] Errors of the same type should emit the same error message
 - [ ] The error message informs the user of possible causes for the problem
-- [ ] All possible error messages are documented
+- [ ] All possible error categories are documented
 - [ ] All possible errors states lead to an error
 - [ ] Proper error codes are chosen
 
 ### Structural Clarity
 
-- [ ] Function does exactly one thing
+- [ ] Function should do exactly one thing
 - [ ] Function should have no side effects
 
 ### Memory Management
 
 - [ ] Memory Management should be handled by the function wherever possible
 - [ ] Functions should not cause memory-leaks
-- [ ] Every Buffer should be accompanied by a max size limit
 - [ ] Functions who require a large amount of memory to be allocated,
       state so in their documentation
 
@@ -384,6 +382,6 @@ following 2 checklists:
 
 - [ ] Added functions are fully covered by tests
 - [ ] Tests cover edge-cases
-- [ ] Tests cover error-cases and check for proper error messages
+- [ ] Tests cover all categories of errors
 - [ ] Inconsistencies between tests and code
 - [ ] Inconsistencies between tests and documentation
