@@ -283,3 +283,94 @@ const Key  *keyGetMeta(const Key *key, const char* metaName);
 The reason behind this is, that the above functions – as their name
 suggest – only retrieve values. The returned value must not be modified
 directly.
+
+
+## Design Guidelines Checklist
+On potential changes of the API/ABI as detected by
+[`elektra-icheck`](https://build.libelektra.org/job/elektra-icheck),
+please make sure the API has been reviewed according to the
+following 2 checklists:
+
+## Checklist for overall API
+
+
+### Naming
+- [ ] Inconsistent naming of functions or variables
+
+### Consistency
+- [ ] Consistent naming schemes
+- [ ] Similar things are named similarly
+- [ ] Different things are named differently
+- [ ] The order of arguments should be consistent across similar functions
+- [ ] Code is formatted according to the [style guidelines](/doc/CODING.md#coding-style)
+
+### Structural Clarity
+- [ ] Functions with similar functionality are grouped into the same namespace
+
+### Compatibility
+- [ ] All Bindings have been updated to reflect the new API and work properly
+
+### Extensibility
+- [ ] New API is easily extensible with additional functionality
+- [ ] Components do not depend too heavily on each other
+
+## Checklist for each function
+
+### Documentation
+- [ ] Doxygen Documentation is complete 
+(covers all parameters, brief/short summary, examples)
+- [ ] Change is mentioned in the release notes
+- [ ] Inconsistencies between documentation and code
+- [ ] Inconsistencies between documentation and tests
+- [ ] Proper Documentation of all side effects
+- [ ] Proper Documentation of thread-safety of function
+- [ ] [Symbol versioning](/doc/dev/symbol-versioning.md) 
+is correct for breaking changes
+
+### Naming
+- [ ] Abbreviations should be avoided in function / parameter names
+- [ ] Function / parameter names should neither be too long, nor too short
+- [ ] Function name should be clear and unambiguous
+
+### Compatibility
+- [ ] ABI/API forward-compatible (breaking backwards-compatibility 
+to add new symbols is fine)
+- [ ] #ifdef present for experimental features
+
+### Parameter & Return Types
+- [ ] Returning a not specific enough type
+- [ ] Requiring a not liberal enough parameter
+- [ ] should not have multiple parameters of the same type
+- [ ] Functions should use Constant Types instead of Boolean Types wherever 
+sensible
+- [ ] Wherever possible, function parameters should be `const`
+- [ ] Functions should not have a long list of parameters (>8)
+
+### Error Handling
+- [ ] When an error occurs, a clear error message should be provided
+- [ ] Errors of the same type should emit the same error message
+- [ ] The error message informs the user of possible causes for the problem
+- [ ] All possible error messages are documented
+- [ ] All possible errors states lead to an error
+- [ ] Proper error codes are chosen
+
+### Structural Clarity
+- [ ] Function does exactly one thing
+- [ ] Function should have no side effects
+
+### Memory Management
+- [ ] Memory Management should be handled by the function wherever possible
+- [ ] Functions should not cause memory-leaks
+- [ ] Every Buffer should be accompanied by a max size limit
+- [ ] Functions who require a large amount of memory to be allocated, 
+state so in their documentation
+
+### Extensibility
+- [ ] Function is easily extensible with additional functionality
+
+### Tests
+- [ ] Added functions are fully covered by tests
+- [ ] Tests cover edge-cases
+- [ ] Tests cover error-cases and check for proper error messages
+- [ ] Inconsistencies between tests and code
+- [ ] Inconsistencies between tests and documentation
