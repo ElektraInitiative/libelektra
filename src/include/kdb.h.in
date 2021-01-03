@@ -125,8 +125,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey);
 Key *keyNew(const char *keyname, ...);
 Key *keyVNew(const char *keyname, va_list ap);
 
-Key *keyDup(const Key *source, elektraKeyFlags flags);
-int keyCopy(Key *dest, const Key *source, elektraKeyFlags flags);
+Key * keyCopy(Key *dest, const Key *source, elektraKeyFlags flags);
 
 int keyClear(Key *key);
 int keyDel(Key *key);
@@ -198,20 +197,13 @@ int keyIsLocked (const Key * key, elektraLockFlags what);
 // FIXME: remove once migrated
 static inline Key *keyDupOld (const Key *source)
 {
-	Key * dup = keyDup (source, 0);
-	keyCopyAllMeta (dup, source);
-	return dup;
+	return keyCopy (keyNew ("/", 0), source, ~0);
 }
 
 // FIXME: remove once migrated
 static inline int keyCopyOld (Key *dest, const Key *source)
 {
-	int ret = keyCopy (dest, source, 0);
-	if (ret > 0)
-	{
-		keyCopyAllMeta (dest, source);
-	}
-	return ret;
+	return keyCopy (dest, source, ~0) != 0;
 }
 
 /**************************************

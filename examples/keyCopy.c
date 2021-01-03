@@ -12,12 +12,17 @@
 
 Key * copy;
 
-//! [Basic Usage]
-void h (Key * k)
+//! [Duplicate Key]
+void x (Key * orig)
 {
-	// receive key c
-	keyCopyOld (k, copy);
-	// the caller will see the changed key k
+	copy = keyCopy (keyNew ("/", KEY_END), orig, ~0);
+}
+//! [Duplicate Key]
+
+//! [Basic Usage]
+void h (Key * orig)
+{
+	keyCopy (copy, orig, ~0);
 }
 //! [Basic Usage]
 
@@ -29,48 +34,15 @@ void g (Key * k)
 }
 //! [Clear]
 
-//! [Copy Without Value]
-void j (Key * k)
-{
-	size_t size = keyGetValueSize (k);
-	char * value = malloc (size);
-	int bstring = keyIsString (k);
-
-	// receive key c
-	memcpy (value, keyValue (k), size);
-	keyCopyOld (k, copy);
-	if (bstring)
-		keySetString (k, value);
-	else
-		keySetBinary (k, value, size);
-	free (value);
-	// the caller will see the changed key k
-	// with the name and metadata from copy (except
-	// metadata "binary", which stayed the same)
-}
-//! [Copy Without Value]
-
-//! [Individual Copy]
-void i (Key * k)
-{
-	keySetName (k, keyName (copy));
-	keySetString (k, keyString (copy));
-	keyCopyAllMeta (k, copy);
-	// k is not a copy of copy even if everything was successfully,
-	// because it still contains metadata from k
-}
-//! [Individual Copy]
-
 int main (void)
 {
 	Key * k = keyNew ("user:/hello", KEY_VALUE, "my content", KEY_END);
 
 	copy = keyNew ("user:/copy", KEY_VALUE, "copies content", KEY_END);
 
+	x (k);
 	h (k);
 	g (k);
-	j (k);
-	i (k);
 
 	keyDel (k);
 	keyDel (copy);

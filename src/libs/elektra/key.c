@@ -245,106 +245,17 @@ Key * keyVNew (const char * name, va_list va)
 }
 
 /**
- * Return a duplicate of a key.
- *
- * Memory will be allocated as needed for dynamic properties.
- *
- * The new key will not be member of any KeySet and
- * will start with a new reference counter at 0. A
- * subsequent keyDel() will delete the key.
- *
- * @code
-int f (const Key * source)
-{
-	Key * dup = keyDup (source, 0);
-	// work with duplicate
-	keyDel (dup);
-	// everything related to dup is freed
-	// and source is unchanged
-}
- * @endcode
- *
- * Like for a new key after keyNew() a subsequent ksAppendKey()
- * makes a KeySet take care of the lifecycle of the key.
- *
- * @code
-int g (const Key * source, KeySet * ks)
-{
-	Key * dup = keyDup (source, 0);
-	// work with duplicate
-	ksAppendKey (ks, dup);
-	// ksDel(ks) will also free the duplicate
-	// source remains unchanged.
-}
- * @endcode
- *
- * Depending on what @p flags are given, only parts of the key will be copied.
- * The supported #elektraKeyFlags values are:
- *   - #KEY_NAME   - copies the name
- *   - #KEY_VALUE  - copies the value
- *   - #KEY_META   - copies all meta keys
- *   - #KEY_BINARY - creates a binary key, even if @p source is not binary
- *
- * If #KEY_NAME is set, the returned Key will have the same name as @p source.
- * Otherwise, the name will be `"/"`.
- *
- * If #KEY_VALUE is set, the returned Key will have the same value as @p source.*
- * If #KEY_BINARY is set as well, the returned Key will be a binary key independent of the type of @p source.
- *
- * Without #KEY_VALUE, the returned Key will have an empty value. If #KEY_BINARY is set,
- * the empty value is `NULL`, otherwise it is an emtpy string `""`.
- *
- * If #KEY_META is set, meta keys will be copied from @p source to the returned key.
- * This function creates a deep copy of meta keys, i.e. all meta keys on @p source will be `keyDup`ed before
- * adding them to the returned Key.
- * If you do not need this, you should prefer:
- * @code
-Key * dup = keyDup (source, 0);
-keyCopyAllMeta (dup, source);
- * @endcode
- *
- * Calling `keyDup (source, 0)` is equivalent to `keyDup (source, KEY_NAME | KEY_VALUE)`.
- *
- * @param source has to be an initialized source Key
- * @param flags  which parts of the key should be copied
- * @retval NULL failure or on NULL pointer
- * @return a fully copy of source on success
- * @see ksAppendKey(), keyDel(), keyNew()
- * @ingroup key
- */
-Key * keyDup (const Key * source, elektraKeyFlags flags)
-{
-	if (!source) return NULL;
-
-	Key * dest = elektraCalloc (sizeof (Key));
-	if (!dest) return NULL;
-
-	/* Copy the struct data */
-	*dest = *source;
-
-	/* get rid of properties bound to old key */
-	dest->ksReference = 0;
-	dest->flags = KEY_FLAG_SYNC;
-
-	/* prepare to set dynamic properties */
-	dest->key = dest->ukey = dest->data.v = dest->meta = 0;
-
-	/* copy dynamic properties */
-	if (keyCopy (dest, source, flags) == -1)
-	{
-		keyDel (dest);
-		return NULL;
-	}
-
-	return dest;
-}
-
-
-/**
  * Copy or Clear a key.
  *
- * Most often you may prefer keyDup() which allocates
- * a new key and returns a duplication of another key.
+ * Depending on the chosen @p flags keyCopy() only copies
+ * certain parts of @p source into @p dest.
+ *
+ * // TODO: describe flags in detail
+ *
+ * Most often you will want to duplicate an existing key.
+ * Use to following snipped to achieve this:
+ *
+ * @snippet keyCopy.c Duplicate Key
  *
  * But when you need to copy into an existing key, e.g.
  * because it was passed by a pointer in a function
@@ -352,63 +263,51 @@ Key * keyDup (const Key * source, elektraKeyFlags flags)
  *
  * @snippet keyCopy.c Basic Usage
  *
- * The reference counter will not be changed for
- * both keys. Affiliation to keysets
- * are also not affected.
+ * The reference counter will not be changed for both keys.
+ * Affiliation to keysets are also not affected.
  *
- * The metadata will be duplicated for the destination
- * key. So it will not take much additional space, even
- * with lots of metadata.
+ * Since metadata uses copy-on-write semantics there is only a
+ * constant memory cost to copying metadata.
  *
- * When you pass a NULL-pointer as source the
- * data of dest will be cleaned completely
- * (except reference counter, see keyClear()) and
- * you get a fresh dest key:
+ * When you pass a NULL-pointer as @p source the data of @p dest
+ * will be cleared. This is different from keyClear(). The key
+ * will not be fully reset, the reference counter and internal flags
+ * will remain unchanged.
  *
  * @snippet keyCopy.c Clear
  *
- * If you want to copy everything, except e.g. the value
- * you can use keyCopy() too:
- *
- * @snippet keyCopy.c Copy Without Value
- *
- * Restrain from coping everything yourself, because it will lead to
- * wrong metadata and is not able to copy empty or cascading names:
- *
- * @snippet keyCopy.c Individual Copy
- *
- *
  * @param dest the key which will be written to
  * @param source the key which should be copied
- *     or NULL to clean the destination key
- * @param flags same behaviour as keyDup()
+ *     or NULL to clear the data of @p dest
+ * @param flags specifies which parts of the key should be copied
+ * // TODO: define behaviour of flags == 0
  * @ingroup key
- * @retval -1 on failure when a NULL pointer
- *     was passed for dest or a dynamic property could not
- *     be written. The content will be unmodified then.
- * @retval 0 when dest was cleaned
- * @retval 1 when source was successfully copied
- * @see keyDup() to get a duplication of a key
+ *
+ * @return @p dest or NULL, in case of error. Possible errors are:
+ *   - memory allocation problems
+ *   - a part of @p dest that should be modified (e.g. name, value) was marked read-only,
+ *     e.g. the name of @p dest will be read-only if @p dest is part of a KeySet
+ *   - @p dest is NULL
  */
-int keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
+Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 {
-	if (!dest) return -1;
+	if (dest == NULL) return NULL;
 
-	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) || test_bit (dest->flags, KEY_FLAG_RO_VALUE) ||
-	    test_bit (dest->flags, KEY_FLAG_RO_META))
-	{
-		return -1;
-	}
+	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) && test_bit (flags, KEY_NAME)) return NULL;
+	if (test_bit (dest->flags, KEY_FLAG_RO_VALUE) && test_bit (flags, KEY_VALUE)) return NULL;
+	if (test_bit (dest->flags, KEY_FLAG_RO_META) && test_bit (flags, KEY_META)) return NULL;
 
-	if (!source)
+	if (source == NULL)
 	{
 		keyClear (dest);
-		return 0;
+		return dest;
 	}
 
 	if (flags == 0)
 	{
-		flags = KEY_NAME | KEY_VALUE;
+		// FIXME: define behaviour
+		// TODO: add flag to define whether non-copied parts are cleared or untouched
+		flags = ~0;
 	}
 
 	// remember original data of dest
@@ -420,21 +319,17 @@ int keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 		dest->key = elektraStrNDup (source->key, source->keySize);
 		if (!dest->key) goto memerror;
 		dest->keySize = source->keySize;
-	}
-	else
-	{
-		dest->key = elektraStrDup ("/");
-		dest->keySize = 2;
-	}
 
-	if (source->ukey && test_bit (flags, KEY_NAME))
-	{
+		ELEKTRA_ASSERT (source->ukey != NULL, "key != NULL but ukey == NULL");
 		dest->ukey = elektraStrNDup (source->ukey, source->keyUSize);
 		if (!dest->ukey) goto memerror;
 		dest->keyUSize = source->keyUSize;
 	}
 	else
 	{
+		dest->key = elektraStrDup ("/");
+		dest->keySize = 2;
+
 		dest->ukey = elektraMalloc (3);
 		dest->ukey[0] = KEY_NS_CASCADING;
 		dest->ukey[1] = '\0';
@@ -451,23 +346,18 @@ int keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 	}
 	else
 	{
-		dest->data.v = 0;
+		dest->data.v = NULL;
 		dest->dataSize = 0;
 	}
 
-	if (source->meta)
+	if (source->meta && test_bit (flags, KEY_META))
 	{
-		dest->meta = ksDeepDup (source->meta);
+		dest->meta = ksDup (source->meta);
 		if (!dest->meta) goto memerror;
 	}
 	else
 	{
 		dest->meta = 0;
-	}
-
-	if (keyGetMeta (source, "binary") != NULL || test_bit (flags, KEY_BINARY))
-	{
-		keySetMeta (dest, "binary", "");
 	}
 
 
@@ -480,7 +370,7 @@ int keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 	if (!test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
 	ksDel (orig.meta);
 
-	return 1;
+	return dest;
 
 memerror:
 	elektraFree (dest->key);
@@ -488,7 +378,7 @@ memerror:
 	ksDel (dest->meta);
 
 	*dest = orig;
-	return -1;
+	return NULL;
 }
 
 static void keyClearNameValue (Key * key)
