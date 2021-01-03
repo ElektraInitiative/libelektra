@@ -360,6 +360,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 		dest->meta = 0;
 	}
 
+	// TODO: correctly copy binary keys
 
 	// successful, now do the irreversible stuff: we obviously modified dest
 	set_bit (dest->flags, KEY_FLAG_SYNC);
