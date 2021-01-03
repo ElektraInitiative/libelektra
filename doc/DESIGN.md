@@ -324,7 +324,7 @@ following 2 checklists:
 
 - [ ] Doxygen Documentation is complete
       (covers all parameters, brief/short summary, examples)
-- [ ] Change is mentioned in the release notes
+- [ ] Change is mentioned in the Compatibility section of the release notes
 - [ ] Inconsistencies between documentation and code
 - [ ] Inconsistencies between documentation and tests
 - [ ] Proper Documentation of all side effects
@@ -348,8 +348,8 @@ following 2 checklists:
 
 - [ ] Returning a not specific enough type
 - [ ] Requiring a not liberal enough parameter
-- [ ] should not have multiple parameters of the same type
-- [ ] Functions should use Constant Types instead of Boolean Types wherever
+- [ ] Should not have multiple parameters of the same type
+- [ ] Functions should use constant types instead of boolean types
       sensible
 - [ ] Wherever possible, function parameters should be `const`
 - [ ] Functions should not have a long list of parameters (>8)
