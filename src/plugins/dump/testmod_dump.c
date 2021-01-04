@@ -24,7 +24,7 @@ static void test_v1_oneValue (void)
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/one_value.dump"));
 	char * v2file = elektraStrDup (srcdir_file ("dump/v2/one_value.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v1/one_value.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
@@ -71,7 +71,7 @@ static void test_v1_twoValue (void)
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/two_value.dump"));
 	char * v2file = elektraStrDup (srcdir_file ("dump/v2/two_value.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v1/two_value.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
@@ -118,7 +118,7 @@ static void test_v1_threeValue (void)
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/three_value.dump"));
 	char * v2file = elektraStrDup (srcdir_file ("dump/v2/three_value.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v1/three_value.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
@@ -165,7 +165,7 @@ static void test_v1_againTwoValue (void)
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/again_two_value.dump"));
 	char * v2file = elektraStrDup (srcdir_file ("dump/v2/again_two_value.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v1/again_two_value.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
@@ -212,7 +212,7 @@ static void test_v1_metaData (void)
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v1/meta_data.dump"));
 	char * v2file = elektraStrDup (srcdir_file ("dump/v2/meta_data.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v1/meta_data.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
@@ -258,7 +258,7 @@ static void test_v2_oneValue (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/one_value.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v2/one_value.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
@@ -303,7 +303,7 @@ static void test_v2_twoValue (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/two_value.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v2/two_value.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
@@ -348,7 +348,7 @@ static void test_v2_threeValue (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/three_value.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v2/three_value.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
@@ -393,7 +393,7 @@ static void test_v2_againTwoValue (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/again_two_value.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v2/again_two_value.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
@@ -438,7 +438,7 @@ static void test_v2_metaData (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/meta_data.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v2/meta_data.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("user:/tests/script", KEY_VALUE, infile, KEY_END);
@@ -483,7 +483,7 @@ static void test_v2_fullnames (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/fullnames.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v2/fullnames.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
@@ -528,7 +528,7 @@ static void test_v2_demo (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/demo.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v2/demo.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("system:/elektra/mountpoints", KEY_VALUE, infile, KEY_END);
@@ -573,7 +573,7 @@ static void test_v2_demo_root (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("dump/v2/demo.dump"));
-	char * outfile = elektraStrDup (srcdir_file ("dump/v2/demo.dump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("system:/", KEY_VALUE, infile, KEY_END);
