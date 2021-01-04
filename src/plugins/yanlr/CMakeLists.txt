@@ -48,13 +48,13 @@ function (check_dependencies)
 	endif (ANTLR4_NOT_AVAILABLE AND ANTLR_NOT_AVAILABLE)
 
 	string (REGEX REPLACE ".*Version ([0-9]+\\.[0-9]+(\\.[0-9]+)?).*" "\\1" ANTLR_VERSION ${ANTLR_VERSION})
-	if ("${ANTLR_VERSION}" VERSION_LESS 4.6)
+	if ("${ANTLR_VERSION}" VERSION_LESS 4.9)
 		set (
 			FAILURE_MESSAGE
-			"ANTLR version 4.6 or later required (found version “${ANTLR_VERSION}”)"
+			"ANTLR version 4.9 or later required (found version “${ANTLR_VERSION}”)"
 			PARENT_SCOPE)
 		return ()
-	endif ("${ANTLR_VERSION}" VERSION_LESS 4.6)
+	endif ("${ANTLR_VERSION}" VERSION_LESS 4.9)
 
 	find_package (ANTLR4CPP QUIET)
 	if (NOT ANTLR4CPP_FOUND)

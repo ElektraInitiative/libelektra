@@ -43,7 +43,10 @@ using ckdb::keyNew;
 
 // -- Functions ----------------------------------------------------------------------------------------------------------------------------
 
-TEST (yamlcpp, contract)
+TEST (yamlcpp, contract) //! OCLint (avoid private static members)
+#ifdef __llvm__
+__attribute__ ((annotate ("oclint:suppress[too few branches in switch statement]"), annotate ("oclint:suppress[empty if statement]")))
+#endif
 {
 	OPEN_PLUGIN ("system:/elektra/modules/yamlcpp", "file/path");
 
@@ -95,7 +98,7 @@ static void test_write_read (kdb::KeySet expected)
 	CLOSE_PLUGIN ();
 }
 
-TEST (yamlcpp, flat)
+TEST (yamlcpp, flat) //! OCLint (avoid private static members)
 {
 	test_read ("yamlcpp/flat_block_mapping.yaml",
 #include "yamlcpp/flat_block_mapping.hpp"
@@ -112,7 +115,7 @@ TEST (yamlcpp, flat)
 	);
 }
 
-TEST (yamlcpp, nested)
+TEST (yamlcpp, nested) //! OCLint (avoid private static members)
 {
 	test_read ("yamlcpp/nested_block_mapping.yaml",
 #include "yamlcpp/nested_block_mapping.hpp"
@@ -128,7 +131,7 @@ TEST (yamlcpp, nested)
 	);
 }
 
-TEST (yamlcpp, array)
+TEST (yamlcpp, array) //! OCLint (avoid private static members)
 {
 	test_read ("yamlcpp/simple_sequence.yaml",
 #include "yamlcpp/simple_sequence.hpp"

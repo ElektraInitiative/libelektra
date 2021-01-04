@@ -136,6 +136,11 @@ ApplicationWindow {
 					nameTextField.readOnly = true
 					valueTextField.forceActiveFocus()
 				}
+
+				if (selectedNode.isNamespaceRoot){
+					nameTextField.textColor = disabledPalette.text
+					nameTextField.readOnly = true
+				}
 			}
 		}
 	}

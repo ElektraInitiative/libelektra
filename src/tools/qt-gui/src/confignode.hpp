@@ -240,6 +240,11 @@ public:
 	void setIsDirty (bool dirty);
 	void updateNode (kdb::Key key);
 
+	/**
+	 * @return true if this is ConfigNode is the root of a namespace
+	 */
+	bool isNamespaceRoot () const;
+
 private:
 	QString m_name;
 	QString m_path;

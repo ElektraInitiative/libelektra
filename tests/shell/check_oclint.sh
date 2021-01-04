@@ -15,7 +15,7 @@ test -f "@PROJECT_BINARY_DIR@/compile_commands.json" || {
 }
 
 cd "@CMAKE_SOURCE_DIR@" || exit
-oclint -p "@PROJECT_BINARY_DIR@" -no-analytics -enable-global-analysis -enable-clang-static-analyzer \
+oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-analyzer \
 	"src/libs/ease/array.c" \
 	"src/libs/ease/keyname.c" \
 	"src/libs/utility/text.c" \
@@ -25,8 +25,7 @@ oclint -p "@PROJECT_BINARY_DIR@" -no-analytics -enable-global-analysis -enable-c
 	"src/plugins/directoryvalue/"*.cpp \
 	"src/plugins/mini/mini.c" \
 	"src/plugins/yamlcpp/"*.cpp \
-	"src/plugins/yamlsmith/"*.cpp \
-	"src/plugins/yanlr/"*.cpp
+	"src/plugins/yamlsmith/"*.cpp
 exit_if_fail "OCLint found problematic code"
 
 end_script

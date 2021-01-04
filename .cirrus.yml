@@ -119,8 +119,6 @@ mac_task:
   install_script:
     - | # Install Homebrew formulas
       brew install openjdk
-      brew tap oclint/formulae
-      brew install oclint
       brew install antlr
       brew install antlr4-cpp-runtime
       brew install augeas
@@ -143,6 +141,7 @@ mac_task:
       brew install maven
       brew install moreutils
       brew install ninja
+      brew install oclint/formulae/oclint
       brew install npm
       brew install openssl
       brew install pkg-config
@@ -166,8 +165,8 @@ mac_task:
     - | # Install Python packages
       pip3 install cmake-format[yaml]==0.6.3
     - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
-      brew install ruby@2.7
-      export PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
+      brew install ruby
+      export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"
     - | # Install Ruby gems
       sudo gem install ronn test-unit --no-document
     - | # Install JavaScript packages

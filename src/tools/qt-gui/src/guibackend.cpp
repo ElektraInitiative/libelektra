@@ -261,8 +261,14 @@ QStringList GUIBackend::availablePlugins (bool includeStorage, bool includeResol
 		{
 			ptr = modules.load (s);
 		}
+		catch (PluginNoContract const & ex)
+		{
+			cerr << "no contract: " << s << endl;
+			continue;
+		}
 		catch (NoPlugin const & ex)
 		{
+			cerr << "no plugin: " << s << endl;
 			continue;
 		}
 

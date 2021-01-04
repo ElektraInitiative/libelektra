@@ -5,7 +5,7 @@ KeyWindow {
 
 	title: qsTr("Create new Key")
 
-	path: selectedNode === null ? "" : selectedNode.path
+	path: selectedNode === null ? "" : selectedNode.isNamespaceRoot ? selectedNode.path + "/" : selectedNode.path
 
 	property bool isBelow: false
 
