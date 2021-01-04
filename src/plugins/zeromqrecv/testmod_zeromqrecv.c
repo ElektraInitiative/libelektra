@@ -48,7 +48,7 @@ static void * createTestSocket (void)
 	usleep (TIME_HOLDOFF);
 
 	void * pubSocket = zmq_socket (context, ZMQ_PUB);
-	int result = zmq_bind (pubSocket, "tcp://*:6001");
+	int result = zmq_bind (pubSocket, "tcp://127.0.0.1:6001");
 	if (result != 0)
 	{
 		yield_error ("zmq_bind failed");

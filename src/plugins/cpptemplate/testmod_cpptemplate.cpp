@@ -17,7 +17,11 @@
 using CppKeySet = kdb::KeySet;
 using CppKey = kdb::Key;
 
-TEST (cpptemplate, basics)
+TEST (cpptemplate, basics) //! OCLint (avoid private static members)
+#ifdef __llvm__
+__attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("oclint:suppress[high ncss method]"),
+		annotate ("oclint:suppress[too few branches in switch statement]")))
+#endif
 {
 	CppKeySet modules{ 0, KS_END };
 	CppKeySet config{ 0, KS_END };

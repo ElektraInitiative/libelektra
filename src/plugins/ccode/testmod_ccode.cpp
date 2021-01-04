@@ -95,7 +95,7 @@ void testRoundTrip (string const decodedString, string const encodedString = "",
 	elektraModulesClose (modules.getKeySet (), 0);
 }
 
-TEST (type, roundtrip)
+TEST (type, roundtrip) //! OCLint (avoid private static members)
 {
 	testRoundTrip ("a value\nwith=;# and \\ itself", "a\\wvalue\\nwith\\e\\s\\r\\wand\\w\\b\\witself");
 	testRoundTrip ("hello world");

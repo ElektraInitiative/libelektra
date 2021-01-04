@@ -14,7 +14,7 @@
 #include <kdb.hpp>
 #include <kdberrors.h>
 
-#include <antlr4-runtime.h>
+#include <antlr4-runtime/antlr4-runtime.h>
 
 #include "YAML.h"
 #include "error_listener.hpp"
