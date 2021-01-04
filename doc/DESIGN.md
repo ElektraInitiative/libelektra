@@ -291,7 +291,6 @@ On potential changes of the API/ABI as detected by
 please make sure the API has been reviewed according to the
 following 2 checklists:
 
-
 ## Checklist for overall API
 
 ### Consistency
@@ -313,7 +312,6 @@ following 2 checklists:
 
 - [ ] New API is easily extensible with additional functionality
 - [ ] Components do not depend too heavily on each other
-
 
 ## Checklist for each function
 
