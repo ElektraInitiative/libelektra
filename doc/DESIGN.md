@@ -291,6 +291,7 @@ On potential changes of the API/ABI as detected by
 please make sure the API has been reviewed according to the
 following 2 checklists:
 
+
 ## Checklist for overall API
 
 ### Consistency
@@ -299,11 +300,10 @@ following 2 checklists:
 - [ ] Similar things are named similarly
 - [ ] Different things are named differently
 - [ ] The order of arguments should be consistent across similar functions
-- [ ] Code is formatted according to the [style guidelines](/doc/CODING.md#coding-style)
 
 ### Structural Clarity
 
-- [ ] Functions with similar functionality are grouped into the same namespace
+- [ ] Functions with similar functionality have the same prefix
 
 ### Compatibility
 
@@ -314,8 +314,8 @@ following 2 checklists:
 - [ ] New API is easily extensible with additional functionality
 - [ ] Components do not depend too heavily on each other
 
-## Checklist for each function
 
+## Checklist for each function
 
 ### Documentation
 
@@ -323,8 +323,6 @@ following 2 checklists:
 - [ ] Inconsistencies between documentation and code
 - [ ] Inconsistencies between documentation and tests
 - [ ] Proper Documentation of thread-safety of function
-- [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
 
 #### Doxygen
 
@@ -341,17 +339,20 @@ following 2 checklists:
 
 ### Compatibility
 
+- [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
+      is correct for breaking changes
 - [ ] ABI/API forward-compatible (breaking backwards-compatibility
       to add new symbols is fine)
 
 ### Parameter & Return Types
 
-- [ ] Returning a not specific enough type
-- [ ] Requiring a not liberal enough parameter
-- [ ] Should not have multiple parameters of the same type
+- [ ] Functions should return the most specific type possible
+- [ ] Functions should require the most liberal type possible
+- [ ] Functions should not have multiple parameters of the same type
 - [ ] Functions should use constant types instead of boolean types
       sensible
 - [ ] Wherever possible, function parameters should be `const`
+- [ ] Functions should have the least amount of parameters feasible
 
 ### Error Handling
 
