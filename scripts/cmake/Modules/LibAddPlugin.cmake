@@ -181,13 +181,13 @@ function (add_plugintest testname)
 				TARGETS ${testexename}
 				DESTINATION "${TARGET_TOOL_EXEC_FOLDER}"
 				COMPONENT elektra-tests)
-			foreach(ee ${ARG_EXTRA_EXECUTABLES})
+			foreach (ee ${ARG_EXTRA_EXECUTABLES})
 				install (
 					TARGETS ${ee}
 					DESTINATION "${TARGET_TOOL_EXEC_FOLDER}"
 					COMPONENT elektra-tests)
-			endforeach(ee ${ARG_EXTRA_EXECUTABLES})
-			
+			endforeach (ee ${ARG_EXTRA_EXECUTABLES})
+
 			if (ARG_INSTALL_TEST_DATA)
 				install (
 					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${testname}"
@@ -241,7 +241,8 @@ function (add_plugintest testname)
 			set_tests_properties (${testexename} PROPERTIES TIMEOUT "${ARG_TIMEOUT}")
 		endif (ARG_TIMEOUT)
 
-		set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib" "KDB_TEST_BIN_DIR=${CMAKE_BINARY_DIR}/bin" "${ARG_ENVIRONMENT}")
+		set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+							   "KDB_TEST_BIN_DIR=${CMAKE_BINARY_DIR}/bin" "${ARG_ENVIRONMENT}")
 
 		if (ARG_MEMLEAK)
 			set_property (TEST ${testexename} PROPERTY LABELS memleak)

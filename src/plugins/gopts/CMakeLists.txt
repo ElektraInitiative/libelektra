@@ -46,8 +46,7 @@ if (gopts_source)
 
 		add_plugintest (
 			gopts
-			INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}
-			EXTRA_EXECUTABLES elektra-gopts-testapp
+			INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} EXTRA_EXECUTABLES elektra-gopts-testapp
 			TIMEOUT 240)
 
 		if (BUILD_SHARED)
