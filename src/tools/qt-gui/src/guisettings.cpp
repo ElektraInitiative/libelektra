@@ -156,13 +156,13 @@ void GUISettings::setViewermode (bool vmode)
 
 void GUISettings::appendColor (const std::string & keyName, const QColor & color)
 {
-	std::string name = "user" + m_base + m_profile + keyName;
+	std::string name = "user:" + m_base + m_profile + keyName;
 	m_config.append (Key (name, KEY_VALUE, color.name ().toStdString ().c_str (), KEY_END));
 }
 
 void GUISettings::appendBool (const std::string & keyName, const bool value)
 {
-	std::string name = "user" + m_base + m_profile + keyName;
+	std::string name = "user:" + m_base + m_profile + keyName;
 	Key key = m_config.lookup (name);
 	if (key)
 	{
@@ -227,7 +227,7 @@ void GUISettings::setKDB ()
 	// won't set config without user prefix
 	try
 	{
-		kdb.set (m_config, "user" + m_base);
+		kdb.set (m_config, "user:" + m_base);
 	}
 	catch (const KDBException & ex)
 	{

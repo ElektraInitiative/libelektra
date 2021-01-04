@@ -145,7 +145,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- The QtGUI was updated to be compatible with the new key name structure. _(Klemens Böswirth)_
 
 ## Scripts
 
