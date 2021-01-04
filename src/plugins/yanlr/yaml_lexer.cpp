@@ -154,7 +154,7 @@ void YAMLLexer::setTokenFactory (TokenFactory<T1> * tokenFactory)
  *
  * @return The factory the scanner uses to create tokens
  */
-Ref<TokenFactory<CommonToken>> YAMLLexer::getTokenFactory ()
+TokenFactory<CommonToken> * YAMLLexer::getTokenFactory ()
 {
 	return factory;
 }

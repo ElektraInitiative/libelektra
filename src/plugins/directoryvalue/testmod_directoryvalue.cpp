@@ -89,7 +89,10 @@ void test_roundtrip (kdb::KeySet keys, int const status = ELEKTRA_PLUGIN_STATUS_
 
 // -- Tests --------------------------------------------------------------------------------------------------------------------------------
 
-TEST (directoryvalue, increaseArrayIndices)
+TEST (directoryvalue, increaseArrayIndices) //! OCLint (avoid private static members)
+#ifdef __llvm__
+__attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("oclint:suppress[too few branches in switch statement]]")))
+#endif
 {
 	kdb::KeySet arrayParents{ 10, keyNew (PREFIX "key/array", KEY_END), keyNew (PREFIX "key/array/#2/nested", KEY_END), KS_END };
 
@@ -125,7 +128,10 @@ TEST (directoryvalue, increaseArrayIndices)
 	compare_keyset (expectedArrayParents, arrayParents);
 }
 
-TEST (directoryvalue, basics)
+TEST (directoryvalue, basics) //! OCLint (avoid private static members)
+#ifdef __llvm__
+__attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("oclint:suppress[too few branches in switch statement]")))
+#endif
 {
 	OPEN_PLUGIN ("system:/elektra/modules/directoryvalue", "")
 
@@ -136,7 +142,7 @@ TEST (directoryvalue, basics)
 	CLOSE_PLUGIN ();
 }
 
-TEST (directoryvalue, get)
+TEST (directoryvalue, get) //! OCLint (avoid private static members)
 {
 	test_get (
 #include "directoryvalue/simple_set.hpp"
@@ -155,7 +161,7 @@ TEST (directoryvalue, get)
 	);
 }
 
-TEST (directoryvalue, set)
+TEST (directoryvalue, set) //! OCLint (avoid private static members)
 {
 	test_set (
 #include "directoryvalue/empty.hpp"
@@ -188,7 +194,7 @@ TEST (directoryvalue, set)
 	);
 }
 
-TEST (directoryvalue, roundtrip)
+TEST (directoryvalue, roundtrip) //! OCLint (avoid private static members)
 {
 	test_roundtrip (
 #include "directoryvalue/simple_get.hpp"

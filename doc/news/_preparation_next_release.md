@@ -48,7 +48,7 @@ If you rely on specific behaviour of Elektra's Keynames and have already taken t
 
 ### Debian Packaging with CPack
 
-- We are now using CPack to generate modular Debian and Ubuntu packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specifc dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
+- We are now using CPack to generate modular Debian and Ubuntu packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specific dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
 
 ### <<HIGHLIGHT3>>
 
@@ -81,6 +81,10 @@ The following section lists news about the [modules](https://www.libelektra.org/
 ### YAML CPP
 
 - We fixed an [use after free bug in the plugin](https://issues.libelektra.org/3561). _(René Schwaiger)_
+
+### Yan LR
+
+- The plugin now works (with and) requires [ANTLR `4.9`](https://github.com/antlr/antlr4/releases/tag/4.9). _(René Schwaiger)_
 
 ### <<Plugin3>>
 
@@ -135,6 +139,10 @@ you up to date with the multi-language support provided by Elektra.
 
 - Fixed allocation not correctly conveyed on key set initialization _(Michael Tucek)_
 
+### Ruby
+
+- Enable `__declspec` attributes for Ruby 3.0. _(Mihael Pranjić)_
+
 ### <<Binding3>>
 
 ## Tools
@@ -183,7 +191,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Cirrus
 
 - Upgrade Cirrus Fedora docker image to Fedora 33. _(Mihael Pranjić)_
-- <<TODO>>
+- Upgrade to Ruby 3.0 for macOS builds. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Jenkins
@@ -195,7 +203,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- <<TODO>>
+- Move macOS GCC 10 build job to Github Actions. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 

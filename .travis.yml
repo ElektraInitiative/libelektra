@@ -1,6 +1,5 @@
 language: cpp
 dist: bionic
-osx_image: xcode12.2
 
 #
 # Define the build matrix
@@ -151,38 +150,6 @@ matrix:
         - ninja run_all
         - kdb-full run_all
 
-    - os: osx
-      name: 🍏 GCC
-      compiler: gcc
-      addons:
-        homebrew:
-          packages:
-            - augeas
-            - bison
-            - dbus
-            - discount
-            - flex
-            - gpgme
-            - libev
-            - libgcrypt
-            - libgit2
-            - libuv
-            - lua
-            - ninja
-            - openssl
-            - python@3.9
-            - qt
-            - swig
-            - yajl
-            - zeromq
-          update: true
-      env:
-        # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
-        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-        - PLUGINS='ALL;-xerces;-curlget'
-        # Skip homebrew cleanup to avoid issues with removal of packages
-        - HOMEBREW_NO_INSTALL_CLEANUP=1
-
     - os: linux
       name: 🐧 GCC
       compiler: gcc
@@ -211,20 +178,6 @@ matrix:
         - CXX_COMPILER=clang++-7
 
 before_install:
-  - |
-    if [ "$TRAVIS_OS_NAME" = 'osx' ]; then
-      rvm install 2.7.1
-      rvm use 2.7.1
-      gem install test-unit --no-document
-      if [ "$CC" = 'gcc' ]; then
-        brew upgrade gcc
-        export CC=gcc-10
-        export CXX=g++-10
-      fi
-      pip2 install cheetah # Required by kdb-gen
-      # start D-Bus session bus
-      brew services start dbus
-    fi
   - |
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
       [ -n "$CC_COMPILER" ] && export CC="$CC_COMPILER"

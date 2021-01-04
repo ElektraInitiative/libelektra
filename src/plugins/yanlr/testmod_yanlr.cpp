@@ -66,7 +66,10 @@ void test_read (string const & filepath, CppKeySet expected)
 
 // -- Tests --------------------------------------------------------------------------------------------------------------------------------
 
-TEST (yanlr, basics)
+TEST (yanlr, basics) //! OCLint (avoid private static members)
+#ifdef __llvm__
+__attribute__ ((annotate ("oclint:suppress[empty if statement]"), annotate ("oclint:suppress[too few branches in switch statement]")))
+#endif
 {
 	OPEN_PLUGIN ("system:/elektra/modules/yanlr", "file/path");
 
@@ -77,7 +80,7 @@ TEST (yanlr, basics)
 	CLOSE_PLUGIN ();
 }
 
-TEST (yanlr, empty)
+TEST (yanlr, empty) //! OCLint (avoid private static members)
 {
 	test_read ("yanlr/null.yaml",
 #include "yanlr/null.hpp"
@@ -87,7 +90,7 @@ TEST (yanlr, empty)
 	);
 }
 
-TEST (yanlr, scalar)
+TEST (yanlr, scalar) //! OCLint (avoid private static members)
 {
 	test_read ("yanlr/plain_scalar-word_chars.yaml",
 #include "yanlr/plain_scalar-word_chars.hpp"
@@ -103,7 +106,7 @@ TEST (yanlr, scalar)
 	);
 }
 
-TEST (yanlr, list)
+TEST (yanlr, list) //! OCLint (avoid private static members)
 {
 	test_read ("yanlr/list-plain_scalars.yaml",
 #include "yanlr/list-plain_scalars.hpp"
@@ -113,7 +116,7 @@ TEST (yanlr, list)
 	);
 }
 
-TEST (yanlr, map)
+TEST (yanlr, map) //! OCLint (avoid private static members)
 {
 	test_read ("yanlr/map-null.yaml",
 #include "yanlr/map-null.hpp"
