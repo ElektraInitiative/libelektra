@@ -9,33 +9,15 @@
 // clang-format off
 
 ksNew( 28 ,
-	keyNew ("user:/test/keyset/dir1"
-		, KEY_DIR
-	, KEY_END),
-	keyNew ("user:/test/keyset/dir2"
-		, KEY_DIR
-	, KEY_END),
-	keyNew ("user:/test/keyset/dir3"
-		, KEY_DIR
-	, KEY_END),
-	keyNew ("user:/test/keyset/dir4"
-		, KEY_DIR
-	, KEY_END),
-	keyNew ("user:/test/keyset/dir5"
-		, KEY_DIR
-	, KEY_END),
-	keyNew ("user:/test/keyset/dir6"
-		, KEY_DIR
-	, KEY_END),
-	keyNew ("user:/test/keyset/dir7"
-		, KEY_DIR
-	, KEY_END),
-	keyNew ("user:/test/keyset/dir8"
-		, KEY_DIR
-	, KEY_END),
-	keyNew ("user:/test/keyset/dir9"
-		, KEY_DIR
-	, KEY_END),
+	keyNew ("user:/test/keyset/dir1", KEY_END),
+	keyNew ("user:/test/keyset/dir2", KEY_END),
+	keyNew ("user:/test/keyset/dir3", KEY_END),
+	keyNew ("user:/test/keyset/dir4", KEY_END),
+	keyNew ("user:/test/keyset/dir5", KEY_END),
+	keyNew ("user:/test/keyset/dir6", KEY_END),
+	keyNew ("user:/test/keyset/dir7", KEY_END),
+	keyNew ("user:/test/keyset/dir8", KEY_END),
+	keyNew ("user:/test/keyset/dir9", KEY_END),
 	keyNew ("user:/test/keyset/key1"
 		, KEY_VALUE, "value1"
 		, KEY_COMMENT, "comment1"

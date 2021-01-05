@@ -242,11 +242,6 @@ static void test_keyCompare (void)
 	keySetName (key2, "user:/myname");
 	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in name");
 
-	keySetOwner (key1, "myowner");
-	succeed_if (keyCompare (key1, key2) == (KEY_OWNER | KEY_META), "the keys should differ in owner");
-	keySetOwner (key2, "myowner");
-	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in owner");
-
 	keySetString (key1, "myvalue");
 	succeed_if (keyCompare (key1, key2) == KEY_VALUE, "the keys should differ in value");
 	keySetString (key2, "myvalue");
@@ -256,21 +251,6 @@ static void test_keyCompare (void)
 	succeed_if (keyCompare (key1, key2) == (KEY_COMMENT | KEY_META), "the keys should differ in comment");
 	keySetComment (key2, "mycomment");
 	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in comment");
-
-	keySetUID (key1, 50);
-	succeed_if (keyCompare (key1, key2) == (KEY_META), "the keys should differ in uid");
-	keySetUID (key2, 50);
-	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in uid");
-
-	keySetGID (key1, 50);
-	succeed_if (keyCompare (key1, key2) == (KEY_META), "the keys should differ in gid");
-	keySetGID (key2, 50);
-	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in gid");
-
-	keySetMode (key1, 0222);
-	succeed_if (keyCompare (key1, key2) == (KEY_META), "the keys should differ in mode");
-	keySetMode (key2, 0222);
-	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in mode");
 
 	keyDel (key1);
 	keyDel (key2);
@@ -285,21 +265,6 @@ static void test_keyNewExtensions (void)
 	key = keyNew ("/", KEY_END);
 	succeed_if (keyIsUser (key) == 0, "empty user key");
 	succeed_if (keyIsSystem (key) == 0, "empty user key?");
-	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + mode");
-
-	// Key with name + UID/GID
-	key = keyNew ("system:/sw/test", KEY_UID, 123, KEY_GID, 456, KEY_END);
-	succeed_if (key != NULL, "keyNew: Unable to create a key with name + UID + GID");
-	succeed_if (keyGetUID (key) == 123, "keyNew: UID no set correctly");
-	succeed_if (keyGetGID (key) == 456, "keyNew: GID not set correctly");
-	succeed_if (keyIsUser (key) == 0, "not user");
-	succeed_if (keyIsSystem (key) == 1, "is system");
-	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + UID + GID");
-
-	// Key with name + MODE
-	key = keyNew ("system:/sw/test", KEY_MODE, 0644, KEY_END);
-	succeed_if (key != NULL, "keyNew: Unable to create a key with name + mode");
-	succeed_if (keyGetMode (key) == 0644, "keyNew: mode no set correctly");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name + mode");
 }
 
@@ -782,10 +747,6 @@ static void test_keyNeedSync (void)
 	succeed_if (keyAddName (k, "bar") != -1, "could not add name");
 	succeed_if (keyNeedSync (k), "base name changed, sync should be there");
 
-	clear_bit (k->flags, KEY_FLAG_SYNC);
-	succeed_if (keySetOwner (k, "someowner") != -1, "could not set owner");
-	succeed_if (keyNeedSync (k), "owner changed, sync should be there");
-
 	keyDel (k);
 }
 
@@ -861,7 +822,11 @@ static void test_warnings (void)
 	Key * key = keyNew ("user:/bar", KEY_VALUE, "config", KEY_END);
 	for (int i = 0; i < 200; i++)
 	{
-		ELEKTRA_ADD_INTERFACE_WARNING (key, "reason reason reason");
+#define WITH_LINENO(code)                                                                                                                  \
+	const char * lineno = ELEKTRA_STRINGIFY (__LINE__);                                                                                \
+	code
+		WITH_LINENO (ELEKTRA_ADD_INTERFACE_WARNING (key, "reason reason reason"));
+#undef WITH_LINENO
 
 		char index[ELEKTRA_MAX_ARRAY_SIZE];
 		elektraWriteArrayNumber (index, i % 100);
@@ -889,7 +854,7 @@ static void test_warnings (void)
 
 		keySetBaseName (k, "line");
 		// must be line number of ELEKTRA_ADD_INTERFACE_WARNING
-		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), "864");
+		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), lineno);
 
 		keySetBaseName (k, "mountpoint");
 		succeed_if_same_string (keyString (keyGetMeta (key, keyName (k))), "user:/bar");

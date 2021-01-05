@@ -249,6 +249,11 @@ void ConfigNode::setIsExpanded (bool value)
 	m_isExpanded = value;
 }
 
+bool ConfigNode::isNamespaceRoot () const
+{
+	return m_path.indexOf ('/') < 0;
+}
+
 void ConfigNode::populateMetaModel ()
 {
 	if (m_key)

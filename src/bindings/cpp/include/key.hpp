@@ -30,15 +30,20 @@ class NameReverseIterator;
 
 enum class ElektraNamespace : std::uint8_t
 {
-	NONE = 0,
-	CASCADING = 1,
-	META = 2,
-	SPEC = 3,
-	PROC = 4,
-	DIR = 5,
-	USER = 6,
-	SYSTEM = 7,
-	DEFAULT = 8,
+	NONE = KEY_NS_NONE,
+	CASCADING = KEY_NS_CASCADING,
+	META = KEY_NS_META,
+	SPEC = KEY_NS_SPEC,
+	PROC = KEY_NS_PROC,
+	DIR = KEY_NS_DIR,
+	USER = KEY_NS_USER,
+	SYSTEM = KEY_NS_SYSTEM,
+	DEFAULT = KEY_NS_DEFAULT,
+};
+
+static const ElektraNamespace ELEKTRA_NAMESPACES[] = {
+	ElektraNamespace::CASCADING, ElektraNamespace::META, ElektraNamespace::SPEC,   ElektraNamespace::PROC,
+	ElektraNamespace::DIR,	     ElektraNamespace::USER, ElektraNamespace::SYSTEM, ElektraNamespace::DEFAULT,
 };
 
 /**
@@ -295,48 +300,38 @@ public:
 
 	const char * findNext () const
 	{
-		const char * c = current;
-		if (c >= end) return end;
-
-		if (c == begin && *c == 0)
+		if (end - begin == 3)
 		{
-			// special handling of cascading key names
-			return ++c;
+			// special handling for root key
+			return end;
 		}
 
-		do
+		const char * c = current >= end ? end - 1 : current;
+
+		while (c < end && *c != '\0')
 		{
 			++c;
-		} while (c < end && *c != 0);
-		if (c != end)
-		{
-			++c; // skip past null character
 		}
 
-		return c;
+		return c < end ? c + 1 : end;
 	}
 
 	const char * findPrevious () const
 	{
-		const char * c = current;
-		if (c <= begin) return begin;
+		if (end - begin == 3)
+		{
+			// special handling for root key
+			return begin;
+		}
 
-		--c; // go from start of string to null
+		const char * c = current >= end ? end - 1 : current - 1;
+
 		do
 		{
 			--c;
-		} while (c > begin && *c != 0);
-		if (c != begin && c + 1 != current)
-		{
-			++c; // jump back to not-null
-		}
-		else if (c == begin && *c == 0)
-		{
-			// special handling of cascading key names
-			return ++c;
-		}
+		} while (c > begin && *c != '\0');
 
-		return c;
+		return c > begin ? c + 1 : begin;
 	}
 
 	// Forward iterator requirements

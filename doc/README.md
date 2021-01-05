@@ -18,6 +18,7 @@ This folder contains documentation for “Elektra – the configuration framewor
 - [Installation](INSTALL.md): These instructions tell you how you can install Elektra in your favorite operating system.
 - [Compile](COMPILE.md): If you want to compile Elektra from source please take a look at this document.
 - [Help](help): This folder contains our man pages in Markdown format. The folder [man](man) contains these man pages in roff format, which you can read using the Unix utility [`man`](https://en.wikipedia.org/wiki/Man_page) if you already installed Elektra.
+- [Keynames](KEYNAMES.md): This document describes how Elektra's keynames work.
 
 ### API
 

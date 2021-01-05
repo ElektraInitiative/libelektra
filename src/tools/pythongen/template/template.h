@@ -118,7 +118,7 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 @if len(support.override(info)) > 0
 	// override
 	Key * searchKey = keyNew("${support.override(info)[0]}",
-		KEY_CASCADING_NAME, KEY_END);
+		KEY_END);
 	Key * found = ksLookup(ks, searchKey, 0);
 @for $o in $support.override(info)[1:]
 	if (!found)
@@ -136,7 +136,7 @@ static inline $support.typeof(info) $support.getfuncname($key)(KeySet *ks)
 	}
 @else
 	Key * searchKey = keyNew("${key}",
-		KEY_CASCADING_NAME, KEY_END);
+		KEY_END);
 	Key * found = ksLookup(ks, searchKey, 0);
 @end if
 

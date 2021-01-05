@@ -568,7 +568,7 @@ static int elektraGetDoUpdate (Split * split, Key * parentKey)
 static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 {
 	ksRewind (ks);
-	Key * cutKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+	Key * cutKey = keyNew ("/", KEY_END);
 	keyAddName (cutKey, strchr (keyName (parentKey), '/'));
 	KeySet * cutKS = ksCut (ks, cutKey);
 	Key * specCutKey = keyNew ("spec:/", KEY_END);

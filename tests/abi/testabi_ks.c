@@ -1146,7 +1146,7 @@ static void test_ksLookupName (void)
 
 	printf ("Test lookup functions\n");
 
-	ksAppendKey (ks, keyNew ("user:/domain/key", KEY_VALUE, "domainvalue", KEY_OWNER, "markus", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/domain/key", KEY_VALUE, "domainvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
 	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("system:/named/syskey", KEY_VALUE, "syskey", KEY_END));
@@ -1380,24 +1380,18 @@ static void test_ksExample (void)
 	ksAppendKey (ks, keyNew ("user:/tmp/ex1", KEY_VALUE, "some data", // set a string value
 				 KEY_END));				  // end of args
 
-	ksAppendKey (ks, keyNew ("user:/tmp/ex2", KEY_VALUE, "some data", // with a simple value
-				 KEY_MODE, 0777,			  // permissions
-				 KEY_END));				  // end of args
-
 	ksAppendKey (ks, keyNew ("user:/tmp/ex4",
-				 KEY_BINARY,					       // key type
-				 KEY_SIZE, 7,					       // assume binary length 7
-				 KEY_VALUE, "some data",			       // value that will be truncated in 7 bytes
-				 KEY_COMMENT, "value is truncated", KEY_OWNER, "root", // owner (not uid) is root
-				 KEY_UID, 0,					       // root uid
-				 KEY_END));					       // end of args
+				 KEY_BINARY,		 // key type
+				 KEY_SIZE, 7,		 // assume binary length 7
+				 KEY_VALUE, "some data", // value that will be truncated in 7 bytes
+				 KEY_COMMENT, "value is truncated",
+				 KEY_END)); // end of args
 
 	ksAppendKey (ks, keyNew ("user:/tmp/ex5",
-				 KEY_BINARY,					       // binary value
-				 KEY_SIZE, 7, KEY_VALUE, "some data",		       // value that will be truncated in 7 bytes
-				 KEY_COMMENT, "value is truncated", KEY_OWNER, "root", // owner (not uid) is root
-				 KEY_UID, 0,					       // root uid
-				 KEY_END));					       // end of args
+				 KEY_BINARY,			      // binary value
+				 KEY_SIZE, 7, KEY_VALUE, "some data", // value that will be truncated in 7 bytes
+				 KEY_COMMENT, "value is truncated",
+				 KEY_END)); // end of args
 
 	ksRewind (ks);
 
@@ -1412,10 +1406,6 @@ static void test_ksExample (void)
 	key = ksNext (ks);
 	succeed_if (key != NULL, "no next key");
 	succeed_if_same_string (keyName (key), "user:/tmp/ex1");
-
-	key = ksNext (ks);
-	succeed_if (key != NULL, "no next key");
-	succeed_if_same_string (keyName (key), "user:/tmp/ex2");
 
 	key = ksNext (ks);
 	succeed_if (key != NULL, "no next key");
@@ -1741,7 +1731,7 @@ static void test_ksLookupPop (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 
-	ksAppendKey (ks, keyNew ("user:/domain/key", KEY_VALUE, "domainvalue", KEY_OWNER, "markus", KEY_END));
+	ksAppendKey (ks, keyNew ("user:/domain/key", KEY_VALUE, "domainvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("user:/single/key", KEY_VALUE, "singlevalue", KEY_END));
 	ksAppendKey (ks, keyNew ("user:/named/key", KEY_VALUE, "myvalue", KEY_END));
 	ksAppendKey (ks, keyNew ("system:/named/skey", KEY_VALUE, "syskey", KEY_END));

@@ -127,29 +127,10 @@
  *   So this flag toggle from keySetString() to keySetBinary().
  *   If no value (nor size) is given, it will be a NULL key.
  *   @snippet keyNew.c With Binary
- * - ::KEY_CASCADING_NAME allow the name to start with /
- *   useful for ksLookup() and kdbGet() parent/lookup keys
- * - ::KEY_META_NAME allow the name to start with arbitrary namespaces
- *   useful to compare with metakeys
- *
  *
  *
  * @deprecated The flags below are deprecated and ::KEY_META should be
  * preferred. They remain some time, however, for compatibility:
- * - ::KEY_DIR \n
- *   Define that the key is a directory rather than an ordinary key.
- *   This means its executable bits in its mode are set.
- *   But even without this option the key can have subkeys.
- *   See keySetDir().
- * - ::KEY_OWNER \n
- *   Next parameter is the owner. See keySetOwner().
- * - ::KEY_UID, ::KEY_GID \n
- *   Next parameter is taken as the UID (uid_t) or GID (gid_t) that will
- *   be defined on the key.
- *   See keySetUID() and keySetGID().
- * - ::KEY_MODE \n
- *   Next parameter is taken as mode permissions (int) to the key.
- *   See keySetMode().
  *   @snippet keyNew.c With Mode
  * - ::KEY_COMMENT \n
  *   Next parameter is a comment. See keySetComment().
@@ -177,39 +158,6 @@ Key * keyNew (const char * name, ...)
 	return k;
 }
 
-
-/**
- * @internal
- */
-static int elektraSetMetaInt (Key * key, const char * meta, int value)
-{
-	char * str = 0;
-	if ((str = elektraFormat ("%d", value)) == 0)
-	{
-		return -1;
-	}
-
-	keySetMeta (key, meta, str);
-	elektraFree (str);
-	return 0;
-}
-
-// duplicate of keySetMode in meta/meta.c
-static int elektraSetMode (Key * key, mode_t mode)
-{
-	char str[MAX_LEN_INT];
-	if (!key) return -1;
-
-	if (snprintf (str, MAX_LEN_INT - 1, "%o", mode) < 0)
-	{
-		return -1;
-	}
-
-	keySetMeta (key, "mode", str);
-
-	return 0;
-}
-
 /**
  * @copydoc keyNew
  *
@@ -227,9 +175,9 @@ Key * keyVNew (const char * name, va_list va)
 	void * value = 0;
 	void (*func) (void) = 0;
 	int flags = 0;
-	char * owner = 0;
-	int mode = 0;
-	int hasMode = 0;
+
+	// flags that can be set via KEY_FLAGS
+	int allFlags = KEY_BINARY | KEY_LOCK_META | KEY_LOCK_NAME | KEY_LOCK_VALUE;
 
 	while ((action = va_arg (va, elektraKeyFlags)))
 	{
@@ -260,49 +208,23 @@ Key * keyVNew (const char * name, va_list va)
 
 		/* flags without an argument */
 		case KEY_FLAGS:
-			flags |= va_arg (va, int); // FALLTHROUGH
+			flags |= (va_arg (va, int) & allFlags);
+			if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
+			break;
 		case KEY_BINARY:
+			keySetMeta (key, "binary", ""); // FALLTHROUGH
 		case KEY_LOCK_NAME:
 		case KEY_LOCK_VALUE:
 		case KEY_LOCK_META:
-		case KEY_CASCADING_NAME:
-		case KEY_META_NAME:
-		case KEY_EMPTY_NAME:
-			if (action != KEY_FLAGS) flags |= action;
-			if (test_bit (flags, KEY_BINARY)) keySetMeta (key, "binary", "");
+			flags |= action;
 			break;
 
 		/* deprecated flags */
 		case KEY_NAME:
 			name = va_arg (va, char *);
 			break;
-		case KEY_OWNER:
-			owner = va_arg (va, char *);
-			break;
 		case KEY_COMMENT:
 			keySetMeta (key, "comment", va_arg (va, char *));
-			break;
-		case KEY_UID:
-			elektraSetMetaInt (key, "uid", va_arg (va, int));
-			break;
-		case KEY_GID:
-			elektraSetMetaInt (key, "gid", va_arg (va, int));
-			break;
-		case KEY_DIR:
-			mode |= KDB_DIR_MODE;
-			break;
-		case KEY_MODE:
-			hasMode = 1;
-			mode |= va_arg (va, int);
-			break;
-		case KEY_ATIME:
-			elektraSetMetaInt (key, "atime", va_arg (va, time_t));
-			break;
-		case KEY_MTIME:
-			elektraSetMetaInt (key, "mtime", va_arg (va, time_t));
-			break;
-		case KEY_CTIME:
-			elektraSetMetaInt (key, "ctime", va_arg (va, time_t));
 			break;
 
 		default:
@@ -316,20 +238,6 @@ Key * keyVNew (const char * name, va_list va)
 		ELEKTRA_LOG_WARNING ("Invalid name: %s", name);
 		elektraFree (key);
 		return NULL;
-	}
-
-	if (!hasMode && mode == KDB_DIR_MODE)
-	{
-		elektraSetMode (key, KDB_FILE_MODE | KDB_DIR_MODE);
-	}
-	else if (mode != 0)
-	{
-		elektraSetMode (key, mode);
-	}
-
-	if (owner)
-	{
-		keySetOwner (key, owner);
 	}
 
 	keyLock (key, flags);

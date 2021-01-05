@@ -181,29 +181,6 @@ ssize_t keyToStreamBasename (const Key * key, FILE * stream, const char * parent
 			written += fprintf (stream, "<key name=\"%s\"", key->key);
 	}
 
-
-	/* Key type
-	TODO: xml schema does not output type
-	if (options & KDB_O_NUMBERS) {
-		written+=fprintf(stream," type=\"%d\"", key->type);
-	} else {
-		buffer[0]=0;
-
-		if (key->type & KEY_TYPE_DIR) written+=fprintf(stream, " isdir=\"yes\"");
-		if (key->type & KEY_TYPE_REMOVE) written+=fprintf(stream, " isremove=\"yes\"");
-		if (key->type & KEY_TYPE_BINARY) written+=fprintf(stream, " isbinary=\"yes\"");
-	}
-	*/
-
-	if (keyGetUID (key) != (uid_t) -1) written += fprintf (stream, " uid=\"%d\"", (int) keyGetUID (key));
-	if (keyGetGID (key) != (gid_t) -1) written += fprintf (stream, " gid=\"%d\"", (int) keyGetGID (key));
-
-	if (keyGetMode (key) != KDB_FILE_MODE)
-	{
-		written += fprintf (stream, " mode=\"0%o\"", keyGetMode (key));
-	}
-
-
 	if (!key->data.v && !keyComment (key))
 	{ /* no data AND no comment */
 		written += fprintf (stream, "/>");
@@ -448,13 +425,7 @@ ssize_t ksToStream (const KeySet * ks, FILE * stream, KDBStream options)
  */
 int keyOutput (const Key * k, FILE * stream, KDBStream options)
 {
-	time_t t;
-	size_t s;
-	char * tmc;
-
-	size_t c;
-
-	size_t n;
+	size_t s, c, n;
 
 	n = keyGetNameSize (k);
 	if (n > 1)
@@ -508,33 +479,6 @@ int keyOutput (const Key * k, FILE * stream, KDBStream options)
 
 
 	if (options & KDB_O_SHOWMETA) fprintf (stream, " : ");
-	if (options & KEY_UID) fprintf (stream, "UID: %d : ", (int) keyGetUID (k));
-	if (options & KEY_GID) fprintf (stream, "GID: %d : ", (int) keyGetGID (k));
-	if (options & KEY_MODE) fprintf (stream, "Mode: %o : ", (int) keyGetMode (k));
-
-	if (options & KEY_ATIME)
-	{
-		t = keyGetATime (k);
-		tmc = ctime (&t);
-		tmc[24] = '\0';
-		fprintf (stream, "ATime: %s : ", tmc);
-	}
-
-	if (options & KEY_MTIME)
-	{
-		t = keyGetMTime (k);
-		tmc = ctime (&t);
-		tmc[24] = '\0';
-		fprintf (stream, "MTime: %s : ", tmc);
-	}
-
-	if (options & KEY_CTIME)
-	{
-		t = keyGetCTime (k);
-		tmc = ctime (&t);
-		tmc[24] = '\0';
-		fprintf (stream, "CTime: %s : ", tmc);
-	}
 
 	if (options & KDB_O_SHOWFLAGS)
 	{

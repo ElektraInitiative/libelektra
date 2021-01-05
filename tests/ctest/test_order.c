@@ -344,63 +344,12 @@ static void test_cmp (void)
 	succeed_if (keyCmp (k1, k2) == 0, "compare the same key");
 	succeed_if (keyCmp (k2, k1) == 0, "compare the same key");
 
-	keySetOwner (k1, "non_existing_user");
-	succeed_if (keyCmp (k2, k2) == 0, "null owner comparision");
-	succeed_if (keyCmp (k1, k2) > 0, "compare key with no owner with non_existing_user");
-	succeed_if (keyCmp (k2, k1) < 0, "compare key with no owner with non_existing_user");
-
-	keySetOwner (k2, "other_non_existing_user");
-	succeed_if (keyCmp (k1, k2) < 0, "compare key with owner non_existing_user with other_non_existing_user");
-	succeed_if (keyCmp (k2, k1) > 0, "compare key with owner non_existing_user with other_non_existing_user");
-
 	keySetName (k2, "user:/b");
 	succeed_if (keyCmp (k1, k2) < 0, "compare key with different names");
 	succeed_if (keyCmp (k2, k1) > 0, "compare key with different names");
 
 	keyDel (k1);
 	keyDel (k2);
-}
-
-static void test_appendowner (void)
-{
-	Key *key, *s1, *s2, *s3;
-	KeySet * ks;
-
-	printf ("Append Keys with owner");
-
-	key = keyNew ("system:/sw/new", KEY_VALUE, "abc", KEY_END);
-	s1 = keyNew ("system:/sw/new", KEY_VALUE, "xyz1", KEY_OWNER, "s1", KEY_END);
-	s2 = keyNew ("system:/sw/new", KEY_VALUE, "xyz2", KEY_OWNER, "s2", KEY_END);
-	s3 = keyNew ("system:/sw/new", KEY_VALUE, "xyz3", KEY_OWNER, "s3", KEY_END);
-	ks = ksNew (0, KS_END);
-
-	succeed_if (ksAppendKey (ks, key) == 1, "could not append key");
-	succeed_if (ksGetSize (ks) == 1, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == 0, "array not null terminated");
-
-	succeed_if (ksAppendKey (ks, s1) == 2, "could not append key");
-	succeed_if (ksGetSize (ks) == 2, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == s1, "key not on position 1");
-	succeed_if (ks->array[2] == 0, "array not null terminated");
-
-	succeed_if (ksAppendKey (ks, s2) == 3, "could not append key");
-	succeed_if (ksGetSize (ks) == 3, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == s1, "key not on position 1");
-	succeed_if (ks->array[2] == s2, "key not on position 2");
-	succeed_if (ks->array[3] == 0, "array not null terminated");
-
-	succeed_if (ksAppendKey (ks, s3) == 4, "could not append key");
-	succeed_if (ksGetSize (ks) == 4, "wrong size");
-	succeed_if (ks->array[0] == key, "key not on position 0");
-	succeed_if (ks->array[1] == s1, "key not on position 1");
-	succeed_if (ks->array[2] == s2, "key not on position 2");
-	succeed_if (ks->array[3] == s3, "key not on position 3");
-	succeed_if (ks->array[4] == 0, "array not null terminated");
-
-	ksDel (ks);
 }
 
 int main (int argc, char ** argv)
@@ -417,7 +366,6 @@ int main (int argc, char ** argv)
 	test_append ();
 	test_equal ();
 	test_cmp ();
-	test_appendowner ();
 
 	printf ("\n%s RESULTS: %d test(s) done. %d error(s).\n", argv[0], nbTest, nbError);
 

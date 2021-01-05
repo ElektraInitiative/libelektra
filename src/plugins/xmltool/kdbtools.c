@@ -38,7 +38,6 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 	{
 		xmlChar * privateContext = 0;
 		int appended = 0;
-		mode_t isdir = 0;
 		int isbin = 0;
 		int end = 0;
 
@@ -85,46 +84,6 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 			buffer = 0;
 		}
 
-		/* Parse UID */
-		buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *) "uid");
-		if (buffer)
-		{
-			int errsave = errno;
-			char * endptr;
-			long int uid = strtol ((const char *) buffer, &endptr, 10);
-			errno = errsave;
-			if (endptr && *endptr == '\0')
-			{
-				keySetUID (newKey, uid);
-			}
-			xmlFree (buffer);
-			buffer = 0;
-		}
-
-		/* Parse GID */
-		buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *) "gid");
-		if (buffer)
-		{
-			int errsave = errno;
-			char * endptr;
-			long int gid = strtol ((const char *) buffer, &endptr, 10);
-			errno = errsave;
-			if (endptr && *endptr == '\0')
-			{
-				keySetGID (newKey, gid);
-			}
-			xmlFree (buffer);
-			buffer = 0;
-		}
-
-		/* Parse mode permissions */
-		buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *) "mode");
-		int errsave = errno;
-		if (buffer) keySetMode (newKey, strtol ((char *) buffer, 0, 0));
-		errno = errsave;
-		xmlFree (buffer);
-
-
 		if (xmlTextReaderIsEmptyElement (reader))
 		{
 			/* we have a <key ..../> element */
@@ -146,19 +105,6 @@ static int consumeKeyNode (KeySet * ks, const char * context, xmlTextReaderPtr r
 		}
 		xmlFree (buffer);
 
-		/* If "isdir" appears, everything different from "0", "false" or "no"
-		marks it as a dir key */
-		buffer = xmlTextReaderGetAttribute (reader, (const xmlChar *) "isdir");
-		if (buffer)
-		{
-			if (strcmp ((char *) buffer, "0") && strcmp ((char *) buffer, "false") && strcmp ((char *) buffer, "no"))
-				isdir = 1;
-			else
-				isdir = 0;
-		}
-		xmlFree (buffer);
-
-		if (isdir) keySetDir (newKey);
 		if (isbin) keySetMeta (newKey, "binary", "");
 
 		// TODO: should parse arbitrary attributes as metadata

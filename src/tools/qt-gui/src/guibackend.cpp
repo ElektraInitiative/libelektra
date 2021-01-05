@@ -44,7 +44,7 @@ void GUIBackend::createBackend (const QString & mountpoint)
 
 	try
 	{
-		m_backend->setMountpoint (Key (mountpoint.toStdString (), KEY_CASCADING_NAME, KEY_END), m_mountConf);
+		m_backend->setMountpoint (Key (mountpoint.toStdString (), KEY_END), m_mountConf);
 	}
 	catch (MountpointInvalidException const & ex)
 	{
@@ -261,8 +261,14 @@ QStringList GUIBackend::availablePlugins (bool includeStorage, bool includeResol
 		{
 			ptr = modules.load (s);
 		}
+		catch (PluginNoContract const & ex)
+		{
+			cerr << "no contract: " << s << endl;
+			continue;
+		}
 		catch (NoPlugin const & ex)
 		{
+			cerr << "no plugin: " << s << endl;
 			continue;
 		}
 

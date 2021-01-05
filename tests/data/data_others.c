@@ -9,15 +9,9 @@
 // clang-format off
 
 ksNew( 94 ,
-	keyNew ("user:/"
-		, KEY_DIR
-	, KEY_END),
-	keyNew ("user:/test"
-		, KEY_DIR
-	, KEY_END),
-	keyNew ("user:/test/keyset"
-		, KEY_DIR
-	, KEY_END),
+	keyNew ("user:/", KEY_END),
+	keyNew ("user:/test", KEY_END),
+	keyNew ("user:/test/keyset", KEY_END),
 	keyNew ("user:/test/keyset/dir1/key1"
 		, KEY_VALUE, "value1"
 		, KEY_COMMENT, "comment1"

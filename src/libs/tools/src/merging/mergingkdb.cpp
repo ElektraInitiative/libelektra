@@ -46,7 +46,7 @@ int MergingKDB::get (KeySet & returned, Key & parentKey)
 
 int MergingKDB::synchronize (KeySet & returned, std::string const & keyname, ThreeWayMerge & merger)
 {
-	Key parentKey (keyname.c_str (), KEY_CASCADING_NAME, KEY_END);
+	Key parentKey (keyname.c_str (), KEY_END);
 	return synchronize (returned, parentKey, merger);
 }
 

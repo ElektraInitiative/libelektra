@@ -66,7 +66,7 @@ static Key * keyDupWithNS (const Key * origKey, elektraNamespace ns)
 		break;
 	case KEY_NS_CASCADING:
 	default:
-		newKey = keyNew ("/", KEY_CASCADING_NAME, KEY_END);
+		newKey = keyNew ("/", KEY_END);
 		break;
 	}
 	const char * relativeName = keyName (origKey);
@@ -184,7 +184,7 @@ int elektraProfileGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA
 		return 1; // success
 	}
 	// get all keys
-	Key * swKey = keyNew ("/sw", KEY_CASCADING_NAME, KEY_END);
+	Key * swKey = keyNew ("/sw", KEY_END);
 	KeySet * swKS = ksCut (returned, swKey);
 	keyDel (swKey);
 	ksRewind (swKS);
