@@ -44,7 +44,7 @@ void GUIBackend::createBackend (const QString & mountpoint)
 
 	try
 	{
-		m_backend->setMountpoint (Key (mountpoint.toStdString (), KEY_CASCADING_NAME, KEY_END), m_mountConf);
+		m_backend->setMountpoint (Key (mountpoint.toStdString (), KEY_END), m_mountConf);
 	}
 	catch (MountpointInvalidException const & ex)
 	{

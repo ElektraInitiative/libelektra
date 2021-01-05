@@ -173,7 +173,6 @@ $cpp_util.generateForwardDeclContext(support, child)
 @if len($support.override(info)) > 0
 // override
 	kdb::Key search ("${support.override(info)[0]}",
-		KEY_CASCADING_NAME,
 		KEY_END);
 	kdb::Key found = ks.lookup(search, 0);
 	if (found)
@@ -196,7 +195,6 @@ $cpp_util.generateForwardDeclContext(support, child)
 	found = ks.lookup(search, 0);
 @else
 kdb::Key search ("$key",
-		KEY_CASCADING_NAME,
 		KEY_END);
 	kdb::Key found = ks.lookup(search, 0);
 @end if
@@ -232,8 +230,7 @@ kdb::Key search ("$key",
 @else
 				"/",
 @end if
-				KEY_CASCADING_NAME,
-@if $hierarchy.info.get('default') != None:
+		@if $hierarchy.info.get('default') != None:
 				KEY_META, "default", $support.quote($hierarchy.info.get('default')),
 @end if
 @if $hierarchy.info.get('unit'):

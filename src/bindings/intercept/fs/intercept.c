@@ -114,7 +114,7 @@ void init (void)
 	char cwd[PATH_MAX];
 	getcwd (cwd, PATH_MAX);
 	KeySet * tmpKS = ksNew (0, KS_END);
-	Key * parentKey = keyNew (PRELOAD_PATH, KEY_CASCADING_NAME, KEY_END);
+	Key * parentKey = keyNew (PRELOAD_PATH, KEY_END);
 	Key * key;
 	KDB * handle = kdbOpen (parentKey);
 	kdbGet (handle, tmpKS, parentKey);

@@ -80,7 +80,6 @@ void test_key (void)
 			succeed_if (strcmp (keyValue (cur), "BinaryValue") == 0, "value not correct");
 			succeed_if (strcmp (keyComment (cur), "Binary key with hidden name") == 0, "comment not correct");
 			succeed_if (keyIsBinary (cur) == 1, "key is not binary");
-			succeed_if (keyGetMode (cur) == 0440, "could not get mode");
 			break;
 		case 2:
 			succeed_if (strcmp (keyName (cur), "user:/tests/filesys/.HiddenDirectoryKey") == 0, "wrong name");
@@ -93,15 +92,12 @@ void test_key (void)
 			succeed_if (strcmp (keyValue (cur), "StringValue") == 0, "value not correct");
 			succeed_if (strcmp (keyComment (cur), "String key with hidden name") == 0, "comment not correct");
 			succeed_if (keyIsString (cur) == 1, "key is not string");
-			succeed_if (keyGetUID (cur) == 0, "could not get uid value");
-			succeed_if (keyGetGID (cur) == 20, "could not get gid value");
 			break;
 		case 4:
 			succeed_if (strcmp (keyName (cur), "user:/tests/filesys/PerfectBinaryKey") == 0, "wrong name");
 			succeed_if (strcmp (keyValue (cur), "BinaryValue") == 0, "value not correct");
 			succeed_if (strcmp (keyComment (cur), "Binary key with standard name") == 0, "comment not correct");
 			succeed_if (keyIsBinary (cur) == 1, "key is not binary");
-			succeed_if (keyGetGID (cur) == 40, "could not get gid value");
 			break;
 		case 5:
 			succeed_if (strcmp (keyName (cur), "user:/tests/filesys/PerfectDirectoryKey") == 0, "wrong name");
@@ -114,14 +110,12 @@ void test_key (void)
 			succeed_if (strcmp (keyValue (cur), "StringValue") == 0, "value not correct");
 			succeed_if (strcmp (keyComment (cur), "String key with\nstandard name") == 0, "comment not correct");
 			succeed_if (keyIsString (cur) == 1, "key is not string");
-			succeed_if (keyGetUID (cur) == 20, "could not get uid value");
 			break;
 		case 7:
 			succeed_if (strcmp (keyName (cur), "user:/tests/filesys/Ug.ly:Bin@a€ry Key") == 0, "wrong name");
 			succeed_if (keyValue (cur) == 0, "value not correct");
 			succeed_if (strcmp (keyComment (cur), "Binary key with ugly name") == 0, "comment not correct");
 			succeed_if (keyIsBinary (cur) == 1, "key is not binary");
-			succeed_if (keyGetMode (cur) == 230, "could not get mode");
 			// <key type="binary" basename="Ug.ly:Bin@a€ry Key"><comment>Binary key with ugly name</comment></key>
 			break;
 		case 8:

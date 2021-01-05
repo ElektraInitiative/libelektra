@@ -599,7 +599,7 @@ int elektraCsvstorageGet (Plugin * handle, KeySet * returned, Key * parentKey)
 static int isExportKey (const Key * key, const Key * parent, KeySet * ks)
 {
 	if (!ks) return 1;
-	Key * lookupKey = keyNew ("/export", KEY_CASCADING_NAME, KEY_END);
+	Key * lookupKey = keyNew ("/export", KEY_END);
 	keyAddName (lookupKey, keyName (key) + strlen (keyName (parent)) + 1);
 	if (!ksLookupByName (ks, keyName (lookupKey), KDB_O_NONE))
 	{

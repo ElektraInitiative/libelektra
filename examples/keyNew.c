@@ -75,16 +75,6 @@ keyDel(k);
 
 }{
 
-//! [With Mode]
-Key *k=keyNew("user:/tmp/ex3",
-	KEY_VALUE, "some data",    // with a simple value
-	KEY_MODE, 0777,            // permissions
-	KEY_END);                  // end of args
-//! [With Mode]
-keyDel(k);
-
-}{
-
 //! [With Meta]
 Key *k=keyNew("user:/tmp/ex3",
 	KEY_META, "comment", "a comment",  // with a comment
@@ -98,7 +88,7 @@ keyDel(k);
 
 //! [With Flags]
 Key *k=keyNew("user:/tmp/ex3",
-	KEY_FLAGS, KEY_BINARY | KEY_CASCADING_NAME, // flags
+	KEY_BINARY,			// binary key
 	KEY_SIZE, 7,			// assume binary length 7
 	KEY_VALUE, "some data",		// value that will be truncated in 7 bytes
 	KEY_END);			// end of args
@@ -114,8 +104,6 @@ Key *k=keyNew("user:/tmp/ex4",
 	KEY_SIZE, 7,			// assume binary length 7
 	KEY_VALUE, "some data",		// value that will be truncated in 7 bytes
 	KEY_COMMENT, "value is truncated",
-	KEY_OWNER, "root",		// owner (not uid) is root
-	KEY_UID, 0,			// root uid
 	KEY_END);			// end of args
 //! [With Everything]
 printf ("%.7s\n", (char*)keyValue(k));

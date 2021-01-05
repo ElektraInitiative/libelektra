@@ -36,7 +36,7 @@ static void test_keyNamespace (void)
 	succeed_if (keyGetNamespace (key) == KEY_NS_SPEC, "Spec namespace not KEY_NS_SPEC");
 	keyDel (key);
 
-	key = keyNew ("/key", KEY_CASCADING_NAME, KEY_END);
+	key = keyNew ("/key", KEY_END);
 	succeed_if (keyGetNamespace (key) == KEY_NS_CASCADING, "not correct namespace");
 	keyDel (key);
 }

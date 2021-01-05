@@ -73,6 +73,17 @@
   The **mountpoint** is the key where the backend is mounted to.
   All keys of the backend are below that key.
 
+- [Key name](/doc/KEYNAMES.md):
+  All keys in the KDB have a name.
+  This name is the keys unique identifier and follows a particular structure.
+  For more information take look at the [keyname documentation](/doc/KEYNAMES.md).
+
+- [Key name part](/doc/KEYNAMES.md):
+  Key names consist of a series parts (and a namespace).
+
+- [Key base name](/doc/KEYNAMES.md):
+  The last part of a key name.
+
 - [Namespaces](elektra-namespaces.md):
   Allow us to have multiple keys for the same purpose and otherwise the same key name.
 

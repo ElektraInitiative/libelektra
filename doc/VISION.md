@@ -122,7 +122,7 @@ no error-handling and no cleanup):
 int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
-	Key * key = keyNew ("/sw/samba/#0/current", KEY_CASCADING_NAME, KEY_END);
+	Key * key = keyNew ("/sw/samba/#0/current", KEY_END);
 	KDB * handle = kdbOpen (key);
 	kdbGet (handle, myConfig, key);
 

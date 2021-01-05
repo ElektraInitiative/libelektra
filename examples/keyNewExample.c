@@ -25,17 +25,11 @@ int main (void)
 	ksAppendKey (ks, keyNew ("user:/tmp/ex1", KEY_VALUE, "some data", /* with a simple value */
 				 KEY_END));				  /* end of args */
 
-	ksAppendKey (ks, keyNew ("user:/tmp/ex2", KEY_VALUE, "some data", /* with a simple value */
-				 KEY_MODE, 0777,			  /* permissions */
-				 KEY_END));				  /* end of args */
-
 	ksAppendKey (ks, keyNew ("user:/tmp/ex4", KEY_BINARY, KEY_COMMENT, "value is truncated", KEY_SIZE, 7, KEY_VALUE,
 				 "some data", /* value that will be truncated to 7 bytes */
-				 KEY_UID, 0,  /* root uid */
 				 KEY_END));   /* end of args */
 
 	ksAppendKey (ks, keyNew ("user:/tmp/ex5", KEY_VALUE, "some data", /* value  */
-				 KEY_OWNER, "root",			  /* owner (not uid) is root */
 				 KEY_COMMENT, "some comment",		  /* a comment */
 				 KEY_END));				  /* end of args */
 
@@ -43,7 +37,6 @@ int main (void)
 				 KEY_END));	       /* do nothing more */
 
 	ksAppendKey (ks, keyNew ("user:/env/alias/ls",	     /* same key, to compare in output */
-				 KEY_OWNER, "root",	     /* set new owner (not uid) as root */
 				 KEY_COMMENT, "new comment", /* set new comment */
 				 KEY_END));		     /* end of args */
 

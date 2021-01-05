@@ -80,9 +80,7 @@ static GElektraKey * g_bkey = NULL;
 
 static void create_global_keys (void)
 {
-	g_key = gelektra_key_new ("user:/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_OWNER, "myowner", GELEKTRA_KEY_COMMENT,
-				  "mycomment", GELEKTRA_KEY_UID, "123", GELEKTRA_KEY_GID, 456, GELEKTRA_KEY_MODE, 0644, GELEKTRA_KEY_ATIME,
-				  123, GELEKTRA_KEY_MTIME, "456", GELEKTRA_KEY_CTIME, 789, GELEKTRA_KEY_DIR, GELEKTRA_KEY_META, "by",
+	g_key = gelektra_key_new ("user:/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_COMMENT, "mycomment", GELEKTRA_KEY_META, "by",
 				  "manuel", GELEKTRA_KEY_END);
 	succeed_if (g_key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (g_key), "key should be valid");
@@ -219,7 +217,7 @@ static void test_meta_data (void)
 		++metacnt;
 		g_object_unref (meta);
 	}
-	succeed_if (metacnt == 9, "incorrect number of metadata");
+	succeed_if_fmt (metacnt == 2, "incorrect number of metadata: %d", metacnt);
 
 	gelektra_key_setmeta (g_key, "by", "gelektra");
 	meta = gelektra_key_getmeta (g_key, "by");
@@ -232,11 +230,6 @@ static void test_meta_data (void)
 	gelektra_key_copymeta (g_key, key, "by");
 	meta = gelektra_key_getmeta (g_key, "by");
 	succeed_if (!memcmp (gelektra_key_getvalue (meta), "gelektra", sizeof ("gelektra")), "invalid metavalue");
-	g_object_unref (meta);
-
-	gelektra_key_copyallmeta (g_key, key);
-	meta = gelektra_key_getmeta (g_key, "owner");
-	succeed_if (!memcmp (gelektra_key_getvalue (meta), "myowner", sizeof ("myowner")), "invalid metavalue");
 	g_object_unref (meta);
 
 	g_object_unref (key);

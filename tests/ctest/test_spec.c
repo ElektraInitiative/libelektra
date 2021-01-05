@@ -140,7 +140,6 @@ static void test_lookupNoOverride (void)
 
 	// clang-format off
 	Key *specKey = keyNew("/test/lift/limit",
-			KEY_CASCADING_NAME,
 			KEY_META, "default", "1",
 			KEY_META, "override/#0", "/test/person_lift/limit",
 			KEY_META, "override/#1", "/test/material_lift/limit",
@@ -152,7 +151,7 @@ static void test_lookupNoOverride (void)
 	Key * k1 = 0;
 	Key * k2 = 0;
 	KeySet * ks = ksNew (20, k1 = keyNew ("user:/test/lift/limit", KEY_VALUE, "22", KEY_END),
-			     k2 = keyNew ("/test/person_lift/limit", KEY_CASCADING_NAME, KEY_VALUE, "10", KEY_END), KS_END);
+			     k2 = keyNew ("/test/person_lift/limit", KEY_VALUE, "10", KEY_END), KS_END);
 
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == k1, "found wrong key");
 	succeed_if (ksLookup (ks, dup, KDB_O_SPEC) == k1, "found wrong key");
@@ -198,7 +197,7 @@ static void test_lookupNoascading (void)
 {
 	printf ("Test lookup without cascading\n");
 
-	Key * specKey = keyNew ("/abc", KEY_CASCADING_NAME, KEY_END);
+	Key * specKey = keyNew ("/abc", KEY_END);
 
 	Key * d = keyDup (specKey);
 	keySetString (d, "dup");
@@ -217,7 +216,7 @@ static void test_lookupNoascading (void)
 	succeed_if (k != specKey, "should not be specKey");
 	succeed_if (k == d, "should be dup key");
 
-	Key * a = keyNew (keyName (specKey), KEY_CASCADING_NAME, KEY_VALUE, "a", KEY_END);
+	Key * a = keyNew (keyName (specKey), KEY_VALUE, "a", KEY_END);
 	ksAppendKey (ks, a);
 
 	for (int i = 0; i < 5; ++i)
@@ -246,7 +245,7 @@ static void test_lookupDefaultCascading (void)
 {
 	printf ("Test lookup default with cascading\n");
 
-	Key * specKey = keyNew ("/abc", KEY_CASCADING_NAME, KEY_END);
+	Key * specKey = keyNew ("/abc", KEY_END);
 	Key * k = 0;
 	KeySet * ks = ksNew (20, KS_END);
 
@@ -322,7 +321,7 @@ static void test_lookupCascading (void)
 {
 	printf ("Test lookup cascading\n");
 
-	Key * specKey = keyNew ("/abc", KEY_CASCADING_NAME, KEY_META, "override/#0", "/something", KEY_END);
+	Key * specKey = keyNew ("/abc", KEY_META, "override/#0", "/something", KEY_END);
 	Key * k = 0;
 	KeySet * ks = ksNew (20, k = keyNew ("user:/else", KEY_END), KS_END);
 	succeed_if (ksLookup (ks, specKey, KDB_O_SPEC) == 0, "found wrong key");
@@ -345,7 +344,7 @@ static void test_lookupNamespace (void)
 {
 	printf ("Test lookup namespace\n");
 
-	Key * specKey = keyNew ("/abc", KEY_CASCADING_NAME, KEY_META, "namespace/#0", "system", KEY_END);
+	Key * specKey = keyNew ("/abc", KEY_META, "namespace/#0", "system", KEY_END);
 	Key * k = 0;
 
 	KeySet * ks = ksNew (20, k = keyNew ("user:/abc", KEY_END), KS_END);

@@ -45,7 +45,7 @@ static void test_cascadingLookup (void)
 	Key * k3;
 	KeySet * ks = ksNew (10, k0 = keyNew ("system:/benchmark/override/#0", 0), k1 = keyNew ("system:/benchmark/override/#1", 0),
 			     k2 = keyNew ("user:/benchmark/override/#2", 0), k3 = keyNew ("user:/benchmark/override/#3", 0), KS_END);
-	Key * search = keyNew ("/benchmark/override/#0", KEY_CASCADING_NAME, KEY_END);
+	Key * search = keyNew ("/benchmark/override/#0", KEY_END);
 	Key * found = ksLookup (ks, search, 0);
 	succeed_if (found == k0, "found wrong key");
 
@@ -54,7 +54,7 @@ static void test_cascadingLookup (void)
 	succeed_if (found == k1, "found wrong key");
 	keyDel (search);
 
-	search = keyNew ("/benchmark/override/#2", KEY_CASCADING_NAME, KEY_END);
+	search = keyNew ("/benchmark/override/#2", KEY_END);
 	found = ksLookup (ks, search, 0);
 	succeed_if (found == k2, "found wrong key");
 
@@ -103,7 +103,7 @@ static void test_creatingLookup (void)
 
 	ks = ksNew (10, KS_END);
 
-	searchKey = keyNew ("/something", KEY_CASCADING_NAME, KEY_VALUE, "a value", KEY_END);
+	searchKey = keyNew ("/something", KEY_VALUE, "a value", KEY_END);
 
 	// check if duplication works:
 	Key * dupKey = keyDup (searchKey);
