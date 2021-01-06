@@ -275,6 +275,8 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - It is now possible to have two links on the same line of a markdown file rendered on the website. _(Klemens Böswirth)_
 - The file [doc/KEYNAMES.md](../KEYNAMES.md) is now rendered on the website. _(Klemens Böswirth)_
+- Update `ini` and `highlight.js` dependencies. _(Dependa Bot)_
+- <<TODO>>
 - <<TODO>>
 
 ## Outlook
