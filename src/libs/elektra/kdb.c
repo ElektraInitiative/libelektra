@@ -1467,7 +1467,7 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  *     with ksNew().
  *
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
- *     keyNew().
+ *     keyNew(). It must not have read-only name, value or metadata.
  *
  * If you pass NULL on any parameter kdbSet() will fail immediately without doing anything.
  *
@@ -1477,10 +1477,11 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  * as they were retrieved by kdbGet().
  *
  * @par Errors
- * If some error occurs:
+ * If `parentKey == NULL` or @p parentKey has read-only metadata, kdbSet() will
+ * immediately return the error code -1. In all other error cases the following happens:
  * - kdbSet() will leave the KeySet's * internal cursor on the key that generated the error.
  * - Error information will be written into the metadata of
- *   the parent key.
+ *   the parent key, if possible.
  * - None of the keys are actually committed in this situation, i.e. no
  *   configuration file will be modified.
  *
@@ -1520,7 +1521,7 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  *           - empty/invalid (error C01320)
  * @retval 1 on success
  * @retval 0 if nothing had to be done, no changes in KDB
- * @retval -1 on failure, no changes in KDB
+ * @retval -1 on failure, no changes in KDB, an error will be set on @p parentKey if possible (see "Errors" above)
  * @see keyNeedSync()
  * @see ksCurrent() contains the error key
  * @see kdbOpen() and kdbGet() that must be called first
@@ -1529,12 +1530,51 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  */
 int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 {
-	elektraNamespace ns = keyGetNamespace (parentKey);
-	if (ns == KEY_NS_NONE)
+	if (parentKey == NULL)
 	{
-		ELEKTRA_LOG ("ns == KEY_NS_NONE");
+		ELEKTRA_LOG ("parentKey == NULL");
 		return -1;
 	}
+
+	if (test_bit (parentKey->flags, KEY_FLAG_RO_META))
+	{
+		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_META");
+		return -1;
+	}
+
+	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
+	{
+		clearError (parentKey);
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only name passed");
+		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_NAME");
+		return -1;
+	}
+
+	if (test_bit (parentKey->flags, KEY_FLAG_RO_VALUE))
+	{
+		clearError (parentKey);
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only value passed");
+		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_VALUE");
+		return -1;
+	}
+
+	if (handle == NULL)
+	{
+		clearError (parentKey);
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "KDB handle null pointer passed");
+		ELEKTRA_LOG ("handle == NULL");
+		return -1;
+	}
+
+	if (ks == NULL)
+	{
+		clearError (parentKey);
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "KeySet null pointer passed");
+		ELEKTRA_LOG ("ks == NULL");
+		return -1;
+	}
+
+	elektraNamespace ns = keyGetNamespace (parentKey);
 	Key * oldError = keyNew (keyName (parentKey), KEY_END);
 	copyError (oldError, parentKey);
 
@@ -1544,15 +1584,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Metakey with name '%s' passed to kdbSet as parentkey", keyName (parentKey));
 		keyDel (oldError);
 		ELEKTRA_LOG ("ns == KEY_NS_META");
-		return -1;
-	}
-
-	if (!handle || !ks)
-	{
-		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Handle or KeySet null pointer passed");
-		keyDel (oldError);
-		ELEKTRA_LOG ("!handle || !ks");
 		return -1;
 	}
 
