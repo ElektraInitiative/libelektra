@@ -12,6 +12,7 @@ RUN apt-get update && apt-get -y install \
         debhelper \
         default-jdk \
         devscripts \
+        debsigs \
         dh-exec \
         dh-lua \
         dh-python \

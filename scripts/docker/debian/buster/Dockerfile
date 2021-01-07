@@ -17,6 +17,7 @@ RUN apt-get update \
         curl \
         default-jdk \
         devscripts \
+        debsigs \
         dh-exec \
         dh-lua \
         diffutils \
@@ -82,6 +83,9 @@ RUN apt-get update \
         libcurl4-gnutls-dev \
     && rm -rf /var/lib/apt/lists/*
 
+# use lua5.3 since dh-lua installs liblua5.3-dev which sets the
+# dependency on the generated package to lua5.3
+RUN update-alternatives --set lua-interpreter /usr/bin/lua5.3
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
