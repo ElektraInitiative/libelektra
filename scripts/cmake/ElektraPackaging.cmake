@@ -275,11 +275,11 @@ if (UNIX)
 	foreach (component ${EXCLUDED_COMPONENTS})
 		list (REMOVE_ITEM PACKAGES ${component})
 	endforeach (component)
-	# remove libelektra4-all package if a component is excluded
-	set (MISSING_COMPONENTS_LIBELEKTRA4-ALL "")
+
+	# remove excluded components from libelektra4-all dependent components
 	foreach (component ${CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS})
 		if (component IN_LIST EXCLUDED_COMPONENTS)
-			list (APPEND MISSING_COMPONENTS_LIBELEKTRA4-ALL "${component}")
+			list (REMOVE_ITEM CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS ${component})
 		endif ()
 	endforeach (component)
 

@@ -7,9 +7,10 @@ RUN apt-get update && apt-get -y install \
         build-essential \
         bison \
         clang \
-        cmake \
         curl \
         debhelper \
+        debsigs \
+        default-jdk \
         devscripts \
         dh-exec \
         dh-lua \
@@ -31,8 +32,10 @@ RUN apt-get update && apt-get -y install \
         libxerces-c-dev \
         libxml2-dev \
         libyajl-dev \
+        libyaml-cpp-dev \
         libzmq3-dev \
         locales \
+        maven \
         pkg-config \
         python-all \
         python-dev \
@@ -54,6 +57,18 @@ RUN mkdir -p ${GTEST_ROOT} \
       -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
+
+# Install latest CMake version, since current cmake in repository (3.10.2) doesn't
+# support packaging of debuginfo
+RUN wget https://github.com/Kitware/CMake/releases/download/v3.19.2/cmake-3.19.2.tar.gz \
+    && tar -zxvf cmake-3.19.2.tar.gz \
+    && cd cmake-3.19.2 \
+    && ./bootstrap \
+    && make \
+    && make install \
+    && cd .. \
+    && rm -rf cmake-3.19.2 \
+    && rm cmake-3.19.2.tar.gz
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
