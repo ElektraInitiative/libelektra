@@ -22,63 +22,80 @@ For the following Linux distributions and package managers 0.8 packages are avai
 For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
 
-### Ubuntu-Bionic
+We also provide more recent versions and bleeding-edge versions in our repositories:
 
----
+### Debian/Ubuntu
 
-To use the Ubuntu Bionic repository of the latest builds from master following steps need to be made:
+We provide stable and bleeding-edge repositories for following Debian-based distributions:
 
-1. Run `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D919CE8B27A64C16656FCA9FF1532673651F9C6C` to obtain the key.
+- Debian Buster
+- Ubuntu Focal
+- Ubuntu Bionic
 
-2. Add `deb https://ubuntu-bionic-repo.libelektra.org/ bionic main` into `/etc/apt/sources.list`
+To use the our stable repositories with our recent releases, following steps need to be made:
 
-   Which can also be done using:
+1. Run `sudo apt-key adv --keyserver keys.gnupg.net --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839` to obtain the key.
 
-   ```sh
-   apt-get install software-properties-common apt-transport-https
-   echo "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main" | sudo tee /etc/apt/sources.list.d/elektra.list
-   ```
+2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <DISTRIBUTION> main` into `/etc/apt/sources.list`
+   where `<DISTRIBUTION>` is the Codename of your distributions e.g.`focal`,`bionic`,`buster`, etc.
 
-   Or alternatively, you can use (if you do not mind many dependencies just to add one line to a config file):
-
-   ```sh
-   sudo apt-get install software-properties-common apt-transport-https
-   sudo add-apt-repository "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main"
-   ```
-
-### Debian-Buster
-
-To use the Debian Buster repository of the latest builds from master put following lines in
-`/etc/apt/sources.list`:
-
-```
-deb     [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main
-deb-src [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main
-```
-
-Which can also be done using:
+This can also be done using (e.g. for Ubuntu Focal):
 
 ```sh
-sudo apt-get install software-properties-common apt-transport-https
-echo "deb     [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main" | sudo tee /etc/apt/sources.list.d/elektra.list
+apt-get install software-properties-common apt-transport-https
+echo "deb https://debs.libelektra.org/focal focal main" | sudo tee /etc/apt/sources.list.d/elektra.list
 ```
 
 Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
 
 ```sh
 sudo apt-get install software-properties-common apt-transport-https
-sudo add-apt-repository "deb     [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main"
+sudo add-apt-repository "deb https://debs.libelektra.org/focal focal main"
 ```
 
-If you want to rebuild Elektra from Debian unstable or
-our repositories, add a `deb-src` entry to `/etc/apt/sources.list`
-and then run:
+If you would like to use our bleeding-edge builds (master builds), append `-unstable` to `<DISTRIBUTION>`.
+
+The `etc/apt/source.list` entry must look like following: `deb https://debs.libelektra.org/<DISTRIBUTION> <DISTRIBUTION>-unstable main`
+
+E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
+
+> NOTE: for Ubuntu Bionic the yamlcpp plugin is excluded due to missing dependencies and therefore the package `libelektra4-yamlcpp` is not available.
+
+### Fedora
+
+We also provide stable and bleeding-edge packages for Fedora 33.
+
+For the stable repository:
 
 ```sh
-apt-get source -b elektra
+wget https://rpms.libelektra.org/fedora-33/libelektra.repo -O libelektra.repo;
+sudo mv libelektra.repo /etc/yum.repos.d/;
+sudo yum update
+```
+
+Or alternatively you can use dnf to add this repo:
+
+```sh
+dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33/libelektra.repo
+```
+
+For our bleeding-edge builds append `-unstable` to the distribution name:
+
+```sh
+wget https://rpms.libelektra.org/fedora-33-unstable/libelektra.repo -O libelektra.repo;
+sudo mv libelektra.repo /etc/yum.repos.d/;
+sudo yum update
+```
+
+Or alternatively you can use dnf to add this repo:
+
+```sh
+dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33-unstable/libelektra.repo
 ```
 
 ### Install
+
+> TODO: add how-to for debugsym packages (different for rpm and deb)
 
 To get all packaged plugins, bindings and tools install:
 

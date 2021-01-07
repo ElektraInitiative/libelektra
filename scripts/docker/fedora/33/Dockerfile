@@ -8,6 +8,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         cmake \
         curl \
         dbus-devel \
+        devscripts \
         diffutils \
         dnf-plugins-core \
         discount \
@@ -17,9 +18,11 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         flex \
         flex-devel \
         gcc-c++ \
+        ghostscript \
         git \
         glib2 \
         gpgme-devel \
+        graphviz \
         java-1.8.0-openjdk-devel \
         jna \
         libasan \

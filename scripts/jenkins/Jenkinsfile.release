@@ -10,7 +10,32 @@ properties([
       artifactDaysToKeepStr: '31',
       artifactNumToKeepStr: '10'
     )
-  )
+  ),
+  parameters([
+    booleanParam(
+      defaultValue: false,
+      description: 'If activated, the documentation is generated.',
+      name: 'generate_docu'
+    ),
+    string(
+      defaultValue: '1',
+      description: 'Debian package revision.',
+      name: 'debian_revision',
+      trim: true
+    ),
+    string(
+      defaultValue: '1',
+      description: 'Ubuntu package revision.',
+      name: 'ubuntu_revision',
+      trim: true
+    ),
+    string(
+      defaultValue: '1',
+      description: 'Fedora package revision.',
+      name: 'fedora_revision',
+      trim: true
+    )
+  ])
 ])
 
 // Globals
@@ -49,14 +74,27 @@ maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) 
 }
 
 stage("Release") {
-    milestone label: "Release"
-    parallel generateReleaseStages()
+  milestone label: "Release"
+  parallel generateReleaseStages()
 }
 
-stage("Build Documentation") {
-  milestone label: "Documentation"
-  parallel buildDoc()
+
+stage("Build docker images for package testing") {
+  parallel generateDockerBuildStagesWithPackagesInstalled()
 }
+
+stage("Test packages") {
+  parallel generateInstalledPackagesTestStages()
+}
+
+// Pause pipeline and wait for approval to run publishsing steps
+input(message: 'Publish Release?', ok: 'Yes')
+
+stage("Publish") {
+  sequential generatePublishStages()
+}
+
+
 
 /**************/
 /* Generators */
@@ -72,16 +110,58 @@ def dockerInit() {
     echo "Processing DOCKER_IMAGES"
     checkout scm
 
+    // Test and build release artifacts with these images.
     DOCKER_IMAGES.buster = createDockerImageDesc(
       "debian-buster", this.&idTesting,
       "./scripts/docker/debian/buster",
       "./scripts/docker/debian/buster/Dockerfile"
-    ) 
+    )
 
-    DOCKER_IMAGES.focal = createDockerImageDesc( 
+    DOCKER_IMAGES.focal = createDockerImageDesc(
       "ubuntu-focal", this.&idTesting,
       "./scripts/docker/ubuntu/focal",
       "./scripts/docker/ubuntu/focal/Dockerfile"
+    )
+
+    DOCKER_IMAGES.bionic = createDockerImageDesc(
+      "ubuntu-bionic", this.&idTesting,
+      "./scripts/docker/ubuntu/bionic",
+      "./scripts/docker/ubuntu/bionic/Dockerfile"
+    )
+
+    DOCKER_IMAGES.fedora_33 = createDockerImageDesc(
+      "fedora-33", this.&idTesting,
+      "./scripts/docker/fedora/33",
+      "./scripts/docker/fedora/33/Dockerfile"
+    )
+
+    // Insta and test the built packages with theses images.
+    DOCKER_IMAGES.buster_installed = createDockerImageDesc(
+      "debian-buster-installed", this.&idTesting,
+      "./release-artifact/*/buster/",
+      "./scripts/docker/debian/buster/release.Dockerfile",
+      false
+    )
+
+    DOCKER_IMAGES.focal_installed = createDockerImageDesc(
+      "ubuntu-focal-installed", this.&idTesting,
+      "./release-artifact/*/focal/",
+      "./scripts/docker/ubuntu/focal/release.Dockerfile",
+      false
+    )
+
+    DOCKER_IMAGES.bionic_installed = createDockerImageDesc(
+      "ubuntu-bionic-installed", this.&idTesting,
+      "./release-artifact/*/bionic/",
+      "./scripts/docker/ubuntu/bionic/release.Dockerfile",
+      false
+    )
+
+    DOCKER_IMAGES.fedora_33_installed = createDockerImageDesc(
+      "fedora-33-installed", this.&idTesting,
+      "./release-artifact/*/fedora33/",
+      "./scripts/docker/fedora/33/release.Dockerfile",
+      false
     )
 
     /* Build Elektra's documentation with this image.
@@ -94,128 +174,6 @@ def dockerInit() {
     )
 
   }
-}
-
-/** Release stage 
- *
- * Imports the gpg keys and runs the release script.
- * All relevant artifacts (build and test infos, packages, etc) are archived
- *
- * testName: used to identify the release and name the stage
- * image: which docker image should be used
- */
-def buildRelease(testName, image) {
-  return [(testName): {
-    stage(testName) {
-      withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
-        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
-                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
-          sh "gpg --import $KEY"
-          sh "gpg --import $SKEY"
-          withEnv(["DEBSIGN_PROGRAM=gpg",
-                   "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
-                   "DEBEMAIL=autobuilder@libelektra.org"]) {
-            sh "rm -R ./*"
-                
-            sh "git config --global user.name jenkins-release"
-            sh "git config --global user.email jenkins@libelektra.org"
-            
-            dir('libelektra') {
-              deleteDir()
-              sh "git clone https://github.com/ElektraInitiative/libelektra.git ."
-            }
-            dir('ftp') {
-              deleteDir()
-              sh "git clone https://github.com/ElektraInitiative/ftp.git ."
-            }
-
-            sh "sh libelektra/scripts/release/release.sh"
-            sh "mv release.tar.gz ${testName}-release.tar.gz"
-
-            archive(["${testName}-release.tar.gz"])
-
-            dir('libelektra') {
-              sh "git bundle create libelektra.bundle --all"
-              archive(["libelektra.bundle"])
-            }
-
-            script {
-              RELEASE_VERSION = sh(script: 'sh libelektra/scripts/release/get-installed-version.sh', returnStdout: true).trim()
-            }
-          } 
-        }
-      }
-    }
-  }]
-}
-
-/* Generate release stages for release automation
- */
-def generateReleaseStages() {
-  def tasks = [:]
-
-  tasks << buildRelease(
-    "debian-buster-full",
-    DOCKER_IMAGES.buster
-  )
-
-  tasks << buildRelease(
-    "ubuntu-focal",
-    DOCKER_IMAGES.focal
-  )
-  
-  return tasks
-}
-
-/* Stage building and uploading the documentation */
-def buildDoc() {
-  def stageName = "doc"
-  cmakeFlags = [
-    'BUILD_PDF': 'ON',
-    'BUILD_FULL': 'OFF',
-    'BUILD_SHARED': 'OFF',
-    'BUILD_STATIC': 'OFF',
-    'BUILD_TESTING': 'OFF'
-  ]
-  return [(stageName): {
-    stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.buster_doc) {
-        sh "git config --global user.name jenkins-release"
-        sh "git config --global user.email jenkins@libelektra.org"
-
-        dir('build') {
-          deleteDir()
-          cmake(env.WORKSPACE, cmakeFlags)
-          sh "make html man"
-        }
-
-        dir('doc') {
-          deleteDir()
-          sh "git clone https://github.com/ElektraInitiative/doc.git ."
-        }
-
-        dir('doc/api') {
-          sh "mkdir ${RELEASE_VERSION}"
-          sh "cp -a ${WORKSPACE}/build/doc/html ${WORKSPACE}/build/doc/latex ${WORKSPACE}/build/doc/man ${RELEASE_VERSION}/"
-          sh "rm current"
-          sh "ln -s ${RELEASE_VERSION} current"
-          sh "git add current ${RELEASE_VERSION}"
-        }
-
-        dir('doc') {
-          sh "git commit -a -m '${RELEASE_VERSION} Release'"
-          sh "git bundle create docu.bundle --all"
-          archive(["docu.bundle"])
-        }
-
-        warnings parserConfigurations: [
-          [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
-        ]
-        
-        deleteDir()
-      }
-    }
-  }]
 }
 
 /* Generate Stages to pull all docker images */
@@ -238,6 +196,423 @@ def generateDockerBuildStages() {
   }
   return tasks
 }
+
+/* Generate release stages for release automation
+ */
+def generateReleaseStages() {
+  def tasks = [:]
+
+  tasks << buildRelease(
+    "debian-buster",
+    DOCKER_IMAGES.buster,
+    params.debian_revision
+  )
+
+  tasks << buildRelease(
+    "ubuntu-focal",
+    DOCKER_IMAGES.focal,
+    params.ubuntu_revision
+  )
+
+  tasks << buildRelease(
+    "ubuntu-bionic",
+    DOCKER_IMAGES.bionic,
+    params.ubuntu_revision
+  )
+
+  tasks << buildRelease(
+    "fedora-33",
+    DOCKER_IMAGES.fedora_33,
+    params.fedora_revision,
+    true
+  )
+
+  return tasks
+
+}
+
+/* Generate Docker Build Stages with installed libelektra packages
+ */
+def generateDockerBuildStagesWithPackagesInstalled() {
+  def tasks = [:]
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.focal_installed,
+    "ubuntu-focal"
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.bionic_installed,
+    "ubuntu-bionic"
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.fedora_33_installed,
+    "fedora-33"
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.buster_installed,
+    "debian-buster"
+  )
+
+  tasks << buildDoc()
+
+  return tasks
+}
+
+/* Generates Testing stages where installed packages are tested
+ */
+def generateInstalledPackagesTestStages() {
+  def tasks = [:]
+  tasks << testInstalledPackage(
+    "ubuntu-focal-installed",
+    DOCKER_IMAGES.focal_installed
+  )
+  tasks << testInstalledPackage(
+    "ubuntu-bionic-installed",
+    DOCKER_IMAGES.bionic_installed
+  )
+  tasks << testInstalledPackage(
+    "fedora-33-installed",
+    DOCKER_IMAGES.fedora_33_installed
+  )
+
+  tasks << testInstalledPackage(
+    "debian-buster-installed",
+    DOCKER_IMAGES.buster_installed
+  )
+
+  return tasks
+}
+
+/* Generate Publish Stages
+ */
+def generatePublishStages() {
+  def tasks = [:]
+
+  tasks << publish(
+    "debian-buster",
+    DOCKER_IMAGES.buster_installed.context,
+    "buster",
+    "buster",
+    "DEB",
+    params.debian_revision
+  )
+
+  tasks << publish(
+    "ubuntu-focal",
+    DOCKER_IMAGES.focal_installed.context,
+    "focal",
+    "focal",
+    "DEB",
+    params.ubuntu_revision
+  )
+
+  tasks << publish(
+    "ubuntu-bionic",
+    DOCKER_IMAGES.bionic_installed.context,
+    "bionic",
+    "bionic",
+    "DEB",
+    params.ubuntu_revision
+  )
+
+  tasks << publish(
+    "fedora-33",
+    DOCKER_IMAGES.fedora_33_installed.context,
+    "fedora-33",
+    "fedora-33",
+    "RPM",
+    params.fedora_revision
+  )
+
+  return tasks
+}
+
+/** Release stage
+ *
+ * Imports the gpg keys and runs the release script.
+ * All relevant artifacts (build and test infos, packages, etc) are archived
+ *
+ * testName: used to identify the release and name the stage
+ * image: which docker image should be used
+ */
+def buildRelease(testName, image, packageRevision='1', placeholderDir=false) {
+  return [(testName): {
+    stage(testName) {
+      withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
+        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
+                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
+          sh "gpg --import $KEY"
+          sh "gpg --import $SKEY"
+          withEnv(["DEBSIGN_PROGRAM=gpg",
+                   "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
+                   "DEBEMAIL=autobuilder@libelektra.org"]) {
+            sh "rm -rf ./*"
+
+            sh "git config --global user.name jenkins-release"
+            sh "git config --global user.email jenkins@libelektra.org"
+            def dirStructure = './'
+            if (placeholderDir) {
+              dirStructure = dirStructure + 'placeholder/placeholder/placeholder/placeholder'
+            }
+            dir(dirStructure) {
+              dir('libelektra') {
+                deleteDir()
+                checkout scm
+              }
+
+              sh "sh libelektra/scripts/release/release.sh ${packageRevision}"
+              sh "mv release.tar.gz ${testName}-release.tar.gz"
+
+              archive(["${testName}-release.tar.gz"])
+
+              dir('libelektra') {
+                sh "git bundle create libelektra.bundle --all"
+                archive(["libelektra.bundle"])
+              }
+
+              script {
+                RELEASE_VERSION = sh(
+                  script: 'sh libelektra/scripts/release/get-installed-version.sh',
+                  returnStdout: true
+                ).trim()
+              }
+            }
+            deleteDir()
+          }
+        }
+      }
+    }
+  }]
+}
+
+def testInstalledPackage(testName, image) {
+  return [(testName): {
+    stage(testName) {
+      withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
+        checkout scm
+
+        sh "./scripts/release/release-tests.sh ./ ${RELEASE_VERSION} package OFF"
+        sh "tar -czvf ${testName}-release.tar.gz ./${RELEASE_VERSION}"
+
+        archive(["${testName}-release.tar.gz"])
+        deleteDir()
+
+      }
+    }
+  }]
+}
+
+/* Publish all rpm packages and updates the repo
+ *
+ * Also deletes older versions from the repo.
+ * @param remote where the repository is located
+ * @param remotedir must match with the directory tree inside the remote
+ * @param repoName name of the repository
+ * @param repoPrefix prefix of the repository
+ * @param packageRevision revision number of the package
+ */
+def publishDebPackages(remote, remotedir, repoName, repoPrefix,
+                       releaseVersion, packageRevision='1') {
+  sshPublisher(
+    publishers: [
+      sshPublisherDesc(
+        verbose: true,
+        configName: remote,
+        transfers: [
+          sshTransfer(
+            sourceFiles: '*.d*eb',
+            remoteDirectory: remotedir
+          ),
+          sshTransfer(
+            sourceFiles: '*.tar.gz',
+            remoteDirectory: remotedir
+          )
+        ]
+      )
+    ],
+    failOnError: true
+  )
+
+  // This step is necessary since running the commands to update
+  // the aptly repo directly in the `exeecCommand` results in
+  // invalid interpolation behaviour of `$Version` which is
+  // caused by Grovvys GString.
+  // Escaping could not solve this issue.
+  dir("${WORKSPACE}/scripts/release/") {
+    sshPublisher(
+      publishers: [
+        sshPublisherDesc(
+          verbose: true,
+          configName: remote,
+          transfers: [
+            sshTransfer(
+              sourceFiles: 'update-aptly-repo.sh',
+              remoteDirectory: 'packaging/scripts/',
+              execCommand: """\
+sh /srv/libelektra/packaging/scripts/update-aptly-repo.sh \
+${repoName} ${repoPrefix} ${releaseVersion} ${packageRevision}"""
+            ),
+          ]
+        )
+      ],
+      failOnError: true
+    )
+  }
+}
+
+/* Publish all rpm packages and updates the repo
+ *
+ * Also deletes older versions from the repo.
+ * @param remote where the repository is located
+ * @param remotedir must match with the directory tree inside the remote
+ * @param repoName name of the repository
+ * @param packageRevision revision number of the package
+ */
+def publishRpmPackages(remote, remotedir, repoName, packageRevision='1') {
+  sshPublisher(
+    publishers: [
+      sshPublisherDesc(
+        verbose: true,
+        configName: remote,
+        transfers: [
+          sshTransfer(
+            sourceFiles: '*.rpm',
+            remoteDirectory: remotedir,
+            execCommand: """\
+rm -rf /srv/rpm-repo/${repoName}/packages/*.rpm && \
+mv /srv/libelektra/packaging/incoming/${repoName}/*.rpm /srv/rpm-repo/${repoName}/packages/ && \
+createrepo /srv/rpm-repo/${repoName}/ && \
+rm -rf /srv/rpm-repo/${repoName}/repodata/repomd.xml.asc && \
+gpg2 --detach-sign --armor -u A9A25CC1CC83E839 --pinentry-mode=loopback --batch --passphrase-file \
+/home/jenkins/.aptly/secret /srv/rpm-repo/${repoName}/repodata/repomd.xml"""
+          ),
+          sshTransfer(
+            sourceFiles: '*.tar.gz',
+            remoteDirectory: remotedir
+          )
+        ]
+      )
+    ],
+    failOnError: true
+  )
+}
+
+/* Publish changes and artifacts
+ *
+ * @param correspondingReleaseTestName corresponding name of the test stage in which artifcats
+ *                                     necessaryfor this stage have been generated
+ * @param context filepath under which packages are located
+ * @param repoName name of the package repository
+ * @param repoPrefix prefix of the package repository
+ * @param packageType e.g. DEB, RPM
+ * @param packageRevision revision number of the package
+ */
+def publish(correspondingReleaseTestName, context, repoName, repoPrefix, packageType, packageRevision) {
+  return [(correspondingReleaseTestName): {
+    stage(correspondingReleaseTestName) {
+      withDockerEnv(DOCKER_IMAGES.buster) {
+        copyArtifacts(
+          filter: "artifacts/${correspondingReleaseTestName}/${correspondingReleaseTestName}-release.tar.gz",
+          fingerprintArtifacts: true,
+          projectName: '${JOB_NAME}',
+          selector: specific('${BUILD_NUMBER}')
+        )
+        dir('release-artifact') {
+          deleteDir()
+          sh """\
+tar -zxvf ../artifacts/${correspondingReleaseTestName}/${correspondingReleaseTestName}-release.tar.gz \
+-C ./ --strip-components=1"""
+        }
+        dir('ftp') {
+          deleteDir()
+          // TODO: checkout ftp dir, add packages and push
+          // sh "git clone https://github.com/ElektraInitiative/ftp.git ."
+        }
+        dir("copy") {
+          deleteDir()
+          sh "mv ../${context}* ./"
+          switch(packageType) {
+            case "DEB":
+              publishDebPackages(
+                'doc.libelektra.org',
+                "/packaging/incoming/${repoName}/",
+                repoName,
+                repoPrefix,
+                RELEASE_VERSION,
+                packageRevision
+              )
+              break
+            case "RPM":
+              publishRpmPackages(
+                'doc.libelektra.org',
+                "/packaging/incoming/${repoName}/",
+                repoName,
+                packageRevision
+              )
+              break
+            default:
+              currentBuild.result = 'FAILURE'
+              break
+          }
+        }
+      }
+    }
+  }]
+}
+
+// /* Stage building and uploading the documentation */
+def buildDoc() {
+  def stageName = "Build Documentation"
+  cmakeFlags = [
+    'BUILD_PDF': 'ON',
+    'BUILD_FULL': 'OFF',
+    'BUILD_SHARED': 'OFF',
+    'BUILD_STATIC': 'OFF',
+    'BUILD_TESTING': 'OFF'
+  ]
+  return [(stageName): {
+    maybeStage(stageName, params.generate_docu) {
+      withDockerEnv(DOCKER_IMAGES.buster_doc) {
+        sh "git config --global user.name jenkins-release"
+        sh "git config --global user.email jenkins@libelektra.org"
+
+        dir('build') {
+          deleteDir()
+          cmake(env.WORKSPACE, cmakeFlags)
+          sh "make html man"
+        }
+
+        dir('doc') {
+          deleteDir()
+          sh "git clone https://github.com/ElektraInitiative/doc.git ."
+        }
+
+        dir('doc/api') {
+          dir(RELEASE_VERSION) {
+            sh """\
+cp -a ${WORKSPACE}/build/doc/html ${WORKSPACE}/build/doc/latex \
+${WORKSPACE}/build/doc/man ./"""
+          }
+          sh "rm current"
+          sh "ln -s ${RELEASE_VERSION} current"
+          sh "git add current ${RELEASE_VERSION}"
+        }
+
+        dir('doc') {
+          sh "git commit -a -m '${RELEASE_VERSION} Release'"
+          sh "git bundle create docu.bundle --all"
+          archive(["docu.bundle"])
+        }
+
+        warnings parserConfigurations: [
+          [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
+        ]
+
+        deleteDir()
+      }
+    }
+  }]
+}
+
 
 /* Returns a stage that tries to pull an image
  *
@@ -289,7 +664,6 @@ def buildImageStage(image) {
 --build-arg JENKINS_GROUPID=${gid} \
 --build-arg JENKINS_USERID=${uid} \
 --build-arg PARALLEL=${cpus} \
---build-arg BASE_IMG=${DOCKER_IMAGES.buster.id} \
 -f ${image.file} ${image.context}"""
           )
           i.push()
@@ -297,6 +671,60 @@ def buildImageStage(image) {
       }
     }
   }]
+}
+
+/* Returns a map with a closure that builds image
+ *
+ * @param image Image that needs to be build
+ */
+def buildImageWithPackagesStage(image, previousTaskName) {
+  def taskname = "build/${image.id}/"
+  return [(taskname): {
+    stage(taskname) {
+      node(DOCKER_NODE_LABEL) {
+        echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
+        docker.withRegistry("https://${REGISTRY}",
+                          'docker-hub-elektra-jenkins') {
+          checkout scm
+
+          copyArtifacts(
+            filter: "artifacts/${previousTaskName}/${previousTaskName}-release.tar.gz",
+            fingerprintArtifacts: true,
+            projectName: '${JOB_NAME}',
+            selector: specific('${BUILD_NUMBER}')
+          )
+          dir('release-artifact') {
+            deleteDir()
+            sh """\
+tar -zxvf ../artifacts/${previousTaskName}/${previousTaskName}-release.tar.gz \
+-C ./ --strip-components=1"""
+          }
+
+          def uid = getUid()
+          def gid = getGid()
+          def cpus = cpuCount()
+          def i = docker.build(
+            image.id,"""\
+--build-arg JENKINS_GROUPID=${gid} \
+--build-arg JENKINS_USERID=${uid} \
+--build-arg PARALLEL=${cpus} \
+-f ${image.file} ${image.context}"""
+          )
+          i.push()
+        }
+      }
+    }
+  }]
+}
+
+/**
+ * Run set of tasks sequentially. Similar to `parallel` directive.
+ * @param stages List of stages that will be run sequentially
+ */
+def sequential(stages) {
+  for (stage in stages) {
+    stage.value.call()
+  }
 }
 
 /********************/

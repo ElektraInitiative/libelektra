@@ -326,6 +326,13 @@ def dockerInit() {
       "./scripts/docker/ubuntu/bionic/Dockerfile"
     )
 
+    /* Ubuntu bionic image*/
+    DOCKER_IMAGES.focal = createDockerImageDesc(
+      "focal", this.&idTesting,
+      "./scripts/docker/ubuntu/focal",
+      "./scripts/docker/ubuntu/focal/Dockerfile"
+    )
+
     /* Fedora 32 image*/
     DOCKER_IMAGES.fedora_32 = createDockerImageDesc(
       "fedora-32", this.&idTesting,
@@ -1049,18 +1056,23 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
  */
 def generateArtifactStages() {
   def tasks = [:]
-  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster)
-  tasks << buildDebianPackage("buildPackage/ubuntu/bionic", DOCKER_IMAGES.bionic)
+  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster, "buster-unstable", "buster")
+  tasks << buildDebianPackage("buildPackage/ubuntu/bionic", DOCKER_IMAGES.bionic, "bionic-unstable", "bionic")
+  tasks << buildDebianPackage("buildPackage/ubuntu/focal", DOCKER_IMAGES.focal, "focal-unstable", "focal")
+  tasks << buildFedoraPackage("buildPackage/fedora/33", DOCKER_IMAGES.fedora_33, "fedora-33-unstable", "fedora-33-unstable")
   tasks << buildWebsite()
   // tasks << buildWebUI()
   return tasks
 }
 
-/* Merges into debian branch and runs gbp buildpackage
+/* Runs the packaging script and publishes to unstable repo
  *
- * stageName: e.g. buildPackage/debian/<codename>
- * image: must be one of DOCKER_IMAGES */
-def buildDebianPackage(stageName, image) {
+ * @param stageName e.g. buildPackage/debian/<codename>
+ * @param image must be one of DOCKER_IMAGES
+ * @param repoName name of the package repository
+ * @param repoPrefix prefix of the package repository
+ */
+def buildDebianPackage(stageName, image, repoName, repoPrefix) {
   return [(stageName): {
     stage(stageName) {
       return withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
@@ -1087,23 +1099,32 @@ def buildDebianPackage(stageName, image) {
               sh "git config --global user.name jenkins-builder"
               sh "git config --global user.email jenkins@libelektra.org"
 
-              sh "git checkout -B temp"
-              sh "git tag -f $VERSION"
-
-              sh "git checkout -B debian origin/debian"
-              sh "git merge --no-ff -m 'merge $VERSION' temp"
-
-              sh "dch -l '.$BUILD_NUMBER' 'auto build'"
-              sh "git commit -am 'auto build $VERSION'"
-
-              sh "gbp buildpackage -sa"
-            }
-            if(isMaster()) {
-              if(stageName == 'buildPackage/debian/buster'){
-                publishPackages('a7', 'compose/frontend/volumes/incoming')
+              dir('scripts/packaging') {
+                sh "dch -l '.$BUILD_NUMBER' 'auto build'"
+                sh "git commit -am 'auto build $VERSION'"
               }
-              if(stageName == 'buildPackage/ubuntu/bionic'){
-                publishPackages('doc.libelektra.org', '/incoming/')
+
+              dir("build") {
+                def packageRevision = sh(
+                  returnStdout: true,
+                  script: 'dpkg-parsechangelog --show-field Version -l ../scripts/packaging/debian/changelog | cut -d "-" -f2'
+                ).trim()
+                sh "../scripts/packaging/package.sh ${packageRevision}"
+                sh "../scripts/release/sign-packages.sh ./package"
+
+                dir("package") {
+                  if(isMaster()) {
+                    publishDebPackages(
+                      'doc.libelektra.org',
+                      "/packaging/incoming/${repoName}/",
+                      repoName,
+                      repoPrefix,
+                      "$VERSION",
+                      packageRevision
+                    )
+
+                  }
+                }
               }
             }
           }
@@ -1111,6 +1132,165 @@ def buildDebianPackage(stageName, image) {
       }
     }
   }]
+}
+
+/* Runs the packaging script and publishes to unstable repo
+ *
+ * @param stageName e.g. buildPackage/debian/<codename>
+ * @param image must be one of DOCKER_IMAGES
+ * @param repoName name of the package repository
+ * @param repoPrefix prefix of the package repository
+ */
+def buildFedoraPackage(stageName, image, repoName, repoPrefix) {
+  return [(stageName): {
+    stage(stageName) {
+      return withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
+        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
+                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
+          sh "gpg --import $KEY"
+          sh "gpg --import $SKEY"
+          sh "rm -R ./*"
+          def targetDir="./placeholder/placeholder/placeholder/placeholder/libelektra"
+          checkout scm: [
+            $class: 'GitSCM',
+            branches: scm.branches,
+            extensions: scm.extensions + [
+              [$class: 'PerBuildTag'],
+              [$class: 'RelativeTargetDirectory',
+               relativeTargetDir: targetDir]
+            ],
+            userRemoteConfigs: scm.userRemoteConfigs
+          ]
+          dir(targetDir) {
+            sh "git config --global user.name jenkins-builder"
+            sh "git config --global user.email jenkins@libelektra.org"
+
+            def packageRevision = ''
+            dir('scripts/packaging/fedora') {
+              sh "./update-rpm-changelog.sh -l '.$BUILD_NUMBER' -m 'auto build'"
+              sh "git commit -am 'auto build $VERSION'"
+              packageRevision = sh(
+                returnStdout: true,
+                script: './update-rpm-changelog.sh -p | cut -d "-" -f2'
+              ).trim()
+            }
+
+            dir("build") {
+              sh "../scripts/packaging/package.sh ${packageRevision}"
+              sh "../scripts/release/sign-packages.sh ./package"
+
+              dir("package") {
+                if(isMaster()) {
+                  publishRpmPackages(
+                    'doc.libelektra.org',
+                    "/packaging/incoming/${repoName}/",
+                    repoName,
+                    packageRevision
+                  )
+
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }]
+}
+
+/* Publish all rpm packages and updates the repo
+ *
+ * Also deletes older versions from the repo.
+ * @param remote where the repository is located
+ * @param remotedir must match with the directory tree inside the remote
+ * @param repoName name of the repository
+ * @param repoPrefix prefix of the repository
+ * @param packageRevision revision number of the package
+ */
+def publishDebPackages(remote, remotedir, repoName, repoPrefix,
+                       releaseVersion, packageRevision='1') {
+  sshPublisher(
+    publishers: [
+      sshPublisherDesc(
+        verbose: true,
+        configName: remote,
+        transfers: [
+          sshTransfer(
+            sourceFiles: '*.d*eb',
+            remoteDirectory: remotedir
+          ),
+          sshTransfer(
+            sourceFiles: '*.tar.gz',
+            remoteDirectory: remotedir
+          )
+        ]
+      )
+    ],
+    failOnError: true
+  )
+
+  // This step is necessary since running the commands to update
+  // the aptly repo directly in the `exeecCommand` results in
+  // invalid interpolation behaviour of `$Version` which is
+  // caused by Grovvys GString.
+  // Escaping could not solve this issue.
+  dir("${WORKSPACE}/scripts/release/") {
+    sshPublisher(
+      publishers: [
+        sshPublisherDesc(
+          verbose: true,
+          configName: remote,
+          transfers: [
+            sshTransfer(
+              sourceFiles: 'update-aptly-repo.sh',
+              remoteDirectory: 'packaging/scripts/',
+              execCommand: """\
+sh /srv/libelektra/packaging/scripts/update-aptly-repo.sh \
+${repoName} ${repoPrefix} ${releaseVersion} ${packageRevision}"""
+            ),
+          ]
+        )
+      ],
+      failOnError: true
+    )
+  }
+}
+
+/* Publish all rpm packages and updates the repo
+ *
+ * Also deletes older versions from the repo.
+ * @param remote where the repository is located
+ * @param remotedir must match with the directory tree inside the remote
+ * @param repoName name of the repository
+ * @param packageRevision revision number of the package
+ */
+def publishRpmPackages(remote, remotedir, repoName, packageRevision='1') {
+  sshPublisher(
+    publishers: [
+      sshPublisherDesc(
+        verbose: true,
+        configName: remote,
+        transfers: [
+          sshTransfer(
+            sourceFiles: '*.rpm',
+            remoteDirectory: remotedir,
+            execCommand: """\
+rm -rf /srv/rpm-repo/${repoName}/packages/*.rpm && \
+mv /srv/libelektra/packaging/incoming/${repoName}/*.rpm /srv/rpm-repo/${repoName}/packages/ && \
+createrepo /srv/rpm-repo/${repoName}/ && \
+rm -rf /srv/rpm-repo/${repoName}/repodata/repomd.xml.asc && \
+gpg2 --detach-sign --armor -u A9A25CC1CC83E839 --pinentry-mode=loopback --batch --passphrase-file \
+/home/jenkins/.aptly/secret /srv/rpm-repo/${repoName}/repodata/repomd.xml"""
+          ),
+          sshTransfer(
+            sourceFiles: '*.tar.gz',
+            remoteDirectory: remotedir
+          )
+        ]
+      )
+    ],
+    failOnError: true
+  )
 }
 
 def deployDockerContainer(name, imageDesc, hostName) {
@@ -1508,7 +1688,15 @@ def publishPackages(remote, remotedir) {
             remoteDirectory: remotedir
           ),
           sshTransfer(
+            sourceFiles: '*.ddeb',
+            remoteDirectory: remotedir
+          ),
+          sshTransfer(
             sourceFiles: '*.build',
+            remoteDirectory: remotedir
+          ),
+          sshTransfer(
+            sourceFiles: '*.build.error',
             remoteDirectory: remotedir
           ),
           sshTransfer(
