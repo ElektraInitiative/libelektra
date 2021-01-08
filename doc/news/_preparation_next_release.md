@@ -289,8 +289,12 @@ you up to date with the multi-language support provided by Elektra.
 
 - We now use Debian sid to build the documentation instead of Debian stretch. The Doxygen version in Debian stretch [contains a bug](https://github.com/doxygen/doxygen/issues/6456) that causes the generation of the PDF documentation to fail. _(René Schwaiger)_
 - Use Fedora 33 and 32, drop Fedora 31 use in Jenkins. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
+- Update Release and Main pipeline to generate and publish packages for the same distributions with CPack (Debian Buster, Ubuntu Bionic, Ubuntu Focal, Fedora-33)  _(Robert Sowula)_
+- Add a stage to the release pipeline in which the generated packages are installed and tested. _(Robert Sowula)_
+
+### Package Repositories
+
+- We now provide release and unstable (master built) packages in our own repositories for Debian Buster, Ubuntu Bionic, Ubuntu Focal and Fedora-33. _(Robert Sowula)_
 
 ### Travis
 
