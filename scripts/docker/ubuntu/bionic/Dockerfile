@@ -25,7 +25,7 @@ RUN apt-get update && apt-get -y install \
         libdbus-1-dev \
         libgit2-dev \
         libgpgme-dev \
-        liblua5.2-dev \
+        liblua5.3-dev \
         libmarkdown2-dev \
         libssl-dev \
         libsystemd-dev \
@@ -48,6 +48,13 @@ RUN apt-get update && apt-get -y install \
         swig \
     && rm -rf /var/lib/apt/lists/*
 
+# use lua5.3 because dh-lua installs liblua5.3-dev which sets the
+# dependency on the generated package to lua5.3
+# lua 5.3 doesn't setup lua-interpreter alternative, therefore needs to be
+# explicitly set (https://bugs.launchpad.net/ubuntu/+source/lua5.3/+bug/1707212)
+RUN update-alternatives --install /usr/bin/lua lua-interpreter /usr/bin/lua5.3 130 \
+    && update-alternatives --install /usr/bin/luac lua-compiler /usr/bin/luac5.3 130
+
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=release-1.10.0
@@ -62,13 +69,11 @@ RUN mkdir -p ${GTEST_ROOT} \
 # support packaging of debuginfo
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.19.2/cmake-3.19.2.tar.gz \
     && tar -zxvf cmake-3.19.2.tar.gz \
+    && rm cmake-3.19.2.tar.gz \
     && cd cmake-3.19.2 \
     && ./bootstrap \
     && make \
-    && make install \
-    && cd .. \
-    && rm -rf cmake-3.19.2 \
-    && rm cmake-3.19.2.tar.gz
+    && make install
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
