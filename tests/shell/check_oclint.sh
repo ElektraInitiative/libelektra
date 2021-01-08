@@ -14,8 +14,7 @@ test -f "@PROJECT_BINARY_DIR@/compile_commands.json" || {
 	exit 0
 }
 
-cd "@CMAKE_SOURCE_DIR@" || exit
-oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-analyzer \
+set -- \
 	"src/libs/ease/array.c" \
 	"src/libs/ease/keyname.c" \
 	"src/libs/utility/text.c" \
@@ -23,9 +22,20 @@ oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-an
 	"src/plugins/ccode/"*.cpp \
 	"src/plugins/cpptemplate/"*.cpp \
 	"src/plugins/directoryvalue/"*.cpp \
-	"src/plugins/mini/mini.c" \
-	"src/plugins/yamlcpp/"*.cpp \
-	"src/plugins/yamlsmith/"*.cpp
+	"src/plugins/mini/mini.c"
+
+if [ "$(uname -s)" = Darwin ] && [ "$(uname -r | cut -d '.' -f1)" -eq 19 ]; then
+	printerr 'OCLint does not work on macOS 10.15 if source files use headers that were included using the option `SYSTEM`.\n'
+	printerr 'The script will therefore *not* check the source files of the YAML CPP and Yan LR plugins.'
+else
+	set -- $@ \
+		"src/plugins/yamlcpp/"*.cpp \
+		"src/plugins/yanlr/"*.cpp
+fi
+
+cd "@CMAKE_SOURCE_DIR@" || exit
+oclint -p "@PROJECT_BINARY_DIR@" -enable-global-analysis -enable-clang-static-analyzer $@
+
 exit_if_fail "OCLint found problematic code"
 
 end_script
