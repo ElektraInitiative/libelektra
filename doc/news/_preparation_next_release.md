@@ -99,7 +99,7 @@ There are two places that will still contain the old syntax after the update:
 Fixing the first instance is optional.
 There the key name is just used to create a unique name for the mountpoint.
 
-The second instance, however, must be fix or Elektra will be unusable.
+The second instance, however, must be fixed or Elektra will be unusable.
 
 > **Disclaimer:** We cannot guarantee that the commands below work for all cases.
 > We also make no guarantees that the command will not break things.
