@@ -238,7 +238,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
+- We fixed the (possibly) infinitely running function `generate-random-string` in [check-env-dep](../../scripts/check-env-dep).
+  _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
