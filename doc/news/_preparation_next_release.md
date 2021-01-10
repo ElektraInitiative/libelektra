@@ -99,7 +99,7 @@ There are two places that will still contain the old syntax after the update:
 Fixing the first instance is optional.
 There the key name is just used to create a unique name for the mountpoint.
 
-The second instance, however, must be fix or Elektra will be unusable.
+The second instance, however, must be fixed or Elektra will be unusable.
 
 > **Disclaimer:** We cannot guarantee that the commands below work for all cases.
 > We also make no guarantees that the command will not break things.
@@ -238,7 +238,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
+- We fixed the (possibly) infinitely running function `generate-random-string` in [check-env-dep](../../scripts/check-env-dep).
+  _(René Schwaiger)_
 - <<TODO>>
 - <<TODO>>
 
@@ -278,6 +279,10 @@ you up to date with the multi-language support provided by Elektra.
 - Upgrade Cirrus Fedora docker image to Fedora 33. _(Mihael Pranjić)_
 - Upgrade to Ruby 3.0 for macOS builds. _(Mihael Pranjić)_
 - <<TODO>>
+
+### GitHub Actions
+
+- We added a build job that translates Elektra with GCC on macOS. _(Mihael Pranjić, René Schwaiger)_
 
 ### Jenkins
 

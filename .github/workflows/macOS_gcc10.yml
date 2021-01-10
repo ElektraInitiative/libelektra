@@ -91,12 +91,12 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: ninja
+      run: cmake --build .
 
     - name: Install
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: output="$(ninja install 2>&1)" || printf '%s' "$output"
+      run: output="$(cmake --build . --target install 2>&1)" || printf '%s' "$output"
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
@@ -104,6 +104,5 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        ninja run_all
-        # `kdb run_all` currently does not work, since `check-env-dep` seems to stall
-        # See also: https://github.com/sanssecours/elektra/runs/1626437214?check_suite_focus=true
+        cmake --build . --target run_all
+        kdb run_all
