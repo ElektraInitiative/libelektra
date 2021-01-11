@@ -122,9 +122,6 @@ kdb upgrade pr3555 values
 
 > _Note:_ The original `system:/elektra/mountpoints` data will be moved to `system:/elektra/mountpoints-backup`
 
-### Debian Packaging with CPack
-
-- We are now using CPack to generate modular Debian and Ubuntu packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specific dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
 ### Debian and Fedora Packaging with CPack
 
 - We are now using CPack to generate modular Debian and Ubuntu packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specifc dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
