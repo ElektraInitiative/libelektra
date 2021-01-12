@@ -24,20 +24,32 @@ Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensus
 
 ### Ubuntu-Bionic
 
-To use the Ubuntu-Bionic packages, the following steps need to be made:
+---
+
+To use the Ubuntu Bionic repository of the latest builds from master following steps need to be made:
 
 1. Run `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D919CE8B27A64C16656FCA9FF1532673651F9C6C` to obtain the key.
 
 2. Add `deb https://ubuntu-bionic-repo.libelektra.org/ bionic main` into `/etc/apt/sources.list`
 
-3. `sudo apt-get update`
+   Which can also be done using:
 
-### Debian
+   ```sh
+   apt-get install software-properties-common apt-transport-https
+   echo "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main" | sudo tee /etc/apt/sources.list.d/elektra.list
+   ```
 
-To use the debian repository of the latest builds from master put following lines in
+   Or alternatively, you can use (if you do not mind many dependencies just to add one line to a config file):
+
+   ```sh
+   sudo apt-get install software-properties-common apt-transport-https
+   sudo add-apt-repository "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main"
+   ```
+
+### Debian-Buster
+
+To use the Debian Buster repository of the latest builds from master put following lines in
 `/etc/apt/sources.list`:
-
-For Stretch:
 
 ```
 deb     [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main
@@ -47,7 +59,7 @@ deb-src [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main
 Which can also be done using:
 
 ```sh
-sudo apt-get install apt-transport-https
+sudo apt-get install software-properties-common apt-transport-https
 echo "deb     [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main" | sudo tee /etc/apt/sources.list.d/elektra.list
 ```
 
@@ -58,12 +70,15 @@ sudo apt-get install software-properties-common apt-transport-https
 sudo add-apt-repository "deb     [trusted=yes] https://debian-buster-repo.libelektra.org/ buster main"
 ```
 
-For Jessie (not updated anymore, contains 0.8.24 packages which were created shortly before 0.8.25 release)
+If you want to rebuild Elektra from Debian unstable or
+our repositories, add a `deb-src` entry to `/etc/apt/sources.list`
+and then run:
 
+```sh
+apt-get source -b elektra
 ```
-deb     [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
-deb-src [trusted=yes] https://debian-stable.libelektra.org/elektra-stable/ jessie main
-```
+
+### Install
 
 To get all packaged plugins, bindings and tools install:
 
@@ -77,21 +92,11 @@ For a small installation with command-line tools available use:
 apt-get install elektra-bin
 ```
 
-If you want to rebuild Elektra from Debian unstable or
-our repositories, add a `deb-src` entry to `/etc/apt/sources.list`
-and then run:
+To build Debian/Ubuntu Packages from the source you might want to use:
 
 ```sh
-apt-get source -b elektra
+make package # See CPack below
 ```
-
-To build Debian Packages from the source you might want to use:
-
-```sh
-dpkg-buildpackage -us -uc -sa
-```
-
-(You need to be in the Debian branch, see [GIT](GIT.md))
 
 ## macOS
 
@@ -111,7 +116,55 @@ Please refer to the section OS Independent below.
 
 First follow the steps in [COMPILE](COMPILE.md).
 
-After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or cPack tools.
+After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or CPack tools.
+We recommend to use the packages from our build server or that you generate your own packages with CPack.
+
+### CPack
+
+The current supported systems are: Debian, Ubuntu and Fedora.
+
+Then use:
+
+```sh
+make package
+```
+
+which will create packages for distributions where a Generator is implemented.
+
+You can find the generated packages in the `package` directory of the build directory.
+
+> NOTE: If all plugins/bindings/tools a package includes are excluded, the package will be not generated.
+
+#### Debian/Ubuntu
+
+On Debian based distributions you will need to set LD_LIBRARY_PATH before generating the package.
+Simply `cd` into the build directory and run following command:
+
+```sh
+LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
+```
+
+To install the packages run this in the `package` directory:
+
+```sh
+apt-get install ./*
+```
+
+If any dependency problems appear, run following command to install the missing dependencies:
+
+```sh
+apt-get -f install
+```
+
+#### Fedora
+
+To install RPM packages we recommend using `yum localinstall` since installing with `rpm` doesn't resolve missing dependencies.
+
+Run following command in the `package` directory:
+
+```sh
+yum localinstall *
+```
 
 ### make
 
@@ -133,20 +186,6 @@ or in the build directory (will not honor `DESTDIR`!):
 ```sh
 xargs rm < install_manifest.txt
 ```
-
-### CPack
-
-First follow the steps in [COMPILE](COMPILE.md).
-
-Then use:
-
-```sh
-cpack
-```
-
-which should create a package for distributions where a Generator is
-implemented. See [this cmake file](/scripts/cmake/ElektraPackaging.cmake) for available Generators
-and send a merge request for your system.
 
 ## Troubleshooting
 
