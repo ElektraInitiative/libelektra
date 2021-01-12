@@ -4,7 +4,7 @@ ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
-RUN apt-get update && apt-get upgrade -y && apt-get install -y netbase
+RUN apt-get update && apt-get upgrade -y
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
