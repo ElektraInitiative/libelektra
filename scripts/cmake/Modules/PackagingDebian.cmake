@@ -1,4 +1,11 @@
+# ~~~
+# In this file CPACK_DEBIAN_* vars necessary by CPack DEB
+# to generate DEB packages are set. Also DEB package specifc
+# files are installed.
+# ~~~
+
 set (CPACK_DEBIAN_PACKAGE_VERSION "${PROJECT_VERSION}")
+set (CPACK_DEBIAN_PACKAGE_RELEASE "${CPACK_PACKAGE_RELEASE}")
 set (DEBIAN_VERSION_RELEASE "${CPACK_DEBIAN_PACKAGE_VERSION}-${CPACK_DEBIAN_PACKAGE_RELEASE}")
 set (CPACK_DEBIAN_PACKAGE_MAINTAINER "Robert Sowula <robert@sowula.at>")
 

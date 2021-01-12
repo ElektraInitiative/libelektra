@@ -1,4 +1,11 @@
+# ~~~
+# In this file CPACK_RPM_* vars necessary by CPack RPM
+# to generate RPM packages are set. Also RPM package specifc
+# files are installed.
+# ~~~
+
 set (CPACK_RPM_PACKAGE_VERSION "${PROJECT_VERSION}")
+set (CPACK_RPM_PACKAGE_RELEASE "${CPACK_PACKAGE_RELEASE}")
 set (RPM_VERSION_RELEASE "${CPACK_RPM_PACKAGE_VERSION}-${CPACK_RPM_PACKAGE_RELEASE}")
 
 set (CPACK_GENERATOR "RPM")
@@ -15,6 +22,15 @@ set (CPACK_RPM_CHANGELOG_FILE "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/chan
 execute_process (COMMAND bash "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/map_licenses.sh" "${CMAKE_SOURCE_DIR}/doc/THIRD-PARTY-LICENSES"
 		 OUTPUT_VARIABLE THIR_PARTY_LICENSES_STR)
 set (CPACK_RPM_PACKAGE_LICENSE "${THIR_PARTY_LICENSES_STR} \n # For a breakdown of the licensing, see THIRD-PARTY-LICENSES")
+# install license files
+configure_file ("${CMAKE_SOURCE_DIR}/LICENSE.md" "${CMAKE_BINARY_DIR}/doc/LICENSE" COPYONLY)
+configure_file ("${CMAKE_SOURCE_DIR}/doc/THIRD-PARTY-LICENSES" "${CMAKE_BINARY_DIR}/doc/THIRD-PARTY-LICENSES" COPYONLY)
+foreach (component ${PACKAGES})
+	install (
+		FILES "${CMAKE_BINARY_DIR}/doc/LICENSE" "${CMAKE_BINARY_DIR}/doc/THIRD-PARTY-LICENSES"
+		COMPONENT ${component}
+		DESTINATION "share/licenses/${component}")
+endforeach ()
 
 set (
 	CPACK_RPM_BUILDREQUIRES
@@ -187,13 +203,3 @@ set (CPACK_RPM_ELEKTRA-DOC_PACKAGE_NAME "${CPACK_COMPONENT_ELEKTRA-DOC_DISPLAY_N
 set (CPACK_RPM_ELEKTRA-DOC_PACKAGE_SUMMARY "${CPACK_COMPONENT_ELEKTRA-DOC_DESCRIPTION}")
 set (CPACK_RPM_ELEKTRA-DOC_PACKAGE_DESCRIPTION "${PACKAGE_DESCRIPTION}")
 set (CPACK_RPM_ELEKTRA-DOC_PACKAGE_ARCHITECTURE "noarch")
-
-# install copyright file
-configure_file ("${CMAKE_SOURCE_DIR}/LICENSE.md" "${CMAKE_BINARY_DIR}/doc/LICENSE" COPYONLY)
-configure_file ("${CMAKE_SOURCE_DIR}/doc/THIRD-PARTY-LICENSES" "${CMAKE_BINARY_DIR}/doc/THIRD-PARTY-LICENSES" COPYONLY)
-foreach (component ${PACKAGES})
-	install (
-		FILES "${CMAKE_BINARY_DIR}/doc/LICENSE" "${CMAKE_BINARY_DIR}/doc/THIRD-PARTY-LICENSES"
-		COMPONENT ${component}
-		DESTINATION "share/licenses/${component}")
-endforeach ()

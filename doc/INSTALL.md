@@ -117,7 +117,7 @@ Please refer to the section OS Independent below.
 First follow the steps in [COMPILE](COMPILE.md).
 
 After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or CPack tools.
-We recommend that you generate your own packages with CPack so ensure compatibility with future releases.
+We recommend to use the packages from our build server or that you generate your own packages with CPack.
 
 ### CPack
 
@@ -147,7 +147,7 @@ LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
 To install the packages run this in the `package` directory:
 
 ```sh
-dpkg -i *
+apt-get install ./*
 ```
 
 If any dependency problems appear, run following command to install the missing dependencies:
