@@ -1,7 +1,7 @@
 #!/usr/bin/env groovy
 
-// Imports
-import java.text.SimpleDateFormat
+// Libraries
+@Library('libelektra-shared') _
 
 // Buildjob properties
 properties([
@@ -38,24 +38,19 @@ properties([
   ])
 ])
 
-// Globals
-DOCKER_NODE_LABEL = 'docker'
-REGISTRY = 'hub.libelektra.org'
-
-// Define DOCKER_OPTS enum which is used in withDockerEnv
-enum DOCKER_OPTS {
-  MOUNT_MIRROR,       // Mount the git repository mirror into the container
-  PTRACE              // Allow ptraces in the container
-  public DOCKER_OPTS()  {} // WORKAROUND see TEST
+pipelineConfig {
+// uncomment if you you want to overwrite these values
+// dockerNodeLabel = 'docker'
+// registry = 'hub.libelektra.org'
+  now = new Date()
 }
 
-NOW = new Date()
+
 DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
                      // dockerInit()
 
 RELEASE_VERSION = '' // release version, set during release build and used
                      // by the documentation stage
-
 
 
 // Stages
@@ -64,12 +59,12 @@ stage("Init docker images") {
 }
 
 stage("Pull docker images") {
-  parallel generateDockerPullStages()
+  parallel dockerUtils.generateDockerPullStages(DOCKER_IMAGES)
 }
 
 maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) {
   lock('docker-images') {
-        parallel generateDockerBuildStages()
+        parallel dockerUtils.generateDockerBuildStages(DOCKER_IMAGES)
     }
 }
 
@@ -111,54 +106,54 @@ def dockerInit() {
     checkout scm
 
     // Test and build release artifacts with these images.
-    DOCKER_IMAGES.buster = createDockerImageDesc(
-      "debian-buster", this.&idTesting,
+    DOCKER_IMAGES.buster = dockerUtils.createDockerImageDesc(
+      "debian-buster", dockerUtils.&idTesting,
       "./scripts/docker/debian/buster",
       "./scripts/docker/debian/buster/Dockerfile"
     )
 
-    DOCKER_IMAGES.focal = createDockerImageDesc(
-      "ubuntu-focal", this.&idTesting,
+    DOCKER_IMAGES.focal = dockerUtils.createDockerImageDesc(
+      "ubuntu-focal", dockerUtils.&idTesting,
       "./scripts/docker/ubuntu/focal",
       "./scripts/docker/ubuntu/focal/Dockerfile"
     )
 
-    DOCKER_IMAGES.bionic = createDockerImageDesc(
-      "ubuntu-bionic", this.&idTesting,
+    DOCKER_IMAGES.bionic = dockerUtils.createDockerImageDesc(
+      "ubuntu-bionic", dockerUtils.&idTesting,
       "./scripts/docker/ubuntu/bionic",
       "./scripts/docker/ubuntu/bionic/Dockerfile"
     )
 
-    DOCKER_IMAGES.fedora_33 = createDockerImageDesc(
-      "fedora-33", this.&idTesting,
+    DOCKER_IMAGES.fedora_33 = dockerUtils.createDockerImageDesc(
+      "fedora-33", dockerUtils.&idTesting,
       "./scripts/docker/fedora/33",
       "./scripts/docker/fedora/33/Dockerfile"
     )
 
     // Insta and test the built packages with theses images.
-    DOCKER_IMAGES.buster_installed = createDockerImageDesc(
-      "debian-buster-installed", this.&idTesting,
+    DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
+      "debian-buster-installed", dockerUtils.&idTesting,
       "./release-artifact/*/buster/",
       "./scripts/docker/debian/buster/release.Dockerfile",
       false
     )
 
-    DOCKER_IMAGES.focal_installed = createDockerImageDesc(
-      "ubuntu-focal-installed", this.&idTesting,
+    DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
+      "ubuntu-focal-installed", dockerUtils.&idTesting,
       "./release-artifact/*/focal/",
       "./scripts/docker/ubuntu/focal/release.Dockerfile",
       false
     )
 
-    DOCKER_IMAGES.bionic_installed = createDockerImageDesc(
-      "ubuntu-bionic-installed", this.&idTesting,
+    DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
+      "ubuntu-bionic-installed", dockerUtils.&idTesting,
       "./release-artifact/*/bionic/",
       "./scripts/docker/ubuntu/bionic/release.Dockerfile",
       false
     )
 
-    DOCKER_IMAGES.fedora_33_installed = createDockerImageDesc(
-      "fedora-33-installed", this.&idTesting,
+    DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
+      "fedora-33-installed", dockerUtils.&idTesting,
       "./release-artifact/*/fedora33/",
       "./scripts/docker/fedora/33/release.Dockerfile",
       false
@@ -167,34 +162,13 @@ def dockerInit() {
     /* Build Elektra's documentation with this image.
      * Also contains latex for pdf creation.
      */
-    DOCKER_IMAGES.buster_doc = createDockerImageDesc(
-      "debian-buster-doc", this.&idTesting,
+    DOCKER_IMAGES.buster_doc = dockerUtils.createDockerImageDesc(
+      "debian-buster-doc", dockerUtils.&idTesting,
       "./scripts/docker/debian/buster",
       "./scripts/docker/debian/buster/doc.Dockerfile"
     )
 
   }
-}
-
-/* Generate Stages to pull all docker images */
-def generateDockerPullStages() {
-  def tasks = [:]
-  DOCKER_IMAGES.each { key, image ->
-    if(image.autobuild) {
-      tasks << pullImageStage(image)
-    }
-  }
-  return tasks
-}
-
-def generateDockerBuildStages() {
-  def tasks = [:]
-  DOCKER_IMAGES.each { key, image ->
-    if(image.autobuild && !image.exists) {
-      tasks << buildImageStage(image)
-    }
-  }
-  return tasks
 }
 
 /* Generate release stages for release automation
@@ -337,7 +311,7 @@ def generatePublishStages() {
 def buildRelease(testName, image, packageRevision='1', placeholderDir=false) {
   return [(testName): {
     stage(testName) {
-      withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"
@@ -362,11 +336,11 @@ def buildRelease(testName, image, packageRevision='1', placeholderDir=false) {
               sh "sh libelektra/scripts/release/release.sh ${packageRevision}"
               sh "mv release.tar.gz ${testName}-release.tar.gz"
 
-              archive(["${testName}-release.tar.gz"])
+              utils.archive(["${testName}-release.tar.gz"])
 
               dir('libelektra') {
                 sh "git bundle create libelektra.bundle --all"
-                archive(["libelektra.bundle"])
+                utils.archive(["libelektra.bundle"])
               }
 
               script {
@@ -387,13 +361,13 @@ def buildRelease(testName, image, packageRevision='1', placeholderDir=false) {
 def testInstalledPackage(testName, image) {
   return [(testName): {
     stage(testName) {
-      withDockerEnv(image, [DOCKER_OPTS.MOUNT_MIRROR]) {
+      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
         checkout scm
 
         sh "./scripts/release/release-tests.sh ./ ${RELEASE_VERSION} package OFF"
         sh "tar -czvf ${testName}-release.tar.gz ./${RELEASE_VERSION}"
 
-        archive(["${testName}-release.tar.gz"])
+        utils.archive(["${testName}-release.tar.gz"])
         deleteDir()
 
       }
@@ -401,100 +375,6 @@ def testInstalledPackage(testName, image) {
   }]
 }
 
-/* Publish all rpm packages and updates the repo
- *
- * Also deletes older versions from the repo.
- * @param remote where the repository is located
- * @param remotedir must match with the directory tree inside the remote
- * @param repoName name of the repository
- * @param repoPrefix prefix of the repository
- * @param packageRevision revision number of the package
- */
-def publishDebPackages(remote, remotedir, repoName, repoPrefix,
-                       releaseVersion, packageRevision='1') {
-  sshPublisher(
-    publishers: [
-      sshPublisherDesc(
-        verbose: true,
-        configName: remote,
-        transfers: [
-          sshTransfer(
-            sourceFiles: '*.d*eb',
-            remoteDirectory: remotedir
-          ),
-          sshTransfer(
-            sourceFiles: '*.tar.gz',
-            remoteDirectory: remotedir
-          )
-        ]
-      )
-    ],
-    failOnError: true
-  )
-
-  // This step is necessary since running the commands to update
-  // the aptly repo directly in the `exeecCommand` results in
-  // invalid interpolation behaviour of `$Version` which is
-  // caused by Grovvys GString.
-  // Escaping could not solve this issue.
-  dir("${WORKSPACE}/scripts/release/") {
-    sshPublisher(
-      publishers: [
-        sshPublisherDesc(
-          verbose: true,
-          configName: remote,
-          transfers: [
-            sshTransfer(
-              sourceFiles: 'update-aptly-repo.sh',
-              remoteDirectory: 'packaging/scripts/',
-              execCommand: """\
-sh /srv/libelektra/packaging/scripts/update-aptly-repo.sh \
-${repoName} ${repoPrefix} ${releaseVersion} ${packageRevision}"""
-            ),
-          ]
-        )
-      ],
-      failOnError: true
-    )
-  }
-}
-
-/* Publish all rpm packages and updates the repo
- *
- * Also deletes older versions from the repo.
- * @param remote where the repository is located
- * @param remotedir must match with the directory tree inside the remote
- * @param repoName name of the repository
- * @param packageRevision revision number of the package
- */
-def publishRpmPackages(remote, remotedir, repoName, packageRevision='1') {
-  sshPublisher(
-    publishers: [
-      sshPublisherDesc(
-        verbose: true,
-        configName: remote,
-        transfers: [
-          sshTransfer(
-            sourceFiles: '*.rpm',
-            remoteDirectory: remotedir,
-            execCommand: """\
-rm -rf /srv/rpm-repo/${repoName}/packages/*.rpm && \
-mv /srv/libelektra/packaging/incoming/${repoName}/*.rpm /srv/rpm-repo/${repoName}/packages/ && \
-createrepo /srv/rpm-repo/${repoName}/ && \
-rm -rf /srv/rpm-repo/${repoName}/repodata/repomd.xml.asc && \
-gpg2 --detach-sign --armor -u A9A25CC1CC83E839 --pinentry-mode=loopback --batch --passphrase-file \
-/home/jenkins/.aptly/secret /srv/rpm-repo/${repoName}/repodata/repomd.xml"""
-          ),
-          sshTransfer(
-            sourceFiles: '*.tar.gz',
-            remoteDirectory: remotedir
-          )
-        ]
-      )
-    ],
-    failOnError: true
-  )
-}
 
 /* Publish changes and artifacts
  *
@@ -532,7 +412,7 @@ tar -zxvf ../artifacts/${correspondingReleaseTestName}/${correspondingReleaseTes
           sh "mv ../${context}* ./"
           switch(packageType) {
             case "DEB":
-              publishDebPackages(
+              release.publishDebPackages(
                 'doc.libelektra.org',
                 "/packaging/incoming/${repoName}/",
                 repoName,
@@ -542,7 +422,7 @@ tar -zxvf ../artifacts/${correspondingReleaseTestName}/${correspondingReleaseTes
               )
               break
             case "RPM":
-              publishRpmPackages(
+              release.publishRpmPackages(
                 'doc.libelektra.org',
                 "/packaging/incoming/${repoName}/",
                 repoName,
@@ -577,7 +457,7 @@ def buildDoc() {
 
         dir('build') {
           deleteDir()
-          cmake(env.WORKSPACE, cmakeFlags)
+          utils.cmake(env.WORKSPACE, cmakeFlags)
           sh "make html man"
         }
 
@@ -600,7 +480,7 @@ ${WORKSPACE}/build/doc/man ./"""
         dir('doc') {
           sh "git commit -a -m '${RELEASE_VERSION} Release'"
           sh "git bundle create docu.bundle --all"
-          archive(["docu.bundle"])
+          utils.archive(["docu.bundle"])
         }
 
         warnings parserConfigurations: [
@@ -614,65 +494,6 @@ ${WORKSPACE}/build/doc/man ./"""
 }
 
 
-/* Returns a stage that tries to pull an image
- *
- * Also sets IMAGES_TO_BUILD to true if an image can not be found
- * to indicated that rebuilds are needed
- * @param image Map identifying which image to pull
- */
-def pullImageStage(image) {
-  def taskname = "pull/${image.id}/"
-  return [(taskname): {
-    stage(taskname) {
-      node(DOCKER_NODE_LABEL) {
-        echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
-        docker.withRegistry("https://${REGISTRY}",
-                            'docker-hub-elektra-jenkins') {
-          try {
-            docker.image(image.id).pull()
-            echo "Found existing image"
-            image.exists = true
-          } catch(e) {
-            echo "Detected changes"
-            image.exists = false
-          }
-        }
-      }
-    }
-  }]
-}
-
-/* Returns a map with a closure that builds image
- *
- * @param image Image that needs to be build
- */
-def buildImageStage(image) {
-  def taskname = "build/${image.id}/"
-  return [(taskname): {
-    stage(taskname) {
-      node(DOCKER_NODE_LABEL) {
-        echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
-        docker.withRegistry("https://${REGISTRY}",
-                          'docker-hub-elektra-jenkins') {
-          checkout scm
-          def uid = getUid()
-          def gid = getGid()
-          def cpus = cpuCount()
-          def i = docker.build(
-            image.id,"""\
---pull \
---build-arg JENKINS_GROUPID=${gid} \
---build-arg JENKINS_USERID=${uid} \
---build-arg PARALLEL=${cpus} \
--f ${image.file} ${image.context}"""
-          )
-          i.push()
-        }
-      }
-    }
-  }]
-}
-
 /* Returns a map with a closure that builds image
  *
  * @param image Image that needs to be build
@@ -681,223 +502,25 @@ def buildImageWithPackagesStage(image, previousTaskName) {
   def taskname = "build/${image.id}/"
   return [(taskname): {
     stage(taskname) {
-      node(DOCKER_NODE_LABEL) {
+      node(PipelineConfig.instance.dockerNodeLabel) {
         echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
-        docker.withRegistry("https://${REGISTRY}",
-                          'docker-hub-elektra-jenkins') {
-          checkout scm
+        checkout scm
 
-          copyArtifacts(
-            filter: "artifacts/${previousTaskName}/${previousTaskName}-release.tar.gz",
-            fingerprintArtifacts: true,
-            projectName: '${JOB_NAME}',
-            selector: specific('${BUILD_NUMBER}')
-          )
-          dir('release-artifact') {
-            deleteDir()
-            sh """\
+        copyArtifacts(
+          filter: "artifacts/${previousTaskName}/${previousTaskName}-release.tar.gz",
+          fingerprintArtifacts: true,
+          projectName: '${JOB_NAME}',
+          selector: specific('${BUILD_NUMBER}')
+        )
+        dir('release-artifact') {
+          deleteDir()
+          sh """\
 tar -zxvf ../artifacts/${previousTaskName}/${previousTaskName}-release.tar.gz \
 -C ./ --strip-components=1"""
-          }
-
-          def uid = getUid()
-          def gid = getGid()
-          def cpus = cpuCount()
-          def i = docker.build(
-            image.id,"""\
---build-arg JENKINS_GROUPID=${gid} \
---build-arg JENKINS_USERID=${uid} \
---build-arg PARALLEL=${cpus} \
--f ${image.file} ${image.context}"""
-          )
-          i.push()
         }
+
+        dockerUtils.buildImage(image)
       }
     }
   }]
-}
-
-/**
- * Run set of tasks sequentially. Similar to `parallel` directive.
- * @param stages List of stages that will be run sequentially
- */
-def sequential(stages) {
-  for (stage in stages) {
-    stage.value.call()
-  }
-}
-
-/********************/
-/* Helper functions */
-/********************/
-
-/* Run the passed closure in a docker environment
- *
- * Automatically takes care of docker registry authentication,
- * selecting a docker capable node,
- * checkout of scm and setting of useful Environment variables
- * @param image Docker image that should be used
- * @param opts List of DOCKER_OPTS that should be passed to docker
- * @param cl A closure that should be run inside the docker image
- */
-def withDockerEnv(image, opts=[], cl) {
-  node(DOCKER_NODE_LABEL) {
-    def dockerArgs = ""
-    if (opts.contains(DOCKER_OPTS.MOUNT_MIRROR)) {
-      dockerArgs += "-v ${env.HOME}/git_mirrors:/home/jenkins/git_mirrors "
-    }
-    if (opts.contains(DOCKER_OPTS.PTRACE)) {
-      dockerArgs += "--cap-add SYS_PTRACE "
-    }
-    docker.withRegistry("https://${REGISTRY}",
-                        'docker-hub-elektra-jenkins') {
-      timeout(activity: true, time: 40, unit: 'MINUTES') {
-        def cpu_count = cpuCount()
-        withEnv(["MAKEFLAGS='-j${cpu_count+2} -l${cpu_count*2}'",
-                 "CTEST_PARALLEL_LEVEL='${cpu_count+2}'",
-                 "XDG_CONFIG_HOME=${WORKSPACE}/xdg/user",
-                 "XDG_CONFIG_DIRS=${WORKSPACE}/xdg/system"]) {
-          echo "Starting ${STAGE_NAME} on ${NODE_NAME} using ${image.id}"
-          checkout scm
-          docker.image(image.id)
-                .inside(dockerArgs) { cl() }
-        }
-      }
-    }
-  }
-}
-
-/* Create a new Docker Image description
- *
- * @param name Name of the image, will be extended with registry, a common
- *             prefix and a tag
- * @param idFun Closure describing how the image id should be formatted
- *                      (see idTesting() / idWebsite())
- * @param context Build context for the docker build (base directory that will
- *                be sent to the docker agent). Relative to the current working
- *                directory.
- * @param file Path to Dockerfile relative to the current working directory.
- * @param autobuild If it should be automatically build at the start of the
- *                  Jenkins run. If false it can be build manually
- *                  (see buildImageStage()).
- */
-def createDockerImageDesc(name, idFun, context, file, autobuild=true) {
-  def prefix = 'build-elektra'
-  def fullName = "${REGISTRY}/${prefix}-${name}"
-  def map = [
-    name: fullName,
-    context: context,
-    file: file,
-    autobuild: autobuild,
-    exists: false
-  ]
-  return idFun(map)
-}
-
-/* Run cmake
- * @param directory Basedir for cmake
- * @param argsMap Map of arguments for cmake
- */
-def cmake(String directory, Map argsMap) {
-  def argsStr = ""
-  argsMap.each { key, value ->
-    argsStr += "-D$key=\"$value\" "
-  }
-  sh("cmake $argsStr $directory")
-}
-
-/* Build image ID of docker images used for tests
- *
- * We use identifiers in the form of name:yyyyMM-hash
- * The hash is build from reading the Dockerfile. Hence it needs to be
- * checked out before it can be calculated.
- * @param imageMap Map identifying an docker image (see DOCKER_IMAGES)
- */
-def idTesting(imageMap) {
-  def cs = checksum(imageMap.file)
-  def dateString = dateFormatter(NOW)
-  imageMap.id = "${imageMap.name}:${dateString}-${cs}"
-  return imageMap
-}
-
-
-/* Format the date input
- * @param date Date to format
- */
-def dateFormatter(date) {
-  df = new SimpleDateFormat("yyyyMM")
-  return df.format(date)
-}
-
-/* Generate the checksum of a file
- * @param file File to generate a checksum for
- */
-def checksum(file) {
-  // Used to identify if a Dockerfile changed
-  // TODO expand to use more than one file if Dockerfile ever depends on
-  //      external files
-  return sh(returnStdout: true,
-            script: "cat $file | sha256sum | dd bs=1 count=64 status=none")
-         .trim()
-}
-
-/* Generate a Stage
- *
- * If `expression` evaluates to TRUE, a stage(`name`) with `body` is run
- * @param name Name of the stage
- * @param expression If True, run body
- * @param body Closure representing stage body
- */
-def maybeStage(String name, boolean expression, Closure body) {
-  if(expression) {
-    stage(name, body)
-  } else {
-    stage(name) {
-      echo "Stage skipped: ${name}"
-    }
-  }
-}
-
-/* Get cpu count
- */
-def cpuCount() {
-  return sh(returnStdout: true,
-            script: 'grep -c ^processor /proc/cpuinfo').trim() as Integer
-}
-
-/* Archives files located in paths
- *
- * Automatically prefixes with the current STAGE_NAME to identify where the
- * file was created.
- * @param paths List of paths to be archived
- */
-def archive(paths) {
-  echo "Start archivation"
-  if (paths) {
-    def prefix = "artifacts/"
-    def dest = "${prefix}${env.STAGE_NAME}/"
-    sh "mkdir -p ${dest}"
-    paths.each { path ->
-        sh "cp -v ${path} ${dest} || true"
-    }
-    archiveArtifacts artifacts: "${prefix}**",
-                     fingerprint: true,
-                     allowEmptyArchive: true
-  } else {
-    echo "No Artifacts to archive"
-  }
-  echo "Finish archivation"
-}
-
-/* Get the current users uid
- */
-def getUid() {
-  return sh(returnStdout: true, script: 'id -u').trim()
-}
-
-
-/* Get the current users gid
- */
-def getGid() {
-  return sh(returnStdout: true, script: 'id -g').trim()
 }
