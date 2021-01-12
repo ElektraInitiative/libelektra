@@ -39,7 +39,7 @@ To use the Ubuntu Bionic repository of the latest builds from master following s
    echo "deb https://ubuntu-bionic-repo.libelektra.org/ bionic main" | sudo tee /etc/apt/sources.list.d/elektra.list
    ```
 
-   Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
+   Or alternatively, you can use (if you do not mind many dependencies just to add one line to a config file):
 
    ```sh
    sudo apt-get install software-properties-common apt-transport-https
