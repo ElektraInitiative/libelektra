@@ -1,7 +1,7 @@
 FROM ubuntu:bionic
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get upgrade -y && apt-get install -y netbase
+RUN apt-get update && apt-get upgrade -y
 
 ARG JENKINS_GROUPID
 RUN groupadd \
