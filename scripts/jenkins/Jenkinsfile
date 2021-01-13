@@ -3,7 +3,7 @@
  * This file describes how the elektra-jenkinsfile buildjob should be
  * executed.
  *
- * 1. imports and global variables are set
+ * 1. libraries and global variables are set
  * 2. define the main stages of the pipeline
  * 3. describe sub stages. This is where you will want to add new builds
  * 4. helper section to help write build scripts
@@ -344,7 +344,7 @@ def dockerInit() {
 
     /* Image building the libelektra.org website */
     DOCKER_IMAGES.website = dockerUtils.createDockerImageDesc(
-      "website", dockerUtils.&idWebsite,
+      "website", dockerUtils.&idArtifact,
       ".",
       "./scripts/docker/website/Dockerfile",
       false
@@ -352,7 +352,7 @@ def dockerInit() {
 
     /* Image building elektra web base image */
     DOCKER_IMAGES.webui_base = dockerUtils.createDockerImageDesc(
-      "web-base", dockerUtils.&idWebsite,
+      "web-base", dockerUtils.&idArtifact,
       ".",
       "./scripts/docker/webui/base/Dockerfile",
       false
@@ -360,7 +360,7 @@ def dockerInit() {
 
     /* Image building elektrad */
     DOCKER_IMAGES.webui_elektrad = dockerUtils.createDockerImageDesc(
-      "elektrad-demo", dockerUtils.&idWebsite,
+      "elektrad-demo", dockerUtils.&idArtifact,
       "./scripts/docker/webui/elektrad-demo/",
       "./scripts/docker/webui/elektrad-demo/Dockerfile",
       false
@@ -368,9 +368,41 @@ def dockerInit() {
 
     /* Image building webd */
     DOCKER_IMAGES.webui_webd = dockerUtils.createDockerImageDesc(
-      "webd-demo", dockerUtils.&idWebsite,
+      "webd-demo", dockerUtils.&idArtifact,
       "./scripts/docker/webui/webd-demo/",
       "./scripts/docker/webui/webd-demo/Dockerfile",
+      false
+    )
+
+    /* Debian buster image used to install previously built packages */
+    DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
+      "debian-buster-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/debian/buster/release.Dockerfile",
+      false
+    )
+
+    /* Ubuntu focal image used to install previously built packages */
+    DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
+      "ubuntu-focal-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/ubuntu/focal/release.Dockerfile",
+      false
+    )
+
+    /* Ubuntu bionic image used to install previously built packages */
+    DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
+      "ubuntu-bionic-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/ubuntu/bionic/release.Dockerfile",
+      false
+    )
+
+    /* Fedora 33 image used to install previously built packages */
+    DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
+      "fedora-33-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/fedora/33/release.Dockerfile",
       false
     )
   }
@@ -966,107 +998,113 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
   }]
 }
 
-/* Generate Stages that build and deploy artifacts
+/**
+ *  Generate Stages that build, test and deploy artifacts
  */
 def generateArtifactStages() {
   def tasks = [:]
-  tasks << buildDebianPackage("buildPackage/debian/buster", DOCKER_IMAGES.buster, "buster-unstable", "buster")
-  tasks << buildDebianPackage("buildPackage/ubuntu/bionic", DOCKER_IMAGES.bionic, "bionic-unstable", "bionic")
-  tasks << buildDebianPackage("buildPackage/ubuntu/focal", DOCKER_IMAGES.focal, "focal-unstable", "focal")
-  tasks << buildFedoraPackage("buildPackage/fedora/33", DOCKER_IMAGES.fedora_33, "fedora-33-unstable", "fedora-33-unstable")
-  tasks << buildWebsite()
+  tasks << buildPackage(
+    "buildPackage/debian/buster",
+    DOCKER_IMAGES.buster,
+    "buster-unstable",
+    "buster",
+    DOCKER_IMAGES.buster_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
+    "buildPackage/ubuntu/bionic",
+    DOCKER_IMAGES.bionic,
+    "bionic-unstable",
+    "bionic",
+    DOCKER_IMAGES.bionic_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
+    "buildPackage/ubuntu/focal",
+    DOCKER_IMAGES.focal,
+    "focal-unstable",
+    "focal",
+    DOCKER_IMAGES.focal_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
+    "buildPackage/fedora/33",
+    DOCKER_IMAGES.fedora_33,
+    "fedora-33-unstable",
+    "fedora-33-unstable",
+    DOCKER_IMAGES.fedora_33_installed,
+    release.&publishRpmPackages,
+    this.&updateFedoraChangelog,
+    true
+  )
   // tasks << buildWebUI()
   return tasks
 }
 
-/* Runs the packaging script and publishes to unstable repo
+
+/**
+ *  Runs the packaging script, tests packages and publishes to unstable repo.
+ *
+ * `withDockerEnv` accepts a second closure that builds the test image,
+ * tests packages and publishes them. This is necessary to ensure that
+ * these steps are run on the same node with the same working directory.
  *
  * @param stageName e.g. buildPackage/debian/<codename>
  * @param image must be one of DOCKER_IMAGES
  * @param repoName name of the package repository
  * @param repoPrefix prefix of the package repository
+ * @param installImage image which should be build containing the built packages
+ * @param publishPackagesFun Closure that publishes packages to a repository
+ * @param updateChangelogFun Closure that updates the changelog
+ * @param placeholderDir Bool that describes if placeholder dirs need to be created
  */
-def buildDebianPackage(stageName, image, repoName, repoPrefix) {
+def buildPackage(stageName, image, repoName, repoPrefix, installImage,
+                 publishPackagesFun, updateChangelogFun,
+                 placeholderDir=false) {
   return [(stageName): {
     stage(stageName) {
-      return withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
-        withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
-                         file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
-          sh "gpg --import $KEY"
-          sh "gpg --import $SKEY"
-          withEnv(["DEBSIGN_PROGRAM=gpg",
-                 "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
-                 "DEBEMAIL=autobuilder@libelektra.org"]) {
-            sh "rm -R ./*"
-            def targetDir="./libelektra"
-            checkout scm: [
-              $class: 'GitSCM',
-              branches: scm.branches,
-              extensions: scm.extensions + [
-                [$class: 'PerBuildTag'],
-                [$class: 'RelativeTargetDirectory',
-                 relativeTargetDir: targetDir]
-              ],
-              userRemoteConfigs: scm.userRemoteConfigs
-            ]
-            dir(targetDir) {
-              sh "git config --global user.name jenkins-builder"
-              sh "git config --global user.email jenkins@libelektra.org"
-
-              dir('scripts/packaging') {
-                sh "dch -l '.$BUILD_NUMBER' 'auto build'"
-                sh "git commit -am 'auto build $VERSION'"
-              }
-
-              dir("build") {
-                def packageRevision = sh(
-                  returnStdout: true,
-                  script: 'dpkg-parsechangelog --show-field Version -l ../scripts/packaging/debian/changelog | cut -d "-" -f2'
-                ).trim()
-                sh "../scripts/packaging/package.sh ${packageRevision}"
-                sh "../scripts/release/sign-packages.sh ./package"
-
-                dir("package") {
-                  if(isMaster()) {
-                    release.publishDebPackages(
-                      'doc.libelektra.org',
-                      "/packaging/incoming/${repoName}/",
-                      repoName,
-                      repoPrefix,
-                      "$VERSION",
-                      packageRevision
-                    )
-
-                  }
-                }
-              }
-            }
+      def packageRevision = ''
+      def targetDir=""
+      if (placeholderDir) {
+        // necessary because libelektra path must be longer than
+        // CPACK_RPM_<component>_BUILD_SOURCE_DIRS_PREFIX for debuginfo generation
+        // of RPM packages.
+        targetDir = "./placeholder/placeholder/placeholder/placeholder/libelektra"
+      } else {
+        targetDir = "./libelektra"
+      }
+      // Closure that builds the image with the previously generated packages,
+      // tests these packages and publishes them.
+      def postCl = {
+        dir(targetDir) {
+          dockerUtils.buildImage(installImage)
+          // Do not call withDockerEnv(..) {} directly because this step would be
+          // executed in a nested node, causing the current node to wait for the
+          // stage on the other node to complete.
+          withDockerEnv.withDockerEnvWithoutNode(installImage) {
+            sh "kdb run_all || true" // TODO: remove `|| true` after specload and gopts tests are working
+          }
+          dir("build/package") {
+            publishPackagesFun(
+              'doc.libelektra.org',
+              "/packaging/incoming/${repoName}/",
+              repoName,
+              repoPrefix,
+              "$VERSION",
+              packageRevision
+            )
           }
         }
       }
-    }
-  }]
-}
-
-/* Runs the packaging script and publishes to unstable repo
- *
- * @param stageName e.g. buildPackage/debian/<codename>
- * @param image must be one of DOCKER_IMAGES
- * @param repoName name of the package repository
- * @param repoPrefix prefix of the package repository
- */
-def buildFedoraPackage(stageName, image, repoName, repoPrefix) {
-  return [(stageName): {
-    stage(stageName) {
-      return withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
+      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR], postCl) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"
           sh "gpg --import $SKEY"
           sh "rm -R ./*"
-          // necessary because libelektra path must be longer than
-          // CPACK_RPM_<component>_BUILD_SOURCE_DIRS_PREFIX for debuinfo generation
-          def targetDir="./placeholder/placeholder/placeholder/placeholder/libelektra"
           checkout scm: [
             $class: 'GitSCM',
             branches: scm.branches,
@@ -1081,37 +1119,47 @@ def buildFedoraPackage(stageName, image, repoName, repoPrefix) {
             sh "git config --global user.name jenkins-builder"
             sh "git config --global user.email jenkins@libelektra.org"
 
-            def packageRevision = ''
-            dir('scripts/packaging/fedora') {
-              sh "./update-rpm-changelog.sh -l '.$BUILD_NUMBER' -m 'auto build'"
-              sh "git commit -am 'auto build $VERSION'"
-              packageRevision = sh(
-                returnStdout: true,
-                script: './update-rpm-changelog.sh -p | cut -d "-" -f2'
-              ).trim()
+            dir('scripts/packaging') {
+              packageRevision = updateChangelogFun()
             }
 
             dir("build") {
               sh "../scripts/packaging/package.sh ${packageRevision}"
               sh "../scripts/release/sign-packages.sh ./package"
-
-              dir("package") {
-                if(isMaster()) {
-                  release.publishRpmPackages(
-                    'doc.libelektra.org',
-                    "/packaging/incoming/${repoName}/",
-                    repoName,
-                    packageRevision
-                  )
-
-                }
-              }
             }
           }
         }
       }
     }
   }]
+}
+
+/**
+ * Updates the fedora changelog for the unstable build
+ * @return revision number of the package
+ */
+def updateFedoraChangelog() {
+  dir ("fedora") {
+    sh "./update-rpm-changelog.sh -l '.$BUILD_NUMBER' -m 'auto build'"
+    sh "git commit -am 'auto build $VERSION'"
+    return sh(
+      returnStdout: true,
+      script: './update-rpm-changelog.sh -p | cut -d "-" -f2'
+    ).trim()
+  }
+}
+
+/**
+ * Updates the ubuntu changelog for the unstable build
+ * @return revision number of the package
+ */
+def updateDebianChangelog() {
+  sh "dch -l '.$BUILD_NUMBER' 'auto build'"
+  sh "git commit -am 'auto build $VERSION'"
+  return sh(
+    returnStdout: true,
+    script: 'dpkg-parsechangelog --show-field Version -l ./debian/changelog | cut -d "-" -f2'
+  ).trim()
 }
 
 
