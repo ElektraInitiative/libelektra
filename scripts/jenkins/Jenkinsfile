@@ -1094,7 +1094,8 @@ def buildPackage(stageName, image, repoName, repoPrefix, installImage,
               repoName,
               repoPrefix,
               "$VERSION",
-              packageRevision
+              packageRevision,
+              targetDir
             )
           }
         }
