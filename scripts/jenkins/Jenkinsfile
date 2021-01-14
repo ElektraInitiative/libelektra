@@ -1081,11 +1081,15 @@ def buildPackage(stageName, image, repoName, repoPrefix, installImage,
       def postCl = {
         dir(targetDir) {
           dockerUtils.buildImage(installImage)
+          // must not be run in targetDir because `withDockerEnv` checks out git
+          // repo in current directory which would overwrite build/package dir
+          dir("../packageTesting") {
           // Do not call withDockerEnv(..) {} directly because this step would be
           // executed in a nested node, causing the current node to wait for the
           // stage on the other node to complete.
-          withDockerEnv.withDockerEnvWithoutNode(installImage) {
-            sh "kdb run_all || true" // TODO: remove `|| true` after specload and gopts tests are working
+            withDockerEnv.withDockerEnvWithoutNode(installImage) {
+              sh "kdb run_all || true" // TODO: remove `|| true` after specload and gopts tests are working
+            }
           }
           dir("build/package") {
             publishPackagesFun(
