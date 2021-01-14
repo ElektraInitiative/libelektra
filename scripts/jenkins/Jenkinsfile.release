@@ -95,7 +95,8 @@ stage("Publish") {
 /* Generators */
 /**************/
 
-/* Populate DOCKER_IMAGES with data
+/**
+ *  Populate DOCKER_IMAGES with data
  *
  * For this we need a checkout of the scm to generate the hash for the
  * Dockerfiles which indicates if a rebuild of the images is needed
@@ -105,7 +106,7 @@ def dockerInit() {
     echo "Processing DOCKER_IMAGES"
     checkout scm
 
-    // Test and build release artifacts with these images.
+    /* Test and build release artifacts with these images. */
     DOCKER_IMAGES.buster = dockerUtils.createDockerImageDesc(
       "debian-buster", dockerUtils.&idTesting,
       "./scripts/docker/debian/buster",
@@ -130,30 +131,30 @@ def dockerInit() {
       "./scripts/docker/fedora/33/Dockerfile"
     )
 
-    // Insta and test the built packages with theses images.
+    /* Install and test the built packages with theses images. */
     DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
-      "debian-buster-installed", dockerUtils.&idTesting,
+      "debian-buster-installed", dockerUtils.&idArtifact,
       "./release-artifact/*/buster/",
       "./scripts/docker/debian/buster/release.Dockerfile",
       false
     )
 
     DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
-      "ubuntu-focal-installed", dockerUtils.&idTesting,
+      "ubuntu-focal-installed", dockerUtils.&idArtifact,
       "./release-artifact/*/focal/",
       "./scripts/docker/ubuntu/focal/release.Dockerfile",
       false
     )
 
     DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
-      "ubuntu-bionic-installed", dockerUtils.&idTesting,
+      "ubuntu-bionic-installed", dockerUtils.&idArtifact,
       "./release-artifact/*/bionic/",
       "./scripts/docker/ubuntu/bionic/release.Dockerfile",
       false
     )
 
     DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
-      "fedora-33-installed", dockerUtils.&idTesting,
+      "fedora-33-installed", dockerUtils.&idArtifact,
       "./release-artifact/*/fedora33/",
       "./scripts/docker/fedora/33/release.Dockerfile",
       false
@@ -171,7 +172,8 @@ def dockerInit() {
   }
 }
 
-/* Generate release stages for release automation
+/**
+ *  Generate release stages for release automation
  */
 def generateReleaseStages() {
   def tasks = [:]
@@ -205,7 +207,8 @@ def generateReleaseStages() {
 
 }
 
-/* Generate Docker Build Stages with installed libelektra packages
+/**
+ *  Generate Docker Build Stages with installed libelektra packages
  */
 def generateDockerBuildStagesWithPackagesInstalled() {
   def tasks = [:]
@@ -231,7 +234,8 @@ def generateDockerBuildStagesWithPackagesInstalled() {
   return tasks
 }
 
-/* Generates Testing stages where installed packages are tested
+/**
+ *  Generates Testing stages where installed packages are tested
  */
 def generateInstalledPackagesTestStages() {
   def tasks = [:]
@@ -256,7 +260,8 @@ def generateInstalledPackagesTestStages() {
   return tasks
 }
 
-/* Generate Publish Stages
+/**
+ *  Generate Publish Stages
  */
 def generatePublishStages() {
   def tasks = [:]
@@ -266,7 +271,7 @@ def generatePublishStages() {
     DOCKER_IMAGES.buster_installed.context,
     "buster",
     "buster",
-    "DEB",
+    release.&publishDebPackages,
     params.debian_revision
   )
 
@@ -275,7 +280,7 @@ def generatePublishStages() {
     DOCKER_IMAGES.focal_installed.context,
     "focal",
     "focal",
-    "DEB",
+    release.&publishDebPackages,
     params.ubuntu_revision
   )
 
@@ -284,7 +289,7 @@ def generatePublishStages() {
     DOCKER_IMAGES.bionic_installed.context,
     "bionic",
     "bionic",
-    "DEB",
+    release.&publishDebPackages,
     params.ubuntu_revision
   )
 
@@ -293,24 +298,27 @@ def generatePublishStages() {
     DOCKER_IMAGES.fedora_33_installed.context,
     "fedora-33",
     "fedora-33",
-    "RPM",
+    release.&publishRpmPackages,
     params.fedora_revision
   )
 
   return tasks
 }
 
-/** Release stage
+/**
+ * Release stage
  *
  * Imports the gpg keys and runs the release script.
- * All relevant artifacts (build and test infos, packages, etc) are archived
+ * All relevant artifacts (build and test infos, packages, etc) are archived.
+ * The Elektra version is queried and assigned to the pipeline
+ * variable `RELEASE_VERSION`
  *
- * testName: used to identify the release and name the stage
- * image: which docker image should be used
+ * @param stageName used to identify the release and name the stage
+ * @param image which docker image should be used
  */
-def buildRelease(testName, image, packageRevision='1', placeholderDir=false) {
-  return [(testName): {
-    stage(testName) {
+def buildRelease(stageName, image, packageRevision='1', placeholderDir=false) {
+  return [(stageName): {
+    stage(stageName) {
       withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
@@ -334,9 +342,9 @@ def buildRelease(testName, image, packageRevision='1', placeholderDir=false) {
               }
 
               sh "sh libelektra/scripts/release/release.sh ${packageRevision}"
-              sh "mv release.tar.gz ${testName}-release.tar.gz"
+              sh "mv release.tar.gz ${stageName}-release.tar.gz"
 
-              utils.archive(["${testName}-release.tar.gz"])
+              utils.archive(["${stageName}-release.tar.gz"])
 
               dir('libelektra') {
                 sh "git bundle create libelektra.bundle --all"
@@ -358,16 +366,22 @@ def buildRelease(testName, image, packageRevision='1', placeholderDir=false) {
   }]
 }
 
-def testInstalledPackage(testName, image) {
-  return [(testName): {
-    stage(testName) {
+/**
+ * Tests installed packages in docker container and archives results
+ *
+ * @param stageName used to identify the stage
+ * @param image which docker image should be used
+ */
+def testInstalledPackage(stageName, image) {
+  return [(stageName): {
+    stage(stageName) {
       withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
         checkout scm
 
         sh "./scripts/release/release-tests.sh ./ ${RELEASE_VERSION} package OFF"
-        sh "tar -czvf ${testName}-release.tar.gz ./${RELEASE_VERSION}"
+        sh "tar -czvf ${stageName}-release.tar.gz ./${RELEASE_VERSION}"
 
-        utils.archive(["${testName}-release.tar.gz"])
+        utils.archive(["${stageName}-release.tar.gz"])
         deleteDir()
 
       }
@@ -376,22 +390,24 @@ def testInstalledPackage(testName, image) {
 }
 
 
-/* Publish changes and artifacts
+/**
+ * Publish changes and artifacts
  *
- * @param correspondingReleaseTestName corresponding name of the test stage in which artifcats
+ * @param correspondingReleaseStageName corresponding name of the test stage in which artifcats
  *                                     necessaryfor this stage have been generated
  * @param context filepath under which packages are located
  * @param repoName name of the package repository
  * @param repoPrefix prefix of the package repository
- * @param packageType e.g. DEB, RPM
+ * @param publishPackagesFun Closure that publishes packages to a repository
  * @param packageRevision revision number of the package
  */
-def publish(correspondingReleaseTestName, context, repoName, repoPrefix, packageType, packageRevision) {
-  return [(correspondingReleaseTestName): {
-    stage(correspondingReleaseTestName) {
+def publish(correspondingReleaseStageName, context, repoName,
+            repoPrefix, publishPackagesFun, packageRevision) {
+  return [(correspondingReleaseStageName): {
+    stage(correspondingReleaseStageName) {
       withDockerEnv(DOCKER_IMAGES.buster) {
         copyArtifacts(
-          filter: "artifacts/${correspondingReleaseTestName}/${correspondingReleaseTestName}-release.tar.gz",
+          filter: "artifacts/${correspondingReleaseStageName}/${correspondingReleaseStageName}-release.tar.gz",
           fingerprintArtifacts: true,
           projectName: '${JOB_NAME}',
           selector: specific('${BUILD_NUMBER}')
@@ -399,7 +415,7 @@ def publish(correspondingReleaseTestName, context, repoName, repoPrefix, package
         dir('release-artifact') {
           deleteDir()
           sh """\
-tar -zxvf ../artifacts/${correspondingReleaseTestName}/${correspondingReleaseTestName}-release.tar.gz \
+tar -zxvf ../artifacts/${correspondingReleaseStageName}/${correspondingReleaseStageName}-release.tar.gz \
 -C ./ --strip-components=1"""
         }
         dir('ftp') {
@@ -410,36 +426,24 @@ tar -zxvf ../artifacts/${correspondingReleaseTestName}/${correspondingReleaseTes
         dir("copy") {
           deleteDir()
           sh "mv ../${context}* ./"
-          switch(packageType) {
-            case "DEB":
-              release.publishDebPackages(
-                'doc.libelektra.org',
-                "/packaging/incoming/${repoName}/",
-                repoName,
-                repoPrefix,
-                RELEASE_VERSION,
-                packageRevision
-              )
-              break
-            case "RPM":
-              release.publishRpmPackages(
-                'doc.libelektra.org',
-                "/packaging/incoming/${repoName}/",
-                repoName,
-                packageRevision
-              )
-              break
-            default:
-              currentBuild.result = 'FAILURE'
-              break
-          }
+
+          publishPackagesFun(
+            'doc.libelektra.org',
+            "/packaging/incoming/${repoName}/",
+            repoName,
+            repoPrefix,
+            RELEASE_VERSION,
+            packageRevision
+          )
         }
       }
     }
   }]
 }
 
-// /* Stage building and uploading the documentation */
+/**
+ * Stage building and uploading the documentation
+ */
 def buildDoc() {
   def stageName = "Build Documentation"
   cmakeFlags = [
@@ -494,7 +498,11 @@ ${WORKSPACE}/build/doc/man ./"""
 }
 
 
-/* Returns a map with a closure that builds image
+/**
+ * Build image with installed packges
+ *
+ * Copies artifact containing packages built in previous stage
+ * and builds an image which copies and install these packages.
  *
  * @param image Image that needs to be build
  */
