@@ -1092,15 +1092,17 @@ def buildPackage(stageName, image, repoName, repoPrefix, installImage,
             }
           }
           dir("build/package") {
-            publishPackagesFun(
-              'doc.libelektra.org',
-              "/packaging/incoming/${repoName}/",
-              repoName,
-              repoPrefix,
-              "$VERSION",
-              packageRevision,
-              targetDir
-            )
+            if (isMaster()) {
+              publishPackagesFun(
+                'doc.libelektra.org',
+                "/packaging/incoming/${repoName}/",
+                repoName,
+                repoPrefix,
+                "$VERSION",
+                packageRevision,
+                targetDir
+              )
+            }
           }
         }
       }
