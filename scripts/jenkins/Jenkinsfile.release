@@ -86,7 +86,7 @@ stage("Test packages") {
 input(message: 'Publish Release?', ok: 'Yes')
 
 stage("Publish") {
-  sequential generatePublishStages()
+  parallel generatePublishStages()
 }
 
 
@@ -229,8 +229,6 @@ def generateDockerBuildStagesWithPackagesInstalled() {
     "debian-buster"
   )
 
-  tasks << buildDoc()
-
   return tasks
 }
 
@@ -261,9 +259,9 @@ def generateInstalledPackagesTestStages() {
 }
 
 /**
- *  Generate Publish Stages
+ *  Generates stages to publish deb packages
  */
-def generatePublishStages() {
+def generateDebPackagePublishStages() {
   def tasks = [:]
 
   tasks << publish(
@@ -293,6 +291,33 @@ def generatePublishStages() {
     params.ubuntu_revision
   )
 
+  return tasks
+}
+
+/**
+ * Runs the debian package stages sequential
+ *
+ * Necessary to prevent race conditions from `aptly`.
+ */
+def publishDebPackagesStage() {
+  def stageName = "publish-deb"
+  return [(stageName): {
+    stage(stageName) {
+      sequential generateDebPackagePublishStages()
+    }
+  }]
+}
+
+/**
+ *  Generate Publish Stages
+ */
+def generatePublishStages() {
+  def tasks = [:]
+
+  tasks << publishDebPackagesStage()
+
+  // RPM packges can be published in parallel because
+  // no shared DB is used.
   tasks << publish(
     "fedora-33",
     DOCKER_IMAGES.fedora_33_installed.context,
@@ -301,6 +326,8 @@ def generatePublishStages() {
     release.&publishRpmPackages,
     params.fedora_revision
   )
+
+  tasks << buildDoc()
 
   return tasks
 }
