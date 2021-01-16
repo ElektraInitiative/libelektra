@@ -4,7 +4,10 @@ ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
-RUN apt-get update && apt-get upgrade -y
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get -y install strace \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
@@ -28,8 +31,9 @@ RUN mkdir -p ${ELEKTRA_ROOT}
 COPY ./*.deb ${ELEKTRA_ROOT}
 COPY ./*.ddeb ${ELEKTRA_ROOT}
 
-RUN apt-get update
-RUN dpkg -i ${ELEKTRA_ROOT}/* || apt-get -f install -y
+RUN apt-get update \
+    && apt-get install ${ELEKTRA_ROOT}/* \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN kdb mount-info \
     && mkdir -p `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .` || true \

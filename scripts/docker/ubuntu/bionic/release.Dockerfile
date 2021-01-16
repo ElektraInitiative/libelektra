@@ -1,7 +1,10 @@
 FROM ubuntu:bionic
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get upgrade -y
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get -y install strace \
+    && rm -rf /var/lib/apt/lists/*
 
 ARG JENKINS_GROUPID
 RUN groupadd \
@@ -23,8 +26,9 @@ RUN mkdir -p ${ELEKTRA_ROOT}
 COPY ./*.deb ${ELEKTRA_ROOT}
 COPY ./*.ddeb ${ELEKTRA_ROOT}
 
-RUN apt-get update
-RUN dpkg -i ${ELEKTRA_ROOT}/* || apt-get -f install -y
+RUN apt-get update \
+    && apt-get install ${ELEKTRA_ROOT}/* \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN kdb mount-info \
     && mkdir -p `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .` || true \

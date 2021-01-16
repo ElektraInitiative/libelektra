@@ -1,6 +1,8 @@
 FROM fedora:33
 
-RUN dnf upgrade --refresh -y
+RUN dnf upgrade --refresh -y \
+    && dnf install -y strace \
+    && dnf clean all -y
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
@@ -23,7 +25,8 @@ ENV ELEKTRA_ROOT=/opt/elektra/
 RUN mkdir -p ${ELEKTRA_ROOT}
 COPY ./*.rpm ${ELEKTRA_ROOT}
 
-RUN yum localinstall -y ${ELEKTRA_ROOT}/*
+RUN yum localinstall -y ${ELEKTRA_ROOT}/* \
+    && dnf clean all -y
 
 RUN kdb mount-info \
     && mkdir -p `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .` || true \
