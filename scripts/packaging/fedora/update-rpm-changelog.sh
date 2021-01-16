@@ -7,7 +7,7 @@ USAGE=$(
 Usage: [-h] [-a AUTHOR] [-f FILE] [-m MESSAGE] [-v VERSION] [-l VERSION_SUFFIX]
 Adds a new entry to the rpm changelog.
   -a=AUTHOR     	set the author of the changelog.
-                	Defaults to git config user.email
+                	Defaults to git config user.name and user.email
   -f=FILE       	path to the changelog.
                 	Defaults to ./changelog.
   -m=MESSAGE    	add a custom changelog message.
@@ -67,7 +67,7 @@ if [ -n "${PRINT_VERSION_FLAG}" ]; then
 fi
 
 if [ -z ${AUTHOR+x} ]; then
-	AUTHOR="$(git config user.email)"
+	AUTHOR="$(git config user.name) <$(git config user.email)>"
 fi
 
 DATE=$(date "+%a %b %d %Y")
