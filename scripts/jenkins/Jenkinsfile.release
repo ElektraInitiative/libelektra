@@ -13,9 +13,14 @@ properties([
   ),
   parameters([
     booleanParam(
+      defaultValue: true,
+      description: 'If activated, changes to repositories are pushed. Can be combined with git_bundle.',
+      name: 'git_publish'
+    ),
+    booleanParam(
       defaultValue: false,
-      description: 'If activated, the documentation is generated.',
-      name: 'generate_docu'
+      description: 'If activated, changes to repositories are bundled. Can be combined with git_publish.',
+      name: 'git_bundle'
     ),
     string(
       defaultValue: '1',
@@ -44,7 +49,6 @@ pipelineConfig {
 // registry = 'hub.libelektra.org'
   now = new Date()
 }
-
 
 DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
                      // dockerInit()
@@ -88,7 +92,6 @@ input(message: 'Publish Release?', ok: 'Yes')
 stage("Publish") {
   parallel generatePublishStages()
 }
-
 
 
 /**************/
@@ -181,7 +184,8 @@ def generateReleaseStages() {
   tasks << buildRelease(
     "debian-buster",
     DOCKER_IMAGES.buster,
-    params.debian_revision
+    params.debian_revision,
+    true // bundle repository
   )
 
   tasks << buildRelease(
@@ -200,7 +204,8 @@ def generateReleaseStages() {
     "fedora-33",
     DOCKER_IMAGES.fedora_33,
     params.fedora_revision,
-    true
+    false, // do not bundle git repo
+    true // use placeholder dirs
   )
 
   return tasks
@@ -329,6 +334,12 @@ def generatePublishStages() {
 
   tasks << buildDoc()
 
+  // publish source package built in debian-buster stage
+  tasks << publishSource("debian-buster")
+  // publish main repo which got modified during the
+  // debian-buster release stage
+  tasks << publishMainRepo("debian-buster")
+
   return tasks
 }
 
@@ -342,8 +353,12 @@ def generatePublishStages() {
  *
  * @param stageName used to identify the release and name the stage
  * @param image which docker image should be used
+ * @param bundleRepo if the libelektra repository should be bundled and archived
+ * @param placeholderDir if placeholder directories should be used to extend
+ *                       the base path
  */
-def buildRelease(stageName, image, packageRevision='1', placeholderDir=false) {
+def buildRelease(stageName, image, packageRevision='1',
+                 bundleRepo=false, placeholderDir=false) {
   return [(stageName): {
     stage(stageName) {
       withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
@@ -351,42 +366,37 @@ def buildRelease(stageName, image, packageRevision='1', placeholderDir=false) {
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"
           sh "gpg --import $SKEY"
-          withEnv(["DEBSIGN_PROGRAM=gpg",
-                   "DEBFULLNAME=Jenkins (User for Elektra automated build system)",
-                   "DEBEMAIL=autobuilder@libelektra.org"]) {
-            sh "rm -rf ./*"
+          sh "rm -rf ./*"
 
-            sh "git config --global user.name jenkins-release"
-            sh "git config --global user.email jenkins@libelektra.org"
-            def dirStructure = './'
-            if (placeholderDir) {
-              dirStructure = dirStructure + 'placeholder/placeholder/placeholder/placeholder'
+          configureGitUser()
+          def dirStructure = './'
+          if (placeholderDir) {
+            dirStructure = dirStructure + 'placeholder/placeholder/placeholder/placeholder'
+          }
+          dir(dirStructure) {
+            dir('libelektra') {
+              deleteDir()
+              checkout scm
             }
-            dir(dirStructure) {
-              dir('libelektra') {
-                deleteDir()
-                checkout scm
-              }
+            sh "sh libelektra/scripts/release/release.sh ${packageRevision}"
+            sh "mv release.tar.gz ${stageName}-release.tar.gz"
+            utils.archive(["${stageName}-release.tar.gz"])
 
-              sh "sh libelektra/scripts/release/release.sh ${packageRevision}"
-              sh "mv release.tar.gz ${stageName}-release.tar.gz"
-
-              utils.archive(["${stageName}-release.tar.gz"])
-
+            if (bundleRepo) {
               dir('libelektra') {
                 sh "git bundle create libelektra.bundle --all"
                 utils.archive(["libelektra.bundle"])
               }
-
-              script {
-                RELEASE_VERSION = sh(
-                  script: 'sh libelektra/scripts/release/get-installed-version.sh',
-                  returnStdout: true
-                ).trim()
-              }
             }
-            deleteDir()
+
+            script {
+              RELEASE_VERSION = sh(
+                script: 'sh libelektra/scripts/release/get-installed-version.sh',
+                returnStdout: true
+              ).trim()
+            }
           }
+          deleteDir()
         }
       }
     }
@@ -410,7 +420,6 @@ def testInstalledPackage(stageName, image) {
 
         utils.archive(["${stageName}-release.tar.gz"])
         deleteDir()
-
       }
     }
   }]
@@ -433,23 +442,7 @@ def publish(correspondingReleaseStageName, context, repoName,
   return [(correspondingReleaseStageName): {
     stage(correspondingReleaseStageName) {
       withDockerEnv(DOCKER_IMAGES.buster) {
-        copyArtifacts(
-          filter: "artifacts/${correspondingReleaseStageName}/${correspondingReleaseStageName}-release.tar.gz",
-          fingerprintArtifacts: true,
-          projectName: '${JOB_NAME}',
-          selector: specific('${BUILD_NUMBER}')
-        )
-        dir('release-artifact') {
-          deleteDir()
-          sh """\
-tar -zxvf ../artifacts/${correspondingReleaseStageName}/${correspondingReleaseStageName}-release.tar.gz \
--C ./ --strip-components=1"""
-        }
-        dir('ftp') {
-          deleteDir()
-          // TODO: checkout ftp dir, add packages and push
-          // sh "git clone https://github.com/ElektraInitiative/ftp.git ."
-        }
+        copyReleaseArtifact(correspondingReleaseStageName)
         dir("copy") {
           deleteDir()
           sh "mv ../${context}* ./"
@@ -469,6 +462,71 @@ tar -zxvf ../artifacts/${correspondingReleaseStageName}/${correspondingReleaseSt
 }
 
 /**
+ * Publish source package to ftp repo
+ *
+ * @param artifactStageName artifact to get source package from
+ */
+def publishSource(artifactStageName) {
+  def stageName = "publishSourcePackage"
+  return [(stageName): {
+    maybeStage(stageName, params.git_publish) {
+      withDockerEnv(DOCKER_IMAGES.buster) {
+        configureGitUser()
+        copyReleaseArtifact(artifactStageName)
+        dir('ftp') {
+          deleteDir()
+          git branch: 'master',
+              url: 'https://github.com/ElektraInitiative/ftp.git'
+          sh "cp ../release-artifact/*/*.tar.gz* ./releases/"
+          sh "git commit -a -m '${RELEASE_VERSION} Release'"
+          if (params.git_publish) {
+            pushGitRepo('ftp')
+          }
+          if (params.git_bundle) {
+            sh "git bundle create ftp.bundle --all"
+            utils.archive(["ftp.bundle"])
+          }
+        }
+      }
+    }
+  }]
+}
+
+/**
+ * Publishes main repository which got archived in the release stage
+ *
+ * @param  artifactStageName stage name under which the main repo
+ *                           got archived
+ */
+def publishMainRepo(artifactStageName) {
+  def stageName = "publishMainRepo"
+  return [(stageName): {
+    maybeStage(stageName, params.git_publish) {
+      withDockerEnv(DOCKER_IMAGES.buster) {
+        configureGitUser()
+        copyArtifacts(
+          filter: "artifacts/${artifactStageName}/libelektra.bundle",
+          fingerprintArtifacts: true,
+          projectName: '${JOB_NAME}',
+          selector: specific('${BUILD_NUMBER}')
+        )
+
+        dir('libelektra') {
+          deleteDir()
+          git branch: 'master',
+              url: 'https://github.com/ElektraInitiative/libelektra.git'
+          sh "git bundle verify ${WORKSPACE}/artifacts/${artifactStageName}/libelektra.bundle"
+          sh "git pull --ff-only ${WORKSPACE}/artifacts/${artifactStageName}/libelektra.bundle"
+          if (params.git_publish) {
+            pushGitRepo('libelektra')
+          }
+        }
+      }
+    }
+  }]
+}
+
+/**
  * Stage building and uploading the documentation
  */
 def buildDoc() {
@@ -481,10 +539,9 @@ def buildDoc() {
     'BUILD_TESTING': 'OFF'
   ]
   return [(stageName): {
-    maybeStage(stageName, params.generate_docu) {
+    stage(stageName) {
       withDockerEnv(DOCKER_IMAGES.buster_doc) {
-        sh "git config --global user.name jenkins-release"
-        sh "git config --global user.email jenkins@libelektra.org"
+        configureGitUser()
 
         dir('build') {
           deleteDir()
@@ -494,7 +551,8 @@ def buildDoc() {
 
         dir('doc') {
           deleteDir()
-          sh "git clone https://github.com/ElektraInitiative/doc.git ."
+          git branch: 'master',
+              url: 'https://github.com/ElektraInitiative/doc.git'
         }
 
         dir('doc/api') {
@@ -509,9 +567,14 @@ ${WORKSPACE}/build/doc/man ./"""
         }
 
         dir('doc') {
-          sh "git commit -a -m '${RELEASE_VERSION} Release'"
-          sh "git bundle create docu.bundle --all"
-          utils.archive(["docu.bundle"])
+          sh "git commit -m '${RELEASE_VERSION} Release'"
+          if (params.git_publish) {
+            pushGitRepo('doc')
+          }
+          if (params.git_bundle) {
+            sh "git bundle create docu.bundle --all"
+            utils.archive(["docu.bundle"])
+          }
         }
 
         warnings parserConfigurations: [
@@ -540,22 +603,51 @@ def buildImageWithPackagesStage(image, previousTaskName) {
       node(PipelineConfig.instance.dockerNodeLabel) {
         echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
         checkout scm
-
-        copyArtifacts(
-          filter: "artifacts/${previousTaskName}/${previousTaskName}-release.tar.gz",
-          fingerprintArtifacts: true,
-          projectName: '${JOB_NAME}',
-          selector: specific('${BUILD_NUMBER}')
-        )
-        dir('release-artifact') {
-          deleteDir()
-          sh """\
-tar -zxvf ../artifacts/${previousTaskName}/${previousTaskName}-release.tar.gz \
--C ./ --strip-components=1"""
-        }
-
+        copyReleaseArtifact(previousTaskName)
         dockerUtils.buildImage(image)
       }
     }
   }]
+}
+
+/**
+ * Copy release artifact from previous stage and extract it
+ * @param  artifactStageName stage name under which the artifact
+ *                           got archived
+ */
+def copyReleaseArtifact(artifactStageName) {
+  copyArtifacts(
+    filter: "artifacts/${artifactStageName}/${artifactStageName}-release.tar.gz",
+    fingerprintArtifacts: true,
+    projectName: '${JOB_NAME}',
+    selector: specific('${BUILD_NUMBER}')
+  )
+  dir('release-artifact') {
+    deleteDir()
+    sh """\
+tar -zxvf ${WORKSPACE}/artifacts/${artifactStageName}/${artifactStageName}-release.tar.gz \
+-C ./ --strip-components=1"""
+  }
+}
+
+/**
+ * Push git repo
+ * Currently the best way according to
+ * https://github.com/jenkinsci/pipeline-examples/blob/master/pipeline-examples/push-git-repo/pushGitRepo.groovy
+ * @param  repoName name of the git repo
+ */
+def pushGitRepo(repoName) {
+  def gitOrg = "ElektraInitiative"
+  def credentialsId = "jenkins-publish-credentials"
+  withCredentials([usernamePassword(credentialsId: "${credentialsId}", passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+    sh("git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${gitOrg}/${repoName}.git")
+  }
+}
+
+/**
+ * Configures git user to elektrabot
+ */
+def configureGitUser() {
+  sh "git config --global user.name elektrabot"
+  sh "git config --global user.email elektrabot@libelektra.org"
 }
