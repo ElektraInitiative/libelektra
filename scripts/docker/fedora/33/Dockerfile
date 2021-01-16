@@ -32,7 +32,6 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         libgcrypt-devel \
         libgit2-devel \
         libmarkdown-devel \
-        qt5-qtsvg-devel \
         libubsan \
         libuv-devel \
         libxml2-devel \
@@ -46,9 +45,11 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         python3-devel \
         qt5-qtbase-devel \
         qt5-qtdeclarative-devel \
+        qt5-qtsvg-devel \
         rpmdevtools \
         ruby-devel \
         rubygem-test-unit \
+        strace \
         swig \
         systemd-devel \
         valgrind \
