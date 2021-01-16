@@ -44,9 +44,9 @@ properties([
 ])
 
 pipelineConfig {
-// uncomment if you you want to overwrite these values
-// dockerNodeLabel = 'docker'
-// registry = 'hub.libelektra.org'
+  // uncomment if you you want to overwrite these values
+  // dockerNodeLabel = 'docker'
+  // registry = 'hub.libelektra.org'
   now = new Date()
 }
 
@@ -56,43 +56,40 @@ DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
 RELEASE_VERSION = '' // release version, set during release build and used
                      // by the documentation stage
 
-
 // Stages
-stage("Init docker images") {
+stage('Init docker images') {
   dockerInit()
 }
 
-stage("Pull docker images") {
+stage('Pull docker images') {
   parallel dockerUtils.generateDockerPullStages(DOCKER_IMAGES)
 }
 
-maybeStage("Build docker images", DOCKER_IMAGES.any {img -> !img.value.exists}) {
+maybeStage('Build docker images', DOCKER_IMAGES.any { img -> !img.value.exists }) {
   lock('docker-images') {
         parallel dockerUtils.generateDockerBuildStages(DOCKER_IMAGES)
-    }
+  }
 }
 
-stage("Release") {
-  milestone label: "Release"
+stage('Release') {
+  milestone label: 'Release'
   parallel generateReleaseStages()
 }
 
-
-stage("Build docker images for package testing") {
+stage('Build docker images for package testing') {
   parallel generateDockerBuildStagesWithPackagesInstalled()
 }
 
-stage("Test packages") {
+stage('Test packages') {
   parallel generateInstalledPackagesTestStages()
 }
 
 // Pause pipeline and wait for approval to run publishsing steps
 input(message: 'Publish Release?', ok: 'Yes')
 
-stage("Publish") {
+stage('Publish') {
   parallel generatePublishStages()
 }
-
 
 /**************/
 /* Generators */
@@ -105,61 +102,61 @@ stage("Publish") {
  * Dockerfiles which indicates if a rebuild of the images is needed
  */
 def dockerInit() {
-  node("master") {
-    echo "Processing DOCKER_IMAGES"
+  node('master') {
+    echo 'Processing DOCKER_IMAGES'
     checkout scm
 
     /* Test and build release artifacts with these images. */
     DOCKER_IMAGES.buster = dockerUtils.createDockerImageDesc(
-      "debian-buster", dockerUtils.&idTesting,
-      "./scripts/docker/debian/buster",
-      "./scripts/docker/debian/buster/Dockerfile"
+      'debian-buster', dockerUtils.&idTesting,
+      './scripts/docker/debian/buster',
+      './scripts/docker/debian/buster/Dockerfile'
     )
 
     DOCKER_IMAGES.focal = dockerUtils.createDockerImageDesc(
-      "ubuntu-focal", dockerUtils.&idTesting,
-      "./scripts/docker/ubuntu/focal",
-      "./scripts/docker/ubuntu/focal/Dockerfile"
+      'ubuntu-focal', dockerUtils.&idTesting,
+      './scripts/docker/ubuntu/focal',
+      './scripts/docker/ubuntu/focal/Dockerfile'
     )
 
     DOCKER_IMAGES.bionic = dockerUtils.createDockerImageDesc(
-      "ubuntu-bionic", dockerUtils.&idTesting,
-      "./scripts/docker/ubuntu/bionic",
-      "./scripts/docker/ubuntu/bionic/Dockerfile"
+      'ubuntu-bionic', dockerUtils.&idTesting,
+      './scripts/docker/ubuntu/bionic',
+      './scripts/docker/ubuntu/bionic/Dockerfile'
     )
 
     DOCKER_IMAGES.fedora_33 = dockerUtils.createDockerImageDesc(
-      "fedora-33", dockerUtils.&idTesting,
-      "./scripts/docker/fedora/33",
-      "./scripts/docker/fedora/33/Dockerfile"
+      'fedora-33', dockerUtils.&idTesting,
+      './scripts/docker/fedora/33',
+      './scripts/docker/fedora/33/Dockerfile'
     )
 
     /* Install and test the built packages with theses images. */
     DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
-      "debian-buster-installed", dockerUtils.&idArtifact,
-      "./release-artifact/*/buster/",
-      "./scripts/docker/debian/buster/release.Dockerfile",
+      'debian-buster-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/buster/',
+      './scripts/docker/debian/buster/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
-      "ubuntu-focal-installed", dockerUtils.&idArtifact,
-      "./release-artifact/*/focal/",
-      "./scripts/docker/ubuntu/focal/release.Dockerfile",
+      'ubuntu-focal-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/focal/',
+      './scripts/docker/ubuntu/focal/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
-      "ubuntu-bionic-installed", dockerUtils.&idArtifact,
-      "./release-artifact/*/bionic/",
-      "./scripts/docker/ubuntu/bionic/release.Dockerfile",
+      'ubuntu-bionic-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/bionic/',
+      './scripts/docker/ubuntu/bionic/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
-      "fedora-33-installed", dockerUtils.&idArtifact,
-      "./release-artifact/*/fedora33/",
-      "./scripts/docker/fedora/33/release.Dockerfile",
+      'fedora-33-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/fedora33/',
+      './scripts/docker/fedora/33/release.Dockerfile',
       false
     )
 
@@ -167,11 +164,10 @@ def dockerInit() {
      * Also contains latex for pdf creation.
      */
     DOCKER_IMAGES.buster_doc = dockerUtils.createDockerImageDesc(
-      "debian-buster-doc", dockerUtils.&idTesting,
-      "./scripts/docker/debian/buster",
-      "./scripts/docker/debian/buster/doc.Dockerfile"
+      'debian-buster-doc', dockerUtils.&idTesting,
+      './scripts/docker/debian/buster',
+      './scripts/docker/debian/buster/doc.Dockerfile'
     )
-
   }
 }
 
@@ -182,26 +178,26 @@ def generateReleaseStages() {
   def tasks = [:]
 
   tasks << buildRelease(
-    "debian-buster",
+    'debian-buster',
     DOCKER_IMAGES.buster,
     params.debian_revision,
     true // bundle repository
   )
 
   tasks << buildRelease(
-    "ubuntu-focal",
+    'ubuntu-focal',
     DOCKER_IMAGES.focal,
     params.ubuntu_revision
   )
 
   tasks << buildRelease(
-    "ubuntu-bionic",
+    'ubuntu-bionic',
     DOCKER_IMAGES.bionic,
     params.ubuntu_revision
   )
 
   tasks << buildRelease(
-    "fedora-33",
+    'fedora-33',
     DOCKER_IMAGES.fedora_33,
     params.fedora_revision,
     false, // do not bundle git repo
@@ -209,7 +205,6 @@ def generateReleaseStages() {
   )
 
   return tasks
-
 }
 
 /**
@@ -219,19 +214,19 @@ def generateDockerBuildStagesWithPackagesInstalled() {
   def tasks = [:]
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.focal_installed,
-    "ubuntu-focal"
+    'ubuntu-focal'
   )
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.bionic_installed,
-    "ubuntu-bionic"
+    'ubuntu-bionic'
   )
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.fedora_33_installed,
-    "fedora-33"
+    'fedora-33'
   )
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.buster_installed,
-    "debian-buster"
+    'debian-buster'
   )
 
   return tasks
@@ -243,20 +238,20 @@ def generateDockerBuildStagesWithPackagesInstalled() {
 def generateInstalledPackagesTestStages() {
   def tasks = [:]
   tasks << testInstalledPackage(
-    "ubuntu-focal-installed",
+    'ubuntu-focal-installed',
     DOCKER_IMAGES.focal_installed
   )
   tasks << testInstalledPackage(
-    "ubuntu-bionic-installed",
+    'ubuntu-bionic-installed',
     DOCKER_IMAGES.bionic_installed
   )
   tasks << testInstalledPackage(
-    "fedora-33-installed",
+    'fedora-33-installed',
     DOCKER_IMAGES.fedora_33_installed
   )
 
   tasks << testInstalledPackage(
-    "debian-buster-installed",
+    'debian-buster-installed',
     DOCKER_IMAGES.buster_installed
   )
 
@@ -270,28 +265,28 @@ def generateDebPackagePublishStages() {
   def tasks = [:]
 
   tasks << publish(
-    "debian-buster",
+    'debian-buster',
     DOCKER_IMAGES.buster_installed.context,
-    "buster",
-    "buster",
+    'buster',
+    'buster',
     release.&publishDebPackages,
     params.debian_revision
   )
 
   tasks << publish(
-    "ubuntu-focal",
+    'ubuntu-focal',
     DOCKER_IMAGES.focal_installed.context,
-    "focal",
-    "focal",
+    'focal',
+    'focal',
     release.&publishDebPackages,
     params.ubuntu_revision
   )
 
   tasks << publish(
-    "ubuntu-bionic",
+    'ubuntu-bionic',
     DOCKER_IMAGES.bionic_installed.context,
-    "bionic",
-    "bionic",
+    'bionic',
+    'bionic',
     release.&publishDebPackages,
     params.ubuntu_revision
   )
@@ -305,7 +300,7 @@ def generateDebPackagePublishStages() {
  * Necessary to prevent race conditions from `aptly`.
  */
 def publishDebPackagesStage() {
-  def stageName = "publish-deb"
+  def stageName = 'publish-deb'
   return [(stageName): {
     stage(stageName) {
       sequential generateDebPackagePublishStages()
@@ -324,10 +319,10 @@ def generatePublishStages() {
   // RPM packges can be published in parallel because
   // no shared DB is used.
   tasks << publish(
-    "fedora-33",
+    'fedora-33',
     DOCKER_IMAGES.fedora_33_installed.context,
-    "fedora-33",
-    "fedora-33",
+    'fedora-33',
+    'fedora-33',
     release.&publishRpmPackages,
     params.fedora_revision
   )
@@ -335,10 +330,10 @@ def generatePublishStages() {
   tasks << buildDoc()
 
   // publish source package built in debian-buster stage
-  tasks << publishSource("debian-buster")
+  tasks << publishSource('debian-buster')
   // publish main repo which got modified during the
   // debian-buster release stage
-  tasks << publishMainRepo("debian-buster")
+  tasks << publishMainRepo('debian-buster')
 
   return tasks
 }
@@ -366,7 +361,7 @@ def buildRelease(stageName, image, packageRevision='1',
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"
           sh "gpg --import $SKEY"
-          sh "rm -rf ./*"
+          sh 'rm -rf ./*'
 
           configureGitUser()
           def dirStructure = './'
@@ -384,8 +379,8 @@ def buildRelease(stageName, image, packageRevision='1',
 
             if (bundleRepo) {
               dir('libelektra') {
-                sh "git bundle create libelektra.bundle --all"
-                utils.archive(["libelektra.bundle"])
+                sh 'git bundle create libelektra.bundle --all'
+                utils.archive(['libelektra.bundle'])
               }
             }
 
@@ -425,7 +420,6 @@ def testInstalledPackage(stageName, image) {
   }]
 }
 
-
 /**
  * Publish changes and artifacts
  *
@@ -443,7 +437,7 @@ def publish(correspondingReleaseStageName, context, repoName,
     stage(correspondingReleaseStageName) {
       withDockerEnv(DOCKER_IMAGES.buster) {
         copyReleaseArtifact(correspondingReleaseStageName)
-        dir("copy") {
+        dir('copy') {
           deleteDir()
           sh "mv ../${context}* ./"
 
@@ -467,7 +461,7 @@ def publish(correspondingReleaseStageName, context, repoName,
  * @param artifactStageName artifact to get source package from
  */
 def publishSource(artifactStageName) {
-  def stageName = "publishSourcePackage"
+  def stageName = 'publishSourcePackage'
   return [(stageName): {
     maybeStage(stageName, params.git_publish) {
       withDockerEnv(DOCKER_IMAGES.buster) {
@@ -477,14 +471,14 @@ def publishSource(artifactStageName) {
           deleteDir()
           git branch: 'master',
               url: 'https://github.com/ElektraInitiative/ftp.git'
-          sh "cp ../release-artifact/*/*.tar.gz* ./releases/"
+          sh 'cp ../release-artifact/*/*.tar.gz* ./releases/'
           sh "git commit -a -m '${RELEASE_VERSION} Release'"
           if (params.git_publish) {
             pushGitRepo('ftp')
           }
           if (params.git_bundle) {
-            sh "git bundle create ftp.bundle --all"
-            utils.archive(["ftp.bundle"])
+            sh 'git bundle create ftp.bundle --all'
+            utils.archive(['ftp.bundle'])
           }
         }
       }
@@ -499,7 +493,7 @@ def publishSource(artifactStageName) {
  *                           got archived
  */
 def publishMainRepo(artifactStageName) {
-  def stageName = "publishMainRepo"
+  def stageName = 'publishMainRepo'
   return [(stageName): {
     maybeStage(stageName, params.git_publish) {
       withDockerEnv(DOCKER_IMAGES.buster) {
@@ -530,7 +524,7 @@ def publishMainRepo(artifactStageName) {
  * Stage building and uploading the documentation
  */
 def buildDoc() {
-  def stageName = "Build Documentation"
+  def stageName = 'Build Documentation'
   cmakeFlags = [
     'BUILD_PDF': 'ON',
     'BUILD_FULL': 'OFF',
@@ -546,7 +540,7 @@ def buildDoc() {
         dir('build') {
           deleteDir()
           utils.cmake(env.WORKSPACE, cmakeFlags)
-          sh "make html man"
+          sh 'make html man'
         }
 
         dir('doc') {
@@ -561,7 +555,7 @@ def buildDoc() {
 cp -a ${WORKSPACE}/build/doc/html ${WORKSPACE}/build/doc/latex \
 ${WORKSPACE}/build/doc/man ./"""
           }
-          sh "rm current"
+          sh 'rm current'
           sh "ln -s ${RELEASE_VERSION} current"
           sh "git add current ${RELEASE_VERSION}"
         }
@@ -572,8 +566,8 @@ ${WORKSPACE}/build/doc/man ./"""
             pushGitRepo('doc')
           }
           if (params.git_bundle) {
-            sh "git bundle create docu.bundle --all"
-            utils.archive(["docu.bundle"])
+            sh 'git bundle create docu.bundle --all'
+            utils.archive(['docu.bundle'])
           }
         }
 
@@ -586,7 +580,6 @@ ${WORKSPACE}/build/doc/man ./"""
     }
   }]
 }
-
 
 /**
  * Build image with installed packges
@@ -637,8 +630,8 @@ tar -zxvf ${WORKSPACE}/artifacts/${artifactStageName}/${artifactStageName}-relea
  * @param  repoName name of the git repo
  */
 def pushGitRepo(repoName) {
-  def gitOrg = "ElektraInitiative"
-  def credentialsId = "jenkins-publish-credentials"
+  def gitOrg = 'ElektraInitiative'
+  def credentialsId = 'jenkins-publish-credentials'
   withCredentials([usernamePassword(credentialsId: "${credentialsId}", passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
     sh("git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${gitOrg}/${repoName}.git")
   }
@@ -648,6 +641,6 @@ def pushGitRepo(repoName) {
  * Configures git user to elektrabot
  */
 def configureGitUser() {
-  sh "git config --global user.name elektrabot"
-  sh "git config --global user.email elektrabot@libelektra.org"
+  sh 'git config --global user.name elektrabot'
+  sh 'git config --global user.email elektrabot@libelektra.org'
 }
