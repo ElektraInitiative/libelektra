@@ -19,7 +19,7 @@ properties([
     ),
     booleanParam(
       defaultValue: false,
-      description: 'If activated, changes to repositories are bundled. Can be combined with git_publish.',
+      description: 'If activated, changes to the ftp and doc repositories are bundled and archived in the publish stages. Can be combined with git_publish.',
       name: 'git_bundle'
     ),
     string(
