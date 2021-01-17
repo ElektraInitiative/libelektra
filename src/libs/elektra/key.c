@@ -269,10 +269,13 @@ Key * keyVNew (const char * name, va_list va)
  * Since metadata uses copy-on-write semantics there is only a
  * constant memory cost to copying metadata.
  *
- * When you pass a NULL-pointer as @p source the data of @p dest
- * will be cleared. This is different from keyClear(). The key
- * will not be fully reset, the reference counter and internal flags
- * will remain unchanged.
+ * When you pass a NULL-pointer as @p source the pieces of @p dest
+ * specified by @p flags will be cleared.
+ *
+ * Calling `keyCopy (dest, NULL, ~0)` is different from calling keyClear().
+ * The key will not be fully reset, the reference counter and internal flags
+ * will remain unchanged. Additionally, keyCopy() respects keyLock() state,
+ * while keyClear() always works.
  *
  * @snippet keyCopy.c Clear
  *
@@ -299,15 +302,19 @@ Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 
 	if (source == NULL)
 	{
-		keyClear (dest);
+		if (test_bit (flags, KEY_NAME))
+		{
+			keySetName (dest, "/");
+		}
+		if (test_bit (flags, KEY_VALUE))
+		{
+			keySetRaw (dest, NULL, 0);
+		}
+		if (test_bit (flags, KEY_META))
+		{
+			ksClear (dest->meta);
+		}
 		return dest;
-	}
-
-	if (flags == 0)
-	{
-		// FIXME: define behaviour
-		// TODO: add flag to define whether non-copied parts are cleared or untouched
-		flags = ~0;
 	}
 
 	// remember original data of dest
@@ -343,6 +350,11 @@ Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 		dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
 		if (!dest->data.v) goto memerror;
 		dest->dataSize = source->dataSize;
+
+		if (!test_bit (flags, KEY_META) && keyIsBinary (source))
+		{
+			keySetMeta (dest, "binary", "");
+		}
 	}
 	else
 	{
@@ -359,8 +371,6 @@ Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 	{
 		dest->meta = 0;
 	}
-
-	// TODO: correctly copy binary keys
 
 	// successful, now do the irreversible stuff: we obviously modified dest
 	set_bit (dest->flags, KEY_FLAG_SYNC);
