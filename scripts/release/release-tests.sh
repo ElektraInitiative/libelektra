@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# quit with error if any command fails
+# set -ex # TODO: uncomment if gopts and quickdump tests are fixed
+
 BASE_DIR=$1
 VERSION=$2
 SUFFIX=$3

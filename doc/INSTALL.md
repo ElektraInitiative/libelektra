@@ -32,16 +32,17 @@ We provide stable and bleeding-edge repositories for following Debian-based dist
 - Ubuntu Focal
 - Ubuntu Bionic
 
-To use the our stable repositories with our recent releases, following steps need to be made:
+To use our stable repositories with our recent releases, following steps need to be made:
 
 1. Run `sudo apt-key adv --keyserver keys.gnupg.net --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839` to obtain the key.
 
 2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <DISTRIBUTION> main` into `/etc/apt/sources.list`
    where `<DISTRIBUTION>` is the Codename of your distributions e.g.`focal`,`bionic`,`buster`, etc.
 
-This can also be done using (e.g. for Ubuntu Focal):
+This can also be done using:
 
 ```sh
+# Example for Ubuntu Focal
 apt-get install software-properties-common apt-transport-https
 echo "deb https://debs.libelektra.org/focal focal main" | sudo tee /etc/apt/sources.list.d/elektra.list
 ```
@@ -49,6 +50,7 @@ echo "deb https://debs.libelektra.org/focal focal main" | sudo tee /etc/apt/sour
 Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
 
 ```sh
+# Example for Ubuntu Focal
 sudo apt-get install software-properties-common apt-transport-https
 sudo add-apt-repository "deb https://debs.libelektra.org/focal focal main"
 ```
@@ -95,18 +97,40 @@ dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33-unstable/lib
 
 ### Install
 
-> TODO: add how-to for debugsym packages (different for rpm and deb)
-
 To get all packaged plugins, bindings and tools install:
 
 ```sh
+# For Debian based distributions
 apt-get install libelektra4-all
+# For Fedora based distributions
+dnf install libelektra4-all
 ```
 
 For a small installation with command-line tools available use:
 
 ```sh
+# For Debian based distributions
 apt-get install elektra-bin
+# For Fedora based distributions
+dnf install elektra-bin
+```
+
+To install all debugsym/debuginfo packages:
+
+```sh
+# For Debian based distributions
+apt-get install elektra-dbg
+# For Fedora based distributions
+dnf install elektra-dbg
+```
+
+If you want to install individual debugsym/debuginfo packages:
+
+```sh
+# For Debian based distributions
+apt-get install <packagename>-dbgsym # e.g. apt-get install libelektra4-dbgsym
+# For Fedora based distributions
+dnf debuginfo-install <packagename> # e.g. dnf debuginfo-install libelektra4
 ```
 
 To build Debian/Ubuntu Packages from the source you might want to use:

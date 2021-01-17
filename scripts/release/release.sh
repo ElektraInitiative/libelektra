@@ -168,7 +168,7 @@ configure_package() {
 	fi
 
 	mkdir -p $BASE_DIR/$VERSION/$VERSION_CODENAME
-	$SCRIPTS_DIR/packaging/package.sh "$PACKAGE_REVISION" 2> $BASE_DIR/$VERSION/$VERSION_CODENAME/elektra_$PVERSION.build.error > $BASE_DIR/$VERSION/$VERSION_CODENAME/elektra_$PVERSION.build # $DIST_NAME #TODO: sign package
+	$SCRIPTS_DIR/packaging/package.sh "$PACKAGE_REVISION" 2> $BASE_DIR/$VERSION/$VERSION_CODENAME/elektra_$PVERSION.build.error > $BASE_DIR/$VERSION/$VERSION_CODENAME/elektra_$PVERSION.build
 
 	mv $BUILD_DIR/package/* $BASE_DIR/$VERSION/$VERSION_CODENAME/
 }
