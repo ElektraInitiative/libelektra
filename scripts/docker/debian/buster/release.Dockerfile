@@ -32,7 +32,7 @@ COPY ./*.deb ${ELEKTRA_ROOT}
 COPY ./*.ddeb ${ELEKTRA_ROOT}
 
 RUN apt-get update \
-    && apt-get install ${ELEKTRA_ROOT}/* \
+    && apt-get -y install ${ELEKTRA_ROOT}/* \
     && rm -rf /var/lib/apt/lists/*
 
 RUN kdb mount-info \
