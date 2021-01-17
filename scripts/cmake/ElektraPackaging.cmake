@@ -263,7 +263,6 @@ if (UNIX)
 		"libelektra4-curl"
 		"libelektra4-journald"
 		"libelektra4-extra")
-	string (REPLACE ";" ", " LIBELEKTRA4-ALL_DEPENDS "${CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS}")
 
 	set (CPACK_COMPONENT_ELEKTRA-DBG_DISPLAY_NAME "elektra-dbg")
 	set (CPACK_COMPONENT_ELEKTRA-DBG_DESCRIPTION "This package contains the dependencies to all dbgsym packages of Elektra.")
@@ -282,16 +281,8 @@ if (UNIX)
 			list (REMOVE_ITEM CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS ${component})
 		endif ()
 	endforeach (component)
+	string (REPLACE ";" ", " LIBELEKTRA4-ALL_DEPENDS "${CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS}")
 
-	if (MISSING_COMPONENTS_LIBELEKTRA4-ALL)
-		string (REPLACE ";" ", " MISSING_COMPONENTS_LIBELEKTRA4-ALL_STR "${MISSING_COMPONENTS_LIBELEKTRA4-ALL}")
-		message (
-			STATUS
-				"Excluding libelektra4-all because following components are excluded: ${MISSING_COMPONENTS_LIBELEKTRA4-ALL_STR}"
-		)
-		list (REMOVE_ITEM PACKAGES libelektra4-all)
-		list (APPEND EXCLUDED_COMPONENTS libelektra4-all)
-	endif ()
 	# For Debian-based distros we want to create DEB packages.
 	if ("${OS_NAME}" MATCHES "Ubuntu|Debian")
 		set (DEBIAN_DBG_PACKAGE_NAMES "")
