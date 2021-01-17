@@ -100,6 +100,8 @@ static bool check_binary_file (int fd, size_t expectedSize, const unsigned char 
 		cur++;
 	}
 
+	fclose (file);
+
 	if (cur == expectedSize)
 	{
 		return true;
@@ -107,7 +109,8 @@ static bool check_binary_file (int fd, size_t expectedSize, const unsigned char 
 
 	char buf[255];
 	snprintf (buf, 255, "actual size %zd differs from expected size %zd", cur, expectedSize);
-	yield_error (buf) return false;
+	yield_error (buf);
+	return false;
 }
 
 void test_default (void)
