@@ -29,7 +29,7 @@ void h (Key * orig)
 //! [Clear]
 void g (Key * k)
 {
-	keyCopyOld (k, 0);
+	keyCopy (k, 0, ~0);
 	// k is now an empty and fresh key
 }
 //! [Clear]

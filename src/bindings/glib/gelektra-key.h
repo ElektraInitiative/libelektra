@@ -72,7 +72,7 @@ gssize gelektra_key_getref (const GElektraKey * key);
 
 /* basic methods */
 GElektraKey * gelektra_key_dup (const GElektraKey * key);
-gint gelektra_key_copy (const GElektraKey * key, GElektraKey * dest);
+GElektraKey * gelektra_key_copy (const GElektraKey * key, GElektraKey * dest, elektraKeyFlags flags);
 gint gelektra_key_clear (GElektraKey * key);
 
 /* operators */

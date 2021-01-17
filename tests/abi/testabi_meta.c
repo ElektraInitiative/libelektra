@@ -200,7 +200,7 @@ static void j (Key * k)
 
 	// receive key g_c
 	memcpy (value, keyValue (k), size);
-	keyCopyOld (k, g_c);
+	keyCopy (k, g_c, ~0);
 	if (bstring)
 		keySetString (k, value);
 	else

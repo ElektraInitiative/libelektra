@@ -715,7 +715,7 @@ static void test_keyNeedSync (void)
 
 	clear_bit (k->flags, KEY_FLAG_SYNC);
 	clear_bit (d->flags, KEY_FLAG_SYNC);
-	succeed_if (keyCopyOld (d, k) != -1, "copy not successful");
+	succeed_if (keyCopy (d, k, 0) != NULL, "copy not successful");
 	succeed_if (keyNeedSync (d), "copy key, should definitely need sync");
 	succeed_if (!keyNeedSync (k), "sources sync flag should not be affected");
 	keyDel (d);
@@ -752,16 +752,17 @@ static void test_keyNeedSync (void)
 
 static void test_keyCopy (void)
 {
+	// FIXME: add more tests
 	printf ("test copy key\n");
 	Key * k = keyNew ("/", KEY_END);
 	Key * c = keyNew ("user:/name", KEY_END);
 
-	succeed_if (keyCopyOld (c, k) != -1, "could not copy");
+	succeed_if (keyCopy (c, k, KEY_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "/");
 	succeed_if_same_string (keyName (c), "/");
 
 	succeed_if (keySetName (k, "/abc") != -1, "could not set cascading name");
-	succeed_if (keyCopyOld (c, k) != -1, "could not copy");
+	succeed_if (keyCopy (c, k, KEY_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "/abc");
 	succeed_if_same_string (keyName (c), "/abc");
 

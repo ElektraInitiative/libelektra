@@ -116,7 +116,7 @@ static void test_keyNewSystem (void)
 	key = keyNew ("system:/sw/test", KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name");
 	succeed_if_same_string (keyName (key), "system:/sw/test");
-	keyCopyOld (key, 0);
+	keyCopy (key, 0, KEY_NAME);
 	succeed_if_same_string (keyName (key), "/");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name");
 
@@ -226,19 +226,19 @@ static void test_keyReference (void)
 	succeed_if (keyDecRef (d) == 0, "decrement key");
 	succeed_if (keyDel (d) == 0, "last keyDel d, key exist");
 
-	keyCopyOld (c, key);
+	keyCopy (c, key, ~0);
 	succeed_if (keyGetRef (c) == 0, "After keyCopy key reference");
 	succeed_if (keyIncRef (c) == 1, "keyIncRef return value");
 	succeed_if (keyGetRef (key) == 4, "Reference should not change");
 
-	keyCopyOld (c, key);
+	keyCopy (c, key, ~0);
 	succeed_if (keyGetRef (c) == 1, "After keyCopy key reference");
 	succeed_if (keyDecRef (c) == 0, "keyDecRef return value");
 	succeed_if (keyGetRef (key) == 4, "Reference should not change");
 
 	succeed_if (keyIncRef (c) == 1, "keyIncRef return value");
 	succeed_if (keyIncRef (c) == 2, "keyIncRef return value");
-	keyCopyOld (c, key);
+	keyCopy (c, key, ~0);
 	succeed_if (keyGetRef (c) == 2, "After keyCopy key reference");
 	succeed_if (keyDecRef (c) == 1, "keyDecRef return value");
 	succeed_if (keyDecRef (c) == 0, "keyDecRef return value");
@@ -737,7 +737,7 @@ static void test_keyNameSlashes (void)
 		key = keyNew (tstKeyName[i].keyName, KEY_END);
 
 		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
-		keyCopyOld (copy, key);
+		keyCopy (copy, key, ~0);
 		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
 
 		Key * dup = keyDupOld (key);
@@ -1433,12 +1433,12 @@ static void test_keyCopy (void)
 
 	// Copy the key
 	copy = keyNew ("/", KEY_END);
-	succeed_if (keyCopyOld (copy, orig) == 1, "keyCopy failed");
+	succeed_if (keyCopy (copy, orig, ~0) == copy, "keyCopy failed");
 	succeed_if (keyGetRef (orig) == 0, "orig ref counter should be 0");
 	succeed_if (keyGetRef (copy) == 0, "copy ref counter should be 0");
 	compare_key (orig, copy);
 
-	succeed_if (keyCopyOld (copy, orig) == 1, "keyCopy failed");
+	succeed_if (keyCopy (copy, orig, ~0) == copy, "keyCopy failed");
 	succeed_if (keyGetRef (orig) == 0, "orig ref counter should be 0");
 	succeed_if (keyGetRef (copy) == 0, "copy ref counter should be 0");
 	compare_key (orig, copy);
@@ -1449,10 +1449,10 @@ static void test_keyCopy (void)
 	succeed_if (strncmp (keyValue (copy), "foobar", 6) == 0, "keyCopy: key value copy error");
 
 	orig = keyNew ("/", KEY_END);
-	succeed_if (keyCopyOld (copy, orig) == 1, "make a key copy of an unmodified key");
+	succeed_if (keyCopy (copy, orig, ~0) == copy, "make a key copy of an unmodified key");
 	compare_key (orig, copy);
 
-	succeed_if (keyCopyOld (copy, 0) == 0, "make the key copy fresh");
+	succeed_if (keyCopy (copy, 0, ~0) == copy, "make the key copy fresh");
 	compare_key (orig, copy);
 	keyDel (orig);
 
@@ -1462,7 +1462,7 @@ static void test_keyCopy (void)
 	keySetName (orig, "invalid");
 
 	copy = keyNew ("/", KEY_END);
-	succeed_if (keyCopyOld (copy, orig) == 1, "keyCopy failed");
+	succeed_if (keyCopy (copy, orig, ~0) == copy, "keyCopy failed");
 	succeed_if_same_string (keyName (orig), "/");
 	succeed_if_same_string (keyName (copy), "/");
 	succeed_if (keyGetNameSize (orig) == 2, "orig name size");
@@ -1481,7 +1481,7 @@ static void test_keyCopy (void)
 	succeed_if (keyNeedSync (copy), "fresh key does not need sync?");
 	succeed_if (keyGetRef (orig) == 1, "orig ref counter should be 1");
 	succeed_if (keyGetRef (copy) == 0, "copy ref counter should be 0");
-	succeed_if (keyCopyOld (orig, copy) == -1, "copy should not be allowed when key is already referred to");
+	succeed_if (keyCopy (orig, copy, ~0) == NULL, "copy should not be allowed when key is already referred to");
 	succeed_if (keyNeedSync (orig), "copied key does not need sync?");
 	succeed_if (keyNeedSync (copy), "copied key does not need sync?");
 

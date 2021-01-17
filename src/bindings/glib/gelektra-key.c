@@ -202,10 +202,10 @@ GElektraKey * gelektra_key_dup (const GElektraKey * key)
  * gelektra_key_copy: (skip)
  * see keyCopy
  */
-gint gelektra_key_copy (const GElektraKey * key, GElektraKey * dest)
+GElektraKey * gelektra_key_copy (const GElektraKey * key, GElektraKey * dest, elektraKeyFlags flags)
 {
-	// TODO (kodebach): binding
-	return keyCopyOld (dest->key, key->key);
+	Key * ret = keyCopy (dest->key, key->key, flags);
+	return ret == NULL ? NULL : dest;
 }
 
 gint gelektra_key_clear (GElektraKey * key)
