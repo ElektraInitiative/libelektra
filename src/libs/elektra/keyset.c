@@ -474,10 +474,11 @@ int ksDel (KeySet * ks)
  * @param ks the keyset object to work with
  * @see ksAppendKey() for details on how keys are inserted in KeySets
  * @retval 0 on success
- * @retval -1 on failure (memory)
+ * @retval -1 on failure (memory) or ks == NULL
  */
 int ksClear (KeySet * ks)
 {
+	if (ks == NULL) return -1;
 	ksClose (ks);
 	// ks->array empty now
 
@@ -2436,9 +2437,12 @@ int ksInit (KeySet * ks)
  *
  * @see ksDel(), ksNew(), keyInit()
  * @retval 0 on success
+ * @retval -1 on ks == NULL
  */
 int ksClose (KeySet * ks)
 {
+	if (ks == NULL) return -1;
+
 	Key * k;
 
 	ksRewind (ks);
