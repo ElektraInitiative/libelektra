@@ -203,9 +203,9 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
 int keyLock (Key * key, elektraLockFlags what);
 int keyIsLocked (const Key * key, elektraLockFlags what);
 
-static inline Key *keyDup (const Key *source)
+static inline Key *keyDup (const Key *source, elektraCopyFlags flags)
 {
-	return keyCopy (keyNew ("/", 0), source, KEY_CP_ALL);
+	return keyCopy (keyNew ("/", 0), source, flags);
 }
 
 // FIXME: remove once migrated

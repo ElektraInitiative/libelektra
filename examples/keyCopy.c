@@ -12,27 +12,38 @@
 
 Key * copy;
 
-//! [Duplicate Key]
+// clang-format off
 void x (Key * orig)
 {
-	copy = keyCopy (keyNew ("/", KEY_END), orig, KEY_CP_ALL);
-}
 //! [Duplicate Key]
+copy = keyCopy (keyNew ("/", KEY_END), orig, KEY_CP_ALL);
+//! [Duplicate Key]
+}
 
-//! [Basic Usage]
+void y (Key * orig)
+{
+//! [Dup Key]
+copy = keyDup (orig, KEY_CP_ALL);
+//! [Dup Key]
+}
+
 void h (Key * orig)
 {
-	keyCopy (copy, orig, KEY_CP_ALL);
-}
 //! [Basic Usage]
+keyCopy (copy, orig, KEY_CP_ALL);
+//! [Basic Usage]
+}
 
-//! [Clear]
 void g (Key * k)
 {
-	keyCopy (k, 0, KEY_CP_ALL);
-	// k is now an empty and fresh key
-}
 //! [Clear]
+keyCopy (k, NULL, KEY_CP_ALL);
+// name, value and metadata of k have now been clear
+// lock flags, reference count, etc. remain unchanged
+//! [Clear]
+}
+
+// clang-format on
 
 int main (void)
 {

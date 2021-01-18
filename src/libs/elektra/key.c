@@ -250,10 +250,38 @@ Key * keyVNew (const char * name, va_list va)
  * Depending on the chosen @p flags keyCopy() only copies
  * certain parts of @p source into @p dest.
  *
- * // TODO: describe flags in detail
+ * * If #KEY_CP_NAME is set, the key name will be copied
+ *   from @p source to @p dest.
+ * * If #KEY_CP_META is set, the meta keys will be copied
+ *   from @p source to @p dest.
+ * * If #KEY_CP_VALUE is set, the key value will be copied
+ *   from @p source to @p dest.
+ *   Additionally, if @p source is a binary key (keyIsBinary()),
+ *   @p dest will also be
+ *   marked as binary. This means that even if #KEY_CP_META is
+ *   not set, the `binary` meta key will be copied with
+ *   #KEY_CP_VALUE.
+ * * If #KEY_CP_STRING is set, the key value will be copied
+ *   from @p source to @p dest, but only, if @p source is
+ *   _not_ a binary key (keyIsBinary()). If @p source is binary,
+ *   keyCopy() fails. If @p dest is binary, it will still be
+ *   marked as binary after the copy.
+ *   This cannot be used together with #KEY_CP_VALUE.
+ *   The main purpose of #KEY_CP_STRING is for copying _into_
+ *   known string keys. It ensure that you don't accidentally
+ *   convert string keys into binary keys.
+ *
+ * There is also the shorthand #KEY_CP_ALL. It is equivalent
+ * to `KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META`,
+ * i.e. all key data supported by keyCopy() will be copied
+ * from @p source to @p dest.
  *
  * Most often you will want to duplicate an existing key.
- * Use to following snipped to achieve this:
+ * For this purpose the alias keyDup() exists. Calling
+ *
+ *  @snippet keyCopy.c Dup Key
+ *
+ * is equivalent to
  *
  * @snippet keyCopy.c Duplicate Key
  *
@@ -283,7 +311,6 @@ Key * keyVNew (const char * name, va_list va)
  * @param source the key which should be copied
  *     or NULL to clear the data of @p dest
  * @param flags specifies which parts of the key should be copied
- * // TODO: define behaviour of flags == 0
  * @ingroup key
  *
  * @return @p dest or NULL, in case of error. Possible errors are:
@@ -291,6 +318,8 @@ Key * keyVNew (const char * name, va_list va)
  *   - a part of @p dest that should be modified (e.g. name, value) was marked read-only,
  *     e.g. the name of @p dest will be read-only if @p dest is part of a KeySet
  *   - @p dest is NULL
+ *   - both #KEY_CP_VALUE and #KEY_CP_STRING are set in @p flags
+ *   - both #KEY_CP_STRING is set in @p flags and @p source is a binary key (keyIsBinary())
  */
 Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 {
