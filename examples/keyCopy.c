@@ -15,21 +15,21 @@ Key * copy;
 //! [Duplicate Key]
 void x (Key * orig)
 {
-	copy = keyCopy (keyNew ("/", KEY_END), orig, ~0);
+	copy = keyCopy (keyNew ("/", KEY_END), orig, KEY_CP_ALL);
 }
 //! [Duplicate Key]
 
 //! [Basic Usage]
 void h (Key * orig)
 {
-	keyCopy (copy, orig, ~0);
+	keyCopy (copy, orig, KEY_CP_ALL);
 }
 //! [Basic Usage]
 
 //! [Clear]
 void g (Key * k)
 {
-	keyCopy (k, 0, ~0);
+	keyCopy (k, 0, KEY_CP_ALL);
 	// k is now an empty and fresh key
 }
 //! [Clear]

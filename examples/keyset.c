@@ -31,7 +31,7 @@ void h (Key * k)
 	Key * c = keyNew ("user:/from/h", KEY_END);
 	printf ("\tin h\n");
 
-	keyCopy (k, c, ~0);
+	keyCopy (k, c, KEY_CP_ALL);
 	keyDel (c);
 	/* the caller will see the changed key k */
 }

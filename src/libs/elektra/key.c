@@ -272,7 +272,7 @@ Key * keyVNew (const char * name, va_list va)
  * When you pass a NULL-pointer as @p source the pieces of @p dest
  * specified by @p flags will be cleared.
  *
- * Calling `keyCopy (dest, NULL, ~0)` is different from calling keyClear().
+ * Calling `keyCopy (dest, NULL, KEY_CP_ALL)` is different from calling keyClear().
  * The key will not be fully reset, the reference counter and internal flags
  * will remain unchanged. Additionally, keyCopy() respects keyLock() state,
  * while keyClear() always works.
@@ -300,7 +300,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	if (test_bit (dest->flags, KEY_FLAG_RO_VALUE) && test_bit (flags, KEY_CP_VALUE)) return NULL;
 	if (test_bit (dest->flags, KEY_FLAG_RO_META) && test_bit (flags, KEY_CP_META)) return NULL;
 
-	if (source == dest) return dest;
+	if (test_bit (flags, KEY_CP_STRING) && test_bit (flags, KEY_CP_VALUE)) return NULL;
 
 	if (source == NULL)
 	{
@@ -318,6 +318,10 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 		}
 		return dest;
 	}
+
+	if (test_bit (flags, KEY_CP_STRING) && keyIsBinary (source)) return NULL;
+
+	if (source == dest) return dest;
 
 	// remember original data of dest
 	Key orig = *dest;
@@ -352,6 +356,26 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 		clear_bit (dest->flags, KEY_FLAG_MMAP_KEY);
 	}
 
+	if (test_bit (flags, KEY_CP_STRING))
+	{
+		if (source->data.v)
+		{
+			dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
+			if (!dest->data.v) goto memerror;
+			dest->dataSize = source->dataSize;
+
+			if (!test_bit (flags, KEY_META) && keyIsBinary (source))
+			{
+				keySetMeta (dest, "binary", "");
+			}
+		}
+		else
+		{
+			dest->data.v = NULL;
+			dest->dataSize = 0;
+		}
+		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
+	}
 
 	if (test_bit (flags, KEY_CP_VALUE))
 	{

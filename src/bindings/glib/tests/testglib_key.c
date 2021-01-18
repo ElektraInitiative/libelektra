@@ -124,7 +124,7 @@ static void test_basic (void)
 
 	gchar * name;
 	key = gelektra_key_new ("user:/bar", GELEKTRA_KEY_END);
-	gelektra_key_copy (g_key, key, ~0);
+	gelektra_key_copy (g_key, key, KEY_CP_ALL);
 	g_object_get (key, "name", &name, NULL);
 	succeed_if (!strcmp (name, "user:/key"), "wrong value");
 	g_free (name);

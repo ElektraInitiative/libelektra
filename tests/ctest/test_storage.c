@@ -467,7 +467,7 @@ static void test_keyCopy_newKey (const size_t storagePlugin, const char * tmpFil
 	succeed_if (found, "did not find key");
 
 	Key * copy = keyNew ("/", KEY_END);
-	succeed_if (keyCopy (copy, found, ~0) != NULL, "keyCopy failed");
+	succeed_if (keyCopy (copy, found, KEY_CP_ALL) != NULL, "keyCopy failed");
 
 	compare_key (found, copy);
 
@@ -507,8 +507,8 @@ static void test_keyCopy_clearOverwriteKey (const size_t storagePlugin, const ch
 	}
 
 	// overwrite Key
-	succeed_if (keyCopy (found, 0, ~0) != NULL, "keyCopy: clear destination failed");
-	succeed_if (keyCopy (found, toCopy, ~0) != NULL, "keyCopy failed");
+	succeed_if (keyCopy (found, 0, KEY_CP_ALL) != NULL, "keyCopy: clear destination failed");
+	succeed_if (keyCopy (found, toCopy, KEY_CP_ALL) != NULL, "keyCopy failed");
 	compare_key (found, toCopy);
 	keyDel (toCopy);
 
