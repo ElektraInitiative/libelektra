@@ -300,6 +300,8 @@ Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 	if (test_bit (dest->flags, KEY_FLAG_RO_VALUE) && test_bit (flags, KEY_VALUE)) return NULL;
 	if (test_bit (dest->flags, KEY_FLAG_RO_META) && test_bit (flags, KEY_META)) return NULL;
 
+	if (source == dest) return dest;
+
 	if (source == NULL)
 	{
 		if (test_bit (flags, KEY_NAME))
@@ -320,66 +322,79 @@ Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 	// remember original data of dest
 	Key orig = *dest;
 
+	// TODO: check MMAP flags
+
 	// duplicate dynamic properties
-	if (source->key && test_bit (flags, KEY_NAME))
+	if (test_bit (flags, KEY_NAME))
 	{
-		dest->key = elektraStrNDup (source->key, source->keySize);
-		if (!dest->key) goto memerror;
-		dest->keySize = source->keySize;
-
-		ELEKTRA_ASSERT (source->ukey != NULL, "key != NULL but ukey == NULL");
-		dest->ukey = elektraStrNDup (source->ukey, source->keyUSize);
-		if (!dest->ukey) goto memerror;
-		dest->keyUSize = source->keyUSize;
-	}
-	else
-	{
-		dest->key = elektraStrDup ("/");
-		dest->keySize = 2;
-
-		dest->ukey = elektraMalloc (3);
-		dest->ukey[0] = KEY_NS_CASCADING;
-		dest->ukey[1] = '\0';
-		dest->ukey[2] = '\0';
-		dest->keyUSize = 3;
-	}
-
-
-	if (source->data.v && test_bit (flags, KEY_VALUE))
-	{
-		dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
-		if (!dest->data.v) goto memerror;
-		dest->dataSize = source->dataSize;
-
-		if (!test_bit (flags, KEY_META) && keyIsBinary (source))
+		if (source->key)
 		{
-			keySetMeta (dest, "binary", "");
+			dest->key = elektraStrNDup (source->key, source->keySize);
+			if (!dest->key) goto memerror;
+			dest->keySize = source->keySize;
+
+			ELEKTRA_ASSERT (source->ukey != NULL, "key != NULL but ukey == NULL");
+			dest->ukey = elektraStrNDup (source->ukey, source->keyUSize);
+			if (!dest->ukey) goto memerror;
+			dest->keyUSize = source->keyUSize;
 		}
-	}
-	else
-	{
-		dest->data.v = NULL;
-		dest->dataSize = 0;
+		else
+		{
+			dest->key = elektraStrDup ("/");
+			dest->keySize = 2;
+
+			dest->ukey = elektraMalloc (3);
+			dest->ukey[0] = KEY_NS_CASCADING;
+			dest->ukey[1] = '\0';
+			dest->ukey[2] = '\0';
+			dest->keyUSize = 3;
+		}
+		clear_bit (dest->flags, KEY_FLAG_MMAP_KEY);
 	}
 
-	if (source->meta && test_bit (flags, KEY_META))
+
+	if (test_bit (flags, KEY_VALUE))
 	{
-		dest->meta = ksDup (source->meta);
-		if (!dest->meta) goto memerror;
+		if (source->data.v)
+		{
+			dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
+			if (!dest->data.v) goto memerror;
+			dest->dataSize = source->dataSize;
+
+			if (!test_bit (flags, KEY_META) && keyIsBinary (source))
+			{
+				keySetMeta (dest, "binary", "");
+			}
+		}
+		else
+		{
+			dest->data.v = NULL;
+			dest->dataSize = 0;
+		}
+		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
 	}
-	else
+
+	if (test_bit (flags, KEY_META))
 	{
-		dest->meta = 0;
+		if (source->meta)
+		{
+			dest->meta = ksDup (source->meta);
+			if (!dest->meta) goto memerror;
+		}
+		else
+		{
+			dest->meta = 0;
+		}
 	}
 
 	// successful, now do the irreversible stuff: we obviously modified dest
 	set_bit (dest->flags, KEY_FLAG_SYNC);
 
 	// free old resources of destination
-	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
-	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
-	if (!test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
-	ksDel (orig.meta);
+	if (test_bit (flags, KEY_NAME) && !test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
+	if (test_bit (flags, KEY_NAME) && !test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
+	if (test_bit (flags, KEY_VALUE) && !test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
+	if (test_bit (flags, KEY_META)) ksDel (orig.meta);
 
 	return dest;
 
