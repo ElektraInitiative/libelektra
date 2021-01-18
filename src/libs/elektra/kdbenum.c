@@ -99,6 +99,20 @@ enum elektraKeyFlags
 };
 
 /**
+ * Copy options
+ * 
+ * @ingroup key
+ * @see keyCopy()
+ */
+enum elektraCopyFlags
+{
+  	KEY_CP_NAME   = 1<<0, /*!< Flag for copying the key name */
+    KEY_CP_STRING = 1<<1, /*!< Flag for copying the key value, if it is a string */
+    KEY_CP_VALUE  = 1<<2, /*!< Flag for copying the key value */
+    KEY_CP_META   = 1<<3, /*!< Flag for copying the key meta data */
+};
+
+/**
  * Lock options
  *
  * @ingroup key

@@ -292,27 +292,27 @@ Key * keyVNew (const char * name, va_list va)
  *     e.g. the name of @p dest will be read-only if @p dest is part of a KeySet
  *   - @p dest is NULL
  */
-Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
+Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 {
 	if (dest == NULL) return NULL;
 
-	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) && test_bit (flags, KEY_NAME)) return NULL;
-	if (test_bit (dest->flags, KEY_FLAG_RO_VALUE) && test_bit (flags, KEY_VALUE)) return NULL;
-	if (test_bit (dest->flags, KEY_FLAG_RO_META) && test_bit (flags, KEY_META)) return NULL;
+	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) && test_bit (flags, KEY_CP_NAME)) return NULL;
+	if (test_bit (dest->flags, KEY_FLAG_RO_VALUE) && test_bit (flags, KEY_CP_VALUE)) return NULL;
+	if (test_bit (dest->flags, KEY_FLAG_RO_META) && test_bit (flags, KEY_CP_META)) return NULL;
 
 	if (source == dest) return dest;
 
 	if (source == NULL)
 	{
-		if (test_bit (flags, KEY_NAME))
+		if (test_bit (flags, KEY_CP_NAME))
 		{
 			keySetName (dest, "/");
 		}
-		if (test_bit (flags, KEY_VALUE))
+		if (test_bit (flags, KEY_CP_VALUE))
 		{
 			keySetRaw (dest, NULL, 0);
 		}
-		if (test_bit (flags, KEY_META))
+		if (test_bit (flags, KEY_CP_META))
 		{
 			ksClear (dest->meta);
 		}
@@ -325,7 +325,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 	// TODO: check MMAP flags
 
 	// duplicate dynamic properties
-	if (test_bit (flags, KEY_NAME))
+	if (test_bit (flags, KEY_CP_NAME))
 	{
 		if (source->key)
 		{
@@ -353,7 +353,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 	}
 
 
-	if (test_bit (flags, KEY_VALUE))
+	if (test_bit (flags, KEY_CP_VALUE))
 	{
 		if (source->data.v)
 		{
@@ -374,7 +374,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
 	}
 
-	if (test_bit (flags, KEY_META))
+	if (test_bit (flags, KEY_CP_META))
 	{
 		if (source->meta)
 		{
@@ -391,10 +391,10 @@ Key * keyCopy (Key * dest, const Key * source, elektraKeyFlags flags)
 	set_bit (dest->flags, KEY_FLAG_SYNC);
 
 	// free old resources of destination
-	if (test_bit (flags, KEY_NAME) && !test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
-	if (test_bit (flags, KEY_NAME) && !test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
-	if (test_bit (flags, KEY_VALUE) && !test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
-	if (test_bit (flags, KEY_META)) ksDel (orig.meta);
+	if (test_bit (flags, KEY_CP_NAME) && !test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
+	if (test_bit (flags, KEY_CP_NAME) && !test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
+	if (test_bit (flags, KEY_CP_VALUE) && !test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
+	if (test_bit (flags, KEY_CP_META)) ksDel (orig.meta);
 
 	return dest;
 

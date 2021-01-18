@@ -114,7 +114,7 @@ public:
 	inline Key & operator= (ckdb::Key * k);
 	inline Key & operator= (const Key & k);
 
-	inline void copy (const Key & other, int flags = ~0); // TODO: ~0 or 0 as default?
+	inline void copy (const Key & other, elektraCopyFlags flags = ~0); // TODO: ~0 or 0 as default?
 	inline void clear ();
 	inline ckdb::Key * operator-> () const;
 
@@ -732,7 +732,7 @@ inline Key & Key::operator= (const Key & k)
 /**
  * @copydoc keyCopy
  */
-inline void Key::copy (const Key & other, int flags)
+inline void Key::copy (const Key & other, elektraCopyFlags flags)
 {
 	ckdb::keyCopy (key, other.key, flags);
 }
