@@ -1003,6 +1003,7 @@ yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
  */
 def generateArtifactStages() {
   def tasks = [:]
+
   tasks << buildPackage(
     "buildPackage/debian/buster",
     DOCKER_IMAGES.buster,
@@ -1040,7 +1041,10 @@ def generateArtifactStages() {
     this.&updateFedoraChangelog,
     true
   )
+
+  tasks << buildWebsite()
   // tasks << buildWebUI()
+
   return tasks
 }
 

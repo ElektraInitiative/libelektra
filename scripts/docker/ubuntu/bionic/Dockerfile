@@ -46,6 +46,7 @@ RUN apt-get update && apt-get -y install \
         qtdeclarative5-dev \
         ruby-dev \
         swig \
+        valgrind \
     && rm -rf /var/lib/apt/lists/*
 
 # use lua5.3 because dh-lua installs liblua5.3-dev which sets the

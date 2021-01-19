@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+# @brief Sign packages
 
 set -ex
 
@@ -21,9 +23,8 @@ if files_with_extension_exists "deb"; then
 		debsigs --sign=origin "$package"
 	done
 elif files_with_extension_exists "rpm"; then
-	echo "Signing RPM packages ..."
-	# TODO: implement
-	# is currently not possible since importing a gpg key into rpm
+	echo "Skipping RPM package signing ..."
+	# is currently in Jenkins not possible because importing a gpg key into rpm
 	# requires root privileges
 else
 	echo "No supported packages found."
