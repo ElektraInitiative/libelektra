@@ -42,9 +42,13 @@ run_updates() {
 
 	# regenerate dot of plugins
 	$SRC_DIR/scripts/dev/draw-all-plugins 2> $BASE_DIR/$VERSION/draw-all-plugins.error > $BASE_DIR/$VERSION/draw-all-plugins
-	# Add generated dot of plugins to git and commit
 	git add $SRC_DIR/doc/images/plugins.*
 	git commit -a -m "Regenerate dot of plugins for release ${VERSION}"
+
+	# update info status
+	cd $SRC_DIR
+	$SCRIPTS_DIR/dev/update-infos-status --auto 2> $BASE_DIR/$VERSION/update-infos-status.error > $BASE_DIR/$VERSION/update-infos-status
+	git commit -a -m "Update plugin info status for release ${VERSION}"
 
 	# run link checker
 	cd $BUILD_DIR
@@ -170,7 +174,7 @@ build_package() {
 }
 
 memcheck() {
-	# With ENABLE_DEBUG="OFF" testkdb_allplugins yields a memlea on buster and bionic,
+	# With ENABLE_DEBUG="OFF" testkdb_allplugins detects a memleak on buster and bionic,
 	# therefore the tests are disabled for theses distribitions.
 	# discussed in https://github.com/ElektraInitiative/libelektra/pull/3530
 	if [ "$VERSION_CODENAME" = "buster" ] || [ "$VERSION_CODENAME" = "bionic" ]; then
