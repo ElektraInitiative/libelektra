@@ -1,4 +1,6 @@
 #!/bin/sh
+#
+# @brief Prepare for release, run tests and generate release artifacts
 
 # quit with error if any command fails
 set -ex
@@ -90,9 +92,7 @@ run_checks() {
 		..
 	make
 	make run_all
-	# memleak because of external tools on debian buster
-	# discussed in https://github.com/ElektraInitiative/libelektra/pull/3530
-	make run_memcheck || true
+	memcheck
 
 	$SCRIPTS_DIR/release/release-tests.sh $BASE_DIR $VERSION "src"
 
@@ -114,7 +114,7 @@ run_checks() {
 
 }
 
-prepare_package() {
+create_source_package() {
 	echo "Preparing package..."
 
 	export KDB_VERSION=$(kdb get system:/elektra/version/constants/KDB_VERSION)
@@ -144,23 +144,19 @@ prepare_package() {
 		../elektra-$VERSION
 	make
 	make run_all
-	# memleak because of external tools on debian buster
-	# discussed in https://github.com/ElektraInitiative/libelektra/pull/3530
-	make run_memcheck || true
+	memcheck
 
 	cp $BUILD_DIR/elektra-$VERSION.tar.gz* $BASE_DIR/$VERSION/
 }
 
-configure_package() {
-	echo "Configuring debian package..."
+build_package() {
+	echo "Building packages..."
 
 	cd $SRC_DIR
 	git clean -fdx
 	mkdir $BUILD_DIR
 	cd $BUILD_DIR
 
-	# get version codename
-	VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 	if [ -z ${VERSION_CODENAME} ]; then
 		OS_ID=$(grep "^ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 		VERSION_ID=$(grep "VERSION_ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
@@ -173,14 +169,33 @@ configure_package() {
 	mv $BUILD_DIR/package/* $BASE_DIR/$VERSION/$VERSION_CODENAME/
 }
 
+memcheck() {
+	# With ENABLE_DEBUG="OFF" testkdb_allplugins yields a memlea on buster and bionic,
+	# therefore the tests are disabled for theses distribitions.
+	# discussed in https://github.com/ElektraInitiative/libelektra/pull/3530
+	if [ "$VERSION_CODENAME" = "buster" ] || [ "$VERSION_CODENAME" = "bionic" ]; then
+		cmemcheck 'testkdb_allplugins'
+	else
+		cmemcheck
+	fi
+}
+
+cmemcheck() {
+	ctest -j $CTEST_PARALLEL_LEVEL --force-new-ctest-process \
+		--output-on-failure --no-compress-output \
+		-T MemCheck -LE memleak -E "$1"
+}
+
+# get version codename
+VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 install_elektra
 run_updates
-git tag -f $VERSION # needed by `make source-package
+git tag -f $VERSION # needed by `make source-package`
 update_fedora_changelog
 update_debian_changelog
 run_checks
-prepare_package
-configure_package
+create_source_package
+build_package
 cd $BASE_DIR
 $SCRIPTS_DIR/release/sign-packages.sh $BASE_DIR/$VERSION/$VERSION_CODENAME
 tar -czvf release.tar.gz ./$VERSION

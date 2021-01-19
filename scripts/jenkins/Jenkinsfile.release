@@ -12,16 +12,6 @@ properties([
     )
   ),
   parameters([
-    booleanParam(
-      defaultValue: true,
-      description: 'If activated, changes to repositories are pushed. Can be combined with git_bundle.',
-      name: 'git_publish'
-    ),
-    booleanParam(
-      defaultValue: false,
-      description: 'If activated, changes to the ftp and doc repositories are bundled and archived in the publish stages. Can be combined with git_publish.',
-      name: 'git_bundle'
-    ),
     string(
       defaultValue: '1',
       description: 'Debian package revision.',
@@ -463,7 +453,7 @@ def publish(correspondingReleaseStageName, context, repoName,
 def publishSource(artifactStageName) {
   def stageName = 'publishSourcePackage'
   return [(stageName): {
-    maybeStage(stageName, params.git_publish) {
+    stage(stageName) {
       withDockerEnv(DOCKER_IMAGES.buster) {
         configureGitUser()
         copyReleaseArtifact(artifactStageName)
@@ -473,13 +463,7 @@ def publishSource(artifactStageName) {
               url: 'https://github.com/ElektraInitiative/ftp.git'
           sh 'cp ../release-artifact/*/*.tar.gz* ./releases/'
           sh "git commit -a -m '${RELEASE_VERSION} Release'"
-          if (params.git_publish) {
-            pushGitRepo('ftp')
-          }
-          if (params.git_bundle) {
-            sh 'git bundle create ftp.bundle --all'
-            utils.archive(['ftp.bundle'])
-          }
+          pushGitRepo('ftp')
         }
       }
     }
@@ -495,7 +479,7 @@ def publishSource(artifactStageName) {
 def publishMainRepo(artifactStageName) {
   def stageName = 'publishMainRepo'
   return [(stageName): {
-    maybeStage(stageName, params.git_publish) {
+    stage(stageName) {
       withDockerEnv(DOCKER_IMAGES.buster) {
         configureGitUser()
         copyArtifacts(
@@ -511,9 +495,7 @@ def publishMainRepo(artifactStageName) {
               url: 'https://github.com/ElektraInitiative/libelektra.git'
           sh "git bundle verify ${WORKSPACE}/artifacts/${artifactStageName}/libelektra.bundle"
           sh "git pull --ff-only ${WORKSPACE}/artifacts/${artifactStageName}/libelektra.bundle"
-          if (params.git_publish) {
-            pushGitRepo('libelektra')
-          }
+          pushGitRepo('libelektra')
         }
       }
     }
@@ -562,13 +544,7 @@ ${WORKSPACE}/build/doc/man ./"""
 
         dir('doc') {
           sh "git commit -m '${RELEASE_VERSION} Release'"
-          if (params.git_publish) {
-            pushGitRepo('doc')
-          }
-          if (params.git_bundle) {
-            sh 'git bundle create docu.bundle --all'
-            utils.archive(['docu.bundle'])
-          }
+          pushGitRepo('doc')
         }
 
         warnings parserConfigurations: [
