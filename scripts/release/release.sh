@@ -47,7 +47,7 @@ run_updates() {
 
 	# update info status
 	cd $SRC_DIR
-	$SCRIPTS_DIR/dev/update-infos-status --auto 2> $BASE_DIR/$VERSION/update-infos-status.error > $BASE_DIR/$VERSION/update-infos-status
+	$SCRIPTS_DIR/dev/update-infos-status 2> $BASE_DIR/$VERSION/update-infos-status.error > $BASE_DIR/$VERSION/update-infos-status
 	git commit -a -m "Update plugin info status for release ${VERSION}"
 
 	# run link checker
