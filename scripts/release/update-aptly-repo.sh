@@ -5,7 +5,7 @@
 # Moves new packages from an "incoming" directory to the local repository.
 # Packages that are older than the version of the packages added (including revision) will be removed
 # from the local repository.
-# Plublishes local repository and signs it with gpg key.
+# Plublishes the local repository that was modified and signs it with gpg key.
 
 set -ex
 
