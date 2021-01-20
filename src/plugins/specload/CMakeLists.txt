@@ -22,19 +22,18 @@ if (ADDTESTING_PHASE)
 	add_headers (TEST_SOURCES)
 	add_testheaders (TEST_SOURCES)
 
-	if (NOT ENABLE_ASAN)
-		add_executable (test_elektra-specload-testapp ${TEST_SOURCES})
-		target_link_elektra (test_elektra-specload-testapp elektra-core elektra-invoke)
-		target_include_directories (test_elektra-specload-testapp PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework")
-		target_include_directories (test_elektra-specload-testapp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
+	add_executable (test_elektra-specload-testapp ${TEST_SOURCES})
+	target_link_elektra (test_elektra-specload-testapp elektra-core elektra-invoke)
+	target_include_directories (test_elektra-specload-testapp PRIVATE "${CMAKE_SOURCE_DIR}/tests/cframework")
+	target_include_directories (test_elektra-specload-testapp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 
-		add_test (
-			NAME test_elektra-specload-testapp
-			COMMAND "${CMAKE_BINARY_DIR}/bin/test_elektra-specload-testapp" "${CMAKE_CURRENT_SOURCE_DIR}"
-			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
-		set_tests_properties (test_elektra-specload-testapp PROPERTIES TIMEOUT 30 ENVIRONMENT
-									       "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-	endif (NOT ENABLE_ASAN)
+	add_test (
+		NAME test_elektra-specload-testapp
+		COMMAND "${CMAKE_BINARY_DIR}/bin/test_elektra-specload-testapp" "${CMAKE_CURRENT_SOURCE_DIR}"
+		WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}")
+	set_tests_properties (test_elektra-specload-testapp PROPERTIES TIMEOUT 30)
+	set_property (TEST test_elektra-specload-testapp PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+								  "KDB_TEST_BIN_DIR=${CMAKE_BINARY_DIR}/bin")
 
 	add_plugintest (
 		specload INSTALL_TEST_DATA
