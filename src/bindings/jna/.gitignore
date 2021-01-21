@@ -1,5 +1,5 @@
 # ignore maven output directory
-libelektra4j/target
+libelektra5j/target
 
 # ignore java class files
 *.class

@@ -122,7 +122,8 @@ if (UNIX)
 	endif (NOT OS_DISTRIB)
 
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}_DISPLAY_NAME "libelektra${SO_VERSION}")
-	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}_DESCRIPTION "This package contains the main elektra library, and most of the core plugins")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}_DESCRIPTION
+	     "This package contains the main elektra library, and most of the core plugins")
 
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-FULL_DISPLAY_NAME "libelektra${SO_VERSION}-full")
 	set (

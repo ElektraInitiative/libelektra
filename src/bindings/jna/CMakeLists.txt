@@ -26,7 +26,7 @@ if (Java_JAVAC_EXECUTABLE)
 		if (MAVEN_EXECUTABLE) # set by find_program
 			add_binding (jna)
 
-			file (MAKE_DIRECTORY libelektra4j)
+			file (MAKE_DIRECTORY libelektra5j)
 
 			if (NOT APPLE)
 				set (USE_SYSTEM_CLASS_LOADER "<useSystemClassLoader>false</useSystemClassLoader>")
@@ -34,17 +34,17 @@ if (Java_JAVAC_EXECUTABLE)
 
 			# first fill the elektra version in the pom file @ONLY to avoid replacing pom.xml placeholders which also use the
 			# format ${}
-			configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j/pom.xml.in"
-					"${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml" @ONLY)
+			configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/libelektra5j/pom.xml.in"
+					"${CMAKE_CURRENT_BINARY_DIR}/libelektra5j/pom.xml" @ONLY)
 
 			# required to have a recognizable name for the pom upon installation in case other software installs a pom to the
 			# target directory and calls it pom.xml
 			file (
 				GENERATE
-				OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/libelektra4j-${KDB_VERSION}.pom.xml"
-				INPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml")
+				OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra5j/libelektra5j-${KDB_VERSION}.pom.xml"
+				INPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra5j/pom.xml")
 
-			set (JNA_BINDING_PREFIX libelektra4j/src)
+			set (JNA_BINDING_PREFIX libelektra5j/src)
 			set (JNA_BINDING_NAMESPACE java/org/libelektra)
 
 			set (JNA_BINDING_SOURCE_DIRECTORY ${JNA_BINDING_PREFIX}/main/${JNA_BINDING_NAMESPACE})
@@ -95,22 +95,22 @@ if (Java_JAVAC_EXECUTABLE)
 			# Compile the source files and build the jar. We copy the source files into the build folder as that is the easiest
 			# way to handle the integration between CMake and Maven.
 			add_custom_command (
-				OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
-				COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/libelektra4j"
-					"${CMAKE_CURRENT_BINARY_DIR}/libelektra4j"
+				OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/libelektra5j/target/libelektra5j-${KDB_VERSION}.jar"
+				COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/libelektra5j"
+					"${CMAKE_CURRENT_BINARY_DIR}/libelektra5j"
 				COMMAND ${MAVEN_EXECUTABLE} -q -B -DskipTests=true package
-				WORKING_DIRECTORY libelektra4j
-				DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/pom.xml" ${JNA_BINDING_SOURCE_FILES})
+				WORKING_DIRECTORY libelektra5j
+				DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra5j/pom.xml" ${JNA_BINDING_SOURCE_FILES})
 
-			create_lib_symlink (libelektra4j-${KDB_VERSION}.jar libelektra4j.jar java-elektra JAVA)
-			create_lib_symlink (libelektra4j-${KDB_VERSION}.pom.xml libelektra4j.pom.xml java-elektra JAVA)
+			create_lib_symlink (libelektra5j-${KDB_VERSION}.jar libelektra5j.jar java-elektra JAVA)
+			create_lib_symlink (libelektra5j-${KDB_VERSION}.pom.xml libelektra5j.pom.xml java-elektra JAVA)
 
 			add_custom_target (jna ALL
-					   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar")
+					   DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra5j/target/libelektra5j-${KDB_VERSION}.jar")
 
 			install (
-				FILES "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/target/libelektra4j-${KDB_VERSION}.jar"
-				      "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j/libelektra4j-${KDB_VERSION}.pom.xml"
+				FILES "${CMAKE_CURRENT_BINARY_DIR}/libelektra5j/target/libelektra5j-${KDB_VERSION}.jar"
+				      "${CMAKE_CURRENT_BINARY_DIR}/libelektra5j/libelektra5j-${KDB_VERSION}.pom.xml"
 				DESTINATION "share/java"
 				COMPONENT java-elektra)
 
@@ -129,7 +129,7 @@ if (Java_JAVAC_EXECUTABLE)
 					NAME testjna_maven
 					COMMAND
 						${MAVEN_EXECUTABLE} -q -B -e -P ${MAVEN_TEST_ENV} test
-					WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra4j")
+					WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra5j")
 
 				set_property (TEST testjna_maven PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
 

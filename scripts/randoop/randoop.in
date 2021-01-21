@@ -19,10 +19,10 @@
 #
 # You can pass a custom location for the two files by calling this script like:
 #
-# ./randoop [path to randoop jar] [path to libelektra4j jar]
+# ./randoop [path to randoop jar] [path to libelektra5j jar]
 # e.g.
 # ./randoop /Users/admin/Downloads/randoop-3.1.5/randoop-all-3.1.5.jar \
-# /usr/local/share/java/libelektra4j-0.8.19.jar
+# /usr/local/share/java/libelektra5j-0.8.19.jar
 #
 # In case you have the required files in the standard paths, simply call ./randoop
 #
@@ -31,9 +31,9 @@ RANDOOP="${1:-randoop-all-3.1.5.jar}"
 
 stringContain() { [ -z "${2##*$1*}" ] && ([ -z "$1" ] || [ -n "$2" ]); }
 if stringContain "Darwin" "$(uname)"; then
-	BINDINGS="${2:-/usr/local/share/java/libelektra4j-@KDB_VERSION@.jar}"
+	BINDINGS="${2:-/usr/local/share/java/libelektra5j-@KDB_VERSION@.jar}"
 else
-	BINDINGS="${2:-/usr/share/java/libelektra4j-@KDB_VERSION@.jar}"
+	BINDINGS="${2:-/usr/share/java/libelektra5j-@KDB_VERSION@.jar}"
 fi
 CLASSPATH="${BINDINGS}:${RANDOOP}"
 
