@@ -47,16 +47,16 @@ if (ADDTESTING_PHASE)
 			include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 			# Generate header file
-			set (LIBELEKTRA4J_PATH ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra4j)
+			set (LIBELEKTRA5J_PATH ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra5j)
 			add_custom_command (
 				COMMAND ${MAVEN_EXECUTABLE} ARGS dependency:build-classpath -q -Dmdep.outputFile=classpath.txt
 				COMMAND
 					${CMAKE_COMMAND} ARGS -D SOURCE_PATH=${CMAKE_CURRENT_SOURCE_DIR} -D
-					DESTINATION_PATH=${CMAKE_CURRENT_BINARY_DIR} -D LIBELEKTRA4J_PATH=${LIBELEKTRA4J_PATH} -D
+					DESTINATION_PATH=${CMAKE_CURRENT_BINARY_DIR} -D LIBELEKTRA5J_PATH=${LIBELEKTRA5J_PATH} -D
 					KDB_VERSION=${KDB_VERSION} -P ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraClasspath.cmake
-				OUTPUT "${LIBELEKTRA4J_PATH}/classpath.txt" "${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h"
-				WORKING_DIRECTORY ${LIBELEKTRA4J_PATH}
-				DEPENDS "${LIBELEKTRA4J_PATH}/pom.xml jna")
+				OUTPUT "${LIBELEKTRA5J_PATH}/classpath.txt" "${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h"
+				WORKING_DIRECTORY ${LIBELEKTRA5J_PATH}
+				DEPENDS "${LIBELEKTRA5J_PATH}/pom.xml jna")
 			add_custom_target (jni_header DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h")
 		else ()
 			message (WARNING "jna bindings are required for testing, test deactivated")

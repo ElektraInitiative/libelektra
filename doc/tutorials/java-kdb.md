@@ -103,7 +103,7 @@ mvn clean package
 Afterwards run it with (change VERSION in the command below!):
 
 ```sh
-java -cp target/read-keys-example-jar-with-dependencies.jar:lib/libelektra4j-VERSION.jar org.libelektra.app.App
+java -cp target/read-keys-example-jar-with-dependencies.jar:lib/libelektra5j-VERSION.jar org.libelektra.app.App
 ```
 
 ## Java Plugin Tutorial

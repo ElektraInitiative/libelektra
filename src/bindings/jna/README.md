@@ -22,7 +22,7 @@ Please note that the [jni plugin](/src/plugins/jni) serves a different purpose. 
 use the jni plugin to develop plugins for Elektra itself, whereas the jna
 bindings allow to use Elektra to access configuration in Java projects. The jni
 plugin is _not_ required for the jna bindings to work. But, to develop
-jni plugins, jna can be used. [Here](libelektra4j/plugin) are example
+jni plugins, jna can be used. [Here](libelektra5j/plugin) are example
 plugins, which need jni at runtime.
 
 ### Command line
@@ -31,11 +31,11 @@ plugins, which need jni at runtime.
 
 For using the binding as standalone (to write applications using Elektra),
 make sure that CLASSPATH includes jna.jar and libelektra.jar (or this directory
-which contains the libelektra4j subdirectory that corresponds to the
+which contains the libelektra5j subdirectory that corresponds to the
 libelektra.jar), e.g.:
 
 ```sh
-export CLASSPATH=".:/usr/share/java/libelektra4j.jar:/usr/share/java/jna.jar"
+export CLASSPATH=".:/usr/share/java/libelektra5j.jar:/usr/share/java/jna.jar"
 ```
 
 Then you can compile and run [HelloElektra](HelloElektra.java):
@@ -61,8 +61,8 @@ local maven repository from that location, execute the following command
 
 ```sh
 mvn org.apache.maven.plugins:maven-install-plugin:install-file \
-    -Dfile=/usr/share/java/libelektra4j.jar \
-    -DpomFile=/usr/share/java/libelektra4j.pom.xml
+    -Dfile=/usr/share/java/libelektra5j.jar \
+    -DpomFile=/usr/share/java/libelektra5j.pom.xml
 ```
 
 Then you can simply add libelektra as dependency using:
@@ -70,7 +70,7 @@ Then you can simply add libelektra as dependency using:
 ```xml
     <dependency>
       <groupId>org.libelektra</groupId>
-      <artifactId>libelektra4j</artifactId>
+      <artifactId>libelektra5j</artifactId>
       <version>0.9.3</version>
     </dependency>
 ```
@@ -136,7 +136,7 @@ which can be used to save and load `.properties` files into Elektra.
 
 ### Command Line
 
-You can run unit tests after importing jUnit, JNA and the libelektra4j java
+You can run unit tests after importing jUnit, JNA and the libelektra5j java
 library into a project (eclipse, netbeans, intelliJ, ...).
 
 Tested library versions are:
@@ -158,7 +158,7 @@ It should also be possible to run the tests by command line:
 
 1.  Compile the library and tests (run in root directory; make sure junit4 and
     jna are installed and/or path is correct). Execute the following commands inside
-    the libelektra4j folder:
+    the libelektra5j folder:
 
     ```sh
     mkdir ./target (if it does not exist yet)
