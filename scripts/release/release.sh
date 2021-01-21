@@ -55,6 +55,16 @@ run_updates() {
 	$SRC_DIR/scripts/link-checker external-links.txt 2> $BASE_DIR/$VERSION/link-checker.error > $BASE_DIR/$VERSION/link-checker
 }
 
+git_tag() {
+	cd $SRC_DIR
+	PREVIOUS_RELEASE_TAG=$(git tag -l '[0-9].[0-9].[0-9]' | tail -n1)
+	if [ $PREVIOUS_RELEASE_TAG != $VERSION ]; then
+		git tag $VERSION -m "Release $VERSION" # needed by `make source-package` and `git-release-stats
+	else
+		echo "VERSION equals latest git version tag. Git tag will not be created."
+	fi
+}
+
 update_debian_changelog() {
 	echo "Updating debian changelog..."
 
@@ -72,6 +82,19 @@ update_fedora_changelog() {
 	./update-rpm-changelog.sh -v "$PVERSION"
 	git add changelog
 	git commit -m "Update fedora/changelog for release $PVERSION"
+}
+
+export_git_log() {
+	cd "$SRC_DIR"
+	GIT_LOG_DIR="$BASE_DIR/$VERSION/git"
+	mkdir "$GIT_LOG_DIR"
+	# export git diff since 1 day (changes done in pipeline)
+	git log -p --since="1 days ago" > "$GIT_LOG_DIR/master.log"
+	# get latest two version tags
+	PREVIOUS_RELEASE=$(git tag -l '[0-9].[0-9].[0-9]' | tail -n2 | head -n1)
+	CURRENT_RELEASE=$(git tag -l '[0-9].[0-9].[0-9]' | tail -n1)
+	# generate git statistics
+	$SCRIPTS_DIR/git-release-stats "$PREVIOUS_RELEASE" "$CURRENT_RELEASE" > "$GIT_LOG_DIR/statistics"
 }
 
 run_checks() {
@@ -194,9 +217,10 @@ cmemcheck() {
 VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 install_elektra
 run_updates
-git tag -f $VERSION # needed by `make source-package`
+git_tag
 update_fedora_changelog
 update_debian_changelog
+export_git_log
 run_checks
 create_source_package
 build_package
