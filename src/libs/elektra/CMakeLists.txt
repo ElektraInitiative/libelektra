@@ -110,7 +110,7 @@ if (BUILD_SHARED)
 		TARGETS elektra-core elektra-kdb
 		DESTINATION lib${LIB_SUFFIX}
 		EXPORT ElektraTargetsLibelektra
-		COMPONENT libelektra4)
+		COMPONENT libelektra${SO_VERSION})
 
 	list (APPEND targets_built ${elektra-all_LIBRARIES})
 endif (BUILD_SHARED)
@@ -149,7 +149,7 @@ if (BUILD_FULL)
 		TARGETS elektra-full
 		DESTINATION lib${LIB_SUFFIX}
 		EXPORT ElektraTargetsLibelektra
-		COMPONENT libelektra4-full)
+		COMPONENT libelektra${SO_VERSION}-full)
 
 	list (APPEND targets_built elektra-full)
 endif (BUILD_FULL)
@@ -174,7 +174,7 @@ if (BUILD_STATIC)
 		TARGETS elektra-static
 		DESTINATION lib${LIB_SUFFIX}
 		EXPORT ElektraTargetsLibelektra
-		COMPONENT libelektra4)
+		COMPONENT libelektra${SO_VERSION})
 
 	list (APPEND targets_built elektra-static)
 endif (BUILD_STATIC)

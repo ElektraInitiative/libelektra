@@ -10,7 +10,7 @@ if (HAVE_FNMATCH)
 		LINK_ELEKTRA
 		elektra-ease
 		COMPONENT
-		libelektra4)
+		libelektra${SO_VERSION})
 else ()
 	message ("Excluding lib-globbing, because fnmatch was not found.")
 endif ()

@@ -7,4 +7,4 @@ add_plugin (
 	SOURCES csvstorage.h csvstorage.c
 	LINK_ELEKTRA elektra-ease elektra-kdb
 	ADD_TEST INSTALL_TEST_DATA TEST_README
-	TEST_REQUIRED_PLUGINS directoryvalue COMPONENT libelektra4)
+	TEST_REQUIRED_PLUGINS directoryvalue COMPONENT libelektra${SO_VERSION})

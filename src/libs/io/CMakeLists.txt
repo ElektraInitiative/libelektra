@@ -10,7 +10,7 @@ add_lib (
 	elektra-kdb
 	elektra-invoke
 	COMPONENT
-	libelektra4)
+	libelektra${SO_VERSION})
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_NAME}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${LIBRARY_NAME}.pc" @ONLY)
 

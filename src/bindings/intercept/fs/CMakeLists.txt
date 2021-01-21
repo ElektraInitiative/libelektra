@@ -16,8 +16,8 @@ else ()
 	install (
 		TARGETS elektraintercept-fs
 		DESTINATION lib${LIB_SUFFIX}
-		COMPONENT libelektra4)
+		COMPONENT libelektra${SO_VERSION})
 
 	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-	create_lib_symlink (libelektraintercept-fs.so libelektraintercept.so libelektra4)
+	create_lib_symlink (libelektraintercept-fs.so libelektraintercept.so libelektra${SO_VERSION})
 endif ()

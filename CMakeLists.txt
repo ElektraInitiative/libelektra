@@ -83,7 +83,7 @@ set (REVERSE_DOMAIN org.libelektra)
 
 message (STATUS "You are building Elektra ${KDB_VERSION}")
 
-set (SO_VERSION 4)
+set (SO_VERSION 5)
 set (SO_VERSION_TOOLS 2)
 set (SO_VERSION_GETENV 0)
 
@@ -127,7 +127,7 @@ endif ()
 install (
 	FILES LICENSE.md
 	DESTINATION ${TARGET_DOCUMENTATION_TEXT_FOLDER}
-	COMPONENT libelektra4)
+	COMPONENT libelektra${SO_VERSION})
 
 # needs to be included last to collect all install components
 include (scripts/cmake/ElektraPackaging.cmake)

@@ -6,4 +6,4 @@ add_plugin (
 	LINK_ELEKTRA elektra-ease elektra-meta
 	ADD_TEST TEST_README
 	TEST_REQUIRED_PLUGINS network
-	INSTALL_TEST_DATA COMPONENT libelektra4)
+	INSTALL_TEST_DATA COMPONENT libelektra${SO_VERSION})

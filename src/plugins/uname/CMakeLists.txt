@@ -12,4 +12,4 @@ add_plugin (
 	uname
 	SOURCES uname.h uname.c
 	ADD_TEST TEST_README
-	TEST_REQUIRED_PLUGINS noresolver COMPONENT libelektra4-extra)
+	TEST_REQUIRED_PLUGINS noresolver COMPONENT libelektra${SO_VERSION}-extra)
