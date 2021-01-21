@@ -8,7 +8,7 @@ add_plugin (
 	range
 	SOURCES range.h range.c
 	LINK_LIBRARIES m
-	ADD_TEST TEST_README COMPONENT libelektra4-experimental)
+	ADD_TEST TEST_README COMPONENT libelektra${SO_VERSION}-experimental)
 
 if (ADDTESTING_PHASE)
 	if (CMAKE_C_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

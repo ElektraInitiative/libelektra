@@ -6,4 +6,4 @@ add_lib (
 	LINK_ELEKTRA
 	elektra-kdb
 	COMPONENT
-	libelektra4)
+	libelektra${SO_VERSION})

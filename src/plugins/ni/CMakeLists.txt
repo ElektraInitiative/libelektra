@@ -9,7 +9,7 @@ add_plugin (
 	SOURCES ni.h ni.c ${NI_FILES}
 	INCLUDE_DIRECTORIES ${NI}/include ${NI}/src/include
 	LINK_ELEKTRA elektra-ease
-	ADD_TEST TEST_README COMPONENT libelektra4)
+	ADD_TEST TEST_README COMPONENT libelektra${SO_VERSION})
 
 if (ADDTESTING_PHASE)
 	file (GLOB NI_INI_FILES ${NI}/src/tests/*.ini)

@@ -20,7 +20,7 @@ LUA_VERSION=$(lua -v | grep -Po '(?<=Lua )\d.\d')
 
 echo "DIST: $DIST_NAME"
 
-CMAKE_ARGS_BASE="-DTARGET_PLUGIN_FOLDER='elektra4' \
+CMAKE_ARGS_BASE="-DTARGET_PLUGIN_FOLDER='elektra5' \
 	-DBUILD_STATIC=OFF \
 	-DGTEST_ROOT='/usr/src/gtest' \
 	-DCMAKE_INSTALL_PREFIX=/usr \

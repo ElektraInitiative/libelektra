@@ -61,7 +61,7 @@ The `etc/apt/source.list` entry must look like following: `deb https://debs.libe
 
 E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
 
-> NOTE: for Ubuntu Bionic the yamlcpp plugin is excluded due to missing dependencies and therefore the package `libelektra4-yamlcpp` is not available.
+> NOTE: for Ubuntu Bionic the yamlcpp plugin is excluded due to missing dependencies and therefore the package `libelektra5-yamlcpp` is not available.
 
 ### Fedora
 
@@ -101,9 +101,9 @@ To get all packaged plugins, bindings and tools install:
 
 ```sh
 # For Debian based distributions
-apt-get install libelektra4-all
+apt-get install libelektra5-all
 # For Fedora based distributions
-dnf install libelektra4-all
+dnf install libelektra5-all
 ```
 
 For a small installation with command-line tools available use:
@@ -128,9 +128,9 @@ If you want to install individual debugsym/debuginfo packages:
 
 ```sh
 # For Debian based distributions
-apt-get install <packagename>-dbgsym # e.g. apt-get install libelektra4-dbgsym
+apt-get install <packagename>-dbgsym # e.g. apt-get install libelektra5-dbgsym
 # For Fedora based distributions
-dnf debuginfo-install <packagename> # e.g. dnf debuginfo-install libelektra4
+dnf debuginfo-install <packagename> # e.g. dnf debuginfo-install libelektra5
 ```
 
 To build Debian/Ubuntu Packages from the source you might want to use:

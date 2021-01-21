@@ -7,4 +7,4 @@ add_lib (
 	LINK_ELEKTRA
 	elektra-meta
 	COMPONENT
-	libelektra4)
+	libelektra${SO_VERSION})

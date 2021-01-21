@@ -4,7 +4,7 @@ add_plugin (
 	specload
 	SOURCES specload.h specload.c
 	LINK_ELEKTRA elektra-ease elektra-invoke
-	TEST_README COMPONENT libelektra4)
+	TEST_README COMPONENT libelektra${SO_VERSION})
 
 if (DEPENDENCY_PHASE AND BUILD_SHARED)
 	add_dependencies (elektra-specload elektra-quickdump)

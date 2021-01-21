@@ -13,25 +13,25 @@ set (CPACK_OUTPUT_FILE_PREFIX "package")
 
 set (
 	PACKAGES
-	libelektra4
-	libelektra4-all
-	libelektra4-full
-	libelektra4-experimental
-	libelektra4-extra
-	libelektra4-augeas
-	libelektra4-crypto
-	libelektra4-curl
-	libelektra4-dbus
+	libelektra${SO_VERSION}
+	libelektra${SO_VERSION}-all
+	libelektra${SO_VERSION}-full
+	libelektra${SO_VERSION}-experimental
+	libelektra${SO_VERSION}-extra
+	libelektra${SO_VERSION}-augeas
+	libelektra${SO_VERSION}-crypto
+	libelektra${SO_VERSION}-curl
+	libelektra${SO_VERSION}-dbus
 	libelektra-dev
-	libelektra4-java
-	libelektra4-journald
-	libelektra4-lua
-	libelektra4-python
-	libelektra4-xerces
-	libelektra4-xmltool
-	libelektra4-yajl
-	libelektra4-yamlcpp
-	libelektra4-zeromq
+	libelektra${SO_VERSION}-java
+	libelektra${SO_VERSION}-journald
+	libelektra${SO_VERSION}-lua
+	libelektra${SO_VERSION}-python
+	libelektra${SO_VERSION}-xerces
+	libelektra${SO_VERSION}-xmltool
+	libelektra${SO_VERSION}-yajl
+	libelektra${SO_VERSION}-yamlcpp
+	libelektra${SO_VERSION}-zeromq
 	java-elektra
 	lua-elektra
 	python3-elektra
@@ -48,14 +48,14 @@ set (
 	elektra-doc
 	elektra-dbg
 	libelektra-dev
-	libelektra4-all
+	libelektra${SO_VERSION}-all
 	elektra-bin-extra
 	java-elektra
 	${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 
 set (ALL_PLUGINS "")
 foreach (component ${PACKAGES})
-	if (component MATCHES "^libelektra4-.*")
+	if (component MATCHES "^libelektra${SO_VERSION}-.*")
 		list (APPEND ALL_PLUGINS "${component}")
 	endif ()
 endforeach ()
@@ -121,148 +121,148 @@ if (UNIX)
 		set (OS_DISTRIB "unix")
 	endif (NOT OS_DISTRIB)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4_DISPLAY_NAME "libelektra4")
-	set (CPACK_COMPONENT_LIBELEKTRA4_DESCRIPTION "This package contains the main elektra library, and most of the core plugins")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}_DISPLAY_NAME "libelektra${SO_VERSION}")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}_DESCRIPTION "This package contains the main elektra library, and most of the core plugins")
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-FULL_DISPLAY_NAME "libelektra4-full")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-FULL_DISPLAY_NAME "libelektra${SO_VERSION}-full")
 	set (
-		CPACK_COMPONENT_LIBELEKTRA4-FULL_DESCRIPTION
+		CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-FULL_DESCRIPTION
 		"This package contains an variant of the Elektra library in which all plugins are linked together to a full library. The package is only needed for testing."
 	)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-EXPERIMENTAL_DISPLAY_NAME "libelektra4-experimental")
-	set (CPACK_COMPONENT_LIBELEKTRA4-EXPERIMENTAL_DESCRIPTION "This package contains experimental plugins.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-EXTRA_DISPLAY_NAME "libelektra4-extra")
-	set (CPACK_COMPONENT_LIBELEKTRA4-EXTRA_DESCRIPTION "This package contains extra plugins.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-EXPERIMENTAL_DISPLAY_NAME "libelektra${SO_VERSION}-experimental")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-EXPERIMENTAL_DESCRIPTION "This package contains experimental plugins.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-EXTRA_DISPLAY_NAME "libelektra${SO_VERSION}-extra")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-EXTRA_DESCRIPTION "This package contains extra plugins.")
 
 	set (CPACK_COMPONENT_ELEKTRA-BIN_DISPLAY_NAME "elektra-bin")
 	set (CPACK_COMPONENT_ELEKTRA-BIN_DESCRIPTION "This package contains command line utilities for Elektra.")
-	set (CPACK_COMPONENT_ELEKTRA-BIN_DEPENDS "libelektra4")
+	set (CPACK_COMPONENT_ELEKTRA-BIN_DEPENDS "libelektra${SO_VERSION}")
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-AUGEAS_DISPLAY_NAME "libelektra4-augeas")
-	set (CPACK_COMPONENT_LIBELEKTRA4-AUGEAS_DESCRIPTION "This package contains the 'augeas' plugin.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-AUGEAS_DEPENDS "libelektra4")
-	check_component_dependencies (augeas libelektra4-augeas PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-AUGEAS_DISPLAY_NAME "libelektra${SO_VERSION}-augeas")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-AUGEAS_DESCRIPTION "This package contains the 'augeas' plugin.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-AUGEAS_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (augeas libelektra${SO_VERSION}-augeas PLUGIN)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-DBUS_DISPLAY_NAME "libelektra4-dbus")
-	set (CPACK_COMPONENT_LIBELEKTRA4-DBUS_DESCRIPTION "This package contains the 'dbus' plugins.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-DBUS_DEPENDS "libelektra4")
-	check_component_dependencies (dbus libelektra4-dbus PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-DBUS_DISPLAY_NAME "libelektra${SO_VERSION}-dbus")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-DBUS_DESCRIPTION "This package contains the 'dbus' plugins.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-DBUS_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (dbus libelektra${SO_VERSION}-dbus PLUGIN)
 
 	set (CPACK_COMPONENT_LIBELEKTRA-DEV_DISPLAY_NAME "libelektra-dev")
 	set (CPACK_COMPONENT_LIBELEKTRA-DEV_DESCRIPTION "This package contains the development files for the main Elektra library.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-DEV_DEPENDS "libelektra4")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-DEV_DEPENDS "libelektra${SO_VERSION}")
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-ZEROMQ_DISPLAY_NAME "libelektra4-zeromq")
-	set (CPACK_COMPONENT_LIBELEKTRA4-ZEROMQ_DESCRIPTION "This package contains the 'zeromq' plugins.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-ZEROMQ_DEPENDS "libelektra4")
-	check_component_dependencies (zeromqrecv libelektra4-zeromq PLUGIN ADDITIONAL_DEPENDENCIES zeromqsend)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ZEROMQ_DISPLAY_NAME "libelektra${SO_VERSION}-zeromq")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ZEROMQ_DESCRIPTION "This package contains the 'zeromq' plugins.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ZEROMQ_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (zeromqrecv libelektra${SO_VERSION}-zeromq PLUGIN ADDITIONAL_DEPENDENCIES zeromqsend)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-XMLTOOL_DISPLAY_NAME "libelektra4-xmltool")
-	set (CPACK_COMPONENT_LIBELEKTRA4-XMLTOOL_DESCRIPTION "This package contains the 'xmltool' plugin.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-XMLTOOL_DEPENDS "libelektra4")
-	check_component_dependencies (xmltool libelektra4-xmltool PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XMLTOOL_DISPLAY_NAME "libelektra${SO_VERSION}-xmltool")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XMLTOOL_DESCRIPTION "This package contains the 'xmltool' plugin.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XMLTOOL_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (xmltool libelektra${SO_VERSION}-xmltool PLUGIN)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-XERCES_DISPLAY_NAME "libelektra4-xerces")
-	set (CPACK_COMPONENT_LIBELEKTRA4-XERCES_DESCRIPTION "This package contains the 'xerces' plugin.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-XERCES_DEPENDS "libelektra4")
-	check_component_dependencies (xerces libelektra4-xerces PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XERCES_DISPLAY_NAME "libelektra${SO_VERSION}-xerces")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XERCES_DESCRIPTION "This package contains the 'xerces' plugin.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XERCES_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (xerces libelektra${SO_VERSION}-xerces PLUGIN)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-YAJL_DISPLAY_NAME "libelektra4-yajl")
-	set (CPACK_COMPONENT_LIBELEKTRA4-YAJL_DESCRIPTION "This package contains the 'yajl' plugin.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-YAJL_DEPENDS "libelektra4")
-	check_component_dependencies (yajl libelektra4-yajl PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAJL_DISPLAY_NAME "libelektra${SO_VERSION}-yajl")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAJL_DESCRIPTION "This package contains the 'yajl' plugin.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAJL_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (yajl libelektra${SO_VERSION}-yajl PLUGIN)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-CRYPTO_DISPLAY_NAME "libelektra4-crypto")
-	set (CPACK_COMPONENT_LIBELEKTRA4-CRYPTO_DESCRIPTION "This package contains the crypto plugins.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-CRYPTO_DEPENDS "libelektra4")
-	check_component_dependencies (crypto libelektra4-crypto PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-CRYPTO_DISPLAY_NAME "libelektra${SO_VERSION}-crypto")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-CRYPTO_DESCRIPTION "This package contains the crypto plugins.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-CRYPTO_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (crypto libelektra${SO_VERSION}-crypto PLUGIN)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-CURL_DISPLAY_NAME "libelektra4-curl")
-	set (CPACK_COMPONENT_LIBELEKTRA4-CURL_DESCRIPTION "This package contains the 'curlget' plugin.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-CURL_DEPENDS "libelektra4")
-	check_component_dependencies (curlget libelektra4-curl PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-CURL_DISPLAY_NAME "libelektra${SO_VERSION}-curl")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-CURL_DESCRIPTION "This package contains the 'curlget' plugin.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-CURL_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (curlget libelektra${SO_VERSION}-curl PLUGIN)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-JOURNALD_DISPLAY_NAME "libelektra4-journald")
-	set (CPACK_COMPONENT_LIBELEKTRA4-JOURNALD_DESCRIPTION "This package contains the 'journald' plugins.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-JOURNALD_DEPENDS "libelektra4")
-	check_component_dependencies (journald libelektra4-journald PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-JOURNALD_DISPLAY_NAME "libelektra${SO_VERSION}-journald")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-JOURNALD_DESCRIPTION "This package contains the 'journald' plugins.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-JOURNALD_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (journald libelektra${SO_VERSION}-journald PLUGIN)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-YAMLCPP_DISPLAY_NAME "libelektra4-yamlcpp")
-	set (CPACK_COMPONENT_LIBELEKTRA4-YAMLCPP_DESCRIPTION "This package contains the 'yamlcpp' plugin.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-YAMLCPP_DEPENDS "libelektra4")
-	check_component_dependencies (yamlcpp libelektra4-yamlcpp PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAMLCPP_DISPLAY_NAME "libelektra${SO_VERSION}-yamlcpp")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAMLCPP_DESCRIPTION "This package contains the 'yamlcpp' plugin.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAMLCPP_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (yamlcpp libelektra${SO_VERSION}-yamlcpp PLUGIN)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-JAVA_DISPLAY_NAME "libelektra4-java")
-	set (CPACK_COMPONENT_LIBELEKTRA4-JAVA_DESCRIPTION "This package contains the 'jni' plugin.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-JAVA_DEPENDS "libelektra4" "java-elektra")
-	check_component_dependencies (jni libelektra4-java PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-JAVA_DISPLAY_NAME "libelektra${SO_VERSION}-java")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-JAVA_DESCRIPTION "This package contains the 'jni' plugin.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-JAVA_DEPENDS "libelektra${SO_VERSION}" "java-elektra")
+	check_component_dependencies (jni libelektra${SO_VERSION}-java PLUGIN)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DISPLAY_NAME "libelektra4-lua")
-	set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DESCRIPTION "This package contains the 'lua' plugin.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-LUA_DEPENDS "libelektra4")
-	check_component_dependencies (lua libelektra4-lua PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-LUA_DISPLAY_NAME "libelektra${SO_VERSION}-lua")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-LUA_DESCRIPTION "This package contains the 'lua' plugin.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-LUA_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (lua libelektra${SO_VERSION}-lua PLUGIN)
 
 	set (CPACK_COMPONENT_JAVA-ELEKTRA_DISPLAY_NAME "java-elektra")
 	set (CPACK_COMPONENT_JAVA-ELEKTRA_DESCRIPTION "This package contains the Java bindings.")
-	set (CPACK_COMPONENT_JAVA-ELEKTRA_DEPENDS "libelektra4")
+	set (CPACK_COMPONENT_JAVA-ELEKTRA_DEPENDS "libelektra${SO_VERSION}")
 	check_component_dependencies (jna java-elektra BINDING)
 
 	set (CPACK_COMPONENT_LUA-ELEKTRA_DISPLAY_NAME "lua-elektra")
 	set (CPACK_COMPONENT_LUA-ELEKTRA_DESCRIPTION "This package contains the Lua bindings.")
-	set (CPACK_COMPONENT_LUA-ELEKTRA_DEPENDS "libelektra4")
+	set (CPACK_COMPONENT_LUA-ELEKTRA_DEPENDS "libelektra${SO_VERSION}")
 	check_component_dependencies (lua lua-elektra BINDING)
 
 	set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DISPLAY_NAME "python3-elektra")
 	set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DESCRIPTION "This package contains the Python 3 bindings.")
-	set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DEPENDS "libelektra4")
+	set (CPACK_COMPONENT_PYTHON3-ELEKTRA_DEPENDS "libelektra${SO_VERSION}")
 	check_component_dependencies (python python3-elektra BINDING)
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-PYTHON_DISPLAY_NAME "libelektra4-python")
-	set (CPACK_COMPONENT_LIBELEKTRA4-PYTHON_DESCRIPTION "This package contains the 'python' plugin.")
-	set (CPACK_COMPONENT_LIBELEKTRA4-PYTHON_DEPENDS "libelektra4" "python3-elektra")
-	check_component_dependencies (python libelektra4-python PLUGIN)
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-PYTHON_DISPLAY_NAME "libelektra${SO_VERSION}-python")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-PYTHON_DESCRIPTION "This package contains the 'python' plugin.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-PYTHON_DEPENDS "libelektra${SO_VERSION}" "python3-elektra")
+	check_component_dependencies (python libelektra${SO_VERSION}-python PLUGIN)
 
 	set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DISPLAY_NAME "elektra-bin-extra")
 	set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DESCRIPTION
 	     "This package contains extra command line utilities for Elektra written in non-shell languages like python.")
-	set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DEPENDS "libelektra4")
+	set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DEPENDS "libelektra${SO_VERSION}")
 
 	set (CPACK_COMPONENT_ELEKTRA-QT-GUI_DISPLAY_NAME "elektra-qt-gui")
 	set (CPACK_COMPONENT_ELEKTRA-QT-GUI_DESCRIPTION "This package contains a Qt-based graphical interface for Elektra.")
-	set (CPACK_COMPONENT_ELEKTRA-QT-GUI_DEPENDS "libelektra4")
+	set (CPACK_COMPONENT_ELEKTRA-QT-GUI_DEPENDS "libelektra${SO_VERSION}")
 	check_component_dependencies (qt-gui elektra-qt-gui TOOL)
 
 	set (CPACK_COMPONENT_ELEKTRA-TESTS_DISPLAY_NAME "elektra-tests")
 	set (CPACK_COMPONENT_ELEKTRA-TESTS_DESCRIPTION "This package contains the Elektra test suite.")
-	set (CPACK_COMPONENT_ELEKTRA-TESTS_DEPENDS "libelektra4-full" "elektra-bin")
+	set (CPACK_COMPONENT_ELEKTRA-TESTS_DEPENDS "libelektra${SO_VERSION}-full" "elektra-bin")
 
 	set (CPACK_COMPONENT_ELEKTRA-DOC_DISPLAY_NAME "elektra-doc")
 	set (CPACK_COMPONENT_ELEKTRA-DOC_DESCRIPTION "This package contains the API documentation for the Elektra libraries.")
 
-	set (CPACK_COMPONENT_LIBELEKTRA4-ALL_DISPLAY_NAME "libelektra4-all")
-	set (CPACK_COMPONENT_LIBELEKTRA4-ALL_DESCRIPTION "This package provides the dependencies for all Elektra packages.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ALL_DISPLAY_NAME "libelektra${SO_VERSION}-all")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ALL_DESCRIPTION "This package provides the dependencies for all Elektra packages.")
 	set (
-		CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS
-		"libelektra4"
-		"libelektra4-experimental"
-		"libelektra4-augeas"
-		"libelektra4-dbus"
-		"libelektra4-zeromq"
-		"libelektra4-java"
-		"libelektra4-lua"
-		"libelektra4-python"
-		"libelektra4-xmltool"
-		"libelektra4-xerces"
-		"libelektra4-yajl"
-		"libelektra4-yamlcpp"
+		CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ALL_DEPENDS
+		"libelektra${SO_VERSION}"
+		"libelektra${SO_VERSION}-experimental"
+		"libelektra${SO_VERSION}-augeas"
+		"libelektra${SO_VERSION}-dbus"
+		"libelektra${SO_VERSION}-zeromq"
+		"libelektra${SO_VERSION}-java"
+		"libelektra${SO_VERSION}-lua"
+		"libelektra${SO_VERSION}-python"
+		"libelektra${SO_VERSION}-xmltool"
+		"libelektra${SO_VERSION}-xerces"
+		"libelektra${SO_VERSION}-yajl"
+		"libelektra${SO_VERSION}-yamlcpp"
 		"lua-elektra"
 		"elektra-bin"
 		"elektra-qt-gui"
-		"libelektra4-crypto"
-		"libelektra4-curl"
-		"libelektra4-journald"
-		"libelektra4-extra")
+		"libelektra${SO_VERSION}-crypto"
+		"libelektra${SO_VERSION}-curl"
+		"libelektra${SO_VERSION}-journald"
+		"libelektra${SO_VERSION}-extra")
 
 	set (CPACK_COMPONENT_ELEKTRA-DBG_DISPLAY_NAME "elektra-dbg")
 	set (CPACK_COMPONENT_ELEKTRA-DBG_DESCRIPTION "This package contains the dependencies to all dbgsym packages of Elektra.")
@@ -275,13 +275,13 @@ if (UNIX)
 		list (REMOVE_ITEM PACKAGES ${component})
 	endforeach (component)
 
-	# remove excluded components from libelektra4-all dependent components
-	foreach (component ${CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS})
+	# remove excluded components from libelektra${SO_VERSION}-all dependent components
+	foreach (component ${CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ALL_DEPENDS})
 		if (component IN_LIST EXCLUDED_COMPONENTS)
-			list (REMOVE_ITEM CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS ${component})
+			list (REMOVE_ITEM CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ALL_DEPENDS ${component})
 		endif ()
 	endforeach (component)
-	string (REPLACE ";" ", " LIBELEKTRA4-ALL_DEPENDS "${CPACK_COMPONENT_LIBELEKTRA4-ALL_DEPENDS}")
+	string (REPLACE ";" ", " LIBELEKTRA${SO_VERSION}-ALL_DEPENDS "${CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ALL_DEPENDS}")
 
 	# For Debian-based distros we want to create DEB packages.
 	if ("${OS_NAME}" MATCHES "Ubuntu|Debian")
