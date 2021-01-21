@@ -544,7 +544,18 @@ ${WORKSPACE}/build/doc/man ./"""
 
         dir('doc') {
           sh "git commit -m '${RELEASE_VERSION} Release'"
+          // push to github mirror
           pushGitRepo('doc')
+          withCredentials([sshUserPrivateKey(credentialsId: "community-ssh-git", keyFileVariable: "privateSshKey", usernameVariable: 'GIT_USERNAME')]) {
+            // add community server to known hosts
+            sh "mkdir -p ~/.ssh/ && ssh-keyscan -t rsa doc.libelektra.org >> ~/.ssh/known_hosts"
+            // add community mirror of doc repo as remote
+            sh "git remote add community ${GIT_USERNAME}@doc.libelektra.org:/srv/libelektra"
+          }
+          // push to community mirror
+          sshagent(['community-ssh-git']) {
+            sh "git push community master"
+          }
         }
 
         warnings parserConfigurations: [
