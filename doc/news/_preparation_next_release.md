@@ -247,7 +247,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - Finalize 1.0 decisions. _(Markus Raab)_
-- Changed api documentation terms [current, latest] to [latest, master]. The api documentation of the latest release is now available at https://doc.libelektra.org/api/latest/html/ and of the current git master at https://doc.libelektra.org/api/master/html/.  _(Robert Sowula)_
+- Changed api documentation terms [current, latest] to [latest, master]. The api documentation of the latest release is now available at https://doc.libelektra.org/api/latest/html/ and of the current git master at https://doc.libelektra.org/api/master/html/. _(Robert Sowula)_
 - <<TODO>>
 
 ## Tests
