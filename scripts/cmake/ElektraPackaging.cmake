@@ -152,7 +152,7 @@ if (UNIX)
 
 	set (CPACK_COMPONENT_LIBELEKTRA-DEV_DISPLAY_NAME "libelektra-dev")
 	set (CPACK_COMPONENT_LIBELEKTRA-DEV_DESCRIPTION "This package contains the development files for the main Elektra library.")
-	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-DEV_DEPENDS "libelektra${SO_VERSION}")
+	set (CPACK_COMPONENT_LIBELEKTRA-DEV_DEPENDS "libelektra${SO_VERSION}")
 
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ZEROMQ_DISPLAY_NAME "libelektra${SO_VERSION}-zeromq")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ZEROMQ_DESCRIPTION "This package contains the 'zeromq' plugins.")
