@@ -4,7 +4,6 @@ This describes what to do for a release:
 
 - make sure no TODO is in this file (resolve them first!)
 - Check transitions in plugin status: especially from/to experimental
-- Check if Elektra builds, installs and works on freshly installed OS
 
 == Testing ==
 
@@ -26,7 +25,7 @@ This describes what to do for a release:
 
 - CMakeLists.txt
 - Increment version in output of doc/tutorials/hello-elektra.md
-- Increment <Version> of libelektra4j in examples/external/java/read-keys-example/pom.xml and src/bindings/jna/README.md
+- Increment <Version> of libelektra5j in examples/external/java/read-keys-example/pom.xml and src/bindings/jna/README.md
 - Change VERSION variable in build-server
 
 == Check ==
@@ -34,39 +33,45 @@ This describes what to do for a release:
 
 = When Source Code is considered ready =
 
-- Trigger release pipeline
-- Inspect the logs from the pipeline
-  - [ ] Error logs (*.error) must be empty
-  - [ ] Check in the (test-*) folders if the passed tests really were successful
-  - [ ] Check if version is correct in the version file
-  - [ ] Check if the Debian package build log has warnings (debian/<DEBIAN_CODENAME>/elektra_*.buildinfo)
-- Check if all artifacts are present
-  - [ ] Check debian/<DEBIAN_CODENAME> if all Debian packages were built
-- Inspect the changes to the libelektra git repository in git/
-  git/master.log
-  - [ ] Check diff of commit "Regenerate dot of plugins for release <VERSION>" and if 
+- Trigger release pipeline with parameters
+  On a release of a new version, the revision parameters should be set to 1 (default)
+- Download artifacts after release build is finished and pipeline waits for input:
+  To download the artifacts either open the "Artifacts" tab on Blue Ocean or open this URL
+  https://build.libelektra.org/job/libelektra-release/<BUILD_NUMBER>/artifact/artifacts/
+  where <BUILD_NUMBER> is the number of the Jenkins build e.g. 77
+- Inspect the logs from the artifacts
+  For each distribution two artifact folder exist: "<DISTRO_CODENAME>" and "<DISTRO_CODENAME>-installed"
+  "<DISTRO_CODENAME>-installed" contains the test and strace logs of Elektra installed through the built packages
+  For <DISTRO_CODENAME> artifact:
+    - [ ] Error logs (*.error) must be empty
+    - [ ] Check in the (test-*) folders if the passed tests really were successful
+    - [ ] Check if version is correct in the version file
+    - [ ] Check if the package build log has warnings (<DISTRO_CODENAME>/elektra_*.build and <DISTRO_CODENAME>/elektra_*.error)
+    - [ ] Check if all plugins/bindings/tools that are part of a package were included (<DISTRO_CODENAME>/elektra_*.build)
+  For <DISTRO_CODENAME>-installed artifact:
+    - [ ] Check in the (test-*) folders if the passed tests really were successful
+- Inspect the changes to the libelektra git repository in git/master.log
+  - [ ] Check diff of commit "Regenerate dot of plugins for release" and if
         doc/images/plugins.pdf was generated correctly
-  - [ ] Check diff of commit "Update contract for release <VERSION>": Plugin tags in the plugin 
-        README.md should be sorted (Only if tags are not sorted)
-  git/debian.log
-  - [ ] Check if master is merged to Debian branch (commit: "merge <VERSION>")
-- Inspect the changes to the docu git repository in git/docu.log
-  - [ ] Check diff of the latest commit "<VERSION> release" 
-- Inspect the changes to the ftp git repository in git/ftp.log
-  - [ ] Check diff of the latest commit "Release <VERSION>"
-- Inspect the website from the pipeline
+  - [ ] Check diff of commit "Update plugin info status for release": Plugin tags should be sorted (optional commit)
+  - [ ] Check diff of commit "Update debian/changelog for release": Changelog should have a new entry for this release
+  - [ ] Check diff of commit "Update fedora/changelog for release": Changelog should have a new entry for this release
 
 = Publish =
 
-- Select "process" in the stage view to publish the package
+- Publish packages and artifacts from the pipeline:
+  - Go to the classic Jenkins UI (BlueOcean sometimes doesn't show the Input step on long pipelines)
+  - Select "Paused for Input" on the side menu
+  - On the prompt "Publish Release?" select "Yes" to publish the artifacts
+- Verify that debs.libelektra.org and rpms.libelektra.org contain the released packages.
 - Clean the git statistics in git/statistics and add them to the release notes (formatting, remove uninteresting data)
 - Add hash sums to release notes and run linkchecker to verify that all download links of the current release are working:
   mkdir build && cd build && make html && ../scripts/link-checker external-links.txt
 - (Possible) rebuilds from website for last changes in the release notes
 
-== Preperation for next release == 
+== Preperation for next release ==
 
-- Increment CMPVERSION in scripts/build/run_icheck 
+- Increment CMPVERSION in scripts/build/run_icheck
 - Cleanup tests/icheck.suppression (and add info to release notes)
 
 == Update Alpine Linux image on docker hub ==
@@ -75,7 +80,7 @@ Now that the release is available to download, rebuild the Alpine release image.
 
 To do so, increment the Elektra version in e.g. `scripts/docker/alpine/3.12/release.Dockerfile`:
 ```
-ELEKTRA_RELEASE=0.9.2
+ELEKTRA_RELEASE=0.9.4
 ```
 If the file does not exist, possibly the Alpine version was changed.
 
