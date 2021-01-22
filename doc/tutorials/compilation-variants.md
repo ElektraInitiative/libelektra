@@ -11,7 +11,7 @@ duplications within plugins, you have multiple options:
   (in the folder libs).
   This should be used for rather common functionality that might
   be useful for many plugins or even applications.
-- Have configuration for plugins (See [elektraPluginGetConfig()](https://doc.libelektra.org/api/latest/html/group__plugin.html)
+- Have configuration for plugins (See [elektraPluginGetConfig()](https://doc.libelektra.org/api/master/html/group__plugin.html)
   and dynamically switch with `if` according to the configuration.
   This should be preferred when you want to (de)activate some
   features of a plugin at run-time.

@@ -224,7 +224,7 @@ fn main() {
 
 ## Documentation
 
-Is automatically built on `docs.rs` for [elektra](https://docs.rs/elektra) and [elektra-sys](https://docs.rs/elektra-sys/). Note that since `elektra-sys` is a one-to-one translation of the C API, it doesn't have documentation and you should instead use the [C docs](https://doc.libelektra.org/api/current/html/index.html) directly.
+Is automatically built on `docs.rs` for [elektra](https://docs.rs/elektra) and [elektra-sys](https://docs.rs/elektra-sys/). Note that since `elektra-sys` is a one-to-one translation of the C API, it doesn't have documentation and you should instead use the [C docs](https://doc.libelektra.org/api/latest/html/index.html) directly.
 
 Documentation can also be built in the `src/bindings/rust/` subdirectory of the **build** directory, by running `cargo doc` and opening `target/doc/elektra/index.html`.
 

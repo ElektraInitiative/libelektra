@@ -537,9 +537,9 @@ def buildDoc() {
 cp -a ${WORKSPACE}/build/doc/html ${WORKSPACE}/build/doc/latex \
 ${WORKSPACE}/build/doc/man ./"""
           }
-          sh 'rm current'
-          sh "ln -s ${RELEASE_VERSION} current"
-          sh "git add current ${RELEASE_VERSION}"
+          sh 'rm latest'
+          sh "ln -s ${RELEASE_VERSION} latest"
+          sh "git add latest ${RELEASE_VERSION}"
         }
 
         dir('doc') {

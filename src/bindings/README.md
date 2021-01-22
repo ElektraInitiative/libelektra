@@ -1,6 +1,6 @@
 # Bindings
 
-[Elektra’s API](https://doc.libelektra.org/api/latest/html/) is written in C,
+[Elektra’s API](https://doc.libelektra.org/api/master/html/) is written in C,
 but many different bindings allow _applications_ in different programming languages
 to use Elektra.
 
@@ -37,7 +37,7 @@ To build all available I/O bindings use `cmake -DBINDINGS="IO"`.
 For more information please check out the
 [notification tutorial](https://github.com/ElektraInitiative/libelektra/tree/master/doc/tutorials/notifications.md)
 or the
-[API documentation](https://doc.libelektra.org/api/current/html/group__kdbio.html).
+[API documentation](https://doc.libelektra.org/api/latest/html/group__kdbio.html).
 The [doc](io/doc/) directory contains an example binding for a fictive
 asynchronous I/O management library.
 

@@ -41,7 +41,7 @@ The behavior of Elektra is defined by (in that order):
 
 1. [ABI](/tests/abi) test cases
 2. Non-ABI test cases (including Shell Recorder)
-3. The [API documentation](https://doc.libelektra.org/api/latest/html/)
+3. The [API documentation](https://doc.libelektra.org/api/master/html/)
 4. The [man pages](/doc/help)
 5. Tutorials (excluding Shell Recorder)
 6. Examples

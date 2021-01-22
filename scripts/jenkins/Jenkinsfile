@@ -778,17 +778,17 @@ def buildDoc() {
                   sshTransfer(
                     sourceFiles: 'build/doc/latex/*',
                     removePrefix: 'build/doc/',
-                    remoteDirectory: 'api/latest'
+                    remoteDirectory: 'api/master'
                   ),
                   sshTransfer(
                     sourceFiles: 'build/doc/html/*',
                     removePrefix: 'build/doc/',
-                    remoteDirectory: 'api/latest'
+                    remoteDirectory: 'api/master'
                   ),
                   sshTransfer(
                     sourceFiles: 'build/doc/man/man3elektra/*',
                     removePrefix: 'build/doc/man/man3elektra/',
-                    remoteDirectory: 'api/latest/man'
+                    remoteDirectory: 'api/master/man'
                   )
                 ]
               )
