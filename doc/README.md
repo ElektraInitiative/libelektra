@@ -42,6 +42,6 @@ This folder contains documentation for “Elektra – the configuration framewor
 
 - [Images](images): The images folder contains logos and other promotional material.
 - [Decisions](decisions): If you are interested in why Elektra uses a certain technology or strategy, then please check out the documents in this folder.
-- [Markdown Link Converter](markdownlinkconverter/README.md): This tool converts links in Markdown files to make them usable in our [Doxygen documentation](https://doc.libelektra.org/api/current/html).
+- [Markdown Link Converter](markdownlinkconverter/README.md): This tool converts links in Markdown files to make them usable in our [Doxygen documentation](https://doc.libelektra.org/api/latest/html).
 - [Usecases](usecases): This folder contains use cases for our [snippet sharing service](https://www.libelektra.org/auth/login) and the upcoming web user interface for the KDB.
 - [Glossary](help/elektra-glossary.md): The glossary explains common terminology used in the documentation.

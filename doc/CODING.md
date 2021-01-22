@@ -641,7 +641,7 @@ The steps below show you how to create a [TextMate][] command that formats a doc
 `doxygen` is used to document the API and to build the html and pdf output.
 We also support the import of Markdown pages. Doxygen 1.8.8 or later
 is required for this feature (Anyways you can find the
-[API Doc](https://doc.libelektra.org/api/latest/html/) online).
+[API Doc](https://doc.libelektra.org/api/master/html/) online).
 Links between Markdown files will be converted with the
 [Markdown Link Converter](/doc/markdownlinkconverter/README.md).
 **Markdown pages are used in the pdf, therefore watch which characters you use and
@@ -669,7 +669,7 @@ Note:
 
 - `@` `file` has _no_ parameters.
 - `@` `brief` should contain a short statement about the content of the file and is needed
-  so that your file gets listed at https://doc.libelektra.org/api/latest/html/files.html
+  so that your file gets listed at https://doc.libelektra.org/api/master/html/files.html
 
 The duplication of the filename, author and date is not needed, because
 this information is tracked using git and [doc/AUTHORS.md](AUTHORS.md) already.

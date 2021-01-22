@@ -119,7 +119,7 @@ Key *parentKey = keyNew("/sw/org/myapp/#0/current", KEY_END);
 
 The key name is standardized to make it easier to locate configuration.
 
-- [Read more about key-functions in API doc.](https://doc.libelektra.org/api/current/html/group__key.html)
+- [Read more about key-functions in API doc.](https://doc.libelektra.org/api/latest/html/group__key.html)
 - [Read more about key names here.](/doc/help/elektra-key-names.md)
 
 Now we have the `Key` we will use to pass as argument.

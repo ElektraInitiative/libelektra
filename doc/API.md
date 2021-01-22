@@ -28,11 +28,11 @@ developers using Elektra, on the
 other hand it gives an informal description what methods must and may provide
 to allow an alternative implementation of the API.
 
-The current version (for stable releases) of this document can be found at
-https://doc.libelektra.org/api/current/html
-
-The latest version (from git master) of this document can be found at
+The latest released version (for stable releases) of this document can be found at
 https://doc.libelektra.org/api/latest/html
+
+The git master version of this document can be found at
+https://doc.libelektra.org/api/master/html
 
 **Important:** On GitHub links to API functions are broken, so it is recommended that you continue
 reading in one of these links above.

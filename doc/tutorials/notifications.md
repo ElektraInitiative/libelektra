@@ -14,10 +14,10 @@ While sending and receiving notifications is implemented by plugins,
 applications use the notification API in order to use different plugins.
 
 The
-[notification API](https://doc.libelektra.org/api/current/html/group__kdbnotification.html)
+[notification API](https://doc.libelektra.org/api/latest/html/group__kdbnotification.html)
 implemented by the `elektra-notification` library allows receiving and handling
 notifications.
-An [I/O abstraction layer](https://doc.libelektra.org/api/current/html/group__kdbio.html)
+An [I/O abstraction layer](https://doc.libelektra.org/api/latest/html/group__kdbio.html)
 allows asynchronous notification processing by compatible plugins.
 The abstraction layer consists of an _interface_ used by transport plugins and
 different implementations of that interface called _I/O bindings_.
@@ -26,7 +26,7 @@ event loop API.
 Applications typically use one I/O binding but can also use none or multiple
 I/O bindings.
 For more on I/O bindings see the
-[API documenation](https://doc.libelektra.org/api/current/html/group__kdbio.html).
+[API documenation](https://doc.libelektra.org/api/latest/html/group__kdbio.html).
 
 Transport plugins exchange notifications via different protocols like D-Bus or
 ZeroMQ.
@@ -531,7 +531,7 @@ Developers can create their own bindings if the I/O management library of their
 choice is not supported by an existing I/O binding.
 
 For details on see the [example "doc" binding](/src/bindings/io/doc/) or the
-[API documentation](https://doc.libelektra.org/api/current/html/group__kdbio.html).
+[API documentation](https://doc.libelektra.org/api/latest/html/group__kdbio.html).
 Existing I/O bindings provide a good inspiration on how to implement a custom
 binding.
 Since a binding is generic and not application specific it is much appreciated

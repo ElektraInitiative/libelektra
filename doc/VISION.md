@@ -112,7 +112,7 @@ Different to other solutions, in Elektra
 [applications itself can be integrated](/doc/tutorials/application-integration.md),
 too.
 In Samba we would simply replace the configuration file parser
-with code like ([low-level C code](https://doc.libelektra.org/api/current/html/group__key.html),
+with code like ([low-level C code](https://doc.libelektra.org/api/latest/html/group__key.html),
 no error-handling and no cleanup):
 
 ```c

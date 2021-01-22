@@ -23,7 +23,7 @@ applications' configurations, leveraging easy application integration.
 - If you are new, start reading [Get Started](doc/GETSTARTED.md)
 - [Build server](https://build.libelektra.org/)
 - [Website](https://www.libelektra.org)
-- [API documentation](https://doc.libelektra.org/api/latest/html/)
+- [API documentation](https://doc.libelektra.org/api/master/html/)
 
 ## Overview
 
@@ -104,7 +104,7 @@ In the GitHub repository the full documentation is available, including:
 You can read the documentation for the kdb tool, either
 
 - [on the Website](https://www.libelektra.org)
-- [in the API docu](https://doc.libelektra.org/api/latest/html/doc_help_kdb_md.html)
+- [in the API docu](https://doc.libelektra.org/api/master/html/doc_help_kdb_md.html)
 - by using `man kdb`
 - by using `kdb --help` or `kdb help <command>`
 - [on GitHub](https://master.libelektra.org/doc/help/kdb.md)
@@ -116,7 +116,7 @@ You can read the documentation for the kdb tool, either
 
 - Elektra uses simple key-value pairs.
 - Elektra uses the [BSD licence](LICENSE.md).
-- Elektra implements an [API](https://doc.libelektra.org/api/latest/html/) to fully access a global key database.
+- Elektra implements an [API](https://doc.libelektra.org/api/master/html/) to fully access a global key database.
 - Elektra can be thought of a [virtual file system for configuration](/doc/BIGPICTURE.md).
 - Elektra supports mounting of existing configuration files into a global key database.
 - Elektra has dozens of [Plugins](src/plugins/) that make it possible

@@ -51,4 +51,4 @@ To have readline functionality (line editing, history, ...), you can use:<br>
 
 ## SEE ALSO
 
-To learn more about these commands and how they work, refer to the [Elektra API Documentation](https://doc.libelektra.org/api/current/html).
+To learn more about these commands and how they work, refer to the [Elektra API Documentation](https://doc.libelektra.org/api/latest/html).
