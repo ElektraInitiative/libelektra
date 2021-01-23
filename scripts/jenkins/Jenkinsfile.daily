@@ -82,7 +82,12 @@ def cleanupDocker(targetNode) {
         stage(taskname) {
             node(targetNode) {
                 dockerImages().each {
-                    retainNewestImages(it, 5)
+                    if (it ==~ /^hub.libelektra.org.*-installed$/) {
+                        // remove all images with Elektra packages installed
+                        retainNewestImages(it, 0)
+                    } else {
+                        retainNewestImages(it, 5)
+                    }
                 }
                 sh "docker system prune -f"
             }
@@ -108,10 +113,13 @@ def cleanupDockerRegistry(targetNode) {
             node(targetNode) {
                 withCredentials([usernameColonPassword(credentialsId:
                 'docker-hub-elektra-jenkins', variable: 'AUTH')]) {
-                    // Remove all but the latest 15 versions of each image in
+                    // Remove all but the latest 10 versions of each image in
                     // the registry
                     docker.image('anoxis/registry-cli')
                           .run('--rm', '-l $AUTH -r https://hub.libelektra.org --delete')
+                    // remove all images with Elektra packages installed in the registry
+                    docker.image('anoxis/registry-cli')
+                          .run('--rm', '-l $AUTH -r https://hub.libelektra.org --delete-all --images-like ".*-installed$"')
                 }
                 def frontendFolder = "${env.HOME}/compose/frontend"
                 dir(frontendFolder){
