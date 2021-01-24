@@ -540,21 +540,17 @@ int f (Key *k)
  * @endcode
  *
  * @retval returns 0 on success
- * @retval -1 on null pointer
+ * @retval -1 on null pointer or if @p key is part of a keyset
  *
  * @param key the key object to work with
  * @ingroup key
  */
 int keyClear (Key * key)
 {
-	if (!key)
+	if (!key || key->ksReference > 0)
 	{
 		return -1;
 	}
-
-	size_t ref = 0;
-
-	ref = key->ksReference;
 
 	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
 
@@ -566,9 +562,6 @@ int keyClear (Key * key)
 	if (keyStructInMmap) key->flags |= KEY_FLAG_MMAP_STRUCT;
 
 	keySetName (key, "/");
-
-	/* Set reference properties */
-	key->ksReference = ref;
 
 	return 0;
 }
