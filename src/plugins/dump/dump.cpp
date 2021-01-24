@@ -29,7 +29,7 @@ int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool
 	os << "kdbOpen 2" << std::endl;
 
 	size_t rootOffset;
-	if (useFullNames)
+	if (useFullNames || parentKey == NULL)
 	{
 		rootOffset = 0;
 	}
@@ -47,7 +47,15 @@ int serialise (std::ostream & os, ckdb::Key * parentKey, ckdb::KeySet * ks, bool
 	{
 		ckdb::Key * cur = ksAtCursor (ks, cursor);
 
-		size_t namesize = keyGetNameSize (cur) - rootOffset;
+		size_t cursize = keyGetNameSize (cur);
+		if (cursize < rootOffset)
+		{
+			ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "Got key above parent key (%s) in keyset: %s", keyName (parentKey),
+							 keyName (cur));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+
+		size_t namesize = cursize - rootOffset;
 		if (namesize > 0)
 		{
 			namesize -= 1;
