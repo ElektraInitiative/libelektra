@@ -456,7 +456,7 @@ ssize_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSiz
 ssize_t keySetName (Key * key, const char * newName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME) return -1;
 	if (newName == NULL || strlen (newName) == 0) return -1;
 
 	if (!elektraKeyNameValidate (newName, true))
@@ -522,7 +522,7 @@ ssize_t keySetName (Key * key, const char * newName)
 ssize_t keyAddName (Key * key, const char * newName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME) return -1;
 	if (!newName) return -1;
 
 	while (*newName == '/')
@@ -1409,7 +1409,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 {
 	if (!key) return -1;
 	if (!baseName) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME) return -1;
 	if (!key->key) return -1;
 
 	return keyAddBaseNameInternal (key, baseName);
@@ -1465,7 +1465,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 ssize_t keySetBaseName (Key * key, const char * baseName)
 {
 	if (!key) return -1;
-	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+	if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME) return -1;
 	if (!key->key) return -1;
 
 	// adjust sizes to exclude base name

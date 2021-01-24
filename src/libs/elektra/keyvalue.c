@@ -477,7 +477,7 @@ ssize_t keySetBinary (Key * key, const void * newBinary, size_t dataSize)
 
 	if (!dataSize && newBinary) return -1;
 	if (dataSize > SSIZE_MAX) return -1;
-	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
+	if (keyIsLocked (key, KEY_LOCK_VALUE) == KEY_LOCK_VALUE) return -1;
 
 	keySetMeta (key, "binary", "");
 
@@ -507,7 +507,7 @@ ssize_t keySetBinary (Key * key, const void * newBinary, size_t dataSize)
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize)
 {
 	if (!key) return -1;
-	if (key->flags & KEY_FLAG_RO_VALUE) return -1;
+	if (keyIsLocked (key, KEY_LOCK_VALUE) == KEY_LOCK_VALUE) return -1;
 
 	if (!dataSize || !newBinary)
 	{

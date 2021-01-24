@@ -815,8 +815,6 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		return -1;
 	}
 
-	keyLock (toAppend, KEY_LOCK_NAME);
-
 	result = ksSearchInternal (ks, toAppend);
 
 	if (result >= 0)
@@ -2231,9 +2229,9 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 	if (options & KDB_O_SPEC)
 	{
 		Key * lookupKey = key;
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key);
+		if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME) lookupKey = keyDup (key);
 		ret = elektraLookupBySpec (ks, lookupKey, options & mask);
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME))
+		if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME)
 		{
 			elektraCopyCallbackMeta (key, lookupKey);
 			keyDel (lookupKey);
@@ -2242,9 +2240,9 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 	else if (!(options & KDB_O_NOCASCADING) && strcmp (name, "") && name[0] == '/')
 	{
 		Key * lookupKey = key;
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key);
+		if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME) lookupKey = keyDup (key);
 		ret = elektraLookupByCascading (ks, lookupKey, options & mask);
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME))
+		if (keyIsLocked (key, KEY_LOCK_NAME) == KEY_LOCK_NAME)
 		{
 			elektraCopyCallbackMeta (key, lookupKey);
 			keyDel (lookupKey);

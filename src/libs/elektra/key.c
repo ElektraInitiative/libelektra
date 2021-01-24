@@ -371,8 +371,7 @@ int keyCopy (Key * dest, const Key * source)
 {
 	if (!dest) return -1;
 
-	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) || test_bit (dest->flags, KEY_FLAG_RO_VALUE) ||
-	    test_bit (dest->flags, KEY_FLAG_RO_META))
+	if (keyIsLocked (dest, KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META) > 0)
 	{
 		return -1;
 	}
@@ -730,5 +729,5 @@ int keyIsLocked (const Key * key, elektraLockFlags what)
 	if (!key) return -1;
 	what &= (KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META);
 	what >>= 16; // to KEY_FLAG_RO_xyz
-	return (test_bit (key->flags, what) << 16);
+	return (test_bit (key->flags, what) << 16) | (key->ksReference > 0 ? KEY_LOCK_NAME : 0);
 }

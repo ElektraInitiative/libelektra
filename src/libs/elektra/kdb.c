@@ -1536,13 +1536,13 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_META))
+	if (keyIsLocked (parentKey, KEY_LOCK_META) == KEY_LOCK_META)
 	{
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_META");
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
+	if (keyIsLocked (parentKey, KEY_LOCK_NAME) == KEY_LOCK_NAME)
 	{
 		clearError (parentKey);
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only name passed");
@@ -1550,7 +1550,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	if (test_bit (parentKey->flags, KEY_FLAG_RO_VALUE))
+	if (keyIsLocked (parentKey, KEY_LOCK_VALUE) == KEY_LOCK_VALUE)
 	{
 		clearError (parentKey);
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only value passed");
