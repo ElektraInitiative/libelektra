@@ -131,22 +131,25 @@ We are now using CPack to generate modular Debian, Ubuntu (DEB) and Fedora (RPM)
 We now provide released and master built DEB and RPM packages in our own repositories.
 
 DEB packages are available for following distributions:
+
 - Debian Buster
 - Ubuntu Bionic
 - Ubuntu Focal
 
 RPM packages are available for Fedora 33.
 
-
 #### Installation of latest released packages
 
 To add our DEB package repositories following steps need to be done:
+
 1. First, you need to obtain the repository key:
-  ```sh
-  sudo apt-key adv --keyserver keys.gnupg.net --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839
-  ```
+
+```sh
+sudo apt-key adv --keyserver keys.gnupg.net --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839
+```
+
 2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <DISTRIBUTION> main` into `/etc/apt/sources.list`
-where `<DISTRIBUTION>` is the codename of your distributions e.g.`focal`,`bionic`,`buster`.
+   where `<DISTRIBUTION>` is the codename of your distributions e.g.`focal`,`bionic`,`buster`.
 
 To add our RPM package repositories you need to download our [.repo configuration file](https://rpms.libelektra.org/fedora-33/libelektra.repo) and add it to yum/dnf.
 
@@ -161,7 +164,6 @@ dnf install libelektra5-all
 
 For more available packages, further instructions on how to add our repositories or instructions on how to use our master built packages, please refer to our [install documentation](../INSTALL.md). _(Robert Sowula)_
 
-
 ### Cleanup
 
 We removed the `ini` plugin (superseded by the TOML plugin), the `null` plugin (superseded by the base64 plugin) and the `tcl` plugin _(Markus Raab, Philipp Gackstatter)_
@@ -173,7 +175,7 @@ The SO version was bumped from 4 to 5 due to the breaking changes.
 The package names which consist of the SO Version also changed from libelektra4\* to libelektra5\*.
 If you used our previous repository with master built packages, please make sure to migrate to our new package repositories described in our [install documentation](../INSTALL.md).
 
-The API, including the Java bindings, are still work in progress in the 0.9.* series. Therefore the Java bindings version was also bumped from 4 to 5. _(Robert Sowula)_
+The API, including the Java bindings, are still work in progress in the 0.9.\* series. Therefore the Java bindings version was also bumped from 4 to 5. _(Robert Sowula)_
 
 ## Plugins
 
