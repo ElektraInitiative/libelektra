@@ -35,7 +35,7 @@ You can also read the news [on our website](https://www.libelektra.org/news/0.9.
 
 - Important Changes to Keynames
 - Debian and Fedora Packaging with CPack
-- <<HIGHLIGHT3>>
+- Package Repositories
 
 <a id="br-1"></a>
 
@@ -124,14 +124,56 @@ kdb upgrade pr3555 values
 
 ### Debian and Fedora Packaging with CPack
 
-- We are now using CPack to generate modular Debian and Ubuntu packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specifc dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
-- We now also generate RPM packages for Fedora. _(Robert Sowula)_
+We are now using CPack to generate modular Debian, Ubuntu (DEB) and Fedora (RPM) packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specific dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
 
-### <<HIGHLIGHT3>>
+### Package Repositories
+
+We now provide released and master built DEB and RPM packages in our own repositories.
+
+DEB packages are available for following distributions:
+- Debian Buster
+- Ubuntu Bionic
+- Ubuntu Focal
+
+RPM packages are available for Fedora 33.
+
+
+#### Installation of latest released packages
+
+To add our DEB package repositories following steps need to be done:
+1. First, you need to obtain the repository key:
+  ```sh
+  sudo apt-key adv --keyserver keys.gnupg.net --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839
+  ```
+2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <DISTRIBUTION> main` into `/etc/apt/sources.list`
+where `<DISTRIBUTION>` is the codename of your distributions e.g.`focal`,`bionic`,`buster`.
+
+To add our RPM package repositories you need to download our [.repo configuration file](https://rpms.libelektra.org/fedora-33/libelektra.repo) and add it to yum/dnf.
+
+To get all packaged plugins, bindings and tools install:
+
+```sh
+# For Debian based distributions
+apt-get install libelektra5-all
+# For Fedora based distributions
+dnf install libelektra5-all
+```
+
+For more available packages, further instructions on how to add our repositories or instructions on how to use our master built packages, please refer to our [install documentation](../INSTALL.md). _(Robert Sowula)_
+
 
 ### Cleanup
 
 We removed the `ini` plugin (superseded by the TOML plugin), the `null` plugin (superseded by the base64 plugin) and the `tcl` plugin _(Markus Raab, Philipp Gackstatter)_
+
+### Version Bump
+
+The SO version was bumped from 4 to 5 due to the breaking changes.
+
+The package names which consist of the SO Version also changed from libelektra4\* to libelektra5\*.
+If you used our previous repository with master built packages, please make sure to migrate to our new package repositories described in our [install documentation](../INSTALL.md).
+
+The API, including the Java bindings, are still work in progress in the 0.9.* series. Therefore the Java bindings version was also bumped from 4 to 5. _(Robert Sowula)_
 
 ## Plugins
 
@@ -296,10 +338,6 @@ you up to date with the multi-language support provided by Elektra.
 - We refactored shared code between pipelines into a [Jenkins Shared Library](https://github.com/ElektraInitiative/jenkins-library). _(Robert Sowula)_
 - The Main and Release Pipeline now creates packages for Debian Buster, Ubuntu Bionic, Ubuntu Focal and Fedora-33. These packages are also installed and automatically tested before they are published. To install these packages, please refer to our [Install documentation](../INSTALL.md). _(Robert Sowula)_
 - We updated our Release Pipeline to push changes directly to our git repositories. _(Robert Sowula)_
-
-### Package Repositories
-
-- We now provide release and unstable (master built) packages in our own repositories for Debian Buster, Ubuntu Bionic, Ubuntu Focal and Fedora-33. _(Robert Sowula)_
 
 ### Travis
 

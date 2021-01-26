@@ -74,7 +74,7 @@ stage('Test packages') {
   parallel generateInstalledPackagesTestStages()
 }
 
-// Pause pipeline and wait for approval to run publishsing steps
+// Pause pipeline and wait for approval to run publishing steps
 input(message: 'Publish Release?', ok: 'Yes')
 
 stage('Publish') {
@@ -414,11 +414,11 @@ def testInstalledPackage(stageName, image) {
  * Publish changes and artifacts
  *
  * @param correspondingReleaseStageName corresponding name of the test stage in which artifcats
- *                                     necessaryfor this stage have been generated
+ *                                      necessary for this stage have been generated
  * @param context filepath under which packages are located
  * @param repoName name of the package repository
  * @param repoPrefix prefix of the package repository
- * @param publishPackagesFun Closure that publishes packages to a repository
+ * @param publishPackagesFun closure that publishes packages to a repository
  * @param packageRevision revision number of the package
  */
 def publish(correspondingReleaseStageName, context, repoName,
