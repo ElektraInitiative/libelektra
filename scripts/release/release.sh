@@ -43,12 +43,12 @@ run_updates() {
 	# regenerate dot of plugins
 	$SRC_DIR/scripts/dev/draw-all-plugins 2> $BASE_DIR/$VERSION/draw-all-plugins.error > $BASE_DIR/$VERSION/draw-all-plugins
 	git add $SRC_DIR/doc/images/plugins.*
-	git commit -a -m "Regenerate dot of plugins for release ${VERSION}"
+	git commit -a -m "release: regenerate plugins overview picture"
 
 	# update info status
 	cd $SRC_DIR
 	$SCRIPTS_DIR/dev/update-infos-status 2> $BASE_DIR/$VERSION/update-infos-status.error > $BASE_DIR/$VERSION/update-infos-status
-	git commit -a -m "Update plugin info status for release ${VERSION}"
+	git commit -a -m "release: update plugin info status"
 
 	# run link checker
 	cd $BUILD_DIR
@@ -72,7 +72,7 @@ update_debian_changelog() {
 	dch --newversion $PVERSION "New upstream version."
 	dch --release $PVERSION "New upstream version"
 	git add debian/changelog
-	git commit -m "Update debian/changelog for release $PVERSION"
+	git commit -m "release: update debian/changelog"
 }
 
 update_fedora_changelog() {
@@ -81,7 +81,7 @@ update_fedora_changelog() {
 	cd $PACKAGING_DIR/fedora
 	./update-rpm-changelog.sh -v "$PVERSION"
 	git add changelog
-	git commit -m "Update fedora/changelog for release $PVERSION"
+	git commit -m "release: update fedora/changelog"
 }
 
 export_git_log() {
