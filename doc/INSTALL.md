@@ -22,11 +22,11 @@ For the following Linux distributions and package managers 0.8 packages are avai
 For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
 Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
 
-We also provide latest releases (stable) and latest builds from master (unstable) in our repositories:
+We also provide latest releases and latest builds from master (suite postfixed with `-unstable`) in our repositories:
 
 ### Debian/Ubuntu
 
-We provide repositories for latest releases (stable) and latest builds from master (unstable) for following Debian-based distributions:
+We provide repositories for latest releases and latest builds from master (suite postfixed with `-unstable`) for following Debian-based distributions:
 
 - Debian Buster
 - Ubuntu Focal
@@ -36,8 +36,8 @@ To use our stable repositories with our latest releases, following steps need to
 
 1. Run `sudo apt-key adv --keyserver keys.gnupg.net --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839` to obtain the key.
 
-2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <DISTRIBUTION> main` into `/etc/apt/sources.list`
-   where `<DISTRIBUTION>` is the Codename of your distributions e.g.`focal`,`bionic`,`buster`, etc.
+2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE> main` into `/etc/apt/sources.list`
+   where `<DISTRIBUTION>` and `<SUITE>` is the codename of your distributions e.g.`focal`,`bionic`,`buster`, etc.
 
 This can also be done using:
 
@@ -55,9 +55,9 @@ sudo apt-get install software-properties-common apt-transport-https
 sudo add-apt-repository "deb https://debs.libelektra.org/focal focal main"
 ```
 
-If you would like to use the latest builds of master, append `-unstable` to `<DISTRIBUTION>`.
+If you would like to use the latest builds of master, append `-unstable` to `<SUITE>`.
 
-The `etc/apt/source.list` entry must look like following: `deb https://debs.libelektra.org/<DISTRIBUTION> <DISTRIBUTION>-unstable main`
+The `etc/apt/source.list` entry must look like following: `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE>-unstable main`
 
 E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
 
@@ -65,9 +65,9 @@ E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
 
 ### Fedora
 
-We also provide repositories for latest releases (stable) and latest builds from master (unstable) for Fedora 33.
+We provide repositories for latest releases and latest builds from master (suite postfixed with `-unstable`) for Fedora 33.
 
-For the stable repository:
+For our stable repository with our latest releases:
 
 ```sh
 wget https://rpms.libelektra.org/fedora-33/libelektra.repo -O libelektra.repo;
@@ -81,7 +81,7 @@ Or alternatively you can use dnf to add this repo:
 dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33/libelektra.repo
 ```
 
-For our latest builds from master append `-unstable` to the distribution name:
+For our latest builds from master append `-unstable` to the suite name:
 
 ```sh
 wget https://rpms.libelektra.org/fedora-33-unstable/libelektra.repo -O libelektra.repo;
