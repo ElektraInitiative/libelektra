@@ -83,7 +83,8 @@ function (add_plugintest testname)
 			LINK_PLUGIN
 			ENVIRONMENT
 			TIMEOUT
-			WORKING_DIRECTORY)
+			WORKING_DIRECTORY
+			EXTRA_EXECUTABLES)
 
 		cmake_parse_arguments (
 			ARG
@@ -125,6 +126,7 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_TEST_LINK_ELEKTRA)
 		restore_variable (${PLUGIN_NAME} ARG_ENVIRONMENT)
 		restore_variable (${PLUGIN_NAME} ARG_TIMEOUT)
+		restore_variable (${PLUGIN_NAME} ARG_EXTRA_EXECUTABLES)
 
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
 
@@ -179,6 +181,13 @@ function (add_plugintest testname)
 				TARGETS ${testexename}
 				DESTINATION "${TARGET_TOOL_EXEC_FOLDER}"
 				COMPONENT elektra-tests)
+			foreach (ee ${ARG_EXTRA_EXECUTABLES})
+				install (
+					TARGETS ${ee}
+					DESTINATION "${TARGET_TOOL_EXEC_FOLDER}"
+					COMPONENT elektra-tests)
+			endforeach (ee ${ARG_EXTRA_EXECUTABLES})
+
 			if (ARG_INSTALL_TEST_DATA)
 				install (
 					DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${testname}"
@@ -232,7 +241,8 @@ function (add_plugintest testname)
 			set_tests_properties (${testexename} PROPERTIES TIMEOUT "${ARG_TIMEOUT}")
 		endif (ARG_TIMEOUT)
 
-		set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib" "${ARG_ENVIRONMENT}")
+		set_property (TEST ${testexename} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib"
+							   "KDB_TEST_BIN_DIR=${CMAKE_BINARY_DIR}/bin" "${ARG_ENVIRONMENT}")
 
 		if (ARG_MEMLEAK)
 			set_property (TEST ${testexename} PROPERTY LABELS memleak)

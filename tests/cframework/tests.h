@@ -410,6 +410,7 @@ int compare_line_files (const char * filename, const char * genfilename);
 int compare_regex_to_line_files (const char * filename, const char * genfilename);
 
 char * srcdir_file (const char * fileName);
+char * bindir_file (const char * fileName);
 const char * elektraFilename (void);
 void elektraUnlink (const char * filename);
 

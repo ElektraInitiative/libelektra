@@ -40,6 +40,7 @@ int nbTest;
 
 char file[KDB_MAX_PATH_LENGTH];
 char srcdir[KDB_MAX_PATH_LENGTH + 1];
+char bindir[KDB_MAX_PATH_LENGTH + 1];
 
 char * tmpfilename;
 char * tempHome;
@@ -94,6 +95,16 @@ int init (int argc, char ** argv)
 	fd = mkstemp (tmpfilename);
 	succeed_if (fd != -1, "mkstemp failed");
 	close (fd);
+
+	const char * binpath = getenv ("KDB_TEST_BIN_DIR");
+	if (binpath != NULL)
+	{
+		strncpy (bindir, binpath, sizeof (bindir) - 1);
+	}
+	else
+	{
+		strncpy (bindir, BUILTIN_EXEC_FOLDER, sizeof (bindir) - 1);
+	}
 
 	return 0;
 }
@@ -272,6 +283,16 @@ int compare_files (const char * filename)
 char * srcdir_file (const char * fileName)
 {
 	strcpy (file, srcdir);
+	strcat (file, "/");
+	strcat (file, fileName);
+	return file;
+}
+
+/* return file name in srcdir.
+ * No bound checking on file size, may overflow. */
+char * bindir_file (const char * fileName)
+{
+	strcpy (file, bindir);
 	strcat (file, "/");
 	strcat (file, fileName);
 	return file;

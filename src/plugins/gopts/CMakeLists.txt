@@ -41,12 +41,12 @@ if (gopts_source)
 		add_executable (elektra-gopts-testapp "${CMAKE_CURRENT_SOURCE_DIR}/testapp.c" ${TEST_SOURCES})
 		target_link_elektra (elektra-gopts-testapp elektra-core elektra-invoke elektra-opts)
 
-		set (TESTAPP_PATH "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/elektra-gopts-testapp")
+		set (TESTAPP_NAME "elektra-gopts-testapp")
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/config.c.in" "${CMAKE_CURRENT_BINARY_DIR}/config.c" @ONLY)
 
 		add_plugintest (
 			gopts
-			INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR}
+			INCLUDE_DIRECTORIES ${CMAKE_CURRENT_BINARY_DIR} EXTRA_EXECUTABLES elektra-gopts-testapp
 			TIMEOUT 240)
 
 		if (BUILD_SHARED)

@@ -64,7 +64,7 @@ static void test_basics (bool directFile)
 	}
 	else
 	{
-		conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/app", KEY_VALUE, bindir_file (TESTAPP_NAME), KEY_END), KS_END);
 	}
 
 	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to checkConf was not successful");
@@ -101,7 +101,7 @@ static void test_newfile (bool directFile)
 	}
 	else
 	{
-		conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/app", KEY_VALUE, bindir_file (TESTAPP_NAME), KEY_END), KS_END);
 	}
 
 	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to checkConf was not successful");
@@ -138,7 +138,7 @@ static void test_add (bool directFile)
 	}
 	else
 	{
-		conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/app", KEY_VALUE, bindir_file (TESTAPP_NAME), KEY_END), KS_END);
 	}
 
 	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to checkConf was not successful");
@@ -192,7 +192,7 @@ static void test_edit (bool directFile)
 	}
 	else
 	{
-		conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/app", KEY_VALUE, bindir_file (TESTAPP_NAME), KEY_END), KS_END);
 	}
 
 	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to checkConf was not successful");
@@ -249,7 +249,7 @@ static void test_remove (bool directFile)
 	}
 	else
 	{
-		conf = ksNew (2, keyNew ("/app", KEY_VALUE, TESTAPP_PATH, KEY_END), KS_END);
+		conf = ksNew (2, keyNew ("/app", KEY_VALUE, bindir_file (TESTAPP_NAME), KEY_END), KS_END);
 	}
 
 	succeed_if (elektraSpecloadCheckConf (parentKey, conf) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "call to checkConf was not successful");
