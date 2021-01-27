@@ -1092,7 +1092,7 @@ def buildPackage(stageName, image, repoName, repoPrefix, installImage,
           // executed in a nested node, causing the current node to wait for the
           // stage on the other node to complete.
             withDockerEnv.withDockerEnvWithoutNode(installImage) {
-              sh "kdb run_all || true" // TODO: remove `|| true` after specload and gopts tests are working
+              sh "kdb run_all"
             }
           }
           dir("build/package") {

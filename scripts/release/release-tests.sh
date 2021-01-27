@@ -3,7 +3,7 @@
 # @brief Straces kdb, runs tests and stores logs
 
 # quit with error if any command fails
-# set -ex # TODO: uncomment if gopts and quickdump tests are fixed
+set -ex
 
 BASE_DIR=$1
 VERSION=$2
