@@ -15,6 +15,7 @@ commands:
   - &build cmake --build "$BUILD_DIR"
   - &install output="$(cmake --build "$BUILD_DIR" --target install 2>&1)" || printf '%s' "$output"
   - &run_tests | # Run tests
+    brew services list
     if [ "$ENABLE_ASAN" = 'ON' ]; then
       cmake --build "$BUILD_DIR" --target run_nocheckshell
     else
@@ -159,6 +160,7 @@ mac_task:
       brew tap homebrew/services
       brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
       brew services start dbus
+      brew services list
     - | # Install Python
       brew install python@3.8 || brew upgrade python@3.8
       export PATH="/usr/local/opt/python@3.8/bin:$PATH"
