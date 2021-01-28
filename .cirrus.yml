@@ -118,10 +118,7 @@ mac_task:
 
   install_script:
     - | # Install Homebrew formulas
-      brew update
       brew install openjdk
-      brew install antlr
-      brew install antlr4-cpp-runtime
       brew install augeas
       brew install bison
       brew install boost
