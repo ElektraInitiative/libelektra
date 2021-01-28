@@ -24,8 +24,8 @@ commands:
       cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
     fi
 
-bsd_task:
-  matrix:
+# bsd_task:
+#   matrix:
 
     # - name: 😈 FreeBSD 11
     #   freebsd_instance:
@@ -41,38 +41,38 @@ bsd_task:
     #   env:
     #     ENABLE_ASAN: ON
 
-  install_script:
-    - >
-      pkg install -y
-      bison
-      cmake
-      flex
-      git
-      libgit2
-      ninja
-      yajl
-      yaml-cpp
+  # install_script:
+  #   - >
+  #     pkg install -y
+  #     bison
+  #     cmake
+  #     flex
+  #     git
+  #     libgit2
+  #     ninja
+  #     yajl
+  #     yaml-cpp
 
-  script:
-    - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
-      set --
-      -DBINDINGS='ALL;-io_glib'
-      -DINSTALL_SYSTEM_FILES=ON
-      -DCMAKE_SKIP_INSTALL_RPATH=ON
-      -DCOMMON_FLAGS=-Werror
-      -DC_STD=-std=c11
-      -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-      -DPLUGINS='ALL'
-      -DTARGET_PLUGIN_FOLDER=''
-    - *print_cmake_options
-    - *generate
-    - *build
-    - *install
+  # script:
+  #   - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
+  #     set --
+  #     -DBINDINGS='ALL;-io_glib'
+  #     -DINSTALL_SYSTEM_FILES=ON
+  #     -DCMAKE_SKIP_INSTALL_RPATH=ON
+  #     -DCOMMON_FLAGS=-Werror
+  #     -DC_STD=-std=c11
+  #     -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+  #     -DPLUGINS='ALL'
+  #     -DTARGET_PLUGIN_FOLDER=''
+  #   - *print_cmake_options
+  #   - *generate
+  #   - *build
+  #   - *install
 
-  tests_script:
-    # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
-    - sudo mount -t fdescfs fdesc /dev/fd
-    - *run_tests
+  # tests_script:
+  #   # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
+  #   - sudo mount -t fdescfs fdesc /dev/fd
+  #   - *run_tests
 
 mac_task:
   env:
