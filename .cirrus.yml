@@ -24,55 +24,55 @@ commands:
       cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
     fi
 
-# bsd_task:
-#   matrix:
+bsd_task:
+  matrix:
 
-#     - name: 😈 FreeBSD 11
-#       freebsd_instance:
-#         image_family: freebsd-11-4
+    # - name: 😈 FreeBSD 11
+    #   freebsd_instance:
+    #     image_family: freebsd-11-4
 
-#     - name: 😈 FreeBSD 12
-#       freebsd_instance:
-#         image_family: freebsd-12-1
+    # - name: 😈 FreeBSD 12
+    #   freebsd_instance:
+    #     image_family: freebsd-12-1
 
-#     - name: 😈 ASAN
-#       freebsd_instance:
-#         image_family: freebsd-12-1
-#       env:
-#         ENABLE_ASAN: ON
+    # - name: 😈 ASAN
+    #   freebsd_instance:
+    #     image_family: freebsd-12-1
+    #   env:
+    #     ENABLE_ASAN: ON
 
-#   install_script:
-#     - >
-#       pkg install -y
-#       bison
-#       cmake
-#       flex
-#       git
-#       libgit2
-#       ninja
-#       yajl
-#       yaml-cpp
+  install_script:
+    - >
+      pkg install -y
+      bison
+      cmake
+      flex
+      git
+      libgit2
+      ninja
+      yajl
+      yaml-cpp
 
-#   script:
-#     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
-#       set --
-#       -DBINDINGS='ALL;-io_glib'
-#       -DINSTALL_SYSTEM_FILES=ON
-#       -DCMAKE_SKIP_INSTALL_RPATH=ON
-#       -DCOMMON_FLAGS=-Werror
-#       -DC_STD=-std=c11
-#       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-#       -DPLUGINS='ALL'
-#       -DTARGET_PLUGIN_FOLDER=''
-#     - *print_cmake_options
-#     - *generate
-#     - *build
-#     - *install
+  script:
+    - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
+      set --
+      -DBINDINGS='ALL;-io_glib'
+      -DINSTALL_SYSTEM_FILES=ON
+      -DCMAKE_SKIP_INSTALL_RPATH=ON
+      -DCOMMON_FLAGS=-Werror
+      -DC_STD=-std=c11
+      -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+      -DPLUGINS='ALL'
+      -DTARGET_PLUGIN_FOLDER=''
+    - *print_cmake_options
+    - *generate
+    - *build
+    - *install
 
-#   tests_script:
-#     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
-#     - sudo mount -t fdescfs fdesc /dev/fd
-#     - *run_tests
+  tests_script:
+    # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
+    - sudo mount -t fdescfs fdesc /dev/fd
+    - *run_tests
 
 mac_task:
   env:
@@ -91,7 +91,7 @@ mac_task:
 
     - name: 🍎 Clang ASAN
       osx_instance:
-        image: big-sur-xcode
+        image: catalina-xcode
       env:
         ASAN_OPTIONS: 'detect_leaks=1'
         BINDINGS: cpp
@@ -119,6 +119,8 @@ mac_task:
   install_script:
     - | # Install Homebrew formulas
       brew install openjdk
+      brew install antlr
+      brew install antlr4-cpp-runtime
       brew install augeas
       brew install bison
       brew install boost
@@ -156,7 +158,7 @@ mac_task:
     - | # Start D-Bus session bus
       brew tap homebrew/services
       brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
-      brew services start dbus
+      brew services restart dbus
     - | # Install Python
       brew install python@3.8 || brew upgrade python@3.8
       export PATH="/usr/local/opt/python@3.8/bin:$PATH"
@@ -319,4 +321,4 @@ mac_task:
 #         printf >&2 -- '%s' "$git_diff_output"
 #         printf >&2 -- '\n\n————————————————————————————————————————————————————————————\n\n'
 #         false
-      # fi
+#       fi
