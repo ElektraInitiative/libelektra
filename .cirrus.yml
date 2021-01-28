@@ -24,55 +24,55 @@ commands:
       cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
     fi
 
-bsd_task:
-  matrix:
+# bsd_task:
+#   matrix:
 
-    - name: 😈 FreeBSD 11
-      freebsd_instance:
-        image_family: freebsd-11-4
+#     - name: 😈 FreeBSD 11
+#       freebsd_instance:
+#         image_family: freebsd-11-4
 
-    - name: 😈 FreeBSD 12
-      freebsd_instance:
-        image_family: freebsd-12-1
+#     - name: 😈 FreeBSD 12
+#       freebsd_instance:
+#         image_family: freebsd-12-1
 
-    - name: 😈 ASAN
-      freebsd_instance:
-        image_family: freebsd-12-1
-      env:
-        ENABLE_ASAN: ON
+#     - name: 😈 ASAN
+#       freebsd_instance:
+#         image_family: freebsd-12-1
+#       env:
+#         ENABLE_ASAN: ON
 
-  install_script:
-    - >
-      pkg install -y
-      bison
-      cmake
-      flex
-      git
-      libgit2
-      ninja
-      yajl
-      yaml-cpp
+#   install_script:
+#     - >
+#       pkg install -y
+#       bison
+#       cmake
+#       flex
+#       git
+#       libgit2
+#       ninja
+#       yajl
+#       yaml-cpp
 
-  script:
-    - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
-      set --
-      -DBINDINGS='ALL;-io_glib'
-      -DINSTALL_SYSTEM_FILES=ON
-      -DCMAKE_SKIP_INSTALL_RPATH=ON
-      -DCOMMON_FLAGS=-Werror
-      -DC_STD=-std=c11
-      -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
-      -DPLUGINS='ALL'
-      -DTARGET_PLUGIN_FOLDER=''
-    - *print_cmake_options
-    - *generate
-    - *build
-    - *install
+#   script:
+#     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
+#       set --
+#       -DBINDINGS='ALL;-io_glib'
+#       -DINSTALL_SYSTEM_FILES=ON
+#       -DCMAKE_SKIP_INSTALL_RPATH=ON
+#       -DCOMMON_FLAGS=-Werror
+#       -DC_STD=-std=c11
+#       -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
+#       -DPLUGINS='ALL'
+#       -DTARGET_PLUGIN_FOLDER=''
+#     - *print_cmake_options
+#     - *generate
+#     - *build
+#     - *install
 
-  tests_script:
-    # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
-    - sudo mount -t fdescfs fdesc /dev/fd
-    - *run_tests
+#   tests_script:
+#     # Work around stalled process plugin and library problems on FreeBSD: https://issues.libelektra.org/2323
+#     - sudo mount -t fdescfs fdesc /dev/fd
+#     - *run_tests
 
 mac_task:
   env:
@@ -81,13 +81,13 @@ mac_task:
 
   matrix:
 
-    - name: 🍎 Clang
-      osx_instance:
-        image: catalina-xcode
-      env:
-        ENABLE_LOGGER: ON
-        TOOLS: ALL;web
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+    # - name: 🍎 Clang
+    #   osx_instance:
+    #     image: catalina-xcode
+    #   env:
+    #     ENABLE_LOGGER: ON
+    #     TOOLS: ALL;web
+    #     PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
     - name: 🍎 Clang ASAN
       osx_instance:
@@ -99,22 +99,22 @@ mac_task:
         TOOLS: kdb
         PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
-    - name: 🍎 FULL
-      osx_instance:
-        image: catalina-xcode
-      env:
-        BUILD_FULL: ON
-        BUILD_SHARED: OFF
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+    # - name: 🍎 FULL
+    #   osx_instance:
+    #     image: catalina-xcode
+    #   env:
+    #     BUILD_FULL: ON
+    #     BUILD_SHARED: OFF
+    #     PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
-    - name: 🍎 MMap
-      osx_instance:
-        image: catalina-xcode
-      env:
-        KDB_DEFAULT_STORAGE: mmapstorage
-        KDB_DB_FILE: default.mmap
-        KDB_DB_INIT: elektra.mmap
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+    # - name: 🍎 MMap
+    #   osx_instance:
+    #     image: catalina-xcode
+    #   env:
+    #     KDB_DEFAULT_STORAGE: mmapstorage
+    #     KDB_DB_FILE: default.mmap
+    #     KDB_DB_INIT: elektra.mmap
+    #     PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
   install_script:
     - | # Install Homebrew formulas
@@ -217,109 +217,109 @@ mac_task:
         false
       fi
 
-linux_task:
-  matrix:
+# linux_task:
+#   matrix:
 
-    - name: 🐧 Fedora
-      container:
-          dockerfile: scripts/docker/cirrus/fedora/Dockerfile
+#     - name: 🐧 Fedora
+#       container:
+#           dockerfile: scripts/docker/cirrus/fedora/Dockerfile
 
-  script:
-    - >
-      set --
-      -DBUILD_FULL=ON
-      -DBUILD_SHARED=ON
-      -DBUILD_STATIC=ON
-      -DENABLE_LOGGER=ON
-      -DENABLE_DEBUG=ON
-      -DBINDINGS='ALL'
-      -DPLUGINS='ALL'
-      -DTOOLS='ALL'
-      -DKDB_DB_SYSTEM="$CIRRUS_WORKING_DIR/system"
-      -DCMAKE_INSTALL_PREFIX="$CIRRUS_WORKING_DIR/install"
-    - *print_cmake_options
-    - *generate
-    - *build
-    - *install
+#   script:
+#     - >
+#       set --
+#       -DBUILD_FULL=ON
+#       -DBUILD_SHARED=ON
+#       -DBUILD_STATIC=ON
+#       -DENABLE_LOGGER=ON
+#       -DENABLE_DEBUG=ON
+#       -DBINDINGS='ALL'
+#       -DPLUGINS='ALL'
+#       -DTOOLS='ALL'
+#       -DKDB_DB_SYSTEM="$CIRRUS_WORKING_DIR/system"
+#       -DCMAKE_INSTALL_PREFIX="$CIRRUS_WORKING_DIR/install"
+#     - *print_cmake_options
+#     - *generate
+#     - *build
+#     - *install
 
-  tests_script:
-    - export PATH=$PATH:"$CIRRUS_WORKING_DIR/install/bin"
-    - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
-    - *run_tests
+#   tests_script:
+#     - export PATH=$PATH:"$CIRRUS_WORKING_DIR/install/bin"
+#     - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
+#     - *run_tests
 
-link_task:
-  matrix:
+# link_task:
+#   matrix:
 
-    - name: 🔗 Check
-      container:
-          dockerfile: scripts/docker/cirrus/arch/Dockerfile
+#     - name: 🔗 Check
+#       container:
+#           dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
-  clone_script: |
-    if [ -z "$CIRRUS_PR" ]; then
-      git clone --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git \
-                $CIRRUS_WORKING_DIR
-      git reset --hard $CIRRUS_CHANGE_IN_REPO
-    else
-      git clone https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
-      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
-      git config user.email "nobody@example.com"
-      git config user.name "nobody"
-      git merge --no-commit --no-ff $CIRRUS_CHANGE_IN_REPO
-    fi
+#   clone_script: |
+#     if [ -z "$CIRRUS_PR" ]; then
+#       git clone --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git \
+#                 $CIRRUS_WORKING_DIR
+#       git reset --hard $CIRRUS_CHANGE_IN_REPO
+#     else
+#       git clone https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+#       git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+#       git config user.email "nobody@example.com"
+#       git config user.name "nobody"
+#       git merge --no-commit --no-ff $CIRRUS_CHANGE_IN_REPO
+#     fi
 
-  script:
-    - >
-      set --
-      -DBUILD_FULL=OFF
-      -DBUILD_SHARED=OFF
-      -DBUILD_STATIC=OFF
-      -DBUILD_TESTING=OFF
-    - *generate
-    - cmake --build "$BUILD_DIR" 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
-    - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
+#   script:
+#     - >
+#       set --
+#       -DBUILD_FULL=OFF
+#       -DBUILD_SHARED=OFF
+#       -DBUILD_STATIC=OFF
+#       -DBUILD_TESTING=OFF
+#     - *generate
+#     - cmake --build "$BUILD_DIR" 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
+#     - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
 
-  tests_script:
-    - |
-      if test -s broken_links.txt; then
-        printf >&2 'Broken Links:\n'
-        printf >&2 '—————————————\n'
-        cat >&2 broken_links.txt
-        printf >&2 '—————————————\n'
-        false
-      fi
+#   tests_script:
+#     - |
+#       if test -s broken_links.txt; then
+#         printf >&2 'Broken Links:\n'
+#         printf >&2 '—————————————\n'
+#         cat >&2 broken_links.txt
+#         printf >&2 '—————————————\n'
+#         false
+#       fi
 
-docu_task:
-  matrix:
+# docu_task:
+#   matrix:
 
-    - name: 📚 Check
-      container:
-          dockerfile: scripts/docker/cirrus/arch/Dockerfile
+#     - name: 📚 Check
+#       container:
+#           dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
-  script:
-    - >
-      set --
-      -DBUILD_PDF=ON
-      -DPLUGINS='dump;list;resolver_fm_hpu_b;spec;sync;yajl'
-      -DTOOLS='ALL;web;website'
-    - *generate
-    - *build
+#   script:
+#     - >
+#       set --
+#       -DBUILD_PDF=ON
+#       -DPLUGINS='dump;list;resolver_fm_hpu_b;spec;sync;yajl'
+#       -DTOOLS='ALL;web;website'
+#     - *generate
+#     - *build
 
-  tests_script:
-    - |
-      git_diff_output="$(git diff -p 2>&1)"
-      if [ -n "$git_diff_output" ]; then
-        printf >&2 -- 'It looks like you modified a source file of a man page, but did not commit the updated man page.\n'
-        printf >&2 -- 'Please either:\n\n'
-        printf >&2 -- '- build the man pages with `ronn` and commit the result, or\n'
-        printf >&2 -- '- use the `patch` command after this message to update the man pages.\n\n'
-        printf >&2 -- 'For the second option, please\n\n'
-        printf >&2 -- '1. copy the lines between the long dashes (`—`), and\n'
-        printf >&2 -- '2. store them in a file called `man.patch` **in the root of the repository**.\n\n'
-        printf >&2 -- 'After that use the command:\n\n'
-        printf >&2 -- '\tcat man.patch | patch -p1\n\n'
-        printf >&2 -- 'to apply the changes.\n'
-        printf >&2 -- '\n\n————————————————————————————————————————————————————————————\n\n'
-        printf >&2 -- '%s' "$git_diff_output"
-        printf >&2 -- '\n\n————————————————————————————————————————————————————————————\n\n'
-        false
-      fi
+#   tests_script:
+#     - |
+#       git_diff_output="$(git diff -p 2>&1)"
+#       if [ -n "$git_diff_output" ]; then
+#         printf >&2 -- 'It looks like you modified a source file of a man page, but did not commit the updated man page.\n'
+#         printf >&2 -- 'Please either:\n\n'
+#         printf >&2 -- '- build the man pages with `ronn` and commit the result, or\n'
+#         printf >&2 -- '- use the `patch` command after this message to update the man pages.\n\n'
+#         printf >&2 -- 'For the second option, please\n\n'
+#         printf >&2 -- '1. copy the lines between the long dashes (`—`), and\n'
+#         printf >&2 -- '2. store them in a file called `man.patch` **in the root of the repository**.\n\n'
+#         printf >&2 -- 'After that use the command:\n\n'
+#         printf >&2 -- '\tcat man.patch | patch -p1\n\n'
+#         printf >&2 -- 'to apply the changes.\n'
+#         printf >&2 -- '\n\n————————————————————————————————————————————————————————————\n\n'
+#         printf >&2 -- '%s' "$git_diff_output"
+#         printf >&2 -- '\n\n————————————————————————————————————————————————————————————\n\n'
+#         false
+      # fi
