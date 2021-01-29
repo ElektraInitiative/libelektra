@@ -172,6 +172,9 @@ mac_task:
     - | # Install JavaScript packages
       npm install dredd --global
       npm install --global prettier@1.19.1
+    - | # test dbus
+      dbus-test-tool echo --session --name=com.$USER.echo &
+      dbus-send --session --print-reply --dest=com.$USER.echo /my/test/object my.test.service.TestInterface.TestMethod string:'testdata3'
 
   script:
     - | # Use latest version of LLVM to translate Elektra
@@ -205,6 +208,7 @@ mac_task:
     # Remove files produced by `ronn`, since `testscr_check_formatting` only checks the formatting, if the stating area is clean
     - git checkout .
     - export PATH=$PATH:"$CIRRUS_WORKING_DIR/$INSTALL_DIR/bin:/usr/local/opt/llvm/bin"
+    - dbus-send --session --print-reply --dest=com.$USER.echo /my/test/object my.test.service.TestInterface.TestMethod string:'testdata3'
     - *run_tests
     - | # Uninstall Elektra
       output="$(cmake --build "$BUILD_DIR" --target uninstall 2>&1)" || printf '%s' "$output"
