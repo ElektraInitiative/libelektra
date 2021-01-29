@@ -91,7 +91,7 @@ mac_task:
 
     - name: 🍎 Clang ASAN
       osx_instance:
-        image: catalina-xcode
+        image: big-sur-base
       env:
         ASAN_OPTIONS: 'detect_leaks=1'
         BINDINGS: cpp
