@@ -91,7 +91,7 @@ mac_task:
 
     - name: 🍎 Clang ASAN
       osx_instance:
-        image: big-sur-base
+        image: catalina-xcode
       env:
         ASAN_OPTIONS: 'detect_leaks=1'
         BINDINGS: cpp
@@ -191,7 +191,9 @@ mac_task:
       mkdir -p ~/Library/LaunchAgents
       ln -sfv /usr/local/opt/dbus/*.plist ~/Library/LaunchAgents
       launchctl load ~/Library/LaunchAgents/org.freedesktop.dbus-session.plist
+      launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
     - | # test dbus
+      launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
       dbus-test-tool echo --session --name=com.$USER.echo &
       dbus-send --session --print-reply --dest=com.$USER.echo /my/test/object my.test.service.TestInterface.TestMethod string:'testdata3'
 
