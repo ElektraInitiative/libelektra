@@ -116,65 +116,81 @@ mac_task:
     #     KDB_DB_INIT: elektra.mmap
     #     PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
 
+  # install_script:
+  #   - | # Install Homebrew formulas
+  #     brew install openjdk
+  #     brew install antlr
+  #     brew install antlr4-cpp-runtime
+  #     brew install augeas
+  #     brew install bison
+  #     brew install boost
+  #     brew install dbus
+  #     brew install discount
+  #     brew install doxygen
+  #     brew install flex
+  #     brew install glib
+  #     brew install go
+  #     brew install gpgme
+  #     brew install graphviz
+  #     brew install libev
+  #     brew install libgcrypt
+  #     brew install libgit2
+  #     brew install libuv
+  #     brew install llvm
+  #     brew install lua
+  #     brew install maven
+  #     brew install moreutils
+  #     brew install ninja
+  #     brew install oclint/formulae/oclint
+  #     brew install npm
+  #     brew install openssl
+  #     brew install pkg-config
+  #     brew install qt
+  #     brew install shfmt
+  #     brew install swig
+  #     brew install tree
+  #     brew install xerces-c
+  #     brew install yajl
+  #     brew install yaml-cpp
+  #     brew install zeromq
+  #   - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
+  #     brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
+  #   # - | # Start D-Bus session bus
+  #   #   brew tap homebrew/services
+  #   #   brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
+  #   #   brew services restart dbus
+  #   - | # Start dbus session bus manually
+  #     ls -la /Users
+  #     ls -la ~/Library/
+  #     mkdir -p ~/Library/LaunchAgents
+  #     ln -sfv /usr/local/opt/dbus/*.plist ~/Library/LaunchAgents
+  #     launchctl load ~/Library/LaunchAgents/org.freedesktop.dbus-session.plist
+  #   - | # Install Python
+  #     brew install python@3.8 || brew upgrade python@3.8
+  #     export PATH="/usr/local/opt/python@3.8/bin:$PATH"
+  #   - | # Install Python packages
+  #     pip3 install cmake-format[yaml]==0.6.3
+  #   - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
+  #     brew install ruby
+  #     export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"
+  #   - | # Install Ruby gems
+  #     sudo gem install ronn test-unit --no-document
+  #   - | # Install JavaScript packages
+  #     npm install dredd --global
+  #     npm install --global prettier@1.19.1
+  #   - | # test dbus
+  #     dbus-test-tool echo --session --name=com.$USER.echo &
+  #     dbus-send --session --print-reply --dest=com.$USER.echo /my/test/object my.test.service.TestInterface.TestMethod string:'testdata3'
+
   install_script:
     - | # Install Homebrew formulas
-      brew install openjdk
-      brew install antlr
-      brew install antlr4-cpp-runtime
-      brew install augeas
-      brew install bison
-      brew install boost
       brew install dbus
-      brew install discount
-      brew install doxygen
-      brew install flex
-      brew install glib
-      brew install go
-      brew install gpgme
-      brew install graphviz
-      brew install libev
-      brew install libgcrypt
-      brew install libgit2
-      brew install libuv
-      brew install llvm
-      brew install lua
-      brew install maven
-      brew install moreutils
-      brew install ninja
-      brew install oclint/formulae/oclint
-      brew install npm
-      brew install openssl
-      brew install pkg-config
-      brew install qt
-      brew install shfmt
-      brew install swig
-      brew install tree
-      brew install xerces-c
-      brew install yajl
-      brew install yaml-cpp
-      brew install zeromq
-    - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
-      brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
-    # - | # Start D-Bus session bus
-    #   brew tap homebrew/services
-    #   brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
-    #   brew services restart dbus
     - | # Start dbus session bus manually
+      ls -la /Users
+      ls -la ~/Library/
+      mkdir -p ~/Library/LaunchAgents
       ln -sfv /usr/local/opt/dbus/*.plist ~/Library/LaunchAgents
       launchctl load ~/Library/LaunchAgents/org.freedesktop.dbus-session.plist
-    - | # Install Python
-      brew install python@3.8 || brew upgrade python@3.8
-      export PATH="/usr/local/opt/python@3.8/bin:$PATH"
-    - | # Install Python packages
-      pip3 install cmake-format[yaml]==0.6.3
-    - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
-      brew install ruby
-      export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"
-    - | # Install Ruby gems
-      sudo gem install ronn test-unit --no-document
-    - | # Install JavaScript packages
-      npm install dredd --global
-      npm install --global prettier@1.19.1
     - | # test dbus
       dbus-test-tool echo --session --name=com.$USER.echo &
       dbus-send --session --print-reply --dest=com.$USER.echo /my/test/object my.test.service.TestInterface.TestMethod string:'testdata3'
