@@ -69,8 +69,11 @@ If no release critical problems are found during testing, continue.
   - Select "Paused for Input" on the side menu
   - On the prompt "Publish Release?" select "Yes" to publish the artifacts
 - Verify that debs.libelektra.org and rpms.libelektra.org contain the released packages.
-- Clean the git statistics in git/statistics and add them to the release notes (formatting, remove uninteresting data)
-- Add hash sums to release notes and run linkchecker to verify that all download links of the current release are working:
+- Complete release notes:
+  - Clean the git statistics in git/statistics and add them to the release notes (formatting, remove uninteresting data)
+  - Add download links to release notes (api-docu, release tarball)
+  - Add hash sums to release notes
+- Run linkchecker to verify that all download links of the current release are working:
   mkdir build && cd build && make html && ../scripts/link-checker external-links.txt
 - Wait for master build to finish and verify website is correct
 
