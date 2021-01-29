@@ -155,10 +155,13 @@ mac_task:
       brew install zeromq
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
-    - | # Start D-Bus session bus
-      brew tap homebrew/services
-      brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
-      brew services restart dbus
+    # - | # Start D-Bus session bus
+    #   brew tap homebrew/services
+    #   brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
+    #   brew services restart dbus
+    - | # Start dbus session bus manually
+      ln -sfv /usr/local/opt/dbus/*.plist ~/Library/LaunchAgents
+      launchctl load ~/Library/LaunchAgents/org.freedesktop.dbus-session.plist
     - | # Install Python
       brew install python@3.8 || brew upgrade python@3.8
       export PATH="/usr/local/opt/python@3.8/bin:$PATH"
