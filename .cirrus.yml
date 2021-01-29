@@ -165,7 +165,7 @@ mac_task:
     - | # Start D-Bus session bus
       brew tap homebrew/services
       brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
-      brew services start dbus
+      brew services restart dbus
     - | # Install Python
       brew install python@3.8 || brew upgrade python@3.8
       export PATH="/usr/local/opt/python@3.8/bin:$PATH"
