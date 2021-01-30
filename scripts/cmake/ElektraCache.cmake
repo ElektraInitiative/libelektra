@@ -403,6 +403,7 @@ mark_as_advanced (
 	XercesC_DIR
 	OPENSSL_INCLUDE_DIR
 	LUA_EXECUTABLE # The following settings are internal (not to be changed by users):
+	FEDORA
 	CARGO_EXECUTABLE
 	DIFF_COMMAND
 	GLib_CONFIG_INCLUDE_DIR
@@ -441,6 +442,7 @@ mark_as_advanced (
 	ADDED_DIRECTORIES
 	ADDED_PLUGINS
 	REMOVED_PLUGINS
+	REMOVED_TOOLS
 	ADDED_BINDINGS
 	LIBGCRYPTCONFIG_EXECUTABLE
 	jna
