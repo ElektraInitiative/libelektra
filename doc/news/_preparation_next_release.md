@@ -128,7 +128,7 @@ A big thanks to _(Robert Sowula)_ for introducing CPack and creating the reposit
 
 #### Short Installation Guide
 
-To add our DEB package repositories following steps need to be done:
+##### DEB packages
 
 1. First, you need to obtain the repository key:
 
@@ -143,7 +143,9 @@ sudo apt-key adv --keyserver keys.gnupg.net --recv-keys F26BBE02F3C315A19BF1F791
 apt-get install libelektra5-all
 ```
 
-2. To add our RPM package repositories you need to download our [.repo configuration file](https://rpms.libelektra.org/fedora-33/libelektra.repo) and add it to yum/dnf.
+##### RPM packages
+
+Download our [.repo configuration file](https://rpms.libelektra.org/fedora-33/libelektra.repo) and add it to yum/dnf.
 
 To get all packaged plugins, bindings and tools install:
 
