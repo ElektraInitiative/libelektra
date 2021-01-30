@@ -2,15 +2,6 @@
 
 This release did not happen yet.
 
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial (checked by
-shell recorder) or asciinema for highlighted items.
-
-Please add your name at the end of every contribution.
-**Syntax:** _(your name)_
-
 <<`scripts/generate-news-entry`>>
 
 We are proud to release Elektra 0.9.<<VERSION>>.
@@ -23,23 +14,24 @@ For more information, visit [https://libelektra.org](https://libelektra.org).
 
 You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
-## Breaking Changes
-
-- The structure of key names has been changed. [more info](#br-1) <br/>
-  **This change breaks mountpoint configurations.**
-  Please follow the upgrade procedure [below](#mountpoint-upgrade).
-- The backend fallback procedure introduced in Elektra 0.8.15 has been removed. [more info](#br-2)
-- The structure of the `warnings` metadata array has been changed. [more info](#br-3)
-
 ## Highlights
 
-- Important Changes to Keynames
-- Debian and Fedora Packaging with CPack
-- Package Repositories
+- Important Breaking Changes to Keynames et al. _[more info](#hl-1)_
+- Debian and Fedora Packaging with CPack _[more info](#hl-2)_
+
+### Important Breaking Changes
+
+<a id="hl-1"></a>
+
+- The structure of key names has been changed. [more info](#br-1) _(Klemens Böswirth)_ <br/>
+  **This change breaks mountpoint configurations.**
+  Please follow the upgrade procedure [below](#mountpoint-upgrade).
+- The backend fallback procedure introduced in Elektra 0.8.15 has been removed and the structure of the `warnings` metadata array has been changed. [more info](#br-2) _(Klemens Böswirth)_
+- We removed the `ini` plugin (superseded by the TOML plugin), the `null` plugin (superseded by the base64 plugin) and the `tcl` plugin _(Markus Raab, Philipp Gackstatter)_
+
+#### Important Changes to Keynames
 
 <a id="br-1"></a>
-
-### Important Changes to Keynames
 
 There have been significant changes to Elektra's Keynames.
 
@@ -47,7 +39,7 @@ There have been significant changes to Elektra's Keynames.
   So instead of `system/elektra/version` you have to use `system:/elektra/version`.
 
 - The second big change is to array elements.
-  From now on `keyNew ("/array/#10", KEY_END)` will create a `Key` with name `/array/#_10`, to make arrays more user-friendly while preserving numerical ordering.
+  From now on `keyNew ("/array/#10", KEY_END)` will create a `Key` with name `/array/#_10`, to make arrays more user-friendly by preserving numerical ordering.
 
 - The whole internal implementation for `keySetName`, `keyAddName`, etc. has been completely rewritten.
   If you rely on specific behaviour of Elektra's Keynames and have already taken the two changes above into account, please refer to the newly created [Keyname documentation](../KEYNAMES.md) and [Python reference implementation](../../scripts/keynames.py).
@@ -80,12 +72,11 @@ There have been significant changes to Elektra's Keynames.
 
 - `keyGetFullName` et al. have been removed. The concept of a "full name (with owner)" no longer exists.
 
-Updates since initial PR: <!-- TODO: remove for release -->
-
-- Fix combining dot-dot parts and escapes in key names. _(Klemens Böswirth)_
-- Fix adding more than 10 warnings to a key. _(Klemens Böswirth)_
+A huge thanks to _(Klemens Böswirth)_ for doing these important changes and clean-ups.
 
 #### Mountpoint upgrade
+
+<a id="mountpoint-upgrade"></a>
 
 The change to key names breaks existing mountpoint configurations.
 
@@ -106,39 +97,34 @@ The second instance, however, must be fixed or Elektra will be unusable.
 >
 > _You have been warned. Manually backup important data first._
 
-To fix both the `system:/elektra/mountpoints/*/mountpoint` values and the `system:/elektra/mountpoints/<MOUNTPOINT>` names, you can use the following command.
-
-<!-- FIXME (kodebach): implement `kdb upgrade` -->
+For the migration you can use the following commands:
 
 ```sh
-kdb upgrade pr3555 names values
-```
-
-If you just want to fix the `system:/elektra/mountpoints/*/mountpoint` values, but keep the old syntax for the mountpoint names, you can use this script:
-
-```sh
-kdb upgrade pr3555 values
+#! /usr/bin/env sh
+kdb export system:/elektra/mountpoints ni > mountpoints.ini
+sed -E 's~((^\[?|/mountpoint = )(user|system))((\\\\)?/)~\1:\4~g' mountpoints.ini > mountpoints_corrected.ini
+kdb mv -r system:/elektra/mountpoints system:/elektra/mountpoints-backup
+kdb import system:/elektra/mountpoints ni < mountpoints_corrected.ini
 ```
 
 > _Note:_ The original `system:/elektra/mountpoints` data will be moved to `system:/elektra/mountpoints-backup`
 
 ### Debian and Fedora Packaging with CPack
 
-We are now using CPack to generate modular Debian, Ubuntu (DEB) and Fedora (RPM) packages. This simplifies the packaging process and solves problems where a PR that introduces changes to installed files, fails. We can now also set distribution specific dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
+<a id="hl-2"></a>
 
-### Package Repositories
+We are now using CPack to generate modular Debian, Ubuntu (DEB) and Fedora (RPM) packages. This simplifies the packaging process and solves problems where a PR, which introduces changes to installed files, fails. We can now also set distribution specific dependencies with CPack, which is needed for some packages. _(Robert Sowula)_
 
-We now provide released and master built DEB and RPM packages in our own repositories.
+We now provide DEB and RPM packages for releases and for every commit on master in our own repositories using CPack for:
 
-DEB packages are available for following distributions:
+- DEB packages for Debian Buster
+- DEB packages for Ubuntu Bionic
+- DEB packages for Ubuntu Focal
+- RPM packages for Fedora 33.
 
-- Debian Buster
-- Ubuntu Bionic
-- Ubuntu Focal
+A big thanks to _(Robert Sowula)_ for introducing CPack and creating the repositories.
 
-RPM packages are available for Fedora 33.
-
-#### Installation of latest released packages
+#### Short Installation Guide
 
 To add our DEB package repositories following steps need to be done:
 
@@ -149,33 +135,36 @@ sudo apt-key adv --keyserver keys.gnupg.net --recv-keys F26BBE02F3C315A19BF1F791
 ```
 
 2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <DISTRIBUTION> main` into `/etc/apt/sources.list`
-   where `<DISTRIBUTION>` is the codename of your distributions e.g.`focal`,`bionic`,`buster`.
+   where `<DISTRIBUTION>` is the codename of your distributions e.g. `focal`, `bionic` or `buster`.
 
-To add our RPM package repositories you need to download our [.repo configuration file](https://rpms.libelektra.org/fedora-33/libelektra.repo) and add it to yum/dnf.
+```sh
+apt-get install libelektra5-all
+```
+
+2. To add our RPM package repositories you need to download our [.repo configuration file](https://rpms.libelektra.org/fedora-33/libelektra.repo) and add it to yum/dnf.
 
 To get all packaged plugins, bindings and tools install:
 
 ```sh
-# For Debian based distributions
-apt-get install libelektra5-all
-# For Fedora based distributions
 dnf install libelektra5-all
 ```
 
-For more available packages, further instructions on how to add our repositories or instructions on how to use our master built packages, please refer to our [install documentation](../INSTALL.md). _(Robert Sowula)_
+For more available packages, further instructions on how to add our repositories or instructions on how to use our master built packages, please refer to our [install documentation](../INSTALL.md).
 
-### Cleanup
+#### Version Bump
 
-We removed the `ini` plugin (superseded by the TOML plugin), the `null` plugin (superseded by the base64 plugin) and the `tcl` plugin _(Markus Raab, Philipp Gackstatter)_
+The 0.9.\* series of Elektra is for development of Elektra 1.0.
+Elektra 1.0 will be incompatible to 0.8 and as such, we need a SO version bump.
+We used this release to bump the SO version from 4 to 5 due to the breaking changes that are not visible in the API.
 
-### Version Bump
-
-The SO version was bumped from 4 to 5 due to the breaking changes.
+> Note, that within 0.9.\* we likely introduce further breaking changes but we will not bump the SO version again.
 
 The package names which consist of the SO Version also changed from libelektra4\* to libelektra5\*.
-If you used our previous repository with master built packages, please make sure to migrate to our new package repositories described in our [install documentation](../INSTALL.md).
+If you used our previous repository with master built packages, please make sure to migrate to our new package repositories described above or in our [install documentation](../INSTALL.md).
 
-The API, including the Java bindings, are still work in progress in the 0.9.\* series. Therefore the Java bindings version was also bumped from 4 to 5. _(Robert Sowula)_
+The version of the Java bindings version was also bumped from 4 to 5, although the API is also work in progress.
+
+A big thanks to _(Robert Sowula)_ for doing the necessary renamings.
 
 ## Plugins
 
@@ -207,49 +196,29 @@ The following section lists news about the [modules](https://www.libelektra.org/
 
 - The plugin now works (with and) requires [ANTLR `4.9`](https://github.com/antlr/antlr4/releases/tag/4.9). _(René Schwaiger)_
 
-### <<Plugin3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
 
 ### Compatibility
 
-- <a id="br-2"></a> We removed the fallback procedure introduced in Elektra 0.8.15 (using `KDB_DB_FILE` (`default.ecf`) for `system:/elektra`, if the bootstrap backend `KDB_DB_INIT` (`elektra.ecf`) isn't found).
+<a id="br-2"></a>
+
+- We removed the fallback procedure introduced in Elektra 0.8.15 (using `KDB_DB_FILE` (`default.ecf`) for `system:/elektra`, if the bootstrap backend `KDB_DB_INIT` (`elektra.ecf`) isn't found).
   If you still rely on this feature, either use `kdb upgrade-bootstrap` **before** upgrading, or manually extract `system:/elektra` into `elektra.ecf`.
-- <a id="br-3"></a> There was an internal update to how warnings are generated.
+- There was an internal update to how warnings are generated.
   For users this means that the `warnings` metadata now forms a proper array.
   Specifically, the first 100 warnings are stored below to the meta keys `warnings/#0`, `warnings/#1`, ..., `warnings/#9`, `warnings/#_10`, ..., `warnings/#_99`.
-  After that, warnings will wrap around, so the 101st warning will be stored as `warnings/#0`, no. 102 as `warnings/#1` etc.
-- <<TODO>>
+  After that, warnings will wrap around, so the 101st warning will be stored as `warnings/#0`, 102nd as `warnings/#1` etc.
 
 ### Core
 
 - `kdbSet` now properly handles, if the given `parentKey` is `NULL` or has read-only name, value or metadata. _(Klemens Böswirth)_
-- <<TODO>>
-- <<TODO>>
-
-### <<Library1>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library2>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Proposal
 
 - Removed `elektraKeyGetMetaKeySet` and moved `keySetStringF` to the hosts plugin. _(Philipp Gackstatter)_
 - Removed `ksPopAtCursor`. _(Philipp Gackstatter)_
-- <<TODO>>
 
 ## Bindings
 
@@ -273,52 +242,40 @@ you up to date with the multi-language support provided by Elektra.
 
 - Enable `__declspec` attributes for Ruby 3.0. _(Mihael Pranjić)_
 
-### <<Binding3>>
-
 ## Tools
 
-- <<TODO>>
-- <<TODO>>
 - The QtGUI was updated to be compatible with the new key name structure. _(Klemens Böswirth)_
 
 ## Scripts
 
 - We fixed the (possibly) infinitely running function `generate-random-string` in [check-env-dep](../../scripts/check-env-dep).
   _(René Schwaiger)_
-- <<TODO>>
-- <<TODO>>
 
 ## Documentation
 
 - Finalize 1.0 decisions. _(Markus Raab)_
 - Update [API design document](/doc/DESIGN.md) _(Markus Raab and Stefan Hanreich)_
 - Update [release instructions](../todo/RELEASE) _(Robert Sowula)_
-- Changed api documentation terms [current, latest] to [latest, master]. The api documentation of the latest release is now available at https://doc.libelektra.org/api/latest/html/ and of the current git master at https://doc.libelektra.org/api/master/html/. _(Robert Sowula)_
-- <<TODO>>
+- Changed API documentation terms [current, latest] to [latest, master].
+  The API documentation of the latest release is now available at https://doc.libelektra.org/api/latest/html/ and of the current git master at https://doc.libelektra.org/api/master/html/. _(Robert Sowula)_
 
 ## Tests
 
 - Tests that use additional executables can now be installed and run via `kdb <testname>`.
   Existing tests have been update to support this. _(Klemens Böswirth)_
-- <<TODO>>
-- <<TODO>>
 
 ## Build
 
 ### CMake
 
 - Use Lua 5.4 when available. _(Mihael Pranjić)_
-- <<TODO>>
 - Force `RTLD_NODELETE` on dlopen() when the `ENABLE_ASAN` CMake option is used. This enables ASAN to find symbols which otherwise might be unloaded. _(Mihael Pranjić)_
-- <<TODO>>
 
 ### Docker
 
-- We added a Docker image for [building the documentation on Debian sid](../../scripts/docker/debian/sid/doc.Dockerfile). _(René Schwaiger)_
+- We added a Docker image for [building the documentation on Debian Sid](../../scripts/docker/debian/sid/doc.Dockerfile). _(René Schwaiger)_
 - We removed the Docker image for building the documentation on Debian Stretch. _(René Schwaiger)_
 - Add Fedora 33 Dockerfile for Cirrus and Jenkins CI. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Infrastructure
 
@@ -326,7 +283,6 @@ you up to date with the multi-language support provided by Elektra.
 
 - Upgrade Cirrus Fedora docker image to Fedora 33. _(Mihael Pranjić)_
 - Upgrade to Ruby 3.0 for macOS builds. _(Mihael Pranjić)_
-- <<TODO>>
 
 ### GitHub Actions
 
@@ -334,34 +290,36 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- We now use Debian sid to build the documentation instead of Debian stretch. The Doxygen version in Debian stretch [contains a bug](https://github.com/doxygen/doxygen/issues/6456) that causes the generation of the PDF documentation to fail. _(René Schwaiger)_
-- Use Fedora 33 and 32, drop Fedora 31 use in Jenkins. _(Mihael Pranjić)_
 - We refactored shared code between pipelines into a [Jenkins Shared Library](https://github.com/ElektraInitiative/jenkins-library). _(Robert Sowula)_
+- We now use Debian Sid to build the documentation instead of Debian Stretch. The Doxygen version in Debian stretch [contains a bug](https://github.com/doxygen/doxygen/issues/6456) that causes the generation of the PDF documentation to fail. _(René Schwaiger)_
+- Use Fedora 33 and 32, drop Fedora 31 use in Jenkins. _(Mihael Pranjić)_
 - The Main and Release Pipeline now creates packages for Debian Buster, Ubuntu Bionic, Ubuntu Focal and Fedora-33. These packages are also installed and automatically tested before they are published. To install these packages, please refer to our [Install documentation](../INSTALL.md). _(Robert Sowula)_
 - We updated our Release Pipeline to push changes directly to our git repositories. _(Robert Sowula)_
 
 ### Travis
 
 - Move macOS GCC 10 build job to Github Actions. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Website
 
 The website is generated from the repository, so all information about
-plugins, bindings and tools are always up to date. Furthermore, we changed:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+plugins, bindings and tools are always up to date.
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Elektrify KDE _(Dardan Haxhimustafa)_, _(Felix Resch)_ and _(Mihael Pranjić)_
+- 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth)_
+- Improve Java Development Experience _(Michael Tucek)_
+- Elektrify GNOME _(Mihael Pranjić)_
+- Continious Releases _(Robert Sowula)_
+- KDB access using FUSE _(Alexander Firbas)_
+- Default TOML plugin _(Jakob Fischer)_
+- Improve Plugin Framework _(Vid Leskovar)_
+- Improve 3-way merge _(Dominic Jäger)_
+- Shell completion _(Ulrike Schäfer)_
+- Ansible bindings _(Thomas Waser)_
 
 ## Statistics
 
