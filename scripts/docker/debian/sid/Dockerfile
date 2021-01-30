@@ -11,8 +11,8 @@ RUN apt-get update && apt-get -y install \
         bison \
         build-essential \
         checkinstall \
-        clang-9 \
-        clang-format-9 \
+        clang-11 \
+        clang-format-11 \
         cmake \
         curl \
         default-jdk \

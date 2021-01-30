@@ -8,7 +8,7 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
-MIN_VERSION=6
+MIN_VERSION=11
 CLANG_FORMAT=$(command -v clang-format-$MIN_VERSION || command -v clang-format)
 
 if [ -n "$CLANG_FORMAT" ]; then

@@ -268,6 +268,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Tests that use additional executables can now be installed and run via `kdb <testname>`.
   Existing tests have been update to support this. _(Klemens Böswirth)_
+- Update source formatting check to clang-format 11. _(Mihael Pranjić)_
 
 ## Build
 
@@ -281,6 +282,7 @@ you up to date with the multi-language support provided by Elektra.
 - We added a Docker image for [building the documentation on Debian Sid](../../scripts/docker/debian/sid/doc.Dockerfile). _(René Schwaiger)_
 - We removed the Docker image for building the documentation on Debian Stretch. _(René Schwaiger)_
 - Add Fedora 33 Dockerfile for Cirrus and Jenkins CI. _(Mihael Pranjić)_
+- Debian Sid: update to clang 11. _(Mihael Pranjić)_
 
 ## Infrastructure
 

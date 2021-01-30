@@ -163,7 +163,7 @@ or by installing the whole [LLVM](http://llvm.org) infrastructure:
 brew install llvm
 ```
 
-. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `9` in certain edge cases. If you want you can also install Clang-Format `9` using LLVM `9`:
+. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `11` in certain edge cases. If you want you can also install Clang-Format `11` using LLVM `11`:
 
 ```
 brew install llvm@9
@@ -175,10 +175,10 @@ brew install llvm@9
 
 ###### Debian
 
-In Debian the package for Clang-Format `9` is called `clang-format-9`:
+In Debian the package for Clang-Format `11` is called `clang-format-11`:
 
 ```sh
-apt-get install clang-format-9
+apt-get install clang-format-11
 ```
 
 .
@@ -190,7 +190,7 @@ For the basic use cases you can use `clang-format` directly. To do that, just ca
 ```sh
 # On some systems such as Debian the `clang-format` executable also contains
 # the version number. For those systems, please replace `clang-format`,
-# with `clang-format-9` in the command below.
+# with `clang-format-11` in the command below.
 clang-format -i src/bindings/cpp/include/kdb.hpp
 ```
 
