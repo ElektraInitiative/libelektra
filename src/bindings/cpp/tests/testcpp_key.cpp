@@ -545,7 +545,7 @@ TEST (key, valid)
 
 	for (auto & invalid_name : invalid_names)
 	{
-		EXPECT_THROW (Key (invalid_name, KEY_END), std::bad_alloc);
+		EXPECT_THROW (Key (invalid_name, KEY_END), std::KeyInvalidName);
 	}
 
 	Key v1 ("user:/", KEY_END);

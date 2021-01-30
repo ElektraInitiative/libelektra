@@ -599,7 +599,7 @@ inline Key::Key (Key const & k) : key (k.key)
 /**
  * @copydoc keyNew
  *
- * @throw bad_alloc if key could not be constructed (allocation problems)
+ * @throw KeyInvalidName if key could not be constructed
  *
  * @param keyName the name of the new key
  */
@@ -611,7 +611,7 @@ inline Key::Key (const char * keyName, ...)
 	key = ckdb::keyVNew (keyName, ap);
 	va_end (ap);
 
-	if (!key) throw KeyInvalidName (keyName, "");
+	if (!key) throw KeyInvalidName (keyName, "A key name consists of [<namespace>:]/<path>.");
 
 	operator++ ();
 }
@@ -619,7 +619,7 @@ inline Key::Key (const char * keyName, ...)
 /**
  * @copydoc keyNew
  *
- * @throw bad_alloc if key could not be constructed (allocation problems)
+ * @throw KeyInvalidName if key could not be constructed
  *
  * @warning Not supported on some compilers, e.g.
  * clang which requires you to only pass non-POD
@@ -635,7 +635,7 @@ inline Key::Key (const std::string keyName, ...)
 	key = ckdb::keyVNew (keyName.c_str (), ap);
 	va_end (ap);
 
-	if (!key) throw std::bad_alloc ();
+	if (!key) throw KeyInvalidName (keyName, "A key name consists of [<namespace>:]/<path>.");
 
 	operator++ ();
 }
@@ -643,7 +643,7 @@ inline Key::Key (const std::string keyName, ...)
 /**
  * @copydoc keyNew
  *
- * @throw bad_alloc if key could not be constructed (allocation problems)
+ * @throw KeyInvalidName if key could not be constructed
  *
  * @param keyName the name of the new key
  * @param ap the variable argument list pointer
@@ -652,7 +652,7 @@ inline Key::Key (const char * keyName, va_list ap)
 {
 	key = ckdb::keyVNew (keyName, ap);
 
-	if (!key) throw std::bad_alloc ();
+	if (!key) throw KeyInvalidName (keyName, "A key name consists of [<namespace>:]/<path>.");
 
 	operator++ ();
 }
