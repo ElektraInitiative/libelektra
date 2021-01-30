@@ -22,10 +22,10 @@
 
 #include "testdata.h"
 
-#define ARGS(NAME, ...) ((const char *[]){ TESTAPP_PATH, NAME, __VA_ARGS__, NULL })
+#define ARGS(NAME, ...) ((const char *[]){ TESTAPP_NAME, NAME, __VA_ARGS__, NULL })
 #define ENVP(LD_LIB_PATH, ...) ((const char *[]){ LD_LIB_PATH, __VA_ARGS__, NULL })
 
-#define NO_ARGS(NAME) ((const char *[]){ TESTAPP_PATH, NAME, NULL })
+#define NO_ARGS(NAME) ((const char *[]){ TESTAPP_NAME, NAME, NULL })
 #define NO_ENVP(LD_LIB_PATH) ((const char *[]){ LD_LIB_PATH, NULL })
 
 static void run_test (const char ** argv, const char ** envp)
@@ -45,7 +45,7 @@ static void run_test (const char ** argv, const char ** envp)
 	if (pid == 0)
 	{
 		/* child */
-		execve (TESTAPP_PATH, (char * const *) argv, (char * const *) envp);
+		execve (bindir_file (TESTAPP_NAME), (char * const *) argv, (char * const *) envp);
 
 		exit (EXIT_FAILURE);
 	}

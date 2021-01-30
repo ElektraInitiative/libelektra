@@ -79,7 +79,7 @@ static void test_basics (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 	char * infile = elektraStrDup (srcdir_file ("quickdump/test.quickdump"));
-	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * getKey = keyNew ("dir:/tests/bench", KEY_VALUE, infile, KEY_END);
@@ -129,7 +129,7 @@ static void test_noParent (void)
 	KeySet * input = ksNew (2, keyNew ("/", KEY_VALUE, "value", KEY_END), keyNew ("/a", KEY_VALUE, "value1", KEY_END), KS_END);
 	KeySet * expected = ksNew (2, keyNew ("dir:/tests/bench", KEY_VALUE, "value", KEY_END),
 				   keyNew ("dir:/tests/bench/a", KEY_VALUE, "value1", KEY_END), KS_END);
-	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * setKey = keyNew ("dir:/tests/bench", KEY_VALUE, outfile, KEY_END);
@@ -175,7 +175,7 @@ static void test_parentKeyValue (void)
 	printf ("test parent key value\n");
 
 	KeySet * expected = ksNew (1, keyNew ("dir:/tests/bench", KEY_VALUE, "value", KEY_END), KS_END);
-	char * outfile = elektraStrDup (srcdir_file ("quickdump/test.quickdump.out"));
+	char * outfile = elektraStrDup (elektraFilename ());
 
 	{
 		Key * setKey = keyNew ("dir:/tests/bench", KEY_VALUE, outfile, KEY_END);

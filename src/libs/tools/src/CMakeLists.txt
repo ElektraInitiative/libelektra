@@ -59,7 +59,7 @@ if (BUILD_FULL)
 	install (
 		TARGETS elektratools-full
 		DESTINATION lib${LIB_SUFFIX}
-		COMPONENT libelektra4-full)
+		COMPONENT libelektra${SO_VERSION}-full)
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)

@@ -22,16 +22,16 @@ and what various methods exists within one.
 
 All plugins use the same basic interface. This interface consists of five basic functions:
 
-- [`elektraPluginOpen`](https://doc.libelektra.org/api/current/html/group__plugin.html#ga23c2eb3584e38a4d494eb8f91e5e3d8d),
-- [`elektraPluginGet`](https://doc.libelektra.org/api/current/html/group__plugin.html#gacb69f3441c6d84241b4362f958fbe313),
-- [`elektraPluginSet`](https://doc.libelektra.org/api/current/html/group__plugin.html#gae65781a1deb34efc79c8cb9d9174842c),
-- [`elektraPluginError`](https://doc.libelektra.org/api/current/html/group__plugin.html#gad74b35f558ac7c3262f6069c5c47dc79), and
-- [`elektraPluginClose`](https://doc.libelektra.org/api/current/html/group__plugin.html#ga1236aefe5b2baf8b7bf636ba5aa9ea29)
+- [`elektraPluginOpen`](https://doc.libelektra.org/api/latest/html/group__plugin.html#ga23c2eb3584e38a4d494eb8f91e5e3d8d),
+- [`elektraPluginGet`](https://doc.libelektra.org/api/latest/html/group__plugin.html#gacb69f3441c6d84241b4362f958fbe313),
+- [`elektraPluginSet`](https://doc.libelektra.org/api/latest/html/group__plugin.html#gae65781a1deb34efc79c8cb9d9174842c),
+- [`elektraPluginError`](https://doc.libelektra.org/api/latest/html/group__plugin.html#gad74b35f558ac7c3262f6069c5c47dc79), and
+- [`elektraPluginClose`](https://doc.libelektra.org/api/latest/html/group__plugin.html#ga1236aefe5b2baf8b7bf636ba5aa9ea29)
 
 . The developer replaces `Plugin` with the name of their plugin. So in the case of the line plugin, the names of these functions would be
 `elektraLineOpen()`, `elektraLineGet()`, `elektraLineSet()`, `elektraLineError()`, and `elektraLineClose()`.
 Additionally, there is one more function called
-[ELEKTRA_PLUGIN_EXPORT](https://doc.libelektra.org/api/current/html/group__plugin.html#ga8dd092048e972a3f0c9c9f54eb41576e),
+[ELEKTRA_PLUGIN_EXPORT](https://doc.libelektra.org/api/latest/html/group__plugin.html#ga8dd092048e972a3f0c9c9f54eb41576e),
 where once again `Plugin` should be replaced with the name of the plugin, this time in uppercase. So for the line plugin this function would be
 `ELEKTRA_PLUGIN_EXPORT(line)`.
 The developer may also define `elektraPluginCheckConf()` if configuration validation at mount-time is desired.
@@ -444,7 +444,7 @@ Plugin *ELEKTRA_PLUGIN_EXPORT
 }
 ```
 
-For further information see [the API documentation](https://doc.libelektra.org/api/current/html/group__plugin.html).
+For further information see [the API documentation](https://doc.libelektra.org/api/latest/html/group__plugin.html).
 
 ### `elektraPluginGetGlobalKeySet`
 

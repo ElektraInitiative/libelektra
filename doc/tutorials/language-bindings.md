@@ -151,4 +151,4 @@ getReason()
 
 Please also keep the wording identical for consistency.
 Take a look how the Java Binding implemented it in the
-[KDBException](../../src/bindings/jna/libelektra4j/src/main/java/org/libelektra/exception/KDBException.java)
+[KDBException](../../src/bindings/jna/libelektra5j/src/main/java/org/libelektra/exception/KDBException.java)

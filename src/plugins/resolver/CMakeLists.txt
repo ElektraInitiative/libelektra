@@ -61,9 +61,9 @@ foreach (plugin ${RESOLVERS})
 		set (SOURCES resolver.h resolver.c filename.c)
 
 		if (plugin MATCHES "resolver_fm_hpu_b")
-			set (HAS_COMPONENT "libelektra4")
+			set (HAS_COMPONENT "libelektra${SO_VERSION}")
 		else ()
-			set (HAS_COMPONENT "libelektra4-extra")
+			set (HAS_COMPONENT "libelektra${SO_VERSION}-extra")
 		endif ()
 
 		add_plugin (

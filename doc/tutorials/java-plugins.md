@@ -36,17 +36,17 @@ Here we will look into, how can we write Java Plugins using - `JNA Binding`.
 
 ### Writing a Plugin
 
-Under the the following [path](/src/bindings/jna/libelektra4j/src/main/java/org/libelektra) you can find the examples of already existing plugins and you can look into libelektra Java library, which is used for communication with the configuration database.
+Under the the following [path](/src/bindings/jna/libelektra5j/src/main/java/org/libelektra) you can find the examples of already existing plugins and you can look into libelektra Java library, which is used for communication with the configuration database.
 
 In order to write a new Java Plugin, the new class has to be created under the `plugin` folder. It has also to extend the `Plugin.java` interface, which contains all required methods to communicate with Elektra’s database. You can leave some of the methods unimplemented, if there is no need for them.
 
 The `Plugin.java` interface contains methods for the five basic functions of plugins:
 
-- [`elektraPluginOpen`](https://doc.libelektra.org/api/current/html/group__plugin.html#ga23c2eb3584e38a4d494eb8f91e5e3d8d),
-- [`elektraPluginGet`](https://doc.libelektra.org/api/current/html/group__plugin.html#gacb69f3441c6d84241b4362f958fbe313),
-- [`elektraPluginSet`](https://doc.libelektra.org/api/current/html/group__plugin.html#gae65781a1deb34efc79c8cb9d9174842c),
-- [`elektraPluginError`](https://doc.libelektra.org/api/current/html/group__plugin.html#gad74b35f558ac7c3262f6069c5c47dc79), and
-- [`elektraPluginClose`](https://doc.libelektra.org/api/current/html/group__plugin.html#ga1236aefe5b2baf8b7bf636ba5aa9ea29)
+- [`elektraPluginOpen`](https://doc.libelektra.org/api/latest/html/group__plugin.html#ga23c2eb3584e38a4d494eb8f91e5e3d8d),
+- [`elektraPluginGet`](https://doc.libelektra.org/api/latest/html/group__plugin.html#gacb69f3441c6d84241b4362f958fbe313),
+- [`elektraPluginSet`](https://doc.libelektra.org/api/latest/html/group__plugin.html#gae65781a1deb34efc79c8cb9d9174842c),
+- [`elektraPluginError`](https://doc.libelektra.org/api/latest/html/group__plugin.html#gad74b35f558ac7c3262f6069c5c47dc79), and
+- [`elektraPluginClose`](https://doc.libelektra.org/api/latest/html/group__plugin.html#ga1236aefe5b2baf8b7bf636ba5aa9ea29)
 
 It is expected that each method returns -1 if an error occurred or 0 if everything worked as expected.
 

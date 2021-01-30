@@ -52,7 +52,7 @@ add_plugin (
 	LINK_LIBRARIES ${PYTHON_LIBRARIES}
 	LINK_ELEKTRA elektra-pluginprocess
 	COMPILE_DEFINITIONS SWIG_TYPE_TABLE=kdb SWIG_RUNTIME=\"runtime.h\" PYTHON_PLUGIN_NAME=python PYTHON_PLUGIN_SYMBOL_NAME=Python
-			    COMPONENT libelektra4-python)
+			    COMPONENT libelektra${SO_VERSION}-python)
 
 if (ADDTESTING_PHASE)
 	# bindings are required for tests

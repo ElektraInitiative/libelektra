@@ -11,7 +11,7 @@ if (PLUGINPROCESS_FOUND)
 		elektra-invoke
 		elektra-plugin
 		COMPONENT
-		libelektra4)
+		libelektra${SO_VERSION})
 
 	if (ENABLE_TESTING)
 		add_subdirectory (tests)

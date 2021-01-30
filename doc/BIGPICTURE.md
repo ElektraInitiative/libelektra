@@ -27,7 +27,7 @@ be interpreted.
 For file systems, the API is `open`, `read`, `write`, and then `close`.
 For configuration key-value access is more suitable because values are
 so small that a single read/write always suffices. Thus Elektra [has a
-key-value API](https://doc.libelektra.org/api/current/html) with `kdbOpen`,
+key-value API](https://doc.libelektra.org/api/latest/html) with `kdbOpen`,
 `kdbGet`, `kdbSet` and `kdbClose`. Not every application is written in C,
 thus many `bindings` where written to access file systems. For example,
 in C++ you have `fstream`, and in Java `FileReader`. Also Elektra provides

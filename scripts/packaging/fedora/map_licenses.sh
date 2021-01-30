@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+#
+# @brief Extracts the licenses of a dep5 copyright file and
+# 		 transforms them into RPM licenses format.
 
 LICENSE_FILE=$1
 
