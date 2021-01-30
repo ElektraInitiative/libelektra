@@ -244,6 +244,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
+- The kdb cmd-line tool outputs better error messages on wrong names like `user` or `user:` as `user:/` is now required. _(Markus Raab)_
 - The QtGUI was updated to be compatible with the new key name structure. _(Klemens Böswirth)_
 
 ## Scripts
@@ -342,7 +343,7 @@ The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/release
 
 <<`scripts/generate-hashsums elektra-0.9.<<VERSION>>.tar.gz`>>
 
-The release tarball is also available signed by Markus Raab using GnuPG from
+The release tarball is also available signed by Mihael Pranjić using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
 [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
 
