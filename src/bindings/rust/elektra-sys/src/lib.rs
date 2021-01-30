@@ -1,5 +1,5 @@
 //! Raw bindings for libelektra.
-//! For documentation on the functions, see the [C API documentation](https://doc.libelektra.org/api/current/html/index.html).
+//! For documentation on the functions, see the [C API documentation](https://doc.libelektra.org/api/latest/html/index.html).
 
 #![allow(non_upper_case_globals)]
 #![allow(non_camel_case_types)]

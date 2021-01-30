@@ -11,10 +11,10 @@ you should start reading [elektra-introduction(7)](elektra-introduction.md).
 CLI Tools of Elektra are in man page section 1 and are prefixed with `kdb-`.
 
 The man pages can also be viewed online at:
-https://doc.libelektra.org/api/current/html/pages.html
+https://doc.libelektra.org/api/latest/html/pages.html
 
 And the page you are currently reading at:
-https://doc.libelektra.org/api/current/html/md_doc_help_kdb.html
+https://doc.libelektra.org/api/latest/html/md_doc_help_kdb.html
 
 ## OVERVIEW
 

@@ -49,7 +49,7 @@ int main ()
 	//   * remove the root key itself from the result KeySet because it usually
 	//     contains the mounted filename and cannot be merged anyway
 	// Also have a look at the documentation of kdbSet()
-	// (https://doc.libelektra.org/api/latest/html/group__kdb.html#ga11436b058408f83d303ca5e996832bcf).
+	// (https://doc.libelektra.org/api/master/html/group__kdb.html#ga11436b058408f83d303ca5e996832bcf).
 	// The merging framework can also be used to resolve conflicts resulting from
 	// concurrent calls to kdbSet() as described in the example of kdbSet().
 	{

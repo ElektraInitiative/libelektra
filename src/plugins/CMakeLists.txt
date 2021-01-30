@@ -101,7 +101,7 @@ endif ()
 
 if (BUILD_SHARED)
 	mkdir (${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-	create_lib_symlink (libelektra-${KDB_DEFAULT_STORAGE}.so libelektra-storage.so libelektra4 PLUGIN)
+	create_lib_symlink (libelektra-${KDB_DEFAULT_STORAGE}.so libelektra-storage.so libelektra${SO_VERSION} PLUGIN)
 
-	create_lib_symlink (libelektra-${KDB_DEFAULT_RESOLVER}.so libelektra-resolver.so libelektra4 PLUGIN)
+	create_lib_symlink (libelektra-${KDB_DEFAULT_RESOLVER}.so libelektra-resolver.so libelektra${SO_VERSION} PLUGIN)
 endif (BUILD_SHARED)

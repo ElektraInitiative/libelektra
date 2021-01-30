@@ -45,6 +45,6 @@ else
 	export MANPATH="$SOURCE/doc/man:$MANPATH"
 fi
 
-export CLASSPATH="$CLASSPATH:$BUILD/lib/libelektra4j.jar"
+export CLASSPATH="$CLASSPATH:$BUILD/lib/libelektra5j.jar"
 
 export PS1="[DEV] $PS1"

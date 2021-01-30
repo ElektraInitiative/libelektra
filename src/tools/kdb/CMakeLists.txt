@@ -38,7 +38,7 @@ if (BUILD_FULL)
 	install (
 		TARGETS kdb-full
 		DESTINATION bin
-		COMPONENT libelektra4-full)
+		COMPONENT libelektra${SO_VERSION}-full)
 endif (BUILD_FULL)
 
 if (BUILD_STATIC)

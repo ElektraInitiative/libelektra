@@ -389,7 +389,7 @@
                 "type": "link",
                 "ref": "apidocumentation",
                 "options": {
-                    "path": "https://doc.libelektra.org/api/current/html/"
+                    "path": "https://doc.libelektra.org/api/latest/html/"
                 }
             },
             {

@@ -9,4 +9,4 @@ add_plugin (
 		kconfig_serializer.cpp
 		file_utility.cpp
 		COMPONENT
-		libelektra4)
+		libelektra${SO_VERSION})

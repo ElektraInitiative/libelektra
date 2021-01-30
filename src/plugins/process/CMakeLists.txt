@@ -14,7 +14,7 @@ if (PLUGINPROCESS_FOUND)
 		SOURCES process.h process.c
 		ADD_TEST TEST_README
 		TEST_REQUIRED_PLUGINS "dump"
-		LINK_ELEKTRA elektra-pluginprocess elektra-invoke COMPONENT libelektra4-experimental)
+		LINK_ELEKTRA elektra-pluginprocess elektra-invoke COMPONENT libelektra${SO_VERSION}-experimental)
 else (PLUGINPROCESS_FOUND)
 	remove_plugin (process "${PLUGINPROCESS_NOTFOUND_INFO}, pluginprocess library excluded, thus also excluding the process plugin")
 endif (PLUGINPROCESS_FOUND)

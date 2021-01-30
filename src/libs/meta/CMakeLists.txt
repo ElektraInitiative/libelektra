@@ -6,4 +6,4 @@ add_lib (
 	LINK_ELEKTRA
 	elektra-ease
 	COMPONENT
-	libelektra4)
+	libelektra${SO_VERSION})

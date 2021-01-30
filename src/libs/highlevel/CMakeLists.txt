@@ -8,7 +8,7 @@ add_lib (
 	elektra-kdb
 	elektra-ease
 	COMPONENT
-	libelektra4)
+	libelektra${SO_VERSION})
 
 if (BUILD_SHARED)
 	set (LIBRARIES "-lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core")
