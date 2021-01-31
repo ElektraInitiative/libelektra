@@ -86,7 +86,7 @@ mac_task:
 
     - name: 🍎 Clang
       osx_instance:
-        image: catalina-xcode
+        image: big-sur-xcode
       env:
         ENABLE_LOGGER: ON
         TOOLS: ALL;web
@@ -94,7 +94,7 @@ mac_task:
 
     - name: 🍎 Clang ASAN
       osx_instance:
-        image: catalina-xcode
+        image: big-sur-xcode
       env:
         ASAN_OPTIONS: 'detect_leaks=1'
         BINDINGS: cpp
@@ -105,7 +105,7 @@ mac_task:
 
     - name: 🍎 FULL
       osx_instance:
-        image: catalina-xcode
+        image: big-sur-xcode
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
@@ -113,7 +113,7 @@ mac_task:
 
     - name: 🍎 MMap
       osx_instance:
-        image: catalina-xcode
+        image: big-sur-xcode
       env:
         KDB_DEFAULT_STORAGE: mmapstorage
         KDB_DB_FILE: default.mmap
@@ -132,6 +132,7 @@ mac_task:
       brew install boost
       brew install clang-format
       brew install dbus
+      brew upgrade dbus
       brew install discount
       brew install doxygen
       brew install flex
@@ -166,6 +167,8 @@ mac_task:
       brew tap homebrew/services
       brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
       brew services restart dbus
+      launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
+      ls -l /private/tmp/com.apple.launchd*
     - | # Install Python
       brew install python@3.8 || brew upgrade python@3.8
       export PATH="/usr/local/opt/python@3.8/bin:$PATH"
