@@ -123,7 +123,7 @@ the original C++ class in the following aspects:
 %catches (kdb::KeyTypeMismatch, kdb::KeyException) kdb::Key::getString;
 %catches (kdb::KeyTypeMismatch, kdb::KeyException) kdb::Key::getBinary;
 
-%catches (std::bad_alloc) kdb::Key::Key;
+%catches (kdb::KeyInvalidName) kdb::Key::Key;
 
 
 /* ignore certain methods */

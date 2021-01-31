@@ -41,7 +41,7 @@ This is the quickest way to get started with Elektra without compiling and other
 
 ## Plugins
 
-The following section lists news about the [modules](https://www.libelektra.org/plugins/readme) we updated in this release.
+The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
 ### <<Plugin1>>
 
@@ -208,7 +208,7 @@ The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/release
 
 <<`scripts/generate-hashsums elektra-0.9.<<VERSION>>.tar.gz`>>
 
-The release tarball is also available signed by Markus Raab using GnuPG from
+The release tarball is also available signed using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg) or on
 [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.<<VERSION>>.tar.gz.gpg?raw=true)
 
