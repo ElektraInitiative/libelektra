@@ -10,5 +10,10 @@ if [ $# -ne 1 ]; then
 	exit 1
 fi
 
-ARGS="-j@PROCESSOR_COUNT@ --force-new-ctest-process --output-on-failure -E testscr_check --build-config $1"
+if [ "$DBUS_BUG" = 'ON' ]; then
+  ARGS="-j@PROCESSOR_COUNT@ --force-new-ctest-process --output-on-failure -E 'testmod_dbus|testscr_check' --build-config $1"
+else
+  ARGS="-j@PROCESSOR_COUNT@ --force-new-ctest-process --output-on-failure -E testscr_check --build-config $1"
+fi
+
 ctest $ARGS || ctest $ARGS --rerun-failed
