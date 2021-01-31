@@ -118,6 +118,8 @@ mac_task:
 
   install_script:
     - | # Install Homebrew formulas
+      brew update
+      brew config
       brew install openjdk
       brew install antlr
       brew install antlr4-cpp-runtime
