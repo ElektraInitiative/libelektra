@@ -8,14 +8,14 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
-MIN_VERSION=6
-CLANG_FORMAT=$(command -v clang-format-$MIN_VERSION || command -v clang-format)
+REQUIRED_VERSION=11
+CLANG_FORMAT=$(command -v clang-format-$REQUIRED_VERSION || command -v clang-format)
 
 if [ -n "$CLANG_FORMAT" ]; then
 	LOCATION="$CLANG_FORMAT"
 	VERSION=$("$CLANG_FORMAT" --version 2> /dev/null)
-	MAJOR_VERSION=$(printf '%s' "$VERSION" | sed -E 's/.* ([0-9]+)\.[0-9].[0-9][ -].*/\1/')
-	if [ "${MAJOR_VERSION:-0}" -lt $MIN_VERSION ]; then
+	MAJOR_VERSION=$(printf '%s' "$VERSION" | sed -E 's/.* ([0-9]+)\.[0-9].[0-9][ -]?.*/\1/')
+	if [ "${MAJOR_VERSION:-0}" -ne $REQUIRED_VERSION ]; then
 		unset CLANG_FORMAT
 	fi
 fi

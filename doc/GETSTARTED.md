@@ -37,7 +37,7 @@
   sudo yum install -y cmake git gcc-c++
   ```
 
-  Or on macOS Sierra, most of the build tools can be obtained by installing [Xcode](https://developer.apple.com/xcode/). Other required tools may be installed using [brew ](https://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+  Or on macOS, most of the build tools can be obtained by installing [Xcode](https://developer.apple.com/xcode/). Other required tools may be installed using [brew ](https://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
   ```sh
   brew install cmake git

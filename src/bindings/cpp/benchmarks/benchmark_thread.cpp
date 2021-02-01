@@ -41,7 +41,7 @@ public:
 	: ThreadString (ks, context_, Key ("/%layer1%/person", KEY_META, "default", "no name", KEY_END))
 	{
 	}
-	using ThreadString::operator= ;
+	using ThreadString::operator=;
 
 private:
 	Person () = delete;
@@ -56,7 +56,7 @@ public:
 	: ThreadInteger (ks, context_, Key ("/test/%layer1%/%thread%/%layer2%/nested", KEY_META, "default", s_value, KEY_END))
 	{
 	}
-	using ThreadInteger::operator= ;
+	using ThreadInteger::operator=;
 };
 
 class Environment : public ThreadBoolean

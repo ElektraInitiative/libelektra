@@ -28,6 +28,8 @@ jobs:
 
     - name: Install Dependencies
       run: |
+        brew update
+        brew config
         brew install augeas
         brew install bison
         brew install dbus

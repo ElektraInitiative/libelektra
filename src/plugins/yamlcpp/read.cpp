@@ -134,7 +134,9 @@ Key createLeafKey (Node const & node, string const & name)
 		key.setMeta ("type", "binary");
 	}
 	ELEKTRA_LOG_DEBUG ("Add key “%s: %s”", key.getName ().c_str (),
-			   key.getBinarySize () == 0 ? "NULL" : key.isBinary () ? "binary value!" : key.get<string> ().c_str ());
+			   key.getBinarySize () == 0 ? "NULL" :
+			   key.isBinary ()	     ? "binary value!" :
+							     key.get<string> ().c_str ());
 	return key;
 }
 
@@ -149,9 +151,11 @@ Key createLeafKey (Node const & node, string const & name)
 Key convertMetaNodeToKey (Node const & node, Key & parent)
 {
 	auto key = node[0].IsNull () ? Key{ parent.getName (), KEY_BINARY, KEY_END } :
-				       Key{ parent.getName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
+					     Key{ parent.getName (), KEY_VALUE, node[0].as<string> ().c_str (), KEY_END };
 	ELEKTRA_LOG_DEBUG ("Add key “%s”: “%s”", key.getName ().c_str (),
-			   key.getBinarySize () == 0 ? "NULL" : key.isString () ? key.getString ().c_str () : "binary value!");
+			   key.getBinarySize () == 0 ? "NULL" :
+			   key.isString ()	     ? key.getString ().c_str () :
+							     "binary value!");
 	return key;
 }
 
