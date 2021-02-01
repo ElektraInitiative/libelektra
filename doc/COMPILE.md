@@ -137,7 +137,7 @@ For a list of compilers we test with have a look at:
 - [Cirrus](/.cirrus.yml)
 - [Github Actions](/.github/workflows)
 
-Here is a list of compilers used by developers or build servers:
+Here is a list of compilers used by developers:
 
 | Compiler | Version                                         | Target                    |
 | -------- | ----------------------------------------------- | ------------------------- |
