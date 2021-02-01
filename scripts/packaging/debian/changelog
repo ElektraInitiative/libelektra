@@ -1,3 +1,9 @@
+elektra (0.9.4-1) unstable; urgency=medium
+
+  * New upstream version.
+
+ -- Jenkins (User for Elektra automated build system) <jenkins@b647aaeb03a4>  Mon, 01 Feb 2021 19:21:30 +0000
+
 elektra (0.9.3-1) unstable; urgency=medium
 
   * New upstream version.
