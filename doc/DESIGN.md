@@ -320,9 +320,11 @@ following 2 checklists:
 ### Documentation
 
 - [ ] Change is mentioned in the Compatibility section of the release notes
-- [ ] Inconsistencies between documentation and code
-- [ ] Inconsistencies between documentation and tests
+- [ ] No inconsistencies between documentation and code
+- [ ] No inconsistencies between documentation and tests
 - [ ] Proper Documentation of thread-safety of function
+- [ ] All possible error states are documented
+- [ ] Configuration flags are documented
 
 #### Doxygen
 
@@ -330,59 +332,56 @@ following 2 checklists:
 - [ ] Precondition / Postcondition / Invariant
 - [ ] `@see`
 - [ ] `@since`
+- [ ] `@ingroup`
 
 ### Naming
 
-- [ ] Abbreviations should be avoided in function / parameter names
-- [ ] Function / parameter names should neither be too long, nor too short
+- [ ] Abbreviations should be avoided in function names
+- [ ] Abbreviations should be avoided in parameter names
+- [ ] Parameter names should neither be too long, nor too short
+- [ ] Function names should neither be too long, nor too short
 - [ ] Function name should be clear and unambiguous
+- [ ] Parameter names should be clear and unambiguous
 
 ### Compatibility
 
 - [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
       is correct for breaking changes
-- [ ] ABI/API forward-compatible (breaking backwards-compatibility
-      to add new symbols is fine)
+- [ ] ABI/API changes are forward-compatible (breaking backwards-compatibility
+      to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - [ ] Functions should return the most specific type possible
 - [ ] Functions should require the most liberal type possible
-- [ ] Functions should not have multiple parameters of the same type
 - [ ] Functions should use constant types instead of boolean types
-      sensible
+      wherever sensible
 - [ ] Wherever possible, function parameters should be `const`
 - [ ] Functions should have the least amount of parameters feasible
-
-### Error Handling
-
-- [ ] When an error occurs, a clear error message should be provided
-- [ ] Errors of the same type should emit the same error message
-- [ ] The error message informs the user of possible causes for the problem
-- [ ] All possible error categories are documented
-- [ ] All possible errors states lead to an error
-- [ ] Proper error codes are chosen
 
 ### Structural Clarity
 
 - [ ] Function should do exactly one thing
 - [ ] Function should have no side effects
+- [ ] Configuration options are named constants
+- [ ] Function belongs to appropriate group
 
 ### Memory Management
 
 - [ ] Memory Management should be handled by the function wherever possible
-- [ ] Functions should not cause memory-leaks
-- [ ] Functions who require a large amount of memory to be allocated,
+- [ ] Functions, who require a large amount of memory to be allocated,
       state so in their documentation
 
 ### Extensibility
 
-- [ ] Function is easily extensible with additional functionality
+- [ ] Function is easily extensible with additional functionality via bitmap-flags
+- [ ] Documentation does not impose limits, that would hinder further extensions
 
 ### Tests
 
 - [ ] Added functions are fully covered by tests
-- [ ] Tests cover edge-cases
-- [ ] Tests cover all categories of errors
-- [ ] Inconsistencies between tests and code
-- [ ] Inconsistencies between tests and documentation
+- [ ] All possible error states are covered by tests
+- [ ] All possible configuration options are covered by tests
+- [ ] Tests cover possible edge-cases
+- [ ] No inconsistencies between tests and code
+- [ ] No inconsistencies between tests and documentation
