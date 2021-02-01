@@ -80,7 +80,6 @@ strict digraph G {
 	hexnumber -> conv;
 	check [shape=Mdiamond];
 	hexnumber -> check;
-	hidden [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	hosts -> storage;
 	hosts [shape=Mdiamond];
@@ -115,8 +114,8 @@ strict digraph G {
 	mathcheck -> check;
 	storage [shape=Mdiamond];
 	mini -> storage;
-	ini [shape=Mdiamond];
-	mini -> ini;
+	properties [shape=Mdiamond];
+	mini -> properties;
 	storage [shape=Mdiamond];
 	mmapstorage -> storage;
 	mmapstorage [shape=Mdiamond];
@@ -160,8 +159,8 @@ strict digraph G {
 	shell [shape=Mdiamond];
 	storage [shape=Mdiamond];
 	simpleini -> storage;
-	ini [shape=Mdiamond];
-	simpleini -> ini;
+	properties [shape=Mdiamond];
+	simpleini -> properties;
 	check [shape=Mdiamond];
 	spec -> check;
 	apply [shape=Mdiamond];
