@@ -135,23 +135,16 @@ For a list of compilers we test with have a look at:
   on [our build server](https://build.libelektra.org/)
 - [Travis](/.travis.yml)
 - [Cirrus](/.cirrus.yml)
+- [Github Actions](/.github/workflows)
 
 Here is a list of compilers used by developers or build servers:
 
-| Compiler | Version                     | Target              |
-| -------- | --------------------------- | ------------------- |
-| gcc      | gcc (Debian 6.3.0-18) 6.3.0 | amd64               |
-| gcc      | gcc 4.8                     | amd64               |
-| gcc      | gcc 4.9                     | amd64               |
-| clang    | 3.8                         | x86_64-pc-linux-gnu |
-| clang    | 5.0                         | x86_64-pc-linux-gnu |
-| clang    | 6.0                         | x86_64-pc-linux-gnu |
-| clang    | 8.0                         | macOS               |
-| gcc      | 9.1                         | macOS               |
-| gcc/g++  | 4.9.4 (¹)                   | openbsd 6.3         |
-| mingw    | 6.0.0-3                     | amd64               |
-| clang    | 6.0.0                       | freebsd 11          |
-| clang    | 6.0.1                       | freebsd 12          |
+| Compiler | Version                                         | Target                    |
+| -------- | ----------------------------------------------- | ------------------------- |
+| gcc      | gcc (GCC) 10.2.1 20201125 (Red Hat 10.2.1-9)    | x86_64-redhat-linux       |
+| gcc      | gcc-10 (Homebrew GCC 10.2.0_3) 10.2.0           | x86_64-apple-darwin20     |
+| clang    | clang version 11.0.0 (Fedora 11.0.0-2.fc33)     | x86_64-unknown-linux-gnu  |
+| clang    | Apple clang version 12.0.0 (clang-1200.0.32.29) | x86_64-apple-darwin20.2.0 |
 
 > (¹) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
 > A manual installation of egcc/eg++ is required. Note that not every OpenBSD
