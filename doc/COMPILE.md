@@ -141,6 +141,7 @@ Here is a list of compilers used by developers:
 
 | Compiler | Version                                         | Target                    |
 | -------- | ----------------------------------------------- | ------------------------- |
+| gcc      | gcc (Debian 8.3.0-6) 8.3.0                      | x86_64-linux-gnu          |
 | gcc      | gcc (GCC) 10.2.1 20201125 (Red Hat 10.2.1-9)    | x86_64-redhat-linux       |
 | gcc      | gcc-10 (Homebrew GCC 10.2.0_3) 10.2.0           | x86_64-apple-darwin20     |
 | clang    | clang version 11.0.0 (Fedora 11.0.0-2.fc33)     | x86_64-unknown-linux-gnu  |
