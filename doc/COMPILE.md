@@ -17,7 +17,7 @@ Or on RPM based systems (CentOS):
 sudo dnf install -y cmake git gcc-c++ make
 ```
 
-Or on macOS Sierra, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+Or on macOS, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
 ```sh
 brew install cmake git
@@ -46,7 +46,7 @@ Afterwards you can use `sudo make install && sudo ldconfig` to install Elektra.
 See [INSTALL](/doc/INSTALL.md) for more information about
 installation of self-compiled Elektra (such as how to uninstall it).
 
-## Optional Dependences
+## Optional Dependencies
 
 > Note: You do not need to install the dependencies listed here.
 > If they are not available, some of the functionality gets disabled automatically.
@@ -65,7 +65,7 @@ sudo yum install -y doxygen docbook-style-xsl graphviz ruby
 gem install ronn
 ```
 
-Or on macOS Sierra using brew:
+Or on macOS using brew:
 
 ```sh
 brew install doxygen graphviz
