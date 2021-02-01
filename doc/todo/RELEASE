@@ -15,7 +15,7 @@ If no release critical problems are found during testing, continue.
 - Update doc/COMPILE.md to reflect actually tested setups
 - Run scripts/dev/update-infos-status with arguments for heuristics (--auto) and check
   transitions in plugin status: especially from/to experimental
-- Write release notes without hash sums (move to final name, add links where to download release)
+- Write release notes (without hash sums, guid or proper download links)
 - cp doc/todo/NEWS.md doc/news/_preparation_next_release.md
 
 == Increment Version Number ==
@@ -70,6 +70,7 @@ If no release critical problems are found during testing, continue.
   - On the prompt "Publish Release?" select "Yes" to publish the artifacts
 - Verify that debs.libelektra.org and rpms.libelektra.org contain the released packages.
 - Complete release notes:
+  - Move release notes to final name, add links where to download release
   - Clean the git statistics in git/statistics and add them to the release notes (formatting, remove uninteresting data)
   - Add download links to release notes (api-docu, release tarball)
   - Add hash sums to release notes
