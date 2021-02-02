@@ -296,8 +296,8 @@ following 2 checklists:
 
 ### Consistency
 
-- [ ] Consistent naming schemes for enums, macros, typedefs and functions (called components below)
-- [ ] Similar things are named similarly
+- [ ] Consistent naming schemes for enums, macros, typedefs and functions
+- [ ] Same things are named the same and included in [Glossary](/doc/help/elektra-glossary.md)
 - [ ] Different things are named differently
 - [ ] The order of arguments should be consistent across similar functions
 
@@ -320,7 +320,6 @@ following 2 checklists:
 ### Documentation
 
 - [ ] Change is mentioned in the Compatibility section of the release notes
-- [ ] No inconsistencies between documentation and code
 - [ ] No inconsistencies between documentation and tests
 - [ ] Proper Documentation of thread-safety of function
 - [ ] All possible error states are documented
@@ -328,8 +327,8 @@ following 2 checklists:
 
 #### Doxygen
 
-- [ ] Return Value
 - [ ] Precondition / Postcondition / Invariant
+- [ ] `@retval`
 - [ ] `@see`
 - [ ] `@since`
 - [ ] `@ingroup`
@@ -337,8 +336,10 @@ following 2 checklists:
 
 ### Naming
 
-- [ ] Abbreviations should be avoided in function names
-- [ ] Abbreviations should be avoided in parameter names
+- [ ] Abbreviations used in parameter names must be defined in the
+      [Glossary](/doc/help/elektra-glossary.md)
+- [ ] Abbreviations used in function names must be defined in the
+      [Glossary](/doc/help/elektra-glossary.md)
 - [ ] Parameter names should neither be too long, nor too short
 - [ ] Function names should neither be too long, nor too short
 - [ ] Function name should be clear and unambiguous
@@ -354,10 +355,11 @@ following 2 checklists:
 ### Parameter & Return Types
 
 - [ ] Functions should return the most specific type possible
-- [ ] Functions should require the most liberal type possible
+- [ ] Functions should require the most general type possible
 - [ ] Functions should use constant types instead of boolean types
       wherever sensible
 - [ ] Wherever possible, function parameters should be `const`
+- [ ] Wherever possible, return types should be `const`
 - [ ] Functions should have the least amount of parameters feasible
 
 ### Structural Clarity
@@ -370,12 +372,11 @@ following 2 checklists:
 ### Memory Management
 
 - [ ] Memory Management should be handled by the function wherever possible
-- [ ] Functions, who require a large amount of memory to be allocated,
-      state so in their documentation
+- [ ] Every memory allocation should be documented
 
 ### Extensibility
 
-- [ ] Function is easily extensible with additional functionality via bitmap-flags
+- [ ] Function is easily extensible with function flags (constants)
 - [ ] Documentation does not impose limits, that would hinder further extensions
 
 ### Tests
@@ -383,6 +384,5 @@ following 2 checklists:
 - [ ] Added functions are fully covered by tests
 - [ ] All possible error states are covered by tests
 - [ ] All possible configuration options are covered by tests
-- [ ] Tests cover possible edge-cases
-- [ ] No inconsistencies between tests and code
+- [ ] Function body has full test coverage
 - [ ] No inconsistencies between tests and documentation
