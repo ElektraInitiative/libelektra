@@ -140,7 +140,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
+- Update Alpine Linux images to version 3.13.1 and update Elektra release image. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
