@@ -296,7 +296,7 @@ following 2 checklists:
 
 ### Consistency
 
-- [ ] Consistent naming schemes for enums, macros, typedefs and functions
+- [ ] Consistent naming schemes for enums, macros, typedefs and functions (called components below)
 - [ ] Similar things are named similarly
 - [ ] Different things are named differently
 - [ ] The order of arguments should be consistent across similar functions
@@ -307,12 +307,12 @@ following 2 checklists:
 
 ### Compatibility
 
-- [ ] All Bindings have been updated to reflect the new API and work properly
+- [ ] All bindings have been updated to reflect the new API and work properly
 
 ### Extensibility
 
 - [ ] New API is easily extensible with additional functionality
-- [ ] Components do not depend too heavily on each other
+- [ ] Components only depend on each other if needed
 
 
 ## Checklist for each function
@@ -333,6 +333,7 @@ following 2 checklists:
 - [ ] `@see`
 - [ ] `@since`
 - [ ] `@ingroup`
+- [ ] there is at least one example or snippet how to use the function
 
 ### Naming
 
@@ -361,8 +362,8 @@ following 2 checklists:
 
 ### Structural Clarity
 
-- [ ] Function should do exactly one thing
-- [ ] Function should have no side effects
+- [ ] Functions should do exactly one thing
+- [ ] Functions should have no side effects
 - [ ] Configuration options are named constants
 - [ ] Function belongs to appropriate group
 
