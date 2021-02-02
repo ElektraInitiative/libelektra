@@ -87,9 +87,9 @@ If no release critical problems are found during testing, continue.
 
 Now that the release is available to download, rebuild the Alpine release image.
 
-To do so, increment the Elektra version in e.g. `scripts/docker/alpine/3.12/release.Dockerfile`:
+To do so, increment the Elektra version in e.g. `scripts/docker/alpine/3.13/release.Dockerfile`:
 ```
-ELEKTRA_RELEASE=0.9.4
+ELEKTRA_RELEASE=0.9.5
 ```
 If the file does not exist, possibly the Alpine version was changed.
 
