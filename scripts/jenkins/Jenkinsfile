@@ -310,8 +310,8 @@ def dockerInit() {
      */
     DOCKER_IMAGES.alpine = dockerUtils.createDockerImageDesc(
       "alpine", dockerUtils.&idTesting,
-      "./scripts/docker/alpine/3.12",
-      "./scripts/docker/alpine/3.12/Dockerfile"
+      "./scripts/docker/alpine/3.13",
+      "./scripts/docker/alpine/3.13/Dockerfile"
     )
 
     /* Ubuntu bionic image*/
