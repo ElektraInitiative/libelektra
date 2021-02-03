@@ -175,8 +175,8 @@ you up to date with the multi-language support provided by Elektra.
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- <<TODO>>
-- <<TODO>>
+- It is now possible to have two links on the same line of a markdown file rendered on the website. _(Klemens Böswirth)_
+- The file [doc/KEYNAMES.md](../KEYNAMES.md) is now rendered on the website. _(Klemens Böswirth)_
 - <<TODO>>
 
 ## Outlook

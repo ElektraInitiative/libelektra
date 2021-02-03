@@ -83,6 +83,19 @@
 				}]
 			},
 			{
+				"name": "Keynames",
+				"type": "staticlist",
+				"ref": "keynames",
+				"dev-comment": "",
+				"children": [{
+					"name": "keynames",
+					"type": "staticfile",
+					"options": {
+					"path": "doc/KEYNAMES.md"
+				  }
+				}]
+			},
+			{
                 "name": "Compiling",
                 "type": "staticlist",
                 "ref": "compiling",

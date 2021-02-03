@@ -158,7 +158,7 @@ module.exports = function(grunt) {
       };
 
       this.ensureAbsoluteLinkPaths = function(filepath, text) {
-        return text.replace(/\[(.+)\]\(([^\)]+)\)/gi, function(
+        return text.replace(/\[([^\]]+)\]\(([^\)]+)\)/gi, function(
           match,
           text,
           url
@@ -178,7 +178,7 @@ module.exports = function(grunt) {
       };
 
       this.ensureLinkToFile = function(text) {
-        return text.replace(/\[(.+)\]\(([^\)]+)\)/gi, function(
+        return text.replace(/\[([^\]]+)\]\(([^\)]+)\)/gi, function(
           match,
           text,
           url
@@ -219,7 +219,7 @@ module.exports = function(grunt) {
       };
 
       this.copyImages = function(filepath, text) {
-        return text.replace(/!\[(.+)\]\(([^\)]+)\)/gi, function(
+        return text.replace(/!\[([^\]]+)\]\(([^\)]+)\)/gi, function(
           match,
           text,
           url
