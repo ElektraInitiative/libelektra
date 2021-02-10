@@ -123,6 +123,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Add a short Visual Studio 2019 tutorial _(Dominic Jäger)_
 
 ## Tests
 
