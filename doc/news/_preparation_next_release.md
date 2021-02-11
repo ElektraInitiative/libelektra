@@ -148,7 +148,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Cirrus
 
-- <<TODO>>
+- Update FreeBSD images from version 12.1 to 12.2 _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 

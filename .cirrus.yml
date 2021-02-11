@@ -33,11 +33,11 @@ bsd_task:
 
     - name: 😈 FreeBSD 12
       freebsd_instance:
-        image_family: freebsd-12-1
+        image_family: freebsd-12-2
 
     - name: 😈 ASAN
       freebsd_instance:
-        image_family: freebsd-12-1
+        image_family: freebsd-12-2
       env:
         ENABLE_ASAN: ON
 
