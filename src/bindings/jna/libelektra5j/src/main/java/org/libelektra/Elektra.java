@@ -21,7 +21,7 @@ public interface Elektra extends Library {
 	 *
 	 **************************************/
 
-	Pointer kdbOpen (Pointer p);
+	Pointer kdbOpen (Pointer contract, Pointer parent);
 
 	int kdbClose (Pointer handle, Pointer errorPointer);
 

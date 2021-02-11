@@ -18,7 +18,7 @@ int main (void)
 	// clang-format off
 //! [basic usage]
 Key * key = keyNew ("/sw/tests/myapp/#0/current/",  KEY_END);
-KDB * handle = kdbOpen (key);
+KDB * handle = kdbOpenOld (key);
 kdbGet (handle, myConfig, key);
 Key * result = ksLookupByName (myConfig, "/sw/tests/myapp/#0/current/testkey1", 0);
 //! [basic usage]

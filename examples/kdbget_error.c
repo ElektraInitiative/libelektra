@@ -20,7 +20,7 @@ int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
 	Key * key = keyNew ("/sw/MyApp", KEY_END);
-	KDB * handle = kdbOpen (key);
+	KDB * handle = kdbOpenOld (key);
 
 	if (!handle) printError (key);
 

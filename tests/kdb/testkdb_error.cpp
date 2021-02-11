@@ -140,7 +140,7 @@ TEST_F (Error, CSimple)
 {
 	using namespace ckdb;
 	Key * parentKey = keyNew (testRoot.c_str (), KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpenOld (parentKey);
 	KeySet * ks = ksNew (20, KS_END);
 
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key").c_str (), KEY_META, "trigger/error", "C01310", KEY_END));
@@ -162,7 +162,7 @@ TEST_F (Error, ToWarning)
 {
 	using namespace ckdb;
 	Key * parentKey = keyNew (testRoot.c_str (), KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpenOld (parentKey);
 	KeySet * ks = ksNew (20, KS_END);
 
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key1").c_str (), KEY_META, "trigger/error/nofail", "C01310", KEY_END));
@@ -189,7 +189,7 @@ TEST_F (Error, Persists)
 {
 	using namespace ckdb;
 	Key * parentKey = keyNew (testRoot.c_str (), KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpenOld (parentKey);
 	KeySet * ks = ksNew (20, KS_END);
 
 	ksAppendKey (ks, keyNew (("system:" + testRoot + "key").c_str (), KEY_META, "trigger/error", "C01310", KEY_END));

@@ -69,7 +69,7 @@ static KeySet * createSpec (void)
 static int setupSpec (void)
 {
 	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpenOld (parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
 
@@ -96,7 +96,7 @@ static int setupSpec (void)
 static void removeSpec (void)
 {
 	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpenOld (parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
 	KeySet * spec = ksCut (ks, parentKey);
@@ -119,7 +119,7 @@ int main (void)
 	}
 
 	Key * parentKey = keyNew (BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpenOld (parentKey);
 
 	KeySet * contract = ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
 	int rc = kdbEnsure (kdb, contract, parentKey);

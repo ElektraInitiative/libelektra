@@ -90,7 +90,7 @@ void main (void)
 
 	// Open KDB
 	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
-	KDB * kdb = kdbOpen (key);
+	KDB * kdb = kdbOpenOld (key);
 
 	// Create libuv event loop
 	uv_loop_t * loop = uv_default_loop ();
@@ -160,7 +160,7 @@ void main (void)
 
 	// Open KDB
 	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
-	KDB * kdb = kdbOpen (key);
+	KDB * kdb = kdbOpenOld (key);
 
 	// Create libuv event loop
 	uv_loop_t * loop = uv_default_loop ();
@@ -292,7 +292,7 @@ void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 		kdbClose (kdb, parentKey);
 	}
 
-	kdb = kdbOpen (parentKey);
+	kdb = kdbOpenOld (parentKey);
 	elektraIoSetBinding (kdb, binding);
 	elektraNotificationOpen (kdb);
 

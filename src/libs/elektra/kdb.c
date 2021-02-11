@@ -248,32 +248,34 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
  * @retval NULL on failure
  * @ingroup kdb
  */
-KDB * kdbOpen (Key * errorKey)
+KDB * kdbOpen (KeySet * contract, Key * parentKey)
 {
-	if (!errorKey)
+	// TODO: documentation parentKey
+	if (!parentKey)
 	{
-		ELEKTRA_LOG ("no error key passed");
+		ELEKTRA_LOG ("no parent key passed");
 		return 0;
 	}
 
-	ELEKTRA_LOG ("called with %s", keyName (errorKey));
+	ELEKTRA_LOG ("called with %s", keyName (parentKey));
 
 	int errnosave = errno;
 	KDB * handle = elektraCalloc (sizeof (struct _KDB));
-	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 
 	handle->global = ksNew (0, KS_END);
 	handle->modules = ksNew (0, KS_END);
-	if (elektraModulesInit (handle->modules, errorKey) == -1)
+	if (elektraModulesInit (handle->modules, parentKey) == -1)
 	{
 		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
 		ELEKTRA_SET_INSTALLATION_ERROR (
-			errorKey, "Method 'elektraModulesInit' returned with -1. See other warning or error messages for concrete details");
+			parentKey,
+			"Method 'elektraModulesInit' returned with -1. See other warning or error messages for concrete details");
 
-		keySetName (errorKey, keyName (initialParent));
-		keySetString (errorKey, keyString (initialParent));
+		keySetName (parentKey, keyName (initialParent));
+		keySetString (parentKey, keyString (initialParent));
 		keyDel (initialParent);
 		errno = errnosave;
 		return 0;
@@ -281,24 +283,24 @@ KDB * kdbOpen (Key * errorKey)
 
 	KeySet * keys = ksNew (0, KS_END);
 	int inFallback = 0;
-	switch (elektraOpenBootstrap (handle, keys, errorKey))
+	switch (elektraOpenBootstrap (handle, keys, parentKey))
 	{
 	case -1:
 		ksDel (handle->global);
 		ksDel (handle->modules);
 		elektraFree (handle);
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey,
 						"Could not open default backend. See other warning or error messages for concrete details");
 
-		keySetName (errorKey, keyName (initialParent));
-		keySetString (errorKey, keyString (initialParent));
+		keySetName (parentKey, keyName (initialParent));
+		keySetString (parentKey, keyString (initialParent));
 		keyDel (initialParent);
 		errno = errnosave;
 		ksDel (keys);
 		return 0;
 	case 0:
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial 'kdbGet()' failed, you should either fix " KDB_DB_INIT
-							    " or the fallback " KDB_DB_FILE);
+		ELEKTRA_ADD_INSTALLATION_WARNING (parentKey, "Initial 'kdbGet()' failed, you should either fix " KDB_DB_INIT
+							     " or the fallback " KDB_DB_FILE);
 		break;
 	case 2:
 		ELEKTRA_LOG ("entered fallback code for bootstrapping");
@@ -306,18 +308,18 @@ KDB * kdbOpen (Key * errorKey)
 		break;
 	}
 
-	keySetString (errorKey, "kdbOpen(): mountGlobals");
+	keySetString (parentKey, "kdbOpen(): mountGlobals");
 
-	if (mountGlobals (handle, ksDup (keys), handle->modules, errorKey) == -1)
+	if (mountGlobals (handle, ksDup (keys), handle->modules, parentKey) == -1)
 	{
 		// mountGlobals also sets a warning containing the name of the plugin that failed to load
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting global plugins failed. Please see warning of concrete plugin");
+		ELEKTRA_ADD_INSTALLATION_WARNING (parentKey, "Mounting global plugins failed. Please see warning of concrete plugin");
 	}
 
-	keySetName (errorKey, keyName (initialParent));
-	keySetString (errorKey, "kdbOpen(): backendClose");
+	keySetName (parentKey, keyName (initialParent));
+	keySetString (parentKey, "kdbOpen(): backendClose");
 
-	backendClose (handle->defaultBackend, errorKey);
+	backendClose (handle->defaultBackend, parentKey);
 	splitDel (handle->split);
 	handle->defaultBackend = 0;
 	handle->trie = 0;
@@ -336,40 +338,46 @@ KDB * kdbOpen (Key * errorKey)
 
 	handle->split = splitNew ();
 
-	keySetString (errorKey, "kdbOpen(): mountOpen");
+	keySetString (parentKey, "kdbOpen(): mountOpen");
 	// Open the trie, keys will be deleted within mountOpen
-	if (mountOpen (handle, keys, handle->modules, errorKey) == -1)
+	if (mountOpen (handle, keys, handle->modules, parentKey) == -1)
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial loading of trie did not work");
+		ELEKTRA_ADD_INSTALLATION_WARNING (parentKey, "Initial loading of trie did not work");
 	}
 
-	keySetString (errorKey, "kdbOpen(): mountDefault");
-	if (mountDefault (handle, handle->modules, inFallback, errorKey) == -1)
+	keySetString (parentKey, "kdbOpen(): mountDefault");
+	if (mountDefault (handle, handle->modules, inFallback, parentKey) == -1)
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not reopen and mount default backend");
-		keySetString (errorKey, "kdbOpen(): close");
-		kdbClose (handle, errorKey);
+		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "Could not reopen and mount default backend");
+		keySetString (parentKey, "kdbOpen(): close");
+		kdbClose (handle, parentKey);
 
-		keySetName (errorKey, keyName (initialParent));
-		keySetString (errorKey, keyString (initialParent));
+		keySetName (parentKey, keyName (initialParent));
+		keySetString (parentKey, keyString (initialParent));
 		keyDel (initialParent);
 		errno = errnosave;
 		return 0;
 	}
 
-	keySetString (errorKey, "kdbOpen(): mountVersion");
-	mountVersion (handle, errorKey);
+	keySetString (parentKey, "kdbOpen(): mountVersion");
+	mountVersion (handle, parentKey);
 
-	keySetString (errorKey, "kdbOpen(): mountModules");
-	if (mountModules (handle, handle->modules, errorKey) == -1)
+	keySetString (parentKey, "kdbOpen(): mountModules");
+	if (mountModules (handle, handle->modules, parentKey) == -1)
 	{
-		ELEKTRA_ADD_INTERNAL_WARNING (errorKey, "Mounting modules did not work");
+		ELEKTRA_ADD_INTERNAL_WARNING (parentKey, "Mounting modules did not work");
 	}
 
-	keySetName (errorKey, keyName (initialParent));
-	keySetString (errorKey, keyString (initialParent));
+	keySetName (parentKey, keyName (initialParent));
+	keySetString (parentKey, keyString (initialParent));
 	keyDel (initialParent);
 	errno = errnosave;
+
+	if (contract != NULL)
+	{
+		kdbEnsure (handle, contract, parentKey);
+	}
+
 	return handle;
 }
 
@@ -2050,6 +2058,8 @@ static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoi
  */
 int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
 {
+	// TODO: change functionality
+
 	if (contract == NULL)
 	{
 		return -1;

@@ -79,7 +79,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 		didReload = 1;
 	}
 
-	data->kdb = kdbOpen (data->parentKey);
+	data->kdb = kdbOpenOld (data->parentKey);
 	if (data->kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");

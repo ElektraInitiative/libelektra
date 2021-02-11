@@ -14,7 +14,7 @@ int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
 	Key * key = keyNew ("system:/test/myapp", KEY_END);
-	KDB * handle = kdbOpen (key);
+	KDB * handle = kdbOpenOld (key);
 
 	kdbGet (handle, myConfig, key);
 

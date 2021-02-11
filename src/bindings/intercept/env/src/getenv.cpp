@@ -181,7 +181,7 @@ void printVersion ()
 {
 	cout << "Elektra getenv is active" << std::endl;
 	Key * k = keyNew ("system:/elektra/version", KEY_END);
-	KDB * kdb = kdbOpen (k);
+	KDB * kdb = kdbOpenOld (k);
 	KeySet * c = ksNew (20, KS_END);
 	kdbGet (kdb, c, k);
 	kdbClose (kdb, k);
@@ -453,12 +453,12 @@ extern "C" void elektraOpen (int * argc, char ** argv)
 
 	elektraParentKey = keyNew ("/elektra/intercept/getenv", KEY_END);
 	elektraConfig = ksNew (20, KS_END);
-	elektraRepo = kdbOpen (elektraParentKey);
+	elektraRepo = kdbOpenOld (elektraParentKey);
 	kdbGet (elektraRepo, elektraConfig, elektraParentKey);
 
 	elektraFallbackParentKey = keyNew ("/env", KEY_END);
 	elektraFallbackConfig = ksNew (20, KS_END);
-	elektraFallbackRepo = kdbOpen (elektraFallbackParentKey);
+	elektraFallbackRepo = kdbOpenOld (elektraFallbackParentKey);
 	kdbGet (elektraFallbackRepo, elektraFallbackConfig, elektraFallbackParentKey);
 	ksAppend (elektraConfig, elektraFallbackConfig);
 
@@ -470,7 +470,7 @@ extern "C" void elektraOpen (int * argc, char ** argv)
 
 	// reopen everything (if wrong variable names were used before)
 	kdbClose (elektraRepo, elektraParentKey);
-	elektraRepo = kdbOpen (elektraParentKey);
+	elektraRepo = kdbOpenOld (elektraParentKey);
 	std::string name = keyName (elektraParentKey);
 	kdbGet (elektraRepo, elektraConfig, elektraParentKey);
 	addLayers ();

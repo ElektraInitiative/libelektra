@@ -41,13 +41,15 @@ class KDB
 {
 public:
 	KDB ();
-	explicit KDB (Key & errorKey);
+	explicit KDB (Key & parentKey);
+	// TODO: KDB (KeySet & contract, Key & parentKey);
 	virtual ~KDB () throw ()
 	{
 		close ();
 	}
 
-	virtual inline void open (Key & errorKey);
+	virtual inline void open (Key & parentKey);
+	// TODO: virtual inline void open (KeySet & contract, Key & parentKey);
 	virtual inline void close () throw ();
 	virtual inline void close (Key & errorKey) throw ();
 
@@ -71,8 +73,8 @@ private:
  */
 inline KDB::KDB ()
 {
-	Key errorKey;
-	open (errorKey);
+	Key parentKey;
+	open (parentKey);
 }
 
 /**
@@ -85,9 +87,10 @@ inline KDB::KDB ()
  *
  * @copydoc kdbOpen
  */
-inline KDB::KDB (Key & errorKey)
+inline KDB::KDB (Key & parentKey)
 {
-	open (errorKey);
+	// TODO: documentation parentKey
+	open (parentKey);
 }
 
 /**
@@ -98,12 +101,13 @@ inline KDB::KDB (Key & errorKey)
  *
  * @copydoc kdbOpen
  */
-inline void KDB::open (Key & errorKey)
+inline void KDB::open (Key & parentKey)
 {
-	handle = ckdb::kdbOpen (errorKey.getKey ());
+	// TODO: documentation parentKey
+	handle = ckdb::kdbOpen (NULL, parentKey.getKey ());
 	if (!handle)
 	{
-		throw kdb::KDBException (errorKey);
+		throw kdb::KDBException (parentKey);
 	}
 }
 

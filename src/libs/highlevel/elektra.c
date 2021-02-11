@@ -62,7 +62,7 @@ static bool checkHighlevelContract (const char * application, KeySet * contract,
 Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * contract, ElektraError ** error)
 {
 	Key * const parentKey = keyNew (application, KEY_END);
-	KDB * const kdb = kdbOpen (parentKey);
+	KDB * const kdb = kdbOpenOld (parentKey);
 
 	if (kdb == NULL)
 	{
@@ -348,7 +348,7 @@ void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
 static bool minimalValidation (const char * application)
 {
 	Key * parent = keyNew ("system:/elektra/mountpoints", KEY_END);
-	KDB * kdb = kdbOpen (parent);
+	KDB * kdb = kdbOpenOld (parent);
 	KeySet * mountpoints = ksNew (0, KS_END);
 	if (kdbGet (kdb, mountpoints, parent) < 0)
 	{

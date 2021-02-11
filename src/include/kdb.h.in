@@ -113,7 +113,13 @@ typedef struct _KeySet	KeySet;
  *
  **************************************/
 
-KDB * kdbOpen(Key *errorKey);
+KDB * kdbOpen(KeySet * contract, Key *parentKey);
+
+// TODO: migrate
+static inline KDB * kdbOpenOld (Key * errorKey) {
+	return kdbOpen (0, errorKey);
+}
+
 int kdbClose(KDB *handle, Key *errorKey);
 
 int kdbGet(KDB *handle, KeySet *returned,
@@ -121,6 +127,7 @@ int kdbGet(KDB *handle, KeySet *returned,
 int kdbSet(KDB *handle, KeySet *returned,
 	Key *parentKey);
 
+// TODO: remove
 int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey);
 
 

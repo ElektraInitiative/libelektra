@@ -16,7 +16,7 @@ int main (void)
 	Key * root = keyNew ("user:/test", KEY_END);
 
 	printf ("Open key database\n");
-	KDB * handle = kdbOpen (root);
+	KDB * handle = kdbOpenOld (root);
 
 	printf ("Retrieve key set\n");
 	kdbGet (handle, config, root);

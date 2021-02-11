@@ -27,7 +27,7 @@ impl KDB {
     /// Opens the session with the Key database.
     pub fn open<'a>() -> Result<Self, KDBError<'a>> {
         let mut key = StringKey::new_empty();
-        let kdb_ptr = unsafe { elektra_sys::kdbOpen(key.as_ptr()) };
+        let kdb_ptr = unsafe { elektra_sys::kdbOpen(std::ptr::null_mut(), key.as_ptr()) };
 
         if kdb_ptr.is_null() {
             Err(KDBError::new(key.duplicate(CopyOption::KEY_CP_ALL)))

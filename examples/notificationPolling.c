@@ -90,7 +90,7 @@ int main (void)
 	KeySet * config = ksNew (20, KS_END);
 
 	Key * key = keyNew ("/sw/example/notification/#0/current", KEY_END);
-	KDB * kdb = kdbOpen (key);
+	KDB * kdb = kdbOpenOld (key);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");

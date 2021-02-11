@@ -13,7 +13,7 @@ Key * key;
 
 void benchmarkOpen (void)
 {
-	kdb = kdbOpen (key);
+	kdb = kdbOpenOld (key);
 }
 
 void benchmarkInread (void)

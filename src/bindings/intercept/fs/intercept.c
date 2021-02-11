@@ -116,7 +116,7 @@ void init (void)
 	KeySet * tmpKS = ksNew (0, KS_END);
 	Key * parentKey = keyNew (PRELOAD_PATH, KEY_END);
 	Key * key;
-	KDB * handle = kdbOpen (parentKey);
+	KDB * handle = kdbOpenOld (parentKey);
 	kdbGet (handle, tmpKS, parentKey);
 	KeySet * ks = ksCut (tmpKS, parentKey);
 	ksRewind (ks);
@@ -250,7 +250,7 @@ int __xstat64 (int ver, const char * path, struct stat64 * buf);
 static void exportConfiguration (Node * node)
 {
 	Key * key = keyNew (node->exportKey, KEY_END);
-	KDB * handle = kdbOpen (key);
+	KDB * handle = kdbOpenOld (key);
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (handle, ks, key);
 	KeySet * exportKS;

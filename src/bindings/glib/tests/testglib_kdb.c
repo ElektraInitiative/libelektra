@@ -28,7 +28,7 @@ static void test_open_close (void)
 	g_object_unref (kdb);
 
 	/* open + close */
-	KDB * ckdb = kdbOpen (error->key);
+	KDB * ckdb = kdbOpenOld (error->key);
 	kdb = gelektra_kdb_make (ckdb);
 	succeed_if (kdb->handle == ckdb, "handle not wrapped");
 	g_object_unref (kdb);
