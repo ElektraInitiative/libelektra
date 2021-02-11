@@ -108,6 +108,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 			     keyNew ("system:/elektra/ensure/plugins/global/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
 		ksAppendKey (contract, keyNew ("system:/elektra/ensure/plugins/global/spec/config/missing/log", KEY_VALUE, "1", KEY_END));
 
+		/* FIXME: kdbEnsure
 		const int kdbEnsureResult = kdbEnsure (kdb, contract, parentKey);
 
 		if (kdbEnsureResult == 1)
@@ -126,7 +127,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 			kdbClose (kdb, parentKey);
 			keyDel (parentKey);
 			return NULL;
-		}
+		}*/
 	}
 
 	KeySet * const config = ksNew (0, KS_END);

@@ -33,7 +33,6 @@ libelektra_0.8 {
 	# kdb.h
 	## KDB functions
 	kdbClose;
-	kdbEnsure;
 	kdbGet;
 	kdbOpen;
 	kdbSet;
@@ -141,6 +140,9 @@ libelektra_1.0 {
 	keyMeta;
 	keyLock;
 	keyIsLocked;
+
+	ksRename;
+	keyReplacePrefix;
 };
 
 libelektraprivate_1.0 {

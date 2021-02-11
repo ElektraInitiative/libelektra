@@ -113,7 +113,7 @@ typedef struct _KeySet	KeySet;
  *
  **************************************/
 
-KDB * kdbOpen(KeySet * contract, Key *parentKey);
+KDB * kdbOpen(const KeySet * contract, Key *parentKey);
 
 // TODO: migrate
 static inline KDB * kdbOpenOld (Key * errorKey) {
@@ -126,9 +126,6 @@ int kdbGet(KDB *handle, KeySet *returned,
 	Key *parentKey);
 int kdbSet(KDB *handle, KeySet *returned,
 	Key *parentKey);
-
-// TODO: remove
-int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey);
 
 
 /**************************************
@@ -182,6 +179,8 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize);
 
 ssize_t keySetName(Key *key, const char *newname);
 ssize_t keyAddName(Key *key, const char *addName);
+
+int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
 
 const void *keyUnescapedName(const Key *key);
 ssize_t keyGetUnescapedNameSize(const Key *key);
@@ -254,6 +253,8 @@ Key *ksAtCursor(KeySet *ks, elektraCursor cursor);
 
 Key *ksLookup(KeySet *ks, Key *k, elektraLookupFlags options);
 Key *ksLookupByName(KeySet *ks, const char *name, elektraLookupFlags options);
+
+ssize_t ksRename (KeySet *ks, const Key *root, const Key *newRoot);
 
 #ifdef __cplusplus
 }

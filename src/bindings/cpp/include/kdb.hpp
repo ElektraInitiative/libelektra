@@ -58,8 +58,6 @@ public:
 	virtual inline int set (KeySet & returned, std::string const & keyname);
 	virtual inline int set (KeySet & returned, Key & parentKey);
 
-	inline int ensure (const KeySet & contract, Key & parentKey);
-
 private:
 	ckdb::KDB * handle; ///< holds an kdb handle
 };
@@ -237,33 +235,6 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 	}
 	return ret;
 }
-
-/**
- * Ensures that the conditions defined in @p contract are met by this KDB.
- *
- * @see ckdb::kdbEnsure()
- *
- * @param contract  The contract to ensure.
- * @param parentKey The parentKey to use.
- *
- * @throw KDBException if there were problems with the contract or the database
- * @throw ContractException if the contract couldn't be ensured
- */
-int KDB::ensure (const KeySet & contract, Key & parentKey)
-{
-	// have to ksDup because contract is consumed and ksDel()ed by kdbEnsure
-	int ret = ckdb::kdbEnsure (handle, ckdb::ksDup (contract.getKeySet ()), parentKey.getKey ());
-	if (ret == -1)
-	{
-		throw KDBException (parentKey);
-	}
-	if (ret == 1)
-	{
-		throw ContractException (parentKey);
-	}
-	return ret;
-}
-
 
 } // end of namespace kdb
 

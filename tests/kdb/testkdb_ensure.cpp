@@ -56,7 +56,7 @@ protected:
 const char * Ensure::testRoot = "/tests/kdb/ensure";
 const char * Ensure::configFileRoot = "kdbFileEnsure.dump";
 
-
+/* FIXME: kdbEnsure
 TEST_F (Ensure, GlobalUnmount)
 {
 	using namespace kdb;
@@ -213,3 +213,4 @@ TEST_F (Ensure, GlobalMount)
 		}
 	}
 }
+*/

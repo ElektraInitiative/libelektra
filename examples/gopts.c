@@ -30,7 +30,7 @@ extern char ** environ;
  *
  * DO NOT set/unset the specification inside of your application.
  */
-
+/* FIXME: kdbEnsure
 static KeySet * createSpec (void)
 {
 	return ksNew (
@@ -93,6 +93,7 @@ static int setupSpec (void)
 	return 1;
 }
 
+
 static void removeSpec (void)
 {
 	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
@@ -104,7 +105,7 @@ static void removeSpec (void)
 	kdbSet (kdb, ks, parentKey);
 	kdbClose (kdb, parentKey);
 	ksDel (ks);
-}
+}*/
 
 // -----------------
 // Main example
@@ -112,7 +113,9 @@ static void removeSpec (void)
 
 int main (void)
 {
-	if (!setupSpec ())
+	return EXIT_FAILURE;
+	// FIXME: update kdbEnsure
+	/*if (!setupSpec ())
 	{
 		fprintf (stderr, "ERROR: Couldn't setup spec, keys exist!\n");
 		return EXIT_FAILURE;
@@ -253,5 +256,5 @@ int main (void)
 
 	removeSpec ();
 
-	return EXIT_SUCCESS;
+	return EXIT_SUCCESS;*/
 }

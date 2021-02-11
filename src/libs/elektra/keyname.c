@@ -570,6 +570,130 @@ ssize_t keyAddName (Key * key, const char * newName)
 	return key->keySize;
 }
 
+static void replacePrefix (char ** buffer, size_t size, size_t oldPrefixSize, const char * newPrefix, size_t newPrefixSize)
+{
+	if (size == oldPrefixSize)
+	{
+		// overwrite everything
+		elektraRealloc ((void **) buffer, newPrefixSize);
+		memcpy (*buffer, newPrefix, newPrefixSize);
+	}
+	else if (oldPrefixSize < newPrefixSize)
+	{
+		// grow, move, overwrite
+		elektraRealloc ((void **) buffer, size + (newPrefixSize - oldPrefixSize));
+		memmove (*buffer + newPrefixSize, *buffer + oldPrefixSize, size - oldPrefixSize);
+		memcpy (*buffer, newPrefix, newPrefixSize);
+	}
+	else
+	{
+		// move, overwrite, shrink
+		memmove (*buffer + newPrefixSize, *buffer + oldPrefixSize, size - oldPrefixSize);
+		memcpy (*buffer, newPrefix, newPrefixSize);
+		elektraRealloc ((void **) buffer, size - (oldPrefixSize - newPrefixSize));
+	}
+}
+
+/**
+ * Replaces a prefix of the key name of @p key.
+ *
+ * The function only modifies @p key, if is is below (or same as)
+ * @p oldPrefix (see keyIsBelowOrSame()) and they both have the
+ * same namespace (this is not always the case with keyIsBelowOrSame()).
+ *
+ * In simple terms this function operates as follows:
+ * 1. If before calling this function @p key and @p oldPrefix had the
+ *    same name, then afterwards @p key will have the same name as
+ *    @p newPrefix.
+ * 2. If @p key was in the same namespace as and below @p oldPrefix, then
+ *    after calling this function @p key will be in the same namespace as
+ *    and below @p newPrefix.
+ * 3. Otherwise @p key will not be modified.
+ *
+ * @param key       The key that will be manipulated.
+ * @param oldPrefix The name of this key will be removed from the front
+ *                  of the name of @p key.
+ * @param newPrefix The name of this key will be added to the front of
+ *                  @p key, after the name of @p oldPrefix is removed.
+ *
+ * @retval -1 if @p key, @p oldPrefix or @p newPrefix are NULL
+ *            or the name of @p key is marked as read-only
+ * @retval  0 if @p key is not below (or same as) @p oldPrefix,
+ *            i.e. there is no prefix to replace
+ * @retval  1 if the prefix was sucessfully replaced
+ */
+int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
+{
+	// TODO: tests
+	if (key == NULL || oldPrefix == NULL || newPrefix == NULL) return -1;
+	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
+
+	// check namespace manually, because keyIsBelowOrSame has special handling for cascading keys
+	if (keyGetNamespace (key) != keyGetNamespace (oldPrefix)) return 0;
+
+	if (keyIsBelowOrSame (oldPrefix, key) != 1)
+	{
+		return 0;
+	}
+
+	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+	{
+		// key was in mmap region, clear flag and copy to malloced buffer
+		char * tmp = elektraMalloc (key->keySize);
+		memcpy (tmp, key->key, key->keySize);
+		key->key = tmp;
+
+		tmp = elektraMalloc (key->keyUSize);
+		memcpy (tmp, key->ukey, key->keyUSize);
+		key->ukey = tmp;
+
+		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
+	}
+
+	if (key->keyUSize == oldPrefix->keyUSize && memcmp (key->ukey, oldPrefix->ukey, key->keyUSize) == 0)
+	{
+		// key is same as oldPrefix -> just copy name
+		// TODO: replace with keyCopy (key, newPrefix, KEY_CP_NAME) once #3606 is merged
+		key->key = elektraStrNDup (newPrefix->key, newPrefix->keySize);
+		key->keySize = newPrefix->keySize;
+
+		key->ukey = elektraStrNDup (newPrefix->ukey, newPrefix->keyUSize);
+		key->keyUSize = newPrefix->keyUSize;
+		return 1;
+	}
+
+	size_t oldSize, oldUSize;
+	if (oldPrefix->keyUSize == 3)
+	{
+		// oldPrefix is root key -> needs special handling
+		oldSize = oldPrefix->keySize - 2;
+		oldUSize = 2;
+	}
+	else
+	{
+		oldSize = oldPrefix->keySize - 1;
+		oldUSize = oldPrefix->keyUSize;
+	}
+
+	size_t newSize, newUSize;
+	if (newPrefix->keyUSize == 3)
+	{
+		// newPrefix is root key -> needs special handling
+		oldSize = oldPrefix->keySize - 2;
+		newUSize = 2;
+	}
+	else
+	{
+		newSize = newPrefix->keySize - 1;
+		newUSize = newPrefix->keyUSize;
+	}
+
+	replacePrefix (&key->key, key->keySize, oldSize, newPrefix->key, newSize);
+	replacePrefix (&key->ukey, key->keyUSize, oldUSize, newPrefix->ukey, newUSize);
+
+	return 1;
+}
+
 /**
  * Takes an escaped key name and validates it.
  * Complete key names must inlcude a namespace or a leading slash.

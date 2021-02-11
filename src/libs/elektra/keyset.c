@@ -937,6 +937,66 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 	return ks->size;
 }
 
+/**
+ * Moves all keys below @p root to below @p newRoot
+ *
+ * Only keys below @p root will be modified. The rest of @p ks remains untouched.
+ *
+ * This functions is more or less an optimized version of
+ *
+ * @code{.c}
+ * KeySet * toRename = ksCut (ks, root);
+ * for (elektraCursor cursor = 0; cursor < ksGetSize (toRename); cursor++)
+ * {
+ *     Key * cur = keyDup (ksAtCursor (ks, cursor));
+ *     keyReplacePrefix (cur, root, newRoot);
+ *     ksAppendKey (ks, cur);
+ * }
+ * ksDel (toRename);
+ * @endcode
+ *
+ * @param ks      the keyset to manipulate
+ * @param root    the old prefix that will be removed, must not be a cascading key
+ * @param newRoot the new prefix the will replace the old one, must not be a cascading key
+ *
+ * @retval -1 if any of @p ks, @p root, @p newRoot is NULL, or if @p root or @p newRoot are cascading keys
+ * @retval  0 if @p ks contains no keys below @p root (and also not @p root itself)
+ * @returns   otherwise, the number of keys that have been renamed
+ */
+ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
+{
+	// TODO: tests
+	if (ks == NULL || root == NULL || newRoot == NULL) return -1;
+	if (keyGetNamespace (root) == KEY_NS_CASCADING || keyGetNamespace (newRoot) == KEY_NS_CASCADING) return -1;
+
+	// search the root
+	ssize_t search = ksSearchInternal (ks, root);
+	size_t it = search < 0 ? -search - 1 : search;
+
+	// we found nothing
+	if (it == ks->size) return 0;
+
+	// we found the root
+	size_t found = it;
+
+	// rename everything below root
+	while (it < ks->size && keyIsBelowOrSame (root, ks->array[it]) == 1)
+	{
+		// temporarily clear read-only flag to allow renaming
+		clear_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
+		keyReplacePrefix (ks->array[it], root, newRoot);
+		set_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
+
+		++it;
+	}
+
+	// fix order and invalidate hashmap after renaming
+	qsort (ks->array, ks->size, sizeof (struct _Key *), keyCompareByNameOwner);
+	elektraOpmphmInvalidate (ks);
+
+	return it - found;
+}
+
 
 /**
  * @internal

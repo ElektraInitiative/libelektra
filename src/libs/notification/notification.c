@@ -104,7 +104,10 @@ int elektraNotificationOpen (KDB * kdb)
 	context->kdb = kdb;
 	context->kdbUpdate = &elektraNotificationKdbUpdate;
 
-	Key * parent = keyNew ("/", KEY_END);
+	// FIXME: kdbEnsure
+	return 0;
+
+	/*Key * parent = keyNew ("/", KEY_END);
 	KeySet * contract = ksNew (2, keyNew ("system:/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "mounted", KEY_END),
 				   keyNew ("system:/elektra/ensure/plugins/global/internalnotification/config/context", KEY_BINARY,
 					   KEY_SIZE, sizeof (context), KEY_VALUE, &context, KEY_END),
@@ -124,10 +127,12 @@ int elektraNotificationOpen (KDB * kdb)
 	}
 
 	context->notificationPlugin = notificationPlugin;
+	*/
 
 	// Get notification callback from notification plugin
 	size_t func = elektraPluginGetFunction (notificationPlugin, "notificationCallback");
-	if (!func)
+	// FIXME: kdbEnsure
+	/*if (!func)
 	{
 		// remove notification plugin again
 		contract = ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END),
@@ -138,10 +143,11 @@ int elektraNotificationOpen (KDB * kdb)
 		}
 		keyDel (parent);
 		return 0;
-	}
+	}*/
 	ElektraNotificationCallback notificationCallback = (ElektraNotificationCallback) func;
 
-	keyDel (parent);
+	// FIXME: kdbEnsure
+	// keyDel (parent);
 
 	// Open notification for plugins
 	pluginsOpenNotification (kdb, notificationCallback, context);
@@ -170,7 +176,8 @@ int elektraNotificationClose (KDB * kdb)
 	ElektraNotificationCallbackContext * context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
 	elektraFree (context);
 
-	// Unmount the plugin
+	// FIXME: kdbEnsure
+	/*// Unmount the plugin
 	Key * parent = keyNew ("/", KEY_END);
 	KeySet * contract =
 		ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/internalnotification", KEY_VALUE, "unmounted", KEY_END), KS_END);
@@ -178,7 +185,7 @@ int elektraNotificationClose (KDB * kdb)
 	{
 		ELEKTRA_LOG_WARNING ("kdbEnsure failed");
 	}
-	keyDel (parent);
+	keyDel (parent);*/
 
 	// Close notification for plugins
 	pluginsCloseNotification (kdb);

@@ -211,6 +211,151 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
 	return funret;
 }
 
+/**
+ * Checks whether the same instance of the list plugin is mounted in the global (maxonce) positions:
+ *
+ * pregetstorage, procgetstorage, postgetstorage, postgetcleanup,
+ * presetstorage, presetcleanup, precommit, postcommit,
+ * prerollback and postrollback
+ *
+ * @param handle the KDB handle to check
+ * @param errorKey used for error reporting
+ *
+ * @retval 1 if list is mounted everywhere
+ * @retval 0 otherwise
+ */
+static int ensureListPluginMountedEverywhere (KDB * handle, Key * errorKey)
+{
+	GlobalpluginPositions expectedPositions[] = { PREGETSTORAGE,
+						      PROCGETSTORAGE,
+						      POSTGETSTORAGE,
+						      POSTGETCLEANUP,
+						      PRESETSTORAGE,
+						      PRESETCLEANUP,
+						      PRECOMMIT,
+						      POSTCOMMIT,
+						      PREROLLBACK,
+						      POSTROLLBACK,
+						      -1 };
+
+	Plugin * list = handle->globalPlugins[expectedPositions[0]][MAXONCE];
+	if (list == NULL || elektraStrCmp (list->name, "list") != 0)
+	{
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "list plugin not mounted at position %s/maxonce",
+						 GlobalpluginPositionsStr[expectedPositions[0]]);
+		return 0;
+	}
+
+	for (int i = 1; expectedPositions[i] > 0; ++i)
+	{
+		Plugin * plugin = handle->globalPlugins[expectedPositions[i]][MAXONCE];
+		if (plugin != list)
+		{
+			// must always be the same instance
+			ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "list plugin not mounted at position %s/maxonce",
+							 GlobalpluginPositionsStr[expectedPositions[i]]);
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+/**
+ * Handles the system:/elektra/contract/globalkeyset part of kdbOpen() contracts
+ *
+ * NOTE: @p contract will be modified
+ *
+ * @see kdbOpen()
+ */
+static void ensureContractGlobalKs (KDB * handle, KeySet * contract)
+{
+	Key * globalKsContractRoot = keyNew ("system:/elektra/contract/globalkeyset", KEY_END);
+	Key * globalKsRoot = keyNew ("system:/elektra", KEY_END);
+
+	KeySet * globalKs = ksCut (contract, globalKsContractRoot);
+
+	ksRename (globalKs, globalKsContractRoot, globalKsRoot);
+
+	ksAppend (handle->global, globalKs);
+
+	ksDel (globalKs);
+	keyDel (globalKsContractRoot);
+	keyDel (globalKsRoot);
+}
+
+/**
+ * Handles the system:/elektra/contract/mountglobal part of kdbOpen() contracts
+ *
+ * NOTE: @p contract will be modified
+ *
+ * @see kdbOpen()
+ */
+static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * parentKey)
+{
+	if (!ensureListPluginMountedEverywhere (handle, parentKey))
+	{
+		return -1;
+	}
+
+	Plugin * listPlugin = handle->globalPlugins[PREGETSTORAGE][MAXONCE];
+	typedef int (*mountPluginFun) (Plugin *, const char *, KeySet *, Key *);
+	mountPluginFun listAddPlugin = (mountPluginFun) elektraPluginGetFunction (listPlugin, "mountplugin");
+	typedef int (*unmountPluginFun) (Plugin *, const char *, Key *);
+	unmountPluginFun listRemovePlugin = (unmountPluginFun) elektraPluginGetFunction (listPlugin, "unmountplugin");
+
+
+	Key * mountContractRoot = keyNew ("system:/elektra/contract/mountglobal", KEY_END);
+	Key * pluginConfigRoot = keyNew ("system:/", KEY_END);
+
+	ksLookup (contract, mountContractRoot, 0); // sets internal cursor
+	for (elektraCursor cursor = ksGetCursor (contract); cursor < ksGetSize (contract); cursor++)
+	{
+		Key * cur = ksAtCursor (contract, cursor);
+		if (keyIsDirectlyBelow (mountContractRoot, cur) == 1)
+		{
+			const char * pluginName = keyBaseName (cur);
+			KeySet * pluginConfig = ksCut (contract, cur);
+			ksRename (pluginConfig, mountContractRoot, pluginConfigRoot);
+
+			int ret = listRemovePlugin (listPlugin, pluginName, parentKey);
+			if (ret != ELEKTRA_PLUGIN_STATUS_ERROR)
+			{
+				ret = listAddPlugin (listPlugin, pluginName, pluginConfig, parentKey);
+			}
+
+			ksDel (pluginConfig);
+
+			if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
+			{
+				ELEKTRA_SET_INSTALLATION_ERRORF (
+					parentKey, "The plugin '%s' couldn't be mounted globally (via the 'list' plugin).", pluginName);
+				return -1;
+			}
+		}
+	}
+
+	return 0;
+}
+
+/**
+ * Handles the @p contract argument of kdbOpen().
+ *
+ * @see kdbOpen()
+ */
+static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
+{
+	// TODO: tests
+	KeySet * dup = ksDup (contract);
+
+	ensureContractGlobalKs (handle, dup);
+	int ret = ensureContractMountGlobal (handle, dup, parentKey);
+
+	ksDel (dup);
+
+	return ret;
+}
+
 
 /**
  * @brief Opens the session with the Key database.
@@ -248,9 +393,9 @@ int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
  * @retval NULL on failure
  * @ingroup kdb
  */
-KDB * kdbOpen (KeySet * contract, Key * parentKey)
+KDB * kdbOpen (const KeySet * contract, Key * parentKey)
 {
-	// TODO: documentation parentKey
+	// TODO: documentation contract, parentKey
 	if (!parentKey)
 	{
 		ELEKTRA_LOG ("no parent key passed");
@@ -368,15 +513,26 @@ KDB * kdbOpen (KeySet * contract, Key * parentKey)
 		ELEKTRA_ADD_INTERNAL_WARNING (parentKey, "Mounting modules did not work");
 	}
 
+	if (contract != NULL)
+	{
+		if (ensureContract (handle, contract, parentKey) != 0)
+		{
+			// error is set by ensureContract
+			keySetString (parentKey, "kdbOpen(): close");
+			kdbClose (handle, parentKey);
+
+			keySetName (parentKey, keyName (initialParent));
+			keySetString (parentKey, keyString (initialParent));
+			keyDel (initialParent);
+			errno = errnosave;
+			return 0;
+		}
+	}
+
 	keySetName (parentKey, keyName (initialParent));
 	keySetString (parentKey, keyString (initialParent));
 	keyDel (initialParent);
 	errno = errnosave;
-
-	if (contract != NULL)
-	{
-		kdbEnsure (handle, contract, parentKey);
-	}
 
 	return handle;
 }
@@ -1738,467 +1894,6 @@ error:
 	errno = errnosave;
 	keyDel (oldError);
 	return -1;
-}
-
-/**
- * Checks whether the same instance of the list plugin is mounted in the global (maxonce) positions:
- *
- * pregetstorage, procgetstorage, postgetstorage, postgetcleanup,
- * presetstorage, presetcleanup, precommit, postcommit,
- * prerollback and postrollback
- *
- * @param handle the KDB to check
- *
- * @retval 1 if list is mounted everywhere
- * @retval 0 otherwise
- */
-static int ensureListPluginMountedEverywhere (KDB * handle)
-{
-	GlobalpluginPositions expectedPositions[] = { PREGETSTORAGE,
-						      PROCGETSTORAGE,
-						      POSTGETSTORAGE,
-						      POSTGETCLEANUP,
-						      PRESETSTORAGE,
-						      PRESETCLEANUP,
-						      PRECOMMIT,
-						      POSTCOMMIT,
-						      PREROLLBACK,
-						      POSTROLLBACK,
-						      -1 };
-
-	Plugin * list = handle->globalPlugins[expectedPositions[0]][MAXONCE];
-	if (list == NULL || elektraStrCmp (list->name, "list") != 0)
-	{
-		ELEKTRA_LOG_WARNING ("list plugin not mounted at position %s/maxonce", GlobalpluginPositionsStr[expectedPositions[0]]);
-		return 0;
-	}
-
-	for (int i = 1; expectedPositions[i] > 0; ++i)
-	{
-		Plugin * plugin = handle->globalPlugins[expectedPositions[i]][MAXONCE];
-		if (plugin != list)
-		{
-			// must always be the same instance
-			ELEKTRA_LOG_WARNING ("list plugin not mounted at position %s/maxonce",
-					     GlobalpluginPositionsStr[expectedPositions[i]]);
-			return 0;
-		}
-	}
-
-	return 1;
-}
-
-/**
- * Finds the global placements in which a plugin should be mounted and mounts the plugin there, if it isn't already.
- *
- * @post The plugin is mounted globally in all placements defined in its infos/placements key.
- *
- * @param handle        the KDB handle to use
- * @param pluginName    the name of the plugin to mount
- * @param pluginConfig  the configuration to use, if the plugin has to be mounted
- * @param errorKey      used for error reporting
- *
- * @retval  0 on success
- * @retval -1 on error in list plugin
- * @retval -2 on other errors, warnings will be logged
- */
-static int ensureGlobalPluginMounted (KDB * handle, const char * pluginName, KeySet * pluginConfig, Key * errorKey)
-{
-	ELEKTRA_NOT_NULL (handle);
-	ELEKTRA_NOT_NULL (pluginName);
-
-	if (!ensureListPluginMountedEverywhere (handle))
-	{
-		ELEKTRA_LOG_WARNING ("the list plugin MUST be mounted in all global positions, or kdbEnsure will not work");
-		return -2;
-	}
-
-	Plugin * listPlugin = handle->globalPlugins[PREROLLBACK][MAXONCE]; // take any position
-	typedef int (*mountPluginFun) (Plugin *, const char *, KeySet *, Key *);
-	mountPluginFun listAddPlugin = (mountPluginFun) elektraPluginGetFunction (listPlugin, "mountplugin");
-
-	int result = listAddPlugin (listPlugin, pluginName, pluginConfig, errorKey);
-	if (result == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		ELEKTRA_LOG_WARNING ("could not add plugin %s to list plugin", pluginName);
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The global plugin %s couldn't be mounted (via the list plugin)",
-							pluginName);
-		return -1;
-	}
-
-	return 0;
-}
-
-/**
- * Finds the global placements in which a plugin should be mounted and removes the plugin from these, if it is present.
- *
- * @post The plugin is not mounted globally in any of the placements defined in its infos/placements key.
- *
- * @param handle        the KDB handle to use
- * @param pluginName    the name of the plugin to mount
- * @param errorKey      used for error reporting
- *
- * @retval  0 on success
- * @retval -1 on error in list plugin
- * @retval -2 on other errors, warnings will be logged
- */
-static int ensureGlobalPluginUnmounted (KDB * handle, const char * pluginName, Key * errorKey)
-{
-	ELEKTRA_NOT_NULL (handle);
-	ELEKTRA_NOT_NULL (pluginName);
-
-	if (!ensureListPluginMountedEverywhere (handle))
-	{
-		ELEKTRA_LOG_WARNING ("the list plugin MUST be mounted in all global positions, or kdbEnsure will not work");
-		return -2;
-	}
-
-	Plugin * listPlugin = handle->globalPlugins[PREROLLBACK][MAXONCE]; // take any position
-	typedef int (*unmountPluginFun) (Plugin *, const char *, Key *);
-	unmountPluginFun listRemovePlugin = (unmountPluginFun) elektraPluginGetFunction (listPlugin, "unmountplugin");
-
-	int result = listRemovePlugin (listPlugin, pluginName, errorKey);
-	if (result == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		ELEKTRA_LOG_WARNING ("could not remove %s from list plugin", pluginName);
-		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The global plugin %s couldn't be unmounted (via the list plugin)",
-							pluginName);
-		return -1;
-	}
-
-	return 0;
-}
-
-/**
- * Finds the placements in which a plugin should be mounted and removes the plugin from these, if it is present.
- * The functions only affects the mountpoint given in @p mountpoint.
- *
- * @post For mountpoint @p mountpoint, the plugin is not mounted in any of the placements defined in its infos/placements key.
- *
- * @param handle        the KDB handle to use
- * @param mountpoint    the mountpoint to modify
- * @param pluginName    the name of the plugin to mount
- * @param errorKey      used for error reporting
- *
- * @retval 0 on error, warnings will be logged
- * @retval 1 on success
- */
-static int ensurePluginUnmounted (KDB * handle, const char * mountpoint, const char * pluginName, Key * errorKey)
-{
-	Backend * backend = mountGetBackend (handle, mountpoint);
-
-	int ret = 1;
-	for (int i = 0; i < NR_OF_PLUGINS; ++i)
-	{
-		Plugin * getPlugin = backend->getplugins[i];
-		Plugin * setPlugin = backend->setplugins[i];
-		Plugin * errorPlugin = backend->errorplugins[i];
-
-		if (setPlugin != NULL && elektraStrCmp (setPlugin->name, pluginName) == 0)
-		{
-			if (elektraPluginClose (setPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					errorKey, "The plugin %s couldn't be closed (set, position: %d, mountpoint: %s)", pluginName, i,
-					mountpoint);
-				ret = 0;
-			}
-			backend->setplugins[i] = NULL;
-		}
-
-		if (getPlugin != NULL && elektraStrCmp (getPlugin->name, pluginName) == 0)
-		{
-			if (elektraPluginClose (getPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					errorKey, "The plugin %s couldn't be closed (get, position: %d, mountpoint: %s)", pluginName, i,
-					mountpoint);
-				ret = 0;
-			}
-			backend->getplugins[i] = NULL;
-		}
-
-		if (errorPlugin != NULL && elektraStrCmp (errorPlugin->name, pluginName) == 0)
-		{
-			if (elektraPluginClose (errorPlugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-					errorKey, "The plugin %s couldn't be closed (error, position: %d, mountpoint: %s)", pluginName, i,
-					mountpoint);
-				ret = 0;
-			}
-			backend->errorplugins[i] = NULL;
-		}
-	}
-
-	return ret;
-}
-
-enum PluginContractState
-{
-	PLUGIN_STATE_UNMOUNTED,
-	PLUGIN_STATE_MOUNTED,
-	PLUGIN_STATE_REMOUNT,
-};
-
-/**
- * Ensures a kdbEnsure() contract clause for a global plugin.
- *
- * @see kdbEnsure()
- *
- * @param handle       the KDB handle
- * @param pluginName   the name of the plugin
- * @param pluginState  the intended clause for the plugin
- * @param pluginConfig the config KeySet for the plugin; is always consumed, i.e. you shouldn't ksDel() it after calling this
- * @param errorKey     used for error reporting
- *
- * @retval  0 on success
- * @retval -1 on error in list plugin
- * @retval -2 on other errors
- */
-static int ensureGlobalPluginState (KDB * handle, const char * pluginName, enum PluginContractState pluginState, KeySet * pluginConfig,
-				    Key * errorKey)
-{
-	switch (pluginState)
-	{
-	case PLUGIN_STATE_UNMOUNTED:
-		ksDel (pluginConfig);
-		return ensureGlobalPluginUnmounted (handle, pluginName, errorKey);
-	case PLUGIN_STATE_MOUNTED:
-		return ensureGlobalPluginMounted (handle, pluginName, pluginConfig, errorKey);
-	case PLUGIN_STATE_REMOUNT: {
-		int ret = ensureGlobalPluginUnmounted (handle, pluginName, errorKey);
-		if (ret != 0)
-		{
-			return ret;
-		}
-		return ensureGlobalPluginMounted (handle, pluginName, pluginConfig, errorKey);
-	}
-	default:
-		ELEKTRA_ASSERT (0, "missing switch case");
-		return -2;
-	}
-}
-
-/**
- * Ensures a kdbEnsure() contract clause for a plugin under a certain mountpoint.
- *
- * @see kdbEnsure()
- *
- * @param handle       the KDB handle
- * @param mountpoint   the mountpoint to use
- * @param pluginName   the name of the plugin
- * @param pluginState  the intended clause for the plugin
- * @param pluginConfig the config KeySet for the plugin; is always consumed, i.e. you shouldn't ksDel() it after calling this
- * @param errorKey     used for error reporting
- *
- * @retval 1 on success
- * @retval 0 otherwise
- */
-static int ensurePluginState (KDB * handle ELEKTRA_UNUSED, const char * mountpoint ELEKTRA_UNUSED, const char * pluginName ELEKTRA_UNUSED,
-			      enum PluginContractState pluginState, KeySet * pluginConfig ELEKTRA_UNUSED, Key * errorKey ELEKTRA_UNUSED)
-{
-	switch (pluginState)
-	{
-	case PLUGIN_STATE_UNMOUNTED:
-		ksDel (pluginConfig);
-		return ensurePluginUnmounted (handle, mountpoint, pluginName, errorKey);
-	case PLUGIN_STATE_MOUNTED:
-		ELEKTRA_ASSERT (0, "not supported");
-		return 0; // TODO: ensurePluginMounted (handle, mountpoint, pluginName, pluginConfig, errorKey);
-	case PLUGIN_STATE_REMOUNT:
-		ELEKTRA_ASSERT (0, "not supported");
-		return 0; // TODO: ensurePluginUnmounted (handle, mountpoint, pluginName, errorKey) && ensurePluginMounted (handle,
-			  // mountpoint, pluginName, pluginConfig, errorKey);
-	default:
-		ELEKTRA_ASSERT (0, "missing switch case");
-		return 0;
-	}
-}
-
-/**
- * This function can be used to ensure the given KDB @p handle meets certain clauses,
- * specified in @p contract. Currently the following clauses are supported:
- *
- * - `system:/elektra/ensure/plugins/<mountpoint>/<pluginname>` defines the state of the plugin
- *   `<pluginname>` for the mountpoint `<mountpoint>`:
- * 	- The value `unmounted` ensures the plugin is not mounted, at this mountpoint.
- * 	- The value `mounted` ensures the plugin is mounted, at this mountpoint.
- * 	  If the plugin is not mounted, we will try to mount it.
- * 	- The value `remount` always mounts the plugin, at this mountpoint.
- * 	  If it was already mounted, it will me unmounted and mounted again.
- * 	  This can be used to ensure the plugin is mounted with a certain configuration.
- * - Keys below `system:/elektra/ensure/plugins/<mountpoint>/<pluginname>/config` are extracted and used
- *   as the plugins config KeySet during mounting. `system:/elektra/ensure/plugins/<mountpoint>/<pluginname>`
- *   will be replaced by `user` in the keynames. If no keys are given, an empty KeySet is used.
- *
- * There are a few special values for `<mountpoint>`:
- * - `global` is used to indicate the plugin should (un)mounted as a global plugin.
- *   Currently this only supports (un)mounting plugins from/to the subposition `maxonce`.
- * - `parent` is used to indicate the keyname of @p parentKey shall be used as the mountpoint.
- *
- * If `<mountpoint>` is none of those values, it has to be valid keyname with the slashes escaped.
- * That means it has to start with `/`, `user`, `system`, `dir` or `spec`.
- *
- * If `<mountpoint>` is NOT `global`, currently only `unmounted` is supported (not `mounted` and `remounted`).
- *
- * NOTE: This function only works properly, if the list plugin is mounted in all global positions.
- * If this is not the case, 1 will be returned, because this is seen as an implicit clause in the contract.
- * Additionally any contract that specifies clauses for the list plugin is rejected as malformed.
- *
- * @param handle    contains internal information of @link kdbOpen() opened @endlink key database
- * @param contract  KeySet containing the contract described above.
- *                  This will always be `ksDel()`ed. **Even in error cases.**
- * @param parentKey The parentKey used if the `parent` special value is used,
- *                  otherwise only used for error reporting.
- *
- * @retval  0 on success
- * @retval  1 if clauses of the contract are unmet
- * @retval -1 on NULL pointers, or malformed contract
- */
-int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey)
-{
-	// TODO: change functionality
-
-	if (contract == NULL)
-	{
-		return -1;
-	}
-
-	if (handle == NULL || parentKey == NULL)
-	{
-		ksDel (contract);
-		return -1;
-	}
-
-	Key * cutpoint = keyNew ("system:/elektra/ensure/plugins", KEY_END);
-	KeySet * pluginsContract = ksCut (contract, cutpoint);
-
-	// delete unused part of contract immediately
-	ksDel (contract);
-
-	ksRewind (pluginsContract);
-	Key * clause = NULL;
-	while ((clause = ksNext (pluginsContract)) != NULL)
-	{
-		// only handle 'system:/elektra/ensure/plugins/<mountpoint>/<pluginname>' keys
-		const char * condUNameBase = keyUnescapedName (clause);
-		const char * condUName = condUNameBase;
-		condUName += sizeof ("\0\0elektra\0ensure\0plugins"); // skip known common part
-
-		size_t condUSize = keyGetUnescapedNameSize (clause);
-		if (condUNameBase + condUSize <= condUName)
-		{
-			continue; // base key
-		}
-
-		condUName += strlen (condUName) + 1; // skip mountpoint
-		if (condUNameBase + condUSize <= condUName)
-		{
-			continue; // mountpoint key
-		}
-
-		condUName += strlen (condUName) + 1; // skip pluginname
-		if (condUNameBase + condUSize > condUName)
-		{
-			continue; // key below 'system:/elektra/ensure/plugins/<mountpoint>/<pluginname>'
-		}
-
-		const char * mountpoint = keyUnescapedName (clause);
-		mountpoint += sizeof ("\0\0elektra\0ensure\0plugins");
-		const char * pluginName = keyBaseName (clause);
-		const char * pluginStateString = keyString (clause);
-
-		if (elektraStrCmp (pluginName, "list") == 0)
-		{
-			ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Cannot specify clauses for the list plugin");
-			keyDel (cutpoint);
-			ksDel (pluginsContract);
-			return -1;
-		}
-
-		enum PluginContractState pluginState;
-		if (elektraStrCmp (pluginStateString, "unmounted") == 0)
-		{
-			pluginState = PLUGIN_STATE_UNMOUNTED;
-		}
-		else if (elektraStrCmp (pluginStateString, "mounted") == 0)
-		{
-			pluginState = PLUGIN_STATE_MOUNTED;
-		}
-		else if (elektraStrCmp (pluginStateString, "remount") == 0)
-		{
-			pluginState = PLUGIN_STATE_REMOUNT;
-		}
-		else
-		{
-			ELEKTRA_SET_INTERFACE_ERRORF (
-				parentKey,
-				"The key '%s' contained the value '%s', but only 'unmounted', 'mounted' or 'remounted' may be used",
-				keyName (clause), pluginStateString);
-			keyDel (cutpoint);
-			ksDel (pluginsContract);
-			return -1;
-		}
-
-		Key * pluginCutpoint = keyNew (keyName (clause), KEY_END);
-		keyAddBaseName (pluginCutpoint, "config");
-		KeySet * pluginConfig = ksCut (pluginsContract, pluginCutpoint);
-		ksAppendKey (pluginConfig, pluginCutpoint);
-		{
-			KeySet * newPluginConfig = ksRenameKeys (pluginConfig, "user:/");
-			ksDel (pluginConfig);
-			pluginConfig = newPluginConfig;
-		}
-
-		if (elektraStrCmp (mountpoint, "global") == 0)
-		{
-			int ret = ensureGlobalPluginState (handle, pluginName, pluginState, pluginConfig, parentKey);
-			if (ret != 0)
-			{
-				keyDel (cutpoint);
-				ksDel (pluginsContract);
-
-				if (ret != -1)
-				{
-					ksDel (pluginConfig);
-				}
-
-				return 1;
-			}
-		}
-		else
-		{
-			if (pluginState != PLUGIN_STATE_UNMOUNTED)
-			{
-				ELEKTRA_SET_INTERFACE_ERRORF (
-					parentKey,
-					"The key '%s' contained the value '%s', but only 'unmounted' is supported for "
-					"non-global clauses at the moment",
-					keyName (clause), pluginStateString);
-				keyDel (cutpoint);
-				ksDel (pluginConfig);
-				ksDel (pluginsContract);
-				return -1;
-			}
-
-			if (elektraStrCmp (mountpoint, "parent") == 0)
-			{
-				mountpoint = keyName (parentKey);
-			}
-
-			if (!ensurePluginState (handle, mountpoint, pluginName, pluginState, pluginConfig, parentKey))
-			{
-				keyDel (cutpoint);
-				ksDel (pluginsContract);
-				return 1;
-			}
-		}
-	}
-	keyDel (cutpoint);
-	ksDel (pluginsContract);
-
-	return 0;
 }
 
 /**
