@@ -65,6 +65,7 @@ It makes sense to compare WSL 1 and WSL 2 and make an informed decision for one 
 Your setup may require adaptions, such as installing an SSH server in your Linux distribution.
 
 Good sources of information are:
+
 - the article [Comparing WSL 1 and WSL 2](https://docs.microsoft.com/en-us/windows/wsl/compare-versions) from the official WSL documentation
 - the blog post [C++ with Visual Studio and WSL2](https://devblogs.microsoft.com/cppblog/c-with-visual-studio-and-wsl2/)
 - the official [Linux with Visual Studio C++ documentation](https://docs.microsoft.com/en-us/cpp/linux/?view=msvc-160)
