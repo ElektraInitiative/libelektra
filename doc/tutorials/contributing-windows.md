@@ -1,8 +1,6 @@
 # Introduction
 
 In this tutorial, you will learn how to set up a development environment for Elektra using Windows Subsystem for Linux (WSL) and Visual Studio 2019.
-For further information, consider the
-[Linux with Visual Studio C++ documentation](https://docs.microsoft.com/en-us/cpp/linux/?view=msvc-160).
 
 Visual Studio 2019 (VS2019) Community is free but requires a registration after a couple of days.
 [Download it](https://visualstudio.microsoft.com/downloads/)
@@ -60,3 +58,21 @@ Create a breakpoint in the main function and run the program again using the gre
 On the bottom-left you will see the windows `Autos`, `Locals` and `Watch 1`.
 Click on `Locals` to inspect the `Key * k`.
 Right-click `keyNew` to access functions like `Peek Definition`.
+
+# Choosing your WSL version
+
+It makes sense to compare WSL 1 and WSL 2 and make an informed decision for one of them.
+Your setup may require adaptions, such as installing an SSH server in your Linux distribution.
+
+Good sources of information are:
+- the article [Comparing WSL 1 and WSL 2](https://docs.microsoft.com/en-us/windows/wsl/compare-versions) from the official WSL documentation
+- the blog post [C++ with Visual Studio and WSL2](https://devblogs.microsoft.com/cppblog/c-with-visual-studio-and-wsl2/)
+- the official [Linux with Visual Studio C++ documentation](https://docs.microsoft.com/en-us/cpp/linux/?view=msvc-160)
+
+Commands to change your WSL version can be found, for example, in the blog post
+[WSL 2 is now available in Windows Insiders](https://devblogs.microsoft.com/commandline/wsl-2-is-now-available-in-windows-insiders/)
+
+# Troubleshooting
+
+For further information, consider the official
+[Linux with Visual Studio C++ documentation](https://docs.microsoft.com/en-us/cpp/linux/?view=msvc-160).
