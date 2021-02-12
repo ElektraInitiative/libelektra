@@ -940,9 +940,11 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 /**
  * Moves all keys below @p root to below @p newRoot
  *
- * Only keys below @p root will be modified. The rest of @p ks remains untouched.
+ * Only keys below @p root will be modified. The rest of
+ * @p ks remains untouched.
  *
- * This functions is more or less an optimized version of
+ * This functions is similar to the following snippet, but
+ * there are some differences.
  *
  * @code{.c}
  * KeySet * toRename = ksCut (ks, root);
@@ -955,17 +957,28 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
  * ksDel (toRename);
  * @endcode
  *
+ * Firstly, the optimizations only work, if @p ks doesn't
+ * contain any keys below @p newRoot. If there are already keys
+ * present, below @p newRoot, ksRename() will fail.
+ *
+ * The second difference to the manual for-loop is that ksRename()
+ * will modify the keys in @p ks directly, if they aren't referenced
+ * from anywhere else (if their reference count is 1 (see keyGetRef())).
+ * Normally, this shouldn't cause problems, but if you have a direct
+ * `Key *` pointer to a key in @p ks, you may need to call keyIncRef()
+ * to ensure the key isn't modified.
+ *
  * @param ks      the keyset to manipulate
  * @param root    the old prefix that will be removed, must not be a cascading key
  * @param newRoot the new prefix the will replace the old one, must not be a cascading key
  *
  * @retval -1 if any of @p ks, @p root, @p newRoot is NULL, or if @p root or @p newRoot are cascading keys
+ * @retval -2 if @p ks already contains keys below @p newRoot
  * @retval  0 if @p ks contains no keys below @p root (and also not @p root itself)
  * @returns   otherwise, the number of keys that have been renamed
  */
 ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 {
-	// TODO: tests
 	if (ks == NULL || root == NULL || newRoot == NULL) return -1;
 	if (keyGetNamespace (root) == KEY_NS_CASCADING || keyGetNamespace (newRoot) == KEY_NS_CASCADING) return -1;
 
@@ -979,12 +992,43 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 	// we found the root
 	size_t found = it;
 
+	if (keyCmp (root, newRoot) == 0)
+	{
+		// same root, just count
+		while (it < ks->size && keyIsBelowOrSame (root, ks->array[it]) == 1)
+		{
+			++it;
+		}
+		return it - found;
+	}
+
+	search = ksSearchInternal (ks, newRoot);
+	size_t newIt = search < 0 ? -search - 1 : search;
+
+	if (keyIsBelowOrSame (newRoot, ks->array[newIt]) == 1)
+	{
+		// has keys below newRoot
+		return -2;
+	}
+
 	// rename everything below root
 	while (it < ks->size && keyIsBelowOrSame (root, ks->array[it]) == 1)
 	{
-		// temporarily clear read-only flag to allow renaming
-		clear_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
+		if (ks->array[it]->ksReference == 1)
+		{
+			// only referenced in this KeySet -> just override read-only flag
+			clear_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
+		}
+		else
+		{
+			// key has other references -> dup in-place so we can safely rename it
+			Key * dup = keyDup (ks->array[it]);
+			keyDecRef (ks->array[it]);
+			keyDel (ks->array[it]);
+			ks->array[it] = dup;
+		}
 		keyReplacePrefix (ks->array[it], root, newRoot);
+		// lock key with new name
 		set_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
 
 		++it;

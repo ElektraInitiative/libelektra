@@ -627,13 +627,15 @@ static void replacePrefix (char ** buffer, size_t size, size_t oldPrefixSize, co
  */
 int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 {
-	// TODO: tests
 	if (key == NULL || oldPrefix == NULL || newPrefix == NULL) return -1;
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 
 	// check namespace manually, because keyIsBelowOrSame has special handling for cascading keys
 	if (keyGetNamespace (key) != keyGetNamespace (oldPrefix)) return 0;
 	if (keyIsBelowOrSame (oldPrefix, key) != 1) return 0;
+
+	// same prefix -> nothing to do
+	if (keyCmp (oldPrefix, newPrefix) == 0) return 1;
 
 	if (key->keyUSize == oldPrefix->keyUSize)
 	{
