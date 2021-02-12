@@ -871,6 +871,130 @@ static void test_warnings (void)
 	keyDel (key);
 }
 
+static void test_keyReplacePrefix (void)
+{
+	printf ("Test keyReplacePrefix\n");
+
+	Key * key = keyNew ("user:/", KEY_END);
+	Key * oldPrefix = keyNew ("user:/", KEY_END);
+	Key * newPrefix = keyNew ("user:/", KEY_END);
+
+	succeed_if (keyReplacePrefix (NULL, oldPrefix, newPrefix) == -1, "should not accept NULL argument");
+	succeed_if (keyReplacePrefix (key, NULL, newPrefix) == -1, "should not accept NULL argument");
+	succeed_if (keyReplacePrefix (key, oldPrefix, NULL) == -1, "should not accept NULL argument");
+
+	set_bit (key->flags, KEY_FLAG_RO_NAME);
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == -1, "should not accept read-only key");
+	clear_bit (key->flags, KEY_FLAG_RO_NAME);
+
+	keySetName (oldPrefix, "user:/foo");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 0, "shouldn't touch keys not below oldPrefix");
+	succeed_if_same_string (keyName (key), "user:/");
+	succeed_if_same_string (keyName (oldPrefix), "user:/foo");
+	succeed_if_same_string (keyName (newPrefix), "user:/");
+
+	keySetName (key, "user:/bar");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 0, "shouldn't touch keys not below oldPrefix");
+	succeed_if_same_string (keyName (key), "user:/bar");
+	succeed_if_same_string (keyName (oldPrefix), "user:/foo");
+	succeed_if_same_string (keyName (newPrefix), "user:/");
+
+	keySetName (key, "system:/foo/bar");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 0, "shouldn't touch keys with different namespace than oldPrefix");
+	succeed_if_same_string (keyName (key), "system:/foo/bar");
+	succeed_if_same_string (keyName (oldPrefix), "user:/foo");
+	succeed_if_same_string (keyName (newPrefix), "user:/");
+
+	keySetName (key, "/foo/bar");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 0, "shouldn't touch keys with different namespace than oldPrefix");
+	succeed_if_same_string (keyName (key), "/foo/bar");
+	succeed_if_same_string (keyName (oldPrefix), "user:/foo");
+	succeed_if_same_string (keyName (newPrefix), "user:/");
+
+	keySetName (key, "system:/foo/bar");
+	keySetName (oldPrefix, "/foo");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 0, "shouldn't touch keys with different namespace than oldPrefix");
+	succeed_if_same_string (keyName (key), "system:/foo/bar");
+	succeed_if_same_string (keyName (oldPrefix), "/foo");
+	succeed_if_same_string (keyName (newPrefix), "user:/");
+
+	keySetName (key, "system:/foo/bar");
+	keySetName (oldPrefix, "system:/foo");
+	keySetName (newPrefix, "system:/baz");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 1, "didn't correctly replace");
+	succeed_if_same_string (keyName (key), "system:/baz/bar");
+	succeed_if_same_string (keyName (oldPrefix), "system:/foo");
+	succeed_if_same_string (keyName (newPrefix), "system:/baz");
+
+	keySetName (key, "system:/foo/bar");
+	keySetName (oldPrefix, "system:/foo");
+	keySetName (newPrefix, "user:/baz");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 1, "didn't correctly replace");
+	succeed_if_same_string (keyName (key), "user:/baz/bar");
+	succeed_if_same_string (keyName (oldPrefix), "system:/foo");
+	succeed_if_same_string (keyName (newPrefix), "user:/baz");
+
+	keySetName (key, "system:/foo/bar");
+	keySetName (oldPrefix, "system:/foo/bar");
+	keySetName (newPrefix, "system:/baz");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 1, "didn't correctly replace");
+	succeed_if_same_string (keyName (key), "system:/baz");
+	succeed_if_same_string (keyName (oldPrefix), "system:/foo/bar");
+	succeed_if_same_string (keyName (newPrefix), "system:/baz");
+
+	keySetName (key, "system:/foo/bar");
+	keySetName (oldPrefix, "system:/");
+	keySetName (newPrefix, "user:/baz");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 1, "didn't correctly replace");
+	succeed_if_same_string (keyName (key), "user:/baz/foo/bar");
+	succeed_if_same_string (keyName (oldPrefix), "system:/");
+	succeed_if_same_string (keyName (newPrefix), "user:/baz");
+
+	keySetName (key, "system:/foo/bar");
+	keySetName (oldPrefix, "system:/");
+	keySetName (newPrefix, "user:/");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 1, "didn't correctly replace");
+	succeed_if_same_string (keyName (key), "user:/foo/bar");
+	succeed_if_same_string (keyName (oldPrefix), "system:/");
+	succeed_if_same_string (keyName (newPrefix), "user:/");
+
+	keySetName (key, "system:/");
+	keySetName (oldPrefix, "system:/");
+	keySetName (newPrefix, "user:/");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 1, "didn't correctly replace");
+	succeed_if_same_string (keyName (key), "user:/");
+	succeed_if_same_string (keyName (oldPrefix), "system:/");
+	succeed_if_same_string (keyName (newPrefix), "user:/");
+
+	keySetName (key, "/foo/bar");
+	keySetName (oldPrefix, "/foo");
+	keySetName (newPrefix, "/baz");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 1, "didn't correctly replace");
+	succeed_if_same_string (keyName (key), "/baz/bar");
+	succeed_if_same_string (keyName (oldPrefix), "/foo");
+	succeed_if_same_string (keyName (newPrefix), "/baz");
+
+	keySetName (key, "/foo/bar");
+	keySetName (oldPrefix, "/");
+	keySetName (newPrefix, "system:/baz");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 1, "didn't correctly replace");
+	succeed_if_same_string (keyName (key), "system:/baz/foo/bar");
+	succeed_if_same_string (keyName (oldPrefix), "/");
+	succeed_if_same_string (keyName (newPrefix), "system:/baz");
+
+	keySetName (key, "/foo/bar");
+	keySetName (oldPrefix, "/");
+	keySetName (newPrefix, "system:/");
+	succeed_if (keyReplacePrefix (key, oldPrefix, newPrefix) == 1, "didn't correctly replace");
+	succeed_if_same_string (keyName (key), "system:/foo/bar");
+	succeed_if_same_string (keyName (oldPrefix), "/");
+	succeed_if_same_string (keyName (newPrefix), "system:/");
+
+	keyDel (key);
+	keyDel (oldPrefix);
+	keyDel (newPrefix);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KEY      TESTS\n");
@@ -894,6 +1018,7 @@ int main (int argc, char ** argv)
 	test_keyFixedNew ();
 	test_keyFlags ();
 	test_warnings ();
+	test_keyReplacePrefix ();
 
 	print_result ("test_key");
 	return nbError;

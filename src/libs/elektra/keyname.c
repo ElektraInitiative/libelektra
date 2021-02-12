@@ -610,6 +610,9 @@ static void replacePrefix (char ** buffer, size_t size, size_t oldPrefixSize, co
  *    and below @p newPrefix.
  * 3. Otherwise @p key will not be modified.
  *
+ * Note: We use `const Key *` arguments for the prefixes instead of
+ * `const char *` to ensure only valid key names can be passed as arguments.
+ *
  * @param key       The key that will be manipulated.
  * @param oldPrefix The name of this key will be removed from the front
  *                  of the name of @p key.
@@ -630,10 +633,24 @@ int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 
 	// check namespace manually, because keyIsBelowOrSame has special handling for cascading keys
 	if (keyGetNamespace (key) != keyGetNamespace (oldPrefix)) return 0;
+	if (keyIsBelowOrSame (oldPrefix, key) != 1) return 0;
 
-	if (keyIsBelowOrSame (oldPrefix, key) != 1)
+	if (key->keyUSize == oldPrefix->keyUSize)
 	{
-		return 0;
+		// key is same as oldPrefix -> just copy name
+		// TODO: replace with keyCopy (key, newPrefix, KEY_CP_NAME) once #3606 is merged
+		if (!test_bit (key->flags, KEY_FLAG_MMAP_KEY))
+		{
+			elektraFree (key->key);
+			elektraFree (key->ukey);
+		}
+
+		key->key = elektraStrNDup (newPrefix->key, newPrefix->keySize);
+		key->keySize = newPrefix->keySize;
+
+		key->ukey = elektraStrNDup (newPrefix->ukey, newPrefix->keyUSize);
+		key->keyUSize = newPrefix->keyUSize;
+		return 1;
 	}
 
 	if (test_bit (key->flags, KEY_FLAG_MMAP_KEY))
@@ -648,18 +665,6 @@ int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 		key->ukey = tmp;
 
 		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
-	}
-
-	if (key->keyUSize == oldPrefix->keyUSize && memcmp (key->ukey, oldPrefix->ukey, key->keyUSize) == 0)
-	{
-		// key is same as oldPrefix -> just copy name
-		// TODO: replace with keyCopy (key, newPrefix, KEY_CP_NAME) once #3606 is merged
-		key->key = elektraStrNDup (newPrefix->key, newPrefix->keySize);
-		key->keySize = newPrefix->keySize;
-
-		key->ukey = elektraStrNDup (newPrefix->ukey, newPrefix->keyUSize);
-		key->keyUSize = newPrefix->keyUSize;
-		return 1;
 	}
 
 	size_t oldSize, oldUSize;
@@ -679,7 +684,7 @@ int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 	if (newPrefix->keyUSize == 3)
 	{
 		// newPrefix is root key -> needs special handling
-		oldSize = oldPrefix->keySize - 2;
+		newSize = newPrefix->keySize - 2;
 		newUSize = 2;
 	}
 	else
