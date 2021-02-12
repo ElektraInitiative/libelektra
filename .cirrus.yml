@@ -37,7 +37,7 @@ bsd_task:
 
     - name: 😈 ASAN
       freebsd_instance:
-        image_family: freebsd-12-2
+        image_family: freebsd-12-1-snap
       env:
         ENABLE_ASAN: ON
 
