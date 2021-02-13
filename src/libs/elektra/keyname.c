@@ -570,28 +570,33 @@ ssize_t keyAddName (Key * key, const char * newName)
 	return key->keySize;
 }
 
-static void replacePrefix (char ** buffer, size_t size, size_t oldPrefixSize, const char * newPrefix, size_t newPrefixSize)
+static size_t replacePrefix (char ** buffer, size_t size, size_t oldPrefixSize, const char * newPrefix, size_t newPrefixSize)
 {
+	size_t newSize;
 	if (size == oldPrefixSize)
 	{
 		// overwrite everything
-		elektraRealloc ((void **) buffer, newPrefixSize);
+		newSize = newPrefixSize;
+		elektraRealloc ((void **) buffer, newSize);
 		memcpy (*buffer, newPrefix, newPrefixSize);
 	}
 	else if (oldPrefixSize < newPrefixSize)
 	{
 		// grow, move, overwrite
-		elektraRealloc ((void **) buffer, size + (newPrefixSize - oldPrefixSize));
+		newSize = size + (newPrefixSize - oldPrefixSize);
+		elektraRealloc ((void **) buffer, newSize);
 		memmove (*buffer + newPrefixSize, *buffer + oldPrefixSize, size - oldPrefixSize);
 		memcpy (*buffer, newPrefix, newPrefixSize);
 	}
 	else
 	{
 		// move, overwrite, shrink
+		newSize = size - (oldPrefixSize - newPrefixSize);
 		memmove (*buffer + newPrefixSize, *buffer + oldPrefixSize, size - oldPrefixSize);
 		memcpy (*buffer, newPrefix, newPrefixSize);
-		elektraRealloc ((void **) buffer, size - (oldPrefixSize - newPrefixSize));
+		elektraRealloc ((void **) buffer, newSize);
 	}
+	return newSize;
 }
 
 /**
@@ -695,8 +700,8 @@ int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 		newUSize = newPrefix->keyUSize;
 	}
 
-	replacePrefix (&key->key, key->keySize, oldSize, newPrefix->key, newSize);
-	replacePrefix (&key->ukey, key->keyUSize, oldUSize, newPrefix->ukey, newUSize);
+	key->keySize = replacePrefix (&key->key, key->keySize, oldSize, newPrefix->key, newSize);
+	key->keyUSize = replacePrefix (&key->ukey, key->keyUSize, oldUSize, newPrefix->ukey, newUSize);
 
 	return 1;
 }
