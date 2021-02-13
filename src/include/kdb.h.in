@@ -254,8 +254,6 @@ Key *ksAtCursor(KeySet *ks, elektraCursor cursor);
 Key *ksLookup(KeySet *ks, Key *k, elektraLookupFlags options);
 Key *ksLookupByName(KeySet *ks, const char *name, elektraLookupFlags options);
 
-ssize_t ksRename (KeySet *ks, const Key *root, const Key *newRoot);
-
 #ifdef __cplusplus
 }
 }

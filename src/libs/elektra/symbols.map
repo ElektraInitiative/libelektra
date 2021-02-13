@@ -137,12 +137,15 @@ libelektra_1.0 {
 	ELEKTRA_WARNING_VALIDATION_SYNTACTIC;
 	ELEKTRA_WARNING_VALIDATION_SEMANTIC;
 
+	# kdb.h
 	keyMeta;
 	keyLock;
 	keyIsLocked;
 
-	ksRename;
 	keyReplacePrefix;
+
+	# kdbcontracts.h
+	elektraGOptsContract;
 };
 
 libelektraprivate_1.0 {
@@ -171,6 +174,9 @@ libelektraprivate_1.0 {
 	elektraProcessPlugin;
 	elektraProcessPlugins;
 	keySetNamespace;
+
+	ksRename;
+	ksFindHierarchy;
 
 	# kdblogger.h
 	elektraLog;

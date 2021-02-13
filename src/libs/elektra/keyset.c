@@ -938,6 +938,34 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
 }
 
 /**
+ * The core rename loop of ksRename()
+ */
+static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key * root, const Key * newRoot)
+{
+	for (size_t it = start; it < end; ++it)
+	{
+		if (ks->array[it]->ksReference == 1)
+		{
+			// only referenced in this KeySet -> just override read-only flag
+			clear_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
+		}
+		else
+		{
+			// key has other references -> dup in-place so we can safely rename it
+			Key * dup = keyDup (ks->array[it]);
+			keyDecRef (ks->array[it]);
+			dup->ksReference = ks->array[it]->ksReference;
+			keyDel (ks->array[it]);
+			ks->array[it] = dup;
+		}
+		keyReplacePrefix (ks->array[it], root, newRoot);
+		// lock key with new name
+		set_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
+	}
+	return end - start;
+}
+
+/**
  * Moves all keys below @p root to below @p newRoot
  *
  * Only keys below @p root will be modified. The rest of
@@ -958,12 +986,13 @@ ssize_t ksAppend (KeySet * ks, const KeySet * toAppend)
  * @endcode
  *
  * Firstly, the optimizations only work, if @p ks doesn't
- * contain any keys below @p newRoot. If there are already keys
- * present, below @p newRoot, ksRename() will fail.
+ * contain any keys below @p newRoot that aren't below @p root.
+ * If such keys exist, ksRename() will still work, but it will fall
+ * back to code similar to the for-loop above.
  *
- * The second difference to the manual for-loop is that ksRename()
- * will modify the keys in @p ks directly, if they aren't referenced
- * from anywhere else (if their reference count is 1 (see keyGetRef())).
+ * The second difference is that ksRename() will modify the keys in
+ * @p ks directly, if they aren't referenced from anywhere else
+ * (if their reference count is 1 (see keyGetRef())).
  * Normally, this shouldn't cause problems, but if you have a direct
  * `Key *` pointer to a key in @p ks, you may need to call keyIncRef()
  * to ensure the key isn't modified.
@@ -983,64 +1012,49 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 	if (keyGetNamespace (root) == KEY_NS_CASCADING || keyGetNamespace (newRoot) == KEY_NS_CASCADING) return -1;
 
 	// search the root
-	ssize_t search = ksSearchInternal (ks, root);
-	size_t it = search < 0 ? -search - 1 : search;
+	elektraCursor end;
+	size_t start = ksFindHierarchy (ks, root, &end);
 
 	// we found nothing
-	if (it == ks->size) return 0;
-
-	// we found the root
-	size_t found = it;
+	if (start == ks->size) return 0;
 
 	if (keyCmp (root, newRoot) == 0)
 	{
-		// same root, just count
-		while (it < ks->size && keyIsBelowOrSame (root, ks->array[it]) == 1)
-		{
-			++it;
-		}
-		return it - found;
+		// same root, just return count
+		return end - start;
 	}
 
-	search = ksSearchInternal (ks, newRoot);
-	size_t newIt = search < 0 ? -search - 1 : search;
-
-	if (keyIsBelowOrSame (newRoot, ks->array[newIt]) == 1)
+	size_t newStart = ksFindHierarchy (ks, newRoot, NULL);
+	if (newStart < ks->size && keyIsBelowOrSame (newRoot, ks->array[newStart]) == 1)
 	{
 		// has keys below newRoot
-		return -2;
+		if (start == newStart)
+		{
+			// first key below newRoot is also first key below root
+			// -> we can just rename keys and everything will be fine
+			// we don't need to re-sort/invalidate the hashmap,
+			// because the renamed subset is already in the right place
+			return ksRenameInternal (ks, start, end, root, newRoot);
+		}
+
+		// possible name collisions after rename
+		// -> ksCut and ksAppend to be safe
+		KeySet * toRename = ksCut (ks, root);
+		size_t renamed = ksRenameInternal (toRename, 0, ksGetSize (toRename), root, newRoot);
+		ksAppend (ks, toRename);
+		ksDel (toRename);
+		return renamed;
 	}
 
 	// rename everything below root
-	while (it < ks->size && keyIsBelowOrSame (root, ks->array[it]) == 1)
-	{
-		if (ks->array[it]->ksReference == 1)
-		{
-			// only referenced in this KeySet -> just override read-only flag
-			clear_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
-		}
-		else
-		{
-			// key has other references -> dup in-place so we can safely rename it
-			Key * dup = keyDup (ks->array[it]);
-			keyDecRef (ks->array[it]);
-			keyDel (ks->array[it]);
-			ks->array[it] = dup;
-		}
-		keyReplacePrefix (ks->array[it], root, newRoot);
-		// lock key with new name
-		set_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
-
-		++it;
-	}
+	size_t renamed = ksRenameInternal (ks, start, end, root, newRoot);
 
 	// fix order and invalidate hashmap after renaming
 	qsort (ks->array, ks->size, sizeof (struct _Key *), keyCompareByNameOwner);
 	elektraOpmphmInvalidate (ks);
 
-	return it - found;
+	return renamed;
 }
-
 
 /**
  * @internal
@@ -1078,6 +1092,78 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
 	if (ret) elektraOpmphmInvalidate (ks);
 
 	return ret;
+}
+
+/**
+ * Searches for the start and optionally end of the key hierachy rooted at @p root in @p ks.
+ *
+ * The main use-case for this function is this kind of loop:
+ *
+ * @code{.c}
+ * elektraCursor end;
+ * for (elektraCursor it = ksFindHierarachy (ks, root, &end); it < end; ++it)
+ * {
+ * 	Key * cur = ksAtCursor (ks, it);
+ * }
+ * @endcode
+ *
+ * @param ks   The keyset to search in
+ * @param root The root of the hierachy to find
+ * @param end  If this is not NULL, it will be set to position of the first
+ *             key after @p root that is not below @p root. This is useful
+ *             for loops like the one above.
+ *             If not keys below @p root exist in @p ks, @p end will always
+ *             be set to the size of @p ks. This way a loop like the one above
+ *             will still work correctly.
+ *
+ * @retval -1 if @p ks or @p root are NULL
+ * @return the position of either @p root itself or the first key below
+ *         @p root that is part of @p ks. If no keys below @p root exist
+ *         in @p ks, the size of @p ks is returned. The snippet above
+ *         shows why this is useful.
+ */
+elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end)
+{
+	if (ks == NULL || root == NULL) return -1;
+
+	ssize_t search = ksSearchInternal (ks, root);
+	size_t it = search < 0 ? -search - 1 : search;
+	if (it == ks->size || keyGetNamespace (root) != keyGetNamespace (ks->array[it]) || keyIsBelowOrSame (root, ks->array[it]) != 1)
+	{
+		if (end != NULL)
+		{
+			*end = ks->size;
+		}
+		return ks->size;
+	}
+
+	if (end != NULL)
+	{
+		if (root->keyUSize == 3)
+		{
+
+			// special handling for root keys
+			// we just increment the namespace byte and search
+			// for the next theoretically possible namespace
+			root->ukey[0]++;
+			ssize_t endSearch = ksSearchInternal (ks, root);
+			root->ukey[0]--;
+			*end = endSearch < 0 ? -endSearch - 1 : endSearch;
+		}
+		else
+		{
+			// Very much a HACK to avoid allocating a new key name
+			// Overwriting the null terminator works fine, because
+			// all accesses to root->ukey inside of ksSearchInternal()
+			// use root->keyUSize explicitly.
+			root->ukey[root->keyUSize - 1] = '\1';
+			ssize_t endSearch = ksSearchInternal (ks, root);
+			root->ukey[root->keyUSize - 1] = '\0';
+			*end = endSearch < 0 ? -endSearch - 1 : endSearch;
+		}
+	}
+
+	return it;
 }
 
 /**

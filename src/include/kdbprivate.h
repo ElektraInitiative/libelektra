@@ -588,6 +588,10 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
 KeySet * ksRenameKeys (KeySet * config, const char * name);
 
+ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
+
+elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
+
 
 /* Conveniences Methods for Making Tests */
 
