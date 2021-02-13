@@ -86,11 +86,11 @@ void test_global (void)
 	char ** argv = (char **) (char *[]){ "gopts-test", "-capple", "--longopt=banana", "raspberry", NULL };
 	char ** envp = (char **) (char *[]){ "ENV_VAR=carrot", "OTHER_ENV_VAR=strawberry", NULL };
 
-	plugin->global =
-		ksNew (4, keyNew ("system:/elektra/gopts/parent", KEY_VALUE, keyName (parentKey), KEY_END),
-		       keyNew ("system:/elektra/gopts/argc", KEY_BINARY, KEY_SIZE, sizeof (int), KEY_VALUE, &argc, KEY_END),
-		       keyNew ("system:/elektra/gopts/argv", KEY_BINARY, KEY_SIZE, sizeof (char **), KEY_VALUE, &argv, KEY_END),
-		       keyNew ("system:/elektra/gopts/envp", KEY_BINARY, KEY_SIZE, sizeof (char **), KEY_VALUE, &envp, KEY_END), KS_END);
+	plugin->global = ksNew (
+		4, keyNew ("system:/elektra/internal/gopts/parent", KEY_VALUE, keyName (parentKey), KEY_END),
+		keyNew ("system:/elektra/internal/gopts/argc", KEY_BINARY, KEY_SIZE, sizeof (int), KEY_VALUE, &argc, KEY_END),
+		keyNew ("system:/elektra/internal/gopts/argv", KEY_BINARY, KEY_SIZE, sizeof (char **), KEY_VALUE, &argv, KEY_END),
+		keyNew ("system:/elektra/internal/gopts/envp", KEY_BINARY, KEY_SIZE, sizeof (char **), KEY_VALUE, &envp, KEY_END), KS_END);
 
 	KeySet * ks = ksNew (5, keyNew ("spec:/tests/gopts/apple", KEY_META, "opt", "c", KEY_END),
 			     keyNew ("spec:/tests/gopts/banana", KEY_META, "opt/long", "longopt", KEY_END),

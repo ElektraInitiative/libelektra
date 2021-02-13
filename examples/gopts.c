@@ -30,7 +30,7 @@ extern char ** environ;
  *
  * DO NOT set/unset the specification inside of your application.
  */
-/* FIXME: kdbEnsure
+
 static KeySet * createSpec (void)
 {
 	return ksNew (
@@ -105,46 +105,31 @@ static void removeSpec (void)
 	kdbSet (kdb, ks, parentKey);
 	kdbClose (kdb, parentKey);
 	ksDel (ks);
-}*/
+}
 
 // -----------------
 // Main example
 // -----------------
 
-int main (void)
+int main (int argc, const char * const * argv)
 {
 	return EXIT_FAILURE;
-	// FIXME: update kdbEnsure
-	/*if (!setupSpec ())
+	if (!setupSpec ())
 	{
 		fprintf (stderr, "ERROR: Couldn't setup spec, keys exist!\n");
 		return EXIT_FAILURE;
 	}
 
 	Key * parentKey = keyNew (BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpenOld (parentKey);
+	KeySet * goptsConfig = ksNew (0, KS_END);
+	KeySet * contract = ksNew (0, KS_END);
 
-	KeySet * contract = ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
-	int rc = kdbEnsure (kdb, contract, parentKey);
-	if (rc == 1)
-	{
-		fprintf (stderr, "ERROR: Contract could not be ensured!\n%s\n", keyString (keyGetMeta (parentKey, "error/reason")));
-		kdbClose (kdb, parentKey);
-		keyDel (parentKey);
-		removeSpec ();
-		return EXIT_FAILURE;
-	}
-	else if (rc == -1)
-	{
-		fprintf (stderr, "ERROR: Contract malformed/NULL pointer!\n%s\n", keyString (keyGetMeta (parentKey, "error/reason")));
-		kdbClose (kdb, parentKey);
-		keyDel (parentKey);
-		removeSpec ();
-		return EXIT_FAILURE;
-	}
+	elektraGOptsContract (contract, argc, argv, (const char * const *) environ, parentKey, goptsConfig);
+
+	KDB * kdb = kdbOpen (contract, parentKey);
 
 	KeySet * ks = ksNew (0, KS_END);
-	rc = kdbGet (kdb, ks, parentKey);
+	int rc = kdbGet (kdb, ks, parentKey);
 
 	if (rc == -1)
 	{
@@ -256,5 +241,5 @@ int main (void)
 
 	removeSpec ();
 
-	return EXIT_SUCCESS;*/
+	return EXIT_SUCCESS;
 }
