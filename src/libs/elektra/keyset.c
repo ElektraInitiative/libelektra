@@ -955,7 +955,6 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
 			Key * dup = keyDup (ks->array[it]);
 			keyDecRef (ks->array[it]);
 			dup->ksReference = 1;
-			keyDel (ks->array[it]);
 			ks->array[it] = dup;
 		}
 		keyReplacePrefix (ks->array[it], root, newRoot);
