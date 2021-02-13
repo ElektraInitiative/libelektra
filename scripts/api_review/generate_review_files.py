@@ -76,7 +76,9 @@ with open(args.template_path) as template_file:
     template = template_file.read()
 
 for method in methods:
-    with open(get_file_name(get_method_name(method)), 'w') as output_file:
+    method_name = get_method_name(method)
+
+    with open(get_file_name(method_name), 'w') as output_file:
         output_file.write(
-            template.format(signature_name = method)
+            template.format(signature = method, name = method_name)
         )
