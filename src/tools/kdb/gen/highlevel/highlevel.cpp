@@ -625,14 +625,14 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	}
 
 	kdb::KeySet contract;
-	contract.append (kdb::Key ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/mountglobal/gopts", KEY_END));
 
 	// make elektraOpen() succeed, if there are missing required keys, but we are in helpMode
-	contract.append (kdb::Key ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
 
 	if (specValidation == SpecValidation::Minimal)
 	{
-		contract.append (kdb::Key ("system:/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
+		contract.append (kdb::Key ("system:/elektra/contract/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
 	}
 
 	data["keys_count"] = std::to_string (keys.size ());
