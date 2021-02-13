@@ -306,17 +306,20 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
 
 
 	Key * mountContractRoot = keyNew ("system:/elektra/contract/mountglobal", KEY_END);
-	Key * pluginConfigRoot = keyNew ("system:/", KEY_END);
+	Key * pluginConfigRoot = keyNew ("user:/", KEY_END);
 
-	ksLookup (contract, mountContractRoot, 0); // sets internal cursor
-	for (elektraCursor cursor = ksGetCursor (contract); cursor < ksGetSize (contract); cursor++)
+	for (elektraCursor it = ksFindHierarchy (contract, mountContractRoot, NULL); it < ksGetSize (contract); it++)
 	{
-		Key * cur = ksAtCursor (contract, cursor);
+		Key * cur = ksAtCursor (contract, it);
 		if (keyIsDirectlyBelow (mountContractRoot, cur) == 1)
 		{
 			const char * pluginName = keyBaseName (cur);
 			KeySet * pluginConfig = ksCut (contract, cur);
-			ksRename (pluginConfig, mountContractRoot, pluginConfigRoot);
+
+			// increment ref count, because cur is part of pluginConfig and
+			// we hold a reference to cur that is still needed (via pluginName)
+			keyIncRef (cur);
+			ksRename (pluginConfig, cur, pluginConfigRoot);
 
 			int ret = listRemovePlugin (listPlugin, pluginName, parentKey);
 			if (ret != ELEKTRA_PLUGIN_STATUS_ERROR)
@@ -324,7 +327,10 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
 				ret = listAddPlugin (listPlugin, pluginName, pluginConfig, parentKey);
 			}
 
-			ksDel (pluginConfig);
+			// we ned to delete cur separately, because it was ksCut() from contract
+			// we also need to decrement the ref count, because it was incremented above
+			keyDecRef (cur);
+			keyDel (cur);
 
 			if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
 			{
@@ -332,8 +338,14 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
 					parentKey, "The plugin '%s' couldn't be mounted globally (via the 'list' plugin).", pluginName);
 				return -1;
 			}
+
+			// adjust cursor, because we removed the current key
+			--it;
 		}
 	}
+
+	keyDel (mountContractRoot);
+	keyDel (pluginConfigRoot);
 
 	return 0;
 }
@@ -346,7 +358,8 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
 static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
 {
 	// TODO: tests
-	KeySet * dup = ksDup (contract);
+	// deep dup, so modifications to the keys in contract after kdbOpen() cannot modify the contract
+	KeySet * dup = ksDeepDup (contract);
 
 	ensureContractGlobalKs (handle, dup);
 	int ret = ensureContractMountGlobal (handle, dup, parentKey);

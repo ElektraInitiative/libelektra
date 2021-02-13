@@ -954,7 +954,7 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
 			// key has other references -> dup in-place so we can safely rename it
 			Key * dup = keyDup (ks->array[it]);
 			keyDecRef (ks->array[it]);
-			dup->ksReference = ks->array[it]->ksReference;
+			dup->ksReference = 1;
 			keyDel (ks->array[it]);
 			ks->array[it] = dup;
 		}
@@ -994,8 +994,9 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
  * @p ks directly, if they aren't referenced from anywhere else
  * (if their reference count is 1 (see keyGetRef())).
  * Normally, this shouldn't cause problems, but if you have a direct
- * `Key *` pointer to a key in @p ks, you may need to call keyIncRef()
- * to ensure the key isn't modified.
+ * `Key *` pointer to a key in @p ks or hold a reference to some data
+ * within a key of @p ks, you may need to call keyIncRef() to ensure
+ * the key isn't modified.
  *
  * @param ks      the keyset to manipulate
  * @param root    the old prefix that will be removed, must not be a cascading key

@@ -82,9 +82,38 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	char ** argv = NULL;
-	int argc = loadArgs (&argv);
-	char ** envp = loadEnvp ();
+	char ** argv;
+	int argc;
+	char ** envp;
+	Key * optsParent;
+
+	KeySet * global = elektraPluginGetGlobalKeySet (handle);
+	Key * globalParent = ksLookupByName (global, "system:/elektra/internal/gopts/parent", 0);
+
+	if (globalParent != NULL)
+	{
+		Key * kArgc = ksLookupByName (global, "system:/elektra/internal/gopts/argc", 0);
+		Key * kArgv = ksLookupByName (global, "system:/elektra/internal/gopts/argv", 0);
+		Key * kEnvp = ksLookupByName (global, "system:/elektra/internal/gopts/envp", 0);
+
+		if (kArgc == NULL || kArgv == NULL || kEnvp == NULL)
+		{
+			ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey set via global KeySet but argc, argv or envp missing");
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+
+		optsParent = keyNew (keyString (globalParent), KEY_END);
+		keyGetBinary (kArgc, &argc, sizeof (int));
+		keyGetBinary (kArgv, &argv, sizeof (char **));
+		keyGetBinary (kEnvp, &envp, sizeof (char **));
+	}
+	else
+	{
+		optsParent = keyNew (keyName (parentKey), KEY_END);
+		argv = NULL;
+		argc = loadArgs (&argv);
+		envp = loadEnvp ();
+	}
 
 	if (argv == NULL || envp == NULL)
 	{
@@ -113,31 +142,38 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		offset = 0;
 	}
 
-	int ret = elektraGetOpts (returned, argc - offset, (const char **) argv + offset, (const char **) envp, parentKey);
+	int ret = elektraGetOpts (returned, argc - offset, (const char **) argv + offset, (const char **) envp, optsParent);
 
-	cleanupArgs (argc, argv);
-	cleanupEnvp (envp);
+	if (globalParent == NULL)
+	{
+		cleanupArgs (argc, argv);
+		cleanupEnvp (envp);
+	}
 
 	if (ret == -1)
 	{
+		keyCopyAllMeta (parentKey, optsParent);
+		keyDel (optsParent);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 	else if (ret == 1)
 	{
 		Key * helpKey = keyNew ("proc:/elektra/gopts/help", KEY_VALUE, "1", KEY_END);
-		keyCopyAllMeta (helpKey, parentKey);
+		keyCopyAllMeta (helpKey, optsParent);
 		ksAppendKey (returned, helpKey);
 
 		const char * usage = usageKey == NULL ? NULL : keyString (usageKey);
 		const char * prefix = prefixKey == NULL ? NULL : keyString (prefixKey);
 
-		char * message = elektraGetOptsHelpMessage (parentKey, usage, prefix);
+		char * message = elektraGetOptsHelpMessage (optsParent, usage, prefix);
 		Key * messageKey = keyNew ("proc:/elektra/gopts/help/message", KEY_VALUE, message, KEY_END);
 		elektraFree (message);
 		ksAppendKey (returned, messageKey);
+		keyDel (optsParent);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
+	keyDel (optsParent);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 

@@ -10,6 +10,7 @@
 #define ELEKTRA_KDB_HPP
 
 #include <string>
+#include <vector>
 
 #include <kdbexcept.hpp>
 #include <key.hpp>
@@ -41,15 +42,16 @@ class KDB
 {
 public:
 	KDB ();
-	explicit KDB (Key & parentKey);
-	// TODO: KDB (KeySet & contract, Key & parentKey);
+	explicit KDB (Key & errorKey);
+	explicit KDB (KeySet & contract);
+	KDB (KeySet & contract, Key & errorKey);
 	virtual ~KDB () throw ()
 	{
 		close ();
 	}
 
-	virtual inline void open (Key & parentKey);
-	// TODO: virtual inline void open (KeySet & contract, Key & parentKey);
+	virtual inline void open (Key & errorKey);
+	virtual inline void open (KeySet & contract, Key & errorKey);
 	virtual inline void close () throw ();
 	virtual inline void close (Key & errorKey) throw ();
 
@@ -71,8 +73,8 @@ private:
  */
 inline KDB::KDB ()
 {
-	Key parentKey;
-	open (parentKey);
+	Key errorKey;
+	open (errorKey);
 }
 
 /**
@@ -85,10 +87,42 @@ inline KDB::KDB ()
  *
  * @copydoc kdbOpen
  */
-inline KDB::KDB (Key & parentKey)
+inline KDB::KDB (Key & errorKey)
 {
-	// TODO: documentation parentKey
-	open (parentKey);
+	open (errorKey);
+}
+
+/**
+ * Constructs a class KDB.
+ *
+ * @param errorKey is useful if you want to get the warnings in
+ * the successful case, when no exception is thrown.
+ *
+ * @throw KDBException if database could not be opened
+ *
+ * @copydoc kdbOpen
+ */
+inline KDB::KDB (KeySet & contract)
+{
+	// TODO: documentation contract
+	Key errorKey;
+	open (contract, errorKey);
+}
+
+/**
+ * Constructs a class KDB.
+ *
+ * @param errorKey is useful if you want to get the warnings in
+ * the successful case, when no exception is thrown.
+ *
+ * @throw KDBException if database could not be opened
+ *
+ * @copydoc kdbOpen
+ */
+inline KDB::KDB (KeySet & contract, Key & errorKey)
+{
+	// TODO: documentation contract
+	open (contract, errorKey);
 }
 
 /**
@@ -99,13 +133,30 @@ inline KDB::KDB (Key & parentKey)
  *
  * @copydoc kdbOpen
  */
-inline void KDB::open (Key & parentKey)
+inline void KDB::open (Key & errorKey)
 {
-	// TODO: documentation parentKey
-	handle = ckdb::kdbOpen (NULL, parentKey.getKey ());
+	handle = ckdb::kdbOpen (NULL, errorKey.getKey ());
 	if (!handle)
 	{
-		throw kdb::KDBException (parentKey);
+		throw kdb::KDBException (errorKey);
+	}
+}
+
+/**
+ * Open the database
+ *
+ * @param errorKey is useful if you want to get the warnings in
+ * the successful case, when no exception is thrown.
+ *
+ * @copydoc kdbOpen
+ */
+inline void KDB::open (KeySet & contract, Key & errorKey)
+{
+	// TODO: documentation contract
+	handle = ckdb::kdbOpen (contract.getKeySet (), errorKey.getKey ());
+	if (!handle)
+	{
+		throw kdb::KDBException (errorKey);
 	}
 }
 
@@ -234,6 +285,15 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 		throw KDBException (parentKey);
 	}
 	return ret;
+}
+
+/**
+ * @see elektraGOptsContract
+ */
+inline int goptsContract (kdb::KeySet & contract, int argc, const char * const * argv, const char * const * envp,
+			  const kdb::Key & parentKey, kdb::KeySet & goptsConfig)
+{
+	return ckdb::elektraGOptsContract (contract.getKeySet (), argc, argv, envp, parentKey.getKey (), goptsConfig.getKeySet ());
 }
 
 } // end of namespace kdb

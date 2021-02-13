@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
 import sys
-import os
 import kdb
+import unittest
+from ctypes import c_char_p
 
 base_key = "/sw/org/kdbdummy/#0/current"
 spec_base_key = "spec:" + base_key
@@ -45,7 +46,6 @@ spec = kdb.KeySet(10, kdb.Key(spec_base_key, kdb.KEY_META, "command", ""),
 			  kdb.KEY_META, "args", "remaining")
 		  )
 
-
 def setupSpec():
 	with kdb.KDB() as db:
 		ks = kdb.KeySet(10)
@@ -53,7 +53,7 @@ def setupSpec():
 		if len(ks.cut(kdb.Key(spec_base_key))) > 0:
 			print("ERROR: Couldn't setup spec, keys exist!", file=sys.stderr)
 			exit(1)
-		
+
 		ks.extend(spec)
 		db.set(ks, spec_base_key)
 
@@ -67,73 +67,33 @@ def removeSpec():
 def array_index(index):
 	return "_" * (len(str(index)) - 1) + str(index)
 
-setupSpec()
+class GOpts(unittest.TestCase):
+	def test_gopts(self):
+		try:
+			setupSpec()
 
-contract = kdb.KeySet(0)
-config = kdb.KeySet(0)
+			custom_argv = ["test", "get", "-v", "user:/"]
+			custom_envp = []
 
-# FIXME: somehow convert python string list into const char * const * with NULL at the end
-c_argv = sys.argv
-c_envp = os.environ
+			# FIXME: somehow convert python string list into const char * const * with NULL at the end
+			c_argv = custom_argv
+			c_envp = custom_envp
 
-kdb.goptsContract (contract, len(sys.argv), c_argv, c_envp, base_key, config)
+			config = kdb.KeySet(0)
+			contract = kdb.KeySet(0)
+			kdb.goptsContract (contract, len(custom_argv), c_argv, c_envp, kdb.Key(base_key), config)
 
-with kdb.KDB(contract) as db:
-	ks = kdb.KeySet(0)
-	db.get(ks, spec_base_key)
-	
-	if "proc:/elektra/gopts/help" in ks and ks["proc:/elektra/gopts/help"].value == "1":
-		print (ks["proc:/elektra/gopts/help/message"].value)
-		removeSpec()
-		exit(0)
-	
-	print("A real implementation would now")
+			with kdb.KDB(contract) as db:
+				ks = kdb.KeySet(0)
+				db.get(ks, base_key)
 
-	if base_key + "/printversion" in ks and ks[base_key + "/printversion"].value == "1":
-		print("print version information\n")
-		removeSpec()
-		exit(0)
-
-	if base_key in ks and ks[base_key].value == "getter":
-		if base_key + "/getter/keyname" not in ks or len(ks[base_key + "/getter/keyname"].value) == 0:
-			print ("report the error 'empty parameter: keyname'")
+				self.assertTrue((base_key in ks))
+				self.assertEqual(ks[base_key].value, "getter")
+				self.assertEqual(ks[base_key+"/getter/keyname"].value, "user:/")
+				self.assertTrue((base_key + "/getter/verbose" in ks))
+				self.assertEqual(ks[base_key + "/getter/verbose"].value, "1")
+		finally:
 			removeSpec()
-			exit(0)
 
-		print("get the key '" + ks[base_key + "/getter/keyname"].value + "'")
-
-		if base_key + "/getter/verbose" in ks and ks[base_key + "/getter/verbose"].value == "1":
-			print ("print where the read key value comes from")
-
-	elif base_key in ks and ks[base_key].value == "setter":
-		if base_key + "/setter/keyname" not in ks or len(ks[base_key + "/setter/keyname"].value) == 0:
-			print ("report the error 'missing parameter: keyname'")
-			removeSpec()
-			exit(0)
-
-		if base_key + "/setter/value" not in ks:
-			print ("report the error 'missing parameter: value'")
-			removeSpec()
-			exit(0)
-
-		print ("set the key '" + ks[base_key + "/setter/keyname"].value + "' with the value '" + ks[base_key + "/setter/value"].value + "'")
-
-		if base_key + "/setter/verbose" in ks and ks[base_key + "/setter/verbose"] == "1":
-			print ("print where the key value is stored now")
-
-	else:
-		if base_key + "/dynamic" in ks and base_key + "/dynamic/#0" in ks:
-			print ("dynamically invoke the command '" + ks[base_key + "/dynamic/#0"].value + "' with arguments:", end="")
-
-			index = 1
-			while True:
-				try:
-					print (" "+ks[base_key + "/dynamic/#" + array_index(index)].value, end="")
-				except KeyError:
-					break
-				index += 1
-			print ()
-		else:
-			print ("do nothing\n")
-
-removeSpec()
+if __name__ == '__main__':
+	unittest.main()

@@ -331,7 +331,15 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	// load cache from storage
 	keySetString (cacheFile, cacheFileName);
 	elektraFree (cacheFileName);
-	if (ch->cacheStorage->kdbGet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
+
+	Key * globalCutpoint = keyNew ("system:/elektra/internal", KEY_END);
+	KeySet * globalCut = ksCut (ch->cacheStorage->global, globalCutpoint);
+	int result = ch->cacheStorage->kdbGet (ch->cacheStorage, returned, cacheFile);
+	ksAppend (ch->cacheStorage->global, globalCut);
+	ksDel (globalCut);
+	keyDel (globalCutpoint);
+
+	if (result == ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		keyDel (cacheFile);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -368,7 +376,15 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// write cache to temp file
 	keySetString (cacheFile, tmpFile);
-	if (ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
+
+	Key * globalCutpoint = keyNew ("system:/elektra/internal", KEY_END);
+	KeySet * globalCut = ksCut (ch->cacheStorage->global, globalCutpoint);
+	int result = ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile);
+	ksAppend (ch->cacheStorage->global, globalCut);
+	ksDel (globalCut);
+	keyDel (globalCutpoint);
+
+	if (result == ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		if (rename (tmpFile, cacheFileName) == -1)
 		{

@@ -65,7 +65,8 @@ if (BUILD_SHARED)
 		mount.c
 		split.c
 		trie.c
-		plugin.c)
+		plugin.c
+		contracts.c)
 	set (CORE_FILES ${SOURCES})
 	list (REMOVE_ITEM CORE_FILES ${KDB_FILES})
 	set (KDB_FILES ${KDB_FILES} ${HDR_FILES})

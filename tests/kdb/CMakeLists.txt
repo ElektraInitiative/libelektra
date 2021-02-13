@@ -96,7 +96,7 @@ add_kdb_test (conflict REQUIRED_PLUGINS error)
 add_kdb_test (error REQUIRED_PLUGINS error list spec)
 add_kdb_test (nested REQUIRED_PLUGINS error)
 add_kdb_test (simple REQUIRED_PLUGINS error)
-add_kdb_test (ensure REQUIRED_PLUGINS tracer list spec)
+add_kdb_test (contracts REQUIRED_PLUGINS gopts list)
 
 check_xcode ()
 if ("${XCODE_VERSION}" VERSION_EQUAL 10.1)

@@ -358,13 +358,13 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 					ksDel (configOrig);
 					return -1;
 				}
-				slave->global = global;
 				Key * slaveKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &slave, KEY_END);
 				keyAddBaseName (slaveKey, name);
 				ksAppendKey (plugins, keyDup (slaveKey, KEY_CP_ALL));
 				keyDel (slaveKey);
 			}
 		}
+		slave->global = global;
 		elektraDeferredCallsExecute (slave, deferredCalls);
 
 		if ((op == GET && slave->kdbGet && (slave->kdbGet (slave, returned, parentKey)) == -1) ||

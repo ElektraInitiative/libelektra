@@ -127,6 +127,7 @@ int kdbGet(KDB *handle, KeySet *returned,
 int kdbSet(KDB *handle, KeySet *returned,
 	Key *parentKey);
 
+int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv, const char * const * envp, const Key * parentKey, KeySet * goptsConfig);
 
 /**************************************
  *
