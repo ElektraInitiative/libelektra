@@ -56,13 +56,12 @@ int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv
 		keyDel (contractRoot);
 	}
 
-	ksAppendKey (contract,
-		     keyNew ("system:/elektra/contract/globalkeyset/internal/gopts/parent", KEY_VALUE, keyName (parentKey), KEY_END));
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/internal/gopts/argc", KEY_BINARY, KEY_SIZE, sizeof (int),
-				       KEY_VALUE, &argc, KEY_END));
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/internal/gopts/argv", KEY_BINARY, KEY_SIZE,
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/parent", KEY_VALUE, keyName (parentKey), KEY_END));
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/argc", KEY_BINARY, KEY_SIZE, sizeof (int), KEY_VALUE,
+				       &argc, KEY_END));
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/argv", KEY_BINARY, KEY_SIZE,
 				       sizeof (const char * const *), KEY_VALUE, &argv, KEY_END));
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/internal/gopts/envp", KEY_BINARY, KEY_SIZE,
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/envp", KEY_BINARY, KEY_SIZE,
 				       sizeof (const char * const *), KEY_VALUE, &envp, KEY_END));
 	return 0;
 }
@@ -117,11 +116,10 @@ int elektraGOptsContractFromStrings (KeySet * contract, size_t argsSize, const c
 		keyDel (contractRoot);
 	}
 
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/gopts/parent", KEY_VALUE, keyName (parentKey), KEY_END));
 	ksAppendKey (contract,
-		     keyNew ("system:/elektra/contract/globalkeyset/internal/gopts/parent", KEY_VALUE, keyName (parentKey), KEY_END));
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/internal/gopts/args", KEY_BINARY, KEY_SIZE, argsSize,
-				       KEY_VALUE, args, KEY_END));
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/internal/gopts/env", KEY_BINARY, KEY_SIZE, envSize, KEY_VALUE,
-				       env, KEY_END));
+		     keyNew ("system:/elektra/contract/globalkeyset/gopts/args", KEY_BINARY, KEY_SIZE, argsSize, KEY_VALUE, args, KEY_END));
+	ksAppendKey (contract,
+		     keyNew ("system:/elektra/contract/globalkeyset/gopts/env", KEY_BINARY, KEY_SIZE, envSize, KEY_VALUE, env, KEY_END));
 	return 0;
 }

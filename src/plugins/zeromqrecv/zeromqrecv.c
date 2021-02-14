@@ -49,7 +49,7 @@ int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	{
 		KeySet * global = elektraPluginGetGlobalKeySet (handle);
 
-		Key * ioBindingKey = ksLookupByName (global, "system:/elektra/internal/io/binding", 0);
+		Key * ioBindingKey = ksLookupByName (global, "system:/elektra/io/binding", 0);
 		const void * bindingPtr = keyValue (ioBindingKey);
 		ElektraIoInterface * binding = bindingPtr == NULL ? NULL : *(ElektraIoInterface **) keyValue (ioBindingKey);
 

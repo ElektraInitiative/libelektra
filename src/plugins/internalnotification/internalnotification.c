@@ -165,7 +165,7 @@ void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationC
 	if (kdbChanged)
 	{
 		KeySet * global = elektraPluginGetGlobalKeySet (plugin);
-		Key * kdbKey = ksLookupByName (global, "system:/elektra/internal/kdb", 0);
+		Key * kdbKey = ksLookupByName (global, "system:/elektra/kdb", 0);
 		const void * kdbPtr = keyValue (kdbKey);
 		KDB * kdb = kdbPtr == NULL ? NULL : *(KDB **) keyValue (kdbKey);
 		context->kdbUpdate (kdb, changedKey);
@@ -613,15 +613,15 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UN
 
 	if (global != NULL)
 	{
-		ksAppendKey (global, keyNew ("system:/elektra/internal/notification/callback", KEY_FUNC,
-					     elektraInternalnotificationDoUpdate, KEY_END));
+		ksAppendKey (global,
+			     keyNew ("system:/elektra/notification/callback", KEY_FUNC, elektraInternalnotificationDoUpdate, KEY_END));
 
 		Key * contextKey = ksLookupByName (config, "/context", 0);
 		if (contextKey != NULL)
 		{
 			ElektraNotificationCallbackContext * context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
-			ksAppendKey (global, keyNew ("system:/elektra/internal/notification/context", KEY_BINARY, KEY_SIZE,
-						     sizeof (context), KEY_VALUE, &context, KEY_END));
+			ksAppendKey (global, keyNew ("system:/elektra/notification/context", KEY_BINARY, KEY_SIZE, sizeof (context),
+						     KEY_VALUE, &context, KEY_END));
 		}
 	}
 

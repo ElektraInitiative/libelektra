@@ -151,9 +151,9 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	PLUGIN_OPEN ("dbusrecv");
 
 	ksDel (plugin->global);
-	plugin->global = ksNew (
-		5, keyNew ("system:/elektra/internal/io/binding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END),
-		keyNew ("system:/elektra/internal/notification/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
+	plugin->global =
+		ksNew (5, keyNew ("system:/elektra/io/binding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END),
+		       keyNew ("system:/elektra/notification/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
 	// call open again after correctly setting up global keyset
 	plugin->kdbOpen (plugin, NULL);
 
@@ -184,9 +184,9 @@ static void test_keyAdded (uv_loop_t * loop, ElektraIoInterface * binding)
 	PLUGIN_OPEN ("dbusrecv");
 
 	ksDel (plugin->global);
-	plugin->global = ksNew (
-		5, keyNew ("system:/elektra/internal/io/binding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END),
-		keyNew ("system:/elektra/internal/notification/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
+	plugin->global =
+		ksNew (5, keyNew ("system:/elektra/io/binding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END),
+		       keyNew ("system:/elektra/notification/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
 	// call open again after correctly setting up global keyset
 	plugin->kdbOpen (plugin, NULL);
 
@@ -217,9 +217,9 @@ static void test_keyChanged (uv_loop_t * loop, ElektraIoInterface * binding)
 	PLUGIN_OPEN ("dbusrecv");
 
 	ksDel (plugin->global);
-	plugin->global = ksNew (
-		5, keyNew ("system:/elektra/internal/io/binding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END),
-		keyNew ("system:/elektra/internal/notification/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
+	plugin->global =
+		ksNew (5, keyNew ("system:/elektra/io/binding", KEY_BINARY, KEY_SIZE, sizeof (binding), KEY_VALUE, &binding, KEY_END),
+		       keyNew ("system:/elektra/notification/callback", KEY_FUNC, test_notificationCallback, KEY_END), KS_END);
 	// call open again after correctly setting up global keyset
 	plugin->kdbOpen (plugin, NULL);
 

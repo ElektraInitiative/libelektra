@@ -21,15 +21,15 @@ int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding)
 {
 	if (contract == NULL || ioBinding == NULL) return -1;
 
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/internal/io/binding", KEY_BINARY, KEY_SIZE,
-				       sizeof (ioBinding), KEY_VALUE, &ioBinding, KEY_END));
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/io/binding", KEY_BINARY, KEY_SIZE, sizeof (ioBinding),
+				       KEY_VALUE, &ioBinding, KEY_END));
 
 	return 0;
 }
 
 ElektraIoInterface * elektraIoGetBinding (KDB * kdb)
 {
-	Key * ioBindingKey = ksLookupByName (kdb->global, "system:/elektra/internal/io/binding", 0);
+	Key * ioBindingKey = ksLookupByName (kdb->global, "system:/elektra/io/binding", 0);
 	const void * bindingPtr = keyValue (ioBindingKey);
 	ElektraIoInterface * binding = bindingPtr == NULL ? NULL : *(ElektraIoInterface **) keyValue (ioBindingKey);
 	return binding;

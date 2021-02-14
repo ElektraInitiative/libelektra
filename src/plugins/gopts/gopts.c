@@ -90,16 +90,16 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	bool freeArgs;
 
 	KeySet * global = elektraPluginGetGlobalKeySet (handle);
-	Key * globalParent = ksLookupByName (global, "system:/elektra/internal/gopts/parent", 0);
+	Key * globalParent = ksLookupByName (global, "system:/elektra/gopts/parent", 0);
 
 	if (globalParent != NULL)
 	{
-		Key * kArgc = ksLookupByName (global, "system:/elektra/internal/gopts/argc", 0);
-		Key * kArgv = ksLookupByName (global, "system:/elektra/internal/gopts/argv", 0);
-		Key * kEnvp = ksLookupByName (global, "system:/elektra/internal/gopts/envp", 0);
+		Key * kArgc = ksLookupByName (global, "system:/elektra/gopts/argc", 0);
+		Key * kArgv = ksLookupByName (global, "system:/elektra/gopts/argv", 0);
+		Key * kEnvp = ksLookupByName (global, "system:/elektra/gopts/envp", 0);
 
-		Key * kArgs = ksLookupByName (global, "system:/elektra/internal/gopts/args", 0);
-		Key * kEnv = ksLookupByName (global, "system:/elektra/internal/gopts/env", 0);
+		Key * kArgs = ksLookupByName (global, "system:/elektra/gopts/args", 0);
+		Key * kEnv = ksLookupByName (global, "system:/elektra/gopts/env", 0);
 
 		if (kArgc != NULL && kArgv != NULL && kEnvp != NULL)
 		{

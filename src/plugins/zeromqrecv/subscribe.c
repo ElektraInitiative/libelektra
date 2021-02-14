@@ -23,7 +23,7 @@ static int setupNotificationCallback (Plugin * handle)
 	KeySet * global = elektraPluginGetGlobalKeySet (handle);
 
 	ElektraNotificationCallback callback;
-	Key * callbackKey = ksLookupByName (global, "system:/elektra/internal/notification/callback", 0);
+	Key * callbackKey = ksLookupByName (global, "system:/elektra/notification/callback", 0);
 	const void * callbackPtr = keyValue (callbackKey);
 
 	if (callbackPtr == NULL)
@@ -34,7 +34,7 @@ static int setupNotificationCallback (Plugin * handle)
 	callback = *(ElektraNotificationCallback *) keyValue (callbackKey);
 
 	ElektraNotificationCallbackContext * context;
-	Key * contextKey = ksLookupByName (global, "system:/elektra/internal/notification/context", 0);
+	Key * contextKey = ksLookupByName (global, "system:/elektra/notification/context", 0);
 	const void * contextPtr = keyValue (contextKey);
 	context = contextPtr == NULL ? NULL : *(ElektraNotificationCallbackContext **) contextPtr;
 
