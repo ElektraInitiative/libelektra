@@ -296,6 +296,33 @@ inline int goptsContract (kdb::KeySet & contract, int argc, const char * const *
 	return ckdb::elektraGOptsContract (contract.getKeySet (), argc, argv, envp, parentKey.getKey (), goptsConfig.getKeySet ());
 }
 
+/**
+ * Prefer to use goptsContract if possible
+ * (especially when you are calling this in your main function)
+ *
+ * @see elektraGOptsContractFromStrings
+ */
+inline int goptsContract (kdb::KeySet & contract, const std::vector<std::string> & args, const std::vector<std::string> & env,
+			  const kdb::Key & parentKey, kdb::KeySet & goptsConfig)
+{
+	std::stringstream argStringStream;
+	for (auto && arg : args)
+	{
+		argStringStream << arg << '\0';
+	}
+	std::string argString = argStringStream.str ();
+
+	std::stringstream envStringStream;
+	for (auto && envvar : env)
+	{
+		envStringStream << envvar << '\0';
+	}
+	std::string envString = envStringStream.str ();
+
+	return ckdb::elektraGOptsContractFromStrings (contract.getKeySet (), argString.size (), argString.c_str (), envString.size (),
+						      envString.c_str (), parentKey.getKey (), goptsConfig.getKeySet ());
+}
+
 } // end of namespace kdb
 
 #endif

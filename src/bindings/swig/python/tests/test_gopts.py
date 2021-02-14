@@ -75,13 +75,9 @@ class GOpts(unittest.TestCase):
 			custom_argv = ["test", "get", "-v", "user:/"]
 			custom_envp = []
 
-			# FIXME: somehow convert python string list into const char * const * with NULL at the end
-			c_argv = custom_argv
-			c_envp = custom_envp
-
 			config = kdb.KeySet(0)
 			contract = kdb.KeySet(0)
-			kdb.goptsContract (contract, len(custom_argv), c_argv, c_envp, kdb.Key(base_key), config)
+			kdb.goptsContract (contract, custom_argv, custom_envp, kdb.Key(base_key), config)
 
 			with kdb.KDB(contract) as db:
 				ks = kdb.KeySet(0)

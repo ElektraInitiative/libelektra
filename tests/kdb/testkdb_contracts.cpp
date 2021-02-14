@@ -106,3 +106,31 @@ TEST_F (Contracts, GOpts)
 	k = ks.lookup (std::string (testRoot) + "/getter/verbose");
 	EXPECT_EQ (k.get<std::string> (), "1");
 }
+
+TEST_F (Contracts, GOptsStringVector)
+{
+	using namespace kdb;
+
+	KeySet contract;
+	KeySet config = KeySet (ckdb::ksNew (1, ckdb::keyNew ("user:/offset", KEY_VALUE, "1", KEY_END), KS_END));
+
+	std::vector<std::string> customArgv = { "dummy", "test", "get", "-v", "user:/" };
+	std::vector<std::string> customEnvp = {};
+	goptsContract (contract, customArgv, customEnvp, Key (testRoot, KEY_END), config);
+
+	KDB kdb (contract);
+
+	KeySet ks;
+	kdb.get (ks, testRoot);
+
+	Key k = ks.lookup (testRoot);
+	EXPECT_TRUE (k);
+
+	EXPECT_EQ (k.get<std::string> (), "getter");
+
+	k = ks.lookup (std::string (testRoot) + "/getter/keyname");
+	EXPECT_EQ (k.get<std::string> (), "user:/");
+
+	k = ks.lookup (std::string (testRoot) + "/getter/verbose");
+	EXPECT_EQ (k.get<std::string> (), "1");
+}

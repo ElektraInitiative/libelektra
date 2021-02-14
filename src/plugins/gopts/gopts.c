@@ -86,6 +86,8 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 	int argc;
 	char ** envp;
 	Key * optsParent;
+	bool cleanup;
+	bool freeArgs;
 
 	KeySet * global = elektraPluginGetGlobalKeySet (handle);
 	Key * globalParent = ksLookupByName (global, "system:/elektra/internal/gopts/parent", 0);
@@ -96,16 +98,72 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		Key * kArgv = ksLookupByName (global, "system:/elektra/internal/gopts/argv", 0);
 		Key * kEnvp = ksLookupByName (global, "system:/elektra/internal/gopts/envp", 0);
 
-		if (kArgc == NULL || kArgv == NULL || kEnvp == NULL)
+		Key * kArgs = ksLookupByName (global, "system:/elektra/internal/gopts/args", 0);
+		Key * kEnv = ksLookupByName (global, "system:/elektra/internal/gopts/env", 0);
+
+		if (kArgc != NULL && kArgv != NULL && kEnvp != NULL)
 		{
-			ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey set via global KeySet but argc, argv or envp missing");
+			optsParent = keyNew (keyString (globalParent), KEY_END);
+			keyGetBinary (kArgc, &argc, sizeof (int));
+			keyGetBinary (kArgv, &argv, sizeof (char **));
+			keyGetBinary (kEnvp, &envp, sizeof (char **));
+
+			freeArgs = false;
+			cleanup = false;
+		}
+		else if (kArgs != NULL && kEnv != NULL)
+		{
+			optsParent = keyNew (keyString (globalParent), KEY_END);
+
+			const char * argsString = keyValue (kArgs);
+			size_t argsSize = keyGetValueSize (kArgs) - 1;
+			const char * argPtr = argsString;
+
+			argc = 0;
+			while (argPtr < argsString + argsSize)
+			{
+				++argc;
+				argPtr += strlen (argPtr) + 1;
+			}
+
+			argPtr = argsString;
+			argv = elektraMalloc (argc * sizeof (const char *));
+			for (int i = 0; i < argc; i++)
+			{
+				argv[i] = (char *) argPtr;
+				argPtr += strlen (argPtr) + 1;
+			}
+
+
+			const char * envString = keyValue (kEnv);
+			size_t envSize = keyGetValueSize (kEnv) - 1;
+			const char * envPtr = envString;
+
+			size_t envCount = 0;
+			while (envPtr < envString + envSize)
+			{
+				++envCount;
+				envPtr += strlen (envPtr) + 1;
+			}
+
+			envPtr = envString;
+			envp = elektraMalloc ((envCount + 1) * sizeof (const char *));
+			for (size_t i = 0; i < envCount; i++)
+			{
+				envp[i] = (char *) envPtr;
+				envPtr += strlen (envPtr) + 1;
+			}
+			envp[envCount] = NULL;
+
+			freeArgs = true;
+			cleanup = false;
+		}
+		else
+		{
+			ELEKTRA_SET_INTERFACE_ERROR (parentKey,
+						     "If parentKey is set, either argc, argv and envp, or arg and env must be set.");
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
-
-		optsParent = keyNew (keyString (globalParent), KEY_END);
-		keyGetBinary (kArgc, &argc, sizeof (int));
-		keyGetBinary (kArgv, &argv, sizeof (char **));
-		keyGetBinary (kEnvp, &envp, sizeof (char **));
 	}
 	else
 	{
@@ -113,6 +171,8 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		argv = NULL;
 		argc = loadArgs (&argv);
 		envp = loadEnvp ();
+		cleanup = true;
+		freeArgs = false;
 	}
 
 	if (argv == NULL || envp == NULL)
@@ -144,10 +204,15 @@ int elektraGOptsGet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	int ret = elektraGetOpts (returned, argc - offset, (const char **) argv + offset, (const char **) envp, optsParent);
 
-	if (globalParent == NULL)
+	if (cleanup)
 	{
 		cleanupArgs (argc, argv);
 		cleanupEnvp (envp);
+	}
+	if (freeArgs)
+	{
+		elektraFree (argv);
+		elektraFree (envp);
 	}
 
 	if (ret == -1)

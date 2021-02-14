@@ -389,7 +389,7 @@
     local ks = orig_call(alloc)
 
     if select("#", ...) > 0 then
-      -- there's no need to check for KS_END
+      -- there is no need to check for KS_END
       -- ipairs will do this for us
       for _, arg in ipairs({...}) do
         ks:append(arg)
@@ -428,6 +428,13 @@
 // exception handling for kdb::KDB
 %exception {
   KDB_CATCH(KDB_EXCEPTIONS)
+}
+
+%include "std_vector.i"
+%include "std_string.i"
+
+namespace std {
+  %template(StringVector) vector<string>;
 }
 
 %include "kdb.hpp"

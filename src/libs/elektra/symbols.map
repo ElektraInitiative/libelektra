@@ -144,8 +144,8 @@ libelektra_1.0 {
 
 	keyReplacePrefix;
 
-	# kdbcontracts.h
 	elektraGOptsContract;
+	elektraGOptsContractFromStrings;
 };
 
 libelektraprivate_1.0 {

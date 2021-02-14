@@ -728,4 +728,11 @@ aliased to '<=>', implemented for sorting operations.
 %catches (kdb::KDBException) kdb::KDB::get;
 %catches (kdb::KDBException) kdb::KDB::set;
 
+%include "std_vector.i"
+%include "std_string.i"
+
+namespace std {
+  %template(StringVector) vector<string>;
+}
+
 %include "kdb.hpp"
