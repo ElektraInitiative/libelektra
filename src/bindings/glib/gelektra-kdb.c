@@ -37,15 +37,15 @@ static void gelektra_kdb_class_init (GElektraKdbClass * klass)
 /* constructor */
 /**
  * gelektra_kdb_open: (constructor)
+ * @contract contract for kdbOpen()
  * @error key which holds errors and warnings which were issued
  *
  * Returns: (transfer full): A new #GElektraKdb
  * see kdbOpen
  */
-GElektraKdb * gelektra_kdb_open (GElektraKey * error)
+GElektraKdb * gelektra_kdb_open (GElektraKeySet * contract, GElektraKey * error)
 {
-	// FIXME: binding
-	return gelektra_kdb_make (kdbOpen (NULL, error->key));
+	return gelektra_kdb_make (kdbOpen (contract->keyset, error->key));
 }
 
 /**
@@ -79,10 +79,9 @@ gint gelektra_kdb_close (GElektraKdb * kdb, GElektraKey * error)
  * \note This is for GObject Introspection.
  * \note Do NOT use! Use gelektra_kdb_open instead
  */
-void gelektra_kdb_gi_open (GElektraKdb * kdb, GElektraKey * error)
+void gelektra_kdb_gi_open (GElektraKdb * kdb, GElektraKeySet * contract, GElektraKey * error)
 {
-	// FIXME: binding
-	kdb->handle = kdbOpen (NULL, error->key);
+	kdb->handle = kdbOpen (contract->keyset, error->key);
 }
 
 gint gelektra_kdb_get (GElektraKdb * kdb, GElektraKeySet * returned, GElektraKey * parent)
