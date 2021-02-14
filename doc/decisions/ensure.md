@@ -20,7 +20,7 @@ is present in Elektra.
 - Specific APIs per plugin, Rejected because:
   - difficult for application developers
   - every plugin would need to design new APIs
-- Have a new API: `KDB * kdbOpenOld (Key * parent);`
+- Have a new API: `KDB * kdbOpen (Key * parent);`
   `int kdbConfigure (KDB * handle, KeySet * contract, Key * parentKey);`
   `KDB * kdbOpenDefault (Key * parent);`
   The new kdbOpen only does the absolute minimum work, in particular it doesn't set up any global plugins.

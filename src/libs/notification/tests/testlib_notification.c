@@ -16,12 +16,13 @@
 
 int callback_called;
 
+// FIXME: notifications
 static void test_openclose (void)
 {
 	printf ("test open & close\n");
 
 	Key * key = keyNew ("system:/sw/tests/testlib_notification", KEY_END);
-	KDB * kdb = kdbOpenOld (key);
+	KDB * kdb = kdbOpen (NULL, key);
 	exit_if_fail (kdb, "opening kdb failed");
 
 	succeed_if (!elektraNotificationClose (kdb), "could close notification system without open");
@@ -38,6 +39,7 @@ static void test_openclose (void)
 	keyDel (key);
 }
 
+// FIXME: notifications
 static void test_registerInt (void)
 {
 	printf ("test elektraNotificationRegisterInt\n");
@@ -48,7 +50,7 @@ static void test_registerInt (void)
 	int startValue = -1;
 	int value = startValue;
 
-	KDB * kdb = kdbOpenOld (key);
+	KDB * kdb = kdbOpen (NULL, key);
 
 	succeed_if (elektraNotificationRegisterInt (kdb, valueKey, &value) == 0, "register should fail before open");
 
@@ -75,6 +77,7 @@ static void testCallback (Key * key ELEKTRA_UNUSED, void * context ELEKTRA_UNUSE
 	callback_called = 1;
 }
 
+// FIXME: notifications
 static void test_registerCallback (void)
 {
 	printf ("test elektraNotificationRegisterCallback\n");
@@ -83,7 +86,7 @@ static void test_registerCallback (void)
 	Key * valueKey = keyNew ("system:/elektra/version/constants/KDB_VERSION_MAJOR", KEY_END);
 	callback_called = 0;
 
-	KDB * kdb = kdbOpenOld (key);
+	KDB * kdb = kdbOpen (NULL, key);
 
 	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback, NULL) == 0, "register should fail before open");
 

@@ -115,11 +115,6 @@ typedef struct _KeySet	KeySet;
 
 KDB * kdbOpen(const KeySet * contract, Key *parentKey);
 
-// TODO: migrate
-static inline KDB * kdbOpenOld (Key * errorKey) {
-	return kdbOpen (0, errorKey);
-}
-
 int kdbClose(KDB *handle, Key *errorKey);
 
 int kdbGet(KDB *handle, KeySet *returned,

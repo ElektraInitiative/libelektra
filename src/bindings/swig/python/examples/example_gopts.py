@@ -72,11 +72,7 @@ setupSpec()
 contract = kdb.KeySet(0)
 config = kdb.KeySet(0)
 
-# FIXME: somehow convert python string list into const char * const * with NULL at the end
-c_argv = sys.argv
-c_envp = os.environ
-
-kdb.goptsContract (contract, len(sys.argv), c_argv, c_envp, base_key, config)
+kdb.goptsContract (contract, sys.argv, os.environ, base_key, config)
 
 with kdb.KDB(contract) as db:
 	ks = kdb.KeySet(0)

@@ -84,13 +84,15 @@ the initialization of an I/O binding.
 
 #include <uv.h>
 
+// FIXME: notifications
+
 void main (void)
 {
 	KDB* repo;
 
 	// Open KDB
 	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
-	KDB * kdb = kdbOpenOld (key);
+	KDB * kdb = kdbOpen (key);
 
 	// Create libuv event loop
 	uv_loop_t * loop = uv_default_loop ();
@@ -154,13 +156,15 @@ static void printVariable (ElektraIoTimerOperation * timerOp)
 	printf ("\nMy integer value is %d\n", value);
 }
 
+// FIXME: notifications
+
 void main (void)
 {
 	KDB* repo;
 
 	// Open KDB
 	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
-	KDB * kdb = kdbOpenOld (key);
+	KDB * kdb = kdbOpen (key);
 
 	// Create libuv event loop
 	uv_loop_t * loop = uv_default_loop ();
@@ -283,6 +287,7 @@ configuration changes we need to create a function which cleans
 up and reinitializes KDB.
 
 ```C
+// FIXME: notifications
 void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 {
 	if (kdb != NULL)
@@ -292,7 +297,7 @@ void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 		kdbClose (kdb, parentKey);
 	}
 
-	kdb = kdbOpenOld (parentKey);
+	kdb = kdbOpen (parentKey);
 	elektraIoSetBinding (kdb, binding);
 	elektraNotificationOpen (kdb);
 

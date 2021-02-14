@@ -123,7 +123,7 @@ int main (void)
 {
 	KeySet * myConfig = ksNew (0, KS_END);
 	Key * key = keyNew ("/sw/samba/#0/current", KEY_END);
-	KDB * handle = kdbOpenOld (key);
+	KDB * handle = kdbOpen (NULL, key);
 	kdbGet (handle, myConfig, key);
 
 	Key * result = ksLookupByName (myConfig, "/sw/samba/#0/current/global/workgroup", 0);

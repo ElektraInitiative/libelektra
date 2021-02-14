@@ -44,7 +44,8 @@ static void gelektra_kdb_class_init (GElektraKdbClass * klass)
  */
 GElektraKdb * gelektra_kdb_open (GElektraKey * error)
 {
-	return gelektra_kdb_make (kdbOpenOld (error->key));
+	// FIXME: binding
+	return gelektra_kdb_make (kdbOpen (NULL, error->key));
 }
 
 /**
@@ -80,7 +81,8 @@ gint gelektra_kdb_close (GElektraKdb * kdb, GElektraKey * error)
  */
 void gelektra_kdb_gi_open (GElektraKdb * kdb, GElektraKey * error)
 {
-	kdb->handle = kdbOpenOld (error->key);
+	// FIXME: binding
+	kdb->handle = kdbOpen (NULL, error->key);
 }
 
 gint gelektra_kdb_get (GElektraKdb * kdb, GElektraKeySet * returned, GElektraKey * parent)

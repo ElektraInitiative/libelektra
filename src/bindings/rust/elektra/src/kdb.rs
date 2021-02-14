@@ -26,6 +26,8 @@ impl Drop for KDB {
 impl KDB {
     /// Opens the session with the Key database.
     pub fn open<'a>() -> Result<Self, KDBError<'a>> {
+        // FIXME: binding
+
         let mut key = StringKey::new_empty();
         let kdb_ptr = unsafe { elektra_sys::kdbOpen(std::ptr::null_mut(), key.as_ptr()) };
 
@@ -82,25 +84,6 @@ impl KDB {
         }
     }
 
-    /// This method can be used the given KDB handle meets certain clauses, specified in contract.
-    /// The return value is true on success,
-    /// and false if clauses of the contract are unmet.
-    pub fn ensure<'a>(
-        &mut self,
-        keyset: &mut KeySet,
-        key: &mut StringKey<'a>,
-    ) -> Result<bool, KDBError<'a>> {
-        let ret_val =
-            unsafe { elektra_sys::kdbEnsure(self.as_ptr(), keyset.as_ptr(), key.as_ptr()) };
-
-        if ret_val == 0 {
-            Ok(true)
-        } else if ret_val == 1 {
-            Ok(false)
-        } else {
-            Err(KDBError::new(key.duplicate(CopyOption::KEY_CP_ALL)))
-        }
-    }
     /// Returns the raw pointer of the KDB object.
     /// Should be used with caution. In particular,
     /// the pointer should only be modified with

@@ -47,7 +47,7 @@ int main (void)
 	keyAddBaseName (configXSubEndpoint, "bind_xsub");
 	Key * configXPubEndpoint = keyDup (parentKey);
 	keyAddBaseName (configXPubEndpoint, "bind_xpub");
-	KDB * kdb = kdbOpenOld (parentKey);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB. aborting\n");

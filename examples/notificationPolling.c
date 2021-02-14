@@ -82,6 +82,7 @@ void onSIGINT (int signal)
 	}
 }
 
+// FIXME: notifications
 int main (void)
 {
 	// Cleanup on SIGINT
@@ -90,7 +91,7 @@ int main (void)
 	KeySet * config = ksNew (20, KS_END);
 
 	Key * key = keyNew ("/sw/example/notification/#0/current", KEY_END);
-	KDB * kdb = kdbOpenOld (key);
+	KDB * kdb = kdbOpen (NULL, key);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");

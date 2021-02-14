@@ -19,19 +19,15 @@ script via an interpreter (e.g. in python scripts).
 
 ## Usage
 
-The preferred way of using this plugin is via `kdbEnsure`:
+The preferred way of using this plugin is via a `kdbOpen` contract:
 
 ```c
-KDB * kdb = kdbOpenOld (parentKey);
+KeySet * contract = ksNew (0, KS_END);
+elektraGOptsContract (contract, argc, argv, environ, parentKey, NULL);
 
-KeySet * contract = ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
-int rc = kdbEnsure (kdb, contract, parentKey);
-if (rc != 0)
-{
-	// error handling
-}
+KDB * kdb = kdbOpen (contract, parentKey);
 
-// gopts now mounted
+// gopts automatically mounted
 KeySet * ks = ksNew (0, KS_END);
 kdbGet (kdb, ks, parentKey);
 ```

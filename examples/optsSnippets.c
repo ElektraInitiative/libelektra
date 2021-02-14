@@ -18,7 +18,7 @@ static int basicUse (int argc, const char ** argv)
 {
 	Key * parentKey = keyNew ("/sw/org/example/#0/current", KEY_END);
 	//! [basic use]
-	KDB * kdb = kdbOpenOld (parentKey);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 
 	kdbGet (kdb, ks, parentKey);

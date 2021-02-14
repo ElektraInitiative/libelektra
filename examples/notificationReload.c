@@ -55,6 +55,8 @@ typedef struct ExampleUserData
 
 static void elektraChangedCallback (Key * changedKey ELEKTRA_UNUSED, void * context);
 
+// FIXME: notifications
+
 /**
  * Initializes KDB on first call and performs cleanup before initialization on
  * subsequent calls.
@@ -79,7 +81,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 		didReload = 1;
 	}
 
-	data->kdb = kdbOpenOld (data->parentKey);
+	data->kdb = kdbOpen (NULL, data->parentKey);
 	if (data->kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");

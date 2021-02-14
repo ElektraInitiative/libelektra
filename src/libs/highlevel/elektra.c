@@ -56,7 +56,7 @@ static bool checkHighlevelContract (const char * application, KeySet * contract,
  * @return An Elektra instance initialized for the application (free with elektraClose()).
  *
  * @see elektraClose
- * @see kdbEnsure
+ * @see kdbOpen
  */
 Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * contract, ElektraError ** error)
 {
@@ -86,6 +86,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 		if (ksGetSize (highlevelContract) > 0)
 		{
+			ksAppend (contract, ksDup (highlevelContract));
 			if (ksLookupByName (highlevelContract, "system:/elektra/contract/highlevel/helpmode/ignore/require", 0) != NULL)
 			{
 				ignoreRequireInHelpMode = 1;
@@ -95,7 +96,6 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 			{
 				keyDel (contractCut);
 				ksDel (highlevelContract);
-				ksDel (contract); // consume contract, like kdbEnsure would
 
 				kdbClose (kdb, parentKey);
 				keyDel (parentKey);
@@ -327,7 +327,7 @@ void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
 static bool minimalValidation (const char * application)
 {
 	Key * parent = keyNew ("system:/elektra/mountpoints", KEY_END);
-	KDB * kdb = kdbOpenOld (parent);
+	KDB * kdb = kdbOpen (NULL, parent);
 	KeySet * mountpoints = ksNew (0, KS_END);
 	if (kdbGet (kdb, mountpoints, parent) < 0)
 	{

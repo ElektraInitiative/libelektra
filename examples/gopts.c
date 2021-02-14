@@ -69,7 +69,7 @@ static KeySet * createSpec (void)
 static int setupSpec (void)
 {
 	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpenOld (parentKey);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
 
@@ -97,7 +97,7 @@ static int setupSpec (void)
 static void removeSpec (void)
 {
 	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpenOld (parentKey);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
 	KeySet * spec = ksCut (ks, parentKey);
@@ -113,7 +113,7 @@ static void removeSpec (void)
 
 int main (int argc, const char * const * argv)
 {
-	return EXIT_FAILURE;
+	// normally, the spec should already be mounted
 	if (!setupSpec ())
 	{
 		fprintf (stderr, "ERROR: Couldn't setup spec, keys exist!\n");
@@ -239,6 +239,7 @@ int main (int argc, const char * const * argv)
 	keyDel (parentKey);
 	ksDel (ks);
 
+	// normally, you shouldn't remove the spec
 	removeSpec ();
 
 	return EXIT_SUCCESS;
