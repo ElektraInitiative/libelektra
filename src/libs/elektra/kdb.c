@@ -422,6 +422,8 @@ KDB * kdbOpen (const KeySet * contract, Key * parentKey)
 	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 
 	handle->global = ksNew (0, KS_END);
+	ksAppendKey (handle->global,
+		     keyNew ("system:/elektra/internal/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END));
 	handle->modules = ksNew (0, KS_END);
 	if (elektraModulesInit (handle->modules, parentKey) == -1)
 	{

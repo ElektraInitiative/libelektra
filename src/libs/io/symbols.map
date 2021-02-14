@@ -34,7 +34,6 @@ libelektra_0.8 {
 	elektraIoNewFdOperation;
 	elektraIoNewIdleOperation;
 	elektraIoNewTimerOperation;
-	elektraIoSetBinding;
 	elektraIoTimerGetBinding;
 	elektraIoTimerGetBindingData;
 	elektraIoTimerGetCallback;
@@ -62,4 +61,9 @@ libelektra_0.8 {
 
 	# kdbio/uv.h
 	elektraIoUvNew;
+};
+
+libelektra_1.0 {
+	# kdbio.h
+	elektraIoContract;
 };

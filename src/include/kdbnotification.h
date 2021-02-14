@@ -82,33 +82,7 @@ namespace ckdb
 extern "C" {
 #endif
 
-/**
- * @ingroup kdbnotification
- * Initialize the notification system for the given KDB instance.
- *
- * Asynchronous receiving of notifications requires an I/O binding.
- * Use elektraIoSetBinding() before calling this function.
- *
- * May only be called once for a KDB instance. Subsequent calls return 0.
- *
- * @param  kdb         KDB instance
- * @retval 1 on success
- * @retval 0 on error
- */
-int elektraNotificationOpen (KDB * kdb);
-
-/**
- * @ingroup kdbnotification
- * Stop the notification system for the given KDB instance.
- *
- * May only be called after elektraNotificationOpen() was called for given KDB
- * instance.
- *
- * @param  kdb         KDB instance
- * @retval 1 on success
- * @retval 0 on error
- */
-int elektraNotificationClose (KDB * kdb);
+int elektraNotificationContract (KeySet * contract, const char * sender, const char * receiver);
 
 #define ELEKTRA_NOTIFICATION_REGISTER_NAME(TYPE_NAME) elektraNotificationRegister##TYPE_NAME
 

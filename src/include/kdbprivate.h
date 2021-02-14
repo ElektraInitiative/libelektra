@@ -337,8 +337,6 @@ struct _KDB
 
 	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
 
-	ElektraIoInterface * ioBinding; /*!< binding for asynchronous I/O operations.*/
-
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/

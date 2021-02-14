@@ -18,75 +18,6 @@
 
 #include <stdio.h>
 
-
-/**
- * @see ElektraIoPluginSetBinding (kdbioplugin.h)
- */
-void elektraZeroMqRecvSetIoBinding (Plugin * handle, KeySet * parameters)
-{
-	ELEKTRA_NOT_NULL (handle);
-	ELEKTRA_NOT_NULL (parameters);
-	ElektraZeroMqRecvPluginData * data = elektraPluginGetData (handle);
-	ELEKTRA_NOT_NULL (data);
-
-	Key * ioBindingKey = ksLookupByName (parameters, "/ioBinding", 0);
-	ELEKTRA_NOT_NULL (ioBindingKey);
-	ElektraIoInterface * binding = *(ElektraIoInterface **) keyValue (ioBindingKey);
-
-	data->ioBinding = binding;
-}
-
-/**
- * @see ElektraNotificationOpenNotification (kdbnotificationinternal.h)
- */
-void elektraZeroMqRecvOpenNotification (Plugin * handle, KeySet * parameters)
-{
-	ELEKTRA_NOT_NULL (handle);
-	ElektraZeroMqRecvPluginData * pluginData = elektraPluginGetData (handle);
-	ELEKTRA_NOT_NULL (pluginData);
-
-	ElektraNotificationCallback callback;
-	Key * callbackKey = ksLookupByName (parameters, "/callback", 0);
-	ELEKTRA_NOT_NULL (callbackKey);
-	callback = *(ElektraNotificationCallback *) keyValue (callbackKey);
-
-	ElektraNotificationCallbackContext * context;
-	Key * contextKey = ksLookupByName (parameters, "/context", 0);
-	if (contextKey != NULL)
-	{
-		context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
-	}
-	else
-	{
-		context = NULL;
-	}
-
-	pluginData->notificationCallback = callback;
-	pluginData->notificationContext = context;
-
-	// init dbus connections
-	if (pluginData->ioBinding)
-	{
-		elektraZeroMqRecvSetup (pluginData);
-	}
-	else
-	{
-		ELEKTRA_LOG_DEBUG ("no I/O binding present. plugin in noop mode");
-	}
-}
-
-/**
- * @see ElektraNotificationCloseNotification (kdbnotificationinternal.h)
- */
-void elektraZeroMqRecvCloseNotification (Plugin * handle, KeySet * parameters ELEKTRA_UNUSED)
-{
-	ElektraZeroMqRecvPluginData * pluginData = elektraPluginGetData (handle);
-	pluginData->notificationCallback = NULL;
-	pluginData->notificationContext = NULL;
-
-	elektraZeroMqRecvTeardown (pluginData);
-}
-
 int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	Key * endpointKey = ksLookupByName (elektraPluginGetConfig (handle), "/endpoint", 0);
@@ -101,7 +32,7 @@ int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	}
 
 	ElektraZeroMqRecvPluginData * data = elektraPluginGetData (handle);
-	if (!data)
+	if (data == NULL)
 	{
 		data = elektraMalloc (sizeof (*data));
 		data->ioBinding = NULL;
@@ -109,8 +40,29 @@ int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		data->zmqSubscriber = NULL;
 		data->zmqAdapter = NULL;
 		data->endpoint = endpoint;
+		elektraPluginSetData (handle, data);
 	}
-	elektraPluginSetData (handle, data);
+
+	if (data->ioBinding == NULL)
+	{
+		KeySet * global = elektraPluginGetGlobalKeySet (handle);
+
+		Key * ioBindingKey = ksLookupByName (global, "system:/elektra/internal/io/binding", 0);
+		const void * bindingPtr = keyValue (ioBindingKey);
+		ElektraIoInterface * binding = bindingPtr == NULL ? NULL : *(ElektraIoInterface **) keyValue (ioBindingKey);
+
+		data->ioBinding = binding;
+	}
+
+	// init zeromq connections
+	if (data->ioBinding != NULL)
+	{
+		elektraZeroMqRecvSetup (handle);
+	}
+	else
+	{
+		ELEKTRA_LOG_DEBUG ("no I/O binding present. plugin in noop mode");
+	}
 
 	return 1; /* success */
 }
@@ -125,12 +77,6 @@ int elektraZeroMqRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 			keyNew ("system:/elektra/modules/zeromqrecv/exports/open", KEY_FUNC, elektraZeroMqRecvOpen, KEY_END),
 			keyNew ("system:/elektra/modules/zeromqrecv/exports/get", KEY_FUNC, elektraZeroMqRecvGet, KEY_END),
 			keyNew ("system:/elektra/modules/zeromqrecv/exports/close", KEY_FUNC, elektraZeroMqRecvClose, KEY_END),
-			keyNew ("system:/elektra/modules/zeromqrecv/exports/setIoBinding", KEY_FUNC, elektraZeroMqRecvSetIoBinding,
-				KEY_END),
-			keyNew ("system:/elektra/modules/zeromqrecv/exports/openNotification", KEY_FUNC, elektraZeroMqRecvOpenNotification,
-				KEY_END),
-			keyNew ("system:/elektra/modules/zeromqrecv/exports/closeNotification", KEY_FUNC,
-				elektraZeroMqRecvCloseNotification, KEY_END),
 #include ELEKTRA_README
 			keyNew ("system:/elektra/modules/zeromqrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -144,6 +90,8 @@ int elektraZeroMqRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key
 
 int elektraZeroMqRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 {
+	elektraZeroMqRecvTeardown (handle);
+
 	ElektraZeroMqRecvPluginData * pluginData = elektraPluginGetData (handle);
 	if (pluginData == NULL)
 	{

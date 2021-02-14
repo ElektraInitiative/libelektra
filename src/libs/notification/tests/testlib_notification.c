@@ -16,30 +16,6 @@
 
 int callback_called;
 
-// FIXME: notifications
-static void test_openclose (void)
-{
-	printf ("test open & close\n");
-
-	Key * key = keyNew ("system:/sw/tests/testlib_notification", KEY_END);
-	KDB * kdb = kdbOpen (NULL, key);
-	exit_if_fail (kdb, "opening kdb failed");
-
-	succeed_if (!elektraNotificationClose (kdb), "could close notification system without open");
-
-	succeed_if (elektraNotificationOpen (kdb), "could not open notification system");
-	succeed_if (!elektraNotificationOpen (kdb), "could open notification system twice");
-
-	succeed_if (elektraNotificationClose (kdb), "could not close notification system");
-	succeed_if (elektraNotificationOpen (kdb), "could not re-open notification system");
-
-	// cleanup
-	succeed_if (elektraNotificationClose (kdb), "could not close notification system");
-	succeed_if (kdbClose (kdb, key) == 0, "could not close kdb");
-	keyDel (key);
-}
-
-// FIXME: notifications
 static void test_registerInt (void)
 {
 	printf ("test elektraNotificationRegisterInt\n");
@@ -52,9 +28,13 @@ static void test_registerInt (void)
 
 	KDB * kdb = kdbOpen (NULL, key);
 
-	succeed_if (elektraNotificationRegisterInt (kdb, valueKey, &value) == 0, "register should fail before open");
+	succeed_if (elektraNotificationRegisterInt (kdb, valueKey, &value) == 0, "register should fail without contract");
 
-	elektraNotificationOpen (kdb);
+	kdbClose (kdb, key);
+
+	KeySet * contract = ksNew (0, KS_END);
+	elektraNotificationContract (contract, NULL, NULL);
+	kdb = kdbOpen (contract, key);
 
 	succeed_if (elektraNotificationRegisterInt (kdb, valueKey, &value), "register failed");
 
@@ -66,7 +46,6 @@ static void test_registerInt (void)
 
 	// cleanup
 	ksDel (config);
-	elektraNotificationClose (kdb);
 	kdbClose (kdb, key);
 	keyDel (key);
 	keyDel (valueKey);
@@ -77,7 +56,6 @@ static void testCallback (Key * key ELEKTRA_UNUSED, void * context ELEKTRA_UNUSE
 	callback_called = 1;
 }
 
-// FIXME: notifications
 static void test_registerCallback (void)
 {
 	printf ("test elektraNotificationRegisterCallback\n");
@@ -88,9 +66,13 @@ static void test_registerCallback (void)
 
 	KDB * kdb = kdbOpen (NULL, key);
 
-	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback, NULL) == 0, "register should fail before open");
+	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback, NULL) == 0, "register should fail without contract");
 
-	elektraNotificationOpen (kdb);
+	kdbClose (kdb, key);
+
+	KeySet * contract = ksNew (0, KS_END);
+	elektraNotificationContract (contract, NULL, NULL);
+	kdb = kdbOpen (contract, key);
 
 	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback, NULL), "register failed");
 
@@ -102,7 +84,6 @@ static void test_registerCallback (void)
 
 	// cleanup
 	ksDel (config);
-	elektraNotificationClose (kdb);
 	kdbClose (kdb, key);
 	keyDel (key);
 	keyDel (valueKey);
@@ -111,9 +92,6 @@ static void test_registerCallback (void)
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
-
-	// Test elektraNotificationOpen and elektraNotificationClose
-	test_openclose ();
 
 	// Test elektraNotificationRegisterInt
 	test_registerInt ();

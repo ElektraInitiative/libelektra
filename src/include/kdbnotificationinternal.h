@@ -143,8 +143,6 @@ typedef void (*ElektraNotificationKdbUpdate) (KDB * kdb, Key * changedKey);
  */
 struct _ElektraNotificationCallbackContext
 {
-	KDB * kdb; /*!< The pointer to kdb handle.*/
-
 	ElektraNotificationKdbUpdate kdbUpdate; /*!< The pointer to the update function.*/
 
 	Plugin * notificationPlugin; /*!< Notification plugin handle.*/

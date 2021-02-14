@@ -55,8 +55,6 @@ typedef struct ExampleUserData
 
 static void elektraChangedCallback (Key * changedKey ELEKTRA_UNUSED, void * context);
 
-// FIXME: notifications
-
 /**
  * Initializes KDB on first call and performs cleanup before initialization on
  * subsequent calls.
@@ -76,28 +74,22 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 	if (data->kdb != NULL)
 	{
 		// Cleanup notifications and close KDB
-		elektraNotificationClose (data->kdb);
 		kdbClose (data->kdb, data->parentKey);
 		didReload = 1;
 	}
 
-	data->kdb = kdbOpen (NULL, data->parentKey);
+	KeySet * contract = ksNew (0, KS_END);
+	elektraIoContract (contract, data->binding);
+	elektraNotificationContract (contract, NULL, NULL);
+
+	data->kdb = kdbOpen (contract, data->parentKey);
 	if (data->kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
 		exit (1);
 	}
 
-	elektraIoSetBinding (data->kdb, data->binding);
-
-	int result = elektraNotificationOpen (data->kdb);
-	if (!result)
-	{
-		printf ("could not init notification, aborting\n");
-		exit (1);
-	}
-
-	result = elektraNotificationRegisterInt (data->kdb, data->intKeyToWatch, &data->valueToPrint);
+	int result = elektraNotificationRegisterInt (data->kdb, data->intKeyToWatch, &data->valueToPrint);
 	if (!result)
 	{
 		printf ("could not register variable, aborting\n");
@@ -129,7 +121,6 @@ static gboolean onSIGNAL (gpointer user_data)
 	elektraFree (data->timer);
 	elektraIoBindingRemoveTimer (data->reload);
 	elektraFree (data->reload);
-	elektraNotificationClose (data->kdb);
 	kdbClose (data->kdb, data->parentKey);
 	elektraIoBindingCleanup (data->binding);
 
