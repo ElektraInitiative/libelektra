@@ -62,12 +62,6 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 {
 	Key * const parentKey = keyNew (application, KEY_END);
 
-	// TODO: set default spec config to use ERROR
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec", KEY_END));
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
-	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec/config/missing/log", KEY_VALUE, "1", KEY_END));
-
 	KDB * const kdb = kdbOpen (contract, parentKey);
 
 	if (kdb == NULL)
@@ -81,6 +75,14 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	if (contract != NULL)
 	{
+		// TODO: set default spec config to use ERROR
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec", KEY_END));
+		ksAppendKey (contract,
+			     keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
+		ksAppendKey (contract,
+			     keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec/config/missing/log", KEY_VALUE, "1", KEY_END));
+
 		Key * contractCut = keyNew ("system:/elektra/contract/highlevel", KEY_END);
 		KeySet * highlevelContract = ksCut (contract, contractCut);
 

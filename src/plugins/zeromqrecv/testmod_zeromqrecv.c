@@ -152,6 +152,7 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
 	keyDel (test_callbackKey);
+	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 
@@ -195,6 +196,7 @@ static void test_incompleteMessage (uv_loop_t * loop, ElektraIoInterface * bindi
 
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
+	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 

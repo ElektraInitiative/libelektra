@@ -172,6 +172,7 @@ static void test_commit (uv_loop_t * loop, ElektraIoInterface * binding)
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
 	keyDel (test_callbackKey);
+	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 
@@ -204,6 +205,7 @@ static void test_keyAdded (uv_loop_t * loop, ElektraIoInterface * binding)
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
 	keyDel (test_callbackKey);
+	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 
@@ -236,6 +238,7 @@ static void test_keyChanged (uv_loop_t * loop, ElektraIoInterface * binding)
 	elektraIoBindingRemoveTimer (timerOp);
 	elektraFree (timerOp);
 	keyDel (test_callbackKey);
+	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 

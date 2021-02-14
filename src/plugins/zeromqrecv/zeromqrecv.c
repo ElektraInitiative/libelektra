@@ -40,6 +40,8 @@ int elektraZeroMqRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 		data->zmqSubscriber = NULL;
 		data->zmqAdapter = NULL;
 		data->endpoint = endpoint;
+		data->notificationCallback = NULL;
+		data->notificationContext = NULL;
 		elektraPluginSetData (handle, data);
 	}
 

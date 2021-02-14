@@ -45,7 +45,7 @@ static void gelektra_kdb_class_init (GElektraKdbClass * klass)
  */
 GElektraKdb * gelektra_kdb_open (GElektraKeySet * contract, GElektraKey * error)
 {
-	return gelektra_kdb_make (kdbOpen (contract->keyset, error->key));
+	return gelektra_kdb_make (kdbOpen (contract == NULL ? NULL : contract->keyset, error->key));
 }
 
 /**
@@ -81,7 +81,7 @@ gint gelektra_kdb_close (GElektraKdb * kdb, GElektraKey * error)
  */
 void gelektra_kdb_gi_open (GElektraKdb * kdb, GElektraKeySet * contract, GElektraKey * error)
 {
-	kdb->handle = kdbOpen (contract->keyset, error->key);
+	kdb->handle = kdbOpen (contract == NULL ? NULL : contract->keyset, error->key);
 }
 
 gint gelektra_kdb_get (GElektraKdb * kdb, GElektraKeySet * returned, GElektraKey * parent)

@@ -46,6 +46,7 @@ static void test_registerInt (void)
 
 	// cleanup
 	ksDel (config);
+	ksDel (contract);
 	kdbClose (kdb, key);
 	keyDel (key);
 	keyDel (valueKey);
@@ -84,6 +85,7 @@ static void test_registerCallback (void)
 
 	// cleanup
 	ksDel (config);
+	ksDel (contract);
 	kdbClose (kdb, key);
 	keyDel (key);
 	keyDel (valueKey);

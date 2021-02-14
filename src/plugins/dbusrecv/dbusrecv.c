@@ -112,10 +112,11 @@ int elektraDbusRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 	{
 		data = elektraMalloc (sizeof (*data));
 		data->ioBinding = NULL;
-		data->notificationCallback = NULL;
 		data->dbusInitialized = 0;
 		data->systemBus = NULL;
 		data->sessionBus = NULL;
+		data->notificationCallback = NULL;
+		data->notificationContext = NULL;
 		elektraPluginSetData (handle, data);
 	}
 
