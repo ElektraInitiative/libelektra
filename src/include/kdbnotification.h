@@ -31,11 +31,8 @@
  *
  * @par Global Mounting
  *
- * elektraNotificationOpen() loads and mounts the
- * <a href="https://www.libelektra.org/plugins/internalnotification">internalnotification plugin</a>
- * globally at run-time.
- * The key database is not altered permanently.
- * elektraNotificationClose() reverts the mounting.
+ * elektraNotificationContract() returns a contract for use with kdbOpen().
+ * The contract ensures that the internalnotification plugin is mounted and configured correctly.
  *
  * The internalnotification plugin is mounted at its defined positions
  * (see
@@ -57,22 +54,27 @@
  *
  * @par Transport Plugins
  *
- * Notification transport plugins (or simply transport plugins) export
- * "openNotification" (ElektraNotificationOpenNotification()) and
- * optionally "closeNotification" (ElektraNotificationCloseNotification())
- * functions as part of their contract.
+ * Notification transport plugins (or simply transport plugins) need access
+ * to an I/O binding, as well as a notification callback and context.
  *
- * The function "openNotification" is called during elektraNotificationOpen().
- * At this point an I/O binding is set and it is save to use it.
- * If no binding is set despite the plugin requires it, it should log a message
- * and perform no additional operations.
- * This ensures that the plugin can be used in applications that do not use I/O
- * bindings or notification features.
+ * All of these can be retrieved from the global keyset. The keys are as follows:
+ * - I/O binding: `system:/elektra/io/binding` Type: `ElektraIoInterface *`
+ * - Callback: `system:/elektra/notification/callback` Type: `ElektraNotificationCallback`
+ * - Context: `system:/elektra/notification/context` Type: `ElektraNotificationCallbackContext *`
  *
- * ElektraNotificationOpenNotification() receives a callback and additional data.
- * When a key change notification is received (or a change is detected by other
- * means) this callback shall be called with the changed Key and the additional
- * data.
+ * All of these keys are binary and store a pointer that can be read via `*(TYPE **) keyValue (key)`.
+ *
+ * The I/O binding can be accessed at any time. It is recommended, plugins read the key
+ * once during their `open` function and store the pointer in their plugin data struct.
+ *
+ * The notification callback and context are provided by the `internalnotification` plugin.
+ * Since it might be initialised after the transport plugin, it is not recommended to read
+ * the callback and context in the `open` function. Instead the plugin should read and store
+ * the values when the first notification is processed.
+ *
+ * Transport plugins should handle missing I/O bindings, notification callbacks and notification
+ * contexts gracefully. The plugin should not report and error and instead simply log a debug or
+ * warning message.
  *
  */
 
@@ -82,7 +84,22 @@ namespace ckdb
 extern "C" {
 #endif
 
-int elektraNotificationContract (KeySet * contract, const char * sender, const char * receiver);
+/**
+ * Creates a contract for use with kdbOpen() that sets up notifications.
+ *
+ * When you call kdbOpen() with this contract, the `internalnotification`
+ * plugin will be mounted automatically. This allows you to call other
+ * `elektraNotification*` functions.
+ *
+ * If you need to configure notification transport plugins, you should
+ * manually add the relevant keys to @p contract.
+ *
+ * @param contract The keyset into which the contract is written.
+ *
+ * @retval -1 if @p contract is NULL
+ * @retval  0 on success
+ */
+int elektraNotificationContract (KeySet * contract);
 
 #define ELEKTRA_NOTIFICATION_REGISTER_NAME(TYPE_NAME) elektraNotificationRegister##TYPE_NAME
 

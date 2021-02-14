@@ -595,6 +595,18 @@ void * elektraIoIdleGetData (ElektraIoIdleOperation * idleOp);
  */
 ElektraIoIdleCallback elektraIoIdleGetCallback (ElektraIoIdleOperation * idleOp);
 
+/**
+ * Creates a contract for use with kdbOpen() that sets up an I/O binding.
+ *
+ * When you call kdbOpen() with this contract, the KDB instance will use
+ * @p ioBinding as its I/O binding.
+ *
+ * @param contract  The keyset into which the contract is written.
+ * @param ioBinding The ioBinding to use.
+ *
+ * @retval -1 if @p contract or @p ioBinding are NULL
+ * @retval  0 on success
+ */
 int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding);
 
 /**

@@ -90,7 +90,7 @@ int main (void)
 	KeySet * config = ksNew (20, KS_END);
 
 	KeySet * contract = ksNew (0, KS_END);
-	elektraNotificationContract (contract, NULL, NULL);
+	elektraNotificationContract (contract);
 
 	Key * key = keyNew ("/sw/example/notification/#0/current", KEY_END);
 	KDB * kdb = kdbOpen (contract, key);

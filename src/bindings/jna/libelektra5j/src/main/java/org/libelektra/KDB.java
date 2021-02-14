@@ -31,6 +31,7 @@ public class KDB implements AutoCloseable
 	 */
 	public static KDB open (final Key parentKey)
 	{
+		// FIXME: binding
 		return new KDB (Elektra.INSTANCE.kdbOpen (Pointer.NULL, parentKey.get ()));
 	}
 

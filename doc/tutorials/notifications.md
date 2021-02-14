@@ -166,7 +166,7 @@ void main (void)
 	elektraIoContract (contract, binding);
 
 	// Add notifications to the contract
-	elektraNotificationContract (contract, NULL, NULL);
+	elektraNotificationContract (contract);
 
 	// Open KDB
 	Key * key = keyNew ("/sw/myorg/myapp/#0/current", KEY_END);
@@ -290,7 +290,7 @@ void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 
 	KeySet * contract = ksNew (0, KS_END);
 	elektraIoContract (contract, binding);
-	elektraNotificationContract (contract, NULL, NULL);
+	elektraNotificationContract (contract);
 
 	kdb = kdbOpen (parentKey);
 
@@ -353,7 +353,6 @@ void initKdb (void)
 	if (kdb != NULL)
 	{
 		// Cleanup notifications and close KDB
-		elektraNotificationClose (kdb);
 		kdbClose (kdb, parentKey);
 	}
 

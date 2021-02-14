@@ -31,7 +31,7 @@ static void elektraNotificationKdbUpdate (KDB * kdb, Key * changedKey)
 	ksDel (ks);
 }
 
-int elektraNotificationContract (KeySet * contract, const char * sender, const char * receiver)
+int elektraNotificationContract (KeySet * contract)
 {
 	if (contract == NULL) return -1;
 
@@ -41,20 +41,6 @@ int elektraNotificationContract (KeySet * contract, const char * sender, const c
 	context->kdbUpdate = &elektraNotificationKdbUpdate;
 	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/internalnotification/context", KEY_BINARY, KEY_SIZE,
 				       sizeof (context), KEY_VALUE, &context, KEY_END));
-
-	if (sender != NULL)
-	{
-		Key * senderKey = keyNew ("system:/elektra/contract/mountglobal", KEY_END);
-		keyAddBaseName (senderKey, sender);
-		ksAppendKey (contract, senderKey);
-	}
-
-	if (receiver != NULL)
-	{
-		Key * receiverKey = keyNew ("system:/elektra/contract/mountglobal", KEY_END);
-		keyAddBaseName (receiverKey, receiver);
-		ksAppendKey (contract, receiverKey);
-	}
 
 	return 0;
 }
@@ -79,7 +65,7 @@ static Plugin * getNotificationPlugin (KDB * kdb)
 	{
 		ELEKTRA_LOG_WARNING (
 			"notificationPlugin not set. use "
-			"elektraNotificationOpen before calling other "
+			"elektraNotifiationContract before calling other "
 			"elektraNotification-functions");
 		return NULL;
 	}

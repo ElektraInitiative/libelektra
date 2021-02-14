@@ -80,7 +80,7 @@ static void initKdb (ElektraIoTimerOperation * timerOp ELEKTRA_UNUSED)
 
 	KeySet * contract = ksNew (0, KS_END);
 	elektraIoContract (contract, data->binding);
-	elektraNotificationContract (contract, NULL, NULL);
+	elektraNotificationContract (contract);
 
 	data->kdb = kdbOpen (contract, data->parentKey);
 	if (data->kdb == NULL)
@@ -130,8 +130,6 @@ static gboolean onSIGNAL (gpointer user_data)
 
 /**
  * This function is called whenever Elektra's configuration has changed.
- * Since cannot call elektraNotificationClose() here we start a timer operation
- * which allows us to reload KDB in the next main loop iteration.
  *
  * @param changedKey unused
  * @param context unused

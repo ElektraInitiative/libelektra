@@ -100,32 +100,13 @@ typedef struct _ElektraNotificationCallbackContext ElektraNotificationCallbackCo
 /**
  * Notify notification library of changes to a key.
  *
- * This callback is passed by `elektraNotificationOpen` to plugins
- * exporting a `openNotification` function.
+ * This callback is provided by the `internalnotification` plugin and
+ * for use by notification transport plugins.
  *
  * @param  key      changed key
- * @param  context  context passed by ElektraNotificationOpenNotification
+ * @param  context  additional data
  */
 typedef void (*ElektraNotificationCallback) (Key * key, ElektraNotificationCallbackContext * context);
-
-/**
- * Initialize plugin's notification capabilities.
- * Exported as "openNotification" by transport plugins.
- *
- * @param  handle     plugin handle
- * @param  parameters contains the keys "/callback" (ElektraNotificationCallback) and "/context" (ElektraNotificationCallbackContext *).
- */
-typedef void (*ElektraNotificationOpenNotification) (Plugin * handle, KeySet * parameters);
-
-/**
- * Teardown plugin's notification capabilities.
- *
- * Exported as "closeNotification" by transport plugins.
- *
- * @param  handle     plugin handle
- * @param  parameters unused
- */
-typedef void (*ElektraNotificationCloseNotification) (Plugin * handle, KeySet * parameters);
 
 /**
  * Used by notification plugins to get values from the key database.

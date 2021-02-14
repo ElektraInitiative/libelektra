@@ -33,7 +33,7 @@ static void test_registerInt (void)
 	kdbClose (kdb, key);
 
 	KeySet * contract = ksNew (0, KS_END);
-	elektraNotificationContract (contract, NULL, NULL);
+	elektraNotificationContract (contract);
 	kdb = kdbOpen (contract, key);
 
 	succeed_if (elektraNotificationRegisterInt (kdb, valueKey, &value), "register failed");
@@ -72,7 +72,7 @@ static void test_registerCallback (void)
 	kdbClose (kdb, key);
 
 	KeySet * contract = ksNew (0, KS_END);
-	elektraNotificationContract (contract, NULL, NULL);
+	elektraNotificationContract (contract);
 	kdb = kdbOpen (contract, key);
 
 	succeed_if (elektraNotificationRegisterCallback (kdb, valueKey, testCallback, NULL), "register failed");

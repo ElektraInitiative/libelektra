@@ -29,11 +29,44 @@ This is the quickest way to get started with Elektra without compiling and other
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- Breaking change to `kdbOpen`. _[see below](#hl-1)_
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-### <<HIGHLIGHT1>>
+<a id="hl-1"></a>
+
+### `kdbOpen` Contracts
+
+The signature of `kdbOpen` has been changed from
+
+```c
+int kdbOpen (Key * errorKey);
+```
+
+to
+
+```c
+int kdbOpen (KeySet * contract, errorKey);
+```
+
+You can use `kdbOpen (NULL, errorKey)` to get the same behaviour as before.
+
+The new parameter `contract` is similar to what could be done via `kdbEnsure` (which has been removed).
+Currently, the contract allows you to mount global plugins and add data into the global KeySet (passed to all plugins)
+during `kdbOpen`. This alone is already quite powerful, but we might more functionality in future releases.
+
+For now, there are three use cases for the `contract` parameter. All of them are covered by special helper functions:
+
+```c
+int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv, const char * const * envp, const Key * parentKey, KeySet * goptsConfig);
+int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding);
+int elektraNotificationContract (KeySet * contract);
+```
+
+With `elektraGOptsContract` you can mount and set up the `gopts` plugin used for command-line argument parsing.
+The other two functions are the new way to configure Elektra's notification feature.
+
+For more information take a look at [doc/dev/kdb-contracts.md](../dev/kdb-contracts.md)
 
 ### <<HIGHLIGHT2>>
 
@@ -43,17 +76,29 @@ This is the quickest way to get started with Elektra without compiling and other
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### Cache
 
-- <<TODO>>
+- The `cache` plugin now only caches the parts of the global keyset that are below `system:/elektra/cache` or below
+  `system:/elektra/cached`. The part below `system:/elektra/cache` is meant for internal data of the `cache`, so you
+  should put data below `system:/elektra/cached`, if you want it to be cached. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin2>>
+### Dbus
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
+
+### Dbusrecv
+
+- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
+
+### Zeromqsend
+
+- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
+
+### Zeromqrecv
+
+- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
 
 ### <<Plugin3>>
 
@@ -79,19 +124,21 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   returns a key similar to what `keyNew ("/", KEY_END)` produces, whereas previously `keyDup (NULL)` returned `NULl`.
   _(Klemens Böswirth)_
 - <<TODO>>
+- We added `keyReplacePrefix`, a function that allows you to easily move a key from one parent to another. _(Klemens Böswirth)_
+- `kdbEnsure` was removed and replaced by similar functionality added to `kdbOpen`. _[see above](#hl-1)_ _(Klemens Böswirth)_
 - <<TODO>>
 
-### <<Library1>>
+### Io
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- `elektraSetIoBinding` has been removed. Use `elektraIoContract` instead. _(Klemens Böswirth)_
 
-### <<Library2>>
+### Notification
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- `elektraNotificationOpen` has been removed. Use `elektraNotificationContract` instead.
+  `elektraNotificationClose` has also been removed. There is no replacement, cleanup now happens automatially during
+  `kdbClose`. _(Klemens Böswirth)_
+- The contract for transport plugins has been changed. The exported functions `"openNotification"`, `"closeNotification" and`"setIoBinding"`are no longer used. Instead, plugins should retrieve the I/O binding from the key`system:/elektra/io/binding`in the global keyset. The notification callback and context that were passed to`"openNotification"`, can now be read from the global keyset as well. The keys are`system:/elektra/notification/callback`and`system:/elektra/notification/context` respectively.
+  _(Klemens Böswirth)_
 
 ### <<Library3>>
 

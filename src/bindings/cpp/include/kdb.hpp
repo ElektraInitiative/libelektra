@@ -95,6 +95,7 @@ inline KDB::KDB (Key & errorKey)
 /**
  * Constructs a class KDB.
  *
+ * @param contract the contract that should be ensured
  * @param errorKey is useful if you want to get the warnings in
  * the successful case, when no exception is thrown.
  *
@@ -104,7 +105,6 @@ inline KDB::KDB (Key & errorKey)
  */
 inline KDB::KDB (KeySet & contract)
 {
-	// TODO: documentation contract
 	Key errorKey;
 	open (contract, errorKey);
 }
@@ -112,6 +112,7 @@ inline KDB::KDB (KeySet & contract)
 /**
  * Constructs a class KDB.
  *
+ * @param contract the contract that should be ensured
  * @param errorKey is useful if you want to get the warnings in
  * the successful case, when no exception is thrown.
  *
@@ -121,7 +122,6 @@ inline KDB::KDB (KeySet & contract)
  */
 inline KDB::KDB (KeySet & contract, Key & errorKey)
 {
-	// TODO: documentation contract
 	open (contract, errorKey);
 }
 
@@ -145,6 +145,7 @@ inline void KDB::open (Key & errorKey)
 /**
  * Open the database
  *
+ * @param contract the contract that should be ensured
  * @param errorKey is useful if you want to get the warnings in
  * the successful case, when no exception is thrown.
  *
@@ -152,7 +153,6 @@ inline void KDB::open (Key & errorKey)
  */
 inline void KDB::open (KeySet & contract, Key & errorKey)
 {
-	// TODO: documentation contract
 	handle = ckdb::kdbOpen (contract.getKeySet (), errorKey.getKey ());
 	if (!handle)
 	{

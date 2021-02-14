@@ -11,9 +11,6 @@
 #include <kdbhelper.h>
 #include <kdblogger.h>
 
-/**
- * @see ElektraNotificationOpenNotification (kdbnotificationinternal.h)
- */
 static int setupNotificationCallback (Plugin * handle)
 {
 	ELEKTRA_NOT_NULL (handle);
