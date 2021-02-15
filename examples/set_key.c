@@ -61,7 +61,7 @@ int main (void)
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb_handle, ks, top);
 
-	Key * key = keyNew (0);
+	Key * key = keyNew ("/", KEY_END);
 	keySetName (key, "user:/sw/MyApp/Tests/TestKey1"); // == 31
 	keySetString (key, "NULLTestValue");		   // == 14
 	keySetMeta (key, "comment", "NULLTestComment");	   // == 16

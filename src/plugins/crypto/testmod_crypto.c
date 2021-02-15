@@ -92,7 +92,7 @@ static KeySet * newTestdataKeySet (void)
 
 static inline void setPluginShutdown (KeySet * config)
 {
-	ksAppendKey (config, keyNew (ELEKTRA_CRYPTO_PARAM_SHUTDOWN, KEY_VALUE, "1", 0));
+	ksAppendKey (config, keyNew (ELEKTRA_CRYPTO_PARAM_SHUTDOWN, KEY_VALUE, "1", KEY_END));
 }
 
 static KeySet * newPluginConfiguration (void)

@@ -41,8 +41,8 @@ int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv
 	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END));
 	if (goptsConfig != NULL)
 	{
-		Key * configRoot = keyNew ("user:/");
-		Key * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts");
+		Key * configRoot = keyNew ("user:/", KEY_END);
+		Key * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END);
 
 		elektraCursor end;
 		for (elektraCursor it = ksFindHierarchy (goptsConfig, configRoot, &end); it < end; it++)
@@ -100,8 +100,8 @@ int elektraGOptsContractFromStrings (KeySet * contract, size_t argsSize, const c
 	ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END));
 	if (goptsConfig != NULL)
 	{
-		Key * configRoot = keyNew ("user:/");
-		Key * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts");
+		Key * configRoot = keyNew ("user:/", KEY_END);
+		Key * contractRoot = keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END);
 
 		elektraCursor end;
 		for (elektraCursor it = ksFindHierarchy (goptsConfig, configRoot, &end); it < end; it++)

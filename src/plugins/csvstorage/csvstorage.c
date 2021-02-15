@@ -454,7 +454,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 				Key * lookupKey = keyNew (keyName (dirKey), KEY_END);
 				keyAddName (lookupKey, keyString (colAsParent));
 				Key * indexKey = ksLookupByName (tmpKs, keyName (lookupKey), 0);
-				Key * renameKey = keyNew (keyName (dirKey), 0);
+				Key * renameKey = keyNew (keyName (dirKey), KEY_END);
 				keySetBaseName (renameKey, keyString (indexKey));
 				ksRewind (tmpKs);
 				KeySet * renamedKs = ksRenameKeys (tmpKs, keyName (renameKey));

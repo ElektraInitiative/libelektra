@@ -209,10 +209,12 @@ void test_keyset (void)
 static void test_ksCommonParentName (void)
 {
 	char ret[MAX_SIZE + 1];
-	KeySet * ks = ksNew (
-		10, keyNew ("system:/sw/xorg/Monitors/Monitor1/vrefresh", 0), keyNew ("system:/sw/xorg/Monitors/Monitor1/hrefresh", 0),
-		keyNew ("system:/sw/xorg/Monitors/Monitor2/vrefresh", 0), keyNew ("system:/sw/xorg/Monitors/Monitor2/hrefresh", 0),
-		keyNew ("system:/sw/xorg/Devices/Device1/driver", 0), keyNew ("system:/sw/xorg/Devices/Device1/mode", 0), KS_END);
+	KeySet * ks = ksNew (10, keyNew ("system:/sw/xorg/Monitors/Monitor1/vrefresh", KEY_END),
+			     keyNew ("system:/sw/xorg/Monitors/Monitor1/hrefresh", KEY_END),
+			     keyNew ("system:/sw/xorg/Monitors/Monitor2/vrefresh", KEY_END),
+			     keyNew ("system:/sw/xorg/Monitors/Monitor2/hrefresh", KEY_END),
+			     keyNew ("system:/sw/xorg/Devices/Device1/driver", KEY_END),
+			     keyNew ("system:/sw/xorg/Devices/Device1/mode", KEY_END), KS_END);
 
 	printf ("Test common parentname\n");
 
@@ -220,33 +222,34 @@ static void test_ksCommonParentName (void)
 	succeed_if_same_string (ret, "system:/sw/xorg");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system:/", 0), keyNew ("user:/", 0), KS_END);
+	ks = ksNew (10, keyNew ("system:/", KEY_END), keyNew ("user:/", KEY_END), KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 0, "could find correct parentname");
 	succeed_if_same_string (ret, "");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system:/some/thing", 0), keyNew ("system:/other/thing", 0), KS_END);
+	ks = ksNew (10, keyNew ("system:/some/thing", KEY_END), keyNew ("system:/other/thing", KEY_END), KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 9, "could find correct parentname");
 	succeed_if_same_string (ret, "system:/");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system:/some/thing", 0), keyNew ("system:/something", 0), KS_END);
+	ks = ksNew (10, keyNew ("system:/some/thing", KEY_END), keyNew ("system:/something", KEY_END), KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 9, "could find correct parentname");
 	succeed_if_same_string (ret, "system:/");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system:/here/in/deep/goes/ok/thing", 0), keyNew ("system:/here/in/deep/goes/ok/other/thing", 0), KS_END);
+	ks = ksNew (10, keyNew ("system:/here/in/deep/goes/ok/thing", KEY_END),
+		    keyNew ("system:/here/in/deep/goes/ok/other/thing", KEY_END), KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) > 0, "could find correct parentname");
 	succeed_if_same_string (ret, "system:/here/in/deep/goes/ok");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("system:/here/in/deep/goes/ok/thing", 0), keyNew ("system:/here/in/deep/goes/ok/other/thing", 0),
-		    keyNew ("user:/unique/thing", 0), KS_END);
+	ks = ksNew (10, keyNew ("system:/here/in/deep/goes/ok/thing", KEY_END),
+		    keyNew ("system:/here/in/deep/goes/ok/other/thing", KEY_END), keyNew ("user:/unique/thing", KEY_END), KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) == 0, "could find correct parentname");
 	succeed_if_same_string (ret, "");
 	ksDel (ks);
 
-	ks = ksNew (10, keyNew ("user:/unique/thing", 0), KS_END);
+	ks = ksNew (10, keyNew ("user:/unique/thing", KEY_END), KS_END);
 	succeed_if (ksGetCommonParentName (ks, ret, MAX_SIZE) > 0, "could find correct parentname");
 	succeed_if_same_string (ret, "user:/unique/thing");
 	ksDel (ks);

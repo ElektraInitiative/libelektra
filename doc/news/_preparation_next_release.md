@@ -126,7 +126,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - We added `keyReplacePrefix`, a function that allows you to easily move a key from one parent to another. _(Klemens Böswirth)_
 - `kdbEnsure` was removed and replaced by similar functionality added to `kdbOpen`. _[see above](#hl-1)_ _(Klemens Böswirth)_
-- <<TODO>>
+- `KEY_END` is now defined as `(void *) 0` instead of `0`. This allows us to mark `keyNew` with the GCC attribute
+  `__attribute__ ((sentinel))`, which causes a compiler warning, if `keyNew` calls don't use `KEY_END` as their last argument.
+  _(Klemens Böswirth)_
 
 ### Io
 

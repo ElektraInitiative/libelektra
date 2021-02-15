@@ -325,8 +325,8 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 			}
 			else
 			{
-				Key * userCutPoint = keyNew ("user:/", 0);
-				Key * globalConfCutPoint = keyNew ("/config", 0);
+				Key * userCutPoint = keyNew ("user:/", KEY_END);
+				Key * globalConfCutPoint = keyNew ("/config", KEY_END);
 				KeySet * config = ksDup (configOrig);
 				KeySet * globalConfigAll = ksCut (config, globalConfCutPoint);
 				KeySet * userConfigAll = ksCut (config, userCutPoint);
@@ -339,7 +339,7 @@ static int runPlugins (KeySet * pluginKS, KeySet * modules, KeySet * plugins, Ke
 				ksAppend (pluginConfigWithConfigPrefix, globalPluginConfig);
 				ksDel (globalPluginConfig);
 				// remove "placements" from plugin config
-				Key * toRemove = keyNew ("user:/placements", 0);
+				Key * toRemove = keyNew ("user:/placements", KEY_END);
 				ksDel (ksCut (pluginConfigWithConfigPrefix, toRemove));
 				ksRewind (pluginConfigWithConfigPrefix);
 				ksDel (globalConfigAll);

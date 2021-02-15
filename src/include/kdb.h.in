@@ -57,8 +57,14 @@ enum {
 	KEY_LOCK_NAME=1<<17,
 	KEY_LOCK_VALUE=1<<18,
 	KEY_LOCK_META=1<<19,
-	KEY_END=0,
 };
+
+#ifdef __cplusplus
+#define KEY_END (static_cast<void *> (0))
+#else
+#define KEY_END ((void *) 0)
+#endif
+
 typedef int elektraLockFlags;
 typedef int elektraKeyFlags;
 
@@ -134,7 +140,7 @@ int elektraGOptsContractFromStrings (KeySet * contract, size_t argsSize, const c
  **************************************/
 
 /* Basic Methods */
-Key *keyNew(const char *keyname, ...);
+Key *keyNew(const char *keyname, ...) ELEKTRA_SENTINEL;
 Key *keyVNew(const char *keyname, va_list ap);
 
 Key * keyCopy(Key *dest, const Key *source, elektraCopyFlags flags);
