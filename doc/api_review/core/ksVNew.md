@@ -6,19 +6,21 @@
 
 
 ## Signature
+
 KeySet *ksVNew(size_t alloc, va_list ap)
+
 
 ## Checklist
 
 #### Doxygen
 
-- [ ] first line explains briefly what the function does
+- [ ] First line explains briefly what the function does
 - [ ] `@see`
 - [ ] `@since`
 - [ ] `@ingroup`
 - [ ] `@retval`
-- [ ] good example or snippet how to use the function
-- [ ] simple examples go first
+- [ ] Good example or snippet how to use the function
+- [ ] Simple examples go first
 - [ ] Precondition
 - [ ] Postcondition
 - [ ] Invariant
@@ -77,7 +79,7 @@ KeySet *ksVNew(size_t alloc, va_list ap)
 
 ### Tests
 
-- [ ] Added functions are fully covered by tests
+- [ ] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests
 - [ ] All possible enum values are covered by tests
 - [ ] No inconsistencies between tests and documentation
