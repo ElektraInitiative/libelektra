@@ -24,15 +24,27 @@ public class KDB implements AutoCloseable
 
 	/**
 	 * Basic constructor of KDB class<br>
-	 * Opens KDB session with the given parentKey to write possible warning and error information to
+	 * Opens KDB session with the given errorKey to write possible warning and error information to
 	 *
-	 * @param parentKey Parent key being used for this KDB session; it is used to store warning and error information
+	 * @param errorKey used to store warning and error information
 	 * @return New KDB session object
 	 */
-	public static KDB open (final Key parentKey)
+	public static KDB open (final Key errorKey)
 	{
-		// FIXME: binding
-		return new KDB (Elektra.INSTANCE.kdbOpen (Pointer.NULL, parentKey.get ()));
+		return new KDB (Elektra.INSTANCE.kdbOpen (Pointer.NULL, errorKey.get ()));
+	}
+
+	/**
+	 * Basic constructor of KDB class<br>
+	 * Opens KDB session with the given errorKey to write possible warning and error information to
+	 *
+	 * @param contract the contract that will be ensured by kdbOpen()
+	 * @param errorKey used to store warning and error information
+	 * @return New KDB session object
+	 */
+	public static KDB open (final KeySet contract, final Key errorKey)
+	{
+		return new KDB (Elektra.INSTANCE.kdbOpen (contract.get (), errorKey.get ()));
 	}
 
 	/**
