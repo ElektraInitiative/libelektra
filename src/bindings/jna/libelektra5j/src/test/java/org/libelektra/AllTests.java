@@ -7,7 +7,7 @@ import org.libelektra.exception.model.WarningEntryTest;
 
 @RunWith (Suite.class)
 @SuiteClasses ({ KeySetTest.class, KeyTest.class, KDBTest.class, ExceptionMapperTest.class, KDBExceptionTest.class, PluginLoaderIT.class,
-		 WarningEntryTest.class, ExceptionMapperIT.class })
+		 WarningEntryTest.class, ExceptionMapperIT.class, GOptsTest.class })
 public class AllTests
 {
 }

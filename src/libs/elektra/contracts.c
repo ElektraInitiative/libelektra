@@ -90,7 +90,6 @@ int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv
  *                    namespace will be used.
  *
  * @retval -1 if any of @p contract, @p argv, @p envp, @p parentKey is NULL
- *            of if @p argc is 0
  * @retval  0 on success
  */
 int elektraGOptsContractFromStrings (KeySet * contract, size_t argsSize, const char * args, size_t envSize, const char * env,

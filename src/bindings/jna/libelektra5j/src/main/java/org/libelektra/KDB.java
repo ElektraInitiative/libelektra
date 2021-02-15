@@ -104,6 +104,49 @@ public class KDB implements AutoCloseable
 	}
 
 	/**
+	 * Creates a contract for use with {@link KDB#open} that mounts and configures the gopts plugin
+	 *
+	 * @param contract    the KeySet into which the contract is written
+	 * @param args        the arguments that will be converted into argc and argv for gopts
+	 * @param env         the environment variables that gopts will use
+	 * @param parentKey   the parent key that gopts will use
+	 * @param goptsConfig the config KeySet used for mounting gopts
+	 *
+	 * @throws IllegalArgumentException if any of the arguments are null
+	 */
+	public static void goptsContract (final KeySet contract, final String[] args, final String[] env, final Key parentKey,
+					  final KeySet goptsConfig)
+	{
+		if (contract == null || args == null || env == null || parentKey == null || goptsConfig == null)
+		{
+			throw new IllegalArgumentException ("all arguments must be non-null");
+		}
+
+		StringBuilder argsBuilder = new StringBuilder ();
+		for (String arg : args)
+		{
+			argsBuilder.append (arg).append ('\0');
+		}
+		String argsString = argsBuilder.toString ();
+
+		StringBuilder envBuilder = new StringBuilder ();
+		for (String e : env)
+		{
+			envBuilder.append (e).append ('\0');
+		}
+		String envString = envBuilder.toString ();
+
+		final int ret = Elektra.INSTANCE.elektraGOptsContractFromStrings (contract.get (), argsString.length (), argsString,
+										  envString.length (), envString, parentKey.get (),
+										  goptsConfig.get ());
+
+		if (ret == -1)
+		{
+			throw new IllegalArgumentException ("all arguments must be non-null");
+		}
+	}
+
+	/**
 	 * Native pointer being used by JNA
 	 *
 	 * @return Native pointer object
