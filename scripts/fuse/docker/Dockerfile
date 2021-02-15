@@ -1,0 +1,32 @@
+# run this container with any of the run scripts (in order to mount the source code folder, ensure privileged mode to be able to mount fuse, setup logging to nohup.out/stdout)
+
+FROM ubuntu:focal 
+
+RUN apt-get -y update
+RUN apt-get -y update
+
+#install everything for fuse
+RUN apt-get -y install libfuse-dev fuse python3-pip
+RUN pip3 install fusepy psutil
+
+#install convinience packages for interactive use
+RUN apt-get -y install vim less tree xattr jp2a wget sudo
+
+#setting timezone so that configuring tzdata can happen non-interactively
+ENV TZ=Europe/Vienna
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/time
+
+#install elektra
+#add elektra sources and 'apt update'
+RUN echo "deb [trusted=yes] https://debs.libelektra.org/focal focal-unstable main" | tee /etc/apt/sources.list.d/elektra.list
+RUN apt-get update
+RUN apt-get -y install libelektra5-all
+
+WORKDIR /root
+
+#create mountpoint
+RUN mkdir /root/mount
+
+#copy source
+COPY ./elektra_fuse /root/elektra_fuse
+COPY ./docker /root/docker
