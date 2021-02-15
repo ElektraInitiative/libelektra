@@ -66,6 +66,7 @@ namespace std {
  *
  ****************************************************************************/
 
+%constant void *KEY_END = KEY_END;
 %constant void *KS_END = KS_END;
 %constant const char *VERSION = KDB_VERSION;
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;

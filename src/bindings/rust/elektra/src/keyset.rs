@@ -164,7 +164,7 @@ impl KeySet {
     /// # Panics
     /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     pub fn new() -> Self {
-        let ks_ptr = unsafe { elektra_sys::ksNew(0, elektra_sys::KEY_END) };
+        let ks_ptr = unsafe { elektra_sys::ksNew(0, elektra_sys::KS_END) };
         unsafe { KeySet::from_ptr(ks_ptr) }
     }
 
@@ -174,7 +174,7 @@ impl KeySet {
     /// # Panics
     /// Panics if an allocation error (out of memory) occurs in the C-constructor.
     pub fn with_capacity(capacity: usize) -> Self {
-        let ks_ptr = unsafe { elektra_sys::ksNew(capacity, elektra_sys::KEY_END) };
+        let ks_ptr = unsafe { elektra_sys::ksNew(capacity, elektra_sys::KS_END) };
         unsafe { Self::from_ptr(ks_ptr) }
     }
 
