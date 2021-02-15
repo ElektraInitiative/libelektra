@@ -25,11 +25,21 @@ impl Drop for KDB {
 
 impl KDB {
     /// Opens the session with the Key database.
-    pub fn open<'a>() -> Result<Self, KDBError<'a>> {
-        // FIXME: binding
+    pub fn open<'a, C>(contract: C) -> Result<Self, KDBError<'a>>
+        where 
+            C: Into<Option<KeySet>> {
 
         let mut key = StringKey::new_empty();
-        let kdb_ptr = unsafe { elektra_sys::kdbOpen(std::ptr::null_mut(), key.as_ptr()) };
+        let contract_opt = contract.into();
+
+        let kdb_ptr = match contract_opt {
+            Some(mut contract) => {
+                unsafe { elektra_sys::kdbOpen(contract.as_ptr(), key.as_ptr()) }
+            }
+            None => {
+                unsafe { elektra_sys::kdbOpen(std::ptr::null_mut(), key.as_ptr()) }
+            }
+        };
 
         if kdb_ptr.is_null() {
             Err(KDBError::new(key.duplicate(CopyOption::KEY_CP_ALL)))
@@ -473,7 +483,7 @@ mod test {
 
     fn set_kdb() {
         let mut parent_key = get_parent_key();
-        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
+        let mut kdb = KDB::open(None).unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(10);
         kdb.get(&mut ks, &mut parent_key)
             .unwrap_or_else(|e| panic!("{}", e));
@@ -497,7 +507,7 @@ mod test {
 
     fn get_kdb() {
         let mut parent_key = get_parent_key();
-        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
+        let mut kdb = KDB::open(None).unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(2);
         let get_res = kdb
             .get(&mut ks, &mut parent_key)
@@ -519,7 +529,7 @@ mod test {
 
     fn remove_test_keys() {
         let mut parent_key = get_parent_key();
-        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
+        let mut kdb = KDB::open(None).unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(10);
         let get_res = kdb
             .get(&mut ks, &mut parent_key)
