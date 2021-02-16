@@ -430,14 +430,24 @@
   KDB_CATCH(KDB_EXCEPTIONS)
 }
 
-%include "std_vector.i"
-%include "std_string.i"
-
-namespace std {
-  %template(StringVector) vector<string>;
-}
-
 %include "kdb.hpp"
+
+%luacode %{
+  local orig_call = kdb.goptsContract
+  kdb.goptsContract = function(contract, args, env, parentKey, goptsConfig)
+    local argsString = ""
+    for i, arg in ipairs(args) do
+      argsString = argsString .. arg .. "\0"
+    end
+    
+    local envString = ""
+    for i, e in ipairs(env) do
+      envString = envString .. e .. "\0"
+    end
+
+    orig_call(contract, argsString, envString, parentKey, goptsConfig)
+  end
+%}
 
 // clear exception handler
 %exception;

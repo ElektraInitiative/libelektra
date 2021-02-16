@@ -297,8 +297,25 @@ inline int goptsContract (kdb::KeySet & contract, int argc, const char * const *
 }
 
 /**
- * Prefer to use goptsContract if possible
+ * Prefer to use goptsContract with argc, argv and envp if possible
  * (especially when you are calling this in your main function)
+ *
+ * This function mainly exists for use from language bindings.
+ *
+ * @see elektraGOptsContractFromStrings
+ */
+inline int goptsContract (kdb::KeySet & contract, const std::string & argsString, const std::string & envString, const kdb::Key & parentKey,
+			  kdb::KeySet & goptsConfig)
+{
+	return ckdb::elektraGOptsContractFromStrings (contract.getKeySet (), argsString.size (), argsString.c_str (), envString.size (),
+						      envString.c_str (), parentKey.getKey (), goptsConfig.getKeySet ());
+}
+
+/**
+ * Prefer to use goptsContract with argc, argv and envp if possible
+ * (especially when you are calling this in your main function)
+ *
+ * This function mainly exists for use from language bindings.
  *
  * @see elektraGOptsContractFromStrings
  */

@@ -1,6 +1,3 @@
---[[
--- TODO: cannot call std::vector<std::string> function from lua
-
 require("kdb")
 
 base_key = "/tests/swig_lua/gopts"
@@ -84,4 +81,3 @@ do
 
 	remove_spec()
 end
---]]
