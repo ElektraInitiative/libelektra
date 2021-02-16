@@ -13,7 +13,7 @@ import org.libelektra.exception.KDBException;
 public class GOptsTest
 {
 
-	private static final String BASE_KEY = "/sw/org/kdbdummy/#0/current";
+	private static final String BASE_KEY = "/tests/java/gopts";
 	private static final String SPEC_BASE_KEY = "spec:" + BASE_KEY;
 
 	private Key key, key2, parentKey;

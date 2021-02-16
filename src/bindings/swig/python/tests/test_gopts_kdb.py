@@ -5,7 +5,7 @@ import kdb
 import unittest
 from ctypes import c_char_p
 
-base_key = "/sw/org/kdbdummy/#0/current"
+base_key = "/tests/python/gopts"
 spec_base_key = "spec:" + base_key
 
 spec = kdb.KeySet(10, kdb.Key(spec_base_key, kdb.KEY_META, "command", ""),
