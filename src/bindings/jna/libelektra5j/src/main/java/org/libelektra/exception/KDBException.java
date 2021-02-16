@@ -1,7 +1,7 @@
 package org.libelektra.exception;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import org.libelektra.Key;
 import org.libelektra.exception.model.WarningEntry;
 
@@ -13,7 +13,7 @@ public abstract class KDBException extends Exception
 {
 
 	private final transient Key errorKey;
-	private Collection<WarningEntry> warnings;
+	private List<WarningEntry> warnings;
 
 	/**
 	 * KDBException which holds the errorKey
@@ -28,10 +28,11 @@ public abstract class KDBException extends Exception
 		{
 			return;
 		}
-		final int nr = warningsKey.getInteger ();
-		for (int i = 0; i <= nr; i++)
+		final String lastArrayIndex = warningsKey.getString ();
+		final int arraySize = Integer.valueOf (lastArrayIndex.replaceAll ("^#_*", ""));
+		for (int i = 0; i <= arraySize; i++)
 		{
-			warnings.add (new WarningEntry (k, nr));
+			warnings.add (new WarningEntry (k, i));
 		}
 	}
 
@@ -152,11 +153,11 @@ public abstract class KDBException extends Exception
 	}
 
 	/**
-	 * Returns the warnings collection
+	 * Returns the warnings list
 	 *
-	 * @return the warnings collection
+	 * @return the warnings list
 	 */
-	public Collection<WarningEntry> getWarnings ()
+	public List<WarningEntry> getWarnings ()
 	{
 		return warnings;
 	}
