@@ -47,7 +47,7 @@ public class GOptsTest
 		Key specParent = Key.create (SPEC_BASE_KEY);
 		try (final KDB kdb = KDB.open (specParent))
 		{
-			final KeySet ks = KeySet.create (10, KeySet.KS_END);
+			final KeySet ks = KeySet.create ();
 			kdb.get (ks, specParent);
 
 			if (ks.cut (specParent).length () > 0)
@@ -65,15 +65,15 @@ public class GOptsTest
 		String[] args = new String[] { "test", "get", "-v", "user:/" };
 		String[] env = new String[0];
 
-		KeySet config = KeySet.create (0, KeySet.KS_END);
-		KeySet contract = KeySet.create (0, KeySet.KS_END);
+		KeySet config = KeySet.create ();
+		KeySet contract = KeySet.create ();
 
 		Key parentKey = Key.create (BASE_KEY);
 		KDB.goptsContract (contract, args, env, parentKey, config);
 
 		try (final KDB kdb = KDB.open (contract, parentKey))
 		{
-			KeySet ks = KeySet.create (0, KeySet.KS_END);
+			KeySet ks = KeySet.create ();
 
 			kdb.get (ks, parentKey);
 
@@ -91,7 +91,7 @@ public class GOptsTest
 		Key specParent = Key.create (SPEC_BASE_KEY);
 		try (final KDB kdb = KDB.open (specParent))
 		{
-			final KeySet ks = KeySet.create (10, KeySet.KS_END);
+			final KeySet ks = KeySet.create ();
 			kdb.get (ks, specParent);
 			ks.cut (specParent);
 			kdb.set (ks, specParent);
