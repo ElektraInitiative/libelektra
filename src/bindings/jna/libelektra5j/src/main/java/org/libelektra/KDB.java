@@ -142,7 +142,7 @@ public class KDB implements AutoCloseable
 
 		if (ret == -1)
 		{
-			throw new IllegalArgumentException ("all arguments must be non-null");
+			throw new AssertionError ("all arguments must be non-null");
 		}
 	}
 

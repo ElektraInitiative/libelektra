@@ -106,6 +106,7 @@ void main (void)
 	uv_run (loop, UV_RUN_DEFAULT);
 
 	// Cleanup
+	ksDel (contract);
 	kdbClose (kdb, key);
 	elektraIoBindingCleanup (binding);
 	uv_loop_close (loop);
