@@ -564,6 +564,8 @@ void keyInit (Key * key);
 
 int keyClearSync (Key * key);
 
+int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
+
 /*Private helper for keyset*/
 int ksInit (KeySet * ks);
 int ksClose (KeySet * ks);

@@ -180,8 +180,6 @@ ssize_t keyGetName(const Key *key, char *returnedName, size_t maxSize);
 ssize_t keySetName(Key *key, const char *newname);
 ssize_t keyAddName(Key *key, const char *addName);
 
-int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
-
 const void *keyUnescapedName(const Key *key);
 ssize_t keyGetUnescapedNameSize(const Key *key);
 

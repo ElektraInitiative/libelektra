@@ -142,8 +142,6 @@ libelektra_1.0 {
 	keyLock;
 	keyIsLocked;
 
-	keyReplacePrefix;
-
 	elektraGOptsContract;
 	elektraGOptsContractFromStrings;
 };
@@ -177,6 +175,7 @@ libelektraprivate_1.0 {
 
 	ksRename;
 	ksFindHierarchy;
+	keyReplacePrefix;
 
 	# kdblogger.h
 	elektraLog;
