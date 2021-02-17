@@ -8,6 +8,7 @@
 
 #include <kdb.h>
 #include <kdbease.h>
+#include <kdbgopts.h>
 #include <kdbhelper.h>
 
 #include <kdbopts.h>
@@ -144,6 +145,11 @@ int main (int argc, const char * const * argv)
 	Key * helpKey = ksLookupByName (ks, "proc:/elektra/gopts/help", 0);
 	if (helpKey != NULL && elektraStrCmp (keyString (helpKey), "1") == 0)
 	{
+		/*
+		// alternatively, read pre-formatted message from proc:/elektra/gopts/help/message
+		const char * help = keyString (ksLookupByName (ks, "proc:/elektra/gopts/help/message", 0));
+		*/
+
 		char * help = elektraGetOptsHelpMessage (helpKey, NULL, NULL);
 		printf ("%s\n", help);
 		elektraFree (help);

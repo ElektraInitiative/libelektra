@@ -17,6 +17,7 @@
 #include <keyset.hpp>
 
 #include <kdb.h>
+#include <kdbgopts.h>
 
 
 /**

@@ -190,6 +190,7 @@ install (
 	      kdbendian.h
 	      kdbmacros.h
 	      kdbmerge.h
+	      kdbgopts.h
 	DESTINATION include/${TARGET_INCLUDE_FOLDER}
 	COMPONENT libelektra-dev)
 
