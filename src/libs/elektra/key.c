@@ -245,7 +245,7 @@ Key * keyVNew (const char * name, va_list va)
 }
 
 /**
- * Copy or Clear a key.
+ * Copy or clear a key.
  *
  * Depending on the chosen @p flags keyCopy() only copies
  * certain parts of @p source into @p dest.
@@ -276,20 +276,20 @@ Key * keyVNew (const char * name, va_list va)
  * i.e. all key data supported by keyCopy() will be copied
  * from @p source to @p dest.
  *
- * Most often you will want to duplicate an existing key.
- * For this purpose the alias keyDup() exists. Calling
- *
- *  @snippet keyCopy.c Dup Key
- *
- * is equivalent to
- *
- * @snippet keyCopy.c Duplicate Key
- *
- * But when you need to copy into an existing key, e.g.
+ * Use this function when you need to copy into an existing key, e.g.
  * because it was passed by a pointer in a function
  * you can do so:
  *
  * @snippet keyCopy.c Basic Usage
+ *
+ * Most often you will want to duplicate an existing key.
+ * For this purpose the alias keyDup() exists. Calling
+ *
+ * @snippet keyCopy.c Dup Key
+ *
+ * is equivalent to
+ *
+ * @snippet keyCopy.c Duplicate Key
  *
  * The reference counter will not be changed for both keys.
  * Affiliation to keysets are also not affected.
@@ -307,19 +307,28 @@ Key * keyVNew (const char * name, va_list va)
  *
  * @snippet keyCopy.c Clear
  *
+ * @pre dest must be a valid Key (created with keyNew)
+ * @pre source must be a valid Key or NULL
+ *
+ * @invariant Key name stays valid until delete
+ *
+ * @post Value from Key source is written to Key dest
+ *
  * @param dest the key which will be written to
  * @param source the key which should be copied
  *     or NULL to clear the data of @p dest
  * @param flags specifies which parts of the key should be copied
+ * @see keyDup()
+ * @since 0.9.5
  * @ingroup key
  *
- * @return @p dest or NULL, in case of error. Possible errors are:
- *   - memory allocation problems
- *   - a part of @p dest that should be modified (e.g. name, value) was marked read-only,
- *     e.g. the name of @p dest will be read-only if @p dest is part of a KeySet
- *   - @p dest is NULL
- *   - both #KEY_CP_VALUE and #KEY_CP_STRING are set in @p flags
- *   - both #KEY_CP_STRING is set in @p flags and @p source is a binary key (keyIsBinary())
+ * @return @p dest
+ * @retval NULL on memory allocation problems
+ * @retval NULL when a part of @p dest that should be modified (e.g. name, value) was marked read-only,
+ *              e.g. the name of @p dest will be read-only if @p dest is part of a KeySet
+ * @retval NULL when @p dest is NULL
+ * @retval NULL when both #KEY_CP_VALUE and #KEY_CP_STRING are set in @p flags
+ * @retval NULL when both #KEY_CP_STRING is set in @p flags and @p source is a binary key (keyIsBinary())
  */
 Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 {
