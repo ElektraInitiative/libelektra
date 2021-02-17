@@ -40,13 +40,13 @@ This is the quickest way to get started with Elektra without compiling and other
 The signature of `kdbOpen` has been changed from
 
 ```c
-int kdbOpen (Key * errorKey);
+KDB *  kdbOpen (Key * errorKey);
 ```
 
 to
 
 ```c
-int kdbOpen (KeySet * contract, errorKey);
+KDB * kdbOpen(const KeySet * contract, Key *parentKey);
 ```
 
 You can use `kdbOpen (NULL, errorKey)` to get the same behaviour as before.
@@ -55,7 +55,7 @@ The new parameter `contract` is similar to what could be done via `kdbEnsure` (w
 Currently, the contract allows you to mount global plugins and add data into the global KeySet (passed to all plugins)
 during `kdbOpen`. This alone is already quite powerful, but we might more functionality in future releases.
 
-For now, there are three use cases for the `contract` parameter. All of them are covered by special helper functions:
+For now, there are three use cases for the `contract` parameter. All of them are covered by helper functions:
 
 ```c
 int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv, const char * const * envp, const Key * parentKey, KeySet * goptsConfig);

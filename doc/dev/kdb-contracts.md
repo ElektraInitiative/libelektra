@@ -28,12 +28,12 @@ There are a few pre-defined contracts that can be accessed via helper functions.
 ### GOpts
 
 To mount and configure the `gopts` plugin you can use `elektraGOptsContract`.
-There is also `elektraGOptsContractFromStrings`, but it's use is discouraged unless you really need it.
+There is also `elektraGOptsContractFromStrings`, but its use is discouraged unless you really need it.
 It mainly exists for use from various bindings.
 
 ### I/O binding
 
-To set the I/O binding to use in a KDB instance, use `elektraIoContract`.
+To set the I/O binding to be used in a KDB instance, use `elektraIoContract`.
 
 ### Notification
 
