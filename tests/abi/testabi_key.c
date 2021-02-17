@@ -1424,6 +1424,7 @@ static void test_keyDup (void)
 static void test_keyCopy (void)
 {
 	Key *orig, *copy;
+	char origBuffer[5], copyBuffer[5];
 
 	printf ("Test key copy\n");
 
@@ -1472,6 +1473,80 @@ static void test_keyCopy (void)
 
 	keyDel (orig);
 	keyDel (copy);
+
+
+	// check KEY_CP_NAME
+	orig = keyNew ("user:/orig");
+	keySetString (orig, "orig");
+	keySetMeta (orig, "orig", "orig");
+
+	copy = keyNew ("user:/copy");
+	keySetString (copy, "copy");
+	keySetMeta (copy, "copy", "copy");
+
+	succeed_if (keyCopy (copy, orig, KEY_CP_NAME) == copy, "keyCopy failed");
+	succeed_if_same_string (keyName (orig), "user:/orig");
+	succeed_if_same_string (keyName (copy), "user:/orig");
+	keyGetString (orig, origBuffer, sizeof(origBuffer));
+	keyGetString (copy, copyBuffer, sizeof(copyBuffer));
+	succeed_if_same_string (origBuffer, "orig");
+	succeed_if_same_string (copyBuffer, "copy");
+	succeed_if_same_string (keyValue (keyGetMeta (orig, "orig")), "orig");
+	succeed_if (keyGetMeta (orig, "copy") == 0, "Metadata not cleared on keyCopy with KEY_CP_NAME");
+	succeed_if_same_string (keyValue (keyGetMeta (copy, "copy")), "copy");
+	succeed_if (keyGetMeta (copy, "orig") == 0, "Metadata not cleared on keyCopy with KEY_CP_NAME");
+
+	keyDel (orig);
+	keyDel (copy);
+
+	// check KEY_CP_VALUE
+	orig = keyNew ("user:/orig");
+	keySetString (orig, "orig");
+	keySetMeta (orig, "orig", "orig");
+
+	copy = keyNew ("user:/copy");
+	keySetString (copy, "copy");
+	keySetMeta (copy, "copy", "copy");
+
+	succeed_if (keyCopy (copy, orig, KEY_CP_VALUE) == copy, "keyCopy failed");
+	succeed_if_same_string (keyName (orig), "user:/orig");
+	succeed_if_same_string (keyName (copy), "user:/copy");
+	keyGetString (orig, origBuffer, sizeof(origBuffer));
+	keyGetString (copy, copyBuffer, sizeof(copyBuffer));
+	succeed_if_same_string (origBuffer, "orig");
+	succeed_if_same_string (copyBuffer, "orig");
+	succeed_if_same_string (keyValue (keyGetMeta (orig, "orig")), "orig");
+	succeed_if (keyGetMeta (orig, "copy") == 0, "Metadata not cleared on keyCopy with KEY_CP_VALUE");
+	succeed_if_same_string (keyValue (keyGetMeta (copy, "copy")), "copy");
+	succeed_if (keyGetMeta (copy, "orig") == 0, "Metadata not cleared on keyCopy with KEY_CP_VALUE");
+
+	keyDel (orig);
+	keyDel (copy);
+
+	// check KEY_CP_META
+	orig = keyNew ("user:/orig");
+	keySetString (orig, "orig");
+	keySetMeta (orig, "orig", "orig");
+
+	copy = keyNew ("user:/copy");
+	keySetString (copy, "copy");
+	keySetMeta (copy, "copy", "copy");
+
+	succeed_if (keyCopy (copy, orig, KEY_CP_META) == copy, "keyCopy failed");
+	succeed_if_same_string (keyName (orig), "user:/orig");
+	succeed_if_same_string (keyName (copy), "user:/copy");
+	keyGetString (orig, origBuffer, sizeof(origBuffer));
+	keyGetString (copy, copyBuffer, sizeof(copyBuffer));
+	succeed_if_same_string (origBuffer, "orig");
+	succeed_if_same_string (copyBuffer, "copy");
+	succeed_if_same_string (keyValue (keyGetMeta (orig, "orig")), "orig");
+	succeed_if (keyGetMeta (orig, "copy") == 0, "Metadata not cleared on keyCopy with KEY_CP_META");
+	succeed_if_same_string (keyValue (keyGetMeta (copy, "orig")), "orig");
+	succeed_if (keyGetMeta (copy, "copy") == 0, "Metadata not cleared on keyCopy with KEY_CP_META");
+
+	keyDel (orig);
+	keyDel (copy);
+
 
 	orig = keyNew ("user:/orig", KEY_END);
 	succeed_if (keyNeedSync (orig), "fresh key does not need sync?");
