@@ -1476,11 +1476,11 @@ static void test_keyCopy (void)
 
 
 	// check KEY_CP_NAME
-	orig = keyNew ("user:/orig");
+	orig = keyNew ("user:/orig", KEY_END);
 	keySetString (orig, "orig");
 	keySetMeta (orig, "orig", "orig");
 
-	copy = keyNew ("user:/copy");
+	copy = keyNew ("user:/copy", KEY_END);
 	keySetString (copy, "copy");
 	keySetMeta (copy, "copy", "copy");
 
@@ -1500,11 +1500,11 @@ static void test_keyCopy (void)
 	keyDel (copy);
 
 	// check KEY_CP_VALUE
-	orig = keyNew ("user:/orig");
+	orig = keyNew ("user:/orig", KEY_END);
 	keySetString (orig, "orig");
 	keySetMeta (orig, "orig", "orig");
 
-	copy = keyNew ("user:/copy");
+	copy = keyNew ("user:/copy", KEY_END);
 	keySetString (copy, "copy");
 	keySetMeta (copy, "copy", "copy");
 
@@ -1524,11 +1524,11 @@ static void test_keyCopy (void)
 	keyDel (copy);
 
 	// check KEY_CP_META
-	orig = keyNew ("user:/orig");
+	orig = keyNew ("user:/orig", KEY_END);
 	keySetString (orig, "orig");
 	keySetMeta (orig, "orig", "orig");
 
-	copy = keyNew ("user:/copy");
+	copy = keyNew ("user:/copy", KEY_END);
 	keySetString (copy, "copy");
 	keySetMeta (copy, "copy", "copy");
 
