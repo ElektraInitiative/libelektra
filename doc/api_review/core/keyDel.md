@@ -11,24 +11,25 @@
 ## Checklist
 
 #### Doxygen
+
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
 - [ ] Simple example or snippet how to use the function  
-      - [ ] add example
+       - [ ] add example
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] @pre Key must not be null
+       - [ ] @pre Key must not be null
 - [ ] `@post`  
-      - [ ] @post Key memory has been freed
+       - [ ] @post Key memory has been freed
 - [ ] `@invariant  
-      - [ ] add (tbd)
+       - [ ] add (tbd)
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
-      - [ ] `0` when the key was freed and no references are held in keysets
+       - [ ] `0` when the key was freed and no references are held in keysets
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [x] `@see`
 
@@ -44,12 +45,13 @@
 - [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
+
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
@@ -57,7 +59,7 @@
       wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [ ] Wherever possible, return types should be `const`  
-      - [ ] could maybe change this to const
+       - [ ] could maybe change this to const
 - [x] Functions should have the least amount of parameters feasible
 
 ### Structural Clarity
@@ -65,7 +67,7 @@
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
 - [ ] Order of signatures in kdb.h.in is the same as Doxygen  
-      - [ ] swap keyClear and keyDel
+       - [ ] swap keyClear and keyDel
 - [x] No functions with similar purpose exist
 
 ### Memory Management
@@ -76,7 +78,7 @@
 
 - [x] Function is easily extensible, e.g., with flags
 - [ ] Documentation does not impose limits, that would hinder further extensions  
-      - [ ] TBD cannot change behaviour of referenced keys
+       - [ ] TBD cannot change behaviour of referenced keys
 
 ### Tests
 
