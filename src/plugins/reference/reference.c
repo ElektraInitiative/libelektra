@@ -116,7 +116,7 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 	}
 	else
 	{
-		refArray = ksNew (1, keyDupOld (key), KS_END);
+		refArray = ksNew (1, keyDup (key, KEY_CP_ALL), KS_END);
 	}
 
 	ksRewind (refArray);
@@ -249,7 +249,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 		KeySet * keysToCheck = ksNew (0, KS_END);
 		const char * refname = keyBaseName (curRoot);
 
-		Key * rootParent = keyDupOld (curRoot);
+		Key * rootParent = keyDup (curRoot, KEY_CP_ALL);
 		keySetBaseName (rootParent, NULL);
 		ksAppendKey (keysToCheck, rootParent);
 
@@ -311,7 +311,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 			}
 			else
 			{
-				Key * element = keyDupOld (baseKey);
+				Key * element = keyDup (baseKey, KEY_CP_ALL);
 				keyAddBaseName (element, "#0");
 				refArray = ksNew (1, element, KS_END);
 			}
@@ -387,7 +387,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 
 				if (!rgContains (referenceGraph, refKeyName))
 				{
-					ksAppendKey (keysToCheck, keyDupOld (refKey));
+					ksAppendKey (keysToCheck, keyDup (refKey, KEY_CP_ALL));
 					rgAddNode (referenceGraph, refKeyName);
 				}
 				rgAddEdge (referenceGraph, curName, refKeyName);

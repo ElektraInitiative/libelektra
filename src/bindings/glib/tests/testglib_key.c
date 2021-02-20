@@ -114,7 +114,7 @@ static void test_basic (void)
 {
 	GElektraKey * key;
 
-	key = gelektra_key_dup (g_key);
+	key = gelektra_key_dup (g_key, KEY_CP_ALL);
 	gelektra_key_incref (key);
 	succeed_if (gelektra_key_getref (key) == 2, "refcount should be 2");
 	succeed_if (gelektra_key_getref (g_key) == 1, "refcount should be still 1");
@@ -142,7 +142,7 @@ static void test_operators (void)
 	succeed_if (!gelektra_key_equal (g_key, g_bkey), "keys shouldn't be equal");
 	succeed_if (gelektra_key_cmp (g_key, g_bkey) != 0, "keys shouldn't be equal");
 
-	GElektraKey * key = gelektra_key_dup (g_key);
+	GElektraKey * key = gelektra_key_dup (g_key, KEY_CP_ALL);
 	succeed_if (gelektra_key_equal (g_key, key), "keys should be equal");
 	succeed_if (gelektra_key_cmp (g_key, key) == 0, "keys should be equal");
 	g_object_unref (key);

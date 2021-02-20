@@ -193,16 +193,16 @@ gssize gelektra_key_getref (const GElektraKey * key)
  * Returns: (transfer full): A duplicated #GElektraKey
  * see keyDup
  */
-GElektraKey * gelektra_key_dup (const GElektraKey * key)
+GElektraKey * gelektra_key_dup (const GElektraKey * key, elektraCopyFlags flags)
 {
-	return gelektra_key_make (keyDupOld (key->key));
+	return gelektra_key_make (keyDup (key->key, flags));
 }
 
 /**
  * gelektra_key_copy: (skip)
  * see keyCopy
  */
-GElektraKey * gelektra_key_copy (const GElektraKey * key, GElektraKey * dest, elektraKeyFlags flags)
+GElektraKey * gelektra_key_copy (const GElektraKey * key, GElektraKey * dest, elektraCopyFlags flags)
 {
 	Key * ret = keyCopy (dest->key, key->key, flags);
 	return ret == NULL ? NULL : dest;

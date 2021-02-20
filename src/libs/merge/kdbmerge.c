@@ -261,7 +261,7 @@ static int prependStringToAllKeyNames (KeySet * result, KeySet * input, const ch
 		{
 			strcat (newName, keyName (key));
 		}
-		Key * duplicateKey = keyDupOld (key); // keySetName returns -1 if key was inserted to a keyset before
+		Key * duplicateKey = keyDup (key, KEY_CP_ALL); // keySetName returns -1 if key was inserted to a keyset before
 		int status = keySetName (duplicateKey, newName);
 		elektraFree (newName);
 		if (status < 0)
@@ -305,7 +305,7 @@ static KeySet * removeRoot (KeySet * original, Key * root, Key * informationKey)
 		};
 		if (keyIsBelow (root, currentKey) || keyCmp (currentKey, root) == 0)
 		{
-			Key * duplicateKey = keyDupOld (currentKey);
+			Key * duplicateKey = keyDup (currentKey, KEY_CP_ALL);
 			int retVal;
 			if (keyIsBelow (root, currentKey))
 			{
@@ -687,7 +687,7 @@ static char * getValuesAsArray (KeySet * ks, const Key * arrayStart, Key * infor
 	 *  The elektraArrayIncName would then change the name of the real key.
 	 *  We don't want that as we only increase the name to loop over all keys.
 	 */
-	Key * iterator = keyDupOld (arrayStart);
+	Key * iterator = keyDup (arrayStart, KEY_CP_NAME);
 	if (iterator == NULL)
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not duplicate key to iterate.");

@@ -1,3 +1,6 @@
+remove_tool (elektrad "API incompatible")
+return ()
+
 find_program (GO_EXECUTABLE "go")
 
 list (FIND REMOVED_PLUGINS "yajl" yajl_index)

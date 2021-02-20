@@ -146,7 +146,7 @@ Key * elektraKeyCreateNewName (const Key * key, const Key * parentKey, const cha
 	elektraFree (curKeyName);
 	if (replace)
 	{
-		Key * result = keyDupOld (key);
+		Key * result = keyDup (key, KEY_CP_ALL);
 		keySetName (result, keyName (parentKey));
 		keyAddName (result, newName);
 		elektraFree (newName);
@@ -214,7 +214,7 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 		if (strcmp (keyString (origNameKey), keyName (key)))
 		{
 			int hasSync = keyNeedSync (key); // test_bit(key->flags, KEY_FLAG_SYNC);
-			Key * result = keyDupOld (key);
+			Key * result = keyDup (key, KEY_CP_ALL);
 			keySetName (result, keyString (origNameKey));
 			keySetMeta (result, ELEKTRA_ORIGINAL_NAME_META, 0);
 
@@ -230,7 +230,7 @@ static Key * restoreKeyName (Key * key, const Key * parentKey, const Key * confi
 		if (configKey)
 		{
 			int hasSync = keyNeedSync (key); // test_bit(key->flags, KEY_FLAG_SYNC);
-			Key * result = keyDupOld (key);
+			Key * result = keyDup (key, KEY_CP_ALL);
 			keySetName (result, keyName (parentKey));
 			keyAddName (result, keyString (configKey));
 
@@ -363,7 +363,7 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			renamedKey = restoreKeyName (key, parentKey, cutConfig);
 
-			if (!renamedKey) renamedKey = keyDupOld (key);
+			if (!renamedKey) renamedKey = keyDup (key, KEY_CP_ALL);
 			if (writeConversion == TOUPPER || writeConversion == TOLOWER)
 			{
 				char * curKeyName = elektraMalloc (keyGetNameSize (renamedKey));

@@ -124,7 +124,7 @@ public:
 	inline ckdb::Key * operator* () const;
 
 	inline ckdb::Key * release ();
-	inline ckdb::Key * dup () const;
+	inline ckdb::Key * dup (elektraCopyFlags flags = KEY_CP_ALL) const;
 	inline ~Key ();
 
 
@@ -813,9 +813,9 @@ ckdb::Key * Key::release ()
 /**
  * @copydoc keyDup
  */
-ckdb::Key * Key::dup () const
+ckdb::Key * Key::dup (elektraCopyFlags flags) const
 {
-	return ckdb::keyDupOld (getKey ());
+	return ckdb::keyDup (getKey (), flags);
 }
 
 /**

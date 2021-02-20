@@ -59,7 +59,7 @@ bool rgAddEdge (RefGraph * graph, const char * fromNode, const char * toNode)
 		return false;
 	}
 
-	Key * lastKey = keyDupOld (keyGetMeta (node, "last"));
+	Key * lastKey = keyDup (keyGetMeta (node, "last"), KEY_CP_ALL);
 	if (elektraArrayIncName (lastKey) < 0)
 	{
 		keyDel (lastKey);

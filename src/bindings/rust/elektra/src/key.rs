@@ -180,11 +180,14 @@ impl<'a> StringKey<'a> {
 
     /// Returns a deep copy of the key.
     pub fn duplicate<'b>(&'a self) -> StringKey<'b> {
-        // TODO: binding
-        let dup_ptr = unsafe { 
-            let dup = elektra_sys::keyDup(self.as_ref(), 0);
-            elektra_sys::keyCopyAllMeta(dup, self.as_ref());
-            dup
+        // FIXME: binding
+        let dup_ptr = unsafe {
+            let name = CString::new("/").unwrap();
+            elektra_sys::keyCopy(
+                elektra_sys::keyNew (name.as_ptr(), elektra_sys::KEY_END),
+                self.as_ref(),
+                elektra_sys::KEY_CP_ALL
+            )
         };
         unsafe { StringKey::from_ptr(dup_ptr) }
     }
@@ -250,11 +253,14 @@ impl<'a> BinaryKey<'a> {
 
     /// Returns a deep copy of the key.
     pub fn duplicate<'b>(&'a self) -> BinaryKey<'b> {
-        // TODO: binding
-        let dup_ptr = unsafe { 
-            let dup = elektra_sys::keyDup(self.as_ref(), 0);
-            elektra_sys::keyCopyAllMeta(dup, self.as_ref());
-            dup
+        // FIXME: binding
+        let dup_ptr = unsafe {
+            let name = CString::new("/").unwrap();
+            elektra_sys::keyCopy(
+                elektra_sys::keyNew (name.as_ptr(), elektra_sys::KEY_END),
+                self.as_ref(),
+                elektra_sys::KEY_CP_ALL
+            )
         };
         unsafe { BinaryKey::from_ptr(dup_ptr) }
     }

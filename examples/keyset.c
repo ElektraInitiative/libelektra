@@ -12,7 +12,7 @@
 
 void f (const Key * source)
 {
-	Key * dup = keyDupOld (source);
+	Key * dup = keyDup (source, KEY_CP_ALL);
 	printf ("\tin f\n");
 
 	keyDel (dup);
@@ -20,7 +20,7 @@ void f (const Key * source)
 
 void g (const Key * source, KeySet * ks)
 {
-	Key * dup = keyDupOld (source);
+	Key * dup = keyDup (source, KEY_CP_ALL);
 	printf ("\tin g\n");
 
 	ksAppendKey (ks, dup);
@@ -68,7 +68,7 @@ void dupAppend (void)
 //! [dup append]
 KeySet * ks = ksNew (1, KS_END);
 Key * k = keyNew ("user:/ref/key", KEY_END);
-ksAppendKey (ks, keyDupOld (k));
+ksAppendKey (ks, keyDup (k, KEY_CP_ALL));
 ksDel (ks);
 // now we still can work with the key k!
 keyDel (k);
@@ -101,7 +101,7 @@ int main (void)
 
 	ksRewind (ks);
 	origKey = ksNext (ks);
-	key = keyDupOld (origKey);
+	key = keyDup (origKey, KEY_CP_ALL);
 	printf ("A duplication of the key %s with value %s\n", keyName (key), keyString (key));
 
 	keyDel (key);

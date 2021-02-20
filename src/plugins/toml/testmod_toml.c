@@ -55,7 +55,7 @@
 	{                                                                                                                                  \
 		if (lastKey != NULL)                                                                                                       \
 		{                                                                                                                          \
-			lastKey = keyDupOld (lastKey);                                                                                     \
+			lastKey = keyDup (lastKey, KEY_CP_ALL);                                                                            \
 			ksAppendKey (expectedKs, lastKey);                                                                                 \
 		}                                                                                                                          \
 	}

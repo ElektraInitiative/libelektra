@@ -506,13 +506,13 @@ static const char * isAssign (Key * key, char * expr, Key * parentKey, KeySet * 
 		Key * lookupKey;
 		if (*firstPtr == '@')
 		{
-			lookupKey = keyDupOld (parentKey);
+			lookupKey = keyDup (parentKey, KEY_CP_ALL);
 			++firstPtr;
 			keyAddName (lookupKey, firstPtr);
 		}
 		else if (!strncmp (firstPtr, "..", 2) || !strncmp (firstPtr, ".", 1))
 		{
-			lookupKey = keyDupOld (key);
+			lookupKey = keyDup (key, KEY_CP_ALL);
 			keyAddName (lookupKey, firstPtr);
 		}
 		else

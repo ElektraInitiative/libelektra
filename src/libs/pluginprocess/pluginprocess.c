@@ -160,7 +160,7 @@ void elektraPluginProcessStart (Plugin * handle, ElektraPluginProcess * pp)
 		Key * commandKey = ksLookupByName (commandKeySet, "/pluginprocess/command", KDB_O_NONE);
 		Key * parentNameKey = ksLookupByName (commandKeySet, "/pluginprocess/parent/name", KDB_O_NONE);
 		Key * parentKey = ksLookupByName (commandKeySet, "/pluginprocess/parent", KDB_O_POP);
-		Key * key = keyDupOld (parentKey);
+		Key * key = keyDup (parentKey, KEY_CP_ALL);
 		keySetName (key, keyString (parentNameKey));
 		int result = ELEKTRA_PLUGIN_STATUS_ERROR;
 
@@ -273,7 +273,7 @@ int elektraPluginProcessSend (const ElektraPluginProcess * pp, pluginprocess_t c
 	// Construct the command set that controls the pluginprocess communication
 	KeySet * commandKeySet = ksNew (6, KS_END);
 	ksAppendKey (commandKeySet, keyNew ("/pluginprocess/parent/name", KEY_VALUE, keyName (key), KEY_END));
-	Key * parentKey = keyDupOld (key);
+	Key * parentKey = keyDup (key, KEY_CP_ALL);
 	keySetName (parentKey, "/pluginprocess/parent");
 	ksAppendKey (commandKeySet, parentKey);
 	char * commandStr = longToStr (command);

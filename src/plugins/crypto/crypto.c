@@ -422,7 +422,7 @@ int ELEKTRA_PLUGIN_FUNCTION (checkconf) (Key * errorKey, KeySet * conf)
 	if (k)
 	{
 		// call gpg module to verify that we own the required key
-		Key * msg = keyDupOld (k);
+		Key * msg = keyDup (k, KEY_CP_ALL);
 		if (ELEKTRA_PLUGIN_FUNCTION (gpgDecryptMasterPassword) (conf, errorKey, msg) != 1)
 		{
 			keyDel (msg);

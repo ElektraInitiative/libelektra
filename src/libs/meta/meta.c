@@ -298,13 +298,13 @@ void elektraMetaArrayAdd (Key * key, const char * metaName, const char * value)
 	if (!meta)
 	{
 		keySetMeta (key, metaName, "#0");
-		arrayKey = keyDupOld (keyGetMeta (key, metaName));
+		arrayKey = keyDup (keyGetMeta (key, metaName), KEY_CP_NAME);
 		keySetString (arrayKey, 0);
 		keyAddBaseName (arrayKey, "#");
 	}
 	else
 	{
-		arrayKey = keyDupOld (meta);
+		arrayKey = keyDup (meta, KEY_CP_NAME);
 		keyAddBaseName (arrayKey, keyString (meta));
 	}
 	elektraArrayIncName (arrayKey);
@@ -500,7 +500,7 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 		resolveDep (j, adjMatrix, size);
 		keySetMeta (adjMatrix[j].key, "order", keyBaseName (orderCounter));
 		elektraArrayIncName (orderCounter);
-		ksAppendKey (done, keyDupOld (adjMatrix[j].key));
+		ksAppendKey (done, keyDup (adjMatrix[j].key, KEY_CP_ALL));
 		return 1;
 	}
 	unsigned int max_loops = todo;
@@ -522,7 +522,7 @@ static int resolveDeps (unsigned int j, _adjMatrix * adjMatrix, size_t size, Key
 			resolveDep (i, adjMatrix, size);
 			keySetMeta (adjMatrix[i].key, "order", keyBaseName (orderCounter));
 			elektraArrayIncName (orderCounter);
-			ksAppendKey (done, keyDupOld (adjMatrix[i].key));
+			ksAppendKey (done, keyDup (adjMatrix[i].key, KEY_CP_ALL));
 		}
 	}
 	return 1;
@@ -606,7 +606,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			// key has no dependencies, give it an order number and add it to list of resolved dependencies
 			keySetMeta (cur, "order", keyBaseName (orderCounter));
 			elektraArrayIncName (orderCounter);
-			ksAppendKey (done, keyDupOld (cur));
+			ksAppendKey (done, keyDup (cur, KEY_CP_ALL));
 			adjMatrix[j].isResolved = 1;
 			ksDel (deps);
 			break;
@@ -619,7 +619,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 			{
 				keySetMeta (cur, "order", keyBaseName (orderCounter));
 				elektraArrayIncName (orderCounter);
-				ksAppendKey (done, keyDupOld (cur));
+				ksAppendKey (done, keyDup (cur, KEY_CP_ALL));
 				adjMatrix[j].isResolved = 1;
 				ksDel (deps);
 				break;
@@ -736,7 +736,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 					resolveDep (j, adjMatrix, size);
 					keySetMeta (localArray[j], "order", keyBaseName (orderCounter));
 					elektraArrayIncName (orderCounter);
-					ksAppendKey (done, keyDupOld (localArray[j]));
+					ksAppendKey (done, keyDup (localArray[j], KEY_CP_ALL));
 					found = 1;
 				}
 			}
@@ -780,7 +780,7 @@ TopSortCleanup:
 char * elektraMetaArrayToString (const Key * key, const char * metaName, const char * delim)
 {
 	char * result = NULL;
-	Key * lookupElem = keyDupOld (keyGetMeta (key, metaName));
+	Key * lookupElem = keyDup (keyGetMeta (key, metaName), KEY_CP_ALL);
 	keyAddBaseName (lookupElem, "#0");
 	Key * elem = (Key *) keyGetMeta (key, keyName (lookupElem));
 	if (elem != NULL)

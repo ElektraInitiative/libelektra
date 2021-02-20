@@ -437,7 +437,7 @@ static void test_keyDup (const size_t storagePlugin, const char * tmpFile)
 	Key * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	Key * duplicate = keyDupOld (found);
+	Key * duplicate = keyDup (found, KEY_CP_ALL);
 
 	// check that keyDup has not changed KeySet
 	KeySet * expected = metaTestKeySet ();
@@ -615,7 +615,7 @@ static void test_keySetName (const size_t storagePlugin, const char * tmpFile)
 	Key * found = ksLookupByName (ks, "user:/tests/storage/b", 0);
 	succeed_if (found, "did not find key");
 
-	Key * duplicate = keyDupOld (found);
+	Key * duplicate = keyDup (found, KEY_CP_ALL);
 	keySetName (duplicate, "user:/tests/storage/z");
 	keySetString (duplicate, "zzz");
 
@@ -681,7 +681,7 @@ static void test_keyValue (const size_t storagePlugin, const char * tmpFile)
 
 	Key * key = keyNew (name, KEY_END);
 	keySetBinary (key, value, valueSize);
-	ksAppendKey (ks, keyDupOld (key));
+	ksAppendKey (ks, keyDup (key, KEY_CP_ALL));
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == 1, "kdbSet was not successful");
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == 1, "kdbGet was not successful");
 

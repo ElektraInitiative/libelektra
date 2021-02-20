@@ -178,7 +178,7 @@ static void test_ksReference (void)
 	succeed_if (ksHead (ks) == k1, "head wrong");
 	succeed_if (ksTail (ks) == k1, "tail wrong");
 
-	k2 = keyDupOld (k1);
+	k2 = keyDup (k1, KEY_CP_ALL);
 	keySetString (k2, "newvalue");
 
 	succeed_if (keyGetRef (k2) == 0, "reference counter not resetted");
@@ -748,7 +748,7 @@ static void test_ksSort (void)
 	k1 = keyNew ("user:/xname", KEY_END);
 	ksAppendKey (ks, k1);
 
-	k2 = keyDupOld (k1);
+	k2 = keyDup (k1, KEY_CP_ALL);
 
 	succeed_if (keyGetRef (k2) == 0, "reference counter not resetted");
 	ksAppendKey (ks, k2);
@@ -760,7 +760,7 @@ static void test_ksSort (void)
 
 	ks = ksNew (0, KS_END);
 	k1 = keyNew ("user:/yname", KEY_END);
-	k2 = keyDupOld (k1);
+	k2 = keyDup (k1, KEY_CP_ALL);
 	ksAppendKey (ks, k2);
 	ksAppendKey (ks, k1);
 
@@ -1316,7 +1316,7 @@ static void test_ksLookupNameCascading (void)
 	Key * k2;
 	ksAppendKey (ks, k1 = keyNew ("system:/test/myapp/key", KEY_VALUE, "wrong", KEY_END));
 	ksAppendKey (ks, k2 = keyNew ("user:/test/myapp/key", KEY_VALUE, "correct", KEY_END));
-	ksAppendKey (ks, keyDupOld ((s = keyNew ("/test/myapp/key", KEY_END))));
+	ksAppendKey (ks, keyDup ((s = keyNew ("/test/myapp/key", KEY_END)), KEY_CP_ALL));
 	succeed_if (ksGetSize (ks) == 3, "initial size of keyset");
 	succeed_if (keyGetNameSize (s) == 16, "initial name size");
 
@@ -1571,7 +1571,7 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 		else if (rc != 0)
 		{
 			++ret;
-			ksAppendKey (result, keyDupOld (current));
+			ksAppendKey (result, keyDup (current, KEY_CP_ALL));
 		}
 	}
 	ksSetCursor (input, cursor);
@@ -1994,7 +1994,7 @@ static void test_ksAppendKey (void)
 	succeed_if (ksCurrent (ks) == cur, "did not update current position");
 	succeed_if (ksGetSize (ks) == 4, "size not correct after 4 keys");
 
-	Key * newKey = keyDupOld (cur);
+	Key * newKey = keyDup (cur, KEY_CP_ALL);
 	keySetBaseName (newKey, "second_bool_key");
 
 	succeed_if (ksAppendKey (ks, newKey) == 5, "could not append a key");
@@ -2212,7 +2212,7 @@ static void test_cut (void)
 	for (int i = 0; i < 16; ++i)
 	{
 		orig = set_a ();
-		cutpoint = keyDupOld (ksAtCursor (orig, i));
+		cutpoint = keyDup (ksAtCursor (orig, i), KEY_CP_ALL);
 		result = ksCut (orig, cutpoint);
 
 		compare_keyset (result, cmp_result[i]);
@@ -2710,7 +2710,7 @@ static void test_simpleLookup (void)
 	Key * k0 = ksLookup (ks, searchKey, 0);
 	succeed_if (!k0, "we have a problem: found not inserted key");
 
-	Key * dup = keyDupOld (searchKey);
+	Key * dup = keyDup (searchKey, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "user:/something");
 	succeed_if_same_string (keyString (dup), "a value");
 	ksAppendKey (ks, dup);
@@ -2797,7 +2797,7 @@ static void test_ksAppend2 (void)
 	succeed_if_same_string (keyValue (keyGetMeta (ksCurrent (ks2), "hello")), "hello_world");
 	succeed_if (keyGetMeta (ksCurrent (ks2), "error") == 0, "hello was not set up to now");
 
-	Key * dup = keyDupOld (inks);
+	Key * dup = keyDup (inks, KEY_CP_ALL);
 	succeed_if_same_string (keyValue (keyGetMeta (inks, "hello")), "hello_world");
 	succeed_if (keyGetMeta (inks, "error") == 0, "hello was not set up to now");
 
@@ -2825,7 +2825,7 @@ static void test_ksAppend2 (void)
 	ksRewind (iter);
 	Key * key = ksNext (iter);
 	succeed_if (keyGetMeta (key, "name") == 0, "no such meta exists");
-	Key * result = keyDupOld (key);
+	Key * result = keyDup (key, KEY_CP_ALL);
 	succeed_if (keyGetRef (parent) == 2, "ref wrong");
 	succeed_if (keyGetRef (result) == 0, "ref wrong");
 	keySetName (result, keyName (parent));

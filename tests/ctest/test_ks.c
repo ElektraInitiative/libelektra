@@ -106,7 +106,7 @@ static void test_creatingLookup (void)
 	searchKey = keyNew ("/something", KEY_VALUE, "a value", KEY_END);
 
 	// check if duplication works:
-	Key * dupKey = keyDupOld (searchKey);
+	Key * dupKey = keyDup (searchKey, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dupKey), keyName (searchKey));
 	succeed_if_same_string (keyString (dupKey), keyString (searchKey));
 	ksAppendKey (ks, dupKey);

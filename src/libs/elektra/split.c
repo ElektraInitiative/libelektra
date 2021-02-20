@@ -327,7 +327,7 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 			printf ("   def add %s\n", keyName (kdb->split->parents[i]));
 #endif
 			/* Catch all: add all mountpoints */
-			splitAppend (split, kdb->split->handles[i], keyDupOld (kdb->split->parents[i]), kdb->split->syncbits[i]);
+			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], KEY_CP_ALL), kdb->split->syncbits[i]);
 		}
 		else if (backend == kdb->split->handles[i] &&
 			 (keyCmp (kdb->split->parents[i], parentKey) == 0 || keyIsBelow (kdb->split->parents[i], parentKey) == 1))
@@ -336,7 +336,7 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 			printf ("   exa add %s\n", keyName (kdb->split->parents[i]));
 #endif
 			/* parentKey is exactly in this backend, so add it! */
-			splitAppend (split, kdb->split->handles[i], keyDupOld (kdb->split->parents[i]), kdb->split->syncbits[i]);
+			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], KEY_CP_ALL), kdb->split->syncbits[i]);
 		}
 		else if (keyCmp (parentKey, kdb->split->parents[i]) == 0 || keyIsBelow (parentKey, kdb->split->parents[i]) == 1)
 		{
@@ -344,7 +344,7 @@ int splitBuildup (Split * split, KDB * kdb, Key * parentKey)
 			printf ("   rel add %s\n", keyName (kdb->split->parents[i]));
 #endif
 			/* this backend is completely below the parentKey, so lets add it. */
-			splitAppend (split, kdb->split->handles[i], keyDupOld (kdb->split->parents[i]), kdb->split->syncbits[i]);
+			splitAppend (split, kdb->split->handles[i], keyDup (kdb->split->parents[i], KEY_CP_ALL), kdb->split->syncbits[i]);
 		}
 	}
 

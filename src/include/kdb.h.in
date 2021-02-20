@@ -208,16 +208,6 @@ static inline Key *keyDup (const Key *source, elektraCopyFlags flags)
 	return keyCopy (keyNew ("/", 0), source, flags);
 }
 
-// FIXME: remove once migrated
-static inline Key *keyDupOld (const Key *source)
-{
-	if (source == 0)
-	{
-		return 0;
-	}
-	return keyCopy (keyNew ("/", 0), source, KEY_CP_ALL);
-}
-
 /**************************************
  *
  * KeySet methods

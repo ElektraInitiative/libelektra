@@ -219,7 +219,7 @@ static void test_keyReference (void)
 	succeed_if (keyIncRef (key) == 4, "keyIncRef return value");
 	succeed_if (keyGetRef (key) == 4, "After keyIncRef key reference");
 
-	d = keyDupOld (key);
+	d = keyDup (key, KEY_CP_ALL);
 	succeed_if (keyGetRef (d) == 0, "After keyDup key reference");
 	succeed_if (keyIncRef (d) == 1, "keyIncRef return value");
 	succeed_if (keyGetRef (key) == 4, "Reference should not change");
@@ -740,7 +740,7 @@ static void test_keyNameSlashes (void)
 		keyCopy (copy, key, KEY_CP_ALL);
 		succeed_if (keyGetRef (copy) == 0, "reference of copy not correct");
 
-		Key * dup = keyDupOld (key);
+		Key * dup = keyDup (key, KEY_CP_ALL);
 		succeed_if (keyGetRef (dup) == 0, "reference of dup not correct");
 
 		compare_key (copy, key);
@@ -1378,14 +1378,14 @@ static void test_keyDup (void)
 
 	printf ("Test key duplication\n");
 
-	succeed_if (keyDupOld (0) == 0, "could not duplicate null");
+	succeed_if (keyDup (0, KEY_CP_ALL) != 0, "could duplicate null");
 
 	// Create test key
 	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_END);
 
 
 	// Dup the key
-	succeed_if ((copy = keyDupOld (orig)) != 0, "keyDup failed");
+	succeed_if ((copy = keyDup (orig, KEY_CP_ALL)) != 0, "keyDup failed");
 	compare_key (orig, copy);
 	keyDel (orig); // everything independent from original!
 
@@ -1396,7 +1396,7 @@ static void test_keyDup (void)
 
 	// Dup the key again
 	Key * ccopy;
-	succeed_if ((ccopy = keyDupOld (copy)) != 0, "keyDup failed");
+	succeed_if ((ccopy = keyDup (copy, KEY_CP_ALL)) != 0, "keyDup failed");
 	compare_key (copy, ccopy);
 	keyDel (copy); // everything independent from original!
 
@@ -1409,7 +1409,7 @@ static void test_keyDup (void)
 	orig = keyNew ("/", KEY_END);
 	keySetName (orig, "invalid");
 
-	succeed_if ((copy = keyDupOld (orig)) != 0, "keyDup failed");
+	succeed_if ((copy = keyDup (orig, KEY_CP_ALL)) != 0, "keyDup failed");
 	succeed_if_same_string (keyName (orig), "/");
 	succeed_if_same_string (keyName (copy), "/");
 	succeed_if (keyGetNameSize (orig) == 2, "orig name size");
@@ -1487,8 +1487,8 @@ static void test_keyCopy (void)
 	succeed_if (keyCopy (copy, orig, KEY_CP_NAME) == copy, "keyCopy failed");
 	succeed_if_same_string (keyName (orig), "user:/orig");
 	succeed_if_same_string (keyName (copy), "user:/orig");
-	keyGetString (orig, origBuffer, sizeof(origBuffer));
-	keyGetString (copy, copyBuffer, sizeof(copyBuffer));
+	keyGetString (orig, origBuffer, sizeof (origBuffer));
+	keyGetString (copy, copyBuffer, sizeof (copyBuffer));
 	succeed_if_same_string (origBuffer, "orig");
 	succeed_if_same_string (copyBuffer, "copy");
 	succeed_if_same_string (keyValue (keyGetMeta (orig, "orig")), "orig");
@@ -1511,8 +1511,8 @@ static void test_keyCopy (void)
 	succeed_if (keyCopy (copy, orig, KEY_CP_VALUE) == copy, "keyCopy failed");
 	succeed_if_same_string (keyName (orig), "user:/orig");
 	succeed_if_same_string (keyName (copy), "user:/copy");
-	keyGetString (orig, origBuffer, sizeof(origBuffer));
-	keyGetString (copy, copyBuffer, sizeof(copyBuffer));
+	keyGetString (orig, origBuffer, sizeof (origBuffer));
+	keyGetString (copy, copyBuffer, sizeof (copyBuffer));
 	succeed_if_same_string (origBuffer, "orig");
 	succeed_if_same_string (copyBuffer, "orig");
 	succeed_if_same_string (keyValue (keyGetMeta (orig, "orig")), "orig");
@@ -1535,8 +1535,8 @@ static void test_keyCopy (void)
 	succeed_if (keyCopy (copy, orig, KEY_CP_META) == copy, "keyCopy failed");
 	succeed_if_same_string (keyName (orig), "user:/orig");
 	succeed_if_same_string (keyName (copy), "user:/copy");
-	keyGetString (orig, origBuffer, sizeof(origBuffer));
-	keyGetString (copy, copyBuffer, sizeof(copyBuffer));
+	keyGetString (orig, origBuffer, sizeof (origBuffer));
+	keyGetString (copy, copyBuffer, sizeof (copyBuffer));
 	succeed_if_same_string (origBuffer, "orig");
 	succeed_if_same_string (copyBuffer, "copy");
 	succeed_if_same_string (keyValue (keyGetMeta (orig, "orig")), "orig");

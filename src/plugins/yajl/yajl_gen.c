@@ -197,7 +197,7 @@ int elektraGenEmpty (yajl_gen g, KeySet * returned, Key * parentKey)
 	}
 	else if (ksGetSize (returned) == 2) // maybe just parent+specialkey
 	{
-		Key * toCheck = keyDupOld (parentKey);
+		Key * toCheck = keyDup (parentKey, KEY_CP_ALL);
 
 		keyAddBaseName (toCheck, "###empty_array");
 		if (!strcmp (keyName (ksTail (returned)), keyName (toCheck)))

@@ -48,7 +48,7 @@ int elektraLineRead (FILE * fp, KeySet * returned)
 		{
 			value[n - 1] = '\0';
 		}
-		read = keyDupOld (ksTail (returned));
+		read = keyDup (ksTail (returned), KEY_CP_ALL);
 		if (elektraArrayIncName (read) == -1)
 		{
 			elektraFree (value);
@@ -88,8 +88,8 @@ int elektraLineGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 	}
 
 	Key * b = keyNew (keyName (parentKey), KEY_END);
-	ksAppendKey (returned, keyDupOld (b)); // start with parentKey
-	keyAddName (b, "#");		       // start point for our array
+	ksAppendKey (returned, keyDup (b, KEY_CP_ALL)); // start with parentKey
+	keyAddName (b, "#");				// start point for our array
 	ksAppendKey (returned, b);
 
 	int ret = elektraLineRead (fp, returned);

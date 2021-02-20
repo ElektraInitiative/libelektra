@@ -165,7 +165,7 @@ static char * parseAlias (KeySet * append, const Key * hostParent, char * tokenP
 	sret = elektraParseToken (&fieldBuffer, tokenPointer);
 	if (sret == 0) return 0;
 
-	Key * alias = keyDupOld (hostParent);
+	Key * alias = keyDup (hostParent, KEY_CP_ALL);
 	keyAddBaseName (alias, fieldBuffer);
 	elektraFree (fieldBuffer);
 
@@ -226,7 +226,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	ksClear (returned);
 	KeySet * append = ksNew (ksGetSize (returned) * 2, KS_END);
 
-	Key * key = keyDupOld (parentKey);
+	Key * key = keyDup (parentKey, KEY_CP_ALL);
 	ksAppendKey (append, key);
 
 	Key * currentKey = 0;
@@ -241,7 +241,7 @@ int elektraHostsGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 
 		if (!currentKey)
 		{
-			currentKey = keyDupOld (parentKey);
+			currentKey = keyDup (parentKey, KEY_CP_ALL);
 		}
 
 		if (parseComment (comments, readBuffer, "#", &elektraAddLineComment)) continue;

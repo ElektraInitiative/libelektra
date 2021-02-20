@@ -595,7 +595,7 @@ int isChangeAllowed (Key * oldKey, Key * newKey)
 	}
 	else
 	{
-		oldKey = keyDupOld (oldKey);
+		oldKey = keyDup (oldKey, KEY_CP_ALL);
 	}
 
 	if (newKey == NULL)
@@ -610,7 +610,7 @@ int isChangeAllowed (Key * oldKey, Key * newKey)
 	}
 	else
 	{
-		newKey = keyDupOld (newKey);
+		newKey = keyDup (newKey, KEY_CP_ALL);
 	}
 
 	KeySet * metaDiff = calculateMetaDiff (oldKey, newKey);
