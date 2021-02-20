@@ -1,89 +1,101 @@
 # keySetName
 
-- start = 2021-01-23 18:10
-- end = 2021-01-23 18:10
-- moderator = Stefan Hanreich <stefanhani@gmail.com>
-
+- start = 2021-02-14 03:30
+- end = 2021-02-14 03:50
+- reviewer = Stefan Hanreich <stefanhani@gmail.com>
 
 ## Signature
 
-ssize_t keySetName(Key *key, const char *newname)
-
+`ssize_t keySetName(Key *key, const char *newname)`
 
 ## Checklist
 
 #### Doxygen
+(bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
-- [ ] `@see`
-- [ ] `@since`
-- [ ] `@ingroup`
-- [ ] `@retval`
-- [ ] Good example or snippet how to use the function
-- [ ] Simple examples go first
-- [ ] Precondition
-- [ ] Postcondition
-- [ ] Invariant
-- [ ] `@param` for every parameter
-
-### Documentation
-
-- [ ] Change is mentioned in the Compatibility section of the release notes
-- [ ] Proper Documentation of thread-safety of function
-- [ ] All possible error states are documented
-- [ ] Valid flags are documented
+- [x] First line explains briefly what the function does
+- [ ] Simple example or snippet how to use the function  
+      - [ ] add
+- [ ] Longer description of function containing common use cases
+- [ ] Description of functions reads nicely
+- [ ] `@pre`  
+      - [ ] @pre newName must be a valid name  
+      - [ ] @pre must not be a read-only key  
+      - [ ] @pre must not have been inserted before
+- [ ] `@post`  
+      - [ ] @post Key has (possibly modified) newName as name
+- [ ] `@invariant`  
+      - [ ] add
+- [x] `@param` for every parameter
+- [ ] `@return` / `@retval`  
+      - [ ] add `@retval` -1 if key is read-only
+- [ ] `@since`  
+      - [ ] add
+- [x] `@ingroup`
+- [ ] `@see`  
+      - [ ] add `keySetNameSpace()`
 
 ### Naming
 
-- [ ] Abbreviations used in function names must be defined in the
+- [x] Abbreviations used in function names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
-- [ ] Function names should neither be too long, nor too short
-- [ ] Function name should be clear and unambiguous
-- [ ] Abbreviations used in parameter names must be defined in the
+- [x] Function names should neither be too long, nor too short
+- [x] Function name should be clear and unambiguous
+- [x] Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
-- [ ] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- [x] Parameter names should neither be too long, nor too short
+- [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
+(only in PRs)
 
-- [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
+- [Symbol versioning](/doc/dev/symbol-versioning.md)
       is correct for breaking changes
-- [ ] ABI/API changes are forward-compatible (breaking backwards-compatibility
+- ABI/API changes are forward-compatible (breaking backwards-compatibility
       to add additional symbols is fine)
 
 ### Parameter & Return Types
 
-- [ ] Functions should return the most specific type possible
-- [ ] Functions should require the most general type possible
-- [ ] Function parameters should use enum types instead of boolean types
+- [x] Function parameters should use enum types instead of boolean types
       wherever sensible
-- [ ] Wherever possible, function parameters should be `const`
-- [ ] Wherever possible, return types should be `const`
-- [ ] Functions should have the least amount of parameters feasible
+- [x] Wherever possible, function parameters should be `const`
+- [ ] Wherever possible, return types should be `const`  
+      - [ ] might be possible to make it `const`
+- [x] Functions should have the least amount of parameters feasible
 
 ### Structural Clarity
 
-- [ ] Functions should do exactly one thing
-- [ ] Function name has the appropriate prefix
-- [ ] Signature in kdb.h.in has same order as Doxygen docu
-- [ ] No functions with similar purpose exist
+- [x] Functions should do exactly one thing
+- [x] Function name has the appropriate prefix
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
+      - [ ] swapped with functions for unescaped
+- [x] No functions with similar purpose exist
 
 ### Memory Management
 
-- [ ] Memory Management should be handled by the function wherever possible
+- [x] Memory Management should be handled by the function wherever possible
 
 ### Extensibility
 
-- [ ] Function is easily extensible, e.g., with flags
-- [ ] Documentation does not impose limits, that would hinder further extensions
+- [x] Function is easily extensible, e.g., with flags
+- [ ] Documentation does not impose limits, that would hinder further extensions  
+      - [ ] behaviour on invalid names
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
-- [ ] All possible enum values are covered by tests
-- [ ] No inconsistencies between tests and documentation
-- [ ] Functions should have no side effects (idempotency)
-
+- [ ] Function code is fully covered by tests  
+      - [ ] test_bit "CANNOT" fail, so might not be necessary to cover this  
+            for now should be made more resistant to future changes
+- [ ] All possible error states are covered by tests  
+      - [ ] test read-only keys
+- All possible enum values are covered by tests
+- [ ] No inconsistencies between tests and documentation  
+      - [ ] https://github.com/ElektraInitiative/libelektra/blob/master/tests/abi/testabi_key.c#L357  
+            checks for -1 if null pointer is provided  
+            documentation says 0 will be returned  
+      - [ ] Documentation says name will be `""` after an invalid name  
+            Tests show that name stays unchanged  
+            https://github.com/ElektraInitiative/libelektra/blob/master/tests/abi/testabi_key.c#L601  
+      - [ ] Documentations should include stripping trailing `/`
 
 ## Summary

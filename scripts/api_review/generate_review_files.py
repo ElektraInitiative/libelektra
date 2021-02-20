@@ -38,7 +38,7 @@ parser.add_argument(
     '--template-path',
     help='Specify the path for the template',
     type=is_file,
-    default='template.md'
+    default='template.c.md'
 )
 
 parser.add_argument(
@@ -46,7 +46,7 @@ parser.add_argument(
     '--methods-path',
     help='Specify the path for the method list',
     type=is_file,
-    default='methods.txt'
+    default='methods.c.txt'
 )
 
 args = parser.parse_args()
