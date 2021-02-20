@@ -11,6 +11,7 @@
 ## Checklist
 
 #### Doxygen
+
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
@@ -18,16 +19,16 @@
 - [ ] Longer description of function containing common use cases
 - [ ] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] @pre key must be a valid key
+       - [ ] @pre key must be a valid key
 - [ ] `@post`  
-      - [ ] @post Pointer to key that can change over time
+       - [ ] @post Pointer to key that can change over time
 - [ ] `@invariant`  
-      - [ ] key name stays valid
+       - [ ] key name stays valid
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
-      - [ ] add default return value to `@retval`
+       - [ ] add default return value to `@retval`
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [x] `@see`
 
@@ -37,25 +38,26 @@
       [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [ ] Function name should be clear and unambiguous  
-      - [ ] Function name might lead to confusions with `keyGetName()`, make  
-            their intentions more clear in their names
+       - [ ] Function name might lead to confusions with `keyGetName()`, make  
+       their intentions more clear in their names
 - [x] Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
 - [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
+
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -66,7 +68,7 @@
 - [x] Function name has the appropriate prefix
 - [x] Order of signatures in kdb.h.in is the same as Doxygen
 - [x] No functions with similar purpose exist  
-      - [ ] `keyUnescapedName` might be considered too similar
+       - [ ] `keyUnescapedName` might be considered too similar
 
 ### Memory Management
 
@@ -81,7 +83,7 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-      - [ ] empty keyName is not covered in tests
+       - [ ] empty keyName is not covered in tests
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

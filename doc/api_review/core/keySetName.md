@@ -11,29 +11,30 @@
 ## Checklist
 
 #### Doxygen
+
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
 - [ ] Simple example or snippet how to use the function  
-      - [ ] add
+       - [ ] add
 - [ ] Longer description of function containing common use cases
 - [ ] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] @pre newName must be a valid name  
-      - [ ] @pre must not be a read-only key  
-      - [ ] @pre must not have been inserted before
+       - [ ] @pre newName must be a valid name  
+       - [ ] @pre must not be a read-only key  
+       - [ ] @pre must not have been inserted before
 - [ ] `@post`  
-      - [ ] @post Key has (possibly modified) newName as name
+       - [ ] @post Key has (possibly modified) newName as name
 - [ ] `@invariant`  
-      - [ ] add
+       - [ ] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
-      - [ ] add `@retval` -1 if key is read-only
+       - [ ] add `@retval` -1 if key is read-only
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [ ] `@see`  
-      - [ ] add `keySetNameSpace()`
+       - [ ] add `keySetNameSpace()`
 
 ### Naming
 
@@ -47,12 +48,13 @@
 - [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
+
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
@@ -60,7 +62,7 @@
       wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [ ] Wherever possible, return types should be `const`  
-      - [ ] might be possible to make it `const`
+       - [ ] might be possible to make it `const`
 - [x] Functions should have the least amount of parameters feasible
 
 ### Structural Clarity
@@ -68,7 +70,7 @@
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
 - [ ] Order of signatures in kdb.h.in is the same as Doxygen  
-      - [ ] swapped with functions for unescaped
+       - [ ] swapped with functions for unescaped
 - [x] No functions with similar purpose exist
 
 ### Memory Management
@@ -79,23 +81,23 @@
 
 - [x] Function is easily extensible, e.g., with flags
 - [ ] Documentation does not impose limits, that would hinder further extensions  
-      - [ ] behaviour on invalid names
+       - [ ] behaviour on invalid names
 
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-      - [ ] test_bit "CANNOT" fail, so might not be necessary to cover this  
-            for now should be made more resistant to future changes
+       - [ ] test_bit "CANNOT" fail, so might not be necessary to cover this  
+       for now should be made more resistant to future changes
 - [ ] All possible error states are covered by tests  
-      - [ ] test read-only keys
+       - [ ] test read-only keys
 - All possible enum values are covered by tests
 - [ ] No inconsistencies between tests and documentation  
-      - [ ] https://github.com/ElektraInitiative/libelektra/blob/master/tests/abi/testabi_key.c#L357  
-            checks for -1 if null pointer is provided  
-            documentation says 0 will be returned  
-      - [ ] Documentation says name will be `""` after an invalid name  
-            Tests show that name stays unchanged  
-            https://github.com/ElektraInitiative/libelektra/blob/master/tests/abi/testabi_key.c#L601  
-      - [ ] Documentations should include stripping trailing `/`
+       - [ ] https://github.com/ElektraInitiative/libelektra/blob/master/tests/abi/testabi_key.c#L357  
+       checks for -1 if null pointer is provided  
+       documentation says 0 will be returned  
+       - [ ] Documentation says name will be `""` after an invalid name  
+       Tests show that name stays unchanged  
+       https://github.com/ElektraInitiative/libelektra/blob/master/tests/abi/testabi_key.c#L601  
+       - [ ] Documentations should include stripping trailing `/`
 
 ## Summary

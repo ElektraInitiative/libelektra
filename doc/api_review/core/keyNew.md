@@ -11,24 +11,25 @@
 ## Checklist
 
 #### Doxygen
+
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
 - [x] Simple example or snippet how to use the function
 - [ ] Longer description of function containing common use cases  
-      - [ ] is 0 a valid name? returns NULL if 0 is param
+       - [ ] is 0 a valid name? returns NULL if 0 is param
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] @pre name must be a valid key name
+       - [ ] @pre name must be a valid key name
 - [ ] `@post`  
-      - [ ] @post returns a valid key object
+       - [ ] @post returns a valid key object
 - [ ] `@invariant`  
-      - [ ] add
+       - [ ] add
 - [ ] `@param` for every parameter  
-      - [ ] add `@param` for `...`
+       - [ ] add `@param` for `...`
 - [x] `@return` / `@retval`
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [x] `@see`
 
@@ -44,12 +45,13 @@
 - [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
+
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
@@ -62,7 +64,7 @@
 ### Structural Clarity
 
 - [x] Functions should do exactly one thing  
-      - it doesn't technically - but its a convenience function
+       - it doesn't technically - but its a convenience function
 - [x] Function name has the appropriate prefix
 - [x] Order of signatures in kdb.h.in is the same as Doxygen
 - [x] No functions with similar purpose exist
@@ -75,24 +77,20 @@
 
 - [x] Function is easily extensible, e.g., with flags
 - [ ] Documentation does not impose limits, that would hinder further extensions  
-      - [ ] Docs say `Key *k = keyNew(0);` has same effect
-            as `Key *k =keyNew("", KEY_END);`
+       - [ ] Docs say `Key *k = keyNew(0);` has same effect
+      as `Key *k =keyNew("", KEY_END);`
 
 ### Tests
 
 - [x] Function code is fully covered by tests
 - [x] All possible error states are covered by tests
 - [ ] All possible enum values are covered by tests  
-      - [ ] KEY_META  
-      - [ ] KEY_FLAGS
+       - [ ] KEY_META  
+       - [ ] KEY_FLAGS
 - [ ] No inconsistencies between tests and documentation  
-      - [ ] Documentation says i can work with `Key *k =keyNew("", KEY_END);`  
-            Tests say  
-            ```  
-            k = keyNew ("", KEY_END);
-            succeed_if (k == NULL, "should be invalid");
-            keyDel (k);
-            ```  
-      - [ ] same as above with `keyNew(0)`
+       - [ ] Documentation says i can work with `Key *k =keyNew("", KEY_END);`  
+       Tests say  
+       `k = keyNew ("", KEY_END); succeed_if (k == NULL, "should be invalid"); keyDel (k);`  
+       - [ ] same as above with `keyNew(0)`
 
 ## Summary
