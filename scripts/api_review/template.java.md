@@ -4,15 +4,14 @@
 - end = 2021-01-23 18:10
 - moderator = Stefan Hanreich <stefanhani@gmail.com>
 
-
 ## Signature
 
 {signature}
 
-
 ## Checklist
 
 #### Doxygen
+
 (bullet points are in order of appearance)
 
 - [ ] First line explains briefly what the function does

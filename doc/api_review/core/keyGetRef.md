@@ -11,6 +11,7 @@
 ## Checklist
 
 #### Doxygen
+
 (bullet points are in order of appearance)
 
 - [ ] First line explains briefly what the function does
@@ -38,6 +39,7 @@
 - [ ] Parameter names should be clear and unambiguous
 
 ### Compatibility
+
 (only in PRs)
 
 - [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
