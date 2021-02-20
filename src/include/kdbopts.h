@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief INTERNAL header for libelektra-opts
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -19,7 +19,7 @@ extern "C" {
 #endif
 
 int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** envp, Key * parentKey);
-char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char * prefix);
+char * elektraGetOptsHelpMessage (Key * helpKey, const char * usage, const char * prefix);
 
 #ifdef __cplusplus
 }

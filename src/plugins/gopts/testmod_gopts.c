@@ -77,6 +77,8 @@ static void run_test (const char ** argv, const char ** envp)
 
 void test_global (void)
 {
+	printf ("test global\n");
+
 	Key * parentKey = keyNew ("/tests/gopts", KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 

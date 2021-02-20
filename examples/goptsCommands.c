@@ -1,16 +1,15 @@
 /**
  * @file
  *
- * @brief Advanced use example for elektraGetOpts (with sub-commands)
- *        You should prefer the example in goptsCommands.c over this one.
+ * @brief Example for using command-line options with sub-commands
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>
 #include <kdbease.h>
+#include <kdbgopts.h>
 #include <kdbhelper.h>
-#include <kdbopts.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +19,18 @@ extern char ** environ;
 
 #define BASE_KEY "/sw/org/kdbdummy/#0/current"
 #define SPEC_BASE_KEY "spec" BASE_KEY
+
+// -----------------
+// Helper methods
+// -----------------
+
+/*
+ * The methods below are only used, so that this example is self-contained.
+ * If you actually develop an application, you may use the `specload` plugin,
+ * but in any case the specification should be mounted into the KDB using `kdb mount`.
+ *
+ * DO NOT set/unset the specification inside of your application.
+ */
 
 static KeySet * createSpec (void)
 {
@@ -46,41 +57,92 @@ static KeySet * createSpec (void)
 		      KS_END);
 }
 
+static int setupSpec (void)
+{
+	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	KDB * kdb = kdbOpen (NULL, parentKey);
+	KeySet * ks = ksNew (0, KS_END);
+	kdbGet (kdb, ks, parentKey);
+
+	KeySet * existing = ksCut (ks, parentKey);
+	if (ksGetSize (existing) > 0)
+	{
+		kdbClose (kdb, parentKey);
+		ksDel (ks);
+		ksDel (existing);
+		return 0;
+	}
+	ksDel (existing);
+
+	KeySet * spec = createSpec ();
+	ksAppend (ks, spec);
+	ksDel (spec);
+	kdbSet (kdb, ks, parentKey);
+	kdbClose (kdb, parentKey);
+	ksDel (ks);
+
+	return 1;
+}
+
+
+static void removeSpec (void)
+{
+	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
+	KDB * kdb = kdbOpen (NULL, parentKey);
+	KeySet * ks = ksNew (0, KS_END);
+	kdbGet (kdb, ks, parentKey);
+	KeySet * spec = ksCut (ks, parentKey);
+	ksDel (spec);
+	kdbSet (kdb, ks, parentKey);
+	kdbClose (kdb, parentKey);
+	ksDel (ks);
+}
+
+// -----------------
+// Main example
+// -----------------
+
 int main (int argc, const char ** argv)
 {
-	/**
-	 * THIS IS AN EXAMPLE FOR AN ADVANCED USE CASE
-	 *
-	 * If you follow this example, please make sure
-	 * you know what you are doing.
-	 *
-	 * Some of the functions used in this example,
-	 * may not be part of the public API or may not
-	 * be considered stable.
-	 */
-
-
-	KeySet * ks = createSpec ();
-	Key * errorKey = keyNew (BASE_KEY, KEY_END);
-
-	int result = elektraGetOpts (ks, argc, argv, (const char **) environ, errorKey);
-	if (result == -1)
+	// normally, you shouldn't mount the spec here
+	// it should be mounted already
+	// we do this just to keep the example self-contained
+	if (!setupSpec ())
 	{
-		// there was an error
-		fprintf (stderr, "ERROR: %s\n", keyString (keyGetMeta (errorKey, "error/reason")));
-		keyDel (errorKey);
-		ksDel (ks);
+		fprintf (stderr, "ERROR: Couldn't setup spec, keys exist!\n");
 		return EXIT_FAILURE;
 	}
 
-	if (result == 1)
+	Key * parentKey = keyNew (BASE_KEY, KEY_END);
+	KeySet * goptsConfig = ksNew (0, KS_END);
+	KeySet * contract = ksNew (0, KS_END);
+
+	elektraGOptsContract (contract, argc, argv, (const char * const *) environ, parentKey, goptsConfig);
+
+	KDB * kdb = kdbOpen (contract, parentKey);
+
+	KeySet * ks = ksNew (0, KS_END);
+	int rc = kdbGet (kdb, ks, parentKey);
+
+	if (rc == -1)
 	{
-		// '--help' option was used
-		char * help = elektraGetOptsHelpMessage (errorKey, NULL, NULL);
-		fprintf (stderr, "%s\n", help);
-		elektraFree (help);
-		keyDel (errorKey);
+		fprintf (stderr, "ERROR: kdbGet failed! %s\n", keyString (keyGetMeta (parentKey, "error/reason")));
+		kdbClose (kdb, parentKey);
+		keyDel (parentKey);
 		ksDel (ks);
+		removeSpec ();
+		return EXIT_FAILURE;
+	}
+
+	Key * helpKey = ksLookupByName (ks, "proc:/elektra/gopts/help", 0);
+	if (helpKey != NULL && elektraStrCmp (keyString (helpKey), "1") == 0)
+	{
+		const char * help = keyString (ksLookupByName (ks, "proc:/elektra/gopts/help/message", 0));
+		printf ("%s\n", help);
+		kdbClose (kdb, parentKey);
+		keyDel (parentKey);
+		ksDel (ks);
+		removeSpec ();
 		return EXIT_SUCCESS;
 	}
 
@@ -91,9 +153,10 @@ int main (int argc, const char ** argv)
 	{
 		printf ("print version information\n");
 
-		keyDel (errorKey);
+		kdbClose (kdb, parentKey);
+		keyDel (parentKey);
 		ksDel (ks);
-
+		removeSpec ();
 		return EXIT_SUCCESS;
 	}
 
@@ -104,9 +167,10 @@ int main (int argc, const char ** argv)
 		if (lookup == NULL || strlen (keyString (lookup)) == 0)
 		{
 			printf ("report the error 'empty parameter: keyname'\n");
-			keyDel (errorKey);
+			kdbClose (kdb, parentKey);
+			keyDel (parentKey);
 			ksDel (ks);
-
+			removeSpec ();
 			return EXIT_SUCCESS;
 		}
 		printf ("get the key '%s'\n", keyString (lookup));
@@ -125,18 +189,20 @@ int main (int argc, const char ** argv)
 		if (lookup == NULL || strlen (keyname = keyString (lookup)) == 0)
 		{
 			printf ("report the error 'missing parameter: keyname'\n");
-			keyDel (errorKey);
+			kdbClose (kdb, parentKey);
+			keyDel (parentKey);
 			ksDel (ks);
-
+			removeSpec ();
 			return EXIT_SUCCESS;
 		}
 		lookup = ksLookupByName (ks, BASE_KEY "/setter/value", 0);
 		if (lookup == NULL)
 		{
 			printf ("report the error 'missing parameter: value'\n");
-			keyDel (errorKey);
+			kdbClose (kdb, parentKey);
+			keyDel (parentKey);
 			ksDel (ks);
-
+			removeSpec ();
 			return EXIT_SUCCESS;
 		}
 		printf ("set the key '%s' with the value '%s'\n", keyname, keyString (lookup));
@@ -170,8 +236,14 @@ int main (int argc, const char ** argv)
 		}
 	}
 
-	keyDel (errorKey);
+	kdbClose (kdb, parentKey);
+	keyDel (parentKey);
 	ksDel (ks);
+
+	// normally, you shouldn't remove the spec,
+	// because you shouldn't have mounted it inside the application,
+	// we do this just to keep the example self-contained
+	removeSpec ();
 
 	return EXIT_SUCCESS;
 }

@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief Example for using command-line options
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -11,7 +11,6 @@
 #include <kdbgopts.h>
 #include <kdbhelper.h>
 
-#include <kdbopts.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -114,7 +113,9 @@ static void removeSpec (void)
 
 int main (int argc, const char * const * argv)
 {
-	// normally, the spec should already be mounted
+	// normally, you shouldn't mount the spec here
+	// it should be mounted already
+	// we do this just to keep the example self-contained
 	if (!setupSpec ())
 	{
 		fprintf (stderr, "ERROR: Couldn't setup spec, keys exist!\n");
@@ -145,14 +146,8 @@ int main (int argc, const char * const * argv)
 	Key * helpKey = ksLookupByName (ks, "proc:/elektra/gopts/help", 0);
 	if (helpKey != NULL && elektraStrCmp (keyString (helpKey), "1") == 0)
 	{
-		/*
-		// alternatively, read pre-formatted message from proc:/elektra/gopts/help/message
 		const char * help = keyString (ksLookupByName (ks, "proc:/elektra/gopts/help/message", 0));
-		*/
-
-		char * help = elektraGetOptsHelpMessage (helpKey, NULL, NULL);
 		printf ("%s\n", help);
-		elektraFree (help);
 		kdbClose (kdb, parentKey);
 		keyDel (parentKey);
 		ksDel (ks);
@@ -245,7 +240,9 @@ int main (int argc, const char * const * argv)
 	keyDel (parentKey);
 	ksDel (ks);
 
-	// normally, you shouldn't remove the spec
+	// normally, you shouldn't remove the spec,
+	// because you shouldn't have mounted it inside the application,
+	// we do this just to keep the example self-contained
 	removeSpec ();
 
 	return EXIT_SUCCESS;

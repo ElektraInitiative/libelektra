@@ -1,4 +1,4 @@
-libelektra_0.8 {
+libelektraprivate_1.0 {
 	# kdbopts.h
 	elektraGetOpts;
 	elektraGetOptsHelpMessage;
