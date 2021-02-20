@@ -73,7 +73,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
-- <<TODO>>
+- The `keyCopy` and `keyDup` functions have been changed. They now take a `flags` argument which specifies which parts
+  of the `Key` should be copied. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 
