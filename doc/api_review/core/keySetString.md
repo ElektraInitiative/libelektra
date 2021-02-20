@@ -4,34 +4,27 @@
 - end = 2021-01-23 18:10
 - moderator = Stefan Hanreich <stefanhani@gmail.com>
 
-
 ## Signature
 
-ssize_t keySetString(Key *key, const char *newString)
-
+`ssize_t keySetString(Key *key, const char *newString)`
 
 ## Checklist
 
 #### Doxygen
+(bullet points are in order of appearance)
 
 - [ ] First line explains briefly what the function does
-- [ ] `@see`
+- [ ] Simple example or snippet how to use the function
+- [ ] Longer description of function containing common use cases
+- [ ] Description of functions reads nicely
+- [ ] `@pre`
+- [ ] `@post`
+- [ ] `@invariant`
+- [ ] `@param` for every parameter
+- [ ] `@return` / `@retval`
 - [ ] `@since`
 - [ ] `@ingroup`
-- [ ] `@retval`
-- [ ] Good example or snippet how to use the function
-- [ ] Simple examples go first
-- [ ] Precondition
-- [ ] Postcondition
-- [ ] Invariant
-- [ ] `@param` for every parameter
-
-### Documentation
-
-- [ ] Change is mentioned in the Compatibility section of the release notes
-- [ ] Proper Documentation of thread-safety of function
-- [ ] All possible error states are documented
-- [ ] Valid flags are documented
+- [ ] `@see`
 
 ### Naming
 
@@ -45,6 +38,7 @@ ssize_t keySetString(Key *key, const char *newString)
 - [ ] Parameter names should be clear and unambiguous
 
 ### Compatibility
+(only in PRs)
 
 - [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
       is correct for breaking changes
@@ -53,8 +47,6 @@ ssize_t keySetString(Key *key, const char *newString)
 
 ### Parameter & Return Types
 
-- [ ] Functions should return the most specific type possible
-- [ ] Functions should require the most general type possible
 - [ ] Function parameters should use enum types instead of boolean types
       wherever sensible
 - [ ] Wherever possible, function parameters should be `const`
@@ -65,7 +57,7 @@ ssize_t keySetString(Key *key, const char *newString)
 
 - [ ] Functions should do exactly one thing
 - [ ] Function name has the appropriate prefix
-- [ ] Signature in kdb.h.in has same order as Doxygen docu
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen
 - [ ] No functions with similar purpose exist
 
 ### Memory Management
@@ -83,7 +75,5 @@ ssize_t keySetString(Key *key, const char *newString)
 - [ ] All possible error states are covered by tests
 - [ ] All possible enum values are covered by tests
 - [ ] No inconsistencies between tests and documentation
-- [ ] Functions should have no side effects (idempotency)
-
 
 ## Summary

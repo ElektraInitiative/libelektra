@@ -1,89 +1,98 @@
 # keyNew
 
-- start = 2021-01-23 18:10
-- end = 2021-01-23 18:10
-- moderator = Stefan Hanreich <stefanhani@gmail.com>
-
+- start = 2021-02-14 02:55
+- end = 2021-02-14 03:22
+- reviewer = Stefan Hanreich <stefanhani@gmail.com>
 
 ## Signature
 
-Key *keyNew(const char *keyname, ...)
-
+`Key *keyNew(const char *keyname, ...)`
 
 ## Checklist
 
 #### Doxygen
+(bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
-- [ ] `@see`
-- [ ] `@since`
-- [ ] `@ingroup`
-- [ ] `@retval`
-- [ ] Good example or snippet how to use the function
-- [ ] Simple examples go first
-- [ ] Precondition
-- [ ] Postcondition
-- [ ] Invariant
-- [ ] `@param` for every parameter
-
-### Documentation
-
-- [ ] Change is mentioned in the Compatibility section of the release notes
-- [ ] Proper Documentation of thread-safety of function
-- [ ] All possible error states are documented
-- [ ] Valid flags are documented
+- [x] First line explains briefly what the function does
+- [x] Simple example or snippet how to use the function
+- [ ] Longer description of function containing common use cases  
+      - [ ] is 0 a valid name? returns NULL if 0 is param
+- [x] Description of functions reads nicely
+- [ ] `@pre`  
+      - [ ] @pre name must be a valid key name
+- [ ] `@post`  
+      - [ ] @post returns a valid key object
+- [ ] `@invariant`  
+      - [ ] add
+- [ ] `@param` for every parameter  
+      - [ ] add `@param` for `...`
+- [x] `@return` / `@retval`
+- [ ] `@since`  
+      - [ ] add
+- [x] `@ingroup`
+- [x] `@see`
 
 ### Naming
 
-- [ ] Abbreviations used in function names must be defined in the
+- [x] Abbreviations used in function names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
-- [ ] Function names should neither be too long, nor too short
-- [ ] Function name should be clear and unambiguous
-- [ ] Abbreviations used in parameter names must be defined in the
+- [x] Function names should neither be too long, nor too short
+- [x] Function name should be clear and unambiguous
+- [x] Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
-- [ ] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- [x] Parameter names should neither be too long, nor too short
+- [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
+(only in PRs)
 
-- [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
+- [Symbol versioning](/doc/dev/symbol-versioning.md)
       is correct for breaking changes
-- [ ] ABI/API changes are forward-compatible (breaking backwards-compatibility
+- ABI/API changes are forward-compatible (breaking backwards-compatibility
       to add additional symbols is fine)
 
 ### Parameter & Return Types
 
-- [ ] Functions should return the most specific type possible
-- [ ] Functions should require the most general type possible
-- [ ] Function parameters should use enum types instead of boolean types
+- [x] Function parameters should use enum types instead of boolean types
       wherever sensible
-- [ ] Wherever possible, function parameters should be `const`
-- [ ] Wherever possible, return types should be `const`
-- [ ] Functions should have the least amount of parameters feasible
+- [x] Wherever possible, function parameters should be `const`
+- [x] Wherever possible, return types should be `const`
+- [x] Functions should have the least amount of parameters feasible
 
 ### Structural Clarity
 
-- [ ] Functions should do exactly one thing
-- [ ] Function name has the appropriate prefix
-- [ ] Signature in kdb.h.in has same order as Doxygen docu
-- [ ] No functions with similar purpose exist
+- [x] Functions should do exactly one thing  
+      - it doesn't technically - but its a convenience function
+- [x] Function name has the appropriate prefix
+- [x] Order of signatures in kdb.h.in is the same as Doxygen
+- [x] No functions with similar purpose exist
 
 ### Memory Management
 
-- [ ] Memory Management should be handled by the function wherever possible
+- [x] Memory Management should be handled by the function wherever possible
 
 ### Extensibility
 
-- [ ] Function is easily extensible, e.g., with flags
-- [ ] Documentation does not impose limits, that would hinder further extensions
+- [x] Function is easily extensible, e.g., with flags
+- [ ] Documentation does not impose limits, that would hinder further extensions  
+      - [ ] Docs say `Key *k = keyNew(0);` has same effect
+            as `Key *k =keyNew("", KEY_END);`
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
-- [ ] All possible enum values are covered by tests
-- [ ] No inconsistencies between tests and documentation
-- [ ] Functions should have no side effects (idempotency)
-
+- [x] Function code is fully covered by tests
+- [x] All possible error states are covered by tests
+- [ ] All possible enum values are covered by tests  
+      - [ ] KEY_META  
+      - [ ] KEY_FLAGS
+- [ ] No inconsistencies between tests and documentation  
+      - [ ] Documentation says i can work with `Key *k =keyNew("", KEY_END);`  
+            Tests say  
+            ```  
+            k = keyNew ("", KEY_END);
+            succeed_if (k == NULL, "should be invalid");
+            keyDel (k);
+            ```  
+      - [ ] same as above with `keyNew(0)`
 
 ## Summary

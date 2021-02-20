@@ -1,12 +1,14 @@
-# ksNeedSync
+# {name}
 
 - start = 2021-01-23 18:10
 - end = 2021-01-23 18:10
 - moderator = Stefan Hanreich <stefanhani@gmail.com>
 
+
 ## Signature
 
-`int ksNeedSync(const KeySet *ks)`
+{signature}
+
 
 ## Checklist
 
@@ -22,6 +24,7 @@
 - [ ] `@invariant`
 - [ ] `@param` for every parameter
 - [ ] `@return` / `@retval`
+- [ ] `@throws`
 - [ ] `@since`
 - [ ] `@ingroup`
 - [ ] `@see`
@@ -38,7 +41,6 @@
 - [ ] Parameter names should be clear and unambiguous
 
 ### Compatibility
-(only in PRs)
 
 - [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
       is correct for breaking changes
@@ -47,6 +49,8 @@
 
 ### Parameter & Return Types
 
+- [ ] Functions should return the most specific type possible
+- [ ] Functions should require the most general type possible
 - [ ] Function parameters should use enum types instead of boolean types
       wherever sensible
 - [ ] Wherever possible, function parameters should be `const`
@@ -57,7 +61,6 @@
 
 - [ ] Functions should do exactly one thing
 - [ ] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
 - [ ] No functions with similar purpose exist
 
 ### Memory Management
