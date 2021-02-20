@@ -456,6 +456,13 @@ It can be accessed by calling the `elektraPluginGetGlobalKeySet` function, which
 
 Plugins using the global keyset are responsible for cleaning up the parts of the keyset they no longer need.
 
+To make sure there is no collision between plugins, each plugin should use a unique prefix for its keys, e.g. `system:/elektra/<plugin>` for `<plugin>`.
+
+To improve performance, the `cache` plugin also caches parts of the global keyset.
+If your plugin uses non-cacheable data, you don't have to do anything special.
+However, if you want your plugin's keys to be cached you should put them below `system:/elektra/cached` (to avoid collisions, use e.g. `system:/elektra/cached/<plugin>` for `<plugin>`).
+The `cache` plugin also caches keys below `system:/elektra/cache`, but those are reserved for use by the plugin itself.
+
 ## Note on Direct Method Calls via External Integrations
 
 Some applications want to call Elektra methods directly via native access.
