@@ -42,6 +42,7 @@ const char * HighlevelGenTemplate::Params::SpecValidation = "specValidation";
 const char * HighlevelGenTemplate::Params::InstallPrefix = "installPrefix";
 const char * HighlevelGenTemplate::Params::EmbedHelpFallback = "embedHelpFallback";
 const char * HighlevelGenTemplate::Params::UseCommands = "useCommands";
+const char * HighlevelGenTemplate::Params::InitWithPointers = "initWithPointers";
 
 enum class EmbeddedSpec
 {
@@ -260,6 +261,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 										      { "switch", EnumConversion::Trie },
 										      { "strcmp", EnumConversion::Strcmp } });
 	auto useCommands = getBoolParameter (Params::UseCommands, false);
+	auto initWithPointers = getBoolParameter (Params::InitWithPointers, true);
 
 
 	std::string cascadingParent;
@@ -299,7 +301,8 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 			    { "embed_spec?", specHandling == EmbeddedSpec::Full },
 			    { "embed_defaults?", specHandling == EmbeddedSpec::Defaults },
 			    { "spec_as_defaults?", specHandling == EmbeddedSpec::Full },
-			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
+			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) },
+			    { "init_with_pointers?", initWithPointers } };
 
 	list enums;
 	list structs;

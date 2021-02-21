@@ -58,9 +58,16 @@ extern "C" {
 
 /*%> partial.keys.fun.h %*/
 
-int /*%& init_function_name %*/ (Elektra ** elektra, ElektraError ** error);
+int /*%& init_function_name %*/ (Elektra ** elektra,
+				 /*%# init_with_pointers? %*/
+				 int argc, const char * const * argv, const char * const * envp,
+				 /*%/ init_with_pointers? %*/
+				 /*%^ init_with_pointers? %*/
+				 size_t argsSize, const char * args, size_t envSize, const char * envs,
+				 /*%/ init_with_pointers? %*/
+				 ElektraError ** error);
 void /*%& help_function_name %*/ (Elektra * elektra, const char * usage, const char * prefix);
-void /*%& specload_function_name %*/ (int argc, const char ** argv);
+void /*%& specload_function_name %*/ (int argc, const char * const * argv);
 
 /*%# use_commands? %*/
 int /*%& run_commands_function_name %*/ (Elektra * elektra, void * userData);

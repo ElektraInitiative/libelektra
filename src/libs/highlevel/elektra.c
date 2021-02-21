@@ -88,7 +88,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 		if (ksGetSize (highlevelContract) > 0)
 		{
-			ksAppend (contract, ksDup (highlevelContract));
+			ksAppend (contract, highlevelContract);
 			if (ksLookupByName (highlevelContract, "system:/elektra/contract/highlevel/helpmode/ignore/require", 0) != NULL)
 			{
 				ignoreRequireInHelpMode = 1;

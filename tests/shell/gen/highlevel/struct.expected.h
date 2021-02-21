@@ -791,9 +791,12 @@ static inline void ELEKTRA_SET (ELEKTRA_TAG_PERSON_NAME) (Elektra * elektra,
 #undef elektra_len
 
 
-int loadConfiguration (Elektra ** elektra, ElektraError ** error);
+int loadConfiguration (Elektra ** elektra,
+				 int argc, const char * const * argv, const char * const * envp,
+				 
+				 ElektraError ** error);
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix);
-void exitForSpecload (int argc, const char ** argv);
+void exitForSpecload (int argc, const char * const * argv);
 
 
 

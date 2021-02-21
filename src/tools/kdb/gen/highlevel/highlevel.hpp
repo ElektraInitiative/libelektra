@@ -28,6 +28,7 @@ class HighlevelGenTemplate : public GenTemplate
 		static const char * InstallPrefix;
 		static const char * EmbedHelpFallback;
 		static const char * UseCommands;
+		static const char * InitWithPointers;
 	};
 
 public:
@@ -41,11 +42,14 @@ public:
 			 { Params::RunCommandsFunctionName, false },
 			 { Params::TagPrefix, false },
 			 { Params::EnumConversion, false },
-			 { Params::GenerateSetters, false },
 			 { Params::AdditionalHeaders, false },
+			 { Params::GenerateSetters, false },
 			 { Params::EmbeddedSpec, false },
 			 { Params::SpecValidation, false },
-			 { Params::UseCommands, false } })
+			 { Params::InstallPrefix, false },
+			 { Params::EmbedHelpFallback, false },
+			 { Params::UseCommands, false },
+			 { Params::InitWithPointers, false } })
 	{
 	}
 

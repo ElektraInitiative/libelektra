@@ -35,6 +35,7 @@
 #include <kdbhelper.h>
 #include <kdbinvoke.h>
 #include <kdbopts.h>
+#include <kdbgopts.h>
 
 #include <elektra/conversion.h>
 
@@ -53,18 +54,19 @@ static KeySet * embeddedSpec (void)
 
 static const char * helpFallback = "Usage: tests_script_gen_highlevel_nosetter [OPTION...]\n\nOPTIONS\n  --help                      Print this help message\n";
 
-static int isHelpMode (void)
+static int isHelpMode (int argc, const char * const * argv)
 {
-	ElektraInvokeHandle * gopts = elektraInvokeOpen ("gopts", NULL, NULL);
+	for (int i = 0; i < argc; ++i)
+	{
+		if (strcmp (argv[i], "--help") == 0)
+		{
+			return 1;
+		}
+	}
 
-	typedef int (*func) (void);
-	func * goptsIsHelpModePtr = (func *) elektraInvokeGetFunction (gopts, "ishelpmode");
-	
-	int ret = goptsIsHelpModePtr == NULL ? 0 : (*goptsIsHelpModePtr) ();
-
-	elektraInvokeClose (gopts, NULL);
-	return ret == 1;
+	return 0;
 }
+
 
 
 /**
@@ -87,7 +89,9 @@ static int isHelpMode (void)
  *
  * @see elektraOpen
  */// 
-int loadConfiguration (Elektra ** elektra, ElektraError ** error)
+int loadConfiguration (Elektra ** elektra, 
+				 int argc, const char * const * argv, const char * const * envp,
+				 ElektraError ** error)
 {
 	KeySet * defaults = embeddedSpec ();
 	
@@ -97,6 +101,12 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
 	KS_END);
 ;
+	Key * parentKey = keyNew ("/tests/script/gen/highlevel/nosetter", KEY_END);
+
+	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
+	
+
+	keyDel (parentKey);
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/nosetter", defaults, contract, error);
 
@@ -105,20 +115,26 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 		ksDel (defaults);
 	}
 
+	if (contract != NULL)
+	{
+		ksDel (contract);
+	}
+
 	if (e == NULL)
 	{
 		*elektra = NULL;
-		if (isHelpMode ())
+		if (isHelpMode (argc, argv))
 		{
 			elektraErrorReset (error);
 			return 1;
 		}
+		
 
 		return -1;
 	}
 
 	*elektra = e;
-	return elektraHelpKey (e) != NULL ? 1 : 0;
+	return elektraHelpKey (e) != NULL && strcmp (keyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
 }
 
 /**
@@ -133,7 +149,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
  * @param argc pass the value of argc from main
  * @param argv pass the value of argv from main
  */
-void exitForSpecload (int argc, const char ** argv)
+void exitForSpecload (int argc, const char * const * argv)
 {
 	if (argc != 2 || strcmp (argv[1], "--elektra-spec") != 0)
 	{
