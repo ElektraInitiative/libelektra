@@ -156,7 +156,7 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, const
 
 	g_mutex_unlock (&elektra_settings_kdb_lock);
 	// Notify GSettings that the key has changed
-	g_settings_backend_changed (backend, key, origin_tag);
+	g_settings_backend_changed (G_SETTINGS_BACKEND (backend), key, origin_tag);
 	return TRUE;
 }
 
@@ -328,7 +328,7 @@ static gboolean elektra_settings_backend_write_tree (GSettingsBackend * backend,
 	g_mutex_lock (&elektra_settings_kdb_lock);
 	g_tree_foreach (tree, elektra_settings_keyset_from_tree, esb->gks);
 	/* Notify the GSettings about the changed tree */
-	g_settings_backend_changed_tree (backend, tree, origin_tag);
+	g_settings_backend_changed_tree (G_SETTINGS_BACKEND (backend), tree, origin_tag);
 	g_mutex_unlock (&elektra_settings_kdb_lock);
 	return TRUE;
 }
@@ -355,7 +355,7 @@ static void elektra_settings_backend_reset (GSettingsBackend * backend, const gc
 	{
 		gelektra_keyset_lookup (esb->gks, gkey, GELEKTRA_KDB_O_POP);
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Key not found and reseted");
-		g_settings_backend_changed (backend, key, origin_tag);
+		g_settings_backend_changed (G_SETTINGS_BACKEND (backend), key, origin_tag);
 	}
 	else
 	{
@@ -422,7 +422,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 		{
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Subscribed key changed");
 			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
-			g_settings_backend_changed (user_data, gsettingskeyname, NULL);
+			g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
 			// g_settings_backend_writable_changed (user_data, gsettingskeyname);
 			g_free (gsettingskeyname);
 		}
