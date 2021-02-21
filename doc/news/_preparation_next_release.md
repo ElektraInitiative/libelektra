@@ -74,7 +74,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### Core
 
 - The `keyCopy` and `keyDup` functions have been changed. They now take a `flags` argument which specifies which parts
-  of the `Key` should be copied. _(Klemens Böswirth)_
+  of the `Key` should be copied.
+  The API also changed slightly. Most importantly `NULL` values are handled differently. For example, `keyDup (NULL, KEY_CP_ALL)`
+  returns a key similar to what `keyNew ("/", KEY_END)` produces, whereas previously `keyDup (NULL)` returned `NULl`.
+  _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 

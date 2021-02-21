@@ -757,12 +757,12 @@ static void test_keyCopy (void)
 	Key * k = keyNew ("/", KEY_END);
 	Key * c = keyNew ("user:/name", KEY_END);
 
-	succeed_if (keyCopy (c, k, KEY_NAME) != NULL, "could not copy");
+	succeed_if (keyCopy (c, k, KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "/");
 	succeed_if_same_string (keyName (c), "/");
 
 	succeed_if (keySetName (k, "/abc") != -1, "could not set cascading name");
-	succeed_if (keyCopy (c, k, KEY_NAME) != NULL, "could not copy");
+	succeed_if (keyCopy (c, k, KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "/abc");
 	succeed_if_same_string (keyName (c), "/abc");
 

@@ -364,12 +364,10 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	// remember original data of dest
 	Key orig = *dest;
 
-	// TODO: check MMAP flags
-
 	// duplicate dynamic properties
 	if (test_bit (flags, KEY_CP_NAME))
 	{
-		if (source->key)
+		if (source->key != NULL)
 		{
 			dest->key = elektraStrNDup (source->key, source->keySize);
 			if (!dest->key) goto memerror;
@@ -396,13 +394,13 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 
 	if (test_bit (flags, KEY_CP_STRING))
 	{
-		if (source->data.v)
+		if (source->data.v != NULL)
 		{
 			dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
 			if (!dest->data.v) goto memerror;
 			dest->dataSize = source->dataSize;
 
-			if (!test_bit (flags, KEY_META) && keyIsBinary (source))
+			if (!test_bit (flags, KEY_CP_META) && keyIsBinary (source))
 			{
 				keySetMeta (dest, "binary", "");
 			}
@@ -417,13 +415,13 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 
 	if (test_bit (flags, KEY_CP_VALUE))
 	{
-		if (source->data.v)
+		if (source->data.v != NULL)
 		{
 			dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
 			if (!dest->data.v) goto memerror;
 			dest->dataSize = source->dataSize;
 
-			if (!test_bit (flags, KEY_META) && keyIsBinary (source))
+			if (!test_bit (flags, KEY_CP_META) && keyIsBinary (source))
 			{
 				keySetMeta (dest, "binary", "");
 			}
@@ -438,7 +436,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 
 	if (test_bit (flags, KEY_CP_META))
 	{
-		if (source->meta)
+		if (source->meta != NULL)
 		{
 			dest->meta = ksDup (source->meta);
 			if (!dest->meta) goto memerror;

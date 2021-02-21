@@ -116,7 +116,7 @@ static void test_keyNewSystem (void)
 	key = keyNew ("system:/sw/test", KEY_END);
 	succeed_if (key != NULL, "keyNew: Unable to create a key with name");
 	succeed_if_same_string (keyName (key), "system:/sw/test");
-	keyCopy (key, 0, KEY_NAME);
+	keyCopy (key, 0, KEY_CP_NAME);
 	succeed_if_same_string (keyName (key), "/");
 	succeed_if (keyDel (key) == 0, "keyDel: Unable to delete key with name");
 
@@ -1377,8 +1377,6 @@ static void test_keyDup (void)
 	Key *orig, *copy;
 
 	printf ("Test key duplication\n");
-
-	succeed_if (keyDup (0, KEY_CP_ALL) != 0, "could duplicate null");
 
 	// Create test key
 	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_END);
