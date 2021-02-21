@@ -15,48 +15,46 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
-      - [ ] add
-- [ ] Longer description of function containing common use cases
-      - [ ] add better description or reference to `keyLocked()`
+- [ ] Simple example or snippet how to use the function - [ ] add
+- [ ] Longer description of function containing common use cases - [ ] add better description or reference to `keyLocked()`
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] `key` is a valid key  
-      - [ ] `what` contains valid elektraLockFlags  
+       - [ ] `key` is a valid key  
+       - [ ] `what` contains valid elektraLockFlags
 - [ ] `@post`  
-      - [ ] `key` stays unchanged  
+       - [ ] `key` stays unchanged
 - [ ] `@invariant`  
-      - [ ] `key` stays a valid key  
+       - [ ] `key` stays a valid key
 - [ ] `@param` for every parameter  
-      - [ ] add  
+       - [ ] add
 - [ ] `@return` / `@retval`  
-      - [ ] change default case to `@return`  
+       - [ ] change default case to `@return`
 - [ ] `@since`  
-      - [ ] add  
+       - [ ] add
 - [x] `@ingroup`
 - [ ] `@see`  
-      - [ ] move to bottom
+       - [ ] move to bottom
 
 ### Naming
 
 - Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
 - [ ] Parameter names should be clear and unambiguous  
-      - [ ] rename what to flags?
+       - [ ] rename what to flags?
 
 ### Compatibility
 
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
@@ -71,7 +69,7 @@
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
 - [ ] Order of signatures in kdb.h.in is the same as Doxygen  
-      - [ ] move below `keyGetRef()`-family of functions  
+       - [ ] move below `keyGetRef()`-family of functions
 - [x] No functions with similar purpose exist
 
 ### Memory Management
@@ -87,7 +85,7 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-      - [ ] test for null pointer return value  
+       - [ ] test for null pointer return value
 - [x] All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
