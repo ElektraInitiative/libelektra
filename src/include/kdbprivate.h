@@ -112,7 +112,7 @@ enum
  *
  * @ingroup backend
  */
-typedef enum {
+enum {
 	KEY_FLAG_SYNC = 1,	  /*!<
 			Key need sync.
 			If name, value or metadata
@@ -151,7 +151,8 @@ typedef enum {
 			 This flag is set once a Key value has been moved to a mapped region,
 			 and is removed if the value moves out of the mapped region.
 			 It prevents erroneous free() calls on these keys. */
-} keyflag_t;
+};
+typedef unsigned int keyflag_t;
 
 
 /**
@@ -162,7 +163,7 @@ typedef enum {
  *
  * @ingroup backend
  */
-typedef enum {
+enum {
 	KS_FLAG_SYNC = 1 /*!<
 		 KeySet need sync.
 		 If keys were popped from the Keyset
@@ -183,7 +184,8 @@ typedef enum {
 		 This flag is set for KeySets where the array is in a mapped region,
 		 and is removed if the array is moved out from the mapped region.
 		 It prevents erroneous free() calls on these arrays. */
-} ksflag_t;
+};
+typedef unsigned int ksflag_t;
 
 
 /**
