@@ -15,29 +15,29 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
-      - [ ] add simple example for `keyGetRef()` base case without ks
+- [ ] Simple example or snippet how to use the function  
+      - [ ] add simple example for `keyGetRef()` base case without ks  
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
-      - [ ] @pre key is a valid key
-- [ ] `@post`
-      - [ ] @post key stays unchanged
-- [ ] `@invariant`
-      - [ ] @invariant key stays a valid key
+- [ ] `@pre`  
+      - [ ] @pre key is a valid key  
+- [ ] `@post`  
+      - [ ] @post key stays unchanged  
+- [ ] `@invariant`  
+      - [ ] @invariant key stays a valid key  
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
-- [ ] `@since`
-      - [ ] add
+- [ ] `@since`  
+      - [ ] add  
 - [x] `@ingroup`
-- [ ] `@see`
-      - maybe add `keyDel()`
+- [ ] `@see`  
+      - maybe add `keyDel()`  
 
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
-      - [ ] add Ref to the Glossary
+      [Glossary](/doc/help/elektra-glossary.md)  
+      - [ ] add Ref to the Glossary  
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - Abbreviations used in parameter names must be defined in the
@@ -81,7 +81,7 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] check for null pointer
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

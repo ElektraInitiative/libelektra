@@ -20,21 +20,21 @@
 - [x] Simple example or snippet how to use the function
 - [ ] Longer description of function containing common use cases
       - be more explicit which data is actually included
-- [ ] Description of functions reads nicely
-      - [ ] very short sentences
-- [ ] `@pre`
-      - [ ] @pre key is a valid key
-- [ ] `@post`
-      - [ ] @post key contains not internal data
-- [ ] `@invariant`
-      - [ ] @invariant key stays a valid key
+- [ ] Description of functions reads nicely  
+      - [ ] very short sentences  
+- [ ] `@pre`  
+      - [ ] @pre key is a valid key  
+- [ ] `@post`  
+      - [ ] @post key contains not internal data  
+- [ ] `@invariant`  
+      - [ ] @invariant key stays a valid key  
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
-      - [ ] mark default case with `@return`
-- [ ] `@since`
-      - [ ] add
+- [ ] `@return` / `@retval`  
+      - [ ] mark default case with `@return`  
+- [ ] `@since`  
+      - [ ] add  
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] maybe `keyDel()`
 
 ### Naming
@@ -69,10 +69,10 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
-      - [ ] swap with `keyDel()`
-- [ ] No functions with similar purpose exist
-      - [ ] new keyCopy can also clear a key, maybe make `keyClear` an alias?
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
+      - [ ] swap with `keyDel()`  
+- [ ] No functions with similar purpose exist  
+      - [ ] new keyCopy can also clear a key, maybe make `keyClear` an alias?  
 
 ### Memory Management
 
@@ -80,8 +80,8 @@
 
 ### Extensibility
 
-- [ ] Function is easily extensible, e.g., with flags
-      - [ ] could add flags for clearing parts of the key like `keyCopy()`
+- [ ] Function is easily extensible, e.g., with flags  
+      - [ ] could add flags for clearing parts of the key like `keyCopy()`  
 - [x] Documentation does not impose limits, that would hinder further extensions
 
 ### Tests

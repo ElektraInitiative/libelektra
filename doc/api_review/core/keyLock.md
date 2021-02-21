@@ -19,25 +19,25 @@
       - [ ] add
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
-      - [ ] key is a valid key
-      - [ ] what contains valid elektraLockFlags
-- [ ] `@post`
-      - [ ] parts of the keys, as stated in the what-parameter, are locked
-- [ ] `@invariant`
-      - [ ] key stays a valid key
-- [ ] `@param` for every parameter
-      - [ ] key
-      - [ ] what
-- [ ] `@return` / `@retval`
-      - [ ] move above see also
-      - [ ] move `>0` to default case (`@return`)
-- [ ] `@since`
-      - [ ] add
-- [ ] `@ingroup`
-      - [ ] add
-- [ ] `@see`
-      - [ ] add `keyIsLocked()`
+- [ ] `@pre`  
+      - [ ] key is a valid key  
+      - [ ] what contains valid elektraLockFlags  
+- [ ] `@post`  
+      - [ ] parts of the keys, as stated in the what-parameter, are locked  
+- [ ] `@invariant`  
+      - [ ] key stays a valid key  
+- [ ] `@param` for every parameter  
+      - [ ] key  
+      - [ ] what  
+- [ ] `@return` / `@retval`  
+      - [ ] move above see also  
+      - [ ] move `>0` to default case (`@return`)  
+- [ ] `@since`  
+      - [ ] add  
+- [ ] `@ingroup`  
+      - [ ] add  
+- [ ] `@see`  
+      - [ ] add `keyIsLocked()`  
 
 ### Naming
 
@@ -48,7 +48,7 @@
 - [x] Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- [ ] Parameter names should be clear and unambiguous  
       - [ ] rename what to flags?
 
 ### Compatibility
@@ -72,7 +72,7 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
       - [ ] move below `keyGetRef()`-family of functions
 - [x] No functions with similar purpose exist
 
@@ -83,14 +83,14 @@
 ### Extensibility
 
 - [x] Function is easily extensible, e.g., with flags
-- [ ] Documentation does not impose limits, that would hinder further extensions
+- [ ] Documentation does not impose limits, that would hinder further extensions  
       - [ ] keys cannot be unlocked
 
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
-      - [ ] test null pointer
+- [ ] All possible error states are covered by tests  
+      - [ ] test null pointer  
 - [x] All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

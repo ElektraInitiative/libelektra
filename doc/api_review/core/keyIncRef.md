@@ -14,33 +14,33 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
-      - [ ] change viability to 'reference counter'
-- [ ] Simple example or snippet how to use the function
-      - [ ] add example
+- [ ] First line explains briefly what the function does  
+      - [ ] change viability to 'reference counter'  
+- [ ] Simple example or snippet how to use the function  
+      - [ ] add example  
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
-      - [ ] @pre key is a valid key
-- [ ] `@post`
-      - [ ] @post reference counter of the key is incremented by one
-- [ ] `@invariant`
-      - [ ] @invariant key stays a valid key
+- [ ] `@pre`  
+      - [ ] @pre key is a valid key  
+- [ ] `@post`  
+      - [ ] @post reference counter of the key is incremented by one  
+- [ ] `@invariant`  
+      - [ ] @invariant key stays a valid key  
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
-- [ ] `@since`
-      - [ ] add
+- [ ] `@since`  
+      - [ ] add  
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] add `keyGetRef()`
+- [ ] `@see`  
+      - [ ] add `keyGetRef()`  
       - [ ] add `keyDecRef()`
 
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
-      - [ ] add inc to glossary
-      - [ ] add ref to glossary
+      [Glossary](/doc/help/elektra-glossary.md)  
+      - [ ] add inc to glossary  
+      - [ ] add ref to glossary  
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - Abbreviations used in parameter names must be defined in the
@@ -84,8 +84,8 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
-      - [ ] add test for null pointer
+- [ ] All possible error states are covered by tests  
+      - [ ] add test for null pointer  
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
