@@ -55,7 +55,7 @@ This function copies its arguments `args` and `env` into separate memory, so the
 This is mainly useful for language bindings, since in many programming languages manual memory management is not possible and there is no (easy) way to ensure the `argv` and `envp` pointers meet the necessary requirements.
 
 The `gopts` plugin can also use operating system specific functions to retrieve the command-line arguments and environment variables internally.
-We recommend that you do not rely on this behaviour whenever possible, since it can be a bit flaky (especially for command-line arguments).
+We recommend that you do not rely on this behavior whenever possible, since it can be a bit flaky (especially for command-line arguments).
 However, if for example you are writing a library or for some other reason do not have access to the necessary data, you can use this fallback.
 
 If you pass `argc=0` **and** `argv=NULL` to `elektraGOptsContract` or `argsSize=0` **and** `args=NULL` to `elektraGOptsContractFromStrings`, `gopts` will fallback to the internal lookup of command-line options.
@@ -130,7 +130,7 @@ The array will be copied into this key.
 As is the case with getopt(3) processing of options will stop, if `--` is encountered in `argv`.
 
 If we parse command-line options like the POSIX version of getopt(3) does, then we would also stop processing options at the first non-option argument.
-This not the case by default, but we can enable this behaviour.
+This not the case by default, but we can enable this behavior.
 To do so, you need to pass a Key `/posixly` with value `1` in the `goptsConfig` KeySet of the `gopts` contract.
 
 Additionally, there is `args=indexed`.
