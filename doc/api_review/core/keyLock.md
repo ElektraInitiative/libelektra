@@ -2,7 +2,7 @@
 
 - start = 2021-02-21 21:45
 - end = 2021-02-21 22:05
-- moderator = Stefan Hanreich <stefanhani@gmail.com>
+- reviewer = Stefan Hanreich <stefanhani@gmail.com>
 
 ## Signature
 
