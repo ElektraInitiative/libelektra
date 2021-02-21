@@ -1,8 +1,8 @@
 # keyIsLocked
 
 - start = 2021-02-21 22:15
-- end = 2021-02-21 18:10
-- moderator = Stefan Hanreich <stefanhani@gmail.com>
+- end = 2021-02-21 22:40
+- reviewer = Stefan Hanreich <stefanhani@gmail.com>
 
 ## Signature
 
