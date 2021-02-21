@@ -1206,10 +1206,17 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 #endif
 
-	if (!handle || !ks)
+	if (!handle)
 	{
 		clearError (parentKey);
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "Handle or KeySet null pointer passed");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "NULL pointer passed for handle");
+		goto error;
+	}
+
+	if (!ks)
+	{
+		clearError (parentKey);
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "NULL pointer passed for KeySet");
 		goto error;
 	}
 
