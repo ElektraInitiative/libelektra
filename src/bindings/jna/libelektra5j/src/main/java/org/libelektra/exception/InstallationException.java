@@ -36,7 +36,7 @@ public class InstallationException extends PermanentException
 		{
 			WarningEntry w = warnings.get (i);
 			builder.append ("  ")
-				.append (String.format ("#%d: Warning %s from module %s", w.getWarningNumber (), w.getModule ()))
+				.append (String.format ("#%d: Warning %s from module %s", i, w.getWarningNumber (), w.getModule ()))
 				.append ("\n");
 			builder.append ("    ").append (w.getReason ()).append ("\n");
 			builder.append ("    ").append ("Configfile: ").append (w.getConfigFile ()).append ("\n");
