@@ -112,7 +112,7 @@ enum
  *
  * @ingroup backend
  */
-enum {
+typedef enum {
 	KEY_FLAG_SYNC = 1,	  /*!<
 			Key need sync.
 			If name, value or metadata
@@ -151,8 +151,7 @@ enum {
 			 This flag is set once a Key value has been moved to a mapped region,
 			 and is removed if the value moves out of the mapped region.
 			 It prevents erroneous free() calls on these keys. */
-};
-typedef unsigned int keyflag_t;
+} keyflag_t;
 
 
 /**
@@ -163,7 +162,7 @@ typedef unsigned int keyflag_t;
  *
  * @ingroup backend
  */
-enum {
+typedef enum {
 	KS_FLAG_SYNC = 1 /*!<
 		 KeySet need sync.
 		 If keys were popped from the Keyset
@@ -184,8 +183,7 @@ enum {
 		 This flag is set for KeySets where the array is in a mapped region,
 		 and is removed if the array is moved out from the mapped region.
 		 It prevents erroneous free() calls on these arrays. */
-};
-typedef unsigned int ksflag_t;
+} ksflag_t;
 
 
 /**
@@ -612,11 +610,11 @@ int elektraGlobalSet (KDB * handle, KeySet * ks, Key * parentKey, int position, 
 int elektraGlobalError (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);
 
 /** Test a bit. @see set_bit(), clear_bit() */
-#define test_bit(var, bit) ((var) & (bit))
+#define test_bit(var, bit) (((unsigned long long) (var)) & ((unsigned long long) (bit)))
 /** Set a bit. @see clear_bit() */
-#define set_bit(var, bit) ((var) |= (bit))
+#define set_bit(var, bit) ((var) |= ((unsigned long long) (bit)))
 /** Clear a bit. @see set_bit() */
-#define clear_bit(var, bit) ((var) &= ~(bit))
+#define clear_bit(var, bit) ((var) &= ~((unsigned long long) (bit)))
 
 #ifdef __cplusplus
 }
