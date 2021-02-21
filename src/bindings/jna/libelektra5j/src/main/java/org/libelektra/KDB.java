@@ -29,9 +29,16 @@ public class KDB implements AutoCloseable
 	 * @param errorKey used to store warning and error information
 	 * @return New KDB session object
 	 */
-	public static KDB open (final Key errorKey)
+	public static KDB open (final Key errorKey) throws KDBException
 	{
-		return new KDB (Elektra.INSTANCE.kdbOpen (Pointer.NULL, errorKey.get ()));
+		Pointer kdb = Elektra.INSTANCE.kdbOpen (null, errorKey.get ());
+
+		if (kdb == null)
+		{
+			throw ExceptionMapperService.getMappedException (errorKey);
+		}
+
+		return new KDB (kdb);
 	}
 
 	/**
@@ -42,15 +49,22 @@ public class KDB implements AutoCloseable
 	 * @param errorKey used to store warning and error information
 	 * @return New KDB session object
 	 */
-	public static KDB open (final KeySet contract, final Key errorKey)
+	public static KDB open (final KeySet contract, final Key errorKey) throws KDBException
 	{
-		return new KDB (Elektra.INSTANCE.kdbOpen (contract.get (), errorKey.get ()));
+		Pointer kdb = Elektra.INSTANCE.kdbOpen (contract.get (), errorKey.get ());
+
+		if (kdb == null)
+		{
+			throw ExceptionMapperService.getMappedException (errorKey);
+		}
+
+		return new KDB (kdb);
 	}
 
 	/**
 	 * Clean-up function initiating closing of the KDB session
 	 */
-	@Override public void close ()
+	@Override public void close () throws KDBException
 	{
 		final Key k = Key.create ("");
 		close (k);
@@ -98,9 +112,14 @@ public class KDB implements AutoCloseable
 	 *
 	 * @param parentKey Key holding error and warning information
 	 */
-	public void close (final Key parentKey)
+	public void close (final Key parentKey) throws KDBException
 	{
-		Elektra.INSTANCE.kdbClose (kdb, parentKey.get ());
+		final int ret = Elektra.INSTANCE.kdbClose (kdb, parentKey.get ());
+
+		if (ret == -1)
+		{
+			throw ExceptionMapperService.getMappedException (parentKey);
+		}
 	}
 
 	/**
