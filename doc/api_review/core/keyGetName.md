@@ -24,7 +24,8 @@
        - [ ] maxSize special case move description to pre / post / return values  
        - [ ] mention explicitly, that user has to manage their buffer  
        - [ ] move special case 'not enough space' to return values / pre / post
-- [ ] Description of functions reads nicely - [ ] remove / define abbreviated (make it more explicit)  
+- [ ] Description of functions reads nicely  
+       - [ ] remove / define abbreviated (make it more explicit)  
        - [ ] "Writes keyName of `key` into the provided buffer `returnedName` if it is shorter than `maxSize`"
 - [ ] `@pre`  
        - [ ] `key` is a valid Key  
@@ -88,14 +89,15 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen - wrong order
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
+       - wrong order
 - [x] No functions with similar purpose exist
 
 ### Memory Management
 
 - [ ] Memory Management should be handled by the function wherever possible  
        - [ ] pass variable and return size instead  
-       - [ ] remove `maxSize` param  
+       - [ ] remove `maxSize` param
 
 ### Extensibility
 
@@ -106,8 +108,10 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests - Lines 365 / 366
-- [ ] All possible error states are covered by tests - test empty string
+- [ ] Function code is fully covered by tests  
+       - Lines 365 / 366
+- [ ] All possible error states are covered by tests  
+       - test empty string
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
