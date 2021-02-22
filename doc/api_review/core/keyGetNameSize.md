@@ -16,31 +16,32 @@
 (bullet points are in order of appearance)
 
 - [ ] First line explains briefly what the function does  
-      - [ ] only describes return value  
-      - [ ] null-termination  
-      - [ ] mit return mergen  
+       - [ ] only describes return value  
+       - [ ] null-termination  
+       - [ ] mit return mergen
 - [ ] Simple example or snippet how to use the function  
-      - [ ] add  
+       - [ ] add
 - [ ] Longer description of function containing common use cases  
-      - [ ] better describe common use case   
-      - [ ] example for error case  
-      - [ ] example for empty string  
+       - [ ] better describe common use case  
+       - [ ] example for error case  
+       - [ ] example for empty string
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] add 'Key should be valid'  
+       - [ ] add 'Key should be valid'
 - [ ] `@post`  
-      - [ ] add 'key doesn't get modified'  
+       - [ ] add 'key doesn't get modified'
 - [ ] `@invariant`  
-      - [ ] add 'key doesn't get modified'  
+       - [ ] add 'key doesn't get modified'
 - [ ] `@param` for every parameter  
-      - [ ] 'key object to get the size of the name from'  
-      - [ ] make consistent  
+       - [ ] 'key object to get the size of the name from'  
+       - [ ] make consistent
 - [ ] `@return` / `@retval`  
-      - [ ] without owner?  
+       - [ ] without owner?
 - [ ] `@see`  
-      - [ ] add parentheses to keyGetUnescapedNameSize  
+       - [ ] add parentheses to keyGetUnescapedNameSize
 
 ### Naming
+
 - Abbreviations used in function names must be defined in the
   [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
@@ -87,7 +88,7 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-      - [ ] add test case for NULL pointer  
+       - [ ] add test case for NULL pointer
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

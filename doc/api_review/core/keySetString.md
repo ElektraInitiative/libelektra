@@ -17,29 +17,29 @@
 
 - [x] First line explains briefly what the function does
 - [ ] Simple example or snippet how to use the function  
-      - [ ] add  
+       - [ ] add
 - Longer description of function containing common use cases - All uses cases covered by brief description
 - [ ] Description of functions reads nicely  
-      - [ ] 'as new string value' seems strange  
-      - [ ] 'private copy' is unclear  
+       - [ ] 'as new string value' seems strange  
+       - [ ] 'private copy' is unclear
 - [ ] `@pre`  
-      - [ ] add  
+       - [ ] add
 - [ ] `@post`  
-      - [ ] add   
-      - [ ] string saved as UTF-8 in backend  
+       - [ ] add  
+       - [ ] string saved as UTF-8 in backend
 - [ ] `@invariant`  
-      - [ ] add  
-- [ ] `@param` for every parameter   
-      - [ ] 'text string' maybe redundant?  
+       - [ ] add
+- [ ] `@param` for every parameter  
+       - [ ] 'text string' maybe redundant?
 - [x] `@return` / `@retval`
-- [ ] `@since`   
-      - [ ] add  
+- [ ] `@since`  
+       - [ ] add
 - [x] `@ingroup`
 - [ ] `@see`  
-      - [ ] split to multiple lines  
-      - [ ] shortly explain differences between `keyString` `keyGetString`  
-      - [ ] add `keySetBinary` ?  
-      - [ ] remove `keyValue`, as it is not related to string  
+       - [ ] split to multiple lines  
+       - [ ] shortly explain differences between `keyString` `keyGetString`  
+       - [ ] add `keySetBinary` ?  
+       - [ ] remove `keyValue`, as it is not related to string
 
 ### Naming
 
@@ -50,7 +50,7 @@
 - Abbreviations used in parameter names must be defined in the
   [Glossary](/doc/help/elektra-glossary.md)
 - [ ] Parameter names should neither be too long, nor too short  
-      - [ ] `newStringValue` - remove Value?  
+       - [ ] `newStringValue` - remove Value?
 - [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
@@ -85,9 +85,9 @@
 
 - [x] Function is easily extensible, e.g., with flags
 - [ ] Documentation does not impose limits, that would hinder further extensions  
-      - [ ] iconv-Plugin  
-      - [ ] UTF-8  
-      - [ ] Return Value on NULL  
+       - [ ] iconv-Plugin  
+       - [ ] UTF-8  
+       - [ ] Return Value on NULL
 
 ### Tests
 
