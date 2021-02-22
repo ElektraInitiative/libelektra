@@ -1,8 +1,9 @@
 # keySetString
 
-- start = 2021-01-23 18:10
-- end = 2021-01-23 18:10
+- start = 2021-02-21 12:20
+- end = 2021-02-21 18:10
 - moderator = Stefan Hanreich <stefanhani@gmail.com>
+- reviewer = Dominic Jäger
 
 ## Signature
 
@@ -14,68 +15,88 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
-- [ ] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
-- [ ] `@pre`
-- [ ] `@post`
-- [ ] `@invariant`
-- [ ] `@param` for every parameter
-- [ ] `@return` / `@retval`
-- [ ] `@since`
-- [ ] `@ingroup`
-- [ ] `@see`
+- [x] First line explains briefly what the function does
+- [ ] Simple example or snippet how to use the function  
+      - [ ] add  
+- Longer description of function containing common use cases - All uses cases covered by brief description
+- [ ] Description of functions reads nicely  
+      - [ ] 'as new string value' seems strange  
+      - [ ] 'private copy' is unclear  
+- [ ] `@pre`  
+      - [ ] add  
+- [ ] `@post`  
+      - [ ] add   
+      - [ ] string saved as UTF-8 in backend  
+- [ ] `@invariant`  
+      - [ ] add  
+- [ ] `@param` for every parameter   
+      - [ ] 'text string' maybe redundant?  
+- [x] `@return` / `@retval`
+- [ ] `@since`   
+      - [ ] add  
+- [x] `@ingroup`
+- [ ] `@see`  
+      - [ ] split to multiple lines  
+      - [ ] shortly explain differences between `keyString` `keyGetString`  
+      - [ ] add `keySetBinary` ?  
+      - [ ] remove `keyValue`, as it is not related to string  
 
 ### Naming
 
-- [ ] Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
-- [ ] Function names should neither be too long, nor too short
-- [ ] Function name should be clear and unambiguous
-- [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
-- [ ] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- Abbreviations used in function names must be defined in the
+  [Glossary](/doc/help/elektra-glossary.md)
+- [x] Function names should neither be too long, nor too short
+- [x] Function name should be clear and unambiguous
+- Abbreviations used in parameter names must be defined in the
+  [Glossary](/doc/help/elektra-glossary.md)
+- [ ] Parameter names should neither be too long, nor too short  
+      - [ ] `newStringValue` - remove Value?  
+- [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
 
 (only in PRs)
 
-- [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
-- [ ] ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+- [Symbol versioning](/doc/dev/symbol-versioning.md)
+  is correct for breaking changes
+- ABI/API changes are forward-compatible (breaking backwards-compatibility
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
-- [ ] Function parameters should use enum types instead of boolean types
-      wherever sensible
-- [ ] Wherever possible, function parameters should be `const`
-- [ ] Wherever possible, return types should be `const`
-- [ ] Functions should have the least amount of parameters feasible
+- Function parameters should use enum types instead of boolean types
+  wherever sensible
+- [x] Wherever possible, function parameters should be `const`
+- [x] Wherever possible, return types should be `const`
+- [x] Functions should have the least amount of parameters feasible
 
 ### Structural Clarity
 
-- [ ] Functions should do exactly one thing
-- [ ] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
-- [ ] No functions with similar purpose exist
+- [x] Functions should do exactly one thing
+- [x] Function name has the appropriate prefix
+- [x] Order of signatures in kdb.h.in is the same as Doxygen
+- [x] No functions with similar purpose exist
 
 ### Memory Management
 
-- [ ] Memory Management should be handled by the function wherever possible
+- [x] Memory Management should be handled by the function wherever possible
 
 ### Extensibility
 
-- [ ] Function is easily extensible, e.g., with flags
-- [ ] Documentation does not impose limits, that would hinder further extensions
+- [x] Function is easily extensible, e.g., with flags
+- [ ] Documentation does not impose limits, that would hinder further extensions  
+      - [ ] iconv-Plugin  
+      - [ ] UTF-8  
+      - [ ] Return Value on NULL  
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
-- [ ] All possible enum values are covered by tests
-- [ ] No inconsistencies between tests and documentation
+- [x] Function code is fully covered by tests
+- [x] All possible error states are covered by tests
+- All possible enum values are covered by tests
+- [x] No inconsistencies between tests and documentation
 
 ## Summary
+
+Behaviour when `newStringValue` is a NULL pointer seems strange
+Exact difference keyString keyGetString ?
