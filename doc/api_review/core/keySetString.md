@@ -18,8 +18,8 @@
 - [x] First line explains briefly what the function does
 - [ ] Simple example or snippet how to use the function  
        - [ ] add
-- Longer description of function containing common use cases  
-   - All uses cases covered by brief description
+- Longer description of function containing common use cases
+  - All uses cases covered by brief description
 - [ ] Description of functions reads nicely  
        - [ ] 'as new string value' seems strange  
        - [ ] 'private copy' is unclear
