@@ -286,8 +286,8 @@ directly.
 
 ## Design Guidelines Checklist
 
-On potential changes of the API/ABI as detected by
-[`elektra-icheck`](https://build.libelektra.org/job/elektra-icheck),
+On potential changes of the API/ABI as detected by the
+[`build server`](https://build.libelektra.org/job/libelektra/job/master/),
 please make sure the API has been reviewed according to the
 following 2 checklists:
 
