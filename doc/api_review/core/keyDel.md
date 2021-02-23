@@ -78,7 +78,7 @@
 
 - [x] Function is easily extensible, e.g., with flags
 - [ ] Documentation does not impose limits, that would hinder further extensions  
-       - [ ] TBD cannot change behaviour of referenced keys
+       - [ ] TBD cannot change behavior of referenced keys
 
 ### Tests
 

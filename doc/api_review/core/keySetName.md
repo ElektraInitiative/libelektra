@@ -81,7 +81,7 @@
 
 - [x] Function is easily extensible, e.g., with flags
 - [ ] Documentation does not impose limits, that would hinder further extensions  
-       - [ ] behaviour on invalid names
+       - [ ] behavior on invalid names
 
 ### Tests
 

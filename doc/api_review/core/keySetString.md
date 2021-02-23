@@ -99,5 +99,5 @@
 
 ## Summary
 
-Behaviour when `newStringValue` is a NULL pointer seems strange
+Behavior when `newStringValue` is a NULL pointer seems strange
 Exact difference keyString keyGetString ?
