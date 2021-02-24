@@ -53,13 +53,12 @@ bsd_task:
       ninja
       yajl
       yaml-cpp
-    - echo "CC=clang11" >> /etc/make.conf
-    - echo "CXX=clang++11" >> /etc/make.conf
-    - echo "CPP=clang-cpp11" >> /etc/make.conf
 
   script:
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       set --
+      -DCMAKE_C_COMPILER=clang11
+      -DCMAKE_CXX_COMPILER=clang++11
       -DBINDINGS='ALL;-io_glib'
       -DINSTALL_SYSTEM_FILES=ON
       -DCMAKE_SKIP_INSTALL_RPATH=ON
