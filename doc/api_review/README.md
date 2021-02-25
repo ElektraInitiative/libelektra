@@ -12,7 +12,7 @@ every unfulfilled point a short explanation has to be given why the reviewer
 thinks the function does not fulfill the respective bullet point. This is done
 simply by providing a short description of the issue below the respective
 bullet point. After the review has been completed, the reviewer creates an
-issue for every unfulfilled bullet point so it can be fixed by the Elektra team.
+issue for every unfulfilled bullet point so it can be fixed by the Elektra Initiative.
 
 ## Checklist Legend
 
