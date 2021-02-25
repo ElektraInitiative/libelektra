@@ -402,7 +402,47 @@ static gboolean elektra_settings_backend_get_writable (GSettingsBackend * backen
 
 static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UNUSED, const gchar * sender_name G_GNUC_UNUSED,
 					  const gchar * object_path G_GNUC_UNUSED, const gchar * interface_name G_GNUC_UNUSED,
-					  const gchar * signal_name G_GNUC_UNUSED, GVariant * parameters, gpointer user_data)
+					  const gchar * /*signal_*/name G_GNUC_UNUSED, GVariant * parameters, gpointer user_data)
+{
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "dbus signal that key has changed", g_variant_print (parameters, FALSE));
+	GVariant * variant = g_variant_get_child_value (parameters, 0);
+	gchar const * keypathname = g_variant_get_string (variant, NULL);
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) user_data;
+
+	g_mutex_lock (&elektra_settings_kdb_lock);
+	GElektraKeySet * ks = gelektra_keyset_dup (esb->subscription_gks);
+	GElektraKey * key = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!",
+	       "GSEttings Path: ", (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/")));
+	GElektraKey * item;
+	gssize pos = 0;
+	while ((item = gelektra_keyset_at (ks, pos)) != NULL)
+	{
+		if (gelektra_key_isbeloworsame (key, item))
+		{
+			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Subscribed key changed");
+			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
+			g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
+			// g_settings_backend_writable_changed (user_data, gsettingskeyname);
+			g_free (gsettingskeyname);
+		}
+		pos++;
+	}
+	g_variant_unref (variant);
+
+	// TODO: mpranj check if sync needed here
+	esb->gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
+	if (gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
+	{
+		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
+	}
+
+	g_mutex_unlock (&elektra_settings_kdb_lock);
+}
+
+static void elektra_settings_key_changed_onsignal_mpranj (GDBusConnection * connection G_GNUC_UNUSED, const gchar * sender_name G_GNUC_UNUSED,
+					  const gchar * object_path G_GNUC_UNUSED, const gchar * interface_name G_GNUC_UNUSED,
+					  const gchar * /*signal_*/name G_GNUC_UNUSED, GVariant * parameters, gpointer user_data)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "dbus signal that key has changed", g_variant_print (parameters, FALSE));
 	GVariant * variant = g_variant_get_child_value (parameters, 0);
@@ -584,6 +624,10 @@ static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 	esb->subscription_gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
 	elektra_settings_check_bus_connection (esb);
+
+	g_signal_connect (esb, "changed", G_CALLBACK (elektra_settings_key_changed_onsignal_mpranj), &esb->backend);
+	// g_signal_connect (settings, "writable-changed", G_CALLBACK (test_keyfile_settings_backend_writable_changed_cb), tk_backend);
+
 	g_mutex_unlock (&elektra_settings_kdb_lock);
 }
 
