@@ -1,6 +1,6 @@
 # Elektra API Review
 
-This folder contains all API design reviews conducted on the Elektra library.
+This folder contains all API design reviews conducted on LibElektra.
 Below you can find a short description of the review process.
 
 ## Review Process
