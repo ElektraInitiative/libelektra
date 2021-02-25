@@ -95,3 +95,5 @@
 ## Summary
 
 try splitting ifs to two lines, for better coverage reports
+
+## Other Issues discovered (unrelated to function)

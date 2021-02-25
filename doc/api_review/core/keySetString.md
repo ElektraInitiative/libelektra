@@ -100,4 +100,7 @@
 ## Summary
 
 Behavior when `newStringValue` is a NULL pointer seems strange
+
+## Other Issues discovered (unrelated to function)
+
 Exact difference keyString keyGetString ?

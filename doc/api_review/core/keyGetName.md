@@ -118,3 +118,5 @@
 ## Summary
 
 Different error codes for different errors
+
+## Other Issues discovered (unrelated to function)

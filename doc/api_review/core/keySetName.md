@@ -101,3 +101,5 @@
        - [ ] Documentations should include stripping trailing `/`
 
 ## Summary
+
+## Other Issues discovered (unrelated to function)

@@ -96,3 +96,5 @@
 ## Summary
 
 Also check return values of function in tests
+
+## Other Issues discovered (unrelated to function)
