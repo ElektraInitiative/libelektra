@@ -283,3 +283,41 @@ const Key  *keyGetMeta(const Key *key, const char* metaName);
 The reason behind this is, that the above functions – as their name
 suggest – only retrieve values. The returned value must not be modified
 directly.
+
+## Design Guidelines Checklist
+
+On potential changes of the API/ABI as detected by the
+[`build server`](https://build.libelektra.org/job/libelektra/job/master/),
+please make sure the API has been reviewed according to the
+following 2 checklists:
+
+## Checklist for overall API
+
+### Consistency
+
+- [ ] Consistent naming schemes for enums, macros, typedefs and functions
+- [ ] Same things are named the same and included in [Glossary](/doc/help/elektra-glossary.md)
+- [ ] Different things are named differently
+- [ ] The order of arguments should be consistent across similar functions
+
+### Structural Clarity
+
+- [ ] Functions with similar functionality have the same prefix
+
+### Compatibility
+
+- [ ] All bindings have been updated to reflect the new API and work properly
+
+### Extensibility
+
+- [ ] New API is easily extensible with additional functionality
+- [ ] Components only depend on each other if needed
+
+## Checklist for each function
+
+There are several checklists for functions, depending on the language in which
+the function is written:
+
+- [C](/scripts/api_review/template.c.md)
+- [Rust](/scripts/api_review/template.rs.md)
+- [Java](/scripts/api_review/template.java.md)
