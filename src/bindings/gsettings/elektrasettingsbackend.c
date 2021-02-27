@@ -441,14 +441,14 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	g_variant_unref (variant);
 
 
-	g_mutex_lock (&elektra_settings_kdb_lock);
-	// TODO: mpranj check if sync needed here
-	esb->gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
-	if (gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
-	{
-		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
-	}
-	g_mutex_unlock (&elektra_settings_kdb_lock);
+// 	g_mutex_lock (&elektra_settings_kdb_lock);
+// 	// TODO: mpranj check if sync needed here
+// 	esb->gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
+// 	if (gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
+// 	{
+// 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
+// 	}
+// 	g_mutex_unlock (&elektra_settings_kdb_lock);
 }
 
 static void elektra_settings_bus_connected (GObject * source_object G_GNUC_UNUSED, GAsyncResult * res, gpointer user_data)
