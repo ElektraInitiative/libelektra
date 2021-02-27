@@ -1,8 +1,8 @@
 # keyCopyMeta
 
-- start = 2021-01-23 18:10
-- end = 2021-01-23 18:10
-- moderator = Stefan Hanreich <stefanhani@gmail.com>
+- start = 2021-02-27 17:30
+- end = 2021-02-27 17:45
+- reviewer = Stefan Hanreich <stefanhani@gmail.com>
 
 ## Signature
 
@@ -15,68 +15,85 @@
 (bullet points are in order of appearance)
 
 - [ ] First line explains briefly what the function does
+      - [ ] of metadata -> of the metaData with name `metaName`
 - [ ] Simple example or snippet how to use the function
+      - [ ] move below `@brief`
 - [ ] Longer description of function containing common use cases
+      - [ ] describe the functionality more explicitly where meta-information
+      gets deleted when `source`'s `metaName` is not set in `dest` 
+      - [ ] add information that it does nothing on read-only keys
 - [ ] Description of functions reads nicely
+      - [ ] it will take -> will take
 - [ ] `@pre`
-- [ ] `@post`
+      - [ ] 'dest is a valid Key'
+      - [ ] 'source is a valid Key'
+- [x] `@post`
 - [ ] `@invariant`
+      - [ ] 'dest stays a valid Key'
+      - [ ] 'source stays a valid Key'
 - [ ] `@param` for every parameter
+      - [ ] too -> to
+      - [ ] name of the metadata -> name of the key in the metadata
 - [ ] `@return` / `@retval`
-- [ ] `@since`
-- [ ] `@ingroup`
+      - [ ] move `1` to `@return`
+      - [ ] add `-1` if meta-information is read-only
+- [x] `@since`
+- [x] `@ingroup`
 - [ ] `@see`
+      - [ ] add `keyCopyAllMeta()`
 
 ### Naming
 
-- [ ] Abbreviations used in function names must be defined in the
+- Abbreviations used in function names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
-- [ ] Function names should neither be too long, nor too short
-- [ ] Function name should be clear and unambiguous
-- [ ] Abbreviations used in parameter names must be defined in the
+- [x] Function names should neither be too long, nor too short
+- [x] Function name should be clear and unambiguous
+- [x] Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
-- [ ] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- [x] Parameter names should neither be too long, nor too short
+- [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
 
 (only in PRs)
 
-- [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
+- [Symbol versioning](/doc/dev/symbol-versioning.md)
       is correct for breaking changes
-- [ ] ABI/API changes are forward-compatible (breaking backwards-compatibility
+- ABI/API changes are forward-compatible (breaking backwards-compatibility
       to add additional symbols is fine)
 
 ### Parameter & Return Types
 
-- [ ] Function parameters should use enum types instead of boolean types
+- Function parameters should use enum types instead of boolean types
       wherever sensible
-- [ ] Wherever possible, function parameters should be `const`
-- [ ] Wherever possible, return types should be `const`
-- [ ] Functions should have the least amount of parameters feasible
+- [x] Wherever possible, function parameters should be `const`
+- [x] Wherever possible, return types should be `const`
+- [x] Functions should have the least amount of parameters feasible
 
 ### Structural Clarity
 
-- [ ] Functions should do exactly one thing
-- [ ] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
-- [ ] No functions with similar purpose exist
+- [x] Functions should do exactly one thing
+- [x] Function name has the appropriate prefix
+- [x] Order of signatures in kdb.h.in is the same as Doxygen
+- [x] No functions with similar purpose exist
 
 ### Memory Management
 
-- [ ] Memory Management should be handled by the function wherever possible
+- [x] Memory Management should be handled by the function wherever possible
 
 ### Extensibility
 
-- [ ] Function is easily extensible, e.g., with flags
-- [ ] Documentation does not impose limits, that would hinder further extensions
+- [x] Function is easily extensible, e.g., with flags
+- [x] Documentation does not impose limits, that would hinder further extensions
 
 ### Tests
 
 - [ ] Function code is fully covered by tests
+      - [ ] Lines 294:298
 - [ ] All possible error states are covered by tests
-- [ ] All possible enum values are covered by tests
-- [ ] No inconsistencies between tests and documentation
+      - [ ] add test case for clearing meta-information key
+- All possible enum values are covered by tests
+- [x] No inconsistencies between tests and documentation
 
 ## Summary
 
