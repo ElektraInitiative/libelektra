@@ -424,7 +424,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 		{
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Subscribed key changed");
 			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
-			// g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
+			g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
 			g_free (gsettingskeyname);
 		}
 		else
@@ -433,7 +433,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 
 			// TODO: workaround for broken subscription - notify change anyway
 			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
-			// g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
+			g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
 			g_free (gsettingskeyname);
 		}
 		pos++;
