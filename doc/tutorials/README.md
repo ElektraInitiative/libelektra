@@ -53,12 +53,13 @@ These tutorials are for persons that want to contribute to
 Elektra:
 
 - [Contributing with CLion](contributing-clion.md)
-- [Benchmarking](benchmarking.md)
-- [Profiling](profiling.md)
+- [Contributing with Visual Studio (Windows)](contributing-windows.md)
 - [Run all Tests with Docker](run_all_tests_with_docker.md)
 - [Run Reformatting with Docker](run_reformatting_script_with_docker.md)
 - [Language Bindings](language-bindings.md)
-- [Code generator](code-generator.md)
+- [Code Generator](code-generator.md)
+- [Benchmarking](benchmarking.md)
+- [Profiling](profiling.md)
 
 ## Installation Manuals
 
