@@ -420,6 +420,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	gssize pos = 0;
 	while ((item = gelektra_keyset_at (ks, pos)) != NULL)
 	{
+		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s with %s", "Comparing", gelektra_key_name (key), gelektra_key_name (item));
 		if (gelektra_key_isbeloworsame (key, item))
 		{
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Subscribed key changed");
