@@ -83,6 +83,8 @@ gint gelektra_key_cmp (const GElektraKey * key, const GElektraKey * other);
 
 /* name manipulation */
 gssize gelektra_key_setname (GElektraKey * key, const char * name);
+const gchar * gelektra_key_name (const GElektraKey * key);
+
 gssize gelektra_key_setbasename (GElektraKey * key, const char * basename);
 gssize gelektra_key_addbasename (GElektraKey * key, const char * basename);
 
@@ -92,6 +94,7 @@ gssize gelektra_key_getbasenamesize (const GElektraKey * key);
 /* value operations */
 gssize gelektra_key_setstring (GElektraKey * key, const gchar * value);
 gssize gelektra_key_getstring (const GElektraKey * key, gchar * out, gsize size);
+const gchar * gelektra_key_string (const GElektraKey * key);
 gchar * gelektra_key_gi_getstring (const GElektraKey * key);
 
 gssize gelektra_key_setbinary (GElektraKey * key, const void * data, gsize size);

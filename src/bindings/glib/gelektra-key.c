@@ -248,6 +248,11 @@ gssize gelektra_key_setname (GElektraKey * key, const char * name)
 	return keySetName (key->key, name);
 }
 
+const gchar * gelektra_key_name (const GElektraKey * key)
+{
+	return keyName (key->key);
+}
+
 gssize gelektra_key_setbasename (GElektraKey * key, const char * basename)
 {
 	return keySetBaseName (key->key, basename);
@@ -281,6 +286,11 @@ gssize gelektra_key_setstring (GElektraKey * key, const gchar * value)
 gssize gelektra_key_getstring (const GElektraKey * key, gchar * out, gsize size)
 {
 	return keyGetString (key->key, out, size);
+}
+
+const gchar * gelektra_key_string (const GElektraKey * key)
+{
+	return keyString (key->key);
 }
 
 /**
