@@ -39,7 +39,7 @@
        - [x] Key name stays valid (document at struct)  
        - [x] Key name stays valid until delete
 - [ ] `@param` for every parameter  
-       - [x] better describe flags (|)  
+       - [x] better describe flags (|)
 
 @copydoc for invariants?
 
