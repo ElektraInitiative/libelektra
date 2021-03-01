@@ -499,7 +499,7 @@ static void elektra_settings_check_bus_connection (ElektraSettingsBackend * back
 static void elektra_settings_backend_subscribe (GSettingsBackend * backend, const gchar * name)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Subscribe to:", name);
-	gchar * pathToSubscribe = g_strconcat ("default:/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
+	gchar * pathToSubscribe = g_strconcat ("/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 
 	g_mutex_lock (&elektra_settings_kdb_lock);
@@ -536,7 +536,7 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
 static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, const gchar * name)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Unsubscribe:", name);
-	gchar * pathToUnsubscribe = g_strconcat ("default:/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
+	gchar * pathToUnsubscribe = g_strconcat ("/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 
 	g_mutex_lock (&elektra_settings_kdb_lock);
