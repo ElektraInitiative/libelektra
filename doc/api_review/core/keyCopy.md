@@ -1,82 +1,111 @@
 # keyCopy
 
-- start = 2021-01-23 18:10
-- end = 2021-01-23 18:10
+- start = 2021-02-13 12:00
+- end = 2021-02-13 13:10
 - moderator = Stefan Hanreich <stefanhani@gmail.com>
+- reviewer = Markus Raab <markus@libelektra.org>
 
 ## Signature
 
-`int keyCopy(Key *dest, const Key *source)`
+`int keyCopy(Key *dest, const Key *source);`
 
 ## Checklist
 
-#### Doxygen
+### Doxygen
 
-(bullet points are in order of appearance)
+- [ ] first line explains briefly what the function does  
+       - [x] Clear -> clear  
+       - [x] do not instantly reference `keyDup`
+- [ ] `@see`  
+       - [x] add `@see` for `keyDup`
+- [ ] `@since` (optional: for after 1.0.0)  
+       - [x] add `@since` 0.9.5
+- [x] `@ingroup`
+- [ ] `@retval`  
+       - [x] use retval instead of return (see snippet below)
+- [ ] good example or snippet how to use the function  
+       - [ ] move example to `keyDup`
+- [ ] simple examples go first
+       - [x] move simple example to the top
+- [ ] Precondition  
+       - [x] add precondition (valid key values)  
+       - [x] @pre dest must be a valid Key (created with keyNew)  
+       - [x] @pre source must be a valid Key or NULL
+- [ ] Postcondition  
+       - [x] add postcondition  
+       - [x] @post Value is written to key dest
+- [ ] Invariant  
+       - [x] add invariant  
+       - [x] Key name stays valid (document at struct)  
+       - [x] Key name stays valid until delete
+- [ ] `@param` for every parameter  
+       - [x] better describe flags (|)  
+        
 
-- [ ] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
-- [ ] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
-- [ ] `@pre`
-- [ ] `@post`
-- [ ] `@invariant`
-- [ ] `@param` for every parameter
-- [ ] `@return` / `@retval`
-- [ ] `@since`
-- [ ] `@ingroup`
-- [ ] `@see`
+
+@copydoc for invariants?
+
+```
+@retval dest
+@retval NULL in case of error
+```
 
 ### Naming
 
-- [ ] Abbreviations used in function names must be defined in the
+- [x] Abbreviations used in function names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
-- [ ] Function names should neither be too long, nor too short
-- [ ] Function name should be clear and unambiguous
+      src/libs/elektra/symbols.map
+- [x] Function names should neither be too long, nor too short
+- [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
-- [ ] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+      [Glossary](/doc/help/elektra-glossary.md)  
+       - [ ] add dest to glossary - maybe rename dest to destination?
+- [x] Parameter names should neither be too long, nor too short
+- [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
 
-(only in PRs)
-
-- [ ] [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
-- [ ] ABI/API changes are forward-compatible (breaking backwards-compatibility
+- [x] ABI/API changes are forward-compatible (breaking backwards-compatibility
       to add additional symbols is fine)
 
 ### Parameter & Return Types
 
-- [ ] Function parameters should use enum types instead of boolean types
+- Functions should return the most specific type possible
+- Functions should require the most general type possible
+- [x] Function parameters should use enum types instead of boolean types
       wherever sensible
-- [ ] Wherever possible, function parameters should be `const`
-- [ ] Wherever possible, return types should be `const`
-- [ ] Functions should have the least amount of parameters feasible
+- [x] Wherever possible, function parameters should be `const`
+- [x] Wherever possible, return types should be `const`
+- [x] Functions should have the least amount of parameters feasible
 
 ### Structural Clarity
 
-- [ ] Functions should do exactly one thing
-- [ ] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
-- [ ] No functions with similar purpose exist
+- [ ] Functions should do exactly one thing  
+       - [x] remove keySetName keySetRaw ksClear functionality from keyCopy?
+- [x] Function name has the appropriate prefix
+- [x] Signature in kdb.h.in has same order as Doxygen docu
+- [ ] No functions with similar purpose exist  
+       - [ ] keyCopyAllMeta
 
 ### Memory Management
 
-- [ ] Memory Management should be handled by the function wherever possible
+- [x] Memory Management should be handled by the function wherever possible
 
 ### Extensibility
 
-- [ ] Function is easily extensible, e.g., with flags
-- [ ] Documentation does not impose limits, that would hinder further extensions
+- [x] Function is easily extensible, e.g., with flags
+- [ ] Documentation does not impose limits, that would hinder further extensions  
+       - [ ] KEY_CP_ALL equivalent to KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
-- [ ] All possible enum values are covered by tests
+- [ ] Added functions are fully covered by tests
+      https://doc.libelektra.org/coverage/master/debian-buster-full/src/libs/elektra/key.c.gcov.html
+- [ ] All possible error states are covered by tests and documented
+- [ ] All possible enum values are covered by tests  
+       - [ ] use flags other than KEY_CP_ALL
 - [ ] No inconsistencies between tests and documentation
+- [ ] Functions should have no side effects (idempotency)
 
 ## Summary
 
