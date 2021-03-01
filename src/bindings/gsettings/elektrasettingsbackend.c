@@ -499,11 +499,11 @@ static void elektra_settings_check_bus_connection (ElektraSettingsBackend * back
 static void elektra_settings_backend_subscribe (GSettingsBackend * backend, const gchar * name)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Subscribe to:", name);
-	gchar * pathToSubscribe = g_strconcat ("/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
+	gchar * lookupPath = g_strconcat ("/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 
 	g_mutex_lock (&elektra_settings_kdb_lock);
-	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks, pathToSubscribe, GELEKTRA_KDB_O_NONE);
+	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks, lookupPath, GELEKTRA_KDB_O_NONE);
 	if (gkey != NULL)
 	{
 		(*(guint *) gelektra_key_getvalue (gkey))++; // TODO: violation of the C API
@@ -511,11 +511,15 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
 		g_mutex_unlock (&elektra_settings_kdb_lock);
 		return;
 	}
+	g_free (lookupPath);
+
 	guint counter = 1;
+	gchar * pathToSubscribe = g_strconcat ("default:/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	gkey = gelektra_key_new (pathToSubscribe, KEY_BINARY, KEY_SIZE, sizeof (guint), // now the size is important
 				 KEY_VALUE, &counter,					// sets the binary value of the counter
 				 KEY_END);
 	g_free (pathToSubscribe);
+
 	if (gelektra_keyset_append (esb->subscription_gks, gkey) == -1)
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Could not append the key to subscription keyset!");
@@ -536,11 +540,11 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
 static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, const gchar * name)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Unsubscribe:", name);
-	gchar * pathToUnsubscribe = g_strconcat ("/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
+	gchar * lookupPath = g_strconcat ("/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 
 	g_mutex_lock (&elektra_settings_kdb_lock);
-	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks, pathToUnsubscribe, GELEKTRA_KDB_O_NONE);
+	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks, lookupPath, GELEKTRA_KDB_O_NONE);
 	// TODO CHECK VALUE BEFORE working with it
 	if (gkey != NULL)
 	{
@@ -552,11 +556,13 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 			gelektra_keyset_lookup (esb->subscription_gks, gkey, GELEKTRA_KDB_O_POP);
 		}
 		g_mutex_unlock (&elektra_settings_kdb_lock);
+		g_free (lookupPath);
 		return;
 	}
 
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Subscription not found");
 	g_mutex_unlock (&elektra_settings_kdb_lock);
+	g_free (lookupPath);
 	return;
 }
 
