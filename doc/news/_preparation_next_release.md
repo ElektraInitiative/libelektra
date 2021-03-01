@@ -111,6 +111,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Make search for providers not skip rest of plugins on exceptions. _(Markus Raab)_
 
 ## Scripts
 
