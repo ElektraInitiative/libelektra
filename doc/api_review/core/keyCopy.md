@@ -41,7 +41,6 @@
 - [ ] `@param` for every parameter  
        - [x] better describe flags (|)  
 
-
 @copydoc for invariants?
 
 ```
