@@ -25,7 +25,7 @@
        - [x] use retval instead of return (see snippet below)
 - [ ] good example or snippet how to use the function  
        - [ ] move example to `keyDup`
-- [ ] simple examples go first
+- [ ] simple examples go first  
        - [x] move simple example to the top
 - [ ] Precondition  
        - [x] add precondition (valid key values)  
@@ -40,7 +40,6 @@
        - [x] Key name stays valid until delete
 - [ ] `@param` for every parameter  
        - [x] better describe flags (|)  
-        
 
 
 @copydoc for invariants?
@@ -59,7 +58,7 @@
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)  
-       - [ ] add dest to glossary - maybe rename dest to destination?
+       - [x] add dest to glossary - maybe rename dest to destination?
 - [x] Parameter names should neither be too long, nor too short
 - [x] Parameter names should be clear and unambiguous
 
@@ -85,7 +84,7 @@
 - [x] Function name has the appropriate prefix
 - [x] Signature in kdb.h.in has same order as Doxygen docu
 - [ ] No functions with similar purpose exist  
-       - [ ] keyCopyAllMeta
+       - [x] keyCopyAllMeta
 
 ### Memory Management
 
@@ -95,7 +94,7 @@
 
 - [x] Function is easily extensible, e.g., with flags
 - [ ] Documentation does not impose limits, that would hinder further extensions  
-       - [ ] KEY_CP_ALL equivalent to KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META
+       - [x] KEY_CP_ALL equivalent to KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META
 
 ### Tests
 
@@ -103,7 +102,7 @@
       https://doc.libelektra.org/coverage/master/debian-buster-full/src/libs/elektra/key.c.gcov.html
 - [ ] All possible error states are covered by tests and documented
 - [ ] All possible enum values are covered by tests  
-       - [ ] use flags other than KEY_CP_ALL
+       - [x] use flags other than KEY_CP_ALL
 - [ ] No inconsistencies between tests and documentation
 - [ ] Functions should have no side effects (idempotency)
 
