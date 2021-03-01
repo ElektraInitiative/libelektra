@@ -104,24 +104,38 @@ namespace
 bool hasProvides (PluginDatabase const & pd, std::string which)
 {
 	std::vector<std::string> allPlugins = pd.listAllPlugins ();
+	std::string errors;
 
 	for (auto const & plugin : allPlugins)
 	{
-		std::istringstream ss (pd.lookupInfo (
-			PluginSpec (
-				plugin,
-				KeySet (5, *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END), KS_END)),
-			"provides"));
-		std::string provide;
-		while (ss >> provide)
+		try
 		{
-			if (provide == which)
+			std::istringstream ss (pd.lookupInfo (
+				PluginSpec (plugin,
+					    KeySet (5,
+						    *Key ("system:/module", KEY_VALUE, "this plugin was loaded without a config", KEY_END),
+						    KS_END)),
+				"provides"));
+			std::string provide;
+			while (ss >> provide)
 			{
-				return true;
+				if (provide == which)
+				{
+					return true;
+				}
 			}
 		}
+		catch (std::exception const & e)
+		{
+			errors += e.what ();
+			errors += ",";
+		}
 	}
-	return false;
+
+	if (errors.empty ())
+		return false;
+	else
+		throw NoPlugin ("No plugin that provides " + which + " could be found, got errors: " + errors);
 }
 } // namespace
 
@@ -278,9 +292,9 @@ PluginSpec ModulesPluginDatabase::lookupMetadata (std::string const & which) con
 	if (foundPlugins.empty ())
 	{
 		if (!errors.empty ())
-			throw NoPlugin ("No plugin that provides " + which + " could be found, got errors: " + errors);
+			throw NoPlugin ("No plugin that provides metadata " + which + " could be found, got errors: " + errors);
 		else
-			throw NoPlugin ("No plugin that provides " + which + " could be found");
+			throw NoPlugin ("No plugin that provides metadata " + which + " could be found");
 	}
 
 	// the largest element of the map contains the best-suited plugin:
