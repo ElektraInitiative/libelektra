@@ -74,6 +74,7 @@
 							</systemPropertyVariables>
 							<excludes>
 								<exclude>**/KDBTest.java</exclude>
+								<exclude>**/GOptsTest.java</exclude>
 							</excludes>
 						</configuration>
 					</plugin>
