@@ -494,7 +494,7 @@ impl<'a> Iterator for StringKeyIter<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{KeyBuilder, KeyNameInvalidError};
+    use crate::{KeyBuilder, KeyNameInvalidError, CopyOption};
     use std::iter::FromIterator;
 
     #[test]
@@ -656,7 +656,7 @@ mod tests {
             key = ks
                 .lookup_by_name("/test/key", LookupOption::KDB_O_NONE)
                 .unwrap()
-                .duplicate();
+                .duplicate(CopyOption::KEY_CP_ALL);
             assert_eq!(ks.size(), 2);
             assert_eq!(ks.head().unwrap().name(), "user:/test/key");
             assert_eq!(ks.tail().unwrap().name(), "system:/test/key");

@@ -59,14 +59,14 @@ static KeySet * nextPackage (FILE * fp, Key * parentKey)
 			strtok (data, "\n"); // remove newline
 			if (!strcmp (section, "Package"))
 			{
-				baseKey = keyDup (parentKey);
+				baseKey = keyDup (parentKey, KEY_CP_ALL);
 				keyAddBaseName (baseKey, data);
 				lastKey = baseKey;
 				ksAppendKey (package, baseKey);
 			}
 			else
 			{
-				Key * key = keyDup (baseKey);
+				Key * key = keyDup (baseKey, KEY_CP_ALL);
 				keyAddBaseName (key, section);
 				keySetString (key, data);
 				lastKey = key;

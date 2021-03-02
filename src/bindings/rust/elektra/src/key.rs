@@ -31,6 +31,7 @@
 //! ```
 
 use crate::{ReadOnly, ReadableKey, WriteableKey};
+use bitflags::bitflags;
 use elektra_sys;
 use std::borrow::Cow;
 use std::convert::TryInto;
@@ -47,6 +48,23 @@ pub struct StringKey<'a> {
 pub struct BinaryKey<'a> {
     ptr: NonNull<elektra_sys::Key>,
     _marker: std::marker::PhantomData<&'a mut elektra_sys::Key>,
+}
+
+bitflags! {
+    /// Bitflags to be passed to [`duplicate`](struct.Key.html#method.duplicate).
+    #[derive(Default)]
+    pub struct CopyOption: elektra_sys::elektraCopyFlags {
+        /// Copy the key name.
+        const KEY_CP_NAME = elektra_sys::KEY_CP_NAME as elektra_sys::elektraCopyFlags;
+        /// Copy the key value, if it is a string.
+        const KEY_CP_STRING = elektra_sys::KEY_CP_STRING as elektra_sys::elektraCopyFlags;
+        /// Copy the key value.
+        const KEY_CP_VALUE = elektra_sys::KEY_CP_VALUE as elektra_sys::elektraCopyFlags;
+        /// Copy the key metadata.
+        const KEY_CP_META = elektra_sys::KEY_CP_META as elektra_sys::elektraCopyFlags;
+        /// Shorthand for copying key name, value and metadata.
+        const KEY_CP_ALL = Self::KEY_CP_NAME.bits | Self::KEY_CP_VALUE.bits | Self::KEY_CP_META.bits as elektra_sys::elektraCopyFlags;
+    }
 }
 
 macro_rules! add_traits {
@@ -105,7 +123,7 @@ macro_rules! add_traits {
 
         impl Clone for $t {
             fn clone(&self) -> Self {
-                self.duplicate()
+                self.duplicate(CopyOption::KEY_CP_ALL)
             }
         }
 
@@ -179,14 +197,21 @@ impl<'a> StringKey<'a> {
     }
 
     /// Returns a deep copy of the key.
-    pub fn duplicate<'b>(&'a self) -> StringKey<'b> {
-        let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
+    pub fn duplicate<'b>(&'a self, options: CopyOption) -> StringKey<'b> {
+        let dup_ptr = unsafe {
+            let name = CString::new("/").unwrap();
+            elektra_sys::keyCopy(
+                elektra_sys::keyNew (name.as_ptr(), elektra_sys::KEY_END),
+                self.as_ref(),
+                options.bits() as elektra_sys::elektraCopyFlags,
+            )
+        };
         unsafe { StringKey::from_ptr(dup_ptr) }
     }
 
     /// Returns an iterator over the key's metakeys.
     pub fn meta_iter<'b>(&'b self) -> MetaIter<'b, StringKey<'a>> {
-        let mut dup = self.duplicate();
+        let mut dup = self.duplicate(CopyOption::KEY_CP_ALL);
         dup.rewind_meta();
         MetaIter { key: dup, _marker: std::marker::PhantomData }
     }
@@ -244,14 +269,21 @@ impl<'a> BinaryKey<'a> {
     }
 
     /// Returns a deep copy of the key.
-    pub fn duplicate<'b>(&'a self) -> BinaryKey<'b> {
-        let dup_ptr = unsafe { elektra_sys::keyDup(self.as_ref()) };
+    pub fn duplicate<'b>(&'a self, options: CopyOption) -> BinaryKey<'b> {
+        let dup_ptr = unsafe {
+            let name = CString::new("/").unwrap();
+            elektra_sys::keyCopy(
+                elektra_sys::keyNew (name.as_ptr(), elektra_sys::KEY_END),
+                self.as_ref(),
+                options.bits() as elektra_sys::elektraCopyFlags,
+            )
+        };
         unsafe { BinaryKey::from_ptr(dup_ptr) }
     }
 
     /// Returns an iterator over the key's metakeys.
     pub fn meta_iter<'b>(&'b self) -> MetaIter<'b, BinaryKey<'a>> {
-        let mut dup = self.duplicate();
+        let mut dup = self.duplicate(CopyOption::KEY_CP_ALL);
         dup.rewind_meta();
         MetaIter { key: dup, _marker: std::marker::PhantomData }
     }

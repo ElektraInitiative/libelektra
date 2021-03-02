@@ -3,7 +3,7 @@
 //! For example usage see the [Readme](https://github.com/ElektraInitiative/libelektra/tree/master/src/bindings/rust).
 
 use crate::ReadableKey;
-use crate::{KeySet, StringKey, WriteableKey};
+use crate::{KeySet, StringKey, WriteableKey, CopyOption};
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -30,7 +30,7 @@ impl KDB {
         let kdb_ptr = unsafe { elektra_sys::kdbOpen(key.as_ptr()) };
 
         if kdb_ptr.is_null() {
-            Err(KDBError::new(key.duplicate()))
+            Err(KDBError::new(key.duplicate(CopyOption::KEY_CP_ALL)))
         } else {
             Ok(KDB {
                 ptr: NonNull::new(kdb_ptr).unwrap(),
@@ -56,7 +56,7 @@ impl KDB {
         } else if ret_val == 0 {
             Ok(false)
         } else {
-            Err(KDBError::new(key.duplicate()))
+            Err(KDBError::new(key.duplicate(CopyOption::KEY_CP_ALL)))
         }
     }
 
@@ -78,7 +78,7 @@ impl KDB {
         } else if ret_val == 0 {
             Ok(false)
         } else {
-            Err(KDBError::new(key.duplicate()))
+            Err(KDBError::new(key.duplicate(CopyOption::KEY_CP_ALL)))
         }
     }
 
@@ -98,7 +98,7 @@ impl KDB {
         } else if ret_val == 1 {
             Ok(false)
         } else {
-            Err(KDBError::new(key.duplicate()))
+            Err(KDBError::new(key.duplicate(CopyOption::KEY_CP_ALL)))
         }
     }
     /// Returns the raw pointer of the KDB object.
@@ -524,13 +524,13 @@ mod test {
         let key1_lookup = ks
             .lookup_by_name(KEY_1_NAME, Default::default())
             .unwrap()
-            .duplicate();
+            .duplicate(CopyOption::KEY_CP_ALL);
         assert_eq!(key1_lookup.value(), KEY_1_VALUE);
 
         let key2_lookup = ks
             .lookup_by_name(KEY_2_NAME, Default::default())
             .unwrap()
-            .duplicate();
+            .duplicate(CopyOption::KEY_CP_ALL);
         assert_eq!(key2_lookup.value(), KEY_2_VALUE);
     }
 

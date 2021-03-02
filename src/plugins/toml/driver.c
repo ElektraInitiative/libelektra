@@ -83,7 +83,7 @@ static Driver * createDriver (Key * parent, KeySet * keys)
 	}
 	driver->root = parent;
 	driver->keys = keys;
-	driver->parentStack = pushParent (NULL, keyDup (parent));
+	driver->parentStack = pushParent (NULL, keyDup (parent, KEY_CP_ALL));
 	driver->filename = elektraStrDup (keyString (parent));
 	driver->simpleTableActive = false;
 	driver->drainCommentsOnKeyExit = true;
@@ -461,7 +461,7 @@ void driverExitTableArray (Driver * driver)
 	driver->order--;				       // Undo order increment
 
 	Key * key = buildTableArrayKeyName (driver->tableArrayStack);
-	Key * rootNameKey = keyDup (key);
+	Key * rootNameKey = keyDup (key, KEY_CP_ALL);
 	keyAddName (rootNameKey, "..");
 	Key * existingRoot = ksLookup (driver->keys, rootNameKey, 0);
 

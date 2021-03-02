@@ -110,7 +110,7 @@ int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		return 1;
 	}
 
-	key = keyDup (parentKey);
+	key = keyDup (parentKey, KEY_CP_ALL);
 	ksAppendKey (returned, key);
 	nr_keys++;
 
@@ -132,45 +132,45 @@ int elektraFstabGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 		elektraFstabFsName (fsname, fstabEntry, &swapIndex);
 
 		/* Include only the filesystem pseudo-names */
-		dir = keyDup (parentKey);
+		dir = keyDup (parentKey, KEY_CP_ALL);
 		keyAddBaseName (dir, fsname);
 		keySetString (dir, "");
 		keySetComment (dir, "");
 		keySetComment (dir, "Filesystem pseudo-name");
 		ksAppendKey (returned, dir);
 
-		key = keyDup (dir);
+		key = keyDup (dir, KEY_CP_ALL);
 		keyAddBaseName (key, "device");
 		keySetString (key, fstabEntry->mnt_fsname);
 		keySetComment (key, "Device or Label");
 		ksAppendKey (returned, key);
 
-		key = keyDup (dir);
+		key = keyDup (dir, KEY_CP_ALL);
 		keyAddBaseName (key, "mpoint");
 		keySetString (key, fstabEntry->mnt_dir);
 		keySetComment (key, "Mount point");
 		ksAppendKey (returned, key);
 
-		key = keyDup (dir);
+		key = keyDup (dir, KEY_CP_ALL);
 		keyAddBaseName (key, "type");
 		keySetString (key, fstabEntry->mnt_type);
 		keySetComment (key, "Filesystem type.");
 		ksAppendKey (returned, key);
 
-		key = keyDup (dir);
+		key = keyDup (dir, KEY_CP_ALL);
 		keyAddBaseName (key, "options");
 		keySetString (key, fstabEntry->mnt_opts);
 		keySetComment (key, "Filesystem specific options");
 		ksAppendKey (returned, key);
 
-		key = keyDup (dir);
+		key = keyDup (dir, KEY_CP_ALL);
 		keyAddBaseName (key, "dumpfreq");
 		snprintf (buffer, MAX_NUMBER_SIZE, "%d", fstabEntry->mnt_freq);
 		keySetString (key, buffer);
 		keySetComment (key, "Dump frequency in days");
 		ksAppendKey (returned, key);
 
-		key = keyDup (dir);
+		key = keyDup (dir, KEY_CP_ALL);
 		keyAddBaseName (key, "passno");
 		snprintf (buffer, MAX_NUMBER_SIZE, "%d", fstabEntry->mnt_passno);
 		keySetString (key, buffer);

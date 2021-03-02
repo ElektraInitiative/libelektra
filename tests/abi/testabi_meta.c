@@ -180,7 +180,7 @@ static void test_dup (void)
 	succeed_if (keySetMeta (key, "test", "some_meta_test") == sizeof ("some_meta_test"), "could not set meta");
 	succeed_if_same_string (keyValue (keyGetMeta (key, "test")), "some_meta_test");
 
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyValue (keyGetMeta (dup, "test")), "some_meta_test");
 	succeed_if (keySetMeta (dup, "test", "some_other_meta_test") == sizeof ("some_other_meta_test"), "sizeof meta test wrong");
 	succeed_if_same_string (keyValue (keyGetMeta (dup, "test")), "some_other_meta_test");
@@ -200,7 +200,7 @@ static void j (Key * k)
 
 	// receive key g_c
 	memcpy (value, keyValue (k), size);
-	keyCopy (k, g_c);
+	keyCopy (k, g_c, KEY_CP_ALL);
 	if (bstring)
 		keySetString (k, value);
 	else

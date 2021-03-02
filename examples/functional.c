@@ -81,7 +81,7 @@ int ksFilter (KeySet * result, KeySet * input, int (*filter) (Key * k))
 		else if (rc != 0)
 		{
 			++ret;
-			ksAppendKey (result, keyDup (current));
+			ksAppendKey (result, keyDup (current, KEY_CP_ALL));
 		}
 	}
 	ksSetCursor (input, cursor);

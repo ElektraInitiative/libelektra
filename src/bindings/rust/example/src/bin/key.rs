@@ -15,7 +15,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Duplicate a key
-    let key_duplicate = key.duplicate();
+    let key_duplicate = key.duplicate(CopyOption::KEY_CP_ALL);
 
     // And compare them
     assert_eq!(key, key_duplicate);

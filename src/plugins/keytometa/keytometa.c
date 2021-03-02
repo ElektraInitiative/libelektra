@@ -136,8 +136,8 @@ static void flushConvertedKeys (Key * target, KeySet * converted, KeySet * orig)
 		Key * appendTarget = target;
 		const char * metaName = keyString (keyGetMeta (current, CONVERT_METANAME));
 
-		Key * currentDup = keyDup (current);
-		Key * targetDup = keyDup (appendTarget);
+		Key * currentDup = keyDup (current, KEY_CP_ALL);
+		Key * targetDup = keyDup (appendTarget, KEY_CP_ALL);
 		keySetBaseName (currentDup, 0);
 		keySetBaseName (targetDup, 0);
 

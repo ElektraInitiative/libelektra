@@ -407,7 +407,7 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, KeySet * returned, 
 {
 	Codes rc = NOUPDATE;
 	KeySet * found = ksNew (0, KS_END);
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 
 	rc = updateFilesGlob (handle, mc, found, parentKey);
 	if (rc == ERROR)
@@ -488,7 +488,7 @@ static Codes updateFiles (Plugin * handle, MultiConfig * mc, KeySet * returned, 
 static Codes doGetStorage (MultiConfig * mc, Key * parentKey)
 {
 	ksRewind (mc->childBackends);
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 	Codes rc = NOUPDATE;
 	Key * k;
 	while ((k = ksNext (mc->childBackends)) != NULL)
@@ -609,7 +609,7 @@ int elektraMultifileGet (Plugin * handle, KeySet * returned, Key * parentKey ELE
 static Codes resolverSet (MultiConfig * mc, Key * parentKey)
 {
 	ksRewind (mc->childBackends);
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 	Key * k;
 	Codes rc = NOUPDATE;
 	while ((k = ksNext (mc->childBackends)) != NULL)
@@ -650,7 +650,7 @@ static Codes resolverSet (MultiConfig * mc, Key * parentKey)
 static Codes doSetStorage (MultiConfig * mc, Key * parentKey)
 {
 	ksRewind (mc->childBackends);
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 	Codes rc = NOUPDATE;
 	Key * k;
 	while ((k = ksNext (mc->childBackends)) != NULL)
@@ -686,7 +686,7 @@ static Codes doSetStorage (MultiConfig * mc, Key * parentKey)
 static Codes doCommit (MultiConfig * mc, Key * parentKey)
 {
 	ksRewind (mc->childBackends);
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 	Codes rc = NOUPDATE;
 	Key * k;
 	while ((k = ksNext (mc->childBackends)) != NULL)
@@ -828,7 +828,7 @@ int elektraMultifileError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELE
 	if (!mc) return 0;
 	ksRewind (mc->childBackends);
 	Key * key;
-	Key * initialParent = keyDup (parentKey);
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 	while ((key = ksNext (mc->childBackends)) != NULL)
 	{
 		SingleConfig * s = *(SingleConfig **) keyValue (key);

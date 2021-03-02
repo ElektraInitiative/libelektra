@@ -245,217 +245,226 @@ Key * keyVNew (const char * name, va_list va)
 }
 
 /**
- * Return a duplicate of a key.
+ * Copy or clear a key.
  *
- * Memory will be allocated as needed for dynamic properties.
+ * Depending on the chosen @p flags keyCopy() only copies
+ * certain parts of @p source into @p dest.
  *
- * The new key will not be member of any KeySet and
- * will start with a new reference counter at 0. A
- * subsequent keyDel() will delete the key.
+ * * If #KEY_CP_NAME is set, the key name will be copied
+ *   from @p source to @p dest.
+ * * If #KEY_CP_META is set, the meta keys will be copied
+ *   from @p source to @p dest.
+ * * If #KEY_CP_VALUE is set, the key value will be copied
+ *   from @p source to @p dest.
+ *   Additionally, if @p source is a binary key (keyIsBinary()),
+ *   @p dest will also be
+ *   marked as binary. This means that even if #KEY_CP_META is
+ *   not set, the `binary` meta key will be copied with
+ *   #KEY_CP_VALUE.
+ * * If #KEY_CP_STRING is set, the key value will be copied
+ *   from @p source to @p dest, but only, if @p source is
+ *   _not_ a binary key (keyIsBinary()). If @p source is binary,
+ *   keyCopy() fails. If @p dest is binary, it will still be
+ *   marked as binary after the copy.
+ *   This cannot be used together with #KEY_CP_VALUE.
+ *   The main purpose of #KEY_CP_STRING is for copying _into_
+ *   known string keys. It ensure that you don't accidentally
+ *   convert string keys into binary keys.
  *
- * @code
-int f (const Key * source)
-{
-	Key * dup = keyDup (source);
-	// work with duplicate
-	keyDel (dup);
-	// everything related to dup is freed
-	// and source is unchanged
-}
- * @endcode
+ * There is also the shorthand #KEY_CP_ALL. It is equivalent
+ * to `KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META`,
+ * i.e. all key data supported by keyCopy() will be copied
+ * from @p source to @p dest.
  *
- * Like for a new key after keyNew() a subsequent ksAppendKey()
- * makes a KeySet take care of the lifecycle of the key.
- *
- * @code
-int g (const Key * source, KeySet * ks)
-{
-	Key * dup = keyDup (source);
-	// work with duplicate
-	ksAppendKey (ks, dup);
-	// ksDel(ks) will also free the duplicate
-	// source remains unchanged.
-}
- * @endcode
- *
- * Duplication of keys should be preferred to keyNew(),
- * because data like owner can be filled with a copy
- * of the key instead of asking the environment.
- * It can also be optimized in the checks, because the keyname
- * is known to be valid.
- *
- * @param source has to be an initialized source Key
- * @retval 0 failure or on NULL pointer
- * @return a fully copy of source on success
- * @see ksAppendKey(), keyDel(), keyNew()
- * @ingroup key
- */
-Key * keyDup (const Key * source)
-{
-	if (!source) return 0;
-
-	Key * dest = elektraCalloc (sizeof (Key));
-	if (!dest) return 0;
-
-	/* Copy the struct data */
-	*dest = *source;
-
-	/* get rid of properties bound to old key */
-	dest->ksReference = 0;
-	dest->flags = KEY_FLAG_SYNC;
-
-	/* prepare to set dynamic properties */
-	dest->key = dest->ukey = dest->data.v = dest->meta = 0;
-
-	/* copy dynamic properties */
-	if (keyCopy (dest, source) == -1)
-	{
-		keyDel (dest);
-		return 0;
-	}
-
-	return dest;
-}
-
-
-/**
- * Copy or Clear a key.
- *
- * Most often you may prefer keyDup() which allocates
- * a new key and returns a duplication of another key.
- *
- * But when you need to copy into an existing key, e.g.
+ * Use this function when you need to copy into an existing key, e.g.
  * because it was passed by a pointer in a function
  * you can do so:
  *
  * @snippet keyCopy.c Basic Usage
  *
- * The reference counter will not be changed for
- * both keys. Affiliation to keysets
- * are also not affected.
+ * Most often you will want to duplicate an existing key.
+ * For this purpose the alias keyDup() exists. Calling
  *
- * The metadata will be duplicated for the destination
- * key. So it will not take much additional space, even
- * with lots of metadata.
+ * @snippet keyCopy.c Dup Key
  *
- * When you pass a NULL-pointer as source the
- * data of dest will be cleaned completely
- * (except reference counter, see keyClear()) and
- * you get a fresh dest key:
+ * is equivalent to
+ *
+ * @snippet keyCopy.c Duplicate Key
+ *
+ * The reference counter will not be changed for both keys.
+ * Affiliation to keysets are also not affected.
+ *
+ * Since metadata uses copy-on-write semantics there is only a
+ * constant memory cost to copying metadata.
+ *
+ * When you pass a NULL-pointer as @p source the pieces of @p dest
+ * specified by @p flags will be cleared.
+ *
+ * Calling `keyCopy (dest, NULL, KEY_CP_ALL)` is different from calling keyClear().
+ * The key will not be fully reset, the reference counter and internal flags
+ * will remain unchanged. Additionally, keyCopy() respects keyLock() state,
+ * while keyClear() always works.
  *
  * @snippet keyCopy.c Clear
  *
- * If you want to copy everything, except e.g. the value
- * you can use keyCopy() too:
+ * @pre dest must be a valid Key (created with keyNew)
+ * @pre source must be a valid Key or NULL
  *
- * @snippet keyCopy.c Copy Without Value
+ * @invariant Key name stays valid until delete
  *
- * Restrain from coping everything yourself, because it will lead to
- * wrong metadata and is not able to copy empty or cascading names:
- *
- * @snippet keyCopy.c Individual Copy
- *
+ * @post Value from Key source is written to Key dest
  *
  * @param dest the key which will be written to
  * @param source the key which should be copied
- *     or NULL to clean the destination key
+ *     or NULL to clear the data of @p dest
+ * @param flags specifies which parts of the key should be copied
+ * @see keyDup()
+ * @since 0.9.5
  * @ingroup key
- * @retval -1 on failure when a NULL pointer
- *     was passed for dest or a dynamic property could not
- *     be written. The content will be unmodified then.
- * @retval 0 when dest was cleaned
- * @retval 1 when source was successfully copied
- * @see keyDup() to get a duplication of a key
+ *
+ * @return @p dest
+ * @retval NULL on memory allocation problems
+ * @retval NULL when a part of @p dest that should be modified (e.g. name, value) was marked read-only,
+ *              e.g. the name of @p dest will be read-only if @p dest is part of a KeySet
+ * @retval NULL when @p dest is NULL
+ * @retval NULL when both #KEY_CP_VALUE and #KEY_CP_STRING are set in @p flags
+ * @retval NULL when both #KEY_CP_STRING is set in @p flags and @p source is a binary key (keyIsBinary())
  */
-int keyCopy (Key * dest, const Key * source)
+Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 {
-	if (!dest) return -1;
+	if (dest == NULL) return NULL;
 
-	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) || test_bit (dest->flags, KEY_FLAG_RO_VALUE) ||
-	    test_bit (dest->flags, KEY_FLAG_RO_META))
+	if (test_bit (dest->flags, KEY_FLAG_RO_NAME) && test_bit (flags, KEY_CP_NAME)) return NULL;
+	if (test_bit (dest->flags, KEY_FLAG_RO_VALUE) && test_bit (flags, KEY_CP_VALUE)) return NULL;
+	if (test_bit (dest->flags, KEY_FLAG_RO_META) && test_bit (flags, KEY_CP_META)) return NULL;
+
+	if (test_bit (flags, KEY_CP_STRING) && test_bit (flags, KEY_CP_VALUE)) return NULL;
+
+	if (source == NULL)
 	{
-		return -1;
+		if (test_bit (flags, KEY_CP_NAME))
+		{
+			keySetName (dest, "/");
+		}
+		if (test_bit (flags, KEY_CP_VALUE))
+		{
+			keySetRaw (dest, NULL, 0);
+		}
+		if (test_bit (flags, KEY_CP_META))
+		{
+			ksClear (dest->meta);
+		}
+		return dest;
 	}
 
-	if (!source)
-	{
-		keyClear (dest);
-		return 0;
-	}
+	if (test_bit (flags, KEY_CP_STRING) && keyIsBinary (source)) return NULL;
 
-	// remember dynamic memory to be removed
-	char * destKey = dest->key;
-	char * destUKey = dest->ukey;
-	void * destData = dest->data.c;
-	KeySet * destMeta = dest->meta;
+	if (source == dest) return dest;
+
+	// remember original data of dest
+	Key orig = *dest;
 
 	// duplicate dynamic properties
-	if (source->key)
+	if (test_bit (flags, KEY_CP_NAME))
 	{
-		dest->key = elektraStrNDup (source->key, source->keySize);
-		if (!dest->key) goto memerror;
-	}
-	else
-	{
-		dest->key = 0;
+		if (source->key != NULL)
+		{
+			dest->key = elektraStrNDup (source->key, source->keySize);
+			if (!dest->key) goto memerror;
+			dest->keySize = source->keySize;
+
+			ELEKTRA_ASSERT (source->ukey != NULL, "key != NULL but ukey == NULL");
+			dest->ukey = elektraStrNDup (source->ukey, source->keyUSize);
+			if (!dest->ukey) goto memerror;
+			dest->keyUSize = source->keyUSize;
+		}
+		else
+		{
+			dest->key = elektraStrDup ("/");
+			dest->keySize = 2;
+
+			dest->ukey = elektraMalloc (3);
+			dest->ukey[0] = KEY_NS_CASCADING;
+			dest->ukey[1] = '\0';
+			dest->ukey[2] = '\0';
+			dest->keyUSize = 3;
+		}
+		clear_bit (dest->flags, KEY_FLAG_MMAP_KEY);
 	}
 
-	if (source->ukey)
+	if (test_bit (flags, KEY_CP_STRING))
 	{
-		dest->ukey = elektraStrNDup (source->ukey, source->keyUSize);
-		if (!dest->ukey) goto memerror;
-	}
-	else
-	{
-		dest->ukey = 0;
+		if (source->data.v != NULL)
+		{
+			dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
+			if (!dest->data.v) goto memerror;
+			dest->dataSize = source->dataSize;
+
+			if (!test_bit (flags, KEY_CP_META) && keyIsBinary (source))
+			{
+				keySetMeta (dest, "binary", "");
+			}
+		}
+		else
+		{
+			dest->data.v = NULL;
+			dest->dataSize = 0;
+		}
+		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
 	}
 
+	if (test_bit (flags, KEY_CP_VALUE))
+	{
+		if (source->data.v != NULL)
+		{
+			dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
+			if (!dest->data.v) goto memerror;
+			dest->dataSize = source->dataSize;
 
-	if (source->data.v)
-	{
-		dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
-		if (!dest->data.v) goto memerror;
-	}
-	else
-	{
-		dest->data.v = 0;
+			if (!test_bit (flags, KEY_CP_META) && keyIsBinary (source))
+			{
+				keySetMeta (dest, "binary", "");
+			}
+		}
+		else
+		{
+			dest->data.v = NULL;
+			dest->dataSize = 0;
+		}
+		clear_bit (dest->flags, KEY_FLAG_MMAP_DATA);
 	}
 
-	if (source->meta)
+	if (test_bit (flags, KEY_CP_META))
 	{
-		dest->meta = ksDup (source->meta);
-		if (!dest->meta) goto memerror;
-	}
-	else
-	{
-		dest->meta = 0;
+		if (source->meta != NULL)
+		{
+			dest->meta = ksDup (source->meta);
+			if (!dest->meta) goto memerror;
+		}
+		else
+		{
+			dest->meta = 0;
+		}
 	}
 
 	// successful, now do the irreversible stuff: we obviously modified dest
 	set_bit (dest->flags, KEY_FLAG_SYNC);
 
-	// copy sizes accordingly
-	dest->keySize = source->keySize;
-	dest->keyUSize = source->keyUSize;
-	dest->dataSize = source->dataSize;
-
 	// free old resources of destination
-	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (destKey);
-	if (!test_bit (dest->flags, KEY_FLAG_MMAP_KEY)) elektraFree (destUKey);
-	if (!test_bit (dest->flags, KEY_FLAG_MMAP_DATA)) elektraFree (destData);
-	ksDel (destMeta);
+	if (test_bit (flags, KEY_CP_NAME) && !test_bit (orig.flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.key);
+	if (test_bit (flags, KEY_CP_NAME) && !test_bit (orig.flags, KEY_FLAG_MMAP_KEY)) elektraFree (orig.ukey);
+	if (test_bit (flags, KEY_CP_VALUE) && !test_bit (orig.flags, KEY_FLAG_MMAP_DATA)) elektraFree (orig.data.c);
+	if (test_bit (flags, KEY_CP_META)) ksDel (orig.meta);
 
-	return 1;
+	return dest;
 
 memerror:
 	elektraFree (dest->key);
 	elektraFree (dest->data.v);
 	ksDel (dest->meta);
 
-	dest->key = destKey;
-	dest->data.v = destData;
-	dest->meta = destMeta;
-	return -1;
+	*dest = orig;
+	return NULL;
 }
 
 static void keyClearNameValue (Key * key)

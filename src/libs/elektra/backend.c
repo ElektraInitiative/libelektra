@@ -72,7 +72,7 @@ static Backend * elektraBackendAllocate (void)
 int elektraBackendSetMountpoint (Backend * backend, KeySet * elektraConfig, Key * errorKey)
 {
 	Key * root = ksCurrent (elektraConfig);
-	Key * searchMountpoint = keyDup (root);
+	Key * searchMountpoint = keyDup (root, KEY_CP_NAME);
 	keyAddBaseName (searchMountpoint, "mountpoint");
 	Key * foundMountpoint = ksLookup (elektraConfig, searchMountpoint, 0);
 	keyDel (searchMountpoint);

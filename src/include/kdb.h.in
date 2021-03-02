@@ -63,6 +63,15 @@ typedef int elektraLockFlags;
 typedef int elektraKeyFlags;
 
 enum {
+	KEY_CP_NAME   = 1<<0,
+	KEY_CP_STRING = 1<<1,
+	KEY_CP_VALUE  = 1<<2,
+	KEY_CP_META   = 1<<3,
+	KEY_CP_ALL    = KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META,
+};
+typedef unsigned int elektraCopyFlags;
+
+enum {
 	KDB_O_NONE=0,
 	KDB_O_DEL=1,
 	KDB_O_POP=1<<1
@@ -125,8 +134,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey);
 Key *keyNew(const char *keyname, ...);
 Key *keyVNew(const char *keyname, va_list ap);
 
-Key *keyDup(const Key *source);
-int keyCopy(Key *dest, const Key *source);
+Key * keyCopy(Key *dest, const Key *source, elektraCopyFlags flags);
 
 int keyClear(Key *key);
 int keyDel(Key *key);
@@ -194,6 +202,11 @@ ssize_t keySetBinary(Key *key, const void *newBinary, size_t dataSize);
 
 int keyLock (Key * key, elektraLockFlags what);
 int keyIsLocked (const Key * key, elektraLockFlags what);
+
+static inline Key *keyDup (const Key *source, elektraCopyFlags flags)
+{
+	return keyCopy (keyNew ("/", 0), source, flags);
+}
 
 /**************************************
  *

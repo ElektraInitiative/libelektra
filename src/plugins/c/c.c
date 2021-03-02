@@ -130,7 +130,7 @@ int keyGenerate (const Key * key, FILE * stream)
 	}
 
 	const Key * meta;
-	Key * dup = keyDup (key);
+	Key * dup = keyDup (key, KEY_CP_ALL);
 	keyRewindMeta (dup);
 	while ((meta = keyNextMeta (dup)))
 	{

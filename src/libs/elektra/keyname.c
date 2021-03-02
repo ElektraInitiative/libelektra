@@ -469,7 +469,9 @@ ssize_t keySetName (Key * key, const char * newName)
 	{
 		// key was in mmap region, clear flag and set NULL to allow realloc
 		key->key = NULL;
+		key->keySize = 0;
 		key->ukey = NULL;
+		key->keyUSize = 0;
 		clear_bit (key->flags, (keyflag_t) KEY_FLAG_MMAP_KEY);
 	}
 

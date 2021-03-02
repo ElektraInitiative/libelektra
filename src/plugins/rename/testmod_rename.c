@@ -129,7 +129,7 @@ static void test_metaCutOnGet (void)
 static void test_simpleCutRestoreOnSet (void)
 {
 	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	Key * parentKeyCopy = keyDup (parentKey);
+	Key * parentKeyCopy = keyDup (parentKey, KEY_CP_ALL);
 	KeySet * conf = ksNew (20, keyNew ("system:/cut", KEY_VALUE, "will/be/stripped", KEY_END), KS_END);
 	PLUGIN_OPEN ("rename");
 
@@ -168,7 +168,7 @@ static void test_simpleCutRestoreOnSet (void)
 static void test_withoutConfig (void)
 {
 	Key * parentKey = keyNew ("user:/tests/rename", KEY_END);
-	Key * parentKeyCopy = keyDup (parentKey);
+	Key * parentKeyCopy = keyDup (parentKey, KEY_CP_ALL);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("rename");
 

@@ -134,7 +134,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 {
 	elektraCursor initial = ksGetCursor (ks);
 
-	Key * specParent = keyDup (parentKey);
+	Key * specParent = keyDup (parentKey, KEY_CP_ALL);
 	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
 	{
 		keySetName (specParent, "spec");
@@ -1088,7 +1088,7 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 		}
 		keySetMeta (*keyWithOpt, "args", "remaining");
 
-		Key * dup = keyDup (specKey);
+		Key * dup = keyDup (specKey, KEY_CP_ALL);
 		keySetBaseName (dup, NULL); // remove #
 
 		const char * existing = keyGetMetaString (command, "remainingargskey");
@@ -1328,7 +1328,7 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * argI
 		Key * procKey = keyNew ("proc:/", KEY_END);
 		keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
 
-		Key * insertKey = keyDup (procKey);
+		Key * insertKey = keyDup (procKey, KEY_CP_NAME);
 
 		ksRewind (args);
 		for (elektraCursor i = firstRemainingArg; i < ksGetSize (args); ++i)
@@ -1336,7 +1336,7 @@ int writeArgsValues (KeySet * ks, Key * keyWithOpt, Key * command, KeySet * argI
 			Key * arg = ksAtCursor (args, i);
 			elektraArrayIncName (insertKey);
 
-			Key * k = keyDup (insertKey);
+			Key * k = keyDup (insertKey, KEY_CP_NAME);
 			keySetString (k, keyString (arg));
 			ksAppendKey (ks, k);
 		}
@@ -1455,7 +1455,7 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 
 	if (isArrayKey)
 	{
-		Key * insertKey = keyDup (procKey);
+		Key * insertKey = keyDup (procKey, KEY_CP_NAME);
 		keyAddBaseName (insertKey, "#");
 		KeySet * values = elektraMetaArrayToKS (valueKey, "values");
 		if (values == NULL)
@@ -1472,7 +1472,7 @@ int addProcKey (KeySet * ks, const Key * key, Key * valueKey)
 		{
 			elektraArrayIncName (insertKey);
 
-			Key * k = keyDup (insertKey);
+			Key * k = keyDup (insertKey, KEY_CP_NAME);
 			keySetString (k, keyString (cur));
 			ksAppendKey (ks, k);
 		}
@@ -1578,7 +1578,7 @@ KeySet * parseArgs (Key * command, KeySet * optionsSpec, bool useSubcommands, in
 			}
 
 			elektraArrayIncName (argKey);
-			Key * newArgKey = keyDup (argKey);
+			Key * newArgKey = keyDup (argKey, KEY_CP_NAME);
 			keySetString (newArgKey, cur);
 			ksAppendKey (options, newArgKey);
 		}
@@ -1588,7 +1588,7 @@ KeySet * parseArgs (Key * command, KeySet * optionsSpec, bool useSubcommands, in
 	for (; i < argc; ++i)
 	{
 		elektraArrayIncName (argKey);
-		Key * newArgKey = keyDup (argKey);
+		Key * newArgKey = keyDup (argKey, KEY_CP_NAME);
 		keySetString (newArgKey, argv[i]);
 		ksAppendKey (options, newArgKey);
 	}
@@ -1857,7 +1857,7 @@ int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool write
 	{
 		if (spec->useSubcommands)
 		{
-			Key * checkKey = keyDup (keyWithOpt);
+			Key * checkKey = keyDup (keyWithOpt, KEY_CP_ALL);
 			if (strcmp (keyBaseName (keyWithOpt), "#") == 0)
 			{
 				keySetBaseName (checkKey, NULL); // remove #
@@ -1940,7 +1940,7 @@ KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
 		return ksNew (2, keyNew ("meta:/#", KEY_END), k, KS_END);
 	}
 
-	Key * testKey = keyDup (k);
+	Key * testKey = keyDup (k, KEY_CP_NAME);
 	keyAddBaseName (testKey, keyString (k));
 
 	const Key * test = keyGetMeta (key, keyName (testKey));
@@ -2086,7 +2086,7 @@ char * generateOptionsList (KeySet * keysWithOpts, Key * commandKey)
 	ksRewind (keysWithOpts);
 	while ((cur = ksNext (keysWithOpts)) != NULL)
 	{
-		Key * checkKey = keyDup (cur);
+		Key * checkKey = keyDup (cur, KEY_CP_NAME);
 		if (strcmp (keyBaseName (cur), "#") == 0)
 		{
 			keySetBaseName (checkKey, NULL); // remove #
@@ -2136,7 +2136,7 @@ char * generateCommandsList (KeySet * keysWithOpts, Key * commandKey)
 	ksRewind (keysWithOpts);
 	while ((cur = ksNext (keysWithOpts)) != NULL)
 	{
-		Key * checkKey = keyDup (cur);
+		Key * checkKey = keyDup (cur, KEY_CP_NAME);
 		if (strcmp (keyBaseName (cur), "#") == 0)
 		{
 			keySetBaseName (checkKey, NULL); // remove #
@@ -2187,7 +2187,7 @@ char * generateArgsList (KeySet * keysWithOpts, Key * commandKey)
 	ksRewind (keysWithOpts);
 	while ((cur = ksNext (keysWithOpts)) != NULL)
 	{
-		Key * checkKey = keyDup (cur);
+		Key * checkKey = keyDup (cur, KEY_CP_NAME);
 		if (strcmp (keyBaseName (cur), "#") == 0)
 		{
 			keySetBaseName (checkKey, NULL); // remove #

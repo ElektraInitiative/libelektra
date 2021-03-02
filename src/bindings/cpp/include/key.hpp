@@ -114,7 +114,7 @@ public:
 	inline Key & operator= (ckdb::Key * k);
 	inline Key & operator= (const Key & k);
 
-	inline void copy (const Key & other);
+	inline void copy (const Key & other, elektraCopyFlags flags = KEY_CP_ALL);
 	inline void clear ();
 	inline ckdb::Key * operator-> () const;
 
@@ -124,7 +124,7 @@ public:
 	inline ckdb::Key * operator* () const;
 
 	inline ckdb::Key * release ();
-	inline ckdb::Key * dup () const;
+	inline ckdb::Key * dup (elektraCopyFlags flags = KEY_CP_ALL) const;
 	inline ~Key ();
 
 
@@ -732,9 +732,9 @@ inline Key & Key::operator= (const Key & k)
 /**
  * @copydoc keyCopy
  */
-inline void Key::copy (const Key & other)
+inline void Key::copy (const Key & other, elektraCopyFlags flags)
 {
-	ckdb::keyCopy (key, other.key);
+	ckdb::keyCopy (key, other.key, flags);
 }
 
 /**
@@ -813,9 +813,9 @@ ckdb::Key * Key::release ()
 /**
  * @copydoc keyDup
  */
-ckdb::Key * Key::dup () const
+ckdb::Key * Key::dup (elektraCopyFlags flags) const
 {
-	return ckdb::keyDup (getKey ());
+	return ckdb::keyDup (getKey (), flags);
 }
 
 /**

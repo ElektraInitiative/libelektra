@@ -171,7 +171,7 @@ int elektraProcessPlugins (Plugin ** plugins, KeySet * modules, KeySet * referen
 
 			if (pluginName)
 			{
-				Key * key = keyDup (cur);
+				Key * key = keyDup (cur, KEY_CP_ALL);
 				keyAddBaseName (key, "config");
 				KeySet * cutConfig = ksCut (config, key);
 				keyDel (key);

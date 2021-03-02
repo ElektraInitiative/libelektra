@@ -21,6 +21,12 @@ public class Key implements Iterable<String>
 	public static final int KEY_META = 1 << 15;
 	public static final int KEY_NULL = 1 << 16;
 
+	public static final int KEY_CP_NAME = 1 << 0;
+	public static final int KEY_CP_STRING = 1 << 1;
+	public static final int KEY_CP_VALUE = 1 << 2;
+	public static final int KEY_CP_META = 1 << 3;
+	public static final int KEY_CP_ALL = KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META;
+
 	/**
 	 * Indicates a generic key exception occurred.
 	 */
@@ -412,19 +418,32 @@ public class Key implements Iterable<String>
 	 */
 	public Key dup ()
 	{
-		return new Key (Elektra.INSTANCE.keyDup (get ()));
+		return dup (KEY_CP_ALL);
+	}
+
+	/**
+	 * Duplicates the key
+	 *
+	 * @param flags what parts of the key to copy (a combination of KEY_CP_* flags)
+	 *
+	 * @return New Key object containing the same information as this key
+	 */
+	public Key dup (final int flags)
+	{
+		return new Key (Elektra.INSTANCE.keyDup (get (), flags));
 	}
 
 	/**
 	 * Copies the information from the source key into this key. Does nothing if null is provided.
 	 *
 	 * @param source Source Key object containing the information to copy
+	 * @param flags what parts of the key to copy (a combination of KEY_CP_* flags)
 	 */
-	public void copy (final Key source)
+	public void copy (final Key source, final int flags)
 	{
 		if (source != null)
 		{
-			Elektra.INSTANCE.keyCopy (get (), source.get ());
+			Elektra.INSTANCE.keyCopy (get (), source.get (), flags);
 		}
 	}
 

@@ -85,7 +85,7 @@ void check_reversibility (const char * msg)
 	char buf[1000];
 	hd->buf = buf;
 
-	Key * encode = keyDup (decode);
+	Key * encode = keyDup (decode, KEY_CP_ALL);
 	elektraHexcodeEncode (encode, hd);
 
 	elektraHexcodeDecode (encode, hd);

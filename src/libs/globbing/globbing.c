@@ -216,7 +216,7 @@ int elektraKsGlob (KeySet * result, KeySet * input, const char * pattern)
 		if (rc == 0)
 		{
 			++ret;
-			ksAppendKey (result, keyDup (current));
+			ksAppendKey (result, keyDup (current, KEY_CP_ALL));
 		}
 	}
 	ksSetCursor (input, cursor);

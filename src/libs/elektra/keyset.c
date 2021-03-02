@@ -348,7 +348,7 @@ KeySet * ksDeepDup (const KeySet * source)
 	for (i = 0; i < s; ++i)
 	{
 		Key * k = source->array[i];
-		Key * d = keyDup (k);
+		Key * d = keyDup (k, KEY_CP_ALL);
 		if (!test_bit (k->flags, KEY_FLAG_SYNC))
 		{
 			keyClearSync (d);
@@ -474,10 +474,11 @@ int ksDel (KeySet * ks)
  * @param ks the keyset object to work with
  * @see ksAppendKey() for details on how keys are inserted in KeySets
  * @retval 0 on success
- * @retval -1 on failure (memory)
+ * @retval -1 on failure (memory) or ks == NULL
  */
 int ksClear (KeySet * ks)
 {
+	if (ks == NULL) return -1;
 	ksClose (ks);
 	// ks->array empty now
 
@@ -1785,7 +1786,7 @@ static Key * elektraLookupByCascading (KeySet * ks, Key * key, elektraLookupFlag
 		}
 
 		// we found a spec key, so we know what to do
-		specKey = keyDup (specKey);
+		specKey = keyDup (specKey, KEY_CP_ALL);
 		keySetBinary (specKey, keyValue (key), keyGetValueSize (key));
 		elektraCopyCallbackMeta (specKey, key);
 		found = elektraLookupBySpec (ks, specKey, options);
@@ -2119,7 +2120,7 @@ static Key * elektraLookupSearch (KeySet * ks, Key * key, elektraLookupFlags opt
 
 static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elektraLookupFlags options)
 {
-	Key * ret = keyDup (key);
+	Key * ret = keyDup (key, KEY_CP_ALL);
 	ksAppendKey (ks, ret);
 	return ret;
 }
@@ -2228,7 +2229,7 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 	if (options & KDB_O_SPEC)
 	{
 		Key * lookupKey = key;
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key);
+		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key, KEY_CP_NAME);
 		ret = elektraLookupBySpec (ks, lookupKey, options & mask);
 		if (test_bit (key->flags, KEY_FLAG_RO_NAME))
 		{
@@ -2239,7 +2240,7 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 	else if (!(options & KDB_O_NOCASCADING) && strcmp (name, "") && name[0] == '/')
 	{
 		Key * lookupKey = key;
-		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key);
+		if (test_bit (key->flags, KEY_FLAG_RO_NAME)) lookupKey = keyDup (key, KEY_CP_NAME);
 		ret = elektraLookupByCascading (ks, lookupKey, options & mask);
 		if (test_bit (key->flags, KEY_FLAG_RO_NAME))
 		{
@@ -2436,9 +2437,12 @@ int ksInit (KeySet * ks)
  *
  * @see ksDel(), ksNew(), keyInit()
  * @retval 0 on success
+ * @retval -1 on ks == NULL
  */
 int ksClose (KeySet * ks)
 {
+	if (ks == NULL) return -1;
+
 	Key * k;
 
 	ksRewind (ks);

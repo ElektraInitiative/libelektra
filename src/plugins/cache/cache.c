@@ -311,7 +311,7 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	if (!elektraStrCmp (keyString (keyGetMeta (parentKey, "cache/clear")), "1"))
 	{
 		// clear all caches
-		Key * cacheFile = keyDup (parentKey);
+		Key * cacheFile = keyDup (parentKey, KEY_CP_ALL);
 		char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeDirectory);
 		ELEKTRA_LOG_DEBUG ("CLEAR CACHES path: %s", cacheFileName);
 
@@ -323,7 +323,7 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	}
 
 	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
-	Key * cacheFile = keyDup (parentKey);
+	Key * cacheFile = keyDup (parentKey, KEY_CP_ALL);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
 	ELEKTRA_LOG_DEBUG ("CACHE get cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey), keyString (parentKey));
@@ -357,7 +357,7 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	}
 
 	// construct cache file name from parentKey (which stores the mountpoint from mountGetMountpoint)
-	Key * cacheFile = keyDup (parentKey);
+	Key * cacheFile = keyDup (parentKey, KEY_CP_ALL);
 	char * cacheFileName = kdbCacheFileName (ch, cacheFile, modeFile);
 	ELEKTRA_ASSERT (cacheFileName != 0, "Could not construct cache file name.");
 	ELEKTRA_LOG_DEBUG ("CACHE set cacheFileName: %s, parentKey: %s, %s", cacheFileName, keyName (parentKey), keyString (parentKey));

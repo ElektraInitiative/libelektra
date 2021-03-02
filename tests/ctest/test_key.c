@@ -370,13 +370,13 @@ static void test_keySetName (void)
 
 	succeed_if (keySetName (key, "/") != -1, "could not set cascading name");
 	succeed_if_same_string (keyName (key), "/");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "/");
 	keyDel (dup);
 
 	keySetName (key, "/c");
 	succeed_if_same_string (keyName (key), "/c");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "/c");
 	keyDel (dup);
 
@@ -384,43 +384,43 @@ static void test_keySetName (void)
 	succeed_if_same_string (keyName (key), "/");
 	keySetName (key, "/cascading");
 	succeed_if_same_string (keyName (key), "/cascading");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "/cascading");
 	keyDel (dup);
 
 	keySetName (key, "/cascading/s/deep/below");
 	succeed_if_same_string (keyName (key), "/cascading/s/deep/below");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "/cascading/s/deep/below");
 	keyDel (dup);
 
 	keySetName (key, "user:/cascading/s/deep/below");
 	succeed_if_same_string (keyName (key), "user:/cascading/s/deep/below");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "user:/cascading/s/deep/below");
 	keyDel (dup);
 
 	keySetName (key, "system:/cascading/s/deep/below");
 	succeed_if_same_string (keyName (key), "system:/cascading/s/deep/below");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "system:/cascading/s/deep/below");
 	keyDel (dup);
 
 	keySetName (key, "meta:/order");
 	succeed_if_same_string (keyName (key), "meta:/order");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/order");
 	keyDel (dup);
 
 	keySetName (key, "meta:/check/type");
 	succeed_if_same_string (keyName (key), "meta:/check/type");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/check/type");
 	keyDel (dup);
 
 	keySetName (key, "meta:/a");
 	succeed_if_same_string (keyName (key), "meta:/a");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/a");
 	keyDel (dup);
 
@@ -432,21 +432,21 @@ static void test_keySetName (void)
 
 	keySetName (key, "/cascading");
 	succeed_if_same_string (keyName (key), "/cascading");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "/cascading");
 	keyDel (dup);
 
 	keySetName (key, "meta:/");
 	succeed_if_same_string (keyName (key), "meta:/");
 	succeed_if (key->key != 0, "null pointer?");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/");
 	keyDel (dup);
 
 	keySetName (key, "meta:/other");
 	succeed_if_same_string (keyName (key), "meta:/other");
 	succeed_if (key->key != 0, "null pointer?");
-	dup = keyDup (key);
+	dup = keyDup (key, KEY_CP_ALL);
 	succeed_if_same_string (keyName (dup), "meta:/other");
 	keyDel (dup);
 
@@ -454,31 +454,31 @@ static void test_keySetName (void)
 	{
 		keySetName (key, "spec:/test");
 		succeed_if_same_string (keyName (key), "spec:/test");
-		dup = keyDup (key);
+		dup = keyDup (key, KEY_CP_ALL);
 		succeed_if_same_string (keyName (dup), "spec:/test");
 		keyDel (dup);
 
 		keySetName (key, "proc:/test");
 		succeed_if_same_string (keyName (key), "proc:/test");
-		dup = keyDup (key);
+		dup = keyDup (key, KEY_CP_ALL);
 		succeed_if_same_string (keyName (dup), "proc:/test");
 		keyDel (dup);
 
 		keySetName (key, "dir:/test");
 		succeed_if_same_string (keyName (key), "dir:/test");
-		dup = keyDup (key);
+		dup = keyDup (key, KEY_CP_ALL);
 		succeed_if_same_string (keyName (dup), "dir:/test");
 		keyDel (dup);
 
 		keySetName (key, "user:/test");
 		succeed_if_same_string (keyName (key), "user:/test");
-		dup = keyDup (key);
+		dup = keyDup (key, KEY_CP_ALL);
 		succeed_if_same_string (keyName (dup), "user:/test");
 		keyDel (dup);
 
 		keySetName (key, "system:/test");
 		succeed_if_same_string (keyName (key), "system:/test");
-		dup = keyDup (key);
+		dup = keyDup (key, KEY_CP_ALL);
 		succeed_if_same_string (keyName (dup), "system:/test");
 		keyDel (dup);
 	}
@@ -710,12 +710,12 @@ static void test_keyNeedSync (void)
 	succeed_if (keyNeedSync (k), "new meta, should definitely need sync");
 
 	clear_bit (k->flags, KEY_FLAG_SYNC);
-	Key * d = keyDup (k);
+	Key * d = keyDup (k, KEY_CP_ALL);
 	succeed_if (keyNeedSync (d), "dup key, should definitely need sync");
 
 	clear_bit (k->flags, KEY_FLAG_SYNC);
 	clear_bit (d->flags, KEY_FLAG_SYNC);
-	succeed_if (keyCopy (d, k) != -1, "copy not successful");
+	succeed_if (keyCopy (d, k, 0) != NULL, "copy not successful");
 	succeed_if (keyNeedSync (d), "copy key, should definitely need sync");
 	succeed_if (!keyNeedSync (k), "sources sync flag should not be affected");
 	keyDel (d);
@@ -752,16 +752,17 @@ static void test_keyNeedSync (void)
 
 static void test_keyCopy (void)
 {
+	// FIXME: add more tests
 	printf ("test copy key\n");
 	Key * k = keyNew ("/", KEY_END);
 	Key * c = keyNew ("user:/name", KEY_END);
 
-	succeed_if (keyCopy (c, k) != -1, "could not copy");
+	succeed_if (keyCopy (c, k, KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "/");
 	succeed_if_same_string (keyName (c), "/");
 
 	succeed_if (keySetName (k, "/abc") != -1, "could not set cascading name");
-	succeed_if (keyCopy (c, k) != -1, "could not copy");
+	succeed_if (keyCopy (c, k, KEY_CP_NAME) != NULL, "could not copy");
 	succeed_if_same_string (keyName (k), "/abc");
 	succeed_if_same_string (keyName (c), "/abc");
 
