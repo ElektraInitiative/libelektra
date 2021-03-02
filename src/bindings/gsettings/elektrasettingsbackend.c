@@ -417,7 +417,6 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!",
 	       "GSEttings Path: ", (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/")));
 	GElektraKeySet * subscribed = gelektra_keyset_cut (ks, cutpoint);
-	g_free (cutpoint);
 
 	GElektraKey * item;
 	gssize pos = 0;
@@ -426,7 +425,8 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 		gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s!", "Subscribed key changed", gsettingskeyname);
 		g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
-			g_free (gsettingskeyname);
+
+		g_free (gsettingskeyname);
 		pos++;
 	}
 	g_variant_unref (variant);
