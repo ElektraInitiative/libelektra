@@ -412,44 +412,25 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 
 	g_mutex_lock (&elektra_settings_kdb_lock);
 	GElektraKeySet * ks = gelektra_keyset_dup (esb->subscription_gks);
-	g_mutex_unlock (&elektra_settings_kdb_lock);
-	GElektraKey * key = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
+
+	GElektraKey * cutpoint = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!",
 	       "GSEttings Path: ", (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/")));
+	GElektraKeySet * subscribed = gelektra_keyset_cut (ks, cutpoint);
+	g_free (cutpoint);
+
 	GElektraKey * item;
 	gssize pos = 0;
-	while ((item = gelektra_keyset_at (ks, pos)) != NULL)
+	while ((item = gelektra_keyset_at (subscribed, pos)) != NULL)
 	{
-		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s with %s", "Comparing", gelektra_key_name (key), gelektra_key_name (item));
-		if (gelektra_key_isbeloworsame (key, item))
-		{
-			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Subscribed key changed");
-			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
-			g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
+		gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
+		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s!", "Subscribed key changed", gsettingskeyname);
+		g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
 			g_free (gsettingskeyname);
-		}
-		else
-		{
-			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s!", "Not subscribed to key");
-
-			// TODO: workaround for broken subscription - notify change anyway
-			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
-			g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
-			g_free (gsettingskeyname);
-		}
 		pos++;
 	}
 	g_variant_unref (variant);
-
-
-// 	g_mutex_lock (&elektra_settings_kdb_lock);
-// 	// TODO: mpranj check if sync needed here
-// 	esb->gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
-// 	if (gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
-// 	{
-// 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
-// 	}
-// 	g_mutex_unlock (&elektra_settings_kdb_lock);
+	g_mutex_unlock (&elektra_settings_kdb_lock);
 }
 
 static void elektra_settings_bus_connected (GObject * source_object G_GNUC_UNUSED, GAsyncResult * res, gpointer user_data)
