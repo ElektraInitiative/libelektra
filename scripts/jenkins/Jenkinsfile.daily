@@ -124,7 +124,7 @@ def cleanupDockerRegistry(targetNode) {
                 def frontendFolder = "${env.HOME}/compose/frontend"
                 dir(frontendFolder){
                     // Run garbage collect on the registry
-                    sh 'docker-compose run --rm registry bin/registry garbage-collect /etc/docker/registry/config.yml'
+                    sh 'COMPOSE_INTERACTIVE_NO_CLI=1 docker-compose run -T --rm registry bin/registry garbage-collect /etc/docker/registry/config.yml'
                 }
             }
         }
