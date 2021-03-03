@@ -112,11 +112,13 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
-- <<TODO>>
+- `keyCopy` and `keyDup` now take an additional flag. See [below](#key-copy).
+- `kdbEnsure` was removed and integrated into `kdbOpen`, which now takes an additional `KeySet * contract` parameter. See [above](#hl-1)
 - <<TODO>>
 
 ### Core
+
+<a id="key-copy"></a>
 
 - The `keyCopy` and `keyDup` functions have been changed. They now take a `flags` argument which specifies which parts
   of the `Key` should be copied.
