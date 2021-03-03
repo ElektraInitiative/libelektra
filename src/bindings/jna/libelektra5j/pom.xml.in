@@ -54,6 +54,9 @@
 							<systemPropertyVariables>
 								<jna.library.path>${basedir}/../../../../lib</jna.library.path>
 							</systemPropertyVariables>
+							<excludes>
+							@MAVEN_TEST_EXCLUDES@
+							</excludes>
 						</configuration>
 					</plugin>
 				</plugins>
@@ -75,6 +78,7 @@
 							<excludes>
 								<exclude>**/KDBTest.java</exclude>
 								<exclude>**/GOptsTest.java</exclude>
+								@MAVEN_TEST_EXCLUDES@
 							</excludes>
 						</configuration>
 					</plugin>

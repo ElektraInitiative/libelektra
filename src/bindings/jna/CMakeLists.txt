@@ -1,6 +1,13 @@
 find_program (MAVEN_EXECUTABLE mvn)
 find_package (Java QUIET)
 
+macro (test_needs_plugin test plugin)
+	list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
+	if (plugin_index GREATER -1)
+		string (APPEND MAVEN_TEST_EXCLUDES "<exclude>**/${test}</exclude>")
+	endif (plugin_index GREATER -1)
+endmacro (test_needs_plugin test plugin)
+
 if (Java_JAVAC_EXECUTABLE)
 
 	if (NOT Java_VERSION)
@@ -31,6 +38,9 @@ if (Java_JAVAC_EXECUTABLE)
 			if (NOT APPLE)
 				set (USE_SYSTEM_CLASS_LOADER "<useSystemClassLoader>false</useSystemClassLoader>")
 			endif (NOT APPLE)
+
+			set (MAVEN_TEST_EXCLUDES "")
+			test_needs_plugin (GOptsTest.java gopts)
 
 			# first fill the elektra version in the pom file @ONLY to avoid replacing pom.xml placeholders which also use the
 			# format ${}
