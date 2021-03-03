@@ -952,7 +952,7 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
 		else
 		{
 			// key has other references -> dup in-place so we can safely rename it
-			Key * dup = keyDup (ks->array[it]);
+			Key * dup = keyDup (ks->array[it], KEY_CP_ALL);
 			keyDecRef (ks->array[it]);
 			dup->ksReference = 1;
 			ks->array[it] = dup;

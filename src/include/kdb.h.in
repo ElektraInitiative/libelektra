@@ -209,7 +209,7 @@ int keyIsLocked (const Key * key, elektraLockFlags what);
 
 static inline Key *keyDup (const Key *source, elektraCopyFlags flags)
 {
-	return keyCopy (keyNew ("/", 0), source, flags);
+	return keyCopy (keyNew ("/", KEY_END), source, flags);
 }
 
 /**************************************

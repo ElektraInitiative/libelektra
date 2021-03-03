@@ -52,7 +52,7 @@ int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv
 		elektraCursor end;
 		for (elektraCursor it = ksFindHierarchy (goptsConfig, configRoot, &end); it < end; it++)
 		{
-			Key * renamed = keyDup (ksAtCursor (goptsConfig, it));
+			Key * renamed = keyDup (ksAtCursor (goptsConfig, it), KEY_CP_ALL);
 			keyReplacePrefix (renamed, configRoot, contractRoot);
 			ksAppendKey (contract, renamed);
 		}
@@ -124,7 +124,7 @@ int elektraGOptsContractFromStrings (KeySet * contract, size_t argsSize, const c
 		elektraCursor end;
 		for (elektraCursor it = ksFindHierarchy (goptsConfig, configRoot, &end); it < end; it++)
 		{
-			Key * renamed = keyDup (ksAtCursor (goptsConfig, it));
+			Key * renamed = keyDup (ksAtCursor (goptsConfig, it), KEY_CP_ALL);
 			keyReplacePrefix (renamed, configRoot, contractRoot);
 			ksAppendKey (contract, renamed);
 		}
