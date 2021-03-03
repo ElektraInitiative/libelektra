@@ -123,6 +123,13 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
+## Examples
+
+- Fix enums in examples/spec. _(Markus Raab)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 ## Documentation
 
 - <<TODO>>

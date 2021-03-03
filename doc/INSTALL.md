@@ -8,21 +8,13 @@ The graph below shows an (incomplete) list of available packages for Elektra.
 
 ## Linux
 
-For the following Linux distributions and package managers 0.8 packages are available:
+For the following Linux distributions and package managers 0.9 packages are available:
 
 - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
 - [Openwrt](https://github.com/openwrt/packages/tree/master/libs/elektra)
 - [OpenSuse](https://software.opensuse.org/package/elektra)
-- [Debian](https://packages.debian.org/de/jessie/libelektra4)
-- [Ubuntu](https://launchpad.net/ubuntu/+source/elektra)
 - [Gentoo](http://packages.gentoo.org/package/app-admin/elektra)
-- [Linux Mint](https://community.linuxmint.com/software/view/elektra-bin)
 - [LinuxBrew](https://github.com/Linuxbrew/homebrew-core/blob/master/Formula/elektra.rb)
-
-For [OpenSUSE, CentOS, Fedora, RHEL and SLE](https://build.opensuse.org/package/show/home:bekun:devel/elektra)
-Kai-Uwe Behrmann kindly provides packages [for download](http://software.opensuse.org/download.html?project=home%3Abekun%3Adevel&package=libelektra4).
-
-We also provide latest releases and latest builds from master (suite postfixed with `-unstable`) in our repositories:
 
 ### Debian/Ubuntu
 
@@ -151,7 +143,12 @@ brew install elektra
 
 ## Windows
 
-Please refer to the section OS Independent below.
+Installation for WSL is described [here](tutorials/contributing-windows.md).
+
+If you prefer native but in functionality limited version you can download MinGW builds from
+[here](https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-buster-mingw-w64/elektra.zip).
+
+Otherwise please refer to the section `OS Independent` below.
 
 ## OS Independent
 
