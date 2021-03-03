@@ -139,12 +139,12 @@ not individual keys' metakeys. It also applies to `kdbGet` and `kdbSet` calls.
 
 ## Examples
 
-Ini files can be found in [/examples/spec](/examples/spec) which should be PWD
+Ni files can be found in [/examples/spec](/examples/spec) which should be PWD
 so that the example works:
 
 ```sh
-cd ~e/examples/spec
-kdb global-mount        # mounts spec plugin by default
+cd ../../../examples/spec
+#kdb global-mount        # spec plugin should be mounted by default
 kdb mount $PWD/spec.ini spec ni
 kdb mount $PWD/spectest.ini /testkey ni
 kdb export /testkey ni     # note: spec can only applied on cascading access
@@ -162,7 +162,9 @@ kdb meta-ls /example/battery/level    # we see it has a check/enum
 kdb meta-get /example/battery/level check/enum    # now we know allowed values
 kdb set /example/battery/level low   # success, low is ok!
 kdb set /example/battery/level x     # fails, not one of the allowed values!
+```
 
+```sh
 cp openicc.ini $(dirname $(kdb file spec:/))
 kdb mount openicc.ini spec:/freedesktop/openicc ni
 kdb spec-mount /freedesktop/openicc
