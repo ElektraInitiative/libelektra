@@ -144,9 +144,9 @@ so that the example works:
 
 ```sh
 cd ../../../examples/spec
-#kdb global-mount        # spec plugin should be mounted by default
-kdb mount $PWD/spec.ini spec ni
-kdb mount $PWD/spectest.ini /testkey ni
+#sudo kdb global-mount        # spec plugin should be mounted by default
+sudo kdb mount $PWD/spec.ini spec ni
+sudo kdb mount $PWD/spectest.ini /testkey ni
 kdb export /testkey ni     # note: spec can only applied on cascading access
 ```
 
@@ -155,9 +155,9 @@ With spec mount one can use (in this case battery.ini needs to be installed in
 everything still works after the source is removed):
 
 ```sh
-cp battery.ini $(dirname $(kdb file spec:/))
-kdb mount battery.ini spec:/example/battery ni
-kdb spec-mount /example/battery
+sudo cp battery.ini $(dirname $(kdb file spec:/))
+sudo kdb mount battery.ini spec:/example/battery ni
+sudo kdb spec-mount /example/battery
 kdb meta-ls /example/battery/level    # we see it has a check/enum
 kdb meta-get /example/battery/level check/enum    # now we know allowed values
 kdb set /example/battery/level low   # success, low is ok!
@@ -166,8 +166,8 @@ kdb set /example/battery/level x     # fails, not one of the allowed values!
 
 ```sh
 cp openicc.ini $(dirname $(kdb file spec:/))
-kdb mount openicc.ini spec:/freedesktop/openicc ni
-kdb spec-mount /freedesktop/openicc
+sudo kdb mount openicc.ini spec:/freedesktop/openicc ni
+sudo kdb spec-mount /freedesktop/openicc
 
 kdb ls /freedesktop/openicc # lets see the whole configuration
 kdb export spec:/freedesktop/openicc ni   # give us details about the specification
