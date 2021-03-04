@@ -1175,3 +1175,52 @@ error:
 	if (name) elektraFree (name);
 	return -1;
 }
+
+static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * curBackend, KeySet * ks, elektraCursor cur)
+{
+	Key * defaultBackendKey = ksLookupByName (backends, "default:/", 0);
+	const struct _BackendData * defaultBackendData = keyValue (defaultBackendKey);
+	Key * backendKey = *curBackend < 0 ? defaultBackendKey : ksAtCursor (backends, *curBackend);
+	const struct _BackendData * backendData = keyValue (backendKey);
+	ksClear (backendData->keys);
+
+	while (cur < ksGetSize (ks))
+	{
+		Key * k = ksAtCursor (ks, cur);
+		Key * nextBackendKey = *curBackend >= ksGetSize (backends) - 1 ? defaultBackendKey : ksAtCursor (backends, *curBackend + 1);
+
+		if (keyIsBelowOrSame (defaultBackendKey, k) == 1)
+		{
+			ksAppendKey (defaultBackendData->keys, keyDup (k, KEY_CP_ALL));
+		}
+		else if (keyCmp (k, nextBackendKey) >= 0)
+		{
+			++*curBackend;
+			cur = backendsDivideInternal (backends, curBackend, ks, cur);
+			continue;
+		}
+		else if (*curBackend < 0 || keyIsBelowOrSame (backendKey, k) == 1)
+		{
+			if (keyNeedSync (k) == 1)
+			{
+				keySetMeta (backendKey, "internal/kdb/needsync", "1");
+			}
+			ksAppendKey (backendData->keys, keyDup (k, KEY_CP_ALL));
+		}
+		else
+		{
+			break;
+		}
+
+		cur++;
+	}
+
+	return cur;
+}
+
+int backendsDivide (KeySet * backends, KeySet * ks)
+{
+	elektraCursor curBackend = -1;
+	elektraCursor ret = backendsDivideInternal (backends, &curBackend, ks, 0);
+	return ret == ksGetSize (ks);
+}

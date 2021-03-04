@@ -354,6 +354,8 @@ struct _KDB
 			up their parts of the global keyset, which they do not need any more.*/
 
 	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
+
+	KeySet * backends;
 };
 
 /**
@@ -400,6 +402,12 @@ struct _Plugin
 	KeySet * modules; /*!< A list of all currently loaded modules.*/
 };
 
+// FIXME: document
+struct _BackendData
+{
+	struct _Plugin * backend;
+	struct _KeySet * keys;
+};
 
 /**
  *
@@ -639,6 +647,8 @@ ElektraError * elektraErrorKeyNotFound (const char * keyname);
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
 ElektraError * elektraErrorNullError (const char * function);
 ElektraError * elektraErrorEnsureFailed (const char * reason);
+
+int splitKsDivide (KeySet * backends, KeySet * ks);
 
 #ifdef __cplusplus
 }
