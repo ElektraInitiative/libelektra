@@ -1133,14 +1133,24 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	if (test_bit (mode, MODE_GLOBALCACHE)) // TODO: remove code duplication here
 	{
 		KeySet * global = elektraPluginGetGlobalKeySet (handle);
-		ksClose (global); // TODO: if we have a global keyset, maybe use ksAppend?
 		KeySet * mmapTimeStamps = (KeySet *) (mappedRegion + OFFSET_GLOBAL_KEYSET);
-		global->array = mmapTimeStamps->array;
-		global->size = mmapTimeStamps->size;
-		global->alloc = mmapTimeStamps->alloc;
-		// to be able to free() the timeStamps KeySet, just set the array flag here
-		global->flags = KS_FLAG_MMAP_ARRAY;
-		// we intentionally do not change the KeySet->opmphm here!
+
+		if (ksGetSize (global) == 0)
+		{
+			// fast replace KeySet, if Global KeySet was empty
+			ksClose (global);
+			global->array = mmapTimeStamps->array;
+			global->size = mmapTimeStamps->size;
+			global->alloc = mmapTimeStamps->alloc;
+			// to be able to free() the timeStamps KeySet, just set the array flag here
+			global->flags = KS_FLAG_MMAP_ARRAY;
+			// we intentionally do not change the KeySet->opmphm here!
+		}
+		else
+		{
+			// do not overwrite, but append Keys to existing Global KeySet
+			ksAppend (global, mmapTimeStamps);
+		}
 	}
 }
 
