@@ -414,21 +414,43 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	GElektraKeySet * ks = gelektra_keyset_dup (esb->subscription_gks);
 
 	GElektraKey * cutpoint = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
-	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!",
-	       "GSEttings Path: ", (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/")));
+
+	gchar * gsettingspath = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!", "GSEttings Path: ", gsettingspath);
+	g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingspath, NULL);
+
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s!", "Cutpoint", gelektra_key_name (cutpoint));
 	GElektraKeySet * subscribed = gelektra_keyset_cut (ks, cutpoint);
+
+	// TODO: remove notifications about non-subscribed keys (DEBUG)
+	if (gelektra_keyset_len (subscribed) == 0)
+	{
+		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "No keys in subscribed keyset");
+
+		GElektraKey * item;
+		gssize pos = 0;
+		while ((item = gelektra_keyset_at (ks, pos)) != NULL)
+		{
+			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1, "/"));
+			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s!", "Skipped non-subscribed key", gsettingskeyname);
+			g_free (gsettingskeyname);
+			pos++;
+		}
+	}
 
 	GElektraKey * item;
 	gssize pos = 0;
 	while ((item = gelektra_keyset_at (subscribed, pos)) != NULL)
 	{
-		gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
+		gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1, "/"));
+
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s!", "Subscribed key changed", gsettingskeyname);
 		g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
 
 		g_free (gsettingskeyname);
 		pos++;
 	}
+
 	g_variant_unref (variant);
 	g_mutex_unlock (&elektra_settings_kdb_lock);
 }
@@ -495,7 +517,7 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
 	g_free (lookupPath);
 
 	guint counter = 1;
-	gchar * pathToSubscribe = g_strconcat ("default:/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
+	gchar * pathToSubscribe = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	gkey = gelektra_key_new (pathToSubscribe, KEY_BINARY, KEY_SIZE, sizeof (guint), // now the size is important
 				 KEY_VALUE, &counter,					// sets the binary value of the counter
 				 KEY_END);
