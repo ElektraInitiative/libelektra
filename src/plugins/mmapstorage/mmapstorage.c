@@ -1099,6 +1099,25 @@ static void mmapOpmphmPredictorDel (OpmphmPredictor * op)
 #endif
 
 /**
+ * @brief Replaces contents of dest with the keyset from src.
+ *
+ * The keyset members of dest are replaced with data from src.
+ *
+ * @param dest destination keyset
+ * @param src source keyset
+ */
+static void mmapFastReplace (KeySet * dest, KeySet * src)
+{
+	ksClose (dest);
+	dest->array = src->array;
+	dest->size = src->size;
+	dest->alloc = src->alloc;
+	// to be able to free() the returned KeySet, just set the array flag here
+	dest->flags = KS_FLAG_MMAP_ARRAY;
+	// we intentionally do not change the KeySet->opmphm here!
+}
+
+/**
  * @brief Replaces contents of a keyset with the keyset from the mapped region.
  *
  * The keyset members are replaced with data from a mapped keyset. The keyset
@@ -1110,12 +1129,7 @@ static void mmapOpmphmPredictorDel (OpmphmPredictor * op)
 static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returned, PluginMode mode)
 {
 	KeySet * keySet = (KeySet *) (mappedRegion + OFFSET_KEYSET);
-	ksClose (returned);
-	returned->array = keySet->array;
-	returned->size = keySet->size;
-	returned->alloc = keySet->alloc;
-	// to be able to free() the returned KeySet, just set the array flag here
-	returned->flags = KS_FLAG_MMAP_ARRAY;
+	mmapFastReplace (returned, keySet);
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (keySet->opmphm)
@@ -1130,7 +1144,7 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 	}
 #endif
 
-	if (test_bit (mode, MODE_GLOBALCACHE)) // TODO: remove code duplication here
+	if (test_bit (mode, MODE_GLOBALCACHE))
 	{
 		KeySet * global = elektraPluginGetGlobalKeySet (handle);
 		KeySet * mmapTimeStamps = (KeySet *) (mappedRegion + OFFSET_GLOBAL_KEYSET);
@@ -1138,13 +1152,7 @@ static void mmapToKeySet (Plugin * handle, char * mappedRegion, KeySet * returne
 		if (ksGetSize (global) == 0)
 		{
 			// fast replace KeySet, if Global KeySet was empty
-			ksClose (global);
-			global->array = mmapTimeStamps->array;
-			global->size = mmapTimeStamps->size;
-			global->alloc = mmapTimeStamps->alloc;
-			// to be able to free() the timeStamps KeySet, just set the array flag here
-			global->flags = KS_FLAG_MMAP_ARRAY;
-			// we intentionally do not change the KeySet->opmphm here!
+			mmapFastReplace (global, mmapTimeStamps);
 		}
 		else
 		{
