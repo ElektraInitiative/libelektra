@@ -32,6 +32,7 @@
 
 #include "kdbinternal.h"
 
+#if 1 == 0
 static char * elektraTrieStartsWith (const char * str, const char * substr);
 static Plugin * elektraTriePrefixLookup (Trie * trie, const char * name);
 
@@ -274,3 +275,4 @@ static Plugin * elektraTriePrefixLookup (Trie * trie, const char * name)
 
 	return ret;
 }
+#endif

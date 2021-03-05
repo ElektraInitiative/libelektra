@@ -14,6 +14,7 @@
 
 // FIXME: lots of commented out tests
 
+#if 1 == 0
 KDB * kdb_new (void)
 {
 	KDB * kdb = elektraCalloc (sizeof (KDB));
@@ -985,6 +986,7 @@ static void test_modules (void)
 	//	keyDel (errorKey);
 	//	ksDel (modules);
 }
+#endif
 
 int main (int argc, char ** argv)
 {
@@ -993,6 +995,7 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
+#if 1 == 0
 	test_mount ();
 	test_minimaltrie ();
 	test_simple ();
@@ -1006,6 +1009,7 @@ int main (int argc, char ** argv)
 	test_init ();
 	test_rootInit ();
 	test_modules ();
+#endif
 
 	printf ("\ntest_trie RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

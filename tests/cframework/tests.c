@@ -354,6 +354,26 @@ void output_plugin (Plugin * plugin)
 	output_keyset (plugin->config);
 }
 
+#if 1 == 0
+void output_trie (Trie * trie)
+{
+	int i;
+	for (i = 0; i < KDB_MAX_UCHAR; ++i)
+	{
+		if (trie->value[i])
+		{
+			printf ("output_trie: %p, mp: %s %s [%d]\n", (void *) trie->value[i], keyName (trie->value[i]->mountpoint),
+				keyString (trie->value[i]->mountpoint), i);
+		}
+		if (trie->children[i]) output_trie (trie->children[i]);
+	}
+	if (trie->empty_value)
+	{
+		printf ("empty_value: %p, mp: %s %s\n", (void *) trie->empty_value, keyName (trie->empty_value->mountpoint),
+			keyString (trie->empty_value->mountpoint));
+	}
+}
+
 void output_split (Split * split)
 {
 	printf ("Split - size: %zu, alloc: %zu\n", split->size, split->alloc);
@@ -383,6 +403,7 @@ void generate_split (Split * split)
 		printf ("succeed_if (ksGetSize(split->keysets[%zu]) == %zd, \"wrong size\");\n", i, ksGetSize (split->keysets[i]));
 	}
 }
+#endif
 
 /**
  * @brief Output warnings if present

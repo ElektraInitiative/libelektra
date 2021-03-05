@@ -83,8 +83,10 @@ namespace ckdb
 extern "C" {
 #endif
 
+#if 1 == 0
 typedef struct _Trie Trie;
 typedef struct _Split Split;
+#endif
 
 
 /* These define the type for pointers to all the kdb functions */
@@ -337,17 +339,21 @@ typedef struct _KDB KDB;
 
 struct _KDB
 {
+#if 1 == 0
 	Trie * trie; /*!< The pointer to the trie holding backends.*/
 
 	Split * split; /*!< A list of all mountpoints. It basically has the
 			same information than in the trie, but it is not trivial
 			to convert from one to the other.*/
+#endif
 
 	KeySet * modules; /*!< A list of all modules loaded at the moment.*/
 
+#if 1 == 0
 	Plugin * defaultBackend; /*!< The default backend as fallback when nothing else is found.*/
 
 	Plugin * initBackend; /*!< The init backend for bootstrapping.*/
+#endif
 
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
@@ -403,12 +409,13 @@ struct _Plugin
 };
 
 // FIXME: document
-struct _BackendData
+typedef struct _BackendData
 {
 	struct _Plugin * backend;
 	struct _KeySet * keys;
-};
+} BackendData;
 
+#if 1 == 0
 /**
  *
  * The private trie structure.
@@ -470,6 +477,7 @@ struct _Split
 		-1 if still uninitialized.
 		Needed to know if a key was removed from a keyset. */
 };
+#endif
 
 // clang-format on
 
@@ -481,6 +489,7 @@ struct _Split
 
 ssize_t keySetRaw (Key * key, const void * newBinary, size_t dataSize);
 
+#if 1 == 0
 /*Methods for split keysets */
 Split * splitNew (void);
 void splitDel (Split * keysets);
@@ -505,7 +514,10 @@ int splitUpdateSize (Split * split);
 void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent);
 int splitCacheCheckState (Split * split, KeySet * global);
 int splitCacheLoadState (Split * split, KeySet * global);
+#endif
 
+int backendsDivide (KeySet * backends, KeySet * ks);
+void backendsMerge (KeySet * backends, KeySet * ks);
 
 /*Backend handling*/
 Plugin * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
@@ -514,7 +526,9 @@ Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey);
 Plugin * backendOpenVersion (KeySet * global, KeySet * modules, Key * errorKey);
 Key * backendGetMountpoint (const Plugin * backend);
 
+#if 1 == 0
 int backendUpdateSize (Split * split, int index, Key * parent, int size);
+#endif
 
 /*Plugin handling*/
 Plugin * elektraPluginOpen (const char * backendname, KeySet * modules, KeySet * config, Key * errorKey);
@@ -524,21 +538,23 @@ size_t elektraPluginGetFunction (Plugin * plugin, const char * name);
 Plugin * elektraPluginFindGlobal (KDB * handle, const char * pluginName);
 
 
+#if 1 == 0
 /*Trie handling*/
 int trieClose (Trie * trie, Key * errorKey);
 Plugin * trieLookup (Trie * trie, const Key * key);
 Trie * trieInsert (Trie * trie, const char * name, Plugin * value);
+#endif
 
 /*Mounting handling */
 int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey);
-int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey);
+int mountDefault (KDB * kdb, KeySet * modules, Key * errorKey);
 int mountModules (KDB * kdb, KeySet * modules, Key * errorKey);
 int mountVersion (KDB * kdb, Key * errorKey);
 int mountGlobals (KDB * kdb, KeySet * keys, KeySet * modules, Key * errorKey);
-int mountBackend (KDB * kdb, Plugin * backend, Key * errorKey);
+int mountBackend (KDB * kdb, const Key * mountpoint, Plugin * backend);
 
-Key * mountGetMountpoint (KDB * handle, const Key * where);
-Plugin * mountGetBackend (KDB * handle, const Key * key);
+const Key * mountGetMountpoint (KDB * handle, Key * where);
+Plugin * mountGetBackend (KDB * handle, Key * key);
 
 void keyInit (Key * key);
 
@@ -647,8 +663,6 @@ ElektraError * elektraErrorKeyNotFound (const char * keyname);
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
 ElektraError * elektraErrorNullError (const char * function);
 ElektraError * elektraErrorEnsureFailed (const char * reason);
-
-int splitKsDivide (KeySet * backends, KeySet * ks);
 
 #ifdef __cplusplus
 }

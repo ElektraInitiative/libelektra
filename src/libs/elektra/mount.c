@@ -81,7 +81,10 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
 				continue;
 			}
 
-			if (mountBackend (kdb, backend, errorKey) == -1)
+			Key * mountpoint = keyNew (keyBaseName (cur), KEY_END);
+			ret = mountBackend (kdb, mountpoint, backend);
+			keyDel (mountpoint);
+			if (ret == -1)
 			{
 				ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting of backend failed");
 				ret = -1;
@@ -109,115 +112,57 @@ int mountOpen (KDB * kdb, KeySet * config, KeySet * modules, Key * errorKey)
  * @retval 0 on success
  * @ingroup mount
  */
-int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
+int mountDefault (KDB * kdb, KeySet * modules, Key * errorKey)
 {
 	// open the defaultBackend the first time
-	kdb->defaultBackend = backendOpenDefault (modules, kdb->global, KDB_DB_FILE, errorKey);
-	kdb->initBackend = 0;
-
-	if (!kdb->defaultBackend)
+	Plugin * defaultBackend = backendOpenDefault (modules, kdb->global, KDB_DB_FILE, errorKey);
+	if (defaultBackend == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not (re)open default backend");
 		return -1;
 	}
+	BackendData defaultBackendData = {
+		.backend = defaultBackend,
+		.keys = ksNew (0, KS_END),
+	};
+	ksAppendKey (kdb->backends,
+		     keyNew ("default:/", KEY_BINARY, KEY_SIZE, sizeof (BackendData), KEY_VALUE, &defaultBackendData, KEY_END));
 
-	if (!inFallback)
+	/* Reopen the init Backend for fresh user experience (update issue) */
+	Plugin * initBackend = backendOpenDefault (modules, kdb->global, KDB_DB_INIT, errorKey);
+	if (initBackend == NULL)
 	{
-		/* Reopen the init Backend for fresh user experience (update issue) */
-		kdb->initBackend = backendOpenDefault (modules, kdb->global, KDB_DB_INIT, errorKey);
-
-		if (!kdb->initBackend)
-		{
-			ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not (re)open init backend");
-			return -1;
-		}
+		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Could not (re)open init backend");
+		return -1;
 	}
+	BackendData initBackendData = {
+		.backend = initBackend,
+		.keys = ksNew (0, KS_END),
+	};
+	ksAppendKey (kdb->backends,
+		     keyNew ("system:/elektra", KEY_BINARY, KEY_SIZE, sizeof (BackendData), KEY_VALUE, &initBackendData, KEY_END));
 
-	Plugin * backend = 0;
-
+	Key * lookupKey = keyNew ("/", KEY_END);
 	for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 	{
+		Plugin * backend;
 		switch (ns)
 		{
 		case KEY_NS_SPEC:
-			backend = mountGetBackend (kdb, keyNew ("spec:/", KEY_END));
-			if (backend != kdb->defaultBackend)
-			{
-				/* It does not matter that spec is not reachable anymore */
-			}
-			else
-			{
-				/* User is reachable, so append that to split */
-				splitAppend (kdb->split, backend, keyNew ("spec:/", KEY_VALUE, "default", KEY_END), 2);
-			}
-			break;
 		case KEY_NS_DIR:
-			backend = mountGetBackend (kdb, keyNew ("dir:/", KEY_END));
-			if (backend != kdb->defaultBackend)
-			{
-				/* It does not matter that dir is not reachable anymore */
-			}
-			else
-			{
-				/* Dir is reachable, so append that to split */
-				splitAppend (kdb->split, backend, keyNew ("dir:/", KEY_VALUE, "default", KEY_END), 2);
-			}
-			break;
-		case KEY_NS_SYSTEM:
-			/* We want system:/elektra still reachable
-			 * through default backend.
-			 * First check if it is still reachable.
-			 */
-			if (inFallback)
-			{
-				backend = mountGetBackend (kdb, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END));
-				if (backend != kdb->defaultBackend)
-				{
-					/* It is not reachable, mount it */
-					mountBackend (kdb, kdb->defaultBackend, errorKey);
-					/*mountBackend will set refcounter*/
-					++kdb->defaultBackend->refcounter;
-					kdb->split->syncbits[kdb->split->size - 1] = 2;
-				}
-				else
-				{
-					/* Lets add the reachable default backend to split.
-					   Note that it is not possible that system:/elektra has the default
-					   backend, but system has not. */
-					splitAppend (kdb->split, backend, keyNew ("system:/", KEY_VALUE, "default", KEY_END), 2);
-				}
-			}
-			else
-			{
-				/* We want system:/elektra still reachable
-				 * through bootstrap backend. */
-				mountBackend (kdb, kdb->initBackend, errorKey);
-				/*mountBackend will set refcounter*/
-				++kdb->initBackend->refcounter;
-				kdb->split->syncbits[kdb->split->size - 1] = 2;
-
-				backend = mountGetBackend (kdb, keyNew ("system:/", KEY_END));
-				if (backend != kdb->defaultBackend)
-				{
-					/* It does not matter that system is not reachable anymore */
-				}
-				else
-				{
-					/* System is reachable, so append that to split */
-					splitAppend (kdb->split, backend, keyNew ("system:/", KEY_VALUE, "default", KEY_END), 2);
-				}
-			}
-			break;
 		case KEY_NS_USER:
-			backend = mountGetBackend (kdb, keyNew ("user:/", KEY_END));
-			if (backend != kdb->defaultBackend)
+		case KEY_NS_SYSTEM:
+			keySetNamespace (lookupKey, ns);
+			backend = mountGetBackend (kdb, lookupKey);
+			if (backend == NULL || backend == defaultBackend)
 			{
-				/* It does not matter that user is not reachable anymore */
-			}
-			else
-			{
-				/* User is reachable, so append that to split */
-				splitAppend (kdb->split, backend, keyNew ("user:/", KEY_VALUE, "default", KEY_END), 2);
+				Key * backendKey = keyDup (lookupKey, KEY_CP_NAME);
+				BackendData backendData = {
+					.backend = defaultBackend,
+					.keys = ksNew (0, KS_END),
+				};
+				keySetBinary (backendKey, &backendData, sizeof (BackendData));
+				ksAppendKey (kdb->backends, backendKey);
 			}
 			break;
 		case KEY_NS_PROC:
@@ -505,7 +450,7 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 			continue;
 		}
 		++oldSize;
-		mountBackend (kdb, backend, errorKey);
+		mountBackend (kdb, cur, backend);
 	}
 
 	ksDel (alreadyMounted);
@@ -523,7 +468,9 @@ int mountModules (KDB * kdb, KeySet * modules, Key * errorKey)
 int mountVersion (KDB * kdb, Key * errorKey)
 {
 	Plugin * backend = backendOpenVersion (kdb->global, kdb->modules, errorKey);
-	mountBackend (kdb, backend, errorKey);
+	Key * mountpoint = keyNew (KDB_SYSTEM_ELEKTRA "/version", KEY_END);
+	mountBackend (kdb, mountpoint, backend);
+	keyDel (mountpoint);
 
 	return 0;
 }
@@ -531,128 +478,56 @@ int mountVersion (KDB * kdb, Key * errorKey)
 /**
  * Mounts a backend into the trie.
  *
- * @pre user must pass correctly allocated backend
- * @post sets reference counter of backend
- *
- * @warning in case of init and default backends, the reference counter needs to
- * be modified *after* calling mountBackend.
  *
  * @param kdb the handle to work with
- * @param backend the backend to mount
- * @param errorKey the key used to report warnings
+ * @param mountpoint where the backend is mounted
+ * @param backend the backend plugin to use
  * @retval -1 on failure
  * @retval 1 on success
  * @ingroup mount
  */
-int mountBackend (KDB * kdb, Plugin * backend, Key * errorKey ELEKTRA_UNUSED)
+int mountBackend (KDB * kdb, const Key * mountpoint, Plugin * backend)
 {
-
-	Key * mp = backendGetMountpoint (backend);
-
-	/* 20 is enough for any of the combinations below. */
-	size_t allocSize = keyGetValueSize (mp) + 20;
-	char * mountpoint = elektraMalloc (allocSize);
-
-	/* Note that you must set the refcounter to the number of insertions
-	   into the trie */
-
-	if (!strcmp (keyString (mp), ""))
+	if (strcmp (keyName (mountpoint), "system:/elektra") == 0)
 	{
-		/* Default backend */
-		kdb->trie = trieInsert (kdb->trie, "system:/elektra/", backend);
-		splitAppend (kdb->split, backend, keyNew ("system:/elektra/", KEY_VALUE, "default", KEY_END), 0);
-		backend->refcounter = 1;
-		return 1;
+		return -1;
 	}
-	else if (!strcmp (keyString (mp), "/"))
+
+	Key * backendKey = keyDup (mountpoint, KEY_CP_NAME);
+	BackendData backendData = {
+		.backend = backend,
+		.keys = ksNew (0, KS_END),
+	};
+	keySetBinary (backendKey, &backendData, sizeof (BackendData));
+
+	if (keyGetNamespace (mountpoint) == KEY_NS_CASCADING)
 	{
-		/* Root backend */
-		backend->refcounter = 0;
-		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
+		Key * backendKeyDir = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
+		keySetNamespace (backendKeyDir, KEY_NS_DIR);
+		ksAppendKey (kdb->backends, backendKeyDir);
+
+		Key * backendKeyUser = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
+		keySetNamespace (backendKeyUser, KEY_NS_USER);
+		ksAppendKey (kdb->backends, backendKeyUser);
+
+		Key * backendKeySystem = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
+		keySetNamespace (backendKeySystem, KEY_NS_SYSTEM);
+		ksAppendKey (kdb->backends, backendKeySystem);
+
+		if (keyGetUnescapedNameSize (mountpoint) == 3)
 		{
-			switch (ns)
-			{
-			case KEY_NS_SPEC:
-				snprintf (mountpoint, allocSize, "spec:%s", keyString (mp));
-				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew ("spec:/", KEY_VALUE, "root", KEY_END), 2);
-				++backend->refcounter;
-				break;
-			case KEY_NS_DIR:
-				snprintf (mountpoint, allocSize, "dir:%s", keyString (mp));
-				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew ("dir:/", KEY_VALUE, "root", KEY_END), 2);
-				++backend->refcounter;
-				break;
-			case KEY_NS_USER:
-				snprintf (mountpoint, allocSize, "user:%s", keyString (mp));
-				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew ("user:/", KEY_VALUE, "root", KEY_END), 2);
-				++backend->refcounter;
-				break;
-			case KEY_NS_SYSTEM:
-				snprintf (mountpoint, allocSize, "system:%s", keyString (mp));
-				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew ("system:/", KEY_VALUE, "root", KEY_END), 2);
-				++backend->refcounter;
-				break;
-			case KEY_NS_PROC:
-			case KEY_NS_NONE:
-			case KEY_NS_META:
-			case KEY_NS_CASCADING:
-			case KEY_NS_DEFAULT:
-				break;
-			}
+			// root key
+			Key * backendKeySpec = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
+			keySetNamespace (backendKeySpec, KEY_NS_SYSTEM);
+			ksAppendKey (kdb->backends, backendKeySpec);
 		}
-	}
-	else if (keyString (mp)[0] == '/')
-	{
-		/* Cascading Backend */
-		backend->refcounter = 0;
-		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
-		{
-			switch (ns)
-			{
-			case KEY_NS_DIR:
-				sprintf (mountpoint, "dir:%s/", keyString (mp));
-				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (mp), KEY_END), 2);
-				++backend->refcounter;
-				break;
-			case KEY_NS_USER:
-				sprintf (mountpoint, "user:%s/", keyString (mp));
-				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (mp), KEY_END), 2);
-				++backend->refcounter;
-				break;
-			case KEY_NS_SYSTEM:
-				sprintf (mountpoint, "system:%s/", keyString (mp));
-				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-				splitAppend (kdb->split, backend, keyNew (mountpoint, KEY_VALUE, keyString (mp), KEY_END), 2);
-				++backend->refcounter;
-				break;
-			case KEY_NS_SPEC:
-			// excluded on purpose because mounting spec is a separate step
-			// (see specmount)
-			case KEY_NS_PROC:
-			case KEY_NS_NONE:
-			case KEY_NS_META:
-			case KEY_NS_CASCADING:
-			case KEY_NS_DEFAULT:
-				break;
-			}
-		}
+
+		keyDel (backendKey);
 	}
 	else
 	{
-		/* Common single mounted backend */
-		sprintf (mountpoint, "%s/", keyString (mp));
-		kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-		splitAppend (kdb->split, backend, keyDup (mp, KEY_CP_ALL), 0);
-		backend->refcounter = 1;
+		ksAppendKey (kdb->backends, backendKey);
 	}
-
-	elektraFree (mountpoint);
 
 	return 1;
 }
@@ -683,17 +558,16 @@ kdbClose (handle);
  * @return the mountpoint associated with the key
  * @ingroup mount
  */
-Key * mountGetMountpoint (KDB * handle, const Key * where)
+const Key * mountGetMountpoint (KDB * handle, Key * where)
 {
-	Plugin * backend_handle;
+	const Key * backendKey = where == NULL ? ksLookupByName (handle->backends, "default:/", 0) : ksLookup (handle->backends, where, 0);
 
-	backend_handle = mountGetBackend (handle, where);
-	if (!backend_handle)
+	if (backendKey == NULL)
 	{
-		return 0;
+		return ksLookupByName (handle->backends, "default:/", 0);
 	}
 
-	return backendGetMountpoint (backend_handle);
+	return backendKey;
 }
 
 
@@ -713,11 +587,15 @@ Key * mountGetMountpoint (KDB * handle, const Key * where)
  * @return the backend handle associated with the key
  * @ingroup mount
  */
-Plugin * mountGetBackend (KDB * handle, const Key * key)
+Plugin * mountGetBackend (KDB * handle, Key * where)
 {
-	if (key == NULL) return handle->defaultBackend;
+	const Key * backendKey = mountGetMountpoint (handle, where);
 
-	Plugin * ret = trieLookup (handle->trie, key);
-	if (!ret) return handle->defaultBackend;
-	return ret;
+	if (backendKey == NULL)
+	{
+		return NULL;
+	}
+
+	const BackendData * backendData = keyValue (backendKey);
+	return backendData->backend;
 }

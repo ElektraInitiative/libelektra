@@ -38,7 +38,7 @@
 #include <kdberrors.h>
 #include <kdbinternal.h>
 
-
+#if 1 == 0
 /**
  * Allocates a new split object.
  *
@@ -1175,13 +1175,20 @@ error:
 	if (name) elektraFree (name);
 	return -1;
 }
+#endif
 
 static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * curBackend, KeySet * ks, elektraCursor cur)
 {
 	Key * defaultBackendKey = ksLookupByName (backends, "default:/", 0);
-	const struct _BackendData * defaultBackendData = keyValue (defaultBackendKey);
+	if (defaultBackendKey == NULL && *curBackend < 0)
+	{
+		// happens during bootstrap
+		*curBackend = 0;
+	}
+
+	const BackendData * defaultBackendData = keyValue (defaultBackendKey);
 	Key * backendKey = *curBackend < 0 ? defaultBackendKey : ksAtCursor (backends, *curBackend);
-	const struct _BackendData * backendData = keyValue (backendKey);
+	const BackendData * backendData = keyValue (backendKey);
 	ksClear (backendData->keys);
 
 	while (cur < ksGetSize (ks))
@@ -1223,4 +1230,18 @@ int backendsDivide (KeySet * backends, KeySet * ks)
 	elektraCursor curBackend = -1;
 	elektraCursor ret = backendsDivideInternal (backends, &curBackend, ks, 0);
 	return ret == ksGetSize (ks);
+}
+
+void backendsMerge (KeySet * backends, KeySet * ks)
+{
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		const Key * backendKey = ksAtCursor (backends, i);
+		const BackendData * backendData = keyValue (backendKey);
+
+		if (keyGetNamespace (backendKey) != KEY_NS_DEFAULT && strcmp (keyName (backendKey), "system:/elektra") != 0)
+		{
+			ksAppend (ks, backendData->keys);
+		}
+	}
 }
