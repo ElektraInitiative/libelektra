@@ -18,97 +18,35 @@
 
 #include <stdio.h>
 
-/**
- * @see ElektraIoPluginSetBinding (kdbioplugin.h)
- */
-void elektraDbusRecvSetIoBinding (Plugin * handle, KeySet * parameters)
-{
-	ELEKTRA_NOT_NULL (handle);
-	ELEKTRA_NOT_NULL (parameters);
-	ElektraDbusRecvPluginData * data = elektraPluginGetData (handle);
-	ELEKTRA_NOT_NULL (data);
-
-	Key * ioBindingKey = ksLookupByName (parameters, "/ioBinding", 0);
-	ELEKTRA_NOT_NULL (ioBindingKey);
-	ElektraIoInterface * binding = *(ElektraIoInterface **) keyValue (ioBindingKey);
-
-	data->ioBinding = binding;
-}
-
-/**
- * @see ElektraNotificationOpenNotification (kdbnotificationinternal.h)
- */
-void elektraDbusRecvOpenNotification (Plugin * handle, KeySet * parameters)
+static int setupNotificationCallback (Plugin * handle)
 {
 	ELEKTRA_NOT_NULL (handle);
 	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
 	ELEKTRA_NOT_NULL (pluginData);
 
+	KeySet * global = elektraPluginGetGlobalKeySet (handle);
+
 	ElektraNotificationCallback callback;
-	Key * callbackKey = ksLookupByName (parameters, "/callback", 0);
-	ELEKTRA_NOT_NULL (callbackKey);
+	Key * callbackKey = ksLookupByName (global, "system:/elektra/notification/callback", 0);
+	const void * callbackPtr = keyValue (callbackKey);
+
+	if (callbackPtr == NULL)
+	{
+		return -1;
+	}
+
 	callback = *(ElektraNotificationCallback *) keyValue (callbackKey);
 
 	ElektraNotificationCallbackContext * context;
-	Key * contextKey = ksLookupByName (parameters, "/context", 0);
-	if (contextKey != NULL)
-	{
-		context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
-	}
-	else
-	{
-		context = NULL;
-	}
+	Key * contextKey = ksLookupByName (global, "system:/elektra/notification/context", 0);
+	const void * contextPtr = keyValue (contextKey);
+	context = contextPtr == NULL ? NULL : *(ElektraNotificationCallbackContext **) contextPtr;
+
 
 	pluginData->notificationCallback = callback;
 	pluginData->notificationContext = context;
 
-	// init dbus connections
-	if (pluginData->ioBinding && !pluginData->dbusInitialized)
-	{
-		int result;
-
-		result = elektraDbusRecvSetupReceive (pluginData, DBUS_BUS_SYSTEM, elektraDbusRecvMessageHandler);
-		if (!result)
-		{
-			ELEKTRA_LOG_WARNING ("setup for system bus failed!");
-		}
-		result = elektraDbusRecvSetupReceive (pluginData, DBUS_BUS_SESSION, elektraDbusRecvMessageHandler);
-		if (!result)
-		{
-			ELEKTRA_LOG_WARNING ("setup for session bus failed!");
-		}
-
-		pluginData->dbusInitialized = 1;
-	}
-	else
-	{
-		ELEKTRA_LOG_DEBUG ("no I/O binding present. plugin in noop mode");
-	}
-}
-
-void elektraDbusRecvCloseNotification (Plugin * handle, KeySet * parameters ELEKTRA_UNUSED)
-{
-	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
-	pluginData->notificationCallback = NULL;
-	pluginData->notificationContext = NULL;
-
-	if (pluginData->dbusInitialized)
-	{
-		int result;
-		result = elektraDbusRecvTeardownReceive (pluginData, DBUS_BUS_SYSTEM, elektraDbusRecvMessageHandler);
-		if (!result)
-		{
-			ELEKTRA_LOG_WARNING ("teardown for system bus failed!");
-		}
-		result = elektraDbusRecvTeardownReceive (pluginData, DBUS_BUS_SESSION, elektraDbusRecvMessageHandler);
-		if (!result)
-		{
-			ELEKTRA_LOG_WARNING ("teardown for session bus failed!");
-		}
-
-		pluginData->dbusInitialized = 0;
-	}
+	return 0;
 }
 
 /**
@@ -131,6 +69,20 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 			     dbus_message_is_signal (message, interface, "KeyChanged");
 	if (processMessage)
 	{
+		Plugin * handle = (Plugin *) data;
+		ELEKTRA_NOT_NULL (handle);
+		ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
+		ELEKTRA_NOT_NULL (pluginData);
+
+		if (pluginData->notificationCallback == NULL)
+		{
+			if (setupNotificationCallback (handle) != 0)
+			{
+				ELEKTRA_LOG_WARNING ("notificationCallback not set up, ignoring dbus message");
+				return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+			}
+		}
+
 		char * keyName;
 		DBusError error;
 		dbus_error_init (&error);
@@ -144,8 +96,6 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 		else
 		{
 			Key * changed = keyNew (keyName, KEY_END);
-			ElektraDbusRecvPluginData * pluginData = (ElektraDbusRecvPluginData *) data;
-			ELEKTRA_NOT_NULL (pluginData);
 			pluginData->notificationCallback (changed, pluginData->notificationContext);
 		}
 
@@ -158,16 +108,51 @@ DBusHandlerResult elektraDbusRecvMessageHandler (DBusConnection * connection ELE
 int elektraDbusRecvOpen (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	ElektraDbusRecvPluginData * data = (ElektraDbusRecvPluginData *) elektraPluginGetData (handle);
-	if (!data)
+	if (data == NULL)
 	{
 		data = elektraMalloc (sizeof (*data));
 		data->ioBinding = NULL;
-		data->notificationCallback = NULL;
 		data->dbusInitialized = 0;
 		data->systemBus = NULL;
 		data->sessionBus = NULL;
+		data->notificationCallback = NULL;
+		data->notificationContext = NULL;
+		elektraPluginSetData (handle, data);
 	}
-	elektraPluginSetData (handle, data);
+
+	if (data->ioBinding == NULL)
+	{
+		KeySet * global = elektraPluginGetGlobalKeySet (handle);
+
+		Key * ioBindingKey = ksLookupByName (global, "system:/elektra/io/binding", 0);
+		const void * bindingPtr = keyValue (ioBindingKey);
+		ElektraIoInterface * binding = bindingPtr == NULL ? NULL : *(ElektraIoInterface **) keyValue (ioBindingKey);
+
+		data->ioBinding = binding;
+	}
+
+	// init dbus connections
+	if (data->ioBinding)
+	{
+		int result;
+
+		result = elektraDbusRecvSetupReceive (handle, DBUS_BUS_SYSTEM, elektraDbusRecvMessageHandler);
+		if (!result)
+		{
+			ELEKTRA_LOG_WARNING ("setup for system bus failed!");
+		}
+		result = elektraDbusRecvSetupReceive (handle, DBUS_BUS_SESSION, elektraDbusRecvMessageHandler);
+		if (!result)
+		{
+			ELEKTRA_LOG_WARNING ("setup for session bus failed!");
+		}
+
+		data->dbusInitialized = 1;
+	}
+	else
+	{
+		ELEKTRA_LOG_DEBUG ("no I/O binding present. plugin in noop mode");
+	}
 
 	return 1; /* success */
 }
@@ -176,19 +161,14 @@ int elektraDbusRecvGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key *
 {
 	if (!strcmp (keyName (parentKey), "system:/elektra/modules/dbusrecv"))
 	{
-		KeySet * contract = ksNew (
-			30, keyNew ("system:/elektra/modules/dbusrecv", KEY_VALUE, "dbusrecv plugin waits for your orders", KEY_END),
-			keyNew ("system:/elektra/modules/dbusrecv/exports", KEY_END),
-			keyNew ("system:/elektra/modules/dbusrecv/exports/open", KEY_FUNC, elektraDbusRecvOpen, KEY_END),
-			keyNew ("system:/elektra/modules/dbusrecv/exports/get", KEY_FUNC, elektraDbusRecvGet, KEY_END),
-			keyNew ("system:/elektra/modules/dbusrecv/exports/close", KEY_FUNC, elektraDbusRecvClose, KEY_END),
-			keyNew ("system:/elektra/modules/dbusrecv/exports/setIoBinding", KEY_FUNC, elektraDbusRecvSetIoBinding, KEY_END),
-			keyNew ("system:/elektra/modules/dbusrecv/exports/openNotification", KEY_FUNC, elektraDbusRecvOpenNotification,
-				KEY_END),
-			keyNew ("system:/elektra/modules/dbusrecv/exports/closeNotification", KEY_FUNC, elektraDbusRecvCloseNotification,
-				KEY_END),
+		KeySet * contract =
+			ksNew (30, keyNew ("system:/elektra/modules/dbusrecv", KEY_VALUE, "dbusrecv plugin waits for your orders", KEY_END),
+			       keyNew ("system:/elektra/modules/dbusrecv/exports", KEY_END),
+			       keyNew ("system:/elektra/modules/dbusrecv/exports/open", KEY_FUNC, elektraDbusRecvOpen, KEY_END),
+			       keyNew ("system:/elektra/modules/dbusrecv/exports/get", KEY_FUNC, elektraDbusRecvGet, KEY_END),
+			       keyNew ("system:/elektra/modules/dbusrecv/exports/close", KEY_FUNC, elektraDbusRecvClose, KEY_END),
 #include ELEKTRA_README
-			keyNew ("system:/elektra/modules/dbusrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			       keyNew ("system:/elektra/modules/dbusrecv/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 
@@ -204,6 +184,23 @@ int elektraDbusRecvClose (Plugin * handle, Key * parentKey ELEKTRA_UNUSED)
 	if (pluginData == NULL)
 	{
 		return 1;
+	}
+
+	if (pluginData->dbusInitialized)
+	{
+		int result;
+		result = elektraDbusRecvTeardownReceive (handle, DBUS_BUS_SYSTEM, elektraDbusRecvMessageHandler);
+		if (!result)
+		{
+			ELEKTRA_LOG_WARNING ("teardown for system bus failed!");
+		}
+		result = elektraDbusRecvTeardownReceive (handle, DBUS_BUS_SESSION, elektraDbusRecvMessageHandler);
+		if (!result)
+		{
+			ELEKTRA_LOG_WARNING ("teardown for session bus failed!");
+		}
+
+		pluginData->dbusInitialized = 0;
 	}
 
 	if (pluginData->systemBus)

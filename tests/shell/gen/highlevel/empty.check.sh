@@ -34,13 +34,15 @@ void callAll (Elektra * elektra)
 {
 }
 
-int main (int argc, const char ** argv)
+extern const char * const * environ;
+
+int main (int argc, const char * const * argv)
 {
 	exitForSpecload (argc, argv);
 
 	ElektraError * error = NULL;
 	Elektra * elektra = NULL;
-	int rc = loadConfiguration (&elektra, &error);
+	int rc = loadConfiguration (&elektra, argc, argv, environ, &error);
 
 	if (rc == -1)
 	{

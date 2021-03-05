@@ -1,7 +1,5 @@
 libelektra_0.8 {
 	# kdbnotification.h;
-	elektraNotificationClose;
-	elektraNotificationOpen;
 	elektraNotificationRegisterCallback;
 	elektraNotificationRegisterCallbackSameOrBelow;
 	elektraNotificationRegisterDouble;
@@ -22,4 +20,9 @@ libelektra_0.8 {
 	elektraNotificationRegisterLong;
 	elektraNotificationRegisterUnsignedInt;
 	elektraNotificationRegisterUnsignedLong;
+};
+
+libelektra_0.8 {
+	# kdbnotification.h;
+	elektraNotificationContract;
 };

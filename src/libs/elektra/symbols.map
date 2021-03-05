@@ -33,7 +33,6 @@ libelektra_0.8 {
 	# kdb.h
 	## KDB functions
 	kdbClose;
-	kdbEnsure;
 	kdbGet;
 	kdbOpen;
 	kdbSet;
@@ -138,9 +137,13 @@ libelektra_1.0 {
 	ELEKTRA_WARNING_VALIDATION_SYNTACTIC;
 	ELEKTRA_WARNING_VALIDATION_SEMANTIC;
 
+	# kdb.h
 	keyMeta;
 	keyLock;
 	keyIsLocked;
+
+	elektraGOptsContract;
+	elektraGOptsContractFromStrings;
 };
 
 libelektraprivate_1.0 {
@@ -169,6 +172,10 @@ libelektraprivate_1.0 {
 	elektraProcessPlugin;
 	elektraProcessPlugins;
 	keySetNamespace;
+
+	ksRename;
+	ksFindHierarchy;
+	keyReplacePrefix;
 
 	# kdblogger.h
 	elektraLog;

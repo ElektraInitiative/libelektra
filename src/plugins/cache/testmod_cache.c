@@ -41,7 +41,7 @@ static void test_cacheNonBackendKeys (void)
 	KeySet * conf = ksNew (0, KS_END);
 
 	Key * key = keyNew ("user:/tests/cache", KEY_END);
-	KDB * handle = kdbOpen (key);
+	KDB * handle = kdbOpen (NULL, key);
 
 	// the key should be in the keyset, but should not be cached
 	Key * doNotCache = keyNew ("user:/tests/cache/somekey", KEY_END);

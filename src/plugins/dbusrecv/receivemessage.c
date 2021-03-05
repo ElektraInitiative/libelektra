@@ -55,14 +55,16 @@ static DBusConnection * dbusGetConnection (DBusBusType type, ElektraIoInterface 
  * @internal
  * Revert changes made to D-Bus connection by elektraDbusRecvSetupReceive().
  *
- * @param  pluginData  Plugin data
+ * @param  handle      Plugin handle
  * @param  connection  D-bus bus type
  * @param  filter_func message handler
  * @retval 1 on success
  * @retval 0 on error
  */
-int elektraDbusRecvTeardownReceive (ElektraDbusRecvPluginData * pluginData, DBusBusType type, DBusHandleMessageFunction filter_func)
+int elektraDbusRecvTeardownReceive (Plugin * handle, DBusBusType type, DBusHandleMessageFunction filter_func)
 {
+	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
+
 	DBusConnection * connection;
 	DBusError error;
 
@@ -95,7 +97,7 @@ int elektraDbusRecvTeardownReceive (ElektraDbusRecvPluginData * pluginData, DBus
 	dbus_bus_remove_match (connection, RECEIVE_MATCH_RULE, &error);
 	if (dbus_error_is_set (&error)) goto error;
 
-	dbus_connection_remove_filter (connection, filter_func, pluginData);
+	dbus_connection_remove_filter (connection, filter_func, handle);
 
 	return 1;
 error:
@@ -108,14 +110,16 @@ error:
  * @internal
  * Setup D-Bus connection for receiving Elektra's signal messages.
  *
- * @param  pluginData  Plugin data
+ * @param  handle      Plugin handle
  * @param  connection  D-Bus connection
  * @param  filter_func message handler
  * @retval 1 on success
  * @retval 0 on error
  */
-int elektraDbusRecvSetupReceive (ElektraDbusRecvPluginData * pluginData, DBusBusType type, DBusHandleMessageFunction filter_func)
+int elektraDbusRecvSetupReceive (Plugin * handle, DBusBusType type, DBusHandleMessageFunction filter_func)
 {
+	ElektraDbusRecvPluginData * pluginData = elektraPluginGetData (handle);
+
 	DBusConnection * connection;
 	DBusError error;
 
@@ -148,7 +152,7 @@ int elektraDbusRecvSetupReceive (ElektraDbusRecvPluginData * pluginData, DBusBus
 	dbus_bus_add_match (connection, RECEIVE_MATCH_RULE, &error);
 	if (dbus_error_is_set (&error)) goto error;
 
-	if (!dbus_connection_add_filter (connection, filter_func, pluginData, NULL))
+	if (!dbus_connection_add_filter (connection, filter_func, handle, NULL))
 	{
 		goto error;
 	}

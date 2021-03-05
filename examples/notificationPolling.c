@@ -89,24 +89,20 @@ int main (void)
 
 	KeySet * config = ksNew (20, KS_END);
 
+	KeySet * contract = ksNew (0, KS_END);
+	elektraNotificationContract (contract);
+
 	Key * key = keyNew ("/sw/example/notification/#0/current", KEY_END);
-	KDB * kdb = kdbOpen (key);
+	KDB * kdb = kdbOpen (contract, key);
 	if (kdb == NULL)
 	{
 		printf ("could not open KDB, aborting\n");
 		return -1;
 	}
 
-	int result = elektraNotificationOpen (kdb);
-	if (!result)
-	{
-		printf ("could not init notification, aborting\n");
-		return -1;
-	}
-
 	int value = 0;
 	Key * intKeyToWatch = keyNew ("/sw/example/notification/#0/current/value", KEY_END);
-	result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
+	int result = elektraNotificationRegisterInt (kdb, intKeyToWatch, &value);
 	if (!result)
 	{
 		printf ("could not register variable, aborting\n");
@@ -141,7 +137,6 @@ int main (void)
 
 	// Cleanup
 	resetTerminalColor ();
-	elektraNotificationClose (kdb);
 	kdbClose (kdb, key);
 	ksDel (config);
 	keyDel (intKeyToWatch);

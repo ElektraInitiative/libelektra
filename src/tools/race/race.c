@@ -24,7 +24,7 @@ pthread_barrier_t * bar;
 void * writer (void * pV_data ELEKTRA_UNUSED)
 {
 	Key * parent = keyNew ("user:/test/race", KEY_END);
-	KDB * h = kdbOpen (parent);
+	KDB * h = kdbOpen (NULL, parent);
 	char buffer[4096];
 	unsigned long tid = (unsigned long) pthread_self ();
 	int pid = getpid ();

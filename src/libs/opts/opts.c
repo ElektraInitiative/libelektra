@@ -111,9 +111,6 @@ static int writeOptions (Key * command, Key * commandKey, Key * commandArgs, boo
  * NOTE: Per default option processing DOES NOT stop, when a non-option string is encountered in @p argv.
  * If you want processing to stop, set the metadata `posixly = 1` on @p parentKey.
  *
- * The basic usage of this function is as follows:
- * @snippet optsSnippets.c basic use
- *
  *
  * @param ks	    The KeySet containing the specification for the options.
  * @param argc	    The number of strings in argv.
@@ -135,16 +132,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	elektraCursor initial = ksGetCursor (ks);
 
 	Key * specParent = keyDup (parentKey, KEY_CP_ALL);
-	if (keyGetNamespace (parentKey) != KEY_NS_SPEC)
-	{
-		keySetName (specParent, "spec");
-
-		const char * parent = strchr (keyName (parentKey), '/');
-		if (parent != NULL)
-		{
-			keyAddName (specParent, parent + 1);
-		}
-	}
+	keySetNamespace (specParent, KEY_NS_SPEC);
 
 	struct Specification spec;
 	if (!processSpec (&spec, ks, specParent, parentKey))
@@ -303,26 +291,26 @@ const char * elektraGetOptsHelpCommand (Key * errorKey)
 }
 
 /**
- * Extracts the help message from the @p errorKey used in elektraGetOpts().
+ * Extracts the help message from the @p helpKey used in elektraGetOpts().
  *
- * @param errorKey The same Key as passed to elektraGetOpts() as errorKey.
+ * @param helpKey  The same Key as passed to elektraGetOpts() as parentKey.
  * @param usage	   If this is not NULL, it will be used instead of the default usage line.
  * 		   Use elektraGetOptsHelpCommand() to check which command was invoked to get the right usage line.
  * @param prefix   If this is not NULL, it will be inserted between the usage line and the options list.
  *
- * @return The full help message extracted from @p errorKey, or NULL if no help message was found.
+ * @return The full help message extracted from @p helpKey, or NULL if no help message was found.
  * The returned string has to be freed with elektraFree().
  */
-char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char * prefix)
+char * elektraGetOptsHelpMessage (Key * helpKey, const char * usage, const char * prefix)
 {
-	const char * command = elektraGetOptsHelpCommand (errorKey);
+	const char * command = elektraGetOptsHelpCommand (helpKey);
 
 	Key * lookup;
 	if (usage == NULL)
 	{
 		lookup = keyNew ("meta:/internal/libopts/help/usage", KEY_END);
 		keyAddBaseName (lookup, command);
-		usage = keyGetMetaStringByKey (errorKey, lookup);
+		usage = keyGetMetaStringByKey (helpKey, lookup);
 	}
 
 	if (usage == NULL)
@@ -332,7 +320,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 
 	lookup = keyNew ("meta:/internal/libopts/help/options", KEY_END);
 	keyAddBaseName (lookup, command);
-	const char * options = keyGetMetaStringByKey (errorKey, lookup);
+	const char * options = keyGetMetaStringByKey (helpKey, lookup);
 	if (options == NULL)
 	{
 		options = "";
@@ -340,7 +328,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 
 	lookup = keyNew ("meta:/internal/libopts/help/commands", KEY_END);
 	keyAddBaseName (lookup, command);
-	const char * commands = keyGetMetaStringByKey (errorKey, lookup);
+	const char * commands = keyGetMetaStringByKey (helpKey, lookup);
 	if (commands == NULL)
 	{
 		commands = "";
@@ -348,7 +336,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 
 	lookup = keyNew ("meta:/internal/libopts/help/args", KEY_END);
 	keyAddBaseName (lookup, command);
-	const char * args = keyGetMetaStringByKey (errorKey, lookup);
+	const char * args = keyGetMetaStringByKey (helpKey, lookup);
 	if (args == NULL)
 	{
 		args = "";
@@ -356,7 +344,7 @@ char * elektraGetOptsHelpMessage (Key * errorKey, const char * usage, const char
 
 	lookup = keyNew ("meta:/internal/libopts/help/envs", KEY_END);
 	keyAddBaseName (lookup, command);
-	const char * envs = keyGetMetaStringByKey (errorKey, lookup);
+	const char * envs = keyGetMetaStringByKey (helpKey, lookup);
 	if (envs == NULL)
 	{
 		envs = "";

@@ -21,13 +21,16 @@ public interface Elektra extends Library {
 	 *
 	 **************************************/
 
-	Pointer kdbOpen (Pointer p);
+	Pointer kdbOpen (Pointer contract, Pointer parent);
 
 	int kdbClose (Pointer handle, Pointer errorPointer);
 
 	int kdbGet (Pointer handle, Pointer returned, Pointer parentPointer);
 
 	int kdbSet (Pointer handle, Pointer returned, Pointer parentPointer);
+
+	int elektraGOptsContractFromStrings (Pointer contract, long argsSize, String args, long envSize, String env, Pointer parentKey,
+					     Pointer goptsConfig);
 
 	/**************************************
 	 *

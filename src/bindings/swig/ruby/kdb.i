@@ -66,6 +66,7 @@ namespace std {
  *
  ****************************************************************************/
 
+%constant void *KEY_END = KEY_END;
 %constant void *KS_END = KS_END;
 %constant const char *VERSION = KDB_VERSION;
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;
@@ -727,5 +728,12 @@ aliased to '<=>', implemented for sorting operations.
 %catches (kdb::KDBException) kdb::KDB::open;
 %catches (kdb::KDBException) kdb::KDB::get;
 %catches (kdb::KDBException) kdb::KDB::set;
+
+%include "std_vector.i"
+%include "std_string.i"
+
+namespace std {
+  %template(StringVector) vector<string>;
+}
 
 %include "kdb.hpp"

@@ -66,14 +66,14 @@ GType gelektra_kdb_get_type(void);
  */
 
 /* constructor */
-GElektraKdb *gelektra_kdb_open(GElektraKey *error);
+GElektraKdb *gelektra_kdb_open(GElektraKeySet * contract, GElektraKey *error);
 GElektraKdb *gelektra_kdb_make(KDB *handle);
 
 /* destructor */
 gint gelektra_kdb_close(GElektraKdb *kdb, GElektraKey *error);
 
 /* basic methods */
-void gelektra_kdb_gi_open(GElektraKdb *kdb, GElektraKey *error);
+void gelektra_kdb_gi_open(GElektraKdb *kdb, GElektraKeySet * contract, GElektraKey *error);
 gint gelektra_kdb_get(GElektraKdb *kdb, GElektraKeySet *returned,
 	GElektraKey *parent);
 gint gelektra_kdb_set(GElektraKdb *kdb, GElektraKeySet *returned,

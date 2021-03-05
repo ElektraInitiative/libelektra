@@ -1,16 +1,16 @@
 /**
  * @file
  *
- * @brief
+ * @brief Example for using command-line options
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
 #include <kdb.h>
 #include <kdbease.h>
+#include <kdbgopts.h>
 #include <kdbhelper.h>
 
-#include <kdbopts.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -69,7 +69,7 @@ static KeySet * createSpec (void)
 static int setupSpec (void)
 {
 	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
 
@@ -93,10 +93,11 @@ static int setupSpec (void)
 	return 1;
 }
 
+
 static void removeSpec (void)
 {
 	Key * parentKey = keyNew (SPEC_BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb, ks, parentKey);
 	KeySet * spec = ksCut (ks, parentKey);
@@ -110,8 +111,11 @@ static void removeSpec (void)
 // Main example
 // -----------------
 
-int main (void)
+int main (int argc, const char * const * argv)
 {
+	// normally, you shouldn't mount the spec here
+	// it should be mounted already
+	// we do this just to keep the example self-contained
 	if (!setupSpec ())
 	{
 		fprintf (stderr, "ERROR: Couldn't setup spec, keys exist!\n");
@@ -119,29 +123,15 @@ int main (void)
 	}
 
 	Key * parentKey = keyNew (BASE_KEY, KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KeySet * goptsConfig = ksNew (0, KS_END);
+	KeySet * contract = ksNew (0, KS_END);
 
-	KeySet * contract = ksNew (1, keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END), KS_END);
-	int rc = kdbEnsure (kdb, contract, parentKey);
-	if (rc == 1)
-	{
-		fprintf (stderr, "ERROR: Contract could not be ensured!\n%s\n", keyString (keyGetMeta (parentKey, "error/reason")));
-		kdbClose (kdb, parentKey);
-		keyDel (parentKey);
-		removeSpec ();
-		return EXIT_FAILURE;
-	}
-	else if (rc == -1)
-	{
-		fprintf (stderr, "ERROR: Contract malformed/NULL pointer!\n%s\n", keyString (keyGetMeta (parentKey, "error/reason")));
-		kdbClose (kdb, parentKey);
-		keyDel (parentKey);
-		removeSpec ();
-		return EXIT_FAILURE;
-	}
+	elektraGOptsContract (contract, argc, argv, (const char * const *) environ, parentKey, goptsConfig);
+
+	KDB * kdb = kdbOpen (contract, parentKey);
 
 	KeySet * ks = ksNew (0, KS_END);
-	rc = kdbGet (kdb, ks, parentKey);
+	int rc = kdbGet (kdb, ks, parentKey);
 
 	if (rc == -1)
 	{
@@ -156,9 +146,8 @@ int main (void)
 	Key * helpKey = ksLookupByName (ks, "proc:/elektra/gopts/help", 0);
 	if (helpKey != NULL && elektraStrCmp (keyString (helpKey), "1") == 0)
 	{
-		char * help = elektraGetOptsHelpMessage (helpKey, NULL, NULL);
+		const char * help = keyString (ksLookupByName (ks, "proc:/elektra/gopts/help/message", 0));
 		printf ("%s\n", help);
-		elektraFree (help);
 		kdbClose (kdb, parentKey);
 		keyDel (parentKey);
 		ksDel (ks);
@@ -251,6 +240,9 @@ int main (void)
 	keyDel (parentKey);
 	ksDel (ks);
 
+	// normally, you shouldn't remove the spec,
+	// because you shouldn't have mounted it inside the application,
+	// we do this just to keep the example self-contained
 	removeSpec ();
 
 	return EXIT_SUCCESS;

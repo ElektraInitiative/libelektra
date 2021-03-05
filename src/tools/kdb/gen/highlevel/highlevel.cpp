@@ -42,6 +42,7 @@ const char * HighlevelGenTemplate::Params::SpecValidation = "specValidation";
 const char * HighlevelGenTemplate::Params::InstallPrefix = "installPrefix";
 const char * HighlevelGenTemplate::Params::EmbedHelpFallback = "embedHelpFallback";
 const char * HighlevelGenTemplate::Params::UseCommands = "useCommands";
+const char * HighlevelGenTemplate::Params::InitWithPointers = "initWithPointers";
 
 enum class EmbeddedSpec
 {
@@ -260,6 +261,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 										      { "switch", EnumConversion::Trie },
 										      { "strcmp", EnumConversion::Strcmp } });
 	auto useCommands = getBoolParameter (Params::UseCommands, false);
+	auto initWithPointers = getBoolParameter (Params::InitWithPointers, true);
 
 
 	std::string cascadingParent;
@@ -299,7 +301,8 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 			    { "embed_spec?", specHandling == EmbeddedSpec::Full },
 			    { "embed_defaults?", specHandling == EmbeddedSpec::Defaults },
 			    { "spec_as_defaults?", specHandling == EmbeddedSpec::Full },
-			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) } };
+			    { "more_headers", list (additionalHeaders.begin (), additionalHeaders.end ()) },
+			    { "init_with_pointers?", initWithPointers } };
 
 	list enums;
 	list structs;
@@ -625,14 +628,14 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	}
 
 	kdb::KeySet contract;
-	contract.append (kdb::Key ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/mountglobal/gopts", KEY_END));
 
 	// make elektraOpen() succeed, if there are missing required keys, but we are in helpMode
-	contract.append (kdb::Key ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
 
 	if (specValidation == SpecValidation::Minimal)
 	{
-		contract.append (kdb::Key ("system:/elektra/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
+		contract.append (kdb::Key ("system:/elektra/contract/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
 	}
 
 	data["keys_count"] = std::to_string (keys.size ());

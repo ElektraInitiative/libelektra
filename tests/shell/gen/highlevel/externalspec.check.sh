@@ -56,11 +56,13 @@ void callAll (Elektra * elektra)
 	ERROR_CHECK (ELEKTRA_TAG_MYSTRING)
 }
 
-int main (int argc, const char ** argv)
+extern const char * const * environ;
+
+int main (int argc, const char * const * argv)
 {
 	ElektraError * error = NULL;
 	Elektra * elektra = NULL;
-	int rc = loadConfiguration (&elektra, &error);
+	int rc = loadConfiguration (&elektra, argc, argv, environ, &error);
 
 	if (rc == -1)
 	{

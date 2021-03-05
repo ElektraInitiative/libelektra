@@ -164,7 +164,11 @@ void elektraInternalnotificationDoUpdate (Key * changedKey, ElektraNotificationC
 
 	if (kdbChanged)
 	{
-		context->kdbUpdate (context->kdb, changedKey);
+		KeySet * global = elektraPluginGetGlobalKeySet (plugin);
+		Key * kdbKey = ksLookupByName (global, "system:/elektra/kdb", 0);
+		const void * kdbPtr = keyValue (kdbKey);
+		KDB * kdb = kdbPtr == NULL ? NULL : *(KDB **) keyValue (kdbKey);
+		context->kdbUpdate (kdb, changedKey);
 	}
 	keyDel (changedKey);
 }
@@ -522,9 +526,6 @@ int elektraInternalnotificationGet (Plugin * handle, KeySet * returned, Key * pa
 			keyNew ("system:/elektra/modules/internalnotification/exports/close", KEY_FUNC, elektraInternalnotificationClose,
 				KEY_END),
 
-			keyNew ("system:/elektra/modules/internalnotification/exports/notificationCallback", KEY_FUNC,
-				elektraInternalnotificationDoUpdate, KEY_END),
-
 			// Export register* functions
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (Int), INTERNALNOTIFICATION_EXPORT_FUNCTION (UnsignedInt),
 			INTERNALNOTIFICATION_EXPORT_FUNCTION (Long), INTERNALNOTIFICATION_EXPORT_FUNCTION (UnsignedLong),
@@ -607,6 +608,23 @@ int elektraInternalnotificationOpen (Plugin * handle, Key * parentKey ELEKTRA_UN
 		pluginState->conversionErrorCallbackContext = NULL;
 	}
 
+	KeySet * config = elektraPluginGetConfig (handle);
+	KeySet * global = elektraPluginGetGlobalKeySet (handle);
+
+	if (global != NULL)
+	{
+		ksAppendKey (global,
+			     keyNew ("system:/elektra/notification/callback", KEY_FUNC, elektraInternalnotificationDoUpdate, KEY_END));
+
+		Key * contextKey = ksLookupByName (config, "/context", 0);
+		if (contextKey != NULL)
+		{
+			ElektraNotificationCallbackContext * context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
+			ksAppendKey (global, keyNew ("system:/elektra/notification/context", KEY_BINARY, KEY_SIZE, sizeof (context),
+						     KEY_VALUE, &context, KEY_END));
+		}
+	}
+
 	return 1;
 }
 
@@ -649,6 +667,15 @@ int elektraInternalnotificationClose (Plugin * handle, Key * parentKey ELEKTRA_U
 		elektraFree (pluginState);
 		elektraPluginSetData (handle, NULL);
 	}
+
+	KeySet * config = elektraPluginGetConfig (handle);
+	Key * contextKey = ksLookupByName (config, "/context", KDB_O_POP);
+	if (contextKey != NULL)
+	{
+		ElektraNotificationCallbackContext * context = *(ElektraNotificationCallbackContext **) keyValue (contextKey);
+		elektraFree (context);
+	}
+	keyDel (contextKey);
 
 	return 1;
 }

@@ -49,20 +49,20 @@ static bool checkHighlevelContract (const char * application, KeySet * contract,
  * 			default values inside of the KDB.
  * 			If a key in this KeySet doesn't have a value, we will use the value of the "default"
  * 			metakey of this key.
- * @param contract      Will be passed to kdbEnsure() as the contract. If it is NULL, kdbEnsure() won't be called.
- * 			Unlike @p defaults, this KeySet is consumed and must not be used afterwards.
+ * @param contract      Will be passed to kdbOpen() as the contract.
  * @param error		If an error occurs during initialization of the Elektra instance, this pointer
  * 			will be used to report the error.
  *
  * @return An Elektra instance initialized for the application (free with elektraClose()).
  *
  * @see elektraClose
- * @see kdbEnsure
+ * @see kdbOpen
  */
 Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * contract, ElektraError ** error)
 {
 	Key * const parentKey = keyNew (application, KEY_END);
-	KDB * const kdb = kdbOpen (parentKey);
+
+	KDB * const kdb = kdbOpen (contract, parentKey);
 
 	if (kdb == NULL)
 	{
@@ -75,12 +75,21 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	if (contract != NULL)
 	{
-		Key * contractCut = keyNew ("system:/elektra/highlevel", KEY_END);
+		// TODO: set default spec config to use ERROR
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec", KEY_END));
+		ksAppendKey (contract,
+			     keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
+		ksAppendKey (contract,
+			     keyNew ("system:/elektra/contract/mountglobal/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
+		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec/config/missing/log", KEY_VALUE, "1", KEY_END));
+
+		Key * contractCut = keyNew ("system:/elektra/contract/highlevel", KEY_END);
 		KeySet * highlevelContract = ksCut (contract, contractCut);
 
 		if (ksGetSize (highlevelContract) > 0)
 		{
-			if (ksLookupByName (highlevelContract, "system:/elektra/highlevel/helpmode/ignore/require", 0) != NULL)
+			ksAppend (contract, highlevelContract);
+			if (ksLookupByName (highlevelContract, "system:/elektra/contract/highlevel/helpmode/ignore/require", 0) != NULL)
 			{
 				ignoreRequireInHelpMode = 1;
 			}
@@ -89,7 +98,6 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 			{
 				keyDel (contractCut);
 				ksDel (highlevelContract);
-				ksDel (contract); // consume contract, like kdbEnsure would
 
 				kdbClose (kdb, parentKey);
 				keyDel (parentKey);
@@ -100,33 +108,6 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 		keyDel (contractCut);
 		ksDel (highlevelContract);
-
-		ksAppendKey (contract, keyNew ("system:/elektra/ensure/plugins/global/spec", KEY_VALUE, "remount", KEY_END));
-		ksAppendKey (contract,
-			     keyNew ("system:/elektra/ensure/plugins/global/spec/config/conflict/get", KEY_VALUE, "ERROR", KEY_END));
-		ksAppendKey (contract,
-			     keyNew ("system:/elektra/ensure/plugins/global/spec/config/conflict/set", KEY_VALUE, "ERROR", KEY_END));
-		ksAppendKey (contract, keyNew ("system:/elektra/ensure/plugins/global/spec/config/missing/log", KEY_VALUE, "1", KEY_END));
-
-		const int kdbEnsureResult = kdbEnsure (kdb, contract, parentKey);
-
-		if (kdbEnsureResult == 1)
-		{
-			const char * reason = keyString (keyGetMeta (parentKey, "error/reason"));
-			*error = elektraErrorEnsureFailed (reason);
-
-			kdbClose (kdb, parentKey);
-			keyDel (parentKey);
-			return NULL;
-		}
-		else if (kdbEnsureResult != 0)
-		{
-			*error = elektraErrorFromKey (parentKey);
-
-			kdbClose (kdb, parentKey);
-			keyDel (parentKey);
-			return NULL;
-		}
 	}
 
 	KeySet * const config = ksNew (0, KS_END);
@@ -348,7 +329,7 @@ void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults)
 static bool minimalValidation (const char * application)
 {
 	Key * parent = keyNew ("system:/elektra/mountpoints", KEY_END);
-	KDB * kdb = kdbOpen (parent);
+	KDB * kdb = kdbOpen (NULL, parent);
 	KeySet * mountpoints = ksNew (0, KS_END);
 	if (kdbGet (kdb, mountpoints, parent) < 0)
 	{
@@ -398,7 +379,7 @@ static bool minimalValidation (const char * application)
 
 bool checkHighlevelContract (const char * application, KeySet * contract, ElektraError ** error)
 {
-	Key * validationKey = ksLookupByName (contract, "system:/elektra/highlevel/validation", 0);
+	Key * validationKey = ksLookupByName (contract, "system:/elektra/contract/highlevel/validation", 0);
 	if (validationKey != NULL)
 	{
 		if (strcmp (keyString (validationKey), "minimal") == 0 && !minimalValidation (application))

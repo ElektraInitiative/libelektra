@@ -11,7 +11,7 @@ public class Key implements Iterable<String>
 
 	private static final String WARNINGS = "warnings";
 	// constants
-	public static final int KEY_END = 0;
+	public static final Pointer KEY_END = null;
 	public static final int KEY_NAME = 1;
 	public static final int KEY_VALUE = 1 << 1;
 	public static final int KEY_COMMENT = 1 << 3;
@@ -133,7 +133,7 @@ public class Key implements Iterable<String>
 				args[cur++] = m;
 			}
 		}
-		args[cur] = Integer.valueOf (KEY_END);
+		args[cur] = KEY_END;
 		return create (name, args);
 	}
 

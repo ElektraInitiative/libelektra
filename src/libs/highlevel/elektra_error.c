@@ -247,23 +247,6 @@ ElektraError * elektraErrorConversionFromString (KDBType targetType, const char 
 }
 
 /**
- * Creates a "kdbEnsure failed" error
- *
- * This intended for the case when kdbEnsure() returns 1.
- *
- * @param reason The error/reason metadata returned by kdbEnsure().
- *
- * @return A newly allocated ElektraError (free with elektraErrorReset()).
- */
-ElektraError * elektraErrorEnsureFailed (const char * reason)
-{
-	char * description = elektraFormat ("The given contract could not be ensured: %s", reason);
-	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
-	elektraFree (description);
-	return error;
-}
-
-/**
  * Creates a "minimal validation failed" error
  *
  * @param application parent key as passed to elektraOpen()

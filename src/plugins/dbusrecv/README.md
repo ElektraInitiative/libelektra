@@ -29,7 +29,7 @@ kdb global-mount dbus dbusrecv
 This plugin is designed to be used as a transport plugin for Elektra's
 notification feature.
 If notification is not enabled (i.e. in the tool `kdb` or in any other
-application that does not use `elektraNotificationOpen()`) this plugin performs
+application that does not use `elektraNotifiationContract()`) this plugin performs
 no actions.
 
 This plugin cannot be directly used to receive notifications.

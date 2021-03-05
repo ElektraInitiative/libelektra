@@ -25,9 +25,21 @@ impl Drop for KDB {
 
 impl KDB {
     /// Opens the session with the Key database.
-    pub fn open<'a>() -> Result<Self, KDBError<'a>> {
+    pub fn open<'a, C>(contract: C) -> Result<Self, KDBError<'a>>
+        where 
+            C: Into<Option<KeySet>> {
+
         let mut key = StringKey::new_empty();
-        let kdb_ptr = unsafe { elektra_sys::kdbOpen(key.as_ptr()) };
+        let contract_opt = contract.into();
+
+        let kdb_ptr = match contract_opt {
+            Some(mut contract) => {
+                unsafe { elektra_sys::kdbOpen(contract.as_ptr(), key.as_ptr()) }
+            }
+            None => {
+                unsafe { elektra_sys::kdbOpen(std::ptr::null_mut(), key.as_ptr()) }
+            }
+        };
 
         if kdb_ptr.is_null() {
             Err(KDBError::new(key.duplicate(CopyOption::KEY_CP_ALL)))
@@ -82,25 +94,6 @@ impl KDB {
         }
     }
 
-    /// This method can be used the given KDB handle meets certain clauses, specified in contract.
-    /// The return value is true on success,
-    /// and false if clauses of the contract are unmet.
-    pub fn ensure<'a>(
-        &mut self,
-        keyset: &mut KeySet,
-        key: &mut StringKey<'a>,
-    ) -> Result<bool, KDBError<'a>> {
-        let ret_val =
-            unsafe { elektra_sys::kdbEnsure(self.as_ptr(), keyset.as_ptr(), key.as_ptr()) };
-
-        if ret_val == 0 {
-            Ok(true)
-        } else if ret_val == 1 {
-            Ok(false)
-        } else {
-            Err(KDBError::new(key.duplicate(CopyOption::KEY_CP_ALL)))
-        }
-    }
     /// Returns the raw pointer of the KDB object.
     /// Should be used with caution. In particular,
     /// the pointer should only be modified with
@@ -490,7 +483,7 @@ mod test {
 
     fn set_kdb() {
         let mut parent_key = get_parent_key();
-        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
+        let mut kdb = KDB::open(None).unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(10);
         kdb.get(&mut ks, &mut parent_key)
             .unwrap_or_else(|e| panic!("{}", e));
@@ -514,7 +507,7 @@ mod test {
 
     fn get_kdb() {
         let mut parent_key = get_parent_key();
-        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
+        let mut kdb = KDB::open(None).unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(2);
         let get_res = kdb
             .get(&mut ks, &mut parent_key)
@@ -536,7 +529,7 @@ mod test {
 
     fn remove_test_keys() {
         let mut parent_key = get_parent_key();
-        let mut kdb = KDB::open().unwrap_or_else(|e| panic!("{}", e));
+        let mut kdb = KDB::open(None).unwrap_or_else(|e| panic!("{}", e));
         let mut ks = KeySet::with_capacity(10);
         let get_res = kdb
             .get(&mut ks, &mut parent_key)

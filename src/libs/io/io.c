@@ -17,34 +17,22 @@
 
 #include <stdio.h>
 
-void elektraIoSetBinding (KDB * kdb, ElektraIoInterface * ioBinding)
+int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding)
 {
-	kdb->ioBinding = ioBinding;
+	if (contract == NULL || ioBinding == NULL) return -1;
 
-	KeySet * parameters =
-		ksNew (1, keyNew ("/ioBinding", KEY_BINARY, KEY_SIZE, sizeof (ioBinding), KEY_VALUE, &ioBinding, KEY_END), KS_END);
+	ksAppendKey (contract, keyNew ("system:/elektra/contract/globalkeyset/io/binding", KEY_BINARY, KEY_SIZE, sizeof (ioBinding),
+				       KEY_VALUE, &ioBinding, KEY_END));
 
-	// iterate over global plugins
-	for (int positionIndex = 0; positionIndex < NR_GLOBAL_POSITIONS; positionIndex++)
-	{
-		for (int subPositionIndex = 0; subPositionIndex < NR_GLOBAL_SUBPOSITIONS; subPositionIndex++)
-		{
-			Plugin * plugin = kdb->globalPlugins[positionIndex][subPositionIndex];
-			if (!plugin)
-			{
-				continue;
-			}
-
-			elektraDeferredCall (plugin, "setIoBinding", parameters);
-		}
-	}
-
-	ksDel (parameters);
+	return 0;
 }
 
 ElektraIoInterface * elektraIoGetBinding (KDB * kdb)
 {
-	return kdb->ioBinding;
+	Key * ioBindingKey = ksLookupByName (kdb->global, "system:/elektra/io/binding", 0);
+	const void * bindingPtr = keyValue (ioBindingKey);
+	ElektraIoInterface * binding = bindingPtr == NULL ? NULL : *(ElektraIoInterface **) keyValue (ioBindingKey);
+	return binding;
 }
 
 // ################################

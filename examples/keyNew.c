@@ -15,7 +15,7 @@ static void shortExamples(void)
 {
 {
 //! [Simple]
-Key *k = keyNew(0);
+Key *k = keyNew("/", KEY_END);
 // work with it
 keyDel (k);
 //! [Simple]
@@ -131,7 +131,7 @@ ksDel(ks2); // k is now deleted
 }{
 
 //! [Ref]
-Key *k = keyNew(0); // ref counter = 0
+Key *k = keyNew("/", KEY_END); // ref counter = 0
 keyIncRef(k); // ref counter = 1
 keyDel(k); // key will not be deleted
 keyDecRef(k);
@@ -141,7 +141,7 @@ keyDel(k);
 }{
 
 //! [Multi Ref]
-Key *k = keyNew(0); // ref counter 0
+Key *k = keyNew("/", KEY_END); // ref counter 0
 keyIncRef(k); // ref counter of key 1
 keyDel (k);   // has no effect
 keyIncRef(k); // ref counter of key 2

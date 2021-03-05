@@ -54,15 +54,6 @@ class KDB(unittest.TestCase):
 			db.get(ks, TEST_NS)
 			self.assertEqual(ks[TEST_NS + "/mykey"].value, "new_value")
 
-	def test_ensure(self):
-		with kdb.KDB() as db:
-			ks = kdb.KeySet()
-			k = kdb.Key("system:/elektra/ensure/plugins/global/gopts", kdb.KEY_VALUE, "mounted")
-			parent = kdb.Key("system:/elektra")
-			rc = db.ensure (ks, parent)
-			self.assertEqual(rc, 0)
-			db.get(ks, parent)
-
 	@classmethod
 	def tearDownClass(cls):
 		# cleanup

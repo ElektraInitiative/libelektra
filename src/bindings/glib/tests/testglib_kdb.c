@@ -18,7 +18,7 @@ static void test_open_close (void)
 	GElektraKey * error = gelektra_key_new (NULL);
 
 	/* open */
-	kdb = gelektra_kdb_open (error);
+	kdb = gelektra_kdb_open (NULL, error);
 	succeed_if (kdb != NULL, "unable to open kdb");
 	succeed_if (!gelektra_key_hasmeta (error, "error"), "unexpected error");
 
@@ -28,7 +28,7 @@ static void test_open_close (void)
 	g_object_unref (kdb);
 
 	/* open + close */
-	KDB * ckdb = kdbOpen (error->key);
+	KDB * ckdb = kdbOpen (NULL, error->key);
 	kdb = gelektra_kdb_make (ckdb);
 	succeed_if (kdb->handle == ckdb, "handle not wrapped");
 	g_object_unref (kdb);
@@ -46,7 +46,7 @@ static void test_get_set (void)
 	/*** set ***/
 	/* open kdb */
 	error = gelektra_key_new (NULL);
-	kdb = gelektra_kdb_open (error);
+	kdb = gelektra_kdb_open (NULL, error);
 
 	ks = gelektra_keyset_new (100, GELEKTRA_KEYSET_END);
 
@@ -78,7 +78,7 @@ static void test_get_set (void)
 
 	/*** get ***/
 	/* open kdb again */
-	kdb = gelektra_kdb_open (error);
+	kdb = gelektra_kdb_open (NULL, error);
 
 	/* check if the value is stored */
 	gelektra_keyset_clear (ks);
@@ -91,7 +91,7 @@ static void test_get_set (void)
 	g_object_unref (kdb);
 
 	/*** cleanup ***/
-	kdb = gelektra_kdb_open (error);
+	kdb = gelektra_kdb_open (NULL, error);
 	gelektra_keyset_clear (ks);
 	gelektra_kdb_get (kdb, ks, base);
 	gelektra_keyset_cut (ks, base);

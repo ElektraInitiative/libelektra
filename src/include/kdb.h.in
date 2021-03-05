@@ -57,8 +57,14 @@ enum {
 	KEY_LOCK_NAME=1<<17,
 	KEY_LOCK_VALUE=1<<18,
 	KEY_LOCK_META=1<<19,
-	KEY_END=0,
 };
+
+#ifdef __cplusplus
+#define KEY_END (static_cast<void *> (0))
+#else
+#define KEY_END ((void *) 0)
+#endif
+
 typedef int elektraLockFlags;
 typedef int elektraKeyFlags;
 
@@ -113,16 +119,14 @@ typedef struct _KeySet	KeySet;
  *
  **************************************/
 
-KDB * kdbOpen(Key *errorKey);
+KDB * kdbOpen(const KeySet * contract, Key *parentKey);
+
 int kdbClose(KDB *handle, Key *errorKey);
 
 int kdbGet(KDB *handle, KeySet *returned,
 	Key *parentKey);
 int kdbSet(KDB *handle, KeySet *returned,
 	Key *parentKey);
-
-int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey);
-
 
 /**************************************
  *
@@ -131,7 +135,7 @@ int kdbEnsure (KDB * handle, KeySet * contract, Key * parentKey);
  **************************************/
 
 /* Basic Methods */
-Key *keyNew(const char *keyname, ...);
+Key *keyNew(const char *keyname, ...) ELEKTRA_SENTINEL;
 Key *keyVNew(const char *keyname, va_list ap);
 
 Key * keyCopy(Key *dest, const Key *source, elektraCopyFlags flags);
@@ -205,7 +209,7 @@ int keyIsLocked (const Key * key, elektraLockFlags what);
 
 static inline Key *keyDup (const Key *source, elektraCopyFlags flags)
 {
-	return keyCopy (keyNew ("/", 0), source, flags);
+	return keyCopy (keyNew ("/", KEY_END), source, flags);
 }
 
 /**************************************

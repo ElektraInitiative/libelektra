@@ -24,20 +24,47 @@ public class KDB implements AutoCloseable
 
 	/**
 	 * Basic constructor of KDB class<br>
-	 * Opens KDB session with the given parentKey to write possible warning and error information to
+	 * Opens KDB session with the given errorKey to write possible warning and error information to
 	 *
-	 * @param parentKey Parent key being used for this KDB session; it is used to store warning and error information
+	 * @param errorKey used to store warning and error information
 	 * @return New KDB session object
 	 */
-	public static KDB open (final Key parentKey)
+	public static KDB open (final Key errorKey) throws KDBException
 	{
-		return new KDB (Elektra.INSTANCE.kdbOpen (parentKey.get ()));
+		Pointer kdb = Elektra.INSTANCE.kdbOpen (null, errorKey.get ());
+
+		if (kdb == null)
+		{
+			throw ExceptionMapperService.getMappedException (errorKey);
+		}
+
+		return new KDB (kdb);
+	}
+
+	/**
+	 * Basic constructor of KDB class<br>
+	 * Opens KDB session with the given errorKey to write possible warning and error information to
+	 *
+	 * @param contract the contract that will be ensured by kdbOpen()
+	 * @param errorKey used to store warning and error information
+	 * @return New KDB session object
+	 */
+	public static KDB open (final KeySet contract, final Key errorKey) throws KDBException
+	{
+		Pointer kdb = Elektra.INSTANCE.kdbOpen (contract.get (), errorKey.get ());
+
+		if (kdb == null)
+		{
+			throw ExceptionMapperService.getMappedException (errorKey);
+		}
+
+		return new KDB (kdb);
 	}
 
 	/**
 	 * Clean-up function initiating closing of the KDB session
 	 */
-	@Override public void close ()
+	@Override public void close () throws KDBException
 	{
 		final Key k = Key.create ("");
 		close (k);
@@ -85,9 +112,57 @@ public class KDB implements AutoCloseable
 	 *
 	 * @param parentKey Key holding error and warning information
 	 */
-	public void close (final Key parentKey)
+	public void close (final Key parentKey) throws KDBException
 	{
-		Elektra.INSTANCE.kdbClose (kdb, parentKey.get ());
+		final int ret = Elektra.INSTANCE.kdbClose (kdb, parentKey.get ());
+
+		if (ret == -1)
+		{
+			throw ExceptionMapperService.getMappedException (parentKey);
+		}
+	}
+
+	/**
+	 * Creates a contract for use with {@link KDB#open} that mounts and configures the gopts plugin
+	 *
+	 * @param contract    the KeySet into which the contract is written
+	 * @param args        the arguments that will be converted into argc and argv for gopts
+	 * @param env         the environment variables that gopts will use
+	 * @param parentKey   the parent key that gopts will use
+	 * @param goptsConfig the config KeySet used for mounting gopts
+	 *
+	 * @throws IllegalArgumentException if any of the arguments are null
+	 */
+	public static void goptsContract (final KeySet contract, final String[] args, final String[] env, final Key parentKey,
+					  final KeySet goptsConfig)
+	{
+		if (contract == null || args == null || env == null || parentKey == null || goptsConfig == null)
+		{
+			throw new IllegalArgumentException ("all arguments must be non-null");
+		}
+
+		StringBuilder argsBuilder = new StringBuilder ();
+		for (String arg : args)
+		{
+			argsBuilder.append (arg).append ('\0');
+		}
+		String argsString = argsBuilder.toString ();
+
+		StringBuilder envBuilder = new StringBuilder ();
+		for (String e : env)
+		{
+			envBuilder.append (e).append ('\0');
+		}
+		String envString = envBuilder.toString ();
+
+		final int ret = Elektra.INSTANCE.elektraGOptsContractFromStrings (contract.get (), argsString.length (), argsString,
+										  envString.length (), envString, parentKey.get (),
+										  goptsConfig.get ());
+
+		if (ret == -1)
+		{
+			throw new AssertionError ("all arguments must be non-null");
+		}
 	}
 
 	/**

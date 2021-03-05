@@ -8,6 +8,9 @@
 // Include the created bindings
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
+pub const KEY_END: *const std::ffi::c_void = std::ptr::null();
+pub const KS_END: *const std::ffi::c_void = std::ptr::null();
+
 #[cfg(test)]
 mod tests {
     use super::{

@@ -26,7 +26,7 @@ The recommended way is to globally mount the plugin together with the zeromqsend
 This plugin is designed to be used as a transport plugin for Elektra's
 notification feature.
 If notification is not enabled (i.e. in the tool `kdb` or in any other
-application that does not use `elektraNotificationOpen()`) this plugin does
+application that does not use `elektraNotifiationContract()`) this plugin does
 performs no operations.
 
 Since ZeroMQ sockets only provide a 1:n mapping (i.e. one publisher with many

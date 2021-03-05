@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
 import sys
+import os
 import kdb
 
 base_key = "/sw/org/kdbdummy/#0/current"
-spec_base_key = "spec" + base_key
+spec_base_key = "spec:" + base_key
 
 spec = kdb.KeySet(10, kdb.Key(spec_base_key, kdb.KEY_META, "command", ""),
 		  kdb.Key(spec_base_key + "/printversion",
@@ -66,40 +67,14 @@ def removeSpec():
 def array_index(index):
 	return "_" * (len(str(index)) - 1) + str(index)
 
-def get_python_interpreter_arguments():
-	import ctypes
-	argc = ctypes.c_int()
-	argv = ctypes.POINTER(ctypes.c_wchar_p if sys.version_info >= (3, ) else ctypes.c_char_p)()
-	ctypes.pythonapi.Py_GetArgcArgv(ctypes.byref(argc), ctypes.byref(argv))
-
-	# Ctypes are weird. They can't be used in list comprehensions, you can't use `in` with them, and you can't
-	# use a for-each loop on them. We have to do an old-school for-i loop.
-	arguments = list()
-	for i in range(argc.value):
-		arguments.append(argv[i])
-
-	return arguments
-
-# we need to calculate the number of arguments given to the python interpreter itself
-# this number is given to 'gopts' as an offset, so it only looks at the keys actually relvant to this script
-argv_offset = len(get_python_interpreter_arguments()) - len(sys.argv)
-
 setupSpec()
-with kdb.KDB() as db:
-	error_key = kdb.Key(spec_base_key)
-	rc = db.ensure(kdb.KeySet(2,
-			kdb.Key("system:/elektra/ensure/plugins/global/gopts", kdb.KEY_VALUE, "remount"), 
-			kdb.Key("system:/elektra/ensure/plugins/global/gopts/config/offset", kdb.KEY_VALUE, str(argv_offset))
-			), error_key)
-	if rc == 1:
-		print("ERROR: Contract could not be ensured!\n", error_key.getMeta("error/reason").value, file=sys.stderr)
-		removeSpec()
-		exit(1)
-	elif rc == -1:
-		print("ERROR: Contract malformed/NULL pointer!\n", error_key.getMeta("error/reason").value, file=sys.stderr)
-		removeSpec()
-		exit(1)
-	
+
+contract = kdb.KeySet(0)
+config = kdb.KeySet(0)
+
+kdb.goptsContract (contract, sys.argv, os.environ, base_key, config)
+
+with kdb.KDB(contract) as db:
 	ks = kdb.KeySet(0)
 	db.get(ks, spec_base_key)
 	

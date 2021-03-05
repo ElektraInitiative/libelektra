@@ -331,7 +331,38 @@ int elektraCacheGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * pa
 	// load cache from storage
 	keySetString (cacheFile, cacheFileName);
 	elektraFree (cacheFileName);
-	if (ch->cacheStorage->kdbGet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
+
+	// not the whole global keyset is cached
+	// -> backup existing data
+	KeySet * global = ch->cacheStorage->global;
+	ch->cacheStorage->global = ksNew (0, KS_END);
+
+	// now we load the cache
+	int result = ch->cacheStorage->kdbGet (ch->cacheStorage, returned, cacheFile);
+
+	// extract the cached parts from the cache result
+	Key * cacheCutpoint = keyNew ("system:/elektra/cache", KEY_END);   // internal cache data
+	Key * cachedCutpoint = keyNew ("system:/elektra/cached", KEY_END); // other data that requests caching
+
+	if (global != NULL)
+	{
+		KeySet * cut = ksCut (ch->cacheStorage->global, cacheCutpoint);
+		ksAppend (global, cut);
+		ksDel (cut);
+
+		cut = ksCut (ch->cacheStorage->global, cachedCutpoint);
+		ksAppend (global, cut);
+		ksDel (cut);
+	}
+
+	keyDel (cacheCutpoint);
+	keyDel (cachedCutpoint);
+
+	// delete the rest and restore global keyset
+	ksDel (ch->cacheStorage->global);
+	ch->cacheStorage->global = global;
+
+	if (result == ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		keyDel (cacheFile);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -368,7 +399,31 @@ int elektraCacheSet (Plugin * handle, KeySet * returned, Key * parentKey)
 
 	// write cache to temp file
 	keySetString (cacheFile, tmpFile);
-	if (ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile) == ELEKTRA_PLUGIN_STATUS_SUCCESS)
+
+	// don't cache the whole global keyset
+	Key * cacheCutpoint = keyNew ("system:/elektra/cache", KEY_END);   // internal cache data
+	Key * cachedCutpoint = keyNew ("system:/elektra/cached", KEY_END); // other data that requests caching
+
+	KeySet * global = ch->cacheStorage->global;
+
+	ch->cacheStorage->global = ksCut (global, cacheCutpoint);
+
+	KeySet * cut = ksCut (global, cachedCutpoint);
+	ksAppend (ch->cacheStorage->global, cut);
+	ksDel (cut);
+
+	keyDel (cacheCutpoint);
+	keyDel (cachedCutpoint);
+
+	// now we can store the cache
+	int result = ch->cacheStorage->kdbSet (ch->cacheStorage, returned, cacheFile);
+
+	// restore global keyset
+	ksAppend (global, ch->cacheStorage->global);
+	ksDel (ch->cacheStorage->global);
+	ch->cacheStorage->global = global;
+
+	if (result == ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		if (rename (tmpFile, cacheFileName) == -1)
 		{

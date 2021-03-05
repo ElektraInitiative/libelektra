@@ -42,23 +42,24 @@ Integrate `kdbEnsure` in `kdbOpen(Key *errorKey, KeySet *contract)` but only all
 
 ## Implications
 
-`elektraNotificationOpen` will only return a contract KeySet:
+`elektraNotificationOpen` will be renamed and only return a contract KeySet:
 
 ```c
+KeySet * errorKey = keyNew ("/", KEY_END);
 KeySet * contract = ksNew (0, KS_END);
-elektraNotificationContract (contract, iobinding);
+elektraNotificationContract (contract, iobinding, errorKey);
 ```
 
 The same for gopts:
 
 ```c
-elektraGOptsContract (contract, argc, argv, environ);
+elektraGOptsContract (contract, argc, argv, environ, errorKey);
 ```
 
 Finally, we create `KDB` with the contracts we got before:
 
 ```c
-KDB * kdb = kdbOpen (key, contract);
+KDB * kdb = kdbOpen (contract, parentKey);
 ```
 
 Opening `KDB` will fail if any of the contracts cannot be ensured.
@@ -77,7 +78,8 @@ kdbClose (kdb, errorKey);
 ```
 
 It is safe to use the contract `KeySet` also for `kdbGet` and `kdbSet`
-invocations.
+invocations. Contract `KeySet`s only contain `Key`s below
+`system:/elektra/contract`. Therefore, normal `KeySet`s should not interfere.
 
 ## Related Decisions
 

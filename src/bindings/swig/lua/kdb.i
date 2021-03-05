@@ -389,7 +389,7 @@
     local ks = orig_call(alloc)
 
     if select("#", ...) > 0 then
-      -- there's no need to check for KS_END
+      -- there is no need to check for KS_END
       -- ipairs will do this for us
       for _, arg in ipairs({...}) do
         ks:append(arg)
@@ -431,6 +431,23 @@
 }
 
 %include "kdb.hpp"
+
+%luacode %{
+  local orig_call = kdb.goptsContract
+  kdb.goptsContract = function(contract, args, env, parentKey, goptsConfig)
+    local argsString = ""
+    for i, arg in ipairs(args) do
+      argsString = argsString .. arg .. "\0"
+    end
+    
+    local envString = ""
+    for i, e in ipairs(env) do
+      envString = envString .. e .. "\0"
+    end
+
+    orig_call(contract, argsString, envString, parentKey, goptsConfig)
+  end
+%}
 
 // clear exception handler
 %exception;

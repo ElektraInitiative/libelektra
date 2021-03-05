@@ -50,7 +50,7 @@ void kdbGetByName (KDB * kdb, KeySet * conf, Key * parentKey, char * where)
 int main (int argc, char ** argv)
 {
 	Key * parentKey = keyNew ("", KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	KeySet * conf = ksNew (0, KS_END);
 
 	// get all config files

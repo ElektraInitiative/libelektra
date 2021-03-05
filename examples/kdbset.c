@@ -46,7 +46,7 @@ int main (void)
 //! [set]
 KeySet * myConfig = ksNew (0, KS_END);
 Key * parentKey = keyNew ("system:/sw/MyApp", KEY_END);
-KDB * handle = kdbOpen (parentKey);
+KDB * handle = kdbOpen (NULL, parentKey);
 
 kdbGet (handle, myConfig, parentKey); // kdbGet needs to be called first!
 KeySet * base = ksDup (myConfig);     // save a copy of original keyset

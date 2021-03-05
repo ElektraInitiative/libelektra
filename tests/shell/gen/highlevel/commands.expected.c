@@ -35,6 +35,7 @@
 #include <kdbhelper.h>
 #include <kdbinvoke.h>
 #include <kdbopts.h>
+#include <kdbgopts.h>
 
 #include <elektra/conversion.h>
 
@@ -60,18 +61,19 @@ static KeySet * embeddedSpec (void)
 
 static const char * helpFallback = "Usage: tests_script_gen_highlevel_commands [OPTION...] [COMMAND [...]|[<dynamic>...]]\n\nOPTIONS\n  --help                      Print this help message\n  -v, --version               \n\nCOMMANDS\n  get                         \n  set                         \n\nPARAMETERS\n  dynamic...                  \n";
 
-static int isHelpMode (void)
+static int isHelpMode (int argc, const char * const * argv)
 {
-	ElektraInvokeHandle * gopts = elektraInvokeOpen ("gopts", NULL, NULL);
+	for (int i = 0; i < argc; ++i)
+	{
+		if (strcmp (argv[i], "--help") == 0)
+		{
+			return 1;
+		}
+	}
 
-	typedef int (*func) (void);
-	func * goptsIsHelpModePtr = (func *) elektraInvokeGetFunction (gopts, "ishelpmode");
-	
-	int ret = goptsIsHelpModePtr == NULL ? 0 : (*goptsIsHelpModePtr) ();
-
-	elektraInvokeClose (gopts, NULL);
-	return ret == 1;
+	return 0;
 }
+
 
 
 /**
@@ -94,16 +96,24 @@ static int isHelpMode (void)
  *
  * @see elektraOpen
  */// 
-int loadConfiguration (Elektra ** elektra, ElektraError ** error)
+int loadConfiguration (Elektra ** elektra, 
+				 int argc, const char * const * argv, const char * const * envp,
+				 ElektraError ** error)
 {
 	KeySet * defaults = embeddedSpec ();
 	
 
 	KeySet * contract = ksNew (2,
-	keyNew ("system:/elektra/ensure/plugins/global/gopts", KEY_VALUE, "mounted", KEY_END),
-	keyNew ("system:/elektra/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
+	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
 	KS_END);
 ;
+	Key * parentKey = keyNew ("/tests/script/gen/highlevel/commands", KEY_END);
+
+	elektraGOptsContract (contract, argc, argv, envp, parentKey, NULL);
+	
+
+	keyDel (parentKey);
 
 	Elektra * e = elektraOpen ("/tests/script/gen/highlevel/commands", defaults, contract, error);
 
@@ -112,20 +122,26 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
 		ksDel (defaults);
 	}
 
+	if (contract != NULL)
+	{
+		ksDel (contract);
+	}
+
 	if (e == NULL)
 	{
 		*elektra = NULL;
-		if (isHelpMode ())
+		if (isHelpMode (argc, argv))
 		{
 			elektraErrorReset (error);
 			return 1;
 		}
+		
 
 		return -1;
 	}
 
 	*elektra = e;
-	return elektraHelpKey (e) != NULL ? 1 : 0;
+	return elektraHelpKey (e) != NULL && strcmp (keyString (elektraHelpKey (e)), "1") == 0 ? 1 : 0;
 }
 
 /**
@@ -140,7 +156,7 @@ int loadConfiguration (Elektra ** elektra, ElektraError ** error)
  * @param argc pass the value of argc from main
  * @param argv pass the value of argv from main
  */
-void exitForSpecload (int argc, const char ** argv)
+void exitForSpecload (int argc, const char * const * argv)
 {
 	if (argc != 2 || strcmp (argv[1], "--elektra-spec") != 0)
 	{
@@ -199,7 +215,7 @@ void printHelpMessage (Elektra * elektra, const char * usage, const char * prefi
  *
  * @param elektra  The Elektra instance produced by loadConfiguration.
  * @param usage	   Custom applicationd defined data. Will be passed untouched to the invoked command functions. Maybe NULL.
- * 
+ *
  * @return If @p elektra is NULL -1 is returned.
  *         If one of the invoked command functions returns a non-zero value, that value is returned.
  *         Otherwise the return value of the terminal command function is returned.
@@ -211,19 +227,18 @@ int runCommands (Elektra * elektra, void * userData)
 		return -1;
 	}
 
-	KeySet * commands = ksNew(4,
-		keyNew ("/", KEY_FUNC, commandKdb, KEY_END),
-		keyNew ("/get", KEY_FUNC, commandKdbGet, KEY_END),
-		keyNew ("/get/meta", KEY_FUNC, commandKdbGetMeta, KEY_END),
-		keyNew ("/setter", KEY_FUNC, commandKdbSet, KEY_END),
-		KS_END
-	);
+	KeySet * commands = ksNew (4,
+				   keyNew ("/", KEY_FUNC, commandKdb, KEY_END),
+				   keyNew ("/get", KEY_FUNC, commandKdbGet, KEY_END),
+				   keyNew ("/get/meta", KEY_FUNC, commandKdbGetMeta, KEY_END),
+				   keyNew ("/setter", KEY_FUNC, commandKdbSet, KEY_END),
+				   KS_END);
 
 	typedef int (*commandFunction) (Elektra *, kdb_boolean_t, void *);
 
 	Key * lastCommand = keyNew ("/", KEY_END);
-	const char * command = ELEKTRA_GET (String) (elektra, keyName(lastCommand) + 1);
-	while(strlen(command) > 0)
+	const char * command = ELEKTRA_GET (String) (elektra, keyName (lastCommand) + 1);
+	while (strlen (command) > 0)
 	{
 		Key * commandKey = ksLookup (commands, lastCommand, 0);
 		const void * rawFunc = keyValue (commandKey);
@@ -237,14 +252,14 @@ int runCommands (Elektra * elektra, void * userData)
 		}
 
 		keyAddBaseName (lastCommand, command);
-		command = ELEKTRA_GET (String) (elektra, keyName(lastCommand) + 1);
+		command = ELEKTRA_GET (String) (elektra, keyName (lastCommand) + 1);
 	}
 
 	Key * commandKey = ksLookup (commands, lastCommand, 0);
 	const void * rawFunc = keyValue (commandKey);
 	commandFunction func = *(commandFunction *) rawFunc;
 	int result = func (elektra, true, userData);
-	
+
 	keyDel (lastCommand);
 	ksDel (commands);
 	return result;

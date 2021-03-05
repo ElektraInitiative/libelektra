@@ -31,7 +31,7 @@ void print_warnings (Key * err)
 void check_key (void)
 {
 	Key * error_key = keyNew ("/", KEY_END);
-	KDB * kdb_handle = kdbOpen (error_key);
+	KDB * kdb_handle = kdbOpen (NULL, error_key);
 	Key * top = keyNew ("/", KEY_END);
 	keySetName (top, "user:/sw/MyApp"); // == 14
 	KeySet * ks = ksNew (0, KS_END);
@@ -54,14 +54,14 @@ void check_key (void)
 int main (void)
 {
 	Key * error_key = keyNew ("/", KEY_END);
-	KDB * kdb_handle = kdbOpen (error_key);
+	KDB * kdb_handle = kdbOpen (NULL, error_key);
 	Key * top = keyNew ("/", KEY_END);
 	keySetName (top, "user:/sw/MyApp");
 
 	KeySet * ks = ksNew (0, KS_END);
 	kdbGet (kdb_handle, ks, top);
 
-	Key * key = keyNew (0);
+	Key * key = keyNew ("/", KEY_END);
 	keySetName (key, "user:/sw/MyApp/Tests/TestKey1"); // == 31
 	keySetString (key, "NULLTestValue");		   // == 14
 	keySetMeta (key, "comment", "NULLTestComment");	   // == 16

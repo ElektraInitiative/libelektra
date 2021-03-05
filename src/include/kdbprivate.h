@@ -337,8 +337,6 @@ struct _KDB
 
 	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
 
-	ElektraIoInterface * ioBinding; /*!< binding for asynchronous I/O operations.*/
-
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/
@@ -566,6 +564,8 @@ void keyInit (Key * key);
 
 int keyClearSync (Key * key);
 
+int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix);
+
 /*Private helper for keyset*/
 int ksInit (KeySet * ks);
 int ksClose (KeySet * ks);
@@ -587,6 +587,10 @@ int elektraReadArrayNumber (const char * baseName, kdb_long_long_t * oldIndex);
 
 
 KeySet * ksRenameKeys (KeySet * config, const char * name);
+
+ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
+
+elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
 
 
 /* Conveniences Methods for Making Tests */

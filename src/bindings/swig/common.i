@@ -39,6 +39,8 @@
 /*
  * kdb.h
  */
+// Lua doesn't like the void* type of KEY_END for some reason
+%constant unsigned long long KEY_END = 0;
 %constant void *KS_END = KS_END;
 %constant const char *VERSION = KDB_VERSION;
 %constant const short VERSION_MAJOR = KDB_VERSION_MAJOR;

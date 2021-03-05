@@ -43,8 +43,9 @@ static void test_cascadingLookup (void)
 	Key * k1;
 	Key * k2;
 	Key * k3;
-	KeySet * ks = ksNew (10, k0 = keyNew ("system:/benchmark/override/#0", 0), k1 = keyNew ("system:/benchmark/override/#1", 0),
-			     k2 = keyNew ("user:/benchmark/override/#2", 0), k3 = keyNew ("user:/benchmark/override/#3", 0), KS_END);
+	KeySet * ks =
+		ksNew (10, k0 = keyNew ("system:/benchmark/override/#0", KEY_END), k1 = keyNew ("system:/benchmark/override/#1", KEY_END),
+		       k2 = keyNew ("user:/benchmark/override/#2", KEY_END), k3 = keyNew ("user:/benchmark/override/#3", KEY_END), KS_END);
 	Key * search = keyNew ("/benchmark/override/#0", KEY_END);
 	Key * found = ksLookup (ks, search, 0);
 	succeed_if (found == k0, "found wrong key");
@@ -144,6 +145,8 @@ static void test_creatingLookup (void)
 
 static void test_ksToArray (void)
 {
+	printf ("Test ksToArray\n");
+
 	KeySet * ks = ksNew (5, keyNew ("user:/test1", KEY_END), keyNew ("user:/test2", KEY_END), keyNew ("user:/test3", KEY_END), KS_END);
 
 	Key ** keyArray = calloc (ksGetSize (ks), sizeof (Key *));
@@ -172,6 +175,8 @@ static void test_ksToArray (void)
 
 static void test_ksNoAlloc (void)
 {
+	printf ("Test no alloc\n");
+
 	KeySet * ks = ksNew (0, KS_END);
 
 	succeed_if (ks->alloc == 0, "alloc is not 0");
@@ -189,6 +194,262 @@ static void test_ksNoAlloc (void)
 	ksDel (ks);
 }
 
+static void test_ksRename (void)
+{
+	printf ("Test ksRename\n");
+
+	Key * key1 = keyNew ("system:/baz", KEY_VALUE, "5", KEY_END);
+	Key * key2 = keyNew ("system:/baz/bar", KEY_VALUE, "6", KEY_END);
+	Key * key3 = keyNew ("system:/baz/bar/bar", KEY_VALUE, "7", KEY_END);
+	Key * key4 = keyNew ("system:/baz/bar/foo", KEY_VALUE, "8", KEY_END);
+
+	KeySet * ks = ksNew (
+		24,
+		// clang-format off
+		keyNew ("system:/bar", KEY_VALUE, "1", KEY_END), 
+		keyNew ("system:/bar/bar", KEY_VALUE, "2", KEY_END),
+		keyNew ("system:/bar/bar/bar", KEY_VALUE, "3", KEY_END),
+		keyNew ("system:/bar/bar/foo", KEY_VALUE, "4", KEY_END),
+		key1,
+		key2,
+		key3,
+		key4,
+		keyNew ("system:/foo", KEY_VALUE, "9", KEY_END), 
+		keyNew ("system:/foo/bar", KEY_VALUE, "10", KEY_END),
+		keyNew ("system:/foo/bar/bar", KEY_VALUE, "11", KEY_END),
+		keyNew ("system:/foo/bar/foo", KEY_VALUE, "12", KEY_END),
+		// clang-format on
+		KS_END);
+
+	Key * keyRenamed1 = keyNew ("dir:/baz", KEY_VALUE, "5", KEY_END);
+	Key * keyRenamed2 = keyNew ("dir:/baz/bar", KEY_VALUE, "6", KEY_END);
+	Key * keyRenamed3 = keyNew ("dir:/baz/bar/bar", KEY_VALUE, "7", KEY_END);
+	Key * keyRenamed4 = keyNew ("dir:/baz/bar/foo", KEY_VALUE, "8", KEY_END);
+
+	KeySet * renamed =
+		ksNew (24,
+		       // clang-format off
+		       keyRenamed1, 
+		       keyRenamed2,
+		       keyRenamed3,
+		       keyRenamed4,
+		       keyNew ("system:/bar", KEY_VALUE, "1", KEY_END), 
+		       keyNew ("system:/bar/bar", KEY_VALUE, "2", KEY_END),
+		       keyNew ("system:/bar/bar/bar", KEY_VALUE, "3", KEY_END),
+		       keyNew ("system:/bar/bar/foo", KEY_VALUE, "4", KEY_END),
+		       keyNew ("system:/foo", KEY_VALUE, "9", KEY_END), 
+		       keyNew ("system:/foo/bar", KEY_VALUE, "10", KEY_END),
+		       keyNew ("system:/foo/bar/bar", KEY_VALUE, "11", KEY_END),
+		       keyNew ("system:/foo/bar/foo", KEY_VALUE, "12", KEY_END),
+		       // clang-format on
+		       KS_END);
+
+	Key * orig1 = keyNew ("system:/baz", KEY_VALUE, "5", KEY_END);
+	Key * orig2 = keyNew ("system:/baz/bar", KEY_VALUE, "6", KEY_END);
+	Key * orig3 = keyNew ("system:/baz/bar/bar", KEY_VALUE, "7", KEY_END);
+	Key * orig4 = keyNew ("system:/baz/bar/foo", KEY_VALUE, "8", KEY_END);
+
+	KeySet * orig = ksDeepDup (ks);
+
+	Key * root = keyNew ("user:/baz", KEY_END);
+	Key * newRoot = keyNew ("user:/baz", KEY_END);
+
+	succeed_if (ksRename (NULL, root, newRoot) == -1, "shouldn't accept NULL pointers");
+	succeed_if (ksRename (ks, NULL, newRoot) == -1, "shouldn't accept NULL pointers");
+	succeed_if (ksRename (ks, root, NULL) == -1, "shouldn't accept NULL pointers");
+
+	keySetName (root, "/baz");
+	succeed_if (ksRename (ks, root, newRoot) == -1, "shouldn't accept cascading keys");
+	compare_keyset (ks, orig);
+
+	keySetName (root, "user:/baz");
+	keySetName (newRoot, "/baz");
+	succeed_if (ksRename (ks, root, newRoot) == -1, "shouldn't accept cascading keys");
+	compare_keyset (ks, orig);
+
+	keySetName (root, "system:/zzzz");
+	keySetName (newRoot, "dir:/baz");
+	succeed_if (ksRename (ks, root, newRoot) == 0, "root not found should be nop");
+	compare_keyset (ks, orig);
+
+	keySetName (root, "system:/zzzz");
+	keySetName (newRoot, "system:/baz");
+	succeed_if (ksRename (ks, root, newRoot) == 0, "root not found should be nop");
+	compare_keyset (ks, orig);
+
+	keySetName (root, "system:/baz");
+	keySetName (newRoot, "system:/baz");
+	succeed_if (ksRename (ks, root, newRoot) == 4, "same root should always work");
+	compare_keyset (ks, orig);
+
+	keySetName (root, "system:/baz");
+	keySetName (newRoot, "dir:/baz");
+	// keys only referenced by ks
+	succeed_if (ksRename (ks, root, newRoot) == 4, "didn't rename correctly");
+	compare_keyset (ks, renamed);
+	succeed_if (keyCmp (key1, keyRenamed1) == 0, "should have renamed in-place");
+	succeed_if (keyCmp (key2, keyRenamed2) == 0, "should have renamed in-place");
+	succeed_if (keyCmp (key3, keyRenamed3) == 0, "should have renamed in-place");
+	succeed_if (keyCmp (key4, keyRenamed4) == 0, "should have renamed in-place");
+
+	ksDel (ks);
+	ks = ksDup (orig);
+	key1 = ksLookup (ks, orig1, 0);
+	key2 = ksLookup (ks, orig2, 0);
+	key3 = ksLookup (ks, orig3, 0);
+	key4 = ksLookup (ks, orig4, 0);
+
+	keySetName (root, "system:/baz");
+	keySetName (newRoot, "dir:/baz");
+	// keys referenced by ks and orig
+	succeed_if (ksRename (ks, root, newRoot) == 4, "didn't rename correctly");
+	compare_keyset (ks, renamed);
+	succeed_if (keyCmp (key1, orig1) == 0, "should have dup'ed key");
+	succeed_if (keyCmp (key2, orig2) == 0, "should have dup'ed key");
+	succeed_if (keyCmp (key3, orig3) == 0, "should have dup'ed key");
+	succeed_if (keyCmp (key4, orig4) == 0, "should have dup'ed key");
+
+	ksDel (renamed);
+	renamed = ksNew (24,
+			 // clang-format off
+			 keyNew ("system:/bar", KEY_VALUE, "1", KEY_END), 
+			 keyNew ("system:/bar/bar", KEY_VALUE, "2", KEY_END),
+			 keyNew ("system:/bar/bar/bar", KEY_VALUE, "3", KEY_END),
+			 keyNew ("system:/bar/bar/foo", KEY_VALUE, "4", KEY_END),
+			 keyNew ("system:/baz/baz", KEY_VALUE, "5", KEY_END),
+			 keyNew ("system:/baz/baz/bar", KEY_VALUE, "6", KEY_END),
+			 keyNew ("system:/baz/baz/bar/bar", KEY_VALUE, "7", KEY_END),
+			 keyNew ("system:/baz/baz/bar/foo", KEY_VALUE, "8", KEY_END),
+			 keyNew ("system:/foo", KEY_VALUE, "9", KEY_END), 
+			 keyNew ("system:/foo/bar", KEY_VALUE, "10", KEY_END),
+			 keyNew ("system:/foo/bar/bar", KEY_VALUE, "11", KEY_END),
+			 keyNew ("system:/foo/bar/foo", KEY_VALUE, "12", KEY_END),
+			 // clang-format on
+			 KS_END);
+
+	ksDel (ks);
+	ks = ksDup (orig);
+	keySetName (root, "system:/baz");
+	keySetName (newRoot, "system:/baz/baz");
+	succeed_if (ksRename (ks, root, newRoot) == 4, "didn't rename correctly");
+	compare_keyset (ks, renamed);
+
+	ksDel (renamed);
+	renamed = ksNew (24,
+			 // clang-format off
+			 keyNew ("system:/bar", KEY_VALUE, "5", KEY_END), 
+			 keyNew ("system:/bar/bar", KEY_VALUE, "6", KEY_END),
+			 keyNew ("system:/bar/bar/bar", KEY_VALUE, "7", KEY_END),
+			 keyNew ("system:/bar/bar/foo", KEY_VALUE, "8", KEY_END),
+			 keyNew ("system:/foo", KEY_VALUE, "9", KEY_END), 
+			 keyNew ("system:/foo/bar", KEY_VALUE, "10", KEY_END),
+			 keyNew ("system:/foo/bar/bar", KEY_VALUE, "11", KEY_END),
+			 keyNew ("system:/foo/bar/foo", KEY_VALUE, "12", KEY_END),
+			 // clang-format on
+			 KS_END);
+
+	ksDel (ks);
+	ks = ksDup (orig);
+	keySetName (root, "system:/baz");
+	keySetName (newRoot, "system:/bar");
+	succeed_if (ksRename (ks, root, newRoot) == 4, "should work even with existing keys below newRoot");
+	compare_keyset (ks, renamed);
+
+	ksDel (renamed);
+	renamed = ksNew (24,
+			 // clang-format off
+			 keyNew ("system:/", KEY_VALUE, "1", KEY_END), 
+			 keyNew ("system:/bar", KEY_VALUE, "2", KEY_END),
+			 keyNew ("system:/bar/bar", KEY_VALUE, "3", KEY_END),
+			 keyNew ("system:/bar/foo", KEY_VALUE, "4", KEY_END),
+			 keyNew ("system:/baz", KEY_VALUE, "5", KEY_END),
+			 keyNew ("system:/baz/bar", KEY_VALUE, "6", KEY_END),
+			 keyNew ("system:/baz/bar/bar", KEY_VALUE, "7", KEY_END),
+			 keyNew ("system:/baz/bar/foo", KEY_VALUE, "8", KEY_END),
+			 keyNew ("system:/foo", KEY_VALUE, "9", KEY_END), 
+			 keyNew ("system:/foo/bar", KEY_VALUE, "10", KEY_END),
+			 keyNew ("system:/foo/bar/bar", KEY_VALUE, "11", KEY_END),
+			 keyNew ("system:/foo/bar/foo", KEY_VALUE, "12", KEY_END),
+			 // clang-format on
+			 KS_END);
+
+	ksDel (ks);
+	ks = ksDup (orig);
+	keySetName (root, "system:/bar");
+	keySetName (newRoot, "system:/");
+	succeed_if (ksRename (ks, root, newRoot) == 4, "didn't rename correctly");
+	compare_keyset (ks, renamed);
+
+	ksDel (ks);
+	ksDel (orig);
+	ksDel (renamed);
+	keyDel (orig1);
+	keyDel (orig2);
+	keyDel (orig3);
+	keyDel (orig4);
+	keyDel (root);
+	keyDel (newRoot);
+}
+
+void test_ksFindHierarchy (void)
+{
+	printf ("Test ksFindHierarchy\n");
+
+	KeySet * ks =
+		ksNew (24,
+		       // clang-format off
+		       keyNew ("system:/bar", KEY_VALUE, "1", KEY_END), 
+		       keyNew ("system:/bar/bar", KEY_VALUE, "2", KEY_END),
+		       keyNew ("system:/bar/bar/bar", KEY_VALUE, "3", KEY_END),
+		       keyNew ("system:/bar/bar/foo", KEY_VALUE, "4", KEY_END),
+		       keyNew ("system:/baz", KEY_VALUE, "5", KEY_END),
+		       keyNew ("system:/baz/bar", KEY_VALUE, "6", KEY_END),
+		       keyNew ("system:/baz/bar/bar", KEY_VALUE, "7", KEY_END),
+		       keyNew ("system:/baz/bar/foo", KEY_VALUE, "8", KEY_END),
+		       keyNew ("system:/foo", KEY_VALUE, "9", KEY_END), 
+		       keyNew ("system:/foo/bar", KEY_VALUE, "10", KEY_END),
+		       keyNew ("system:/foo/bar/bar", KEY_VALUE, "11", KEY_END),
+		       keyNew ("system:/foo/bar/foo", KEY_VALUE, "12", KEY_END),
+		       // clang-format on
+		       KS_END);
+
+	Key * root = keyNew ("/", KEY_END);
+
+	elektraCursor end;
+
+	succeed_if (ksFindHierarchy (ks, NULL, &end) == -1, "shouldn't accept NULL");
+	succeed_if (ksFindHierarchy (NULL, root, &end) == -1, "shouldn't accept NULL");
+
+	succeed_if (ksFindHierarchy (ks, root, &end) == ksGetSize (ks), "shouldn't find key");
+
+	keySetName (root, "user:/");
+	succeed_if (ksFindHierarchy (ks, root, &end) == ksGetSize (ks), "shouldn't find key");
+
+	keySetName (root, "system:/zoo");
+	succeed_if (ksFindHierarchy (ks, root, &end) == ksGetSize (ks), "shouldn't find key");
+
+	keySetName (root, "system:/bar/foo");
+	succeed_if (ksFindHierarchy (ks, root, &end) == ksGetSize (ks), "shouldn't find key");
+
+	keySetName (root, "system:/");
+	succeed_if (ksFindHierarchy (ks, root, &end) == 0 && end == 12, "hierarchy should be present");
+
+	keySetName (root, "system:/bar");
+	succeed_if (ksFindHierarchy (ks, root, &end) == 0 && end == 4, "hierarchy should be present");
+
+	keySetName (root, "system:/bar/bar");
+	succeed_if (ksFindHierarchy (ks, root, &end) == 1 && end == 4, "hierarchy should be present");
+
+	keySetName (root, "system:/baz/bar/bar");
+	succeed_if (ksFindHierarchy (ks, root, &end) == 6 && end == 7, "hierarchy should be present");
+
+	keySetName (root, "system:/baz/bar/bar");
+	succeed_if (ksFindHierarchy (ks, root, NULL) == 6, "should accept NULL for end");
+
+	keyDel (root);
+	ksDel (ks);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("KS         TESTS\n");
@@ -201,6 +462,8 @@ int main (int argc, char ** argv)
 	test_cascadingLookup ();
 	test_creatingLookup ();
 	test_ksNoAlloc ();
+	test_ksRename ();
+	test_ksFindHierarchy ();
 
 	printf ("\ntest_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 

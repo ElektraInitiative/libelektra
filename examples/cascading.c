@@ -19,7 +19,7 @@ void printError (char * what, Key const * parentKey)
 int main (void)
 {
 	Key * parentKey = keyNew ("/", KEY_END);
-	KDB * kdb = kdbOpen (parentKey);
+	KDB * kdb = kdbOpen (NULL, parentKey);
 	KeySet * ks = ksNew (0, KS_END);
 	if (kdbGet (kdb, ks, parentKey) == -1)
 	{

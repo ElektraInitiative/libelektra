@@ -23,7 +23,7 @@ int main (void)
 
 	for (size_t i = 0; i < NUM_RUNS; ++i)
 	{
-		KDB * handle = kdbOpen (parentKey);
+		KDB * handle = kdbOpen (NULL, parentKey);
 
 		KeySet * ks = ksNew (0, KS_END);
 

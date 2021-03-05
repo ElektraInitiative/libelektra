@@ -69,6 +69,9 @@ int main (int argc, const char ** argv)
 	KeySet * ks = getSpec (specname, &parentKey);
 
 	bool libFailed = elektraGetOpts (ks, argc - 1, &argv[1], (const char **) environ, parentKey) != 0;
+	Key * libHelpKey = keyNew ("proc:/elektra/gopts/help", KEY_VALUE, "0", KEY_END);
+	keyCopyAllMeta (libHelpKey, parentKey);
+	ksAppendKey (ks, libHelpKey);
 
 	KeySet * conf = ksNew (0, KS_END);
 

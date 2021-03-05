@@ -1,7 +1,8 @@
 /**
  * @file
  *
- * @brief Implements example given in doc/tutorials/command-line-options.md
+ * @brief Advanced use example for elektraGetOpts (with sub-commands)
+ *        You should prefer the example in goptsCommands.c over this one.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -47,6 +48,18 @@ static KeySet * createSpec (void)
 
 int main (int argc, const char ** argv)
 {
+	/**
+	 * THIS IS AN EXAMPLE FOR AN ADVANCED USE CASE
+	 *
+	 * If you follow this example, please make sure
+	 * you know what you are doing.
+	 *
+	 * Some of the functions used in this example,
+	 * may not be part of the public API or may not
+	 * be considered stable.
+	 */
+
+
 	KeySet * ks = createSpec ();
 	Key * errorKey = keyNew (BASE_KEY, KEY_END);
 

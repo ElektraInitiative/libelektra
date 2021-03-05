@@ -49,9 +49,9 @@ static void test_ksNew (void)
 	// succeed_if(ksGetAlloc(keys) == 15, "allocation size wrong");
 	succeed_if (ksDel (keys) == 0, "could not delete keyset");
 
-	config = ksNew (100, keyNew ("user:/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
-			keyNew ("user:/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
-			keyNew ("user:/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", 0), KS_END);
+	config = ksNew (100, keyNew ("user:/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", KEY_END),
+			keyNew ("user:/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", KEY_END),
+			keyNew ("user:/sw/app/fixedConfiguration/key3", KEY_VALUE, "value3", KEY_END), KS_END);
 	succeed_if (ksGetSize (config) == 3, "could not append 3 keys in keyNew");
 	// this behaviour might change, do not build on it,
 	// and there is no compatible way to get the alloc info
@@ -64,14 +64,14 @@ static void test_ksNew (void)
 	// succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
 	succeed_if (ksDel (config) == 0, "could not delete keyset");
 
-	config = ksNew (10, keyNew ("user:/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", 0),
-			keyNew ("user:/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", 0),
-			keyNew ("user:/sw/app/fixedConfiguration/key3", KEY_VALUE, "value1", 0),
-			keyNew ("user:/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", 0), KS_END);
+	config = ksNew (10, keyNew ("user:/sw/app/fixedConfiguration/key1", KEY_VALUE, "value1", KEY_END),
+			keyNew ("user:/sw/app/fixedConfiguration/key2", KEY_VALUE, "value2", KEY_END),
+			keyNew ("user:/sw/app/fixedConfiguration/key3", KEY_VALUE, "value1", KEY_END),
+			keyNew ("user:/sw/app/fixedConfiguration/key4", KEY_VALUE, "value3", KEY_END), KS_END);
 
 	succeed_if (ksGetSize (config) == 4, "could not append 5 keys in keyNew");
 	// succeed_if(ksGetAlloc(config) == 15, "allocation size wrong");
-	ksAppendKey (config, keyNew ("user:/sw/app/fixedConfiguration/key6", KEY_VALUE, "value4", 0));
+	ksAppendKey (config, keyNew ("user:/sw/app/fixedConfiguration/key6", KEY_VALUE, "value4", KEY_END));
 
 	ksClear (ks2);
 	ksCopy (ks2, config);

@@ -10,12 +10,14 @@
 #define ELEKTRA_KDB_HPP
 
 #include <string>
+#include <vector>
 
 #include <kdbexcept.hpp>
 #include <key.hpp>
 #include <keyset.hpp>
 
 #include <kdb.h>
+#include <kdbgopts.h>
 
 
 /**
@@ -42,12 +44,15 @@ class KDB
 public:
 	KDB ();
 	explicit KDB (Key & errorKey);
+	explicit KDB (KeySet & contract);
+	KDB (KeySet & contract, Key & errorKey);
 	virtual ~KDB () throw ()
 	{
 		close ();
 	}
 
 	virtual inline void open (Key & errorKey);
+	virtual inline void open (KeySet & contract, Key & errorKey);
 	virtual inline void close () throw ();
 	virtual inline void close (Key & errorKey) throw ();
 
@@ -55,8 +60,6 @@ public:
 	virtual inline int get (KeySet & returned, Key & parentKey);
 	virtual inline int set (KeySet & returned, std::string const & keyname);
 	virtual inline int set (KeySet & returned, Key & parentKey);
-
-	inline int ensure (const KeySet & contract, Key & parentKey);
 
 private:
 	ckdb::KDB * handle; ///< holds an kdb handle
@@ -91,6 +94,39 @@ inline KDB::KDB (Key & errorKey)
 }
 
 /**
+ * Constructs a class KDB.
+ *
+ * @param contract the contract that should be ensured
+ * @param errorKey is useful if you want to get the warnings in
+ * the successful case, when no exception is thrown.
+ *
+ * @throw KDBException if database could not be opened
+ *
+ * @copydoc kdbOpen
+ */
+inline KDB::KDB (KeySet & contract)
+{
+	Key errorKey;
+	open (contract, errorKey);
+}
+
+/**
+ * Constructs a class KDB.
+ *
+ * @param contract the contract that should be ensured
+ * @param errorKey is useful if you want to get the warnings in
+ * the successful case, when no exception is thrown.
+ *
+ * @throw KDBException if database could not be opened
+ *
+ * @copydoc kdbOpen
+ */
+inline KDB::KDB (KeySet & contract, Key & errorKey)
+{
+	open (contract, errorKey);
+}
+
+/**
  * Open the database
  *
  * @param errorKey is useful if you want to get the warnings in
@@ -100,7 +136,25 @@ inline KDB::KDB (Key & errorKey)
  */
 inline void KDB::open (Key & errorKey)
 {
-	handle = ckdb::kdbOpen (errorKey.getKey ());
+	handle = ckdb::kdbOpen (NULL, errorKey.getKey ());
+	if (!handle)
+	{
+		throw kdb::KDBException (errorKey);
+	}
+}
+
+/**
+ * Open the database
+ *
+ * @param contract the contract that should be ensured
+ * @param errorKey is useful if you want to get the warnings in
+ * the successful case, when no exception is thrown.
+ *
+ * @copydoc kdbOpen
+ */
+inline void KDB::open (KeySet & contract, Key & errorKey)
+{
+	handle = ckdb::kdbOpen (contract.getKeySet (), errorKey.getKey ());
 	if (!handle)
 	{
 		throw kdb::KDBException (errorKey);
@@ -235,31 +289,57 @@ inline int KDB::set (KeySet & returned, Key & parentKey)
 }
 
 /**
- * Ensures that the conditions defined in @p contract are met by this KDB.
- *
- * @see ckdb::kdbEnsure()
- *
- * @param contract  The contract to ensure.
- * @param parentKey The parentKey to use.
- *
- * @throw KDBException if there were problems with the contract or the database
- * @throw ContractException if the contract couldn't be ensured
+ * @see elektraGOptsContract
  */
-int KDB::ensure (const KeySet & contract, Key & parentKey)
+inline int goptsContract (kdb::KeySet & contract, int argc, const char * const * argv, const char * const * envp,
+			  const kdb::Key & parentKey, kdb::KeySet & goptsConfig)
 {
-	// have to ksDup because contract is consumed and ksDel()ed by kdbEnsure
-	int ret = ckdb::kdbEnsure (handle, ckdb::ksDup (contract.getKeySet ()), parentKey.getKey ());
-	if (ret == -1)
-	{
-		throw KDBException (parentKey);
-	}
-	if (ret == 1)
-	{
-		throw ContractException (parentKey);
-	}
-	return ret;
+	return ckdb::elektraGOptsContract (contract.getKeySet (), argc, argv, envp, parentKey.getKey (), goptsConfig.getKeySet ());
 }
 
+/**
+ * Prefer to use goptsContract with argc, argv and envp if possible
+ * (especially when you are calling this in your main function)
+ *
+ * This function mainly exists for use from language bindings.
+ *
+ * @see elektraGOptsContractFromStrings
+ */
+inline int goptsContract (kdb::KeySet & contract, const std::string & argsString, const std::string & envString, const kdb::Key & parentKey,
+			  kdb::KeySet & goptsConfig)
+{
+	return ckdb::elektraGOptsContractFromStrings (contract.getKeySet (), argsString.size (), argsString.c_str (), envString.size (),
+						      envString.c_str (), parentKey.getKey (), goptsConfig.getKeySet ());
+}
+
+/**
+ * Prefer to use goptsContract with argc, argv and envp if possible
+ * (especially when you are calling this in your main function)
+ *
+ * This function mainly exists for use from language bindings.
+ *
+ * @see elektraGOptsContractFromStrings
+ */
+inline int goptsContract (kdb::KeySet & contract, const std::vector<std::string> & args, const std::vector<std::string> & env,
+			  const kdb::Key & parentKey, kdb::KeySet & goptsConfig)
+{
+	std::stringstream argStringStream;
+	for (auto && arg : args)
+	{
+		argStringStream << arg << '\0';
+	}
+	std::string argString = argStringStream.str ();
+
+	std::stringstream envStringStream;
+	for (auto && envvar : env)
+	{
+		envStringStream << envvar << '\0';
+	}
+	std::string envString = envStringStream.str ();
+
+	return ckdb::elektraGOptsContractFromStrings (contract.getKeySet (), argString.size (), argString.c_str (), envString.size (),
+						      envString.c_str (), parentKey.getKey (), goptsConfig.getKeySet ());
+}
 
 } // end of namespace kdb
 
