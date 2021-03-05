@@ -283,7 +283,7 @@ Particularly a _Specfile_ contains metadata that defines
 - the plugins to load and
 - the behavior of these plugins.
 
-(note that the `\\` are due to  [Markdown Shell Recorder][], do not copy them to your shell)
+(note that the `\\` are due to [Markdown Shell Recorder][], do not copy them to your shell)
 [markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ```sh
