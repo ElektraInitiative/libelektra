@@ -352,9 +352,11 @@ static gboolean elektra_settings_backend_write_tree (GSettingsBackend * backend,
 	g_mutex_lock (&elektra_settings_kdb_lock);
 	g_tree_foreach (tree, elektra_settings_keyset_from_tree, esb->gks);
 	elektra_settings_backend_sync (backend);
+	g_mutex_unlock (&elektra_settings_kdb_lock);
+
 	/* Notify the GSettings about the changed tree */
 	g_settings_backend_changed_tree (G_SETTINGS_BACKEND (backend), tree, origin_tag);
-	g_mutex_unlock (&elektra_settings_kdb_lock);
+
 	return TRUE;
 }
 
