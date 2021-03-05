@@ -351,6 +351,7 @@ static gboolean elektra_settings_backend_write_tree (GSettingsBackend * backend,
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Function writeTree. ", "We have to loop the tree and add the keys");
 	g_mutex_lock (&elektra_settings_kdb_lock);
 	g_tree_foreach (tree, elektra_settings_keyset_from_tree, esb->gks);
+	elektra_settings_backend_sync (backend);
 	/* Notify the GSettings about the changed tree */
 	g_settings_backend_changed_tree (G_SETTINGS_BACKEND (backend), tree, origin_tag);
 	g_mutex_unlock (&elektra_settings_kdb_lock);
