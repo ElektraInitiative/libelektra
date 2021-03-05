@@ -462,6 +462,7 @@ def publishSource(artifactStageName) {
           git branch: 'master',
               url: 'https://github.com/ElektraInitiative/ftp.git'
           sh 'cp ../release-artifact/*/*.tar.gz* ./releases/'
+          sh 'git add ./releases'
           sh "git commit -a -m 'release: add ${RELEASE_VERSION}'"
           pushGitRepo('ftp')
           withCredentials([sshUserPrivateKey(credentialsId: "community-ssh-git", keyFileVariable: "privateSshKey", usernameVariable: 'GIT_USERNAME')]) {
