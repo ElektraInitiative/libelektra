@@ -202,6 +202,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 
 ## Packaging
+
 - Change shlibs version compatibility policy of Debian packages to ">=" _(Robert Sowula)_
 
 ## Build
