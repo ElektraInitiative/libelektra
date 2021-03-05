@@ -77,6 +77,27 @@ static GMutex elektra_settings_kdb_lock;
 static GType elektra_settings_backend_get_type (void);
 G_DEFINE_TYPE (ElektraSettingsBackend, elektra_settings_backend, G_TYPE_SETTINGS_BACKEND)
 
+/* elektra_settings_backend_sync implements g_settings_backend_sync:
+ * @backend: a #GSettingsBackend
+ *
+ * Write and read changes.
+ */
+static void elektra_settings_backend_sync (GSettingsBackend * backend)
+{
+	// TODO conflict management
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
+
+	g_mutex_lock (&elektra_settings_kdb_lock);
+	if (gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
+	{
+		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
+		g_mutex_unlock (&elektra_settings_kdb_lock);
+		return;
+	}
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Sync state");
+	g_mutex_unlock (&elektra_settings_kdb_lock);
+}
+
 static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gchar * keypathname, const GVariantType * expected_type)
 {
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
@@ -250,6 +271,8 @@ static gboolean elektra_settings_backend_write (GSettingsBackend * backend, cons
 
 	gboolean ret = elektra_settings_write_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL),
 					      value);
+
+	elektra_settings_backend_sync (backend);
 
 	// Notify GSettings that the key has changed
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Calling g_settings_backend_changed, Key", key);
@@ -567,27 +590,6 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 	g_mutex_unlock (&elektra_settings_kdb_lock);
 	g_free (lookupPath);
 	return;
-}
-
-/* elektra_settings_backend_sync implements g_settings_backend_sync:
- * @backend: a #GSettingsBackend
- *
- * Write and read changes.
- */
-static void elektra_settings_backend_sync (GSettingsBackend * backend)
-{
-	// TODO conflict management
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
-
-	g_mutex_lock (&elektra_settings_kdb_lock);
-	if (gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
-	{
-		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
-		g_mutex_unlock (&elektra_settings_kdb_lock);
-		return;
-	}
-	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Sync state");
-	g_mutex_unlock (&elektra_settings_kdb_lock);
 }
 
 /*
