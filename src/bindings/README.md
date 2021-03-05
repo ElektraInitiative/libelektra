@@ -30,7 +30,7 @@ Experimental bindings (included in `cmake -DBINDINGS=EXPERIMENTAL`):
 
 External bindings (in a separate repo):
 
-- [go](https://go.libelektra.org/) Go bindings (experimental)
+- [go](https://github.com/ElektraInitiative/go-elektra) Go bindings (experimental)
 
 # I/O Bindings
 

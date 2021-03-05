@@ -187,7 +187,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
-- Add link to [Go](https://go.libelektra.org/) bindings _(Markus Raab)_
+- Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
 - Fix order of tutorials _(Markus Raab)_
 - Added API-Reviews for multiple functions in the public API _(Stefan Hanreich)_
 - Add a short Visual Studio 2019 tutorial _(Dominic Jäger)_
