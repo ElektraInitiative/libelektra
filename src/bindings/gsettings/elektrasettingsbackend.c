@@ -412,6 +412,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 
 	g_mutex_lock (&elektra_settings_kdb_lock);
 	GElektraKeySet * ks = gelektra_keyset_dup (esb->subscription_gks);
+	g_mutex_unlock (&elektra_settings_kdb_lock);
 
 	GElektraKey * cutpoint = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
 
@@ -452,7 +453,6 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	}
 
 	g_variant_unref (variant);
-	g_mutex_unlock (&elektra_settings_kdb_lock);
 }
 
 static void elektra_settings_bus_connected (GObject * source_object G_GNUC_UNUSED, GAsyncResult * res, gpointer user_data)
