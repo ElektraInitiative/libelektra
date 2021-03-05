@@ -28,6 +28,10 @@ Experimental bindings (included in `cmake -DBINDINGS=EXPERIMENTAL`):
 - [io_ev](io/ev/) I/O binding for ev (experimental)
 - [io_glib](io/glib/) I/O binding for glib (experimental)
 
+External bindings (in a separate repo):
+
+- [go](https://go.libelektra.org/) Go bindings (experimental)
+
 # I/O Bindings
 
 These bindings allow Elektra to integrate into different main loop APIs using a
