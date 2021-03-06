@@ -183,9 +183,11 @@ below a specific path in form of metadata, _Specfiles_.
 A _Specfile_ contains metadata, among others, that defines how
 the configuration settings should be validated.
 
-Let us create an example _Specfile_ in the dump format, which supports metadata
-(although the specfile is stored in the dump format, we can still create it using
-the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`):
+Let us create an example _Specfile_ in the dump format, which supports metadata.
+Although the specfile is stored in the dump format, we can still create it using
+the human readable [ni format](/src/plugins/ni/README.md) by using `kdb import`
+(note that the `\\` are due to [Markdown Shell Recorder][], do not copy them to your shell):
+[markdown shell recorder]: https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper
 
 ```sh
 sudo kdb mount tutorial.dump spec:/tests/tutorial dump
