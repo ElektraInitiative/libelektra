@@ -195,13 +195,14 @@ Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * fil
 		keyNew ("system:/elektra/mountpoints/default/set/setstorage/#0/reference", KEY_VALUE, KDB_STORAGE, KEY_END), KS_END);
 
 #ifdef ENABLE_TRACER
-	KeySet * tracerConfig = ksNew (10, keyNew ("/default/error/prerollback", KEY_END), keyNew ("/default/error/prerollback/#0", KEY_END),
-				       keyNew ("/default/error/prerollback/#0/label", KEY_VALUE, "tracer", KEY_END),
-				       keyNew ("/default/error/prerollback/#0/name", KEY_VALUE, "tracer", KEY_END),
-				       keyNew ("/default/get/pregetstorage", KEY_END), keyNew ("/default/get/pregetstorage/#0", KEY_END),
-				       keyNew ("/default/get/pregetstorage/#0/reference", KEY_VALUE, "tracer", KEY_END),
-				       keyNew ("/default/set/presetstorage", KEY_END), keyNew ("/default/set/presetstorage/#0", KEY_END),
-				       keyNew ("/default/set/presetstorage/#0/reference", KEY_VALUE, "tracer"));
+	KeySet * tracerConfig =
+		ksNew (10, keyNew ("/default/error/prerollback", KEY_END), keyNew ("/default/error/prerollback/#0", KEY_END),
+		       keyNew ("/default/error/prerollback/#0/label", KEY_VALUE, "tracer", KEY_END),
+		       keyNew ("/default/error/prerollback/#0/name", KEY_VALUE, "tracer", KEY_END),
+		       keyNew ("/default/get/pregetstorage", KEY_END), keyNew ("/default/get/pregetstorage/#0", KEY_END),
+		       keyNew ("/default/get/pregetstorage/#0/reference", KEY_VALUE, "tracer", KEY_END),
+		       keyNew ("/default/set/presetstorage", KEY_END), keyNew ("/default/set/presetstorage/#0", KEY_END),
+		       keyNew ("/default/set/presetstorage/#0/reference", KEY_VALUE, "tracer"));
 	ksAppend (config, tracerConfig);
 #endif
 

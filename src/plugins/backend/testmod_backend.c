@@ -272,38 +272,39 @@ static void test_default (void)
 
 KeySet * set_backref (void)
 {
-	return ksNew (50, keyNew ("system:/elektra/mountpoints/backref", KEY_END),
+	return ksNew (
+		50, keyNew ("system:/elektra/mountpoints/backref", KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/backref/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/config/anything", KEY_VALUE, "backend", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/config/more", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/config/more/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/config/more/config/below", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/config/mountpoint", KEY_VALUE, "user:/tests/backend/backref", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/config/path", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/config", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/config/anything", KEY_VALUE, "backend", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/config/more", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/config/more/config", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/config/more/config/below", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/config/mountpoint", KEY_VALUE, "user:/tests/backend/backref", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/config/path", KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/backref/error", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/error/prerollback", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config/anything", KEY_VALUE, "plugin", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config/more", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config/more/config", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config/more/config/below", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config/path", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/label", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/name", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error/prerollback", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config/anything", KEY_VALUE, "plugin", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config/more", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config/more/config", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config/more/config/below", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/config/path", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/label", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/error/prerollback/#0/name", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/backref/get", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/get/pregetstorage", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/get/pregetstorage/#0", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/get/pregetstorage/#0/reference", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/get", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/get/pregetstorage", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/get/pregetstorage/#0", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/get/pregetstorage/#0/reference", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
 
-		      keyNew ("system:/elektra/mountpoints/backref/set", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/set/presetstorage", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/set/presetstorage/#0", KEY_END),
-		      keyNew ("system:/elektra/mountpoints/backref/set/presetstorage/#0/reference", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
-		      KS_END);
+		keyNew ("system:/elektra/mountpoints/backref/set", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/set/presetstorage", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/set/presetstorage/#0", KEY_END),
+		keyNew ("system:/elektra/mountpoints/backref/set/presetstorage/#0/reference", KEY_VALUE, KDB_DEFAULT_STORAGE, KEY_END),
+		KS_END);
 }
 
 static void test_backref (void)

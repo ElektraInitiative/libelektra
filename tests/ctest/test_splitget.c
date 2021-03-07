@@ -67,8 +67,8 @@ static void test_simple (void)
 	//	mountOpen (handle, simple_config (), modules, 0);
 	//
 	//	KeySet * ks = ksNew (15, keyNew ("user:/testkey1/below/here", KEY_END), keyNew ("user:/testkey/below1/here", KEY_END),
-	//			     keyNew ("user:/testkey/below2/here", KEY_END), keyNew ("user:/tests/simple/testkey/b1/b2/down", KEY_END),
-	//			     keyNew ("user:/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
+	//			     keyNew ("user:/testkey/below2/here", KEY_END), keyNew ("user:/tests/simple/testkey/b1/b2/down",
+	// KEY_END), 			     keyNew ("user:/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
 	//
 	//	Split * split;
 	//	Key * parentKey;
@@ -143,8 +143,8 @@ static void test_cascading (void)
 	//	mountOpen (handle, simple_cascading (), modules, 0);
 	//
 	//	KeySet * ks = ksNew (15, keyNew ("user:/testkey1/below/here", KEY_END), keyNew ("user:/testkey/below1/here", KEY_END),
-	//			     keyNew ("user:/testkey/below2/here", KEY_END), keyNew ("user:/tests/simple/testkey/b1/b2/down", KEY_END),
-	//			     keyNew ("user:/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
+	//			     keyNew ("user:/testkey/below2/here", KEY_END), keyNew ("user:/tests/simple/testkey/b1/b2/down",
+	// KEY_END), 			     keyNew ("user:/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
 	//
 	//	Split * split;
 	//	Key * parentKey;
@@ -551,8 +551,8 @@ static void test_triesizes (void)
 	//	succeed_if (handle->defaultBackend->systemsize == -1, "systemsize not initialized correct");
 	//
 	//	KeySet * ks = ksNew (15, keyNew ("user:/testkey1/below/here", KEY_END), keyNew ("user:/testkey/below1/here", KEY_END),
-	//			     keyNew ("user:/testkey/below2/here", KEY_END), keyNew ("user:/tests/simple/testkey/b1/b2/down", KEY_END),
-	//			     keyNew ("user:/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
+	//			     keyNew ("user:/testkey/below2/here", KEY_END), keyNew ("user:/tests/simple/testkey/b1/b2/down",
+	// KEY_END), 			     keyNew ("user:/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
 	//
 	//	Split * split;
 	//	Key * parentKey;
@@ -647,8 +647,8 @@ static void test_merge (void)
 	//	succeed_if (handle->defaultBackend->systemsize == -1, "systemsize not initialized correct");
 	//
 	//	KeySet * ks = ksNew (15, keyNew ("user:/testkey1/below/here", KEY_END), keyNew ("user:/testkey/below1/here", KEY_END),
-	//			     keyNew ("user:/testkey/below2/here", KEY_END), keyNew ("user:/tests/simple/testkey/b1/b2/down", KEY_END),
-	//			     keyNew ("user:/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
+	//			     keyNew ("user:/testkey/below2/here", KEY_END), keyNew ("user:/tests/simple/testkey/b1/b2/down",
+	// KEY_END), 			     keyNew ("user:/tests/simple/testkey/b1/b2/up", KEY_END), KS_END);
 	//
 	//	Split * split;
 	//	Key * parentKey;

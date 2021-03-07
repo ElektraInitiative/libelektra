@@ -510,8 +510,7 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Plugin *
 		ELEKTRA_ADD_INTERFACE_WARNINGF (
 			warningKey,
 			"Postcondition of backend was violated: drop key %s not belonging to \"%s\" with name \"%s\" because %s ",
-			name ? name : "(no name)", mountpoint ? mountpoint : "(default mountpoint)", keyString (mountpoint),
-			msg);
+			name ? name : "(no name)", mountpoint ? mountpoint : "(default mountpoint)", keyString (mountpoint), msg);
 	}
 	elektraCursor c = ksGetCursor (ks);
 	keyDel (elektraKsPopAtCursor (ks, c));
