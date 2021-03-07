@@ -14,6 +14,7 @@ Please add your name at the end of every contribution.
 <<`scripts/generate-news-entry`>>
 
 We are proud to release Elektra 0.9.<<VERSION>>.
+This is a small change
 
 ## What is Elektra?
 
