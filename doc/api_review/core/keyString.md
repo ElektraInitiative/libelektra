@@ -19,7 +19,9 @@
       - [ ] Get the pointer to the string representing the Key's value.
 - [ ] Simple example or snippet how to use the function
       - [ ] add example
-- [x] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases
+      - [ ] add explanation about pointers
+      - [ ] add explanation about modifications from the user
 - [ ] Description of functions reads nicely
       - [ ] (null) -> "(null)"
       - [ ] (binary) -> "(binary)"
@@ -102,5 +104,8 @@
 - [x] No inconsistencies between tests and documentation
 
 ## Summary
+Think about changing the return values for 1.0.0. It seems like a hard step,
+but also inevitable to do at some point. Now would probably be better than in
+the future.
 
 ## Other Issues discovered (unrelated to function)
