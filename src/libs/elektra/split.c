@@ -502,7 +502,7 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Plugin *
 			warningKey,
 			"Postcondition of backend was violated: drop key %s not belonging to \"%s\" with name \"%s\" but "
 			"instead to \"%s\" with name \"%s\" because %s ",
-			name ? name : "(no name)", mountpoint ? mountpoint : "(default mountpoint)", keyString (mountpoint),
+			name ? name : "(no name)", mountpoint ? keyName (mountpoint) : "(default mountpoint)", keyString (mountpoint),
 			keyName (otherMountpoint), keyString (otherMountpoint), msg);
 	}
 	else
@@ -510,7 +510,7 @@ static void elektraDropCurrentKey (KeySet * ks, Key * warningKey, const Plugin *
 		ELEKTRA_ADD_INTERFACE_WARNINGF (
 			warningKey,
 			"Postcondition of backend was violated: drop key %s not belonging to \"%s\" with name \"%s\" because %s ",
-			name ? name : "(no name)", mountpoint ? mountpoint : "(default mountpoint)", keyString (mountpoint), msg);
+			name ? name : "(no name)", mountpoint ? keyName (mountpoint) : "(default mountpoint)", keyString (mountpoint), msg);
 	}
 	elektraCursor c = ksGetCursor (ks);
 	keyDel (elektraKsPopAtCursor (ks, c));
@@ -848,7 +848,7 @@ static char * elektraStrConcat (const char * a, const char * b)
 
 void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent)
 {
-	Key * mountPoint = mountGetMountpoint (handle, keyName (parentKey));
+	Key * mountPoint = mountGetMountpoint (handle, parentKey);
 	const char * mountPointName = mountPoint == NULL ? "/" : keyName (mountPoint);
 	const char * mountPointValue = mountPoint == NULL ? "" : keyString (mountPoint);
 	Key * lastParentName = keyNew (KDB_CACHE_PREFIX "/lastParentName", KEY_VALUE, mountPointName, KEY_END);

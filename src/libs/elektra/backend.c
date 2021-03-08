@@ -226,14 +226,9 @@ Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * fil
 Plugin * backendOpenModules (KeySet * modules, KeySet * global, Key * errorKey)
 {
 	Key * mp = keyNew ("system:/elektra/modules", KEY_VALUE, "modules", KEY_END);
-
-	elektraCursor save = ksGetCursor (modules);
-	KeySet * defaultConfig =
-		ksNew (5, keyNew ("system:/module", KEY_VALUE, "1", KEY_END), keyNew ("user:/module", KEY_VALUE, "1", KEY_END), KS_END);
 	Key * cur = ksCurrent (modules);
 
 	keySetName (errorKey, keyName (cur));
-	Key * cur = ksCurrent (modules);
 
 	keyAddBaseName (mp, keyBaseName (cur));
 

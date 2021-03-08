@@ -424,7 +424,7 @@ static void test_nobackend (void)
 	succeed_if (ksGetSize (split->keysets[0]) == 2, "wrong size");
 	succeed_if (ksGetSize (split->keysets[1]) == 3, "wrong size");
 	compare_key (split->parents[0], mp);
-	backend = trieLookup (handle->trie, keyName (parentKey));
+	backend = trieLookup (handle->trie, parentKey);
 	succeed_if (split->handles[0] == backend, "should be user backend");
 	succeed_if (split->handles[1] == 0, "should be default backend");
 

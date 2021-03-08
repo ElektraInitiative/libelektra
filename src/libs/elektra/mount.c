@@ -133,7 +133,6 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 		}
 	}
 
-	Key * key = 0;
 	Plugin * backend = 0;
 
 	for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
@@ -141,7 +140,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 		switch (ns)
 		{
 		case KEY_NS_SPEC:
-			backend = mountGetBackend (kdb, "spec:/");
+			backend = mountGetBackend (kdb, keyNew ("spec:/", KEY_END));
 			if (backend != kdb->defaultBackend)
 			{
 				/* It does not matter that spec is not reachable anymore */
@@ -153,7 +152,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 			}
 			break;
 		case KEY_NS_DIR:
-			backend = mountGetBackend (kdb, "dir:/");
+			backend = mountGetBackend (kdb, keyNew ("dir:/", KEY_END));
 			if (backend != kdb->defaultBackend)
 			{
 				/* It does not matter that dir is not reachable anymore */
@@ -171,7 +170,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 			 */
 			if (inFallback)
 			{
-				backend = mountGetBackend (kdb, KDB_SYSTEM_ELEKTRA);
+				backend = mountGetBackend (kdb, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END));
 				if (backend != kdb->defaultBackend)
 				{
 					/* It is not reachable, mount it */
@@ -197,7 +196,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 				++kdb->initBackend->refcounter;
 				kdb->split->syncbits[kdb->split->size - 1] = 2;
 
-				backend = mountGetBackend (kdb, "system:/");
+				backend = mountGetBackend (kdb, keyNew ("system:/", KEY_END));
 				if (backend != kdb->defaultBackend)
 				{
 					/* It does not matter that system is not reachable anymore */
@@ -210,7 +209,7 @@ int mountDefault (KDB * kdb, KeySet * modules, int inFallback, Key * errorKey)
 			}
 			break;
 		case KEY_NS_USER:
-			backend = mountGetBackend (kdb, "user:/");
+			backend = mountGetBackend (kdb, keyNew ("user:/", KEY_END));
 			if (backend != kdb->defaultBackend)
 			{
 				/* It does not matter that user is not reachable anymore */
@@ -649,7 +648,7 @@ int mountBackend (KDB * kdb, Plugin * backend, Key * errorKey ELEKTRA_UNUSED)
 		/* Common single mounted backend */
 		sprintf (mountpoint, "%s/", keyString (mp));
 		kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
-		splitAppend (kdb->split, backend, keyDup (mp), 0);
+		splitAppend (kdb->split, backend, keyDup (mp, KEY_CP_ALL), 0);
 		backend->refcounter = 1;
 	}
 
@@ -684,7 +683,7 @@ kdbClose (handle);
  * @return the mountpoint associated with the key
  * @ingroup mount
  */
-Key * mountGetMountpoint (KDB * handle, const char * where)
+Key * mountGetMountpoint (KDB * handle, const Key * where)
 {
 	Plugin * backend_handle;
 
@@ -716,7 +715,7 @@ Key * mountGetMountpoint (KDB * handle, const char * where)
  */
 Plugin * mountGetBackend (KDB * handle, const Key * key)
 {
-	if (where == NULL || strlen (where) == 0) return handle->defaultBackend;
+	if (key == NULL) return handle->defaultBackend;
 
 	Plugin * ret = trieLookup (handle->trie, key);
 	if (!ret) return handle->defaultBackend;

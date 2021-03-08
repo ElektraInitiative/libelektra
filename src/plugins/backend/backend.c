@@ -15,7 +15,7 @@ int setMountpoint (BackendHandle * bh, Key * root, KeySet * config, Key * errorK
 
 	configRoot = ksNext (config);
 
-	Key * searchMountpoint = keyDup (configRoot);
+	Key * searchMountpoint = keyDup (configRoot, KEY_CP_ALL);
 	keyAddBaseName (searchMountpoint, "mountpoint");
 	Key * foundMountpoint = ksLookup (config, searchMountpoint, 0);
 
@@ -28,7 +28,7 @@ int setMountpoint (BackendHandle * bh, Key * root, KeySet * config, Key * errorK
 	}
 
 	bh->mountpoint = keyNew ("", KEY_VALUE, keyBaseName (root), KEY_END);
-	elektraKeySetName (bh->mountpoint, keyString (foundMountpoint), KEY_CASCADING_NAME | KEY_EMPTY_NAME);
+	keySetName (bh->mountpoint, keyString (foundMountpoint));
 
 	keySetName (errorKey, keyName (bh->mountpoint));
 
@@ -101,19 +101,19 @@ int linkedListPosition (Key * cur, Key * errorKey)
 int processPlugin (KeySet * config, Key * cur, char ** name, KeySet ** pluginConfig, char ** referenceName, Key * errorKey)
 {
 	// This key will be used to find the configuration of the plugin, if it exists
-	Key * pluginConfigSearchKey = keyDup (cur);
+	Key * pluginConfigSearchKey = keyDup (cur, KEY_CP_ALL);
 	keyAddBaseName (pluginConfigSearchKey, "config");
 
 	// This key will be used to find the plugin label, which it can be referenced with afterwards, if it exists
-	Key * labelSearchKey = keyDup (cur);
+	Key * labelSearchKey = keyDup (cur, KEY_CP_ALL);
 	keyAddBaseName (labelSearchKey, "label");
 
 	// This key will be used to find the name of the plugin
-	Key * nameSearchKey = keyDup (cur);
+	Key * nameSearchKey = keyDup (cur, KEY_CP_ALL);
 	keyAddBaseName (nameSearchKey, "name");
 
 	// This key will be used to find the plugin's reference name, which is the label it was first set with
-	Key * refSearchKey = keyDup (cur);
+	Key * refSearchKey = keyDup (cur, KEY_CP_ALL);
 	keyAddBaseName (refSearchKey, "reference");
 
 	KeySet * cutPluginConfig = ksCut (config, pluginConfigSearchKey);
@@ -573,7 +573,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 	KeySet * systemConfig = 0;
 	KeySet * referencePlugins = ksNew (0, KS_END);
 
-	Key * configKey = keyDup (root);
+	Key * configKey = keyDup (root, KEY_CP_ALL);
 	keyAddBaseName (configKey, "config");
 	KeySet * configSet = ksCut (handle->config, configKey);
 	keyDel (configKey);
@@ -586,7 +586,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	Key * errorPluginsKey = keyDup (root);
+	Key * errorPluginsKey = keyDup (root, KEY_CP_ALL);
 	keyAddBaseName (errorPluginsKey, "error");
 	KeySet * errorPluginsSet = ksCut (handle->config, errorPluginsKey);
 	keyDel (errorPluginsKey);
@@ -608,7 +608,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 
 	elektraFree (errorPlugins);
 
-	Key * getPluginsKey = keyDup (root);
+	Key * getPluginsKey = keyDup (root, KEY_CP_ALL);
 	keyAddBaseName (getPluginsKey, "get");
 	KeySet * getPluginsSet = ksCut (handle->config, getPluginsKey);
 	keyDel (getPluginsKey);
@@ -630,7 +630,7 @@ int elektraBackendOpen (Plugin * handle, Key * errorKey)
 
 	elektraFree (getPlugins);
 
-	Key * setPluginsKey = keyDup (root);
+	Key * setPluginsKey = keyDup (root, KEY_CP_ALL);
 	keyAddBaseName (setPluginsKey, "set");
 	KeySet * setPluginsSet = ksCut (handle->config, setPluginsKey);
 	keyDel (setPluginsKey);

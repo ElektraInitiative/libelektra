@@ -53,7 +53,7 @@ Plugin * trieLookup (Trie * trie, const Key * key)
 	if (!key) return 0;
 	if (!trie) return 0;
 
-	size_t len = strlen (key) + 2;
+	size_t len = strlen (keyName (key)) + 2;
 	if (len <= 1) return 0; // would crash otherwise
 	char * where = elektraMalloc (len);
 	strncpy (where, keyName (key), len);
