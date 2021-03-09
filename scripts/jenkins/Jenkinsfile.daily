@@ -188,7 +188,7 @@ def dockerImages() {
 def retainNewestImages(image, n, withTag='', excludeTag='none') {
   sh """docker images ${image} --format \"{{.Repository}} {{.Tag}}\" \
 | grep -v \"${excludeTag}\" \
-| grep \"${withTag}\"
+| grep \"${withTag}\" \
 | sort -k 2,2 \
 | head -n -${n} \
 | awk \'BEGIN{OFS=\":\"} {print \$1,\$2}' \
