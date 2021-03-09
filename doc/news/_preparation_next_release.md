@@ -186,6 +186,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Reworked [METADATA.ini]/doc/METADATA.ini() _(Markus Raab)_
 - Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
 - Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
 - Fix order of tutorials _(Markus Raab)_
