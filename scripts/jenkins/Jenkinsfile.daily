@@ -83,8 +83,10 @@ def cleanupDocker(targetNode) {
             node(targetNode) {
                 dockerImages().each {
                     if (it ==~ /^hub.libelektra.org.*-installed$/) {
-                        // remove all images with Elektra packages installed
-                        retainNewestImages(it, 0)
+                        // keep latest release and master image
+                        retainNewestImages(it, 5, '', 'master\\|release')
+                        retainNewestImages(it, 1, 'release', 'none')
+                        retainNewestImages(it, 1, 'master', 'none')
                     } else {
                         retainNewestImages(it, 5)
                     }
@@ -183,9 +185,10 @@ def dockerImages() {
     return r.tokenize('\n')
 }
 
-def retainNewestImages(image, n) {
+def retainNewestImages(image, n, withTag='', excludeTag='none') {
   sh """docker images ${image} --format \"{{.Repository}} {{.Tag}}\" \
-| grep -v \"none\" \
+| grep -v \"${excludeTag}\" \
+| grep \"${withTag}\" \
 | sort -k 2,2 \
 | head -n -${n} \
 | awk \'BEGIN{OFS=\":\"} {print \$1,\$2}' \
