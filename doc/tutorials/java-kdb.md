@@ -52,7 +52,7 @@ kdb set user:/my/test it_works!
 
 The method call would return `it_works!`.
 
-```java 
+```java
 String str = set.lookup("user:/my/test").getString()
 System.out.println(str) //prints "it works!"
 ```
