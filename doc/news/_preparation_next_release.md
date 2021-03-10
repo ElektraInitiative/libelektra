@@ -191,6 +191,7 @@ you up to date with the multi-language support provided by Elektra.
 - Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
 - Fix order of tutorials _(Markus Raab)_
 - Added API-Reviews for multiple functions in the public API _(Stefan Hanreich)_
+- Minor rewording in [java-kdb.md](/doc/tutorials/java-kdb.md) _(@aaronabebe)_
 - Add a short Visual Studio 2019 tutorial _(Dominic Jäger)_
 
 ## Tests

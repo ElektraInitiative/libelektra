@@ -44,8 +44,18 @@ Now we can simply fetch the desired key's value as follows:
 String str = set.lookup("user:/my/presaved/key").getString()
 ```
 
-So for example if you have executed before the application starts `kdb set user:/my/test it_works!`,
-the method call `set.lookup("user:/my/test").getString()` would return `it_works!`.
+So for example if you had executed the command below via shell, before starting the application:
+
+```bash
+kdb set user:/my/test it_works!
+```
+
+The method call would return `it_works!`.
+
+```java 
+String str = set.lookup("user:/my/test").getString()
+System.out.println(str) //prints "it works!"
+```
 
 ## Saving Keys
 
