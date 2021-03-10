@@ -768,59 +768,35 @@ def buildDoc() {
           [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
         ]
 
-        if (isMaster()) {
-          sshPublisher(
-            publishers: [
-              sshPublisherDesc(
-                verbose: true,
-                configName: 'doc.libelektra.org',
-                transfers: [
-                  sshTransfer(
-                    sourceFiles: 'build/doc/latex/*',
-                    removePrefix: 'build/doc/',
-                    remoteDirectory: 'api/master'
-                  ),
-                  sshTransfer(
-                    sourceFiles: 'build/doc/html/*',
-                    removePrefix: 'build/doc/',
-                    remoteDirectory: 'api/master'
-                  ),
-                  sshTransfer(
-                    sourceFiles: 'build/doc/man/man3elektra/*',
-                    removePrefix: 'build/doc/man/man3elektra/',
-                    remoteDirectory: 'api/master/man'
-                  )
-                ]
-              )
-            ]
-          )
-        } else {
-          sshPublisher(
-            publishers: [
-              sshPublisherDesc(
-                verbose: true,
-                configName: 'doc.libelektra.org',
-                transfers: [
-                  sshTransfer(
-                    sourceFiles: 'build/doc/latex/*',
-                    removePrefix: 'build/doc/',
-                    remoteDirectory: 'api/pr'
-                  ),
-                  sshTransfer(
-                    sourceFiles: 'build/doc/html/*',
-                    removePrefix: 'build/doc/',
-                    remoteDirectory: 'api/pr'
-                  ),
-                  sshTransfer(
-                    sourceFiles: 'build/doc/man/man3elektra/*',
-                    removePrefix: 'build/doc/man/man3elektra/',
-                    remoteDirectory: 'api/pr/man'
-                  )
-                ]
-              )
-            ]
-          )
+        def uploadDir = "api/${env.BRANCH_NAME}"
+        if (!isMaster()) {
+          uploadDir = "api/pr/${env.BRANCH_NAME}"
         }
+        sshPublisher(
+          publishers: [
+            sshPublisherDesc(
+              verbose: true,
+              configName: 'doc.libelektra.org',
+              transfers: [
+                sshTransfer(
+                  sourceFiles: 'build/doc/latex/*',
+                  removePrefix: 'build/doc/',
+                  remoteDirectory: "${uploadDir}"
+                ),
+                sshTransfer(
+                  sourceFiles: 'build/doc/html/*',
+                  removePrefix: 'build/doc/',
+                  remoteDirectory: "${uploadDir}"
+                ),
+                sshTransfer(
+                  sourceFiles: 'build/doc/man/man3elektra/*',
+                  removePrefix: 'build/doc/man/man3elektra/',
+                  remoteDirectory: "${uploadDir}/man"
+                )
+              ]
+            )
+          ]
+        )
         deleteDir()
       }
     }

@@ -135,13 +135,14 @@ def cleanupDockerRegistry(targetNode) {
 
 def generateFileCleanupStages() {
     def tasks = [:]
-    tasks << cleanupCoverage()
+    tasks << cleanupDoc('coverage/')
+    tasks << cleanupDoc('api/pr/')
     return tasks
 }
 
-def cleanupCoverage() {
+def cleanupDoc(path) {
     def cleanupCommand = """
-find /srv/libelektra/coverage/ \
+find /srv/libelektra/${path} \
     -mindepth 1 \
     -maxdepth 1 \
     -type d \
@@ -149,7 +150,7 @@ find /srv/libelektra/coverage/ \
     -print0 \
     | xargs -r -0 rm -R
 """
-    def taskname = "cleanup-coverage"
+    def taskname = "cleanup-${path}"
     return [(taskname): {
         stage(taskname) {
             node("master") {
