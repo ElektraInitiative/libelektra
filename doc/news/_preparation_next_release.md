@@ -14,7 +14,6 @@ Please add your name at the end of every contribution.
 <<`scripts/generate-news-entry`>>
 
 We are proud to release Elektra 0.9.<<VERSION>>.
-This is a small change
 
 ## What is Elektra?
 
@@ -188,6 +187,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
+- Minor rewording in INSTALL.md _(@a-kraschitzer)_
 - Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
 - Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
 - Fix order of tutorials _(Markus Raab)_
