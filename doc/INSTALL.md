@@ -171,7 +171,7 @@ which will create packages for distributions where a Generator is implemented.
 
 You can find the generated packages in the `package` directory of the build directory.
 
-> NOTE: If all plugins/bindings/tools a package includes are excluded, the package will be not generated.
+> NOTE: If all plugins/bindings/tools a package includes are excluded, the package will not be generated.
 
 #### Debian/Ubuntu
 
