@@ -87,6 +87,10 @@ stage('Publish') {
   parallel generatePublishStages()
 }
 
+stage('Upload release Docker images') {
+  parallel generateImageUploadStages()
+}
+
 /**************/
 /* Generators */
 /**************/
@@ -169,7 +173,7 @@ def dockerInit() {
      * Alpine release image with installed Elektra
      */
     DOCKER_IMAGES.alpine_release = createDockerImageDescForRelease(
-      'elektra/elektra', this.&idRelease,
+      'elektra/elektra',
       './scripts/docker/alpine/*',
       './scripts/docker/alpine/*/release.Dockerfile',
       false
@@ -340,6 +344,15 @@ def generatePublishStages() {
   // publish main repo which got modified during the
   // debian-buster release stage
   tasks << publishMainRepo('debian-buster')
+
+  return tasks
+}
+
+/**
+ * Generate stages that upload release Docker images
+ */
+def generateImageUploadStages() {
+  def tasks = [:]
 
   tasks << publishImageToDockerHub(
     'publish-alpine',
@@ -624,26 +637,6 @@ def buildImageWithPackagesStage(image, previousTaskName) {
 }
 
 /**
- * Copy release artifact from previous stage and extract it
- * @param  artifactStageName stage name under which the artifact
- *                           got archived
- */
-def copyReleaseArtifact(artifactStageName) {
-  copyArtifacts(
-    filter: "artifacts/${artifactStageName}/${artifactStageName}-release.tar.gz",
-    fingerprintArtifacts: true,
-    projectName: '${JOB_NAME}',
-    selector: specific('${BUILD_NUMBER}')
-  )
-  dir('release-artifact') {
-    deleteDir()
-    sh """\
-tar -zxvf ${WORKSPACE}/artifacts/${artifactStageName}/${artifactStageName}-release.tar.gz \
--C ./ --strip-components=1"""
-  }
-}
-
-/**
  * Builds and publishes an image to the official Docker Hub.
  *
  * The image is tagged with a version number and additional
@@ -664,6 +657,7 @@ def publishImageToDockerHub(stageName, image, imageRevision='1') {
           def i = docker.build(
             image.id,"""\
 --pull \
+--squash \
 --build-arg PARALLEL=${cpus} \
 -f ${image.file} ${image.context}"""
           )
@@ -675,6 +669,26 @@ def publishImageToDockerHub(stageName, image, imageRevision='1') {
       }
     }
   }]
+}
+
+/**
+ * Copy release artifact from previous stage and extract it
+ * @param  artifactStageName stage name under which the artifact
+ *                           got archived
+ */
+def copyReleaseArtifact(artifactStageName) {
+  copyArtifacts(
+    filter: "artifacts/${artifactStageName}/${artifactStageName}-release.tar.gz",
+    fingerprintArtifacts: true,
+    projectName: '${JOB_NAME}',
+    selector: specific('${BUILD_NUMBER}')
+  )
+  dir('release-artifact') {
+    deleteDir()
+    sh """\
+tar -zxvf ${WORKSPACE}/artifacts/${artifactStageName}/${artifactStageName}-release.tar.gz \
+-C ./ --strip-components=1"""
+  }
 }
 
 /**
@@ -692,25 +706,16 @@ def publishImageToDockerHub(stageName, image, imageRevision='1') {
  *                  Jenkins run. If false it can be build manually
  *                  (see buildImageStage()).
  */
-def createDockerImageDescForRelease(name, idFun, context, file, autobuild=true) {
+def createDockerImageDescForRelease(name, context, file, autobuild=true) {
   def map = [
+    id: name,
     name: name,
     context: context,
     file: file,
     autobuild: autobuild,
     exists: false
   ]
-  return idFun(map)
-}
-
-/**
- *  Build id for artifact for release images without tagging it.
- *
- * @param imageMap Map identifying an docker image
- */
-def idRelease(imageMap) {
-  imageMap.id = "${imageMap.name}"
-  return imageMap
+  return map
 }
 
 /**
