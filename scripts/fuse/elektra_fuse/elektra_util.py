@@ -7,7 +7,7 @@ import kdb
 #TODO: Add 'default:' and 'proc:'. These namespaces do not work out of the box like "user:", "sysem:", ... but need extra treatment.
 elektra_namespaces = ["user:", "system:", "dir:", "spec:", "cascading:"]
 
-dir_file_special_name = "@elektra.value"
+dir_file_special_name = "®elektra.value"
 
 #translates from filesystem (that are below the "pid"-level) paths to elektra paths (e.g. '/user:/dir/@elektra.value' -> 'user:/dir', '/cascading:/key' -> '/key') 
 def os_path_to_elektra_path(os_path):
