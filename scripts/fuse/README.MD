@@ -1,14 +1,14 @@
 # elektra-fuse
 
-Mount  [elektra](https://github.com/ElektraInitiative/libelektra) as a [fuse(py)](https://github.com/fusepy/fusepy) filesystem.
+Mount [elektra](https://www.libelektra.org)'s KDB as a [fuse(py)](https://github.com/fusepy/fusepy) filesystem.
 
-This tool enables the inspection and modification of the Elektra-hierarchy, in the form of a classical filesystem, as it is observed by a given running process.
-In the simplest case, an Elektra key appears as a file of the same name, where its contents pose the keys value.
+This tool enables the inspection and modification of the KDB, in the form of a classical filesystem, as it is observed by a given running process.
+In the simplest case, an Elektra key appears as a file with the key name as file path and with the key value as file content.
 
 This enables users to interact with Elektra
 - using standard unix tooling, making Elektra more accessible
 - with standard system/library procedures
-- without the need to build with libelektra
+- without the need to learn other tooling of libelektra
 - with additional features: e.g. the ability to effortlessly write binary keys
 
 ## Quickstart
@@ -28,14 +28,14 @@ For debugging purposes, a logfile is written to `~/nohup.out` inside the contain
 Required (debian) packages:
 - libfuse-dev
 - fuse
-- libelektra5-all (not in official repositories, follow [these](https://github.com/ElektraInitiative/libelektra/blob/master/doc/INSTALL.md) instructions)
+- libelektra5-all (not in official repositories, follow [these](https://www.libelektra.org/installation/installation) instructions)
 
 Required (python3) packages:
 - fusepy psutil
 
-Mount the filesystem below the (already existing) directory `mountpoint` (as root-user) with
+Mount the filesystem below the (already existing) directory `<mount point>` (as root-user) with
 ```sh
-sudo ./elektra_fuse/elektra_fuse.py `mountpoint`
+sudo ./elektra_fuse/elektra_fuse.py <mount point>
 ```
 
 ## Filesystem Structure
@@ -45,10 +45,10 @@ Directly below the mount point, for every process running on the system (except 
 For convinience, each such directory possesses numerous extened filesystem attributes that identify the process, user, etc., that can be listed by:
 
 ```sh
-xattr -l mountpoint/<pid>
+xattr -l <mount point>/<pid>
 ```
 
-Below any such pid-directory, the elektra key database is mounted bidirectionally using directories that correspond to the different namespaces:
+Below any such pid-directory, the elektra key database is mounted bidirectionally using directories that correspond to the different [namespaces](https://www.libelektra.org/tutorials/namespaces):
 
 - `user:`
 - `system:`
@@ -111,8 +111,8 @@ tree -L 4 mountpoint
 
 ## Assumptions and special behaviour
 
-Elektra does not map perfectly to the structure of a classical filesystem.
-Whenever deviations are necessary, the goal is to maximize usability and adhere to the expectations of common unix tools.
+Elektra cannot map perfectly to the structure of a classical filesystem as described [here](https://www.libelektra.org/docgettingstarted/big-picture).
+Whenever deviations are necessary, the goal is to maximize usability and adhere to the expectations of common Unix tools.
 
 ### Intermediate directories
 
@@ -159,8 +159,8 @@ If a value is to be written that cannot be decoded using the systems default enc
 
 ## Known issues
 
-- Moving an ``@elektra.value``-file corrupts the filesytsem/key database (See this [issue](https://github.com/ElektraInitiative/libelektra/issues/3648)). As editors like `vim` may move a file during editing, such editors cannot reliebly be used on these pseudo-files.
+- Moving an ``@elektra.value``-file corrupts the filesystem/key database (See this [issue](https://issues.libelektra.org/3648)). As editors like `vim` may move a file during editing, such editors cannot reliably be used on these pseudo-files.
 - Only functional on UNIX-like systems
-- chmod/chown is currently not implemented (and how it should be is not obvious). A call does not signal a "not supported error" to enable compatibility with common tools like `cp`.
+- chmod/chown is not implemented and does not signal a "not supported error" to enable compatibility with common tools like `cp`.
 - Access related errorcodes not yet implemented (e.g. normal user tries to write to system:/) (defaulting to read only fs - error)
 - Everything that is labled as `TODO` in the source.
