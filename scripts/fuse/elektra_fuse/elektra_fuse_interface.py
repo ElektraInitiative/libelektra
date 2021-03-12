@@ -74,7 +74,7 @@ def getattr(path, fh=None):
         key_stat["st_nlink"] = 2
         return key_stat
     elif mode == stat.S_IFREG:
-        key_stat["st_nlink"] = 1 #TODO: maybe consider key.getReferenceCounter?
+        key_stat["st_nlink"] = 1
         key_stat["st_size"] = filesize
         return key_stat
     else:
@@ -84,8 +84,7 @@ def getattr(path, fh=None):
 # -) `kdb file` does not return a path
 # -) the returned path does not actually exist
 def _stat_kdb_file(os_path):
-    elektra_path = os_path_to_elektra_path(os_path)
-    resolved_file_path = subprocess.check_output(["kdb", "file", elektra_path]).decode().strip()
+    resolved_file_path = get_kdb_file(os_path)
     return os.stat(resolved_file_path)
 
 def readdir(path, fh):

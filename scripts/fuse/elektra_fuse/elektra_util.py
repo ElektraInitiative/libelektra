@@ -32,7 +32,14 @@ def size_of_file(os_path):
 def is_directory_empty(os_path):
     dirs, files = ls(os_path)
     return not bool(dirs) and not bool(files)
-    
+   
+#performs function of the "kdb file" command 
+def get_kdb_file(os_path):
+    with kdb.KDB() as db:
+        elektra_path = os_path_to_elektra_path(os_path)
+        x = kdb.Key(elektra_path)
+        db.get(kdb.KeySet(), x)
+        return x.value 
 
 def update_key_value(os_path: str, new_value: bytes):
     # kdb.kdb.KDBException, may be thrown
