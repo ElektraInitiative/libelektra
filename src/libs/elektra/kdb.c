@@ -779,7 +779,8 @@ static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
 	return cutKS;
 }
 
-static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, KeySet * ks, Key * parentKey, Key * initialParent, UpdatePass run)
+static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, KeySet * backends, KeySet * ks, Key * parentKey, Key * initialParent,
+					      UpdatePass run)
 {
 	switch (run)
 	{
@@ -812,9 +813,9 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, KeySet * ks, Key * p
 
 	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
 
-	for (elektraCursor i = 0; i < ksGetSize (handle->backends); i++)
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		Key * backendKey = ksAtCursor (handle->backends, i);
+		Key * backendKey = ksAtCursor (backends, i);
 
 		if (keyGetNamespace (backendKey) == KEY_NS_DEFAULT)
 		{
@@ -1233,6 +1234,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 #if 1 == 0
 	Split * split = splitNew ();
 #endif
+	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
 
 	KeySet * cache = 0;
 	Key * cacheParent = 0;
@@ -1285,7 +1287,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 				handle->globalPlugins[PROCGETSTORAGE][DEINIT];
 
 	// Check if a update is needed at all
-	switch (elektraGetCheckUpdateNeeded (handle->backends, parentKey))
+	switch (elektraGetCheckUpdateNeeded (backends, parentKey))
 	{
 	case -2: // We have a cache hit
 		goto cachemiss;
@@ -1390,7 +1392,7 @@ cachemiss:
 	}
 
 	// Appoint keys (some in the bypass)
-	if (!backendsDivide (handle->backends, ks))
+	if (!backendsDivide (backends, ks))
 	{
 		clearError (parentKey);
 		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Error in backendsDivide");
@@ -1401,7 +1403,7 @@ cachemiss:
 	    handle->globalPlugins[PROCGETSTORAGE][FOREACH] || hasProcGetStorage)
 	{
 		clearError (parentKey);
-		if (elektraGetDoUpdateWithGlobalHooks (handle, ks, parentKey, initialParent, FIRST) == -1)
+		if (elektraGetDoUpdateWithGlobalHooks (handle, backends, ks, parentKey, initialParent, FIRST) == -1)
 		{
 			goto error;
 		}
@@ -1421,7 +1423,7 @@ cachemiss:
 		}
 #endif
 		ksClear (ks);
-		backendsMerge (handle->backends, ks);
+		backendsMerge (backends, ks);
 
 		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
@@ -1437,7 +1439,7 @@ cachemiss:
 		}
 
 		clearError (parentKey);
-		if (elektraGetDoUpdateWithGlobalHooks (handle, ks, parentKey, initialParent, LAST) == -1)
+		if (elektraGetDoUpdateWithGlobalHooks (handle, backends, ks, parentKey, initialParent, LAST) == -1)
 		{
 			goto error;
 		}
@@ -1453,7 +1455,7 @@ cachemiss:
 		   but not for bypassed keys in split->size-1 */
 		clearError (parentKey);
 		// do everything up to position get_storage
-		if (elektraGetDoUpdate (handle->backends, parentKey) == -1)
+		if (elektraGetDoUpdate (backends, parentKey) == -1)
 		{
 			goto error;
 		}
@@ -1472,7 +1474,7 @@ cachemiss:
 #endif
 
 		ksClear (ks);
-		backendsMerge (handle->backends, ks);
+		backendsMerge (backends, ks);
 
 		keySetName (parentKey, keyName (initialParent));
 
@@ -1516,7 +1518,7 @@ cachemiss:
 	cacheParent = 0;
 
 	// the default split is not handled by POSTGETSTORAGE
-	Key * defaultBackendKey = ksLookupByName (handle->backends, "default:/", 0);
+	Key * defaultBackendKey = ksLookupByName (backends, "default:/", 0);
 	if (defaultBackendKey != NULL)
 	{
 		const BackendData * defaultBackendData = keyValue (defaultBackendKey);
@@ -1664,7 +1666,6 @@ static void elektraSetCommit (KeySet * backends, Key * parentKey)
 	{
 		for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 		{
-			int ret = 0;
 			Key * backendKey = ksAtCursor (backends, i);
 
 			if (keyGetNamespace (backendKey) == KEY_NS_DEFAULT)
@@ -1687,6 +1688,8 @@ static void elektraSetCommit (KeySet * backends, Key * parentKey)
 					keyString (parentKey));
 #endif
 				ksRewind (backendData->keys);
+
+				int ret = 0;
 				if (p == SET_COMMIT)
 				{
 					ret = backend->kdbCommit (backend, backendData->keys, parentKey);
@@ -1697,12 +1700,12 @@ static void elektraSetCommit (KeySet * backends, Key * parentKey)
 				{
 					ret = backend->kdbSet (backend, backendData->keys, parentKey);
 				}
-			}
 
-			if (ret == -1)
-			{
-				ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Error during commit. This means backend is broken: %s",
-							       keyName (backendGetMountpoint (backend)));
+				if (ret == -1)
+				{
+					ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Error during commit. This means backend is broken: %s",
+								       keyName (backendKey));
+				}
 			}
 		}
 	}
@@ -1951,7 +1954,9 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 #endif
 	// FIXME: ensure kdbGet() called first
 
-	if (!backendsDivide (handle->backends, ks))
+	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
+
+	if (!backendsDivide (backends, ks))
 	{
 		/* Error during backend divison */
 		ELEKTRA_LOG ("Error during backend divison");
@@ -1972,7 +1977,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	clearError (parentKey); // clear previous error to set new one
 
 	Key * errorKey = 0;
-	if (elektraSetPrepare (handle->backends, parentKey, &errorKey, handle->globalPlugins) == -1)
+	if (elektraSetPrepare (backends, parentKey, &errorKey, handle->globalPlugins) == -1)
 	{
 		goto error;
 	}
@@ -1987,7 +1992,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	elektraGlobalSet (handle, ks, parentKey, PRECOMMIT, MAXONCE);
 	elektraGlobalSet (handle, ks, parentKey, PRECOMMIT, DEINIT);
 
-	elektraSetCommit (handle->backends, parentKey);
+	elektraSetCommit (backends, parentKey);
 
 	elektraGlobalSet (handle, ks, parentKey, COMMIT, INIT);
 	elektraGlobalSet (handle, ks, parentKey, COMMIT, MAXONCE);
@@ -2020,7 +2025,7 @@ error:
 	elektraGlobalError (handle, ks, parentKey, PREROLLBACK, MAXONCE);
 	elektraGlobalError (handle, ks, parentKey, PREROLLBACK, DEINIT);
 
-	elektraSetRollback (handle->backends, parentKey);
+	elektraSetRollback (backends, parentKey);
 
 	if (errorKey)
 	{

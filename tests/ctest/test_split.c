@@ -186,7 +186,9 @@ void test_backendsDivide (void)
 
 	// clang-format off
 	KeySet * ks = ksNew (20,
+				keyNew ("spec:/xyz", KEY_END),
 				keyNew ("user:/abc", KEY_END),
+				keyNew ("user:/bak/abc", KEY_END),
 				keyNew ("user:/bar/abc", KEY_END),
 				keyNew ("user:/bar/bar/abc", KEY_END),
 				keyNew ("user:/bar/bar/def", KEY_END),
@@ -194,11 +196,9 @@ void test_backendsDivide (void)
 				keyNew ("user:/bar/foo/abc", KEY_END),
 				keyNew ("user:/bar/foo/xyz", KEY_END),
 				keyNew ("user:/bar/xyz", KEY_END),
-				keyNew ("user:/bak/abc", KEY_END),
 				keyNew ("user:/foo/abc", KEY_END),
 				keyNew ("user:/foo/xyz", KEY_END),
 				keyNew ("user:/xyz", KEY_END),
-				keyNew ("spec:/xyz", KEY_END),
 				keyNew ("default:/xyz", KEY_END),
 			     KS_END);
 	// clang-format on

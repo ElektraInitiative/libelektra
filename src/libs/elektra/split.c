@@ -1177,6 +1177,65 @@ error:
 }
 #endif
 
+Key * backendsFindParent (KeySet * backends, const Key * key)
+{
+	// TODO: performance? Should be fine?
+	// With m = number of parts in key, n = size of backends
+	// this should be O(m) if backends uses the hashmap, but O(m*log(n)) otherwise
+	// The old trie solution would be O(k) where k is the length of the name of key
+	// The expectation is that k is bigger than m*log(n) in most cases
+
+	Key * lookup = keyDup (key, KEY_CP_NAME);
+	while (keyGetUnescapedNameSize (lookup) > 3)
+	{
+		Key * parent = ksLookup (backends, lookup, 0);
+		if (parent != NULL)
+		{
+			keyDel (lookup);
+			return parent;
+		}
+		keySetBaseName (lookup, NULL);
+	}
+
+	// lookup root key or fallback to default:/
+	Key * parent = ksLookup (backends, lookup, 0);
+	return parent != NULL ? parent : ksLookupByName (backends, "default:/", 0);
+}
+
+KeySet * backendsForParentKey (KeySet * backends, Key * parentKey)
+{
+	KeySet * selected = ksBelow (backends, parentKey);
+	if (keyGetNamespace (parentKey) == KEY_NS_CASCADING)
+	{
+		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
+		{
+			switch (ns)
+			{
+			case KEY_NS_PROC:
+			case KEY_NS_DIR:
+			case KEY_NS_USER:
+			case KEY_NS_SYSTEM:
+			case KEY_NS_SPEC:
+			case KEY_NS_META:
+			case KEY_NS_DEFAULT:
+				keySetNamespace (parentKey, ns);
+				ksAppendKey (selected, backendsFindParent (backends, parentKey));
+				break;
+			case KEY_NS_NONE:
+			case KEY_NS_CASCADING:
+				break;
+			}
+		}
+		keySetNamespace (parentKey, KEY_NS_CASCADING);
+	}
+	else
+	{
+		ksAppendKey (selected, backendsFindParent (backends, parentKey));
+	}
+	ksAppendKey (selected, ksLookupByName (backends, "default:/", 0));
+	return selected;
+}
+
 static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * curBackend, KeySet * ks, elektraCursor cur)
 {
 	Key * defaultBackendKey = ksLookupByName (backends, "default:/", 0);
@@ -1189,7 +1248,6 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 	const BackendData * defaultBackendData = keyValue (defaultBackendKey);
 	Key * backendKey = *curBackend < 0 ? defaultBackendKey : ksAtCursor (backends, *curBackend);
 	const BackendData * backendData = keyValue (backendKey);
-	ksClear (backendData->keys);
 
 	while (cur < ksGetSize (ks))
 	{
@@ -1227,6 +1285,13 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 
 int backendsDivide (KeySet * backends, KeySet * ks)
 {
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		const BackendData * backendData = keyValue (ksAtCursor (backends, i));
+		ksClear (backendData->keys);
+	}
+
+
 	elektraCursor curBackend = -1;
 	elektraCursor ret = backendsDivideInternal (backends, &curBackend, ks, 0);
 	return ret == ksGetSize (ks);
@@ -1239,7 +1304,7 @@ void backendsMerge (KeySet * backends, KeySet * ks)
 		const Key * backendKey = ksAtCursor (backends, i);
 		const BackendData * backendData = keyValue (backendKey);
 
-		if (keyGetNamespace (backendKey) != KEY_NS_DEFAULT && strcmp (keyName (backendKey), "system:/elektra") != 0)
+		if (keyGetNamespace (backendKey) != KEY_NS_DEFAULT)
 		{
 			ksAppend (ks, backendData->keys);
 		}

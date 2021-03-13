@@ -516,6 +516,8 @@ int splitCacheCheckState (Split * split, KeySet * global);
 int splitCacheLoadState (Split * split, KeySet * global);
 #endif
 
+Key * backendsFindParent (KeySet * backends, const Key * key);
+KeySet * backendsForParentKey (KeySet * backends, Key * parentKey);
 int backendsDivide (KeySet * backends, KeySet * ks);
 void backendsMerge (KeySet * backends, KeySet * ks);
 
@@ -585,6 +587,7 @@ KeySet * ksRenameKeys (KeySet * config, const char * name);
 ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot);
 
 elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCursor * end);
+KeySet * ksBelow (const KeySet * ks, const Key * root);
 
 
 /* Conveniences Methods for Making Tests */

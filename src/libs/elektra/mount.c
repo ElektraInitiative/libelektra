@@ -504,21 +504,25 @@ int mountBackend (KDB * kdb, const Key * mountpoint, Plugin * backend)
 	{
 		Key * backendKeyDir = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
 		keySetNamespace (backendKeyDir, KEY_NS_DIR);
+		((BackendData *) keyValue (backendKeyDir))->keys = ksNew (0, KS_END);
 		ksAppendKey (kdb->backends, backendKeyDir);
 
 		Key * backendKeyUser = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
 		keySetNamespace (backendKeyUser, KEY_NS_USER);
+		((BackendData *) keyValue (backendKeyUser))->keys = ksNew (0, KS_END);
 		ksAppendKey (kdb->backends, backendKeyUser);
 
 		Key * backendKeySystem = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
 		keySetNamespace (backendKeySystem, KEY_NS_SYSTEM);
+		((BackendData *) keyValue (backendKeySystem))->keys = ksNew (0, KS_END);
 		ksAppendKey (kdb->backends, backendKeySystem);
 
 		if (keyGetUnescapedNameSize (mountpoint) == 3)
 		{
 			// root key
 			Key * backendKeySpec = keyDup (backendKey, KEY_CP_NAME | KEY_CP_VALUE);
-			keySetNamespace (backendKeySpec, KEY_NS_SYSTEM);
+			keySetNamespace (backendKeySpec, KEY_NS_SPEC);
+			((BackendData *) keyValue (backendKeySpec))->keys = ksNew (0, KS_END);
 			ksAppendKey (kdb->backends, backendKeySpec);
 		}
 

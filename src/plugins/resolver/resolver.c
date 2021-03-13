@@ -1087,7 +1087,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 			ret = 0;
 
 			ELEKTRA_LOG ("check if removal of the configuration file \"%s\" would work later", pk->filename);
-			if (access (pk->dirname, W_OK | X_OK) == -1)
+			if (access (pk->dirname, F_OK) == 0 && access (pk->dirname, W_OK | X_OK) == -1)
 			{
 				ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename,
 							     strerror (errno));
@@ -1109,7 +1109,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey
 	else if (pk->fd == -2)
 	{
 		ELEKTRA_LOG ("unlink configuration file \"%s\"", pk->filename);
-		if (unlink (pk->filename) == -1)
+		if (access (pk->filename, F_OK) == 0 && unlink (pk->filename) == -1)
 		{
 			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not remove file '%s'. Reason: %s", pk->filename, strerror (errno));
 			ret = -1;

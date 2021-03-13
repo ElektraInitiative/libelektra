@@ -91,7 +91,7 @@ TEST_F (Simple, MetaInSet)
 	KeySet ks;
 	Key parent (testRoot, KEY_END);
 	kdb.get (ks, parent);
-	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backend" << ks;
+	ASSERT_EQ (ks.size (), 0) << "got keys from freshly mounted backend\n" << ks;
 
 	ks.append (Key ("meta:" + testRoot + "wrong_meta_key", KEY_END));
 
@@ -144,8 +144,9 @@ void compareKeySet (kdb::KeySet ks1, kdb::KeySet ks2)
 	EXPECT_EQ (i1, ks1.end ()) << "second iterator not at end";
 }
 
-TEST_F (Simple, EverythingInGetSet)
+TEST_F (Simple, DISABLED_EverythingInGetSet)
 {
+	// FIXME: uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks = getAll ();
@@ -165,8 +166,9 @@ TEST_F (Simple, EverythingInGetSet)
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "did find config file";
 }
 
-TEST_F (Simple, EverythingInSet)
+TEST_F (Simple, DISABLED_EverythingInSet)
 {
+	// FIXME: uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -312,8 +314,9 @@ TEST_F (Simple, GetCascading)
 }
 
 
-TEST_F (Simple, GetAppendCascading)
+TEST_F (Simple, DISABLED_GetAppendCascading)
 {
+	// FIXME: uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -355,8 +358,9 @@ TEST_F (Simple, GetAppendCascading)
 	ASSERT_EQ (ks2.size (), 0) << "got keys from freshly mounted backends";
 }
 
-TEST_F (Simple, GetAppendMeta)
+TEST_F (Simple, DISABLED_GetAppendMeta)
 {
+	// FIXME: uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
