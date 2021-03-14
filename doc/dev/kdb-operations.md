@@ -109,15 +109,19 @@ The basic flow of this operation is:
 2. Check if any key in `ks` below `parentKey` needs sync (via `KEY_FLAG_SYNC`).
    If neither `ks` nor any of the keys need sync, **return**.
 3. Determine the backends needed to write all keys below `parentKey`.
-4. Run the `spec` plugin (to remove copied metakeys).
-5. Split `ks` (below `parentKey`) into individual backends
-6. Run the `resolver`, `prestorage`, `storage` and `poststorage` phases on all backends (abort immediately on error, do 7 then go to 9).
-7. Run the `spec` plugin (to re-add copied metakeys).
-8. If everything was successful:
-   Run the `precommit` and `commit` phases on all backends (abort immediately on error and go to 9), then run the `postcommit` phase on all backends.
-9. If there was an error:
-   Run the `prerollback`, `rollback` and `postrollback` phases on all backends and **return**.
-10. Store `ks` in the global cache and **return**.
+4. Deep-Copy `ks` (below `parentKey`) into a new KeySet `set_ks`
+5. Run the `spec` plugin on `set_ks` (to add metakeys for new keys).
+6. Split `set_ks` into individual backends
+7. Run the `resolver` and `prestorage` on all backends (abort immediately on error and go to 13).
+8. Merge the results into a new version of `set_ks`.
+9. Run the `spec` plugin on `set_ks` (to remove copied metakeys).
+10. Split `set_ks` into individual backends again.
+11. Run the `storage` and `poststorage` phases on all backends (abort immediately on error and go to 13).
+12. If everything was successful:
+    Run the `precommit` and `commit` phases on all backends (abort immediately on error and go to 13), then run the `postcommit` phase on all backends.
+13. If there was an error:
+    Run the `prerollback`, `rollback` and `postrollback` phases on all backends and **return**.
+14. Store `ks` in the global cache and **return**.
 
 Influence of namespaces:
 
