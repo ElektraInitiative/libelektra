@@ -63,15 +63,6 @@ master should always compile and all test
 cases should pass successfully.
 (see config option above)
 
-    debian
-
-Is the branch to be used to build debian
-packages. It additionally contains the
-debian folder. Only debian related commits
-should be on the debian branch - otherwise
-it should only contain --no-ff merges from
-master. (see config option above)
-
 ## Local Branches
 
 You should always make your own feature branch with:
