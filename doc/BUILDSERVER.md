@@ -55,7 +55,7 @@ pipelineConfig {
 
 we can use any function that is declared in the shared library.
 
-It is available in the [following repository](https://github.com/ElektraInitiative/jenkins-library). 
+It is available in the [following repository](https://github.com/ElektraInitiative/jenkins-library).
 For more detailed usage instruction or instructions on how to integrate this shared library into Jenkins, see its [README.md](https://github.com/ElektraInitiative/jenkins-library/blob/master/README.md).
 
 ### Jenkinsfiles
@@ -166,7 +166,7 @@ The Jenkinsfile describes the steps used to run tests.
 Helper functions for easily adding new tests are available
 (`buildAndTest`, `BuildAndTestAsan`, ...).
 
-The `withDockerEnv` helper, that is available in the shared library, 
+The `withDockerEnv` helper, that is available in the shared library,
 makes sure to print the following information at the start of a test branch:
 
 - branch name
@@ -205,10 +205,10 @@ Additionally we recompile the homepage and deploy it on the community node.
 ### Release Builds
 
 The `buildRelease` function runs various test suites and collects and archives debug
-information. It also generates source-packages and packages for Debian based 
+information. It also generates source-packages and packages for Debian based
 distributions and Fedora.
 
-The generated packages are additionally installed and tested on a clean 
+The generated packages are additionally installed and tested on a clean
 Docker image.
 
 ### Manual approval
@@ -220,7 +220,7 @@ After manually verifying the correctness, the pipeline run can be resumed.
 
 ### Publishing
 
-The previously generated packages are published to its repositories, as described 
+The previously generated packages are published to its repositories, as described
 above in _Jenkinsfile (Main CI Pipeline)_.
 The API documentation and source packages get published to its git repositories.
 Finally the Alpine release image is published to Docker Hub.
@@ -252,7 +252,8 @@ verified or added to build Elektra correctly:
 
 The `libelektra-release` job is a normal pipeline job.
 
-Most of the default settings can be used. 
+Most of the default settings can be used.
+
 - Under General you need to enable `Permission to Copy Artifact` and set the field
   to `*`.
 - For Build Configuration you want to specify `by Jenkinsfile` and add the
@@ -263,18 +264,19 @@ Most of the default settings can be used.
 We will cover how to set-up a pipeline that uses a different git repository than
 this `libelektra` repository.
 
-Most of the default settings can be used. 
+Most of the default settings can be used.
+
 - If a private repository were to be used with a GitHub type job,
   a credentials pair of `elektrabot` must be selected to access this repository.
 - For Build Configuration you want to specify `by Jenkinsfile` and add the
   script path to the Jenkinsfile.
 
 We first start by including the shared library as described above in _Jenkins Shared Library_.
-Then we declare in a Jenkinsfile an empty map that will contain all Docker images we will use 
+Then we declare in a Jenkinsfile an empty map that will contain all Docker images we will use
 in this pipeline:
 
 ```groovy
-DOCKER_IMAGES = [:] 
+DOCKER_IMAGES = [:]
 ```
 
 This map will later be populated in a function.
@@ -296,10 +298,10 @@ def dockerInit() {
 }
 ```
 
-We can now begin to create the stages that initialize, pull and if necessary 
+We can now begin to create the stages that initialize, pull and if necessary
 also build these Docker images:
 
-```groovy 
+```groovy
 stage('Init docker images') {
   dockerInit()
 }
@@ -314,6 +316,7 @@ maybeStage('Build docker images', DOCKER_IMAGES.any { img -> !img.value.exists }
   }
 }
 ```
+
 Now the actual stages that contain our CI/CD code can be created.
 
 To allow parallel execution of stages we create generator functions that return
@@ -340,7 +343,7 @@ def generateTestStages() {
 ```
 
 Suppose we have a bash script `test.sh` in the root of our git repository.
-This script can be executed inside one of our Docker images by using the 
+This script can be executed inside one of our Docker images by using the
 `withDockerEnv` function:
 
 ```groovy
