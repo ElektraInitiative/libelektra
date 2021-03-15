@@ -696,8 +696,6 @@ tar -zxvf ${WORKSPACE}/artifacts/${artifactStageName}/${artifactStageName}-relea
  * Docker Hub
  *
  * @param name Name of the image
- * @param idFun Closure describing how the image id should be formatted
- *                      (see idTesting() / idArtifact())
  * @param context Build context for the docker build (base directory that will
  *                be sent to the docker agent). Relative to the current working
  *                directory.
