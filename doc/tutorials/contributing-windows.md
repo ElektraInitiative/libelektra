@@ -84,7 +84,6 @@ If you choose to work with source code residing on a windows filesystem mounted 
 [automount]
 options = "metadata"
 ```
-
 * Restart the WSL VM by issuing `wsl --shutdown` in your window console.
 
 Building from sources residing on a mounted windows file system may incur a signiifcant performance penalty. Consider using your WSL home directory (e.g. `~/`) as your location for the Elektra sources.
