@@ -1,8 +1,8 @@
 # ksNeedSync
 
-- start = 2021-01-23 18:10
-- end = 2021-01-23 18:10
-- moderator = Stefan Hanreich <stefanhani@gmail.com>
+- start = 2021-03-15 00:15
+- end = 2021-03-15 22:55
+- reviewer = Stefan Hanreich <stefanhani@gmail.com>
 
 ## Signature
 
