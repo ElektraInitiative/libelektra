@@ -4,8 +4,8 @@ import org.libelektra.Key;
 
 public class InternalException extends LogicalException
 {
-
-	private static final String errorNumber = "C01310";
+	private static final long serialVersionUID = 1L;
+	private static final String ERROR_NUMBER = "C01310";
 
 	public InternalException (Key k)
 	{
@@ -14,6 +14,6 @@ public class InternalException extends LogicalException
 
 	public static String errorNumber ()
 	{
-		return errorNumber;
+		return ERROR_NUMBER;
 	}
 }

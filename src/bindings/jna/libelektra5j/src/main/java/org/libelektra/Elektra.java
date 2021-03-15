@@ -146,22 +146,17 @@ public interface Elektra extends Library {
 
 	Pointer ksCut (Pointer ks, Pointer cutpoint);
 
+	// TODO #3137 Also elektraKsPopAtCursor should replace the current ksPop. See also #3189.
 	Pointer ksPop (Pointer ks);
 
+	@Deprecated(forRemoval = true)
 	int ksRewind (Pointer ks);
-
-	Pointer ksNext (Pointer ks);
-
-	Pointer ksCurrent (Pointer ks);
 
 	Pointer ksHead (Pointer ks);
 
 	Pointer ksTail (Pointer ks);
 
-	int ksGetCursor (Pointer ks);
-
-	int ksSetCursor (Pointer ks, int cursor);
-
+	// TODO #3137 ksAtCursor needs to stay and just be renamed to ksAt. It doesn't use the internal cursor, but takes an external cursor value.
 	Pointer ksAtCursor (Pointer ks, int cursor);
 
 	Pointer ksLookup (Pointer ks, Pointer key, int options);

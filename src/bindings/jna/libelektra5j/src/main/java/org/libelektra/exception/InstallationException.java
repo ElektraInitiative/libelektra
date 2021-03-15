@@ -6,7 +6,7 @@ import org.libelektra.exception.model.WarningEntry;
 
 public class InstallationException extends PermanentException
 {
-
+	private static final long serialVersionUID = 1L;
 	private static final String errorNumber = "C01200";
 
 	public InstallationException (Key k)

@@ -4,8 +4,8 @@ import org.libelektra.Key;
 
 public class InterfaceException extends LogicalException
 {
-
-	private static final String errorNumber = "C01320";
+	private static final long serialVersionUID = 1L;
+	private static final String ERROR_NUMBER = "C01320";
 
 	public InterfaceException (Key k)
 	{
@@ -14,6 +14,6 @@ public class InterfaceException extends LogicalException
 
 	public static String errorNumber ()
 	{
-		return errorNumber;
+		return ERROR_NUMBER;
 	}
 }
