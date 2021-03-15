@@ -1,12 +1,14 @@
 package org.libelektra;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.libelektra.Key;
-import org.libelektra.KeySet;
 
 public class KeySetTest
 {
@@ -184,22 +186,7 @@ public class KeySetTest
 		assertEquals (0, ks.length ());
 	}
 
-	@Test public void test_keySetCurrentNextRewind_shouldPass ()
-	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		assertEquals (null, ks.current ().get ());
-		assertEquals (key.get (), ks.next ().get ());
-		assertEquals (key.get (), ks.current ().get ());
-		assertEquals (key2.get (), ks.next ().get ());
-		assertEquals (key2.get (), ks.current ().get ());
-		ks.rewind ();
-		assertEquals (null, ks.current ().get ());
-		assertEquals (key.get (), ks.next ().get ());
-		assertEquals (key.get (), ks.current ().get ());
-		assertEquals (key2.get (), ks.next ().get ());
-		assertEquals (key2.get (), ks.current ().get ());
-	}
-
+	
 	@Test public void test_keySetHeadTail_shouldPass ()
 	{
 		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
@@ -207,31 +194,7 @@ public class KeySetTest
 		assertEquals (key6.get (), ks.tail ().get ());
 	}
 
-	@Test public void test_keySetCursor_shouldPass ()
-	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		assertEquals (-1, ks.getCursor ());
-		ks.next ();
-		assertEquals (0, ks.getCursor ());
-		ks.next ();
-		ks.next ();
-		assertEquals (2, ks.getCursor ());
-		ks.rewind ();
-		assertEquals (-1, ks.getCursor ());
-		ks.next ();
-		assertEquals (0, ks.getCursor ());
-		ks.next ();
-		ks.next ();
-		ks.next ();
-		assertEquals (3, ks.getCursor ());
-		// set cursor
-		ks.setCursor (1);
-		assertEquals (1, ks.getCursor ());
-		assertEquals (key3.get (), ks.next ().get ());
-		// at
-		assertEquals (key5.get (), ks.at (4).get ());
-	}
-
+	
 	@Test public void test_keySetLookup_shouldPass ()
 	{
 		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);

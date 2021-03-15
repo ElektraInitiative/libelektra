@@ -1,13 +1,11 @@
 package org.libelektra;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
-import java.util.Iterator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.libelektra.Key;
-import org.libelektra.KeySet;
 import org.libelektra.exception.KDBException;
 
 public class GOptsTest
@@ -15,8 +13,6 @@ public class GOptsTest
 
 	private static final String BASE_KEY = "/tests/java/gopts";
 	private static final String SPEC_BASE_KEY = "spec:" + BASE_KEY;
-
-	private Key key, key2, parentKey;
 
 	@Before public void setupSpec () throws KDBException
 	{

@@ -4,8 +4,8 @@ import org.libelektra.Key;
 
 public abstract class LogicalException extends PermanentException
 {
-
-	private static final String errorNumber = "C01300";
+	private static final long serialVersionUID = 1L;
+	private static final String ERROR_NUMBER = "C01300";
 
 	public LogicalException (Key k)
 	{
@@ -14,6 +14,6 @@ public abstract class LogicalException extends PermanentException
 
 	public static String errorNumber ()
 	{
-		return errorNumber;
+		return ERROR_NUMBER;
 	}
 }

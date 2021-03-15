@@ -170,7 +170,7 @@ public class KeySet implements Iterable<Key>
 	 * Copies key references from other key set
 	 *
 	 * @param other Key set that is used as source
-	 * @retval 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an
+	 * @return 1 in case of success, 0 if source was NULL and dest (this) was cleared successfully, -1 in case of an
 	 * error (null pointer)
 	 */
 	public int copy (final KeySet other)
@@ -182,7 +182,7 @@ public class KeySet implements Iterable<Key>
 	/**
 	 * Helper function to check if synchronization is necessary
 	 *
-	 * @retval 1 if sync is necessary, 0 if no sync is necessary, -1 in case of an error (null key)
+	 * @return 1 if sync is necessary, 0 if no sync is necessary, -1 in case of an error (null key)
 	 */
 	public int needsSync ()
 	{
@@ -259,36 +259,6 @@ public class KeySet implements Iterable<Key>
 	}
 
 	/**
-	 * Helper function that returns current key from the key set
-	 *
-	 * @return Current Key in iteration
-	 */
-	public Key current ()
-	{
-		return new Key (Elektra.INSTANCE.ksCurrent (get ()));
-	}
-
-	/**
-	 * Helper function that returns the next key in the key set
-	 *
-	 * @return Next Key in key set
-	 */
-	public Key next ()
-	{
-		return new Key (Elektra.INSTANCE.ksNext (get ()));
-	}
-
-	/**
-	 * Helper function that rewinds the current key set
-	 *
-	 * @retval 0 on success, -1 on NullPointer
-	 */
-	public int rewind ()
-	{
-		return Elektra.INSTANCE.ksRewind (get ());
-	}
-
-	/**
 	 * Helper function that gets the key set head
 	 *
 	 * @return First element of the key set
@@ -308,26 +278,6 @@ public class KeySet implements Iterable<Key>
 		return new Key (Elektra.INSTANCE.ksTail (get ()));
 	}
 
-	/**
-	 * Helper function that gets the current cursor of the key set
-	 *
-	 * @return Cursor position as integer; initially -1, incremented by next()
-	 */
-	public int getCursor ()
-	{
-		return Elektra.INSTANCE.ksGetCursor (get ());
-	}
-
-	/**
-	 * Helper function that sets the current cursor of the key set
-	 *
-	 * @param cursor Cursor position as integer
-	 * @retval 1 in case of success
-	 */
-	public int setCursor (final int cursor)
-	{
-		return Elektra.INSTANCE.ksSetCursor (get (), cursor);
-	}
 
 	/**
 	 * Helper function that gets the Key at the given cursor position
