@@ -234,6 +234,8 @@ Add support for keyset.remove(key). _(Manuel Mausz)_
 - Minor readability improvement in [](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
 - Minor readability improvement in [highlevel.md](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
 - Fix examples of spec plugin. _(Robert Sowula)_
+- Add a short Visual Studio 2019 tutorial _(Dominic Jäger)_
+- Update buildserver documentation _(Robert Sowula)_
 
 ## Tests
 
