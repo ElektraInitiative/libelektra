@@ -23,6 +23,7 @@ If no release critical problems are found during testing, continue.
 - CMakeLists.txt
 - Increment version in output of doc/tutorials/hello-elektra.md
 - Increment <Version> of libelektra5j in examples/external/java/read-keys-example/pom.xml and src/bindings/jna/README.md
+- Increment the Elektra version in scripts/docker/alpine/*/release.Dockerfile
 - Change VERSION variable in build-server:
   - Go to https://build.libelektra.org
   - Select "Manage Jenkins" -> "Configure System"
@@ -82,16 +83,6 @@ If no release critical problems are found during testing, continue.
 
 - Increment CMPVERSION in scripts/build/run_icheck
 - Cleanup tests/icheck.suppression (and add info to release notes)
-
-== Update Alpine Linux image on docker hub ==
-
-Now that the release is available to download, rebuild the Alpine release image.
-
-To do so, increment the Elektra version in e.g. `scripts/docker/alpine/3.13/release.Dockerfile`:
-```
-ELEKTRA_RELEASE=0.9.5
-```
-If the file does not exist, possibly the Alpine version was changed.
 
 == Announce ==
 

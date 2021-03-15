@@ -29,6 +29,12 @@ properties([
       description: 'Fedora package revision.',
       name: 'fedora_revision',
       trim: true
+    ),
+    string(
+      defaultValue: '1',
+      description: 'Alpine Docker image revision.',
+      name: 'alpine_revision',
+      trim: true
     )
   ])
 ])
@@ -79,6 +85,10 @@ input(message: 'Publish Release?', ok: 'Yes')
 
 stage('Publish') {
   parallel generatePublishStages()
+}
+
+stage('Upload release Docker images') {
+  parallel generateImageUploadStages()
 }
 
 /**************/
@@ -157,6 +167,16 @@ def dockerInit() {
       'debian-buster-doc', dockerUtils.&idTesting,
       './scripts/docker/debian/buster',
       './scripts/docker/debian/buster/doc.Dockerfile'
+    )
+
+    /*
+     * Alpine release image with installed Elektra
+     */
+    DOCKER_IMAGES.alpine_release = createDockerImageDescForRelease(
+      'elektra/elektra',
+      './scripts/docker/alpine/*',
+      './scripts/docker/alpine/*/release.Dockerfile',
+      false
     )
   }
 }
@@ -329,6 +349,21 @@ def generatePublishStages() {
 }
 
 /**
+ * Generate stages that upload release Docker images
+ */
+def generateImageUploadStages() {
+  def tasks = [:]
+
+  tasks << publishImageToDockerHub(
+    'publish-alpine',
+    DOCKER_IMAGES.alpine_release,
+    params.alpine_revision
+  )
+
+  return tasks
+}
+
+/**
  * Release stage
  *
  * Imports the gpg keys and runs the release script.
@@ -462,6 +497,7 @@ def publishSource(artifactStageName) {
           git branch: 'master',
               url: 'https://github.com/ElektraInitiative/ftp.git'
           sh 'cp ../release-artifact/*/*.tar.gz* ./releases/'
+          sh 'git add ./releases'
           sh "git commit -a -m 'release: add ${RELEASE_VERSION}'"
           pushGitRepo('ftp')
           withCredentials([sshUserPrivateKey(credentialsId: "community-ssh-git", keyFileVariable: "privateSshKey", usernameVariable: 'GIT_USERNAME')]) {
@@ -601,6 +637,41 @@ def buildImageWithPackagesStage(image, previousTaskName) {
 }
 
 /**
+ * Builds and publishes an image to the official Docker Hub.
+ *
+ * The image is tagged with a version number and additional
+ * with 'latest'.
+ *
+ * @param  stageName         name of the stage
+ * @param  image             image to be build and pushed
+ * @param  imageRevision     revision number of the image
+ */
+def publishImageToDockerHub(stageName, image, imageRevision='1') {
+  return [(stageName): {
+    stage(stageName) {
+      node(PipelineConfig.instance.dockerNodeLabel) {
+        checkout scm
+        docker.withRegistry('',
+                            'docker-hub-official-elektrabot') {
+          def cpus = dockerUtils.cpuCount()
+          def i = docker.build(
+            image.id,"""\
+--pull \
+--squash \
+--build-arg PARALLEL=${cpus} \
+-f ${image.file} ${image.context}"""
+          )
+
+          def dockerVersionTag = "${RELEASE_VERSION}-${imageRevision}"
+          i.push(dockerVersionTag)
+          i.push('latest')
+        }
+      }
+    }
+  }]
+}
+
+/**
  * Copy release artifact from previous stage and extract it
  * @param  artifactStageName stage name under which the artifact
  *                           got archived
@@ -621,6 +692,31 @@ tar -zxvf ${WORKSPACE}/artifacts/${artifactStageName}/${artifactStageName}-relea
 }
 
 /**
+ * Create a new Docker Image description for images published to official
+ * Docker Hub
+ *
+ * @param name Name of the image
+ * @param context Build context for the docker build (base directory that will
+ *                be sent to the docker agent). Relative to the current working
+ *                directory.
+ * @param file Path to Dockerfile relative to the current working directory.
+ * @param autobuild If it should be automatically build at the start of the
+ *                  Jenkins run. If false it can be build manually
+ *                  (see buildImageStage()).
+ */
+def createDockerImageDescForRelease(name, context, file, autobuild=true) {
+  def map = [
+    id: name,
+    name: name,
+    context: context,
+    file: file,
+    autobuild: autobuild,
+    exists: false
+  ]
+  return map
+}
+
+/**
  * Push git repo
  * Currently the best way according to
  * https://github.com/jenkinsci/pipeline-examples/blob/master/pipeline-examples/push-git-repo/pushGitRepo.groovy
@@ -630,7 +726,7 @@ def pushGitRepo(repoName) {
   def gitOrg = 'ElektraInitiative'
   def credentialsId = 'jenkins-publish-credentials'
   withCredentials([usernamePassword(credentialsId: "${credentialsId}", passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
-    sh("git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${gitOrg}/${repoName}.git")
+    sh("git push --follow-tags https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/${gitOrg}/${repoName}.git")
   }
 }
 
