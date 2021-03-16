@@ -78,7 +78,7 @@ Commands to change your WSL version can be found, for example, in the blog post
 For further information, consider the official
 [Linux with Visual Studio C++ documentation](https://docs.microsoft.com/en-us/cpp/linux/?view=msvc-160).
 
-If you choose to work with source code residing on a windows filesystem mounted in WSL (e.g.`/mnt/c/...`), please enable the `metadata` option to prevent problems due to permissions not being persisted:
+If you choose to work with source code residing on a Windows filesystem mounted in WSL (e.g.`/mnt/c/...`), please enable the `metadata` option to prevent problems due to permissions not being persisted:
 
 - Create or modify `/etc/wsl.conf` to contain the following section and setting:
 
