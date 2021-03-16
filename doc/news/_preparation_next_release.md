@@ -156,7 +156,9 @@ Bindings allow you to utilize Elektra using [various programming languages](http
 you up to date with the multi-language support provided by Elektra.
 
 ### JNA
+
 Since internal iterator support for `KeySet` is due to being dropped, the following methods have been removed:
+
 - `Elektra::ksNext`
 - `Elektra::ksCurrent`
 - `Elektra::ksGetCursor`
