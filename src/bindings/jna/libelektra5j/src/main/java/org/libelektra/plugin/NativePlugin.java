@@ -92,7 +92,8 @@ public class NativePlugin implements Plugin
 	 */
 	public int set (KeySet keySet, Key errorKey) throws KDBException
 	{
-		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code KeySet} API
+		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code
+		// KeySet} API
 		Elektra.INSTANCE.ksRewind (keySet.get ());
 		int returnValue = elektraPlugin.kdbSet.invoke (elektraPlugin, keySet.get (), errorKey.get ());
 		if (returnValue == -1)
@@ -112,7 +113,8 @@ public class NativePlugin implements Plugin
 	 */
 	public int get (KeySet keySet, Key errorKey) throws KDBException
 	{
-		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code KeySet} API
+		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code
+		// KeySet} API
 		Elektra.INSTANCE.ksRewind (keySet.get ());
 		int returnValue = elektraPlugin.kdbGet.invoke (elektraPlugin, keySet.get (), errorKey.get ());
 		if (returnValue == -1)
@@ -131,7 +133,8 @@ public class NativePlugin implements Plugin
 	 */
 	public int error (KeySet keySet, Key errorKey)
 	{
-		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code KeySet} API
+		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code
+		// KeySet} API
 		Elektra.INSTANCE.ksRewind (keySet.get ());
 		return elektraPlugin.kdbError.invoke (elektraPlugin, keySet.get (), errorKey.get ());
 	}

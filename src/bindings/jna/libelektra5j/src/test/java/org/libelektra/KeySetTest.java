@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -186,7 +185,7 @@ public class KeySetTest
 		assertEquals (0, ks.length ());
 	}
 
-	
+
 	@Test public void test_keySetHeadTail_shouldPass ()
 	{
 		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
@@ -194,7 +193,7 @@ public class KeySetTest
 		assertEquals (key6.get (), ks.tail ().get ());
 	}
 
-	
+
 	@Test public void test_keySetLookup_shouldPass ()
 	{
 		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
