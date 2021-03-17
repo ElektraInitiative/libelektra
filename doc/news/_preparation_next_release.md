@@ -173,6 +173,8 @@ Until internal `KeySet` iterator support has been dropped form native library, `
 
 Further more `Elektra::ksPop` and `KeySet::pop` have been removed and `KeySet::remove` has been introduced as replacment.
 
+_(@tucek)_
+
 ### <<Binding2>>
 
 ### <<Binding3>>
