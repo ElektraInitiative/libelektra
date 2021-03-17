@@ -1,0 +1,3 @@
+test {
+	@GRADLE_TEST_EXCLUDES@
+}

@@ -381,7 +381,7 @@ scripts/dev/reformat-java
 
 ```sh
 # The command below reformats the file `cmake/CMakeLists.txt`.
-scripts/dev/reformat-java src/bindings/jna/libelektra5j/src/main/java/org/libelektra/KDB.java
+scripts/dev/reformat-java src/bindings/jna/libelektra/src/main/java/org/libelektra/KDB.java
 ```
 
 .

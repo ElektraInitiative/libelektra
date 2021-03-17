@@ -1,0 +1,5 @@
+// apply java-library plugin
+apply plugin: 'java-library'
+
+// apply common java project cofiguration
+apply from: "$rootProject.projectDir/java-shared.gradle"

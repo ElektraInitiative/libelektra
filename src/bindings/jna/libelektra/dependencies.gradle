@@ -1,0 +1,7 @@
+dependencies {
+	// jna
+	api "net.java.dev.jna:jna:$jnaVersion"
+
+	// junit
+	testImplementation "junit:junit:$junitVersion"	
+}

@@ -1,0 +1,39 @@
+plugins {
+	// dependency versions (task: dependencyUpdates)
+	//	https://github.com/ben-manes/gradle-versions-plugin
+	id 'com.github.ben-manes.versions' version "$versionsPluginVersion"
+
+	// maven publish plugin
+	id 'maven-publish'
+}
+
+allprojects {
+	version = 'SNAPSHOT'
+}
+
+// apply optional version information override
+File versionSettings = new File(rootProject.projectDir, 'version-settings.gradle')
+if (versionSettings.exists()) {
+	apply from: versionSettings
+}
+
+allprojects {
+	ext {
+		groupId = 'org.libelektra'
+		isReleaseVersion = !project.version.contains("SNAPSHOT")
+	}
+}
+
+// log task graph
+gradle.taskGraph.whenReady {taskGraph ->
+	logger.lifecycle("Building Elektra Java bindings version: ${rootProject.version}")
+	logger.lifecycle("Is release version: ${rootProject.isReleaseVersion}")
+	logger.lifecycle("Found task graph: $taskGraph")
+	logger.lifecycle("Found ${taskGraph.allTasks.size()} tasks.")
+	taskGraph.allTasks.forEach { task ->
+		logger.lifecycle("$task")
+		task.dependsOn.forEach { dep ->
+			logger.lifecycle("  - $dep")
+		}
+	}
+}

@@ -36,7 +36,7 @@ Here we will look into, how can we write Java Plugins using - `JNA Binding`.
 
 ### Writing a Plugin
 
-Under the the following [path](/src/bindings/jna/libelektra5j/src/main/java/org/libelektra) you can find the examples of already existing plugins and you can look into libelektra Java library, which is used for communication with the configuration database.
+Under the the following [path](/src/bindings/jna/libelektra/src/main/java/org/libelektra) you can find the examples of already existing plugins and you can look into libelektra Java library, which is used for communication with the configuration database.
 
 In order to write a new Java Plugin, the new class has to be created under the `plugin` folder. It has also to extend the `Plugin.java` interface, which contains all required methods to communicate with Elektra’s database. You can leave some of the methods unimplemented, if there is no need for them.
 

@@ -19,7 +19,7 @@
   <dependencies>
     <dependency>
       <groupId>org.libelektra</groupId>
-      <artifactId>libelektra5j</artifactId>
+      <artifactId>libelektra</artifactId>
       <version>0.9.4</version>
     </dependency>
     <dependency>
