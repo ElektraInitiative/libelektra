@@ -237,7 +237,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Jenkins
 
 - Update daily job to always keep the latest Docker images containing installed Elektra packages that were build on master or during release. _(Robert Sowula)_
-- <<TODO>>
+- Add a cleanup of the aptly database to the daily job. _(Robert Sowula)_
 - <<TODO>>
 
 ### Travis
