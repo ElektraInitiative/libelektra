@@ -251,11 +251,12 @@ public class KeySet implements Iterable<Key>
 	/**
 	 * Helper function that returns key from key set and also removes it from the set
 	 *
+	 * @param cursor Cursor position of the key to remove; starting from 0
 	 * @return First Key in the set
 	 */
-	public Key pop ()
+	public Key remove (final int cursor)
 	{
-		return new Key (Elektra.INSTANCE.ksPop (get ()));
+		return new Key (Elektra.INSTANCE.elektraKsPopAtCursor (get (), cursor));
 	}
 
 	/**

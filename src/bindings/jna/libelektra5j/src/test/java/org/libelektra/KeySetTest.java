@@ -169,22 +169,21 @@ public class KeySetTest
 		assertNotNull (ks2.lookup (key6));
 	}
 
-	@Test public void test_keySetPop_shouldPass ()
+	@Test public void test_keySetRemove_shouldPass ()
 	{
 		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
 		assertEquals (6, ks.length ());
-		assertEquals (key6.get (), ks.pop ().get ());
+		assertEquals (key6.get (), ks.remove (5).get ());
 		assertEquals (5, ks.length ());
-		assertEquals (key5.get (), ks.pop ().get ());
+		assertEquals (key5.get (), ks.remove (4).get ());
 		assertEquals (4, ks.length ());
-		ks.pop ();
-		ks.pop ();
-		ks.pop ();
+		ks.remove (3);
+		ks.remove (2);
+		ks.remove (1);
 		assertEquals (1, ks.length ());
-		assertEquals (key.get (), ks.pop ().get ());
+		assertEquals (key.get (), ks.remove (0).get ());
 		assertEquals (0, ks.length ());
 	}
-
 
 	@Test public void test_keySetHeadTail_shouldPass ()
 	{

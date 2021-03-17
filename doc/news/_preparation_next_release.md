@@ -171,6 +171,8 @@ Since internal iterator support for `KeySet` is due to being dropped, the follow
 
 Until internal `KeySet` iterator support has been dropped form native library, `Elektra::ksRewind` is being retained while also being annotated as 'depricated for removal'. The reason is, that we still need to rewind a `KeySet` before passing it to a native plugin via `NativePlugin::set`, `NativePlugin::get` or `NativePlugin::error`. _(@tucek)_
 
+Further more `Elektra::ksPop` and `KeySet::pop` have been removed and `KeySet::remove` has been introduced as replacment.
+
 ### <<Binding2>>
 
 ### <<Binding3>>
