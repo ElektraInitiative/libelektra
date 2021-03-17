@@ -169,7 +169,7 @@ Since internal iterator support for `KeySet` is due to being dropped, the follow
 - `KeySet::getCursor`
 - `KeySet::setCursor`
 
-Until internal `KeySet` iterator support has been dropped form native library, `Elektra::ksRewind` is being retained while also being annotated as 'depricated for removal'. The reason is, that we still need to rewind a `KeySet` before passing it to a native plugin via `NativePlugin::set`, `NativePlugin::get` or `NativePlugin::error`.
+Until internal `KeySet` iterator support has been dropped form native library, `Elektra::ksRewind` is being retained while also being annotated as 'depricated for removal'. The reason is, that we still need to rewind a `KeySet` before passing it to a native plugin via `NativePlugin::set`, `NativePlugin::get` or `NativePlugin::error`. _(@tucek)_
 
 ### <<Binding2>>
 
