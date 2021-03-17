@@ -11,6 +11,7 @@ import org.libelektra.exception.model.WarningEntry;
  */
 public abstract class KDBException extends Exception
 {
+	private static final long serialVersionUID = 1L;
 
 	private final transient Key errorKey;
 	private List<WarningEntry> warnings;

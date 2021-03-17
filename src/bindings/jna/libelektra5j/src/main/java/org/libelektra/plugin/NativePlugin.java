@@ -14,7 +14,7 @@ import org.libelektra.exception.KDBException;
 import org.libelektra.exception.mapper.ExceptionMapperService;
 
 /**
- * This class can be used to load native Elektra Plugins to be used by Java directly
+ * This class can be used to load native Elektra plugins to be used by Java directly
  */
 public class NativePlugin implements Plugin
 {
@@ -22,7 +22,7 @@ public class NativePlugin implements Plugin
 	private ElektraPlugin elektraPlugin;
 
 	/**
-	 * Constructor for loading an elektra plugin
+	 * Constructor for loading an Elektra plugin
 	 * @param pluginName The plugin name
 	 * @param errorKey The errorKey
 	 * @throws InstallationException if the plugin does not exist
@@ -64,7 +64,7 @@ public class NativePlugin implements Plugin
 	 * Opens the session with the KeyDatabase
 	 *
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
-	 * @retval 0 if success or -1 otherwise
+	 * @return 0 if success or -1 otherwise
 	 */
 	public int kdbOpen (Key errorKey)
 	{
@@ -75,7 +75,7 @@ public class NativePlugin implements Plugin
 	 * Closes the session with the Key database.
 	 *
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
-	 * @retval 0 if success or -1 otherwise
+	 * @return 0 if success or -1 otherwise
 	 */
 	public int close (Key errorKey)
 	{
@@ -87,12 +87,14 @@ public class NativePlugin implements Plugin
 	 *
 	 * @param keySet   The KeySet to transform
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
-	 * @retval 0 if success or -1 otherwise
+	 * @return 0 if success or -1 otherwise
 	 * @throws KDBException if return value was -1
 	 */
 	public int set (KeySet keySet, Key errorKey) throws KDBException
 	{
-		keySet.rewind ();
+		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code
+		// KeySet} API
+		Elektra.INSTANCE.ksRewind (keySet.get ());
 		int returnValue = elektraPlugin.kdbSet.invoke (elektraPlugin, keySet.get (), errorKey.get ());
 		if (returnValue == -1)
 		{
@@ -106,12 +108,14 @@ public class NativePlugin implements Plugin
 	 *
 	 * @param keySet   The KeySet you want returned
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
-	 * @retval 0 if success or -1 otherwise
+	 * @return 0 if success or -1 otherwise
 	 * @throws KDBException if return value was -1
 	 */
 	public int get (KeySet keySet, Key errorKey) throws KDBException
 	{
-		keySet.rewind ();
+		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code
+		// KeySet} API
+		Elektra.INSTANCE.ksRewind (keySet.get ());
 		int returnValue = elektraPlugin.kdbGet.invoke (elektraPlugin, keySet.get (), errorKey.get ());
 		if (returnValue == -1)
 		{
@@ -124,12 +128,14 @@ public class NativePlugin implements Plugin
 	 * Called in case an error happened
 	 *
 	 * @param keySet   The affected KeySet
-	 * @param errorKey ust be a valid key, e.g. created with Key.create() and contains error information
-	 * @retval 0 if success or -1 otherwise
+	 * @param errorKey must be a valid key, e.g. created with Key.create() and contains error information
+	 * @return 0 if success or -1 otherwise
 	 */
 	public int error (KeySet keySet, Key errorKey)
 	{
-		keySet.rewind ();
+		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code
+		// KeySet} API
+		Elektra.INSTANCE.ksRewind (keySet.get ());
 		return elektraPlugin.kdbError.invoke (elektraPlugin, keySet.get (), errorKey.get ());
 	}
 

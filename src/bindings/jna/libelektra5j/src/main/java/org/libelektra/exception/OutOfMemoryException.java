@@ -4,8 +4,8 @@ import org.libelektra.Key;
 
 public class OutOfMemoryException extends ResourceException
 {
-
-	private static final String errorNumber = "C01110";
+	private static final long serialVersionUID = 1L;
+	private static final String ERROR_NUMBER = "C01110";
 
 	public OutOfMemoryException (Key k)
 	{
@@ -14,6 +14,6 @@ public class OutOfMemoryException extends ResourceException
 
 	public static String errorNumber ()
 	{
-		return errorNumber;
+		return ERROR_NUMBER;
 	}
 }

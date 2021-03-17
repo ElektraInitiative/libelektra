@@ -199,3 +199,7 @@ if you run all tests on a build (the target is called testjna_maven).
 
 - no binary keys
 - no Java iterator for metadata
+
+## Contributing
+
+Pleas only use Javadoc compliant tags when documenting the code.

@@ -19,7 +19,6 @@ public class WarningEntryTest
 		String module = "kdb";
 		String reason = "This is a testerror";
 
-		final String warningKeyName = String.format ("warnings/#0", 0);
 		Key warningKey = Key.create ("user:/temporary/errorkey");
 		warningKey.setMeta ("warnings/#0/number", errorNumber);
 		warningKey.setMeta ("warnings/#0/configfile", configFile);

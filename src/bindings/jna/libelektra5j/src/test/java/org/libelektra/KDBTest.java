@@ -6,8 +6,6 @@ import java.util.Iterator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.libelektra.Key;
-import org.libelektra.KeySet;
 import org.libelektra.exception.KDBException;
 
 public class KDBTest

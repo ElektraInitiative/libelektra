@@ -4,8 +4,8 @@ import org.libelektra.Key;
 
 public class ResourceException extends PermanentException
 {
-
-	private static final String errorNumber = "C01100";
+	private static final long serialVersionUID = 1L;
+	private static final String ERROR_NUMBER = "C01100";
 
 	public ResourceException (Key k)
 	{
@@ -14,6 +14,6 @@ public class ResourceException extends PermanentException
 
 	public static String errorNumber ()
 	{
-		return errorNumber;
+		return ERROR_NUMBER;
 	}
 }
