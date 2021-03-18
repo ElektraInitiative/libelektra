@@ -78,7 +78,7 @@ Currently Elektra uses four different files.
 
 #### Jenkinsfile.release
 
-- Triggered manually with optional arguments and is for automated releasing a new version of Elektra.
+- Triggered manually with optional arguments. It is used for automated releasing a new version of Elektra.
 - [Jenkinsfile.release](/scripts/jenkins/Jenkinsfile.release) contains description how to release a new version of Elektra.
 - [Buildjob: libelektra-release](https://build.libelektra.org/job/libelektra-release/)
 - [Jenkinsfile.release](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.release)
@@ -195,7 +195,7 @@ your needs.
 
 For runs of the build job that are run in the master branch we also execute
 deployment steps after all tests pass.
-We use it to build Debian and Fedora packages and move them into the repositories
+We use these steps to build Debian and Fedora packages and move them into the repositories
 hosted on the community node.
 
 Additionally we recompile the homepage and deploy it on the community node.
@@ -213,16 +213,16 @@ Docker image.
 
 ### Manual approval
 
-In order to verify the correct behavior and results of the previous steps and its
+In order to verify the correct behavior and results of the previous steps and their
 generated artifacts, we use the [Input Step](https://www.jenkins.io/doc/pipeline/steps/pipeline-input-step/)
 to pause the pipeline.
 After manually verifying the correctness, the pipeline run can be resumed.
 
 ### Publishing
 
-The previously generated packages are published to its repositories, as described
+The previously generated packages are published to the repositories, as described
 above in _Jenkinsfile (Main CI Pipeline)_.
-The API documentation and source packages get published to its git repositories.
+The API documentation and source packages get published to the relevant git repositories.
 Finally the Alpine release image is published to Docker Hub.
 
 ## Jenkins Setup
