@@ -137,6 +137,7 @@ def generateFileCleanupStages() {
     def tasks = [:]
     tasks << cleanupDoc('coverage/')
     tasks << cleanupDoc('api/pr/')
+    tasks << cleanupAptlyDb()
     return tasks
 }
 
@@ -151,16 +152,12 @@ find /srv/libelektra/${path} \
     | xargs -r -0 rm -R
 """
     def taskname = "cleanup-${path}"
-    return [(taskname): {
-        stage(taskname) {
-            node("master") {
-                sshExec(
-                    'doc.libelektra.org',
-                    cleanupCommand
-                )
-            }
-        }
-    }]
+    return runCommandOnCommunity(taskname, cleanupCommand)
+}
+
+def cleanupAptlyDb() {
+    def cleanupCommand = 'aptly db cleanup -verbose'
+    return runCommandOnCommunity('cleanupAptlyDb', cleanupCommand)
 }
 
 /***********/
@@ -178,6 +175,19 @@ def sshExec(remoteConfig, command) {
             verbose: true
         )
     ])
+}
+
+def runCommandOnCommunity(taskname, cleanupCommand) {
+    return [(taskname): {
+        stage(taskname) {
+            node("master") {
+                sshExec(
+                    'doc.libelektra.org',
+                    cleanupCommand
+                )
+            }
+        }
+    }]
 }
 
 def dockerImages() {
