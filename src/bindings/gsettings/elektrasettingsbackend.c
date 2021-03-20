@@ -105,6 +105,7 @@ static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gcha
 	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
 	/* Lookup the requested key */
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks, keypathname, GELEKTRA_KDB_O_NONE);
+	// TODO: copy key string/data before releasing lock
 	g_mutex_unlock (&elektra_settings_kdb_lock);
 	/* free the passed path string */
 	g_free (keypathname);
