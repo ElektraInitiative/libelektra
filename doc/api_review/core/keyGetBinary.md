@@ -14,37 +14,27 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
-      - [ ] as binary data
-- [ ] Simple example or snippet how to use the function
-      - [ ] move up
-- [ ] Longer description of function containing common use cases
-      - [ ] merge reference to string functions with `@see`
-      - [ ] how exactly is empty defined for binary?
+- [ ] First line explains briefly what the function does - [ ] as binary data
+- [ ] Simple example or snippet how to use the function - [ ] move up
+- [ ] Longer description of function containing common use cases - [ ] merge reference to string functions with `@see` - [ ] how exactly is empty defined for binary?
 - [x] Description of functions reads nicely
-- [ ] `@pre`
-      - [ ] add
-- [ ] `@post`
-      - [ ] add
-- [ ] `@invariant`
-      - [ ] add
+- [ ] `@pre` - [ ] add
+- [ ] `@post` - [ ] add
+- [ ] `@invariant` - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
-      - [ ] merge lines for maxSize errors
-- [ ] `@since`
-      - [ ] add
+- [ ] `@return` / `@retval` - [ ] merge lines for maxSize errors
+- [ ] `@since` - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] split first line
+- [ ] `@see` - [ ] split first line
 
 ### Naming
 
 - Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
 - [x] Parameter names should be clear and unambiguous
 
@@ -53,14 +43,14 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -83,18 +73,13 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] L417
-      - [ ] L422
-      - [ ] L427
-- [ ] All possible error states are covered by tests
-      - [ ] add test for key with string value
-      - [ ] L422 seems to be in the tests - check
-      - [ ] L427 seems to be in the tests - check
+- [ ] Function code is fully covered by tests - [ ] L417 - [ ] L422 - [ ] L427
+- [ ] All possible error states are covered by tests - [ ] add test for key with string value - [ ] L422 seems to be in the tests - check - [ ] L427 seems to be in the tests - check
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
 ## Summary
+
 "Clear" binary array on error, to mirror behaviour from string?
 What to fill it with, though? Zeroes?
 

@@ -16,40 +16,27 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
-      - [ ] move below brief description
+- [ ] Simple example or snippet how to use the function - [ ] move below brief description
 - [x] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
-      - [ ] If the value is binary, there...
-      - [ ] [..] for binary data, so 0 will be returned.
-      - [ ] String types have it, so to there length will be added 1 to have enough space to store it. -> Strings are null-terminated, and the null
+- [ ] Description of functions reads nicely - [ ] If the value is binary, there... - [ ][..] for binary data, so 0 will be returned. - [ ] String types have it, so to there length will be added 1 to have enough space to store it. -> Strings are null-terminated, and the null
       terminator will be considered for the length.
-- [ ] `@pre`
-      - [ ] add?
-- [ ] `@post`
-      - [ ] add?
-- [ ] `@invariant`
-      - [ ] add?
-- [ ] `@param` for every parameter
-      - [ ] key: key -> Key
-- [ ] `@return` / `@retval`
-      - [ ] 1: not binary -> string
-      - [ ] 0: binary -> not string (?)
-- [ ] `@since`
-      - [ ] add
+- [ ] `@pre` - [ ] add?
+- [ ] `@post` - [ ] add?
+- [ ] `@invariant` - [ ] add?
+- [ ] `@param` for every parameter - [ ] key: key -> Key
+- [ ] `@return` / `@retval` - [ ] 1: not binary -> string - [ ] 0: binary -> not string (?)
+- [ ] `@since` - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] `keyGetString()`
-      - [ ] `keyGetBinary()`
+- [ ] `@see` - [ ] `keyGetString()` - [ ] `keyGetBinary()`
 
 ### Naming
 
 - Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
 - [x] Parameter names should be clear and unambiguous
 
@@ -58,14 +45,14 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -74,8 +61,7 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
-      - [ ] swapped `with keyGetValueSize()`
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen - [ ] swapped `with keyGetValueSize()`
 - [x] No functions with similar purpose exist
 
 ### Memory Management
@@ -89,8 +75,7 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] Line 249
+- [ ] Function code is fully covered by tests - [ ] Line 249
 - [x] All possible error states are covered by tests
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

@@ -16,34 +16,25 @@
 
 - [x] First line explains briefly what the function does
 - [x] Simple example or snippet how to use the function
-- [ ] Longer description of function containing common use cases
-      - [ ] use correct testing functions in examples
-- [ ] Description of functions reads nicely
-      - 'and you should use it if' -> 'and you should use it, if'
-- [ ] `@pre`
-      - [ ] add
-- [ ] `@post`
-      - [ ] add
-- [ ] `@invariant`
-      - [ ] add
+- [ ] Longer description of function containing common use cases - [ ] use correct testing functions in examples
+- [ ] Description of functions reads nicely - 'and you should use it if' -> 'and you should use it, if'
+- [ ] `@pre` - [ ] add
+- [ ] `@post` - [ ] add
+- [ ] `@invariant` - [ ] add
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
-- [ ] `@since`
-      - [ ] add
+- [ ] `@since` - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] split first line and add explanations
-      - [ ] add `keyIsBinary()`
-      - [ ] add `keyIsString()`
+- [ ] `@see` - [ ] split first line and add explanations - [ ] add `keyIsBinary()` - [ ] add `keyIsString()`
 
 ### Naming
 
 - Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
 - [x] Parameter names should be clear and unambiguous
 
@@ -52,14 +43,14 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -78,8 +69,7 @@
 ### Extensibility
 
 - [x] Function is easily extensible, e.g., with flags
-- [ ] Documentation does not impose limits, that would hinder further extensions
-      - [ ] return type on empty string/ binary?
+- [ ] Documentation does not impose limits, that would hinder further extensions - [ ] return type on empty string/ binary?
 
 ### Tests
 

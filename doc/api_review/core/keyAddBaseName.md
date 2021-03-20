@@ -14,38 +14,27 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
-      - [ ] Adds -> Appends
-- [ ] Simple example or snippet how to use the function
-      - [ ] move below brief description
-- [ ] Longer description of function containing common use cases
-      - [ ] add notice for read-only keys
-- [ ] Description of functions reads nicely
-      - [ ] Add comma after "When baseName is 0"
-      - [ ] 0 -> null pointer
-- [ ] `@pre`
-      - [ ] add
-- [ ] `@post`
-      - [ ] add
-- [ ] `@invariant`
-      - [ ] add
+- [ ] First line explains briefly what the function does - [ ] Adds -> Appends
+- [ ] Simple example or snippet how to use the function - [ ] move below brief description
+- [ ] Longer description of function containing common use cases - [ ] add notice for read-only keys
+- [ ] Description of functions reads nicely - [ ] Add comma after "When baseName is 0" - [ ] 0 -> null pointer
+- [ ] `@pre` - [ ] add
+- [ ] `@post` - [ ] add
+- [ ] `@invariant` - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
-      - [ ] add read-only case
-- [ ] `@since`
-      - [ ] add
+- [ ] `@return` / `@retval` - [ ] add read-only case
+- [ ] `@since` - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] move to bottom
+- [ ] `@see` - [ ] move to bottom
 
 ### Naming
 
 - Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
 - [x] Parameter names should be clear and unambiguous
 
@@ -54,14 +43,14 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -70,8 +59,7 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
-      - [ ] swapped with `keySetBaseName`
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen - [ ] swapped with `keySetBaseName`
 - [x] No functions with similar purpose exist
 
 ### Memory Management
