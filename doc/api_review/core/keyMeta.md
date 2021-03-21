@@ -15,36 +15,36 @@
 (bullet points are in order of appearance)
 
 - [ ] First line explains briefly what the function does  
-      - [ ] keyset -> KeySet
+       - [ ] keyset -> KeySet
 - [ ] Simple example or snippet how to use the function  
-      - [ ] add
+       - [ ] add
 - [ ] Longer description of function containing common use cases  
-      - [ ] what happens if metadata is read-only?
+       - [ ] what happens if metadata is read-only?
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] add
+       - [ ] add
 - [ ] `@post`  
-      - [ ] add
+       - [ ] add
 - [ ] `@invariant`  
-      - [ ] add
+       - [ ] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
-      - [ ] move `@return` above `@retval`  
-      - [ ] add `@retval` 0 if key has no metadata
+       - [ ] move `@return` above `@retval`  
+       - [ ] add `@retval` 0 if key has no metadata
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [ ] `@see`  
-      - [ ] split into two lines
+       - [ ] split into two lines
 
 ### Naming
 
 - Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
 - [x] Parameter names should be clear and unambiguous
 
@@ -53,16 +53,16 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [ ] Wherever possible, function parameters should be `const`  
-      - [ ] could key be const here? it doesn't get modified per se
+       - [ ] could key be const here? it doesn't get modified per se
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
 
@@ -86,13 +86,14 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-      - [ ] add check if key is NULL  
-      - [ ] add check if key has no metadata  
-      - [ ] add test if metadata is read-only
+       - [ ] add check if key is NULL  
+       - [ ] add check if key has no metadata  
+       - [ ] add test if metadata is read-only
 - All possible enum values are covered by tests
 - [ ] No inconsistencies between tests and documentation
 
 ## Summary
+
 Should this function work if metadata of Key is set to read-only?
 
 ## Other Issues discovered (unrelated to function)

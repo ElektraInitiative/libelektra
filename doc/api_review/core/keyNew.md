@@ -90,11 +90,7 @@
 - [ ] No inconsistencies between tests and documentation  
        - [ ] Documentation says i can work with `Key *k =keyNew("", KEY_END);`  
        Tests say  
-       ```
-       k = keyNew ("", KEY_END);  
-       succeed_if (k == NULL, "should be invalid");  
-       keyDel (k);
-       ```  
+       `k = keyNew ("", KEY_END); succeed_if (k == NULL, "should be invalid"); keyDel (k);`  
        - [ ] same as above with `keyNew(0)`
 
 ## Summary

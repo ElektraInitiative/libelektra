@@ -15,28 +15,28 @@
 (bullet points are in order of appearance)
 
 - [ ] First line explains briefly what the function does  
-      - [ ] 'Atomic operation to retrieve Keys from a KDB'
+       - [ ] 'Atomic operation to retrieve Keys from a KDB'
 - [ ] Simple example or snippet how to use the function  
-      - [ ] add
+       - [ ] add
 - [ ] Longer description of function containing common use cases  
-      - [ ] explain in more detail which keys are included (`keyIsBelow()`)  
-      - [ ] move above description out of `@param`
+       - [ ] explain in more detail which keys are included (`keyIsBelow()`)  
+       - [ ] move above description out of `@param`
 - [ ] Description of functions reads nicely  
-      - [ ] remove indentation from first paragraph in Optimization
+       - [ ] remove indentation from first paragraph in Optimization
 - [ ] `@pre`  
-      - [ ] move below description  
-      - [ ] KeySet is not named `returned` anymore
+       - [ ] move below description  
+       - [ ] KeySet is not named `returned` anymore
 - [ ] `@post`  
-      - [ ] add
+       - [ ] add
 - [ ] `@invariant`  
-      - [ ] add
+       - [ ] add
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [ ] `@see`  
-      - [ ] `keyIsBelow()` for rules on parents / children
+       - [ ] `keyIsBelow()` for rules on parents / children
 
 ### Naming
 
@@ -46,9 +46,9 @@
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)  
-      - [ ] define `ks`
+       - [ ] define `ks`
 - [ ] Parameter names should neither be too long, nor too short  
-      - [ ] `ks` -> `keySet`
+       - [ ] `ks` -> `keySet`
 - [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
@@ -56,17 +56,17 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [ ] Wherever possible, function parameters should be `const`  
-      - [ ] handle  
-      - [ ] parentKey
+       - [ ] handle  
+       - [ ] parentKey
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
 
@@ -89,21 +89,21 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-      - [ ] Lines 1185:1188  
-      - [ ] Lines 1218:1220  
-      - [ ] Lines 1225:1227  
-      - [ ] Lines 1262:1288  
-      - [ ] Lines 1298:1310  
-      - [ ] Lines 1345:1347  
-      - [ ] Line 1205  
-      - [ ] Line 1234  
-      - [ ] Line 1368  
-      - [ ] Line 1403  
-      - [ ] add `kdbGet` specific tests
+       - [ ] Lines 1185:1188  
+       - [ ] Lines 1218:1220  
+       - [ ] Lines 1225:1227  
+       - [ ] Lines 1262:1288  
+       - [ ] Lines 1298:1310  
+       - [ ] Lines 1345:1347  
+       - [ ] Line 1205  
+       - [ ] Line 1234  
+       - [ ] Line 1368  
+       - [ ] Line 1403  
+       - [ ] add `kdbGet` specific tests
 - [ ] All possible error states are covered by tests  
-      - [ ] parentKey namespace is `KEY_NS_META`  
-      - [ ] parentKey namespace is `KEY_NS_NONE`  
-      - [ ] `ks == NULL`
+       - [ ] parentKey namespace is `KEY_NS_META`  
+       - [ ] parentKey namespace is `KEY_NS_NONE`  
+       - [ ] `ks == NULL`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

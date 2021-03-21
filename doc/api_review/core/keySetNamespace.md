@@ -16,33 +16,33 @@
 
 - [x] First line explains briefly what the function does
 - [ ] Simple example or snippet how to use the function  
-      - [ ] add
+       - [ ] add
 - [ ] Longer description of function containing common use cases  
-      - [ ] add info for read-only keys
+       - [ ] add info for read-only keys
 - [ ] Description of functions reads nicely  
-      - [ ] References to Key not working
+       - [ ] References to Key not working
 - [x] `@pre`
 - [ ] `@post`  
-      - [ ] add
+       - [ ] add
 - [ ] `@invariant`  
-      - [ ] add
+       - [ ] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
-      - [ ] move return values below returns
+       - [ ] move return values below returns
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [ ] `@see`  
-      - [ ] maybe add `keyGetNamespace()`
+       - [ ] maybe add `keyGetNamespace()`
 
 ### Naming
 
 - Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
 - [x] Parameter names should be clear and unambiguous
 
@@ -51,9 +51,9 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
@@ -82,16 +82,17 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-      - [ ] several cases in switches for enums not covered  
-      - [ ] ns == `key->ukey[0]`
+       - [ ] several cases in switches for enums not covered  
+       - [ ] ns == `key->ukey[0]`
 - [ ] All possible error states are covered by tests  
-      - [ ] key == `NULL`  
-      - [ ] ns == `KEY_NS_NONE`
+       - [ ] key == `NULL`  
+       - [ ] ns == `KEY_NS_NONE`
 - [ ] All possible enum values are covered by tests  
-      - [ ] several cases in switches for enums not covered
+       - [ ] several cases in switches for enums not covered
 - [x] No inconsistencies between tests and documentation
 
 ## Summary
+
 comment in Line 1619: growing -> shrinking
 
 ## Other Issues discovered (unrelated to function)

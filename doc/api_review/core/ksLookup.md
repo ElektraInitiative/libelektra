@@ -16,38 +16,38 @@
 
 - [x] First line explains briefly what the function does
 - [ ] Simple example or snippet how to use the function  
-      - [ ] add
+       - [ ] add
 - [ ] Longer description of function containing common use cases  
-      - [ ] only example uses `ksLookupByName`
+       - [ ] only example uses `ksLookupByName`
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] add
+       - [ ] add
 - [ ] `@post`  
-      - [ ] add
+       - [ ] add
 - [ ] `@invariant`  
-      - [ ] add
+       - [ ] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
-      - [ ] remove '0 otherwise' from `@return`
+       - [ ] remove '0 otherwise' from `@return`
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [ ] `@ingroup`  
-      - [ ] add
+       - [ ] add
 - [x] `@see`
 
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)  
-      - [ ] define `ks`
+       - [ ] define `ks`
 - [ ] Function names should neither be too long, nor too short  
-      - [ ] change name to `ksLookupByKey` to fit `ksLookupByName()`?
+       - [ ] change name to `ksLookupByKey` to fit `ksLookupByName()`?
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)  
-      - [ ] define `ks`
+       - [ ] define `ks`
 - [ ] Parameter names should neither be too long, nor too short  
-      - [ ] `ks` -> `keySet`
+       - [ ] `ks` -> `keySet`
 - [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
@@ -55,9 +55,9 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
@@ -88,11 +88,12 @@
 - [x] Function code is fully covered by tests
 - [x] All possible error states are covered by tests
 - [ ] All possible enum values are covered by tests  
-      - [ ] `KDB_O_DEL`
+       - [ ] `KDB_O_DEL`
 - [x] No inconsistencies between tests and documentation
 
 ## Summary
+
 - [ ] Maybe convert some documentation from here to snippets
-and reference it in `ksLookupByName()`
+      and reference it in `ksLookupByName()`
 
 ## Other Issues discovered (unrelated to function)

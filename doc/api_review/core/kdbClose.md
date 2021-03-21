@@ -16,23 +16,23 @@
 
 - [x] First line explains briefly what the function does
 - [ ] Simple example or snippet how to use the function  
-      - [ ] add
+       - [ ] add
 - [ ] Longer description of function containing common use cases  
-      - [ ] add possible error messages `errorKey` could contain
+       - [ ] add possible error messages `errorKey` could contain
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] move below description
+       - [ ] move below description
 - [ ] `@post`  
-      - [ ] add
+       - [ ] add
 - [ ] `@invariant`  
-      - [ ] add
+       - [ ] add
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [ ] `@see`  
-      - [ ] add `kdbOpen()`
+       - [ ] add `kdbOpen()`
 
 ### Naming
 
@@ -50,14 +50,14 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -81,15 +81,17 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-      - [ ] line 587  
-      - [ ] return value never gets checked
+       - [ ] line 587  
+       - [ ] return value never gets checked
 - [ ] All possible error states are covered by tests  
-      - [ ] add test for `handle == NULl`
+       - [ ] add test for `handle == NULl`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
 ## Summary
+
 - [ ] What happens if `errorKey` is `NULL`?
 
 ## Other Issues discovered (unrelated to function)
+
 - [ ] `ksRenameKeys()` in KDB-Module?

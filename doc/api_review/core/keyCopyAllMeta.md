@@ -16,31 +16,31 @@
 
 - [x] First line explains briefly what the function does
 - [ ] Simple example or snippet how to use the function  
-      - [ ] move simple example below `@brief`
+       - [ ] move simple example below `@brief`
 - [ ] Longer description of function containing common use cases  
-      - [ ] add info that if `dest` is read-only nothing will happen
+       - [ ] add info that if `dest` is read-only nothing will happen
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] add 'dest is a valid Key'  
-      - [ ] add 'source is a valid Key'
+       - [ ] add 'dest is a valid Key'  
+       - [ ] add 'source is a valid Key'
 - [x] `@post`
 - [ ] `@invariant`  
-      - [ ] add 'dest stays a valid Key'  
-      - [ ] add 'source stays a valid Key'
+       - [ ] add 'dest stays a valid Key'  
+       - [ ] add 'source stays a valid Key'
 - [ ] `@param` for every parameter  
-      - [ ] move in front of return values
+       - [ ] move in front of return values
 - [ ] `@return` / `@retval`  
-      - [ ] if **meta-information** was successfully copied
+       - [ ] if **meta-information** was successfully copied
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [ ] `@see`  
-      - [ ] add `keyCopyMeta()`
+       - [ ] add `keyCopyMeta()`
 
 ### Naming
 
 - Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [x] Abbreviations used in parameter names must be defined in the
@@ -53,14 +53,14 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -85,8 +85,8 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-      - [ ] add test for dest NULL  
-      - [ ] add test for source NULL
+       - [ ] add test for dest NULL  
+       - [ ] add test for source NULL
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

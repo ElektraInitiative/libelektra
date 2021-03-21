@@ -16,61 +16,61 @@
 
 - [x] First line explains briefly what the function does
 - [ ] Simple example or snippet how to use the function  
-      - [ ] move up
+       - [ ] move up
 - [x] Longer description of function containing common use cases
 - [ ] Description of functions reads nicely  
-      - [ ] 'you should read the next statements' seems a bit strange  
-      - [ ] remove 'va the list of arguments' heading
+       - [ ] 'you should read the next statements' seems a bit strange  
+       - [ ] remove 'va the list of arguments' heading
 - [ ] `@pre`  
-      - [ ] move up  
-      - [ ] add more
+       - [ ] move up  
+       - [ ] add more
 - [ ] `@post`  
-      - [ ] add more
+       - [ ] add more
 - [ ] `@invariant`  
-      - [ ] add
+       - [ ] add
 - [ ] `@param` for every parameter  
-      - [ ] delete the first one  
-      - [ ] move below conditions / invariants  
-      - [ ] improve description for alloc: clarify hint
+       - [ ] delete the first one  
+       - [ ] move below conditions / invariants  
+       - [ ] improve description for alloc: clarify hint
 - [x] `@return` / `@retval`
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [ ] `@ingroup`  
-      - [ ] add
+       - [ ] add
 - [ ] `@see`  
-      - [ ] move to bottom  
-      - [ ] add `keyNew()`?  
-      - [ ] add `ksNew()`
+       - [ ] move to bottom  
+       - [ ] add `keyNew()`?  
+       - [ ] add `ksNew()`
 
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)  
-      - [ ] define `ks`
+       - [ ] define `ks`
 - [x] Function names should neither be too long, nor too short
 - [ ] Function name should be clear and unambiguous  
-      - [ ] What does the `V` mean?
+       - [ ] What does the `V` mean?
 - [ ] Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)  
-      - [ ] define `ks`
+       - [ ] define `ks`
 - [x] Parameter names should neither be too long, nor too short
 - [ ] Parameter names should be clear and unambiguous  
-      - [ ] `alloc` -> `size` / `initialSize`  
-      - [ ] `va` -> `params` / `parameters` / `va_list`
+       - [ ] `alloc` -> `size` / `initialSize`  
+       - [ ] `va` -> `params` / `parameters` / `va_list`
 
 ### Compatibility
 
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -81,7 +81,7 @@
 - [x] Function name has the appropriate prefix
 - [ ] Order of signatures in kdb.h.in is the same as Doxygen
 - [ ] No functions with similar purpose exist  
-      - [ ] difference to `keyNew()`?
+       - [ ] difference to `keyNew()`?
 
 ### Memory Management
 
@@ -95,14 +95,15 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-      - [ ] Line 254  
-      - [ ] Line 270
+       - [ ] Line 254  
+       - [ ] Line 270
 - [ ] All possible error states are covered by tests  
-      - [ ] above error cases seem hard to test
+       - [ ] above error cases seem hard to test
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
 ## Summary
+
 Is this function still needed? Is it necessary to provide raw access, as keyNew
 is just a wrapper for this function that performs actions, which the user has to
 manually perform when using `keyVNew()`.

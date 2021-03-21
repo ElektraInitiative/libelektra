@@ -15,37 +15,37 @@
 (bullet points are in order of appearance)
 
 - [ ] First line explains briefly what the function does  
-      - [ ] of metadata -> of the metaData with name `metaName`
+       - [ ] of metadata -> of the metaData with name `metaName`
 - [ ] Simple example or snippet how to use the function  
-      - [ ] move below `@brief`
+       - [ ] move below `@brief`
 - [ ] Longer description of function containing common use cases  
-      - [ ] describe the functionality more explicitly where meta-information
-      gets deleted when `source`'s `metaName` is not set in `dest`   
-      - [ ] add information that it does nothing on read-only keys
+       - [ ] describe the functionality more explicitly where meta-information
+      gets deleted when `source`'s `metaName` is not set in `dest`  
+       - [ ] add information that it does nothing on read-only keys
 - [ ] Description of functions reads nicely  
-      - [ ] it will take -> will take
+       - [ ] it will take -> will take
 - [ ] `@pre`  
-      - [ ] 'dest is a valid Key'  
-      - [ ] 'source is a valid Key'
+       - [ ] 'dest is a valid Key'  
+       - [ ] 'source is a valid Key'
 - [x] `@post`
 - [ ] `@invariant`  
-      - [ ] 'dest stays a valid Key'  
-      - [ ] 'source stays a valid Key'
+       - [ ] 'dest stays a valid Key'  
+       - [ ] 'source stays a valid Key'
 - [ ] `@param` for every parameter  
-      - [ ] too -> to  
-      - [ ] name of the metadata -> name of the key in the metadata
+       - [ ] too -> to  
+       - [ ] name of the metadata -> name of the key in the metadata
 - [ ] `@return` / `@retval`  
-      - [ ] move `1` to `@return`  
-      - [ ] add `-1` if meta-information is read-only
+       - [ ] move `1` to `@return`  
+       - [ ] add `-1` if meta-information is read-only
 - [x] `@since`
 - [x] `@ingroup`
 - [ ] `@see`  
-      - [ ] add `keyCopyAllMeta()`
+       - [ ] add `keyCopyAllMeta()`
 
 ### Naming
 
 - Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [x] Abbreviations used in parameter names must be defined in the
@@ -58,14 +58,14 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -89,9 +89,9 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-      - [ ] Lines 294:298
+       - [ ] Lines 294:298
 - [ ] All possible error states are covered by tests  
-      - [ ] add test case for clearing meta-information key
+       - [ ] add test case for clearing meta-information key
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

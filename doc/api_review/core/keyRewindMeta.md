@@ -15,40 +15,40 @@
 (bullet points are in order of appearance)
 
 - [ ] First line explains briefly what the function does  
-      - [ ] first entry in meta-information
+       - [ ] first entry in meta-information
 - [ ] Simple example or snippet how to use the function  
-      - [ ] move up a bit
+       - [ ] move up a bit
 - [x] Longer description of function containing common use cases
 - [ ] Description of functions reads nicely  
-      - [ ] Use it -> Use this function  
-      - [ ] -then  
-      - [ ] So you want -> Afterwards, when you want to iterate the meta-information, you have  
-      - [ ] to **use** `keyNextMeta()`
+       - [ ] Use it -> Use this function  
+       - [ ] -then  
+       - [ ] So you want -> Afterwards, when you want to iterate the meta-information, you have  
+       - [ ] to **use** `keyNextMeta()`
 - [ ] `@pre`  
-      - [ ] add 'key must be a valid key'
+       - [ ] add 'key must be a valid key'
 - [ ] `@post`  
-      - [ ] add 'key stays valid'  
-      - [ ] add 'internal iterator set to first entry in metadata'
+       - [ ] add 'key stays valid'  
+       - [ ] add 'internal iterator set to first entry in metadata'
 - [ ] `@invariant`  
-      - [ ] add
+       - [ ] add
 - [ ] `@param` for every parameter  
-      - [ ] key: Key whose internal iterator should be rewinded
+       - [ ] key: Key whose internal iterator should be rewinded
 - [ ] `@return` / `@retval`  
-      - [ ] move success to normal `@return`
+       - [ ] move success to normal `@return`
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [ ] `@see`  
-      - [ ] split first line into two
+       - [ ] split first line into two
 
 ### Naming
 
 - Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+  [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
 - [x] Parameter names should be clear and unambiguous
 
@@ -57,9 +57,9 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
@@ -89,7 +89,7 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-      - [ ] add test for null pointer
+       - [ ] add test for null pointer
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

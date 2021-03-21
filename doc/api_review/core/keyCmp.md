@@ -16,24 +16,24 @@
 
 - [x] First line explains briefly what the function does
 - [ ] Simple example or snippet how to use the function  
-      - [ ] move last example below brief explanation
+       - [ ] move last example below brief explanation
 - [ ] Longer description of function containing common use cases  
-      - [ ] add description about behaviour of namespace comparison
+       - [ ] add description about behaviour of namespace comparison
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-      - [ ] add
+       - [ ] add
 - [ ] `@post`  
-      - [ ] add
+       - [ ] add
 - [ ] `@invariant`  
-      - [ ] add
+       - [ ] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
-      - [ ] remove `@return` in favour of `@retval`'s?  
-      - [ ] add `@retval` for k1 > k2  
-      - [ ] add `@retval` for k1 == k2  
-      - [ ] add `@retval` for k1 < k2
+       - [ ] remove `@return` in favour of `@retval`'s?  
+       - [ ] add `@retval` for k1 > k2  
+       - [ ] add `@retval` for k1 == k2  
+       - [ ] add `@retval` for k1 < k2
 - [ ] `@since`  
-      - [ ] add
+       - [ ] add
 - [x] `@ingroup`
 - [x] `@see`
 
@@ -41,14 +41,13 @@
 
 - [ ] Abbreviations used in function names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)  
-      - [ ] Define Cmp or write it out?
+       - [ ] Define Cmp or write it out?
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [x] Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
 - [ ] Parameter names should neither be too long, nor too short  
-      - [ ] k1 -> key1 / this
-      - [ ] k2 -> key2 / that
+       - [ ] k1 -> key1 / this - [ ] k2 -> key2 / that
 - [x] Parameter names should be clear and unambiguous
 
 ### Compatibility
@@ -56,14 +55,14 @@
 (only in PRs)
 
 - [Symbol versioning](/doc/dev/symbol-versioning.md)
-      is correct for breaking changes
+  is correct for breaking changes
 - ABI/API changes are forward-compatible (breaking backwards-compatibility
-      to add additional symbols is fine)
+  to add additional symbols is fine)
 
 ### Parameter & Return Types
 
 - Function parameters should use enum types instead of boolean types
-      wherever sensible
+  wherever sensible
 - [x] Wherever possible, function parameters should be `const`
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -82,20 +81,21 @@
 ### Extensibility
 
 - [ ] Function is easily extensible, e.g., with flags  
-      - [ ] add flags for comparing specific parts of the key
+       - [ ] add flags for comparing specific parts of the key
 - [ ] Documentation does not impose limits, that would hinder further extensions
 
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-      - [ ] L517  
-      - [ ] L558
+       - [ ] L517  
+       - [ ] L558
 - [ ] All possible error states are covered by tests  
-      - [ ] test key with same name, but different owners
+       - [ ] test key with same name, but different owners
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
 ## Summary
+
 move implementation out of keyset.c ?
 
 ## Other Issues discovered (unrelated to function)
