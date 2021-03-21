@@ -14,39 +14,39 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] append to 'to the given `cursor`'
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move up
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
-- [ ] `@ingroup`
+- [ ] `@ingroup`  
       - [ ] add
-- [ ] `@see`
-      - [ ] add `ksCurrent()` to `ksNext()`
+- [ ] `@see`  
+      - [ ] add `ksCurrent()` to `ksNext()`  
       - [ ] move `ksGetCursor` to its own line
 
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
-- [ ] Parameter names should neither be too long, nor too short
+- [ ] Parameter names should neither be too long, nor too short  
       - [ ] `ks` -> `keySet`
 - [x] Parameter names should be clear and unambiguous
 
@@ -86,8 +86,8 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
-      - [ ] `ks == NULL`
+- [ ] All possible error states are covered by tests  
+      - [ ] `ks == NULL`  
       - [ ] `cursor == -1`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

@@ -15,39 +15,40 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] Add an already escaped key name part to the key name
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add very simple example, with one simple key name part without dots
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] add common use cases (append to a key name,..)
-- [ ] Description of functions reads nicely
-      - [ ] move examples to bottom
-      - [ ] passed name below brief description
-      - [ ] replace list with reference to canonicalization docs
+- [ ] Description of functions reads nicely  
+      - [ ] move examples to bottom  
+      - [ ] passed name below brief description  
+      - [ ] replace list with reference to canonicalization docs  
       - [ ] 'key name' rules no space before dot
-- [ ] `@pre`
-      - [ ] move above `@param`
-      - [ ] writeable key
-      - [ ] newName must be a valid name (reference to key name rules)
+- [ ] `@pre`  
+      - [ ] move above `@param`  
+      - [ ] writeable key  
+      - [ ] newName must be a valid name (reference to key name rules)  
       - [ ] move "It is not allowed to" precondition
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] newName has been added to key
 - [ ] `@invariant`
-- [ ] `@param` for every parameter
-      - [ ] move below `@pre`
-      - [ ] key - pointer to Key object
+      - [ ] add
+- [ ] `@param` for every parameter  
+      - [ ] move below `@pre`  
+      - [ ] key - pointer to Key object  
       - [ ] newName - name part to append to `key`'s name
-- [ ] `@return` / `@retval`
-      - [ ] move below `@param`
-      - [ ] move `@retval` into list
+- [ ] `@return` / `@retval`  
+      - [ ] move below `@param`  
+      - [ ] move `@retval` into list  
       - [ ] make error cases differentiable (key errors, name errors)?
-- [x] `@since`
+- [ ] `@since`  
       - [ ] move lower
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] `keyAddBaseName()`
-      - [ ] `keySetName()`
+- [ ] `@see`  
+      - [ ] `keyAddBaseName()`  
+      - [ ] `keySetName()`  
       - [ ] `keySetBaseName()`
 
 ### Naming
@@ -55,12 +56,12 @@
 - Abbreviations used in function names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
-- [ ] Function name should be clear and unambiguous
+- [ ] Function name should be clear and unambiguous  
       - [ ] Add -> Append
 - Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- [ ] Parameter names should be clear and unambiguous  
       - [ ] newName -> nameParts
 
 
@@ -85,9 +86,9 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
       - [ ] order is different
-- [ ] No functions with similar purpose exist
+- [ ] No functions with similar purpose exist  
       - [ ] `keyAddName()` merge with `keySetName()`
 
 ### Memory Management
@@ -101,11 +102,11 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] check if we can remove uncovered code
+- [ ] Function code is fully covered by tests  
+      - [ ] check if we can remove uncovered code  
       - [ ] Line 542
-- [ ] All possible error states are covered by tests
-      - [ ] add test case for read-only key
+- [ ] All possible error states are covered by tests  
+      - [ ] add test case for read-only key  
       - [ ] test invalid name
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

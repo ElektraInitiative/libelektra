@@ -14,40 +14,40 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] 'Cuts out all Keys from a KeySet that are below the specified key (see `keyIsBelow()`)'
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move up
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] move above return
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
-- [ ] `@ingroup`
+- [ ] `@ingroup`  
       - [ ] add
-- [ ] `@see`
-      - [ ] move to bottom
+- [ ] `@see`  
+      - [ ] move to bottom  
       - [ ] add `keyIsBelow()`
 
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
-- [ ] Parameter names should neither be too long, nor too short
+- [ ] Parameter names should neither be too long, nor too short  
       - [ ] `ks` -> `keySet`
 - [x] Parameter names should be clear and unambiguous
 
@@ -86,14 +86,14 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] fully covered yes, but no return value is ever checked
+- [ ] Function code is fully covered by tests  
+      - [ ] fully covered yes, but no return value is ever checked  
       - [ ] add test case for the example at least
-- [ ] All possible error states are covered by tests
-      - [ ] `ks == NULL`
-      - [ ] `cutpoint == NULL`
-      - [ ] `!ks->array`
-      - [ ] `cutpoint->key == NULL`
+- [ ] All possible error states are covered by tests  
+      - [ ] `ks == NULL`  
+      - [ ] `cutpoint == NULL`  
+      - [ ] `!ks->array`  
+      - [ ] `cutpoint->key == NULL`  
       - [ ] `cutpoint->key == ''`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

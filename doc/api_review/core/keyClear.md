@@ -14,10 +14,12 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does - remove first line, second line could be improved a bit
+- [ ] First line explains briefly what the function does  
+      - [ ] remove first line, second line could be improved a bit  
       (what is meant with internal data, exactly? is the name included?)
 - [x] Simple example or snippet how to use the function
-- [ ] Longer description of function containing common use cases - be more explicit which data is actually included
+- [ ] Longer description of function containing common use cases  
+      - [ ] be more explicit which data is actually included
 - [ ] Description of functions reads nicely  
        - [ ] very short sentences
 - [ ] `@pre`  

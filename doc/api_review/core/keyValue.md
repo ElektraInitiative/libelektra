@@ -16,24 +16,24 @@
 
 - [x] First line explains briefly what the function does
 - [x] Simple example or snippet how to use the function
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] use correct testing functions in examples
-- [ ] Description of functions reads nicely
+- [ ] Description of functions reads nicely  
       - 'and you should use it if' -> 'and you should use it, if'
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] split first line and add explanations
-      - [ ] add `keyIsBinary()`
+- [ ] `@see`  
+      - [ ] split first line and add explanations  
+      - [ ] add `keyIsBinary()`  
       - [ ] add `keyIsString()`
 
 ### Naming
@@ -78,7 +78,7 @@
 ### Extensibility
 
 - [x] Function is easily extensible, e.g., with flags
-- [ ] Documentation does not impose limits, that would hinder further extensions
+- [ ] Documentation does not impose limits, that would hinder further extensions  
       - [ ] return type on empty string/ binary?
 
 ### Tests

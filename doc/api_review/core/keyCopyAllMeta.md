@@ -15,26 +15,26 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move simple example below `@brief`
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] add info that if `dest` is read-only nothing will happen
 - [x] Description of functions reads nicely
-- [ ] `@pre`
-      - [ ] add 'dest is a valid Key'
+- [ ] `@pre`  
+      - [ ] add 'dest is a valid Key'  
       - [ ] add 'source is a valid Key'
 - [x] `@post`
-- [ ] `@invariant`
-      - [ ] add 'dest stays a valid Key'
+- [ ] `@invariant`  
+      - [ ] add 'dest stays a valid Key'  
       - [ ] add 'source stays a valid Key'
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] move in front of return values
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] if **meta-information** was successfully copied
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] add `keyCopyMeta()`
 
 ### Naming
@@ -84,8 +84,8 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
-      - [ ] add test for dest NULL
+- [ ] All possible error states are covered by tests  
+      - [ ] add test for dest NULL  
       - [ ] add test for source NULL
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

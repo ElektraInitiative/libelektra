@@ -14,27 +14,27 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] as binary data
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move up
-- [ ] Longer description of function containing common use cases
-      - [ ] merge reference to string functions with `@see`
+- [ ] Longer description of function containing common use cases  
+      - [ ] merge reference to string functions with `@see`  
       - [ ] how exactly is empty defined for binary?
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] merge lines for maxSize errors
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] split first line
 
 ### Naming
@@ -83,13 +83,13 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] L417
-      - [ ] L422
+- [ ] Function code is fully covered by tests  
+      - [ ] L417  
+      - [ ] L422  
       - [ ] L427
-- [ ] All possible error states are covered by tests
-      - [ ] add test for key with string value
-      - [ ] L422 seems to be in the tests - check
+- [ ] All possible error states are covered by tests  
+      - [ ] add test for key with string value  
+      - [ ] L422 seems to be in the tests - check  
       - [ ] L427 seems to be in the tests - check
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

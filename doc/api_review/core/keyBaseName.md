@@ -15,22 +15,22 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add a simple example below the description
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] split first line
 
 ### Naming

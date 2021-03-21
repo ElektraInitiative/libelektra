@@ -16,30 +16,29 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move below brief description
 - [x] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
-      - [ ] If the value is binary, there...
-      - [ ] [..] for binary data, so 0 will be returned.
-      - [ ] String types have it, so to there length will be added 1 to have enough space to store it. -> Strings are null-terminated, and the null
-      terminator will be considered for the length.
-- [ ] `@pre`
+- [ ] Description of functions reads nicely  
+      - [ ] If the value is binary, there...  
+      - [ ] [..] for binary data, so 0 will be returned.  
+      - [ ] String types have it, so to there length will be added 1 to have enough space to store it. -> Strings are null-terminated, and the null terminator will be considered for the length.
+- [ ] `@pre`  
       - [ ] add?
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add?
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add?
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] key: key -> Key
-- [ ] `@return` / `@retval`
-      - [ ] 1: not binary -> string
+- [ ] `@return` / `@retval`  
+      - [ ] 1: not binary -> string  
       - [ ] 0: binary -> not string (?)
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] `keyGetString()`
+- [ ] `@see`  
+      - [ ] `keyGetString()`  
       - [ ] `keyGetBinary()`
 
 ### Naming
@@ -74,7 +73,7 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
       - [ ] swapped `with keyGetValueSize()`
 - [x] No functions with similar purpose exist
 
@@ -89,7 +88,7 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
+- [ ] Function code is fully covered by tests  
       - [ ] Line 249
 - [x] All possible error states are covered by tests
 - All possible enum values are covered by tests

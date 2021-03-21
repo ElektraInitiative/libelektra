@@ -15,23 +15,23 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] add possible error messages `errorKey` could contain
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] move below description
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] add `kdbOpen()`
 
 ### Naming
@@ -76,14 +76,14 @@
 ### Extensibility
 
 - [x] Function is easily extensible, e.g., with flags
-- [ x Documentation does not impose limits, that would hinder further extensions
+- [x] Documentation does not impose limits, that would hinder further extensions
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] line 587
+- [ ] Function code is fully covered by tests  
+      - [ ] line 587  
       - [ ] return value never gets checked
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] add test for `handle == NULl`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

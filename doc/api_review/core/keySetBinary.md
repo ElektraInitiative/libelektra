@@ -14,22 +14,22 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] 'as a binary' -> to a binary value `newBinary`
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] add notice about read-only keys
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
 - [x] `@see`
@@ -81,7 +81,7 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] text maxSize > SSIZE_MAX
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

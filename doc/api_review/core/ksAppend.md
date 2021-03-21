@@ -14,21 +14,21 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] 'Append all keys from `toAppend` to the end of KeySet `ks`'
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
 - [x] `@post`
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] move above return
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
 - [x] `@see`
@@ -36,15 +36,15 @@
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- [ ] Parameter names should be clear and unambiguous  
       - [ ] `ks` -> `keySet`
 
 ### Compatibility
@@ -68,7 +68,7 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
       - [ ] fix
 - [x] No functions with similar purpose exist
 
@@ -83,10 +83,10 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
+- [ ] Function code is fully covered by tests  
       - [ ] Line 923
-- [ ] All possible error states are covered by tests
-      - [ ] add test case for `ks == NULL`
+- [ ] All possible error states are covered by tests  
+      - [ ] add test case for `ks == NULL`  
       - [ ] add test case for `toAppend == NULL`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

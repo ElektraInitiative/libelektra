@@ -15,33 +15,33 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
-      - [ ] Merge first and second sentence
+- [ ] First line explains briefly what the function does  
+      - [ ] Merge first and second sentence  
         'Returns a key's name where the key name parts are separated by null bytes and does not use backslash for escaping'
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add example
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
-      - [ ] add
-      - [ ] key stays unchanged
+- [ ] `@post`  
+      - [ ] add  
+      - [ ] key stays unchanged  
       - [ ] returns pointer to unescaped Name
-- [ ] `@invariant`
-      - [ ] add
+- [ ] `@invariant`  
+      - [ ] add  
       - [ ] key stays unchanged
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] 'optional pointer to Key object'
-- [ ] `@return` / `@retval`
-      - [ ] swap order
-      - [ ] 'if Key has no name'
+- [ ] `@return` / `@retval`  
+      - [ ] swap order  
+      - [ ] 'if Key has no name'  
       - [ ] 'the Key's name'
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
-- [ ] `@ingroup`
+- [ ] `@ingroup`  
       - [ ] add
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] keyGetUnescapedName() for getting a copy
 
 ### Naming
@@ -49,7 +49,7 @@
 - Abbreviations used in function names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
-- [ ] Function name should be clear and unambiguous
+- [ ] Function name should be clear and unambiguous  
       - [ ] `keyGetUnescapedName()` make difference to this function more clear?
 - Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
@@ -77,7 +77,7 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
       - [ ] mismatch, move up in docs to match place in header file
 - [x] No functions with similar purpose exist
 
@@ -92,13 +92,13 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
+- [ ] Function code is fully covered by tests  
       - [ ] no tests for this function
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] no tests for this function
-- [ ] All possible enum values are covered by tests
+- [ ] All possible enum values are covered by tests  
       - [ ] no tests for this function
-- [ ] No inconsistencies between tests and documentation
+- [ ] No inconsistencies between tests and documentation  
       - [ ] no tests for this function
 
 ## Summary

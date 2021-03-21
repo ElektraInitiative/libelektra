@@ -14,25 +14,25 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] capitalize Key to make it distinct from parameter
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] change example into real code
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] rework descriptions to be more clear
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] split
 
 ### Naming
@@ -44,7 +44,7 @@
 - Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- [ ] Parameter names should be clear and unambiguous  
       - [ ] the name of `check` might be improved
 
 ### Compatibility
@@ -82,13 +82,13 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] Line 214
-      - [ ] Line 227
+- [ ] Function code is fully covered by tests  
+      - [ ] Line 214  
+      - [ ] Line 227  
       - [ ] Line 256
-- [ ] All possible error states are covered by tests
-      - [ ] 214 seems to be tested
-      - [ ] 256 seems to be tested
+- [ ] All possible error states are covered by tests  
+      - [ ] 214 seems to be tested  
+      - [ ] 256 seems to be tested  
       - [ ] add test for cascading key vs root key
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

@@ -15,40 +15,39 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] add part about options including reference to `elektraLookupFlags`
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
-      - [ ] shorten `options` by replacing explanation with reference to real
-      real explanation
-- [ ] `@return` / `@retval`
+- [ ] `@param` for every parameter  
+      - [ ] shorten `options` by replacing explanation with reference to real explanation
+- [ ] `@return` / `@retval`  
       - [ ] remove '0 otherwise' from `@return`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
-- [ ] `@ingroup`
+- [ ] `@ingroup`  
       - [ ] add
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] remove first 'See Also' section
 
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
-- [ ] Parameter names should neither be too long, nor too short
+- [ ] Parameter names should neither be too long, nor too short  
       - [ ] `ks` -> `keySet`
 - [x] Parameter names should be clear and unambiguous
 
@@ -88,13 +87,12 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] `name == NULL`
-- [ ] All possible enum values are covered by tests
+- [ ] All possible enum values are covered by tests  
       - [ ] `KDB_O_DEL`
-- [ ] No inconsistencies between tests and documentation
-      - [ ] several flags used in test, that cant be found in the documentation
-      for `ksLookup()` or `elektraLookupFlags`
+- [ ] No inconsistencies between tests and documentation  
+      - [ ] several flags used in test, that cant be found in the documentation for `ksLookup()` or `elektraLookupFlags`
 
 ## Summary
 - [ ] Maybe convert some documentation from `ksLookup()` to snippets

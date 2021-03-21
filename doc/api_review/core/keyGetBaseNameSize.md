@@ -14,29 +14,29 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - add including `\0`
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
-- [ ] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
+- [x] Longer description of function containing common use cases
+- [ ] Description of functions reads nicely  
       - [ ] does -> do
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
-      - [ ] add special case `""`
+- [ ] `@return` / `@retval`  
+      - [ ] add special case `""`  
       - [ ] add special case `key == NULL`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] split into multiple lines
-      - [ ] remove `keyGetName()`
+- [ ] `@see`  
+      - [ ] split into multiple lines  
+      - [ ] remove `keyGetName()`  
       - [ ] remove `keySetName()`
 
 ### Naming
@@ -86,7 +86,7 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] add NULL pointer test case
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

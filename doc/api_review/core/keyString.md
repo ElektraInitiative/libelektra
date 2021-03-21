@@ -15,35 +15,35 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] Get the pointer to the string representing the Key's value.
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add example
-- [ ] Longer description of function containing common use cases
-      - [ ] add explanation about pointers
+- [ ] Longer description of function containing common use cases  
+      - [ ] add explanation about pointers  
       - [ ] add explanation about modifications from the user
-- [ ] Description of functions reads nicely
-      - [ ] (null) -> "(null)"
+- [ ] Description of functions reads nicely  
+      - [ ] (null) -> "(null)"  
       - [ ] (binary) -> "(binary)"
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add?
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add?
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add?
-- [ ] `@param` for every parameter
-      - [ ] move before return
+- [ ] `@param` for every parameter  
+      - [ ] move before return  
       - [ ] key: key -> Key
-- [ ] `@return` / `@retval`
-      - [ ] pointer to the string representing the Key's value
-      - [ ] (null) -> "(null)"
+- [ ] `@return` / `@retval`  
+      - [ ] pointer to the string representing the Key's value  
+      - [ ] (null) -> "(null)"  
       - [ ] (binary) -> "(binary)"
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add `1.0.0`
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] `keyGetString()`
-      - [ ] `keyGetBinary()`
+- [ ] `@see`  
+      - [ ] `keyGetString()`  
+      - [ ] `keyGetBinary()`  
       - [ ] `keyValue()`
 
 ### Naming
@@ -51,7 +51,7 @@
 - Abbreviations used in function names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
 - [x] Function names should neither be too long, nor too short
-- [ ] Function name should be clear and unambiguous
+- [ ] Function name should be clear and unambiguous  
       - [ ] `keyString()` vs `keyGetString()`
 - Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
@@ -77,10 +77,10 @@
 
 ### Structural Clarity
 
-- [ ] Functions should do exactly one thing
+- [ ] Functions should do exactly one thing  
       - [ ] Return Values (null) and (binary)
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
       - [ ] swapped `with keyGetValueSize()`
 - [x] No functions with similar purpose exist
 
@@ -91,13 +91,13 @@
 ### Extensibility
 
 - [x] Function is easily extensible, e.g., with flags
-- [ ] Documentation does not impose limits, that would hinder further extensions
+- [ ] Documentation does not impose limits, that would hinder further extensions  
       - "(null)" & "(binary)"
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] Line 198
+- [ ] Function code is fully covered by tests  
+      - [ ] Line 198  
       - [ ] Line 203
 - All possible error states are covered by tests
 - All possible enum values are covered by tests

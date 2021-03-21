@@ -15,24 +15,24 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] add description of what happens when maxSize < baseNameSize
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] split first line
+- [ ] `@see`  
+      - [ ] split first line  
       - [ ] maybe remove second line?
 
 ### Naming
@@ -44,7 +44,7 @@
 - Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- [ ] Parameter names should be clear and unambiguous  
       - [ ] change to returnedBaseName in order to be more in line with other  
       functions?
 
@@ -83,10 +83,10 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - Lines 1147:1148
-- [ ] All possible error states are covered by tests
-      - Lines 1147:1148
+- [ ] Function code is fully covered by tests  
+      - [ ] Lines 1147:1148
+- [ ] All possible error states are covered by tests  
+      - [ ] Lines 1147:1148
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

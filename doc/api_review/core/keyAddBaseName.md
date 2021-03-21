@@ -14,28 +14,28 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] Adds -> Appends
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move below brief description
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] add notice for read-only keys
-- [ ] Description of functions reads nicely
-      - [ ] Add comma after "When baseName is 0"
+- [ ] Description of functions reads nicely  
+      - [ ] Add comma after "When baseName is 0"  
       - [ ] 0 -> null pointer
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] add read-only case
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] move to bottom
 
 ### Naming
@@ -70,7 +70,7 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
       - [ ] swapped with `keySetBaseName`
 - [x] No functions with similar purpose exist
 

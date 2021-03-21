@@ -14,27 +14,27 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] keyset -> KeySet
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] what happens if metadata is read-only?
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
-      - [ ] move `@return` above `@retval`
+- [ ] `@return` / `@retval`  
+      - [ ] move `@return` above `@retval`  
       - [ ] add `@retval` 0 if key has no metadata
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] split into two lines
 
 ### Naming
@@ -61,7 +61,7 @@
 
 - Function parameters should use enum types instead of boolean types
       wherever sensible
-- [ ] Wherever possible, function parameters should be `const`
+- [ ] Wherever possible, function parameters should be `const`  
       - [ ] could key be const here? it doesn't get modified per se
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -85,9 +85,9 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
-      - [ ] add check if key is NULL
-      - [ ] add check if key has no metadata
+- [ ] All possible error states are covered by tests  
+      - [ ] add check if key is NULL  
+      - [ ] add check if key has no metadata  
       - [ ] add test if metadata is read-only
 - All possible enum values are covered by tests
 - [ ] No inconsistencies between tests and documentation

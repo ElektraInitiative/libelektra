@@ -14,26 +14,26 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] 'Check if the value of a key is of string type'
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
 - [x] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
+- [ ] Description of functions reads nicely  
       - [ ] rework last sentence, especially last part (split into two sentences?)
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] replace 'it' with 'value of key' / 'key's value'
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] split into two lines
 
 ### Naming
@@ -83,7 +83,7 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] add test for null pointer
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

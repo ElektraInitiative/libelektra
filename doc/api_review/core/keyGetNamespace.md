@@ -14,24 +14,24 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] add 'returns the `elektraNamespace` for a given key'
 - [x] Simple example or snippet how to use the function
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] add `@retval` for key == `NULL` ?
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] add `keySetNamespace()`
 
 ### Naming
@@ -82,10 +82,10 @@
 
 - [x] Function code is fully covered by tests
 - [x] All possible error states are covered by tests
-- [ ] All possible enum values are covered by tests
-      - [ ] `KEY_NS_META`
-      - [ ] `KEY_NS_PROC`
-      - [ ] `KEY_NS_DIR`
+- [ ] All possible enum values are covered by tests  
+      - [ ] `KEY_NS_META`  
+      - [ ] `KEY_NS_PROC`  
+      - [ ] `KEY_NS_DIR`  
       - [ ] `KEY_NS_DEFAULT`
 - [x] No inconsistencies between tests and documentation
 

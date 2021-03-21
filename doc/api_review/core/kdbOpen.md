@@ -15,30 +15,30 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
-- [ ] Longer description of function containing common use cases
-      - [ ] how do errors end up in `errorKey`?
+- [ ] Longer description of function containing common use cases  
+      - [ ] how do errors end up in `errorKey`?  
       - [ ] what kind of errors end up in `errorKey`?
-- [ ] Description of functions reads nicely
-      - monospace 'system:/elektra/mountpoints'
-      - move 'You must always call...' one paragraph up
-- [ ] `@pre`
-      - [ ] remove first (duplicated)
+- [ ] Description of functions reads nicely  
+      - [ ] monospace 'system:/elektra/mountpoints'
+      - [ ] move 'You must always call...' one paragraph up
+- [ ] `@pre`  
+      - [ ] remove first (duplicated)  
       - [ ] move below description
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] explain format of contract
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] specify failure conditions
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] split into two lines
+- [ ] `@see`  
+      - [ ] split into two lines  
       - [ ] remove `kdbGet`?
 
 ### Naming
@@ -87,14 +87,14 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] Lines 433:443
-      - [ ] Lines 451:470
-      - [ ] Line 478
-      - [ ] Lines 508:515
-      - [ ] Lines 531:539
+- [ ] Function code is fully covered by tests  
+      - [ ] Lines 433:443  
+      - [ ] Lines 451:470  
+      - [ ] Line 478  
+      - [ ] Lines 508:515  
+      - [ ] Lines 531:539  
       - [ ] return value never checked in tests
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] `errorKey == NULl`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

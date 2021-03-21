@@ -15,7 +15,8 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function - [ ] add
+- [ ] Simple example or snippet how to use the function  
+      - [ ] add
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
 - [ ] `@pre`  

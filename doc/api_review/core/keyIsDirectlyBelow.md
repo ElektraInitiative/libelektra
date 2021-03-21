@@ -15,25 +15,25 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
-      - [ ] split examples
+- [ ] Simple example or snippet how to use the function  
+      - [ ] split examples  
       - [ ] turn examples into proper code
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] move description from examples to documentation body
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] 'check is below key' -> 'check is directly below key'
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] split and add descriptions
 
 ### Naming
@@ -45,7 +45,7 @@
 - Abbreviations used in parameter names must be defined in the
       [Glossary](/doc/help/elektra-glossary.md)
 - [x] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- [ ] Parameter names should be clear and unambiguous  
       - [ ] the name of `check` might be improved
 
 ### Compatibility
@@ -69,7 +69,7 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
       - [ ] swapped with `keyIsBelowOrSame()`
 - [x] No functions with similar purpose exist
 
@@ -84,11 +84,11 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] Line 293
+- [ ] Function code is fully covered by tests  
+      - [ ] Line 293  
       - [ ] Line 326
-- [ ] All possible error states are covered by tests
-      - [ ] Line 293 seems to be checked
+- [ ] All possible error states are covered by tests  
+      - [ ] Line 293 seems to be checked  
       - [ ] Line 326 seems to be checked
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

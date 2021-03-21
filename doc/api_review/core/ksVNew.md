@@ -15,47 +15,47 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move up
 - [x] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
-      - [ ] 'you should read the next statements' seems a bit strange
+- [ ] Description of functions reads nicely  
+      - [ ] 'you should read the next statements' seems a bit strange  
       - [ ] remove 'va the list of arguments' heading
-- [ ] `@pre`
-      - [ ] move up
+- [ ] `@pre`  
+      - [ ] move up  
       - [ ] add more
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add more
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
-      - [ ] delete the first one
-      - [ ] move below conditions / invariants
+- [ ] `@param` for every parameter  
+      - [ ] delete the first one  
+      - [ ] move below conditions / invariants  
       - [ ] improve description for alloc: clarify hint
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
-- [ ] `@ingroup`
+- [ ] `@ingroup`  
       - [ ] add
-- [ ] `@see`
-      - [ ] move to bottom
-      - [ ] add `keyNew()`?
+- [ ] `@see`  
+      - [ ] move to bottom  
+      - [ ] add `keyNew()`?  
       - [ ] add `ksNew()`
 
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Function names should neither be too long, nor too short
-- [ ] Function name should be clear and unambiguous
+- [ ] Function name should be clear and unambiguous  
       - [ ] What does the `V` mean?
 - [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
-      - [ ] `alloc` -> `size` / `initialSize`
+- [ ] Parameter names should be clear and unambiguous  
+      - [ ] `alloc` -> `size` / `initialSize`  
       - [ ] `va` -> `params` / `parameters` / `va_list`
 
 ### Compatibility
@@ -80,7 +80,7 @@
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
 - [ ] Order of signatures in kdb.h.in is the same as Doxygen
-- [ ] No functions with similar purpose exist
+- [ ] No functions with similar purpose exist  
       - [ ] difference to `keyNew()`?
 
 ### Memory Management
@@ -94,10 +94,10 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] Line 254
+- [ ] Function code is fully covered by tests  
+      - [ ] Line 254  
       - [ ] Line 270
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] above error cases seem hard to test
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

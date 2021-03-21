@@ -15,25 +15,24 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] add info for read-only keys
-- [ ] Description of functions reads nicely
+- [ ] Description of functions reads nicely  
       - [ ] References to Key not working
 - [x] `@pre`
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] move return values below returns
-      - [ ] 
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] maybe add `keyGetNamespace()`
 
 ### Naming
@@ -82,13 +81,13 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] several cases in switches for enums not covered
+- [ ] Function code is fully covered by tests  
+      - [ ] several cases in switches for enums not covered  
       - [ ] ns == `key->ukey[0]`
-- [ ] All possible error states are covered by tests
-      - [ ] key == `NULL`
+- [ ] All possible error states are covered by tests  
+      - [ ] key == `NULL`  
       - [ ] ns == `KEY_NS_NONE`
-- [ ] All possible enum values are covered by tests
+- [ ] All possible enum values are covered by tests  
       - [ ] several cases in switches for enums not covered
 - [x] No inconsistencies between tests and documentation
 

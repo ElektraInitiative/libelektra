@@ -15,42 +15,42 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move up
 - [x] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
-      - [ ] 'you should read the next statements' seems a bit strange
+- [ ] Description of functions reads nicely  
+      - [ ] 'you should read the next statements' seems a bit strange  
       - [ ] remove 'va the list of arguments' heading
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add more
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] improve description for alloc: clarify hint
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
-- [ ] `@ingroup`
+- [ ] `@ingroup`  
       - [ ] add
-- [ ] `@see`
-      - [ ] move to bottom
-      - [ ] add `keyNew()`?
+- [ ] `@see`  
+      - [ ] move to bottom  
+      - [ ] add `keyNew()`?  
       - [ ] add `ksVNew()`?
 
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Parameter names should neither be too long, nor too short
-- [ ] Parameter names should be clear and unambiguous
+- [ ] Parameter names should be clear and unambiguous  
       - [ ] `alloc` -> `size` / `initialSize`
 
 ### Compatibility
@@ -75,7 +75,7 @@
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
 - [ ] Order of signatures in kdb.h.in is the same as Doxygen
-- [ ] No functions with similar purpose exist
+- [ ] No functions with similar purpose exist  
       - [ ] `keyVNew()`
 
 ### Memory Management
@@ -90,7 +90,7 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] see review for `ksVNew()` as this is a wrapper for this
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

@@ -16,23 +16,23 @@
 
 - [x] First line explains briefly what the function does
 - [x] Simple example or snippet how to use the function
-- [ ] Longer description of function containing common use cases
-      - [ ] add notice for read-only
+- [ ] Longer description of function containing common use cases  
+      - [ ] add notice for read-only  
       - [ ] add notice that root-name cant be removed
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] add `@retval` for read-only
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] remove first `@see` and merge description into the parts below
 
 ### Naming
@@ -67,7 +67,7 @@
 
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
-- [ ] Order of signatures in kdb.h.in is the same as Doxygen
+- [ ] Order of signatures in kdb.h.in is the same as Doxygen  
       - [ ] swapped with `keyAddBaseName()`
 - [x] No functions with similar purpose exist
 
@@ -82,11 +82,11 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
+- [ ] Function code is fully covered by tests  
       - [ ] Line 1475
-- [ ] All possible error states are covered by tests
-      - [ ] `baseNamePtr == NULL`
-      - [ ] `key == NULL`
+- [ ] All possible error states are covered by tests  
+      - [ ] `baseNamePtr == NULL`  
+      - [ ] `key == NULL`  
       - [ ] key is read-only
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

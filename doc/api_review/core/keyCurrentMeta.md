@@ -14,27 +14,27 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] returns the Key of the meta-information the internal iterator points at
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
 - [x] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
+- [ ] Description of functions reads nicely  
       - [ ] The pointer -> The returned pointer
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] Key to get the current meta-information from
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] a pointer to the current meta-information's Key
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] split first line into two lines
 
 ### Naming
@@ -79,13 +79,13 @@
 ### Extensibility
 
 - [x] Function is easily extensible, e.g., with flags
-- [ ] Documentation does not impose limits, that would hinder further extensions
+- [ ] Documentation does not impose limits, that would hinder further extensions  
       - [ ] pointer is NULL after `ksRewind()`
 
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] add check for null pointer
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

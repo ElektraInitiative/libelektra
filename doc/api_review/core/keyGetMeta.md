@@ -14,34 +14,34 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
-      - [ ] returns the Key of a meta...
+- [ ] First line explains briefly what the function does  
+      - [ ] returns the Key of a meta...  
       - [ ] name -> metaName
-- [ ] Simple example or snippet how to use the function
-      - [ ] move up
-      - [ ] assign to variable
-      - [ ] add comment about value in variable
+- [ ] Simple example or snippet how to use the function  
+      - [ ] move up  
+      - [ ] assign to variable  
+      - [ ] add comment about value in variable  
       - [ ] remove function, if
 - [x] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
+- [ ] Description of functions reads nicely  
       - [ ] Remove 'You are not allowed....'
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
-      - [ ] split to two lines
+- [ ] `@param` for every parameter  
+      - [ ] split to two lines  
       - [ ] add dot after first sentence
-- [ ] `@return` / `@retval`
-      - [ ] move `@return` up
-      - [ ] `@return`: value -> Key
+- [ ] `@return` / `@retval`  
+      - [ ] move `@return` up  
+      - [ ] `@return`: value -> Key  
       - [ ] `@retval` 0 metaName invalid
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] add `keyMeta()`
 
 ### Naming
@@ -77,8 +77,8 @@
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
 - [x] Order of signatures in kdb.h.in is the same as Doxygen
-- [ ] No functions with similar purpose exist
-      Similar thing could be achieved via
+- [ ] No functions with similar purpose exist  
+      Similar thing could be achieved via  
       ```
             ksLookupByName (keyMeta (key), metaName, 0)
       ```
@@ -94,10 +94,10 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
+- [ ] Function code is fully covered by tests  
       - [ ] see below
-- [ ] All possible error states are covered by tests
-      - [ ] key is 0
+- [ ] All possible error states are covered by tests  
+      - [ ] key is 0  
       - [ ] metaName is 0
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

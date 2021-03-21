@@ -14,28 +14,28 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] 'Atomic operation to retrieve Keys from a KDB'
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
-- [ ] Longer description of function containing common use cases
-      - [ ] explain in more detail which keys are included (`keyIsBelow()`)
+- [ ] Longer description of function containing common use cases  
+      - [ ] explain in more detail which keys are included (`keyIsBelow()`)  
       - [ ] move above description out of `@param`
-- [ ] Description of functions reads nicely
+- [ ] Description of functions reads nicely  
       - [ ] remove indentation from first paragraph in Optimization
-- [ ] `@pre`
-      - [ ] move below description
+- [ ] `@pre`  
+      - [ ] move below description  
       - [ ] KeySet is not named `returned` anymore
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] `keyIsBelow()` for rules on parents / children
 
 ### Naming
@@ -45,9 +45,9 @@
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
-- [ ] Parameter names should neither be too long, nor too short
+- [ ] Parameter names should neither be too long, nor too short  
       - [ ] `ks` -> `keySet`
 - [x] Parameter names should be clear and unambiguous
 
@@ -64,8 +64,8 @@
 
 - Function parameters should use enum types instead of boolean types
       wherever sensible
-- [ ] Wherever possible, function parameters should be `const`
-      - [ ] handle
+- [ ] Wherever possible, function parameters should be `const`  
+      - [ ] handle  
       - [ ] parentKey
 - [x] Wherever possible, return types should be `const`
 - [x] Functions should have the least amount of parameters feasible
@@ -88,21 +88,21 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] Lines 1185:1188
-      - [ ] Lines 1218:1220
-      - [ ] Lines 1225:1227
-      - [ ] Lines 1262:1288
-      - [ ] Lines 1298:1310
-      - [ ] Lines 1345:1347
-      - [ ] Line 1205
-      - [ ] Line 1234
-      - [ ] Line 1368
-      - [ ] Line 1403
+- [ ] Function code is fully covered by tests  
+      - [ ] Lines 1185:1188  
+      - [ ] Lines 1218:1220  
+      - [ ] Lines 1225:1227  
+      - [ ] Lines 1262:1288  
+      - [ ] Lines 1298:1310  
+      - [ ] Lines 1345:1347  
+      - [ ] Line 1205  
+      - [ ] Line 1234  
+      - [ ] Line 1368  
+      - [ ] Line 1403  
       - [ ] add `kdbGet` specific tests
-- [ ] All possible error states are covered by tests
-      - [ ] parentKey namespace is `KEY_NS_META`
-      - [ ] parentKey namespace is `KEY_NS_NONE`
+- [ ] All possible error states are covered by tests  
+      - [ ] parentKey namespace is `KEY_NS_META`  
+      - [ ] parentKey namespace is `KEY_NS_NONE`  
       - [ ] `ks == NULL`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

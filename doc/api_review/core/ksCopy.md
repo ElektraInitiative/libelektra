@@ -15,36 +15,36 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move below description
 - [x] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
+- [ ] Description of functions reads nicely  
       - [ ] Move text out of implementation section into normal description
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
 - [x] `@param` for every parameter
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] `-1` when dest is a NULL pointer
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
-- [ ] `@ingroup`
+- [ ] `@ingroup`  
       - [ ] add
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] split first line
 
 ### Naming
 
 - [ ] Abbreviations used in function names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
 - [x] Parameter names should neither be too long, nor too short
 - [x] Parameter names should be clear and unambiguous
@@ -71,7 +71,7 @@
 - [x] Functions should do exactly one thing
 - [x] Function name has the appropriate prefix
 - [ ] Order of signatures in kdb.h.in is the same as Doxygen
-- [ ] No functions with similar purpose exist
+- [ ] No functions with similar purpose exist  
       - [ ] `ksDup()`
 
 ### Memory Management
@@ -86,8 +86,8 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
-      - [ ] `dest == NULL`
+- [ ] All possible error states are covered by tests  
+      - [ ] `dest == NULL`  
       - [ ] `source == NULL`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

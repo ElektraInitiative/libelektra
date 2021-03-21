@@ -14,25 +14,25 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] 'Sets internal iterator to the next meta-information entry'
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add 'key is a valid key'
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add 'internal iterator set to next meta-information entry'
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add 'key stays valid'
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
-      - [ ] `keyRewindMeta()`
+- [ ] `@see`  
+      - [ ] `keyRewindMeta()`  
       - [ ] `keyCurrentMeta()`
 
 ### Naming
@@ -82,7 +82,7 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] add check for NULL pointer
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

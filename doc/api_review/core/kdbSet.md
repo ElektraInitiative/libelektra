@@ -14,26 +14,26 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] 'Atomic operation to set Keys for a KDB'
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] add
-- [ ] Longer description of function containing common use cases
-      - [ ] move description out of `@param`
+- [ ] Longer description of function containing common use cases  
+      - [ ] move description out of `@param`  
       - [ ] add info what happens if keys are read-only
-- [ ] Description of functions reads nicely
+- [ ] Description of functions reads nicely  
       - [ ] 'give a hint' -> 'specify'
-- [ ] `@pre`
-      - [ ] move below description
+- [ ] `@pre`  
+      - [ ] move below description  
       - [ ] KeySet is not named `returned` anymore
-- [ ] `@post`
+- [ ] `@post`  
       - [ ] add
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] move parentKey description to description text
 - [x] `@return` / `@retval`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
 - [x] `@see`
@@ -45,9 +45,9 @@
 - [x] Function names should neither be too long, nor too short
 - [x] Function name should be clear and unambiguous
 - [ ] Abbreviations used in parameter names must be defined in the
-      [Glossary](/doc/help/elektra-glossary.md)
+      [Glossary](/doc/help/elektra-glossary.md)  
       - [ ] define `ks`
-- [ ] Parameter names should neither be too long, nor too short
+- [ ] Parameter names should neither be too long, nor too short  
       - [ ] `ks` -> `keySet`
 - [x] Parameter names should be clear and unambiguous
 
@@ -86,18 +86,18 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
-      - [ ] Lines 1737:1740
-      - [ ] Lines 1745:1748
-      - [ ] Lines 1753:1756
-      - [ ] Lines 1761:1764
-      - [ ] Lines 1796:1798
-      - [ ] Lines 1806:1809
+- [ ] Function code is fully covered by tests  
+      - [ ] Lines 1737:1740  
+      - [ ] Lines 1745:1748  
+      - [ ] Lines 1753:1756  
+      - [ ] Lines 1761:1764  
+      - [ ] Lines 1796:1798  
+      - [ ] Lines 1806:1809  
       - [ ] Line 1906
-- [ ] All possible error states are covered by tests
-      - [ ] `handle == NULL`
-      - [ ] `ks == NULL`
-      - [ ] `parentKey == NULL`
+- [ ] All possible error states are covered by tests  
+      - [ ] `handle == NULL`  
+      - [ ] `ks == NULL`  
+      - [ ] `parentKey == NULL`  
       - [ ] read-only parentKey
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

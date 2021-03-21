@@ -14,31 +14,31 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] first entry in meta-information
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move up a bit
 - [x] Longer description of function containing common use cases
-- [ ] Description of functions reads nicely
-      - [ ] Use it -> Use this function
-      - [ ] -then
-      - [ ] So you want -> Afterwards, when you want to iterate the meta-information, you have
+- [ ] Description of functions reads nicely  
+      - [ ] Use it -> Use this function  
+      - [ ] -then  
+      - [ ] So you want -> Afterwards, when you want to iterate the meta-information, you have  
       - [ ] to **use** `keyNextMeta()`
-- [ ] `@pre`
+- [ ] `@pre`  
       - [ ] add 'key must be a valid key'
-- [ ] `@post`
-      - [ ] add 'key stays valid'
+- [ ] `@post`  
+      - [ ] add 'key stays valid'  
       - [ ] add 'internal iterator set to first entry in metadata'
-- [ ] `@invariant`
+- [ ] `@invariant`  
       - [ ] add
-- [ ] `@param` for every parameter
+- [ ] `@param` for every parameter  
       - [ ] key: Key whose internal iterator should be rewinded
-- [ ] `@return` / `@retval`
+- [ ] `@return` / `@retval`  
       - [ ] move success to normal `@return`
-- [ ] `@since`
+- [ ] `@since`  
       - [ ] add
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] split first line into two
 
 ### Naming
@@ -88,7 +88,7 @@
 ### Tests
 
 - [x] Function code is fully covered by tests
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] add test for null pointer
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation

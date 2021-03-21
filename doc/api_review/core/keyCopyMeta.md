@@ -14,32 +14,32 @@
 
 (bullet points are in order of appearance)
 
-- [ ] First line explains briefly what the function does
+- [ ] First line explains briefly what the function does  
       - [ ] of metadata -> of the metaData with name `metaName`
-- [ ] Simple example or snippet how to use the function
+- [ ] Simple example or snippet how to use the function  
       - [ ] move below `@brief`
-- [ ] Longer description of function containing common use cases
+- [ ] Longer description of function containing common use cases  
       - [ ] describe the functionality more explicitly where meta-information
-      gets deleted when `source`'s `metaName` is not set in `dest` 
+      gets deleted when `source`'s `metaName` is not set in `dest`   
       - [ ] add information that it does nothing on read-only keys
-- [ ] Description of functions reads nicely
+- [ ] Description of functions reads nicely  
       - [ ] it will take -> will take
-- [ ] `@pre`
-      - [ ] 'dest is a valid Key'
+- [ ] `@pre`  
+      - [ ] 'dest is a valid Key'  
       - [ ] 'source is a valid Key'
 - [x] `@post`
-- [ ] `@invariant`
-      - [ ] 'dest stays a valid Key'
+- [ ] `@invariant`  
+      - [ ] 'dest stays a valid Key'  
       - [ ] 'source stays a valid Key'
-- [ ] `@param` for every parameter
-      - [ ] too -> to
+- [ ] `@param` for every parameter  
+      - [ ] too -> to  
       - [ ] name of the metadata -> name of the key in the metadata
-- [ ] `@return` / `@retval`
-      - [ ] move `1` to `@return`
+- [ ] `@return` / `@retval`  
+      - [ ] move `1` to `@return`  
       - [ ] add `-1` if meta-information is read-only
 - [x] `@since`
 - [x] `@ingroup`
-- [ ] `@see`
+- [ ] `@see`  
       - [ ] add `keyCopyAllMeta()`
 
 ### Naming
@@ -88,9 +88,9 @@
 
 ### Tests
 
-- [ ] Function code is fully covered by tests
+- [ ] Function code is fully covered by tests  
       - [ ] Lines 294:298
-- [ ] All possible error states are covered by tests
+- [ ] All possible error states are covered by tests  
       - [ ] add test case for clearing meta-information key
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
