@@ -96,7 +96,7 @@
 
 ## Summary
 
-"Clear" binary array on error, to mirror behaviour from string?
+"Clear" binary array on error, to mirror behavior from string?
 What to fill it with, though? Zeroes?
 
 ## Other Issues discovered (unrelated to function)

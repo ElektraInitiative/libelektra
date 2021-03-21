@@ -18,7 +18,7 @@
 - [ ] Simple example or snippet how to use the function  
        - [ ] move last example below brief explanation
 - [ ] Longer description of function containing common use cases  
-       - [ ] add description about behaviour of namespace comparison
+       - [ ] add description about behavior of namespace comparison
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
        - [ ] add
@@ -28,7 +28,7 @@
        - [ ] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
-       - [ ] remove `@return` in favour of `@retval`'s?  
+       - [ ] remove `@return` in favor of `@retval`'s?  
        - [ ] add `@retval` for k1 > k2  
        - [ ] add `@retval` for k1 == k2  
        - [ ] add `@retval` for k1 < k2
