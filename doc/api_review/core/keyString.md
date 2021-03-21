@@ -23,8 +23,8 @@
        - [ ] add explanation about pointers  
        - [ ] add explanation about modifications from the user
 - [ ] Description of functions reads nicely  
-       - [ ](null) -> "(null)"  
-       - [ ](binary) -> "(binary)"
+       - [ ] `(null)` -> `"(null)"`  
+       - [ ] `(binary)` -> `"(binary)"`
 - [ ] `@pre`  
        - [ ] add?
 - [ ] `@post`  
@@ -36,8 +36,8 @@
        - [ ] key: key -> Key
 - [ ] `@return` / `@retval`  
        - [ ] pointer to the string representing the Key's value  
-       - [ ](null) -> "(null)"  
-       - [ ](binary) -> "(binary)"
+       - [ ] `(null)` -> `"(null)"`  
+       - [ ] `(binary)` -> `"(binary)"`
 - [ ] `@since`  
        - [ ] add `1.0.0`
 - [x] `@ingroup`

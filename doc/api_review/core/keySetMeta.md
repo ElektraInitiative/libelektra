@@ -27,7 +27,7 @@
        - [ ] metaName must be a valid key name
 - [ ] `@post`  
        - [ ] value set  
-       - [ ] (Key has a meta-information Keyset)
+       - [ ] Key has a meta-information Keyset (?)
 - [ ] `@invariant`  
        - [ ] key stays valid
 - [ ] `@param` for every parameter  
