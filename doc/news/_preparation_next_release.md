@@ -224,13 +224,13 @@ Add support for keyset.remove(key). _(Manuel Mausz)_
 - Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
 - Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
 - Fix order of tutorials _(Markus Raab)_
-- Added API-Reviews for multiple functions in the public API _(Stefan Hanreich)_
 - Minor rewording in [java-kdb.md](/doc/tutorials/java-kdb.md) _(@aaronabebe)_
 - Added a short Visual Studio 2019 tutorial (/doc/tutorials/contributing-windows.md) _(Dominic Jäger)_
 - Added hint regarding WSL filesystem configuration (/doc/tutorials/contributing-windows.md) _(@tucek)_
 - Fixed broken link in yanlr-plugin readme _(@lawli3t)_
 - Minor readability improvement in [highlevel.md](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
 - Fix examples of spec plugin. _(Robert Sowula)_
+- Added Reviews for all functions contained in the Elektra Core API _(@lawli3t)_
 
 ## Tests
 
