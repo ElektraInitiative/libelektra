@@ -215,6 +215,7 @@ _(@tucek)_
 - Added hint regarding WSL filesystem configuration (/doc/tutorials/contributing-windows.md) _(@tucek)_
 - Fixed broken link in yanlr-plugin readme _(@lawli3t)_
 - Minor readability improvement in [](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
+- Minor readability improvement in [highlevel.md](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
 
 ## Tests
 
