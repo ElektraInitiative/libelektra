@@ -36,8 +36,11 @@ type = float
 default = 1.1
 ```
 
-In Elektra a specification is defined through the metadata of keys in the `spec` namespace. The specification above contains metadata for
-three keys: 1. the parent key (`@`), 2. `@/mydouble` and 3. `@/myfloatarray/#`. The `#` at the end of `myfloatarray/#` indicates that it is an array.
+In Elektra a specification is defined through the metadata of keys in the `spec` namespace. The specification above contains metadata for three keys: 
+
+1. the parent key (`@`)
+2. `@/mydouble` 
+3. `@/myfloatarray/#` (The `#` at the end of `myfloatarray/#` indicates that it is an array
 
 The `mountpoint` metadata on the parent key sets the name of our application's config file (the location is defined by Elektra), it should
 be unique.
