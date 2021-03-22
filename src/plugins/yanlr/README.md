@@ -36,7 +36,7 @@ Please note that we only tested the plugin with ANTLR `4.7.1` (and later version
 
 ### Arch Linux
 
-In [Arch Linux](https://www.archlinux.org/) the required packages are called [`antlr4`](https://www.archlinux.org/packages/extra/any/antlr4/) and [`antlr4-runtime`](https://www.archlinux.org/packages/community/x86_64/antlr4-runtime/).
+In [Arch Linux](https://www.archlinux.org/) the required packages are called [`antlr4`](https://archlinux.org/packages/community/any/antlr4/) and [`antlr4-runtime`](https://www.archlinux.org/packages/community/x86_64/antlr4-runtime/).
 
 ```
 pacman -Sy --noconfirm antlr4 antlr4-runtime
