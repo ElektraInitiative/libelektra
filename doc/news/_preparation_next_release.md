@@ -213,6 +213,7 @@ _(@tucek)_
 - Minor rewording in [java-kdb.md](/doc/tutorials/java-kdb.md) _(@aaronabebe)_
 - Added a short Visual Studio 2019 tutorial (/doc/tutorials/contributing-windows.md) _(Dominic Jäger)_
 - Added hint regarding WSL filesystem configuration (/doc/tutorials/contributing-windows.md) _(@tucek)_
+- Fixed broken link in yanlr-plugin readme _(@lawli3t)_
 
 ## Tests
 
