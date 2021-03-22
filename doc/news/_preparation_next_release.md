@@ -232,6 +232,7 @@ Add support for keyset.remove(key). _(Manuel Mausz)_
 - Fix examples of spec plugin. _(Robert Sowula)_
 - Added Reviews for all functions contained in the Elektra Core API _(@lawli3t)_
 - Minor readability improvement in [](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
+- Minor readability improvement in [highlevel.md](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
 
 ## Tests
 
