@@ -214,6 +214,7 @@ _(@tucek)_
 - Added a short Visual Studio 2019 tutorial (/doc/tutorials/contributing-windows.md) _(Dominic Jäger)_
 - Added hint regarding WSL filesystem configuration (/doc/tutorials/contributing-windows.md) _(@tucek)_
 - Fixed broken link in yanlr-plugin readme _(@lawli3t)_
+- fixed #3722 _(Philipp Oppel)_
 
 ## Tests
 
