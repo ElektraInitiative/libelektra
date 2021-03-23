@@ -191,6 +191,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added hint regarding WSL filesystem configuration (/doc/tutorials/contributing-windows.md) _(@tucek)_
 - Fixed broken link in yanlr-plugin readme _(@lawli3t)_
 - The example in the tutorial "mount-configuration-files" is adapted, so that it works now (fixed #3722) _(Philipp Oppel)_
+- fixed #3722 _(Philipp Oppel)_
 
 ## Tests
 
