@@ -204,6 +204,7 @@ _(@tucek)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Work on COMPILE.md and INSTALL.md to help with understanding _(@a-kraschitzer)_
 - Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
 - Minor rewording in INSTALL.md _(@a-kraschitzer)_
 - Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
