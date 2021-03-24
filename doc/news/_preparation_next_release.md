@@ -156,6 +156,17 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - Adding info about syncing forks to `doc/GIT.md` _(Klemens Böswirth)_
+- Work on COMPILE.md and INSTALL.md to help with understanding _(@a-kraschitzer)_
+- Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
+- Minor rewording in INSTALL.md _(@a-kraschitzer)_
+- Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
+- Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
+- Fix order of tutorials _(Markus Raab)_
+- Added API-Reviews for multiple functions in the public API _(Stefan Hanreich)_
+- Minor rewording in [java-kdb.md](/doc/tutorials/java-kdb.md) _(@aaronabebe)_
+- Added a short Visual Studio 2019 tutorial (/doc/tutorials/contributing-windows.md) _(Dominic Jäger)_
+- Added hint regarding WSL filesystem configuration (/doc/tutorials/contributing-windows.md) _(@tucek)_
+- Fixed broken link in yanlr-plugin readme _(@lawli3t)_
 
 ## Tests
 

@@ -82,17 +82,22 @@ apt-get install pdflatex \
         texlive-math-extra
 ```
 
-For the plugins, please refer to the README.md of the respective plugin.
-For example, for CentOS:
+For the plugins, please refer to the [README.md](https://www.libelektra.org/plugins/readme) of the respective plugin.
 
+A small subset of plugins to get you started:
+for CentOS:
 ```sh
 sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
 libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
 java-1.8.0-openjdk-devel jna ruby-devel byacc
 ```
 
-For the Debian package, please refer to debian/control (in the debian
-branch).
+for Ubuntu:
+```sh
+sudo apt install -y libboost-dev libxerces-c-dev libxml2-dev libyajl-dev \
+libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
+dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison 
+```
 
 ## Preparation
 
@@ -220,7 +225,7 @@ To add also experimental plugins, you can use:
 -DPLUGINS=ALL
 ```
 
-> Note that plugins are excluded automatically if dependences are not satisfied.
+> Note that plugins are only build if their dependencies are satisfied.
 > So make sure to install all dependencies you need before you run `cmake`.
 > For example, to include the plugin `yajl`, make sure `libyajl-dev` is installed.
 
