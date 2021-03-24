@@ -196,7 +196,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- Added small test for jna Return plugin (`Return.java`), `KeyNameIterator.java` _(@aaronabebe)_
 - <<TODO>>
 - <<TODO>>
 
