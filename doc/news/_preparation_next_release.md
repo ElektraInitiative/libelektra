@@ -249,8 +249,6 @@ _(@tucek)_
 
 - Update FreeBSD images from version 12.1 to 12.2 _(Robert Sowula)_
 - <<TODO>>
-- Upgrade Cirrus Fedora docker image to Fedora 33. _(Mihael Pranjić)_
-- Upgrade to Ruby 3.0 for macOS builds. _(Mihael Pranjić)_
 - Update brew before installing packages and print brew config. _(Mihael Pranjić)_
 - Restart `dbus` service before running tests. _(Mihael Pranjić)_
 - <<TODO>>
@@ -260,8 +258,6 @@ _(@tucek)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- We added a build job that translates Elektra with GCC on macOS. _(Mihael Pranjić, René Schwaiger)_
-- Update brew before installing packages and print brew config. _(Mihael Pranjić)_
 
 ### Jenkins
 
