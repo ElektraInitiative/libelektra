@@ -39,17 +39,49 @@ Summarized libelektra's job purpose is to combine the where
 (our GIT repository), with a when (tracking changes via polling or webhooks)
 with a how (pointing to the Jenkinsfile + configuration).
 
+### Jenkins Shared Library
+
+We use a [shared library](https://www.jenkins.io/doc/book/pipeline/shared-libraries/) to share common functionalities across multiple pipelines.
+This shared library contains all docker related functionalities, code to publish artifacts and various other directives and helper functions.
+After integrating this shared library with:
+
+```groovy
+@Library('libelektra-shared') _
+
+pipelineConfig {
+  now = new Date()
+}
+```
+
+we can use any function that is declared in the shared library.
+
+It is available in the [following repository](https://github.com/ElektraInitiative/jenkins-library).
+For more detailed usage instruction or instructions on how to integrate this shared library into Jenkins, see its [README.md](https://github.com/ElektraInitiative/jenkins-library/blob/master/README.md).
+
 ### Jenkinsfiles
 
 Jenkinsfiles describe what actions the build system should execute on which
 build slave.
-Currently Elektra uses two different files.
+Currently Elektra uses four different files.
 
 #### Jenkinsfile.daily
 
 - [Jenkinsfile.daily](/scripts/jenkins/Jenkinsfile.daily) contains daily maintenance tasks, like cleaning up build servers.
 - [Buildjob: libelektra-daily](https://build.libelektra.org/job/libelektra-daily/)
 - [Jenkinsfile.daily](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.daily)
+
+#### Jenkinsfile.monthly
+
+- [Jenkinsfile.monthly](/scripts/jenkins/Jenkinsfile.monthly) contains monthly triggering of libelektra job on master.
+- [Buildjob: libelektra-monthly](https://build.libelektra.org/job/libelektra-monthly/)
+- [Jenkinsfile.monthly](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.monthly)
+
+#### Jenkinsfile.release
+
+- Triggered manually with optional arguments. It is used for automated releasing a new version of Elektra.
+- [Jenkinsfile.release](/scripts/jenkins/Jenkinsfile.release) contains description how to release a new version of Elektra.
+- [Buildjob: libelektra-release](https://build.libelektra.org/job/libelektra-release/)
+- [Jenkinsfile.release](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.release)
 
 #### Jenkinsfile
 
@@ -121,6 +153,8 @@ In the case that an image needed a build it will afterwards be uploaded into a
 private Docker image registry (on a7) and thus is shared between all Docker
 capable build slaves.
 
+## Jenkinsfile (Main CI Pipeline)
+
 ### Tests
 
 We will use the Docker images build as described earlier to run compilations
@@ -132,8 +166,8 @@ The Jenkinsfile describes the steps used to run tests.
 Helper functions for easily adding new tests are available
 (`buildAndTest`, `BuildAndTestAsan`, ...).
 
-The `withDockerEnv` helper makes sure to print the following information at the
-start of a test branch:
+The `withDockerEnv` helper, that is available in the shared library,
+makes sure to print the following information at the start of a test branch:
 
 - branch name
 - build machine
@@ -161,10 +195,35 @@ your needs.
 
 For runs of the build job that are run in the master branch we also execute
 deployment steps after all tests pass.
-We use it to build Debian packages and move it into the repository on the a7
-node.
+We use these steps to build Debian and Fedora packages and move them into the repositories
+hosted on the community node.
 
-Additionally we recompile the homepage and deploy it on the a7 node.
+Additionally we recompile the homepage and deploy it on the community node.
+
+## Jenkinsfile.release (Release Pipeline)
+
+### Release Builds
+
+The `buildRelease` function runs various test suites and collects and archives debug
+information. It also generates source-packages and packages for Debian based
+distributions and Fedora.
+
+The generated packages are additionally installed and tested on a clean
+Docker image.
+
+### Manual approval
+
+In order to verify the correct behavior and results of the previous steps and their
+generated artifacts, we use the [Input Step](https://www.jenkins.io/doc/pipeline/steps/pipeline-input-step/)
+to pause the pipeline.
+After manually verifying the correctness, the pipeline run can be resumed.
+
+### Publishing
+
+The previously generated packages are published to the repositories, as described
+above in _Jenkinsfile (Main CI Pipeline)_.
+The API documentation and source packages get published to the relevant git repositories.
+Finally the Alpine release image is published to Docker Hub.
 
 ## Jenkins Setup
 
@@ -178,10 +237,6 @@ It is easiest to add via the BlueOcean interface.
 Most of the default settings should be ok, however some settings need to be
 verified or added to build Elektra correctly:
 
-- In Branch Sources under Behaviors `Filter by name` should be
-  added to exclude the `debian` branch from being build.
-  The reason for this is that the `debian` branch only differs that it contains
-  build instructions for Debian packages (the `debian` folder).
 - `Advanced clone behaviors` should be added and the path to the git mirror
   needs to be specified: `/home/jenkins/git_mirrors/libelektra`.
   This reference repository is created and maintained by our
@@ -192,6 +247,124 @@ verified or added to build Elektra correctly:
   [GitHub PR Comment Build Plugin](https://wiki.jenkins-ci.org/display/JENKINS/GitHub+PR+Comment+Build+Plugin).
 - For Build Configuration you want to specify `by Jenkinsfile` and add the
   script path: `scripts/jenkins/Jenkinsfile`.
+
+### Jenkins libelektra-release Configuration
+
+The `libelektra-release` job is a normal pipeline job.
+
+Most of the default settings can be used.
+
+- Under General you need to enable `Permission to Copy Artifact` and set the field
+  to `*`.
+- For Build Configuration you want to specify `by Jenkinsfile` and add the
+  script path: `scripts/jenkins/Jenkinsfile.release`.
+
+### General Set-Up of a New Pipeline
+
+We will cover how to set-up a pipeline that uses a different git repository than
+this `libelektra` repository.
+
+Most of the default settings can be used.
+
+- If a private repository were to be used with a GitHub type job,
+  a credentials pair of `elektrabot` must be selected to access this repository.
+- For Build Configuration you want to specify `by Jenkinsfile` and add the
+  script path to the Jenkinsfile.
+
+We first start by including the shared library as described above in _Jenkins Shared Library_.
+Then we declare in a Jenkinsfile an empty map that will contain all Docker images we will use
+in this pipeline:
+
+```groovy
+DOCKER_IMAGES = [:]
+```
+
+This map will later be populated in a function.
+For a Docker image with Ubuntu Focal and the Dockerfile located at `./ci/Dockerfile`
+this function would need to look as follows:
+
+```groovy
+def dockerInit() {
+  node('master') {
+    checkout scm
+
+    DOCKER_IMAGES.focal = dockerUtils.createDockerImageDesc(
+      'ubuntu-focal', dockerUtils.&idTesting,
+      './ci/',
+      './ci/Dockerfile'
+    )
+    // more docker images ...
+  }
+}
+```
+
+We can now begin to create the stages that initialize, pull and if necessary
+also build these Docker images:
+
+```groovy
+stage('Init docker images') {
+  dockerInit()
+}
+
+stage('Pull docker images') {
+  parallel dockerUtils.generateDockerPullStages(DOCKER_IMAGES)
+}
+
+maybeStage('Build docker images', DOCKER_IMAGES.any { img -> !img.value.exists }) {
+  lock('docker-images') {
+        parallel dockerUtils.generateDockerBuildStages(DOCKER_IMAGES)
+  }
+}
+```
+
+Now the actual stages that contain our CI/CD code can be created.
+
+To allow parallel execution of stages we create generator functions that return
+a map of stages that can be executed in parallel.
+For example the following generator function would create a map of two tasks that
+could be run in parallel.
+
+```groovy
+def generateTestStages() {
+  def tasks = [:]
+
+  tasks << test(
+    'ubuntu-focal-test',
+    DOCKER_IMAGES.focal
+  )
+
+  tasks << test(
+    'ubuntu-bionic-test',
+    DOCKER_IMAGES.bionic
+  )
+
+  return tasks
+}
+```
+
+Suppose we have a bash script `test.sh` in the root of our git repository.
+This script can be executed inside one of our Docker images by using the
+`withDockerEnv` function:
+
+```groovy
+def test(stageName, image) {
+  return [(stageName): {
+    stage(stageName) {
+      withDockerEnv(image) {
+        sh "./test.sh"
+      }
+    }
+  }]
+}
+```
+
+We can now call the generator function `generateTestStages` in a new stage:
+
+```groovy
+stage('Testing') {
+  parallel generateTestStages()
+}
+```
 
 ### Adding a Jenkins Node
 
@@ -253,7 +426,7 @@ you made to the Dockerfiles themselves.
 Locate which Dockerfile you need by looking up the reference the stage that used it in the Jenkinsfile.
 For _alpine_ this would be `DOCKER_IMAGES.alpine`.
 You can search for this entry in the Jenkinsfile to find that this image is build from the
-context `./scripts/docker/alpine/3.8` and uses `./scripts/docker/alpine/3.8/Dockerfile` as a
+context `./scripts/docker/alpine/*` and uses `./scripts/docker/alpine/*/Dockerfile` as a
 Dockerfile.
 Now you can build the image as described in
 [scripts/docker/README.md](https://master.libelektra.org/scripts/docker/README.md#building-images-locally).
@@ -288,8 +461,12 @@ PRs are going to be build.
 Pushes to any of those branches will trigger a new build automatically.
 
 The
-[daily build](https://build.libelektra.org/job/libelektra-daily/)
-is executed according to a cron schedule.
+[daily build](https://build.libelektra.org/job/libelektra-daily/) and [monthly build](https://build.libelektra.org/job/libelektra-monthly/)
+are executed according to a cron schedule.
+
+The
+[release pipeline](https://build.libelektra.org/job/libelektra-release/)
+is triggered manually with optional arguments.
 
 The following phrases can be used as comments to manually trigger a specific
 build:

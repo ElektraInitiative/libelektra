@@ -203,7 +203,7 @@ _(@tucek)_
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Update buildserver documentation _(Robert Sowula)_
 - Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
 - Minor rewording in INSTALL.md _(@a-kraschitzer)_
 - Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
