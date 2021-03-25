@@ -145,7 +145,7 @@ so that the example works:
 ```sh
 cd ../../../examples/spec
 #sudo kdb global-mount        # spec plugin should be mounted by default
-sudo kdb mount $PWD/spec.ini spec ni
+sudo kdb mount $PWD/spec.ini spec:/ ni
 sudo kdb mount $PWD/spectest.ini /testkey ni
 kdb export /testkey ni     # note: spec can only applied on cascading access
 ```
@@ -155,7 +155,7 @@ With spec mount one can use (in this case battery.ini needs to be installed in
 everything still works after the source is removed):
 
 ```sh
-sudo cp battery.ini $(dirname $(kdb file spec:/))
+sudo cp battery.ini $(dirname $(kdb file spec:/))/
 sudo kdb mount battery.ini spec:/example/battery ni
 sudo kdb spec-mount /example/battery
 kdb meta-ls /example/battery/level    # we see it has a check/enum
@@ -165,13 +165,14 @@ kdb set /example/battery/level x     # fails, not one of the allowed values!
 ```
 
 ```sh
-cp openicc.ini $(dirname $(kdb file spec:/))
+cp openicc.ini $(dirname $(kdb file spec:/))/
 sudo kdb mount openicc.ini spec:/freedesktop/openicc ni
 sudo kdb spec-mount /freedesktop/openicc
 
+kdb meta-set /freedesktop/openicc/device/camera/ array "#1"
 kdb ls /freedesktop/openicc # lets see the whole configuration
 kdb export spec:/freedesktop/openicc ni   # give us details about the specification
-kdb meta-ls /freedesktop/openicc/device/camera/#0/EXIF_serial   # seems like there is a check/type
+kdb meta-ls spec:/freedesktop/openicc/device/camera/#0/EXIF_serial   # seems like there is a check/type
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" 203     # success, is a long
 kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a long
 ```
