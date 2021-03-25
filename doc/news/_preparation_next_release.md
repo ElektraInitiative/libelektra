@@ -203,7 +203,7 @@ _(@tucek)_
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Update buildserver documentation _(Robert Sowula)_
 - Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
 - Minor rewording in INSTALL.md _(@a-kraschitzer)_
 - Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
@@ -216,8 +216,6 @@ _(@tucek)_
 - Fixed broken link in yanlr-plugin readme _(@lawli3t)_
 - Minor readability improvement in [highlevel.md](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
 - Fix examples of spec plugin. _(Robert Sowula)_
-- Add a short Visual Studio 2019 tutorial _(Dominic Jäger)_
-- Update buildserver documentation _(Robert Sowula)_
 
 ## Tests
 
