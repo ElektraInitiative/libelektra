@@ -168,6 +168,7 @@ mac_task:
       brew services restart dbus
       launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
       ls -l /private/tmp/com.apple.launchd*
+      export DBUS_LAUNCHD_SESSION_BUS_SOCKET=$(find /private/tmp/com.apple.launchd*/unix_domain_listener | xargs ls -Art | tail -n1) # workaround for cirrus
     - | # Install Python
       brew install python@3.8 || brew upgrade python@3.8
       export PATH="/usr/local/opt/python@3.8/bin:$PATH"
