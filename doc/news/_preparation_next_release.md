@@ -183,7 +183,7 @@ _(@tucek)_
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- `webd`: update `ini` dependency. _(Dependa Bot)_
 - Make search for providers not skip rest of plugins on exceptions. _(Markus Raab)_
 
 ## Scripts
