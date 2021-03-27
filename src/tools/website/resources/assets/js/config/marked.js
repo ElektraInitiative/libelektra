@@ -1,6 +1,6 @@
 "use strict";
 
-var hljs = require("highlight.js");
+const hljs = require("highlight.js");
 
 module.exports = [
   "markedProvider",
@@ -12,7 +12,7 @@ module.exports = [
       tables: true,
       highlight: function(code, lang) {
         if (lang) {
-          return hljs.highlight(lang, code, true).value;
+          return hljs.highlight(code, {language: lang, ignoreIllegals: true}).value;
         } else {
           return hljs.highlightAuto(code).value;
         }
