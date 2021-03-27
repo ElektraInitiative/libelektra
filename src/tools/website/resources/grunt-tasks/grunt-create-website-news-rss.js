@@ -70,7 +70,7 @@ module.exports = function(grunt) {
         // put content into html template
         content =
           '<!doctype html public "-//W3C//DTD HTML 4.0 Transitional //EN"><html><head>' +
-          '<meta http-equiv="Content-Type" content="text/html; charset-us-ascii"></head><body>' +
+          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>' +
           content +
           "</body></html>";
 
