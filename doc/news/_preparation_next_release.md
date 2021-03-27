@@ -183,7 +183,7 @@ _(@tucek)_
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- `webd`: update `ini` and `elliptic` dependencies. _(Dependa Bot)_
 - Make search for providers not skip rest of plugins on exceptions. _(Markus Raab)_
 
 ## Scripts
@@ -275,6 +275,8 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - It is now possible to have two links on the same line of a markdown file rendered on the website. _(Klemens Böswirth)_
 - The file [doc/KEYNAMES.md](../KEYNAMES.md) is now rendered on the website. _(Klemens Böswirth)_
+- Update `ini` dependency. _(Dependa Bot)_
+- Update many dependencies (Node 14.x LTS, angular, bootstrap, ..) and fix broken RSS feed permalinks. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Outlook

@@ -7,7 +7,7 @@ ENV LC_ALL C.UTF-8
 RUN apt-get update && apt-get -y install \
         cmake git build-essential curl \
         libyajl-dev \
-    && curl -sL https://deb.nodesource.com/setup_13.x | bash - \
+    && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 

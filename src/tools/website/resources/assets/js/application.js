@@ -23,7 +23,7 @@ require("angular-translate-loader-static-files");
 require("angular-typewriter");
 require("angular-ui-bootstrap");
 require("angular-ui-notification");
-require("angular-ui-router");
+require("@uirouter/angularjs");
 require("ng-tags-input");
 require("satellizer");
 

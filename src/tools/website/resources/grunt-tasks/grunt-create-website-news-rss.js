@@ -70,7 +70,7 @@ module.exports = function(grunt) {
         // put content into html template
         content =
           '<!doctype html public "-//W3C//DTD HTML 4.0 Transitional //EN"><html><head>' +
-          '<meta http-equiv="Content-Type" content="text/html; charset-us-ascii"></head><body>' +
+          '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body>' +
           content +
           "</body></html>";
 
@@ -81,7 +81,7 @@ module.exports = function(grunt) {
         feed.item({
           title: post.title,
           description: content,
-          url: self.data.post_url + guid + ".html",
+          url: self.data.feed.post_url + guid + ".html",
           guid: guid,
           date: new Date(Date.parse(post.date)).toUTCString()
         });
