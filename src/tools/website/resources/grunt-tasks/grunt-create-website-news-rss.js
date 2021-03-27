@@ -81,7 +81,7 @@ module.exports = function(grunt) {
         feed.item({
           title: post.title,
           description: content,
-          url: self.data.post_url + guid + ".html",
+          url: self.data.feed.post_url + guid + ".html",
           guid: guid,
           date: new Date(Date.parse(post.date)).toUTCString()
         });
