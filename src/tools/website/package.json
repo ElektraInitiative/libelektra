@@ -33,7 +33,7 @@
         "angular-ui-bootstrap": "^2.5.6",
         "angular-ui-notification": "^0.3.6",
         "@uirouter/angularjs": "^0.4.2",
-        "bootstrap": "^3.3.7",
+        "bootstrap": "^3.4.1",
         "connect-modrewrite": "^0.10.2",
         "docsearch.js": "latest",
         "fs-extra": "^0.30.0",
