@@ -123,28 +123,6 @@
  * @{
  */
 
-
-/**
- * @internal
- * Helper which iterates over MetaKeys from key
- * and removes all MetaKeys starting with
- * searchfor.
- */
-void elektraRemoveMetaData (Key * key, const char * searchfor)
-{
-	const Key * iter_key;
-	keyRewindMeta (key);
-	while ((iter_key = keyNextMeta (key)) != 0)
-	{
-		/*startsWith*/
-		if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
-		{
-			keySetMeta (key, keyName (iter_key), 0);
-		}
-	}
-}
-
-
 /**
  * @brief Takes the first key and cuts off this common part
  * for all other keys, instead name will be prepended
@@ -179,36 +157,6 @@ KeySet * ksRenameKeys (KeySet * config, const char * name)
 	}
 
 	return newConfig;
-}
-
-
-/**
- * @brief Bootstrap, first phase with fallback
- * @internal
- *
- * @param handle already allocated, but without defaultBackend
- * @param [out] keys for bootstrapping
- * @param errorKey key to add errors too
- *
- * @retval -1 failure: cannot initialize defaultBackend
- * @retval 0 warning: could not get initial config
- * @retval 1 success
- * @retval 2 success in fallback mode
- */
-int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
-{
-	handle->defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_INIT, errorKey);
-	if (!handle->defaultBackend) return -1;
-
-	handle->split = splitNew ();
-	splitAppend (handle->split, handle->defaultBackend, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
-
-	keySetName (errorKey, KDB_SYSTEM_ELEKTRA);
-	keySetString (errorKey, "kdbOpen(): get");
-
-	int funret = kdbGet (handle, keys, errorKey) != -1;
-	elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()
-	return funret;
 }
 
 /**
@@ -355,7 +303,7 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
  *
  * @see kdbOpen()
  */
-static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
+static bool ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
 {
 	// TODO: tests
 	// deep dup, so modifications to the keys in contract after kdbOpen() cannot modify the contract
@@ -366,9 +314,73 @@ static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKe
 
 	ksDel (dup);
 
-	return ret;
+	return ret == 0;
 }
 
+/**
+ * @internal
+ *
+ * Helper for kdbOpen(). Creates empty KDB instance.
+ *
+ * @see kdbOpen()
+ */
+static KDB * kdbNew (Key * errorKey)
+{
+	KDB * handle = elektraCalloc (sizeof (struct _KDB));
+	handle->modules = ksNew (0, KS_END);
+	if (elektraModulesInit (handle->modules, errorKey) == -1)
+	{
+		// TODO (Q): shouldn't we let elektraModulesInit set this error?
+		ELEKTRA_SET_INSTALLATION_ERROR (
+			errorKey, "Method 'elektraModulesInit' returned with -1. See other warning or error messages for concrete details");
+
+		ksDel (handle->modules);
+		elektraFree (handle);
+		return NULL;
+	}
+	handle->global =
+		ksNew (1, keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END), KS_END);
+
+	return handle;
+}
+
+static bool prepareBootstrap (KDB * handle, Key * errorKey)
+{
+	handle->defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_INIT, errorKey);
+	if (handle->defaultBackend == NULL)
+	{
+		// TODO (Q): shouldn't we let backendOpenDefault set this error?
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
+						"Could not open default backend. See other warning or error messages for concrete details");
+		return false;
+	}
+
+	// TODO (kodebach): replace with keyset
+	handle->split = splitNew ();
+	splitAppend (handle->split, handle->defaultBackend, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
+
+	return true;
+}
+
+static KeySet * elektraBoostrap (KDB * handle, Key * errorKey)
+{
+	KeySet * elektraKs = ksNew (0, KS_END);
+	Key * bootstrapParent = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
+
+	int ret = kdbGet (handle, elektraKs, bootstrapParent);
+
+	keyDel (bootstrapParent);
+
+	if (ret == -1)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Bootstrapping failed, please fix '" KDB_DB_SYSTEM "/" KDB_DB_INIT "'");
+
+		ksDel (elektraKs);
+		return NULL;
+	}
+
+	return elektraKs;
+}
 
 /**
  * Opens the session with the Key database.
@@ -418,146 +430,105 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 {
 	if (!errorKey)
 	{
-		ELEKTRA_LOG ("no parent key passed");
+		ELEKTRA_LOG ("no error key passed");
 		return 0;
 	}
 
 	ELEKTRA_LOG ("called with %s", keyName (errorKey));
-
-	int errnosave = errno;
-	KDB * handle = elektraCalloc (sizeof (struct _KDB));
 	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 
-	handle->global = ksNew (0, KS_END);
-	ksAppendKey (handle->global, keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END));
-	handle->modules = ksNew (0, KS_END);
-	if (elektraModulesInit (handle->modules, errorKey) == -1)
-	{
-		ksDel (handle->global);
-		ksDel (handle->modules);
-		elektraFree (handle);
-		ELEKTRA_SET_INSTALLATION_ERROR (
-			errorKey, "Method 'elektraModulesInit' returned with -1. See other warning or error messages for concrete details");
+	int errnosave = errno; // TODO (Q): really needed?
 
-		keySetName (errorKey, keyName (initialParent));
-		keySetString (errorKey, keyString (initialParent));
-		keyDel (initialParent);
-		errno = errnosave;
-		return 0;
+	// Step 1: create empty KDB instance
+	KDB * handle = kdbNew (errorKey);
+	if (handle == NULL)
+	{
+		goto error;
 	}
 
-	KeySet * keys = ksNew (0, KS_END);
-	int inFallback = 0;
-	switch (elektraOpenBootstrap (handle, keys, errorKey))
+	// Step 2: prepare for bootstrap
+	if (!prepareBootstrap (handle, errorKey))
 	{
-	case -1:
-		ksDel (handle->global);
-		ksDel (handle->modules);
-		elektraFree (handle);
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
-						"Could not open default backend. See other warning or error messages for concrete details");
-
-		keySetName (errorKey, keyName (initialParent));
-		keySetString (errorKey, keyString (initialParent));
-		keyDel (initialParent);
-		errno = errnosave;
-		ksDel (keys);
-		return 0;
-	case 0:
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial 'kdbGet()' failed, you should either fix " KDB_DB_INIT
-							    " or the fallback " KDB_DB_FILE);
-		break;
-	case 2:
-		ELEKTRA_LOG ("entered fallback code for bootstrapping");
-		inFallback = 1;
-		break;
+		goto error;
 	}
 
-	keySetString (errorKey, "kdbOpen(): mountGlobals");
+	// Step 3: execute bootstrap
+	KeySet * elektraKs = elektraBoostrap (handle, errorKey);
+	if (elektraKs == NULL)
+	{
+		goto error;
+	}
 
-	if (mountGlobals (handle, ksDup (keys), handle->modules, errorKey) == -1)
+	// Step 4: mount global plugins
+	// TODO: remove/replace step in global plugins rewrite
+	if (mountGlobals (handle, ksDup (elektraKs), handle->modules, errorKey) == -1)
 	{
 		// mountGlobals also sets a warning containing the name of the plugin that failed to load
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting global plugins failed. Please see warning of concrete plugin");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Mounting global plugins failed. Please see warning of concrete plugin");
+		goto error;
 	}
 
-	keySetName (errorKey, keyName (initialParent));
-	keySetString (errorKey, "kdbOpen(): backendClose");
+	// Step 5: process contract
+	if (contract != NULL && !ensureContract (handle, contract, errorKey))
+	{
+		goto error;
+	}
 
+	// Step 6: parse mountpoints
+	// FIXME (kodebach): implement
+
+	// Step 7: switch from boostrap to real config
+	// FIXME (kodebach): update
+	// Step 7a: remove bootstrap config
+	keyCopy (errorKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	elektraPluginClose (handle->defaultBackend, errorKey);
 	splitDel (handle->split);
+
 	handle->split = 0;
 	handle->defaultBackend = 0;
 	handle->trie = 0;
-
-#ifdef HAVE_LOGGER
-	if (inFallback) ELEKTRA_LOG_WARNING ("fallback for bootstrapping: you might want to run `kdb upgrade-bootstrap`");
-
-	Key * key;
-
-	ksRewind (keys);
-	for (key = ksNext (keys); key; key = ksNext (keys))
-	{
-		ELEKTRA_LOG_DEBUG ("config for createTrie name: %s value: %s", keyName (key), keyString (key));
-	}
-#endif
-
-	if (contract != NULL)
-	{
-		keySetString (errorKey, "kdbOpen(): ensureContract");
-
-		if (ensureContract (handle, contract, errorKey) != 0)
-		{
-			// error is set by ensureContract
-			keySetString (errorKey, "kdbOpen(): close");
-			kdbClose (handle, errorKey);
-
-			keySetName (errorKey, keyName (initialParent));
-			keySetString (errorKey, keyString (initialParent));
-			keyDel (initialParent);
-			errno = errnosave;
-			return 0;
-		}
-	}
-
 	handle->split = splitNew ();
 
-	keySetString (errorKey, "kdbOpen(): mountOpen");
-	// Open the trie, keys will be deleted within mountOpen
-	if (mountOpen (handle, keys, handle->modules, errorKey) == -1)
+	// Step 7b: setup real config
+	if (mountOpen (handle, elektraKs, handle->modules, errorKey) == -1)
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial loading of trie did not work");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Initial loading of trie did not work");
+		goto error;
 	}
 
-	keySetString (errorKey, "kdbOpen(): mountDefault");
-	if (mountDefault (handle, handle->modules, inFallback, errorKey) == -1)
+	if (mountDefault (handle, handle->modules, 0, errorKey) == -1)
 	{
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not reopen and mount default backend");
-		keySetString (errorKey, "kdbOpen(): close");
-		kdbClose (handle, errorKey);
-
-		keySetName (errorKey, keyName (initialParent));
-		keySetString (errorKey, keyString (initialParent));
-		keyDel (initialParent);
-		errno = errnosave;
-		return 0;
+		goto error;
 	}
 
-	keySetString (errorKey, "kdbOpen(): mountVersion");
+	// Step 8: add hardcoded mountpoints
+	// FIXME (kodebach): update
 	mountVersion (handle, errorKey);
-
-	keySetString (errorKey, "kdbOpen(): mountModules");
 	if (mountModules (handle, handle->modules, errorKey) == -1)
 	{
-		ELEKTRA_ADD_INTERNAL_WARNING (errorKey, "Mounting modules did not work");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Mounting modules did not work");
+		goto error;
 	}
 
-	keySetName (errorKey, keyName (initialParent));
-	keySetString (errorKey, keyString (initialParent));
+	keyCopy (errorKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 	errno = errnosave;
 
 	return handle;
+
+error:
+	if (handle != NULL)
+	{
+		Key * closeKey = keyNew ("/", KEY_END);
+		kdbClose (handle, closeKey);
+		keyDel (closeKey);
+	}
+
+	keyCopy (errorKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
+	keyDel (initialParent);
+	errno = errnosave;
+	return NULL;
 }
 
 
@@ -632,12 +603,14 @@ int kdbClose (KDB * handle, Key * errorKey)
 		ELEKTRA_ADD_RESOURCE_WARNING (errorKey, "Could not close modules: modules were not open");
 	}
 
-	if (handle->global) ksDel (handle->global);
+	if (handle->global)
+	{
+		ksDel (handle->global);
+	}
 
 	elektraFree (handle);
 
-	keySetName (errorKey, keyName (initialParent));
-	keySetString (errorKey, keyString (initialParent));
+	keyCopy (errorKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 	errno = errnosave;
 	return 0;
