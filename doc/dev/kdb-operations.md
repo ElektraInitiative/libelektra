@@ -40,6 +40,15 @@ Namespaces in mountpoint configs:
 - `proc:/` mountpoints may exist, but they are read-only (see below)
 - `dir:/`, `user:/` and `system:/` mountpoints can be created without restrictions
 
+Other restrictions:
+
+- Creating mountpoints for root keys (`system:/`, `user:/`, etc.) is not allowed.
+  These parts of the KDB always use hardcoded backends that can only be configured at compile-time.
+- Creating a mountpoint for `system:/elektra` or any mountpoint below is not allowed.
+  This part of the KDB will always be stored in the bootstrap backend.
+  While the only part that is actually required for the bootstrap process is the one below `system:/elektra/mountpoints`, everything below `system:/elektra` is reserved and should only be used internally.
+  Additionally, `system:/elektra/version` and `system:/elektra/modules` will always point to hardcoded read-only backends containing information about this Elektra installation.
+
 ## `get` Operation
 
 The purpose of the `get` operation is to read data stored in backends into a `KDB` instance.

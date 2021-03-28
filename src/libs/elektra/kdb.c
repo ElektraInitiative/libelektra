@@ -123,6 +123,24 @@
  * @{
  */
 
+static bool closeBackends (KeySet * backends, Key * errorKey)
+{
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		Key * backendKey = ksAtCursor (backends, i);
+		const BackendData * backendData = keyValue (backendKey);
+
+		if (elektraPluginClose (backendData->backend, errorKey) != 0)
+		{
+			return false;
+		}
+		ksDel (backendData->keys);
+	}
+
+	ksDel (backends);
+	return true;
+}
+
 /**
  * @brief Takes the first key and cuts off this common part
  * for all other keys, instead name will be prepended
@@ -345,22 +363,51 @@ static KDB * kdbNew (Key * errorKey)
 	return handle;
 }
 
-static bool prepareBootstrap (KDB * handle, Key * errorKey)
+static void addMountpoint (KeySet * backends, const char * mountpoint, Plugin * backend, KeySet * plugins, KeySet * definition)
 {
-	Plugin * defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_INIT, errorKey);
-	if (defaultBackend == NULL)
+	BackendData backendData = {
+		.backend = backend,
+		.keys = ksNew (0, KS_END),
+		.plugins = plugins,
+		.definition = definition,
+	};
+	ksAppendKey (backends, keyNew (mountpoint, KEY_BINARY, KEY_SIZE, sizeof (backendData), KEY_VALUE, &backendData, KEY_END));
+}
+
+static bool addElektraMountpoint (KeySet * backends, KeySet * modules, Key * errorKey)
+{
+	// FIXME: replace KDB_DEFAULT_STORAGE with separate KDB_BOOTSTRAP_STORAGE
+	Plugin * storage = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, ksNew (0, KS_END), errorKey);
+	if (storage == NULL)
 	{
-		// TODO (Q): shouldn't we let backendOpenDefault set this error?
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
-						"Could not open default backend. See other warning or error messages for concrete details");
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Could not open boostrap storage plugin ('%s'). See warnings for details.",
+						 KDB_DEFAULT_STORAGE);
 		return false;
 	}
-	BackendData backendData = {
-		.backend = defaultBackend,
-		.keys = ksNew (0, KS_END),
-	};
-	ksAppendKey (handle->backends,
-		     keyNew (KDB_SYSTEM_ELEKTRA, KEY_BINARY, KEY_SIZE, sizeof (BackendData), KEY_VALUE, &backendData, KEY_END));
+
+	Plugin * backend = elektraPluginOpen ("backend", modules, ksNew (0, KS_END), errorKey);
+	if (backend == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
+						"Could not open system:/elektra backend during bootstrap. See other warnings for details");
+		elektraPluginClose (storage, errorKey);
+		return false;
+	}
+
+	// clang-format off
+	KeySet * plugins =
+		ksNew (1,
+			keyNew ("/#0", KEY_BINARY, KEY_SIZE, sizeof (storage), KEY_VALUE, storage, KEY_END),
+		KS_END);
+	KeySet * definition =
+		ksNew (3,
+			keyNew ("/path", KEY_VALUE, KDB_DB_SYSTEM "/" KDB_DB_INIT, KEY_END),
+			keyNew ("/positions/get/storage", KEY_VALUE, "#0", KEY_END),
+			keyNew ("/positions/set/storage", KEY_VALUE, "#0", KEY_END),
+		KS_END);
+	// clang-format on
+
+	addMountpoint (backends, KDB_SYSTEM_ELEKTRA, backend, plugins, definition);
 
 	return true;
 }
@@ -383,6 +430,268 @@ static KeySet * elektraBoostrap (KDB * handle, Key * errorKey)
 	}
 
 	return elektraKs;
+}
+
+static bool openPlugins (KeySet * plugins, KeySet * modules, Key * errorKey)
+{
+	Key * pluginsRoot = keyNew ("/", KEY_END);
+	bool success = true;
+	for (elektraCursor i = 0; i < ksGetSize (plugins); i++)
+	{
+		Key * cur = ksAtCursor (plugins, i);
+		if (keyIsDirectlyBelow (pluginsRoot, cur) == 1)
+		{
+			Key * lookupHelper = keyDup (cur, KEY_CP_NAME);
+			keyAddBaseName (lookupHelper, "name");
+
+			Key * nameKey = ksLookup (plugins, lookupHelper, 0);
+			const char * pluginName = nameKey == NULL ? NULL : keyString (nameKey);
+			if (nameKey == NULL || strlen (pluginName) == 0)
+			{
+				ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey,
+								   "The plugin definition at '%s' doesn't contain a plugin name. Please "
+								   "set '%s/name' to a non-empty string value.",
+								   keyName (cur), keyName (cur));
+				success = false;
+				keyDel (lookupHelper);
+				continue;
+			}
+
+			keySetBaseName (lookupHelper, "config");
+			KeySet * config = ksBelow (plugins, lookupHelper);
+
+			keyDel (lookupHelper);
+
+			Plugin * plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
+			if (plugin == NULL)
+			{
+				ELEKTRA_ADD_INSTALLATION_WARNINGF (
+					errorKey, "Could not open the plugin '%s' defined at '%s'. See other warnings for details.",
+					pluginName, keyName (cur));
+				success = false;
+				continue;
+			}
+
+			// remove definition ...
+			ksDel (ksCut (plugins, cur));
+			// ... and replace with Plugin *
+			Key * pluginKey = keyDup (cur, KEY_CP_NAME);
+			keySetBinary (pluginKey, &plugin, sizeof (plugin));
+			ksAppendKey (plugins, pluginKey);
+		}
+	}
+
+	keyDel (pluginsRoot);
+	return success;
+}
+
+static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySet * elektraKs, Key * root, Key * errorKey)
+{
+	// check that the base name is a key name
+	Key * mountpoint = keyNew (keyBaseName (root), KEY_END);
+	if (mountpoint == NULL)
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "'%s' is not a valid key name, but is used for the mountpoint '%s'",
+						   keyBaseName (root), keyName (root));
+		return false;
+	}
+
+	// make a copy first and then cut/pop away the parts that don't belong
+	KeySet * definition = ksBelow (elektraKs, root);
+
+	// find backend reference
+	Key * lookupHelper = keyDup (root, KEY_CP_NAME);
+	keyAddBaseName (lookupHelper, "backend");
+	Key * backendRef = ksLookup (definition, lookupHelper, KDB_O_POP);
+	if (backendRef == NULL)
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "The mountpoint '%s' defined in '%s' does not specify a backend plugin.",
+						   keyName (mountpoint), keyName (root));
+		keyDel (mountpoint);
+		keyDel (lookupHelper);
+		ksDel (definition);
+		return false;
+	}
+
+	// get the plugin list and remove the common prefix
+	keySetBaseName (lookupHelper, "plugins");
+	KeySet * plugins = ksCut (definition, lookupHelper);
+	Key * pluginsRoot = keyNew ("/", KEY_END);
+	ksRename (plugins, lookupHelper, pluginsRoot);
+	keyDel (pluginsRoot);
+
+	// open all plugins (replaces key values with Plugin *)
+	if (!openPlugins (plugins, modules, errorKey))
+	{
+		keyDel (mountpoint);
+		keyDel (lookupHelper);
+		keyDel (backendRef);
+		ksDel (definition);
+		ksDel (plugins);
+		return false;
+	}
+
+	const char * backendIndex = keyString (backendRef);
+	if (!elektraIsArrayPart (backendIndex))
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "The value of '%s' is not a valid array index.", keyName (backendRef));
+		keyDel (mountpoint);
+		keyDel (lookupHelper);
+		keyDel (backendRef);
+		ksDel (definition);
+		ksDel (plugins);
+		return false;
+	}
+
+	keyAddBaseName (lookupHelper, backendIndex);
+	Key * backendPluginKey = ksLookup (definition, lookupHelper, 0);
+	if (backendRef == NULL)
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey,
+						   "The mountpoint '%s' defined in '%s' specifies '%s' as the index of the "
+						   "backend plugin, but there is not such element in '%s/plugins'.",
+						   keyName (mountpoint), keyName (root), backendIndex, keyName (root));
+		keyDel (mountpoint);
+		keyDel (lookupHelper);
+		keyDel (backendRef);
+		ksDel (definition);
+		ksDel (plugins);
+		return false;
+	}
+
+	Plugin * backendPlugin = (Plugin *) keyValue (backendPluginKey);
+	addMountpoint (mountpoints, keyName (mountpoint), backendPlugin, plugins, definition);
+
+	keyDel (lookupHelper);
+	return true;
+}
+
+// FIXME: write tests
+KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, Key * errorKey)
+{
+	KeySet * mountpoints = ksNew (0, KS_END);
+
+	Key * mountpointsRoot = keyNew (KDB_SYSTEM_ELEKTRA "/mountpoints", KEY_END);
+
+	bool error = false;
+	for (elektraCursor end, i = ksFindHierarchy (elektraKs, mountpointsRoot, &end); i < end;)
+	{
+		Key * cur = ksAtCursor (elektraKs, i);
+		if (keyIsDirectlyBelow (mountpointsRoot, cur) == 1)
+		{
+			if (!parseAndAddMountpoint (mountpoints, modules, elektraKs, cur, errorKey))
+			{
+				error = true;
+			}
+
+			// skip over the keys we just parsed
+			elektraCursor next;
+			ksFindHierarchy (elektraKs, cur, &next);
+			i = next - 1;
+		}
+		else
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				errorKey,
+				"The key '%s' is below 'system:/elektra/mountpoints', but doesn't belong to a mountpoint configuration. To "
+				"define a mountpoint for the parent e.g. 'user:/mymountpoint' the key "
+				"'system:/elektra/user:\\/mymountpoint' must exist and be set to an arbitrary (possibly empty) value.",
+				keyName (cur));
+			++i;
+		}
+	}
+
+	if (error)
+	{
+		closeBackends (mountpoints, errorKey);
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Some mountpoints couldn't be parsed. See warnings for details.");
+		return NULL;
+	}
+
+	return mountpoints;
+}
+
+static void addRootMountpoint (KeySet * backends, Plugin * plugin, KeySet * plugins, KeySet * definition, elektraNamespace ns)
+{
+	Key * rootKey = keyNew ("/", KEY_END);
+	keySetNamespace (rootKey, ns);
+	addMountpoint (backends, keyName (rootKey), plugin, plugins, definition);
+}
+
+static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
+{
+	addElektraMountpoint (handle->backends, handle->modules, errorKey);
+
+	Plugin * defaultResolver = elektraPluginOpen (KDB_RESOLVER, handle->modules, ksNew (0, KS_END), errorKey);
+	if (defaultResolver == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open default resolver plugin. See warnings for details.");
+		return false;
+	}
+
+	Plugin * defaultStorage = elektraPluginOpen (KDB_STORAGE, handle->modules, ksNew (0, KS_END), errorKey);
+	if (defaultStorage == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open default storage plugin. See warnings for details.");
+		elektraPluginClose (defaultResolver, errorKey);
+		return false;
+	}
+
+	Plugin * root = elektraPluginOpen ("backend", handle->modules, ksNew (0, KS_END), errorKey);
+	if (root == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open default backend. See warnings for details.");
+		elektraPluginClose (defaultResolver, errorKey);
+		elektraPluginClose (defaultStorage, errorKey);
+		return false;
+	}
+
+	// clang-format off
+	KeySet * rootPlugins =
+		ksNew (2,
+			keyNew ("/#0", KEY_BINARY, KEY_SIZE, sizeof (defaultResolver), KEY_VALUE, defaultResolver, KEY_END),
+			keyNew ("/#1", KEY_BINARY, KEY_SIZE, sizeof (defaultStorage), KEY_VALUE, defaultStorage, KEY_END),
+		KS_END);
+
+	KeySet * rootDefinition =
+		ksNew (7,
+			keyNew ("/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
+			keyNew ("/positions/get/resolver", KEY_VALUE, "#0", KEY_END),
+			keyNew ("/positions/get/storage", KEY_VALUE, "#1", KEY_END),
+			keyNew ("/positions/set/resolver", KEY_VALUE, "#0", KEY_END),
+			keyNew ("/positions/set/storage", KEY_VALUE, "#1", KEY_END),
+			keyNew ("/positions/set/commit", KEY_VALUE, "#0", KEY_END),
+			keyNew ("/positions/set/rollback", KEY_VALUE, "#0", KEY_END),
+		KS_END);
+	// clang-format on
+
+	addRootMountpoint (handle->backends, root, ksDup (rootPlugins), ksDup (rootDefinition), KEY_NS_SPEC);
+	addRootMountpoint (handle->backends, root, ksDup (rootPlugins), ksDup (rootDefinition), KEY_NS_SYSTEM);
+	addRootMountpoint (handle->backends, root, ksDup (rootPlugins), ksDup (rootDefinition), KEY_NS_USER);
+	addRootMountpoint (handle->backends, root, ksDup (rootPlugins), ksDup (rootDefinition), KEY_NS_DIR);
+
+	ksDel (rootPlugins);
+	ksDel (rootDefinition);
+
+	Plugin * modules = elektraPluginOpen ("modules", handle->modules, ksNew (0, KS_END), errorKey);
+	if (modules == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open system:/elektra/modules backend. See warnings for details.");
+		elektraPluginClose (defaultResolver, errorKey);
+		elektraPluginClose (defaultStorage, errorKey);
+		return false;
+	}
+	addMountpoint (handle->backends, KDB_SYSTEM_ELEKTRA "/modules", modules, ksNew (0, KS_END), handle->modules);
+
+	Plugin * version = elektraPluginOpen ("version", handle->modules, ksNew (0, KS_END), errorKey);
+	if (version == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open system:/elektra/version backend. See warnings for details.");
+		return false;
+	}
+	addMountpoint (handle->backends, KDB_SYSTEM_ELEKTRA "/version", version, ksNew (0, KS_END), ksNew (0, KS_END));
+
+	return true;
 }
 
 /**
@@ -449,7 +758,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		goto error;
 	}
 
-	if (!prepareBootstrap (handle, errorKey))
+	if (!addElektraMountpoint (handle->backends, handle->modules, errorKey))
 	{
 		goto error;
 	}
@@ -467,52 +776,40 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	{
 		// mountGlobals also sets a warning containing the name of the plugin that failed to load
 		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Mounting global plugins failed. Please see warning of concrete plugin");
+		ksDel (elektraKs);
 		goto error;
 	}
 
 	// Step 5: process contract
 	if (contract != NULL && !ensureContract (handle, contract, errorKey))
 	{
+		ksDel (elektraKs);
 		goto error;
 	}
 
 	// Step 6: parse mountpoints
-	// FIXME (kodebach): implement
+	KeySet * backends = elektraMountpointsParse (elektraKs, handle->modules, errorKey);
+	if (backends == NULL)
+	{
+		ksDel (elektraKs);
+		goto error;
+	}
 
 	// Step 7: switch from boostrap to real config
-	// FIXME (kodebach): update
-	// Step 7a: remove bootstrap config
+
+	ksDel (elektraKs);
 	keyCopy (errorKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 
-#if 1 == 0
-	elektraPluginClose (handle->defaultBackend, errorKey);
-	splitDel (handle->split);
-
-	handle->split = 0;
-	handle->defaultBackend = 0;
-	handle->trie = 0;
-	handle->split = splitNew ();
-#endif
-
-	// Step 7b: setup real config
-	if (mountOpen (handle, elektraKs, handle->modules, errorKey) == -1)
+	if (!closeBackends (handle->backends, errorKey))
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Initial loading of trie did not work");
 		goto error;
 	}
 
-	if (mountDefault (handle, handle->modules, errorKey) == -1)
-	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not reopen and mount default backend");
-		goto error;
-	}
+	handle->backends = backends;
 
 	// Step 8: add hardcoded mountpoints
-	// FIXME (kodebach): update
-	mountVersion (handle, errorKey);
-	if (mountModules (handle, handle->modules, errorKey) == -1)
+	if (!addHardcodedMountpoints (handle, errorKey))
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Mounting modules did not work");
 		goto error;
 	}
 
@@ -593,7 +890,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 	if (handle->backends)
 	{
 
-		ksDel (handle->backends);
+		closeBackends (handle->backends, errorKey);
 		handle->backends = NULL;
 	}
 

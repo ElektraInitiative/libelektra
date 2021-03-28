@@ -93,6 +93,7 @@ typedef struct _Split Split;
 typedef int (*kdbOpenPtr) (Plugin *, Key * errorKey);
 typedef int (*kdbClosePtr) (Plugin *, Key * errorKey);
 
+typedef int (*kdbInitPtr) (Plugin * handle, KeySet * definition, Key * parentKey);
 typedef int (*kdbGetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbSetPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
 typedef int (*kdbErrorPtr) (Plugin * handle, KeySet * returned, Key * parentKey);
@@ -388,6 +389,7 @@ struct _Plugin
 	kdbOpenPtr kdbOpen;   /*!< The pointer to kdbOpen_template() of the backend. */
 	kdbClosePtr kdbClose; /*!< The pointer to kdbClose_template() of the backend. */
 
+	kdbInitPtr kdbInit;	  /*!< The pointer to kdbInit_template() of the backend. */
 	kdbGetPtr kdbGet;	  /*!< The pointer to kdbGet_template() of the backend. */
 	kdbSetPtr kdbSet;	  /*!< The pointer to kdbSet_template() of the backend. */
 	kdbErrorPtr kdbError; /*!< The pointer to kdbError_template() of the backend. */
@@ -413,6 +415,8 @@ typedef struct _BackendData
 {
 	struct _Plugin * backend;
 	struct _KeySet * keys;
+	struct _KeySet * plugins;
+	struct _KeySet * definition;
 } BackendData;
 
 #if 1 == 0
@@ -521,6 +525,8 @@ KeySet * backendsForParentKey (KeySet * backends, Key * parentKey);
 int backendsDivide (KeySet * backends, KeySet * ks);
 void backendsMerge (KeySet * backends, KeySet * ks);
 
+KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, Key * errorKey);
+
 /*Backend handling*/
 Plugin * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
 Plugin * backendOpenDefault (KeySet * modules, KeySet * global, const char * file, Key * errorKey);
@@ -604,6 +610,9 @@ bool elektraKeyNameValidate (const char * name, bool isComplete);
 void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t * canonicalSizePtr, size_t offset, size_t * usizePtr);
 void elektraKeyNameUnescape (const char * name, char * unescapedName);
 size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
+
+// TODO (Q): make public?
+int elektraIsArrayPart (const char * namePart);
 
 /* global plugin calls */
 int elektraGlobalGet (KDB * handle, KeySet * ks, Key * parentKey, int position, int subPosition);

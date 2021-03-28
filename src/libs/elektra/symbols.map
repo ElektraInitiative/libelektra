@@ -184,6 +184,8 @@ libelektraprivate_1.0 {
 
 	ksBelow;
 
+	elektraIsArrayPart;
+
 	# kdblogger.h
 	elektraLog;
 

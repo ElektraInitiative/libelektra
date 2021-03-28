@@ -103,6 +103,7 @@ static Plugin * createDummyPlugin (KeySet * conf)
 	plugin->kdbGet = &elektraDummyGet;
 	plugin->kdbSet = &elektraDummySet;
 	plugin->kdbError = &elektraDummyError;
+	// FIXME: kdbInit, kdbCommit
 	plugin->name = "dummy";
 	plugin->refcounter = 1;
 	plugin->data = NULL;
