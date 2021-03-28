@@ -9,10 +9,8 @@
 
 #include "version.h"
 
-#include <kdberrors.h>
-#include <kdbprivate.h>
+#include <kdbprivate.h> // for keyReplacePrefix
 #include <kdbversion.h>
-
 
 int elektraVersionGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
@@ -22,7 +20,6 @@ int elektraVersionGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 			ksNew (30, keyNew ("system:/elektra/modules/version", KEY_VALUE, "version plugin waits for your orders", KEY_END),
 			       keyNew ("system:/elektra/modules/version/exports", KEY_END),
 			       keyNew ("system:/elektra/modules/version/exports/get", KEY_FUNC, elektraVersionGet, KEY_END),
-			       keyNew ("system:/elektra/modules/version/exports/set", KEY_FUNC, elektraVersionSet, KEY_END),
 #include ELEKTRA_README
 			       keyNew ("system:/elektra/modules/version/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
@@ -30,34 +27,35 @@ int elektraVersionGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * 
 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
-	// get all keys
-	KeySet * info = elektraVersionKeySet ();
 
-	keySetMeta (info->array[0], "restrict/write", "1");
-	keySetMeta (info->array[0], "restrict/remove", "1");
-	for (size_t i = 1; i < info->size; i++)
+	KeySet * info = elektraVersionKeySet ();
+	Key * versionRoot = keyNew ("system:/elektra/version", KEY_END);
+
+	Key * first = keyDup (ksAtCursor (info, 0), KEY_CP_ALL);
+	keyReplacePrefix (first, versionRoot, parentKey);
+	keySetMeta (first, "restrict/write", "1");
+	keySetMeta (first, "restrict/remove", "1");
+	ksAppendKey (returned, first);
+
+	for (elektraCursor i = 1; i < ksGetSize (info); i++)
 	{
-		keyCopyAllMeta (info->array[i], info->array[0]);
+		Key * cur = keyDup (ksAtCursor (info, i), KEY_CP_ALL);
+		keyReplacePrefix (cur, versionRoot, parentKey);
+		keyCopyAllMeta (cur, first);
+		ksAppendKey (returned, cur);
 	}
-	ksAppend (returned, info);
+
 	ksDel (info);
+	keyDel (versionRoot);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraVersionSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
-{
-	KeySet * info = elektraVersionKeySet ();
-	ELEKTRA_SET_ERROR_READ_ONLY (info, returned, parentKey);
-
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
 	// clang-format off
-		return elektraPluginExport ("version",
+	return elektraPluginExport ("version",
 		ELEKTRA_PLUGIN_GET,	&elektraVersionGet,
-		ELEKTRA_PLUGIN_SET,	&elektraVersionSet,
 		ELEKTRA_PLUGIN_END);
-	}
+	// clang-format on
+}
