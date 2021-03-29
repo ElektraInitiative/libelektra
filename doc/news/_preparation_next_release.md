@@ -203,6 +203,7 @@ _(@tucek)_
 
 - <<TODO>>
 - <<TODO>>
+- Document names of different components. _(Markus Raab)_
 - Update buildserver documentation _(Robert Sowula)_
 - Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
 - Minor rewording in INSTALL.md _(@a-kraschitzer)_

@@ -13,6 +13,11 @@
 
 The `curlget` plugin is a resolver using libcurl to upload and download files from/to remote hosts. When mounted with a `URL` as configuration file there will be no changes to the file system. When mounted with a (local) path to a configuration a copy of the remote configuration is kept and used as fallback in `kdbGet()` if fetching the remote file from the server fails.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-curl`.
+
 ## Configuration
 
 ### definitions

@@ -33,6 +33,9 @@ The Java plugin itself needs to have the following methods:
 
 ## Installation
 
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-java`.
+
 ### Java Prerequisites on Debian 9
 
 openjdk-8 and 9 do not work reliable: jvm crashes without usable backtrace.

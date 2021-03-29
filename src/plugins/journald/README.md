@@ -17,6 +17,11 @@ Successful writes are reported with priority 5 (notice priority) and use the mes
 Configure the plugin with `log/get=1` to enable logging when configuration is
 loaded. For example, `kdb gmount journald log/get=1`.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-journald`.
+
 ## Dependencies
 
 - `libsystemd-dev` (also called `libsystemd-journal-dev`)

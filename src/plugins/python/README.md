@@ -14,6 +14,11 @@ The plugin uses Python to do magic things. It allows plugins to be written in Py
 What a Python script can do is not really limited by design, so any kind of plugin may be
 implemented. The python plugin is especially useful to write filter and logging scripts.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-python`.
+
 ## Usage
 
 The python plugin requires the configuration parameter **script** holding the file path to a

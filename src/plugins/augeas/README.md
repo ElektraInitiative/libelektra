@@ -23,6 +23,9 @@ can be found at http://augeas.net/
 
 ## Installation
 
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-augeas`.
+
 If you have installed Augeas manually, it may be necessary to update the ld configuration. This is especially
 true if an older version of Augeas is installed also. Such a situation may lead to an error similar to this:
 

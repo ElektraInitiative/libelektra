@@ -23,6 +23,11 @@ Also the cryptographic keys must never be exposed to the outside of the crypto m
 
 The crypto plugin uses libgcrypt as provider of cryptographic operations.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-crypto`.
+
 ## Dependencies
 
 - `libgcrypt20-dev` or `libgcrypt-devel`

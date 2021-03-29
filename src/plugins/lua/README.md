@@ -14,6 +14,11 @@ The plugin uses Lua to do magic things. It basically allows to call plugins writ
 What a Lua script can do is not really limited by design, so any kind of plugin may be
 implemented. The lua plugin is especially useful to write filter and logging scripts.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-lua`.
+
 ## Usage
 
 The lua plugin accepts only the **script** configuration parameter holding the path to a Lua
