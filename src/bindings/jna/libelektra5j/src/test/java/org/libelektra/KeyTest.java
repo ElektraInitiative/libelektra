@@ -96,21 +96,6 @@ public class KeyTest
 		assertEquals (key.get (), key2.get ());		    // equal pointer
 	}
 
-	@Test public void test_keyNameIterator_shouldPass ()
-	{
-		final Key key = Key.create (KEY_1_NAME, KEY_1_VALUE);
-		final Iterator<String> iterator = key.iterator ();
-		assertTrue (iterator.hasNext ());
-		assertEquals (KEY_1_NAME_PART_1, iterator.next ());
-		assertTrue (iterator.hasNext ());
-		assertEquals (KEY_1_NAME_PART_2, iterator.next ());
-		assertTrue (iterator.hasNext ());
-		assertEquals (KEY_1_NAME_PART_3, iterator.next ());
-		assertTrue (iterator.hasNext ());
-		assertEquals (KEY_1_NAME_PART_4, iterator.next ());
-		assertFalse (iterator.hasNext ());
-	}
-
 	@Test public void test_keyWithBooleanValue_shouldPass ()
 	{
 		final Key key = Key.create (KEY_2_NAME, KEY_2_VALUE);
