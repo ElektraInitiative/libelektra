@@ -169,23 +169,26 @@ you up to date with the multi-language support provided by Elektra.
 
 ### JNA
 
-Since internal iterator support for `KeySet` is due to being dropped, the following methods have been removed:
+- Since internal iterator support for `KeySet` is due to being dropped, the following methods have been removed:
 
-- `Elektra::ksNext`
-- `Elektra::ksCurrent`
-- `Elektra::ksGetCursor`
-- `Elektra::ksSetCursor`
-- `KeySet::next`
-- `KeySet::current`
-- `KeySet::rewind`
-- `KeySet::getCursor`
-- `KeySet::setCursor`
+  - `Elektra::ksNext`
+  - `Elektra::ksCurrent`
+  - `Elektra::ksGetCursor`
+  - `Elektra::ksSetCursor`
+  - `KeySet::next`
+  - `KeySet::current`
+  - `KeySet::rewind`
+  - `KeySet::getCursor`
+  - `KeySet::setCursor`
 
 Until internal `KeySet` iterator support has been dropped form native library, `Elektra::ksRewind` is being retained while also being annotated as 'deprecated for removal'. The reason is, that we still need to rewind a `KeySet` before passing it to a native plugin via `NativePlugin::set`, `NativePlugin::get` or `NativePlugin::error`. _(@tucek)_
 
 Furthermore `Elektra::ksPop` and `KeySet::pop` have been removed and `KeySet::remove` has been introduced as replacment.
+  Until internal `KeySet` iterator support has been dropped form native library, `Elektra::ksRewind` is being retained while also being annotated as 'depricated for removal'. The reason is, that we still need to rewind a `KeySet` before passing it to a native plugin via `NativePlugin::set`, `NativePlugin::get` or `NativePlugin::error`. _(@tucek)_
 
-_(@tucek)_
+  Further more `Elektra::ksPop` and `KeySet::pop` have been removed and `KeySet::remove` has been introduced as replacment. _(Michael Tucek)_
+
+- Migrated to Gradle project _(Michael Tucek)_
 
 ### Python + Lua
 
