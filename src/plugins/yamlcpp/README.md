@@ -15,6 +15,11 @@
 
 The YAML CPP plugin reads and writes configuration data via the [yaml-cpp][] library.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-yamlcpp`.
+
 ## Usage
 
 You can mount this plugin via `kdb mount`:

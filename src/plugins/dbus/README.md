@@ -13,6 +13,11 @@
 This plugin is a notification plugin, which sends a signal to D-Bus when
 the key database (KDB) has been modified.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-dbus`.
+
 ## Dependencies
 
 - `libdbus-1-dev`

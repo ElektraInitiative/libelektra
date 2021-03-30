@@ -53,6 +53,8 @@ The `etc/apt/source.list` entry must look like following: `deb https://debs.libe
 
 E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
 
+3. Run `sudo apt-get update`.
+
 > NOTE: for Ubuntu Bionic the yamlcpp plugin is excluded due to missing dependencies and therefore the package `libelektra5-yamlcpp` is not available.
 
 ### Fedora

@@ -19,6 +19,13 @@ formatted files. It uses a general format which:
   = attribute value
 - Ignores XML comments
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-xerces`.
+
+To include this plugin in a homebrew installation run `brew tap elektrainitiative/elektra` followed by `brew install elektrainitiative/elektra/elektra --with-xerces`
+
 ## Usage
 
 To mount an XML file we use:
@@ -67,8 +74,6 @@ the mount point, then it uses the mount point's name instead.
 - `Xerces-C++ 3.0.0` or newer (`apt-get install libxerces-c-dev` or `brew install xerces-c` on macOS)
 - CMake 3.6 or a copy of `FindXercesC.cmake` in
   `/usr/share/cmake-3.0/Modules/`
-
-To include this plugin in a homebrew installation run `brew tap elektrainitiative/elektra` followed by `brew install elektrainitiative/elektra/elektra --with-xerces`
 
 ## Limitations
 

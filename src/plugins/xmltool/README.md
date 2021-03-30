@@ -15,6 +15,11 @@ formatted files. It uses the legacy Elektra 0.7 XML format.
 This plugin can be used for migration of Key Databases
 from 0.7 -> 0.8. It should not be used otherwise.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-xmltool`.
+
 ## Dependencies
 
 - `libxml2-dev`
