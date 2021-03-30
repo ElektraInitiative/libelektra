@@ -35,7 +35,7 @@ To use our stable repositories with our latest releases, following steps need to
 
    ```sh
    # Example for Ubuntu Focal
-   apt-get install software-properties-common apt-transport-https
+   sudo apt-get install software-properties-common apt-transport-https
    echo "deb https://debs.libelektra.org/focal focal main" | sudo tee /etc/apt/sources.list.d/elektra.list
    ```
 
@@ -72,7 +72,7 @@ sudo yum update
 Or alternatively you can use dnf to add this repo:
 
 ```sh
-dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33/libelektra.repo
+sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33/libelektra.repo
 ```
 
 For our latest builds from master append `-unstable` to the suite name:
@@ -86,7 +86,7 @@ sudo yum update
 Or alternatively you can use dnf to add this repo:
 
 ```sh
-dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33-unstable/libelektra.repo
+sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33-unstable/libelektra.repo
 ```
 
 ### Install
@@ -187,13 +187,13 @@ LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
 To install the packages run this in the `package` directory:
 
 ```sh
-apt-get install ./*
+sudo apt-get install ./*
 ```
 
 If any dependency problems appear, run following command to install the missing dependencies:
 
 ```sh
-apt-get -f install
+sudo apt-get -f install
 ```
 
 #### Fedora
@@ -203,7 +203,7 @@ To install RPM packages we recommend using `yum localinstall` since installing w
 Run following command in the `package` directory:
 
 ```sh
-yum localinstall *
+sudo yum localinstall *
 ```
 
 ### make
