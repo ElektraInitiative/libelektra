@@ -150,12 +150,16 @@ if (Java_JAVAC_EXECUTABLE)
 				#
 				# # we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not installed in
 				# # the system set (MAVEN_TEST_ENV "env-test-without-kdb") else () set (MAVEN_TEST_ENV "env-test") endif ()
-				#
-				# if (NOT ENABLE_ASAN) add_test ( NAME testjna_maven COMMAND ${MAVEN_EXECUTABLE} -q -B -e -P
-				# ${MAVEN_TEST_ENV} test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra")
-				#
-				# set_property (TEST testjna_maven PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-				# set_property (TEST testjna_maven PROPERTY LABELS kdbtests bindings memleak) endif () TODO test execution
+
+				if (NOT ENABLE_ASAN)
+					add_test (
+						NAME testjna_gradle
+						COMMAND ${GRADLE_EXECUTABLE} -q test
+						WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra")
+
+					set_property (TEST testjna_gradle PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+					set_property (TEST testjna_gradle PROPERTY LABELS kdbtests bindings memleak)
+				endif ()
 			else ()
 				exclude_binding (
 					jna
