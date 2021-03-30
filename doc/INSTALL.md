@@ -51,7 +51,7 @@ If you would like to use the latest builds of master, append `-unstable` to `<SU
 
 The `etc/apt/source.list` entry must look like following: `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE>-unstable main`
 
-E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
+   E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
 
 3. Run `sudo apt-get update`.
 
