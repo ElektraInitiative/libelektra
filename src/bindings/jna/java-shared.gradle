@@ -50,6 +50,9 @@ tasks.named('javadoc').configure {
 		]
 		exclude '**/*.md'
 	}
+	
+	// fail on warnings and warn about non-compliant javadoc syntax
+	options.addStringOption('Xwerror', '-Xdoclint:all')
 }
 
 javadoc {

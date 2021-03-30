@@ -13,13 +13,9 @@ public interface Elektra extends Library {
 	/**
 	 * Overall native binding to the elektra library
 	 */
-	Elektra INSTANCE = (Elektra) Native.loadLibrary ("elektra-kdb", Elektra.class);
+	Elektra INSTANCE = Native.loadLibrary ("elektra-kdb", Elektra.class);
 
-	/**************************************
-	 *
-	 * KDB methods
-	 *
-	 **************************************/
+	// KDB methods
 
 	Pointer kdbOpen (Pointer contract, Pointer parent);
 
@@ -32,11 +28,7 @@ public interface Elektra extends Library {
 	int elektraGOptsContractFromStrings (Pointer contract, long argsSize, String args, long envSize, String env, Pointer parentKey,
 					     Pointer goptsConfig);
 
-	/**************************************
-	 *
-	 * Key methods
-	 *
-	 **************************************/
+	// Key methods
 
 	Pointer keyNew (String name, Object... args);
 
@@ -117,14 +109,10 @@ public interface Elektra extends Library {
 
 	int keySetString (Pointer key, String newString);
 
-	// int keyGetBinary(Pointer key, byte[] returnedBinary, int maxSize);
-	// int keySetBinary(Pointer key, byte[] newBinary, int dataSize);
+	//int keyGetBinary(Pointer key, byte[] returnedBinary, int maxSize);
+	//int keySetBinary(Pointer key, byte[] newBinary, int dataSize);
 
-	/**************************************
-	 *
-	 * KeySet methods
-	 *
-	 **************************************/
+	// KeySet methods
 
 	Pointer ksNew (int alloc, Object... args);
 

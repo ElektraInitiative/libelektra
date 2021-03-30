@@ -4,10 +4,14 @@ find_package (Java QUIET)
 set (MIN_JAVA_VERSION "1.8.0")
 set (MIN_GRADLE_VERSION "6.8.0")
 
+macro (java_exclude_test test)
+	string (APPEND GRADLE_TEST_EXCLUDES "\texclude '**/${test}.class'\n")
+endmacro ()
+
 macro (java_test_needs_plugin test plugin)
 	list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
 	if (plugin_index GREATER -1)
-		string (APPEND GRADLE_TEST_EXCLUDES "  exclude '**/${test}.class")
+		java_exclude_test (test)
 	endif ()
 endmacro ()
 
@@ -46,12 +50,19 @@ if (Java_JAVAC_EXECUTABLE)
 
 				file (MAKE_DIRECTORY libelektra)
 
-				# generate test exclusions based on specific plugins
+				# generate test exclusions based on specific plugins and environment
 				set (GRADLE_TEST_EXCLUDES "")
 				java_test_needs_plugin (GOptsTest gopts)
 
+				if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15))
+					# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not
+					# installed in the system
+					java_exclude_test (KDBTest)
+					java_exclude_test (GOptsTest)
+				endif ()
+
 				# first fill the elektra version in the pom file @ONLY to avoid replacing pom.xml placeholders which also
-				# use the         format ${}
+				# use the format ${}
 				configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/version-settings.gradle.in"
 						"${CMAKE_CURRENT_BINARY_DIR}/version-settings.gradle" @ONLY)
 				configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/libelektra/test-exclusion.gradle.in"
@@ -145,12 +156,7 @@ if (Java_JAVAC_EXECUTABLE)
 					DESTINATION "share/java"
 					COMPONENT java-elektra)
 
-				# and add maven test to execute with ctest in the testing phase if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-				# AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15))
-				#
-				# # we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not installed in
-				# # the system set (MAVEN_TEST_ENV "env-test-without-kdb") else () set (MAVEN_TEST_ENV "env-test") endif ()
-
+				# add gradle test to execute with ctest in the testing phase
 				if (NOT ENABLE_ASAN)
 					add_test (
 						NAME testjna_gradle
