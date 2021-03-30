@@ -31,27 +31,27 @@ To use our stable repositories with our latest releases, following steps need to
 2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE> main` into `/etc/apt/sources.list`
    where `<DISTRIBUTION>` and `<SUITE>` is the codename of your distributions e.g.`focal`,`bionic`,`buster`, etc.
 
-This can also be done using:
+   This can also be done using:
 
-```sh
-# Example for Ubuntu Focal
-apt-get install software-properties-common apt-transport-https
-echo "deb https://debs.libelektra.org/focal focal main" | sudo tee /etc/apt/sources.list.d/elektra.list
-```
+   ```sh
+   # Example for Ubuntu Focal
+   apt-get install software-properties-common apt-transport-https
+   echo "deb https://debs.libelektra.org/focal focal main" | sudo tee /etc/apt/sources.list.d/elektra.list
+   ```
 
-Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
+   Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
 
-```sh
-# Example for Ubuntu Focal
-sudo apt-get install software-properties-common apt-transport-https
-sudo add-apt-repository "deb https://debs.libelektra.org/focal focal main"
-```
+   ```sh
+   # Example for Ubuntu Focal
+   sudo apt-get install software-properties-common apt-transport-https
+   sudo add-apt-repository "deb https://debs.libelektra.org/focal focal main"
+   ```
 
-If you would like to use the latest builds of master, append `-unstable` to `<SUITE>`.
+   If you would like to use the latest builds of master, append `-unstable` to `<SUITE>`.
 
-The `etc/apt/source.list` entry must look like following: `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE>-unstable main`
+   The `etc/apt/source.list` entry must look like following: `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE>-unstable main`
 
-E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
+   E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
 
 3. Run `sudo apt-get update`.
 
