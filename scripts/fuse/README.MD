@@ -123,7 +123,9 @@ E.g. the existence of `user:/a` and `user:/a/b/c` does not imply the existence o
 Such intermediate keys are mapped to "virtual" directories, s.t. navigation in an interactive manner is possible and the directory tree is continous.
 
 A side effect is that creating/deleting a single key can create/delete multiple "virtual" directories at once.
+
 Another is that copies created with `cp -r` will not have these vacuous intermediaries but instead empty keys.
+For example, consider the situation of the key `system:/A/B` being present, but not `system:/A`. Then, copying the corresponding directory `A` to `A_copy` will result in the key `system:/A_copy` being created, although it was not present, since to the filesystem (in this case `cp`) there is no distinction between "virtual" and real keys.
 
 ### Keys that act both as file and directory
 
