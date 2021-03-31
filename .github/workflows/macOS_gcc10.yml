@@ -44,6 +44,7 @@ jobs:
         brew install discount
         brew install flex
         brew install gpgme
+        brew install gradle
         brew install libev
         brew install libgcrypt
         brew install libgit2
