@@ -5,7 +5,7 @@ set (MIN_JAVA_VERSION "1.8.0")
 set (MIN_GRADLE_VERSION "6.8.0")
 
 macro (java_exclude_test test)
-	string (APPEND GRADLE_TEST_EXCLUDES "\texclude '**/${test}.class'\n")
+	string (APPEND GRADLE_TEST_EXCLUDES "\t\texcludeTestsMatching '*.${test}'\n")
 endmacro ()
 
 macro (java_test_needs_plugin test plugin)

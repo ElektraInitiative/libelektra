@@ -1,3 +1,4 @@
-test {
-	@GRADLE_TEST_EXCLUDES@
+tasks.named('test').configure {
+	filter {
+@GRADLE_TEST_EXCLUDES@	}
 }

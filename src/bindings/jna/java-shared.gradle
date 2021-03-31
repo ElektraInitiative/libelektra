@@ -90,6 +90,13 @@ tasks.named('test').configure {
 	}
 }
 
+// apply optional test override
+File testExclusions = new File(project.projectDir, 'test-exclusion.gradle')
+if (testExclusions.exists()) {
+	apply from: testExclusions
+	logger.lifecycle("Test exclusions have been applied.")
+}
+
 // eclipse IDE integration
 eclipse {
 	classpath {
