@@ -1,4 +1,4 @@
 // override artifact version
 allprojects {
-	version = '@KDB_VERSION@-SNAPSHOT'
+	version = '@KDB_VERSION@'
 }

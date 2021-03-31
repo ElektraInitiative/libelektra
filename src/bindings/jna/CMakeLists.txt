@@ -135,8 +135,8 @@ if (Java_JAVAC_EXECUTABLE)
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/publications/libelektra/libelektra-${KDB_VERSION}.pom.xml"
 					COMMAND ${CMAKE_COMMAND} ARGS -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}"
 						"${CMAKE_CURRENT_BINARY_DIR}"
-					COMMAND ${GRADLE_EXECUTABLE} -q assemble
-						# WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+					COMMAND ${GRADLE_EXECUTABLE} -q --console=plain clean assemble
+					WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 					DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/libelektra/test-exclusion.gradle"
 						"${CMAKE_CURRENT_BINARY_DIR}/version-settings.gradle" ${JNA_BINDING_SOURCE_FILES})
 
@@ -161,7 +161,7 @@ if (Java_JAVAC_EXECUTABLE)
 				if (NOT ENABLE_ASAN)
 					add_test (
 						NAME testjna_gradle
-						COMMAND ${GRADLE_EXECUTABLE} -q test
+						COMMAND ${GRADLE_EXECUTABLE} -q --console=plain test
 						WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra")
 
 					set_property (TEST testjna_gradle PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
