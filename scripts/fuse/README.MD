@@ -25,6 +25,8 @@ For debugging purposes, a logfile is written to `~/nohup.out` inside the contain
 
 ### Native
 
+Required Elektra version: >= 0.9.4
+
 Required (debian) packages:
 - libfuse-dev
 - fuse
@@ -55,9 +57,9 @@ Below any such pid-directory, the elektra key database is mounted bidirectionall
 - `dir:`
 - `spec:`
 
-Exceptions (at the moment, these namespaces behave differently)
-- `default:`
-- `proc:`
+Exceptions:
+- `default:` (only exists for cascading lookups)
+- `proc:` (to be implemented in future version (read-only))
 
 Furthermore, there is `cascading:`, which correspons to the `/` Elektra-namespace.
 This is useful for inspection purposes, but beware:
