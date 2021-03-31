@@ -177,6 +177,6 @@ If a value is to be written that cannot be decoded using the systems default enc
 
 - Moving an ``@elektra.value``-file corrupts the filesystem/key database (See this [issue](https://issues.libelektra.org/3648)). As editors like `vim` may move a file during editing, such editors cannot reliably be used on these pseudo-files.
 - Only works on POSIX-compatible systems with support for FUSE (via fusepy)
-- chmod/chown is not implemented and does not signal a "not supported error" to enable compatibility with common tools like `cp`.
+- chmod/chown is not implemented (i.e. does nothing and reports success) and does not signal a "not supported error" to enable compatibility with common tools like `cp`.
 - Access related errorcodes not yet implemented (e.g. normal user tries to write to system:/) (defaulting to read only fs - error)
 - Everything that is labled as `TODO` in the source.
