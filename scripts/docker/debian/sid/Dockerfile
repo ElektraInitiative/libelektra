@@ -15,11 +15,9 @@ RUN apt-get update && apt-get -y install \
         clang-format-11 \
         cmake \
         curl \
-        default-jdk \
         dh-lua \
         ed \
         flex \
-        libc6-dbg \
         gawk \
         git \
         gnupg2 \
@@ -29,6 +27,7 @@ RUN apt-get update && apt-get -y install \
         libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-all-dev \
+        libc6-dbg \
         libdbus-1-dev \
         libev-dev \
         libgcrypt20-dev \
@@ -48,10 +47,10 @@ RUN apt-get update && apt-get -y install \
         libyaml-cpp-dev \
         libzmq3-dev \
         llvm \
-        maven \
         moreutils \
         ninja-build \
         npm \
+        openjdk-11-jdk \
         pkg-config \
         python3-dev \
         python3-pip \
@@ -61,7 +60,9 @@ RUN apt-get update && apt-get -y install \
         swig4.0 \
         systemd \
         tclcl-dev \
+        unzip \
         valgrind \
+        zip \
     && rm -rf /var/lib/apt/lists/*
 
 # Update cache for shared libraries
@@ -107,7 +108,13 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 
+# install gradle via sdkman (part 1/2) - update shell as root
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
 USER ${JENKINS_USERID}
+
+# install gradle via sdkman (part 2/2) - install sdkman and gradle
+RUN curl -s https://get.sdkman.io | bash && chmod a+x "$HOME/.sdkman/bin/sdkman-init.sh" && source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install gradle 6.8.3
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin

@@ -17,7 +17,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         git \
         glib2 \
         gpgme-devel \
-        java-1.8.0-openjdk-devel \
+        java-11-openjdk-devel \
         jna \
         libasan \
         libcurl-devel \
@@ -31,7 +31,6 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         llvm \
         lua-devel \
         make \
-        maven \
         ninja-build \
         openssl-devel \
         procps-ng \
@@ -40,10 +39,13 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         ruby-devel \
         rubygem-test-unit \
         swig \
+        unzip \
         valgrind \
+        which \
         xerces-c-devel \
         yajl-devel \
         yaml-cpp-devel \
+        zip \
         zlib-devel \
     && dnf clean all -y
 
@@ -57,3 +59,10 @@ RUN mkdir -p ${GTEST_ROOT} \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
+# install gradle via sdkman (part 1/2) - update shell as root and set JAVA_HOME
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+RUN echo "export JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which javac)))))" >> /etc/profile.d/java.sh
+RUN echo "export PATH=$PATH:$JAVA_HOME/bin" >> /etc/profile.d/java.sh
+RUN echo "CLASSPATH=.:$JAVA_HOME/jre/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar" >> /etc/profile.d/java.sh
+RUN source /etc/profile.d/java.sh
+RUN curl -s https://get.sdkman.io | bash && chmod a+x "$HOME/.sdkman/bin/sdkman-init.sh" && source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install gradle 6.8.3

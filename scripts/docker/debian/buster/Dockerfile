@@ -4,20 +4,18 @@ ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
-RUN apt-get update \
-    && apt-get -y install \
+RUN apt-get update && apt-get -y install \
         antlr4 \
         automake \
         autotools-dev \
         bison \
-        flex \
-        libc6-dbg \
         build-essential \
+        clang-6.0 \
         cmake \
         curl \
+        debsigs \
         default-jdk \
         devscripts \
-        debsigs \
         dh-exec \
         dh-lua \
         diffutils \
@@ -25,17 +23,20 @@ RUN apt-get update \
         dnsutils \
         doxygen \
         ed \
+        flex \
         gawk \
+        ghostscript \
         git \
         git-buildpackage \
         gobject-introspection \
-        ghostscript \
         graphviz \
         icheck \
         lcov \
         libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-dev \
+        libc6-dbg \
+        libcurl4-gnutls-dev \
         libdbus-1-dev \
         libev-dev \
         libgirepository1.0-dev \
@@ -57,7 +58,6 @@ RUN apt-get update \
         libzmq3-dev \
         lintian \
         llvm \
-        maven \
         mingw-w64 \
         ninja-build \
         patch \
@@ -71,16 +71,16 @@ RUN apt-get update \
         reprepro \
         ruby \
         ruby-dev \
+        rustc \
         swig3.0 \
         systemd \
         tclcl-dev \
         uuid-dev \
+        unzip \
         valgrind \
         virtualenv \
         wine \
-        rustc \
-        clang-6.0 \
-        libcurl4-gnutls-dev \
+        zip \
     && rm -rf /var/lib/apt/lists/*
 
 # use lua5.3 since dh-lua installs liblua5.3-dev which sets the
@@ -116,10 +116,18 @@ RUN useradd \
     --gid ${JENKINS_GROUPID} \
     --shell "/bin/bash" \
     jenkins
+
+# install gradle via sdkman (part 1/2) - update shell as root
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
 USER ${JENKINS_USERID}
 
+# Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
     && git config --global user.name 'Jenkins'
+
+# install gradle via sdkman (part 2/2) - install sdkman and gradle
+RUN curl -s https://get.sdkman.io | bash && chmod a+x "$HOME/.sdkman/bin/sdkman-init.sh" && source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install gradle 6.8.3
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
