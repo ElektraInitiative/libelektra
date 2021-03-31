@@ -13,6 +13,9 @@ startup_time = time.time()
 
 #TODO: give appropriate error codes (instead of readonly fs) when non-authenticated user tries to do illegal things
 
+#the following methods map 1:1 to the FUSE interface
+
+#returns a map containing file attributes, i.e. the result of the stat command
 def getattr(path, fh=None):
 
     is_value_of_file = Path(path).name == dir_file_special_name
@@ -80,6 +83,7 @@ def getattr(path, fh=None):
     else:
         raise OSError(mode)
 
+#for the file path of a given key returns the backing file as would be by the command "kdb file"
 #throws OSError when:
 # -) `kdb file` does not return a path
 # -) the returned path does not actually exist
@@ -87,6 +91,10 @@ def _stat_kdb_file(os_path):
     resolved_file_path = get_kdb_file(os_path)
     return os.stat(resolved_file_path)
 
+#returns a list of files of a directory.
+#On the root level, Elektras namespaces are listed,
+#on deeper levels, the key hierarchy is mirroed.
+#".", ".." are always included.
 def readdir(path, fh):
     if path == "/":
         return [".", "..", *elektra_namespaces]
@@ -95,10 +103,11 @@ def readdir(path, fh):
 
     return ['.', '..', *dir_set, *file_set]
 
-
+#returns a chunk of a file, i.e a part of an Elektra key value
 def read(path, size, offset, fh):
     return file_contents(path)[offset:offset+size]
 
+#updates a chunk of a file, i.e a part of an Elektra key value
 def write(path, data, offset, fh):
 
     try:
@@ -113,12 +122,13 @@ def write(path, data, offset, fh):
     except kdb.KDBException:
         raise OSError(errno.EROFS) #TODO differentiate between validation error, write only keys etc
 
-
+#truncates a file (discards all but a prefix of specified length) of a part of an Elektra key value
 def truncate(path, length, fh=None):
     old_value = file_contents(path)
     new_value = old_value[:length].ljust(length, '\x00'.encode()) #if length increased, fill new space with zeros
     update_key_value(path, new_value)
 
+#creates a file, i.e. a new Elektra key
 def create(path, mode):
     if path.count('/') <= 1:
         raise OSError(errno.EROFS) #cannot create key in top level directory (reserved for /user:, /system: ...)
@@ -126,6 +136,7 @@ def create(path, mode):
     create_key(path) #TODO: consider mode argument
     #TODO: maybe consider possible error codes as in https://linux.die.net/man/2/
 
+#creates a directory, i.e. a new Elektra key with the special meta key "meta:/fuse/directory"
 def mkdir(path, mode):
     #TODO: think of a reasonable use for mode parameter
     create(path, mode)
@@ -141,13 +152,7 @@ def _ensure_no_meta_prefix(name):
     return name[len("meta:/"):] if name.startswith("meta:/") else name
     #could use removeprefix, but that would require python 3.9+
 
-def getxattr(path, name, position=0):
-    name = _ensure_meta_prefix(name)
-    try:
-        return get_meta_map(path)[name].encode()
-    except KeyError:
-        raise OSError(errno.ENODATA)
-
+#returns a map of extended file attributes, i.e. all meta keys of an Elektra key. The "meta:/" prefix is not included.
 def listxattr(path):
     try:
         meta_map = get_meta_map(path)
@@ -158,6 +163,15 @@ def listxattr(path):
     
     return [_ensure_no_meta_prefix(keyname) for keyname in get_meta_map(path).keys()]
 
+#returns the value of an xattr key
+def getxattr(path, name, position=0):
+    name = _ensure_meta_prefix(name)
+    try:
+        return get_meta_map(path)[name].encode()
+    except KeyError:
+        raise OSError(errno.ENODATA)
+
+#deletes an xattr key, i.e. the backing meta-key
 def removexattr(path, name):
     try:
         meta_map = get_meta_map(path)
@@ -167,6 +181,7 @@ def removexattr(path, name):
     except KeyError:
         raise OSError(errno.ENODATA)
 
+#updates the value of an xattr key, i.e. the backing meta-key
 def setxattr(path, name, value, options, position=0):
     
     #if key does not really exist (intermediate directories) key should be created (like kdb meta-set does)
@@ -184,6 +199,7 @@ def setxattr(path, name, value, options, position=0):
         meta_map[name] = '' #meta keys cannot contain binary data (apparantly) (TODO: check)
     update_meta_map(path, meta_map)
 
+#deletes a file, i.e. the backing Elektra key
 def unlink(path):
     #delete_key(path) keyset.cut behaved unexpected and deleted child keys => using kdb directly
 
@@ -191,16 +207,18 @@ def unlink(path):
     if returncode != 0:
         raise OSError(errno.EROFS) #TODO: differentiate between different error
 
+#deletes a directory if not empty. (same semantics of unlink in that case)
 def rmdir(path):
     if not is_directory_empty(path):
         raise OSError(errno.ENOTEMPTY)
     else:
         unlink(path)
 
+#renames a file, i.e. the backing Elektra-key
 def rename(old_path, new_path):
 
     if Path(old_path).name == dir_file_special_name:
-        #TODO: refernece bug issue
+        #see https://github.com/ElektraInitiative/libelektra/issues/3648
         returncode = subprocess.run(["kdb", "mv", os_path_to_elektra_path(old_path), os_path_to_elektra_path(new_path)]).returncode
     else:
         #clumsy to implement using the python api => using kdb directly
@@ -208,10 +226,12 @@ def rename(old_path, new_path):
     if returncode != 0:
         raise OSError(errno.EROFS) #TODO: differentiate between different errors
 
+# does nothing and reports success
 # does not raise OSError(errno.EOPNOTSUPP), as this blocks tools like 'cp -r'
 def chmod(path, mode):
     #TODO: maybe this can be handled better?
     return 0
 
+# does nothing and reports success
 def chown(path, uid, gid):
     return 0
