@@ -64,18 +64,6 @@ def update_key_value(os_path: str, new_value: bytes):
         db.set(ks, path) #using key instead of path here deleted the key
 
 
-#unexpected behavior, this deletes child keys too (why?)
-def delete_key(os_path):
-    with kdb.KDB() as db:
-        path = os_path_to_elektra_path(os_path)
-
-        ks = kdb.KeySet()
-        db.get(ks, path)
-        key = ks[path]
-
-        ks.cut(key)
-        db.set(ks, path)
-
 #may throw KeyError
 def file_contents(os_path):
     key, _ = get_key_and_keyset(os_path)
