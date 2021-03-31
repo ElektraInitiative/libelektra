@@ -165,6 +165,7 @@ mac_task:
     - | # Start D-Bus session bus
       brew tap homebrew/services
       brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
+      brew postinstall dbus
       brew services restart dbus
       launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
       ls -l /private/tmp/com.apple.launchd*
