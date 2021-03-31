@@ -144,6 +144,7 @@ mac_task:
       brew install glib
       brew install go
       brew install gpgme
+      brew install gradle
       brew install graphviz
       brew install libev
       brew install libgcrypt
@@ -151,11 +152,10 @@ mac_task:
       brew install libuv
       brew install llvm
       brew install lua
-      brew install maven
       brew install moreutils
       brew install ninja
-      brew install oclint/formulae/oclint
       brew install npm
+      brew install oclint/formulae/oclint
       brew install openssl
       brew install pkg-config
       brew install qt
