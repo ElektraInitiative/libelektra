@@ -151,11 +151,23 @@ To increase compatibility, currently the timestamps from these files are not use
 ## Meta-Keys
 
 Meta-keys are mapped bidirectionally to extended file attributes (xattrs).
-To enable interoperability with other tools, the `meta:/` prefix is optional when reading/writing accessing meta keys. The listing of attributes however will show them prefix-less.
+To enable interoperability with other tools, the `meta:/` prefix is must not be present and is added internally when reading/writing accessing meta keys. The listing of attributes however will show them prefix-less.
 
 Furthermore, no binary values for these attributes are allowed. (As libelektra does not accept those).
 
-See `xattr(1)` on how to read/write/list these attributes.
+An example usage might be:
+```
+#set the metadata metakeyname=metakeyvalue on the key keyname
+xattr -w metakeyname metakeyvalue keyname
+
+#(this is equivalent to this kdb call)
+kdb meta-set keyname metakeyname metakeyvalue
+
+#list meta-keys
+xattr -l keyname
+```
+
+For futher reference, see `xattr(1)` on how to read/write/list these attributes.
 
 ## Binary-Keys
 
