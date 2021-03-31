@@ -42,7 +42,7 @@ class RootlevelResolver(LoggingMixIn, Operations):
     def is_rootlevel_path(path):
         return len(Path(path).parts) <= 2
 
-    # resolves a path "/pid/suffix" to "/suffix", where pid need to be a valid process id
+    # resolves a path "/<pid>/suffix" to "/suffix", where pid need to be a valid process id
     # returns the process imformation with the suffix 
     def resolve_proc_path(self, proc_path):
         matches = re.match("^/(\d+)(.*)$", proc_path)
@@ -105,7 +105,7 @@ class RootlevelResolver(LoggingMixIn, Operations):
         if path == "/":
             all_pids = self._get_all_pids()
 
-            #filter out processes with working dir under mountpoint to prevent endless recursions (e.g. an interactive shell navigatung below the mountpoint)
+            #filter out processes with working directory under mount point to prevent endless recursions (e.g. an interactive shell navigating below the mount point)
             #excluded_pids = {pid for pid in all_pids if self._is_path_child_of(mock_context.parse_process_context_of_pid(pid).cwd, self.mountpoint)}
             
             excluded_pids = set()

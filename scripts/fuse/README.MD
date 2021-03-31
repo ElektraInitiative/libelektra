@@ -48,7 +48,7 @@ For convinience, each such directory possesses numerous extened filesystem attri
 xattr -l <mount point>/<pid>
 ```
 
-Below any such pid-directory, the elektra key database is mounted bidirectionally using directories that correspond to the different [namespaces](https://www.libelektra.org/tutorials/namespaces):
+Below any such pid-directory, the elektra key database is mounted bidirectionally (i.e. read-write capable) using directories that correspond to the different [namespaces](https://www.libelektra.org/tutorials/namespaces):
 
 - `user:`
 - `system:`
@@ -134,8 +134,8 @@ E.g. recursively deleting directories with `rm -r` containing `@elektra.value` f
 
 ### "Leaf"-Keys that act as as directories
 
-Keys at the bottom of the hierarchy are normally treaded as files. However in certain cases, like explicitly creating directories using `mkdir`, this would result in files beeing displayed, making it impossible to expand the hierarchy using standard tools.
-Therefore, when a directory is created, the special meta-key `fuse-directory` is set to override this behaviour.
+Keys at the bottom of the hierarchy are normally treated as files. However in certain cases, like explicitly creating directories using `mkdir`, this would result in files being displayed, making it impossible to expand the hierarchy using standard tools.
+Therefore, when a directory is created, the special meta-key `fuse/directory` is set to override this behaviour.
 
 ### Filesystem attributes
 
@@ -160,7 +160,7 @@ If a value is to be written that cannot be decoded using the systems default enc
 ## Known issues
 
 - Moving an ``@elektra.value``-file corrupts the filesystem/key database (See this [issue](https://issues.libelektra.org/3648)). As editors like `vim` may move a file during editing, such editors cannot reliably be used on these pseudo-files.
-- Only functional on UNIX-like systems
+- Only works on POSIX-compatible systems with support for FUSE (via fusepy)
 - chmod/chown is not implemented and does not signal a "not supported error" to enable compatibility with common tools like `cp`.
 - Access related errorcodes not yet implemented (e.g. normal user tries to write to system:/) (defaulting to read only fs - error)
 - Everything that is labled as `TODO` in the source.
