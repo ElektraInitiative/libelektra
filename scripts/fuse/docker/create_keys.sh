@@ -20,12 +20,6 @@ kdb set system:/person/name "This is a system:/ fallback"
 kdb set user:/dir_and_file_at_once "Contents of a non-leaf node"
 kdb set user:/dir_and_file_at_once/leaf "leaf node"
 
-#mount json file (stopped since libelektra v5, TODO: investigate)
-#kdb mount /root/src/sample_config_files/config.json system:/config.ini ini
-
-#TODO: report bad behavoiur: trying to mount a json file (without specifying 'json' as the last parameter) causes the whole of system:/ to be unusable (Error: C03100)
-
-
 #test the dir namespace
 
 #need to be created from the leafes to the top
