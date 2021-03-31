@@ -29,7 +29,7 @@ def getattr(path, fh=None):
         mode = stat.S_IFDIR
     elif is_dir:
         mode = stat.S_IFDIR
-    elif is_file and has_meta(path, "meta:/fuse-directory"):
+    elif is_file and has_meta(path, "meta:/fuse/directory"):
         mode = stat.S_IFDIR
     elif is_file:
         mode = stat.S_IFREG
@@ -129,12 +129,12 @@ def create(path, mode):
 def mkdir(path, mode):
     #TODO: think of a reasonable use for mode parameter
     create(path, mode)
-    set_meta(path, "meta:/fuse-directory", "")  # 'hack' to enable creation of empty folders (these would otherwise automatically become files)
+    set_meta(path, "meta:/fuse/directory", "")  # 'hack' to enable creation of empty folders (these would otherwise automatically become files)
 
 
-#append 'meta:/' is not already present
+#append 'meta:/' as Elektra requires this prefix to be present
 def _ensure_meta_prefix(name):
-    return name if name.startswith("meta:/") else "meta:/" + name
+    return "meta:/" + name
 
 #remove 'meta:/' if not already present
 def _ensure_no_meta_prefix(name):
