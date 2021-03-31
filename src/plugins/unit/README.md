@@ -9,6 +9,11 @@
 - infos/metadata = check/unit
 - infos/description = validates units of memory and normalizes to bytes
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Validation options
 
 The following representation standards of units are currently supported and can be used by setting `check/unit`:

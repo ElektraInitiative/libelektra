@@ -14,6 +14,11 @@
 The plugin is informational and mainly be used to provide context for
 other configuration. See [elektrify-getenv](/src/libs/getenv/README.md).
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Usage
 
 To mount the plugin please use:

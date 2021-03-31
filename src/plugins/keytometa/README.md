@@ -36,6 +36,11 @@ to the corresponding key (see merging for more details).
 The keys are ordered by the "order" metadata. If two keys are equal according to the order metadata,
 they are ordered by name instead.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Append Strategies
 
 The append strategy specifies which key will receive the resulting metadata.

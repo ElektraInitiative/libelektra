@@ -13,6 +13,11 @@
 
 This plugin uses if-then-else like conditions. It also works as global plugin.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Check Syntax
 
 Stored in the metakey `check/condition` to validate data is:

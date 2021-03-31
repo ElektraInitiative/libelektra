@@ -25,6 +25,11 @@ preferences (next to the namespace preferences):
 2. Usage of key in the profile set with `profile`
 3. Usage of key in the `%` fallback profile
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Example
 
 Suppose we have the configuration file `profile.ini` in `~/.config`:

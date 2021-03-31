@@ -44,6 +44,11 @@ The `mmapstorage` will always be compiled on a supported system (see [Dependenci
 we will additionally compile the `mmapstorage_crc` variant. The first variant does not do a CRC32 checksum of the critical data,
 while the second variant always checks the CRC32 checksum for additional security.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The `mmapstorage` variant is part of the `libelektra5` package and the `mmapstorage_crc` is part of the `libelektra5-extra` package.
+
 ## Dependencies
 
 POSIX compliant system (including XSI extensions).

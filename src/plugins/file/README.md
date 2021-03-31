@@ -13,6 +13,11 @@
 
 The file plugin reads the content of a file and stores it into the parent key.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Configuration
 
 - `binary`

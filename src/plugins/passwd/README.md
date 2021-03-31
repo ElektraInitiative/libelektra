@@ -13,6 +13,11 @@
 
 This plugin parses `passwd` files, e.g. `/etc/passwd`.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Implementation Details
 
 The non-POSIX function `fgetpwent` (GNU_SOURCE) will be used to

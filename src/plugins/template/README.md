@@ -14,6 +14,11 @@
 Copy this template if you want to start a new
 plugin written in C.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Usage
 
 You can use `scripts/copy-template`

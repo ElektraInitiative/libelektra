@@ -20,6 +20,11 @@ This plugin validates MAC-addresses. The following MAC-address-formats are suppo
 
 `kdbGet` returns an integer-representation of these values.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Usage
 
 ```sh

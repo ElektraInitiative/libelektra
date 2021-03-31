@@ -16,6 +16,11 @@ How the values are compared is specified at the beginning of the metakey using t
 `:=` is used to set key values.
 All values are interpreted as `double` floating point values.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ### Keynames
 
 Keynames are all either relative to to-be-tested key (starting with `./` or `../`), relative to the parentkey (starting with `@/`) or absolute (e.g. `system:/key`).

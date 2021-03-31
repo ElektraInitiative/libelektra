@@ -17,6 +17,11 @@ This is useful for runtimes or libraries that cannot be reinitialized in the sam
 after they have been used.
 It is also useful for plugins which cause memory leaks to be isolated in an own process.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Usage
 
 Mount this plugin and specify the plugin configuration parameter `plugin` to a plugin that exists on

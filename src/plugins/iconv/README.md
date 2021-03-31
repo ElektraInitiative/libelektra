@@ -11,6 +11,11 @@
 
 This plugin is a filter plugin that converts between different character encodings.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Purpose
 
 Consider a user insisting on a `latin1` character encoding because

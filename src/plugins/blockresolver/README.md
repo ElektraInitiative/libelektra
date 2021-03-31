@@ -13,6 +13,11 @@
 
 The `blockresolver` can be used to only resolve a tagged block inside a configuration file.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ### Implementation Details
 
 `blockresolver` extracts the requested block from the configurations file and writes it into a temporary file. Afterwards Elektra will only work on the temporary file until kdbSet is called. On kdbSet the contents of the temporary file will be merged with parts outside of the requested block from the original file.

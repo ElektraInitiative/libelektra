@@ -13,6 +13,11 @@
 This plugin is a notification plugin, which receives notifications using ZeroMq
 subscribe (`ZMQ_SUB`) sockets from the compatible zeromqsend plugin.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-zeromq`.
+
 ## Dependencies
 
 - `libzmq3-dev` (ZeroMQ C bindings > 3.2)

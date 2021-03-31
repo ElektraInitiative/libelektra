@@ -18,6 +18,11 @@ This plugin validates hex-formatted rgb color strings and normalizes them to dec
 
 Add the metakey `check/rgbcolor` with an arbitrary value (e.g. `""`) to the key that you want to check and normalize.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Examples
 
 ```sh

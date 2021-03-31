@@ -14,6 +14,11 @@
 This plugin checks whether the value of a key is a valid file system path and optionally if
 correct permissions are set for a certain user.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Purpose
 
 The motivation to write this plugin is given by the two paths that exist

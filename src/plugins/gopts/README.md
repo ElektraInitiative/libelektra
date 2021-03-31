@@ -23,6 +23,11 @@ Which operating system's functions the plugin uses is determined at compile-time
 > **Note:** One of the system-specific implementations of this plugin relies on procfs.
 > Therefore, if you compile the plugin on a system with procfs, the plugin may not work on other machine with the same OS or even on the same machine, if procfs is not mounted.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Basic Usage
 
 The preferred way of using this plugin is via a `kdbOpen` contract:

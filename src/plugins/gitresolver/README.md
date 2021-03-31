@@ -14,6 +14,11 @@
 gitresolver is a resolver that fetches from a local git repository during the get-phase and commits them back at the end of the set-phase.
 It operates on a temporary copy of the latest version of your file fetched from the repository. If the temporary copy modified, a new commit with the modified version will be created. Local files won't be touched.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+This plugin is currently **not** part of a package.
+
 ## Options
 
 `branch` defines the branch to work on. Default: master

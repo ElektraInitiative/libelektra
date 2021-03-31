@@ -13,6 +13,11 @@
 
 The range plugin checks if a `Key`'s value is within a given range.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Usage
 
 The plugin checks every `Key` in the `KeySet` for the metakey `check/range` which contains either a single range with the syntax `[-]min-[-]max`, or a list of ranges or values separated by `,` and tests if the `Key`'s value is within the range(s).
