@@ -57,8 +57,17 @@ if (Java_JAVAC_EXECUTABLE)
 				if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15))
 					# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not
 					# installed in the system
-					java_exclude_test (KDBTest)
+					java_exclude_test (ExceptionMapperIT)
+					java_exclude_test (ExceptionMapperTest)
 					java_exclude_test (GOptsTest)
+					java_exclude_test (KDBExceptionTest)
+					java_exclude_test (KDBTest)
+					java_exclude_test (KeyNameIteratorTest)
+					java_exclude_test (KeySetTest)
+					java_exclude_test (KeyTest)
+					java_exclude_test (PluginLoaderIT)
+					java_exclude_test (ReturnTest)
+					java_exclude_test (WarningEntryTest)
 				endif ()
 
 				# first fill the elektra version in the pom file @ONLY to avoid replacing pom.xml placeholders which also
