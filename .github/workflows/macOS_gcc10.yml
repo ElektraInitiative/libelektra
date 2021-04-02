@@ -68,7 +68,7 @@ jobs:
       run: |
         PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
         PATH="/usr/local/opt/python@3.9/bin:$PATH"
-        echo "JAVA_HOME=$(/usr/libexec/java_home -v 14)" >> $GITHUB_ENV
+        echo "JAVA_HOME=$JAVA_HOME_14_X64" >> $GITHUB_ENV
         echo $JAVA_HOME
         which java
         java --version
