@@ -90,7 +90,9 @@ mac_task:
       env:
         ENABLE_LOGGER: ON
         TOOLS: ALL;web
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        PLUGINS: ALL;-curlget;-augeas
+        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
 
     - name: 🍎 Clang ASAN
       osx_instance:
@@ -100,7 +102,9 @@ mac_task:
         BINDINGS: cpp
         ENABLE_ASAN: ON
         TOOLS: kdb
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        PLUGINS: ALL;-curlget;-augeas
+        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
 
     - name: 🍎 FULL
       osx_instance:
@@ -117,7 +121,9 @@ mac_task:
         KDB_DEFAULT_STORAGE: mmapstorage
         KDB_DB_FILE: default.mmap
         KDB_DB_INIT: elektra.mmap
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        PLUGINS: ALL;-curlget;-augeas
+        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
 
   install_script:
     - | # Install Homebrew formulas
