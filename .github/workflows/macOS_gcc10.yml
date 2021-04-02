@@ -42,6 +42,7 @@ jobs:
         brew install libuv
         brew install lua
         brew install ninja
+        brew install openjdk
         brew install qt
         brew install swig
         brew install yajl
@@ -68,7 +69,10 @@ jobs:
       run: |
         PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
         PATH="/usr/local/opt/python@3.9/bin:$PATH"
-        JAVA_HOME=$JAVA_HOME_11_X64
+        JAVA_HOME="$(/usr/libexec/java_home -v 15)"
+        echo $JAVA_HOME
+        which java
+        java --version
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(
           -GNinja
