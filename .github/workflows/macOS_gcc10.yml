@@ -25,6 +25,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+      with:
+        java-version: '14' # The JDK version to make available on the path.
+        java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
+        architecture: x64 # (x64 or x86) - defaults to x64
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7 # Not needed with a .ruby-version file
 
     - name: Install Dependencies
       run: |
@@ -68,10 +80,7 @@ jobs:
       run: |
         PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
         PATH="/usr/local/opt/python@3.9/bin:$PATH"
-        echo "JAVA_HOME=$JAVA_HOME_14_X64" >> $GITHUB_ENV
         echo $JAVA_HOME
-        which java
-        java --version
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(
           -GNinja
@@ -111,6 +120,5 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        echo $JAVA_HOME
         cmake --build . --target run_all
         kdb run_all
