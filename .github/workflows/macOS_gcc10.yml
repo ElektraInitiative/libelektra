@@ -14,7 +14,6 @@ env:
   HOMEBREW_NO_INSTALL_CLEANUP: 1
   CC: gcc-10
   CXX: g++-10
-  JAVA_HOME: $(/usr/libexec/java_home -v 14)
 
 jobs:
   build:
@@ -29,7 +28,6 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        echo $JAVA_HOME
         brew update
         brew config
         brew install augeas
@@ -70,6 +68,7 @@ jobs:
       run: |
         PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
         PATH="/usr/local/opt/python@3.9/bin:$PATH"
+        echo "JAVA_HOME=$(/usr/libexec/java_home -v 14)" >> $GITHUB_ENV
         echo $JAVA_HOME
         which java
         java --version
