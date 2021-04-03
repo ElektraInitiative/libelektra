@@ -27,7 +27,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-java@v1
       with:
-        java-version: '14' # The JDK version to make available on the path.
+        java-version: '11' # The JDK version to make available on the path.
         java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
         architecture: x64 # (x64 or x86) - defaults to x64
     - uses: actions/setup-python@v2
@@ -78,9 +78,6 @@ jobs:
       # and build directories, but this is only available with CMake 3.13 and higher.
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: |
-        PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
-        PATH="/usr/local/opt/python@3.9/bin:$PATH"
-        echo $JAVA_HOME
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(
           -GNinja
@@ -97,7 +94,6 @@ jobs:
           -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
           -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
           -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
-          $TRAVIS_BUILD_DIR
         )
         printf '—— CMake Config ——\n'
         for option in "${CMAKE_OPT[@]}"; do printf '%s\n' "$option"; done
