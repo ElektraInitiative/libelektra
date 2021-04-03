@@ -174,5 +174,5 @@ KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
 
 const char * elektraPluginGetPhase (Plugin * plugin)
 {
-	return keyString (ksLookupByName (plugin->global, "system:/elektra/kdb/phase", 0));
+	return keyString (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
 }

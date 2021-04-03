@@ -16,7 +16,7 @@ For each of the phases of a `get` operation `libelektra-kdb` calls the backend p
 Similarly, for the phases of a `set` operation `elektra<Plugin>Set` is called.
 
 The current phase is communicated to the backend plugin via the global keyset.
-The value of the key `system:/elektra/kdb/backend/phase` is always set to the name of the current phase.
+The value of the key `system:/elektra/kdb/backend/phase` is always set to the current phase.
 
 ### Operation `get`
 
@@ -46,7 +46,7 @@ This phase exists purely for the backend plugin to initialize and configure itse
 
 > **Note**: This phase is only executed _once per instance of `KDB`_.
 > Only the first `kdbGet()` call will result in `libelektra-kdb` executing this phase, all future calls to `kdbGet()` (and `kdbSet()`) start with the `resolver` phase.
-> The backend plugin must store the information contain in the mountpoint definition internally to accommodate this.
+> The backend plugin must store the information contained in the mountpoint definition internally to accommodate this.
 
 #### Resolver Phase
 
@@ -248,7 +248,7 @@ Similar to the commit phases, the rollback phases (`prerollback`, `rollback` and
   All keys in this keyset and the keyset itself are fully read-only.
 
 Additionally, the phase that reported an error is communicated to the backend plugin via the global keyset (together with the current phase).
-The value of the key `system:/elektra/kdb/backend/failedphase` is set to the name of the failed phase.
+The value of the key `system:/elektra/kdb/backend/failedphase` is set to the failed phase.
 
 The `prerollback` and `postrollback` phases are mostly useful for logging.
 There are no restrictions on these phase, other than those enforced by `parentKey` and `ks` being (partially) read-only.

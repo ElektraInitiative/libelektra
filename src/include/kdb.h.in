@@ -45,6 +45,24 @@ extern "C" {
 }
 #endif
 
+#define KDB_GET_PHASE_INIT "init"
+#define KDB_GET_PHASE_RESOLVER "resolver"
+#define KDB_GET_PHASE_CACHECHECK "cachecheck"
+#define KDB_GET_PHASE_PRE_STORAGE "prestorage"
+#define KDB_GET_PHASE_STORAGE "storage"
+#define KDB_GET_PHASE_POST_STORAGE "poststorage"
+
+#define KDB_SET_PHASE_RESOLVER "resolver"
+#define KDB_SET_PHASE_PRE_STORAGE "prestorage"
+#define KDB_SET_PHASE_STORAGE "storage"
+#define KDB_SET_PHASE_POST_STORAGE "poststorage"
+#define KDB_SET_PHASE_PRE_COMMIT "precommit"
+#define KDB_SET_PHASE_COMMIT "commit"
+#define KDB_SET_PHASE_POST_COMMIT "postcommit"
+#define KDB_SET_PHASE_PRE_ROLLBACK "prerollback"
+#define KDB_SET_PHASE_ROLLBACK "rollback"
+#define KDB_SET_PHASE_POST_ROLLBACK "postrollback"
+
 enum {
 	KEY_NAME=1,
 	KEY_VALUE=1<<1,

@@ -163,7 +163,13 @@ static void test_remove (void)
 
 void addBackendForDivide (KeySet * backends, const char * mountpoint)
 {
-	BackendData data = { .backend = NULL, .keys = ksNew (0, KS_END) };
+	BackendData data = {
+		.backend = NULL,
+		.keys = ksNew (0, KS_END),
+		.definition = NULL,
+		.plugins = NULL,
+		.initialized = false,
+	};
 	ksAppendKey (backends, keyNew (mountpoint, KEY_BINARY, KEY_SIZE, sizeof (data), KEY_VALUE, &data, KEY_END));
 }
 

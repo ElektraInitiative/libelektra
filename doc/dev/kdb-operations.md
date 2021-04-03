@@ -57,13 +57,17 @@ The purpose of the `get` operation is to read data stored in backends into a `KD
 
 Properties of `kdbGet()`:
 
-- After calling `kdbGet (kdb, ks, parentKey)` the KeySet `ks` will contain _all keys_ (including their values) that are stored in _any backend_ with a mountpoint that is _below `parentKey`_.
-- `ks` may also contain other keys outside these backends, if e.g. `kdbGet` determines that it is faster to read a bigger part of the KDB (e.g. because of a cache).
-- _Any key_ present in `ks` after calling `kdbGet (kdb, ks, parentKey)` will _always_ be
-  - a key read from the KDB
-  - OR an untouched key that was already present in `ks` before calling `kdbGet`
-- `kdbGet` never removes keys from `ks`.
-  It only adds or replaces keys.
+- After calling `kdbGet (kdb, ks, parentKey)`, the KeySet `ks` will contain _all keys_ (including their values) that are stored in _any backend_ with a mountpoint that is _below `parentKey`_.
+- After calling `kdbGet (kdb, ks, parentKey)`, below `parentKey` the KeySet `ks` will _only_ contain keys that are stored in a backend.
+- The KeySet `ks` may contain other keys not below `parentKey`.
+  These keys fall into one of two categories:
+  1. Keys that are stored in a backend that is not below `parentKey`.
+     `kdbGet()` may decide that it is more efficient (e.g. because of a cache) to return more keys than requested.
+  2. Keys that were already present in `ks` when `kdbGet()` was called.
+
+In simpler terms, this means to the caller it looks as if `kdbGet()` had removed all keys below `parentKey` from `ks` and then loaded the data from the backends.
+Below `parentKey` the KeySet `ks` correctly represents the state of the KDB.
+For the rest of `ks` there are no such guarantees.
 
 TODO: cache correct? notifications? (just call at the end?)
 
@@ -77,14 +81,14 @@ The basic flow of this operation is:
 6. If a global cache plugin is enabled:
    Ask the global cache plugin for the cache entry IDs for all backends.
 7. If all backends have an existing cache entry:
-   Run the `cache` phase on all backends
+   Run the `cachecheck` phase on all backends
 8. If all backends indicated the cache is still valid:
    Ask the global cache plugin for the cached data and **return**.
 9. Run the `prestorage` and `storage` phase on all backends.
 10. Run the `poststorage` phase of all `spec:/` backends.
-11. Merge the data from all backend
-12. Run the `spec` plugin (to copy metakeys).
-13. If enabled, run the `gopts` plugin.
+11. Merge the data from all backends
+12. If enabled, run the `gopts` plugin.
+13. Run the `spec` plugin (to copy metakeys).
 14. Split data back into individual backends.
 15. Run the `poststorage` phase for all backends.
 16. Merge the data from all backends and **return**.

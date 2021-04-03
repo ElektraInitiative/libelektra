@@ -1283,7 +1283,7 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 	return cur;
 }
 
-int backendsDivide (KeySet * backends, KeySet * ks)
+bool backendsDivide (KeySet * backends, KeySet * ks)
 {
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
