@@ -61,6 +61,7 @@ jobs:
 
     - name: Setup Build Environment
       run: |
+        echo "JAVA_HOME=$(/usr/libexec/java_home --failfast)" >> $GITHUB_ENV
         gem install test-unit --no-document
         pip2 install cheetah # Required by kdb-gen
         brew tap homebrew/services
@@ -78,6 +79,10 @@ jobs:
       # and build directories, but this is only available with CMake 3.13 and higher.
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: |
+        which java
+        which javac
+        java --version
+        javac --version
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(
           -GNinja
@@ -116,5 +121,9 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
+        which java
+        which javac
+        java --version
+        javac --version
         cmake --build . --target run_all
         kdb run_all
