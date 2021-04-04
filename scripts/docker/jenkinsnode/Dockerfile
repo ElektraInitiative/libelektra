@@ -39,7 +39,7 @@ RUN apt-get -y install \
   swig \
   unzip \
   valgrind \
-  zip \
+  wget \
 && apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -83,8 +83,13 @@ EXPOSE 22
 RUN service ssh start
 CMD ["/usr/sbin/sshd", "-D", "-e"]
 
-# install gradle via sdkman
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
+
 USER jenkins:jenkins
-RUN curl -s https://get.sdkman.io | bash && chmod a+x "$HOME/.sdkman/bin/sdkman-init.sh" && source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install gradle 6.8.3
+
+# extend PATH for user jenkins to include gradle
+RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
+
 USER root:root

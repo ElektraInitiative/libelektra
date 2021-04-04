@@ -42,11 +42,11 @@ RUN dnf upgrade -y && dnf install -y \
         swig \
         unzip \
         valgrind \
+        wget \
         which \
         xerces-c-devel \
         yajl-devel \
         yaml-cpp-devel \
-        zip \
         zlib-devel \
     && dnf debuginfo-install -y \
         bison \
@@ -85,8 +85,9 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 
-# install gradle via sdkman (part 1/2) - update shell as root and set JAVA_HOME
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
 RUN echo "export JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which javac)))))" >> /etc/profile.d/java.sh
 RUN echo "export PATH=$PATH:$JAVA_HOME/bin" >> /etc/profile.d/java.sh
 RUN echo "CLASSPATH=.:$JAVA_HOME/jre/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar" >> /etc/profile.d/java.sh
@@ -94,9 +95,9 @@ RUN source /etc/profile.d/java.sh
 
 USER ${JENKINS_USERID}
 
+# extend PATH for user jenkins to include gradle
+RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
+
 # Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
     && git config --global user.name 'Jenkins'
-
-# install gradle via sdkman (part 2/2) - install sdkman and gradle
-RUN curl -s https://get.sdkman.io | bash && chmod a+x "$HOME/.sdkman/bin/sdkman-init.sh" && source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install gradle 6.8.3

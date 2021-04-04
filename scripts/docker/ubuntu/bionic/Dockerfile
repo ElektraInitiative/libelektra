@@ -47,7 +47,6 @@ RUN apt-get update && apt-get -y install \
         swig \
         unzip \
         valgrind \
-        zip \
     && rm -rf /var/lib/apt/lists/*
 
 # use lua5.3 because dh-lua installs liblua5.3-dev which sets the
@@ -95,14 +94,15 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 
-# install gradle via sdkman (part 1/2) - update shell as root
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
+
+# extend PATH for user jenkins to include gradle
+RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
 
 # Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
     && git config --global user.name 'Jenkins'
-
-# install gradle via sdkman (part 2/2) - install sdkman and gradle
-RUN curl -s https://get.sdkman.io | bash && chmod a+x "$HOME/.sdkman/bin/sdkman-init.sh" && source "$HOME/.sdkman/bin/sdkman-init.sh" && sdk install gradle 6.8.3
