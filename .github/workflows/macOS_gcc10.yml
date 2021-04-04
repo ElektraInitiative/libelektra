@@ -25,11 +25,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-java@v1
-      with:
-        java-version: '11' # The JDK version to make available on the path.
-        java-package: jdk # (jre, jdk, or jdk+fx) - defaults to jdk
-        architecture: x64 # (x64 or x86) - defaults to x64
     - uses: actions/setup-python@v2
       with:
         python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
@@ -54,6 +49,7 @@ jobs:
         brew install libuv
         brew install lua
         brew install ninja
+        brew install openjdk
         brew install qt
         brew install swig
         brew install yajl
@@ -61,7 +57,13 @@ jobs:
 
     - name: Setup Build Environment
       run: |
-        echo "JAVA_HOME=$(/usr/libexec/java_home --failfast)" >> $GITHUB_ENV
+        echo "JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk.jdk/Contents/Home" >> $GITHUB_ENV
+        echo "/usr/local/opt/openjdk/bin" >> $GITHUB_PATH
+        sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+        which java
+        which javac
+        java --version
+        javac --version
         gem install test-unit --no-document
         pip2 install cheetah # Required by kdb-gen
         brew tap homebrew/services
