@@ -91,7 +91,8 @@ The basic flow of this operation is:
 13. Run the `spec` plugin (to copy metakeys).
 14. Split data back into individual backends.
 15. Run the `poststorage` phase for all backends.
-16. Merge the data from all backends and **return**.
+16. Merge the data from all backends.
+17. Update cache and **return**.
 
 > **Note:** In case of error, we abort immediately, restore `ks` to its original state and return.
 
@@ -122,26 +123,31 @@ The basic flow of this operation is:
 2. Check if any key in `ks` below `parentKey` needs sync (via `KEY_FLAG_SYNC`).
    If neither `ks` nor any of the keys need sync, **return**.
 3. Determine the backends needed to write all keys below `parentKey`.
-4. Deep-Copy `ks` (below `parentKey`) into a new KeySet `set_ks`
-5. Run the `spec` plugin on `set_ks` (to add metakeys for new keys).
-6. Split `set_ks` into individual backends
-7. Run the `resolver` and `prestorage` on all backends (abort immediately on error and go to 13).
-8. Merge the results into a new version of `set_ks`.
-9. Run the `spec` plugin on `set_ks` (to remove copied metakeys).
-10. Split `set_ks` into individual backends again.
-11. Run the `storage` and `poststorage` phases on all backends (abort immediately on error and go to 13).
-12. If everything was successful:
-    Run the `precommit` and `commit` phases on all backends (abort immediately on error and go to 13), then run the `postcommit` phase on all backends.
-13. If there was an error:
-    Run the `prerollback`, `rollback` and `postrollback` phases on all backends and **return**.
-14. Store `ks` in the global cache and **return**.
+4. Check that all backends are initialized (i.e. `kdbGet()` was called).
+5. From now on ignore all backends that were initialized as read-only.
+6. Run the `spec` plugin on `ks` (to add metakeys for new keys).
+7. Deep-Copy `ks` (below `parentKey`) into a new KeySet `set_ks`
+8. Split `set_ks` into individual backends
+9. Run the `resolver` and `prestorage` on all backends (abort immediately on error and go to E).
+10. Merge the results into a new version of `set_ks`.
+11. Run the `spec` plugin on `set_ks` (to remove copied metakeys).
+12. Split `set_ks` into individual backends again.
+13. Run the `storage` and `poststorage` phases on all backends (abort immediately on error and go to E).
+14. If everything was successful:
+    Run the `precommit` and `commit` phases on all backends (abort immediately on error and go to E), then run the `postcommit` phase on all backends and **return**.
+
+<ol type="A" start="5">
+<li>
+ If there was an error:
+    Run the <code>coderollback</code>, <code>rollback</code> and <code>postrollback</code> phases on all backends and <b>return</b>.
+</li>
+</ol>
 
 Influence of namespaces:
 
 - cascading and `meta:/` keys are always illegal in `ks` (should be enforced via different KeySet types)
 - `default:/` and `proc:/` keys are completely ignored by `kdbSet()`
-- `spec:/`
-- `dir:/`, `user:/` and `system:/` go through all phases as described above.
+- `spec:/`, `dir:/`, `user:/` and `system:/` go through all phases as described above.
 
 ## `close` Operation
 

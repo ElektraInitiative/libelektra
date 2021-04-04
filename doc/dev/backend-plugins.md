@@ -26,9 +26,9 @@ The `get` operation is mandatory and all backend plugins must implement it.
 
 During the `init` phase the backend plugin is called with:
 
-- A key `parentKey` whose name is the parent key of the mountpoint and whose value is an empty string.
+- A key `errorKey` whose name is `/` and whose value is an empty string.
   The key name and value of this key are read-only.
-- A keyset `ks` containing the mountpoint definition.
+- A keyset `definition` containing the mountpoint definition.
 
 TODO: how does the backend plugin get access to the other plugins? Maybe, just add a plugins/# array into `ks` containing keys with `Plugin *` values?
 
