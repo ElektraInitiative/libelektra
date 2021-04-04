@@ -174,5 +174,6 @@ KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
 
 const char * elektraPluginGetPhase (Plugin * plugin)
 {
+	// TODO (kodebach): switch to integer value? (uint32_t?)
 	return keyString (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
 }

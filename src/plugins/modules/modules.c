@@ -12,16 +12,24 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 
+/**
+ * The modules backend is configured by libelektra-kdb with the modules KeySet
+ * of the KDB handle as its mountpoint definition. The plugin simply stores this
+ * KeySet as its plugin data during the init phase of kdbGet() and then returns it
+ * in the storage phase.
+ */
+
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	elektraPluginSetData (handle, NULL);
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	// init as read-only
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * errorKey ELEKTRA_UNUSED)
 {
 	elektraPluginSetData (handle, ksDup (definition));
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * parentKey)
@@ -49,9 +57,20 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	ksAppend (returned, elektraPluginGetData (handle));
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	const char * phase = elektraPluginGetPhase (handle);
+	if (strcmp (phase, KDB_GET_PHASE_RESOLVER) == 0)
+	{
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+	else if (strcmp (phase, KDB_GET_PHASE_STORAGE) == 0)
+	{
+		ksAppend (returned, elektraPluginGetData (handle));
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+	else
+	{
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	}
 }
 
 int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)

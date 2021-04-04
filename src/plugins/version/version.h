@@ -12,8 +12,9 @@
 
 #include <kdbplugin.h>
 
-int elektraVersionGet (Plugin * handle, KeySet * ks, Key * parentKey);
-int elektraVersionSet (Plugin * handle, KeySet * ks, Key * parentKey);
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * errorKey);
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
+
 Plugin * ELEKTRA_PLUGIN_EXPORT;
 
 #endif
