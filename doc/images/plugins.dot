@@ -209,11 +209,6 @@ strict digraph G {
 	yamlcpp -> storage;
 	yaml [shape=Mdiamond];
 	yamlcpp -> yaml;
-	yamlsmith [shape=Mdiamond];
-	storage [shape=Mdiamond];
-	yanlr -> storage;
-	yaml [shape=Mdiamond];
-	yanlr -> yaml;
 	notification [shape=Mdiamond];
 	zeromqrecv -> notification;
 	notification [shape=Mdiamond];
