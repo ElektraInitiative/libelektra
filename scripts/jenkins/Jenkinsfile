@@ -956,8 +956,7 @@ coveralls -b '${buildDir}' \
           -E '.*${buildDir}/src/plugins/\
 (?!\
 constants/constants\\.c|\
-(lua|ruby)/runtime\\.h|\
-yanlr/YAML(((Base)?Listener|ImprovedSymbolNames)|.h)|\
+(lua|ruby)/runtime\\.h
 ).*' \
           -E '.*/src/error/.*' \
 """)

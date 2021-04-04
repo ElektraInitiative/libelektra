@@ -29,8 +29,7 @@ if [ "$(uname -s)" = Darwin ] && [ "$(uname -r | cut -d '.' -f1)" -eq 19 ]; then
 	printerr 'The script will therefore *not* check the source files of the YAML CPP and Yan LR plugins.'
 else
 	set -- $@ \
-		"src/plugins/yamlcpp/"*.cpp \
-		"src/plugins/yanlr/"*.cpp
+		"src/plugins/yamlcpp/"*.cpp
 fi
 
 cd "@CMAKE_SOURCE_DIR@" || exit

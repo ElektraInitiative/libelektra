@@ -92,6 +92,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
 
+### Yan LR
+
+- Removed plugin _(René Schwaiger)_
+
 ### Zeromqsend
 
 - Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_

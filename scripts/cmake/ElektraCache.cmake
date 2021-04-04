@@ -383,7 +383,6 @@ set (
 mark_as_advanced (
 	FORCE # The following settings might be relevant to a few users:
 	GTEST_ROOT
-	ANTLR4CPP_DIR
 	BUILD_GMOCK
 	BUILD_GTEST
 	INSTALL_GMOCK
