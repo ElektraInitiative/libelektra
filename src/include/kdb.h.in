@@ -45,7 +45,6 @@ extern "C" {
 }
 #endif
 
-#define KDB_GET_PHASE_INIT "init"
 #define KDB_GET_PHASE_RESOLVER "resolver"
 #define KDB_GET_PHASE_CACHECHECK "cachecheck"
 #define KDB_GET_PHASE_PRE_STORAGE "prestorage"

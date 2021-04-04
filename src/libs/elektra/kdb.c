@@ -1139,7 +1139,7 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 }
 #endif
 
-static bool initBackends (KeySet * backends, Key * errorKey)
+static bool initBackends (KeySet * backends, Key * parentKey)
 {
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
@@ -1159,13 +1159,18 @@ static bool initBackends (KeySet * backends, Key * errorKey)
 		if (initFn == NULL)
 		{
 			ELEKTRA_ADD_INTERFACE_WARNINGF (
-				errorKey, "The mountpoint '%s' defined a plugin ('%s') without a kdbInit function as a backend.",
+				parentKey, "The mountpoint '%s' defined a plugin ('%s') without a kdbInit function as a backend.",
 				keyName (backendKey), backendData->backend->name);
 			success = false;
 			continue;
 		}
 
-		int ret = initFn (backendData->backend, backendData->definition, errorKey);
+		keySetName (parentKey, KDB_SYSTEM_ELEKTRA "/mountpoints");
+		keySetBaseName (parentKey, keyName (backendKey));
+		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+		int ret = initFn (backendData->backend, backendData->definition, parentKey);
+		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+
 		// check return code
 		switch (ret)
 		{
@@ -1181,14 +1186,14 @@ static bool initBackends (KeySet * backends, Key * errorKey)
 		case ELEKTRA_PLUGIN_STATUS_ERROR:
 			// handle error
 			ELEKTRA_ADD_INTERFACE_WARNINGF (
-				errorKey, "Calling the kdbInit function for the backend plugin ('%s') of the mountpoint '%s' has failed.",
+				parentKey, "Calling the kdbInit function for the backend plugin ('%s') of the mountpoint '%s' has failed.",
 				backendData->backend->name, keyName (backendKey));
 			success = false;
 			continue;
 		default:
 			// unknown result -> treat as error
 			ELEKTRA_ADD_INTERFACE_WARNINGF (
-				errorKey,
+				parentKey,
 				"The kdbInit function for the backend plugin ('%s') of the mountpoint '%s' returned "
 				"an unknown result code '%d'. Treating the call as failed.",
 				backendData->backend->name, keyName (backendKey), ret);
@@ -1199,7 +1204,7 @@ static bool initBackends (KeySet * backends, Key * errorKey)
 
 	if (!success)
 	{
-		ELEKTRA_SET_INTERFACE_ERROR (errorKey, "The init phase of kdbGet() has failed. See warnings for details.");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "The init phase of kdbGet() has failed. See warnings for details.");
 	}
 
 	return success;
@@ -1479,11 +1484,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
 
 	// Step 2: run init phase where needed
-	keySetName (parentKey, "/");
-	set_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
 	if (!initBackends (backends, parentKey))
 	{
-		clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
 		// TODO (kodebach): name not needed, once lock is in place
 		keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 		keyDel (initialParent);
@@ -1604,7 +1606,9 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 14: split dataKs for poststorage phase
 	if (!backendsDivide (backends, dataKs))
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Couldn't divide keys into mountpoints before poststorage.");
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "Couldn't divide keys into mountpoints before poststorage. Please report this bug at "
+					    "https://issues.libelektra.org.");
 		goto error;
 	}
 
@@ -1994,7 +1998,9 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 8: split setKs for resolver and prestorage phases
 	if (!backendsDivide (backends, setKs))
 	{
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Couldn't divide keys into mountpoints at start of kdbSet.");
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "Couldn't divide keys into mountpoints at start of kdbSet. Please report this bug at "
+					    "https://issues.libelektra.org.");
 		goto error;
 	}
 
@@ -2021,8 +2027,8 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		// Step 12: split setKs for remaining phases
 		if (!backendsDivide (backends, setKs))
 		{
-			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Couldn't divide keys into mountpoints after spec removal.");
-			goto rollback;
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Couldn't divide keys into mountpoints after spec removal. Please report this
+	   bug at https://issues.libelektra.org."); goto rollback;
 		}
 	*/
 	// Step 13a: run storage phase

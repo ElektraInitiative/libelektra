@@ -26,9 +26,12 @@ The `get` operation is mandatory and all backend plugins must implement it.
 
 During the `init` phase the backend plugin is called with:
 
-- A key `errorKey` whose name is `/` and whose value is an empty string.
+- A key `parentKey` whose name is the root of the mountpoint configuration (e.g. `system:/elektra/mountpoints/system:\/hosts`) and whose value is an empty string.
   The key name and value of this key are read-only.
+  The name of `parentKey` is chosen to make it easier for the plugin to produce good error messages.
 - A keyset `definition` containing the mountpoint definition.
+  To make things easier for the plugin, keys in `definition` are translated into cascading keys relative to `parentKey`.
+  For example, if the key `system:/elektra/mountpoints/system:\/hosts/path` is set in the KDB, then `definition` will contain a key `/path`.
 
 TODO: how does the backend plugin get access to the other plugins? Maybe, just add a plugins/# array into `ks` containing keys with `Plugin *` values?
 

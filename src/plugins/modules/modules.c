@@ -26,7 +26,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey ELEKTRA_UNUS
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * parentKey ELEKTRA_UNUSED)
 {
 	elektraPluginSetData (handle, ksDup (definition));
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;

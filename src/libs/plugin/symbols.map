@@ -4,6 +4,10 @@ libelektra_0.8 {
 	elektraPluginGetConfig;
 	elektraPluginGetData;
 	elektraPluginGetGlobalKeySet;
-	elektraPluginGetPhase;
 	elektraPluginSetData;
+};
+
+libelektra_1.0 {
+	elektraPluginGetPhase;
+	elektraPluginFromMountpoint;
 };

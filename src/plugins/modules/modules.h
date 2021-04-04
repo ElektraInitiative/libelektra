@@ -13,7 +13,7 @@
 #include <kdbplugin.h>
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * parentKey);
-int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * ks, Key * errorKey);
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * ks, Key * parentKey);
 int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * ks, Key * parentKey);
 int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * parentKey);
 

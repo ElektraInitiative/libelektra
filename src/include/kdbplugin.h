@@ -107,6 +107,7 @@ void * elektraPluginGetData (Plugin * plugin);
 
 KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
 const char * elektraPluginGetPhase (Plugin * plugin);
+Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref);
 
 #define PLUGINVERSION "1"
 

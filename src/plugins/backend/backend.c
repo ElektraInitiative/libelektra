@@ -7,1012 +7,612 @@
 #include <kdblogger.h>
 #include <kdbprivate.h>
 
-int setMountpoint (BackendHandle * bh, Key * root, KeySet * config, Key * errorKey)
+// FIXME: TESTS
+
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)
 {
-	Key * configRoot;
-
-	ksRewind (config);
-
-	configRoot = ksNext (config);
-
-	Key * searchMountpoint = keyDup (configRoot, KEY_CP_ALL);
-	keyAddBaseName (searchMountpoint, "mountpoint");
-	Key * foundMountpoint = ksLookup (config, searchMountpoint, 0);
-
-	keyDel (searchMountpoint);
-
-	if (!foundMountpoint)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not find mountpoint within root %s", keyName (configRoot));
-		return -1;
-	}
-
-	bh->mountpoint = keyNew ("", KEY_VALUE, keyBaseName (root), KEY_END);
-	keySetName (bh->mountpoint, keyString (foundMountpoint));
-
-	keySetName (errorKey, keyName (bh->mountpoint));
-
-	if (!bh->mountpoint)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not create mountpoint with name '%s' and value %s",
-							 keyString (foundMountpoint), keyBaseName (root));
-		return -1;
-	}
-
-	return 0;
+	BackendHandle * handle = elektraCalloc (sizeof (BackendHandle));
+	elektraPluginSetData (plugin, handle);
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-KeySet * processConfig (BackendHandle * bh, Key * root, KeySet * config, Key * errorKey)
+static bool loadPlugin (Plugin ** pluginPtr, Plugin * thisPlugin, Key * pluginRefKey, Key * parentKey)
 {
-	if (setMountpoint (bh, root, config, errorKey) == -1)
+	if (pluginRefKey == NULL)
 	{
-		return NULL;
+		*pluginPtr = NULL;
+		return true;
 	}
 
-	KeySet * systemConfig = ksRenameKeys (config, "system");
-	ksDel (config);
-
-	return systemConfig;
+	const char * pluginRef = keyString (pluginRefKey);
+	*pluginPtr = elektraPluginFromMountpoint (thisPlugin, pluginRef);
+	if (*pluginPtr == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERRORF (
+			parentKey, "The plugin referenced in '%s%s' (value: '%s') could not be found. (Configuration of mountpoint: '%s')",
+			keyName (parentKey), keyName (pluginRefKey), pluginRef, keyBaseName (parentKey));
+		return false;
+	}
+	return true;
 }
 
-int linkedListPosition (Key * cur, Key * errorKey)
+static bool loadPluginList (PluginList ** pluginListPtr, Plugin * thisPlugin, KeySet * definition, Key * pluginRefRoot, Key * parentKey)
 {
-	char * name = elektraCalloc (strlen (keyBaseName (cur)) + 1);
-	strcpy (name, keyBaseName (cur));
+	*pluginListPtr = NULL;
+	PluginList * listEnd = NULL;
 
-	if (name[0] != '#')
+	for (elektraCursor end, i = ksFindHierarchy (definition, pluginRefRoot, &end); i < end; i++)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Plugin positions must start with a #. Position: %s", name);
-		return -1;
-	}
-
-	int numberOfDigits = 1;
-
-	while (name[numberOfDigits] == '_')
-	{
-		numberOfDigits++;
-	}
-
-	int position = 0;
-
-	int digitCountdown = numberOfDigits;
-
-	while (digitCountdown != 0)
-	{
-		position *= 10;
-
-		if (name[numberOfDigits] < '0' || name[numberOfDigits] > '9')
+		Key * cur = ksAtCursor (definition, i);
+		if (keyIsDirectlyBelow (pluginRefRoot, cur) != 1)
 		{
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Plugin positions must be numbers. Position: %s", name);
-			return -1;
+			continue;
 		}
 
-		position += name[numberOfDigits] - '0';
-
-		numberOfDigits++;
-		digitCountdown--;
-	}
-
-	elektraFree (name);
-
-	return position;
-}
-
-int processPlugin (KeySet * config, Key * cur, char ** name, KeySet ** pluginConfig, char ** referenceName, Key * errorKey)
-{
-	// This key will be used to find the configuration of the plugin, if it exists
-	Key * pluginConfigSearchKey = keyDup (cur, KEY_CP_ALL);
-	keyAddBaseName (pluginConfigSearchKey, "config");
-
-	// This key will be used to find the plugin label, which it can be referenced with afterwards, if it exists
-	Key * labelSearchKey = keyDup (cur, KEY_CP_ALL);
-	keyAddBaseName (labelSearchKey, "label");
-
-	// This key will be used to find the name of the plugin
-	Key * nameSearchKey = keyDup (cur, KEY_CP_ALL);
-	keyAddBaseName (nameSearchKey, "name");
-
-	// This key will be used to find the plugin's reference name, which is the label it was first set with
-	Key * refSearchKey = keyDup (cur, KEY_CP_ALL);
-	keyAddBaseName (refSearchKey, "reference");
-
-	KeySet * cutPluginConfig = ksCut (config, pluginConfigSearchKey);
-	keyDel (pluginConfigSearchKey);
-
-	*pluginConfig = ksRenameKeys (cutPluginConfig, "user");
-	ksDel (cutPluginConfig);
-
-	Key * labelKey = ksLookup (config, labelSearchKey, KDB_O_POP);
-
-	Key * nameKey = ksLookup (config, nameSearchKey, KDB_O_POP);
-
-	Key * refKey = ksLookup (config, refSearchKey, KDB_O_POP);
-
-	keyDel (labelSearchKey);
-	keyDel (nameSearchKey);
-	keyDel (refSearchKey);
-
-	if (refKey != 0)
-	{
-		// An existing plugin will be used
-		if (labelKey != 0)
+		Plugin * plugin;
+		if (!loadPlugin (&plugin, thisPlugin, cur, parentKey))
 		{
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (
-				errorKey,
-				"The label and reference name of a plugin cannot be defined at the same time! Label: %s Reference name: %s",
-				keyString (labelKey), keyString (refKey));
-			return -1;
+			return false;
 		}
 
-		if (nameKey != 0)
+		PluginList * element = elektraMalloc (sizeof (PluginList));
+		element->plugin = plugin;
+		element->next = NULL;
+
+		if (listEnd == NULL)
 		{
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey,
-								 "The plugin name and reference name of a plugin cannot be defined at the "
-								 "same time! Plugin name: %s, Reference name: %s",
-								 keyString (nameKey), keyString (refKey));
-			return -1;
-		}
-
-		char prefixReferenceName[] = "system:/elektra/plugins/";
-		char * keyName = elektraCalloc (strlen (keyString (refKey)) + 1);
-		strcpy (keyName, keyString (refKey));
-
-		*referenceName = elektraCalloc (strlen (prefixReferenceName) + strlen (keyName) + 1);
-		strcpy (*referenceName, prefixReferenceName);
-		strcat (*referenceName, keyName);
-
-		elektraFree (keyName);
-
-		return 2;
-	}
-	else if (nameKey != 0) // A new plugin will be created
-	{
-		*name = elektraCalloc (strlen (keyString (nameKey)) + 1);
-		strcpy (*name, keyString (nameKey));
-		if (labelKey != 0)
-		{
-			// A label will be defined for later referencing
-
-			char prefixReferenceName[] = "system:/elektra/plugins/";
-			char * keyName = elektraCalloc (strlen (keyString (labelKey)) + 1);
-			strcpy (keyName, keyString (labelKey));
-
-			*referenceName = elektraCalloc (strlen (prefixReferenceName) + strlen (keyString (labelKey)) + 1);
-			strcpy (*referenceName, prefixReferenceName);
-			strcat (*referenceName, keyName);
-
-			elektraFree (keyName);
-
-			return 3;
-		}
-		return 1;
-	}
-	else if (labelKey != 0)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (
-			errorKey, "The plugin name must be defined If the label is defined! Plugin name: %s, Label: %s",
-			keyString (nameKey), keyString (labelKey));
-		return -1;
-	}
-	else
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Plugin name, reference name and label are not defined!");
-		return -1;
-	}
-}
-
-Slot * processRole (KeySet * config, KeySet * modules, KeySet * referencePlugins, KeySet * systemConfig, Key * errorKey)
-{
-	Key * root;
-	Key * cur;
-
-	ksRewind (config);
-
-	root = ksNext (config);
-
-	Slot * slot = 0;
-
-	while ((cur = ksNext (config)) != 0)
-	{
-		if (keyIsDirectlyBelow (root, cur) == 1)
-		{
-			int position;
-
-			if ((position = linkedListPosition (cur, errorKey)) == -1)
-			{
-				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (
-					errorKey, "Could not parse the position of the plugin in the linked list from the key: %s",
-					keyName (cur));
-				return 0;
-			}
-
-			char * name = 0;
-
-			KeySet * cut = ksCut (config, cur);
-
-			KeySet * pluginConfig;
-
-			char * referenceName = 0;
-
-			int ret = processPlugin (cut, cur, &name, &pluginConfig, &referenceName, errorKey);
-
-			ksDel (cut);
-
-			if (ret == -1)
-			{
-				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not parse plugin name, label and configuration");
-				return NULL;
-			}
-
-			if (!slot)
-			{
-				slot = elektraCalloc (sizeof (Slot));
-				slot->next = 0;
-			}
-
-			Slot * curSlot = slot;
-
-			for (int a = 0; a <= position; a++)
-			{
-				// Insert the plugin into its slot
-				if (a == position)
-				{
-					if (name)
-					{
-						ksAppend (pluginConfig, systemConfig);
-						ksRewind (pluginConfig);
-
-						curSlot->value = elektraPluginOpen (name, modules, ksDup (pluginConfig), errorKey);
-
-						if (!curSlot->value)
-						{
-							ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Could not load plugin %s",
-												 name);
-							elektraFree (name);
-
-							return 0;
-						}
-
-						if (referenceName)
-						{
-							ksAppendKey (referencePlugins,
-								     keyNew (referenceName, KEY_BINARY, KEY_SIZE, sizeof (curSlot->value),
-									     KEY_VALUE, &curSlot->value, KEY_END));
-						}
-					}
-					else
-					{
-						Key * lookup = ksLookup (referencePlugins, keyNew (referenceName, KEY_END), KDB_O_DEL);
-						if (!lookup)
-						{
-							ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (
-								errorKey, "Could not reference back to plugin %s", referenceName);
-							elektraFree (referenceName);
-							ksDel (config);
-							return 0;
-						}
-
-						curSlot->value = *(Plugin **) keyValue (lookup);
-						++curSlot->value->refcounter;
-					}
-				}
-				else
-				{
-					if (!curSlot->next)
-					{
-						curSlot->next = elektraCalloc (sizeof (Slot));
-					}
-					curSlot = curSlot->next;
-				}
-			}
-			ksDel (pluginConfig);
-			elektraFree (referenceName);
-			elektraFree (name);
+			*pluginListPtr = element;
 		}
 		else
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "Unknown entries in plugin configuration: %s", keyString (cur));
+			listEnd->next = element;
 		}
+		listEnd = element;
 	}
 
-	ksDel (config);
-
-	return slot;
+	return true;
 }
 
-int processGetPlugins (Slot ** slots, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig, Key * errorKey)
+int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * parentKey)
 {
-	Key * root;
-	Key * cur;
-
-	ksRewind (config);
-
-	root = ksNext (config);
-
-	while ((cur = ksNext (config)))
+	Key * pathKey = ksLookupByName (definition, "/path", 0);
+	const char * path = keyString (pathKey);
+	if (pathKey == NULL || strlen (path) == 0)
 	{
-		if (keyIsDirectlyBelow (root, cur) == 1)
-		{
-			KeySet * cut = ksCut (config, cur);
-			Slot * slot;
-			if (!strcmp (keyBaseName (cur), "getresolver"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: resolver");
-					return -1;
-				}
-
-				slots[0] = slot;
-			}
-			else if (!strcmp (keyBaseName (cur), "pregetstorage"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey,
-										"Could not build up slots for role: pregetstorage");
-					return -1;
-				}
-
-				slots[1] = slot;
-			}
-			else if (!strcmp (keyBaseName (cur), "getstorage"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: getstorage");
-					return -1;
-				}
-
-				slots[2] = slot;
-			}
-			else if (!strcmp (keyBaseName (cur), "postgetstorage"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey,
-										"Could not build up slots for role: postgetstorage");
-					return -1;
-				}
-
-				slots[3] = slot;
-			}
-			else
-			{
-				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Unexpected key: %s", keyName (cur));
-				return -1;
-			}
-		}
-	}
-
-	return 1;
-}
-
-int processSetPlugins (Slot ** slots, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig, Key * errorKey)
-{
-	Key * root;
-	Key * cur;
-
-	ksRewind (config);
-
-	root = ksNext (config);
-
-	while ((cur = ksNext (config)) != 0)
-	{
-		if (keyIsDirectlyBelow (root, cur) == 1)
-		{
-			KeySet * cut = ksCut (config, cur);
-			Slot * slot;
-			if (!strcmp (keyBaseName (cur), "setresolver"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: resolver");
-					return -1;
-				}
-
-				slots[0] = slot;
-			}
-			else if (!strcmp (keyBaseName (cur), "presetstorage"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: prestorage");
-					return -1;
-				}
-
-				slots[1] = slot;
-			}
-			else if (!strcmp (keyBaseName (cur), "setstorage"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: storage");
-					return -1;
-				}
-
-				slots[2] = slot;
-			}
-			else if (!strcmp (keyBaseName (cur), "precommit"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: precommit");
-					return -1;
-				}
-
-				slots[3] = slot;
-			}
-			else if (!strcmp (keyBaseName (cur), "commit"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: commit");
-					return -1;
-				}
-
-				slots[4] = slot;
-			}
-			else if (!strcmp (keyBaseName (cur), "postcommit"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up slots for role: postcommit");
-					return -1;
-				}
-
-				slots[5] = slot;
-			}
-			else
-			{
-				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Unexpected key: %s", keyName (cur));
-				return -1;
-			}
-		}
-	}
-
-	return 1;
-}
-
-int processErrorPlugins (Slot ** slots, KeySet * modules, KeySet * referencePlugins, KeySet * config, KeySet * systemConfig, Key * errorKey)
-{
-	Key * root;
-	Key * cur;
-
-	ksRewind (config);
-
-	root = ksNext (config);
-
-	while ((cur = ksNext (config)) != 0)
-	{
-		if (keyIsDirectlyBelow (root, cur) == 1)
-		{
-			KeySet * cut = ksCut (config, cur);
-			Slot * slot;
-			if (!strcmp (keyBaseName (cur), "prerollback"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up prerollback slots");
-					return -1;
-				}
-
-				slots[0] = slot;
-			}
-			else if (!strcmp (keyBaseName (cur), "rollback"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up rollback slots");
-					return -1;
-				}
-
-				slots[1] = slot;
-			}
-			else if (!strcmp (keyBaseName (cur), "postrollback"))
-			{
-				slot = processRole (cut, modules, referencePlugins, systemConfig, errorKey);
-
-				if (slot == 0)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up postrollback slots");
-					return -1;
-				}
-
-				slots[2] = slot;
-			}
-			else
-			{
-				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (errorKey, "Unexpected key: %s", keyName (cur));
-				return -1;
-			}
-		}
-	}
-
-	return 1;
-}
-
-int elektraBackendOpen (Plugin * handle, Key * errorKey)
-{
-	BackendHandle * bh = elektraCalloc (sizeof (BackendHandle));
-
-	elektraPluginSetData (handle, bh);
-
-	bh->getposition = GET_GETRESOLVER;
-	bh->setposition = SET_SETRESOLVER;
-	bh->errorposition = ERROR_PREROLLBACK;
-
-	ksRewind (handle->config);
-
-	Key * root = ksNext (handle->config);
-
-	KeySet * systemConfig = 0;
-	KeySet * referencePlugins = ksNew (0, KS_END);
-
-	Key * configKey = keyDup (root, KEY_CP_ALL);
-	keyAddBaseName (configKey, "config");
-	KeySet * configSet = ksCut (handle->config, configKey);
-	keyDel (configKey);
-
-	systemConfig = processConfig (bh, root, configSet, errorKey);
-
-	if (systemConfig == 0)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not generate system config");
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
+						 "You must set '%s/path' to a non-empty value. (Configuration of mountpoint: %s)",
+						 keyName (parentKey), keyBaseName (parentKey));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	Key * errorPluginsKey = keyDup (root, KEY_CP_ALL);
-	keyAddBaseName (errorPluginsKey, "error");
-	KeySet * errorPluginsSet = ksCut (handle->config, errorPluginsKey);
-	keyDel (errorPluginsKey);
+	Key * getResolverRefKey = ksLookupByName (definition, "/positions/get/resolver", 0);
+	const char * getResolverRef = keyString (getResolverRefKey);
+	bool hasGetResolver = getResolverRefKey != NULL && strlen (getResolverRef) > 0;
 
-	Slot ** errorPlugins = elektraCalloc ((sizeof (Slot *)) * NR_OF_ERROR_PLUGINS);
+	Key * setResolverRefKey = ksLookupByName (definition, "/positions/set/resolver", 0);
+	const char * setResolverRef = keyString (setResolverRefKey);
+	bool hasSetResolver = setResolverRefKey != NULL && strlen (setResolverRef) > 0;
 
-	if (processErrorPlugins (errorPlugins, handle->modules, referencePlugins, errorPluginsSet, systemConfig, errorKey) == -1)
+	if (hasGetResolver)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up error array");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	ksDel (errorPluginsSet);
-
-	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
-	{
-		bh->errorplugins[a] = errorPlugins[a];
-	}
-
-	elektraFree (errorPlugins);
-
-	Key * getPluginsKey = keyDup (root, KEY_CP_ALL);
-	keyAddBaseName (getPluginsKey, "get");
-	KeySet * getPluginsSet = ksCut (handle->config, getPluginsKey);
-	keyDel (getPluginsKey);
-
-	Slot ** getPlugins = elektraCalloc ((sizeof (Slot *)) * NR_OF_GET_PLUGINS);
-
-	if (processGetPlugins (getPlugins, handle->modules, referencePlugins, getPluginsSet, systemConfig, errorKey) == -1)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up get array");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	ksDel (getPluginsSet);
-
-	for (int a = 0; a < NR_OF_GET_PLUGINS; a++)
-	{
-		bh->getplugins[a] = getPlugins[a];
-	}
-
-	elektraFree (getPlugins);
-
-	Key * setPluginsKey = keyDup (root, KEY_CP_ALL);
-	keyAddBaseName (setPluginsKey, "set");
-	KeySet * setPluginsSet = ksCut (handle->config, setPluginsKey);
-	keyDel (setPluginsKey);
-
-	Slot ** setPlugins = elektraCalloc ((sizeof (Slot *)) * NR_OF_SET_PLUGINS);
-
-	if (processSetPlugins (setPlugins, handle->modules, referencePlugins, setPluginsSet, systemConfig, errorKey) == -1)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (errorKey, "Could not build up set array");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	ksDel (setPluginsSet);
-
-	for (int a = 0; a < NR_OF_SET_PLUGINS; a++)
-	{
-		bh->setplugins[a] = setPlugins[a];
-	}
-	elektraFree (setPlugins);
-
-	ksDel (referencePlugins);
-
-	handle->config = systemConfig;
-
-	// TODO Open missing backend instead of returning errors
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-int elektraBackendClose (Plugin * handle, Key * errorKey)
-{
-	if (!handle)
-	{
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	int error = 0;
-
-	BackendHandle * bh = elektraPluginGetData (handle);
-	if (!bh)
-	{
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	keyDel (bh->mountpoint);
-
-	for (int a = 0; a < NR_OF_GET_PLUGINS; a++)
-	{
-		Slot * cur = bh->getplugins[a];
-		if (!cur)
+		if (path[0] == '/' && ksLookupByName (definition, "/path/absolute", 0) == NULL)
 		{
-			continue;
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				parentKey,
+				"You configured a resolver. That absolute path in '%s/path' might not be used as-is. If the configuration "
+				"is intentional, set '%s/path/absolute' to any value to silence this warning. (Configuration of "
+				"mountpoint: '%s')",
+				keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
 		}
-
-		while (cur)
-		{
-			int ret = elektraPluginClose (cur->value, errorKey);
-			if (ret == -1)
-			{
-				++error;
-			}
-			Slot * prev = cur;
-			cur = cur->next;
-			elektraFree (prev);
-		}
-	}
-
-	for (int a = 0; a < NR_OF_SET_PLUGINS; a++)
-	{
-		Slot * cur = bh->setplugins[a];
-		if (!cur)
-		{
-			continue;
-		}
-
-		while (cur)
-		{
-			int ret = elektraPluginClose (cur->value, errorKey);
-			if (ret == -1)
-			{
-				++error;
-			}
-			Slot * prev = cur;
-			cur = cur->next;
-			elektraFree (prev);
-		}
-	}
-
-	for (int a = 0; a < NR_OF_ERROR_PLUGINS; a++)
-	{
-		Slot * cur = bh->errorplugins[a];
-		if (!cur)
-		{
-			continue;
-		}
-
-		while (cur)
-		{
-			int ret = elektraPluginClose (cur->value, errorKey);
-			if (ret == -1)
-			{
-				++error;
-			}
-			Slot * prev = cur;
-			cur = cur->next;
-			elektraFree (prev);
-		}
-	}
-
-	if (bh)
-	{
-		elektraFree (bh);
-		elektraPluginSetData (handle, 0);
-	}
-
-	if (error)
-	{
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
-}
-
-void incrementGetPosition (BackendHandle * bh)
-{
-	if (bh->getposition == GET_POSTGETSTORAGE)
-	{
-		bh->getposition = GET_GETRESOLVER;
 	}
 	else
 	{
-		bh->getposition++;
-	}
-}
-
-void incrementSetPosition (BackendHandle * bh)
-{
-	if (bh->setposition == SET_POSTCOMMIT)
-	{
-		bh->setposition = SET_SETRESOLVER;
-	}
-	else
-	{
-		bh->setposition++;
-	}
-}
-
-void incrementErrorPosition (BackendHandle * bh)
-{
-	if (bh->errorposition == ERROR_POSTROLLBACK)
-	{
-		bh->errorposition = ERROR_PREROLLBACK;
-	}
-	else
-	{
-		bh->errorposition++;
-	}
-}
-
-int elektraBackendGet (Plugin * handle, KeySet * ks, Key * parentKey)
-{
-	BackendHandle * bh = elektraPluginGetData (handle);
-
-	if (!bh)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined!");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	if (bh->getposition > GET_POSTGETSTORAGE || bh->getposition < GET_GETRESOLVER)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Invalid plugin position!");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	if (bh->getposition == GET_GETRESOLVER)
-	{
-		Slot * resolver = bh->getplugins[GET_GETRESOLVER];
-
-		if (!resolver || !resolver->value)
+		if (hasSetResolver)
 		{
-			ELEKTRA_LOG ("No resolver, continuing");
+			ELEKTRA_SET_INSTALLATION_ERRORF (
+				parentKey,
+				"If '%s/positions/set/resolver' is set, '%s/positions/get/resolver' you must also set to a "
+				"non-empty value. (Configuration of mountpoint: '%s')",
+				keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 
-			incrementGetPosition (bh);
+		if (path[0] != '/')
+		{
+			ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
+							 "If no resolver is configured, '%s/path' you must set to an absolute path. "
+							 "(Configuration of mountpoint: '%s')",
+							 keyName (parentKey), keyBaseName (parentKey));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
+
+	// TODO (Q): support for read-write to absolute path?
+	bool readOnly = !hasSetResolver;
+
+	BackendHandle * handle = elektraPluginGetData (plugin);
+	handle->path = elektraStrDup (path);
+
+	handle->getPositions.resolver = hasGetResolver ? elektraPluginFromMountpoint (plugin, getResolverRef) : NULL;
+	if (!loadPluginList (&handle->getPositions.prestorage, plugin, definition,
+			     ksLookupByName (definition, "/positions/get/prestorage", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!loadPlugin (&handle->getPositions.storage, plugin, ksLookupByName (definition, "/positions/get/storage", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!loadPluginList (&handle->getPositions.poststorage, plugin, definition,
+			     ksLookupByName (definition, "/positions/get/poststorage", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	handle->setPositions.resolver = hasSetResolver ? elektraPluginFromMountpoint (plugin, getResolverRef) : NULL;
+
+	if (!loadPluginList (&handle->setPositions.prestorage, plugin, definition,
+			     ksLookupByName (definition, "/positions/set/prestorage", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!loadPlugin (&handle->setPositions.storage, plugin, ksLookupByName (definition, "/positions/set/storage", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!loadPluginList (&handle->setPositions.poststorage, plugin, definition,
+			     ksLookupByName (definition, "/positions/set/poststorage", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!loadPluginList (&handle->setPositions.precommit, plugin, definition,
+			     ksLookupByName (definition, "/positions/set/precommit", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!loadPlugin (&handle->setPositions.commit, plugin, ksLookupByName (definition, "/positions/set/commit", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!loadPluginList (&handle->setPositions.postcommit, plugin, definition,
+			     ksLookupByName (definition, "/positions/set/postcommit", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!loadPluginList (&handle->setPositions.prerollback, plugin, definition,
+			     ksLookupByName (definition, "/positions/set/prerollback", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!loadPlugin (&handle->setPositions.rollback, plugin, ksLookupByName (definition, "/positions/set/rollback", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+	if (!loadPluginList (&handle->setPositions.postrollback, plugin, definition,
+			     ksLookupByName (definition, "/positions/set/postrollback", 0), parentKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	if (handle->getPositions.storage == NULL && ksLookupByName (definition, "/positions/get/storage/omit", 0) != NULL)
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (
+			parentKey,
+			"No storage plugin defined for kdbGet(). You probably forgot to set '%s/positions/get/storage'. If the "
+			"configuration is intentional, you can silence this warning by setting '%s/positions/get/storage/omit' to any "
+			"value. (Configuration of mountpoint: '%s')",
+			keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
+	}
+
+	if (readOnly)
+	{
+		if (handle->setPositions.prestorage != NULL || handle->setPositions.storage != NULL ||
+		    handle->setPositions.poststorage != NULL || handle->setPositions.precommit != NULL ||
+		    handle->setPositions.commit != NULL || handle->setPositions.postcommit != NULL ||
+		    handle->setPositions.prerollback != NULL || handle->setPositions.rollback != NULL ||
+		    handle->setPositions.postrollback != NULL)
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				parentKey,
+				"The mountpoint '%s' is configured as read-only (no set-resolver configured), but there are some plugins "
+				"configured for set-positions below '%s/positions/set'. These plugins will be ignored. Remove them from "
+				"the configuration to remove this warning. (Configuration of mountpoint: '%s')",
+				keyBaseName (parentKey), keyName (parentKey), keyBaseName (parentKey));
+		}
+	}
+	else
+	{
+		if (handle->setPositions.storage == NULL && ksLookupByName (definition, "/positions/set/storage/omit", 0) != NULL)
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				parentKey,
+				"You defined a resolver, but no storage plugin defined for kdbSet(). You probably forgot to set "
+				"'%s/positions/set/storage'. If you wanted to create a read-only mountpoint remove "
+				"'%s/positions/set/resolver'. If the configuration is intentional, you can silence this "
+				"warning by setting '%s/positions/set/storage/omit' to any value. (Configuration of mountpoint: '%s')",
+				keyName (parentKey), keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
+		}
+	}
+
+	if (handle->setPositions.resolver != handle->setPositions.commit &&
+	    ksLookupByName (definition, "/positions/set/commit/differs", 0) != NULL)
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (
+			parentKey,
+			"The resolver plugin ('%s') differs from the commit plugin ('%s'). This is a non-standard configuration. Normally, "
+			"'%s/positions/set/resolver' and '%s/positions/set/commit' should have the same value. If the configuration is "
+			"intentional, you can silence this warning by setting '%s/positions/set/commit/differs' to any value. "
+			"(Configuration of mountpoint: '%s')",
+			handle->setPositions.resolver->name, handle->setPositions.commit->name, keyName (parentKey), keyName (parentKey),
+			keyName (parentKey), keyBaseName (parentKey));
+	}
+
+	if (handle->setPositions.resolver != handle->setPositions.rollback &&
+	    ksLookupByName (definition, "/positions/set/rollback/differs", 0) != NULL)
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (
+			parentKey,
+			"The resolver plugin ('%s') differs from the rollback plugin ('%s'). This is a non-standard configuration. "
+			"Normally, '%s/positions/set/resolver' and '%s/positions/set/rollback' should have the same value. If the "
+			"configuration is intentional, you can silence this warning by setting '%s/positions/set/rollback/differs' to any "
+			"value. (Configuration of mountpoint: '%s')",
+			handle->setPositions.resolver->name, handle->setPositions.rollback->name, keyName (parentKey), keyName (parentKey),
+			keyName (parentKey), keyBaseName (parentKey));
+	}
+
+	return readOnly ? ELEKTRA_PLUGIN_STATUS_NO_UPDATE : ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+static inline void addGenericError (Key * key, const char * function, const char * plugin)
+{
+	ELEKTRA_SET_INTERFACE_ERRORF (key,
+				      "The %s() function of the plugin '%s' returned ELEKTRA_PLUGIN_STATUS_ERROR, but did not actually set "
+				      "an error. If you are the author of this plugin, please add a proper error to the parentKey.",
+				      function, plugin);
+}
+
+static bool runPluginGet (Plugin * plugin, KeySet * ks, Key * parentKey)
+{
+	// TODO: provide way to access kdbGet and name without kdbprivate.h
+	if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	{
+		if (keyGetMeta (parentKey, "error") == NULL)
+		{
+			addGenericError (parentKey, "kdbGet", plugin->name);
+		}
+		return false;
+	}
+	return true;
+}
+
+static bool runPluginListGet (PluginList * plugins, KeySet * ks, Key * parentKey)
+{
+	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
+	{
+		if (!runPluginGet (cur->plugin, ks, parentKey))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ks, Key * parentKey)
+{
+	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/backend"))
+	{
+		KeySet * contract = ksNew (
+			30, keyNew ("system:/elektra/modules/backend", KEY_VALUE, "backend plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports", KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/open", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (open), KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/init", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (init), KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/get", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (get), KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/set", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (set), KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/commit", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (commit), KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/error", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (error), KEY_END),
+			keyNew ("system:/elektra/modules/backend/exports/close", KEY_FUNC, ELEKTRA_PLUGIN_FUNCTION (close), KEY_END),
+#include ELEKTRA_README
+			keyNew ("system:/elektra/modules/backend/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+		ksAppend (ks, contract);
+		ksDel (contract);
+
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
+	BackendHandle * handle = elektraPluginGetData (plugin);
+
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "Internal plugin data was NULL. Please report this bug at https://issues.libelektra.org.");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	const char * phase = elektraPluginGetPhase (plugin);
+	if (strcmp (phase, KDB_GET_PHASE_RESOLVER) == 0)
+	{
+		keySetString (parentKey, handle->path);
+
+		if (handle->getPositions.resolver == NULL)
+		{
+			// no resolver configured -> path is absolute
+			// TODO (Q): check mtime to determine up date needed?
 			return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 		}
 
-		if (!resolver || !resolver->value || !resolver->value->kdbGet)
-		{
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (
-				parentKey, "The resolver is not defined properly, the backend was not initialized correctly!");
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-
-		int returnValue = resolver->value->kdbGet (resolver->value, ks, parentKey);
-
-		switch (returnValue)
-		{
-		case ELEKTRA_PLUGIN_STATUS_CACHE_HIT:
-			return returnValue;
-		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
-			return returnValue;
-		case ELEKTRA_PLUGIN_STATUS_ERROR:
-			return returnValue;
-		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
-			incrementGetPosition (bh);
-			return returnValue;
-		default:
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Invalid resolver return value!");
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
+		return runPluginGet (handle->getPositions.resolver, ks, parentKey);
 	}
-
-	if (bh->getplugins[bh->getposition])
+	else if (strcmp (phase, KDB_GET_PHASE_CACHECHECK) == 0)
 	{
-		Slot * cur = bh->getplugins[bh->getposition];
-
-		while (cur != 0)
-		{
-			if (cur->value && cur->value->kdbGet)
-			{
-				if (cur->value->kdbGet (cur->value, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-				{
-					incrementGetPosition (bh);
-					return ELEKTRA_PLUGIN_STATUS_ERROR;
-				}
-
-				if (bh->getposition == GET_GETRESOLVER || bh->getposition == GET_GETSTORAGE)
-				{
-					cur = 0;
-				}
-				else
-				{
-					cur = cur->next;
-				}
-			}
-		}
+		// FIXME: implement
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
-
-	incrementGetPosition (bh);
+	else if (strcmp (phase, KDB_GET_PHASE_PRE_STORAGE) == 0)
+	{
+		return runPluginListGet (handle->getPositions.prestorage, ks, parentKey);
+	}
+	else if (strcmp (phase, KDB_GET_PHASE_STORAGE) == 0)
+	{
+		return runPluginGet (handle->getPositions.storage, ks, parentKey);
+	}
+	else if (strcmp (phase, KDB_GET_PHASE_POST_STORAGE) == 0)
+	{
+		return runPluginListGet (handle->getPositions.poststorage, ks, parentKey);
+	}
+	else
+	{
+		ELEKTRA_SET_INTERNAL_ERRORF (
+			parentKey, "Unknown phase of kdbGet(): %s\n Please report this bug at https://issues.libelektra.org.", phase);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraBackendSet (Plugin * handle, KeySet * ks, Key * parentKey)
+static bool runPluginSet (Plugin * plugin, KeySet * ks, Key * parentKey)
 {
-	// TODO implement global plugins
-	BackendHandle * bh = elektraPluginGetData (handle);
-	if (bh == NULL)
+	// TODO: provide way to access kdbSet and name without kdbprivate.h
+	if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined correctly!");
+		if (keyGetMeta (parentKey, "error") == NULL)
+		{
+			addGenericError (parentKey, "kdbSet", plugin->name);
+		}
+		return false;
+	}
+	return true;
+}
+
+static bool runPluginListSet (PluginList * plugins, KeySet * ks, Key * parentKey)
+{
+	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
+	{
+		if (!runPluginSet (cur->plugin, ks, parentKey))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey)
+{
+	BackendHandle * handle = elektraPluginGetData (plugin);
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "Internal plugin data was NULL. Please report this bug at https://issues.libelektra.org.");
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	if (bh->setposition < SET_SETRESOLVER || bh->setposition > SET_POSTCOMMIT)
+	const char * phase = elektraPluginGetPhase (plugin);
+	if (strcmp (phase, KDB_SET_PHASE_RESOLVER) == 0)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Invalid plugin position!");
+		keySetString (parentKey, handle->path);
+
+		if (handle->setPositions.resolver == NULL)
+		{
+			// no resolver configured -> path is absolute
+			// TODO (Q): support for read-write?
+			ELEKTRA_SET_INTERNAL_ERROR (
+				parentKey,
+				"No resolver, but initialized as read-write. Please report this bug at https://issues.libelektra.org.");
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+
+		return runPluginSet (handle->setPositions.resolver, ks, parentKey);
+	}
+	else if (strcmp (phase, KDB_SET_PHASE_PRE_COMMIT) == 0)
+	{
+		return runPluginListSet (handle->setPositions.precommit, ks, parentKey);
+	}
+	else if (strcmp (phase, KDB_SET_PHASE_PRE_COMMIT) == 0)
+	{
+		return runPluginSet (handle->setPositions.commit, ks, parentKey);
+	}
+	else if (strcmp (phase, KDB_SET_PHASE_PRE_COMMIT) == 0)
+	{
+		return runPluginListSet (handle->setPositions.postcommit, ks, parentKey);
+	}
+	else
+	{
+		ELEKTRA_SET_INTERNAL_ERRORF (
+			parentKey, "Unknown phase of kdbSet(): %s\n Please report this bug at https://issues.libelektra.org.", phase);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-
-	if (bh->setposition == SET_SETRESOLVER)
-	{
-		Slot * resolver = bh->setplugins[SET_SETRESOLVER];
-		if (!resolver || !resolver->value)
-		{
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The resolver plugin is not defined!");
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-		if (!resolver->value->kdbSet)
-		{
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The set function of the resolver plugin is not defined!");
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-
-		int ret = resolver->value->kdbSet (resolver->value, ks, parentKey);
-
-		switch (ret)
-		{
-		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
-			return ret;
-		case ELEKTRA_PLUGIN_STATUS_ERROR:
-			return ret;
-		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
-			incrementSetPosition (bh);
-			return ret;
-		default:
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Invalid resolver return value!");
-			return ELEKTRA_PLUGIN_STATUS_ERROR;
-		}
-	}
-
-	if (bh->setplugins[bh->setposition])
-	{
-		Slot * cur = bh->setplugins[bh->setposition];
-		while (cur != 0)
-		{
-			if (cur->value && cur->value->kdbSet)
-			{
-				if (cur->value->kdbSet (cur->value, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-				{
-					ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey,
-										 "Error while carrying out kdbSet before the commit: %s",
-										 keyName (bh->mountpoint));
-					incrementSetPosition (bh);
-
-					return ELEKTRA_PLUGIN_STATUS_ERROR;
-				}
-			}
-			cur = cur->next;
-		}
-	}
-
-	incrementSetPosition (bh);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraBackendCommit (Plugin * handle, KeySet * ks, Key * parentKey)
+static bool runPluginCommit (Plugin * plugin, KeySet * ks, Key * parentKey)
 {
-	BackendHandle * bh = elektraPluginGetData (handle);
-	if (bh == NULL)
+	// TODO: provide way to access kdbCommit and name without kdbprivate.h
+	if (plugin->kdbCommit (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined correctly!");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	if (bh->setposition != SET_COMMIT)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Invalid plugin position!");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	if (bh->setplugins[SET_COMMIT] && bh->setplugins[SET_COMMIT]->value && bh->setplugins[SET_COMMIT]->value->kdbCommit)
-	{
-		if (bh->setplugins[SET_COMMIT]->value->kdbCommit (bh->setplugins[SET_COMMIT]->value, ks, parentKey) ==
-		    ELEKTRA_PLUGIN_STATUS_ERROR)
+		if (keyGetMeta (parentKey, "error") == NULL)
 		{
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Error during the commit phase");
+			addGenericError (parentKey, "kdbCommit", plugin->name);
+		}
+		return false;
+	}
+	return true;
+}
+
+static bool runPluginListCommit (PluginList * plugins, KeySet * ks, Key * parentKey)
+{
+	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
+	{
+		if (!runPluginCommit (cur->plugin, ks, parentKey))
+		{
+			return false;
 		}
 	}
+	return true;
+}
 
-	incrementSetPosition (bh);
+int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks, Key * parentKey)
+{
+	BackendHandle * handle = elektraPluginGetData (plugin);
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "Internal plugin data was NULL. Please report this bug at https://issues.libelektra.org.");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	const char * phase = elektraPluginGetPhase (plugin);
+	if (strcmp (phase, KDB_SET_PHASE_PRE_COMMIT) == 0)
+	{
+		return runPluginListCommit (handle->setPositions.precommit, ks, parentKey);
+	}
+	else if (strcmp (phase, KDB_SET_PHASE_PRE_COMMIT) == 0)
+	{
+		return runPluginCommit (handle->setPositions.commit, ks, parentKey);
+	}
+	else if (strcmp (phase, KDB_SET_PHASE_PRE_COMMIT) == 0)
+	{
+		return runPluginListCommit (handle->setPositions.postcommit, ks, parentKey);
+	}
+	else
+	{
+		ELEKTRA_SET_INTERNAL_ERRORF (
+			parentKey, "Unknown phase of kdbSet(): %s\n Please report this bug at https://issues.libelektra.org.", phase);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
-int elektraBackendError (Plugin * handle, KeySet * ks, Key * parentKey)
+static bool runPluginError (Plugin * plugin, KeySet * ks, Key * parentKey)
 {
-	BackendHandle * bh = elektraPluginGetData (handle);
-	if (bh == NULL)
+	// TODO: provide way to access kdbError and name without kdbprivate.h
+	if (plugin->kdbError (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "The backend handle is not defined correctly!");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	if (bh->errorposition < ERROR_PREROLLBACK || bh->errorposition > ERROR_POSTROLLBACK)
-	{
-		ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Invalid plugin position!");
-		return ELEKTRA_PLUGIN_STATUS_ERROR;
-	}
-
-	Slot * cur = bh->errorplugins[bh->errorposition];
-	while (cur != 0)
-	{
-		if (cur->value && cur->value->kdbError)
+		if (keyGetMeta (parentKey, "error") == NULL)
 		{
-			if (cur->value->kdbError (cur->value, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNING (parentKey, "Error while carrying out kdbError(oh the irony)");
-			}
+			addGenericError (parentKey, "kdbError", plugin->name);
 		}
-		cur = cur->next;
+		return false;
+	}
+	return true;
+}
+
+static bool runPluginListError (PluginList * plugins, KeySet * ks, Key * parentKey)
+{
+	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
+	{
+		if (!runPluginError (cur->plugin, ks, parentKey))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+int ELEKTRA_PLUGIN_FUNCTION (error) (Plugin * plugin, KeySet * ks, Key * parentKey)
+{
+	BackendHandle * handle = elektraPluginGetData (plugin);
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "Internal plugin data was NULL. Please report this bug at https://issues.libelektra.org.");
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
-	incrementErrorPosition (bh);
+	const char * phase = elektraPluginGetPhase (plugin);
+	if (strcmp (phase, KDB_SET_PHASE_PRE_ROLLBACK) == 0)
+	{
+		return runPluginListError (handle->setPositions.prerollback, ks, parentKey);
+	}
+	else if (strcmp (phase, KDB_SET_PHASE_PRE_ROLLBACK) == 0)
+	{
+		return runPluginError (handle->setPositions.rollback, ks, parentKey);
+	}
+	else if (strcmp (phase, KDB_SET_PHASE_PRE_ROLLBACK) == 0)
+	{
+		return runPluginListError (handle->setPositions.postrollback, ks, parentKey);
+	}
+	else
+	{
+		ELEKTRA_SET_INTERNAL_ERRORF (
+			parentKey, "Unknown phase of kdbSet(): %s\n Please report this bug at https://issues.libelektra.org.", phase);
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
+
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+}
+
+static void freePluginList (PluginList ** pluginsPtr)
+{
+	PluginList * cur = *pluginsPtr;
+	while (cur != NULL)
+	{
+		PluginList * next = cur->next;
+		elektraFree (cur);
+		cur = next;
+	}
+	*pluginsPtr = NULL;
+}
+
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * plugin, Key * errorKey ELEKTRA_UNUSED)
+{
+	BackendHandle * handle = elektraPluginGetData (plugin);
+	if (handle == NULL)
+	{
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
+	if (handle->path != NULL)
+	{
+		elektraFree (handle->path);
+	}
+
+	freePluginList (&handle->getPositions.prestorage);
+	freePluginList (&handle->getPositions.poststorage);
+	freePluginList (&handle->setPositions.prestorage);
+	freePluginList (&handle->setPositions.poststorage);
+	freePluginList (&handle->setPositions.precommit);
+	freePluginList (&handle->setPositions.postcommit);
+	freePluginList (&handle->setPositions.prerollback);
+	freePluginList (&handle->setPositions.postrollback);
+
+	elektraFree (handle);
+	elektraPluginSetData (plugin, NULL);
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
 {
-	return elektraPluginExport ("backend", ELEKTRA_PLUGIN_OPEN, &elektraBackendOpen, ELEKTRA_PLUGIN_CLOSE, &elektraBackendClose,
-				    ELEKTRA_PLUGIN_GET, &elektraBackendGet, ELEKTRA_PLUGIN_SET, &elektraBackendSet, ELEKTRA_PLUGIN_COMMIT,
-				    &elektraBackendCommit, ELEKTRA_PLUGIN_ERROR, &elektraBackendError, ELEKTRA_PLUGIN_END);
+	// clang-format off
+	return elektraPluginExport ("backend",
+		ELEKTRA_PLUGIN_OPEN, &ELEKTRA_PLUGIN_FUNCTION (open),
+		ELEKTRA_PLUGIN_INIT, &ELEKTRA_PLUGIN_FUNCTION (init),
+		ELEKTRA_PLUGIN_GET, &ELEKTRA_PLUGIN_FUNCTION (get),
+		ELEKTRA_PLUGIN_SET, &ELEKTRA_PLUGIN_FUNCTION (set),
+		ELEKTRA_PLUGIN_COMMIT, &ELEKTRA_PLUGIN_FUNCTION (commit),
+		ELEKTRA_PLUGIN_ERROR, &ELEKTRA_PLUGIN_FUNCTION (error),
+		ELEKTRA_PLUGIN_CLOSE, &ELEKTRA_PLUGIN_FUNCTION (close),
+	ELEKTRA_PLUGIN_END);
+	// clang-format on
 }

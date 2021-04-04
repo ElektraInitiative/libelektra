@@ -177,3 +177,9 @@ const char * elektraPluginGetPhase (Plugin * plugin)
 	// TODO (kodebach): switch to integer value? (uint32_t?)
 	return keyString (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
 }
+
+Plugin * elektraPluginFromMountpoint (Plugin * plugin ELEKTRA_UNUSED, const char * ref ELEKTRA_UNUSED)
+{
+	// FIXME: implement
+	return NULL;
+}
