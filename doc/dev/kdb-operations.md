@@ -92,7 +92,8 @@ The basic flow of this operation is:
 14. Split data back into individual backends.
 15. Run the `poststorage` phase for all backends.
 16. Merge the data from all backends.
-17. Update cache and **return**.
+17. If a global cache plugin is enabled, update cache.
+    Then **return**.
 
 > **Note:** In case of error, we abort immediately, restore `ks` to its original state and return.
 
@@ -115,7 +116,7 @@ Properties of `kdbSet()`:
 - _All keys_ in `ks` that are below `parentKey` will be persisted in the KDB, when a `kdbSet (kdb, ks, parentKey)` call returns successfully.
 - Calling `kdbSet` results in an error, if `kdbGet` wasn't called on this `KDB` instance at least once.
 
-TODO: cache correct? notifications? (just call at the end?)
+TODO: notifications? (just call at the end?)
 
 The basic flow of this operation is:
 
