@@ -103,7 +103,6 @@ Influence of namespaces:
 - `spec:/` backends only go through `init`, `resolver`, `cache`, `presetstorage` and `storage` phases as normal, but their `poststorage` phase is called earlier.
 - `dir:/`, `user:/` and `system:/` go through all phases as described above.
 - `proc:/` mountpoints go through all the phases as described above, but they are not stored in the cache.
-  If we load data from the cache, `proc:/` mountpoints will still go through the remaining steps above.
 - `default:/` backends only go through the `poststorage` phase.
 
 ## `set` Operation
