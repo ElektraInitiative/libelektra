@@ -105,7 +105,6 @@ Only suited for import/export:
 - [xerces](xerces/) uses XML (without a specific schema).
 - [xmltool](xmltool/) uses XML in the deprecated Elektra XML schema
   for importing configuration from Elektra 0.7.
-- [yamlsmith](yamlsmith/) exports key sets in the YAML format
 - [c](c/) writes Elektra C-structures (`ksNew(.. keyNew(...`)
 
 Plugins that just show some functionality, (currently) not intended for
