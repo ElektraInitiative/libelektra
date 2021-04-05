@@ -216,9 +216,7 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xaugeas" \
 		-o "x$PLUGIN" = "xcsvstorage" \
 		-o "x$PLUGIN" = "xdpkg" \
-		-o "x$PLUGIN" = "xregexstore" \
 		-o "x$PLUGIN" = "xpasswd" \
-		-o "x$PLUGIN" = "xsimplespeclang" \
 		-o "x$PLUGIN" = "xmozprefs" \
 		-o "x$PLUGIN" = "xfile" \
 		-o "x$PLUGIN" = "xruby" \
@@ -229,17 +227,11 @@ is_not_rw_storage() {
 		-o "x$PLUGIN" = "xmmapstorage" \
 		-o "x$PLUGIN" = "xmmapstorage_crc" \
 		-o "x$PLUGIN" = "xmultifile" \
-		-o "x$PLUGIN" = "xcamel" \
 		-o "x$PLUGIN" = "xsimpleini" \
-		-o "x$PLUGIN" = "xyambi" \
-		-o "x$PLUGIN" = "xtcl" \
 		-o "x$PLUGIN" = "xmini" \
-		-o "x$PLUGIN" = "xyaypeg" \
 		-o "x$PLUGIN" = "xyamlcpp" \
-		-o "x$PLUGIN" = "xyawn" \
 		-o "x$PLUGIN" = "xkconfig" \
-		-o "x$PLUGIN" = "xtoml" \
-		-o "x$PLUGIN" = "xdini"
+		-o "x$PLUGIN" = "xtoml"
 }
 
 is_plugin_available() {
@@ -395,6 +387,15 @@ export_check() {
 }
 
 ### END OF INCLUDE FILE ###
+#
+#
+#
+#
+#
+#
+#
+#
+#
 #
 #
 #
