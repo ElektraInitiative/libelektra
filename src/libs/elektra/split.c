@@ -1258,7 +1258,8 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 		{
 			ksAppendKey (defaultBackendData->keys, keyDup (k, KEY_CP_ALL));
 		}
-		else if (keyCmp (k, nextBackendKey) >= 0)
+		// nextBackendKey == NULL happens during bootstrap
+		else if (nextBackendKey != NULL && keyCmp (k, nextBackendKey) >= 0)
 		{
 			++*curBackend;
 			cur = backendsDivideInternal (backends, curBackend, ks, cur);
@@ -1266,10 +1267,6 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 		}
 		else if (*curBackend < 0 || keyIsBelowOrSame (backendKey, k) == 1)
 		{
-			if (keyNeedSync (k) == 1)
-			{
-				keySetMeta (backendKey, "internal/kdb/needsync", "1");
-			}
 			ksAppendKey (backendData->keys, keyDup (k, KEY_CP_ALL));
 		}
 		else

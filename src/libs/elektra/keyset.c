@@ -1319,6 +1319,10 @@ KeySet * ksBelow (const KeySet * ks, const Key * root)
 	{
 		returned->array[returned->size] = 0;
 	}
+	for (size_t i = 0; i < returned->size; i++)
+	{
+		keyIncRef (returned->array[i]);
+	}
 	return returned;
 }
 

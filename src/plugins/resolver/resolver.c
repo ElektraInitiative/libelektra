@@ -429,17 +429,9 @@ static char * elektraCacheKeyName (char * filename)
 	return name;
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
+static int initHandles (Plugin * handle, Key * parentKey)
 {
-	KeySet * resolverConfig = elektraPluginGetConfig (handle);
-	if (ksLookupByName (resolverConfig, "/module", 0)) return 0;
-	const char * path = keyString (ksLookupByName (resolverConfig, "/path", 0));
-
-	if (!path)
-	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Could not find file configuration");
-		return -1;
-	}
+	const char * path = keyString (parentKey);
 
 	resolverHandles * p = elektraMalloc (sizeof (resolverHandles));
 	resolverInit (&p->spec, path);
@@ -459,7 +451,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 
 		if ((mutexError = pthread_mutexattr_init (&mutexAttr)) != 0)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not initialize recursive mutex: pthread_mutexattr_init returned %d",
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not initialize recursive mutex: pthread_mutexattr_init returned %d",
 						     mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
@@ -467,13 +459,13 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 		if ((mutexError = pthread_mutexattr_settype (&mutexAttr, PTHREAD_MUTEX_RECURSIVE)) != 0)
 		{
 			ELEKTRA_SET_RESOURCE_ERRORF (
-				errorKey, "Could not initialize recursive mutex: pthread_mutexattr_settype returned %d", mutexError);
+				parentKey, "Could not initialize recursive mutex: pthread_mutexattr_settype returned %d", mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
 		}
 		if ((mutexError = pthread_mutex_init (&elektraResolverMutex, &mutexAttr)) != 0)
 		{
-			ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Could not initialize recursive mutex: pthread_mutex_init returned %d",
+			ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not initialize recursive mutex: pthread_mutex_init returned %d",
 						     mutexError);
 			pthread_mutex_unlock (&elektraResolverInitMutex);
 			return -1;
@@ -490,7 +482,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 	p->spec.filemode = 0644;
 	p->spec.dirmode = 0755;
 
-	int ret = mapFilesForNamespaces (p, errorKey);
+	int ret = mapFilesForNamespaces (p, parentKey);
 
 	if (ret != -1)
 	{
@@ -498,6 +490,13 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey)
 	}
 
 	return ret;
+}
+
+
+int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+{
+	elektraPluginSetData (handle, NULL);
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
@@ -528,6 +527,14 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		return 1;
 	}
 	keyDel (root);
+
+	if (elektraPluginGetData (handle) == NULL)
+	{
+		if (initHandles (handle, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+	}
 
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 	keySetString (parentKey, pk->filename);

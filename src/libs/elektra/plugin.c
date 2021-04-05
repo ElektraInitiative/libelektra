@@ -54,6 +54,7 @@
  */
 Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config, Key * errorKey)
 {
+	// TODO (Q): take global KS as arg?
 	Plugin * handle = 0;
 	const char * n;
 

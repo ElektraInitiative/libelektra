@@ -11,24 +11,32 @@
 
 #include <kdberrors.h>
 #include <kdbhelper.h>
+#include <kdbprivate.h> // for struct _Plugin internals
 
 /**
- * The modules backend is configured by libelektra-kdb with the modules KeySet
- * of the KDB handle as its mountpoint definition. The plugin simply stores this
- * KeySet as its plugin data during the init phase of kdbGet() and then returns it
- * in the storage phase.
+ * The modules backend is automatically configured by libelektra-kdb.
+ * The init functions receives a mountpoint definition with a single Key '/plugin'.
+ * This binary Key contains a Plugin* of which the modules plugin takes ownership.
+ * During the storage phase of kdbGet() we then call the kdbGet() function of that plugin.
+ * The plugin only works like this, if it is called with a parentKey of the form 'system:/elektra/modules/<plugin>' (where '<plugin>' !=
+ * 'modules'). If the plugin is called with 'system:/elektra/modules/modules' it returns its own module information. If the plugin is called
+ * with 'system:/elektra/modules' it does nothing. For all other parentKeys the plugin reports an error.
  */
 
 int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
 {
 	elektraPluginSetData (handle, NULL);
-	// init as read-only
-	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * parentKey ELEKTRA_UNUSED)
 {
-	elektraPluginSetData (handle, ksDup (definition));
+	Key * pluginKey = ksLookupByName (definition, "/plugin", 0);
+	if (pluginKey != NULL)
+	{
+		elektraPluginSetData (handle, *(Plugin **) keyValue (pluginKey));
+	}
+	// init as read-only
 	return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 }
 
@@ -51,11 +59,19 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	if (strcmp (keyName (parentKey), "system:/elektra/modules") != 0)
+	Key * modulesRoot = keyNew ("system:/elektra/modules", KEY_END);
+	if (keyCmp (modulesRoot, parentKey) == 0)
+	{
+		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
+	}
+
+	if (keyIsDirectlyBelow (modulesRoot, parentKey) != 1)
 	{
 		ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "The 'modules' plugin is intended for internal use by 'libelektra-kdb' only.");
+		keyDel (modulesRoot);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
+	keyDel (modulesRoot);
 
 	const char * phase = elektraPluginGetPhase (handle);
 	if (strcmp (phase, KDB_GET_PHASE_RESOLVER) == 0)
@@ -64,7 +80,8 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	}
 	else if (strcmp (phase, KDB_GET_PHASE_STORAGE) == 0)
 	{
-		ksAppend (returned, elektraPluginGetData (handle));
+		Plugin * plugin = elektraPluginGetData (handle);
+		plugin->kdbGet (plugin, returned, parentKey);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	else
@@ -73,9 +90,13 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	}
 }
 
-int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey ELEKTRA_UNUSED)
+int ELEKTRA_PLUGIN_FUNCTION (close) (Plugin * handle, Key * errorKey)
 {
-	ksDel (elektraPluginGetData (handle));
+	Plugin * plugin = elektraPluginGetData (handle);
+	if (!elektraPluginClose (plugin, errorKey))
+	{
+		return ELEKTRA_PLUGIN_STATUS_ERROR;
+	}
 	elektraPluginSetData (handle, NULL);
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }

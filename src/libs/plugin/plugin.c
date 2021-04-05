@@ -178,8 +178,15 @@ const char * elektraPluginGetPhase (Plugin * plugin)
 	return keyString (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
 }
 
-Plugin * elektraPluginFromMountpoint (Plugin * plugin ELEKTRA_UNUSED, const char * ref ELEKTRA_UNUSED)
+Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)
 {
-	// FIXME: implement
-	return NULL;
+	KeySet * plugins = *(KeySet **) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
+
+	Key * lookupHelper = keyNew ("/", KEY_END);
+	keyAddBaseName (lookupHelper, ref);
+
+	Key * pluginKey = ksLookup (plugins, lookupHelper, 0);
+	keyDel (lookupHelper);
+
+	return pluginKey == NULL ? NULL : *(Plugin **) keyValue (pluginKey);
 }

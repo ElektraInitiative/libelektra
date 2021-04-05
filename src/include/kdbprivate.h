@@ -526,7 +526,7 @@ KeySet * backendsForParentKey (KeySet * backends, Key * parentKey);
 bool backendsDivide (KeySet * backends, KeySet * ks);
 void backendsMerge (KeySet * backends, KeySet * ks);
 
-KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, Key * errorKey);
+KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet * global, Key * errorKey);
 
 /*Backend handling*/
 Plugin * backendOpen (KeySet * elektra_config, KeySet * modules, KeySet * global, Key * errorKey);
