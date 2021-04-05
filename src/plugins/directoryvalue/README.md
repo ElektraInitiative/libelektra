@@ -5,7 +5,7 @@
 - infos/provides =
 - infos/recommends =
 - infos/placements = postgetstorage presetstorage
-- infos/status = maintained unittest nodep preview
+- infos/status = unittest nodep preview
 - infos/metadata =
 - infos/description = This plugin converts directory keys to leaf keys in the set direction
 
