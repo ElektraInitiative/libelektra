@@ -124,11 +124,11 @@
 #endif
 
 
-/**Rewind the internal iterator to first metadata.
+/** Rewind the internal iterator to the first entry in metadata keyset.
  *
- * Use it to set the cursor to the beginning of the Key Meta Infos.
- * keyCurrentMeta() will then always return NULL afterwards. So
- * you want to keyNextMeta() first.
+ * Use this function to set the cursor to the beginning of the Key Meta Infos.
+ * keyCurrentMeta() will always return NULL afterwards. So
+ * you want to call keyNextMeta() first.
  *
  * @code
 Key *key;
@@ -141,14 +141,18 @@ while ((meta = keyNextMeta (key))!=0)
 }
  * @endcode
  *
- * @param key the key object to work with
+ * @param key Key whose internal iterator should be rewinded
+ * 
  * @retval 0 on success
- * @retval 0 if there is no meta information for that key
+ * @retval 0 if there is no metadata for that key
  *         (keyNextMeta() will always return 0 in that case)
  * @retval -1 on NULL pointer
- * @see keyNextMeta(), keyCurrentMeta()
- * @see ksRewind() for pedant in iterator interface of KeySet
+ * 
+ * @since 1.0.0
  * @ingroup keymeta
+ * 
+ * @see keyNextMeta(), keyCurrentMeta() for iterating after rewinding
+ * @see ksRewind() KeySet's equivalent function for rewinding
  **/
 int keyRewindMeta (Key * key)
 {
@@ -158,13 +162,13 @@ int keyRewindMeta (Key * key)
 	return ksRewind (key->meta);
 }
 
-/** Iterate to the next meta information.
+/** Forwards internal iterator of metadata to the next entry
  *
  * Keys have an internal cursor that can be reset with keyRewindMeta(). Every
  * time keyNextMeta() is called the cursor is incremented and the new current
  * Name of Meta Information is returned.
  *
- * You'll get a NULL pointer if the meta information after the end of the Key was reached.
+ * You'll get a NULL pointer if the metadata after the end of the Key was reached.
  * On subsequent calls of keyNextMeta() it will still return the NULL pointer.
  *
  * The @p key internal cursor will be changed, so it is not const.
@@ -175,13 +179,18 @@ int keyRewindMeta (Key * key)
  * @note You must not delete or change the returned key,
  *    use keySetMeta() if you want to delete or change it.
  *
- * @param key the key object to work with
- * @return a key representing meta information
- * @retval 0 when the end is reached
- * @retval 0 on NULL pointer
+ * @param key the Key object to work with
+ * 
+ * @return a key containing metadata
+ * @retval 0 when the last Key has been reached
+ * @retval 0 when Key is a NULL pointer
  *
- * @see ksNext() for pedant in iterator interface of KeySet
+ * @since 1.0.0
  * @ingroup keymeta
+ * 
+ * @see ksNext() for pedant in iterator interface of KeySet
+ * @see keyRewindMeta() for rewinding the internal iterator
+ * @see keyCurrentMeta() for getting the current metadata Key
  **/
 const Key * keyNextMeta (Key * key)
 {
@@ -194,21 +203,26 @@ const Key * keyNextMeta (Key * key)
 	return ret;
 }
 
-/**Returns the value of a meta-information which is current.
+/** Returns the Key of the metadata the internal iterator currently
+ * points at.
  *
- * The pointer is NULL if you reached the end or after
+ * The returned pointer is NULL if the end has been reached or after calling
  * ksRewind().
  *
  * @note You must not delete or change the returned key,
  *    use keySetMeta() if you want to delete or change it.
  *
- * @param key the key object to work with
+ * @param key Key to get the current metadata from
+ * 
  * @return a buffer to the value pointed by @p key's cursor
  * @retval 0 on NULL pointer
- * @see keyNextMeta(), keyRewindMeta()
- *
- * @see ksCurrent() for pedant in iterator interface of KeySet
+ * 
+ * @since 1.0.0
  * @ingroup keymeta
+ * 
+ * @see keyNextMeta() for getting the next value
+ * @see keyRewindMeta() for rewinding the internal iterator
+ * @see ksCurrent() KeySets's equivalent function for getting the current Key
  **/
 const Key * keyCurrentMeta (const Key * key)
 {
@@ -221,10 +235,11 @@ const Key * keyCurrentMeta (const Key * key)
 	return ret;
 }
 
-/**Do a shallow copy of metadata from source to dest.
+/** Do a shallow copy of metadata with name @p metaName from source to dest.
  *
  * The key dest will have the same metadata referred with
- * metaName afterwards then source.
+ * metaName afterwards then source. If the Key with name @p metaName doesn't
+ * exist in @p src - it gets deleted. Read-only keys are unaffected.
  *
  * For example the metadata type is copied into the
  * Key k.
@@ -240,9 +255,9 @@ void l(Key *k)
  * @endcode
  *
  * The main purpose of this function is for plugins or
- * applications which want to add the same metadata to
- * n keys. When you do that with keySetMeta() it will
- * take n times the memory for the key. This can be
+ * applications, which want to add the same metadata to
+ * n keys. When you do that keySetMeta() will
+ * take n times the memory for the key. This can be a
  * considerable amount of memory for many keys with
  * some metadata for each.
  *
@@ -266,14 +281,20 @@ void o(KeySet *ks)
  *
  * @post keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
  *
+ * @param dest the destination where the metadata should be copied to
+ * @param source the key where the metadata should be copied from
+ * @param metaName the name of the metadata Key which should be copied
+ * 
  * @retval 1 if was successfully copied
  * @retval 0 if the metadata in dest was removed too
  * @retval -1 on null pointers (source or dest)
  * @retval -1 on memory problems
- * @param dest the destination where the metadata should be copied too
- * @param source the key where the metadata should be copied from
- * @param metaName the name of the metadata which should be copied
+ * @retval -1 if metadata is read-only
+ * 
+ * @since 1.0.0
  * @ingroup keymeta
+ * 
+ * @see keyCopyAllMeta() copies all metadata from @p dest to @p src
  */
 int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
 {
@@ -328,13 +349,14 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
 	return 1;
 }
 
-/**Do a shallow copy of all metadata from source to dest.
+/** Do a shallow copy of all metadata from source to dest.
  *
  * The key dest will additionally have all metadata
  * the source had.
- * Meta data not present in source will not be changed.
- * Meta data which was present in source and dest will
+ * Metadata not present in source will not be changed.
+ * Metadata which was present in source and dest will
  * be overwritten.
+ * If the @p dest Key is read-only it will not be changed.
  *
  * For example the metadata type is copied into the
  * Key k:
@@ -355,13 +377,17 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
  *
  * @post for every metaName present in source: keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
  *
- * @retval 1 if was successfully copied
+ * @param dest the destination where the metadata should be copied too
+ * @param source the key where the metadata should be copied from
+ * 
+ * @retval 1 if metadata was successfully copied
  * @retval 0 if source did not have any metadata
  * @retval -1 on null pointer of dest or source
  * @retval -1 on memory problems
- * @param dest the destination where the metadata should be copied too
- * @param source the key where the metadata should be copied from
+ * 
+ * @since 1.0.0
  * @ingroup keymeta
+ * @see keyCopyMeta() for copying one metadata Key from @p dest to @p source
  */
 int keyCopyAllMeta (Key * dest, const Key * source)
 {
@@ -386,31 +412,33 @@ int keyCopyAllMeta (Key * dest, const Key * source)
 	return 0;
 }
 
-/** Returns the value of a meta-information given by name.
+/** Returns the Key for a metadata entry with name @p metaName.
  *
  * You are not allowed to modify the resulting key.
+ * 
+ * If @p metaName does not start with 'meta:/', 
+ * it will be prefixed with 'meta:/'.
  *
  * @code
-int f(Key *k)
-{
-	if (!strcmp(keyValue(keyGetMeta(k, "type")), "boolean"))
-	{
-		// the type of the key is boolean
-	}
-}
+Key metaData = keyGetMeta(k, "type")
+// keyType == "boolean"
+char keyType[] = keyValue(metaData)
  * @endcode
  *
  * @note You must not delete or change the returned key,
  *    use keySetMeta() if you want to delete or change it.
  *
- * @param key the key object to work with
- * @param metaName the name of the meta information you want the value from
- *                 If the name does not start with 'meta:/', we will prefix it with 'meta:/'.
- * @retval 0 if the key or metaName is 0
- * @retval 0 if no such metaName is found
+ * @param key the Key from which to get metadata
+ * @param metaName the name of the meta information you want the Key from.
+ * 
  * @return value of meta-information if meta-information is found
- * @see keySetMeta()
+ * @retval 0 if key or metaName is NULL
+ * @retval 0 if no such metaName is found
+ * 
+ * @since 1.0.0
  * @ingroup keymeta
+ * @see keySetMeta() for setting metadata
+ * @see keyMeta() for getting the KeySet containing metadata
  **/
 const Key * keyGetMeta (const Key * key, const char * metaName)
 {
@@ -439,31 +467,36 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
 }
 
 
-/**Set a new meta-information.
+/** Set a new metadata Key
  *
- * Will set a new meta-information pair consisting of
- * metaName and newMetaString.
+ * Will set a new metadata pair with name @p metaName and value
+ * @p newMetaString.
  *
- * Will add a new Pair for meta-information if metaName was
- * not added up to now.
+ * Will add a new Key of metadata if @p metaName was unused until now.
  *
- * It will modify an existing Pair of meta-information if
- * the metaName was inserted already.
+ * It will modify an existing Pair of metadata if
+ * @p metaName was inserted already.
  *
- * It will remove a meta information if newMetaString is 0.
+ * It will remove a metadata Key if @p newMetaString is 0.
+ * 
+ * If @p metaName does not start with 'meta:/', 
+ * it will be prefixed with 'meta:/'.
  *
- * @param key the key object to work with
- * @param metaName the name of the meta information where you
- *                 want to change the value
- *                 If the name does not start with 'meta:/', we will prefix it with 'meta:/'.
- * @param newMetaString the new value for the meta information
- * @retval -1 on error if key or metaName is 0, out of memory
- *         or names are not valid
- * @retval 0 if the meta-information for metaName was removed
- * @return size (>0) of newMetaString if meta-information was
+ * @param key Key whose metadata should be set
+ * @param metaName name of the metadata Key that should be set
+ * @param newMetaString new value for the metadata Key
+ * 
+ * @return size (>0) of @p newMetaString if metadata has been
  *         successfully added
- * @see keyGetMeta()
+ * @retval 0 if the meta-information for metaName was removed
+ * @retval -1 if key or metaName is 0
+ * @retval -1 if system is out of memory
+ * @retval -1 if @p metaName is not a valid metadata name
+ * 
+ * @since 1.0.0
  * @ingroup keymeta
+ * @see keyGetMeta() for getting the value of a metadata Key
+ * @see keyMeta() for getting the KeySet containing metadata
  **/
 ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString)
 {
@@ -551,29 +584,34 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	return metaStringSize;
 }
 
-/** Returns the keyset holding the given key's metadata
+/** Returns the KeySet holding the given Key's metadata
  *
- * Use keySetMeta() to populate the meta-keyset of a key.
+ * Use keySetMeta() to populate the metadata KeySet of a Key.
  *
  * @snippet keyMetaKeySet.c Basic keyMeta
  *
- * Iterate the meta-keyset like any other KeySet.
+ * Iterate the returned metadata KeySet like any other KeySet.
  *
  * @snippet keyMetaKeySet.c Iterate keyMeta
  *
- * Use ksLookup() or keyGetMeta() to retrieve a value for a given key.
+ * Use ksLookup() or keyGetMeta() to retrieve a single value for a given Key.
  *
  * @snippet keyMetaKeySet.c Lookup keyMeta
  *
- * @note You are not allowed to modify the name of keyset's keys or delete them.
+ * @note You are not allowed to modify the name of KeySet's Keys or delete them.
  * @note You must not delete the returned KeySet.
- * @note Adding a key with metakeys to the KeySet is an error.
+ * @note Adding a key with metadata to the KeySet is an error.
  *
- * @param key the key object to work with
- * @retval 0 if the key is 0
- * @return the keyset holding the metakeys
- * @see keySetMeta(), keyGetMeta()
+ * @param key the Key from which to get the metadata KeySet
+ * 
+ * @return the KeySet holding the metadata
+ * @retval 0 if the Key is 0
+ * @retval 0 if the Key has no metadata
+ * 
+ * @since 1.0.0
  * @ingroup keymeta
+ * @see keySetMeta() for setting a metadata Key 
+ * @see keyGetMeta() for getting a metadata Key
  **/
 KeySet * keyMeta (Key * key)
 {
