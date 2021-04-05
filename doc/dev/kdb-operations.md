@@ -79,7 +79,7 @@ The basic flow of this operation is:
 4. From now on ignore all backends, which indicated that there is no update.
 5. If all backends are now ignored, **return**.
 6. If a global cache plugin is enabled:
-   Ask the global cache plugin for the cache entry IDs for all backends.
+   Ask the global cache plugin for the cache times for all backends.
 7. If all backends have an existing cache entry:
    Run the `cachecheck` phase on all backends
 8. If all backends indicated the cache is still valid:
