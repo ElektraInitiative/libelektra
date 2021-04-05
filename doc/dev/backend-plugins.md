@@ -81,7 +81,8 @@ During the `cachecheck` phase the backend plugin is called with:
 
 - The exact `parentKey` that was returned by the `resolver` phase of this `get` operation.
   The key name and value of this key are read-only.
-  Additionally, the metakey `internal/kdb/cacheid` is set to a value which uniquely identifies the cache entry for this backend.
+  Additionally, the metakey `internal/kdb/cachetime` is set to a value indicating the update time of the cache entry.
+  TODO: exact format of `internal/kdb/cachetime` TBD
 - An empty keyset `ks`.
 
 The backend plugin then:
