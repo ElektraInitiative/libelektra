@@ -2113,14 +2113,14 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 3: find backends for parentKey
 	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
 
-	// Step 4 and 5: check that backends are initialized and remove read-only ones
+	// Step 4: check that backends are initialized and remove read-only ones
 	bool backendsInit = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
 		Key * backendKey = ksAtCursor (backends, i);
 		const BackendData * backendData = keyValue (backendKey);
 
-		// Step 4: check that backend is initialized
+		// check that backend is initialized
 		if (!backendData->initialized)
 		{
 			ELEKTRA_ADD_INTERFACE_WARNINGF (
@@ -2130,13 +2130,16 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 			continue;
 		}
 
-		// Step 5: remove if read-only
+		// remove if read-only
 		if (keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL)
 		{
 			elektraKsPopAtCursor (ks, i);
 			--i;
 		}
 	}
+
+	// Step 5: remove backends that haven't changed since kdbGet()
+	// FIXME: implement
 
 	if (!backendsInit)
 	{

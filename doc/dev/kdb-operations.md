@@ -125,7 +125,9 @@ The basic flow of this operation is:
    If neither `ks` nor any of the keys need sync, **return**.
 3. Determine the backends needed to write all keys below `parentKey`.
 4. Check that all backends are initialized (i.e. `kdbGet()` was called).
-5. From now on ignore all backends that were initialized as read-only.
+   From now on ignore all backends that were initialized as read-only.
+5. Determine which backends contain changed data.
+   From now on ignore all backends that have not changed.
 6. Run the `spec` plugin on `ks` (to add metakeys for new keys).
 7. Deep-Copy `ks` (below `parentKey`) into a new KeySet `set_ks`
 8. Split `set_ks` into individual backends
