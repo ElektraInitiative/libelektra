@@ -41,7 +41,4 @@ tasks.withType(GenerateMavenPom).all {
 // configure signing
 signing {
 	required { project.isReleaseVersion && gradle.taskGraph.hasTask("publish") }
-	if ( project.isReleaseVersion ) {
-		useInMemoryPgpKeys(project.signingSecretKey, project.signingPassword)
-	}
 }
