@@ -8,7 +8,7 @@ plugins {
 }
 
 allprojects {
-	version = 'SNAPSHOT'
+	version = project.properties['version'] ?: 'SNAPSHOT'
 }
 
 // apply optional version information override
