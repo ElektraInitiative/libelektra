@@ -249,11 +249,14 @@ _(@tucek)_
 
 - Update FreeBSD images from version 12.1 to 12.2 _(Robert Sowula)_
 - <<TODO>>
+- Update brew before installing packages and print brew config. _(Mihael Pranjić)_
+- Restart `dbus` service before running tests and find `DBUS_LAUNCHD_SESSION_BUS_SOCKET` manually (as workaround). _(Mihael Pranjić)_
+- Use macOS Big Sur images. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### GitHub Actions
 
-- <<TODO>>
+- Fix issues with `dbus` and java paths, exclude `jni`. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 

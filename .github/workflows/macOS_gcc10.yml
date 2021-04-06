@@ -8,7 +8,8 @@ env:
   BUILD_TYPE: RelWithDebInfo
   # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
   # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-  PLUGINS: 'ALL;-xerces;-curlget'
+  # The tests fail with jni: https://github.com/ElektraInitiative/libelektra/issues/3747
+  PLUGINS: 'ALL;-xerces;-curlget;-jni'
   BINDINGS: 'ALL;-rust'
   # Skip homebrew cleanup to avoid issues with removal of packages
   HOMEBREW_NO_INSTALL_CLEANUP: 1
@@ -21,10 +22,17 @@ jobs:
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: macos-latest
+    runs-on: macos-10.15
 
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+        architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7 # Not needed with a .ruby-version file
 
     - name: Install Dependencies
       run: |
@@ -42,6 +50,7 @@ jobs:
         brew install libuv
         brew install lua
         brew install ninja
+        brew install openjdk
         brew install qt
         brew install swig
         brew install yajl
@@ -49,10 +58,14 @@ jobs:
 
     - name: Setup Build Environment
       run: |
+        sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
+        echo "JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk.jdk/Contents/Home" >> $GITHUB_ENV
+        echo "/usr/local/opt/openjdk/bin" >> $GITHUB_PATH
         gem install test-unit --no-document
         pip2 install cheetah # Required by kdb-gen
         brew tap homebrew/services
         brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
+        brew postinstall dbus
         brew services restart dbus
         cmake -E make_directory ${{runner.workspace}}/build
 
@@ -65,8 +78,6 @@ jobs:
       # and build directories, but this is only available with CMake 3.13 and higher.
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: |
-        PATH="/usr/local/opt/ruby@2.7/bin:/usr/local/lib/ruby/gems/2.7.0/bin:$PATH"
-        PATH="/usr/local/opt/python@3.9/bin:$PATH"
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(
           -GNinja
@@ -83,7 +94,6 @@ jobs:
           -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
           -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
           -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
-          $TRAVIS_BUILD_DIR
         )
         printf '—— CMake Config ——\n'
         for option in "${CMAKE_OPT[@]}"; do printf '%s\n' "$option"; done

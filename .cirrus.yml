@@ -86,26 +86,29 @@ mac_task:
 
     - name: 🍎 Clang
       osx_instance:
-        image: catalina-xcode
+        image: big-sur-xcode
       env:
         ENABLE_LOGGER: ON
         TOOLS: ALL;web
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        PLUGINS: ALL;-curlget;-augeas
+        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
 
     - name: 🍎 Clang ASAN
       osx_instance:
-        image: catalina-xcode
+        image: big-sur-xcode
       env:
         ASAN_OPTIONS: 'detect_leaks=1'
         BINDINGS: cpp
         ENABLE_ASAN: ON
         TOOLS: kdb
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-        DBUS_BUG: ON # dbus tests on cirrus are failing: https://github.com/ElektraInitiative/libelektra/issues/3635
+        PLUGINS: ALL;-curlget;-augeas
+        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
 
     - name: 🍎 FULL
       osx_instance:
-        image: catalina-xcode
+        image: big-sur-xcode
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
@@ -113,12 +116,14 @@ mac_task:
 
     - name: 🍎 MMap
       osx_instance:
-        image: catalina-xcode
+        image: big-sur-xcode
       env:
         KDB_DEFAULT_STORAGE: mmapstorage
         KDB_DB_FILE: default.mmap
         KDB_DB_INIT: elektra.mmap
-        PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        PLUGINS: ALL;-curlget;-augeas
+        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+        # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
 
   install_script:
     - | # Install Homebrew formulas
@@ -132,6 +137,7 @@ mac_task:
       brew install boost
       brew install clang-format
       brew install dbus
+      brew upgrade dbus
       brew install discount
       brew install doxygen
       brew install flex
@@ -165,7 +171,12 @@ mac_task:
     - | # Start D-Bus session bus
       brew tap homebrew/services
       brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
-      brew services start dbus
+      brew postinstall dbus
+      brew services restart dbus # Workaround for dbus socket issues on cirrus
+      export DBUS_LAUNCHD_SESSION_BUS_SOCKET=$(find /private/tmp/com.apple.launchd*/unix_domain_listener | xargs ls -Art | tail -n1) # workaround for cirrus
+      launchctl setenv DBUS_LAUNCHD_SESSION_BUS_SOCKET $DBUS_LAUNCHD_SESSION_BUS_SOCKET
+      echo $DBUS_LAUNCHD_SESSION_BUS_SOCKET
+      launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
     - | # Install Python
       brew install python@3.8 || brew upgrade python@3.8
       export PATH="/usr/local/opt/python@3.8/bin:$PATH"
