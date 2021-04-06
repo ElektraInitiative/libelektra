@@ -616,6 +616,28 @@ ${WORKSPACE}/build/doc/man ./"""
   }]
 }
 
+
+def buildAndPublishMaven() {
+  def stageName = 'publishMavenArtifacts'
+  return [(stageName): {
+    stage(stageName) {
+      withDockerEnv(DOCKER_IMAGES.focal) {
+        withCredentials([file(credentialsId: 'maven-signing-key', variable: 'KEY'),
+                         string(credentialsId: 'maven-signing-passphrase', variable: 'PASS'),
+                         usernamePassword(credentialsId: 'sonatype-credentials', passwordVariable: 'SONATYPE_PASSWORD', usernameVariable: 'SONATYPE_USERNAME')]) {
+          checkout scm
+          dir('src/bindings/jna') {
+            sh """\
+gradle -Pversion=${RELEASE_VERSION} \
+-PsonatypeUsername=${SONATYPE_USERNAME} -PsonatypePassword=${SONATYPE_PASSWORD} \
+-Psigning.secretKeyRingFile=${KEY} -Psigning.keyId=07235980 -Psigning.password=\"${PASS}\" publish"""
+          }
+        }
+      }
+    }
+  }]
+}
+
 /**
  * Build and publish jna bindings to maven repository
  *
