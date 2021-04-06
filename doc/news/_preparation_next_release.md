@@ -256,7 +256,7 @@ _(@tucek)_
 
 ### GitHub Actions
 
-- Fix issues with `dbus` and java paths. _(Mihael Pranjić)_
+- Fix issues with `dbus` and java paths, exclude `jni`. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
