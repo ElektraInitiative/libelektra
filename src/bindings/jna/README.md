@@ -202,4 +202,4 @@ if you run all tests on a build (the target is called testjna_maven).
 
 ## Contributing
 
-Pleas only use Javadoc compliant tags when documenting the code.
+Please only use Javadoc compliant tags when documenting the code.

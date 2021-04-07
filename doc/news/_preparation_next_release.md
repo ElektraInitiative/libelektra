@@ -169,9 +169,9 @@ Since internal iterator support for `KeySet` is due to being dropped, the follow
 - `KeySet::getCursor`
 - `KeySet::setCursor`
 
-Until internal `KeySet` iterator support has been dropped form native library, `Elektra::ksRewind` is being retained while also being annotated as 'depricated for removal'. The reason is, that we still need to rewind a `KeySet` before passing it to a native plugin via `NativePlugin::set`, `NativePlugin::get` or `NativePlugin::error`. _(@tucek)_
+Until internal `KeySet` iterator support has been dropped form native library, `Elektra::ksRewind` is being retained while also being annotated as 'deprecated for removal'. The reason is, that we still need to rewind a `KeySet` before passing it to a native plugin via `NativePlugin::set`, `NativePlugin::get` or `NativePlugin::error`. _(@tucek)_
 
-Further more `Elektra::ksPop` and `KeySet::pop` have been removed and `KeySet::remove` has been introduced as replacment.
+Furthermore `Elektra::ksPop` and `KeySet::pop` have been removed and `KeySet::remove` has been introduced as replacment.
 
 _(@tucek)_
 
@@ -183,7 +183,7 @@ _(@tucek)_
 
 - <<TODO>>
 - <<TODO>>
-- `webd`: update `ini`, `y18n` and `elliptic` dependencies. _(Dependa Bot)_
+- `webd`: update `ini`, `y18n` and `elliptic` dependencies. _(Mihael Pranjić)_
 - Make search for providers not skip rest of plugins on exceptions. _(Markus Raab)_
 
 ## Scripts
