@@ -64,7 +64,7 @@
  *
  * - *handle*, as returned by kdbOpen(), need to be passed to every call
  * - *parentKey* is used for every call to add warnings and set an
- *   error. For kdbGet() / kdbSet() it is used to give an hint which keys
+ *   error. For kdbGet() / kdbSet() it is used to specify which keys
  *   should be retrieved/stored.
  *
  * @note The parentKey is an obligation for you, but only an hint for KDB.
@@ -371,22 +371,22 @@ static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKe
 
 
 /**
- * @brief Opens the session with the Key database.
+ * Opens the session with the Key database.
  *
  * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
- * The method will bootstrap itself the following way.
+ * You must always call this method before retrieving or committing any
+ * keys to the database. In the end of the program,
+ * after using the key database, you must not forget to kdbClose().
+ *
+ * The method will bootstrap itself in the following way.
  * The first step is to open the default backend. With it
- * system:/elektra/mountpoints will be loaded and all needed
+ * `system:/elektra/mountpoints` will be loaded and all needed
  * libraries and mountpoints will be determined.
  * Then the global plugins and global keyset data from the @p contract
  * is processed.
  * Finally, the libraries for backends will be loaded and with it the
  * @p KDB data structure will be initialized.
- *
- * You must always call this method before retrieving or committing any
- * keys to the database. In the end of the program,
- * after using the key database, you must not forget to kdbClose().
  *
  * The pointer to the @p KDB structure returned will be initialized
  * like described above, and it must be passed along on any kdb*()
@@ -406,10 +406,13 @@ static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKe
  *                 all data is copied and the KeySet can safely be used for
  *                 e.g. kdbGet() later
  * @param errorKey the key which holds errors and warnings which were issued
- * @see kdbGet(), kdbClose() to end all affairs to the key database.
- * @retval handle on success
+ * 
+ * @return handle to the newly created KDB on success
  * @retval NULL on failure
+ * 
+ * @since 1.0.0
  * @ingroup kdb
+ * @see kdbClose() to close the session of a Key database opened by kdbOpen()
  */
 KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 {
@@ -562,12 +565,11 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
  * Closes the session with the Key database.
  *
  * @pre The handle must be a valid handle as returned from kdbOpen()
- *
  * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
  * This is the counterpart of kdbOpen().
  *
- * You must call this method when you finished your affairs with the key
+ * You must call this method when you are finished working with the key
  * database. You can manipulate Key and KeySet objects also after
  * kdbClose(), but you must not use any kdb*() call afterwards.
  *
@@ -577,9 +579,13 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
  * @param handle contains internal information of
  *               @link kdbOpen() opened @endlink key database
  * @param errorKey the key which holds error/warning information
+ * 
  * @retval 0 on success
  * @retval -1 on NULL pointer
+ * 
+ * @since 1.0.0
  * @ingroup kdb
+ * @see kdbOpen() for opening a session with a Key database
  */
 int kdbClose (KDB * handle, Key * errorKey)
 {
@@ -1102,36 +1108,36 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 
 
 /**
- * @brief Retrieve keys in an atomic and universal way.
+ * Retrieve Keys from a Key database in an atomic and universal way.
  *
  * @pre The @p handle must be passed as returned from kdbOpen().
- *
  * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
  *     with ksNew().
- *
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
  *     keyNew().
  *
- * If you pass NULL on any parameter kdbGet() will fail immediately without doing anything.
+ * If you pass NULL on any parameter, kdbGet() will fail immediately without doing anything.
  *
- * The @p returned KeySet may already contain some keys, e.g. from previous
- * kdbGet() calls. The new retrieved keys will be appended using
+ * The returned KeySet @p ks may already contain some keys, e.g. from previous
+ * kdbGet() calls. The newly retrieved Keys will be appended using
  * ksAppendKey().
  *
- * If not done earlier kdbGet() will fully retrieve all keys under the @p parentKey
+ * If not done earlier, kdbGet() will fully retrieve all keys under the @p parentKey
  * folder recursively (See Optimization below when it will not be done).
+ * Cascading Keys (starting with /) will retrieve the same path in all namespaces.
+ * `/` will retrieve all Keys in @p handle.
  *
- * @note kdbGet() might retrieve more keys than requested (that are not
- *     below parentKey). These keys must be passed to calls of kdbSet(),
+ * @note kdbGet() might retrieve more Keys than requested (that are not
+ *     below parentKey). These Keys must be passed to calls of kdbSet(),
  *     otherwise they will be lost. This stems from the fact that the
  *     user has the only copy of the whole configuration and backends
  *     only write configuration that was passed to them.
  *     For example, if you kdbGet() "system:/mountpoint/interest"
- *     you will not only get all keys below system:/mountpoint/interest,
- *     but also all keys below system:/mountpoint (if system:/mountpoint
+ *     you will not only get all Keys below system:/mountpoint/interest,
+ *     but also all Keys below system:/mountpoint (if system:/mountpoint
  *     is a mountpoint as the name suggests, but
  *     system:/mountpoint/interest is not a mountpoint).
- *     Make sure to not touch or remove keys outside the keys of interest,
+ *     Make sure to not touch or remove Keys outside the Keys of interest,
  *     because others may need them!
  *
  * @par Example:
@@ -1145,34 +1151,34 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  * The parameter @p returned will not be changed.
  *
  * @par Optimization:
- * In the first run of kdbGet all requested (or more) keys are retrieved. On subsequent
- * calls only the keys are retrieved where something was changed
- * inside the key database. The other keys stay in the
+ * In the first run of kdbGet all requested (or more) Keys are retrieved. On subsequent
+ * calls only the Keys are retrieved where something was changed
+ * inside the Key database. The other Keys stay in the
  * KeySet returned as passed.
  *
- * It is your responsibility to save the original keyset if you
+ * It is your responsibility to save the original KeySet if you
  * need it afterwards.
  *
- * If you want to be sure to get a fresh keyset again, you need to open a
- * second handle to the key database using kdbOpen().
+ * If you want to be sure to get a fresh KeySet again, you need to open a
+ * second handle to the Key database using kdbOpen().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
- * @param parentKey is used to add warnings and set an error
- *         information. Additionally, its name is a hint which keys
- *         should be retrieved (it is possible that more are retrieved, see Note above).
- *           - cascading keys (starting with /) will retrieve the same path in all namespaces
- *           - / will retrieve all keys
+ * @param parentKey Keys below @p parentKey will be retrieved from @p handle
+ * It is also used to add warnings and set error information.
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
- * @see ksLookup(), ksLookupByName() for powerful
- * 	lookups after the KeySet was retrieved
- * @see kdbOpen() which needs to be called before
- * @see kdbSet() to save the configuration afterwards and kdbClose() to
- * 	finish affairs with the key database.
- * @retval 1 if the keys were retrieved successfully
- * @retval 0 if there was no update - no changes are made to the keyset then
- * @retval -1 on failure - no changes are made to the keyset then
+ * 
+ * @retval 1 if the Keys were retrieved successfully
+ * @retval 0 if there was no update - no changes are made to the KeySet then
+ * @retval -1 on failure - no changes are made to the KeySet then
+ * 
+ * @since 1.0.0
  * @ingroup kdb
+ * @see ksLookup(), ksLookupByName() for powerful lookups after the KeySet was 
+ * retrieved
+ * @see kdbOpen() which needs to be called before
+ * @see kdbSet() to save the configuration afterwards 
+ * @see kdbClose() to finish affairs with the key database.
  */
 int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 {
@@ -1652,24 +1658,27 @@ static void elektraSetRollback (Split * split, Key * parentKey)
 }
 
 
-/** @brief Set keys in an atomic and universal way.
+/**
+ * Set Keys to a Key database in an atomic and universal way.
  *
  * @pre kdbGet() must be called before kdbSet():
  *    - initially (after kdbOpen())
  *    - after conflict errors in kdbSet().
- *
  * @pre The @p returned KeySet must be a valid KeySet, e.g. constructed
  *     with ksNew().
- *
  * @pre The @p parentKey Key must be a valid Key, e.g. constructed with
  *     keyNew(). It must not have read-only name, value or metadata.
  *
- * If you pass NULL on any parameter kdbSet() will fail immediately without doing anything.
+ * If you pass NULL on any parameter, kdbSet() will fail immediately without doing anything.
  *
- * With @p parentKey you can give an hint which part of the given keyset
+ * With @p parentKey you can specify which part of the given keyset
  * is of interest for you. Then you promise to only modify or
  * remove keys below this key. All others would be passed back
  * as they were retrieved by kdbGet().
+ * Cascading keys (starting with /) will set the path in all namespaces.
+ * `/` will commit all keys.
+ * Meta-names in @p parentKey will be rejected (error C01320).
+ * Empty/Invalid Keys will also be rejected (error C01320).
  *
  * @par Errors
  * If `parentKey == NULL` or @p parentKey has read-only metadata, kdbSet() will
@@ -1707,21 +1716,19 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
  * @param ks a KeySet which should contain changed keys, otherwise nothing is done
- * @param parentKey is used to add warnings and set an error
- *         information. Additionally, its name is an hint which keys
- *         should be committed (it is possible that more are changed).
- *           - cascading keys (starting with /) will set the path in all namespaces
- *           - / will commit all keys
- *           - metanames will be rejected (error C01320)
- *           - empty/invalid (error C01320)
+ * @param parentKey Keys below @p parentKey will be set to @p handle.
+ * It is also used to add warnings and set error information.
+ *
  * @retval 1 on success
  * @retval 0 if nothing had to be done, no changes in KDB
- * @retval -1 on failure, no changes in KDB, an error will be set on @p parentKey if possible (see "Errors" above)
- * @see keyNeedSync()
- * @see ksCurrent() contains the error key
- * @see kdbOpen() and kdbGet() that must be called first
- * @see kdbClose() that must be called afterwards
+ * @retval -1 on failure, no changes in KDB, an error will be set on 
+ * @p parentKey if possible (see "Errors" above)
+ * 
+ * @since 1.0.0
  * @ingroup kdb
+ * @see kdbOpen() for getting @p handle 
+ * @see kdbClose() that must be called afterwards
+ * @see ksCurrent() contains the error Key
  */
 int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 {
