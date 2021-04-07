@@ -13,8 +13,6 @@ plugins {
 allprojects {
 	version = project.hasProperty('releaseVersion') ? project.properties['releaseVersion'] : 'SNAPSHOT'
 	group = 'org.libelektra.libelektra'
-	sonatypeUsername = project.properties['sonatypeUsername'] ?: 'SONATYPE_USER_NAME_NOT_CONFIGURED'
-	sonatypePassword = project.properties['sonatypePassword'] ?: 'SONATYPE_USER_PASSWORD_NOT_CONFIGURED'
 }
 
 nexusPublishing {
@@ -22,8 +20,8 @@ nexusPublishing {
 		sonatype {
 			nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
 			snapshotRepositoryUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-			username = project.sonatypeUsername
-			password = project.sonatypePassword
+			username = project.properties['sonatypeUsername'] ?: 'SONATYPE_USER_NAME_NOT_CONFIGURED'
+			password = project.properties['sonatypePassword'] ?: 'SONATYPE_USER_PASSWORD_NOT_CONFIGURED'
 		}
 	}
 }
