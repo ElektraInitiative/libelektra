@@ -1,7 +1,8 @@
 dependencies {
-	// jna
+	// api dependencies
+	api "com.google.code.findbugs:jsr305:$jsr305Version"
 	api "net.java.dev.jna:jna:$jnaVersion"
 
-	// junit
-	testImplementation "junit:junit:$junitVersion"	
+	// test dependencies
+	testImplementation "junit:junit:$junitVersion"
 }

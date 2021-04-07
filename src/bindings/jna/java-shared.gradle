@@ -49,6 +49,11 @@ tasks.named('javadoc').configure {
 			'formatter'
 		]
 		exclude '**/*.md'
+		tags(
+			'apiNote:a:"API Note:"',
+			'implSpec:a:"Implementation Requirements:"',
+			'implNote:a:"Implementation Note:"'
+		)
 	}
 	
 	// fail on warnings and warn about non-compliant javadoc syntax
