@@ -114,6 +114,17 @@ class KeySet(unittest.TestCase):
 		self.assertEqual(len(cutresult), 0)
 		self.assertEqual(len(ks), 2)
 
+		' test remove '
+		ks = kdb.KeySet(0)
+		ks.append(kdb.Key("user:/test1"))
+		ks.append(kdb.Key("user:/test2"))
+		ks.append(kdb.Key("user:/test3"))
+		self.assertEqual(len(ks), 3)
+		self.assertEqual(ks.remove("user:/test2"), kdb.Key("user:/test2"))
+		self.assertEqual(len(ks), 2)
+		with self.assertRaises(ValueError):
+			ks.remove(kdb.Key("user:/test2"))
+
 	def test_iterator(self):
 		self.assertEqual(sum(1 for _ in self.ks),           4)
 		self.assertEqual(sum(1 for _ in reversed(self.ks)), 4)

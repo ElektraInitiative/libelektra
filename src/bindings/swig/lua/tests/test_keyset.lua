@@ -52,7 +52,17 @@ assert(ks:lookup(-1) == kdb.Key("system:/key2"))
 local t = kdb.KeySet(0)
 t:append(kdb.Key("user:/foo"))
 t:append(kdb.Key("user:/bar"))
-assert(#t, 2)
+assert(#t == 2)
+
+-- remove
+local t = kdb.KeySet(0)
+t:append(kdb.Key("user:/test1"))
+t:append(kdb.Key("user:/test2"))
+t:append(kdb.Key("user:/test3"))
+assert(#t == 3)
+assert(t:remove("user:/test2") == kdb.Key("user:/test2"))
+assert(#t == 2)
+assert(t:remove(kdb.Key("user:/test2")):isValid() == false)
 
 -- iterator
 function item_cnt(...)

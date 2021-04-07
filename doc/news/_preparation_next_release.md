@@ -175,7 +175,9 @@ Furthermore `Elektra::ksPop` and `KeySet::pop` have been removed and `KeySet::re
 
 _(@tucek)_
 
-### <<Binding2>>
+### Python + Lua
+
+Add support for keyset.remove(key). _(Manuel Mausz)_
 
 ### <<Binding3>>
 
