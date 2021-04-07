@@ -616,7 +616,11 @@ ${WORKSPACE}/build/doc/man ./"""
   }]
 }
 
-
+/**
+ * Build and publish jna bindings to maven repository
+ *
+ * Publishes maven artifacts to staging repository, closes and releases it.
+ */
 def buildAndPublishMaven() {
   def stageName = 'publishMavenArtifacts'
   return [(stageName): {
@@ -630,7 +634,8 @@ def buildAndPublishMaven() {
             sh """\
 gradle -Pversion=${RELEASE_VERSION} \
 -PsonatypeUsername=${SONATYPE_USERNAME} -PsonatypePassword=${SONATYPE_PASSWORD} \
--Psigning.secretKeyRingFile=${KEY} -Psigning.keyId=07235980 -Psigning.password=\"${PASS}\" publish"""
+-Psigning.secretKeyRingFile=${KEY} -Psigning.keyId=07235980 -Psigning.password=\"${PASS}\" \
+publishToSonatype closeAndReleaseSonatypeStagingRepository"""
           }
         }
       }
