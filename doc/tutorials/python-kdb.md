@@ -183,7 +183,7 @@ with kdb.KDB() as k:
     print("{}: {}".format(new_key, new_key.value))
 ```
 
-Keys can be added to a keyset using `append`. If the key already exists, the value will be updated. Calling `keyset_name['/path/to/key'] = 'new_value` does not work for updating keys already in a keyset.
+Keys can be added to a keyset using `append`. If the key already exists, the value will be updated. Calling `keyset_name['/path/to/key'] = 'new_value` does not work for updating keys already in a keyset. Keys can be removed with `pop`, `remove` or `cut`
 
 ```py
 from kdb import KDB, KEY_VALUE, Key, KeySet
