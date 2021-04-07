@@ -1,6 +1,6 @@
 # Authors
 
-This is a list of people that contributed to the Elektra project.
+This is a list of people that contributed to the Elektra Initiative.
 
 ## Markus Raab
 
@@ -23,96 +23,27 @@ journald plugin, augeas plugin, keytometa, main development
 - email: elektra@berlakovich.net
 - devel/test on: Debian
 
-## Pino Toscano
-
-Debian packaging, documentation
-
-- email: pino@kde.org
-- devel/test on: Debian
-
 ## Kai-Uwe Behrmann
 
 test & packaging on CentOS, Fedora, OpenSUSE, RHEL and SLE
 
 - email: kai-uwe@behrmann.name
 
-## Christopher Meng
-
-Fedora packaging
-
-- email: cickumqt@gmail.com
-- devel/test on: Fedora
-
-## Ian S. Donnelly
-
-Google Summer of Code 2014
-
-- email: ian.s.donnelly@gmail.com
-- devel/test on: Debian stable
-
 ## Charles Lindsay
 
 ni library
 
-## Gabriel Rauter
-
-desktop environment integration & usability
-
-- email: rauter.gabriel@gmail.com
-
 ## Avi Alkalay
 
-initial concept & implementation, previous website
+initial concept & implementation
 
 - email: avi@unix.sh
-
-## Yannick Lecaillez
-
-previous Mandriva packaging
-
-- email: yl@itioweb.com
-
-## Jens Andersen
-
-bug fixing
-
-- email: jens.andersen@gmail.com
 
 ## Patrick Sabin
 
 trie development, previous python bindings
 
 - email: patricksabin@gmx.at
-
-## Studio-HB
-
-design of Elektra logo & previous website
-
-- email: contact@studio-hb.com
-
-## Pier Luigi Fiorini
-
-pkg-config file
-
-- email: pierluigi.fiorini@mockup.org
-
-## Rèmi
-
-xml schema
-
-- email: remipouak@yahoo.fr
-
-## Andreas Rottmann
-
-previous Debian packaging and 0.7 scheme bindings
-
-- email: rotty@debian.org
-
-## Simon Law
-
-previous Debian packaging
-
-- email: sfllaw@debian.org
 
 ## Daniel Bugl
 
@@ -159,7 +90,7 @@ development of the REST service & frontend for sharing of conf. snippets, cachef
 
 ## Thomas Waser
 
-main development, many plugins
+main development, many plugins, ansible
 
 - email: thomas.waser@libelektra.org
 - github user: [tom-wa](https://github.com/tom-wa)
