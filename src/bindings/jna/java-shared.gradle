@@ -57,7 +57,10 @@ tasks.named('javadoc').configure {
 	}
 	
 	// TODO #3754 reactivate: fail on warnings and warn about non-compliant javadoc syntax
-	//options.addStringOption('Xwerror', '-Xdoclint:all')
+	//options.addStringOption('Xwerror', '-quiet')
+	//options.addStringOption('Xdoclint:all', '-quiet')
+	options.addStringOption('Xdoclint:-missing', '-quiet')
+	options.addStringOption('Xdoclint:all', '-quiet')
 }
 
 javadoc {

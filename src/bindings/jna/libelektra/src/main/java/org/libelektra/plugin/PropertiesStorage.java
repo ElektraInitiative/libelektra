@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
-
 import org.libelektra.Key;
 import org.libelektra.KeySet;
 import org.libelektra.Plugin;
