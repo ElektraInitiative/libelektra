@@ -29,13 +29,14 @@ publishing {
 					}
 				}
 
-				//developers {
-				//	developer {
-				//		id = 'johnd'
-				//		name = 'John Doe'
-				//		email = 'john.doe@example.com'
-				//	}
-				//}
+				// TODO #3731 - add developers responsible for code
+				developers {
+					developer {
+						id = 'libelektra'
+						name = 'Elektra Initiative'
+						email = 'elektra@libelektra.org'
+					}
+				}
 
 				scm {
 					connection = 'scm:git:git://github.com/ElektraInitiative/libelektra.git'

@@ -4,8 +4,6 @@ apply plugin: 'signing'
 // export project variables for maven publishing
 // if publishing is used wiht this java library, values should be overriden via 'secret-settings.gradle'
 ext {
-	sonatypeUsername = project.properties['sonatypeUsername'] ?: 'SONATYPE_USER_NAME_NOT_CONFIGURED'
-	sonatypePassword = project.properties['sonatypePassword'] ?: 'SONATYPE_USER_PASSWORD_NOT_CONFIGURED'
 	signingPassword  = project.properties['signingPassword']  ?: 'KEY_PASSWORD_NOT_CONFIGURED'
 	signingSecretKey = project.properties['signingSecretKey'] ?: 'ASCII_ARMORED_PGP_SECRET_KEY_NOT_CONFIGURED'
 }
@@ -14,22 +12,6 @@ ext {
 File secretSettings = new File(rootProject.projectDir, 'secret-settings.gradle')
 if (secretSettings.exists()) {
 	apply from: secretSettings
-}
-
-// confugure maven-publish plugin
-publishing {
-	repositories {
-		maven {
-			def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-			def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-			url = project.isReleaseVersion ? releasesRepoUrl : snapshotsRepoUrl
-
-			credentials {
-				username project.sonatypeUsername
-				password project.sonatypePassword
-			}
-		}
-	}
 }
 
 tasks.withType(GenerateMavenPom).all {
