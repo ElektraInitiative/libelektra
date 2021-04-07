@@ -658,11 +658,8 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		)
 		# do not strip rpath during install
 		if (ARG_USE_LINK_RPATH)
-			set_target_properties (
-				${PLUGIN_NAME}
-				PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE
-			)
-		endif()
+			set_target_properties (${PLUGIN_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+		endif ()
 		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 			if (DIR AND NOT DIR STREQUAL "/usr/include")
 				set_property (
