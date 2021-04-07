@@ -29,10 +29,9 @@ publishing {
 					}
 				}
 
-				// TODO #3731 - add developers responsible for code
 				developers {
 					developer {
-						id = 'libelektra'
+						id = 'ElektraInitiative'
 						name = 'Elektra Initiative'
 						email = 'elektra@libelektra.org'
 					}
