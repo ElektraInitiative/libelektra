@@ -628,7 +628,7 @@ def buildAndPublishMaven() {
           checkout scm
           dir('src/bindings/jna') {
             sh """\
-gradle -Pversion=${RELEASE_VERSION} \
+gradle -PreleaseVersion=${RELEASE_VERSION} \
 -PsonatypeUsername=${SONATYPE_USERNAME} -PsonatypePassword=${SONATYPE_PASSWORD} \
 -Psigning.secretKeyRingFile=${KEY} -Psigning.keyId=07235980 -Psigning.password=\"${PASS}\" publish"""
           }
