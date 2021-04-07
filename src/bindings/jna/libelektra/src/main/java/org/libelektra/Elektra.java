@@ -14,9 +14,9 @@ public interface Elektra extends Library {
 	/**
 	 * Singleton instance of the native library proxy.
 	 */
-	Elektra INSTANCE = Native.loadLibrary ("elektra-kdb", Elektra.class);
+	Elektra INSTANCE = Native.loadLibrary("elektra-kdb", Elektra.class);
 
-	// KDB methods
+	// KDB methods --------------------------------------------------------------
 
 	/**
 	 * Opens the session with the Key database.<br >
@@ -35,16 +35,20 @@ public interface Elektra extends Library {
 	 * @see #kdbClose(Pointer, Pointer) kdbClose()
 	 * @see #keyNew(String, Object...) keyNew()
 	 *
-	 * @param contractKeySet TODO #3137 - documentation unclear - the contract that
+	 * @param contractKeySet TODO #3754 - documentation unclear - the contract that
 	 *                       should be ensured before opening the KDB all data is
 	 *                       copied and the KeySet can safely be used for e.g.
 	 *                       kdbGet() later
 	 * @param errorKey       {@link Pointer} to a valid {@code Key}, where issued
 	 *                       errors and warnings will be made available.
-	 * @return {@link Pointer} to {@code KDB handle} on success, {@code null} on
-	 *         failure.
+	 * @return
+	 *         <ul>
+	 *         <li>{@link Pointer} to {@code KDB handle} on success</li>
+	 *         <li>{@code null} on failure</li>
+	 *         </ul>
 	 */
-	@Nullable Pointer kdbOpen (@Nullable Pointer contractKeySet, Pointer errorKey);
+	@Nullable
+	Pointer kdbOpen(@Nullable Pointer contractKeySet, Pointer errorKey);
 
 	/**
 	 * Closes the session with the Key database.<br >
@@ -61,9 +65,13 @@ public interface Elektra extends Library {
 	 *                 {@link #kdbOpen(Pointer, Pointer) kdbOpen()}.
 	 * @param errorKey {@link Pointer} to a valid {@code Key}, where issued errors
 	 *                 and warnings will be made available.
-	 * @return {@code 0} on success, {@code -1} on {@code null} pointer passed.
+	 * @return
+	 *         <ul>
+	 *         <li>{@code 0} on success</li>
+	 *         <li>{@code -1} on {@code null} pointer passed</li>
+	 *         </ul>
 	 */
-	int kdbClose (Pointer handle, Pointer errorKey);
+	int kdbClose(Pointer handle, Pointer errorKey);
 
 	/**
 	 * Retrieve keys in an atomic and universal way.<br >
@@ -121,20 +129,20 @@ public interface Elektra extends Library {
 	 *         <ul>
 	 *         <li>{@code 1} if the keys were retrieved successfully</li>
 	 *         <li>{@code 0} if there was no update</li>
-	 *         <li>{@code -1} on failure or {@code null} pointer passed.</li>
+	 *         <li>{@code -1} on failure or {@code null} pointer passed</li>
 	 *         </ul>
 	 *         When a backend fails, {@link #kdbGet(Pointer, Pointer, Pointer)
 	 *         kdbGet()} will return {@code -1} with all error and warning
 	 *         information in the {@code parentKey} and {@code returnKeySet} left
 	 *         unchanged.
 	 */
-	int kdbGet (Pointer handle, Pointer returnKeySet, Pointer parentKey);
+	int kdbGet(Pointer handle, Pointer returnKeySet, Pointer parentKey);
 
 	/**
 	 * Set keys in an atomic and universal way.<br >
 	 * <br >
 	 * For the particularities of error handling, please see the documentation of
-	 * the native library.
+	 * the native library: TODO #3754 link to C API documentation
 	 *
 	 * @apiNote {@link #kdbGet(Pointer, Pointer, Pointer) kdbGet()} must be called
 	 *          before {@link #kdbSet(Pointer, Pointer, Pointer) kdbSet()}:
@@ -156,166 +164,268 @@ public interface Elektra extends Library {
 	 * @see #kdbGet(Pointer, Pointer, Pointer) kdbGet() must be called first
 	 * @see #kdbClose(Pointer, Pointer) kdbClose() must be called afterwards
 	 *
-	 * @param handle       {@link Pointer} to a valid {@code KDB handle} as returned
-	 *                     by {@link #kdbOpen(Pointer, Pointer) kdbOpen()}.
-	 * @param returnKeySet {@link Pointer} to a valid {@code KeySet} containing
-	 *                     modified keys, otherwise no update is done.
-	 * @param parentKey    {@link Pointer} to a valid {@code Key}. It is used to add
-	 *                     warnings and set an error information. Additionally, its
-	 *                     name is an hint which keys should be committed (it is
-	 *                     possible that more are changed).<br >
-	 *                     With {@code parentKey} you can give an hint which part of
-	 *                     the given {@code KeySet} is of interest to you. Then you
-	 *                     promise to only modify or remove keys below this key. All
-	 *                     others would be passed back as they were retrieved by
-	 *                     {@link #kdbGet(Pointer, Pointer, Pointer) kdbGet()}.
-	 *                     <ul>
-	 *                     <li>cascading keys (starting with "/") will set the path
-	 *                     in all namespaces</li>
-	 *                     <li>"/" will commit all keys</li>
-	 *                     <li>metanames will be rejected (error C01320)</li>
-	 *                     <li>empty/invalid (error C01320)</li>
-	 *                     </ul>
+	 * @param handle    {@link Pointer} to a valid {@code KDB handle} as returned by
+	 *                  {@link #kdbOpen(Pointer, Pointer) kdbOpen()}.
+	 * @param keySet    {@link Pointer} to a valid {@code KeySet} containing
+	 *                  modified keys, otherwise no update is done.
+	 * @param parentKey {@link Pointer} to a valid {@code Key}. It is used to add
+	 *                  warnings and set an error information. Additionally, its
+	 *                  name is an hint which keys should be committed (it is
+	 *                  possible that more are changed).<br >
+	 *                  With {@code parentKey} you can give an hint which part of
+	 *                  the given {@code KeySet} is of interest to you. Then you
+	 *                  promise to only modify or remove keys below this key. All
+	 *                  others would be passed back as they were retrieved by
+	 *                  {@link #kdbGet(Pointer, Pointer, Pointer) kdbGet()}.
+	 *                  <ul>
+	 *                  <li>cascading keys (starting with "/") will set the path in
+	 *                  all namespaces</li>
+	 *                  <li>"/" will commit all keys</li>
+	 *                  <li>metanames will be rejected (error C01320)</li>
+	 *                  <li>empty/invalid (error C01320)</li>
+	 *                  </ul>
 	 * @return
 	 *         <ul>
 	 *         <li>{@code 1} on success</li>
 	 *         <li>{@code 0} if nothing had to be done, no changes in KDB</li>
 	 *         <li>{@code -1} on failure or {@code null} pointer passed. No changes
-	 *         in KDB, an error will be set on {@code parentKey} if possible.</li>
+	 *         in KDB, an error will be set on {@code parentKey} if possible</li>
 	 *         </ul>
 	 */
-	int kdbSet (Pointer handle, Pointer returnKeySet, Pointer parentKey);
+	int kdbSet(Pointer handle, Pointer keySet, Pointer parentKey);
 
-	int elektraGOptsContractFromStrings (Pointer contractKeySet, long argsSize, String args, long envSize, String env,
-					     Pointer parentKey, Pointer goptsConfigKeySet);
+	/**
+	 * Sets up a contract for use with {@link #kdbOpen(Pointer, Pointer) kdbOpen()}
+	 * that configures the {@code gopts} plugin.
+	 * 
+	 * @param contractKeySet    {@link Pointer} to a valid {@code KeySet} into which
+	 *                          the contract will be written.
+	 * @param argsSize          Size of the {@code args} data.
+	 * @param args              Continuous buffer containing all {@code argv}
+	 *                          arguments separated (and terminated) by zero bytes.
+	 *                          The whole buffer is copied, so the pointer only has
+	 *                          to be valid for this function call.
+	 * @param envSize           Size of the {@code env} data.
+	 * @param env               Continuous buffer containing all environment
+	 *                          variables separated (and terminated) by zero bytes
+	 *                          The whole buffer is copied, so the pointer only has
+	 *                          to be valid for this function call.
+	 * @param parentKey         The parent key that should be used by {@code gopts}.
+	 *                          Only the key name is copied. The key can be deleted
+	 *                          immediately after calling this function.
+	 * @param goptsConfigKeySet Configuration that is used to mount the
+	 *                          {@code gopts} plugin. Only keys in the
+	 *                          {@code user:/} namespace will be used.
+	 * @return
+	 *         <ul>
+	 *         <li>{@code 0} on success</li>
+	 *         <li>{@code -1} on {@code null} pointer passed</li>
+	 *         </ul>
+	 */
+	int elektraGOptsContractFromStrings(Pointer contractKeySet, long argsSize, String args, long envSize, String env,
+			Pointer parentKey, @Nullable Pointer goptsConfigKeySet);
 
-	// Key methods
+	// Key methods --------------------------------------------------------------
 
-	Pointer keyNew (String name, Object... args);
+	/**
+	 * Enumeration of argument flags for {@link Elektra#keyNew(String, Object...)}.
+	 */
+	enum KeyNewArgumentFlags {
 
-	Pointer keyDup (Pointer source, int flags);
+		/**
+		 * Used as a parameter terminator to {@link Elektra#keyNew(String, Object...)}
+		 */
+		KEY_END(0),
 
-	int keyCopy (Pointer dest, Pointer source, int flags);
+		/**
+		 * Flag for the key name
+		 */
+		KEY_NAME(1),
 
-	int keyClear (Pointer key); // not needed
+		/**
+		 * Flag for the key data
+		 */
+		KEY_VALUE(1 << 1),
 
-	int keyDel (Pointer key);
+		/**
+		 * Flag for the key comment
+		 */
+		KEY_COMMENT(1 << 3),
 
-	int keyIncRef (Pointer key);
+		/**
+		 * Flag if the key is binary
+		 */
+		KEY_BINARY(1 << 4),
 
-	int keyDecRef (Pointer key);
+		/**
+		 * Flag for maximum size to limit value
+		 */
+		KEY_SIZE(1 << 11),
 
-	int keyGetRef (Pointer key);
+		/**
+		 * Flag for metadata
+		 */
+		KEY_META(1 << 15);
+
+		private final Integer value;
+
+		/**
+		 * @return Integer value recognized by the native library.
+		 */		
+		public Integer getValue() {
+			return value;
+		}
+
+		private KeyNewArgumentFlags(int value) {
+			this.value = Integer.valueOf(value);
+		}
+
+	}
+
+	/**
+	 * A practical way to fully create a Key object in one step.<br >
+	 * <br >
+	 * For examples and further particularities, please see the documentation of the
+	 * native library: TODO #3754 link to C API documentation
+	 * 
+	 * @see #keyDel(Pointer) keyDel()
+	 * @see KeyNewArgumentFlags
+	 * 
+	 * @param name A valid name to the key, or {@code null} to get a simple
+	 *             initialized, but really empty, object.
+	 * @param args Argument flags, each followed by a corresponding value, if appropriate.  
+	 * @return <ul>
+	 *         <li>A {@link Pointer} to a newly allocated and initialized {@code Key} object on success</li>
+	 *         <li>{@code null} on allocation error or if an invalid {@code name} was passed (see {@link #keySetName(Pointer, String) keySetName()</li>
+	 *         </ul>
+	 */
+	@Nullable
+	Pointer keyNew(@Nullable String name, @Nullable Object... args);
+
+	Pointer keyDup(Pointer source, int flags);
+
+	int keyCopy(Pointer dest, Pointer source, int flags);
+
+	int keyClear(Pointer key); // not needed
+
+	int keyDel(Pointer key);
+
+	int keyIncRef(Pointer key);
+
+	int keyDecRef(Pointer key);
+
+	int keyGetRef(Pointer key);
 
 	/* Meta Info */
-	int keyRewindMeta (Pointer key);
+	int keyRewindMeta(Pointer key);
 
-	Pointer keyNextMeta (Pointer key);
+	Pointer keyNextMeta(Pointer key);
 
-	Pointer keyCurrentMeta (Pointer key);
+	Pointer keyCurrentMeta(Pointer key);
 
-	int keyCopyMeta (Pointer dest, Pointer source, String metaName);
+	int keyCopyMeta(Pointer dest, Pointer source, String metaName);
 
-	int keyCopyAllMeta (Pointer dest, Pointer source);
+	int keyCopyAllMeta(Pointer dest, Pointer source);
 
-	Pointer keyGetMeta (Pointer key, String metaName);
+	Pointer keyGetMeta(Pointer key, String metaName);
 
-	int keySetMeta (Pointer key, String metaName, String newMetaString);
+	int keySetMeta(Pointer key, String metaName, String newMetaString);
 
 	/* Methods for Making Tests */
-	int keyCmp (Pointer k1, Pointer k2);
+	int keyCmp(Pointer k1, Pointer k2);
 
-	int keyNeedSync (Pointer key);
+	int keyNeedSync(Pointer key);
 
-	int keyIsBelow (Pointer key, Pointer check);
+	int keyIsBelow(Pointer key, Pointer check);
 
-	int keyIsBelowOrSame (Pointer key, Pointer check);
+	int keyIsBelowOrSame(Pointer key, Pointer check);
 
-	int keyIsDirectlyBelow (Pointer key, Pointer check);
+	int keyIsDirectlyBelow(Pointer key, Pointer check);
 
-	int keyIsBinary (Pointer key);
+	int keyIsBinary(Pointer key);
 
-	int keyIsString (Pointer key);
+	int keyIsString(Pointer key);
 
 	/* Name Manipulation Methods */
-	String keyName (Pointer key);
+	String keyName(Pointer key);
 
-	int keyGetNameSize (Pointer key);
+	int keyGetNameSize(Pointer key);
 
-	int keyGetName (Pointer key, String returnedName, int maxSize); // not needed
+	int keyGetName(Pointer key, String returnedName, int maxSize); // not needed
 
-	int keySetName (Pointer key, String newname);
+	int keySetName(Pointer key, String newname);
 
-	Pointer keyUnescapedName (Pointer key);
+	Pointer keyUnescapedName(Pointer key);
 
-	int keyGetUnescapedNameSize (Pointer key);
+	int keyGetUnescapedNameSize(Pointer key);
 
-	String keyBaseName (Pointer key); // not implemented
+	String keyBaseName(Pointer key); // not implemented
 
-	int keyGetBaseNameSize (Pointer key); // not implemented
+	int keyGetBaseNameSize(Pointer key); // not implemented
 
-	int keyGetBaseName (Pointer key, String returned, int maxSize); // not needed
+	int keyGetBaseName(Pointer key, String returned, int maxSize); // not needed
 
-	int keySetBaseName (Pointer key, String baseName);
+	int keySetBaseName(Pointer key, String baseName);
 
-	int keyAddBaseName (Pointer key, String baseName);
+	int keyAddBaseName(Pointer key, String baseName);
 
 	/* Value Manipulation Methods */
 	// byte[] keyValue(Pointer key);
-	int keyGetValueSize (Pointer key);
+	int keyGetValueSize(Pointer key);
 
-	String keyString (Pointer key);
+	String keyString(Pointer key);
 
-	int keyGetString (Pointer key, String returnedString, int maxSize); // not needed
+	int keyGetString(Pointer key, String returnedString, int maxSize); // not needed
 
-	int keySetString (Pointer key, String newString);
+	int keySetString(Pointer key, String newString);
 
 	// int keyGetBinary(Pointer key, byte[] returnedBinary, int maxSize);
 	// int keySetBinary(Pointer key, byte[] newBinary, int dataSize);
 
-	// KeySet methods
+	// KeySet methods -----------------------------------------------------------
 
-	Pointer ksNew (int alloc, Object... args);
+	Pointer ksNew(int alloc, Object... args);
 
-	Pointer ksDup (Pointer source);
+	Pointer ksDup(Pointer source);
 
-	int ksCopy (Pointer dest, Pointer source);
+	int ksCopy(Pointer dest, Pointer source);
 
-	int ksClear (Pointer ks); // not needed
+	int ksClear(Pointer ks); // not needed
 
-	int ksDel (Pointer ks);
+	int ksDel(Pointer ks);
 
-	int ksNeedSync (Pointer ks);
+	int ksNeedSync(Pointer ks);
 
-	int ksGetSize (Pointer ks);
+	int ksGetSize(Pointer ks);
 
-	int ksAppendKey (Pointer ks, Pointer toAppend);
+	int ksAppendKey(Pointer ks, Pointer toAppend);
 
-	int ksAppend (Pointer ks, Pointer toAppend);
+	int ksAppend(Pointer ks, Pointer toAppend);
 
-	Pointer ksCut (Pointer ks, Pointer cutpoint);
+	Pointer ksCut(Pointer ks, Pointer cutpoint);
 
 	// TODO #3137 Also elektraKsPopAtCursor should replace the current ksPop. See
 	// also #3189.
-	Pointer ksPop (Pointer ks);
+	Pointer ksPop(Pointer ks);
 
-	Pointer elektraKsPopAtCursor (Pointer ks, int cursor);
+	Pointer elektraKsPopAtCursor(Pointer ks, int cursor);
 
 	// deprecated for removal - (forRemoval = true) not set since not all build
 	// server are using JDK >=9 yet
-	@Deprecated int ksRewind (Pointer ks);
+	@Deprecated
+	int ksRewind(Pointer ks);
 
-	Pointer ksHead (Pointer ks);
+	Pointer ksHead(Pointer ks);
 
-	Pointer ksTail (Pointer ks);
+	Pointer ksTail(Pointer ks);
 
-	Pointer ksAtCursor (Pointer ks, int cursor);
+	Pointer ksAtCursor(Pointer ks, int cursor);
 
-	Pointer ksLookup (Pointer ks, Pointer key, int options);
+	Pointer ksLookup(Pointer ks, Pointer key, int options);
 
-	Pointer ksLookupByName (Pointer ks, String name, int options);
+	Pointer ksLookupByName(Pointer ks, String name, int options);
 
-	NativePlugin.ElektraPlugin elektraPluginOpen (String pluginName, Pointer modules, Pointer config, Pointer errorKey);
+	NativePlugin.ElektraPlugin elektraPluginOpen(String pluginName, Pointer modules, Pointer config, Pointer errorKey);
 
-	NativePlugin.ElektraPlugin elektraPluginClose (String pluginName, Pointer errorKey);
+	NativePlugin.ElektraPlugin elektraPluginClose(String pluginName, Pointer errorKey);
 }

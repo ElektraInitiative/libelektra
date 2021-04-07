@@ -28,7 +28,7 @@ public class KDB implements AutoCloseable
 	 *
 	 * @param errorKey used to store warning and error information
 	 * @return New KDB session object
-	 * @throws KDBException TODO #3713 detailed exception description (inlcuding appropriate subtypes)
+	 * @throws KDBException TODO #3754 detailed exception description (inlcuding appropriate subtypes)
 	 */
 	public static KDB open (final Key errorKey) throws KDBException
 	{
@@ -49,7 +49,7 @@ public class KDB implements AutoCloseable
 	 * @param contract the contract that will be ensured by kdbOpen()
 	 * @param errorKey used to store warning and error information
 	 * @return New KDB session object
-	 * @throws KDBException TODO #3713 detailed exception description (inlcuding appropriate subtypes)
+	 * @throws KDBException TODO #3754 detailed exception description (inlcuding appropriate subtypes)
 	 */
 	public static KDB open (final KeySet contract, final Key errorKey) throws KDBException
 	{
@@ -65,7 +65,7 @@ public class KDB implements AutoCloseable
 
 	/**
 	 * Clean-up function initiating closing of the KDB session
-	 * @throws KDBException TODO #3713 detailed exception description (inlcuding appropriate subtypes)
+	 * @throws KDBException TODO #3754 detailed exception description (inlcuding appropriate subtypes)
 	 */
 	@Override public void close () throws KDBException
 	{
@@ -114,7 +114,7 @@ public class KDB implements AutoCloseable
 	 * Clean-up method that closes the KDB session
 	 *
 	 * @param parentKey Key holding error and warning information
-	 * @throws KDBException TODO #3713 detailed exception description (inlcuding appropriate subtypes)
+	 * @throws KDBException TODO #3754 detailed exception description (inlcuding appropriate subtypes)
 	 */
 	public void close (final Key parentKey) throws KDBException
 	{

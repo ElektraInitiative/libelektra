@@ -1,25 +1,23 @@
 package org.libelektra;
 
 import com.sun.jna.Pointer;
+
+import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_END;
+import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_META;
+import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_VALUE;
+
+import java.util.Arrays;
+
+import org.libelektra.Elektra.KeyNewArgumentFlags;
 import org.libelektra.exception.PluginMisbehaviorException;
 
 /**
  * Key is an essential class that encapsulates key name , value and metainfo.
  */
-public class Key implements Iterable<String>
-{
+public class Key implements Iterable<String> {
 
 	private static final String WARNINGS = "warnings";
 	// constants
-	public static final Pointer KEY_END = null;
-	public static final int KEY_NAME = 1;
-	public static final int KEY_VALUE = 1 << 1;
-	public static final int KEY_COMMENT = 1 << 3;
-	public static final int KEY_BINARY = 1 << 4;
-	public static final int KEY_SIZE = 1 << 11;
-	public static final int KEY_FUNC = 1 << 12;
-	public static final int KEY_META = 1 << 15;
-	public static final int KEY_NULL = 1 << 16;
 
 	public static final int KEY_CP_NAME = 1 << 0;
 	public static final int KEY_CP_STRING = 1 << 1;
@@ -30,8 +28,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Indicates a generic key exception occurred.
 	 */
-	public static class KeyException extends RuntimeException
-	{
+	public static class KeyException extends RuntimeException {
 
 		private static final long serialVersionUID = 637936674538102511L;
 	}
@@ -39,8 +36,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Indicates an invalid key name has been used.
 	 */
-	public static class InvalidNameException extends KeyException
-	{
+	public static class InvalidNameException extends KeyException {
 
 		private static final long serialVersionUID = -7659317176138893895L;
 	}
@@ -48,8 +44,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Indicates a key's type conversion failed.
 	 */
-	public static class TypeConversionException extends KeyException
-	{
+	public static class TypeConversionException extends KeyException {
 
 		private static final long serialVersionUID = -8648296754188373810L;
 	}
@@ -57,8 +52,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Indicates a key's type does not match its value.
 	 */
-	public static class TypeMismatchException extends KeyException
-	{
+	public static class TypeMismatchException extends KeyException {
 
 		private static final long serialVersionUID = 8035874860117969698L;
 	}
@@ -70,10 +64,9 @@ public class Key implements Iterable<String>
 	 *
 	 * @param p Pointer in long format
 	 */
-	protected Key (final long p)
-	{
-		key = new Pointer (p);
-		incRef ();
+	protected Key(final long p) {
+		key = new Pointer(p);
+		incRef();
 	}
 
 	/**
@@ -81,10 +74,9 @@ public class Key implements Iterable<String>
 	 *
 	 * @param p Pointer as Pointer object
 	 */
-	protected Key (final Pointer p)
-	{
+	protected Key(final Pointer p) {
 		key = p;
-		incRef ();
+		incRef();
 	}
 
 	/**
@@ -92,30 +84,29 @@ public class Key implements Iterable<String>
 	 *
 	 * @param name Key name; first part of key-value pair
 	 * @param args Arguments used for key value. Example:<br>
-	 *             Key.KEY_VALUE, "custom key value", Key.KEY_END
+	 *             KeyNewArgumentFlags.KEY_VALUE, "custom key value",
+	 *             KeyNewArgumentFlags.KEY_END
 	 * @return New key object
 	 */
-	protected static Key create (final String name, final Object... args)
-	{
-		return new Key (Elektra.INSTANCE.keyNew (name, args));
+	protected static Key create(final String name, final Object... args) {
+		return new Key(Elektra.INSTANCE.keyNew(name, Arrays.stream(args)
+				.map(o -> (o instanceof KeyNewArgumentFlags) ? ((KeyNewArgumentFlags) o).getValue() : o).toArray()));
 	}
 
 	/**
 	 * Basic constructor of key class
 	 *
 	 * @param name  Key name; first part of key-value pair
-	 * @param value Key value; will be determine from the object by calling {@link Object#toString()}, null is
-	 *                 supported too
-	 * @param meta  Metadata that should be added to this key, null keys will be filtered away
+	 * @param value Key value; will be determine from the object by calling
+	 *              {@link Object#toString()}, null is supported too
+	 * @param meta  Metadata that should be added to this key, null keys will be
+	 *              filtered away
 	 * @return New key object
 	 */
-	public static Key create (final String name, final Object value, final Key... meta)
-	{
+	public static Key create(final String name, final Object value, final Key... meta) {
 		int size = 0;
-		for (final Key m : meta)
-		{
-			if (m != null)
-			{
+		for (final Key m : meta) {
+			if (m != null) {
 				size++;
 			}
 		}
@@ -123,55 +114,51 @@ public class Key implements Iterable<String>
 		size += size > 0 ? 4 : 3;
 		final Object[] args = new Object[size];
 		int cur = 0;
-		args[cur++] = Integer.valueOf (KEY_VALUE);
-		args[cur++] = value != null ? value.toString () : null;
-		if (size > 3)
-		{
-			args[cur++] = Integer.valueOf (KEY_META);
-			for (final Key m : meta)
-			{
+		args[cur++] = KEY_VALUE;
+		args[cur++] = value != null ? value.toString() : null;
+		if (size > 3) {
+			args[cur++] = KEY_META;
+			for (final Key m : meta) {
 				args[cur++] = m;
 			}
 		}
 		args[cur] = KEY_END;
-		return create (name, args);
+		return create(name, args);
 	}
 
 	/**
 	 * Basic constructor of key class
 	 *
 	 * @param name Key name; first part of key-value pair
-	 * @param meta Metadata that should be added to this key. Will filter null values.
+	 * @param meta Metadata that should be added to this key. Will filter null
+	 *             values.
 	 * @return New key object
 	 */
-	public static Key create (final String name, final Key... meta)
-	{
-		return create (name, null, meta);
+	public static Key create(final String name, final Key... meta) {
+		return create(name, null, meta);
 	}
 
 	/**
 	 * Clean-up method to release key reference
 	 */
-	public void release ()
-	{
+	public void release() {
 
-		if (key != null)
-		{
-			decRef ();
-			if (getRef () == 0)
-			{
-				Elektra.INSTANCE.keyDel (key);
+		if (key != null) {
+			decRef();
+			if (getRef() == 0) {
+				Elektra.INSTANCE.keyDel(key);
 			}
 		}
 		key = null;
 	}
 
 	/**
-	 * Clean-up method to inform underlying c-library about the release of the key reference in jna-binding
+	 * Clean-up method to inform underlying c-library about the release of the key
+	 * reference in jna-binding
 	 */
-	@Override protected void finalize () throws Throwable
-	{
-		release ();
+	@Override
+	protected void finalize() throws Throwable {
+		release();
 	}
 
 	/**
@@ -179,8 +166,7 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Boolean if key is null
 	 */
-	public boolean isNull ()
-	{
+	public boolean isNull() {
 
 		return key == null;
 	}
@@ -190,9 +176,9 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Key name in String format
 	 */
-	@Override public String toString ()
-	{
-		return getName ();
+	@Override
+	public String toString() {
+		return getName();
 	}
 
 	/**
@@ -200,9 +186,9 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Custom KeyNameIterator
 	 */
-	@Override public java.util.Iterator<String> iterator ()
-	{
-		return new KeyNameIterator (this);
+	@Override
+	public java.util.Iterator<String> iterator() {
+		return new KeyNameIterator(this);
 	}
 
 	/**
@@ -210,9 +196,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Key value in boolean format
 	 */
-	public boolean getBoolean ()
-	{
-		return Boolean.parseBoolean (getString ());
+	public boolean getBoolean() {
+		return Boolean.parseBoolean(getString());
 	}
 
 	/**
@@ -220,9 +205,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Key value in byte format
 	 */
-	public byte getByte ()
-	{
-		return Byte.parseByte (getString ());
+	public byte getByte() {
+		return Byte.parseByte(getString());
 	}
 
 	/**
@@ -230,9 +214,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Key value in short integer format
 	 */
-	public short getShort ()
-	{
-		return Short.parseShort (getString ());
+	public short getShort() {
+		return Short.parseShort(getString());
 	}
 
 	/**
@@ -240,9 +223,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Key value in integer format
 	 */
-	public int getInteger ()
-	{
-		return Integer.parseInt (getString ());
+	public int getInteger() {
+		return Integer.parseInt(getString());
 	}
 
 	/**
@@ -250,9 +232,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Key value in long integer format
 	 */
-	public long getLong ()
-	{
-		return Long.parseLong (getString ());
+	public long getLong() {
+		return Long.parseLong(getString());
 	}
 
 	/**
@@ -260,9 +241,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Key value in float format
 	 */
-	public float getFloat ()
-	{
-		return Float.parseFloat (getString ());
+	public float getFloat() {
+		return Float.parseFloat(getString());
 	}
 
 	/**
@@ -270,9 +250,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Key value in double format
 	 */
-	public double getDouble ()
-	{
-		return Double.parseDouble (getString ());
+	public double getDouble() {
+		return Double.parseDouble(getString());
 	}
 
 	/**
@@ -280,9 +259,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @param v Boolean value to set
 	 */
-	public void setBoolean (final boolean v)
-	{
-		setString (Boolean.toString (v));
+	public void setBoolean(final boolean v) {
+		setString(Boolean.toString(v));
 	}
 
 	/**
@@ -290,9 +268,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @param v Byte value to set
 	 */
-	public void setByte (final byte v)
-	{
-		setString (Byte.toString (v));
+	public void setByte(final byte v) {
+		setString(Byte.toString(v));
 	}
 
 	/**
@@ -300,9 +277,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @param v Short integer value to set
 	 */
-	public void setShort (final short v)
-	{
-		setString (Short.toString (v));
+	public void setShort(final short v) {
+		setString(Short.toString(v));
 	}
 
 	/**
@@ -310,9 +286,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @param v Integer value to set
 	 */
-	public void setInteger (final int v)
-	{
-		setString (Integer.toString (v));
+	public void setInteger(final int v) {
+		setString(Integer.toString(v));
 	}
 
 	/**
@@ -320,9 +295,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @param v Long integer value to set
 	 */
-	public void setLong (final long v)
-	{
-		setString (Long.toString (v));
+	public void setLong(final long v) {
+		setString(Long.toString(v));
 	}
 
 	/**
@@ -330,9 +304,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @param v Float value to set
 	 */
-	public void setFloat (final float v)
-	{
-		setString (Float.toString (v));
+	public void setFloat(final float v) {
+		setString(Float.toString(v));
 	}
 
 	/**
@@ -340,9 +313,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @param v Double value to set
 	 */
-	public void setDouble (final double v)
-	{
-		setString (Double.toString (v));
+	public void setDouble(final double v) {
+		setString(Double.toString(v));
 	}
 
 	/**
@@ -351,18 +323,17 @@ public class Key implements Iterable<String>
 	 * @param text Reason for the error
 	 * @param args Custom arguments
 	 */
-	public void setError (final String text, final Object... args)
-	{
-		final StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
-		setMeta ("error", "number description module file line function reason");
-		setMeta ("error/number", PluginMisbehaviorException.errorNumber ());
-		setMeta ("error/description", "jni/java error");
-		setMeta ("error/module", e[1].getClassName () + " " + e[1].getMethodName ());
-		setMeta ("error/file", e[1].getFileName ());
-		setMeta ("error/line", Integer.toString (e[1].getLineNumber ()));
-		setMeta ("error/mountpoint", getName ());
-		setMeta ("error/configfile", getString ());
-		setMeta ("error/reason", String.format (text, args));
+	public void setError(final String text, final Object... args) {
+		final StackTraceElement[] e = Thread.currentThread().getStackTrace();
+		setMeta("error", "number description module file line function reason");
+		setMeta("error/number", PluginMisbehaviorException.errorNumber());
+		setMeta("error/description", "jni/java error");
+		setMeta("error/module", e[1].getClassName() + " " + e[1].getMethodName());
+		setMeta("error/file", e[1].getFileName());
+		setMeta("error/line", Integer.toString(e[1].getLineNumber()));
+		setMeta("error/mountpoint", getName());
+		setMeta("error/configfile", getString());
+		setMeta("error/reason", String.format(text, args));
 	}
 
 	/**
@@ -371,40 +342,34 @@ public class Key implements Iterable<String>
 	 * @param text Reason for the warning
 	 * @param args Custom arguments
 	 */
-	public void addWarning (final String text, final Object... args)
-	{
-		final StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
-		final Key k = getMeta (WARNINGS);
-		final StringBuilder builder = new StringBuilder (WARNINGS + "/#");
-		if (!k.isNull ())
-		{
-			builder.append (k.getString ());
-			builder.setCharAt (11, (char) (builder.charAt (11) + 1));
-			if (builder.charAt (11) > '9')
-			{
-				builder.setCharAt (11, '0');
-				builder.setCharAt (10, (char) (builder.charAt (10) + 1));
-				if (builder.charAt (10) > '9')
-				{
-					builder.setCharAt (10, '0');
+	public void addWarning(final String text, final Object... args) {
+		final StackTraceElement[] e = Thread.currentThread().getStackTrace();
+		final Key k = getMeta(WARNINGS);
+		final StringBuilder builder = new StringBuilder(WARNINGS + "/#");
+		if (!k.isNull()) {
+			builder.append(k.getString());
+			builder.setCharAt(11, (char) (builder.charAt(11) + 1));
+			if (builder.charAt(11) > '9') {
+				builder.setCharAt(11, '0');
+				builder.setCharAt(10, (char) (builder.charAt(10) + 1));
+				if (builder.charAt(10) > '9') {
+					builder.setCharAt(10, '0');
 				}
 			}
-			setMeta (Key.WARNINGS, builder.substring (10));
+			setMeta(Key.WARNINGS, builder.substring(10));
+		} else {
+			builder.append("00");
+			setMeta(Key.WARNINGS, "00");
 		}
-		else
-		{
-			builder.append ("00");
-			setMeta (Key.WARNINGS, "00");
-		}
-		setMeta (builder + "", "number description module file line function reason");
-		setMeta (builder + "/number", PluginMisbehaviorException.errorNumber ());
-		setMeta (builder + "/description", "jni/java warning");
-		setMeta (builder + "/module", e[1].getClassName () + " " + e[1].getMethodName ());
-		setMeta (builder + "/file", e[1].getFileName ());
-		setMeta (builder + "/line", Integer.toString (e[1].getLineNumber ()));
-		setMeta (builder + "/mountpoint", getName ());
-		setMeta (builder + "/configfile", getString ());
-		setMeta (builder + "/reason", String.format (text, args));
+		setMeta(builder + "", "number description module file line function reason");
+		setMeta(builder + "/number", PluginMisbehaviorException.errorNumber());
+		setMeta(builder + "/description", "jni/java warning");
+		setMeta(builder + "/module", e[1].getClassName() + " " + e[1].getMethodName());
+		setMeta(builder + "/file", e[1].getFileName());
+		setMeta(builder + "/line", Integer.toString(e[1].getLineNumber()));
+		setMeta(builder + "/mountpoint", getName());
+		setMeta(builder + "/configfile", getString());
+		setMeta(builder + "/reason", String.format(text, args));
 	}
 
 	/*
@@ -416,9 +381,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return New Key object containing the same information as this key
 	 */
-	public Key dup ()
-	{
-		return dup (KEY_CP_ALL);
+	public Key dup() {
+		return dup(KEY_CP_ALL);
 	}
 
 	/**
@@ -428,39 +392,35 @@ public class Key implements Iterable<String>
 	 *
 	 * @return New Key object containing the same information as this key
 	 */
-	public Key dup (final int flags)
-	{
-		return new Key (Elektra.INSTANCE.keyDup (get (), flags));
+	public Key dup(final int flags) {
+		return new Key(Elektra.INSTANCE.keyDup(get(), flags));
 	}
 
 	/**
-	 * Copies the information from the source key into this key. Does nothing if null is provided.
+	 * Copies the information from the source key into this key. Does nothing if
+	 * null is provided.
 	 *
 	 * @param source Source Key object containing the information to copy
-	 * @param flags what parts of the key to copy (a combination of KEY_CP_* flags)
+	 * @param flags  what parts of the key to copy (a combination of KEY_CP_* flags)
 	 */
-	public void copy (final Key source, final int flags)
-	{
-		if (source != null)
-		{
-			Elektra.INSTANCE.keyCopy (get (), source.get (), flags);
+	public void copy(final Key source, final int flags) {
+		if (source != null) {
+			Elektra.INSTANCE.keyCopy(get(), source.get(), flags);
 		}
 	}
 
 	/**
 	 * Increments the reference counter for this key
 	 */
-	protected void incRef ()
-	{
-		Elektra.INSTANCE.keyIncRef (key);
+	protected void incRef() {
+		Elektra.INSTANCE.keyIncRef(key);
 	}
 
 	/**
 	 * Decrements the reference counter for this key
 	 */
-	protected void decRef ()
-	{
-		Elektra.INSTANCE.keyDecRef (key);
+	protected void decRef() {
+		Elektra.INSTANCE.keyDecRef(key);
 	}
 
 	/**
@@ -468,19 +428,18 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Reference counter as integer
 	 */
-	public int getRef ()
-	{
-		return Elektra.INSTANCE.keyGetRef (get ());
+	public int getRef() {
+		return Elektra.INSTANCE.keyGetRef(get());
 	}
 
 	/**
 	 * Tries to rewind the meta information for this key
 	 *
-	 * @return 0 in case of no errors; 1 if key is not found; 2 if metakey is not found
+	 * @return 0 in case of no errors; 1 if key is not found; 2 if metakey is not
+	 *         found
 	 */
-	public int rewindMeta ()
-	{
-		return Elektra.INSTANCE.keyRewindMeta (get ());
+	public int rewindMeta() {
+		return Elektra.INSTANCE.keyRewindMeta(get());
 	}
 
 	/**
@@ -488,9 +447,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return new Key object containing the next meta information
 	 */
-	public Key nextMeta ()
-	{
-		return new Key (Elektra.INSTANCE.keyNextMeta (get ()));
+	public Key nextMeta() {
+		return new Key(Elektra.INSTANCE.keyNextMeta(get()));
 	}
 
 	/**
@@ -498,9 +456,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return new Key object containing the current meta information
 	 */
-	public Key currentMeta ()
-	{
-		return new Key (Elektra.INSTANCE.keyNextMeta (get ()));
+	public Key currentMeta() {
+		return new Key(Elektra.INSTANCE.keyNextMeta(get()));
 	}
 
 	/**
@@ -508,34 +465,30 @@ public class Key implements Iterable<String>
 	 *
 	 * @param source   Key object that is used as source
 	 * @param metaName Key name of the meta to be copied
-	 * @return 1 if meta was successfully copied, 0 if source doesn't contain the required meta and nothing had to be
-	 * done, -1 in case of an
-	 * error or if the source parameter was null
+	 * @return 1 if meta was successfully copied, 0 if source doesn't contain the
+	 *         required meta and nothing had to be done, -1 in case of an error or
+	 *         if the source parameter was null
 	 */
-	public int copyMeta (final Key source, final String metaName)
-	{
-		if (source == null)
-		{
+	public int copyMeta(final Key source, final String metaName) {
+		if (source == null) {
 			return -1;
 		}
-		return Elektra.INSTANCE.keyCopyMeta (get (), source.get (), metaName);
+		return Elektra.INSTANCE.keyCopyMeta(get(), source.get(), metaName);
 	}
 
 	/**
 	 * Helper function to copy all meta information from a source key to this key
 	 *
 	 * @param source Key object that is used as source
-	 * @return 1 if meta was successfully copied, 0 if source doesn't contain any meta and nothing had to be done, -1
-	 * in case of an error or
-	 * if the source parameter was null
+	 * @return 1 if meta was successfully copied, 0 if source doesn't contain any
+	 *         meta and nothing had to be done, -1 in case of an error or if the
+	 *         source parameter was null
 	 */
-	public int copyAllMeta (final Key source)
-	{
-		if (source == null)
-		{
+	public int copyAllMeta(final Key source) {
+		if (source == null) {
 			return -1;
 		}
-		return Elektra.INSTANCE.keyCopyAllMeta (get (), source.get ());
+		return Elektra.INSTANCE.keyCopyAllMeta(get(), source.get());
 	}
 
 	/**
@@ -544,9 +497,8 @@ public class Key implements Iterable<String>
 	 * @param metaName Key name of meta information to be fetched
 	 * @return New Key object containing the requested meta information
 	 */
-	public Key getMeta (final String metaName)
-	{
-		return new Key (Elektra.INSTANCE.keyGetMeta (get (), metaName));
+	public Key getMeta(final String metaName) {
+		return new Key(Elektra.INSTANCE.keyGetMeta(get(), metaName));
 	}
 
 	/**
@@ -554,30 +506,27 @@ public class Key implements Iterable<String>
 	 *
 	 * @param metaName      Key name of meta information to be set
 	 * @param newMetaString Meta value to be set
-	 * @return -1 in case of an error, 0 if no meta with given name is available for the key and value &gt; 0
-	 * representing the size of
-	 * newMetaString if update successful
+	 * @return -1 in case of an error, 0 if no meta with given name is available for
+	 *         the key and value &gt; 0 representing the size of newMetaString if
+	 *         update successful
 	 */
-	public int setMeta (final String metaName, final String newMetaString)
-	{
-		return Elektra.INSTANCE.keySetMeta (get (), metaName, newMetaString);
+	public int setMeta(final String metaName, final String newMetaString) {
+		return Elektra.INSTANCE.keySetMeta(get(), metaName, newMetaString);
 	}
 
 	/**
-	 * Helper function to compare two keys. Compares the key name with normal String comparison.
+	 * Helper function to compare two keys. Compares the key name with normal String
+	 * comparison.
 	 *
 	 * @param other Other Key object that is used in comparison
-	 * @return 0 if key name is equal; -1 if this key name has lower alphabetical order than the other key; 1 if this
-	 * key has higher
-	 * alphabetical order
+	 * @return 0 if key name is equal; -1 if this key name has lower alphabetical
+	 *         order than the other key; 1 if this key has higher alphabetical order
 	 */
-	public int cmp (final Key other)
-	{
-		if (other == null)
-		{
-			throw new IllegalArgumentException ("other should be a key, not null");
+	public int cmp(final Key other) {
+		if (other == null) {
+			throw new IllegalArgumentException("other should be a key, not null");
 		}
-		return Integer.signum (Elektra.INSTANCE.keyCmp (get (), other.get ()));
+		return Integer.signum(Elektra.INSTANCE.keyCmp(get(), other.get()));
 	}
 
 	/**
@@ -585,9 +534,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return 1 if needs sync, 0 if no change done and -1 in case of a null pointer
 	 */
-	public int needsSync ()
-	{
-		return Elektra.INSTANCE.keyNeedSync (get ());
+	public int needsSync() {
+		return Elektra.INSTANCE.keyNeedSync(get());
 	}
 
 	/**
@@ -596,13 +544,11 @@ public class Key implements Iterable<String>
 	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is (non-direct) sub-key of other-key
 	 */
-	public boolean isBelow (final Key other)
-	{
-		if (other == null)
-		{
-			throw new IllegalArgumentException ("other should be a key, not null");
+	public boolean isBelow(final Key other) {
+		if (other == null) {
+			throw new IllegalArgumentException("other should be a key, not null");
 		}
-		return Elektra.INSTANCE.keyIsBelow (other.get (), get ()) == 1;
+		return Elektra.INSTANCE.keyIsBelow(other.get(), get()) == 1;
 	}
 
 	/**
@@ -611,13 +557,11 @@ public class Key implements Iterable<String>
 	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is other key or (non-direct) sub-key of other-key
 	 */
-	public boolean isBelowOrSame (final Key other)
-	{
-		if (other == null)
-		{
-			throw new IllegalArgumentException ("other should be a key, not null");
+	public boolean isBelowOrSame(final Key other) {
+		if (other == null) {
+			throw new IllegalArgumentException("other should be a key, not null");
 		}
-		return Elektra.INSTANCE.keyIsBelowOrSame (other.get (), get ()) == 1;
+		return Elektra.INSTANCE.keyIsBelowOrSame(other.get(), get()) == 1;
 	}
 
 	/**
@@ -626,13 +570,11 @@ public class Key implements Iterable<String>
 	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is direct sub-key of other key ("child")
 	 */
-	public boolean isDirectBelow (final Key other)
-	{
-		if (other == null)
-		{
-			throw new IllegalArgumentException ("other should be a key, not null");
+	public boolean isDirectBelow(final Key other) {
+		if (other == null) {
+			throw new IllegalArgumentException("other should be a key, not null");
 		}
-		return Elektra.INSTANCE.keyIsDirectlyBelow (other.get (), get ()) == 1;
+		return Elektra.INSTANCE.keyIsDirectlyBelow(other.get(), get()) == 1;
 	}
 
 	/**
@@ -640,9 +582,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Boolean if this key is a binary key
 	 */
-	public boolean isBinary ()
-	{
-		return Elektra.INSTANCE.keyIsBinary (get ()) == 1;
+	public boolean isBinary() {
+		return Elektra.INSTANCE.keyIsBinary(get()) == 1;
 	}
 
 	/**
@@ -650,9 +591,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Boolean if this key is a string key
 	 */
-	public boolean isString ()
-	{
-		return Elektra.INSTANCE.keyIsString (get ()) == 1;
+	public boolean isString() {
+		return Elektra.INSTANCE.keyIsString(get()) == 1;
 	}
 
 	/**
@@ -660,9 +600,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Key name as String
 	 */
-	public String getName ()
-	{
-		return Elektra.INSTANCE.keyName (key);
+	public String getName() {
+		return Elektra.INSTANCE.keyName(key);
 	}
 
 	/**
@@ -670,9 +609,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Length of key name
 	 */
-	public int getNameSize ()
-	{
-		return Elektra.INSTANCE.keyGetNameSize (get ());
+	public int getNameSize() {
+		return Elektra.INSTANCE.keyGetNameSize(get());
 	}
 
 	/**
@@ -681,11 +619,9 @@ public class Key implements Iterable<String>
 	 * @param name New key name to use
 	 * @throws InvalidNameException TODO #3713 detailed exception description
 	 */
-	public void setName (final String name) throws InvalidNameException
-	{
-		if (Elektra.INSTANCE.keySetName (get (), name) == -1)
-		{
-			throw new InvalidNameException ();
+	public void setName(final String name) throws InvalidNameException {
+		if (Elektra.INSTANCE.keySetName(get(), name) == -1) {
+			throw new InvalidNameException();
 		}
 	}
 
@@ -694,9 +630,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Key base name as String
 	 */
-	public String getBaseName ()
-	{
-		return Elektra.INSTANCE.keyBaseName (get ());
+	public String getBaseName() {
+		return Elektra.INSTANCE.keyBaseName(get());
 	}
 
 	/**
@@ -704,37 +639,33 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Length of key base name
 	 */
-	public int getBaseNameSize ()
-	{
-		return Elektra.INSTANCE.keyGetBaseNameSize (get ());
+	public int getBaseNameSize() {
+		return Elektra.INSTANCE.keyGetBaseNameSize(get());
 	}
 
 	/**
-	 * Helper function to set key base name; will replace current base name with new base name
+	 * Helper function to set key base name; will replace current base name with new
+	 * base name
 	 *
 	 * @param baseName New key base name to use
 	 * @throws InvalidNameException TODO #3713 detailed exception description
 	 */
-	public void setBaseName (final String baseName) throws InvalidNameException
-	{
-		if (Elektra.INSTANCE.keySetBaseName (get (), baseName) == -1)
-		{
-			throw new InvalidNameException ();
+	public void setBaseName(final String baseName) throws InvalidNameException {
+		if (Elektra.INSTANCE.keySetBaseName(get(), baseName) == -1) {
+			throw new InvalidNameException();
 		}
 	}
 
 	/**
-	 * Helper function to add key base name; will add given base name to current key so that new key is sub key of
-	 * current key
+	 * Helper function to add key base name; will add given base name to current key
+	 * so that new key is sub key of current key
 	 *
 	 * @param baseName New key base name to add
 	 * @throws InvalidNameException TODO #3713 detailed exception description
 	 */
-	public void addBaseName (final String baseName) throws InvalidNameException
-	{
-		if (Elektra.INSTANCE.keyAddBaseName (get (), baseName) == -1)
-		{
-			throw new InvalidNameException ();
+	public void addBaseName(final String baseName) throws InvalidNameException {
+		if (Elektra.INSTANCE.keyAddBaseName(get(), baseName) == -1) {
+			throw new InvalidNameException();
 		}
 	}
 
@@ -743,9 +674,8 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Length of key value
 	 */
-	public int getValueSize ()
-	{
-		return Elektra.INSTANCE.keyGetValueSize (get ());
+	public int getValueSize() {
+		return Elektra.INSTANCE.keyGetValueSize(get());
 	}
 
 	/**
@@ -754,24 +684,22 @@ public class Key implements Iterable<String>
 	 * @return Key value in String format
 	 * @throws TypeMismatchException TODO #3713 detailed exception description
 	 */
-	public String getString () throws TypeMismatchException
-	{
-		if (isBinary ())
-		{
-			throw new TypeMismatchException ();
+	public String getString() throws TypeMismatchException {
+		if (isBinary()) {
+			throw new TypeMismatchException();
 		}
-		return Elektra.INSTANCE.keyString (key);
+		return Elektra.INSTANCE.keyString(key);
 	}
 
 	/**
 	 * Helper function to set new key value
 	 *
 	 * @param newString New key value to set
-	 * @return value &gt; 0 representing saved bytes (+null byte), -1 in case of an error (null key)
+	 * @return value &gt; 0 representing saved bytes (+null byte), -1 in case of an
+	 *         error (null key)
 	 */
-	public int setString (final String newString)
-	{
-		return Elektra.INSTANCE.keySetString (get (), newString);
+	public int setString(final String newString) {
+		return Elektra.INSTANCE.keySetString(get(), newString);
 	}
 
 	/**
@@ -779,8 +707,7 @@ public class Key implements Iterable<String>
 	 *
 	 * @return Native pointer object for this key
 	 */
-	public Pointer get ()
-	{
+	public Pointer get() {
 		return key;
 	}
 }
