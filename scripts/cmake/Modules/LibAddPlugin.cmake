@@ -417,7 +417,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 		TEST_REQUIRED_PLUGINS)
 	cmake_parse_arguments (
 		ARG
-		"CPP;CPP_TEST;ADD_TEST;TEST_README;INSTALL_TEST_DATA;ONLY_SHARED" # optional keywords
+		"CPP;CPP_TEST;ADD_TEST;TEST_README;INSTALL_TEST_DATA;ONLY_SHARED;USE_LINK_RPATH" # optional keywords
 		"COMPONENT" # one value keywords
 		"${MULTI_VALUE_KEYWORDS}" # multi value keywords
 		${ARGN})
@@ -440,6 +440,7 @@ function (add_plugin PLUGIN_SHORT_NAME)
 	restore_variable (${PLUGIN_NAME} ARG_TEST_REQUIRED_PLUGINS)
 	restore_variable (${PLUGIN_NAME} ARG_INSTALL_TEST_DATA)
 	restore_variable (${PLUGIN_NAME} ARG_ONLY_SHARED)
+	restore_variable (${PLUGIN_NAME} ARG_USE_LINK_RPATH)
 	restore_variable (${PLUGIN_NAME} ARG_COMPONENT)
 
 	if (ARG_UNPARSED_ARGUMENTS)
@@ -655,6 +656,13 @@ function (add_plugin PLUGIN_SHORT_NAME)
 			APPEND
 			PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES} ${CMAKE_CURRENT_BINARY_DIR} # for readme
 		)
+		# do not strip rpath during install
+		if (ARG_USE_LINK_RPATH)
+			set_target_properties (
+				${PLUGIN_NAME}
+				PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE
+			)
+		endif()
 		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
 			if (DIR AND NOT DIR STREQUAL "/usr/include")
 				set_property (
