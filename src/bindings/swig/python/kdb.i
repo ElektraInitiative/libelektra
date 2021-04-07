@@ -240,6 +240,11 @@
 /*
  * keyset.hpp
  */
+// exception handling for kdb::KeySet
+%exception {
+  KDB_CATCH(KEY_EXCEPTIONS)
+}
+
 %pythonprepend kdb::KeySet::KeySet %{
   orig = []
   if len(args):
@@ -297,6 +302,12 @@
 
     def extend(self, list):
       return self.append(*list)
+
+    def remove(self, name):
+      key = self._lookup(name, KDB_O_POP)
+      if not key:
+        raise ValueError("ks.remove(x): x not in list")
+      return key
 
     def __getitem__(self, key):
       """See lookup(...) for details.
@@ -364,6 +375,9 @@
 }
 
 %include "keyset.hpp"
+
+// clear exception handler
+%exception;
 
 
 /*

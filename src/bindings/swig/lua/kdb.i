@@ -354,6 +354,11 @@
 /*
  * keyset.hpp
  */
+// exception handling for kdb::KeySet
+%exception {
+  KDB_CATCH(KEY_EXCEPTIONS)
+}
+
 %ignore kdb::KeySet::size;
 
 %rename("_%s") kdb::KeySet::lookup;
@@ -380,6 +385,14 @@
 
   myswig::LuaSTLIterator_T<kdb::KeySet::iterator> *iterator() {
     return myswig::make_lua_iterator(self->begin(), self->begin(), self->end());
+  }
+
+  Key remove(const Key &k) {
+    return self->lookup(k, KDB_O_POP);
+  }
+
+  Key remove(const std::string &name) {
+    return self->lookup(name, KDB_O_POP);
   }
 };
 
@@ -420,6 +433,9 @@
 %}
 
 %include "keyset.hpp"
+
+// clear exception handler
+%exception;
 
 
 /*
