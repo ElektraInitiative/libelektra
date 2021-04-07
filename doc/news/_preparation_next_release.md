@@ -235,7 +235,7 @@ Add support for keyset.remove(key). _(Manuel Mausz)_
 
 ### CMake
 
-- <<TODO>>
+- Fix issue where the library runpaths of the jni plugin could not be resolved. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 
