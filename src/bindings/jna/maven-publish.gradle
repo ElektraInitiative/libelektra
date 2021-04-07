@@ -1,19 +1,6 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-// export project variables for maven publishing
-// if publishing is used wiht this java library, values should be overriden via 'secret-settings.gradle'
-ext {
-	signingPassword  = project.properties['signingPassword']  ?: 'KEY_PASSWORD_NOT_CONFIGURED'
-	signingSecretKey = project.properties['signingSecretKey'] ?: 'ASCII_ARMORED_PGP_SECRET_KEY_NOT_CONFIGURED'
-}
-
-// apply optional secret settings (used for maven central plublishing)
-File secretSettings = new File(rootProject.projectDir, 'secret-settings.gradle')
-if (secretSettings.exists()) {
-	apply from: secretSettings
-}
-
 tasks.withType(GenerateMavenPom).all {
 	def matcher = name =~ /generatePomFileFor(\w+)Publication/
 	def publicationName = matcher[0][1].toLowerCase()

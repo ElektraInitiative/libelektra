@@ -11,7 +11,7 @@ plugins {
 }
 
 allprojects {
-	version = project.hasProperty('releaseVersion') ? project.properties['releaseVersion'] : 'SNAPSHOT'
+	version = project.properties['releaseVersion'] ?: 'SNAPSHOT'
 	group = 'org.libelektra.libelektra'
 }
 
@@ -50,5 +50,8 @@ gradle.taskGraph.whenReady {taskGraph ->
 		task.dependsOn.forEach { dep ->
 			logger.lifecycle("  - $dep")
 		}
+	}
+	if (rootProject.version == 'undefined' || rootProject.version == '0.9.4-1') {
+		throw new GradleException("Version '${rootProject.version}' is blacklisted. see https://issues.sonatype.org/browse/OSSRH-66930")
 	}
 }
