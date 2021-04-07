@@ -190,8 +190,6 @@ Furthermore `Elektra::ksPop` and `KeySet::pop` have been removed and `KeySet::re
 
 - Migrated to Gradle project _(Michael Tucek)_
 
-- Migrated to Gradle project _(Michael Tucek)_
-
 ### Python + Lua
 
 Add support for keyset.remove(key). _(Manuel Mausz)_
