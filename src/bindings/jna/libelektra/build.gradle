@@ -19,7 +19,7 @@ publishing {
 
 			pom {
 				name = "$project.name - $parent.name"
-				description = 'Low-level Elektra java binding to elekrify Java applications and write Elektra plugins using Java.'
+				description = 'Low-level Elektra Java binding to elektrify Java applications and write Elektra plugins using Java.'
 				url = 'https://www.libelektra.org'
 
 				licenses {
