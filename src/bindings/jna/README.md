@@ -31,7 +31,7 @@ plugins, which need jni at runtime.
 
 Release versions of the Elektra JNA bindings are published to Maven Central with group id `org.libelektra`, artefact id `libelektra` and the same version as Elektra.
 
-If you want to depend on a modified binding or just want to install it to your local maven repository, change your current working directory to the JNA binding folder `/src/bindings/jna`. Either use the bundled Gradle wrapper (`./gradlew` for unix style OS or `./gradlew.bat` for windows) or ensure a recent Gradle version is available on your system and execute:
+If you want to depend on a modified binding or just want to install it to your local maven repository, change your current working directory to the JNA binding folder `/src/bindings/jna`. Either use the bundled Gradle wrapper (`./gradlew` for Unix style OS or `./gradlew.bat` for windows) or ensure a recent Gradle version is available on your system and execute:
 
 ```sh
 gradle publishToMavenLocal
