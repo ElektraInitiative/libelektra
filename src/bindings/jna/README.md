@@ -90,7 +90,7 @@ Simply add libelektra as dependency using:
     </dependency>
 ```
 
-[Here](../../../examples/external/java/read-keys-example/pom.xml) is a full example using Maven, which should work out of the box if you execute `mvn compile` in the example directory `../../../examples/external/java/read-keys-example/` and start the compiled `App.class`.
+[Here](../../../examples/external/java/read-keys-example/pom.xml) is a full example using Maven, which should work out of the box by executing `mvn compile exec:java` in the example directory `../../../examples/external/java/read-keys-example/`.
 
 #### Gradle
 
@@ -107,7 +107,7 @@ dependencies {
 }
 ```
 
-[Here](../../../examples/external/java/read-keys-example-gradle/build.gradle) is a full example using Gradle, which should work out of the box if you execute `./gradlew run` in the example directory `../../../examples/external/java/read-keys-example-gradle/`.
+[Here](../../../examples/external/java/read-keys-example/build.gradle) is a full example using Gradle, which should work out of the box by executing `./gradlew run` in the example directory `../../../examples/external/java/read-keys-example/`.
 
 ### Using Elektra Plugins
 
