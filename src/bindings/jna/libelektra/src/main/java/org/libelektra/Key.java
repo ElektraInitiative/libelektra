@@ -36,7 +36,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Indicates an invalid key name has been used.
 	 */
-	public static class InvalidNameException extends KeyException
+	public static class KeyInvalidNameException extends KeyException
 	{
 
 		private static final long serialVersionUID = -7659317176138893895L;
@@ -45,7 +45,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Indicates a key's type conversion failed.
 	 */
-	public static class TypeConversionException extends KeyException
+	public static class KeyTypeConversionException extends KeyException
 	{
 
 		private static final long serialVersionUID = -8648296754188373810L;
@@ -54,7 +54,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Indicates a key's type does not match its value.
 	 */
-	public static class TypeMismatchException extends KeyException
+	public static class KeyTypeMismatchException extends KeyException
 	{
 
 		private static final long serialVersionUID = 8035874860117969698L;
@@ -685,13 +685,13 @@ public class Key implements Iterable<String>
 	 * Helper function to set key name
 	 *
 	 * @param name New key name to use
-	 * @throws InvalidNameException TODO #3754 detailed exception description
+	 * @throws KeyInvalidNameException TODO #3754 detailed exception description
 	 */
-	public void setName (final String name) throws InvalidNameException
+	public void setName (final String name) throws KeyInvalidNameException
 	{
 		if (Elektra.INSTANCE.keySetName (get (), name) == -1)
 		{
-			throw new InvalidNameException ();
+			throw new KeyInvalidNameException ();
 		}
 	}
 
@@ -720,13 +720,13 @@ public class Key implements Iterable<String>
 	 * base name
 	 *
 	 * @param baseName New key base name to use
-	 * @throws InvalidNameException TODO #3754 detailed exception description
+	 * @throws KeyInvalidNameException TODO #3754 detailed exception description
 	 */
-	public void setBaseName (final String baseName) throws InvalidNameException
+	public void setBaseName (final String baseName) throws KeyInvalidNameException
 	{
 		if (Elektra.INSTANCE.keySetBaseName (get (), baseName) == -1)
 		{
-			throw new InvalidNameException ();
+			throw new KeyInvalidNameException ();
 		}
 	}
 
@@ -735,13 +735,13 @@ public class Key implements Iterable<String>
 	 * so that new key is sub key of current key
 	 *
 	 * @param baseName New key base name to add
-	 * @throws InvalidNameException TODO #3754 detailed exception description
+	 * @throws KeyInvalidNameException TODO #3754 detailed exception description
 	 */
-	public void addBaseName (final String baseName) throws InvalidNameException
+	public void addBaseName (final String baseName) throws KeyInvalidNameException
 	{
 		if (Elektra.INSTANCE.keyAddBaseName (get (), baseName) == -1)
 		{
-			throw new InvalidNameException ();
+			throw new KeyInvalidNameException ();
 		}
 	}
 
@@ -759,13 +759,13 @@ public class Key implements Iterable<String>
 	 * Helper function to get representation of key value
 	 *
 	 * @return Key value in String format
-	 * @throws TypeMismatchException TODO #3754 detailed exception description
+	 * @throws KeyTypeMismatchException TODO #3754 detailed exception description
 	 */
-	public String getString () throws TypeMismatchException
+	public String getString () throws KeyTypeMismatchException
 	{
 		if (isBinary ())
 		{
-			throw new TypeMismatchException ();
+			throw new KeyTypeMismatchException ();
 		}
 		return Elektra.INSTANCE.keyString (key);
 	}
