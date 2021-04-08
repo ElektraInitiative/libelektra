@@ -107,7 +107,7 @@ dependencies {
 }
 ```
 
-[Here](../../../examples/external/java/read-keys-example/build.gradle) is a full example using Gradle, which should work out of the box by executing `./gradlew run` in the example directory `../../../examples/external/java/read-keys-example/`.
+[Here](../../../examples/external/java/read-keys-example/build.gradle) is a full example using Gradle, which should work out of the box by executing `gradle run` in the example directory `../../../examples/external/java/read-keys-example/`.
 
 ### Using Elektra Plugins
 
