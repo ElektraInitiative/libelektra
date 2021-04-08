@@ -17,6 +17,11 @@ The two modules provides wrapper classes the C++ interface and are
 mainly a 1 to 1 mapping. However, to provide a more Ruby-style API,
 the modules differs to the C++ API in the following way:
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `ruby-elektra`.
+
 ## Ruby `Kdb` Differences to C++ API
 
 - C++ iterators for `Key`/`KeySet` are excluded. Instead `KeySet` implements

@@ -11,6 +11,11 @@ Python bindings for Elektra.
 If you have the Python bindings already installed,
 you get started by reading the [tutorial](/doc/tutorials/python-kdb.md).
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `python3-elektra`.
+
 ## CMake Variables
 
 To build the Python bindings
