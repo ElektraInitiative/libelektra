@@ -12,7 +12,7 @@ plugins {
 
 allprojects {
 	version = project.properties['releaseVersion'] ?: 'SNAPSHOT'
-	group = 'org.libelektra.libelektra'
+	group = 'org.libelektra'
 }
 
 nexusPublishing {
@@ -34,7 +34,6 @@ if (versionSettings.exists()) {
 
 allprojects {
 	ext {
-		groupId = 'org.libelektra'
 		isReleaseVersion = !project.version.contains("SNAPSHOT")
 	}
 }

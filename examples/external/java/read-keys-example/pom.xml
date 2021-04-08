@@ -20,12 +20,7 @@
     <dependency>
       <groupId>org.libelektra</groupId>
       <artifactId>libelektra</artifactId>
-      <version>0.9.4</version>
-    </dependency>
-    <dependency>
-      <groupId>net.java.dev.jna</groupId>
-      <artifactId>jna</artifactId>
-      <version>4.5.0</version>
+      <version>SNAPSHOT</version>
     </dependency>
   </dependencies>
 

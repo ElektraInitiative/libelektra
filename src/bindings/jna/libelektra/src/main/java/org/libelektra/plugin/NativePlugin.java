@@ -25,7 +25,7 @@ public class NativePlugin implements Plugin
 	 * Constructor for loading an Elektra plugin
 	 * @param pluginName The plugin name
 	 * @param errorKey The errorKey
-	 * @param modules #3713 add parameter description and update other
+	 * @param modules #3754 add parameter description and update other
 	 * @throws InstallationException if the plugin does not exist
 	 */
 	public NativePlugin (String pluginName, Key errorKey, KeySet modules) throws InstallationException

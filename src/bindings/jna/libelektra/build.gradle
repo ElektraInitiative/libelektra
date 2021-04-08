@@ -11,7 +11,7 @@ apply from: "$rootProject.projectDir/maven-publish.gradle"
 publishing {
 	publications {
 		libelektra(MavenPublication) {
-			groupId rootProject.groupId
+			groupId rootProject.group
 			artifactId 'libelektra'
 			version project.version
 

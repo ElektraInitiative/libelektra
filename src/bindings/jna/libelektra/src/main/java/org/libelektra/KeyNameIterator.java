@@ -55,7 +55,7 @@ public class KeyNameIterator implements Iterator<String>
 	/**
 	 * NOT SUPPORTED
 	 *
-	 * @throws UnsupportedOperationException TODO #3713 detailed exception description
+	 * @throws UnsupportedOperationException TODO #3754 detailed exception description
 	 */
 	@Override public void remove ()
 	{

@@ -685,7 +685,7 @@ public class Key implements Iterable<String>
 	 * Helper function to set key name
 	 *
 	 * @param name New key name to use
-	 * @throws InvalidNameException TODO #3713 detailed exception description
+	 * @throws InvalidNameException TODO #3754 detailed exception description
 	 */
 	public void setName (final String name) throws InvalidNameException
 	{
@@ -720,7 +720,7 @@ public class Key implements Iterable<String>
 	 * base name
 	 *
 	 * @param baseName New key base name to use
-	 * @throws InvalidNameException TODO #3713 detailed exception description
+	 * @throws InvalidNameException TODO #3754 detailed exception description
 	 */
 	public void setBaseName (final String baseName) throws InvalidNameException
 	{
@@ -735,7 +735,7 @@ public class Key implements Iterable<String>
 	 * so that new key is sub key of current key
 	 *
 	 * @param baseName New key base name to add
-	 * @throws InvalidNameException TODO #3713 detailed exception description
+	 * @throws InvalidNameException TODO #3754 detailed exception description
 	 */
 	public void addBaseName (final String baseName) throws InvalidNameException
 	{
@@ -759,7 +759,7 @@ public class Key implements Iterable<String>
 	 * Helper function to get representation of key value
 	 *
 	 * @return Key value in String format
-	 * @throws TypeMismatchException TODO #3713 detailed exception description
+	 * @throws TypeMismatchException TODO #3754 detailed exception description
 	 */
 	public String getString () throws TypeMismatchException
 	{
