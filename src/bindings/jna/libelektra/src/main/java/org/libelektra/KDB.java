@@ -28,7 +28,7 @@ public class KDB implements AutoCloseable
 	 *
 	 * @param errorKey used to store warning and error information
 	 * @return New KDB session object
-	 * @throws KDBException TODO #3754 detailed exception description (inlcuding appropriate subtypes)
+	 * @throws KDBException TODO #3754 detailed exception description (including appropriate subtypes)
 	 */
 	public static KDB open (final Key errorKey) throws KDBException
 	{
