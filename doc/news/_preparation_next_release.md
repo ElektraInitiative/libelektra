@@ -81,6 +81,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - The `cache` plugin now only caches the parts of the global keyset that are below `system:/elektra/cache` or below
   `system:/elektra/cached`. The part below `system:/elektra/cache` is meant for internal data of the `cache`, so you
   should put data below `system:/elektra/cached`, if you want it to be cached. _(Klemens Böswirth)_
+
+### internalnotification
+
+- Fix use of `kdb_long_double_t` on armel platforms ([#3450](https://github.com/ElektraInitiative/libelektra/issues/3450)). _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
