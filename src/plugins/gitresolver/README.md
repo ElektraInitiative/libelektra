@@ -17,7 +17,7 @@ It operates on a temporary copy of the latest version of your file fetched from 
 ## Installation
 
 See [installation](/doc/INSTALL.md).
-This plugin is currently **not** part of a package.
+The package is called `libelektra5-gitresolver`.
 
 ## Options
 

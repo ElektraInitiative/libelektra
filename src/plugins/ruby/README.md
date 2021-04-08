@@ -16,7 +16,7 @@ This plugin requires the `ruby` binding.
 ## Installation
 
 See [installation](/doc/INSTALL.md).
-This plugin is currently **not** part of a package.
+The package is called `libelektra5-ruby`.
 
 ## Configuration Options
 
