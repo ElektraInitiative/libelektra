@@ -153,7 +153,10 @@ else ()
 	endif ()
 
 	install (TARGETS swig-ruby swig-ruby-tools LIBRARY DESTINATION ${RUBY_LIB_INSTALL_DIR} COMPONENT ruby-elektra)
-	install (FILES ${CMAKE_CURRENT_SOURCE_DIR}/kdb.rb ${CMAKE_CURRENT_SOURCE_DIR}/kdbtools.rb DESTINATION ${RUBY_MODULE_INSTALL_DIR} COMPONENT ruby-elektra)
+	install (
+		FILES ${CMAKE_CURRENT_SOURCE_DIR}/kdb.rb ${CMAKE_CURRENT_SOURCE_DIR}/kdbtools.rb
+		DESTINATION ${RUBY_MODULE_INSTALL_DIR}
+		COMPONENT ruby-elektra)
 
 	include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 	if (BUILD_TESTING)
