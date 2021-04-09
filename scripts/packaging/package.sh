@@ -2,7 +2,7 @@
 
 set -ex
 
-ELEKTRA_PLUGINS='ALL;mozprefs;multifile;gitresolver;jni;ruby;-haskell;yamlcpp;toml'
+ELEKTRA_PLUGINS='ALL;mozprefs;multifile;gitresolver;jni;ruby;yamlcpp;toml'
 ELEKTRA_TOOLS='ALL'
 ELEKTRA_BINDINGS='cpp;lua;python;ruby;jna;INTERCEPT'
 
