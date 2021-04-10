@@ -90,3 +90,28 @@ git reset origin/master
 
 git-ref-log # recover
 ```
+
+## Working with forks
+
+We recommend you use your own fork of the main `libelektra` repository, if you want to contribute.
+For more information on creating a fork, please take a look at [GitHub's tutorial](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo).
+
+Once you have set up and cloned your fork, you need to keep it in sync with the main repository.
+To do that, we recommend you never directly commit anything to your fork's `master` branch.
+You also need to add a remote for the main repository:
+
+```sh
+# We assume the remote for your fork is called `origin` (the default).
+git remote add upstream https://github.com/ElektraInitiative/libelektra.git
+```
+
+When you want to sync changes from the main repository into your fork, you can use these commands:
+
+```sh
+git fetch upstream master:master
+git push orign master:master
+```
+
+> **Note**: These commands work with any branch checked out.
+> You don't need to switch to the `master` branch first.
+> However, this only works, if you have not modified your `master` branch, i.e. the latest commit in your forked `master` branch was once the latest commit in the main `master` branch.
