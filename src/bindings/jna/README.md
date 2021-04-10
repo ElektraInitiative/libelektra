@@ -27,24 +27,6 @@ plugin is _not_ required for the JNA bindings to work. But, to develop
 jni plugins, JNA can be used. [Here](libelektra/plugin) are example
 plugins, which need jni at runtime.
 
-## Installing the JNA binding to the local Maven repository
-
-Release versions of the Elektra JNA bindings are published to Maven Central with group id `org.libelektra`, artefact id `libelektra` and the same version as Elektra.
-
-If you want to depend on a modified binding or just want to install it to your local maven repository, change your current working directory to the JNA binding folder `/src/bindings/jna`. Either use the bundled Gradle wrapper (`./gradlew` for Unix style OS or `./gradlew.bat` for windows) or ensure a recent Gradle version is available on your system and execute:
-
-```sh
-gradle publishToMavenLocal
-```
-
-This will update the local Maven repository with your current version of the JNA binding as `SNAPSHOT` version. To specify a desired version number (e.g. 1.0.0-mymod) execute the following command instead:
-
-```sh
-gradle -PreleaseVersion=1.0.0-mymod publishToMavenLocal
-```
-
-You can verify success by listing the directory `~/.m2/repository/org/libelektra/libelektra/1.0.0-mymod/`.
-
 ### Command line
 
 #### Linux
@@ -72,8 +54,9 @@ difference is that in macOS the jar file gets generally installed to
 
 ### Using a build system
 
-To use the JNA bindings via a build system supporting Maven dependencies, first you have to install the JNA bindings to your local Maven repository (see instructions above).
-Alternatively you can also depend on a released version published to Maven Central.
+To use the JNA bindings via a build system supporting Maven dependencies, you can  depend on a released version published to Maven Central (available since version 0.9.5).
+
+Alternatively you can install the JNA bindings to your local Maven repository (see instructions below).
 
 When you have built Elektra with the JNA binding included, it will also be automatically installed to
 `/usr/share/java/` along with a pom file for the library.
@@ -86,7 +69,7 @@ Simply add libelektra as dependency using:
     <dependency>
       <groupId>org.libelektra</groupId>
       <artifactId>libelektra</artifactId>
-      <version>YOUR_DESIRED_VERSION_HERE</version>
+      <version>0.9.5</version>
     </dependency>
 ```
 
@@ -103,11 +86,30 @@ repositories {
 }
 
 dependencies {
-    implementation "org.libelektra:libelektra:YOUR_DESIRED_VERSION_HERE"
+    implementation "org.libelektra:libelektra:0.9.5"
 }
 ```
 
 [Here](../../../examples/external/java/read-keys-example/build.gradle) is a full example using Gradle, which should work out of the box by executing `gradle run` in the example directory `../../../examples/external/java/read-keys-example/`.
+
+### Installing the JNA binding to the local Maven repository
+
+Release versions of the Elektra JNA bindings are published to Maven Central with group id `org.libelektra`, artefact id `libelektra` and the same version as Elektra.
+
+If you want to depend on a modified binding or just want to install it to your local maven repository, change your current working directory to the JNA binding folder `/src/bindings/jna`. Either use the bundled Gradle wrapper (`./gradlew` for Unix style OS or `./gradlew.bat` for windows) or ensure a recent Gradle version is available on your system and execute:
+
+```sh
+gradle publishToMavenLocal
+```
+
+This will update the local Maven repository with your current version of the JNA binding as `SNAPSHOT` version. To specify a desired version number (e.g. 1.0.0-mymod) execute the following command instead:
+
+```sh
+gradle -PreleaseVersion=1.0.0-mymod publishToMavenLocal
+```
+
+You can verify success by listing the directory `~/.m2/repository/org/libelektra/libelektra/1.0.0-mymod/`.
+
 
 ### Using Elektra Plugins
 
