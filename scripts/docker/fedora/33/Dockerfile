@@ -101,9 +101,8 @@ RUN useradd \
 # download and install gradle
 RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
-RUN echo "export JAVA_HOME=$(dirname $(dirname $(readlink $(readlink $(which javac)))))" >> /etc/profile.d/java.sh
-RUN echo "CLASSPATH=.:$JAVA_HOME/jre/lib:$JAVA_HOME/lib:$JAVA_HOME/lib/tools.jar" >> /etc/profile.d/java.sh
-RUN source /etc/profile.d/java.sh
+ENV JAVA_HOME=/etc/alternatives/jre
+RUN alternatives --auto java && alternatives --auto javac
 
 USER ${JENKINS_USERID}
 
