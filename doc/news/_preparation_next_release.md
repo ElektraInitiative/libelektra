@@ -30,7 +30,7 @@ This is the quickest way to get started with Elektra without compiling and other
 ## Highlights
 
 - Breaking change to `kdbOpen`. _[see below](#hl-1)_
-- <<HIGHLIGHT2>>
+- Ongoing improvements of Java bindings and publishing of bindings to maven central for easy dependency integrations in Java projects
 - <<HIGHLIGHT3>>
 
 <a id="hl-1"></a>
@@ -190,13 +190,15 @@ you up to date with the multi-language support provided by Elektra.
 
 - Renamed `KeyException` specializations: `KeyInvalidNameException`, `KeyTypeConversionException`, `KeyTypeMismatchException`
 
-- Ongoing work on bringing the JNA binding up to scratch and improving developer experience. Both for JNA binding API consumers, as well as future JNA binding contrubutors. _(Michael Tucek)_
-
 - Migration from Maven to Gradle _(Michael Tucek)_
 
 - Updated documentation for usage of published artifacts _(Michael Tucek)_
 
 - Integration of Maven Central publishing on Elektra release _(Robert Sowula)_
+
+#### Outlook
+
+Ongoing work on bringing the JNA binding up to scratch and improving developer experience. Both for JNA binding API consumers, as well as future JNA binding contrubutors. _(Michael Tucek)_
 
 ### Python + Lua
 
