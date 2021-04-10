@@ -54,7 +54,7 @@ difference is that in macOS the jar file gets generally installed to
 
 ### Using a build system
 
-To use the JNA bindings via a build system supporting Maven dependencies, you can  depend on a released version published to Maven Central (available since version 0.9.5).
+To use the JNA bindings via a build system supporting Maven dependencies, you can depend on a released version published to Maven Central (available since version 0.9.5).
 
 Alternatively you can install the JNA bindings to your local Maven repository (see instructions below).
 
@@ -109,7 +109,6 @@ gradle -PreleaseVersion=1.0.0-mymod publishToMavenLocal
 ```
 
 You can verify success by listing the directory `~/.m2/repository/org/libelektra/libelektra/1.0.0-mymod/`.
-
 
 ### Using Elektra Plugins
 

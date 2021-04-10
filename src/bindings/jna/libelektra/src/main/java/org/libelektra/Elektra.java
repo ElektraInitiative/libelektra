@@ -1,12 +1,10 @@
 package org.libelektra;
 
-import javax.annotation.Nullable;
-
-import org.libelektra.plugin.NativePlugin;
-
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
+import javax.annotation.Nullable;
+import org.libelektra.plugin.NativePlugin;
 
 /**
  * The JNA dynamic proxy interface to libelektra. This proxy is not intended to be used directly by libelektra API
@@ -17,7 +15,7 @@ public interface Elektra extends Library {
 	/**
 	 * Singleton instance of the native library proxy.
 	 */
-	Elektra INSTANCE = Native.loadLibrary("elektra-kdb", Elektra.class);
+	Elektra INSTANCE = Native.loadLibrary ("elektra-kdb", Elektra.class);
 
 	// KDB methods --------------------------------------------------------------
 
@@ -49,8 +47,7 @@ public interface Elektra extends Library {
 	 *         <li>{@code null} on failure</li>
 	 *         </ul>
 	 */
-	@Nullable
-	Pointer kdbOpen(@Nullable Pointer contractKeySet, Pointer errorKey);
+	@Nullable Pointer kdbOpen (@Nullable Pointer contractKeySet, Pointer errorKey);
 
 	/**
 	 * Closes the session with the Key database.<br >
@@ -73,7 +70,7 @@ public interface Elektra extends Library {
 	 *         <li>{@code -1} on {@code null} pointer passed</li>
 	 *         </ul>
 	 */
-	int kdbClose(Pointer handle, Pointer errorKey);
+	int kdbClose (Pointer handle, Pointer errorKey);
 
 	/**
 	 * Retrieve keys in an atomic and universal way.<br >
@@ -126,7 +123,7 @@ public interface Elektra extends Library {
 	 *         When a backend fails, {@link #kdbGet(Pointer, Pointer, Pointer) kdbGet()} will return {@code -1} with all
 	 *         error and warning information in the {@code parentKey} and {@code returnKeySet} left unchanged.
 	 */
-	int kdbGet(Pointer handle, Pointer returnKeySet, Pointer parentKey);
+	int kdbGet (Pointer handle, Pointer returnKeySet, Pointer parentKey);
 
 	/**
 	 * Set keys in an atomic and universal way.<br >
@@ -176,7 +173,7 @@ public interface Elektra extends Library {
 	 *         {@code parentKey} if possible</li>
 	 *         </ul>
 	 */
-	int kdbSet(Pointer handle, Pointer keySet, Pointer parentKey);
+	int kdbSet (Pointer handle, Pointer keySet, Pointer parentKey);
 
 	/**
 	 * Sets up a contract for use with {@link #kdbOpen(Pointer, Pointer) kdbOpen()} that configures the {@code gopts}
@@ -206,62 +203,65 @@ public interface Elektra extends Library {
 	 *         <li>{@code -1} on {@code null} pointer passed</li>
 	 *         </ul>
 	 */
-	int elektraGOptsContractFromStrings(Pointer contractKeySet, long argsSize, String args, long envSize, String env,
-			Pointer parentKey, @Nullable Pointer goptsConfigKeySet);
+	int elektraGOptsContractFromStrings (Pointer contractKeySet, long argsSize, String args, long envSize, String env,
+					     Pointer parentKey, @Nullable Pointer goptsConfigKeySet);
 
 	// Key methods --------------------------------------------------------------
 
 	/**
 	 * Enumeration of argument flags for {@link Elektra#keyNew(String, Object...)}.
 	 */
-	enum KeyNewArgumentFlags {
+	enum KeyNewArgumentFlags
+	{
 
 		/**
 		 * Used as a parameter terminator to {@link Elektra#keyNew(String, Object...)}
 		 */
-		KEY_END(0),
+		KEY_END (0),
 
 		/**
 		 * Flag for the key name
 		 */
-		KEY_NAME(1),
+		KEY_NAME (1),
 
 		/**
 		 * Flag for the key data
 		 */
-		KEY_VALUE(1 << 1),
+		KEY_VALUE (1 << 1),
 
 		/**
 		 * Flag for the key comment
 		 */
-		KEY_COMMENT(1 << 3),
+		KEY_COMMENT (1 << 3),
 
 		/**
 		 * Flag if the key is binary
 		 */
-		KEY_BINARY(1 << 4),
+		KEY_BINARY (1 << 4),
 
 		/**
 		 * Flag for maximum size to limit value
 		 */
-		KEY_SIZE(1 << 11),
+		KEY_SIZE (1 << 11),
 
 		/**
 		 * Flag for metadata
 		 */
-		KEY_META(1 << 15);
+		KEY_META (1 << 15);
 
 		private final Integer value;
 
 		/**
 		 * @return Integer value recognized by the native library.
 		 */
-		public Integer getValue() {
+		public Integer getValue ()
+		{
 			return value;
 		}
 
-		private KeyNewArgumentFlags(int value) {
-			this.value = Integer.valueOf(value);
+		private KeyNewArgumentFlags (int value)
+		{
+			this.value = Integer.valueOf (value);
 		}
 	}
 
@@ -285,133 +285,131 @@ public interface Elektra extends Library {
 	 *         {@link #keySetName(Pointer, String) keySetName()}</li>
 	 *         </ul>
 	 */
-	@Nullable
-	Pointer keyNew(@Nullable String name, @Nullable Object... args);
+	@Nullable Pointer keyNew (@Nullable String name, @Nullable Object... args);
 
-	Pointer keyDup(Pointer source, int flags);
+	Pointer keyDup (Pointer source, int flags);
 
-	int keyCopy(Pointer dest, Pointer source, int flags);
+	int keyCopy (Pointer dest, Pointer source, int flags);
 
-	int keyClear(Pointer key); // not needed
+	int keyClear (Pointer key); // not needed
 
-	int keyDel(Pointer key);
+	int keyDel (Pointer key);
 
-	int keyIncRef(Pointer key);
+	int keyIncRef (Pointer key);
 
-	int keyDecRef(Pointer key);
+	int keyDecRef (Pointer key);
 
-	int keyGetRef(Pointer key);
+	int keyGetRef (Pointer key);
 
 	/* Meta Info */
-	int keyRewindMeta(Pointer key);
+	int keyRewindMeta (Pointer key);
 
-	Pointer keyNextMeta(Pointer key);
+	Pointer keyNextMeta (Pointer key);
 
-	Pointer keyCurrentMeta(Pointer key);
+	Pointer keyCurrentMeta (Pointer key);
 
-	int keyCopyMeta(Pointer dest, Pointer source, String metaName);
+	int keyCopyMeta (Pointer dest, Pointer source, String metaName);
 
-	int keyCopyAllMeta(Pointer dest, Pointer source);
+	int keyCopyAllMeta (Pointer dest, Pointer source);
 
-	Pointer keyGetMeta(Pointer key, String metaName);
+	Pointer keyGetMeta (Pointer key, String metaName);
 
-	int keySetMeta(Pointer key, String metaName, String newMetaString);
+	int keySetMeta (Pointer key, String metaName, String newMetaString);
 
 	/* Methods for Making Tests */
-	int keyCmp(Pointer k1, Pointer k2);
+	int keyCmp (Pointer k1, Pointer k2);
 
-	int keyNeedSync(Pointer key);
+	int keyNeedSync (Pointer key);
 
-	int keyIsBelow(Pointer key, Pointer check);
+	int keyIsBelow (Pointer key, Pointer check);
 
-	int keyIsBelowOrSame(Pointer key, Pointer check);
+	int keyIsBelowOrSame (Pointer key, Pointer check);
 
-	int keyIsDirectlyBelow(Pointer key, Pointer check);
+	int keyIsDirectlyBelow (Pointer key, Pointer check);
 
-	int keyIsBinary(Pointer key);
+	int keyIsBinary (Pointer key);
 
-	int keyIsString(Pointer key);
+	int keyIsString (Pointer key);
 
 	/* Name Manipulation Methods */
-	String keyName(Pointer key);
+	String keyName (Pointer key);
 
-	int keyGetNameSize(Pointer key);
+	int keyGetNameSize (Pointer key);
 
-	int keyGetName(Pointer key, String returnedName, int maxSize); // not needed
+	int keyGetName (Pointer key, String returnedName, int maxSize); // not needed
 
-	int keySetName(Pointer key, String newname);
+	int keySetName (Pointer key, String newname);
 
-	Pointer keyUnescapedName(Pointer key);
+	Pointer keyUnescapedName (Pointer key);
 
-	int keyGetUnescapedNameSize(Pointer key);
+	int keyGetUnescapedNameSize (Pointer key);
 
-	String keyBaseName(Pointer key); // not implemented
+	String keyBaseName (Pointer key); // not implemented
 
-	int keyGetBaseNameSize(Pointer key); // not implemented
+	int keyGetBaseNameSize (Pointer key); // not implemented
 
-	int keyGetBaseName(Pointer key, String returned, int maxSize); // not needed
+	int keyGetBaseName (Pointer key, String returned, int maxSize); // not needed
 
-	int keySetBaseName(Pointer key, String baseName);
+	int keySetBaseName (Pointer key, String baseName);
 
-	int keyAddBaseName(Pointer key, String baseName);
+	int keyAddBaseName (Pointer key, String baseName);
 
 	/* Value Manipulation Methods */
 	// byte[] keyValue(Pointer key);
-	int keyGetValueSize(Pointer key);
+	int keyGetValueSize (Pointer key);
 
-	String keyString(Pointer key);
+	String keyString (Pointer key);
 
-	int keyGetString(Pointer key, String returnedString, int maxSize); // not needed
+	int keyGetString (Pointer key, String returnedString, int maxSize); // not needed
 
-	int keySetString(Pointer key, String newString);
+	int keySetString (Pointer key, String newString);
 
 	// int keyGetBinary(Pointer key, byte[] returnedBinary, int maxSize);
 	// int keySetBinary(Pointer key, byte[] newBinary, int dataSize);
 
 	// KeySet methods -----------------------------------------------------------
 
-	Pointer ksNew(int alloc, Object... args);
+	Pointer ksNew (int alloc, Object... args);
 
-	Pointer ksDup(Pointer source);
+	Pointer ksDup (Pointer source);
 
-	int ksCopy(Pointer dest, Pointer source);
+	int ksCopy (Pointer dest, Pointer source);
 
-	int ksClear(Pointer ks); // not needed
+	int ksClear (Pointer ks); // not needed
 
-	int ksDel(Pointer ks);
+	int ksDel (Pointer ks);
 
-	int ksNeedSync(Pointer ks);
+	int ksNeedSync (Pointer ks);
 
-	int ksGetSize(Pointer ks);
+	int ksGetSize (Pointer ks);
 
-	int ksAppendKey(Pointer ks, Pointer toAppend);
+	int ksAppendKey (Pointer ks, Pointer toAppend);
 
-	int ksAppend(Pointer ks, Pointer toAppend);
+	int ksAppend (Pointer ks, Pointer toAppend);
 
-	Pointer ksCut(Pointer ks, Pointer cutpoint);
+	Pointer ksCut (Pointer ks, Pointer cutpoint);
 
 	// TODO #3137 Also elektraKsPopAtCursor should replace the current ksPop. See
 	// also #3189.
-	Pointer ksPop(Pointer ks);
+	Pointer ksPop (Pointer ks);
 
-	Pointer elektraKsPopAtCursor(Pointer ks, int cursor);
+	Pointer elektraKsPopAtCursor (Pointer ks, int cursor);
 
 	// deprecated for removal - (forRemoval = true) not set since not all build
 	// server are using JDK >=9 yet
-	@Deprecated
-	int ksRewind(Pointer ks);
+	@Deprecated int ksRewind (Pointer ks);
 
-	Pointer ksHead(Pointer ks);
+	Pointer ksHead (Pointer ks);
 
-	Pointer ksTail(Pointer ks);
+	Pointer ksTail (Pointer ks);
 
-	Pointer ksAtCursor(Pointer ks, int cursor);
+	Pointer ksAtCursor (Pointer ks, int cursor);
 
-	Pointer ksLookup(Pointer ks, Pointer key, int options);
+	Pointer ksLookup (Pointer ks, Pointer key, int options);
 
-	Pointer ksLookupByName(Pointer ks, String name, int options);
+	Pointer ksLookupByName (Pointer ks, String name, int options);
 
-	NativePlugin.ElektraPlugin elektraPluginOpen(String pluginName, Pointer modules, Pointer config, Pointer errorKey);
+	NativePlugin.ElektraPlugin elektraPluginOpen (String pluginName, Pointer modules, Pointer config, Pointer errorKey);
 
-	NativePlugin.ElektraPlugin elektraPluginClose(String pluginName, Pointer errorKey);
+	NativePlugin.ElektraPlugin elektraPluginClose (String pluginName, Pointer errorKey);
 }
