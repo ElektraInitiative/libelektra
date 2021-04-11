@@ -11,9 +11,9 @@ endmacro ()
 macro (java_test_needs_plugin test plugin)
 	list (FIND REMOVED_PLUGINS ${plugin} plugin_index)
 	if (plugin_index GREATER -1)
-		java_exclude_test (test)
-	endif ()
-endmacro ()
+		java_exclude_test (${test})
+	endif (plugin_index GREATER -1)
+endmacro (java_test_needs_plugin test plugin)
 
 if (Java_JAVAC_EXECUTABLE)
 

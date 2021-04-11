@@ -55,7 +55,7 @@ tasks.named('javadoc').configure {
 			'implNote:a:"Implementation Note:"'
 		)
 	}
-	
+
 	// TODO #3754 reactivate: fail on warnings and warn about non-compliant javadoc syntax
 	//options.addStringOption('Xwerror', '-quiet')
 	//options.addStringOption('Xdoclint:all', '-quiet')
@@ -99,10 +99,12 @@ tasks.named('test').configure {
 }
 
 // apply optional test override
-File testExclusions = new File(project.projectDir, 'test-exclusion.gradle')
+File testExclusions = new File('test-exclusion.gradle')
 if (testExclusions.exists()) {
 	apply from: testExclusions
 	logger.lifecycle("Test exclusions have been applied.")
+} else {
+	logger.lifecycle("Test exclusions file not found.")
 }
 
 // eclipse IDE integration
