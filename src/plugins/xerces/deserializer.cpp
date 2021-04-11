@@ -149,6 +149,11 @@ Key newArrayKey (Key const & arrayKey, KeySet & ks)
 	if (!result.size ())
 	{
 		Key arrayBaseKey = arrayKey.dup ();
+
+		Key parentArrayKey = Key(arrayKey.getName(), KEY_END);
+		parentArrayKey.setMeta ("array", "empty");
+		ks.append (parentArrayKey);
+
 		arrayBaseKey.addBaseName ("#");
 		result.append (arrayBaseKey);
 	}
@@ -167,6 +172,7 @@ void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks, map<Key, bo
 
 			auto it = arrays.find (current);
 			const bool array = it != arrays.end () && it->second;
+			string parentArrayName = current.getName();
 			// Multiple elements with that name, map as an array
 			if (array) current.addBaseName (newArrayKey (current, ks).getBaseName ());
 
@@ -174,6 +180,11 @@ void dom2keyset (DOMNode const * n, Key const & parent, KeySet & ks, map<Key, bo
 			if (n->hasAttributes () || !current.getString ().empty () || !n->getFirstChild () || !ks.size () || array)
 			{
 				ELEKTRA_LOG_DEBUG ("adding %s", current.getName ().c_str ());
+				if (array)
+				{
+					Key parentArrayKey = ks.lookup (parentArrayName);
+					parentArrayKey.setMeta ("array", current.getBaseName());
+				}
 				ks.append (current);
 			}
 			else

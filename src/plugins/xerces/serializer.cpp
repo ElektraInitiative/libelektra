@@ -57,7 +57,7 @@ void key2xml (DOMDocument & doc, DOMElement & elem, string const & name ELEKTRA_
 	while (Key const & meta = itKey.nextMeta ())
 	{
 		auto metaName = meta.getName ().substr (sizeof ("meta:/") - 1);
-		if (metaName != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME)
+		if (metaName != ELEKTRA_XERCES_ORIGINAL_ROOT_NAME && metaName != "array")
 		{
 			ELEKTRA_LOG_DEBUG ("creating attribute %s for element %s: %s", metaName.c_str (), name.c_str (),
 					   meta.get<string> ().c_str ());
