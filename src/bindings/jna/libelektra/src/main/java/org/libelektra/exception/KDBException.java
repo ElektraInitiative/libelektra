@@ -14,13 +14,13 @@ public abstract class KDBException extends Exception
 	private static final long serialVersionUID = 1L;
 
 	private final transient Key errorKey;
-	private List<WarningEntry> warnings;
+	private final transient List<WarningEntry> warnings;
 
 	/**
 	 * KDBException which holds the errorKey
 	 * @param k The errorKey
 	 */
-	public KDBException (final Key k)
+	protected KDBException (final Key k)
 	{
 		errorKey = k;
 		Key warningsKey = k.getMeta ("warnings");
@@ -105,7 +105,7 @@ public abstract class KDBException extends Exception
 	}
 
 	/**
-	 * @see this.getMessage()
+	 * @see #getMessage()
 	 */
 	@Override public String getLocalizedMessage ()
 	{

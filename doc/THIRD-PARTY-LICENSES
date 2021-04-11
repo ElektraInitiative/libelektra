@@ -95,6 +95,12 @@ Files: src/tools/kdb/gen/mustache.hpp:
 Copyright: 2015-2018 Kevin Wojniak
 License: BSL-1.0
 
+Files: src/bindings/jna/gradlew
+       src/bindings/jna/gradlew.bat
+       src/bindings/jna/gradle/wrapper*
+Copyright: 2015 the original author or authors
+License: Apache-2.0
+
 License: BSD-3-clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:

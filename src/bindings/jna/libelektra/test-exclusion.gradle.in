@@ -1,0 +1,5 @@
+tasks.named('test').configure {
+	filter {
+		setFailOnNoMatchingTests(false)
+@GRADLE_TEST_EXCLUDES@	}
+}

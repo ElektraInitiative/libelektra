@@ -1,6 +1,12 @@
 package org.libelektra.plugin;
 
-import java.io.*;
+import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_END;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import org.libelektra.Key;
@@ -25,7 +31,7 @@ public class PropertiesStorage implements Plugin
 	@Override public int get (final KeySet ks, final Key parentKey)
 	{
 		final String root = "system:/elektra/modules/jni";
-		if (parentKey.isBelowOrSame (Key.create (root, Key.KEY_END)))
+		if (parentKey.isBelowOrSame (Key.create (root, KEY_END)))
 		{
 			ks.append (Key.create (root + "/infos/provides", "storage"));
 			ks.append (Key.create (root + "/infos/placements", "getstorage setstorage"));

@@ -4,34 +4,35 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get -y install \
         automake \
         autotools-dev \
-        build-essential \
         bison \
+        build-essential \
         clang \
         cmake \
         curl \
         debhelper \
-        default-jdk \
-        devscripts \
         debsigs \
+        devscripts \
         dh-exec \
         dh-lua \
         dh-python \
         discount \
         doxygen \
         flex \
+        ghostscript \
         git \
         git-buildpackage \
         graphviz \
-        ghostscript \
         libaugeas-dev \
         libboost-dev \
         libcurl4-gnutls-dev \
         libdbus-1-dev \
         libgit2-dev \
         libgpgme-dev \
-        libqt5svg5-dev \
         liblua5.2-dev \
         libmarkdown2-dev \
+        libpcre3 \
+        libpcre3-dev \
+        libqt5svg5-dev \
         libssl-dev \
         libsystemd-dev \
         libxerces-c-dev \
@@ -41,20 +42,19 @@ RUN apt-get update && apt-get -y install \
         libzmq3-dev \
         lintian \
         locales \
-        maven \
+        ninja-build \
+        openjdk-11-jdk \
         pkg-config \
         python-all \
         python-dev \
         python3-all \
         python3-dev \
-        ninja-build \
         qtbase5-dev \
         qtdeclarative5-dev \
         ruby-dev \
         rustc \
+        unzip \
         valgrind \
-        libpcre3 \
-        libpcre3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN wget https://downloads.sourceforge.net/swig/swig-4.0.2.tar.gz && \
@@ -100,7 +100,14 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
+
 USER ${JENKINS_USERID}
+
+# extend PATH for user jenkins to include gradle
+RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
 
 # Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \

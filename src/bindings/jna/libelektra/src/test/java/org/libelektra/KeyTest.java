@@ -4,9 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Iterator;
 import org.junit.Test;
-import org.libelektra.Key.KeyInvalidName;
+import org.libelektra.Key.KeyInvalidNameException;
 
 public class KeyTest
 {
@@ -265,7 +264,7 @@ public class KeyTest
 		assertEquals (new_keyname, key.getName ());
 	}
 
-	@Test (expected = KeyInvalidName.class) public void test_keySetName_shouldFail ()
+	@Test (expected = KeyInvalidNameException.class) public void test_keySetName_shouldFail ()
 	{
 		final String new_keyname = "some_random/test/stuff_or/whatever"; // initial slash missing
 		final Key key = Key.create (KEY_1_NAME, KEY_1_VALUE);

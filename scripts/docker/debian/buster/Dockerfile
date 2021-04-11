@@ -4,20 +4,18 @@ ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
-RUN apt-get update \
-    && apt-get -y install \
+RUN apt-get update && apt-get -y install \
         antlr4 \
         automake \
         autotools-dev \
         bison \
-        flex \
-        libc6-dbg \
         build-essential \
+        clang-6.0 \
         cmake \
         curl \
+        debsigs \
         default-jdk \
         devscripts \
-        debsigs \
         dh-exec \
         dh-lua \
         diffutils \
@@ -25,17 +23,20 @@ RUN apt-get update \
         dnsutils \
         doxygen \
         ed \
+        flex \
         gawk \
+        ghostscript \
         git \
         git-buildpackage \
         gobject-introspection \
-        ghostscript \
         graphviz \
         icheck \
         lcov \
         libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-dev \
+        libc6-dbg \
+        libcurl4-gnutls-dev \
         libdbus-1-dev \
         libev-dev \
         libgirepository1.0-dev \
@@ -57,7 +58,6 @@ RUN apt-get update \
         libzmq3-dev \
         lintian \
         llvm \
-        maven \
         mingw-w64 \
         ninja-build \
         patch \
@@ -71,16 +71,15 @@ RUN apt-get update \
         reprepro \
         ruby \
         ruby-dev \
+        rustc \
         swig3.0 \
         systemd \
         tclcl-dev \
         uuid-dev \
+        unzip \
         valgrind \
         virtualenv \
         wine \
-        rustc \
-        clang-6.0 \
-        libcurl4-gnutls-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # use lua5.3 since dh-lua installs liblua5.3-dev which sets the
@@ -116,8 +115,17 @@ RUN useradd \
     --gid ${JENKINS_GROUPID} \
     --shell "/bin/bash" \
     jenkins
+
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
+
 USER ${JENKINS_USERID}
 
+# extend PATH for user jenkins to include gradle
+RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
+
+# Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
     && git config --global user.name 'Jenkins'
 

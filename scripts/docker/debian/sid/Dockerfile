@@ -15,11 +15,9 @@ RUN apt-get update && apt-get -y install \
         clang-format-11 \
         cmake \
         curl \
-        default-jdk \
         dh-lua \
         ed \
         flex \
-        libc6-dbg \
         gawk \
         git \
         gnupg2 \
@@ -29,6 +27,7 @@ RUN apt-get update && apt-get -y install \
         libantlr4-runtime-dev \
         libaugeas-dev \
         libboost-all-dev \
+        libc6-dbg \
         libdbus-1-dev \
         libev-dev \
         libgcrypt20-dev \
@@ -48,10 +47,10 @@ RUN apt-get update && apt-get -y install \
         libyaml-cpp-dev \
         libzmq3-dev \
         llvm \
-        maven \
         moreutils \
         ninja-build \
         npm \
+        openjdk-11-jdk \
         pkg-config \
         python3-dev \
         python3-pip \
@@ -61,7 +60,9 @@ RUN apt-get update && apt-get -y install \
         swig4.0 \
         systemd \
         tclcl-dev \
+        unzip \
         valgrind \
+        wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Update cache for shared libraries
@@ -107,7 +108,14 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
+
 USER ${JENKINS_USERID}
+
+# extend PATH for user jenkins to include gradle
+RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin

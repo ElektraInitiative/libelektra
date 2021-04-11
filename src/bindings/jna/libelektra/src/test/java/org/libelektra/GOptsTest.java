@@ -2,6 +2,7 @@ package org.libelektra;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_META;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,28 +18,26 @@ public class GOptsTest
 	@Before public void setupSpec () throws KDBException
 	{
 		KeySet spec = KeySet.create (
-			10, Key.create (SPEC_BASE_KEY, Key.KEY_META, "command", ""),
-			Key.create (SPEC_BASE_KEY + "/printversion", Key.KEY_META, "description",
-				    "print version information and exit (ignoring all other options/commands/parameters)", Key.KEY_META,
-				    "opt", "v", Key.KEY_META, "opt/arg", "none", Key.KEY_META, "opt/long", "version"),
-			Key.create (SPEC_BASE_KEY + "/getter", Key.KEY_META, "description", "get a key's value", Key.KEY_META, "command",
-				    "get"),
-			Key.create (SPEC_BASE_KEY + "/getter/verbose", Key.KEY_META, "description",
-				    "print additional information about where the value comes from", Key.KEY_META, "opt", "v", Key.KEY_META,
-				    "opt/long", "verbose", Key.KEY_META, "opt/arg", "none"),
-			Key.create (SPEC_BASE_KEY + "/getter/keyname", Key.KEY_META, "description", "name of the key to read", Key.KEY_META,
-				    "args", "indexed", Key.KEY_META, "args/index", "0"),
-			Key.create (SPEC_BASE_KEY + "/setter", Key.KEY_META, "description", "set a key's value", Key.KEY_META, "command",
-				    "set"),
-			Key.create (SPEC_BASE_KEY + "/setter/verbose", Key.KEY_META, "description",
-				    "print additional information about where the value will be stored", Key.KEY_META, "opt", "v",
-				    Key.KEY_META, "opt/long", "verbose", Key.KEY_META, "opt/arg", "none"),
-			Key.create (SPEC_BASE_KEY + "/setter/keyname", Key.KEY_META, "description", "name of the key to write",
-				    Key.KEY_META, "args", "indexed", Key.KEY_META, "args/index", "0"),
-			Key.create (SPEC_BASE_KEY + "/setter/value", Key.KEY_META, "description", "value to be written", Key.KEY_META,
-				    "args", "indexed", Key.KEY_META, "args/index", "1"),
-			Key.create (SPEC_BASE_KEY + "/dynamic/#", Key.KEY_META, "description", "dynamically call a user-supplied command",
-				    Key.KEY_META, "args", "remaining"));
+			10, Key.create (SPEC_BASE_KEY, KEY_META, "command", ""),
+			Key.create (SPEC_BASE_KEY + "/printversion", KEY_META, "description",
+				    "print version information and exit (ignoring all other options/commands/parameters)", KEY_META, "opt",
+				    "v", KEY_META, "opt/arg", "none", KEY_META, "opt/long", "version"),
+			Key.create (SPEC_BASE_KEY + "/getter", KEY_META, "description", "get a key's value", KEY_META, "command", "get"),
+			Key.create (SPEC_BASE_KEY + "/getter/verbose", KEY_META, "description",
+				    "print additional information about where the value comes from", KEY_META, "opt", "v", KEY_META,
+				    "opt/long", "verbose", KEY_META, "opt/arg", "none"),
+			Key.create (SPEC_BASE_KEY + "/getter/keyname", KEY_META, "description", "name of the key to read", KEY_META, "args",
+				    "indexed", KEY_META, "args/index", "0"),
+			Key.create (SPEC_BASE_KEY + "/setter", KEY_META, "description", "set a key's value", KEY_META, "command", "set"),
+			Key.create (SPEC_BASE_KEY + "/setter/verbose", KEY_META, "description",
+				    "print additional information about where the value will be stored", KEY_META, "opt", "v", KEY_META,
+				    "opt/long", "verbose", KEY_META, "opt/arg", "none"),
+			Key.create (SPEC_BASE_KEY + "/setter/keyname", KEY_META, "description", "name of the key to write", KEY_META,
+				    "args", "indexed", KEY_META, "args/index", "0"),
+			Key.create (SPEC_BASE_KEY + "/setter/value", KEY_META, "description", "value to be written", KEY_META, "args",
+				    "indexed", KEY_META, "args/index", "1"),
+			Key.create (SPEC_BASE_KEY + "/dynamic/#", KEY_META, "description", "dynamically call a user-supplied command",
+				    KEY_META, "args", "remaining"));
 
 		Key specParent = Key.create (SPEC_BASE_KEY);
 		try (final KDB kdb = KDB.open (specParent))

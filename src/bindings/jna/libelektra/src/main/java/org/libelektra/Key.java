@@ -1,6 +1,12 @@
 package org.libelektra;
 
+import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_END;
+import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_META;
+import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_VALUE;
+
 import com.sun.jna.Pointer;
+import java.util.Arrays;
+import org.libelektra.Elektra.KeyNewArgumentFlags;
 import org.libelektra.exception.PluginMisbehaviorException;
 
 /**
@@ -11,15 +17,6 @@ public class Key implements Iterable<String>
 
 	private static final String WARNINGS = "warnings";
 	// constants
-	public static final Pointer KEY_END = null;
-	public static final int KEY_NAME = 1;
-	public static final int KEY_VALUE = 1 << 1;
-	public static final int KEY_COMMENT = 1 << 3;
-	public static final int KEY_BINARY = 1 << 4;
-	public static final int KEY_SIZE = 1 << 11;
-	public static final int KEY_FUNC = 1 << 12;
-	public static final int KEY_META = 1 << 15;
-	public static final int KEY_NULL = 1 << 16;
 
 	public static final int KEY_CP_NAME = 1 << 0;
 	public static final int KEY_CP_STRING = 1 << 1;
@@ -39,7 +36,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Indicates an invalid key name has been used.
 	 */
-	public static class KeyInvalidName extends KeyException
+	public static class KeyInvalidNameException extends KeyException
 	{
 
 		private static final long serialVersionUID = -7659317176138893895L;
@@ -48,7 +45,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Indicates a key's type conversion failed.
 	 */
-	public static class KeyTypeConversion extends KeyException
+	public static class KeyTypeConversionException extends KeyException
 	{
 
 		private static final long serialVersionUID = -8648296754188373810L;
@@ -57,7 +54,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Indicates a key's type does not match its value.
 	 */
-	public static class KeyTypeMismatch extends KeyException
+	public static class KeyTypeMismatchException extends KeyException
 	{
 
 		private static final long serialVersionUID = 8035874860117969698L;
@@ -92,21 +89,26 @@ public class Key implements Iterable<String>
 	 *
 	 * @param name Key name; first part of key-value pair
 	 * @param args Arguments used for key value. Example:<br>
-	 *             Key.KEY_VALUE, "custom key value", Key.KEY_END
+	 *             KeyNewArgumentFlags.KEY_VALUE, "custom key value",
+	 *             KeyNewArgumentFlags.KEY_END
 	 * @return New key object
 	 */
 	protected static Key create (final String name, final Object... args)
 	{
-		return new Key (Elektra.INSTANCE.keyNew (name, args));
+		return new Key (Elektra.INSTANCE.keyNew (
+			name, Arrays.stream (args)
+				      .map (o -> (o instanceof KeyNewArgumentFlags) ? ((KeyNewArgumentFlags) o).getValue () : o)
+				      .toArray ()));
 	}
 
 	/**
 	 * Basic constructor of key class
 	 *
 	 * @param name  Key name; first part of key-value pair
-	 * @param value Key value; will be determine from the object by calling {@link Object#toString()}, null is
-	 *                 supported too
-	 * @param meta  Metadata that should be added to this key, null keys will be filtered away
+	 * @param value Key value; will be determine from the object by calling
+	 *              {@link Object#toString()}, null is supported too
+	 * @param meta  Metadata that should be added to this key, null keys will be
+	 *              filtered away
 	 * @return New key object
 	 */
 	public static Key create (final String name, final Object value, final Key... meta)
@@ -123,11 +125,11 @@ public class Key implements Iterable<String>
 		size += size > 0 ? 4 : 3;
 		final Object[] args = new Object[size];
 		int cur = 0;
-		args[cur++] = Integer.valueOf (KEY_VALUE);
+		args[cur++] = KEY_VALUE;
 		args[cur++] = value != null ? value.toString () : null;
 		if (size > 3)
 		{
-			args[cur++] = Integer.valueOf (KEY_META);
+			args[cur++] = KEY_META;
 			for (final Key m : meta)
 			{
 				args[cur++] = m;
@@ -141,7 +143,8 @@ public class Key implements Iterable<String>
 	 * Basic constructor of key class
 	 *
 	 * @param name Key name; first part of key-value pair
-	 * @param meta Metadata that should be added to this key. Will filter null values.
+	 * @param meta Metadata that should be added to this key. Will filter null
+	 *             values.
 	 * @return New key object
 	 */
 	public static Key create (final String name, final Key... meta)
@@ -167,7 +170,8 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Clean-up method to inform underlying c-library about the release of the key reference in jna-binding
+	 * Clean-up method to inform underlying c-library about the release of the key
+	 * reference in jna-binding
 	 */
 	@Override protected void finalize () throws Throwable
 	{
@@ -434,10 +438,11 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Copies the information from the source key into this key. Does nothing if null is provided.
+	 * Copies the information from the source key into this key. Does nothing if
+	 * null is provided.
 	 *
 	 * @param source Source Key object containing the information to copy
-	 * @param flags what parts of the key to copy (a combination of KEY_CP_* flags)
+	 * @param flags  what parts of the key to copy (a combination of KEY_CP_* flags)
 	 */
 	public void copy (final Key source, final int flags)
 	{
@@ -476,7 +481,8 @@ public class Key implements Iterable<String>
 	/**
 	 * Tries to rewind the meta information for this key
 	 *
-	 * @return 0 in case of no errors; 1 if key is not found; 2 if metakey is not found
+	 * @return 0 in case of no errors; 1 if key is not found; 2 if metakey is not
+	 *         found
 	 */
 	public int rewindMeta ()
 	{
@@ -508,9 +514,9 @@ public class Key implements Iterable<String>
 	 *
 	 * @param source   Key object that is used as source
 	 * @param metaName Key name of the meta to be copied
-	 * @return 1 if meta was successfully copied, 0 if source doesn't contain the required meta and nothing had to be
-	 * done, -1 in case of an
-	 * error or if the source parameter was null
+	 * @return 1 if meta was successfully copied, 0 if source doesn't contain the
+	 *         required meta and nothing had to be done, -1 in case of an error or
+	 *         if the source parameter was null
 	 */
 	public int copyMeta (final Key source, final String metaName)
 	{
@@ -525,9 +531,9 @@ public class Key implements Iterable<String>
 	 * Helper function to copy all meta information from a source key to this key
 	 *
 	 * @param source Key object that is used as source
-	 * @return 1 if meta was successfully copied, 0 if source doesn't contain any meta and nothing had to be done, -1
-	 * in case of an error or
-	 * if the source parameter was null
+	 * @return 1 if meta was successfully copied, 0 if source doesn't contain any
+	 *         meta and nothing had to be done, -1 in case of an error or if the
+	 *         source parameter was null
 	 */
 	public int copyAllMeta (final Key source)
 	{
@@ -554,9 +560,9 @@ public class Key implements Iterable<String>
 	 *
 	 * @param metaName      Key name of meta information to be set
 	 * @param newMetaString Meta value to be set
-	 * @return -1 in case of an error, 0 if no meta with given name is available for the key and value &gt; 0
-	 * representing the size of
-	 * newMetaString if update successful
+	 * @return -1 in case of an error, 0 if no meta with given name is available for
+	 *         the key and value &gt; 0 representing the size of newMetaString if
+	 *         update successful
 	 */
 	public int setMeta (final String metaName, final String newMetaString)
 	{
@@ -564,12 +570,12 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Helper function to compare two keys. Compares the key name with normal String comparison.
+	 * Helper function to compare two keys. Compares the key name with normal String
+	 * comparison.
 	 *
 	 * @param other Other Key object that is used in comparison
-	 * @return 0 if key name is equal; -1 if this key name has lower alphabetical order than the other key; 1 if this
-	 * key has higher
-	 * alphabetical order
+	 * @return 0 if key name is equal; -1 if this key name has lower alphabetical
+	 *         order than the other key; 1 if this key has higher alphabetical order
 	 */
 	public int cmp (final Key other)
 	{
@@ -679,13 +685,13 @@ public class Key implements Iterable<String>
 	 * Helper function to set key name
 	 *
 	 * @param name New key name to use
-	 * @throws KeyInvalidName
+	 * @throws KeyInvalidNameException TODO #3754 detailed exception description
 	 */
-	public void setName (final String name) throws KeyInvalidName
+	public void setName (final String name) throws KeyInvalidNameException
 	{
 		if (Elektra.INSTANCE.keySetName (get (), name) == -1)
 		{
-			throw new KeyInvalidName ();
+			throw new KeyInvalidNameException ();
 		}
 	}
 
@@ -710,31 +716,32 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Helper function to set key base name; will replace current base name with new base name
+	 * Helper function to set key base name; will replace current base name with new
+	 * base name
 	 *
 	 * @param baseName New key base name to use
-	 * @throws KeyInvalidName
+	 * @throws KeyInvalidNameException TODO #3754 detailed exception description
 	 */
-	public void setBaseName (final String baseName) throws KeyInvalidName
+	public void setBaseName (final String baseName) throws KeyInvalidNameException
 	{
 		if (Elektra.INSTANCE.keySetBaseName (get (), baseName) == -1)
 		{
-			throw new KeyInvalidName ();
+			throw new KeyInvalidNameException ();
 		}
 	}
 
 	/**
-	 * Helper function to add key base name; will add given base name to current key so that new key is sub key of
-	 * current key
+	 * Helper function to add key base name; will add given base name to current key
+	 * so that new key is sub key of current key
 	 *
 	 * @param baseName New key base name to add
-	 * @throws KeyInvalidName
+	 * @throws KeyInvalidNameException TODO #3754 detailed exception description
 	 */
-	public void addBaseName (final String baseName) throws KeyInvalidName
+	public void addBaseName (final String baseName) throws KeyInvalidNameException
 	{
 		if (Elektra.INSTANCE.keyAddBaseName (get (), baseName) == -1)
 		{
-			throw new KeyInvalidName ();
+			throw new KeyInvalidNameException ();
 		}
 	}
 
@@ -752,13 +759,13 @@ public class Key implements Iterable<String>
 	 * Helper function to get representation of key value
 	 *
 	 * @return Key value in String format
-	 * @throws KeyTypeMismatch
+	 * @throws KeyTypeMismatchException TODO #3754 detailed exception description
 	 */
-	public String getString () throws KeyTypeMismatch
+	public String getString () throws KeyTypeMismatchException
 	{
 		if (isBinary ())
 		{
-			throw new KeyTypeMismatch ();
+			throw new KeyTypeMismatchException ();
 		}
 		return Elektra.INSTANCE.keyString (key);
 	}
@@ -767,7 +774,8 @@ public class Key implements Iterable<String>
 	 * Helper function to set new key value
 	 *
 	 * @param newString New key value to set
-	 * @return value &gt; 0 representing saved bytes (+null byte), -1 in case of an error (null key)
+	 * @return value &gt; 0 representing saved bytes (+null byte), -1 in case of an
+	 *         error (null key)
 	 */
 	public int setString (final String newString)
 	{

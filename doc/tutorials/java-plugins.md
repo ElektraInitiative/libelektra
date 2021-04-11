@@ -36,7 +36,7 @@ Here we will look into, how can we write Java Plugins using - `JNA Binding`.
 
 ### Writing a Plugin
 
-Under the the following [path](/src/bindings/jna/libelektra5j/src/main/java/org/libelektra) you can find the examples of already existing plugins and you can look into libelektra Java library, which is used for communication with the configuration database.
+Under the the following [path](/src/bindings/jna/libelektra/src/main/java/org/libelektra) you can find the examples of already existing plugins and you can look into libelektra Java library, which is used for communication with the configuration database.
 
 In order to write a new Java Plugin, the new class has to be created under the `plugin` folder. It has also to extend the `Plugin.java` interface, which contains all required methods to communicate with Elektra’s database. You can leave some of the methods unimplemented, if there is no need for them.
 
@@ -52,4 +52,5 @@ It is expected that each method returns -1 if an error occurred or 0 if everythi
 
 ### Usage of Plugin
 
-To use the bindings in a Java project, we have to include the jar file `libelektra-version.jar` in the project. The version number is the same one as used for Elektra. This jar is created upon build, if you enable the JNA binding. You can also use Maven to take care of the dependencies. After that you can take your implemented class out of the `libelektra` folder and integrate it into your project.
+To use the binding in a Java project, you have to include the jar file `libelektra-$VERSION.jar` in the project. The version number is the same one as used for Elektra. This jar is created upon build, if you enable the JNA binding.
+If you are going to use a build tool supporting dependency resolution (e.g. Gradle, Maven, ...), you can fetch the Java binding from maven central with group id `org.libelektra` and artefact id `libelektra` using the desired version number. You can also install the jar into your local maven repository. See [JNA binding](../../src/bindings/jna/README.md) for more information.
