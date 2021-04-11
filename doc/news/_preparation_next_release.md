@@ -1,19 +1,11 @@
-# 0.9.<<VERSION>> Release
+# 0.9.5 Release
 
-This release did not happen yet.
+- guid:
+- author: Mihael Pranjic
+- pubDate: Sun, 11 Apr 2021 23:24:25 +0200
+- shortDesc: Java Binding Improvements, Breaking Change to `kdbOpen`
 
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial (checked by
-shell recorder) or asciinema for highlighted items.
-
-Please add your name at the end of every contribution.
-**Syntax:** _(your name)_
-
-<<`scripts/generate-news-entry`>>
-
-We are proud to release Elektra 0.9.<<VERSION>>.
+We are proud to release Elektra 0.9.5.
 
 ## What is Elektra?
 
@@ -31,7 +23,6 @@ This is the quickest way to get started with Elektra without compiling and other
 
 - Breaking change to `kdbOpen`. _[see below](#hl-1)_
 - Ongoing improvements of Java bindings and publishing of bindings to maven central for easy dependency integrations in Java projects
-- <<HIGHLIGHT3>>
 
 <a id="hl-1"></a>
 
@@ -68,10 +59,6 @@ The other two functions are the new way to configure Elektra's notification feat
 
 For more information take a look at [doc/dev/kdb-contracts.md](../dev/kdb-contracts.md)
 
-### <<HIGHLIGHT2>>
-
-### <<HIGHLIGHT2>>
-
 ## Plugins
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
@@ -85,38 +72,18 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### internalnotification
 
 - Fix use of `kdb_long_double_t` on armel platforms ([#3450](https://github.com/ElektraInitiative/libelektra/issues/3450)). _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
-### Dbus
+### Dbus & Dbusrecv
 
 - Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
 
-### Dbusrecv
+### YAML Smith & Yan LR
+
+- Removed plugins `yamlsmith` and `yanlr`. _(René Schwaiger)_
+
+### Zeromqsend & Zeromqrecv
 
 - Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
-
-### YAML Smith
-
-- Removed plugin _(René Schwaiger)_
-
-### Yan LR
-
-- Removed plugin _(René Schwaiger)_
-
-### Zeromqsend
-
-- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
-
-### Zeromqrecv
-
-- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
-
-### <<Plugin3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Libraries
 
@@ -126,7 +93,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - `keyCopy` and `keyDup` now take an additional flag. See [below](#key-copy).
 - `kdbEnsure` was removed and integrated into `kdbOpen`, which now takes an additional `KeySet * contract` parameter. See [above](#hl-1)
-- <<TODO>>
 
 ### Core
 
@@ -137,7 +103,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   The API also changed slightly. Most importantly `NULL` values are handled differently. For example, `keyDup (NULL, KEY_CP_ALL)`
   returns a key similar to what `keyNew ("/", KEY_END)` produces, whereas previously `keyDup (NULL)` returned `NULl`.
   _(Klemens Böswirth)_
-- <<TODO>>
 - We added `keyReplacePrefix`, a function that allows you to easily move a key from one parent to another. _(Klemens Böswirth)_
 - `kdbEnsure` was removed and replaced by similar functionality added to `kdbOpen`. _[see above](#hl-1)_ _(Klemens Böswirth)_
 - `KEY_END` is now defined as `(void *) 0` instead of `0`. This allows us to mark `keyNew` with the GCC attribute
@@ -155,12 +120,6 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
   `kdbClose`. _(Klemens Böswirth)_
 - The contract for transport plugins has been changed. The exported functions `"openNotification"`, `"closeNotification" and`"setIoBinding"`are no longer used. Instead, plugins should retrieve the I/O binding from the key`system:/elektra/io/binding`in the global keyset. The notification callback and context that were passed to`"openNotification"`, can now be read from the global keyset as well. The keys are`system:/elektra/notification/callback`and`system:/elektra/notification/context` respectively.
   _(Klemens Böswirth)_
-
-### <<Library3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -200,36 +159,21 @@ you up to date with the multi-language support provided by Elektra.
 
 Ongoing work on bringing the JNA binding up to scratch and improving developer experience. Both for JNA binding API consumers, as well as future JNA binding contrubutors. _(Michael Tucek)_
 
-### Python + Lua
+### Python & Lua
 
 Add support for keyset.remove(key). _(Manuel Mausz)_
 
-### <<Binding3>>
-
 ## Tools
 
-- <<TODO>>
-- <<TODO>>
 - `webd`: update `ini`, `y18n` and `elliptic` dependencies. _(Mihael Pranjić)_
 - Make search for providers not skip rest of plugins on exceptions. _(Markus Raab)_
-
-## Scripts
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Examples
 
 - Fix enums in examples/spec. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Documentation
 
-- <<TODO>>
-- <<TODO>>
 - Document names of different components. _(Markus Raab)_
 - Update buildserver documentation _(Robert Sowula)_
 - Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
@@ -248,8 +192,6 @@ Add support for keyset.remove(key). _(Manuel Mausz)_
 ## Tests
 
 - Added small test for jna Return plugin (`Return.java`), `KeyNameIterator.java` _(@aaronabebe)_
-- <<TODO>>
-- <<TODO>>
 
 ## Packaging
 
@@ -261,43 +203,28 @@ Add support for keyset.remove(key). _(Manuel Mausz)_
 ### CMake
 
 - Fix issue where the library runpaths of the jni plugin could not be resolved. _(Robert Sowula)_
-- <<TODO>>
-- <<TODO>>
 
 ### Docker
 
 - Update Alpine Linux images to version 3.13.1 and update Elektra release image. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Infrastructure
 
 ### Cirrus
 
 - Update FreeBSD images from version 12.1 to 12.2 _(Robert Sowula)_
-- <<TODO>>
 - Update brew before installing packages and print brew config. _(Mihael Pranjić)_
 - Restart `dbus` service before running tests and find `DBUS_LAUNCHD_SESSION_BUS_SOCKET` manually (as workaround). _(Mihael Pranjić)_
 - Use macOS Big Sur images. _(Mihael Pranjić)_
-- <<TODO>>
 
 ### GitHub Actions
 
 - Fix issues with `dbus` and java paths, exclude `jni`. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ### Jenkins
 
 - Update daily job to always keep the latest Docker images containing installed Elektra packages that were build on master or during release. _(Robert Sowula)_
 - Add a cleanup of the aptly database to the daily job. _(Robert Sowula)_
-- <<TODO>>
-
-### Travis
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Website
 
@@ -308,15 +235,22 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - The file [doc/KEYNAMES.md](../KEYNAMES.md) is now rendered on the website. _(Klemens Böswirth)_
 - Update `ini` dependency. _(Dependa Bot)_
 - Update many dependencies (Node 14.x LTS, angular, bootstrap, ..) and fix broken RSS feed permalinks. _(Mihael Pranjić)_
-- <<TODO>>
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Elektrify KDE _(Dardan Haxhimustafa)_, _(Felix Resch)_ and _(Mihael Pranjić)_
+- 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth)_
+- Improve Java Development Experience _(Michael Tucek)_
+- Elektrify GNOME _(Mihael Pranjić)_
+- Continious Releases _(Robert Sowula)_
+- KDB access using FUSE _(Alexander Firbas)_
+- Default TOML plugin _(Jakob Fischer)_
+- Improve Plugin Framework _(Vid Leskovar)_
+- Improve 3-way merge _(Dominic Jäger)_
+- Shell completion _(Ulrike Schäfer)_
+- Ansible bindings _(Thomas Waser)_
 
 ## Statistics
 
