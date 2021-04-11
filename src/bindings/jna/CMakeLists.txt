@@ -167,12 +167,15 @@ if (Java_JAVAC_EXECUTABLE)
 					COMPONENT java-elektra)
 
 				# add gradle test to execute with ctest in the testing phase
-				add_test (
-					NAME testjna_gradle
-					COMMAND ${GRADLE_EXECUTABLE} -q --console=plain test
-					WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra")
-				set_property (TEST testjna_gradle PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=/home/jenkins/workspace/libelektra/build_docker/lib/")
-				set_property (TEST testjna_gradle PROPERTY LABELS kdbtests bindings memleak)
+				if (NOT ENABLE_ASAN)
+					add_test (
+						NAME testjna_gradle
+						COMMAND ${GRADLE_EXECUTABLE} -q --console=plain test
+						WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/libelektra")
+
+					set_property (TEST testjna_gradle PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+					set_property (TEST testjna_gradle PROPERTY LABELS kdbtests bindings memleak)
+				endif ()
 			else ()
 				exclude_binding (
 					jna
