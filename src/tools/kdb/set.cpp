@@ -24,23 +24,12 @@ SetCommand::SetCommand ()
 int SetCommand::execute (Cmdline const & cl)
 {
 	int argc = cl.arguments.size ();
-	if (argc != 1 && argc != 2)
+	if (argc != 2)
 	{
-		throw invalid_argument ("1 or 2 arguments needed");
+		throw invalid_argument ("2 arguments needed");
 	}
 
-	bool nullValue;
-	std::string value;
-
-	if (argc == 2)
-	{
-		nullValue = false;
-		value = cl.arguments[1];
-	}
-	else
-	{
-		nullValue = true;
-	}
+	std::string value = cl.arguments[1];
 
 	KeySet conf;
 	Key k = cl.createKey (0);
@@ -68,16 +57,9 @@ int SetCommand::execute (Cmdline const & cl)
 	{
 		toprint << "Create a new key " << name;
 		key = Key (name, KEY_END);
-		if (!nullValue)
-		{
-			toprint << " with string \"" << value << '"' << endl;
-			key.setString (value);
-		}
-		else
-		{
-			toprint << " with null value" << endl;
-			key.setBinary (nullptr, 0);
-		}
+		toprint << " with string \"" << value << '"' << endl;
+		key.setString (value);
+
 		if (!key.isValid ())
 		{
 			cerr << "no valid name supplied" << endl;
@@ -87,16 +69,8 @@ int SetCommand::execute (Cmdline const & cl)
 	}
 	else
 	{
-		if (!nullValue)
-		{
-			toprint << "Set string to \"" << value << '"' << endl;
-			key.setString (value);
-		}
-		else
-		{
-			toprint << "Set null value" << endl;
-			key.setBinary (nullptr, 0);
-		}
+		toprint << "Set string to \"" << value << '"' << endl;
+		key.setString (value);
 	}
 	kdb.set (conf, k);
 	printWarnings (cerr, k, cl.verbose, cl.debug);
