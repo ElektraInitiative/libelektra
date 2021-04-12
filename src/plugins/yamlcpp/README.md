@@ -124,7 +124,7 @@ kdb export user:/tests/yamlcpp/empty yamlcpp
 
 # Arrays in Elektra always require the `array` metakey.
 # Otherwise the keys will be interpreted as normal key-value mappings.
-kdb set user:/tests/yamlcpp/movies
+kdb set user:/tests/yamlcpp/movies ""
 kdb set user:/tests/yamlcpp/movies/#0 'A Silent Voice'
 kdb export user:/tests/yamlcpp/movies yamlcpp
 #> "#0": A Silent Voice
@@ -147,7 +147,7 @@ sudo kdb mount config.yaml user:/tests/yamlcpp yamlcpp
 
 # Add some key value pairs
 kdb set user:/tests/yamlcpp/key value
-kdb set user:/tests/yamlcpp/array
+kdb set user:/tests/yamlcpp/array ""
 kdb set user:/tests/yamlcpp/array/#0 scalar
 kdb set user:/tests/yamlcpp/array/#1/key value
 kdb set user:/tests/yamlcpp/array/#1/🔑 🙈
@@ -204,11 +204,11 @@ Since Elektra allows [“holes”](../../../doc/decisions/holes.md) in a key set
 sudo kdb mount config.yaml user:/tests/yamlcpp yamlcpp
 
 kdb set      user:/tests/yamlcpp/#0/map/#1/#0 value
-kdb set      user:/tests/yamlcpp
+kdb set      user:/tests/yamlcpp ""
 kdb meta-set user:/tests/yamlcpp           array '#0'
-kdb set      user:/tests/yamlcpp/#0/map
+kdb set      user:/tests/yamlcpp/#0/map ""
 kdb meta-set user:/tests/yamlcpp/#0/map    array '#1'
-kdb set      user:/tests/yamlcpp/#0/map/#1
+kdb set      user:/tests/yamlcpp/#0/map/#1 ""
 kdb meta-set user:/tests/yamlcpp/#0/map/#1 array '#0'
 kdb file user:/tests/yamlcpp | xargs cat
 #> - map:
@@ -332,24 +332,13 @@ kdb rm -r user:/tests/binary
 sudo kdb umount user:/tests/binary
 ```
 
-## Null & Empty
+## Empty
 
-Sometimes you only want to save a key without a value (null key) or a key with an empty value. The commands below show that YAML CPP supports this scenario properly.
+Sometimes you only want to save a key with an empty value. The commands below show that YAML CPP supports this scenario properly.
 
 ```sh
 # Mount YAML CPP plugin at `user:/tests/yamlcpp`
 sudo kdb mount test.yaml user:/tests/yamlcpp yamlcpp
-
-# Check if the plugin saves null keys correctly
-kdb set user:/tests/yamlcpp/null
-kdb set user:/tests/yamlcpp/null/level1/level2
-kdb meta-set user:/tests/yamlcpp/null/level1/level2 comment 'Null key'
-
-kdb ls user:/tests/yamlcpp/null
-#> user:/tests/yamlcpp/null
-#> user:/tests/yamlcpp/null/level1/level2
-kdb get -v user:/tests/yamlcpp/null | grep -q 'The key is null.'
-kdb get -v user:/tests/yamlcpp/null/level1/level2 | grep -q 'The key is null.'
 
 # Check if the plugin saves empty keys correctly
 kdb set user:/tests/yamlcpp/empty ""

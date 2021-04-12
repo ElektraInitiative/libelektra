@@ -145,7 +145,7 @@ printf 'removed/key=test' > `kdb file user:/tests/rename`
 kdb ls user:/tests/rename
 #> user:/tests/rename/KEY
 
-kdb set user:/tests/rename
+kdb set user:/tests/rename ""
 
 cat "`kdb file user:/tests/rename`" | tail -n1
 #> KEY=test

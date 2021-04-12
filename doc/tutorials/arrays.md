@@ -12,15 +12,15 @@ kdb set user:/tests/parent value
 . The command above created a key `user:/tests/parent` with the value `value`. Since Elektra uses a hierarchical database we can also create keys **below** `user:/tests/parent`:
 
 ```sh
-# If we do not provide a value, then `kdb set` creates keys with `null` values.
-kdb set user:/tests/parent/son
-#> Create a new key user:/tests/parent/son with null value
+# We can create keys with an empty value by passing an empty string.
+kdb set user:/tests/parent/son ""
+#> Create a new key user:/tests/parent/son with string ""
 
-kdb set user:/tests/parent/daughter
-#> Create a new key user:/tests/parent/daughter with null value
+kdb set user:/tests/parent/daughter ""
+#> Create a new key user:/tests/parent/daughter with string ""
 
-kdb set user:/tests/parent/daughter/grandchild
-#> Create a new key user:/tests/parent/daughter/grandchild with null value
+kdb set user:/tests/parent/daughter/grandchild ""
+#> Create a new key user:/tests/parent/daughter/grandchild with string ""
 ```
 
 . We can check the hierarchy of the keys using `kdb ls` and retrieve data using `kdb get`:
