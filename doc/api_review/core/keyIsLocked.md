@@ -15,8 +15,10 @@
 (bullet points are in order of appearance)
 
 - [x] First line explains briefly what the function does
-- [ ] Simple example or snippet how to use the function - [ ] add
-- [ ] Longer description of function containing common use cases - [ ] add better description or reference to `keyLocked()`
+- [ ] Simple example or snippet how to use the function  
+       - [ ] add
+- [ ] Longer description of function containing common use cases  
+       - [ ] add better description or reference to `keyLocked()`
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
        - [ ] `key` is a valid key  
