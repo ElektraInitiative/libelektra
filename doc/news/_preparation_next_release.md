@@ -50,6 +50,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 
 ### <<Plugin2>>
+
 ### Dbus
 
 - Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
