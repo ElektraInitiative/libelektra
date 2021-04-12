@@ -483,6 +483,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 
 	backendClose (handle->defaultBackend, errorKey);
 	splitDel (handle->split);
+	handle->split = 0;
 	handle->defaultBackend = 0;
 	handle->trie = 0;
 
@@ -589,7 +590,11 @@ int kdbClose (KDB * handle, Key * errorKey)
 
 	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 	int errnosave = errno;
-	splitDel (handle->split);
+
+	if (handle->split)
+	{
+		splitDel (handle->split);
+	}
 
 	trieClose (handle->trie, errorKey);
 

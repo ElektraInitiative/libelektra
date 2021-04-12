@@ -29,44 +29,11 @@ This is the quickest way to get started with Elektra without compiling and other
 
 ## Highlights
 
-- Breaking change to `kdbOpen`. _[see below](#hl-1)_
+- <<HIGHLIGHT1>>
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-<a id="hl-1"></a>
-
-### `kdbOpen` Contracts
-
-The signature of `kdbOpen` has been changed from
-
-```c
-KDB *  kdbOpen (Key * errorKey);
-```
-
-to
-
-```c
-KDB * kdbOpen(const KeySet * contract, Key *parentKey);
-```
-
-You can use `kdbOpen (NULL, errorKey)` to get the same behaviour as before.
-
-The new parameter `contract` is similar to what could be done via `kdbEnsure` (which has been removed).
-Currently, the contract allows you to mount global plugins and add data into the global KeySet (passed to all plugins)
-during `kdbOpen`. This alone is already quite powerful, but we might more functionality in future releases.
-
-For now, there are three use cases for the `contract` parameter. All of them are covered by helper functions:
-
-```c
-int elektraGOptsContract (KeySet * contract, int argc, const char * const * argv, const char * const * envp, const Key * parentKey, KeySet * goptsConfig);
-int elektraIoContract (KeySet * contract, ElektraIoInterface * ioBinding);
-int elektraNotificationContract (KeySet * contract);
-```
-
-With `elektraGOptsContract` you can mount and set up the `gopts` plugin used for command-line argument parsing.
-The other two functions are the new way to configure Elektra's notification feature.
-
-For more information take a look at [doc/dev/kdb-contracts.md](../dev/kdb-contracts.md)
+### <<HIGHLIGHT1>>
 
 ### <<HIGHLIGHT2>>
 
@@ -76,41 +43,17 @@ For more information take a look at [doc/dev/kdb-contracts.md](../dev/kdb-contra
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### Cache
+### <<Plugin1>>
 
-- The `cache` plugin now only caches the parts of the global keyset that are below `system:/elektra/cache` or below
-  `system:/elektra/cached`. The part below `system:/elektra/cache` is meant for internal data of the `cache`, so you
-  should put data below `system:/elektra/cached`, if you want it to be cached. _(Klemens Böswirth)_
-
-### internalnotification
-
-- Fix use of `kdb_long_double_t` on armel platforms ([#3450](https://github.com/ElektraInitiative/libelektra/issues/3450)). _(Mihael Pranjić)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### Dbus
+### <<Plugin2>>
 
-- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
-
-### Dbusrecv
-
-- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
-
-### YAML Smith
-
-- Removed plugin _(René Schwaiger)_
-
-### Yan LR
-
-- Removed plugin _(René Schwaiger)_
-
-### Zeromqsend
-
-- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
-
-### Zeromqrecv
-
-- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### <<Plugin3>>
 
@@ -124,37 +67,27 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- `keyCopy` and `keyDup` now take an additional flag. See [below](#key-copy).
-- `kdbEnsure` was removed and integrated into `kdbOpen`, which now takes an additional `KeySet * contract` parameter. See [above](#hl-1)
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 
 ### Core
 
-<a id="key-copy"></a>
-
-- The `keyCopy` and `keyDup` functions have been changed. They now take a `flags` argument which specifies which parts
-  of the `Key` should be copied.
-  The API also changed slightly. Most importantly `NULL` values are handled differently. For example, `keyDup (NULL, KEY_CP_ALL)`
-  returns a key similar to what `keyNew ("/", KEY_END)` produces, whereas previously `keyDup (NULL)` returned `NULl`.
-  _(Klemens Böswirth)_
 - <<TODO>>
-- We added `keyReplacePrefix`, a function that allows you to easily move a key from one parent to another. _(Klemens Böswirth)_
-- `kdbEnsure` was removed and replaced by similar functionality added to `kdbOpen`. _[see above](#hl-1)_ _(Klemens Böswirth)_
-- `KEY_END` is now defined as `(void *) 0` instead of `0`. This allows us to mark `keyNew` with the GCC attribute
-  `__attribute__ ((sentinel))`, which causes a compiler warning, if `keyNew` calls don't use `KEY_END` as their last argument.
-  _(Klemens Böswirth)_
+- <<TODO>>
+- <<TODO>>
 
-### Io
+### <<Library1>>
 
-- `elektraSetIoBinding` has been removed. Use `elektraIoContract` instead. _(Klemens Böswirth)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
-### Notification
+### <<Library2>>
 
-- `elektraNotificationOpen` has been removed. Use `elektraNotificationContract` instead.
-  `elektraNotificationClose` has also been removed. There is no replacement, cleanup now happens automatially during
-  `kdbClose`. _(Klemens Böswirth)_
-- The contract for transport plugins has been changed. The exported functions `"openNotification"`, `"closeNotification" and`"setIoBinding"`are no longer used. Instead, plugins should retrieve the I/O binding from the key`system:/elektra/io/binding`in the global keyset. The notification callback and context that were passed to`"openNotification"`, can now be read from the global keyset as well. The keys are`system:/elektra/notification/callback`and`system:/elektra/notification/context` respectively.
-  _(Klemens Böswirth)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ### <<Library3>>
 
@@ -167,29 +100,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up to date with the multi-language support provided by Elektra.
 
-### JNA
+### <<Binding1>>
 
-Since internal iterator support for `KeySet` is due to being dropped, the following methods have been removed:
-
-- `Elektra::ksNext`
-- `Elektra::ksCurrent`
-- `Elektra::ksGetCursor`
-- `Elektra::ksSetCursor`
-- `KeySet::next`
-- `KeySet::current`
-- `KeySet::rewind`
-- `KeySet::getCursor`
-- `KeySet::setCursor`
-
-Until internal `KeySet` iterator support has been dropped form native library, `Elektra::ksRewind` is being retained while also being annotated as 'deprecated for removal'. The reason is, that we still need to rewind a `KeySet` before passing it to a native plugin via `NativePlugin::set`, `NativePlugin::get` or `NativePlugin::error`. _(@tucek)_
-
-Furthermore `Elektra::ksPop` and `KeySet::pop` have been removed and `KeySet::remove` has been introduced as replacment.
-
-_(@tucek)_
-
-### Python + Lua
-
-Add support for keyset.remove(key). _(Manuel Mausz)_
+### <<Binding2>>
 
 ### <<Binding3>>
 
@@ -197,8 +110,7 @@ Add support for keyset.remove(key). _(Manuel Mausz)_
 
 - <<TODO>>
 - <<TODO>>
-- `webd`: update `ini`, `y18n` and `elliptic` dependencies. _(Mihael Pranjić)_
-- Make search for providers not skip rest of plugins on exceptions. _(Markus Raab)_
+- <<TODO>>
 
 ## Scripts
 
@@ -206,58 +118,34 @@ Add support for keyset.remove(key). _(Manuel Mausz)_
 - <<TODO>>
 - <<TODO>>
 
-## Examples
-
-- Fix enums in examples/spec. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ## Documentation
 
-- <<TODO>>
-- <<TODO>>
-- Document names of different components. _(Markus Raab)_
-- Update buildserver documentation _(Robert Sowula)_
-- Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
-- Minor rewording in INSTALL.md _(@a-kraschitzer)_
-- Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
-- Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
-- Fix order of tutorials _(Markus Raab)_
-- Minor rewording in [java-kdb.md](/doc/tutorials/java-kdb.md) _(@aaronabebe)_
-- Added a short Visual Studio 2019 tutorial (/doc/tutorials/contributing-windows.md) _(Dominic Jäger)_
-- Added hint regarding WSL filesystem configuration (/doc/tutorials/contributing-windows.md) _(@tucek)_
-- Fixed broken link in yanlr-plugin readme _(@lawli3t)_
-- Minor readability improvement in [highlevel.md](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
-- Fix examples of spec plugin. _(Robert Sowula)_
 - Added Reviews for all functions contained in the Elektra Core API _(@lawli3t)_
 - Minor readability improvement in [](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
 - Minor readability improvement in [highlevel.md](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
 - Fix examples of spec plugin. _(Robert Sowula)_
 - Added Reviews for all functions contained in the Elektra Core API _(@lawli3t)_
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Tests
 
-- Added small test for jna Return plugin (`Return.java`), `KeyNameIterator.java` _(@aaronabebe)_
 - <<TODO>>
 - <<TODO>>
-
-## Packaging
-
-- Change shlibs version compatibility policy of Debian packages to ">=". _(Robert Sowula)_
-- Automate publishing of the release Elektra Docker images. _(Robert Sowula)_
+- <<TODO>>
 
 ## Build
 
 ### CMake
 
-- Fix issue where the library runpaths of the jni plugin could not be resolved. _(Robert Sowula)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
 ### Docker
 
-- Update Alpine Linux images to version 3.13.1 and update Elektra release image. _(Mihael Pranjić)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
@@ -265,23 +153,20 @@ Add support for keyset.remove(key). _(Manuel Mausz)_
 
 ### Cirrus
 
-- Update FreeBSD images from version 12.1 to 12.2 _(Robert Sowula)_
 - <<TODO>>
-- Update brew before installing packages and print brew config. _(Mihael Pranjić)_
-- Restart `dbus` service before running tests and find `DBUS_LAUNCHD_SESSION_BUS_SOCKET` manually (as workaround). _(Mihael Pranjić)_
-- Use macOS Big Sur images. _(Mihael Pranjić)_
+- <<TODO>>
 - <<TODO>>
 
 ### GitHub Actions
 
-- Fix issues with `dbus` and java paths, exclude `jni`. _(Mihael Pranjić)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
 ### Jenkins
 
-- Update daily job to always keep the latest Docker images containing installed Elektra packages that were build on master or during release. _(Robert Sowula)_
-- Add a cleanup of the aptly database to the daily job. _(Robert Sowula)_
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 
 ### Travis
@@ -295,10 +180,8 @@ Add support for keyset.remove(key). _(Manuel Mausz)_
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- It is now possible to have two links on the same line of a markdown file rendered on the website. _(Klemens Böswirth)_
-- The file [doc/KEYNAMES.md](../KEYNAMES.md) is now rendered on the website. _(Klemens Böswirth)_
-- Update `ini` dependency. _(Dependa Bot)_
-- Update many dependencies (Node 14.x LTS, angular, bootstrap, ..) and fix broken RSS feed permalinks. _(Mihael Pranjić)_
+- <<TODO>>
+- <<TODO>>
 - <<TODO>>
 
 ## Outlook

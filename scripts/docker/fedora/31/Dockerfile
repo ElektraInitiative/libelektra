@@ -18,7 +18,7 @@ RUN dnf upgrade -y && dnf install -y \
         git \
         glib2 \
         gpgme-devel \
-        java-1.8.0-openjdk-devel \
+        java-11-openjdk-devel \
         jna \
         libasan \
         libcurl-devel \
@@ -32,7 +32,6 @@ RUN dnf upgrade -y && dnf install -y \
         llvm \
         lua-devel \
         make \
-        maven \
         ninja-build \
         openssl-devel \
         procps-ng \
@@ -41,7 +40,10 @@ RUN dnf upgrade -y && dnf install -y \
         ruby-devel \
         rubygem-test-unit \
         swig \
+        unzip \
         valgrind \
+        wget \
+        which \
         xerces-c-devel \
         yajl-devel \
         yaml-cpp-devel \
@@ -82,8 +84,19 @@ RUN useradd \
     --gid ${JENKINS_GROUPID} \
     --shell "/bin/bash" \
     jenkins
+
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
+ENV JAVA_HOME=/etc/alternatives/jre
+# Pipe in 1 as Java 11 is first in the list
+RUN echo 1 | alternatives --config java && alternatives --auto javac
+
 USER ${JENKINS_USERID}
 
+# extend PATH for user jenkins to include gradle
+RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
+
+# Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
     && git config --global user.name 'Jenkins'
-

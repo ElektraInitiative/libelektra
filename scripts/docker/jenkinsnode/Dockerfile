@@ -6,39 +6,41 @@ RUN apt-get -y install \
   build-essential \
   clang \
   cmake \
-  ruby-dev \
-  python-dev \
-  libaugeas-dev \
-  libyajl-dev \
-  libgit2-dev \
-  libboost-all-dev \
-  libssl-dev \
-  libdbus-1-dev \
-  libpcre3-dev \
-  libpcre++-dev \
-  libglib2.0-dev \
-  libxerces-c-dev \
-  swig \
-  valgrind \
-  libmarkdown2-dev \
-  discount \
+  curl \
   dh-lua \
-  python-all \
-  python3-all \
-  ruby-ronn \
-  libgcrypt20-dev \
-  libgpgme-dev \
+  discount \
+  git \
+  libaugeas-dev \
+  libboost-all-dev \
+  libcurl4-gnutls-dev \
+  libdbus-1-dev \
   libev-dev \
-  libuv1-dev \
+  libgcrypt20-dev \
+  libgit2-dev \
+  libglib2.0-dev \
+  libgpgme-dev \
+  libmarkdown2-dev \
+  libpcre++-dev \
+  libpcre3-dev \
+  libssl-dev \
   libsystemd-dev \
   libuv1-dev \
-	libzmq3-dev \
+  libuv1-dev \
+  libxerces-c-dev \
+  libyajl-dev \
+  libzmq3-dev \
   openjdk-8-jdk-headless \
   openssh-server \
-  maven \
-  git \
-  libcurl4-gnutls-dev
-RUN apt-get clean && \
+  python-all \
+  python-dev \
+  python3-all \
+  ruby-dev \
+  ruby-ronn \
+  swig \
+  unzip \
+  valgrind \
+  wget \
+&& apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # TODO use Elektra for the configuration steps below
@@ -52,7 +54,6 @@ RUN mkdir -p ${GTEST_ROOT} \
       -L https://github.com/google/googletest/archive/${GTEST_VER}.tar.gz \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
-
 
 # setup the ssh server
 RUN sed --in-place 's/^\(PermitRootLogin\|UsePAM\|UseDNS\)/#\1/' /etc/ssh/sshd_config && \
@@ -81,3 +82,14 @@ RUN chmod a+x /usr/local/bin/run-*
 EXPOSE 22
 RUN service ssh start
 CMD ["/usr/sbin/sshd", "-D", "-e"]
+
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
+
+USER jenkins:jenkins
+
+# extend PATH for user jenkins to include gradle
+RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
+
+USER root:root

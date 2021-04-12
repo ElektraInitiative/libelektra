@@ -1,0 +1,19 @@
+plugins {
+    id "application"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+// apply java plugin
+apply plugin: 'java'
+
+dependencies {
+	implementation "org.libelektra:libelektra:SNAPSHOT"
+}
+
+application {
+    mainClassName = 'org.libelektra.app.App'
+}

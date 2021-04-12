@@ -47,7 +47,7 @@ if (ADDTESTING_PHASE)
 			include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 			# Generate header file
-			set (LIBELEKTRA5J_PATH ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra5j)
+			set (LIBELEKTRA5J_PATH ${CMAKE_BINARY_DIR}/src/bindings/jna/libelektra)
 			add_custom_command (
 				COMMAND ${MAVEN_EXECUTABLE} ARGS dependency:build-classpath -q -Dmdep.outputFile=classpath.txt
 				COMMAND

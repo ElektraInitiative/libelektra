@@ -1,0 +1,56 @@
+// apply project configuration for java libraries
+apply from: "$rootProject.projectDir/java-library.gradle"
+
+// apply project dependencies
+apply from: 'dependencies.gradle'
+
+// apply maven publish configuration
+apply from: "$rootProject.projectDir/maven-publish.gradle"
+
+// confugure maven-publish plugin
+publishing {
+	publications {
+		libelektra(MavenPublication) {
+			groupId rootProject.group
+			artifactId 'libelektra'
+			version project.version
+
+			from components.java
+
+			pom {
+				name = "$project.name - $parent.name"
+				description = 'Low-level Elektra Java binding to elektrify Java applications and write Elektra plugins using Java.'
+				url = 'https://www.libelektra.org'
+
+				licenses {
+					license {
+						name = 'BSD 3-Clause License'
+						url = 'https://github.com/ElektraInitiative/libelektra/blob/master/LICENSE.md'
+					}
+				}
+
+				developers {
+					developer {
+						id = 'ElektraInitiative'
+						name = 'Elektra Initiative'
+						email = 'elektra@libelektra.org'
+					}
+				}
+
+				scm {
+					connection = 'scm:git:git://github.com/ElektraInitiative/libelektra.git'
+					developerConnection = 'scm:git:ssh://github.com:ElektraInitiative/libelektra.git'
+					url = 'https://github.com/ElektraInitiative/libelektra'
+				}
+			}
+		}
+	}
+}
+
+// configure signing
+signing {
+	sign publishing.publications.libelektra
+}
+
+assemble.dependsOn generateMetadataFileForLibelektraPublication
+assemble.dependsOn generatePomFileForLibelektraPublication

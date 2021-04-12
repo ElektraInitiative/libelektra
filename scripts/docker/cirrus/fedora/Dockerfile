@@ -17,7 +17,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         git \
         glib2 \
         gpgme-devel \
-        java-1.8.0-openjdk-devel \
+        java-11-openjdk-devel \
         jna \
         libasan \
         libcurl-devel \
@@ -31,7 +31,6 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         llvm \
         lua-devel \
         make \
-        maven \
         ninja-build \
         openssl-devel \
         procps-ng \
@@ -40,7 +39,10 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         ruby-devel \
         rubygem-test-unit \
         swig \
+        unzip \
         valgrind \
+        wget \
+        which \
         xerces-c-devel \
         yajl-devel \
         yaml-cpp-devel \
@@ -57,3 +59,8 @@ RUN mkdir -p ${GTEST_ROOT} \
     && tar -zxvf gtest.tar.gz --strip-components=1 -C ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
+ENV JAVA_HOME=/etc/alternatives/jre
+RUN alternatives --auto java && alternatives --auto javac

@@ -14,7 +14,7 @@ After that you can start loading a `KDB` object as follows:
 ```java
 Key key = Key.create("user:/kdbsession/javabinding");
 try (KDB kdb = KDB.open(key)) {
-    //Your code to manipulate keys
+    // Your code to manipulate keys
 } catch (KDB.KDBException e) {
     e.printStackTrace();
 }
@@ -54,7 +54,7 @@ The method call would return `it_works!`.
 
 ```java
 String str = set.lookup("user:/my/test").getString()
-System.out.println(str) //prints "it works!"
+System.out.println(str)    // prints "it works!"
 ```
 
 ## Saving Keys
@@ -64,7 +64,7 @@ Next I will show you how to save a new key into the database. First we need need
 ```java
 KeySet set = KeySet.create();
 Key namespace = Key.create("user:/");
-kdb.get(set, namespace);    //Fetch all keys for the namespace
+kdb.get(set, namespace);    // Fetch all keys for the namespace
 set.append(Key.create("user:/somekey", "myValue"));
 kdb.set(set, key);
 ```
@@ -83,12 +83,12 @@ environments though as it is not intended for productive systems.
 Key key = Key.create("user:/errors");
 try (KDB kdb = KDB.open(key)) {
     KeySet set = KeySet.create();
-    Key namespace = Key.create("user:/");       //Select a namespace from which all keys should be fetched
-    kdb.get(set, namespace);                  //Fetch all keys into the set object
-    for (int i = 0; i < set.length(); i++) {  //Traverse the set
+    Key namespace = Key.create("user:/");     // Select a namespace from which all keys should be fetched
+    kdb.get(set, namespace);                  // Fetch all keys into the set object
+    for (int i = 0; i < set.length(); i++) {  // Traverse the set
         String keyAndValue = String.format("%s: %s",
-                set.at(i).getName(),          //Fetch the key's name
-                set.at(i).getString());       //Fetch the key's value
+                set.at(i).getName(),          // Fetch the key's name
+                set.at(i).getString());       // Fetch the key's value
         System.out.println(keyAndValue);
     }
 } catch (KDB.KDBException e) {
@@ -113,7 +113,7 @@ mvn clean package
 Afterwards run it with (change VERSION in the command below!):
 
 ```sh
-java -cp target/read-keys-example-jar-with-dependencies.jar:lib/libelektra5j-VERSION.jar org.libelektra.app.App
+java -cp target/read-keys-example-jar-with-dependencies.jar:lib/libelektra-VERSION.jar org.libelektra.app.App
 ```
 
 ## Java Plugin Tutorial

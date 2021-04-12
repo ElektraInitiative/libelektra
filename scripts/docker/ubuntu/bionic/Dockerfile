@@ -4,13 +4,12 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get -y install \
         automake \
         autotools-dev \
-        build-essential \
         bison \
+        build-essential \
         clang \
         curl \
         debhelper \
         debsigs \
-        default-jdk \
         devscripts \
         dh-exec \
         dh-lua \
@@ -35,17 +34,18 @@ RUN apt-get update && apt-get -y install \
         libyaml-cpp-dev \
         libzmq3-dev \
         locales \
-        maven \
+        ninja-build \
+        openjdk-11-jdk \
         pkg-config \
         python-all \
         python-dev \
         python3-all \
         python3-dev \
-        ninja-build \
         qtbase5-dev \
         qtdeclarative5-dev \
         ruby-dev \
         swig \
+        unzip \
         valgrind \
     && rm -rf /var/lib/apt/lists/*
 
@@ -94,7 +94,14 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 
+# download and install gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+ENV PATH "${PATH}:/opt/gradle/bin"
+
 USER ${JENKINS_USERID}
+
+# extend PATH for user jenkins to include gradle
+RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
 
 # Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \

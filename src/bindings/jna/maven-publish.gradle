@@ -1,0 +1,13 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+tasks.withType(GenerateMavenPom).all {
+	def matcher = name =~ /generatePomFileFor(\w+)Publication/
+	def publicationName = matcher[0][1].toLowerCase()
+	destination = "$buildDir/publications/${publicationName}/${publicationName}-${version}.pom.xml"
+}
+
+// configure signing
+signing {
+	required { project.isReleaseVersion && gradle.taskGraph.hasTask("publish") }
+}

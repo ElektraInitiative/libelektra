@@ -1,8 +1,5 @@
-This is a fully working example for how to use Elektra with Maven.
+This is a fully working example for how to use Elektra with Maven or Gradle.
 
-Make sure Elektra and the jna binding are installed correctly **and**
-the files are known by `mvn`. Unfortunately, it is not yet uploaded
-on [Maven Central Repository](https://maven.apache.org/repository/guide-central-repository-upload.html),
-contributions are welcomed.
+Make sure Elektra and the JNA binding are installed correctly.
 
-See [/src/bindings/jna/README.md](JNA binding) for more information.
+See [JNA binding](../../../../src/bindings/jna/README.md) for more information.
