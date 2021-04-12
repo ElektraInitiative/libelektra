@@ -34,7 +34,7 @@ s/[eE]lektra [pP]roject/Elektra Initiative/g
 s/\<[CcFf]engine/CFEngine/g
 
 # Only fix spelling of GitHub outside of URLs:
-s/([^.`/-])git[hH]ub([^.][^\w])/\1GitHub\2/g
+s/([^.`\/-])[Gg]it[hH]ub([^.][^\w])/\1GitHub\2/g
 
 s/\<[Ll]ibreoffice/LibreOffice/g
 
