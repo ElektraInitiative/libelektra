@@ -46,9 +46,9 @@ run_updates() {
 	git commit -a -m "release: regenerate plugins overview picture" || true
 
 	# update info status
-	cd $SRC_DIR
-	$SCRIPTS_DIR/dev/update-infos-status 2> $BASE_DIR/$VERSION/update-infos-status.error > $BASE_DIR/$VERSION/update-infos-status
-	git commit -a -m "release: update plugin info status" || true
+	# cd $SRC_DIR
+	# $SCRIPTS_DIR/dev/update-infos-status 2> $BASE_DIR/$VERSION/update-infos-status.error > $BASE_DIR/$VERSION/update-infos-status
+	# git commit -a -m "release: update plugin info status" || true
 
 	# run link checker
 	cd $BUILD_DIR
