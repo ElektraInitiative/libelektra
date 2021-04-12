@@ -50,6 +50,31 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 
 ### <<Plugin2>>
+### Dbus
+
+- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
+
+### Dbusrecv
+
+- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
+
+### Xerces
+
+- Store length of an array in metakey array according to [array decision](../decisions/array.md). _(Robert Sowula)_
+
+### YAML Smith
+
+- Removed plugin _(René Schwaiger)_
+
+### Yan LR
+
+- Removed plugin _(René Schwaiger)_
+
+### Zeromqsend
+
+- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
+
+### Zeromqrecv
 
 - <<TODO>>
 - <<TODO>>

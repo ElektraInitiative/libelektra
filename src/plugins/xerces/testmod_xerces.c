@@ -71,6 +71,18 @@ static void test_simple_read (void)
 
 	output_keyset (ks);
 
+	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz", 0), "base key fizz not found");
+	if (current)
+	{
+		const Key * meta;
+		succeed_if (meta = keyGetMeta (current, "array"), "no metadata exists");
+		if (meta)
+		{
+			succeed_if (strcmp (keyName (meta), "meta:/array") == 0, "wrong metadata name");
+			succeed_if (strcmp (keyValue (meta), "#2") == 0, "wrong metadata value");
+		}
+	}
+
 	succeed_if (current = ksLookupByName (ks, "/sw/elektra/tests/xerces/fizz/#0", 0), "first fizz key not found");
 	if (current)
 	{
@@ -231,8 +243,7 @@ static void test_maven_pom (void)
 	Key * resultParentKey = keyNew ("/sw/elektra/tests/xerces", KEY_VALUE, keyString (serializationParentKey), KEY_END);
 	KeySet * result = ksNew (64, KS_END);
 	succeed_if (plugin->kdbGet (plugin, result, resultParentKey) == 1, "call to kdbGet was not successful");
-
-	succeed_if (64 == ksGetSize (ks), "pom file is expected to contain 64 keys");
+	succeed_if (66 == ksGetSize (ks), "pom file is expected to contain 66 keys");
 
 	compare_keyset (ks, result); // Should be the same
 
@@ -280,7 +291,7 @@ static void test_jenkins_config (void)
 	succeed_if (strcmp (keyValue (current), "bee4ahGhOqua3ahzsai2Eef5quie5ohK/eiSe4eav+JhVlerBftAil8Ow5AejahBe9oiksKAlla/kk1/1=") == 0,
 		    "api token is wrong");
 
-	succeed_if (86 == ksGetSize (ks), "pom file is expected to contain 86 keys");
+	succeed_if (89 == ksGetSize (ks), "pom file is expected to contain 89 keys");
 
 	compare_keyset (ks, result); // Should be the same
 
