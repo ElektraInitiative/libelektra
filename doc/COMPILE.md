@@ -135,7 +135,7 @@ For a list of compilers we test with have a look at:
   on [our build server](https://build.libelektra.org/)
 - [Travis](/.travis.yml)
 - [Cirrus](/.cirrus.yml)
-- [Github Actions](/.github/workflows)
+- [GitHub Actions](/.github/workflows)
 
 Here is an additional list of compilers used by developers (for build servers, see links above):
 
