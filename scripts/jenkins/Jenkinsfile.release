@@ -211,7 +211,6 @@ def generateReleaseStages() {
     DOCKER_IMAGES.fedora_33,
     params.fedora_revision,
     false, // do not bundle git repo
-    true // use placeholder dirs
   )
 
   return tasks
