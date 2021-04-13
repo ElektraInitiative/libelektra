@@ -12,6 +12,11 @@
 This plugin is a logging plugin which prints a timestamp during
 all placements of backend.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Usage
 
 If you want to measure how long your storage plugin needs to do the read

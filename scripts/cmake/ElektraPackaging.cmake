@@ -23,10 +23,12 @@ set (
 	libelektra${SO_VERSION}-curl
 	libelektra${SO_VERSION}-dbus
 	libelektra-dev
+	libelektra${SO_VERSION}-gitresolver
 	libelektra${SO_VERSION}-java
 	libelektra${SO_VERSION}-journald
 	libelektra${SO_VERSION}-lua
 	libelektra${SO_VERSION}-python
+	libelektra${SO_VERSION}-ruby
 	libelektra${SO_VERSION}-xerces
 	libelektra${SO_VERSION}-xmltool
 	libelektra${SO_VERSION}-yajl
@@ -34,6 +36,7 @@ set (
 	libelektra${SO_VERSION}-zeromq
 	java-elektra
 	lua-elektra
+	ruby-elektra
 	python3-elektra
 	elektra-bin
 	elektra-bin-extra
@@ -51,6 +54,7 @@ set (
 	libelektra${SO_VERSION}-all
 	elektra-bin-extra
 	java-elektra
+	ruby-elektra
 	${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 
 set (ALL_PLUGINS "")
@@ -189,6 +193,11 @@ if (UNIX)
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-JOURNALD_DEPENDS "libelektra${SO_VERSION}")
 	check_component_dependencies (journald libelektra${SO_VERSION}-journald PLUGIN)
 
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-GITRESOLVER_DISPLAY_NAME "libelektra${SO_VERSION}-gitresolver")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-GITRESOLVER_DESCRIPTION "This package contains the 'gitresolver' plugins.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-GITRESOLVER_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (gitresolver libelektra${SO_VERSION}-gitresolver PLUGIN)
+
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAMLCPP_DISPLAY_NAME "libelektra${SO_VERSION}-yamlcpp")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAMLCPP_DESCRIPTION "This package contains the 'yamlcpp' plugin.")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-YAMLCPP_DEPENDS "libelektra${SO_VERSION}")
@@ -224,6 +233,16 @@ if (UNIX)
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-PYTHON_DEPENDS "libelektra${SO_VERSION}" "python3-elektra")
 	check_component_dependencies (python libelektra${SO_VERSION}-python PLUGIN)
 
+	set (CPACK_COMPONENT_RUBY-ELEKTRA_DISPLAY_NAME "ruby-elektra")
+	set (CPACK_COMPONENT_RUBY-ELEKTRA_DESCRIPTION "This package contains the Ruby bindings.")
+	set (CPACK_COMPONENT_RUBY-ELEKTRA_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (ruby ruby-elektra BINDING)
+
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-RUBY_DISPLAY_NAME "libelektra${SO_VERSION}-ruby")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-RUBY_DESCRIPTION "This package contains the 'ruby' plugin.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-RUBY_DEPENDS "libelektra${SO_VERSION}" "ruby-elektra")
+	check_component_dependencies (ruby libelektra${SO_VERSION}-ruby PLUGIN)
+
 	set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DISPLAY_NAME "elektra-bin-extra")
 	set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DESCRIPTION
 	     "This package contains extra command line utilities for Elektra written in non-shell languages like python.")
@@ -249,10 +268,12 @@ if (UNIX)
 		"libelektra${SO_VERSION}-experimental"
 		"libelektra${SO_VERSION}-augeas"
 		"libelektra${SO_VERSION}-dbus"
+		"libelektra${SO_VERSION}-gitresolver"
 		"libelektra${SO_VERSION}-zeromq"
 		"libelektra${SO_VERSION}-java"
 		"libelektra${SO_VERSION}-lua"
 		"libelektra${SO_VERSION}-python"
+		"libelektra${SO_VERSION}-ruby"
 		"libelektra${SO_VERSION}-xmltool"
 		"libelektra${SO_VERSION}-xerces"
 		"libelektra${SO_VERSION}-yajl"

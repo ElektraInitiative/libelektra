@@ -9,6 +9,11 @@
 - infos/metadata = check/date check/date/format
 - infos/description = validates date and time strings
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Validation options
 
 The following representation standards of dates and times are currently supported and can be use by setting `check/date` to:

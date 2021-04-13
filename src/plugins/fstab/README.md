@@ -12,6 +12,11 @@
 
 This plugin is an implementation of a parser and generator of the /etc/fstab file.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Old fstab Entries
 
 (Deprecated, remove this section after it is reimplemented in the new way)

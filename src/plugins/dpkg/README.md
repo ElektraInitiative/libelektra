@@ -7,6 +7,11 @@
 - infos/status = nodep limited nodoc unfinished
 - infos/description = can be used to mount dpkg files
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Example
 
 ```sh

@@ -13,6 +13,11 @@
 This plugin is an Elektra to Ruby bridge and makes is possible to implement Elektra plugins with Ruby.
 This plugin requires the `ruby` binding.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-ruby`.
+
 ## Configuration Options
 
 The plugin has the following configuration options:

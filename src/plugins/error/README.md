@@ -17,6 +17,11 @@ behavior is difficult to produce for tests.
 
 This plugin tackles this issue by yielding error/warnings on request.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Usage
 
 ### By metadata

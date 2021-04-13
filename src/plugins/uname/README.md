@@ -12,6 +12,11 @@
 This plugin is a storage plugin that will use the syscall `uname (2)`.
 No resolver is needed for that plugin to work.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Special Values
 
 This plugin defines following keynames below its mount point:

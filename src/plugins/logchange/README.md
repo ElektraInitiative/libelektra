@@ -12,6 +12,11 @@
 The purpose of this plugin is to demonstrate how one can
 be notified of every removed, added or changed key easily.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Usage
 
 Prints every added, changed or deleted key on the console.

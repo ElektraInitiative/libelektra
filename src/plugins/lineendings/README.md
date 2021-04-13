@@ -12,6 +12,11 @@
 The Lineendings Plugin verifies the line endings of a file.
 If inconsistent line endings or line endings that don't match `valid` are detected the plugin yields an error.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Configuration
 
 `valid`

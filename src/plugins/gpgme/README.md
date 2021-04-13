@@ -17,6 +17,11 @@ The encryption and decryption is designed to work transparently.
 
 The cryptographic operations are performed by GnuPG via the `libgpgme` library.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Dependencies
 
 - `libgpgme11` version 1.10 or later

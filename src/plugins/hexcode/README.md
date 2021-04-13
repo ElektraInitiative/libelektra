@@ -15,6 +15,11 @@ hexadecimal character. The escape character itself always needs to be
 encoded, otherwise the plugin would try to interpret the following two
 characters in the text as a hexadecimal sequence.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Restrictions
 
 - The escape character itself always needs to be encoded, otherwise

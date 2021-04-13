@@ -31,27 +31,27 @@ To use our stable repositories with our latest releases, following steps need to
 2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE> main` into `/etc/apt/sources.list`
    where `<DISTRIBUTION>` and `<SUITE>` is the codename of your distributions e.g.`focal`,`bionic`,`buster`, etc.
 
-This can also be done using:
+   This can also be done using:
 
-```sh
-# Example for Ubuntu Focal
-apt-get install software-properties-common apt-transport-https
-echo "deb https://debs.libelektra.org/focal focal main" | sudo tee /etc/apt/sources.list.d/elektra.list
-```
+   ```sh
+   # Example for Ubuntu Focal
+   sudo apt-get install software-properties-common apt-transport-https
+   echo "deb https://debs.libelektra.org/focal focal main" | sudo tee /etc/apt/sources.list.d/elektra.list
+   ```
 
-Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
+   Or alternatively, you can use (if you do not mind many dependences just to add one line to a config file):
 
-```sh
-# Example for Ubuntu Focal
-sudo apt-get install software-properties-common apt-transport-https
-sudo add-apt-repository "deb https://debs.libelektra.org/focal focal main"
-```
+   ```sh
+   # Example for Ubuntu Focal
+   sudo apt-get install software-properties-common apt-transport-https
+   sudo add-apt-repository "deb https://debs.libelektra.org/focal focal main"
+   ```
 
-If you would like to use the latest builds of master, append `-unstable` to `<SUITE>`.
+   If you would like to use the latest builds of master, append `-unstable` to `<SUITE>`.
 
-The `etc/apt/source.list` entry must look like following: `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE>-unstable main`
+   The `etc/apt/source.list` entry must look like following: `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE>-unstable main`
 
-E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
+   E.g. `deb https://debs.libelektra.org/focal focal-unstable main`
 
 3. Run `sudo apt-get update`.
 
@@ -72,7 +72,7 @@ sudo yum update
 Or alternatively you can use dnf to add this repo:
 
 ```sh
-dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33/libelektra.repo
+sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33/libelektra.repo
 ```
 
 For our latest builds from master append `-unstable` to the suite name:
@@ -86,7 +86,7 @@ sudo yum update
 Or alternatively you can use dnf to add this repo:
 
 ```sh
-dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33-unstable/libelektra.repo
+sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33-unstable/libelektra.repo
 ```
 
 ### Install
@@ -187,13 +187,13 @@ LD_LIBRARY_PATH=$(pwd)/lib:${LD_LIBRARY_PATH} make package
 To install the packages run this in the `package` directory:
 
 ```sh
-apt-get install ./*
+sudo apt-get install ./*
 ```
 
 If any dependency problems appear, run following command to install the missing dependencies:
 
 ```sh
-apt-get -f install
+sudo apt-get -f install
 ```
 
 #### Fedora
@@ -203,7 +203,7 @@ To install RPM packages we recommend using `yum localinstall` since installing w
 Run following command in the `package` directory:
 
 ```sh
-yum localinstall *
+sudo yum localinstall *
 ```
 
 ### make

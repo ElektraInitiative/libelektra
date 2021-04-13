@@ -78,6 +78,11 @@ non-root to modify keys in `system`.
 See [COMPILE.md](/doc/COMPILE.md) for a documentation of possible
 variants.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The default variant of this plugin `resolver_fm_hpu_b` is part of the `libelektra5` package. All other variants are part of the `libelektra5-extra` package.
+
 ### XDG Compatibility
 
 The resolver is fully [XDG compatible](http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html)

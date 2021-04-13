@@ -23,6 +23,11 @@ CCode provides a reasonable default configuration, using the usual escape sequen
 for C strings (e.g. `\n` for newline, `\t` for tab). You can also configure the escape character
 (`/escape`) and the mapping for special characters (`chars`).
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Restrictions
 
 This method of encoding characters is not as powerful as the hexcode plugin in terms of reduction.

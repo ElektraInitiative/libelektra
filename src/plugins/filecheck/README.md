@@ -13,6 +13,11 @@
 
 The filecheck plugin validates files. It tests: encoding, lineendings, BOM, printable characters and null bytes.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Configuration
 
 `check/lineending`

@@ -27,6 +27,11 @@ In this reference graph each node corresponds to a key in the KDB, while each ed
 represents a reference between to keys. The plugin will produce an error, if this graph
 is not a directed acyclic graph or contains any invalid references.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ### Resolution of References
 
 The plugin will try to resolve all keys marked with the metakey `check/reference` as references.

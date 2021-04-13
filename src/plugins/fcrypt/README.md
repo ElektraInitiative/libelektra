@@ -21,6 +21,11 @@ This plugin encrypts backend files before the commit is executed (thus `precommi
 The plugin decrypts the backend files before the getstorage opens it (thus `pregetstorage`).
 After the getstorage plugin has read the backend file, the plugin decrypts the backend file again (thus `postgetstorage`).
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Security Considerations
 
 There are two things to consider when using the `fcrypt` plugin:

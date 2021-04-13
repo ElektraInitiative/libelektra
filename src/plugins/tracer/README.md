@@ -12,6 +12,11 @@
 This plugin is added on every possible position within a backend.
 It allows you to trace when the backend is executed.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Usage
 
 If you want to trace how and if the backend is called:

@@ -8,6 +8,11 @@
 
 Lua bindings for Elektra.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `lua-elektra`.
+
 ## Version
 
 Should work with Lua 5.1 or later. Iterators need Lua 5.2.

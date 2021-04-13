@@ -14,6 +14,11 @@
 Counts and prints usage statistics.
 Only useful for debugging the plugin framework.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ## Module Loading
 
 Will not log when loaded as module (config `/module` present), unless `/logmodule` is set:

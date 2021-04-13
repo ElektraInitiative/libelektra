@@ -15,6 +15,11 @@
 
 This plugin validates IP addresses using regular expressions.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Usage
 
 ```sh

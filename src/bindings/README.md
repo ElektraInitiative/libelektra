@@ -45,6 +45,12 @@ or the
 The [doc](io/doc/) directory contains an example binding for a fictive
 asynchronous I/O management library.
 
+## Installation
+
+See [INSTALL](/doc/INSTALL.md).
+A few bindings are part of the core package `libelektra5`.
+The package that includes a binding which does not belong to the `libelektra5` package can be found in it's README.md.
+
 ## See Also
 
 - See [COMPILE](/doc/COMPILE.md#bindings) for how to specify the bindings to build.

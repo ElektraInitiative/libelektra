@@ -2,9 +2,9 @@
 
 set -ex
 
-ELEKTRA_PLUGINS='ALL;mozprefs;multifile;-gitresolver;jni;-ruby;-haskell;yamlcpp;toml'
+ELEKTRA_PLUGINS='ALL;mozprefs;multifile;gitresolver;jni;ruby;yamlcpp;toml'
 ELEKTRA_TOOLS='ALL'
-ELEKTRA_BINDINGS='cpp;lua;python;jna;INTERCEPT'
+ELEKTRA_BINDINGS='cpp;lua;python;ruby;jna;INTERCEPT'
 
 PACKAGE_REVISION=${1:-1}
 DIST_NAME=${2:-$(grep "^NAME=" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g')}

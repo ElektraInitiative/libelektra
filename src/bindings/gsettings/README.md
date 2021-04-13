@@ -10,6 +10,11 @@
 
 Implementation of Elektra as GSettingsBackend
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+This binding is currently **not** part of a released package.
+
 ## What is Working:
 
 - passing gsettings unit tests

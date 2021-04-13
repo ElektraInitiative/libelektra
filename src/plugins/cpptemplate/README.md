@@ -21,6 +21,11 @@ scripts/dev/copy-template -p pluginname
 
 . For more information please take a look [here](../template/README.md)
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Example
 
 ```sh

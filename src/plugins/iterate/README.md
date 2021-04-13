@@ -7,6 +7,11 @@
 - infos/status = unittest nodep libc experimental unfinished nodoc concept
 - infos/description = conditionally calls exported functions
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-experimental`.
+
 ## Usage
 
 Suppose you have a plugin bar that exports the function `foo(Key *k)`.

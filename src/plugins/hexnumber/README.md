@@ -16,6 +16,11 @@ This plugin is used to read configuration files that use hexadecimal values. All
 converted into decimal when Elektra reads values from the mounted file. When Elektra writes back to the file the converted values
 will be converted back and stored as before (`0X` will be replaced with `0x`).
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ### What are "hex-values"?
 
 There are multiple ways you can signal to the hexnumber plugin, that a value should be converted:

@@ -151,6 +151,7 @@ you up to date with the multi-language support provided by Elektra.
 - Minor readability improvement in [highlevel.md](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
 - Fix examples of spec plugin. _(Robert Sowula)_
 - Added Reviews for all functions contained in the Elektra Core API _(@lawli3t)_
+- Document package names of plugins, bindings and tools. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -161,6 +162,10 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+
+## Packaging
+
+- We now package the ruby bindings, ruby plugin and the gitresolver plugin. _(Robert Sowula)_
 
 ## Build
 

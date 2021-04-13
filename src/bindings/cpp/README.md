@@ -7,6 +7,11 @@
 The C++ binding is a 1:1 mapping of all C-functions into C++. In this
 README the advantages are described.
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package containing the header files is called `libelektra-dev`.
+
 ## No Explicit Delete Necessary
 
 The objects will automatically be freed when they leave the scope. E.g.

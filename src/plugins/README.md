@@ -47,6 +47,12 @@ Furthermore, plugins might export symbols:
 - For information on a plugin use [kdb-plugin-info(1)](/doc/help/kdb-plugin-info.md).
 - For mount plugin(s) use [kdb-mount(1)](/doc/help/kdb-mount.md).
 
+## Installation
+
+See [INSTALL](/doc/INSTALL.md).
+Many plugins are already part of the core package `libelektra5`.
+The package that includes a plugin which does not belong to the `libelektra5` package can be found in it's README.md.
+
 ## See Also
 
 For an easy introduction, see [this tutorial how to write a storage plugin](/doc/tutorials/plugins.md).

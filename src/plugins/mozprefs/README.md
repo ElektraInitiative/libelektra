@@ -14,6 +14,11 @@
 This plugin works on [Mozilla preference files](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/A_brief_guide_to_Mozilla_preferences)
 and is used in Elektra’s [Firefox autoconfig script](autoconfig/README.md).
 
+## Installation
+
+See [installation](/doc/INSTALL.md).
+The package is called `libelektra5-extra`.
+
 ### Preference Types
 
 - Default preferences: `pref(....`, keys below `mountpoint/pref/`.
