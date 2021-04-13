@@ -65,7 +65,7 @@ To set a key to a negative value:<br>
 `kdb set -- /tests/neg -3`
 
 To create bookmarks:<br>
-`kdb set user:/sw/elektra/kdb/#0/current/bookmarks """`
+`kdb set user:/sw/elektra/kdb/#0/current/bookmarks ""`
 
 Followed by:<br>
 `kdb set user:/sw/elektra/kdb/#0/current/bookmarks/kdb user:/sw/elektra/kdb/#0/current`
