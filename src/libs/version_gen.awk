@@ -1,7 +1,7 @@
 #
 # SPDX-License-Identifier: BSD-2-Clause-FreeBSD
 #
-# Copyright (C) 2019 Elektra Initiative.
+# copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 # Copyright (C) 2006 Daniel M. Eischen.  All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
