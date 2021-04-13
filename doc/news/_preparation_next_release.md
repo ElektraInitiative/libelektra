@@ -84,6 +84,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### Lua
 
 - Removed outdated information from docs _(@a-kraschitzer)_
+- Removed outdated information from docs #1995 _(@a-kraschitzer)_
 
 ### <<Plugin3>>
 
@@ -104,6 +105,14 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### Core
 
 - Remove keyCompareBy(Name)?Owner _(@a-kraschitzer)_
+<a id="key-copy"></a>
+
+- The `keyCopy` and `keyDup` functions have been changed. They now take a `flags` argument which specifies which parts
+  of the `Key` should be copied.
+  The API also changed slightly. Most importantly `NULL` values are handled differently. For example, `keyDup (NULL, KEY_CP_ALL)`
+  returns a key similar to what `keyNew ("/", KEY_END)` produces, whereas previously `keyDup (NULL)` returned `NULl`.
+  _(Klemens Böswirth)_
+- remove keyCompareBy(Name)?Owner #3685 _(@a-kraschitzer)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -170,6 +179,17 @@ you up to date with the multi-language support provided by Elektra.
 - Rename [RELEASE.md](/doc/todo/RELEASE.md) _(@a-kraschitzer)_
 - Improved documentation for module kdb in Elektra Core. _(@lawli3t)_
 - Improved documentation for module key in Elektra Core. _(@lawli3t)_
+- Update licensing information (year) #3681 _(@a-kraschitzer)_
+- Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
+- Minor rewording in INSTALL.md _(@a-kraschitzer)_
+- Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
+- Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
+- Fix order of tutorials _(Markus Raab)_
+- Added API-Reviews for multiple functions in the public API _(Stefan Hanreich)_
+- Minor rewording in [java-kdb.md](/doc/tutorials/java-kdb.md) _(@aaronabebe)_
+- Added a short Visual Studio 2019 tutorial (/doc/tutorials/contributing-windows.md) _(Dominic Jäger)_
+- Added hint regarding WSL filesystem configuration (/doc/tutorials/contributing-windows.md) _(@tucek)_
+- Fixed broken link in yanlr-plugin readme _(@lawli3t)_
 
 ## Tests
 
