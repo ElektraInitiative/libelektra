@@ -686,8 +686,7 @@ def buildTodo() {
       withDockerEnv(DOCKER_IMAGES.buster_doc) {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
-        openTasks pattern: openTaskPatterns,
-                  low: 'TODO'
+        recordIssues(tools: [taskScanner(ignoreCase: true, includePattern: openTaskPatterns, lowTags: 'TODO,FIXME')])
         utils.archive(["sloccount.sc"])
         deleteDir()
       }
