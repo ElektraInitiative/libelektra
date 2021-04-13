@@ -85,14 +85,16 @@ apt-get install pdflatex \
 For the plugins, please refer to the [README.md](https://www.libelektra.org/plugins/readme) of the respective plugin.
 
 A small subset of plugins to get you started:
-for CentOS:
+* for CentOS:
+
 ```sh
 sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
 libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
 java-1.8.0-openjdk-devel jna ruby-devel byacc
 ```
 
-for Ubuntu:
+* for Ubuntu:
+
 ```sh
 sudo apt install -y libboost-dev libxerces-c-dev libxml2-dev libyajl-dev \
 libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
@@ -225,7 +227,7 @@ To add also experimental plugins, you can use:
 -DPLUGINS=ALL
 ```
 
-> Note that plugins are only build if their dependencies are satisfied.
+> Note that plugins are only built if their dependencies are satisfied.
 > So make sure to install all dependencies you need before you run `cmake`.
 > For example, to include the plugin `yajl`, make sure `libyajl-dev` is installed.
 
