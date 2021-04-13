@@ -58,8 +58,8 @@ else ()
 		list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
 		if (BUILD_FULL OR BUILD_STATIC)
-			list (APPEND TEST_SOURCES $<TARGET_OBJECTS:${IO_UV_LIBRARY}-objects>) # add sources for elektra-io-uv for static and full
-			# builds
+			# add sources for elektra-io-uv for static and full builds
+			list (APPEND TEST_SOURCES $<TARGET_OBJECTS:${IO_UV_LIBRARY}-objects>)
 		endif ()
 
 		add_executable (${TESTEXENAME} ${TEST_SOURCES})
