@@ -10,7 +10,7 @@
  *
  * @copyright BSD Zero Clause License
  *
- *     Copyright (C) 2019 Elektra Initiative (https://libelektra.org)
+ *     copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  *     Permission to use, copy, modify, and/or distribute this software for any
  *     purpose with or without fee is hereby granted.
