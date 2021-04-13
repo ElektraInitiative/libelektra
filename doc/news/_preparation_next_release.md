@@ -134,7 +134,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tools
 
-- <<TODO>>
+- Remove `kdb set` functionality that creates a null key. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 
