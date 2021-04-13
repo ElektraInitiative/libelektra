@@ -187,6 +187,7 @@ kdb ls user:/tests/yamlcpp
 kdb rm user:/tests/yamlcpp/key
 kdb file user:/tests/yamlcpp | xargs cat
 #> array:
+#>   - "___dirdata: "
 #>   - scalar
 #>   - 🔑: 🙈
 
@@ -211,9 +212,12 @@ kdb meta-set user:/tests/yamlcpp/#0/map    array '#1'
 kdb set      user:/tests/yamlcpp/#0/map/#1 ""
 kdb meta-set user:/tests/yamlcpp/#0/map/#1 array '#0'
 kdb file user:/tests/yamlcpp | xargs cat
+#> - "___dirdata: "
 #> - map:
+#>     - "___dirdata: "
 #>     - ~
 #>     -
+#>       - "___dirdata: "
 #>       - value
 
 # The plugin adds the missing array parents to the key set
@@ -342,7 +346,7 @@ sudo kdb mount test.yaml user:/tests/yamlcpp yamlcpp
 
 # Check if the plugin saves empty keys correctly
 kdb set user:/tests/yamlcpp/empty ""
-kdb set user:/tests/yamlcpp/empty/level1/level2
+kdb set user:/tests/yamlcpp/empty/level1/level2 ""
 
 kdb ls user:/tests/yamlcpp/empty
 #> user:/tests/yamlcpp/empty
