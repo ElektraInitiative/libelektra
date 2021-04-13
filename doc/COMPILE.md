@@ -85,7 +85,8 @@ apt-get install pdflatex \
 For the plugins, please refer to the [README.md](https://www.libelektra.org/plugins/readme) of the respective plugin.
 
 A small subset of plugins to get you started:
-* for CentOS:
+
+- for CentOS:
 
 ```sh
 sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
@@ -93,12 +94,12 @@ libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-de
 java-1.8.0-openjdk-devel jna ruby-devel byacc
 ```
 
-* for Ubuntu:
+- for Ubuntu:
 
 ```sh
 sudo apt install -y libboost-dev libxerces-c-dev libxml2-dev libyajl-dev \
 libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
-dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison 
+dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison
 ```
 
 ## Preparation
