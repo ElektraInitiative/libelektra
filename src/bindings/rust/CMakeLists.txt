@@ -32,7 +32,7 @@ if (CARGO_EXECUTABLE)
 
 	add_custom_target (rust ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/target/release/libelektra.rlib")
 
-	if ((NOT ENABLE_ASAN) AND BUILD_SHARED)
+	if (BUILD_TESTING AND (NOT ENABLE_ASAN) AND BUILD_SHARED)
 		add_test (
 			NAME test_rust_elektra
 			COMMAND ${CARGO_EXECUTABLE} test
