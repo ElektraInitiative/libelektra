@@ -197,8 +197,8 @@ kdb meta-get user:/tests/storage/array array
 # containing array syntax `#0`, `#1`, … will not be
 # interpreted as arrays.
 kdb set user:/tests/storage/map ""
-kdb set user:/tests/storage/map/#0
-kdb set user:/tests/storage/map/#1
+kdb set user:/tests/storage/map/#0 ""
+kdb set user:/tests/storage/map/#1 ""
 kdb meta-get user:/tests/storage/map array
 # RET: 2
 
