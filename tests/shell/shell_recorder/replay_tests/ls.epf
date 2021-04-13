@@ -1,6 +1,6 @@
-CMD: kdb set user:/test/ls
+CMD: kdb set user:/test/ls ''
 RET: 0
-STDOUT: Create a new key user:/test/ls with null value
+STDOUT: Create a new key user:/test/ls with string ""
 
 CMD: kdb set user:/test/ls/level1 'one'
 RET: 0
@@ -26,6 +26,6 @@ user:/test/ls/level1
 user:/test/ls/level1/level2
 user:/test/ls/the
 
-CMD: kdb set user:/test/ls/the/next/level
+CMD: kdb set user:/test/ls/the/next/level ''
 RET: 0
-STDOUT: Create a new key user:/test/ls/the/next/level with null value
+STDOUT: Create a new key user:/test/ls/the/next/level with string ""
