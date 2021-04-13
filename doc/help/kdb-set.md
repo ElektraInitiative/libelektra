@@ -2,10 +2,9 @@
 
 ## SYNOPSIS
 
-`kdb set <key name> [<value>]`
+`kdb set <key name> <value>`
 
 Where `key name` is the name of the key you wish to set the value of (or create) and `value` is the value you would like to set the key to.
-If the `value` argument is not passed, the key will be set to a value of `null`.
 
 ## DESCRIPTION
 
@@ -59,9 +58,6 @@ To set a key to a negative value, `--` has to be used to stop option processing.
 To set a Key to the value `Hello World!`:<br>
 `kdb set user:/example/key "Hello World!"`
 
-To create a new key with a null value:<br>
-`kdb set user:/example/key`
-
 To set a key to an empty value:<br>
 `kdb set user:/example/key ""`
 
@@ -69,7 +65,7 @@ To set a key to a negative value:<br>
 `kdb set -- /tests/neg -3`
 
 To create bookmarks:<br>
-`kdb set user:/sw/elektra/kdb/#0/current/bookmarks`
+`kdb set user:/sw/elektra/kdb/#0/current/bookmarks """`
 
 Followed by:<br>
 `kdb set user:/sw/elektra/kdb/#0/current/bookmarks/kdb user:/sw/elektra/kdb/#0/current`
