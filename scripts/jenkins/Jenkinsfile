@@ -763,9 +763,7 @@ def buildDoc() {
           sh "ln -s ${VERSION} current"
         }
 
-        warnings parserConfigurations: [
-          [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
-        ]
+        recordIssues(tools: [doxygen(pattern: 'build/doc/doxygen.log')])
 
         def uploadDir = "api/${env.BRANCH_NAME}"
         if (!isMaster()) {
