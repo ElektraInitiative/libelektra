@@ -28,7 +28,7 @@ public:
 
 	virtual std::string getSynopsis () override
 	{
-		return "<name> [<value>]";
+		return "<name> <value>";
 	}
 
 	virtual std::string getShortHelpText () override
@@ -38,8 +38,7 @@ public:
 
 	virtual std::string getLongHelpText () override
 	{
-		return "If no value is given, it will be set to a null-value\n"
-		       "To get an empty value you need to quote like \"\" (depending on shell)\n"
+		return "To get an empty value you need to quote like \"\" (depending on shell)\n"
 		       "To set a negative value you need to use '--' to stop option processing.\n"
 		       "(e.g. 'kdb set -- /tests/neg -3')\n";
 	}
