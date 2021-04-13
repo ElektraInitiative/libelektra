@@ -1,5 +1,5 @@
 - infos = Information about the mmapstorage plugin is in keys below
-- infos/author = Mihael Pranjic <mpranj@limun.org>
+- infos/author = Mihael Pranjić <mpranj@limun.org>
 - infos/licence = BSD
 - infos/needs =
 - infos/provides = storage/mmapstorage
