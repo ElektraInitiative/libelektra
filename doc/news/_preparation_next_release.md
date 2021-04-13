@@ -148,27 +148,14 @@ you up to date with the multi-language support provided by Elektra.
 
 - Added Reviews for all functions contained in the Elektra Core API _(@lawli3t)_
 - Minor readability improvement in [](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
-- <<TODO>>
-- <<TODO>>
-- Reformat of enumerations in [INSTALL.md](/doc/INSTALL.md) _(Robert Sowula)_
-- Document names of different components. _(Markus Raab)_
-- Update buildserver documentation _(Robert Sowula)_
-- Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
-- Minor rewording in INSTALL.md _(@a-kraschitzer)_
-- Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
-- Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
-- Fix order of tutorials _(Markus Raab)_
-- Added API-Reviews for multiple functions in the public API _(Stefan Hanreich)_
-- Minor rewording in [java-kdb.md](/doc/tutorials/java-kdb.md) _(@aaronabebe)_
-- Added a short Visual Studio 2019 tutorial (/doc/tutorials/contributing-windows.md) _(Dominic Jäger)_
-- Added hint regarding WSL filesystem configuration (/doc/tutorials/contributing-windows.md) _(@tucek)_
-- Fixed broken link in yanlr-plugin readme _(@lawli3t)_
 - Minor readability improvement in [highlevel.md](/doc/tutorials/highlevel.md) _(Tobias Schubert @qwepoizt)_
 - Fix examples of spec plugin. _(Robert Sowula)_
 - Added Reviews for all functions contained in the Elektra Core API _(@lawli3t)_
+- Document package names of plugins, bindings and tools. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Adding info about syncing forks to `doc/GIT.md` _(Klemens Böswirth)_
 
 ## Tests
 
@@ -178,9 +165,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Packaging
 
-- Change shlibs version compatibility policy of Debian packages to ">=". _(Robert Sowula)_
-- Automate publishing of the release Elektra Docker images. _(Robert Sowula)_
-- We now also package the ruby bindings, ruby plugin and the gitresolver plugin. _(Robert Sowula)_
+- We now package the ruby bindings, ruby plugin and the gitresolver plugin. _(Robert Sowula)_
 
 ## Build
 
