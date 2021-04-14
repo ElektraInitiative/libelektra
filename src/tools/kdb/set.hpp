@@ -38,7 +38,7 @@ public:
 
 	virtual std::string getLongHelpText () override
 	{
-		return "To get an empty value you need to quote like \"\" (depending on shell)\n"
+		return "To set an empty value you need to quote like \"\" (depending on shell)\n"
 		       "To set a negative value you need to use '--' to stop option processing.\n"
 		       "(e.g. 'kdb set -- /tests/neg -3')\n";
 	}
