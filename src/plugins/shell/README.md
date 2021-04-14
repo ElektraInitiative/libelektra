@@ -40,8 +40,8 @@ cat $(kdb get system:/tests/tempfile)
 #>
 
 # Execute `set` command
-kdb set system:/tests/shell
-#> Create a new key system:/tests/shell with null value
+kdb set system:/tests/shell ""
+#> Create a new key system:/tests/shell with string ""
 
 cat $(kdb get system:/tests/tempfile)
 #> set

@@ -47,18 +47,11 @@ sudo kdb umount user:/tests/storage
 
 Elektra supports both binary and textual values. The main difference between binary and textual data is that textual data always ends with a null byte. Therefore you are not allowed to store the code point `0` inside textual data. Binary data does not have this limitation.
 
-The simplest textual data is the empty string (`""` = `0`) and has length 1, while the simplest binary data stores nothing at all and therefore has length 0. In the `kdb` utility you can disambiguate between these value by checking for the [metakey `binary`](../help/elektra-metadata.md). The following [Markdown Shell Recorder][] test shows how a storage plugin should handle these values.
+The simplest textual data is the empty string (`""` = `0`) and has length 1, while the simplest binary data stores nothing at all and therefore has length 0. In the `kdb` utility you can disambiguate between these value by checking for the [metakey `binary`](../help/elektra-metadata.md). The following [Markdown Shell Recorder][] test shows how a storage plugin should handle empty values.
 
 ```sh
 # Mount plugin
 sudo kdb mount config.yaml user:/tests/storage yamlcpp
-
-kdb set user:/tests/storage/null
-#> Create a new key user:/tests/storage/null with null value
-kdb get user:/tests/storage/null
-#>
-kdb meta-ls user:/tests/storage/null
-#> binary
 
 kdb set user:/tests/storage/empty ''
 #> Create a new key user:/tests/storage/empty with string ""
@@ -203,9 +196,9 @@ kdb meta-get user:/tests/storage/array array
 # If you do not add the metakey `array`, then keys
 # containing array syntax `#0`, `#1`, … will not be
 # interpreted as arrays.
-kdb set user:/tests/storage/map
-kdb set user:/tests/storage/map/#0
-kdb set user:/tests/storage/map/#1
+kdb set user:/tests/storage/map ""
+kdb set user:/tests/storage/map/#0 ""
+kdb set user:/tests/storage/map/#1 ""
 kdb meta-get user:/tests/storage/map array
 # RET: 2
 

@@ -1,16 +1,16 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "KDB\-SET" "1" "September 2020" "" ""
+.TH "KDB\-SET" "1" "April 2021" "" ""
 .
 .SH "NAME"
 \fBkdb\-set\fR \- Set the value of a key
 .
 .SH "SYNOPSIS"
-\fBkdb set <key name> [<value>]\fR
+\fBkdb set <key name> <value>\fR
 .
 .P
-Where \fBkey name\fR is the name of the key you wish to set the value of (or create) and \fBvalue\fR is the value you would like to set the key to\. If the \fBvalue\fR argument is not passed, the key will be set to a value of \fBnull\fR\.
+Where \fBkey name\fR is the name of the key you wish to set the value of (or create) and \fBvalue\fR is the value you would like to set the key to\.
 .
 .SH "DESCRIPTION"
 This command allows the user to set the value of an individual key\.
@@ -80,12 +80,6 @@ To set a Key to the value \fBHello World!\fR:
 \fBkdb set user:/example/key "Hello World!"\fR
 .
 .P
-To create a new key with a null value:
-.
-.br
-\fBkdb set user:/example/key\fR
-.
-.P
 To set a key to an empty value:
 .
 .br
@@ -101,7 +95,7 @@ To set a key to a negative value:
 To create bookmarks:
 .
 .br
-\fBkdb set user:/sw/elektra/kdb/#0/current/bookmarks\fR
+\fBkdb set user:/sw/elektra/kdb/#0/current/bookmarks ""\fR
 .
 .P
 Followed by:

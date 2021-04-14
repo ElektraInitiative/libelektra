@@ -1,6 +1,6 @@
 Mountpoint: user:/test/ls
 
-< kdb set user:/test/ls
+< kdb set user:/test/ls ''
 
 < kdb set user:/test/ls/level1 'one'
 
@@ -12,4 +12,4 @@ Mountpoint: user:/test/ls
 
 < kdb ls user:/test/ls
 
-< kdb set user:/test/ls/the/next/level
+< kdb set user:/test/ls/the/next/level ''
