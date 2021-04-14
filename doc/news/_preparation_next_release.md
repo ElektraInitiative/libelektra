@@ -165,6 +165,7 @@ you up to date with the multi-language support provided by Elektra.
 - Adding info about syncing forks to `doc/GIT.md` _(Klemens Böswirth)_
 - Work on [COMPILE.md](/doc/COMPILE.md) and [INSTALL.md](/doc/INSTALL.md) to help with understanding _(@a-kraschitzer)_
 - Update licensing information (year) #3681 _(@a-kraschitzer)_
+- Rename [RELEASE.md](/doc/todo/RELEASE.md) _(@a-kraschitzer)_
 
 ## Tests
 
