@@ -82,9 +82,9 @@ apt-get install pdflatex \
         texlive-math-extra
 ```
 
-For the plugins, please refer to the [README.md](https://www.libelektra.org/plugins/readme) of the respective plugin.
+For dependencies of plugins, please refer to the [README.md](https://www.libelektra.org/plugins/readme) of the respective plugin.
 
-A small subset of plugins to get you started:
+A small subset of build dependencies to get you started:
 
 - for CentOS:
 
