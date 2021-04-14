@@ -140,6 +140,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Tools
 
 - Remove `kdb set` functionality that creates a null key. _(Robert Sowula)_
+- Update specmount error message #3666 _(@a-kraschitzer)_
 - <<TODO>>
 - <<TODO>>
 
