@@ -87,3 +87,8 @@ If no release critical problems are found during testing, continue.
 == Announce ==
 
 send out release mails&post on social media (see github issue #676)
+
+== Special Requirements ==
+
+- Every first release of the year
+  - Update copyright in LICENSE.md
