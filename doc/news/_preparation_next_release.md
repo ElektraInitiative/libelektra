@@ -156,6 +156,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - Adding info about syncing forks to `doc/GIT.md` _(Klemens Böswirth)_
+- Work on [COMPILE.md](/doc/COMPILE.md) and [INSTALL.md](/doc/INSTALL.md) to help with understanding _(@a-kraschitzer)_
 
 ## Tests
 
