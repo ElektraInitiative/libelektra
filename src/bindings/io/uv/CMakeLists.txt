@@ -47,40 +47,43 @@ else ()
 		DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
 		COMPONENT libelektra-dev)
 
-	# Build test
-	set (TESTEXENAME testio_${BINDING_VARIANT})
+	if (BUILD_TESTING)
+		# Build test
+		set (TESTEXENAME testio_${BINDING_VARIANT})
 
-	set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
-	add_headers (TEST_SOURCES)
-	file (GLOB IO_TEST_SRC_FILES "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
-	list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
-	list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
+		set (TEST_SOURCES $<TARGET_OBJECTS:cframework>)
+		add_headers (TEST_SOURCES)
+		file (GLOB IO_TEST_SRC_FILES "${CMAKE_SOURCE_DIR}/src/bindings/io/test/test*.c")
+		list (APPEND TEST_SOURCES ${IO_TEST_SRC_FILES})
+		list (APPEND TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/testio_${BINDING_VARIANT}.c")
 
-	if (BUILD_FULL OR BUILD_STATIC)
-		list (APPEND TEST_SOURCES $<TARGET_OBJECTS:${IO_UV_LIBRARY}-objects>) # add sources for elektra-io-uv for static and full
-		# builds
+		if (BUILD_FULL OR BUILD_STATIC)
+			# add sources for elektra-io-uv for static and full builds
+			list (APPEND TEST_SOURCES $<TARGET_OBJECTS:${IO_UV_LIBRARY}-objects>)
+		endif ()
+
+		add_executable (${TESTEXENAME} ${TEST_SOURCES})
+
+		target_include_directories (${TESTEXENAME} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework" "${libuv_INCLUDE_DIRS}")
+
+		target_link_elektra (${TESTEXENAME} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
+		if (BUILD_FULL OR BUILD_STATIC)
+			target_link_libraries (${TESTEXENAME} "${libuv_LIBRARIES}" m)
+		endif ()
+
+		if (libuv_VERSION VERSION_LESS "1.0")
+			target_compile_definitions (${TESTEXENAME} PRIVATE "HAVE_LIBUV0")
+		else ()
+			target_compile_definitions (${TESTEXENAME} PRIVATE "HAVE_LIBUV1")
+		endif ()
+
+		add_test (
+			NAME ${TESTEXENAME}
+			COMMAND "${CMAKE_BINARY_DIR}/bin/${TESTEXENAME}" "${CMAKE_CURRENT_SOURCE_DIR}"
+			WORKING_DIRECTORY "${WORKING_DIRECTORY}")
+		set_property (TEST ${TESTEXENAME} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
+
+		add_subdirectory (example)
+
 	endif ()
-
-	add_executable (${TESTEXENAME} ${TEST_SOURCES})
-
-	target_include_directories (${TESTEXENAME} PUBLIC "${CMAKE_SOURCE_DIR}/tests/cframework" "${libuv_INCLUDE_DIRS}")
-
-	target_link_elektra (${TESTEXENAME} elektra-kdb elektra-plugin elektra-io ${IO_UV_LIBRARY} m)
-	if (BUILD_FULL OR BUILD_STATIC)
-		target_link_libraries (${TESTEXENAME} "${libuv_LIBRARIES}" m)
-	endif ()
-
-	if (libuv_VERSION VERSION_LESS "1.0")
-		target_compile_definitions (${TESTEXENAME} PRIVATE "HAVE_LIBUV0")
-	else ()
-		target_compile_definitions (${TESTEXENAME} PRIVATE "HAVE_LIBUV1")
-	endif ()
-
-	add_test (
-		NAME ${TESTEXENAME}
-		COMMAND "${CMAKE_BINARY_DIR}/bin/${TESTEXENAME}" "${CMAKE_CURRENT_SOURCE_DIR}"
-		WORKING_DIRECTORY "${WORKING_DIRECTORY}")
-	set_property (TEST ${TESTEXENAME} PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")
-
-	add_subdirectory (example)
 endif ()

@@ -172,7 +172,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### CMake
 
-- <<TODO>>
+- Disable binding tests when `BUILD_TESTING` is disabled. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 

@@ -54,7 +54,9 @@ if (Java_JAVAC_EXECUTABLE)
 				set (GRADLE_TEST_EXCLUDES "")
 				java_test_needs_plugin (GOptsTest gopts)
 
-				if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15))
+				if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+				    AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15)
+				    OR (NOT BUILD_TESTING))
 					# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not
 					# installed in the system
 					java_exclude_test (ExceptionMapperIT)
@@ -167,7 +169,7 @@ if (Java_JAVAC_EXECUTABLE)
 					COMPONENT java-elektra)
 
 				# add gradle test to execute with ctest in the testing phase
-				if (NOT ENABLE_ASAN)
+				if (BUILD_TESTING AND NOT ENABLE_ASAN)
 					add_test (
 						NAME testjna_gradle
 						COMMAND ${GRADLE_EXECUTABLE} -q --console=plain test

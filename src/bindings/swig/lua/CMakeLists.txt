@@ -49,7 +49,9 @@ else ()
 	include_directories (${CMAKE_SOURCE_DIR}/src/swig/)
 
 	if (LUA_EXECUTABLE_VERSION_MATCHED)
-		add_subdirectory (tests)
+		if (BUILD_TESTING)
+			add_subdirectory (tests)
+		endif ()
 	else ()
 		message (WARNING "Lua interpreter does not match Lua libraries version, "
 				 "needed for SWIG Lua bindings tests. Tests will not be executed.")

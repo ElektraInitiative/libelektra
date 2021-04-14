@@ -91,6 +91,7 @@ CMAKE_FLAGS_ASAN = ['ENABLE_ASAN': 'ON']
 CMAKE_FLAGS_DEBUG = ['ENABLE_DEBUG': 'ON']
 CMAKE_FLAGS_LOGGER = ['ENABLE_LOGGER': 'ON']
 CMAKE_FLAGS_OPTIMIZATIONS_OFF = ['ENABLE_OPTIMIZATIONS': 'OFF']
+CMAKE_FLAGS_BUILD_TESTING_OFF = ['BUILD_TESTING': 'OFF']
 
 // CMAKE_FLAGS_BUILD_SHARED = ['BUILD_SHARED': 'ON']  is ON per default
 CMAKE_FLAGS_BUILD_FULL = ['BUILD_FULL': 'ON']
@@ -629,6 +630,16 @@ def generateFullBuildStages() {
       'KDB_DEFAULT_RESOLVER': xdgResolver
     ],
     [TEST.ALL, TEST.MEM]
+  )
+
+  // Build Elektra without tests
+  tasks << buildAndTest(
+    "debian-buster-full-build-testing-off",
+    DOCKER_IMAGES.buster,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_BUILD_TESTING_OFF
+    ,
+    []
   )
 
   // Build Elektra without optimizations

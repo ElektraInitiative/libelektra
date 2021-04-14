@@ -85,8 +85,10 @@ else ()
 		POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/__init__.py" ${CMAKE_SWIG_OUTDIR}/)
 
-	# add tests
-	add_subdirectory (tests)
+	if (BUILD_TESTING)
+		# add tests
+		add_subdirectory (tests)
+	endif ()
 
 	# tools module
 	#
@@ -113,8 +115,10 @@ else ()
 		set_target_properties (_swig-python-tools PROPERTIES OUTPUT_NAME _tools)
 		set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 
-		# add tests
-		add_subdirectory (tests_tools)
+		if (BUILD_TESTING)
+			# add tests
+			add_subdirectory (tests_tools)
+		endif ()
 	endif (${SWIG_VERSION} VERSION_LESS "4.0.0")
 
 	# install package
