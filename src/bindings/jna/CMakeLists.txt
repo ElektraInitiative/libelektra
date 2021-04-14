@@ -58,7 +58,7 @@ if (Java_JAVAC_EXECUTABLE)
 				    AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15)
 				    OR (NOT BUILD_TESTING))
 					# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not
-					# installed in the system Tests should only be built if BUILD_TESTING is enabled.
+					# installed in the system
 					java_exclude_test (ExceptionMapperIT)
 					java_exclude_test (ExceptionMapperTest)
 					java_exclude_test (GOptsTest)
