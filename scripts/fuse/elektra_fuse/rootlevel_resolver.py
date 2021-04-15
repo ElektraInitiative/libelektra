@@ -7,7 +7,7 @@ from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
 
 import mock_context
 import elektra_fuse_interface
-
+import kdb
 
 #fuse references: https://www.cs.hmc.edu/~geoff/classes/hmc.cs135.201109/homework/fuse/fuse_doc.html
 #                 https://libfuse.github.io/doxygen/structfuse__operations.html#a729e53d36acc05a7a8985a1a3bbfac1e

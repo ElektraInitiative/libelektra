@@ -258,7 +258,7 @@ def rename(old_path, new_path):
     if returncode != 0:
         raise OSError(errno.EROFS) #TODO: differentiate between different errors
 
-# does nothing and reports success
+# does nothing (besides checking for readonly namespaces) and reports success
 # does not raise OSError(errno.EOPNOTSUPP), as this blocks tools like 'cp -r'
 def chmod(path, mode):
     _ensure_namespace_is_writable(path)
@@ -266,7 +266,6 @@ def chmod(path, mode):
     #TODO: maybe this can be handled better?
     return 0
 
-# does nothing and reports success
 def chown(path, uid, gid):
     _ensure_namespace_is_writable(path)
 

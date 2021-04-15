@@ -1,6 +1,7 @@
-import multiprocessing, os, pwd, re, sys
+import multiprocessing, os, pwd, re, sys, logging, errno
 from collections import namedtuple
 from pathlib import Path
+import kdb
 
 ProcessContext = namedtuple('ProcessContext', ["ruid", "euid", "suid", "fuid", "rgid", "egid", "sgid", "fgid", "env", "argv", "cwd", "pw_dir", "pw_name", "pid"])
 
@@ -58,10 +59,13 @@ def _mock_process_context_and_run(process_context, func, args, kwargs):
 
     sys.argv = process_context.argv
 
-    return func(*args, **kwargs)
+    try:
+        return func(*args, **kwargs)
+    except kdb.Exception:
+        #translate kdb.Exception to OSError (as SwigPyObject is not picklable).
+        logging.exception("An exception in kdb occured.")
+        raise OSError(errno.EIO)
 
 def run_as(process_context, func, *args, **kwargs):
     with multiprocessing.Pool(processes = 1) as pool:
         return pool.starmap(_mock_process_context_and_run, [ [process_context, func, args, kwargs] ])[0]
-
-
