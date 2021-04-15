@@ -1,11 +1,11 @@
 from pathlib import Path
-import os, re, errno
+import os, re, errno, sys
 
 import kdb
 
 
 #TODO: Add 'default:' and 'proc:'. These namespaces do not work out of the box like "user:", "sysem:", ... but need extra treatment.
-elektra_namespaces = ["user:", "system:", "dir:", "spec:", "cascading:"]
+elektra_namespaces = ["user:", "system:", "dir:", "spec:", "cascading:", "proc:"]
 
 dir_file_special_name = "®elektra.value"
 
@@ -24,7 +24,14 @@ def os_path_to_elektra_path(os_path):
         elektra_path = elektra_path + "/" #special case intruced around elektra v5 (the root of a namespace needs a trailing slash)
 
     return elektra_path
-    
+   
+#returns a kdb instance (with mocked argv, envp)
+def _get_kdb_instance():
+    config = kdb.KeySet(0)
+    contract = kdb.KeySet(0)
+    custom_envp = [ "%s=%s" % (k, v) for (k, v) in os.environ.items() ]
+    kdb.goptsContract (contract, sys.argv, custom_envp, kdb.Key(), config)
+    return kdb.KDB(contract)
 
 def size_of_file(os_path):
     return len(file_contents(os_path))
@@ -35,7 +42,7 @@ def is_directory_empty(os_path):
    
 #performs function of the "kdb file" command 
 def get_kdb_file(os_path):
-    with kdb.KDB() as db:
+    with _get_kdb_instance() as db:
         elektra_path = os_path_to_elektra_path(os_path)
         x = kdb.Key(elektra_path)
         db.get(kdb.KeySet(), x)
@@ -45,7 +52,7 @@ def update_key_value(os_path: str, new_value: bytes):
     # kdb.kdb.KDBException, may be thrown
     # validation => whole key needs to be written at once
 
-    with kdb.KDB() as db:
+    with _get_kdb_instance() as db:
         path = os_path_to_elektra_path(os_path)
 
         ks = kdb.KeySet()
@@ -78,7 +85,7 @@ def file_contents(os_path):
 #creates key, or, if key already exists, does nothing
 def create_key(os_path):
     path = os_path_to_elektra_path(os_path)
-    with kdb.KDB() as db:
+    with _get_kdb_instance() as db:
         ks = kdb.KeySet()
         db.get(ks, path)
         if not path in ks:
@@ -112,7 +119,7 @@ def set_meta(os_path, name, value):
 def update_meta_map(os_path, new_meta_map):
     path = os_path_to_elektra_path(os_path)
 
-    with kdb.KDB() as db:
+    with _get_kdb_instance() as db:
         ks = kdb.KeySet()
         db.get(ks, path)
         key = ks[path]
@@ -131,7 +138,7 @@ def update_meta_map(os_path, new_meta_map):
 def get_key_and_keyset(os_path):
     path = os_path_to_elektra_path(os_path)
 
-    with kdb.KDB() as db:
+    with _get_kdb_instance() as db:
         ks = kdb.KeySet()
         db.get(ks, path)
         key = ks[path]
@@ -139,7 +146,7 @@ def get_key_and_keyset(os_path):
 
 #returns tuple inidicating if path is dir, is file
 def key_type(os_path):
-    if os_path in [".", "..", "/", "/user:", "/system:", "/spec:", "/dir:", "/cascading:"]:
+    if os_path in [".", "..", "/", "/user:", "/system:", "/spec:", "/dir:", "/cascading:", "/proc:"]:
         return (True, False)
 
     dir_listing, file_listing = ls(os_path)
@@ -173,7 +180,7 @@ def ls(os_path):
     is_root_level = len(path) > 1 and path.endswith("/") # special case
 
 
-    with kdb.KDB() as db:
+    with _get_kdb_instance() as db:
         ks = kdb.KeySet()
         db.get(ks, path)
 

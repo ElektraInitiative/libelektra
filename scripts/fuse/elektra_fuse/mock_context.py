@@ -1,4 +1,4 @@
-import multiprocessing, os, pwd, re
+import multiprocessing, os, pwd, re, sys
 from collections import namedtuple
 from pathlib import Path
 
@@ -56,12 +56,7 @@ def _mock_process_context_and_run(process_context, func, args, kwargs):
 
     #mock argv
 
-    #todo set argv s.t. it appears in /proc/<pid>/cmdline
-    #setting sys.argv does not work
-    #possibilites: 
-    #-) dont use the multiprocessing module, instead use subprocess (what about argv[0]? maybe use some execve construction). no neat transmission of python result values nor exceptions, could pipe pickled data/exception through stdout/stderr
-    #-) attach debugger and fiddle with process memory directly
-    #-) https://github.com/ElektraInitiative/libelektra/issues/3607
+    sys.argv = process_context.argv
 
     return func(*args, **kwargs)
 
