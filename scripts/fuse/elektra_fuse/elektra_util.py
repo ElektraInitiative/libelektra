@@ -174,9 +174,7 @@ def ls(os_path):
     if os_path == "/":
         return ({"user:", "system:", "spec:", "dir:", "/cascading:"}, [])
 
-
     path = os_path_to_elektra_path(os_path)
-    path ="bad"
 
     is_root_level = len(path) > 1 and path.endswith("/") # special case
 
