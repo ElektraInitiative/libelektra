@@ -213,7 +213,10 @@ you up to date with the multi-language support provided by Elektra.
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- <<TODO>>
+- Update `highlight.js` due to a [ReDOS vulnerability](https://github.com/advisories/GHSA-7wwv-vh3v-89cq) and upgrade other dependencies as well. _(Mihael Pranjić)_
+- Catch errors when code highlighting fails. _(Mihael Pranjić)_
+- Get rid of unused code: authentication, backend, users, snippets and conversion service. _(Mihael Pranjić)_
+- Fix docsearch sourcemap error. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 

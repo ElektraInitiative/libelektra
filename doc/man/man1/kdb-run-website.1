@@ -1,7 +1,7 @@
 .\" generated with Ronn/v0.7.3
 .\" http://github.com/rtomayko/ronn/tree/0.7.3
 .
-.TH "README" "" "September 2020" "" ""
+.TH "README" "" "April 2021" "" ""
 .
 .SH "Introduction"
 This document aims to provide information about how to build Elektra’s Website\.
@@ -16,7 +16,7 @@ To install the website, make sure \fBwebsite\fR is included in TOOLS\. \fBnpm\fR
 As next step, the website configuration needs to be copied and mounted: \fB/usr/local/lib/elektra/tool_exec/mount\-website\-config\fR
 .
 .P
-The configuration will be mounted to \fBsystem:/sw/elektra/website/#0/current\fR in Elektra (\fB/sw/elektra/website/#0//current\fR) and contains the URL to the backend, some URLs for GitHub resources and translation, as well as logger settings\. Usually, no changes are required there, see Configuration Options below for some useful options\.
+The configuration will be mounted to \fBsystem:/sw/elektra/website/#0/current\fR in Elektra (\fB/sw/elektra/website/#0//current\fR) and contains some URLs for GitHub resources and translation, as well as logger settings\. Usually, no changes are required there, see Configuration Options below for some useful options\.
 .
 .P
 As next step, you can build the website: \fB/usr/local/lib/elektra/tool_exec/build\-website\fR (or \fBkdb build\-website\fR)
@@ -41,7 +41,7 @@ In order to not receive any 404 errors by the webserver, it should serve the \fB
 Using /sw/elektra/website/#0/current/daemon/lock (i\.e\., \fBdaemon\.lock\fR in JSON) you can specify which PID file should be used\. Default: /run/elektra\-website\.pid
 .
 .P
-The configuration file allows to set the URL to the backend in \fBbackend\.root\fR\. GitHub settings may be done in \fBgithub\fR\.
+The configuration file allows to change GitHub settings in the \fBgithub\fR section\.
 .
 .P
 The configuration file also allows to specify available translations in \fBtranslations\.enabled\fR\. To add a translation, copy an existing translation file in \fIpublic/assets/translations\fR, translate it and add the name of the new language to the list in \fBtranslations\.enabled\fR\. After that run \fBgrunt full\fR (or \fBkdb build\-website\fR) to re\-compile the application\.
