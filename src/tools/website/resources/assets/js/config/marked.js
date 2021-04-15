@@ -11,13 +11,17 @@ module.exports = [
       gfm: true,
       tables: true,
       highlight: function(code, lang) {
-        if (lang) {
-          // 9.x API
-          return hljs.highlight(lang, code, true).value;
-          // 10.x API: return hljs.highlight(code, {language: lang, ignoreIllegals: true}).value;
-        } else {
-          return hljs.highlightAuto(code).value;
+        var ret;
+        try {
+          if (lang) {
+            ret = hljs.highlight(code, {language: lang, ignoreIllegals: true}).value;
+          } else {
+            ret = hljs.highlightAuto(code).value;
+          }
+        } catch (err) {
+          ret = code;
         }
+        return ret;
       }
     });
 
