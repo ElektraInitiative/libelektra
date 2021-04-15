@@ -184,10 +184,13 @@ def listxattr(path):
         # if key does not really exist (intermediate directories) return an empty map insted of an error
         # as to not confuse tools like xattr
     
-    return [_ensure_no_meta_prefix(keyname) for keyname in get_meta_map(path).keys()]
+    return [xattr_kdb_file] + [_ensure_no_meta_prefix(keyname) for keyname in get_meta_map(path).keys()]
 
 #returns the value of an xattr key
 def getxattr(path, name, position=0):
+    if name == xattr_kdb_file:
+        return get_kdb_file(path).encode()
+    
     name = _ensure_meta_prefix(name)
     try:
         return get_meta_map(path)[name].encode()
@@ -198,6 +201,9 @@ def getxattr(path, name, position=0):
 def removexattr(path, name):
     _ensure_namespace_is_writable(path)
 
+    if name == xattr_kdb_file:
+        raise OSError(errno.EROFS)
+    
     try:
         meta_map = get_meta_map(path)
         name = _ensure_meta_prefix(name)
@@ -209,6 +215,9 @@ def removexattr(path, name):
 #updates the value of an xattr key, i.e. the backing meta-key
 def setxattr(path, name, value, options, position=0):
     _ensure_namespace_is_writable(path)
+
+    if name == xattr_kdb_file:
+        raise OSError(errno.EROFS)
     
     #if key does not really exist (intermediate directories) key should be created (like kdb meta-set does)
     try:
