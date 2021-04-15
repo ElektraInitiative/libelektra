@@ -109,10 +109,13 @@ module.exports = function(grunt) {
           "node_modules/angular-ui-notification/dist/angular-ui-notification.min.css",
           "node_modules/ng-tags-input/build/ng-tags-input.min.css",
           "node_modules/ng-tags-input/build/ng-tags-input.bootstrap.min.css",
-          "node_modules/angular-typewriter/npm-dist/angular-typewrite.css",
-          "node_modules/docsearch.js/dist/cdn/docsearch.min.css"
+          "node_modules/angular-typewriter/npm-dist/angular-typewrite.css"
         ],
         dest: "public/assets/skin/vendor.css"
+      },
+      docsearchcss: {
+        src: ["node_modules/docsearch.js/dist/cdn/docsearch.min.css"],
+        dest: "public/assets/skin/docsearch.min.css"
       },
       docsearchcssmap: {
         src: ["node_modules/docsearch.js/dist/cdn/docsearch.min.css.map"],
