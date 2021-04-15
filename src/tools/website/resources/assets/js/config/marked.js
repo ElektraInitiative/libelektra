@@ -14,7 +14,8 @@ module.exports = [
         var ret;
         try {
           if (lang) {
-            ret = hljs.highlight(code, {language: lang, ignoreIllegals: true}).value;
+            ret = hljs.highlight(code, { language: lang, ignoreIllegals: true })
+              .value;
           } else {
             ret = hljs.highlightAuto(code).value;
           }
