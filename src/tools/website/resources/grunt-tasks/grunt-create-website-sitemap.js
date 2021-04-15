@@ -2,7 +2,6 @@
 
 var path = require("path");
 var builder = require("xmlbuilder");
-var request = require("then-request");
 
 var resolve_path = require("./helper/resolve-path");
 
