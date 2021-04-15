@@ -11,14 +11,15 @@ dir_file_special_name = "®elektra.value"
 
 #translates from filesystem (that are below the "pid"-level) paths to elektra paths (e.g. '/user:/dir/@elektra.value' -> 'user:/dir', '/cascading:/key' -> '/key') 
 def os_path_to_elektra_path(os_path):
-    if Path(os_path).name == dir_file_special_name:
-        elektra_path = str(Path(os_path).parent).strip("/")
-    elif os_path.startswith("/cascading:"):
-        elektra_path = os_path[len("/cascading:"):] #could use removeprefix with python 3.9+
+    elektra_path = os_path
+    if Path(elektra_path).name == dir_file_special_name:
+        elektra_path = str(Path(elektra_path).parent).strip("/")
+    if re.match("^cascading:|^/cascading:", elektra_path):
+        elektra_path = re.sub("^cascading:|^/cascading:", "", elektra_path)
         if elektra_path == "":
             elektra_path = "/"
     else:
-        elektra_path = os_path.strip("/") #remove slashes ('/' is reserved for the cascading namespace)
+        elektra_path = elektra_path.strip("/") #remove slashes ('/' is reserved for the cascading namespace)
     
     if elektra_path.endswith(":"):
         elektra_path = elektra_path + "/" #special case intruced around elektra v5 (the root of a namespace needs a trailing slash)
