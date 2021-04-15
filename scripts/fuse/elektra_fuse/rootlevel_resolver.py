@@ -75,7 +75,7 @@ class RootlevelResolver(LoggingMixIn, Operations):
     def getattr(self, path, fh=None):
 
         generic_dir_attrs = dict(
-            st_mode = (stat.S_IFDIR | 0o755),
+            st_mode = (stat.S_IFDIR | 0o0444),
             st_ctime = elektra_fuse_interface.startup_time,
             st_mtime = elektra_fuse_interface.startup_time,
             st_atime = elektra_fuse_interface.startup_time,

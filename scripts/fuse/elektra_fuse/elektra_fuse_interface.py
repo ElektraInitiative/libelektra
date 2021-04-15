@@ -43,7 +43,6 @@ def getattr(path, fh=None):
         except KeyError: #key does not exist
             mode = errno.ENOENT
 
-
     try:
         kdb_file_stat = _stat_kdb_file(path)
         st_mode_only_permission_bits = kdb_file_stat.st_mode & 0o777
@@ -58,10 +57,13 @@ def getattr(path, fh=None):
         )
     
     
-
     #common attributes for files and directories
+
+    if not _namespace_is_writable(path):
+        st_mode_only_permission_bits = st_mode_only_permission_bits & 0o7555 # retain all permission bits except write bits
+
     key_stat = dict(
-        st_mode = (mode | st_mode_only_permission_bits),
+        st_mode = mode | st_mode_only_permission_bits,
 
         #TODO: using the real timestamps results in vim complaining on write: "The file has been changed since reading it!!!"
         # => defaulting to a static timestamp for now
@@ -82,6 +84,20 @@ def getattr(path, fh=None):
         return key_stat
     else:
         raise OSError(mode)
+
+
+# returns true iff the namespace of the given path is read only
+def _namespace_is_writable(os_path):
+    namespace = Path(os_path).parts[1]
+    return not namespace in ["cascading:", "proc:", "spec:"]
+
+# throws OSError(errno.EROFS) (read only file system) if the namespace of the given path is read only
+def _ensure_namespace_is_writable(os_path):
+    if not _namespace_is_writable(os_path):
+        raise OSError(errno.EROFS)
+
+
+
 
 #for the file path of a given key returns the backing file as would be by the command "kdb file"
 #throws OSError when:
@@ -109,6 +125,7 @@ def read(path, size, offset, fh):
 
 #updates a chunk of a file, i.e a part of an Elektra key value
 def write(path, data, offset, fh):
+    _ensure_namespace_is_writable(path)
 
     try:
         old_value = file_contents(path)
@@ -124,12 +141,16 @@ def write(path, data, offset, fh):
 
 #truncates a file (discards all but a prefix of specified length) of a part of an Elektra key value
 def truncate(path, length, fh=None):
+    _ensure_namespace_is_writable(path)
+
     old_value = file_contents(path)
     new_value = old_value[:length].ljust(length, '\x00'.encode()) #if length increased, fill new space with zeros
     update_key_value(path, new_value)
 
 #creates a file, i.e. a new Elektra key
 def create(path, mode):
+    _ensure_namespace_is_writable(path)
+
     if path.count('/') <= 1:
         raise OSError(errno.EROFS) #cannot create key in top level directory (reserved for /user:, /system: ...)
 
@@ -138,6 +159,8 @@ def create(path, mode):
 
 #creates a directory, i.e. a new Elektra key with the special meta key "meta:/fuse/directory"
 def mkdir(path, mode):
+    _ensure_namespace_is_writable(path)
+
     #TODO: think of a reasonable use for mode parameter
     create(path, mode)
     set_meta(path, "meta:/fuse/directory", "")  # 'hack' to enable creation of empty folders (these would otherwise automatically become files)
@@ -173,6 +196,8 @@ def getxattr(path, name, position=0):
 
 #deletes an xattr key, i.e. the backing meta-key
 def removexattr(path, name):
+    _ensure_namespace_is_writable(path)
+
     try:
         meta_map = get_meta_map(path)
         name = _ensure_meta_prefix(name)
@@ -183,6 +208,7 @@ def removexattr(path, name):
 
 #updates the value of an xattr key, i.e. the backing meta-key
 def setxattr(path, name, value, options, position=0):
+    _ensure_namespace_is_writable(path)
     
     #if key does not really exist (intermediate directories) key should be created (like kdb meta-set does)
     try:
@@ -201,6 +227,8 @@ def setxattr(path, name, value, options, position=0):
 
 #deletes a file, i.e. the backing Elektra key
 def unlink(path):
+    _ensure_namespace_is_writable(path)
+
     #delete_key(path) keyset.cut behaved unexpected and deleted child keys => using kdb directly
 
     returncode = subprocess.run(["kdb", "rm", os_path_to_elektra_path(path)]).returncode
@@ -209,6 +237,8 @@ def unlink(path):
 
 #deletes a directory if not empty. (same semantics of unlink in that case)
 def rmdir(path):
+    _ensure_namespace_is_writable(path)
+
     if not is_directory_empty(path):
         raise OSError(errno.ENOTEMPTY)
     else:
@@ -216,6 +246,7 @@ def rmdir(path):
 
 #renames a file, i.e. the backing Elektra-key
 def rename(old_path, new_path):
+    _ensure_namespace_is_writable(path)
 
     if Path(old_path).name == dir_file_special_name:
         #see https://github.com/ElektraInitiative/libelektra/issues/3648
@@ -229,9 +260,13 @@ def rename(old_path, new_path):
 # does nothing and reports success
 # does not raise OSError(errno.EOPNOTSUPP), as this blocks tools like 'cp -r'
 def chmod(path, mode):
+    _ensure_namespace_is_writable(path)
+
     #TODO: maybe this can be handled better?
     return 0
 
 # does nothing and reports success
 def chown(path, uid, gid):
+    _ensure_namespace_is_writable(path)
+
     return 0
