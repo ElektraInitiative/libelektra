@@ -42,11 +42,9 @@ RUN mkdir build \
     && echo '/usr/local/lib/elektra/' > /etc/ld.so.conf.d/elektra.conf \
     && ldconfig
 
-ARG BACKEND=https://restapi.libelektra.org/
 ARG URL=https://www.libelektra.org/
 RUN kdb global-mount \
     && kdb mount-website-config \
-    && kdb set -N system /sw/elektra/websitefrontend/#0/current/backend/root "${BACKEND}" \
     && kdb set -N system /sw/elektra/websitefrontend/#0/current/website/url "${URL}" \
     && kdb build-website
 

@@ -46,9 +46,6 @@ module.exports = function(grunt) {
         // go through news file
         self.handleDynamicNews(urlset);
 
-        // go through entries in backend
-        self.handleDynamicSnippets(urlset);
-
         // format XML string
         var sitemap = urlset.end({ pretty: true, indent: "  ", newline: "\n" });
 
@@ -77,32 +74,6 @@ module.exports = function(grunt) {
         news.forEach(function(elem) {
           self.handleNewsEntry(elem, urlset);
         });
-      };
-
-      this.handleDynamicSnippets = function(urlset) {
-        var response = request(
-          "GET",
-          self.data.dynamic.backend + "database?sortby=key"
-        );
-        if (response.statusCode !== 200) {
-          grunt.log.error(
-            "Could not reach Backend and could therefore not create sitemap.xml!"
-          );
-        }
-        var respObj = JSON.parse(response.getBody());
-        var url;
-        if (respObj.elements > 0 && typeof respObj.entries !== "undefined") {
-          respObj.entries.forEach(function(entry) {
-            url = urlset.ele("url");
-            url
-              .ele("loc")
-              .txt(
-                self.data.root_url +
-                  "entries/details/" +
-                  encodeURIComponent(entry.key.full).replace(/%/g, "~")
-              );
-          });
-        }
       };
 
       /* HELPING FUNCTIONS */

@@ -5,10 +5,9 @@
     "main": "Gruntfile.js",
     "keywords": [
         "elektra",
+        "libelektra",
         "kdb",
-        "frontend",
-        "rest",
-        "snippet sharing"
+        "configuration"
     ],
     "author": "Namoshek",
     "license": "BSD-3-Clause",

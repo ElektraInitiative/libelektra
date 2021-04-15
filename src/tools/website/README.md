@@ -23,7 +23,7 @@ As next step, the website configuration needs to be copied and mounted:
 
 The configuration will be mounted to `system:/sw/elektra/website/#0/current` in Elektra
 (`@config_root@/@config_default_profile@`)
-and contains the URL to the backend, some URLs for GitHub resources and translation,
+and contains some URLs for GitHub resources and translation,
 as well as logger settings. Usually, no changes are required there, see
 Configuration Options below for some useful options.
 
@@ -55,10 +55,9 @@ The `index.html` will then try to serve the (dynamic) URL itself.
 Using ${config_root}${config_default_profile}/daemon/lock (i.e., `daemon.lock` in JSON) you can specify which PID file should be used.
 Default: /run/elektra-@tool@.pid
 
-#### APIs (Backend & GitHub)
+#### APIs (GitHub)
 
-The configuration file allows to set the URL to the backend in `backend.root`.
-GitHub settings may be done in `github`.
+The configuration file allows to change GitHub settings in the `github` section.
 
 #### Translations
 
