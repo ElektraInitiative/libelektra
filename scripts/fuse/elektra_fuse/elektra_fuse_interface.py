@@ -246,7 +246,8 @@ def rmdir(path):
 
 #renames a file, i.e. the backing Elektra-key
 def rename(old_path, new_path):
-    _ensure_namespace_is_writable(path)
+    _ensure_namespace_is_writable(old_path)
+    _ensure_namespace_is_writable(new_path)
 
     if Path(old_path).name == dir_file_special_name:
         #see https://github.com/ElektraInitiative/libelektra/issues/3648
