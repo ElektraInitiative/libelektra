@@ -6,10 +6,6 @@ angular
   .module("elektra.rest.angular")
   .controller("WebsiteHomeController", require("./WebsiteHomeController"))
   .controller(
-    "WebsiteConversionController",
-    require("./WebsiteConversionController")
-  )
-  .controller(
     "WebsiteListfilesController",
     require("./WebsiteListfilesController")
   );
