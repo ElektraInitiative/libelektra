@@ -3,7 +3,7 @@
  *
  * @brief source file of spec mount command
  *
- * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ * @Copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
@@ -83,7 +83,7 @@ void SpecMountCommand::buildBackend (Cmdline const & cl)
 
 	if (!cl.quiet && backends.empty ())
 	{
-		std::cout << "No metadata \"mountpoint\" found on key \"spec" << mp << "\"" << std::endl;
+		std::cout << "No metadata \"mountpoint\" found on key \"spec:" << mp << "\"" << std::endl;
 	}
 }
 
