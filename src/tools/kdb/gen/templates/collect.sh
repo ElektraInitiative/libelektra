@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+# Copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 # BSD License (see LICENSE.md or https://www.libelektra.org)
 
 # shellcheck disable=SC2016
