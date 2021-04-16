@@ -414,7 +414,7 @@
 <text  x="374.05" y="127.5" ></text>
 </g>
 <g >
-<title>keyCompareByName (11,692 samples, 0.07%)</title><rect x="954.2" y="69" width="0.9" height="15.0" fill="rgb(220,212,51)" rx="2" ry="2" />
+<title>keyCompareByNameOwner (11,692 samples, 0.07%)</title><rect x="954.2" y="69" width="0.9" height="15.0" fill="rgb(220,212,51)" rx="2" ry="2" />
 <text  x="957.22" y="79.5" ></text>
 </g>
 <g >
