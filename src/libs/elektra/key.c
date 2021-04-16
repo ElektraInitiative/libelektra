@@ -139,10 +139,10 @@
  *
  * @param name a valid name to the key, or NULL to get a simple
  * 	initialized, but really empty, object
- * 
+ *
  * @return a pointer to a new allocated and initialized Key object.
  * @retval NULL on allocation error or if an invalid @p name was passed (see keySetName()).
- * 
+ *
  * @since 1.0.0
  * @ingroup key
  * @see keyDel()
@@ -327,7 +327,7 @@ Key * keyVNew (const char * name, va_list va)
  * @retval NULL when @p dest is NULL
  * @retval NULL when both #KEY_CP_VALUE and #KEY_CP_STRING are set in @p flags
  * @retval NULL when both #KEY_CP_STRING is set in @p flags and @p source is a binary key (keyIsBinary())
- * 
+ *
  * @since 0.9.5
  * @ingroup key
  * @see keyDup() for duplicating an existing Key
@@ -496,12 +496,12 @@ static void keyClearNameValue (Key * key)
  * be returned.
  *
  * @param key the Key object to delete
- * 
+ *
  * @return the value of the reference counter
  *         if the key is within keyset(s)
  * @retval 0 when the Key was freed
  * @retval -1 on NULL pointers
- * 
+ *
  * @since 1.0.0
  * @ingroup key
  * @see keyNew() for creating a new Key
@@ -552,7 +552,7 @@ int f (Key *k)
  * @endcode
  *
  * @param key the Key that shoould be cleared
- * 
+ *
  * @retval 0 on success
  * @retval -1 on NULL pointer
  *
@@ -606,11 +606,11 @@ int keyClear (Key * key)
  * @note keyDup() will reset the references for duplicated Keys.
  *
  * @param key the Key object whose reference counter should get increased
- * 
+ *
  * @return the updated value of the reference counter
  * @retval -1 on NULL pointer
  * @retval SSIZE_MAX when reference counter reached SSIZE_MAX
- * 
+ *
  * @since 1.0.0
  * @ingroup key
  * @see keyGetRef() for addtional explanations about reference counting
@@ -644,11 +644,11 @@ ssize_t keyIncRef (Key * key)
  * @note keyDup() will reset the references for duplicated Key.
  *
  * @param key the Key object whose reference counter should get decreased
- * 
+ *
  * @return the updated value of the reference counter
  * @retval -1 on NULL pointer
  * @retval 0 when the Key is ready to be freed
- * 
+ *
  * @since 1.0.0
  * @ingroup key
  * @see keyGetRef() for addtional explanations about reference counting
@@ -700,10 +700,10 @@ ssize_t keyDecRef (Key * key)
  * counting, too.
  *
  * @param key the Key whose reference counter to retrieve
- * 
+ *
  * @return the value of the @p key's reference counter
  * @retval -1 on NULL pointer
- * 
+ *
  * @since 1.0.0
  * @ingroup key
  * @see keyIncRef(), keyDecRef() for increasing / decreasing the reference counter
@@ -738,7 +738,7 @@ ssize_t keyGetRef (const Key * key)
  * @return the bits that were successfully locked
  * @retval 0 if everything was locked before
  * @retval -1 if it could not be locked (NULL pointer)
- * 
+ *
  * @since 1.0.0
  * @ingroup key
  * @see keyIsLocked() for checking whether a Key is locked
@@ -761,11 +761,11 @@ int keyLock (Key * key, elektraLockFlags what)
  *
  * @param key the Key that should be checked for locks
  * @param what the parts of the Key that should checked for locks
- * 
+ *
  * @return the bits that are locked
  * @retval 0 if nothing is locked
  * @retval -1 on error (NULL pointer)
- * 
+ *
  * @since 1.0.0
  * @ingroup key
  * @see keyLock() for locking a Key
