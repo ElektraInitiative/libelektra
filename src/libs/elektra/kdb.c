@@ -406,10 +406,10 @@ static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKe
  *                 all data is copied and the KeySet can safely be used for
  *                 e.g. kdbGet() later
  * @param errorKey the key which holds errors and warnings which were issued
- * 
+ *
  * @return handle to the newly created KDB on success
  * @retval NULL on failure
- * 
+ *
  * @since 1.0.0
  * @ingroup kdb
  * @see kdbClose() to close the session of a Key database opened by kdbOpen()
@@ -579,10 +579,10 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
  * @param handle contains internal information of
  *               @link kdbOpen() opened @endlink key database
  * @param errorKey the key which holds error/warning information
- * 
+ *
  * @retval 0 on success
  * @retval -1 on NULL pointer
- * 
+ *
  * @since 1.0.0
  * @ingroup kdb
  * @see kdbOpen() for opening a session with a Key database
@@ -1167,11 +1167,11 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  * It is also used to add warnings and set error information.
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
- * 
+ *
  * @retval 1 if the Keys were retrieved successfully
  * @retval 0 if there was no update - no changes are made to the KeySet then
  * @retval -1 on failure - no changes are made to the KeySet then
- * 
+ *
  * @since 1.0.0
  * @ingroup kdb
  * @see ksLookup(), ksLookupByName() for powerful lookups after the KeySet was 
@@ -1723,7 +1723,7 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  * @retval 0 if nothing had to be done, no changes in KDB
  * @retval -1 on failure, no changes in KDB, an error will be set on 
  * @p parentKey if possible (see "Errors" above)
- * 
+ *
  * @since 1.0.0
  * @ingroup kdb
  * @see kdbOpen() for getting @p handle 
