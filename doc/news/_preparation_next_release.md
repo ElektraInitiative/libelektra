@@ -177,6 +177,7 @@ you up to date with the multi-language support provided by Elektra.
 - Improved documentation for module kdb in Elektra Core. _(@lawli3t)_
 - Improved documentation for module keyvalue in Elektra Core. _(@lawli3t)_
 - Improved documentation for module kdb in Elektra Core. _(@lawli3t)_
+- Improved documentation for module keyset in Elektra Core. _(@lawli3t)_
 
 ## Tests
 
