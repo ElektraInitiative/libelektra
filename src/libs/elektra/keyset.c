@@ -218,10 +218,10 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  * @post the KeySet is rewinded properly
  *
  * @param alloc gives a hint for how many Keys may be stored initially
- * 
+ *
  * @return a ready to use KeySet object
  * @retval 0 on memory error
- * 
+ *
  * @since 1.0.0
  * @see ksDel() to free the KeySet afterwards
  * @see ksDup() to duplicate an existing KeySet
@@ -301,10 +301,10 @@ KeySet * ksVNew (size_t alloc, va_list va)
  * need to be deleted via ksDel().
  *
  * @param source has to be an initialized KeySet
- * 
+ *
  * @return a flat copy of source on success
  * @retval 0 on NULL pointer
- * 
+ *
  * @since 1.0.0
  * @see ksNew() for creating a new KeySet
  * @see ksDel() for deleting a KeySet
@@ -408,11 +408,11 @@ int f (KeySet *ks)
  *
  * @param source an initialized KeySet or NULL
  * @param dest an initialized KeySet, where the Keys from @p source get copied to
- * 
+ *
  * @retval 1 on success
  * @retval 0 if @p dest was cleared successfully (@p source is NULL)
  * @retval -1 when @p dest is a NULL pointer
- * 
+ *
  * @since 1.0.0
  * @see ksNew() for creating a new KeySet
  * @see ksDel() for deleting an existing KeySet
@@ -442,10 +442,10 @@ int ksCopy (KeySet * dest, const KeySet * source)
  * (that was previously allocated by ksNew()).
  *
  * @param ks the KeySet that should be deleted
- * 
+ *
  * @retval 0 when the KeySet was successfully freed
  * @retval -1 on NULL pointer
- * 
+ *
  * @since 1.0.0
  * @see ksNew() for creating a new KeySet
  */
@@ -780,7 +780,7 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  * @retval -1 on NULL pointers
  * @retval -1 if appending failed (only on memory problems). The Key will be 
  * deleted then.
- * 
+ *
  * @since 1.0.0
  * @see ksAppend() for appending a KeySet to another KeySet
  * @see keyIncRef() for manually increasing a Key's reference counter
@@ -887,13 +887,13 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
  *
  * @post Sorted KeySet ks with all Keys it had before and additionally
  *       the Keys from toAppend
- * 
+ *
  * @param ks the KeySet that will receive the Keys
  * @param toAppend the KeySet that provides the Keys that will be transferred
- * 
+ *
  * @return the size of the KeySet @p ks after transfer
  * @retval -1 on NULL pointers
- * 
+ *
  * @since 1.0.0
  * @see ksAppendKey()
  */
@@ -1269,13 +1269,13 @@ static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * fr
  * @param ks the Keyset to cut. It will be modified by removing
  *           all Keys at or below the cutpoint.
  * @param cutpoint the point where to cut out the Keyset
- * 
+ *
  * @return a new allocated KeySet which needs to deleted with ksDel().
  *         The KeySet consists of all Keys (of the original KeySet ks)
  *         below the cutpoint. If the Key cutpoint exists, it will
  *         also be appended.
  * @retval 0 on NULL pointers, no Key name or allocation problems
- * 
+ *
  * @since 1.0.0
  * @see kdbGet() for an explanation on why you might get more Keys than you
  * requested.
@@ -1393,10 +1393,10 @@ ksDel (ks2);
  *@endcode
  *
  * @param ks KeySet to pop a Key from
- * 
+ *
  * @return the last Key of @p ks
  * @retval NULL if @p ks is empty or a NULL pointer
- * 
+ *
  * @since 1.0.0
  * @see ksLookup() to pop Keys by name
  * @see ksCopy() to pop all Keys
@@ -1442,10 +1442,10 @@ while ((key = ksNext (ks))!=0) {}
  * @endcode
  *
  * @param ks the KeySet that should be rewound
- * 
+ *
  * @retval 0 on success
  * @retval -1 on NULL pointer
- * 
+ *
  * @since 1.0.0
  * @see ksNext() for moving the cursor to the next entry in the KeySet
  * @see ksCurrent() for getting the current element in the KeySet
@@ -1478,11 +1478,11 @@ int ksRewind (KeySet * ks)
  * Key before using it, because specifications allow to hide or override Keys.
  *
  * @param ks the KeySet object to work with
- * 
+ *
  * @return the new current Key
  * @retval 0 when the end of the KeySet has been reached
  * @retval 0 on NULL pointer
- * 
+ *
  * @since 1.0.0
  * @see ksRewind() for resetting the internal cursor of the KeySet
  * @see ksCurrent() for getting the Key the cursor currently points at
@@ -1513,10 +1513,10 @@ Key * ksNext (KeySet * ks)
  *    use ksPop() if you want to delete it.
  *
  * @param ks the KeySet object to get the current Key from
- * 
+ *
  * @return pointer to the Key pointed by @p ks's cursor
  * @retval 0 on NULL pointer
- * 
+ *
  * @since 1.0.0
  * @see ksNext() to get the next Key in the KeySet
  * @see ksRewind() for resetting the internal cursor of the KeySet
@@ -1538,10 +1538,10 @@ Key * ksCurrent (const KeySet * ks)
  * on the first Key.
  *
  * @param ks the KeySet object to get the first Key from
- * 
+ *
  * @return the first Key of a KeySet
  * @retval 0 on NULL pointer or empty KeySet
- * 
+ *
  * @since 1.0.0
  * @see ksTail() for getting the last Key of the KeySet
  * @see ksRewind(), ksCurrent() and ksNext() for iterating over the KeySet
@@ -1567,10 +1567,10 @@ Key * ksHead (const KeySet * ks)
  * a NULL pointer afterwards.
  *
  * @param ks the KeySet object to get the last Key from
- * 
+ *
  * @return the last Key of a KeySet
  * @retval 0 on NULL pointer or empty KeySet
- * 
+ *
  * @since 1.0.0
  * @see ksHead() for getting the first Key of a KeySet
  * @see ksRewind(), ksCurrent() and ksNext() for iterating over the KeySet
@@ -1660,11 +1660,11 @@ int f (KeySet *ks)
  * made for.
  *
  * @param ks the KeySet object to get the cursor from
- * 
+ *
  * @return a valid cursor on success
  * @return -1 on NULL pointer
  * @return -1 on an invalid internal cursor or after ksRewind
- * 
+ *
  * @since 1.0.0
  * @see ksNext() for moving the internal cursor forward
  * @see ksSetCursor() for setting the cursor to a specific position
@@ -1687,11 +1687,11 @@ elektraCursor ksGetCursor (const KeySet * ks)
  *
  * @param ks the KeySet to get the Key from
  * @param pos the position of the Key that should be retrieved
- * 
+ *
  * @return the Key at the cursor @p pos on success
  * @retval NULL on NULL pointer, negative cursor position
  * or a position that does not lie within the KeySet @p ks
- * 
+ *
  * @since 1.0.0
  * @see ksGetCursor() for getting the cursor at the current position
  * @see ksSetCursor() for setting the cursor to a specific position
@@ -1731,11 +1731,11 @@ ksCurrent(ks); // in same position as before
  *
  * @param ks the KeySet object where the cursor should be set
  * @param cursor the cursor to set for @p ks
- * 
+ *
  * @retval 0 when the KeySet has been ksRewind()ed
  * @retval 1 otherwise
  * @retval -1 on NULL pointer
- * 
+ *
  * @since 1.0.0
  * @see ksGetCursor() for getting the cursor at the current position
  * @see ksNext() for moving the internal cursor forward
