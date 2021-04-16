@@ -87,7 +87,7 @@ static void zeroMqRecvSocketReadable (void * socket, void * context)
 		return;
 	}
 	int length = zmq_msg_size (&message);
-	changeType = elektraStrNDup (zmq_msg_data (&message), length + 1);
+	changeType = elektraMemDup (zmq_msg_data (&message), length + 1);
 	changeType[length] = '\0';
 	ELEKTRA_LOG_DEBUG ("received change type %s", changeType);
 
@@ -100,7 +100,7 @@ static void zeroMqRecvSocketReadable (void * socket, void * context)
 		return;
 	}
 	length = zmq_msg_size (&message);
-	changedKeyName = elektraStrNDup (zmq_msg_data (&message), length + 1);
+	changedKeyName = elektraMemDup (zmq_msg_data (&message), length + 1);
 	changedKeyName[length] = '\0';
 	ELEKTRA_LOG_DEBUG ("received key name %s", changedKeyName);
 

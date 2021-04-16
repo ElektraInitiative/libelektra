@@ -141,7 +141,7 @@ static void * notificationReaderThreadMain (void * filter)
 			}
 
 			int length = zmq_msg_size (&message);
-			char * buffer = elektraStrNDup (zmq_msg_data (&message), length + 1);
+			char * buffer = elektraMemDup (zmq_msg_data (&message), length + 1);
 			buffer[length] = '\0';
 
 			switch (partCounter)

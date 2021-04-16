@@ -126,7 +126,7 @@ static struct lineFormat getFormat (Plugin * handle)
 		{
 			// copy delimiter
 			const size_t delimiterLen = delimiterEnd - delimiterStart;
-			ret.delimiter = elektraStrNDup (delimiterStart, (delimiterLen + 1));
+			ret.delimiter = elektraMemDup (delimiterStart, (delimiterLen + 1));
 			ret.delimiter[delimiterLen] = '\0';
 			ELEKTRA_LOG_DEBUG ("found delimiter:  '%s'", ret.delimiter);
 		}

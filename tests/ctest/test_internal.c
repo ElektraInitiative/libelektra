@@ -32,13 +32,13 @@ static void test_elektraMalloc (void)
 	elektraRealloc ((void **) &buffer, 20);
 	exit_if_fail (buffer, "buffer must not be 0 after reallocation");
 
-	char * dup = elektraStrNDup (buffer, 20);
+	char * dup = elektraMemDup (buffer, 20);
 	exit_if_fail (dup, "could not duplicate buffer");
 	elektraFree (buffer);
 	buffer = 0;
 	for (int i = 0; i < 20; ++i)
 	{
-		succeed_if (dup[i] == 0, "elektraStrNDup did not correctly copy zero-buffer");
+		succeed_if (dup[i] == 0, "elektraMemDup did not correctly copy zero-buffer");
 	}
 	elektraFree (dup);
 }

@@ -369,12 +369,12 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	{
 		if (source->key != NULL)
 		{
-			dest->key = elektraStrNDup (source->key, source->keySize);
+			dest->key = elektraMemDup (source->key, source->keySize);
 			if (!dest->key) goto memerror;
 			dest->keySize = source->keySize;
 
 			ELEKTRA_ASSERT (source->ukey != NULL, "key != NULL but ukey == NULL");
-			dest->ukey = elektraStrNDup (source->ukey, source->keyUSize);
+			dest->ukey = elektraMemDup (source->ukey, source->keyUSize);
 			if (!dest->ukey) goto memerror;
 			dest->keyUSize = source->keyUSize;
 		}
@@ -396,7 +396,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	{
 		if (source->data.v != NULL)
 		{
-			dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
+			dest->data.v = elektraMemDup (source->data.v, source->dataSize);
 			if (!dest->data.v) goto memerror;
 			dest->dataSize = source->dataSize;
 
@@ -417,7 +417,7 @@ Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 	{
 		if (source->data.v != NULL)
 		{
-			dest->data.v = elektraStrNDup (source->data.v, source->dataSize);
+			dest->data.v = elektraMemDup (source->data.v, source->dataSize);
 			if (!dest->data.v) goto memerror;
 			dest->dataSize = source->dataSize;
 

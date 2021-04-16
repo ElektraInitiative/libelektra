@@ -22,7 +22,7 @@ libelektra_0.8 {
 	elektraStrLen;
 	elektraStrNCaseCmp;
 	elektraStrNCmp;
-	elektraStrNDup;
+	elektraMemDup;
 	elektraVFormat;
 	elektraWriteArrayNumber;
 
