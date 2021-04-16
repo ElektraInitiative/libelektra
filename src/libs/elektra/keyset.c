@@ -2422,11 +2422,11 @@ static Key * elektraLookupCreateKey (KeySet * ks, Key * key, ELEKTRA_UNUSED elek
  * @param ks the KeySet that should be searched
  * @param key the Key object you are looking for
  * @param options of type ::elektraLookupFlags with some @p KDB_O_* option bits - as explained above
- * 
+ *
  * @return pointer to the Key found
  * @retval 0 if no Key has been found
  * @retval 0 on NULL pointers
- * 
+ *
  * @since 1.0.0
  * @see ksLookupByName() to search by a name given by a string
  * @see ksCurrent(), ksRewind(), ksNext() for iterating over a KeySet
@@ -2478,7 +2478,7 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
 
 /**
  * Convenience method to look for a Key contained in @p ks with name @p name.
- * 
+ *
  * There are several options that can be used in conjunction with this function.
  * All possible option flags can be found in ::elektraLookupFlags
  *
@@ -2490,7 +2490,7 @@ Key * ksLookup (KeySet * ks, Key * key, elektraLookupFlags options)
  * @return pointer to the Key found
  * @retval 0 if no Key has been found
  * @retval 0 on NULL pointers
- * 
+ *
  * @since 1.0.0
  * @see ksLookup() for explanation of the functionality and examples.
  * @see ksCurrent(), ksRewind(), ksNext() for iterating over a KeySet
