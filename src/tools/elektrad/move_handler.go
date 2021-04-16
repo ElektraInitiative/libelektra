@@ -95,7 +95,7 @@ func renameKey(k elektra.Key, from, to string) elektra.Key {
 	otherName := k.Name()
 	baseName := otherName[len(from):]
 
-	newKey := k.Duplicate()
+	newKey := k.Duplicate(KEY_CP_ALL)
 	newKey.SetName(to + baseName)
 
 	return newKey
