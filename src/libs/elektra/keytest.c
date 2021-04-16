@@ -86,11 +86,11 @@ int keyClearSync (Key * key)
  * does not need to be checked by neither application nor plugins.
  *
  * @param key the Key who should be checked
- * 
+ *
  * @retval 1 if @p key was changed in memory
  * @retval 0 if @p key wasn't changed
  * @retval -1 on NULL pointer
- * 
+ *
  * @since 1.0.0
  * @ingroup keytest
  * @see keyNew(), keyDup() Keys need to be synced after calling those functions
@@ -182,11 +182,11 @@ int keyIsUser (const Key * key)
  * @param key the Key object to check against
  * @param check the Key object for which it should be checked whether it is
  * below @p key
- * 
+ *
  * @retval 1 if @p check is below @p key
  * @retval 0 if it is not below or if it is the same key
  * @retval -1 if key or check is null
- * 
+ *
  * @since 1.0.0
  * @ingroup keytest
  * @see keyIsDirectlyBelow() for checking whether a Key is directly below another
@@ -290,11 +290,11 @@ check user:/sw/app/folder/key
  * @param key the Key object to check against
  * @param check the Key object for which it should be checked whether it is
  * directly below @p key
- * 
+ *
  * @retval 1 if @p check is directly below @p key
  * @retval 0 if @p check is not directly below @p key or if it is the same
  * @retval -1 on null pointer
- * 
+ *
  * @since 1.0.0
  * @ingroup keytest
  * @see keyIsBelow() for checking whether a Key is below another
@@ -361,7 +361,7 @@ int keyIsDirectlyBelow (const Key * key, const Key * check)
  * @retval 1 if the value of @p key is binary
  * @retval 0 if the value of @p key is not binary
  * @retval -1 on NULL pointer
- * 
+ *
  * @ingroup keytest
  * @see keyGetBinary(), keySetBinary() for getting / setting a Key's value as binary
  */
@@ -383,11 +383,11 @@ int keyIsBinary (const Key * key)
  * ensure compatibility and to write less error prone programs.
  *
  * @param key the Key to check
- * 
+ *
  * @retval 1 if the value of @p key is string
  * @retval 0 if the value of @p key is not string
  * @retval -1 on NULL pointer
- * 
+ *
  * @ingroup keytest
  * @see keyGetString(), keySetString() for getting / setting a Key's value as string
  */
