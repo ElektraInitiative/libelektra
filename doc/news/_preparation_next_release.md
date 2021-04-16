@@ -182,6 +182,7 @@ you up to date with the multi-language support provided by Elektra.
 - Update licensing information (year) #3681 _(@a-kraschitzer)_
 - Update licensing information (year) _(@a-kraschitzer)_
 - Rename [RELEASE.md](/doc/todo/RELEASE.md) _(@a-kraschitzer)_
+- Improved documentation for module kdb in Elektra Core. _(@lawli3t)_
 
 ## Tests
 
