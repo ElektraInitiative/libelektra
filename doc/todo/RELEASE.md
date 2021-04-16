@@ -16,20 +16,21 @@ If no release critical problems are found during testing, continue.
 - Run scripts/dev/update-infos-status with arguments for heuristics (--auto) and check
   transitions in plugin status: especially from/to experimental
 - Write release notes (without hash sums, guid or proper download links)
-- cp doc/todo/NEWS.md doc/news/_preparation_next_release.md
+- cp doc/todo/NEWS.md doc/news/\_preparation_next_release.md
 
 == Increment Version Number ==
 
 - CMakeLists.txt
 - Increment version in output of doc/tutorials/hello-elektra.md
 - Increment <Version> of libelektra in examples/external/java/read-keys-example/pom.xml and src/bindings/jna/README.md
-- Increment the Elektra version in scripts/docker/alpine/*/release.Dockerfile
+- Increment the Elektra version in scripts/docker/alpine/\*/release.Dockerfile
 - Change VERSION variable in build-server:
   - Go to https://build.libelektra.org
   - Select "Manage Jenkins" -> "Configure System"
   - Scroll down until "Global Properties" and change the variable VERSION
 
 == Check ==
+
 - https://build.libelektra.org/job/libelektra/job/master/ must pass
 
 = When Source Code is considered ready =
@@ -45,17 +46,17 @@ If no release critical problems are found during testing, continue.
   For each distribution two artifact folder exist: "<DISTRO_CODENAME>" and "<DISTRO_CODENAME>-installed"
   "<DISTRO_CODENAME>-installed" contains the test and strace logs of Elektra installed through the built packages
   For <DISTRO_CODENAME> artifact:
-    - [ ] Error logs (*.error) must be empty
-    - [ ] Check in the (test-*) folders if the passed tests really were successful, i.e.:
-      - [ ] do not contain error output
-      - [ ] were not skipped
-    - [ ] Check if version is correct in the version file
-    - [ ] Check if the package build log has warnings (<DISTRO_CODENAME>/elektra_*.build and <DISTRO_CODENAME>/elektra_*.error)
-    - [ ] Check if all plugins/bindings/tools that are part of a package were included (<DISTRO_CODENAME>/elektra_*.build)
-  For <DISTRO_CODENAME>-installed artifact:
-    - [ ] Check in the (test-*) folders if the passed tests really were successful, i.e.:
-      - [ ] do not contain error output
-      - [ ] were not skipped
+  - [ ] Error logs (\*.error) must be empty
+  - [ ] Check in the (test-\*) folders if the passed tests really were successful, i.e.:
+    - [ ] do not contain error output
+    - [ ] were not skipped
+  - [ ] Check if version is correct in the version file
+  - [ ] Check if the package build log has warnings (<DISTRO\_CODENAME>/elektra\_\*.build and <DISTRO\_CODENAME>/elektra\_\*.error)
+  - [ ] Check if all plugins/bindings/tools that are part of a package were included (<DISTRO\_CODENAME>/elektra\_\*.build)
+        For <DISTRO_CODENAME>-installed artifact:
+  - [ ] Check in the (test-\*) folders if the passed tests really were successful, i.e.:
+    - [ ] do not contain error output
+    - [ ] were not skipped
 - Inspect the changes to the libelektra git repository in git/master.log
   - [ ] Check diff of commit "release: regenerate plugins overview picture" and if
         doc/images/plugins.pdf was generated correctly
@@ -81,7 +82,7 @@ If no release critical problems are found during testing, continue.
 
 == Preperation for next release ==
 
-- Increment CMPVERSION in scripts/build/run_icheck
+- Increment CMPVERSION in scripts/build/run\_icheck
 - Cleanup tests/icheck.suppression (and add info to release notes)
 
 == Announce ==

@@ -10,7 +10,7 @@
  *
  * @copyright BSD Zero Clause License
  *
- *     copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ *     Copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  *     Permission to use, copy, modify, and/or distribute this software for any
  *     purpose with or without fee is hereby granted.
