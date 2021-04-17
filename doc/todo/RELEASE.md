@@ -91,7 +91,7 @@ If no release critical problems are found during testing, continue.
 
 ### Announce
 
-send out release mails&post on social media (see github issue #676)
+send out release mails&post on social media (see GitHub issue #676)
 
 ### Special Requirements
 
