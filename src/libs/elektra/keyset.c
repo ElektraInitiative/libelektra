@@ -776,7 +776,7 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  *
  * @return the size of the KeySet after appending
  * @retval -1 on NULL pointers
- * @retval -1 if appending failed (only on memory problems). The Key will be 
+ * @retval -1 if appending failed (only on memory problems). The Key will be
  * deleted then.
  *
  * @since 1.0.0
@@ -1224,7 +1224,7 @@ static int elektraKsFindCutpoint (KeySet * ks, const Key * cutpoint, size_t * fr
  * Cuts out all Keys from KeySet @p ks that are below or at @p cutpoint
  *
  * Searches for the @p cutpoint inside the KeySet @p ks.
- * If found, it cuts out this Key and everything which is below 
+ * If found, it cuts out this Key and everything which is below
  * (see keyIsBelow()) this Key. These Keys will be missing in the keyset @p ks.
  * Instead, they will be moved to the returned KeySet.
  * If @p cutpoint is not found an empty KeySet is returned and @p ks
