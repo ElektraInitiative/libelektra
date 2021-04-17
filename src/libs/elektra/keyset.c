@@ -194,11 +194,10 @@ static void elektraOpmphmCopy (KeySet * dest ELEKTRA_UNUSED, const KeySet * sour
  *
  * @snippet ksNew.c No Allocation
  *
- * But if you have any idea about how large your keyset may be, you can use the 
- * @p alloc to hint the size of the KeySet.
+ * If the size of the KeySet is known in advance, use the
+ * @p alloc parameter to hint the size of the KeySet.
  *
- * If you want a KeySet with length 15 (because you know of your
- * application that you only need up to 15 Keys), use:
+ * If your application only needs up to 15 Keys you can request a KeySet of size 15:
  *
  * @snippet ksNew.c Length 15
  *
@@ -537,9 +536,8 @@ static int keyCompareByName (const void * p1, const void * p2)
 /**
  * Compare the name of two Keys.
  *
- * The comparison is based on a strcmp of the Key's names, and iff
- * they match, a strcmp of the owner will be used to distuingish.
- * If this also matches, the Keys are found to be exactly the
+ * The comparison is based on a memcmp of the Key's names.
+ * If the names match, the Keys are found to be exactly the
  * same and 0 is returned. These two keys can't be used in the same
  * KeySet.
  *
@@ -769,8 +767,8 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  * do proper ref counting:
  * @snippet keyset.c ref append
  *
- * Or if you want to avoid aliasing at all, you can duplicate the Key.
- * But then Key in the KeySet has another identity:
+ * You can duplicate the Key to avoid aliasing,
+ * but then the Key in the KeySet has another identity:
  * @snippet keyset.c dup append
  *
  * @param ks KeySet where @p toAppend should be append
