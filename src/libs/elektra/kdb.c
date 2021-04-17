@@ -1174,10 +1174,10 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  *
  * @since 1.0.0
  * @ingroup kdb
- * @see ksLookup(), ksLookupByName() for powerful lookups after the KeySet was 
+ * @see ksLookup(), ksLookupByName() for powerful lookups after the KeySet was
  * retrieved
  * @see kdbOpen() which needs to be called before
- * @see kdbSet() to save the configuration afterwards 
+ * @see kdbSet() to save the configuration afterwards
  * @see kdbClose() to finish affairs with the key database.
  */
 int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
@@ -1721,12 +1721,12 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  *
  * @retval 1 on success
  * @retval 0 if nothing had to be done, no changes in KDB
- * @retval -1 on failure, no changes in KDB, an error will be set on 
+ * @retval -1 on failure, no changes in KDB, an error will be set on
  * @p parentKey if possible (see "Errors" above)
  *
  * @since 1.0.0
  * @ingroup kdb
- * @see kdbOpen() for getting @p handle 
+ * @see kdbOpen() for getting @p handle
  * @see kdbClose() that must be called afterwards
  * @see ksCurrent() contains the error Key
  */
