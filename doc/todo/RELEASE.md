@@ -51,8 +51,8 @@ If no release critical problems are found during testing, continue.
     - [ ] do not contain error output
     - [ ] were not skipped
   - [ ] Check if version is correct in the version file
-  - [ ] Check if the package build log has warnings (<DISTRO\_CODENAME>/elektra\_\*.build and <DISTRO\_CODENAME>/elektra\_\*.error)
-  - [ ] Check if all plugins/bindings/tools that are part of a package were included (<DISTRO\_CODENAME>/elektra\_\*.build)
+  - [ ] Check if the package build log has warnings (<DISTRO_CODENAME>/elektra\_\*.build and <DISTRO_CODENAME>/elektra\_\*.error)
+  - [ ] Check if all plugins/bindings/tools that are part of a package were included (<DISTRO_CODENAME>/elektra\_\*.build)
         For <DISTRO_CODENAME>-installed artifact:
   - [ ] Check in the (test-\*) folders if the passed tests really were successful, i.e.:
     - [ ] do not contain error output
@@ -82,7 +82,7 @@ If no release critical problems are found during testing, continue.
 
 == Preperation for next release ==
 
-- Increment CMPVERSION in scripts/build/run\_icheck
+- Increment CMPVERSION in scripts/build/run_icheck
 - Cleanup tests/icheck.suppression (and add info to release notes)
 
 == Announce ==
