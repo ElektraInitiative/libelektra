@@ -483,11 +483,10 @@ static void keyClearNameValue (Key * key)
  * Every Key created by keyNew() must be
  * deleted with keyDel().
  *
- * It is safe to delete Keys which are
- * in a KeySet, the number of references
- * will be returned then.
+ * It is safe to delete Keys which are in a KeySet. Then the Key will not be deleted
+ * and the number of references will be returned.
  *
- * It is save to delete a NULL pointer,
+ * It is safe to delete a NULL pointer,
  * -1 will be returned then.
  *
  * It is also safe to delete a multiple
@@ -757,7 +756,7 @@ int keyLock (Key * key, elektraLockFlags what)
 }
 
 /**
- * Tests if parts of a Key are locked
+ * Checks which parts of a Key are locked
  *
  * @param key the Key that should be checked for locks
  * @param what the parts of the Key that should checked for locks
