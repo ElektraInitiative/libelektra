@@ -652,10 +652,10 @@ int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 			elektraFree (key->ukey);
 		}
 
-		key->key = elektraStrNDup (newPrefix->key, newPrefix->keySize);
+		key->key = elektraMemDup (newPrefix->key, newPrefix->keySize);
 		key->keySize = newPrefix->keySize;
 
-		key->ukey = elektraStrNDup (newPrefix->ukey, newPrefix->keyUSize);
+		key->ukey = elektraMemDup (newPrefix->ukey, newPrefix->keyUSize);
 		key->keyUSize = newPrefix->keyUSize;
 		return 1;
 	}

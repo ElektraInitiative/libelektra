@@ -324,7 +324,7 @@ void elektraFree (void * ptr)
  * @pre s must be a c-string.
  * @see elektraFree
  * @see elektraStrLen
- * @see elektraStrNDup
+ * @see elektraMemDup
  */
 char * elektraStrDup (const char * s)
 {
@@ -353,7 +353,7 @@ char * elektraStrDup (const char * s)
  * @param l the length of s
  * @ingroup internal
  */
-char * elektraStrNDup (const char * s, size_t l)
+char * elektraMemDup (const char * s, size_t l)
 {
 	void * tmp = 0;
 	ELEKTRA_ASSERT (l, "Size for string duplicate is zero");
