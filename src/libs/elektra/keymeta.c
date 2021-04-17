@@ -416,7 +416,7 @@ int keyCopyAllMeta (Key * dest, const Key * source)
  *
  * You are not allowed to modify the resulting key.
  *
- * If @p metaName does not start with 'meta:/', 
+ * If @p metaName does not start with 'meta:/',
  * it will be prefixed with 'meta:/'.
  *
  * @code
@@ -479,7 +479,7 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  *
  * It will remove a metadata Key if @p newMetaString is 0.
  *
- * If @p metaName does not start with 'meta:/', 
+ * If @p metaName does not start with 'meta:/',
  * it will be prefixed with 'meta:/'.
  *
  * @param key Key whose metadata should be set
@@ -610,7 +610,7 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
  *
  * @since 1.0.0
  * @ingroup keymeta
- * @see keySetMeta() for setting a metadata Key 
+ * @see keySetMeta() for setting a metadata Key
  * @see keyGetMeta() for getting a metadata Key
  **/
 KeySet * keyMeta (Key * key)
