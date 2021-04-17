@@ -376,8 +376,8 @@ static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKe
  * @pre errorKey must be a valid key, e.g. created with keyNew()
  *
  * You must always call this method before retrieving or committing any
- * keys to the database. In the end of the program,
- * after using the key database, you must not forget to kdbClose().
+ * keys to the database. At the end of a program, after using the Key database (KDB),
+ * you must not forget to call kdbClose() to free resources.
  *
  * The method will bootstrap itself in the following way.
  * The first step is to open the default backend. With it
@@ -569,7 +569,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
  *
  * This is the counterpart of kdbOpen().
  *
- * You must call this method when you are finished working with the key
+ * You must call this method when you are finished working with the Key
  * database. You can manipulate Key and KeySet objects also after
  * kdbClose(), but you must not use any kdb*() call afterwards.
  *
