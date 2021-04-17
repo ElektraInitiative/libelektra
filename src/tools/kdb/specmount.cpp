@@ -3,7 +3,7 @@
  *
  * @brief source file of spec mount command
  *
- * @Copyright BSD License (see LICENSE.md or https://www.libelektra.org)
+ * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  *
  */
 
