@@ -127,8 +127,8 @@
 /** Rewind the internal iterator to the first entry in metadata keyset.
  *
  * Use this function to set the cursor to the beginning of the Key Meta Infos.
- * keyCurrentMeta() will always return NULL afterwards. So
- * you want to call keyNextMeta() first.
+ * keyCurrentMeta() will always return NULL after rewinding, so
+ * you need to call keyNextMeta() first.
  *
  * @code
 Key *key;
@@ -162,7 +162,7 @@ int keyRewindMeta (Key * key)
 	return ksRewind (key->meta);
 }
 
-/** Forwards internal iterator of metadata to the next entry
+/** Get the next metadata entry of a Key
  *
  * Keys have an internal cursor that can be reset with keyRewindMeta(). Every
  * time keyNextMeta() is called the cursor is incremented and the new current
@@ -472,10 +472,10 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  * Will set a new metadata pair with name @p metaName and value
  * @p newMetaString.
  *
- * Will add a new Key of metadata if @p metaName was unused until now.
+ * Will add a new metadata Key, if @p metaName was unused until now.
  *
  * It will modify an existing Pair of metadata if
- * @p metaName was inserted already.
+ * @p metaName was already present.
  *
  * It will remove a metadata Key if @p newMetaString is 0.
  *
