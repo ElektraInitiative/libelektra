@@ -276,9 +276,9 @@ Example:
 key user:/sw/app
 check user:/sw/app/key
  @endverbatim
-* 
+*
 * returns true because check is directly below key
-* 
+*
  @verbatim
 Example:
 key user:/sw/app
@@ -376,7 +376,7 @@ int keyIsBinary (const Key * key)
 /**
  * Check if the value of @p key is of string type.
  *
- * String values are null terminated and are not allowed to have any '\\0' 
+ * String values are null terminated and are not allowed to have any '\\0'
  * characters inside the string.
  *
  * Make sure to use this function and don't test the string type another way to
