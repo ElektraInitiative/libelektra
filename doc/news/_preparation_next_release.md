@@ -136,6 +136,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Remove `kdb set` functionality that creates a null key. _(Robert Sowula)_
 - Rename elektraStrnDup to elektraMemDup _(@a-kraschitzer)_
+- Update `elektraMemDup` to `void *` and update the documentation. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
