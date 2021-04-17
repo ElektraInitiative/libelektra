@@ -232,10 +232,10 @@ const char * keyString (const Key * key)
  * For that reason 1 is returned. This is not true for binary data,
  * so 0 will be returned.
  *
- * A binary key has no '\\0' termination. String types are null-terminated, 
+ * A binary key has no '\\0' termination. String types are null-terminated,
  * and the terminator will be considered for the length.
  *
- * This method can be used with elektraMalloc() before 
+ * This method can be used with elektraMalloc() before
  * keyGetString() or keyGetBinary() is called.
  *
  * @code
@@ -349,8 +349,8 @@ ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
  * The function will allocate and save a private copy of @p newStringValue, so
  * the parameter can be freed after the call.
  *
- * String values will be saved in backend storage in UTF-8 universal encoding, 
- * regardless of the program's current encoding (if the iconv plugin is 
+ * String values will be saved in backend storage in UTF-8 universal encoding,
+ * regardless of the program's current encoding (if the iconv plugin is
  * available).
  *
  * @param key the Key for which to set the string value
