@@ -85,7 +85,7 @@ int keyClearSync (Key * key)
  * @deprecated The handling of synchronization is done internally and
  * does not need to be checked by neither application nor plugins.
  *
- * @param key the Key who should be checked
+ * @param key the Key which should be checked
  *
  * @retval 1 if @p key was changed in memory
  * @retval 0 if @p key wasn't changed
@@ -348,7 +348,7 @@ int keyIsDirectlyBelow (const Key * key, const Key * check)
 /**
  * Check if the value of a @p key is of binary type.
  *
- * The function checks if the value of @p key is binary. Opposed to string
+ * The function checks if the value of @p key is binary. Contrary to string
  * values binary values can have '\\0' inside the value and may not be
  * terminated by a null character. Their disadvantage is that you need to pass
  * their size.
