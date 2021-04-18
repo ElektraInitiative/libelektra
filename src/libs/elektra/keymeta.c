@@ -124,7 +124,8 @@
 #endif
 
 
-/** Rewind the internal iterator to the first entry in metadata keyset.
+/**
+ * Rewind the internal iterator to the first entry in metadata keyset.
  *
  * Use this function to set the cursor to the beginning of the Key Meta Infos.
  * keyCurrentMeta() will always return NULL after rewinding, so
@@ -162,7 +163,8 @@ int keyRewindMeta (Key * key)
 	return ksRewind (key->meta);
 }
 
-/** Get the next metadata entry of a Key
+/**
+ * Get the next metadata entry of a Key
  *
  * Keys have an internal cursor that can be reset with keyRewindMeta(). Every
  * time keyNextMeta() is called the cursor is incremented and the new current
@@ -203,8 +205,8 @@ const Key * keyNextMeta (Key * key)
 	return ret;
 }
 
-/** Returns the Key of the metadata the internal iterator currently
- * points at.
+/**
+ * Returns the metadata Key at the internal iterator's current position.
  *
  * The returned pointer is NULL if the end has been reached or after calling
  * ksRewind().
@@ -235,11 +237,12 @@ const Key * keyCurrentMeta (const Key * key)
 	return ret;
 }
 
-/** Do a shallow copy of metadata with name @p metaName from source to dest.
+/**
+ * Do a shallow copy of metadata with name @p metaName from source to dest.
  *
- * The key dest will have the same metadata referred with
- * metaName afterwards then source. If the Key with name @p metaName doesn't
- * exist in @p src - it gets deleted. Read-only keys are unaffected.
+ * Afterwards @p source and @p dest will have the same metadata referred with
+ * @p metaName. If the Key with name @p metaName doesn't exist in @p src -
+ * it gets deleted in @p dest.
  *
  * For example the metadata type is copied into the
  * Key k.
@@ -349,7 +352,8 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
 	return 1;
 }
 
-/** Do a shallow copy of all metadata from source to dest.
+/**
+ * Do a shallow copy of all metadata from source to dest.
  *
  * The key dest will additionally have all metadata
  * the source had.
@@ -412,7 +416,8 @@ int keyCopyAllMeta (Key * dest, const Key * source)
 	return 0;
 }
 
-/** Returns the Key for a metadata entry with name @p metaName.
+/**
+ * Returns the Key for a metadata entry with name @p metaName.
  *
  * You are not allowed to modify the resulting key.
  *
@@ -467,7 +472,8 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
 }
 
 
-/** Set a new metadata Key
+/**
+ * Set a new metadata Key
  *
  * Will set a new metadata pair with name @p metaName and value
  * @p newMetaString.
@@ -584,7 +590,8 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 	return metaStringSize;
 }
 
-/** Returns the KeySet holding the given Key's metadata
+/**
+ * Returns the KeySet holding the given Key's metadata
  *
  * Use keySetMeta() to populate the metadata KeySet of a Key.
  *
