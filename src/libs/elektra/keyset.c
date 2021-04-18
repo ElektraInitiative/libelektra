@@ -520,45 +520,6 @@ static int keyCompareByName (const void * p1, const void * p2)
 }
 
 /**
- * @brief Compare only the owner of two keys (not the name)
- *
- * @return comparison result
- */
-static int keyCompareByOwner (const void * p1, const void * p2)
-{
-	Key * key1 = *(Key **) p1;
-	Key * key2 = *(Key **) p2;
-	const char * owner1 = keyValue (keyGetMeta (key1, "owner"));
-	const char * owner2 = keyValue (keyGetMeta (key2, "owner"));
-	if (!owner1 && !owner2) return 0;
-	if (!owner1) return -1;
-	if (!owner2) return 1;
-	return elektraStrCmp (owner1, owner2);
-}
-
-/**
- * @internal
- *
- * Defines how keys are sorted in the keyset
- *
- * Compares by unescaped name, and if equal by owner
- *
- * Is suitable for binary search
- *
- * @see keyCmp, keyCompareByName
- */
-static int keyCompareByNameOwner (const void * p1, const void * p2)
-{
-	int ret = keyCompareByName (p1, p2);
-
-	if (ret == 0)
-	{
-		return keyCompareByOwner (p1, p2);
-	}
-	return ret;
-}
-
-/**
  * Compare the name of two keys.
  *
  * @return a number less than, equal to or greater than zero if
@@ -623,7 +584,7 @@ int keyCmp (const Key * k1, const Key * k2)
 	if (!k1->key) return -1;
 	if (!k2->key) return 1;
 
-	return keyCompareByNameOwner (&k1, &k2);
+	return keyCompareByName (&k1, &k2);
 }
 
 /**
@@ -714,7 +675,7 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 		return -1;
 	}
 
-	cmpresult = keyCompareByNameOwner (&toAppend, &ks->array[right]);
+	cmpresult = keyCompareByName (&toAppend, &ks->array[right]);
 	if (cmpresult > 0)
 	{
 		return -((ssize_t) ks->size) - 1;
@@ -729,7 +690,7 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 			break;
 		}
 		middle = left + ((right - left) / 2);
-		cmpresult = keyCompareByNameOwner (&toAppend, &ks->array[middle]);
+		cmpresult = keyCompareByName (&toAppend, &ks->array[middle]);
 		if (cmpresult > 0)
 		{
 			insertpos = left = middle + 1;
@@ -1050,7 +1011,7 @@ ssize_t ksRename (KeySet * ks, const Key * root, const Key * newRoot)
 	size_t renamed = ksRenameInternal (ks, start, end, root, newRoot);
 
 	// fix order and invalidate hashmap after renaming
-	qsort (ks->array, ks->size, sizeof (struct _Key *), keyCompareByNameOwner);
+	qsort (ks->array, ks->size, sizeof (struct _Key *), keyCompareByName);
 	elektraOpmphmInvalidate (ks);
 
 	return renamed;

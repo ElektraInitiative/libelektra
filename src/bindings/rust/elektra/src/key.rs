@@ -547,15 +547,6 @@ mod tests {
     }
 
     #[test]
-    fn keys_are_ordered_with_metadata() -> Result<(), KeyNameInvalidError> {
-        let k1: StringKey = KeyBuilder::new("user:/a")?.meta("owner", "abc")?.build();
-        let k2: StringKey = KeyBuilder::new("user:/a")?.meta("owner", "abz")?.build();
-        assert!(k1 < k2);
-        assert!(k2 > k1);
-        Ok(())
-    }
-
-    #[test]
     fn can_reference_count() {
         let mut key = BinaryKey::new("user:/test/a").unwrap();
         assert_eq!(key.get_ref(), 0);

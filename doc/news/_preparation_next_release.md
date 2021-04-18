@@ -81,6 +81,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### Lua
+
+- Removed outdated information from docs _(@a-kraschitzer)_
+
 ### <<Plugin3>>
 
 - <<TODO>>
@@ -99,6 +103,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
+- Remove keyCompareBy(Name)?Owner _(@a-kraschitzer)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
@@ -136,6 +141,8 @@ you up to date with the multi-language support provided by Elektra.
 
 - Remove `kdb set` functionality that creates a null key. _(Robert Sowula)_
 - Rename elektraStrnDup to elektraMemDup _(@a-kraschitzer)_
+- Update specmount error message #3666 _(@a-kraschitzer)_
+- Update specmount error message _(@a-kraschitzer)_
 - <<TODO>>
 - <<TODO>>
 
@@ -158,6 +165,8 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - Adding info about syncing forks to `doc/GIT.md` _(Klemens Böswirth)_
 - Work on [COMPILE.md](/doc/COMPILE.md) and [INSTALL.md](/doc/INSTALL.md) to help with understanding _(@a-kraschitzer)_
+- Update licensing information (year) _(@a-kraschitzer)_
+- Rename [RELEASE.md](/doc/todo/RELEASE.md) _(@a-kraschitzer)_
 
 ## Tests
 

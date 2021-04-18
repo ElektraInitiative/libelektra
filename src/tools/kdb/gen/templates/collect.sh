@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2019 Elektra Initiative.
+# Copyright BSD License (see LICENSE.md or https://www.libelektra.org)
 # BSD License (see LICENSE.md or https://www.libelektra.org)
 
 # shellcheck disable=SC2016
