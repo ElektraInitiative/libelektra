@@ -33,7 +33,8 @@
        - [ ] move "It is not allowed to" precondition
 - [ ] `@post`  
        - [ ] newName has been added to key
-- [ ] `@invariant` - [ ] add
+- [ ] `@invariant`  
+       - [ ] add
 - [ ] `@param` for every parameter  
        - [ ] move below `@pre`  
        - [ ] key - pointer to Key object  
