@@ -168,6 +168,7 @@ you up to date with the multi-language support provided by Elektra.
 - Work on [COMPILE.md](/doc/COMPILE.md) and [INSTALL.md](/doc/INSTALL.md) to help with understanding _(@a-kraschitzer)_
 - Update licensing information (year) _(@a-kraschitzer)_
 - Rename [RELEASE.md](/doc/todo/RELEASE.md) _(@a-kraschitzer)_
+- Improved documentation for module keyname in Elektra Core. _(@lawli3t)_
 
 ## Tests
 
