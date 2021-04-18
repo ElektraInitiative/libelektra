@@ -143,6 +143,7 @@ you up to date with the multi-language support provided by Elektra.
 - Rename elektraStrnDup to elektraMemDup _(@a-kraschitzer)_
 - Update specmount error message #3666 _(@a-kraschitzer)_
 - Update specmount error message _(@a-kraschitzer)_
+- Update `elektraMemDup` to `void *` and update the documentation. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 

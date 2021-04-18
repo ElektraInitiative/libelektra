@@ -350,16 +350,16 @@ char * elektraStrDup (const char * s)
  *
  * @return 0 if out of memory, a pointer otherwise
  * @param s must be an allocated buffer
- * @param l the length of s
+ * @param n the number of bytes to copy from s
  * @ingroup internal
  */
-char * elektraMemDup (const char * s, size_t l)
+void * elektraMemDup (const void * s, size_t n)
 {
 	void * tmp = 0;
-	ELEKTRA_ASSERT (l, "Size for string duplicate is zero");
+	ELEKTRA_ASSERT (n, "Size of memory to duplicate is zero");
 
-	tmp = elektraMalloc (l);
-	if (tmp) memcpy (tmp, s, l);
+	tmp = elektraMalloc (n);
+	if (tmp) memcpy (tmp, s, n);
 
 	return tmp;
 }
