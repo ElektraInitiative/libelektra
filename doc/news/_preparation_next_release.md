@@ -105,7 +105,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### Core
 
 - Remove keyCompareBy(Name)?Owner _(@a-kraschitzer)_
-<a id="key-copy"></a>
+  <a id="key-copy"></a>
 
 - The `keyCopy` and `keyDup` functions have been changed. They now take a `flags` argument which specifies which parts
   of the `Key` should be copied.
