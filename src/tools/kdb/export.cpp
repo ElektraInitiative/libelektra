@@ -32,7 +32,7 @@ int ExportCommand::execute (Cmdline const & cl)
 		throw invalid_argument ("need 1 to 3 arguments");
 	}
 
-	Key root = cl.createKey (0);
+	Key root = cl.createKey (0, false);
 
 	kdb.get (ks, root);
 	printWarnings (cerr, root, cl.verbose, cl.debug);

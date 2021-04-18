@@ -38,7 +38,7 @@ int ImportCommand::execute (Cmdline const & cl)
 		throw invalid_argument ("need 1 to 3 arguments");
 	}
 
-	Key root = cl.createKey (0);
+	Key root = cl.createKey (0, false);
 	if (!root.isValid ())
 	{
 		throw invalid_argument ("root key \"" + cl.arguments[0] + "\" is not a valid key name");

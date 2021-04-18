@@ -40,19 +40,17 @@ int SetCommand::execute (Cmdline const & cl)
 	// the config
 	kdb.get (conf, k);
 
-	if (name[0] == '/')
-	{
-		// fix name for lookup
-		name = cl.ns + name;
-		if (!cl.quiet) std::cout << "Using name " << name << std::endl;
-
-		// fix k for kdb.set later
-		k.setName (name);
-	}
+	bool cascadingWrite = name[0] == '/';
 
 	Key key = conf.lookup (name);
 
 	std::ostringstream toprint;
+	
+	if (!key && cascadingWrite)
+	{
+		cerr << "Aborting: A cascading write to a non-existent key is ambiguous." << endl;
+		return 1;
+	}
 	if (!key)
 	{
 		toprint << "Create a new key " << name;
@@ -76,6 +74,7 @@ int SetCommand::execute (Cmdline const & cl)
 	printWarnings (cerr, k, cl.verbose, cl.debug);
 	printError (cerr, k, cl.verbose, cl.debug);
 
+	if (cascadingWrite) toprint << "Using name " << key.getName () << std::endl;
 	if (!cl.quiet) cout << toprint.str ();
 
 	return 0;
