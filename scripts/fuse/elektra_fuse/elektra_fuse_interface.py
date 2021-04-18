@@ -6,6 +6,7 @@ from pathlib import Path
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
 
 #project imports
+import elektra_util
 from elektra_util import *
 import mock_context
 
@@ -18,7 +19,7 @@ startup_time = time.time()
 #returns a map containing file attributes, i.e. the result of the stat command
 def getattr(path, fh=None):
 
-    is_value_of_file = Path(path).name == dir_file_special_name
+    is_value_of_file = Path(path).name == elektra_util.dir_file_special_name
 
     is_dir, is_file = key_type(path)
 
@@ -95,9 +96,6 @@ def _namespace_is_writable(os_path):
 def _ensure_namespace_is_writable(os_path):
     if not _namespace_is_writable(os_path):
         raise OSError(errno.EROFS)
-
-
-
 
 #for the file path of a given key returns the backing file as would be by the command "kdb file"
 #throws OSError when:
@@ -184,11 +182,11 @@ def listxattr(path):
         # if key does not really exist (intermediate directories) return an empty map insted of an error
         # as to not confuse tools like xattr
     
-    return [xattr_kdb_file] + [_ensure_no_meta_prefix(keyname) for keyname in get_meta_map(path).keys()]
+    return [elektra_util.xattr_kdb_file] + [_ensure_no_meta_prefix(keyname) for keyname in get_meta_map(path).keys()]
 
 #returns the value of an xattr key
 def getxattr(path, name, position=0):
-    if name == xattr_kdb_file:
+    if name == elektra_util.xattr_kdb_file:
         return get_kdb_file(path).encode()
     
     name = _ensure_meta_prefix(name)
@@ -201,7 +199,7 @@ def getxattr(path, name, position=0):
 def removexattr(path, name):
     _ensure_namespace_is_writable(path)
 
-    if name == xattr_kdb_file:
+    if name == elektra_util.xattr_kdb_file:
         raise OSError(errno.EROFS)
     
     try:
@@ -216,7 +214,7 @@ def removexattr(path, name):
 def setxattr(path, name, value, options, position=0):
     _ensure_namespace_is_writable(path)
 
-    if name == xattr_kdb_file:
+    if name == elektra_util.xattr_kdb_file:
         raise OSError(errno.EROFS)
     
     #if key does not really exist (intermediate directories) key should be created (like kdb meta-set does)
@@ -258,7 +256,7 @@ def rename(old_path, new_path):
     _ensure_namespace_is_writable(old_path)
     _ensure_namespace_is_writable(new_path)
 
-    if Path(old_path).name == dir_file_special_name:
+    if Path(old_path).name == elektra_util.dir_file_special_name:
         #see https://github.com/ElektraInitiative/libelektra/issues/3648
         returncode = subprocess.run(["kdb", "mv", os_path_to_elektra_path(old_path), os_path_to_elektra_path(new_path)]).returncode
     else:

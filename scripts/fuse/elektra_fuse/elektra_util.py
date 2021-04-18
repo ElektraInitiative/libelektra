@@ -5,8 +5,9 @@ import kdb
 
 elektra_namespaces = ["user:", "system:", "dir:", "spec:", "cascading:", "proc:"]
 
-dir_file_special_name = "®elektra.value"
-xattr_kdb_file = "®elektra.file"
+#initialized in elektry_fuse.py
+dir_file_special_name = None
+xattr_kdb_file = None
 
 #translates from filesystem (that are below the "pid"-level) paths to elektra paths (e.g. '/user:/dir/@elektra.value' -> 'user:/dir', '/cascading:/key' -> '/key') 
 def os_path_to_elektra_path(os_path):
