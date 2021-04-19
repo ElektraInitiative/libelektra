@@ -612,7 +612,7 @@ int keyClear (Key * key)
  *
  * @since 1.0.0
  * @ingroup key
- * @see keyGetRef() for addtional explanations about reference counting
+ * @see keyGetRef() for additional explanations about reference counting
  * @see keyDecRef() for decreasing the reference counter
  * @see keyDel() for deleting a Key
  */
@@ -640,7 +640,7 @@ ssize_t keyIncRef (Key * key)
  * once it reaches 0. In that situation
  * nothing will happen and 0 will be returned.
  *
- * @note keyDup() will reset the references for duplicated Key.
+ * @note keyDup() will reset the references for a duplicated Key.
  *
  * @param key the Key object whose reference counter should get decreased
  *
