@@ -75,6 +75,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
 
+### ni
+
+- Silence Clang 12 warnings about suspicious string literal concatenation. _(Mihael Pranjić)_
+
 ### Zeromqrecv
 
 - <<TODO>>
