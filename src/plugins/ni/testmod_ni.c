@@ -312,8 +312,8 @@ END_TEST ()
 BEGIN_TEST (parse_output)
 // clang-format off
 char * names[] = {
-	"loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooon\xc2"
-	"\xa9",
+	("loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooon\xc2"
+	"\xa9"),
 	"\xc2\xa9valid UTF-8",
 	"valid \xc2\xa9UTF-8",
 	"valid UTF-8\xc2\xa9",
@@ -382,8 +382,8 @@ char * values[] = { "truncated",
 #define NUM_parse_output_NODES (sizeof (names) / sizeof (names[0]))
 
 const char * stored_name0 =
-	"loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooon"
-	"\xc2";
+	("loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooon"
+	"\xc2");
 
 assert (sizeof (values) / sizeof (values[0]) == NUM_parse_output_NODES);
 
