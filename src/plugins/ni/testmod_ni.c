@@ -383,7 +383,7 @@ char * values[] = { "truncated",
 
 const char * stored_name0 =
 	("loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooon"
-	"\xc2");
+	 "\xc2");
 
 assert (sizeof (values) / sizeof (values[0]) == NUM_parse_output_NODES);
 
