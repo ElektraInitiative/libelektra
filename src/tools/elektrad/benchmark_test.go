@@ -29,15 +29,15 @@ func Benchmark(b *testing.B) {
 		},
 		{
 			verb: "GET",
-			path: "/kdb/user/tests/go/elektrad/benchmark/get",
+			path: "/kdb/user:/tests/go/elektrad/benchmark/get",
 		},
 		{
 			verb: "GET",
-			path: "/kdbFind/user/tests/go/elektrad/benchmark/get/001",
+			path: "/kdbFind/user:/tests/go/elektrad/benchmark/get/001",
 		},
 		{
 			verb: "POST",
-			path: "/kdbMv/user/tests/go/elektrad/benchmark/post/mv/from",
+			path: "/kdbMv/user:/tests/go/elektrad/benchmark/post/mv/from",
 			body: func(v2 bool, i int) interface{} {
 				if v2 {
 					return indexedKeyName("/post/mv/to/v2", i)
@@ -49,14 +49,14 @@ func Benchmark(b *testing.B) {
 		},
 		{
 			verb: "POST",
-			path: "/kdbMeta/user/tests/go/elektrad/benchmark/post/meta",
+			path: "/kdbMeta/user:/tests/go/elektrad/benchmark/post/meta",
 			body: func(_ bool, _ int) interface{} {
 				return keyValueBody{Key: "hello", Value: &world}
 			},
 		},
 		{
 			verb: "PUT",
-			path: "/kdb/user/tests/go/elektrad/benchmark/put",
+			path: "/kdb/user:/tests/go/elektrad/benchmark/put",
 			body: func(_ bool, _ int) interface{} {
 				return "value"
 			},
@@ -64,12 +64,12 @@ func Benchmark(b *testing.B) {
 		},
 		{
 			verb:      "DELETE",
-			path:      "/kdb/user/tests/go/elektrad/benchmark/delete/kdb",
+			path:      "/kdb/user:/tests/go/elektrad/benchmark/delete/kdb",
 			indexKeys: true,
 		},
 		{
 			verb: "DELETE",
-			path: "/kdbMeta/user/tests/go/elektrad/benchmark/delete/meta",
+			path: "/kdbMeta/user:/tests/go/elektrad/benchmark/delete/meta",
 			body: func(_ bool, _ int) interface{} {
 				return keyValueBody{Key: "hello"}
 			},
