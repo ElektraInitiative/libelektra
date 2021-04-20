@@ -13,6 +13,7 @@
 #include <kdbconfig.h>
 #include <keysetget.hpp>
 #include <keysetio.hpp>
+#include <mergehelper.hpp>
 
 #include <cstdio>
 #include <iostream>
@@ -492,23 +493,6 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		std::cout << "Both quiet and verbose is active: will suppress default messages, but print verbose messages" << std::endl;
 	}
 
-	if (ns.empty ())
-	{
-#ifndef _WIN32
-		if (getuid () == 0 || geteuid () == 0)
-		{
-			ns = "system";
-		}
-		else
-		{
-			ns = "user";
-		}
-#else
-		ns = "user";
-#endif
-	}
-	ns += ":";
-
 	optind++; // skip the command name
 	while (optind < argc)
 	{
@@ -554,6 +538,11 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 			throw invalid_argument ("cannot find bookmark " + bookmark.getName ());
 		}
 		root = bookmark;
+	}
+
+	if (root.isCascading () && !ns.empty ())
+	{
+		root = prependNamespace (root, ns);
 	}
 
 	if (!root.isValid ())
