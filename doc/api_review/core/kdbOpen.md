@@ -21,7 +21,8 @@
        - [ ] how do errors end up in `errorKey`?  
        - [ ] what kind of errors end up in `errorKey`?
 - [ ] Description of functions reads nicely  
-       - [ ] monospace 'system:/elektra/mountpoints' - [ ] move 'You must always call...' one paragraph up
+       - [ ] monospace 'system:/elektra/mountpoints'  
+       - [ ] move 'You must always call...' one paragraph up
 - [ ] `@pre`  
        - [ ] remove first (duplicated)  
        - [ ] move below description
