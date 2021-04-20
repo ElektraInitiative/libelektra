@@ -96,6 +96,12 @@ int EditorCommand::execute (Cmdline const & cl)
 
 	if (cl.strategy == "validate")
 	{
+		if (cl.ns.empty ())
+		{
+			cerr << "Namespace (-N) needs to be specified for strategy 'validate'." << endl;
+			return -1;
+		}
+
 		prependNamespace (oursToEdit, cl.ns);
 		oursToEdit.cut (prependNamespace (root, cl.ns));
 	}
