@@ -68,7 +68,7 @@ int keyClearSync (Key * key)
 /**
  * Test if a key needs to be synced to backend storage.
  *
- * If any key modification took place the key will be flagged
+ * If any Key modification took place the Key will be flagged
  * so that kdbSet() knows which keys were modified
  * and which not.
  *
@@ -85,12 +85,15 @@ int keyClearSync (Key * key)
  * @deprecated The handling of synchronization is done internally and
  * does not need to be checked by neither application nor plugins.
  *
- * @see after keyNew(), keyDup() keys need sync
+ * @param key the Key which should be checked
  *
- * @param key the key object to work with
- * @retval 1 if @p key was changed in memory, 0 otherwise
+ * @retval 1 if @p key was changed in memory
+ * @retval 0 if @p key wasn't changed
  * @retval -1 on NULL pointer
+ *
+ * @since 1.0.0
  * @ingroup keytest
+ * @see keyNew(), keyDup() Keys need to be synced after calling those functions
  */
 int keyNeedSync (const Key * key)
 {
@@ -151,7 +154,7 @@ int keyIsUser (const Key * key)
 }
 
 /**
- * Check if the key check is below the key key or not.
+ * Check if the Key @p check is below the Key @p key or not.
  *
  * Example:
  @verbatim
@@ -159,7 +162,7 @@ int keyIsUser (const Key * key)
  check user:/sw/app/key
  @endverbatim
  *
- * returns true because check is below key
+ * returns true because @p check is below @p key
  *
  * Example:
  @verbatim
@@ -167,22 +170,27 @@ int keyIsUser (const Key * key)
  check user:/sw/app/folder/key
  @endverbatim
  *
- * returns also true because check is indirect below key
+ * returns also true because @p check is indirectly below @p key
  *
- * Obviously, there is no key above a namespace (e.g. user, system, /):
+ * Obviously, there is no Key above a namespace (e.g. user, system, /):
  *
  @verbatim
  key *
  check user
  @endverbatim
  *
- * @param key the key object to work with
- * @param check the key to find the relative position of
- * @retval 1 if check is below key
+ * @param key the Key object to check against
+ * @param check the Key object for which it should be checked whether it is
+ * below @p key
+ *
+ * @retval 1 if @p check is below @p key
  * @retval 0 if it is not below or if it is the same key
  * @retval -1 if key or check is null
- * @see keySetName(), keyGetName(), keyIsDirectlyBelow()
+ *
+ * @since 1.0.0
  * @ingroup keytest
+ * @see keyIsDirectlyBelow() for checking whether a Key is directly below another
+ * @see keyGetName(), keySetName() for getting / setting the Key's name
  *
  */
 
@@ -261,29 +269,36 @@ int keyIsBelowOrSame (const Key * key, const Key * check)
 
 
 /**
- * Check whether the key `check` is directly below the key `key`.
+ * Check whether the Key @p check is directly below the Key @p key.
  *
  @verbatim
 Example:
 key user:/sw/app
 check user:/sw/app/key
-
-returns true because check is below key
-
+ @endverbatim
+*
+* returns true because check is directly below key
+*
+ @verbatim
 Example:
 key user:/sw/app
 check user:/sw/app/folder/key
-
-does not return true, because there is only an indirect relation
-@endverbatim
+ @endverbatim
  *
- * @param key the key object to work with
- * @param check the key to find the relative position of
- * @retval 1 if check is below key
- * @retval 0 if it is not below or if it is the same key
+ * does not return true, because it is only indirectly below
+ *
+ * @param key the Key object to check against
+ * @param check the Key object for which it should be checked whether it is
+ * directly below @p key
+ *
+ * @retval 1 if @p check is directly below @p key
+ * @retval 0 if @p check is not directly below @p key or if it is the same
  * @retval -1 on null pointer
- * @see keyIsBelow(), keySetName(), keyGetName()
+ *
+ * @since 1.0.0
  * @ingroup keytest
+ * @see keyIsBelow() for checking whether a Key is below another
+ * @see keyGetName(), keySetName() for getting / setting the Key's name
  *
  */
 int keyIsDirectlyBelow (const Key * key, const Key * check)
@@ -331,21 +346,24 @@ int keyIsDirectlyBelow (const Key * key, const Key * check)
 }
 
 /**
- * Check if a key is binary type.
+ * Check if the value of a @p key is of binary type.
  *
- * The function checks if the key is a binary. Opposed to string values binary
- * values can have '\\0' inside the value and may not be terminated by a null
- * character. Their disadvantage is that you need to pass their size.
+ * The function checks if the value of @p key is binary. Contrary to string
+ * values binary values can have '\\0' inside the value and may not be
+ * terminated by a null character. Their disadvantage is that you need to pass
+ * their size.
  *
  * Make sure to use this function and don't test the binary type another way to
  * ensure compatibility and to write less error prone programs.
  *
- * @retval 1 if it is binary
- * @retval 0 if it is not
+ * @param key the Key to check
+ *
+ * @retval 1 if the value of @p key is binary
+ * @retval 0 if the value of @p key is not binary
  * @retval -1 on NULL pointer
- * @see keyGetBinary(), keySetBinary()
- * @param key the key to check
+ *
  * @ingroup keytest
+ * @see keyGetBinary(), keySetBinary() for getting / setting a Key's value as binary
  */
 int keyIsBinary (const Key * key)
 {
@@ -356,20 +374,22 @@ int keyIsBinary (const Key * key)
 
 
 /**
- * Check if a key is string type.
+ * Check if the value of @p key is of string type.
  *
- * String values are null terminated and are not allowed to have any '\\0' characters
- * inside the string.
+ * String values are null terminated and are not allowed to have any '\\0'
+ * characters inside the string.
  *
  * Make sure to use this function and don't test the string type another way to
  * ensure compatibility and to write less error prone programs.
  *
- * @retval 1 if it is string
- * @retval 0 if it is not
+ * @param key the Key to check
+ *
+ * @retval 1 if the value of @p key is string
+ * @retval 0 if the value of @p key is not string
  * @retval -1 on NULL pointer
- * @see keyGetString(), keySetString()
- * @param key the key to check
+ *
  * @ingroup keytest
+ * @see keyGetString(), keySetString() for getting / setting a Key's value as string
  */
 int keyIsString (const Key * key)
 {
