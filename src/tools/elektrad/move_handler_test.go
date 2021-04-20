@@ -18,5 +18,6 @@ func TestPostMove(t *testing.T) {
 	Assertf(t, code == http.StatusNoContent, "wrong status code: %v", code)
 
 	key := getKey(t, keyNameTo)
+	removeKey(t, keyNameTo)
 	Assert(t, key != nil, "key has not been moved")
 }

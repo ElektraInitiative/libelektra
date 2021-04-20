@@ -23,6 +23,9 @@ func TestGetKdb(t *testing.T) {
 	Assert(t, response.Exists, "key not found")
 	Assert(t, response.Path == keyName, "key path is wrong")
 	CompareStrings(t, []string{keyName, keyNameChild}, response.Ls, "Children are not the same")
+
+	removeKey(t, keyName)
+	removeKey(t, keyNameChild)
 }
 
 func TestPutKdb(t *testing.T) {
@@ -35,8 +38,9 @@ func TestPutKdb(t *testing.T) {
 	Assertf(t, code == http.StatusCreated, "wrong status code: %v", code)
 
 	key := getKey(t, keyName)
-	retrievedValue := key.String()
+	removeKey(t, keyName)
 	Assert(t, key != nil, "key was not created")
+	retrievedValue := key.String()
 	Assertf(t, retrievedValue == value, "wrong key value %s, expected %s", retrievedValue, value)
 }
 
@@ -51,5 +55,6 @@ func TestDeleteKdb(t *testing.T) {
 	Assertf(t, code == http.StatusNoContent, "wrong status code: %v", code)
 
 	key := getKey(t, keyName)
+	removeKey(t, keyName)
 	Assert(t, key == nil, "key was not deleted")
 }
