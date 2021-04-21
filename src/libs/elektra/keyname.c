@@ -346,7 +346,7 @@ ssize_t keyGetUnescapedNameSize (const Key * key)
  * When there is not enough space to write the name,
  * nothing will be written and -1 will be returned.
  *
- * maxSize is limited to SSIZE_MAX. When this value
+ * @p maxSize is limited to SSIZE_MAX. When this value
  * is exceeded, -1 will be returned. The reason for that
  * is, that any value higher is just a negative return
  * value passed by accident. elektraMalloc() is not
@@ -403,7 +403,8 @@ ssize_t keyGetName (const Key * key, char * returnedName, size_t maxSize)
 }
 
 /**
- * Copies the unescaped name of a Key into @p returnedName
+ * Copies the unescaped name of a Key into @p returnedName.
+ *
  * It will only copy the whole name. If the buffer is too small,
  * an error code will be returned.
  *
@@ -475,12 +476,10 @@ ssize_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSiz
  *
  * On invalid names, NULL or "" the name will be "" afterwards.
  *
- * @return size in bytes of the new Key name, including ending NULL
- * @retval 0 if newName is an empty string or a NULL pointer
- * (name will be empty afterwards)
- * @retval -1 if newName is invalid (name will be empty afterwards)
+ * @return size of the new Key name in bytes, including NULL terminator
+ * @retval -1 if @p key or @p keyName is NULL or @p keyName is empty or invalid
  * @retval -1 if Key was inserted to a KeySet before
- * @retval -1 if Key is read-only
+ * @retval -1 if Key name is read-only
  *
  * @param key the Key whose name to set
  * @param newName the new name for the Key
@@ -1276,8 +1275,8 @@ const char * keyBaseName (const Key * key)
 
 
 /**
- * Calculates number of bytes needed to store basename of @p key. (including
- * NULL terminator)
+ * Calculates number of bytes needed to store basename of @p key (including
+ * NULL terminator).
  *
  * Key names consisting of only root names (e.g. @c "system:/" or @c "user:/"
  * or @c "user:domain" ) do not have basenames. In this case the function will
@@ -1309,7 +1308,7 @@ ssize_t keyGetBaseNameSize (const Key * key)
 
 
 /**
- * Calculate the basename of a Key's name and copy it to @p returned
+ * Copy the Key's basename to @p returned
  *
  * The copy will include a NULL terminator which will be considered for the
  * returned size. Nothing will be copied if @p maxSize is smaller than the size
@@ -1597,7 +1596,7 @@ static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
  * @return the size in bytes of the Key's new name including the NULL terminator
  * @retval -1 if the Key has no name
  * @retval -1 on NULL pointers
- * @retval -1 if Key was inserted to a KeySet before
+ * @retval -1 if Key was inserted into KeySet before
  * @retval -1 if the Key was read-only
  * @retval -1 on memory allocation errors
  *
@@ -1620,7 +1619,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
 /**
  * Sets @p baseName as the new basename for @p key.
  *
- * Only the basename will be affected and no other part of the Key.
+ * Only the basename of the Key will be affected.
  *
  * A simple example is:
  * @snippet keyBasename.c set base basic
@@ -1654,7 +1653,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
  *
  * @return the size in bytes of the new key name
  * @retval -1 on NULL pointers
- * @retval -1 if Key was inserted to a KeySet before
+ * @retval -1 if Key was inserted into KeySet before
  * @retval -1 if Key is read-only
  * @retval -1 on allocation errors
  *
