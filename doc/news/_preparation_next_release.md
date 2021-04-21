@@ -173,30 +173,13 @@ you up to date with the multi-language support provided by Elektra.
 - Work on [COMPILE.md](/doc/COMPILE.md) and [INSTALL.md](/doc/INSTALL.md) to help with understanding _(@a-kraschitzer)_
 - Update licensing information (year) _(@a-kraschitzer)_
 - Rename [RELEASE.md](/doc/todo/RELEASE.md) _(@a-kraschitzer)_
-- Improved documentation for module keytest in Elektra Core. _(@lawli3t)_
-- Improved documentation for module kdb in Elektra Core. _(@lawli3t)_
-- Improved documentation for module keyvalue in Elektra Core. _(@lawli3t)_
-- Improved documentation for module kdb in Elektra Core. _(@lawli3t)_
-- Improved documentation for module keyset in Elektra Core. _(@lawli3t)_
-- Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
-- Minor rewording in INSTALL.md _(@a-kraschitzer)_
-- Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
-- Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
-- Fix order of tutorials _(Markus Raab)_
-- Minor rewording in [java-kdb.md](/doc/tutorials/java-kdb.md) _(@aaronabebe)_
-- Added a short Visual Studio 2019 tutorial (/doc/tutorials/contributing-windows.md) _(Dominic Jäger)_
-- Added hint regarding WSL filesystem configuration (/doc/tutorials/contributing-windows.md) _(@tucek)_
-- Fixed broken link in yanlr-plugin readme _(@lawli3t)_
-- Added Reviews for all functions contained in the Elektra Core API _(@lawli3t)_
-- Improved documentation for module keymeta in Elektra Core. _(@lawli3t)_
-- Improved documentation for module kdb in Elektra Core. _(@lawli3t)_
-- Improved documentation for module key in Elektra Core. _(@lawli3t)_
-- Update licensing information (year) #3681 _(@a-kraschitzer)_
-- Update licensing information (year) _(@a-kraschitzer)_
-- Rename [RELEASE.md](/doc/todo/RELEASE.md) _(@a-kraschitzer)_
 - Improved documentation for module kdb in Elektra Core. _(@lawli3t)_
 - Improved documentation for module key in Elektra Core. _(@lawli3t)_
 - Improved documentation for module keyname in Elektra Core. _(@lawli3t)_
+- Improved documentation for module keyvalue in Elektra Core. _(@lawli3t)_
+- Improved documentation for module keymeta in Elektra Core. _(@lawli3t)_
+- Improved documentation for module keytest in Elektra Core. _(@lawli3t)_
+- Improved documentation for module keyset in Elektra Core. _(@lawli3t)_
 
 ## Tests
 
