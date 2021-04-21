@@ -172,20 +172,24 @@ def _remove_namespace_prefix(elektra_path):
 
 #returns tuple of dirs, files of given path (does not include '.', '..')
 def ls(os_path):
-    #if os_path == "/":
-    #    return ({"user:", "system:", "spec:", "dir:", "/cascading:"}, [])
-
     path = os_path_to_elektra_path(os_path)
+    root = kdb.Key(path)
 
     is_root_level = len(path) > 1 and path.endswith("/") # special case
 
 
     with _get_kdb_instance() as db:
         ks = kdb.KeySet()
-        db.get(ks, path)
+        db.get(ks, root)
+
+        #only retain keys that are below the root (kdb.get does not gurantee this property)
+        ks_filtered = kdb.KeySet()
+        for key in ks:
+            if key.isBelowOrSame(root):
+                ks_filtered.append(key) 
 
         path_without_namespace = _remove_namespace_prefix(path)
-        result_keys_without_namespace = map(_remove_namespace_prefix, ks.unpack_names())
+        result_keys_without_namespace = map(_remove_namespace_prefix, ks_filtered.unpack_names())
         below = {name.split(path_without_namespace)[1] for name in result_keys_without_namespace if is_path_prefix(path_without_namespace, name)}
 
         dirs = {name.split("/")[0 if is_root_level else 1] for name in below if "/" in name}
