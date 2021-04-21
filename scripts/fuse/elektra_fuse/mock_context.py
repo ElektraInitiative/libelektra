@@ -61,10 +61,18 @@ def _mock_process_context_and_run(process_context, func, args, kwargs):
 
     try:
         return func(*args, **kwargs)
-    except kdb.Exception:
-        #translate kdb.Exception to OSError (as SwigPyObject is not picklable).
+    except kdb.Exception as e:
+        exception_message = str(e).lower()
+
+        #some failing legal requests (i.e. elektra behaves as expected and did not face an (unknown) internal error), like an unpriviliged user trying to write to system: have to be parsed
+        if "permission denied" in exception_message:
+            raise OSError(errno.EACCES)
+
+        #all other errors: log, then translate kdb.Exception to OSError (as SwigPyObject is not picklable).
         logging.exception("An exception in kdb occured.")
         raise OSError(errno.EIO)
+    except PermissionError:
+        raise OSError(errno.EACCES)
 
 def run_as(process_context, func, *args, **kwargs):
     with multiprocessing.Pool(processes = 1) as pool:

@@ -47,9 +47,10 @@ def getattr(path, fh=None):
     try:
         kdb_file_stat = _stat_kdb_file(path)
         st_mode_only_permission_bits = kdb_file_stat.st_mode & 0o777
-    except FileNotFoundError:
-        # some keys, e.g. "system:/elektra" resolve to a file like "/etc/kdb/elektra.ecf", which does not exist
-        # for the filesystem to remain useful, in this case dummy file attributes are used
+    except (FileNotFoundError, PermissionError) as e:
+        # some keys, e.g. "system:/elektra" resolve to a file like "/etc/kdb/elektra.ecf", which does not exist,
+        # other requests result in an unauthorized access.
+        # for the filesystem to remain useful in these cases, dummy file attributes are used
         st_mode_only_permission_bits = 0o000
         kdb_file_stat = dict(
             st_ctime = startup_time,

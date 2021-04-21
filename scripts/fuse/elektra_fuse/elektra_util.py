@@ -62,12 +62,11 @@ def update_key_value(os_path: str, new_value: bytes):
 
 
         #try to save new_value as UTF-8 string in case it can be decoded as such
-        #TODO: manage 'binary' meta-key
         try:
             new_value_as_string = new_value.decode(encoding="utf-8", errors="strict")
             key.value = new_value_as_string
         except UnicodeDecodeError:
-            key.value = new_value
+            raise OSError(errno.ENOTSUP) #general binary meta-keys are not supported
 
         db.set(ks, path) #using key instead of path here deleted the key
 
@@ -173,8 +172,8 @@ def _remove_namespace_prefix(elektra_path):
 
 #returns tuple of dirs, files of given path (does not include '.', '..')
 def ls(os_path):
-    if os_path == "/":
-        return ({"user:", "system:", "spec:", "dir:", "/cascading:"}, [])
+    #if os_path == "/":
+    #    return ({"user:", "system:", "spec:", "dir:", "/cascading:"}, [])
 
     path = os_path_to_elektra_path(os_path)
 
