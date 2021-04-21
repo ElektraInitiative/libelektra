@@ -1087,7 +1087,7 @@ ssize_t ksCopyInternal (KeySet * ks, size_t to, size_t from)
  *
  * @code{.c}
  * elektraCursor end;
- * for (elektraCursor it = ksFindHierarachy (ks, root, &end); it < end; ++it)
+ * for (elektraCursor it = ksFindHierarchy (ks, root, &end); it < end; ++it)
  * {
  * 	Key * cur = ksAtCursor (ks, it);
  * }
