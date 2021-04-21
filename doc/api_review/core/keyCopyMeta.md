@@ -37,7 +37,8 @@
 - [ ] `@return` / `@retval`  
        - [ ] move `1` to `@return`  
        - [ ] add `-1` if meta-information is read-only
-- [x] `@since`
+- [ ] `@since`  
+       - [ ] add
 - [x] `@ingroup`
 - [ ] `@see`  
        - [ ] add `keyCopyAllMeta()`
