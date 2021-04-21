@@ -137,14 +137,15 @@
  *   @snippet keyNew.c With Everything
  *
  *
- *
  * @param name a valid name to the key, or NULL to get a simple
  * 	initialized, but really empty, object
- * @see keyDel()
+ *
  * @return a pointer to a new allocated and initialized Key object.
  * @retval NULL on allocation error or if an invalid @p name was passed (see keySetName()).
- * @ingroup key
  *
+ * @since 1.0.0
+ * @ingroup key
+ * @see keyDel()
  */
 Key * keyNew (const char * name, ...)
 {
@@ -318,9 +319,6 @@ Key * keyVNew (const char * name, va_list va)
  * @param source the key which should be copied
  *     or NULL to clear the data of @p dest
  * @param flags specifies which parts of the key should be copied
- * @see keyDup()
- * @since 0.9.5
- * @ingroup key
  *
  * @return @p dest
  * @retval NULL on memory allocation problems
@@ -329,6 +327,10 @@ Key * keyVNew (const char * name, va_list va)
  * @retval NULL when @p dest is NULL
  * @retval NULL when both #KEY_CP_VALUE and #KEY_CP_STRING are set in @p flags
  * @retval NULL when both #KEY_CP_STRING is set in @p flags and @p source is a binary key (keyIsBinary())
+ *
+ * @since 0.9.5
+ * @ingroup key
+ * @see keyDup() for duplicating an existing Key
  */
 Key * keyCopy (Key * dest, const Key * source, elektraCopyFlags flags)
 {
@@ -478,29 +480,31 @@ static void keyClearNameValue (Key * key)
 /**
  * A destructor for Key objects.
  *
- * Every key created by keyNew() must be
+ * Every Key created by keyNew() must be
  * deleted with keyDel().
  *
- * It is safe to delete keys which are
- * in a keyset, the number of references
- * will be returned then.
+ * It is safe to delete Keys which are in a KeySet. Then the Key will not be deleted
+ * and the number of references will be returned.
  *
- * It is save to delete a nullpointer,
+ * It is safe to delete a NULL pointer,
  * -1 will be returned then.
  *
- * It is also save to delete a multiple
- * referenced key, nothing will happen
+ * It is also safe to delete a multiple
+ * referenced Key, nothing will happen
  * then and the reference counter will
  * be returned.
  *
- * @param key the key object to delete
- * @see keyNew(), keyIncRef(), keyGetRef()
+ * @param key the Key object to delete
+ *
  * @return the value of the reference counter
  *         if the key is within keyset(s)
- * @retval 0 when the key was freed
- * @retval -1 on null pointers
- * @ingroup key
+ * @retval 0 when the Key was freed
+ * @retval -1 on NULL pointers
  *
+ * @since 1.0.0
+ * @ingroup key
+ * @see keyNew() for creating a new Key
+ * @see keyIncRef(), keyGetRef() for changing the reference counter of the Key
  */
 int keyDel (Key * key)
 {
@@ -526,12 +530,10 @@ int keyDel (Key * key)
 }
 
 /**
- * Key Object Cleaner.
- *
- * Will reset all internal data.
+ * Will clear all internal data of a Key.
  *
  * After this call you will receive a fresh
- * key.
+ * Key - with no value, metadata or name.
  *
  * The reference counter will stay unmodified.
  *
@@ -542,17 +544,20 @@ int keyDel (Key * key)
 int f (Key *k)
 {
 	keyClear (k);
-	// you have a fresh key k here
+	// you have a fresh Key k here
 	keySetString (k, "value");
-	// the caller will get an empty key k with an value
+	// the caller will get an empty Key k with an value
 }
  * @endcode
  *
- * @retval returns 0 on success
- * @retval -1 on null pointer
+ * @param key the Key that shoould be cleared
  *
- * @param key the key object to work with
+ * @retval 0 on success
+ * @retval -1 on NULL pointer
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyDel() for completely deleting a Key
  */
 int keyClear (Key * key)
 {
@@ -584,11 +589,11 @@ int keyClear (Key * key)
 
 
 /**
- * Increment the viability of a key object.
+ * Increment the reference counter of a Key object.
  *
  * This function is intended for applications
  * using their own reference counter for
- * key objects. With it you can increment
+ * Key objects. With it you can increment
  * the reference and thus avoid destruction
  * of the object in a subsequent keyDel().
  *
@@ -597,14 +602,19 @@ int keyClear (Key * key)
  * nothing will happen and SSIZE_MAX will be
  * returned.
  *
- * @note keyDup() will reset the references for dupped key.
+ * @note keyDup() will reset the references for duplicated Keys.
  *
- * @return the value of the new reference counter
- * @retval -1 on null pointer
- * @retval SSIZE_MAX when maximum exceeded
- * @param key the key object to work with
- * @see keyGetRef() for longer explanation, keyDecRef(), keyDel()
+ * @param key the Key object whose reference counter should get increased
+ *
+ * @return the updated value of the reference counter
+ * @retval -1 on NULL pointer
+ * @retval SSIZE_MAX when reference counter reached SSIZE_MAX
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyGetRef() for additional explanations about reference counting
+ * @see keyDecRef() for decreasing the reference counter
+ * @see keyDel() for deleting a Key
  */
 ssize_t keyIncRef (Key * key)
 {
@@ -618,27 +628,31 @@ ssize_t keyIncRef (Key * key)
 
 
 /**
- * Decrement the viability of a key object.
+ * Decrement the reference counter of a Key object.
  *
  * The references will be decremented for ksPop() or successful calls
  * of ksLookup() with the option KDB_O_POP.
  * It will also be decremented with an following keyDel() in
- * the case that an old key is replaced with another key with
+ * the case that an old Key is replaced with another Key with
  * the same name.
  *
  * The reference counter can't be decremented
- * once it reached 0. In that situation
- * nothing will happen and 0 will be
- * returned.
+ * once it reaches 0. In that situation
+ * nothing will happen and 0 will be returned.
  *
- * @note keyDup() will reset the references for dupped key.
+ * @note keyDup() will reset the references for a duplicated Key.
  *
- * @return the value of the new reference counter
- * @retval -1 on null pointer
- * @retval 0 when the key is ready to be freed
- * @param key the key object to work with
- * @see keyGetRef() for longer explanation, keyDel(), keyIncRef()
+ * @param key the Key object whose reference counter should get decreased
+ *
+ * @return the updated value of the reference counter
+ * @retval -1 on NULL pointer
+ * @retval 0 when the Key is ready to be freed
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyGetRef() for addtional explanations about reference counting
+ * @see keyIncRef() for increasing the reference counter
+ * @see keyDel() for deleting a Key
  */
 ssize_t keyDecRef (Key * key)
 {
@@ -652,15 +666,15 @@ ssize_t keyDecRef (Key * key)
 
 
 /**
- * Return how many references the key has.
+ * Return how many references the Key has.
  *
- * The reference counting is the essential property of keys to make sure
+ * The reference counting is the essential property of Keys to make sure
  * that they can be put safely into data structures. E.g. if you put
  * a Key into a KeySet:
  *
  * @snippet keyNew.c Ref in KeySet
  *
- * You can even add the key to more KeySets:
+ * You can even add the Key to more KeySets:
  *
  * @snippet keyNew.c Ref in multiple KeySets
  *
@@ -673,22 +687,25 @@ ssize_t keyDecRef (Key * key)
  *
  * @snippet keyNew.c Multi Ref
  *
- * The key won't be deleted by a keyDel() as long refcounter is not 0.
+ * The Key won't be deleted by a keyDel() as long refcounter is not 0.
  *
  * The references will be incremented on successful calls to
  * ksAppendKey() or ksAppend().
  *
- * @note keyDup() will reset the references for dupped key.
+ * @note keyDup() will reset the references for duplicated Keys.
  *
  * For your own applications you can use
  * keyIncRef() and keyDecRef() for reference
  * counting, too.
  *
- * @param key the key object to work with
- * @return the number of references
- * @retval -1 on null pointer
- * @see keyIncRef() and keyDecRef()
+ * @param key the Key whose reference counter to retrieve
+ *
+ * @return the value of the @p key's reference counter
+ * @retval -1 on NULL pointer
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyIncRef(), keyDecRef() for increasing / decreasing the reference counter
  **/
 ssize_t keyGetRef (const Key * key)
 {
@@ -699,28 +716,34 @@ ssize_t keyGetRef (const Key * key)
 
 
 /**
- * @brief Permanently locks a part of the key
+ * Permanently lock parts of a Key
  *
  * This can be:
  * - KEY_LOCK_NAME to lock the name
  * - KEY_LOCK_VALUE to lock the value
  * - KEY_LOCK_META to lock the metadata
  *
- * To unlock the key, duplicate it.
+ * To unlock the Key, duplicate it.
  *
- * It is also possible to lock when the key is created with
+ * It is also possible to lock the Key when it is created with
  * keyNew().
  *
- * Some data structures need to lock the key (most likely
+ * Some data structures need to lock the Key (most likely
  * its name), so that the ordering does not get confused.
  *
- * @param key which name should be locked
+ * @param key the Key that should be locked
+ * @param what the parts of the Key that should be locked (see above)
  *
- * @see keyNew(), keyDup(), ksAppendKey()
- * @retval >0 the bits that were successfully locked
+ * @return the bits that were successfully locked
  * @retval 0 if everything was locked before
- * @retval -1 if it could not be locked (nullpointer)
+ * @retval -1 if it could not be locked (NULL pointer)
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyIsLocked() for checking whether a Key is locked
+ * @see keyNew() for creating a new Key
+ * @see keyDup() for duplicating an existing Key
+ * @see ksAppendKey() appends a Key to a keyset (and locks it)
  */
 int keyLock (Key * key, elektraLockFlags what)
 {
@@ -733,13 +756,18 @@ int keyLock (Key * key, elektraLockFlags what)
 }
 
 /**
- * @brief Tests if a part of a key is locked
+ * Checks which parts of a Key are locked
  *
- * @see keyLock() for more details
- * @retval >0 the bits that are locked
- * @retval 0 if everything is unlocked
- * @retval -1 on error (nullpointer)
+ * @param key the Key that should be checked for locks
+ * @param what the parts of the Key that should checked for locks
+ *
+ * @return the bits that are locked
+ * @retval 0 if nothing is locked
+ * @retval -1 on error (NULL pointer)
+ *
+ * @since 1.0.0
  * @ingroup key
+ * @see keyLock() for locking a Key
  */
 int keyIsLocked (const Key * key, elektraLockFlags what)
 {
