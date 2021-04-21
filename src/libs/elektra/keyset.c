@@ -1660,8 +1660,8 @@ int f (KeySet *ks)
  * @param ks the KeySet object to get the cursor from
  *
  * @return a valid cursor on success
- * @return -1 on NULL pointer
- * @return -1 on an invalid internal cursor or after ksRewind
+ * @retval -1 on NULL pointer
+ * @retval -1 on an invalid internal cursor or after ksRewind
  *
  * @since 1.0.0
  * @see ksNext() for moving the internal cursor forward
