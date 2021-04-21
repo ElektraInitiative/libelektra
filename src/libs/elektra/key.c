@@ -483,8 +483,8 @@ static void keyClearNameValue (Key * key)
  * Every Key created by keyNew() must be
  * deleted with keyDel().
  *
- * It is safe to delete Keys which are in a KeySet. Then the Key will not be deleted
- * and the number of references will be returned.
+ * Keys contained in a KeySet will not be deleted
+ * and the number of references will be returned instead.
  *
  * It is safe to delete a NULL pointer,
  * -1 will be returned then.
@@ -497,7 +497,7 @@ static void keyClearNameValue (Key * key)
  * @param key the Key object to delete
  *
  * @return the value of the reference counter
- *         if the key is within keyset(s)
+ *         if the Key is within KeySets
  * @retval 0 when the Key was freed
  * @retval -1 on NULL pointers
  *
@@ -550,7 +550,7 @@ int f (Key *k)
 }
  * @endcode
  *
- * @param key the Key that shoould be cleared
+ * @param key the Key that should be cleared
  *
  * @retval 0 on success
  * @retval -1 on NULL pointer
@@ -612,7 +612,7 @@ int keyClear (Key * key)
  *
  * @since 1.0.0
  * @ingroup key
- * @see keyGetRef() for additional explanations about reference counting
+ * @see keyGetRef() for addtional explanations about reference counting
  * @see keyDecRef() for decreasing the reference counter
  * @see keyDel() for deleting a Key
  */
@@ -640,7 +640,7 @@ ssize_t keyIncRef (Key * key)
  * once it reaches 0. In that situation
  * nothing will happen and 0 will be returned.
  *
- * @note keyDup() will reset the references for a duplicated Key.
+ * @note keyDup() will reset the references for duplicated Key.
  *
  * @param key the Key object whose reference counter should get decreased
  *
@@ -716,7 +716,7 @@ ssize_t keyGetRef (const Key * key)
 
 
 /**
- * Permanently lock parts of a Key
+ * Permanently lock parts of a Key.
  *
  * This can be:
  * - KEY_LOCK_NAME to lock the name
@@ -756,7 +756,7 @@ int keyLock (Key * key, elektraLockFlags what)
 }
 
 /**
- * Checks which parts of a Key are locked
+ * Checks which parts of a Key are locked.
  *
  * @param key the Key that should be checked for locks
  * @param what the parts of the Key that should checked for locks
