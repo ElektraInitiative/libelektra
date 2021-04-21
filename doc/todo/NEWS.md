@@ -130,6 +130,12 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 
+## Packaging
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 ## Build
 
 ### CMake
