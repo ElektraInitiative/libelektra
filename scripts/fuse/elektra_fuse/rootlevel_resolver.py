@@ -44,6 +44,7 @@ class RootlevelResolver(LoggingMixIn, Operations):
 
     # resolves a path "/<pid>/suffix" to "/suffix", where pid need to be a valid process id
     # returns the process imformation with the suffix 
+    # raises an OSError(errno.ENOENT) when the resolved pid is forbidden, i.e. its cwd is below the mountpoint
     def resolve_proc_path(self, proc_path):
         matches = re.match("^/(\d+)(.*)$", proc_path)
         if matches:
@@ -67,13 +68,16 @@ class RootlevelResolver(LoggingMixIn, Operations):
 
     def _exists_in_rootlevel(self, path):
         return path == "/" or Path(path).name in self._get_all_pids()
-        #TODO: cannot use self.readdir here, as this triggers an endless recusion. Meanwhile, excluded pids are falsely flagged as existing.
-        # (which only leads to unexpected behaviour in case of especially crafted requests)
+        #cannot use self.readdir here (i.e. method returns a superset) as this triggers an endless recusion. As a remedy, access will reject all invalid acesses
+
+    @with_translated_exceptions
+    def access(self, path, mode):
+        if path != "/":
+            self.resolve_proc_path(path) # will raise OSError(errno.ENOENT) if the pid of the path is forbidden, i.e. if the process has a cwd below the mointpoint
 
     
     @with_translated_exceptions
     def getattr(self, path, fh=None):
-
         generic_dir_attrs = dict(
             st_mode = (stat.S_IFDIR | 0o0444),
             st_ctime = elektra_fuse_interface.startup_time,
