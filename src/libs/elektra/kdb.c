@@ -1127,8 +1127,9 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  * Cascading Keys (starting with /) will retrieve the same path in all namespaces.
  * `/` will retrieve all Keys in @p handle.
  *
- * @note kdbGet() might retrieve more Keys than requested (that are not
- *     below parentKey). These Keys must be passed to calls of kdbSet(),
+ * @note kdbGet() might retrieve more Keys than requested which are not
+ *     below parentKey or even in a different namespace.
+ *     These keys, except of `proc:/` keys, must be passed to calls of kdbSet(),
  *     otherwise they will be lost. This stems from the fact that the
  *     user has the only copy of the whole configuration and backends
  *     only write configuration that was passed to them.
