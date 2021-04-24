@@ -14,7 +14,7 @@
  * A Snippet generator is available to the public at
  * https://qa.nuxeo.org/jenkins/pipeline-syntax/.
  * A list of available commands on the build server can be found after a login at
- * https://build.libelektra.org/job/elektra-jenkinsfile/pipeline-syntax/.
+ * https://build.libelektra.org/job/libelektra/pipeline-syntax/.
  */
 
 // TODO have a per plugin/binding deps in Dockerfile for easier maintenance
