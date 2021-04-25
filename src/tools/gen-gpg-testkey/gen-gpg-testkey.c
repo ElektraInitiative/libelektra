@@ -66,6 +66,13 @@ int main (void)
 		err = gpgme_op_createkey (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, "default", 0, 0, NULL,
 					  GPGME_CREATE_SIGN | GPGME_CREATE_ENCR | GPGME_CREATE_NOPASSWD);
 #endif
+
+		if (err)
+		{
+			fprintf (stderr, "failed to create GPG test key with error message: %s\n", gpgme_strerror (err));
+			goto cleanup;
+		}
+
 		res = gpgme_op_genkey_result (ctx);
 		fprintf (stdout, "%s", res->fpr);
 	}
