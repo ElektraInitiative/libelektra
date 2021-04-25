@@ -150,7 +150,7 @@ mac_task:
       brew install libgcrypt
       brew install libgit2
       brew install libuv
-      brew install llvm@11
+      brew install llvm
       brew install lua
       brew install moreutils
       brew install ninja
@@ -193,10 +193,10 @@ mac_task:
 
   script:
     - | # Use latest version of LLVM to translate Elektra
-      export CC="/usr/local/opt/llvm@11/bin/clang" CXX="/usr/local/opt/llvm@11/bin/clang++"
-      export LDFLAGS="-L/usr/local/opt/llvm@11/lib"
-      export CPPFLAGS="-I/usr/local/opt/llvm@11/include"
-      export PATH="/usr/local/opt/llvm@11/bin:$PATH"
+      export CC="/usr/local/opt/llvm/bin/clang" CXX="/usr/local/opt/llvm/bin/clang++"
+      export LDFLAGS="-L/usr/local/opt/llvm/lib"
+      export CPPFLAGS="-I/usr/local/opt/llvm/include"
+      export PATH="/usr/local/opt/llvm/bin:$PATH"
     - >
       set --
       -DBINDINGS="${BINDINGS:-ALL}"
