@@ -135,7 +135,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up to date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
+### SWIG
+
+- Remove `-Wno-shift-overflow warnings` option from SWIG bindings compile flags. _(Mihael Pranjić)_
 
 ### <<Binding2>>
 
@@ -211,7 +213,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Cirrus
 
-- <<TODO>>
+- Use Clang 12 and Python 3.9 for macOS builds. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
