@@ -186,7 +186,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- Fix failing `testshell_markdown_tutorial_crypto` on Mac OS and other OS with GnuPG version >= 2.3.1. _(Peter Nirschl @petermax2)_
 - <<TODO>>
 - <<TODO>>
 
