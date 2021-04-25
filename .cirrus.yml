@@ -143,6 +143,8 @@ mac_task:
       brew install flex
       brew install glib
       brew install go
+      brew install gnupg@2.2
+      export PATH="/usr/local/opt/gnupg@2.2/bin:$PATH"
       brew install gpgme
       brew install gradle
       brew install graphviz
