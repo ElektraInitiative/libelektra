@@ -150,7 +150,7 @@ mac_task:
       brew install libgcrypt
       brew install libgit2
       brew install libuv
-      brew install llvm@11
+      brew install llvm
       brew install lua
       brew install moreutils
       brew install ninja
@@ -178,8 +178,8 @@ mac_task:
       echo $DBUS_LAUNCHD_SESSION_BUS_SOCKET
       launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
     - | # Install Python
-      brew install python@3.8 || brew upgrade python@3.8
-      export PATH="/usr/local/opt/python@3.8/bin:$PATH"
+      brew install python@3.9 || brew upgrade python@3.9
+      export PATH="/usr/local/opt/python@3.9/bin:$PATH"
     - | # Install Python packages
       pip3 install cmake-format[yaml]==0.6.3
     - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
@@ -193,10 +193,10 @@ mac_task:
 
   script:
     - | # Use latest version of LLVM to translate Elektra
-      export CC="/usr/local/opt/llvm@11/bin/clang" CXX="/usr/local/opt/llvm@11/bin/clang++"
-      export LDFLAGS="-L/usr/local/opt/llvm@11/lib"
-      export CPPFLAGS="-I/usr/local/opt/llvm@11/include"
-      export PATH="/usr/local/opt/llvm@11/bin:$PATH"
+      export CC="/usr/local/opt/llvm/bin/clang" CXX="/usr/local/opt/llvm/bin/clang++"
+      export LDFLAGS="-L/usr/local/opt/llvm/lib"
+      export CPPFLAGS="-I/usr/local/opt/llvm/include"
+      export PATH="/usr/local/opt/llvm/bin:$PATH"
     - >
       set --
       -DBINDINGS="${BINDINGS:-ALL}"

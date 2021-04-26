@@ -6,6 +6,9 @@ src:.*include/c\+\+/.+/bits/shared_ptr_base.h
 # Ignore warnings about member calls on addresses, which do not point to an object of type `std::__1::__shared(_weak)_count`
 src:.*include/c\+\+/v1/memory
 
+# Ignore warnings about left shift by `n` places cannot be represented in type `T`
+src:.*include/c\+\+/v1/utility
+
 # memory leaks reported by asan due to xerces interfaces, no issue according to valgrind
 src:*xerces/*.cpp
 src:*xerces/*.hpp
