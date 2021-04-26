@@ -1,4 +1,4 @@
-FROM alpine:3.13.4
+FROM alpine:3.13.5
 
 RUN apk update \
     && apk add --no-cache --upgrade\
@@ -62,7 +62,7 @@ RUN mkdir build \
     && rm -Rf ${GTEST_ROOT}
 
 
-FROM alpine:3.13.1
+FROM alpine:3.13.5
 COPY --from=0 ${ELEKTRA_ROOT} \
               ${ELEKTRA_ROOT}
 ARG USERID=1000
