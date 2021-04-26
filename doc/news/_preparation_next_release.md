@@ -214,12 +214,13 @@ you up to date with the multi-language support provided by Elektra.
 ### Cirrus
 
 - Use Clang 12 and Python 3.9 for macOS builds. _(Mihael Pranjić)_
+- Pin GnuPG version to 2.2.x. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
 ### GitHub Actions
 
-- <<TODO>>
+- Pin GnuPG version to 2.2.x. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 

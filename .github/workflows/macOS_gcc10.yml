@@ -43,6 +43,7 @@ jobs:
         brew install dbus
         brew install discount
         brew install flex
+        brew install gnupg@2.2
         brew install gpgme
         brew install libev
         brew install libgcrypt
@@ -61,6 +62,7 @@ jobs:
         sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
         echo "JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk.jdk/Contents/Home" >> $GITHUB_ENV
         echo "/usr/local/opt/openjdk/bin" >> $GITHUB_PATH
+        echo "/usr/local/opt/gnupg@2.2/bin" >> $GITHUB_PATH
         gem install test-unit --no-document
         pip2 install cheetah # Required by kdb-gen
         brew tap homebrew/services
