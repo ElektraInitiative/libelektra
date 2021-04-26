@@ -1,4 +1,4 @@
-FROM fedora:33
+FROM fedora:34
 
 RUN dnf upgrade --refresh -y && dnf install -y \
         augeas-devel \
@@ -60,7 +60,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.0-bin.zip && unzip gradle-7.0-bin.zip && rm gradle-7.0-bin.zip && mv gradle-7.0 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 ENV JAVA_HOME=/etc/alternatives/jre
 RUN alternatives --auto java && alternatives --auto javac
