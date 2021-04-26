@@ -131,6 +131,12 @@ def dockerInit() {
       './scripts/docker/fedora/33/Dockerfile'
     )
 
+    DOCKER_IMAGES.fedora_34 = dockerUtils.createDockerImageDesc(
+      'fedora-34', dockerUtils.&idTesting,
+      './scripts/docker/fedora/34',
+      './scripts/docker/fedora/34/Dockerfile'
+    )
+
     /* Install and test the built packages with theses images. */
     DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
       'debian-buster-installed', dockerUtils.&idArtifact,
@@ -157,6 +163,13 @@ def dockerInit() {
       'fedora-33-installed', dockerUtils.&idArtifact,
       './release-artifact/*/fedora33/',
       './scripts/docker/fedora/33/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.fedora_34_installed = dockerUtils.createDockerImageDesc(
+      'fedora-34-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/fedora34/',
+      './scripts/docker/fedora/34/release.Dockerfile',
       false
     )
 
@@ -214,6 +227,14 @@ def generateReleaseStages() {
     true // use placeholder dirs
   )
 
+  tasks << buildRelease(
+    'fedora-34',
+    DOCKER_IMAGES.fedora_34,
+    params.fedora_revision,
+    false, // do not bundle git repo
+    true // use placeholder dirs
+  )
+
   return tasks
 }
 
@@ -233,6 +254,10 @@ def generateDockerBuildStagesWithPackagesInstalled() {
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.fedora_33_installed,
     'fedora-33'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.fedora_34_installed,
+    'fedora-34'
   )
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.buster_installed,
@@ -258,6 +283,10 @@ def generateInstalledPackagesTestStages() {
   tasks << testInstalledPackage(
     'fedora-33-installed',
     DOCKER_IMAGES.fedora_33_installed
+  )
+  tasks << testInstalledPackage(
+    'fedora-34-installed',
+    DOCKER_IMAGES.fedora_34_installed
   )
 
   tasks << testInstalledPackage(
@@ -333,6 +362,15 @@ def generatePublishStages() {
     DOCKER_IMAGES.fedora_33_installed.context,
     'fedora-33',
     'fedora-33',
+    release.&publishRpmPackages,
+    params.fedora_revision
+  )
+
+  tasks << publish(
+    'fedora-34',
+    DOCKER_IMAGES.fedora_34_installed.context,
+    'fedora-34',
+    'fedora-34',
     release.&publishRpmPackages,
     params.fedora_revision
   )
