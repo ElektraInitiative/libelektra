@@ -63,8 +63,8 @@ RUN apt-get update && apt-get -y install \
         patch \
         patchutils \
         pkg-config \
-        python-all \
-        python-pip \
+        python3-all \
+        python3-pip \
         python3-all \
         qtbase5-dev \
         qtdeclarative5-dev \
