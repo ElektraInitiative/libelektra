@@ -397,7 +397,6 @@ mark_as_advanced (
 	GRADLE_EXECUTABLE
 	NPM_EXECUTABLE
 	RONN_LOC
-	Boost_DIR
 	LIBGCRYPT_INCLUDE_DIR
 	XercesC_DIR
 	OPENSSL_INCLUDE_DIR
@@ -437,7 +436,6 @@ mark_as_advanced (
 	gtest_disable_pthreads
 	gtest_force_shared_crt
 	BUILD_SHARED_LIBS
-	BOOST_THREAD_LIBRARY
 	ADDED_DIRECTORIES
 	ADDED_PLUGINS
 	REMOVED_PLUGINS

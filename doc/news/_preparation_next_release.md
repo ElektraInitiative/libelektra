@@ -207,13 +207,14 @@ you up to date with the multi-language support provided by Elektra.
 ### CMake
 
 - Disable binding tests when `BUILD_TESTING` is disabled. _(Robert Sowula)_
-- <<TODO>>
+- Remove unused `FindCppCMS.cmake` CMake module and unused `Boost` variables. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Docker
 
 - Add Fedora 34 images. _(Mihael Pranjić)_
 - Use Clang 12 and Gradle 7.0 in Debian Sid image. _(Mihael Pranjić)_
+- Remove boost dependency from all images. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
