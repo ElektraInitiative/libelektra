@@ -32,6 +32,9 @@ This is the quickest way to get started with Elektra without compiling and other
 - <<HIGHLIGHT1>>
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
+- Fresh Fedora 34 packages
+- Documentation Improvements & Cleanups
+- GCC 11 and Clang 12 compatibility
 
 ### <<HIGHLIGHT1>>
 
@@ -156,7 +159,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
+- Require clang-format 12 for reformatting C and Java. _(Mihael Pranjić)_
+- Use basename of release file in `generate-hashsums`. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -187,7 +191,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- Use clang-format 12 for Restyled and update Restyled version. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -207,6 +211,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Docker
 
 - Add Fedora 34 images. _(Mihael Pranjić)_
+- Use Clang 12 and Gradle 7.0 in Debian Sid image. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -234,7 +239,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Travis
 
-- <<TODO>>
+- Update Ubuntu toolchains to GCC 10 and Clang 12. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
