@@ -155,7 +155,7 @@ For `make run_all` following development tools enable even more tests:
 - The script `checkbashisms` is needed to check for bashism (`tests/shell/check_bashisms.sh`),
   it is part of [`devscripts`](https://packages.debian.org/devscripts).
 - The [POSIX compatibility test for shell scripts](../tests/shell/check_posix.sh) requires the tool [`shfmt`](https://github.com/mvdan/sh).
-- `git`, `clang-format` (version 9), and [cmake-format](https://github.com/cheshirekow/cmake_format) to check formatting.
+- `git`, `clang-format` (version 12), and [cmake-format](https://github.com/cheshirekow/cmake_format) to check formatting.
 - `pkg-config` must be available (`check_external.sh` and `check_gen.sh`).
 - A build environment including gcc (`check_gen.sh`).
 - The [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
