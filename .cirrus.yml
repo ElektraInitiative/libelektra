@@ -134,7 +134,6 @@ mac_task:
       brew install antlr4-cpp-runtime
       brew install augeas
       brew install bison
-      brew install boost
       brew install clang-format
       brew install dbus
       brew upgrade dbus

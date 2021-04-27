@@ -11,7 +11,6 @@ RUN apt-get -y install \
   discount \
   git \
   libaugeas-dev \
-  libboost-all-dev \
   libcurl4-gnutls-dev \
   libdbus-1-dev \
   libev-dev \

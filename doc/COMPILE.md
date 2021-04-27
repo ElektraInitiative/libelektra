@@ -89,7 +89,7 @@ A small subset of build dependencies to get you started:
 - for CentOS:
 
 ```sh
-sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
+sudo yum install -y libdb-devel GConf2-devel libxml2-devel yajl-devel   \
 libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
 java-1.8.0-openjdk-devel jna ruby-devel byacc
 ```
@@ -97,7 +97,7 @@ java-1.8.0-openjdk-devel jna ruby-devel byacc
 - for Ubuntu:
 
 ```sh
-sudo apt install -y libboost-dev libxerces-c-dev libxml2-dev libyajl-dev \
+sudo apt install -y libxerces-c-dev libxml2-dev libyajl-dev \
 libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
 dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison
 ```

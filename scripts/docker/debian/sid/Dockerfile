@@ -26,7 +26,6 @@ RUN apt-get update && apt-get -y install \
         lcov \
         libantlr4-runtime-dev \
         libaugeas-dev \
-        libboost-all-dev \
         libc6-dbg \
         libdbus-1-dev \
         libev-dev \
