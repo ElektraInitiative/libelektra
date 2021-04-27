@@ -116,7 +116,8 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-bionic-12
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
             - ubuntu-toolchain-r-test
           packages:
             - clang-12
@@ -169,7 +170,8 @@ matrix:
       addons:
         apt:
           sources:
-            - llvm-toolchain-bionic-12
+            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main'
+              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages:
             - clang-12
             - clang-format-12
