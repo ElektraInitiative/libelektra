@@ -329,18 +329,18 @@ def dockerInit() {
       "./scripts/docker/ubuntu/focal/Dockerfile"
     )
 
-    /* Fedora 32 image*/
-    DOCKER_IMAGES.fedora_32 = dockerUtils.createDockerImageDesc(
-      "fedora-32", dockerUtils.&idTesting,
-      "./scripts/docker/fedora/32",
-      "./scripts/docker/fedora/32/Dockerfile"
-    )
-
     /* Fedora 33 image*/
     DOCKER_IMAGES.fedora_33 = dockerUtils.createDockerImageDesc(
       "fedora-33", dockerUtils.&idTesting,
       "./scripts/docker/fedora/33",
       "./scripts/docker/fedora/33/Dockerfile"
+    )
+
+    /* Fedora 34 image*/
+    DOCKER_IMAGES.fedora_34 = dockerUtils.createDockerImageDesc(
+      "fedora-34", dockerUtils.&idTesting,
+      "./scripts/docker/fedora/34",
+      "./scripts/docker/fedora/34/Dockerfile"
     )
 
     /* Image building the libelektra.org website */
@@ -406,6 +406,14 @@ def dockerInit() {
       "./scripts/docker/fedora/33/release.Dockerfile",
       false
     )
+
+    /* Fedora 34 image used to install previously built packages */
+    DOCKER_IMAGES.fedora_34_installed = dockerUtils.createDockerImageDesc(
+      "fedora-34-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/fedora/34/release.Dockerfile",
+      false
+    )
   }
 }
 
@@ -420,8 +428,8 @@ def generateMainBuildStages() {
   tasks.failFast = true
 
   tasks << buildAndTest(
-    "fedora-33-full",
-    DOCKER_IMAGES.fedora_33,
+    "fedora-34-full",
+    DOCKER_IMAGES.fedora_34,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -467,8 +475,8 @@ def generateFullBuildStages() {
   tasks << buildDoc()
 
   tasks << buildAndTest(
-    "fedora-32-full",
-    DOCKER_IMAGES.fedora_32,
+    "fedora-33-full",
+    DOCKER_IMAGES.fedora_33,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -479,8 +487,8 @@ def generateFullBuildStages() {
   // Build Elektra with clang and ASAN
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
-    "fedora-33-asan",
-    DOCKER_IMAGES.fedora_33,
+    "fedora-34-asan",
+    DOCKER_IMAGES.fedora_34,
     CMAKE_FLAGS_BUILD_ALL
   )
 
@@ -1020,6 +1028,16 @@ def generateArtifactStages() {
     "fedora-33-unstable",
     "fedora-33-unstable",
     DOCKER_IMAGES.fedora_33_installed,
+    release.&publishRpmPackages,
+    this.&updateFedoraChangelog,
+    true
+  )
+  tasks << buildPackage(
+    "buildPackage/fedora/34",
+    DOCKER_IMAGES.fedora_34,
+    "fedora-34-unstable",
+    "fedora-34-unstable",
+    DOCKER_IMAGES.fedora_34_installed,
     release.&publishRpmPackages,
     this.&updateFedoraChangelog,
     true

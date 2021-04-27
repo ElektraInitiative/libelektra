@@ -194,6 +194,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Packaging
 
 - We now package the ruby bindings, ruby plugin and the gitresolver plugin. _(Robert Sowula)_
+- We added Fedora 34 packages. _(Mihael Pranjić)_
 
 ## Build
 
@@ -205,7 +206,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
+- Add Fedora 34 images. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -215,6 +216,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Use Clang 12 and Python 3.9 for macOS builds. _(Mihael Pranjić)_
 - Pin GnuPG version to 2.2.x. _(Mihael Pranjić)_
+- Update Fedora image to version 34. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -226,7 +228,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- <<TODO>>
+- We now build and test on Fedora 34 and 33. Fedora 32 was removed from the CI. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
