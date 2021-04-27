@@ -175,10 +175,10 @@ brew install llvm@9
 
 ###### Debian
 
-In Debian the package for Clang-Format `11` is called `clang-format-11`:
+In Debian the package for Clang-Format `12` is called `clang-format-12`:
 
 ```sh
-apt-get install clang-format-11
+apt-get install clang-format-12
 ```
 
 .
