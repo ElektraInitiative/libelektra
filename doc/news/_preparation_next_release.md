@@ -162,6 +162,7 @@ you up to date with the multi-language support provided by Elektra.
 - Require clang-format 12 for reformatting C and Java. _(Mihael Pranjić)_
 - Use basename of release file in `generate-hashsums`. _(Mihael Pranjić)_
 - Use `shfmt` v3.2.4 to reformat shell scripts. _(Mihael Pranjić)_
+- Use `cmake-format` v0.6.13 (`cmakelang`) to reformat CMake. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 

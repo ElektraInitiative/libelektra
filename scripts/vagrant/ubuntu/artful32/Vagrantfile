@@ -82,7 +82,7 @@ Vagrant.configure("2") do |config|
     apt-get -y upgrade
     apt-get -y install curl build-essential autotools-dev automake cmake pkg-config doxygen graphviz bison flex ruby-dev python-dev python3-dev liblua5.2-dev tclcl-dev libaugeas-dev libyajl-dev libgit2-dev libboost-all-dev libssl-dev libcurl4-gnutls-dev libdbus-1-dev libpcre3-dev libpcre++-dev checkinstall vim valgrind clang-5.0 clang-format-5.0 htop zlib1g-dev git openjdk-8-jdk python-pip locales bison libpython3-dev liblua5.3-dev libxerces-c-dev swig
 
-    pip install cmake-format[yaml]==0.6.13
+    pip install cmakelang[yaml]==0.6.13
 
     mkdir -p /opt/gtest \
     && cd /tmp \
