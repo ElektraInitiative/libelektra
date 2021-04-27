@@ -195,7 +195,7 @@ before_install:
       sudo apt-get install libzmq3-dev
       sudo apt-get install libxerces-c-dev
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
-      sudo pip install cmake-format[yaml]==0.6.13
+      sudo pip3 install cmake-format[yaml]==0.6.13
     fi
 
 #

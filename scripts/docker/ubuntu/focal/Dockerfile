@@ -45,8 +45,6 @@ RUN apt-get update && apt-get -y install \
         ninja-build \
         openjdk-11-jdk \
         pkg-config \
-        python-all \
-        python-dev \
         python3-all \
         python3-dev \
         qtbase5-dev \
