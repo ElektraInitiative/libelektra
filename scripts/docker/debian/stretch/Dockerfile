@@ -29,7 +29,6 @@ RUN apt-get update && apt-get -y install \
         icheck \
         lcov \
         libaugeas-dev \
-        libboost-all-dev \
         libdbus-1-dev \
         libev-dev \
         libgirepository1.0-dev \

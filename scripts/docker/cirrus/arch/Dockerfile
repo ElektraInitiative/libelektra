@@ -2,7 +2,6 @@ FROM archlinux/base
 
 RUN pacman -Sy --noconfirm \
     base-devel \
-    boost \
     cmake \
     diffutils \
     discount \

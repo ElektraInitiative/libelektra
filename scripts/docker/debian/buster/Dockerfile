@@ -34,7 +34,6 @@ RUN apt-get update && apt-get -y install \
         lcov \
         libantlr4-runtime-dev \
         libaugeas-dev \
-        libboost-dev \
         libc6-dbg \
         libcurl4-gnutls-dev \
         libdbus-1-dev \

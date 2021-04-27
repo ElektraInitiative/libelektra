@@ -18,7 +18,6 @@ RUN apt-get update && apt-get -y install \
         libyajl-dev \
         git \
         libgit2-dev \
-        libboost-all-dev \
         libssl-dev \
         libdbus-1-dev \
         libpcre3-dev \

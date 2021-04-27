@@ -4,7 +4,6 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         augeas-devel \
         bison \
         bison-devel \
-        boost-devel \
         cmake \
         curl \
         dbus-devel \

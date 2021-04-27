@@ -4,7 +4,6 @@ RUN dnf upgrade -y && dnf install -y \
         augeas-devel \
         bison \
         bison-devel \
-        boost-devel \
         cmake \
         curl \
         dbus-devel \
@@ -50,7 +49,6 @@ RUN dnf upgrade -y && dnf install -y \
         zlib-devel \
     && dnf debuginfo-install -y \
         bison \
-        boost \
         flex \
         glib2 \
         glibc \
