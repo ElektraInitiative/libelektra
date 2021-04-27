@@ -81,7 +81,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # Prettier
-RUN npm install --global prettier@1.19.1
+RUN npm install --global prettier@2.2.1
 
 # hyperfine
 ARG HYPERFINE_VERSION=1.5.0

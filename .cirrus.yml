@@ -190,7 +190,7 @@ mac_task:
       sudo gem install ronn test-unit --no-document
     - | # Install JavaScript packages
       npm install dredd --global
-      npm install --global prettier@1.19.1
+      npm install --global prettier@2.2.1
 
   script:
     - | # Use latest version of LLVM to translate Elektra
