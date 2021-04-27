@@ -17,7 +17,7 @@ import {
   DELETE_META_SUCCESS,
   CREATE_META_SUCCESS,
   COPY_KEY_SUCCESS,
-  MOVE_KEY_SUCCESS
+  MOVE_KEY_SUCCESS,
 } from "../actions";
 
 export default function batchUndoReducer(state = 0, action) {

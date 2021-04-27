@@ -12,7 +12,7 @@ import {
   FIND_KEY_FAILURE,
   CLEAR_SEARCH,
   CLEAR_SEARCH_FINAL,
-  DELETE_KEY_SUCCESS
+  DELETE_KEY_SUCCESS,
 } from "../actions";
 
 const initialState = {
@@ -20,7 +20,7 @@ const initialState = {
   loading: false,
   error: false,
   done: false,
-  results: []
+  results: [],
 };
 
 export default function batchUndoReducer(state = initialState, action) {
@@ -32,7 +32,7 @@ export default function batchUndoReducer(state = initialState, action) {
         error: false,
         done: false,
         results: [],
-        query: action.query
+        query: action.query,
       };
 
     case FIND_KEY_SUCCESS:
@@ -42,7 +42,7 @@ export default function batchUndoReducer(state = initialState, action) {
         error: false,
         done: true,
         results: action.result.result,
-        query: action.query
+        query: action.query,
       };
 
     case FIND_KEY_FAILURE:
@@ -52,7 +52,7 @@ export default function batchUndoReducer(state = initialState, action) {
         error: action.error,
         done: true,
         results: [],
-        query: action.query
+        query: action.query,
       };
 
     case CLEAR_SEARCH:
@@ -65,7 +65,7 @@ export default function batchUndoReducer(state = initialState, action) {
       const { path } = action.request;
       return {
         ...state,
-        results: state.results.filter(p => !p.startsWith(path))
+        results: state.results.filter((p) => !p.startsWith(path)),
       };
     }
 

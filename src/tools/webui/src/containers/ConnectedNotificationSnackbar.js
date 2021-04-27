@@ -12,11 +12,11 @@ import { connect } from "react-redux";
 
 import NotificationSnackbar from "../components/NotificationSnackbar.jsx";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return { message: state.notification };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {};
 };
 

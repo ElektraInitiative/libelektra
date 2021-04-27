@@ -19,7 +19,7 @@ export default class EditDialog extends Component {
       sendNotification,
       onUndo,
       onClose,
-      refreshKey
+      refreshKey,
     } = this.props;
     onClose();
     const steps = [];
@@ -41,7 +41,7 @@ export default class EditDialog extends Component {
         label="Abort"
         secondary={true}
         onClick={this.handleAbort}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             this.handleAbort();
           }
@@ -51,12 +51,12 @@ export default class EditDialog extends Component {
         label="Done"
         primary={true}
         onClick={onClose}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             onClose();
           }
         }}
-      />
+      />,
     ];
 
     const isDisabled =
@@ -76,11 +76,11 @@ export default class EditDialog extends Component {
         </h1>
         <div style={{ display: "block" }} tabIndex={isDisabled && "0"}>
           {renderField({
-            onKeyPress: e => {
+            onKeyPress: (e) => {
               if (e.key === "Enter") {
                 onClose();
               }
-            }
+            },
           })}
         </div>
       </FocusTrapDialog>

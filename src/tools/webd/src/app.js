@@ -23,7 +23,7 @@ export default function initApp(cb) {
     cookieSession({
       name: "session",
       secret: randomString({ length: 16 }),
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
     })
   );
   app.use(bodyParser.json());

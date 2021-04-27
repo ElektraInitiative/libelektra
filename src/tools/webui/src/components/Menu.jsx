@@ -26,13 +26,13 @@ const HEADER_MARGIN = "16px 10px 0 -10px";
 const navigationArrowStyle = {
   margin: HEADER_MARGIN,
   color: "rgba(0, 0, 0, 0.4)",
-  cursor: "pointer"
+  cursor: "pointer",
 };
 
 const breadcrumbStyle = {
   margin: "-25px 20px",
   color: "rgba(0, 0, 0, 0.4)",
-  fontFamily: "Roboto"
+  fontFamily: "Roboto",
 };
 
 // breadcrumb for menu title
@@ -50,13 +50,13 @@ export default class Menu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: ""
+      name: "",
     };
   }
 
   resetValues() {
     this.setState({
-      name: ""
+      name: "",
     });
   }
 
@@ -71,7 +71,7 @@ export default class Menu extends React.Component {
       canRedo,
       onUndo,
       onRedo,
-      addInstance
+      addInstance,
     } = this.props;
 
     const titleText = (
@@ -84,7 +84,7 @@ export default class Menu extends React.Component {
       <ToolbarGroup>
         <div style={{ display: "flex" }}>
           {subpage &&
-          !singleInstanceMode && ( // show back button on subpages
+            !singleInstanceMode && ( // show back button on subpages
               <Link style={{ textDecoration: "none" }} to="/" tabIndex="0">
                 <NavigationArrowBack style={navigationArrowStyle} />
               </Link>
@@ -95,7 +95,7 @@ export default class Menu extends React.Component {
                 fontFamily: "Roboto Light",
                 fontSize: 22,
                 letterSpacing: 0.79,
-                color: "rgba(0,0,0,0.40)"
+                color: "rgba(0,0,0,0.40)",
               }}
               text={titleText}
             />

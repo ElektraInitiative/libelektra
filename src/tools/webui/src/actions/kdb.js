@@ -14,16 +14,16 @@ export const GET_KDB_REQUEST = "GET_KDB_REQUEST";
 export const GET_KDB_SUCCESS = "GET_KDB_SUCCESS";
 export const GET_KDB_FAILURE = "GET_KDB_FAILURE";
 
-export const getKdb = id =>
+export const getKdb = (id) =>
   thunkCreator({
     id,
     request: { id },
     types: [GET_KDB_REQUEST, GET_KDB_SUCCESS, GET_KDB_FAILURE],
     promise: fetch(`/api/instances/${id}/kdb`, { credentials: "same-origin" })
       .then(parseJSONResponse)
-      .then(result => {
+      .then((result) => {
         return { ...result, id };
-      })
+      }),
   });
 
 // ~~~
@@ -46,9 +46,9 @@ export const getKey = (id, path, preload = false) =>
       { credentials: "same-origin" }
     )
       .then(parseJSONResponse)
-      .then(result => {
+      .then((result) => {
         return { ...result, id, path };
-      })
+      }),
   });
 
 // ~~~
@@ -68,10 +68,10 @@ export const setKey = (id, path, value) =>
       credentials: "same-origin",
       method: "PUT",
       headers: {
-        "Content-Type": "text/plain"
+        "Content-Type": "text/plain",
       },
-      body: value
-    }).then(parseJSONResponse)
+      body: value,
+    }).then(parseJSONResponse),
   });
 
 // ~~~
@@ -92,10 +92,10 @@ export const createKey = (id, path, value, kdb) =>
       credentials: "same-origin",
       method: "PUT",
       headers: {
-        "Content-Type": "text/plain"
+        "Content-Type": "text/plain",
       },
-      body: value
-    }).then(parseJSONResponse)
+      body: value,
+    }).then(parseJSONResponse),
   });
 
 // ~~~
@@ -113,8 +113,8 @@ export const deleteKey = (id, path, kdb) =>
     types: [DELETE_KEY_REQUEST, DELETE_KEY_SUCCESS, DELETE_KEY_FAILURE],
     promise: fetch(`/api/instances/${id}/kdb/${encodePath(path)}`, {
       credentials: "same-origin",
-      method: "DELETE"
-    }).then(parseJSONResponse)
+      method: "DELETE",
+    }).then(parseJSONResponse),
   });
 
 // ~~~
@@ -134,15 +134,15 @@ export const findKey = (id, query) =>
       { credentials: "same-origin" }
     )
       .then(parseJSONResponse)
-      .then(result => {
+      .then((result) => {
         return { result, id, query };
-      })
+      }),
   });
 
 export const CLEAR_SEARCH = "CLEAR_SEARCH";
 export const CLEAR_SEARCH_FINAL = "CLEAR_SEARCH_FINAL";
 
-export const clearSearch = () => dispatch => {
+export const clearSearch = () => (dispatch) => {
   dispatch({ type: CLEAR_SEARCH });
   setTimeout(() => dispatch({ type: CLEAR_SEARCH_FINAL }), 200);
 };
@@ -164,10 +164,10 @@ export const moveKey = (id, from, to) =>
       credentials: "same-origin",
       method: "POST",
       headers: {
-        "Content-Type": "text/plain"
+        "Content-Type": "text/plain",
       },
-      body: to
-    })
+      body: to,
+    }),
   });
 
 // ~~~
@@ -187,10 +187,10 @@ export const copyKey = (id, from, to) =>
       credentials: "same-origin",
       method: "POST",
       headers: {
-        "Content-Type": "text/plain"
+        "Content-Type": "text/plain",
       },
-      body: to
-    })
+      body: to,
+    }),
   });
 
 // ~~~
@@ -211,10 +211,10 @@ export const createMetaKey = (id, path, key, value) =>
       credentials: "same-origin",
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ key, value })
-    })
+      body: JSON.stringify({ key, value }),
+    }),
   });
 
 // ~~~
@@ -235,10 +235,10 @@ export const setMetaKey = (id, path, key, value) =>
       credentials: "same-origin",
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ key, value })
-    })
+      body: JSON.stringify({ key, value }),
+    }),
   });
 
 // ~~~
@@ -258,8 +258,8 @@ export const deleteMetaKey = (id, path, key) =>
       credentials: "same-origin",
       method: "DELETE",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ key })
-    })
+      body: JSON.stringify({ key }),
+    }),
   });

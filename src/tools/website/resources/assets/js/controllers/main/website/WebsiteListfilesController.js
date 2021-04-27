@@ -11,7 +11,7 @@ module.exports = [
   "marked",
   "files",
   "currentFile",
-  function(
+  function (
     $scope,
     Logger,
     $state,
@@ -35,5 +35,5 @@ module.exports = [
     angular.element(document.getElementById("markdown-document")).html(doc);
 
     Logger.info("Website listfiles controller ready");
-  }
+  },
 ];

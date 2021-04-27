@@ -5,19 +5,19 @@ module.exports = [
   "$http",
   "$q",
   "config",
-  function(Logger, $http, $q, config) {
+  function (Logger, $http, $q, config) {
     var service = this;
 
-    this.loadFile = function(url) {
+    this.loadFile = function (url) {
       var deferred = $q.defer();
 
       $http
         .get(config.website.content_root + url, { skipAuthorization: true })
         .then(
-          function(response) {
+          function (response) {
             deferred.resolve(response.data);
           },
-          function(response) {
+          function (response) {
             deferred.reject(response.data);
           }
         );
@@ -26,5 +26,5 @@ module.exports = [
     };
 
     Logger.info("Website service ready!");
-  }
+  },
 ];

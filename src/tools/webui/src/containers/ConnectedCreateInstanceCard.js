@@ -14,13 +14,13 @@ import { bindActionCreators } from "redux";
 import CreateInstanceCard from "../components/CreateInstanceCard.jsx";
 import { createInstance, unaddInstance, sendNotification } from "../actions";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
-    instances: state.instances
+    instances: state.instances,
   };
 };
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     { createInstance, unaddInstance, sendNotification },
     dispatch

@@ -1,14 +1,14 @@
 import React from "react";
 
-export const toElektraBool = val => (val ? "1" : "0");
+export const toElektraBool = (val) => (val ? "1" : "0");
 
-export const fromElektraBool = val => (val === "1" ? true : false);
+export const fromElektraBool = (val) => (val === "1" ? true : false);
 
 export const RANGE_REGEX = /([-+]?[0-9]*\.?[0-9]+)-([-+]?[0-9]*\.?[0-9]+)/;
 export const HOST_REGEX = /(https?:\/\/[^/]+)(\/.*)?/;
 export const ARRAY_KEY_REGEX = /#(_*)([0-9]+)/;
 
-export const prettyPrintArrayIndex = str => {
+export const prettyPrintArrayIndex = (str) => {
   const match = str.match(ARRAY_KEY_REGEX);
   if (!match) return str;
   const [, prefix, index] = match;
@@ -21,7 +21,7 @@ export const prettyPrintArrayIndex = str => {
   );
 };
 
-export const isNumberType = type => {
+export const isNumberType = (type) => {
   switch (type) {
     case "short":
     case "unsigned_short":
@@ -44,7 +44,7 @@ export const VISIBILITY_LEVELS = {
   user: 5,
   advanced: 4,
   developer: 3,
-  internal: 2
+  internal: 2,
 };
 
-export const visibility = name => VISIBILITY_LEVELS[name];
+export const visibility = (name) => VISIBILITY_LEVELS[name];

@@ -27,7 +27,7 @@ class RangeItem extends Component {
       min,
       max,
       errorMin: min.trim().length <= 0,
-      errorMax: max.trim().length <= 0
+      errorMax: max.trim().length <= 0,
     };
   }
 
@@ -48,8 +48,8 @@ class RangeItem extends Component {
               errorMin &&
               !onlyItem && { borderBottom: "2px solid rgb(244, 67, 54)" }
             }
-            onChange={value => this.setState({ min: value })}
-            onDebounced={value => {
+            onChange={(value) => this.setState({ min: value })}
+            onDebounced={(value) => {
               const { min, max } = this.state; // pull updated values from state
               if (isNaN(min) || min.trim().length <= 0) {
                 this.setState({ errorMin: true });
@@ -69,8 +69,8 @@ class RangeItem extends Component {
               errorMax &&
               !onlyItem && { borderBottom: "2px solid rgb(244, 67, 54)" }
             }
-            onChange={value => this.setState({ max: value })}
-            onDebounced={value => {
+            onChange={(value) => this.setState({ max: value })}
+            onDebounced={(value) => {
               const { min, max } = this.state; // pull updated values from state
               if (isNaN(max) || max.trim().length <= 0) {
                 this.setState({ errorMax: true });
@@ -105,17 +105,17 @@ class Ranges extends Component {
     this.setState({ ranges: this.parseRanges(nextProps.ranges) || [["", ""]] });
   }
 
-  parseRanges = rangeStr => {
+  parseRanges = (rangeStr) => {
     if (!rangeStr) return false;
     try {
-      return rangeStr.split(",").map(r => r.split("-"));
+      return rangeStr.split(",").map((r) => r.split("-"));
     } catch (err) {
       return false;
     }
   };
 
-  toRangeStr = ranges => {
-    return ranges.map(r => r.join("-")).join(",");
+  toRangeStr = (ranges) => {
+    return ranges.map((r) => r.join("-")).join(",");
   };
 
   createRange = () => {
@@ -139,11 +139,11 @@ class Ranges extends Component {
             onDelete={() => {
               const newState = ranges.filter((r, j) => i !== j);
               this.setState({
-                ranges: newState.length > 0 ? newState : [["", ""]]
+                ranges: newState.length > 0 ? newState : [["", ""]],
               });
               onChange(this.toRangeStr(newState));
             }}
-            onChange={val => {
+            onChange={(val) => {
               const newState = ranges.map((r, j) => {
                 if (i === j) {
                   return val;
@@ -190,7 +190,7 @@ export default class NumberSubDialog extends Component {
           )}
         </h3>
         <Ranges
-          ref={r => (this.ranges = r)}
+          ref={(r) => (this.ranges = r)}
           ranges={value}
           onChange={onChange}
         />

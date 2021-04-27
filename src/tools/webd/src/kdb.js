@@ -54,10 +54,10 @@ function KDBError(message) {
 KDBError.prototype = Error.prototype;
 
 // remove newline from the end of a string
-const trimNewline = str => str.substring(0, str.length - 1);
+const trimNewline = (str) => str.substring(0, str.length - 1);
 
 // execute a script while catching and parsing errors
-const safeExec = script =>
+const safeExec = (script) =>
   new Promise((resolve, reject) =>
     exec(script, { maxBuffer: Infinity }, (err, stdout, stderr) => {
       if (err) {
@@ -111,7 +111,7 @@ const ELEKTRA_VERSION_REGEX = /KDB_VERSION\:\ ([0-9]+\.[0-9]+\.[0-9]+)\n/;
 // get Elektra version
 const version = () =>
   safeExec(`${KDB_COMMAND} --version`)
-    .then(output => {
+    .then((output) => {
       // parse result
       const matches = ELEKTRA_VERSION_REGEX.exec(output);
       if (!matches) {
@@ -119,31 +119,31 @@ const version = () =>
       }
       return matches;
     })
-    .then(matches => matches.length > 1 && matches[1]) // select version from matches
-    .then(fullVersion => {
+    .then((matches) => matches.length > 1 && matches[1]) // select version from matches
+    .then((fullVersion) => {
       const splitVersions = fullVersion.split(".");
       return {
         version: fullVersion,
         major: Number(splitVersions[0]),
         minor: Number(splitVersions[1]),
-        patch: Number(splitVersions[2])
+        patch: Number(splitVersions[2]),
       };
     });
 
 // list available paths under a given `path`
-const ls = path =>
+const ls = (path) =>
   safeExec(escapeValues`${KDB_COMMAND} ls -0 ${path}`).then(
-    stdout => stdout && stdout.split("\0")
+    (stdout) => stdout && stdout.split("\0")
   );
 
 // find paths given a search query
-const find = query =>
+const find = (query) =>
   safeExec(escapeValues`${KDB_COMMAND} find -0 ${query}`)
-    .then(stdout => stdout && stdout.split("\0"))
-    .then(res => res || []);
+    .then((stdout) => stdout && stdout.split("\0"))
+    .then((res) => res || []);
 
 // get value from given `path`
-const get = path => safeExec(escapeValues`${KDB_COMMAND} get ${path}`);
+const get = (path) => safeExec(escapeValues`${KDB_COMMAND} get ${path}`);
 
 // set value at given `path`
 const set = (path, value) =>
@@ -158,22 +158,22 @@ const cp = (path, destination) =>
   safeExec(escapeValues`${KDB_COMMAND} cp -r ${path} ${destination}`);
 
 // remove single value at `path`
-const rmSingle = path => safeExec(escapeValues`${KDB_COMMAND} rm ${path}`);
+const rmSingle = (path) => safeExec(escapeValues`${KDB_COMMAND} rm ${path}`);
 
 // remove value at given `path`
-const rm = path => {
+const rm = (path) => {
   return ls(path)
-    .then(paths =>
+    .then((paths) =>
       Promise.all(
-        paths.map(p => {
+        paths.map((p) => {
           if (p.startsWith("user:/sw/elektra/web")) return { p, r: "1" }; // always restricted
           return getmeta(p, "restrict/remove")
-            .then(r => ({ p, r }))
-            .catch(err => ({ p, r: "0" })); // restrict/remove key not present
+            .then((r) => ({ p, r }))
+            .catch((err) => ({ p, r: "0" })); // restrict/remove key not present
         })
       )
     )
-    .then(restricted =>
+    .then((restricted) =>
       Promise.all(
         restricted.map(({ p, r }) => {
           if (r !== "1") return rmSingle(p);
@@ -183,9 +183,9 @@ const rm = path => {
 };
 
 // list meta values at given `path`
-const lsmeta = path =>
+const lsmeta = (path) =>
   safeExec(escapeValues`${KDB_COMMAND} lsmeta -0 ${path}`).then(
-    stdout => stdout && stdout.split("\0")
+    (stdout) => stdout && stdout.split("\0")
   );
 
 // get meta value from given `path`
@@ -201,14 +201,14 @@ const rmmeta = (path, meta) =>
   safeExec(escapeValues`${KDB_COMMAND} rmmeta ${path} ${meta}`);
 
 // get all metavalues for given `path`
-const getAllMeta = path =>
+const getAllMeta = (path) =>
   lsmeta(path)
     .then(
-      metaValues =>
+      (metaValues) =>
         metaValues &&
         Promise.all(
-          metaValues.map(meta =>
-            getmeta(path, meta).then(val => {
+          metaValues.map((meta) =>
+            getmeta(path, meta).then((val) => {
               return { [meta]: val };
             })
           )
@@ -216,14 +216,14 @@ const getAllMeta = path =>
     )
     // merge objects
     .then(
-      resolvedMetaValues =>
+      (resolvedMetaValues) =>
         resolvedMetaValues && Object.assign.apply(Object, resolvedMetaValues)
     );
 
 const getBufferFile = () => `/tmp/elektra-web.${Date.now()}.buffer.json`;
 
 // export javascript object from given `path`
-const _export = path => {
+const _export = (path) => {
   const buffer = getBufferFile();
   return safeExec(
     escapeValues`${KDB_COMMAND} export ${path} yajl ${buffer}`
@@ -231,7 +231,7 @@ const _export = path => {
     const data = JSON.parse(readFileSync(buffer));
     unlink(
       buffer,
-      err => err && console.error("could not delete buffer file:", err)
+      (err) => err && console.error("could not delete buffer file:", err)
     );
     return data;
   });
@@ -243,7 +243,7 @@ const _import = (path, value) =>
     // we can trust JSON.stringify to escape values for us
     `echo '${JSON.stringify(value)}' | ` + // pipe json into kdb
       escapeValues`${KDB_COMMAND} import ${path} yajl`
-  ).then(result => _export(path));
+  ).then((result) => _export(path));
 
 // get value and available paths under a given `path`
 const getAndLs = (path, { preload = 0 }) =>
@@ -256,19 +256,19 @@ const getAndLs = (path, { preload = 0 }) =>
       path,
       ls: lsRes || [],
       value,
-      meta
+      meta,
     };
     if (preload > 0 && Array.isArray(lsRes)) {
       return Promise.all(
         lsRes
-          .filter(p => {
+          .filter((p) => {
             const isNotSame = p !== path;
             const isNotDeeplyNested =
               p.split("/").length <= path.split("/").length + 1;
             return isNotSame && isNotDeeplyNested;
           })
-          .map(p => getAndLs(p, { preload: preload - 1 }))
-      ).then(children => {
+          .map((p) => getAndLs(p, { preload: preload - 1 }))
+      ).then((children) => {
         result.children = children;
         return result;
       });
@@ -294,5 +294,5 @@ module.exports = {
   lsmeta,
   getAllMeta,
   find,
-  KDB_COMMAND
+  KDB_COMMAND,
 };

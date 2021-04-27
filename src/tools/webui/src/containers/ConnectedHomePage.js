@@ -12,14 +12,14 @@ import { connect } from "react-redux";
 
 import Home from "../components/pages/Home.jsx";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     instances: state.instances,
-    status: state.container
+    status: state.container,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {};
 };
 

@@ -44,7 +44,7 @@ angular.module("elektra.rest.angular", [
   "slugifier",
   "ui.bootstrap",
   "ui.router",
-  "ui-notification"
+  "ui-notification",
 ]);
 
 // application includes

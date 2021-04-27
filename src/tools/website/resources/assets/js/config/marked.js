@@ -6,11 +6,11 @@ module.exports = [
   "markedProvider",
   "config",
   "webStructure",
-  function(markedProvider, config, webStructure) {
+  function (markedProvider, config, webStructure) {
     markedProvider.setOptions({
       gfm: true,
       tables: true,
-      highlight: function(code, lang) {
+      highlight: function (code, lang) {
         var ret;
         try {
           if (lang) {
@@ -23,11 +23,11 @@ module.exports = [
           ret = code;
         }
         return ret;
-      }
+      },
     });
 
     markedProvider.setRenderer({
-      table: function(head, body) {
+      table: function (head, body) {
         return (
           '<table class="table table-striped table-bordered">' +
           "<thead>" +
@@ -39,7 +39,7 @@ module.exports = [
           "</table>"
         );
       },
-      link: function(href, title, text) {
+      link: function (href, title, text) {
         // external link
         if (href.indexOf("://") > -1) {
           return (
@@ -95,7 +95,7 @@ module.exports = [
           );
         }
       },
-      image: function(href, title, text) {
+      image: function (href, title, text) {
         // external image
         if (href.indexOf("://") > -1) {
           return (
@@ -117,7 +117,7 @@ module.exports = [
           (title ? ' title="' + title + '"' : "") +
           "/>"
         );
-      }
+      },
     });
 
     function findFileInWebstructure(list, path) {
@@ -137,5 +137,5 @@ module.exports = [
       }
       return null; // did not find path
     }
-  }
+  },
 ];

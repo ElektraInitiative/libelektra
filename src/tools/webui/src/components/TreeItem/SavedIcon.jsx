@@ -18,12 +18,12 @@ const SavedIcon = ({ saved, err, style }) => {
     paddingTop: 1,
     paddingLeft: 4,
     color: "#00BCD4",
-    transition: "opacity 0.5s"
+    transition: "opacity 0.5s",
   };
 
   const errorIconBaseStyle = {
     ...savedIconBaseStyle,
-    color: "#FF4081"
+    color: "#FF4081",
   };
 
   const savedIconActiveStyle = saved ? { opacity: 1 } : { opacity: 0 };
@@ -31,7 +31,7 @@ const SavedIcon = ({ saved, err, style }) => {
   const savedIconStyle = {
     ...savedIconBaseStyle,
     ...savedIconActiveStyle,
-    ...style
+    ...style,
   };
   const errorIconStyle = { ...errorIconBaseStyle, opacity: 1, ...style };
 

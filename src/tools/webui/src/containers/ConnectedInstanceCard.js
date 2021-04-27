@@ -16,16 +16,16 @@ import { updateInstance, deleteInstance, sendNotification } from "../actions";
 
 const mapStateToProps = (state, { id }) => {
   return {
-    instances: state.instances
+    instances: state.instances,
   };
 };
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       updateInstance,
       deleteInstance,
-      sendNotification
+      sendNotification,
     },
     dispatch
   );
