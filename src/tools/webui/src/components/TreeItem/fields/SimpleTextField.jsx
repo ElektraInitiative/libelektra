@@ -36,7 +36,7 @@ export default class SimpleTextField extends Component {
       debounce = true,
       onChange,
       onError,
-      onKeyPress
+      onKeyPress,
     } = this.props;
     const val = this.state.value;
     const comp = debounce ? DebouncedTextField : TextField;
@@ -44,7 +44,7 @@ export default class SimpleTextField extends Component {
     const type = (meta && meta["check/type"]) || "any";
 
     return (
-      <div draggable="true" onDragStart={e => e.preventDefault()}>
+      <div draggable="true" onDragStart={(e) => e.preventDefault()}>
         {React.createElement(comp, {
           id,
           value: val || (isBinary ? "(null)" : ""),
@@ -53,14 +53,14 @@ export default class SimpleTextField extends Component {
           errorText: this.state.error,
           hintText: meta && meta.example ? `e.g. ${meta.example}` : false,
           onChange: debounce
-            ? value => this.setState({ value })
-            : evt =>
+            ? (value) => this.setState({ value })
+            : (evt) =>
                 evt && evt.target && evt.target.value
                   ? onChange(evt.target.value)
                   : onChange(""),
           onDebounced:
             debounce &&
-            (currentValue => {
+            ((currentValue) => {
               const validationError = validateType(meta, currentValue);
               if (validationError) {
                 if (typeof onError === "function") onError(validationError);
@@ -77,7 +77,7 @@ export default class SimpleTextField extends Component {
           onKeyPress: onKeyPress,
           onKeyDown:
             isNumberType(type) &&
-            (e => {
+            ((e) => {
               if (
                 [46, 8, 9, 27, 13, 110, 190].includes(e.keyCode) || // allow backspace, delete, etc
                 // allow: ctrl/cmd+A
@@ -102,7 +102,7 @@ export default class SimpleTextField extends Component {
               ) {
                 e.preventDefault();
               }
-            })
+            }),
         })}
       </div>
     );

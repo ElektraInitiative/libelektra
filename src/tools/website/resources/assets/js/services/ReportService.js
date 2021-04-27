@@ -4,10 +4,10 @@ module.exports = [
   "Logger",
   "$window",
   "config",
-  function(Logger, $window, config) {
+  function (Logger, $window, config) {
     var service = this;
 
-    this.reportIssue = function(title, message, labels) {
+    this.reportIssue = function (title, message, labels) {
       var url =
         config.github.website.root +
         config.github.website.paths.issues +
@@ -15,7 +15,7 @@ module.exports = [
         encodeURIComponent(title) +
         "&body=" +
         encodeURIComponent(message);
-      labels.forEach(function(elem) {
+      labels.forEach(function (elem) {
         url += "&labels[]=" + encodeURIComponent(elem);
       });
 
@@ -23,5 +23,5 @@ module.exports = [
     };
 
     Logger.info("Report service ready!");
-  }
+  },
 ];

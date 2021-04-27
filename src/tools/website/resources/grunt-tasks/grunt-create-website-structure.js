@@ -5,11 +5,11 @@ var path = require("path");
 
 var resolve_path = require("./helper/resolve-path");
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   grunt.registerMultiTask(
     "create-website-structure",
     "Builds a comprehensive website structure file.",
-    function() {
+    function () {
       var self = this;
 
       var root_dir = resolve_path(this.data.repo_root);
@@ -18,7 +18,7 @@ module.exports = function(grunt) {
 
       /* MAIN FUNCTION */
 
-      this.build = function() {
+      this.build = function () {
         // read the input file
         // root structure is array holding objects
         var input = grunt.file.readJSON(input_file);
@@ -26,7 +26,7 @@ module.exports = function(grunt) {
         var output = [];
 
         // iterate through menu points and handle them
-        input.forEach(function(entry) {
+        input.forEach(function (entry) {
           output.push(self.handleMenuEntry(entry));
         });
 
@@ -39,7 +39,7 @@ module.exports = function(grunt) {
 
       /* HELPING FUNCTIONS */
 
-      this.handleMenuEntry = function(entry) {
+      this.handleMenuEntry = function (entry) {
         var result = {};
         switch (entry.type) {
           case "submenu":
@@ -78,35 +78,35 @@ module.exports = function(grunt) {
         return result;
       };
 
-      this.handleSubmenuEntry = function(entry) {
+      this.handleSubmenuEntry = function (entry) {
         var result = {
           name: entry.name,
           type: "submenu",
           ref: entry.ref,
-          children: []
+          children: [],
         };
-        entry.children.forEach(function(child) {
+        entry.children.forEach(function (child) {
           result.children.push(self.handleMenuEntry(child));
         });
         return result;
       };
 
-      this.handleLinkEntry = function(entry) {
+      this.handleLinkEntry = function (entry) {
         var result = {
           name: entry.name,
           type: "link",
           ref: entry.ref,
-          options: { path: entry.options.path }
+          options: { path: entry.options.path },
         };
         return result;
       };
 
-      this.handleParsereadmeEntry = function(entry) {
+      this.handleParsereadmeEntry = function (entry) {
         var result = {
           name: entry.name,
           type: "listfiles",
           ref: entry.ref,
-          children: []
+          children: [],
         };
 
         // pretty name option
@@ -118,7 +118,7 @@ module.exports = function(grunt) {
         var fileEntry = {
           name: self.makePrettyName(path.basename(entry.options.path)),
           type: "file",
-          options: { path: entry.options.path }
+          options: { path: entry.options.path },
         };
         fileEntry.slug = self.createSlugFromName(fileEntry.name);
         result.children.push(fileEntry);
@@ -127,7 +127,7 @@ module.exports = function(grunt) {
           .toString()
           .split("\n");
         var hasToParse = false;
-        readme.forEach(function(line) {
+        readme.forEach(function (line) {
           if (
             typeof entry.options.parsing.start_regex === "undefined" ||
             (typeof entry.options.parsing.start_regex !== "undefined" &&
@@ -194,7 +194,7 @@ module.exports = function(grunt) {
                   var fileEntry = {
                     name: pretty ? self.makePrettyName(elem[1]) : elem[1],
                     type: "file",
-                    options: { path: file }
+                    options: { path: file },
                   };
                   fileEntry.slug = self.createSlugFromName(fileEntry.name);
                   result.children.push(fileEntry);
@@ -206,19 +206,19 @@ module.exports = function(grunt) {
         return result;
       };
 
-      this.handleListdirsEntry = function(entry) {
+      this.handleListdirsEntry = function (entry) {
         var result = {
           name: entry.name,
           type: "listfiles",
           ref: entry.ref,
-          children: []
+          children: [],
         };
         var directories = self
           .listDirectory(entry.options.path)
-          .filter(function(elem) {
+          .filter(function (elem) {
             return elem.stats.isDirectory() === true;
           });
-        directories.forEach(function(dir) {
+        directories.forEach(function (dir) {
           var file = null;
           for (var i = 0; i < entry.options.target_file.length; i++) {
             try {
@@ -236,7 +236,7 @@ module.exports = function(grunt) {
             var fileEntry = {
               name: self.makePrettyName(dir.name),
               type: "file",
-              options: { path: file }
+              options: { path: file },
             };
             fileEntry.slug = self.createSlugFromName(fileEntry.name);
             result.children.push(fileEntry);
@@ -245,24 +245,24 @@ module.exports = function(grunt) {
         return result;
       };
 
-      this.handleListfilesEntry = function(entry) {
+      this.handleListfilesEntry = function (entry) {
         var result = {
           name: entry.name,
           type: "listfiles",
           ref: entry.ref,
-          children: []
+          children: [],
         };
         var files = self
           .listDirectory(entry.options.path)
-          .filter(function(elem) {
+          .filter(function (elem) {
             return elem.stats.isFile() === true;
           });
-        files.forEach(function(file) {
+        files.forEach(function (file) {
           if (entry.options.blacklist.indexOf(file.name) === -1) {
             var fileEntry = {
               name: self.makePrettyName(file.name),
               type: "file",
-              options: { path: path.join(entry.options.path, file.name) }
+              options: { path: path.join(entry.options.path, file.name) },
             };
             fileEntry.slug = self.createSlugFromName(fileEntry.name);
             result.children.push(fileEntry);
@@ -271,69 +271,69 @@ module.exports = function(grunt) {
         return result;
       };
 
-      this.handleStaticlistEntry = function(entry) {
+      this.handleStaticlistEntry = function (entry) {
         var result = {
           name: entry.name,
           type: "listfiles",
           ref: entry.ref,
-          children: []
+          children: [],
         };
-        entry.children.forEach(function(child) {
+        entry.children.forEach(function (child) {
           result.children.push(self.handleMenuEntry(child));
         });
         return result;
       };
 
-      this.handleStaticfileEntry = function(entry) {
+      this.handleStaticfileEntry = function (entry) {
         var result = {
           name: entry.name,
           type: "file",
-          options: { path: path.join(entry.options.path) }
+          options: { path: path.join(entry.options.path) },
         };
         result.slug = self.createSlugFromName(result.name);
         return result;
       };
 
-      this.handleStaticrefEntry = function(entry) {
+      this.handleStaticrefEntry = function (entry) {
         var result = {
           name: entry.name,
           type: "ref",
-          options: { path: entry.options.path }
+          options: { path: entry.options.path },
         };
         return result;
       };
 
-      this.handleSectionEntry = function(entry) {
+      this.handleSectionEntry = function (entry) {
         var result = { name: entry.name, type: "section" };
         return result;
       };
 
-      this.listDirectory = function(relPath) {
+      this.listDirectory = function (relPath) {
         var result = [];
         var entries = fs.readdirSync(path.join(root_dir, relPath));
-        entries.forEach(function(entry) {
+        entries.forEach(function (entry) {
           result.push({
             name: entry,
-            stats: fs.statSync(path.join(root_dir, relPath, entry))
+            stats: fs.statSync(path.join(root_dir, relPath, entry)),
           });
         });
         return result;
       };
 
-      this.makePrettyName = function(name) {
+      this.makePrettyName = function (name) {
         var name_pretty = name;
         if (name_pretty.indexOf(".") > -1) {
           name_pretty = name_pretty.substr(0, name_pretty.indexOf("."));
         }
         name_pretty = name_pretty.replace("-", " ");
         var words = name_pretty.split(" ");
-        words = words.map(function(word) {
+        words = words.map(function (word) {
           return self.firstCapitalize(word);
         });
         return words.join(" ");
       };
 
-      this.createSlugFromName = function(name) {
+      this.createSlugFromName = function (name) {
         return name
           .toLowerCase()
           .replace(/ /g, "-")
@@ -341,7 +341,7 @@ module.exports = function(grunt) {
           .replace(/[^\w-]+/g, "");
       };
 
-      this.firstCapitalize = function(text) {
+      this.firstCapitalize = function (text) {
         return text.charAt(0).toUpperCase() + text.substr(1);
       };
 

@@ -22,15 +22,15 @@ import {
   deleteMetaKey,
   resetBatchUndo,
   getKey,
-  moveKey
+  moveKey,
 } from "../actions";
 import { actions as undoActions } from "redux-undo-redo-middleware";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return { batchUndo: state.batchUndo, kdbState: state.kdb };
 };
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       setKey,
@@ -44,7 +44,7 @@ const mapDispatchToProps = dispatch =>
       deleteMetaKey,
       onUndo: undoActions.undo,
       onRedo: undoActions.redo,
-      resetBatchUndo
+      resetBatchUndo,
     },
     dispatch
   );

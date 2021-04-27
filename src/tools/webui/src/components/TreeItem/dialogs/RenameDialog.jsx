@@ -16,7 +16,7 @@ export default class RenameDialog extends Component {
   constructor(props, ...args) {
     super(props, ...args);
     this.state = {
-      name: (props.item && props.item.name) || ""
+      name: (props.item && props.item.name) || "",
     };
   }
 
@@ -37,7 +37,7 @@ export default class RenameDialog extends Component {
       <FlatButton
         label="Cancel"
         onClick={onClose}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             onClose();
           }
@@ -48,12 +48,12 @@ export default class RenameDialog extends Component {
         primary={true}
         onClick={this.handleRename}
         disabled={nameEmpty}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             this.handleRename();
           }
         }}
-      />
+      />,
     ];
 
     return (
@@ -73,9 +73,9 @@ export default class RenameDialog extends Component {
             floatingLabelText="new name"
             floatingLabelFixed={true}
             hintText="e.g. keyName"
-            onChange={evt => this.setState({ name: evt.target.value })}
+            onChange={(evt) => this.setState({ name: evt.target.value })}
             value={name}
-            onKeyPress={e => {
+            onKeyPress={(e) => {
               if (!nameEmpty && e.key === "Enter") {
                 this.handleRename();
               }

@@ -30,7 +30,7 @@ const partsTree = (acc, parts) => {
   return acc;
 };
 
-const createTree = ls =>
+const createTree = (ls) =>
   ls.reduce((acc, item) => {
     return partsTree(acc, item.split("/"));
   }, {});
@@ -43,13 +43,13 @@ const parseDataSet = (
   path,
   parent
 ) => {
-  return Object.keys(tree).map(key => {
+  return Object.keys(tree).map((key) => {
     const newPath = path ? path + "/" + key : key;
     let data = {
       name: key,
       path: newPath,
       root: !path,
-      parent: parent
+      parent: parent,
     };
     const children = parseDataSet(
       getKey,
@@ -62,7 +62,7 @@ const parseDataSet = (
     data.children =
       Array.isArray(children) && children.length > 0
         ? (notify = true) => {
-            return new Promise(resolve => {
+            return new Promise((resolve) => {
               getKey(instanceId, newPath, true);
               resolve(children);
             });
@@ -78,7 +78,7 @@ const parseData = (getKey, sendNotification, instanceId, ls, kdb) => {
   return parseDataSet(getKey, sendNotification, instanceId, tree);
 };
 
-const getUnfolded = searchResults => {
+const getUnfolded = (searchResults) => {
   let unfolded = [];
   for (let r of searchResults) {
     const parts = r.split("/");
@@ -109,13 +109,13 @@ export default class Configuration extends Component {
 
   updateKey = (data, [keyPath, ...paths], keyData) =>
     Array.isArray(data)
-      ? data.map(d => {
+      ? data.map((d) => {
           if (d.name === keyPath) {
             if (paths.length > 0) {
               // recurse deeper
               return {
                 ...d,
-                children: this.updateKey(d.children, paths, keyData)
+                children: this.updateKey(d.children, paths, keyData),
               };
             }
 
@@ -137,7 +137,7 @@ export default class Configuration extends Component {
   waitForData = () => {
     const { sendNotification } = this.props;
     const { data } = this.state;
-    const user = Array.isArray(data) && data.find(d => d.path === "user");
+    const user = Array.isArray(data) && data.find((d) => d.path === "user");
     if (!user || !user.children) {
       this.timeout = setTimeout(this.waitForData, 100);
     } else {
@@ -179,10 +179,10 @@ export default class Configuration extends Component {
           this.updateData(
             {
               ...item,
-              children: childItems
+              children: childItems,
             },
             newPaths
-          )
+          ),
         ];
 
         if (levels > 0) {
@@ -300,7 +300,7 @@ export default class Configuration extends Component {
                     fontSize: "1.1em",
                     color: "rgba(0, 0, 0, 0.4)",
                     marginTop: "1.5em",
-                    padingLeft: "0.5em"
+                    padingLeft: "0.5em",
                   }}
                 >
                   <b>{searchError.name}:</b> {searchError.message}
@@ -311,7 +311,7 @@ export default class Configuration extends Component {
                     fontSize: "1.1em",
                     color: "rgba(0, 0, 0, 0.4)",
                     marginTop: "1.5em",
-                    padingLeft: "0.5em"
+                    padingLeft: "0.5em",
                   }}
                 >
                   No results found for "{search.query}".
@@ -324,7 +324,7 @@ export default class Configuration extends Component {
                   data={filteredData}
                   instanceVisibility={visibility}
                 />
-              )
+              ),
             ]
           ) : (
             <div style={{ fontSize: "1.1em", color: "rgba(0, 0, 0, 0.4)" }}>

@@ -7,11 +7,11 @@ var RSS = require("rss");
 
 var resolve_path = require("./helper/resolve-path");
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   grunt.registerMultiTask(
     "create-website-news-rss",
     "Creates RSS html files for the news.",
-    function() {
+    function () {
       var self = this;
 
       var root_dir = resolve_path(this.data.repo_root);
@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 
       /* MAIN FUNCTION */
 
-      this.build = function() {
+      this.build = function () {
         // load earlier create array of news posts
         var news = grunt.file.readJSON(input_news_file);
 
@@ -28,7 +28,7 @@ module.exports = function(grunt) {
         var feed = new RSS(self.data.feed);
 
         // iterate through news posts and handle them
-        news.forEach(function(post) {
+        news.forEach(function (post) {
           if (post.type === "file") {
             self.handleNewsPost(post, feed);
           }
@@ -43,7 +43,7 @@ module.exports = function(grunt) {
 
       /* HELPING FUNCTIONS */
 
-      this.handleNewsPost = function(post, feed) {
+      this.handleNewsPost = function (post, feed) {
         // read content
         var content = fs
           .readFileSync(path.join(root_dir, post.file))
@@ -83,7 +83,7 @@ module.exports = function(grunt) {
           description: content,
           url: self.data.feed.post_url + guid + ".html",
           guid: guid,
-          date: new Date(Date.parse(post.date)).toUTCString()
+          date: new Date(Date.parse(post.date)).toUTCString(),
         });
       };
 

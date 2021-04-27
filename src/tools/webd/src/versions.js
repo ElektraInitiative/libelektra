@@ -16,7 +16,7 @@ const API_VERSION = version.split(".").shift();
 import kdb from "./kdb";
 
 export default function getVersions() {
-  return kdb.version().then(elektraVersions => {
+  return kdb.version().then((elektraVersions) => {
     return { api: Number(API_VERSION), elektra: elektraVersions };
   });
 }

@@ -14,17 +14,17 @@ import { bindActionCreators } from "redux";
 import ErrorSnackbar from "../components/ErrorSnackbar.jsx";
 import { dismissError } from "../actions";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   const { error } = state;
   return {
     error:
       error && error.instanceError
         ? false // instance error is already handled by configuration page
-        : error
+        : error,
   };
 };
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators({ dismissError }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(ErrorSnackbar);

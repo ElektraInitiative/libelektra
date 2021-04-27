@@ -15,7 +15,7 @@ const { info, error } = makeLog();
 
 import {
   name as packageName,
-  version as packageVersion
+  version as packageVersion,
 } from "../package.json";
 import getVersions from "./versions";
 import initApp from "./app";
@@ -25,7 +25,7 @@ import { getInstances } from "./db";
 
 info(`%s v%s starting`, packageName, packageVersion);
 getVersions()
-  .then(versions => {
+  .then((versions) => {
     if (!versions.elektra) {
       error(`couldn't detect elektra version`);
       error(`are you sure you have libelektra and kdb installed?`);
@@ -45,9 +45,9 @@ getVersions()
           if (kdb.KDB_COMMAND === "kdb") info(`|- using default kdb command`);
           else info(`|- using kdb from: ${kdb.KDB_COMMAND}`);
           info(`|- versions: %o`, versions);
-          initApp(port => info(`\`-> running on http://localhost:${port}`));
+          initApp((port) => info(`\`-> running on http://localhost:${port}`));
         })
-        .catch(err => {
+        .catch((err) => {
           if (err.message.includes("Was not able to load such a plugin!")) {
             error(`missing dependencies`);
             error(`the yajl plugin is not installed for libelektra`);
@@ -56,4 +56,4 @@ getVersions()
         });
     }
   })
-  .catch(err => error(`error while starting %s: %o`, packageName, err));
+  .catch((err) => error(`error while starting %s: %o`, packageName, err));

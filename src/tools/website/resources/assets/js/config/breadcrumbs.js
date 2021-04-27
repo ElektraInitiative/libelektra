@@ -2,11 +2,11 @@
 
 module.exports = [
   "$breadcrumbProvider",
-  function($breadcrumbProvider) {
+  function ($breadcrumbProvider) {
     // configure breadcrumbs
     $breadcrumbProvider.setOptions({
       templateUrl: "templates/breadcrumbs.html",
-      prefixStateName: "main"
+      prefixStateName: "main",
     });
-  }
+  },
 ];

@@ -17,28 +17,28 @@ import {
   getKey,
   setKey,
   deleteKey,
-  sendNotification
+  sendNotification,
 } from "../actions";
 
 const mapStateToProps = (state, { match }) => {
   const { id } = match && match.params;
   const { error, instances, ls } = state;
   return {
-    instance: instances.find(instance => instance.id === id),
+    instance: instances.find((instance) => instance.id === id),
     ls,
     instanceError: error && error.instanceError ? error : false,
-    search: state.kdbFind
+    search: state.kdbFind,
   };
 };
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     {
       getKdb,
       getKey,
       setKey,
       deleteKey,
-      sendNotification
+      sendNotification,
     },
     dispatch
   );

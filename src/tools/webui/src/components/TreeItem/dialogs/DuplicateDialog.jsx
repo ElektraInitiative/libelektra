@@ -17,17 +17,17 @@ export default class DuplicateDialog extends Component {
     super(...args);
     const [props] = args;
     this.state = {
-      name: this.getInitialName(props)
+      name: this.getInitialName(props),
     };
   }
 
-  generateArrayKey = length => {
+  generateArrayKey = (length) => {
     const numberStr = String(length);
     const prefix = "_".repeat(numberStr.length - 1);
     return "#" + prefix + length;
   };
 
-  getInitialName = props => {
+  getInitialName = (props) => {
     if (props.arrayKeyLength) {
       return this.generateArrayKey(props.arrayKeyLength);
     }
@@ -69,7 +69,7 @@ export default class DuplicateDialog extends Component {
       <FlatButton
         label="Cancel"
         onClick={this.handleClose}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             this.handleClose();
           }
@@ -79,12 +79,12 @@ export default class DuplicateDialog extends Component {
         label="Duplicate"
         primary={true}
         onClick={() => this.handleDuplicate(path, newPath)}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             this.handleDuplicate(path, newPath);
           }
         }}
-      />
+      />,
     ];
 
     return (
@@ -104,8 +104,8 @@ export default class DuplicateDialog extends Component {
             floatingLabelText="name of copy"
             floatingLabelFixed={true}
             hintText="e.g. keyNameCopy"
-            onChange={evt => this.setState({ name: evt.target.value })}
-            onKeyPress={e => {
+            onChange={(evt) => this.setState({ name: evt.target.value })}
+            onKeyPress={(e) => {
               if (e.key === "Enter") {
                 this.handleDuplicate(path, newPath);
               }

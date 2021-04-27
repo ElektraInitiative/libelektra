@@ -15,7 +15,7 @@ cd "$SOURCE" || {
 
 NPX="$(which npx)"
 
-if [ -z "${PRETTIER}" ]; then
+if [ -z "${NPX}" ]; then
 	printf 2>&1 'Please install `npx` (Included in npm >= 5.2.0)\n'
 	exit 1
 fi

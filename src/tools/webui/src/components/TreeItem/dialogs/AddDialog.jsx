@@ -27,11 +27,11 @@ export default class AddDialog extends Component {
       type: "any",
       visibility: props.instanceVisibility || "user",
       error: false,
-      paused: false
+      paused: false,
     };
   }
 
-  generateArrayKey = length => {
+  generateArrayKey = (length) => {
     const numberStr = String(length);
     const prefix = "_".repeat(numberStr.length - 1);
     return "#" + prefix + length;
@@ -51,7 +51,7 @@ export default class AddDialog extends Component {
       value: "",
       type: "any",
       visibility: instanceVisibility || "user",
-      error: false
+      error: false,
     });
     onClose();
   };
@@ -62,7 +62,7 @@ export default class AddDialog extends Component {
       onAdd,
       keyExists,
       setMetaByPath,
-      arrayKeyLength
+      arrayKeyLength,
     } = this.props;
     const { path } = item;
     const { name, value, type } = this.state;
@@ -78,7 +78,7 @@ export default class AddDialog extends Component {
         if (!confirmed) return;
       }
     }
-    keyExists(path, name).then(res => {
+    keyExists(path, name).then((res) => {
       if (res && res.exists) {
         alert(
           'A key with the name "' +
@@ -124,7 +124,7 @@ export default class AddDialog extends Component {
       <FlatButton
         label="Cancel"
         onClick={this.handleClose}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             this.handleClose();
           }
@@ -134,7 +134,7 @@ export default class AddDialog extends Component {
         label="Create array"
         primary={true}
         onClick={this.handleCreateArrayKey}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             this.handleCreateArrayKey();
           }
@@ -145,13 +145,13 @@ export default class AddDialog extends Component {
         label="Create"
         primary={true}
         onClick={this.handleCreate}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             this.handleCreate();
           }
         }}
         disabled={nameEmpty || error}
-      />
+      />,
     ];
 
     return (
@@ -172,9 +172,9 @@ export default class AddDialog extends Component {
               floatingLabelText="name"
               floatingLabelFixed={true}
               hintText="e.g. keyName"
-              onChange={evt => this.setState({ name: evt.target.value })}
+              onChange={(evt) => this.setState({ name: evt.target.value })}
               value={name}
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (!nameEmpty && !error && e.key === "Enter") {
                   this.handleCreate();
                 }
@@ -206,21 +206,21 @@ export default class AddDialog extends Component {
                 value,
                 meta: { "check/type": type },
                 debounce: false,
-                onChange: value => this.setState({ value }),
-                onKeyPress: e => {
+                onChange: (value) => this.setState({ value }),
+                onKeyPress: (e) => {
                   if (!nameEmpty && !error && e.key === "Enter") {
                     this.handleCreate();
                   }
                 },
-                onError: err => this.setState({ error: err }),
-                label: "value"
+                onError: (err) => this.setState({ error: err }),
+                label: "value",
               })}
             {type === "enum" && (
               <div
                 style={{
                   display: "block",
                   marginTop: 16,
-                  color: "rgba(0, 0, 0, 0.5)"
+                  color: "rgba(0, 0, 0, 0.5)",
                 }}
               >
                 <b style={{ fontSize: "1.1em" }}>Please note:</b>
@@ -234,7 +234,7 @@ export default class AddDialog extends Component {
                       width: 14,
                       height: 14,
                       marginRight: 4,
-                      color: "rgba(0, 0, 0, 0.5)"
+                      color: "rgba(0, 0, 0, 0.5)",
                     }}
                   />
                   configure metadata
@@ -255,7 +255,7 @@ export default class AddDialog extends Component {
               }}
               value={visibility}
             >
-              {Object.keys(VISIBILITY_LEVELS).map(lvl => (
+              {Object.keys(VISIBILITY_LEVELS).map((lvl) => (
                 <MenuItem key={lvl} value={lvl} primaryText={lvl} />
               ))}
             </SelectField>

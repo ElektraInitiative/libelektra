@@ -2,7 +2,7 @@
 
 module.exports = [
   "NotificationProvider",
-  function(NotificationProvider) {
+  function (NotificationProvider) {
     NotificationProvider.setOptions({
       delay: 5000,
       startTop: 70,
@@ -11,7 +11,7 @@ module.exports = [
       horizontalSpacing: 20,
       positionX: "right",
       positionY: "top",
-      templateUrl: "templates/notification.html"
+      templateUrl: "templates/notification.html",
     });
-  }
+  },
 ];
