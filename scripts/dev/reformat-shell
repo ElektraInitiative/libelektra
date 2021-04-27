@@ -42,6 +42,7 @@ additional_files=$(
 		'scripts/completion/install-sh-completion.in' \
 		'scripts/kdb/list-tools.in' \
 		'scripts/make-source-package.in' \
+		'src/bindings/jna/gradlew' \
 		'scripts/dev/run_all.in' \
 		'scripts/dev/run_memcheck.in' \
 		'scripts/dev/run_nocheckshell.in' \
