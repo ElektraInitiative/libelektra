@@ -31,7 +31,7 @@ export default function debounce(
         timeoutFn: setTimeout(() => {
           this.setState({ timeoutFn: false });
           if (typeof onDebounced === "function") onDebounced(value);
-        }, timeout)
+        }, timeout),
       });
     };
 
@@ -39,7 +39,7 @@ export default function debounce(
       // do not pass onDebounced down to the wrapped component
       const { inputRef, onDebounced, ...originalProps } = this.props;
       const injectedProps = {
-        [handlerFn]: this.handleChange
+        [handlerFn]: this.handleChange,
       };
       return (
         <WrappedComponent

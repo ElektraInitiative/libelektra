@@ -9,7 +9,7 @@
 import { thunkCreator, parseJSONResponse } from "./utils";
 import { HOST_REGEX } from "../utils";
 
-const cleanInstanceData = data => {
+const cleanInstanceData = (data) => {
   if (data && data.host) {
     const [, host] = data.host.match(HOST_REGEX);
     if (host) {
@@ -30,7 +30,7 @@ export const fetchInstances = () =>
     types: [INSTANCES_REQUEST, INSTANCES_SUCCESS, INSTANCES_FAILURE],
     promise: fetch(`/api/instances`, { credentials: "same-origin" }).then(
       parseJSONResponse
-    )
+    ),
   });
 
 // ~~~
@@ -39,12 +39,12 @@ export const INSTANCE_REQUEST = "INSTANCE_REQUEST";
 export const INSTANCE_SUCCESS = "INSTANCE_SUCCESS";
 export const INSTANCE_FAILURE = "INSTANCE_FAILURE";
 
-export const fetchInstance = id =>
+export const fetchInstance = (id) =>
   thunkCreator({
     types: [INSTANCE_REQUEST, INSTANCE_SUCCESS, INSTANCE_FAILURE],
     promise: fetch(`/api/instances/${id}`, { credentials: "same-origin" }).then(
       parseJSONResponse
-    )
+    ),
   });
 
 // ~~~
@@ -58,16 +58,16 @@ export const updateInstance = (id, data) =>
     types: [
       INSTANCE_UPDATE_REQUEST,
       INSTANCE_UPDATE_SUCCESS,
-      INSTANCE_UPDATE_FAILURE
+      INSTANCE_UPDATE_FAILURE,
     ],
     promise: fetch(`/api/instances/${id}`, {
       credentials: "same-origin",
       method: "PUT",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(cleanInstanceData(data))
-    }).then(parseJSONResponse)
+      body: JSON.stringify(cleanInstanceData(data)),
+    }).then(parseJSONResponse),
   });
 
 // ~~~
@@ -81,12 +81,12 @@ export const deleteInstance = (id, data) =>
     types: [
       INSTANCE_DELETE_REQUEST,
       INSTANCE_DELETE_SUCCESS,
-      INSTANCE_DELETE_FAILURE
+      INSTANCE_DELETE_FAILURE,
     ],
     promise: fetch(`/api/instances/${id}`, {
       credentials: "same-origin",
-      method: "DELETE"
-    }).then(parseJSONResponse)
+      method: "DELETE",
+    }).then(parseJSONResponse),
   });
 
 // ~~~
@@ -95,19 +95,19 @@ export const CREATE_INSTANCE_REQUEST = "CREATE_INSTANCE_REQUEST";
 export const CREATE_INSTANCE_SUCCESS = "CREATE_INSTANCE_SUCCESS";
 export const CREATE_INSTANCE_FAILURE = "CREATE_INSTANCE_FAILURE";
 
-export const createInstance = data =>
+export const createInstance = (data) =>
   thunkCreator({
     types: [
       CREATE_INSTANCE_REQUEST,
       CREATE_INSTANCE_SUCCESS,
-      CREATE_INSTANCE_FAILURE
+      CREATE_INSTANCE_FAILURE,
     ],
     promise: fetch(`/api/instances`, {
       credentials: "same-origin",
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(cleanInstanceData(data))
-    }).then(parseJSONResponse)
+      body: JSON.stringify(cleanInstanceData(data)),
+    }).then(parseJSONResponse),
   });

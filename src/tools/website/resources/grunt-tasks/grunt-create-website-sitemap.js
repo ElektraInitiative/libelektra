@@ -5,11 +5,11 @@ var builder = require("xmlbuilder");
 
 var resolve_path = require("./helper/resolve-path");
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   grunt.registerMultiTask(
     "create-website-sitemap",
     "Builds a sitemal.xml for the website.",
-    function() {
+    function () {
       var self = this;
 
       var output_file = resolve_path(this.data.output);
@@ -20,11 +20,11 @@ module.exports = function(grunt) {
 
       /* MAIN FUNCTION */
 
-      this.build = function() {
+      this.build = function () {
         // build XML string
         var urlset = builder.create("urlset", {
           version: "1.0",
-          encoding: "UTF-8"
+          encoding: "UTF-8",
         });
 
         // set important XML namespaces
@@ -51,9 +51,9 @@ module.exports = function(grunt) {
         grunt.file.write(output_file, sitemap);
       };
 
-      this.handleStaticPaths = function(urlset) {
+      this.handleStaticPaths = function (urlset) {
         var url;
-        self.data.static.paths.forEach(function(path) {
+        self.data.static.paths.forEach(function (path) {
           url = urlset.ele("url");
           url.ele("loc").txt(self.data.root_url + path);
           //		  url.ele('lastmod').txt((new Date()).toUTCString());
@@ -61,23 +61,23 @@ module.exports = function(grunt) {
         });
       };
 
-      this.handleDynamicStructure = function(urlset) {
+      this.handleDynamicStructure = function (urlset) {
         var structure = grunt.file.readJSON(input_structure_file);
-        structure.forEach(function(elem) {
+        structure.forEach(function (elem) {
           self.handleMenuEntry(elem, urlset);
         });
       };
 
-      this.handleDynamicNews = function(urlset) {
+      this.handleDynamicNews = function (urlset) {
         var news = grunt.file.readJSON(input_news_file);
-        news.forEach(function(elem) {
+        news.forEach(function (elem) {
           self.handleNewsEntry(elem, urlset);
         });
       };
 
       /* HELPING FUNCTIONS */
 
-      this.handleMenuEntry = function(entry, urlset, parent) {
+      this.handleMenuEntry = function (entry, urlset, parent) {
         switch (entry.type) {
           case "submenu":
           case "listfiles":
@@ -98,12 +98,12 @@ module.exports = function(grunt) {
         }
       };
 
-      this.handleEntryWithChildren = function(entry, urlset) {
-        entry.children.forEach(function(child) {
+      this.handleEntryWithChildren = function (entry, urlset) {
+        entry.children.forEach(function (child) {
           switch (child.type) {
             case "listfiles":
               var url;
-              child.children.forEach(function(file) {
+              child.children.forEach(function (file) {
                 if (file.type === "file") {
                   url = urlset.ele("url");
                   url
@@ -121,12 +121,12 @@ module.exports = function(grunt) {
         });
       };
 
-      this.handleFileEntry = function(entry, urlset, parent) {
+      this.handleFileEntry = function (entry, urlset, parent) {
         var url = urlset.ele("url");
         url.ele("loc").txt(self.data.root_url + parent.ref + "/" + entry.slug);
       };
 
-      this.handleNewsEntry = function(entry, urlset) {
+      this.handleNewsEntry = function (entry, urlset) {
         var url = urlset.ele("url");
         url.ele("loc").txt(self.data.root_url + "news/" + entry.slug);
       };

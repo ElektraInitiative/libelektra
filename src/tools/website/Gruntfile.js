@@ -1,7 +1,7 @@
 var modRewrite = require("connect-modrewrite");
 var serveStatic = require("serve-static");
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   var dstFileBanner =
     '/**\n * @application <%= pkg.name %>\n * @version <%= pkg.version %>\n * @updated <%= grunt.template.today("yyyy-mm-dd") %>\n * @author <%= pkg.author %>\n * @license <%= pkg.license %>\n */\n';
 
@@ -10,15 +10,15 @@ module.exports = function(grunt) {
     app: grunt.file.readJSON("application-config.json"),
     pkg: grunt.file.readJSON("package.json"),
     global: {
-      repository: { root: "@REST_FRONTEND_SOURCE_INSTALL_REPOSITORY@" }
+      repository: { root: "@REST_FRONTEND_SOURCE_INSTALL_REPOSITORY@" },
     },
     "create-website-structure": {
       options: {},
       build: {
         repo_root: "<%= global.repository.root %>",
         input: "resources/structure.json.in",
-        output: "resources/structure.json"
-      }
+        output: "resources/structure.json",
+      },
     },
     "create-website-news": {
       options: {},
@@ -29,19 +29,19 @@ module.exports = function(grunt) {
         regex: {
           filename: {
             pattern: "^([0-9]{4}\\-[0-9]{2}\\-[0-9]{2})_(.*)$",
-            flags: "i"
+            flags: "i",
           },
           title: { pattern: "^# ([^#\n]*)$", flags: "im" },
-          shortdesc: { pattern: "^- shortDesc: (.*)$", flags: "im" }
-        }
-      }
+          shortdesc: { pattern: "^- shortDesc: (.*)$", flags: "im" },
+        },
+      },
     },
     "create-website-news-rss": {
       options: {},
       build: {
         repo_root: "<%= global.repository.root %>",
         input: {
-          news: "<%= grunt.config('create-website-news.build.output') %>"
+          news: "<%= grunt.config('create-website-news.build.output') %>",
         },
         regex: { guid: { pattern: "^\\- guid: ([a-fA-F0-9-]+)$", flags: "m" } },
         feed: {
@@ -53,10 +53,10 @@ module.exports = function(grunt) {
           site_url: "<%= app.website.url %>",
           language: "en",
           pubDate: new Date().toUTCString(),
-          ttl: 1800
+          ttl: 1800,
         },
-        output: { dir: "public/news", feed: "feed.rss" }
-      }
+        output: { dir: "public/news", feed: "feed.rss" },
+      },
     },
     "copy-website-content": {
       options: {},
@@ -65,18 +65,18 @@ module.exports = function(grunt) {
         input: {
           structure:
             "<%= grunt.config('create-website-structure.build.output') %>",
-          news: "<%= grunt.config('create-website-news.build.output') %>"
+          news: "<%= grunt.config('create-website-news.build.output') %>",
         },
-        target_dir: "public/website"
-      }
+        target_dir: "public/website",
+      },
     },
     jshint: {
       options: {
         reporter: require("jshint-stylish"),
         node: true,
-        browserify: true
+        browserify: true,
       },
-      build: ["Gruntfile.js", "resources/assets/js/**/*.js"]
+      build: ["Gruntfile.js", "resources/assets/js/**/*.js"],
     },
     less: {
       options: {},
@@ -85,9 +85,9 @@ module.exports = function(grunt) {
           "public/assets/skin/default/css/theme.css":
             "resources/assets/skin/default/less/theme.less",
           "public/assets/skin/bootstrap/bootstrap.css":
-            "resources/assets/skin/bootstrap/bootstrap.less"
-        }
-      }
+            "resources/assets/skin/bootstrap/bootstrap.less",
+        },
+      },
     },
     cssmin: {
       options: { banner: dstFileBanner },
@@ -96,9 +96,9 @@ module.exports = function(grunt) {
           "public/assets/skin/default/css/theme.min.css":
             "public/assets/skin/default/css/theme.css",
           "public/assets/skin/bootstrap/bootstrap.min.css":
-            "public/assets/skin/bootstrap/bootstrap.css"
-        }
-      }
+            "public/assets/skin/bootstrap/bootstrap.css",
+        },
+      },
     },
     concat: {
       vendor: {
@@ -109,30 +109,30 @@ module.exports = function(grunt) {
           "node_modules/angular-ui-notification/dist/angular-ui-notification.min.css",
           "node_modules/ng-tags-input/build/ng-tags-input.min.css",
           "node_modules/ng-tags-input/build/ng-tags-input.bootstrap.min.css",
-          "node_modules/angular-typewriter/npm-dist/angular-typewrite.css"
+          "node_modules/angular-typewriter/npm-dist/angular-typewrite.css",
         ],
-        dest: "public/assets/skin/vendor.css"
+        dest: "public/assets/skin/vendor.css",
       },
       docsearchcss: {
         src: ["node_modules/docsearch.js/dist/cdn/docsearch.min.css"],
-        dest: "public/assets/skin/docsearch.min.css"
+        dest: "public/assets/skin/docsearch.min.css",
       },
       docsearchcssmap: {
         src: ["node_modules/docsearch.js/dist/cdn/docsearch.min.css.map"],
-        dest: "public/assets/skin/docsearch.min.css.map"
+        dest: "public/assets/skin/docsearch.min.css.map",
       },
       docsearchjs: {
         src: ["node_modules/docsearch.js/dist/cdn/docsearch.min.js"],
-        dest: "public/vendor/docsearch.min.js"
+        dest: "public/vendor/docsearch.min.js",
       },
       pacejs: {
         src: ["node_modules/pace-progress/pace.min.js"],
-        dest: "public/vendor/pace.min.js"
+        dest: "public/vendor/pace.min.js",
       },
       pacecss: {
         src: ["node_modules/pace-progress/themes/blue/pace-theme-minimal.css"],
-        dest: "public/vendor/pace.min.css"
-      }
+        dest: "public/vendor/pace.min.css",
+      },
     },
     copy: {
       options: {},
@@ -144,14 +144,14 @@ module.exports = function(grunt) {
               "qtgui.png",
               "web-gui-kdb.png",
               "oyranos-kolor-manager.png",
-              "oyranos-km-logo.svg"
+              "oyranos-km-logo.svg",
             ],
             dest:
               "<%= grunt.config('copy-website-content.build.target_dir') %>/img",
-            expand: true
-          }
-        ]
-      }
+            expand: true,
+          },
+        ],
+      },
     },
     preprocess: {
       options: {
@@ -159,60 +159,60 @@ module.exports = function(grunt) {
           CONFIGURATION: "<%= grunt.file.read('application-config.json') %>",
           WEBSTRUCTURE: "<%= grunt.file.read('resources/structure.json') %>",
           NEWS: "<%= grunt.file.read('resources/news.json') %>",
-          BUILDDATE: new Date().toUTCString()
+          BUILDDATE: new Date().toUTCString(),
         },
-        type: "js"
+        type: "js",
       },
       config: {
         src: "resources/assets/js/config/index.js.in",
-        dest: "resources/assets/js/config/index.js"
+        dest: "resources/assets/js/config/index.js",
       },
       index: {
         src: "resources/assets/html/index.html.in",
-        dest: "public/index.html"
-      }
+        dest: "public/index.html",
+      },
     },
     watch: {
       options: {},
       less: {
         files: ["resources/assets/skin/**/*"],
-        tasks: ["less", "cssmin"]
+        tasks: ["less", "cssmin"],
       },
       preprocess: {
         files: [
           "application-config.json",
           "<%= grunt.config('create-website-structure.build.output') %>",
-          "<%= grunt.config('create-website-news.build.output') %>"
+          "<%= grunt.config('create-website-news.build.output') %>",
         ],
-        tasks: ["preprocess", "browserify:build"]
+        tasks: ["preprocess", "browserify:build"],
       },
       js: {
         files: ["public/assets/js/application.js"],
-        tasks: [] // do nothing, the watcher only triggers browserify implicitly
-      }
+        tasks: [], // do nothing, the watcher only triggers browserify implicitly
+      },
     },
     browserify: {
       options: {},
       build: {
         src: "resources/assets/js/application.js",
         dest: "resources/application.js.tmp",
-        options: { banner: dstFileBanner, watch: true }
-      }
+        options: { banner: dstFileBanner, watch: true },
+      },
     },
     uglify: {
       options: {
         compress: true,
         mangle: false,
         sourceMap: true,
-        screwIE8: false
+        screwIE8: false,
       },
       build: {
         files: {
           "public/assets/js/application.js": [
-            "<%= grunt.config('browserify.build.dest') %>"
-          ]
-        }
-      }
+            "<%= grunt.config('browserify.build.dest') %>",
+          ],
+        },
+      },
     },
     connect: {
       server: {
@@ -222,10 +222,10 @@ module.exports = function(grunt) {
           protocol: "http",
           base: {
             path: "public",
-            options: { index: "index.html", maxAge: 3600 }
+            options: { index: "index.html", maxAge: 3600 },
           },
           keepalive: true,
-          middleware: function(connect, options, middlewares) {
+          middleware: function (connect, options, middlewares) {
             //                        middlewares.unshift(function(req, res, next) {
             //                            grunt.log.writeln('URL: ' + req.url);
             //                            if(!grunt.file.exists('public', req.url)) {
@@ -257,24 +257,24 @@ module.exports = function(grunt) {
               "java",
               "py",
               "rss",
-              "ini"
+              "ini",
             ];
             return [
               modRewrite([
                 "!" +
                   staticExtensions
-                    .map(function(elem) {
+                    .map(function (elem) {
                       return "\\." + elem;
                     })
                     .join("|") +
-                  "$ /index.html [L]"
+                  "$ /index.html [L]",
               ]),
-              serveStatic("public")
+              serveStatic("public"),
             ];
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   });
 
   grunt.loadNpmTasks("grunt-browserify");
@@ -299,7 +299,7 @@ module.exports = function(grunt) {
     "copy",
     "preprocess",
     "browserify:build",
-    "uglify:build"
+    "uglify:build",
   ]);
   grunt.registerTask("install", [
     "stylesheets",
@@ -309,12 +309,12 @@ module.exports = function(grunt) {
     "copy",
     "preprocess",
     "browserify:build",
-    "uglify:build"
+    "uglify:build",
   ]);
   grunt.registerTask("stylesheets", ["less", "cssmin", "concat"]);
   grunt.registerTask("website-news", [
     "create-website-news",
-    "create-website-news-rss"
+    "create-website-news-rss",
   ]);
   grunt.registerTask("server", ["connect"]);
 };

@@ -6,12 +6,12 @@ const INTEGER_TYPES = [
   "long",
   "unsigned_long",
   "long_long",
-  "unsigned_long_long"
+  "unsigned_long_long",
 ];
 
 const FLOAT_TYPES = ["float", "double"];
 
-const isNumber = value => !isNaN(value);
+const isNumber = (value) => !isNaN(value);
 
 const getMinMax = (first, second) => {
   if (second < first) {

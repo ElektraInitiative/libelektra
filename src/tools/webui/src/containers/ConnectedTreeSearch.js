@@ -14,11 +14,11 @@ import { bindActionCreators } from "redux";
 import TreeSearch from "../components/TreeSearch";
 import { findKey, clearSearch, sendNotification } from "../actions";
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return { search: state.kdbFind };
 };
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators({ findKey, clearSearch, sendNotification }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(TreeSearch);

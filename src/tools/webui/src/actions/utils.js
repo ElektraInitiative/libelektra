@@ -10,15 +10,15 @@
 //  * emits the first action type (REQUESTED) when the promise is started
 //  * emits the second action type (RESOLVED) when everything works well
 //  * emits the third action type (REJECTED) when an error happened
-export const thunkCreator = action => {
+export const thunkCreator = (action) => {
   const { types, promise, ...rest } = action;
   const [REQUESTED, RESOLVED, REJECTED] = types;
 
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ ...rest, type: REQUESTED });
 
     return promise
-      .then(result => {
+      .then((result) => {
         const error =
           (result && result.error) ||
           (result && result.result && result.result.error);
@@ -26,19 +26,16 @@ export const thunkCreator = action => {
           ? dispatch({ ...rest, type: REJECTED, error }) // `error` is only returned in error messages
           : dispatch({ ...rest, type: RESOLVED, result }); // otherwise, dispatch result
       })
-      .catch(error => dispatch({ ...rest, type: REJECTED, error }));
+      .catch((error) => dispatch({ ...rest, type: REJECTED, error }));
   };
 };
 
 // encode kdb path with encodeURIComponent
-export const encodePath = path =>
-  path
-    .split("/")
-    .map(encodeURIComponent)
-    .join("/");
+export const encodePath = (path) =>
+  path.split("/").map(encodeURIComponent).join("/");
 
-export const parseJSONResponse = response => {
-  return response.text().then(text => {
+export const parseJSONResponse = (response) => {
+  return response.text().then((text) => {
     try {
       return JSON.parse(text);
     } catch (err) {

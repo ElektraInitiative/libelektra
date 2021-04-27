@@ -17,14 +17,14 @@ import {
   moveKey,
   copyKey,
   updateInstance,
-  sendNotification
+  sendNotification,
 } from "../actions";
 
 const mapStateToProps = (state, { instanceId, treeRef }) => {
   return { kdb: state.kdb && state.kdb[instanceId], ref: treeRef };
 };
 
-const mapDispatchToProps = dispatch =>
+const mapDispatchToProps = (dispatch) =>
   bindActionCreators(
     { getKey, moveKey, copyKey, updateInstance, sendNotification },
     dispatch

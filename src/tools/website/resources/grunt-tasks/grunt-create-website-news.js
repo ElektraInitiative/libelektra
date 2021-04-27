@@ -6,11 +6,11 @@ var slugify = require("slugify");
 
 var resolve_path = require("./helper/resolve-path");
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   grunt.registerMultiTask(
     "create-website-news",
     "Builds a json file containing news information.",
-    function() {
+    function () {
       var self = this;
 
       var root_dir = resolve_path(this.data.repo_root);
@@ -18,23 +18,23 @@ module.exports = function(grunt) {
 
       /* MAIN FUNCTION */
 
-      this.build = function() {
+      this.build = function () {
         var result = [];
 
         // get all news files
         var posts = self
           .listNewsDirectory(self.data.news_root)
-          .filter(function(post) {
+          .filter(function (post) {
             return post.stats.isFile();
           });
 
         // sort news files descending
-        posts.sort(function(left, right) {
+        posts.sort(function (left, right) {
           // return value: negative value = left before right
           return Date.parse(left.date) > Date.parse(right.date) ? -1 : 1;
         });
 
-        posts.forEach(function(post) {
+        posts.forEach(function (post) {
           var regex_title = new RegExp(
             self.data.regex.title.pattern,
             self.data.regex.title.flags
@@ -83,7 +83,7 @@ module.exports = function(grunt) {
             title: title,
             shortDesc: shortDesc,
             slug: slugify(title.toLowerCase()),
-            type: "file"
+            type: "file",
           });
         });
 
@@ -95,7 +95,7 @@ module.exports = function(grunt) {
         grunt.log.ok("Website news file generated successfully!");
       };
 
-      this.listNewsDirectory = function(relPath) {
+      this.listNewsDirectory = function (relPath) {
         var result = [];
         var regex = new RegExp(
           self.data.regex.filename.pattern,
@@ -103,7 +103,7 @@ module.exports = function(grunt) {
         );
         var entries = fs.readdirSync(path.join(root_dir, relPath));
         var date;
-        entries.forEach(function(entry) {
+        entries.forEach(function (entry) {
           date = regex.exec(entry);
           if (date === null || date.length < 2) {
             grunt.log.warn(
@@ -122,12 +122,12 @@ module.exports = function(grunt) {
         return result;
       };
 
-      this.addYearSections = function(posts) {
+      this.addYearSections = function (posts) {
         var result = [];
 
         var currDate,
           currYear = -1;
-        posts.forEach(function(post) {
+        posts.forEach(function (post) {
           currDate = new Date(Date.parse(post.date));
           if (currDate.getFullYear() !== currYear) {
             result.push({ name: currDate.getFullYear(), type: "section" });

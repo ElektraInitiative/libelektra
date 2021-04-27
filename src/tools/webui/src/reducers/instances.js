@@ -10,16 +10,16 @@ import {
   INSTANCES_SUCCESS,
   INSTANCE_DELETE_SUCCESS,
   INSTANCE_UPDATE_SUCCESS,
-  CREATE_INSTANCE_SUCCESS
+  CREATE_INSTANCE_SUCCESS,
 } from "../actions";
 
 export default function instancesReducer(state = [], action) {
   switch (action.type) {
     case INSTANCE_DELETE_SUCCESS: // instance deleted, remove from state
-      return state.filter(instance => instance.id !== action.result.id);
+      return state.filter((instance) => instance.id !== action.result.id);
 
     case INSTANCE_UPDATE_SUCCESS: // instance updated, update in state
-      return state.map(instance => {
+      return state.map((instance) => {
         if (instance.id === action.result.id) {
           const hasDifference = // ignore differences in unfolded
             instance.name !== action.result.name ||

@@ -29,7 +29,7 @@ export default class CreateInstanceCard extends React.Component {
       host: "",
       description: "",
       visibility: "user",
-      hostError: ""
+      hostError: "",
     };
   }
 
@@ -39,7 +39,7 @@ export default class CreateInstanceCard extends React.Component {
       host: "",
       description: "",
       visibility: "user",
-      hostError: ""
+      hostError: "",
     });
   }
 
@@ -86,7 +86,7 @@ export default class CreateInstanceCard extends React.Component {
                 floatingLabelText="name*"
                 floatingLabelFixed={true}
                 hintText="e.g. my webserver"
-                onChange={evt => this.setState({ name: evt.target.value })}
+                onChange={(evt) => this.setState({ name: evt.target.value })}
                 value={name}
               />
             </div>
@@ -96,20 +96,20 @@ export default class CreateInstanceCard extends React.Component {
                 floatingLabelText="host*"
                 floatingLabelFixed={true}
                 errorText={hostError}
-                onChange={evt => {
+                onChange={(evt) => {
                   const newHost = evt.target.value;
                   this.setState({ host: newHost });
                   const [, matchedHost] = newHost.match(HOST_REGEX) || [];
                   if (!matchedHost) {
                     this.setState({
-                      hostError: "invalid host, use http://host:port syntax"
+                      hostError: "invalid host, use http://host:port syntax",
                     });
                   } else {
                     this.setState({ hostError: "" });
                   }
                 }}
                 value={host}
-                onKeyPress={e => {
+                onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     this.handleCreate();
                   }
@@ -132,11 +132,11 @@ export default class CreateInstanceCard extends React.Component {
                 ref="descriptionField"
                 floatingLabelText="description"
                 floatingLabelFixed={true}
-                onChange={evt =>
+                onChange={(evt) =>
                   this.setState({ description: evt.target.value })
                 }
                 value={description}
-                onKeyPress={e => {
+                onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     this.handleCreate();
                   }
@@ -150,7 +150,7 @@ export default class CreateInstanceCard extends React.Component {
                 onChange={(e, _, val) => this.setState({ visibility: val })}
                 value={visibility}
               >
-                {Object.keys(VISIBILITY_LEVELS).map(lvl => (
+                {Object.keys(VISIBILITY_LEVELS).map((lvl) => (
                   <MenuItem key={lvl} value={lvl} primaryText={">= " + lvl} />
                 ))}
               </SelectField>

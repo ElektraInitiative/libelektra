@@ -1,12 +1,12 @@
 "use strict";
 
 module.exports = [
-  function() {
+  function () {
     return {
       restrict: "A",
       require: "ngModel",
-      link: function(scope, element, attrs, modelCtrl) {
-        var lower = function(inputValue) {
+      link: function (scope, element, attrs, modelCtrl) {
+        var lower = function (inputValue) {
           if (inputValue === undefined) inputValue = "";
           var lowered = inputValue.toLowerCase();
           if (lowered !== inputValue) {
@@ -17,7 +17,7 @@ module.exports = [
         };
         modelCtrl.$parsers.push(lower);
         lower(scope[attrs.ngModel]);
-      }
+      },
     };
-  }
+  },
 ];

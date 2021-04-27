@@ -35,7 +35,7 @@ class EnumItem extends Component {
           floatingLabelText={`option ${id}`}
           floatingLabelFixed={true}
           value={value}
-          onChange={value => this.setState({ value })}
+          onChange={(value) => this.setState({ value })}
           onDebounced={onChange}
         />
         <SavedIcon saved={saved} />

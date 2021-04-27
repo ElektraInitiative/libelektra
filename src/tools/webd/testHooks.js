@@ -7,40 +7,40 @@ const instances = [
     name: "test instance",
     host: "http://localhost:33333",
     description: "longer text describing the instance",
-    visibility: "user"
+    visibility: "user",
   },
   {
     id: "0d8b3c29-88a5-4681-ad7a-17f5689e31f3",
     name: "minimal instance",
     host: "http://127.0.0.1:33333",
-    visibility: "user"
-  }
+    visibility: "user",
+  },
 ];
 
 function createInstance(data) {
   return fetch("http://localhost:33334/api/instances", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   });
 }
 
 function destroyInstance({ id }) {
   return fetch(`http://localhost:33334/api/instances/${id}`, {
-    method: "DELETE"
+    method: "DELETE",
   });
 }
 
-hooks.beforeEach(function(transactions, done) {
-  return Promise.all(instances.map(createInstance)).then(results => {
+hooks.beforeEach(function (transactions, done) {
+  return Promise.all(instances.map(createInstance)).then((results) => {
     done();
   });
 });
 
-hooks.afterAll(function(transactions, done) {
-  return Promise.all(instances.map(destroyInstance)).then(results => {
+hooks.afterAll(function (transactions, done) {
+  return Promise.all(instances.map(destroyInstance)).then((results) => {
     done();
   });
 });
