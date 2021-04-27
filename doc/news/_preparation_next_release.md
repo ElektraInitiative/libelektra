@@ -32,6 +32,9 @@ This is the quickest way to get started with Elektra without compiling and other
 - JNI plugin fixed
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
+- Fresh Fedora 34 packages
+- Documentation Improvements & Cleanups
+- GCC 11 and Clang 12 compatibility
 
 ### JNI plugin fixed
 
@@ -231,7 +234,8 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 
 ## Scripts
 
-- <<TODO>>
+- Require clang-format 12 for reformatting C and Java. _(Mihael Pranjić)_
+- Use basename of release file in `generate-hashsums`. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -265,6 +269,7 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 ## Tests
 
 - Fix failing `testshell_markdown_tutorial_crypto` on Mac OS and other OS with GnuPG version >= 2.3.1. _(Peter Nirschl @petermax2)_
+- Use clang-format 12 for Restyled and update Restyled version. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -286,6 +291,8 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 
 - Add Fedora 34 images. _(Mihael Pranjić)_
 - We added release images that come with pre-installed dependencies and sudo permissions for each distribution we build packages for. _(Robert Sowula)_
+- Use Clang 12 and Gradle 7.0 in Debian Sid image. _(Mihael Pranjić)_
+- <<TODO>>
 - <<TODO>>
 
 ## Infrastructure
@@ -313,7 +320,7 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 
 ### Travis
 
-- <<TODO>>
+- Update Ubuntu toolchains to GCC 10 and Clang 12. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
