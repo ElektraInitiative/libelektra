@@ -16,7 +16,7 @@ log_strace() {
 
 	strace -o $BASE_DIR/$VERSION/$CONTEXT/mount.strace kdb mount file.ecf user:/release_test
 	strace -o $BASE_DIR/$VERSION/$CONTEXT/file.strace kdb file user:/release_test/b
-	strace -o $BASE_DIR/$VERSION/$CONTEXT/set.strace kdb set user:/release_test/b
+	strace -o $BASE_DIR/$VERSION/$CONTEXT/set.strace kdb set user:/release_test/b ""
 	strace -o $BASE_DIR/$VERSION/$CONTEXT/get.strace kdb get user:/release_test/b
 	strace -o $BASE_DIR/$VERSION/$CONTEXT/rm.strace kdb rm user:/release_test/b
 	strace -o $BASE_DIR/$VERSION/$CONTEXT/umount.strace kdb umount user:/release_test
