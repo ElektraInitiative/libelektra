@@ -120,6 +120,7 @@ matrix:
               key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
             - ubuntu-toolchain-r-test
           packages:
+            - llvm-12
             - clang-12
       env:
         - ENABLE_ASAN=ON
