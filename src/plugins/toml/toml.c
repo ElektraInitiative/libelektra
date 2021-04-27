@@ -8,7 +8,7 @@
  */
 
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdberrors.h>
 #include <kdblogger.h>
 #include <kdbmacros.h>

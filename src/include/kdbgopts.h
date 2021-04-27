@@ -9,7 +9,7 @@
 #ifndef ELEKTRA_KDBGOPTS_H
 #define ELEKTRA_KDBGOPTS_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 #ifdef __cplusplus
 namespace ckdb

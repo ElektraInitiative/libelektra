@@ -12,7 +12,7 @@
 #ifndef ELEKTRA_PLUGIN_TOML_DRIVER_H
 #define ELEKTRA_PLUGIN_TOML_DRIVER_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stddef.h>

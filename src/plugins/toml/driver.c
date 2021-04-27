@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbassert.h>
 #include <kdberrors.h>
 #include <kdbhelper.h>

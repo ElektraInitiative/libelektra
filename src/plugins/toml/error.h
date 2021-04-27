@@ -8,7 +8,7 @@
 #ifndef ELEKTRA_PLUGIN_TOML_ERROR_H
 #define ELEKTRA_PLUGIN_TOML_ERROR_H
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 
 #define ERROR_MEMORY 0xC01110
 #define ERROR_INTERNAL 0xC01310

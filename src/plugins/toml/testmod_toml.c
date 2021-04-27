@@ -7,7 +7,7 @@
  *
  */
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbassert.h>
 #include <kdbprivate.h>
 #include <tests.h>

@@ -7,7 +7,7 @@
  */
 
 
-#include <kdb.h>
+#include <elektra/kdb.h>
 #include <kdbassert.h>
 #include <kdbease.h>
 #include <kdberrors.h>

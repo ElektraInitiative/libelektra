@@ -7,7 +7,7 @@
  */
 
 #include "kdbprivate.h"
-#include <kdb.h>
+#include <elektra/kdb.h>
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
 #endif
