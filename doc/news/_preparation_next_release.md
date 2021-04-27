@@ -286,7 +286,7 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 ### CMake
 
 - Disable binding tests when `BUILD_TESTING` is disabled. _(Robert Sowula)_
-- <<TODO>>
+- Remove unused `FindCppCMS.cmake` CMake module and unused `Boost` variables. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Docker
@@ -294,6 +294,7 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Add Fedora 34 images. _(Mihael Pranjić)_
 - We added release images that come with pre-installed dependencies and sudo permissions for each distribution we build packages for. _(Robert Sowula)_
 - Use Clang 12 and Gradle 7.0 in Debian Sid image. _(Mihael Pranjić)_
+- Remove boost dependency from all images. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
