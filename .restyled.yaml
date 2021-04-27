@@ -9,12 +9,12 @@ restylers:
         - "!**/*.js"
 
   - prettier:
-      image: restyled/restyler-prettier:v1.19.1
+      image: restyled/restyler-prettier:v2.2.1
   - prettier-markdown:
-      image: restyled/restyler-prettier:v1.19.1
+      image: restyled/restyler-prettier:v2.2.1
       arguments: []
   - shfmt:
-      image: restyled/restyler-shfmt:v2.4.0
+      image: restyled/restyler-shfmt:v3.2.4
       arguments:
         - -s
         - -sr

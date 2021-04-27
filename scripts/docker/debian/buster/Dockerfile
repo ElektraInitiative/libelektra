@@ -131,7 +131,7 @@ RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
-ENV SHFMT_VERSION=v2.6.3
+ENV SHFMT_VERSION=v3.2.4
 ENV PATH="${SHFMT_PATH}:${PATH}"
 RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \
