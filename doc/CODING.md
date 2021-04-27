@@ -573,7 +573,7 @@ brew install shfmt
 
 ```sh
 mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
-  curl -L "https://github.com/mvdan/sh/releases/download/v2.6.4/shfmt_v2.6.4_linux_amd64" -o shfmt && \
+  curl -L "https://github.com/mvdan/sh/releases/download/v3.2.4/shfmt_v3.2.4_linux_amd64" -o shfmt && \
   chmod u+x shfmt
 ```
 
