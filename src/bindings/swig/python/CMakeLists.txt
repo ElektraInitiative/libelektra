@@ -70,12 +70,9 @@ else ()
 	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (
 			swig-python
-			LANGUAGE
-			python
-			SOURCES
-			kdb.i
-			TYPE
-			MODULE)
+			LANGUAGE python
+			SOURCES kdb.i
+			TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	swig_link_libraries (swig-python elektra-core elektra-kdb ${PYTHON_LIBRARIES})
 	set_target_properties (_swig-python PROPERTIES OUTPUT_NAME _kdb)
@@ -104,12 +101,9 @@ else ()
 		else (CMAKE_VERSION VERSION_LESS 3.8)
 			swig_add_library (
 				swig-python-tools
-				LANGUAGE
-				python
-				SOURCES
-				tools.i
-				TYPE
-				MODULE)
+				LANGUAGE python
+				SOURCES tools.i
+				TYPE MODULE)
 		endif (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_link_libraries (swig-python-tools elektratools ${PYTHON_LIBRARIES})
 		set_target_properties (_swig-python-tools PROPERTIES OUTPUT_NAME _tools)

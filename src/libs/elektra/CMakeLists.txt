@@ -90,8 +90,10 @@ if (BUILD_SHARED)
 	set (elektra-all_LIBRARIES elektra-core elektra-kdb ${elektra-extension_LIBRARIES})
 	set_target_properties (
 		${elektra-all_LIBRARIES}
-		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H" VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION} CLEAN_DIRECT_OUTPUT 1
-
+		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H"
+			   VERSION ${KDB_VERSION}
+			   SOVERSION ${SO_VERSION}
+			   CLEAN_DIRECT_OUTPUT 1
 			   LINK_DEPENDS "${__symbols_file}")
 
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
@@ -140,8 +142,13 @@ if (BUILD_FULL)
 	target_link_libraries (elektra-full ${elektra-full_LIBRARIES})
 
 	set_target_properties (
-		elektra-full PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC" VERSION ${KDB_VERSION}
-					SOVERSION ${SO_VERSION} CLEAN_DIRECT_OUTPUT 1 LINKER_LANGUAGE CXX LINK_DEPENDS "${__symbols_file}")
+		elektra-full
+		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+			   VERSION ${KDB_VERSION}
+			   SOVERSION ${SO_VERSION}
+			   CLEAN_DIRECT_OUTPUT 1
+			   LINKER_LANGUAGE CXX
+			   LINK_DEPENDS "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (elektra-full PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()
@@ -164,9 +171,12 @@ if (BUILD_STATIC)
 
 	set_target_properties (
 		elektra-static
-		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC" VERSION ${KDB_VERSION} SOVERSION ${SO_VERSION}
-
-			   CLEAN_DIRECT_OUTPUT 1 LINKER_LANGUAGE CXX LINK_DEPENDS "${__symbols_file}")
+		PROPERTIES COMPILE_DEFINITIONS "HAVE_KDBCONFIG_H;ELEKTRA_STATIC"
+			   VERSION ${KDB_VERSION}
+			   SOVERSION ${SO_VERSION}
+			   CLEAN_DIRECT_OUTPUT 1
+			   LINKER_LANGUAGE CXX
+			   LINK_DEPENDS "${__symbols_file}")
 	if (${LD_ACCEPTS_VERSION_SCRIPT})
 		set_target_properties (elektra-static PROPERTIES LINK_FLAGS "-Wl,--version-script='${__symbols_file}'")
 	endif ()

@@ -203,9 +203,9 @@ function (set_lua_version_vars)
 	foreach (ver IN LISTS lua_append_versions)
 		string (REGEX MATCH "^([0-9]+)\\.([0-9]+)$" _ver "${ver}")
 		list (APPEND _lua_include_subdirs include/lua${CMAKE_MATCH_1}${CMAKE_MATCH_2} include/lua${CMAKE_MATCH_1}.${CMAKE_MATCH_2}
-			     include/lua-${CMAKE_MATCH_1}.${CMAKE_MATCH_2})
+		      include/lua-${CMAKE_MATCH_1}.${CMAKE_MATCH_2})
 		list (APPEND _lua_library_names lua${CMAKE_MATCH_1}${CMAKE_MATCH_2} lua${CMAKE_MATCH_1}.${CMAKE_MATCH_2}
-			     lua-${CMAKE_MATCH_1}.${CMAKE_MATCH_2})
+		      lua-${CMAKE_MATCH_1}.${CMAKE_MATCH_2})
 	endforeach ()
 
 	set (
@@ -329,6 +329,9 @@ verify_lua_executable_version () # LUA_VERSION_STRING available from here
 include (FindPackageHandleStandardArgs)
 
 # handle the QUIETLY and REQUIRED arguments and set LUA_FOUND to TRUE if all listed variables are TRUE
-find_package_handle_standard_args (Lua REQUIRED_VARS LUA_LIBRARIES LUA_INCLUDE_DIR VERSION_VAR LUA_VERSION_STRING)
+find_package_handle_standard_args (
+	Lua
+	REQUIRED_VARS LUA_LIBRARIES LUA_INCLUDE_DIR
+	VERSION_VAR LUA_VERSION_STRING)
 
 mark_as_advanced (LUA_INCLUDE_DIR LUA_LIBRARY LUA_MATH_LIBRARY)

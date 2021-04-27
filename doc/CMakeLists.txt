@@ -122,8 +122,7 @@ if (DOXYGEN_FOUND)
 		add_custom_command (
 			OUTPUT ${DOCSET_PATH}
 			COMMAND make
-			COMMAND
-				${CMAKE_COMMAND} ARGS -D DOCSET_PATH=${DOCSET_PATH} -D ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png -P
+			COMMAND ${CMAKE_COMMAND} ARGS -D DOCSET_PATH=${DOCSET_PATH} -D ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png -P
 				${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraDocSet.cmake
 			DEPENDS ${OUTPUT_DIRECTORY}/html/index.html markdownlinkconverter
 			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/html)

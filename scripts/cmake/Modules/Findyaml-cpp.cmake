@@ -33,7 +33,10 @@ set (yaml-cpp_VERSION ${PC_yaml-cpp_VERSION})
 
 include (FindPackageHandleStandardArgs)
 # Handle the QUIETLY and REQUIRED arguments and set yaml-cpp_FOUND to TRUE, if all listed variables are TRUE
-find_package_handle_standard_args (yaml-cpp REQUIRED_VARS yaml-cpp_LIBRARY yaml-cpp_INCLUDE_DIR VERSION_VAR yaml-cpp_VERSION)
+find_package_handle_standard_args (
+	yaml-cpp
+	REQUIRED_VARS yaml-cpp_LIBRARY yaml-cpp_INCLUDE_DIR
+	VERSION_VAR yaml-cpp_VERSION)
 
 mark_as_advanced (yaml-cpp_INCLUDE_DIR yaml-cpp_LIBRARY yaml-cpp_VERSION)
 

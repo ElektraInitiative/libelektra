@@ -47,7 +47,10 @@ if (NOT libuv_VERSION_HEADER STREQUAL libuv_VERSION_HEADER-NOTFOUND)
 endif (NOT libuv_VERSION_HEADER STREQUAL libuv_VERSION_HEADER-NOTFOUND)
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (libuv REQUIRED_VARS libuv_LIBRARY libuv_INCLUDE_DIR VERSION_VAR libuv_VERSION)
+find_package_handle_standard_args (
+	libuv
+	REQUIRED_VARS libuv_LIBRARY libuv_INCLUDE_DIR
+	VERSION_VAR libuv_VERSION)
 
 mark_as_advanced (libuv_INCLUDE_DIR libuv_LIBRARY libuv_VERSION)
 
