@@ -21,17 +21,14 @@ if (EXISTS ${COVERAGE_LCOV} AND EXISTS ${COVERAGE_AWK})
 	add_custom_target (
 		coverage-start
 		COMMAND ${COVERAGE_LCOV} ${COMMON_FLAGS} --directory . --zerocounters
-		COMMAND
-			${COVERAGE_LCOV} ${COMMON_FLAGS} --directory . --initial --capture --output-file ${COVERAGE_DIR}/coverage-base.info
+		COMMAND ${COVERAGE_LCOV} ${COMMON_FLAGS} --directory . --initial --capture --output-file ${COVERAGE_DIR}/coverage-base.info
 		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 		COMMENT "Start capturing data for coverage.")
 
 	add_custom_target (
 		coverage-stop
-		COMMAND
-			${COVERAGE_LCOV} ${COMMON_FLAGS} --directory . --capture --output-file ${COVERAGE_DIR}/coverage-test.info
-		COMMAND
-			${COVERAGE_LCOV} ${COMMON_FLAGS} --add-tracefile ${COVERAGE_DIR}/coverage-test.info --add-tracefile
+		COMMAND ${COVERAGE_LCOV} ${COMMON_FLAGS} --directory . --capture --output-file ${COVERAGE_DIR}/coverage-test.info
+		COMMAND ${COVERAGE_LCOV} ${COMMON_FLAGS} --add-tracefile ${COVERAGE_DIR}/coverage-test.info --add-tracefile
 			${COVERAGE_DIR}/coverage-base.info --output-file ${COVERAGE_DIR}/coverage.info
 		COMMAND ${COVERAGE_AWK} -f "${COVERAGE_FILTER}" ${COVERAGE_DIR}/coverage.info > ${COVERAGE_DIR}/coverage-filtered.info
 		WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
@@ -41,8 +38,7 @@ if (EXISTS ${COVERAGE_LCOV} AND EXISTS ${COVERAGE_AWK})
 	if (EXISTS ${COVERAGE_GENHTML})
 		add_custom_target (
 			coverage-genhtml
-			COMMAND
-				${COVERAGE_GENHTML} ${COMMON_FLAGS} ${COVERAGE_DIR}/coverage-filtered.info --prefix "${COVERAGE_PREFIX}"
+			COMMAND ${COVERAGE_GENHTML} ${COMMON_FLAGS} ${COVERAGE_DIR}/coverage-filtered.info --prefix "${COVERAGE_PREFIX}"
 				--output-directory ${COVERAGE_DIR}
 			WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
 			COMMENT "Create html statistics of data for coverage.")

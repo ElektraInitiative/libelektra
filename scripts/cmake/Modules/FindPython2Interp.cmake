@@ -133,6 +133,9 @@ endif (PYTHON2_EXECUTABLE)
 
 # handle the QUIETLY and REQUIRED arguments and set PYTHON2INTERP_FOUND to TRUE if all listed variables are TRUE
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (Python2Interp REQUIRED_VARS PYTHON2_EXECUTABLE VERSION_VAR PYTHON2_VERSION_STRING)
+find_package_handle_standard_args (
+	Python2Interp
+	REQUIRED_VARS PYTHON2_EXECUTABLE
+	VERSION_VAR PYTHON2_VERSION_STRING)
 
 mark_as_advanced (PYTHON2_EXECUTABLE)

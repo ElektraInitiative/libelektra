@@ -44,7 +44,7 @@ else (ELEKTRA_SYMVER_SUPPORTED)
 	set (ELEKTRA_SYMVER_COMMAND "")
 
 	try_compile (ELEKTRA_VERSION_SCRIPT_SUPPORTED ${CMAKE_BINARY_DIR}/src/symvertest/build ${CMAKE_SOURCE_DIR}/src/symvertest
-		     symvertest basic)
+											       symvertest basic)
 	if (ELEKTRA_VERSION_SCRIPT_SUPPORTED)
 		set (LD_ACCEPTS_VERSION_SCRIPT TRUE)
 	else (ELEKTRA_VERSION_SCRIPT_SUPPORTED)

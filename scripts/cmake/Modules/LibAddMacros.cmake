@@ -66,7 +66,11 @@ macro (create_lib_symlink src dest component)
 		endif ()
 		"
 		COMPONENT "${component}")
-endmacro (create_lib_symlink src dest component)
+endmacro (
+	create_lib_symlink
+	src
+	dest
+	component)
 
 # ~~~
 # Create a symlink for man1 files at installation
@@ -109,7 +113,11 @@ macro (create_doc_symlink src dest component)
 		endif ()
 		"
 		COMPONENT "${component}")
-endmacro (create_doc_symlink src dest component)
+endmacro (
+	create_doc_symlink
+	src
+	dest
+	component)
 
 # ~~~
 # Make a directory
@@ -252,7 +260,10 @@ function (find_util util output_loc output_arg)
 		${output_arg}
 		${ARG_LOC}
 		PARENT_SCOPE)
-endfunction (find_util util output)
+endfunction (
+	find_util
+	util
+	output)
 
 # ~~~
 # - Adds all headerfiles of global include path to the given variable
@@ -634,8 +645,7 @@ function (generate_manpage NAME)
 			add_custom_command (
 				OUTPUT ${OUTFILE}
 				DEPENDS ${MDFILE}
-				COMMAND
-					${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D DIFF_COMMAND=${DIFF_COMMAND} -D
+				COMMAND ${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D DIFF_COMMAND=${DIFF_COMMAND} -D
 					MDFILE=${MDFILE} -D MANPAGE=${OUTFILE} -P ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})

@@ -105,16 +105,10 @@ endif ()
 include (FindPackageHandleStandardArgs)
 find_package_handle_standard_args (
 	XercesC
-	FOUND_VAR
-	XercesC_FOUND
-	REQUIRED_VARS
-	XercesC_LIBRARY
-	XercesC_INCLUDE_DIR
-	XercesC_VERSION
-	VERSION_VAR
-	XercesC_VERSION
-	FAIL_MESSAGE
-	"Failed to find XercesC")
+	FOUND_VAR XercesC_FOUND
+	REQUIRED_VARS XercesC_LIBRARY XercesC_INCLUDE_DIR XercesC_VERSION
+	VERSION_VAR XercesC_VERSION
+	FAIL_MESSAGE "Failed to find XercesC")
 
 if (XercesC_FOUND)
 	set (XercesC_INCLUDE_DIRS "${XercesC_INCLUDE_DIR}")
@@ -135,18 +129,16 @@ if (XercesC_FOUND)
 				TARGET XercesC::XercesC
 				APPEND
 				PROPERTY IMPORTED_CONFIGURATIONS DEBUG)
-			set_target_properties (
-				XercesC::XercesC PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "CXX" IMPORTED_LOCATION_DEBUG
-													  "${XercesC_LIBRARY_DEBUG}")
+			set_target_properties (XercesC::XercesC PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_DEBUG "CXX"
+									   IMPORTED_LOCATION_DEBUG "${XercesC_LIBRARY_DEBUG}")
 		endif ()
 		if (EXISTS "${XercesC_LIBRARY_RELEASE}")
 			set_property (
 				TARGET XercesC::XercesC
 				APPEND
 				PROPERTY IMPORTED_CONFIGURATIONS RELEASE)
-			set_target_properties (
-				XercesC::XercesC PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX" IMPORTED_LOCATION_RELEASE
-													    "${XercesC_LIBRARY_RELEASE}")
+			set_target_properties (XercesC::XercesC PROPERTIES IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
+									   IMPORTED_LOCATION_RELEASE "${XercesC_LIBRARY_RELEASE}")
 		endif ()
 	endif ()
 endif ()
