@@ -1,4 +1,4 @@
-FROM debian:sid
+ged	FROM debian:sid
 
 ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
@@ -11,8 +11,8 @@ RUN apt-get update && apt-get -y install \
         bison \
         build-essential \
         checkinstall \
-        clang-11 \
-        clang-format-11 \
+        clang-12 \
+        clang-format-12 \
         cmake \
         curl \
         dh-lua \
