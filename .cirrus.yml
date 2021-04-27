@@ -182,7 +182,7 @@ mac_task:
       brew install python@3.9 || brew upgrade python@3.9
       export PATH="/usr/local/opt/python@3.9/bin:$PATH"
     - | # Install Python packages
-      pip3 install cmake-format[yaml]==0.6.3
+      pip3 install cmake-format[yaml]==0.6.13
     - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
       brew install ruby
       export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"

@@ -68,7 +68,7 @@ RUN apt-get update && apt-get -y install \
 # Update cache for shared libraries
 RUN ldconfig
 
-RUN pip3 install cmake-format[yaml]==0.6.3
+RUN pip3 install cmake-format[yaml]==0.6.13
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
