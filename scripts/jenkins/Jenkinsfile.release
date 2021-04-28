@@ -232,10 +232,10 @@ def dockerInit() {
     /* Build Elektra's documentation with this image.
      * Also contains latex for pdf creation.
      */
-    DOCKER_IMAGES.buster_doc = dockerUtils.createDockerImageDesc(
-      'debian-buster-doc', dockerUtils.&idTesting,
-      './scripts/docker/debian/buster',
-      './scripts/docker/debian/buster/doc.Dockerfile'
+    DOCKER_IMAGES.sid_doc = dockerUtils.createDockerImageDesc(
+      'debian-sid-doc', dockerUtils.&idTesting,
+      './scripts/docker/debian/sid',
+      './scripts/docker/debian/sid/doc.Dockerfile'
     )
 
     /*
@@ -719,7 +719,7 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.buster_doc) {
+      withDockerEnv(DOCKER_IMAGES.sid_doc) {
         configureGitUser()
 
         dir('build') {
