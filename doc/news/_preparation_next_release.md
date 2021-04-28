@@ -153,6 +153,7 @@ you up to date with the multi-language support provided by Elektra.
 ### SWIG
 
 - Remove `-Wno-shift-overflow warnings` option from SWIG bindings compile flags. _(Mihael Pranjić)_
+- Suppress SWIG/Ruby bindings warning about `operator != ignored`. _(Mihael Pranjić)_
 
 ### JNA
 
@@ -268,11 +269,14 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Update and correct third party licensing information _(@a-kraschitzer)_
 - Added contact details to `AUTHORS.md` _(Michael Tucek)_
 - Use Ronn-NG instead of unmaintained ronn to generate man pages. _(Mihael Pranjić)_
+- Re-generate man pages to add missing information and remove unnecessary symbols and escaping. _(Mihael Pranjić)_
+- Update `doc/Doxyfile` to Doxygen 1.9.1 and fix a syntax error with the `FILTER_PATTERNS` directive. _(Mihael Pranjić)_
 
 ## Tests
 
 - Fix failing `testshell_markdown_tutorial_crypto` on Mac OS and other OS with GnuPG version >= 2.3.1. _(Peter Nirschl @petermax2)_
 - Use clang-format 12 for Restyled and update Restyled version. _(Mihael Pranjić)_
+- Update all Restyled formatters to current versions. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
