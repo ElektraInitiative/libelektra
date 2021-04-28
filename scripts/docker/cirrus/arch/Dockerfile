@@ -10,6 +10,8 @@ RUN pacman -Sy --noconfirm \
     graphviz \
     ninja \
     npm \
+    qt5-base \
+    qt5-declarative \
     rubygems \
     texlive-most \
     wget \
