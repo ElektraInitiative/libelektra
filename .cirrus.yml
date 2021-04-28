@@ -293,8 +293,6 @@ link_task:
       -DBUILD_STATIC=OFF
       -DBUILD_TESTING=OFF
     - *generate
-    - cmake --build "$BUILD_DIR"
-    - scripts/link-checker build/external-links.txt
     - cmake --build "$BUILD_DIR" 2>&1 | grep 'warning: invalid link' > broken_links.txt || true
     - scripts/link-checker build/external-links.txt 2>> broken_links.txt > /dev/null
 
