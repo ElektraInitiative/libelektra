@@ -212,6 +212,9 @@ before_script:
     SYSTEM_DIR="$PWD/kdbsystem"
     export CC_FOR_BUILD="$CC"
     export CXX_FOR_BUILD="$CXX"
+    if [ "$CC" = 'clang-12' ]; then
+        export PATH=/usr/lib/llvm-12/bin:$PATH
+    fi
     mkdir build && cd build
     CMAKE_OPT+=(
       -GNinja
