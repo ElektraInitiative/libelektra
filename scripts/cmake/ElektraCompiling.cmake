@@ -137,7 +137,7 @@ if (ENABLE_ASAN)
 
 		# In case the ubsan library exists, link it otherwise some tests will fail due to missing symbols on Linux
 		if (CMAKE_SYSTEM_NAME MATCHES Linux)
-			set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lubsan")
+			set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lubsan -fsanitize=address")
 		endif (CMAKE_SYSTEM_NAME MATCHES Linux)
 	endif ()
 
