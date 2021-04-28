@@ -64,6 +64,9 @@ RUN apt-get update && apt-get -y install \
         wget \
     && rm -rf /var/lib/apt/lists/*
 
+# Add Clang 12 to path
+ENV PATH="/usr/lib/llvm-12/bin:$PATH"
+
 # Update cache for shared libraries
 RUN ldconfig
 
