@@ -45,7 +45,7 @@ RUN apt-get update && apt-get -y install \
         libyajl-dev \
         libyaml-cpp-dev \
         libzmq3-dev \
-        llvm \
+        llvm-12 \
         moreutils \
         ninja-build \
         npm \
@@ -53,7 +53,7 @@ RUN apt-get update && apt-get -y install \
         pkg-config \
         python3-dev \
         python3-pip \
-        ronn \
+        ruby \
         ruby-dev \
         sloccount \
         swig4.0 \
@@ -124,3 +124,7 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \
     && curl -L "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_amd64" -o shfmt \
     && chmod a+x shfmt
+
+# Ronn-NG
+ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/2.7.0/bin"
+RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version

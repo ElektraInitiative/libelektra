@@ -33,7 +33,6 @@ RUN apt-get -y install \
   python3-dev \
   python3-all \
   ruby-dev \
-  ruby-ronn \
   swig \
   unzip \
   valgrind \
