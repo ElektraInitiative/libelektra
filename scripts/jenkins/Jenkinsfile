@@ -72,8 +72,8 @@ CMAKE_FLAGS_BUILD_ALL = [
 CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
 
 CMAKE_FLAGS_CLANG = [
-  'CMAKE_C_COMPILER': 'clang-12',
-  'CMAKE_CXX_COMPILER': 'clang++-12'
+  'CMAKE_C_COMPILER': 'clang',
+  'CMAKE_CXX_COMPILER': 'clang++'
 ]
 
 CMAKE_FLAGS_MMAP = [
@@ -847,6 +847,8 @@ def buildAndTestAsan(testName, image, extraCmakeFlags = [:]) {
       withDockerEnv(image, dockerOpts) {
         dir('build') {
           deleteDir()
+          /* add LLVM 12 path for Debian */
+          sh "export PATH='/usr/lib/llvm-12/bin/:$PATH'"
           utils.cmake(env.WORKSPACE, cmakeFlags)
           sh "make"
           def llvm_symbolizer = sh(returnStdout: true,
