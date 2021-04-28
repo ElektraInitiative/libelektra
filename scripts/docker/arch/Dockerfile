@@ -8,7 +8,7 @@ RUN pacman -Sy --noconfirm \
     lua \
     make \
     ninja \
-    ruby-ronn-ng \
+    rubygems \
     swig \
     tar
 
@@ -39,3 +39,6 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 USER ${JENKINS_USERID}
+
+ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/3.0.0/bin"
+RUN gem install ronn-ng -v 0.10.1.pre1 && ronn --version
