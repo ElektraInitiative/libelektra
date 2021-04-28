@@ -114,11 +114,8 @@ matrix:
       addons:
         apt:
           sources:
-            - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
+            - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
               key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-          packages:
-            - llvm-10
-            - clang-10
       env:
         - ENABLE_ASAN=ON
         - CC=clang
@@ -165,11 +162,8 @@ matrix:
       addons:
         apt:
           sources:
-            - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main'
+            - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
               key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-          packages:
-            - clang-10
-            - clang-format-10
       env:
         - CC=clang
         - CXX=clang++
@@ -190,6 +184,10 @@ before_install:
       sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
       sudo pip3 install cmake-format[yaml]==0.6.13
     fi
+    if [ "$CC" = 'clang' ]; then
+        sudo apt-get install llvm-12 clang-12 clang-format-12
+        export PATH="/usr/lib/llvm-12/bin":$PATH
+    fi
 
 #
 # Source is checked out in $TRAVIS_BUILD_DIR
@@ -198,17 +196,12 @@ before_install:
 before_script:
   - |
     cd $TRAVIS_BUILD_DIR
-    if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
-      CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
-      export PATH=$PATH:"$PWD/install/bin"
-      export LD_LIBRARY_PATH="$PWD/install/lib"
-    fi
+    CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
+    export PATH=$PATH:"$PWD/install/bin"
+    export LD_LIBRARY_PATH="$PWD/install/lib"
     SYSTEM_DIR="$PWD/kdbsystem"
     export CC_FOR_BUILD="$CC"
     export CXX_FOR_BUILD="$CXX"
-    if [ "$CC" = 'clang' ]; then
-        export PATH="/usr/lib/llvm-10/bin":$PATH
-    fi
     mkdir build && cd build
     CMAKE_OPT+=(
       -GNinja
