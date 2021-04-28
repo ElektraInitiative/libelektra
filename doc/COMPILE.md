@@ -69,7 +69,7 @@ Or on macOS using brew:
 ```sh
 brew install doxygen graphviz
 brew install ruby # in case ruby is not already installed
-gem install ronn-ng
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 To build PDF documentation you need `pdflatex` with
@@ -685,7 +685,7 @@ cd ..
 Also, no ronn-ng was available, thus you need to do:
 
 ```sh
-gem install ronn-ng
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 ### Cross Compiling

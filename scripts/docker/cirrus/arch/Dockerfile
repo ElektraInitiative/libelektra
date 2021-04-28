@@ -10,7 +10,7 @@ RUN pacman -Sy --noconfirm \
     graphviz \
     ninja \
     npm \
-    ruby-ronn-ng \
+    rubygems \
     texlive-most \
     wget \
     yajl
@@ -22,4 +22,7 @@ RUN useradd -m -d /home/${ELEKTRA_USER} ${ELEKTRA_USER} \
     && printf '%s ALL=(ALL) NOPASSWD:ALL\n' ${ELEKTRA_USER} >> /etc/sudoers
 
 USER ${ELEKTRA_USER}
+
+ENV PATH="$PATH:/home/${ELEKTRA_USER}/.local/share/gem/ruby/3.0.0/bin"
+RUN gem install ronn-ng -v 0.10.1.pre1 && ronn --version
 
