@@ -124,11 +124,12 @@ matrix:
             - clang-12
       env:
         - ENABLE_ASAN=ON
-        - CC=clang-12
-        - CXX=clang++-12
+        - CC=clang
+        - CXX=clang++
       script:
+        - echo $PATH
         - ninja
-        - ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-12) ninja run_all
+        - ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
 
     # FULL: Build full version of Elektra (BUILD_FULL=ON)
 
@@ -177,8 +178,8 @@ matrix:
             - clang-12
             - clang-format-12
       env:
-        - CC=clang-12
-        - CXX=clang++-12
+        - CC=clang
+        - CXX=clang++
 
 before_install:
   - |
@@ -212,8 +213,8 @@ before_script:
     SYSTEM_DIR="$PWD/kdbsystem"
     export CC_FOR_BUILD="$CC"
     export CXX_FOR_BUILD="$CXX"
-    if [ "$CC" = 'clang-12' ]; then
-        export PATH=/usr/lib/llvm-12/bin:$PATH
+    if [ "$CC" = 'clang' ]; then
+        export PATH="/usr/lib/llvm-12/bin":$PATH
     fi
     mkdir build && cd build
     CMAKE_OPT+=(
