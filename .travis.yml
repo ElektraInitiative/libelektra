@@ -113,13 +113,9 @@ matrix:
       compiler: clang
       addons:
         apt:
-          sources:
-            - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
-              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages:
-            - llvm-12
-            - clang-12
-            - libclang-common-12-dev
+            - llvm-11
+            - clang-11
       env:
         - ENABLE_ASAN=ON
         - CC=clang
@@ -165,13 +161,9 @@ matrix:
       compiler: clang
       addons:
         apt:
-          sources:
-            - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
-              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages:
-            - clang-12
-            - clang-format-12
-            - libclang-common-12-dev
+            - clang-11
+            - clang-format-11
       env:
         - CC=clang
         - CXX=clang++
@@ -209,7 +201,7 @@ before_script:
     export CC_FOR_BUILD="$CC"
     export CXX_FOR_BUILD="$CXX"
     if [ "$CC" = 'clang' ]; then
-        export PATH="/usr/lib/llvm-12/bin":$PATH
+        export PATH="/usr/lib/llvm-11/bin":$PATH
     fi
     mkdir build && cd build
     CMAKE_OPT+=(
