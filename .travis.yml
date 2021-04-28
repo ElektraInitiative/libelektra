@@ -1,5 +1,5 @@
 language: cpp
-dist: bionic
+dist: focal
 
 #
 # Define the build matrix
@@ -14,8 +14,6 @@ matrix:
       compiler: gcc
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
             - g++-10
       env:
@@ -116,9 +114,8 @@ matrix:
       addons:
         apt:
           sources:
-            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main'
+            - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
               key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
-            - ubuntu-toolchain-r-test
           packages:
             - llvm-12
             - clang-12
@@ -138,8 +135,6 @@ matrix:
       compiler: gcc
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
             - g++-10
       env:
@@ -158,8 +153,6 @@ matrix:
       compiler: gcc
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
             - g++-10
       env:
@@ -172,7 +165,7 @@ matrix:
       addons:
         apt:
           sources:
-            - sourceline: 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main'
+            - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
               key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
           packages:
             - clang-12
