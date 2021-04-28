@@ -182,11 +182,11 @@ mac_task:
       export PATH="/usr/local/opt/python@3.9/bin:$PATH"
     - | # Install Python packages
       pip3 install cmakelang[yaml]==0.6.13
-    - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn` fails with the macOs version of Ruby.)
+    - | # Install Ruby (We use the Homebrew version of Ruby to install gems, since compiling `ronn-ng` fails with the macOs version of Ruby.)
       brew install ruby
       export PATH="/usr/local/opt/ruby/bin:/usr/local/lib/ruby/gems/3.0.0/bin:$PATH"
     - | # Install Ruby gems
-      sudo gem install ronn test-unit --no-document
+      sudo gem install ronn-ng test-unit --no-document
     - | # Install JavaScript packages
       npm install dredd --global
       npm install --global prettier@2.2.1
@@ -220,7 +220,7 @@ mac_task:
     - *install
 
   tests_script:
-    # Remove files produced by `ronn`, since `testscr_check_formatting` only checks the formatting, if the stating area is clean
+    # Remove files produced by `ronn-ng`, since `testscr_check_formatting` only checks the formatting, if the stating area is clean
     - git checkout .
     - export PATH=$PATH:"$CIRRUS_WORKING_DIR/$INSTALL_DIR/bin:/usr/local/opt/llvm/bin"
     - *run_tests
@@ -327,7 +327,7 @@ docu_task:
       if [ -n "$git_diff_output" ]; then
         printf >&2 -- 'It looks like you modified a source file of a man page, but did not commit the updated man page.\n'
         printf >&2 -- 'Please either:\n\n'
-        printf >&2 -- '- build the man pages with `ronn` and commit the result, or\n'
+        printf >&2 -- '- build the man pages with `ronn-ng` and commit the result, or\n'
         printf >&2 -- '- use the `patch` command after this message to update the man pages.\n\n'
         printf >&2 -- 'For the second option, please\n\n'
         printf >&2 -- '1. copy the lines between the long dashes (`—`), and\n'

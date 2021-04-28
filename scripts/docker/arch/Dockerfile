@@ -1,4 +1,4 @@
-FROM archlinux/base
+FROM archlinux:base
 
 RUN pacman -Sy --noconfirm \
     awk \
@@ -8,7 +8,7 @@ RUN pacman -Sy --noconfirm \
     lua \
     make \
     ninja \
-    ruby-ronn \
+    ruby-ronn-ng \
     swig \
     tar
 

@@ -52,7 +52,7 @@ installation of self-compiled Elektra (such as how to uninstall it).
 > If they are not available, some of the functionality gets disabled automatically.
 > The core of Elektra never depends on other libraries.
 
-To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
+To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn-ng](https://github.com/apjanke/ronn-ng/blob/master/INSTALLING.md):
 
 ```sh
 apt-get install doxygen graphviz ruby-ronn
@@ -61,8 +61,7 @@ apt-get install doxygen graphviz ruby-ronn
 Or on RPM based systems:
 
 ```sh
-sudo yum install -y doxygen docbook-style-xsl graphviz ruby
-gem install ronn
+sudo yum install -y doxygen docbook-style-xsl graphviz ruby rubygem-ronn
 ```
 
 Or on macOS using brew:
@@ -70,7 +69,7 @@ Or on macOS using brew:
 ```sh
 brew install doxygen graphviz
 brew install ruby # in case ruby is not already installed
-gem install ronn
+gem install ronn-ng
 ```
 
 To build PDF documentation you need `pdflatex` with
@@ -439,9 +438,9 @@ cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
 
 #### BUILD_DOCUMENTATION
 
-Build documentation with doxygen (API) and ronn (man pages).
+Build documentation with doxygen (API) and ronn-ng (man pages).
 
-If ronn is not found, already compiled man pages will be
+If ronn-ng is not found, already compiled man pages will be
 used instead.
 
 > Note: Turning off building the documentation, also turns off
@@ -683,10 +682,10 @@ sudo make install
 cd ..
 ```
 
-Also, no ronn was available, thus you need to do:
+Also, no ronn-ng was available, thus you need to do:
 
 ```sh
-gem install ronn
+gem install ronn-ng
 ```
 
 ### Cross Compiling

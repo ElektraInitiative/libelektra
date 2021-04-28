@@ -267,6 +267,7 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Fixed example in the "mount-configuration-files" tutorial [#3722](https://github.com/ElektraInitiative/libelektra/issues/3722). _(Philipp Oppel)_
 - Update and correct third party licensing information _(@a-kraschitzer)_
 - Added contact details to `AUTHORS.md` _(Michael Tucek)_
+- Use Ronn-NG instead of unmaintained ronn to generate man pages. _(Mihael Pranjić)_
 
 ## Tests
 

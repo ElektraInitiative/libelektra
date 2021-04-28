@@ -655,7 +655,7 @@ function (generate_manpage NAME)
 			message (
 				WARNING
 					"\nThe file “${MAN_PAGE_LOCATION}” does currently not exist. \
-If you have not done so already, please install `ronn`. \
+If you have not done so already, please install `ronn-ng`. \
 Afterwards make sure you set the CMake option `BUILD_DOCUMENTATION` to ON, \
 and generate “${NAME}.${SECTION}” using the current build system (${CMAKE_GENERATOR}). \
 After that please commit the file ${MAN_PAGE_LOCATION}. \
