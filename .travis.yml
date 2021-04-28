@@ -111,19 +111,13 @@ matrix:
     - os: linux
       name: 🐧 Clang ASAN
       compiler: clang
-      addons:
-        apt:
-          sources:
-            - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
-              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
       env:
         - ENABLE_ASAN=ON
         - CC=clang
         - CXX=clang++
       script:
-        - echo $PATH
         - ninja
-        - ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
+        - ninja run_all
 
     # FULL: Build full version of Elektra (BUILD_FULL=ON)
 
@@ -159,35 +153,24 @@ matrix:
     - os: linux
       name: 🐧 Clang
       compiler: clang
-      addons:
-        apt:
-          sources:
-            - sourceline: 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-12 main'
-              key_url: 'https://apt.llvm.org/llvm-snapshot.gpg.key'
       env:
         - CC=clang
         - CXX=clang++
 
 before_install:
   - |
-    if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
-      sudo apt-get -qq update
-      sudo apt-get install ninja-build
-      sudo apt-get install devscripts # contains `checkbashisms`
-      sudo apt-get install libyaml-cpp-dev
-      sudo apt-get install libuv-dev
-      sudo apt-get install libdbus-1-dev
-      sudo apt-get install libev-dev
-      sudo apt-get install libzmq3-dev
-      sudo apt-get install libxerces-c-dev
-      sudo apt-get install python3-pip
-      sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
-      sudo pip3 install cmake-format[yaml]==0.6.13
-    fi
-    if [ "$CC" = 'clang' ]; then
-        sudo apt-get install llvm-12 clang-12 clang-format-12
-        export PATH="/usr/lib/llvm-12/bin":$PATH
-    fi
+    sudo apt-get -qq update
+    sudo apt-get install ninja-build
+    sudo apt-get install devscripts # contains `checkbashisms`
+    sudo apt-get install libyaml-cpp-dev
+    sudo apt-get install libuv-dev
+    sudo apt-get install libdbus-1-dev
+    sudo apt-get install libev-dev
+    sudo apt-get install libzmq3-dev
+    sudo apt-get install libxerces-c-dev
+    sudo apt-get install python3-pip
+    sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
+    sudo pip3 install cmake-format[yaml]==0.6.13
 
 #
 # Source is checked out in $TRAVIS_BUILD_DIR
