@@ -20,8 +20,8 @@ matrix:
             - g++-10
       env:
         - ENABLE_ASAN=ON
-        - CC_COMPILER=gcc-10
-        - CXX_COMPILER=g++-10
+        - CC=gcc-10
+        - CXX=g++-10
         # Build less stuff so the build does not hit the timeout limit that often
         - TOOLS=kdb
         - BINDINGS=cpp
@@ -124,11 +124,11 @@ matrix:
             - clang-12
       env:
         - ENABLE_ASAN=ON
-        - CC_COMPILER=clang-12
-        - CXX_COMPILER=clang++-12
+        - CC=clang-12
+        - CXX=clang++-12
       script:
         - ninja
-        - ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
+        - ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-12) ninja run_all
 
     # FULL: Build full version of Elektra (BUILD_FULL=ON)
 
@@ -144,8 +144,8 @@ matrix:
       env:
         - BUILD_FULL=ON
         - BUILD_SHARED=OFF
-        - CC_COMPILER=gcc-10
-        - CXX_COMPILER=g++-10
+        - CC=gcc-10
+        - CXX=g++-10
       script:
         - ninja
         - output="$(ninja install 2>&1)" || printf '%s' "$output"
@@ -162,8 +162,8 @@ matrix:
           packages:
             - g++-10
       env:
-        - CC_COMPILER=gcc-10
-        - CXX_COMPILER=g++-10
+        - CC=gcc-10
+        - CXX=g++-10
 
     - os: linux
       name: 🐧 Clang
@@ -177,14 +177,12 @@ matrix:
             - clang-12
             - clang-format-12
       env:
-        - CC_COMPILER=clang-12
-        - CXX_COMPILER=clang++-12
+        - CC=clang-12
+        - CXX=clang++-12
 
 before_install:
   - |
     if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
-      [ -n "$CC_COMPILER" ] && export CC="$CC_COMPILER"
-      [ -n "$CXX_COMPILER" ] && export CXX="$CXX_COMPILER"
       sudo apt-get -qq update
       sudo apt-get install ninja-build
       sudo apt-get install devscripts # contains `checkbashisms`
