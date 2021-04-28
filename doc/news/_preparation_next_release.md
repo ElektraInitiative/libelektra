@@ -305,6 +305,7 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Use Clang 12 and Python 3.9 for macOS builds. _(Mihael Pranjić)_
 - Pin GnuPG version to 2.2.x. _(Mihael Pranjić)_
 - Update Fedora image to version 34. _(Mihael Pranjić)_
+- Clean up unused dependencies in Arch Linux image. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
