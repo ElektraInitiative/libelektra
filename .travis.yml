@@ -11,6 +11,7 @@ matrix:
 
     - os: linux
       name: 🐧 GCC ASAN
+      compiler: gcc
       addons:
         apt:
           sources:
@@ -111,6 +112,7 @@ matrix:
 
     - os: linux
       name: 🐧 Clang ASAN
+      compiler: clang
       addons:
         apt:
           sources:
@@ -126,12 +128,13 @@ matrix:
         - CXX_COMPILER=clang++-12
       script:
         - ninja
-        - ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-12) ninja run_all
+        - ASAN_OPTIONS=symbolize=1 ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer) ninja run_all
 
     # FULL: Build full version of Elektra (BUILD_FULL=ON)
 
     - os: linux
       name: 🐧 FULL
+      compiler: gcc
       addons:
         apt:
           sources:
@@ -151,6 +154,7 @@ matrix:
 
     - os: linux
       name: 🐧 GCC
+      compiler: gcc
       addons:
         apt:
           sources:
@@ -163,6 +167,7 @@ matrix:
 
     - os: linux
       name: 🐧 Clang
+      compiler: clang
       addons:
         apt:
           sources:
