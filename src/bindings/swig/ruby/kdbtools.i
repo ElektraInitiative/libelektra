@@ -31,6 +31,7 @@ Please note, this documentation will show C++ types too (e.g. std::string).
 
 %module kdbtools
 
+#pragma SWIG nowarn=378 // Disable warning: operator!= ignored
 
 %include <attribute.i>
 %include <std_vector.i>
