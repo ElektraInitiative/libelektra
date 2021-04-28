@@ -210,6 +210,8 @@ before_script:
       export LD_LIBRARY_PATH="$PWD/install/lib"
     fi
     SYSTEM_DIR="$PWD/kdbsystem"
+    export CC_FOR_BUILD="$CC"
+    export CXX_FOR_BUILD="$CXX"
     mkdir build && cd build
     CMAKE_OPT+=(
       -GNinja
