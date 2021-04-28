@@ -1,114 +1,76 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "KDB\-EXPORT" "1" "September 2020" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-EXPORT" "1" "April 2021" ""
 .SH "NAME"
 \fBkdb\-export\fR \- Export keys from the key database
-.
 .SH "SYNOPSIS"
 \fBkdb export <source> [<format>]\fR
-.
 .br
-.
 .SH "DESCRIPTION"
 This command allows a user to export keys from the key database\.
-.
 .br
 Keys are exported to \fBstdout\fR in whichever format is specified\.
-.
 .br
 This command can also be used to view full key(s) including their values\.
-.
 .br
-.
 .SH "USAGE"
 Where \fBsource\fR is the path of the key(s) you want to export\. Additionally, the user can specify a format to use by passing it as the option argument \fBformat\fR\.
-.
 .br
 The \fBformat\fR attribute relies on Elektra’s plugin system to export the keys in the desired format\.The user can view all plugins available for use by running the kdb\-plugin\-list(1) command\. To learn about any plugin, the user can simply use the kdb\-plugin\-info(1) command\.
-.
 .br
 The \fBstorage\fR plugin can be configured at compile\-time or changed by the link \fBlibelektra\-storage\.so\fR\.
-.
 .SH "OPTIONS"
-.
 .TP
 \fB\-H\fR, \fB\-\-help\fR
 Show the man page\.
-.
 .TP
 \fB\-V\fR, \fB\-\-version\fR
 Print version info\.
-.
 .TP
 \fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
-.
 .TP
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.
-.
 .TP
 \fB\-E\fR, \fB\-\-without\-elektra\fR
 Omit the \fBsystem:/elektra\fR directory\.
-.
 .TP
 \fB\-c\fR, \fB\-\-plugins\-config <plugins\-config>\fR
 Add a configuration to the format plugin\.
-.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Explain what is happening\. Prints additional information in case of errors/warnings\.
-.
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
-.
 .SH "KDB"
-.
 .IP "\(bu" 4
 \fB/sw/elektra/kdb/#0/current/format\fR Change default format (if none is given at commandline) and built\-in default \fBstorage\fR is not your preferred format\.
-.
 .IP "" 0
-.
 .SH "EXAMPLES"
 To view your full key database in Elektra’s \fBstorage\fR format:
-.
 .br
 \fBkdb export /\fR
-.
 .br
-.
 .P
 To backup your full key database in Elektra’s \fBstorage\fR format to a file called \fBfull\-backup\.ecf\fR:
-.
 .br
 \fBkdb export / > full\-backup\.ecf\fR
-.
 .br
-.
 .P
 To backup a keyset stored in \fBuser:/keyset\fR in the \fBini\fR format to a file called \fBkeyset\.ini\fR:
-.
 .br
 \fBkdb export user:/keyset ini > keyset\.ini\fR
-.
 .br
-.
 .P
 Change default format to \fBsimpleini\fR:
-.
 .br
 \fBkdb set /sw/elektra/kdb/#0/current/format simpleini\fR
-.
 .P
 Create two key values and export them as \fBxml\fR:
-.
 .IP "" 4
-.
 .nf
-
 kdb set user:/tests/kdb\-export/one one
 kdb set user:/tests/kdb\-export/two two
 
@@ -125,18 +87,12 @@ kdb export user:/tests/kdb\-export/ xml
 
 kdb rm \-r user:/tests
 # cleanup
-.
 .fi
-.
 .IP "" 0
-.
 .P
 Create two key values and export them with the \fBxerces\fR plugin:
-.
 .IP "" 4
-.
 .nf
-
 kdb set user:/tests/kdb\-export/one one
 kdb set user:/tests/kdb\-export/two two
 
@@ -152,15 +108,10 @@ kdb export user:/tests/kdb\-export/ xerces
 
 kdb rm \-r user:/tests
 # cleanup
-.
 .fi
-.
 .IP "" 0
-.
 .SH "Note"
-.
 .IP "\(bu" 4
 Only storage plugins can be used for formatting\.
-.
 .IP "" 0
 

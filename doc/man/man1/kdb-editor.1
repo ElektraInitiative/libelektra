@@ -1,132 +1,93 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "KDB\-EDITOR" "1" "September 2020" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-EDITOR" "1" "April 2021" ""
 .SH "NAME"
 \fBkdb\-editor\fR \- Use your editor for editing KDB
-.
 .SH "SYNOPSIS"
 \fBkdb editor <path> [<format>]\fR
-.
 .P
 Where \fBpath\fR is the destination where the user wants to edit keys and \fBformat\fR is the format in which the keys should be edited\. If the \fBformat\fR argument is not passed, then the default format will be used as determined by the value of the \fBsw/kdb/current/format\fR key\. By default, that key contains \fBstorage\fR\. The \fBstorage\fR plugin can be configured at compile\-time or changed by the link \fBlibelektra\-storage\.so\fR\. The \fBformat\fR attribute relies on Elektra’s plugin system to properly import the configuration\. The user can view all plugins available for use by running the kdb\-plugin\-list(1) command\. To learn about any plugin, the user can simply use the kdb\-plugin\-info(1) command\.
-.
 .SH "DESCRIPTION"
 This command allows a user to edit configuration of the key database using a text editor\. The user should specify the format that the current configuration or keys are in, otherwise the default format will be used\.
-.
 .SH "RETURN VALUES"
-.
 .TP
 0
 successful\.
-.
 .TP
 1\-10
 standard exit codes, see kdb(1) \fIkdb\.md\fR
-.
 .TP
 11
 could not export configuration\.
-.
 .TP
 12
 could not start editor\.
-.
 .TP
 13
 could not import configuration because of conflicts
-.
 .TP
 14
 could not import configuration because of error during kdbSet() (Most likely a validation error)
-.
 .SH "OPTIONS"
-.
 .TP
 \fB\-H\fR, \fB\-\-help\fR
 Show the man page\.
-.
 .TP
 \fB\-V\fR, \fB\-\-version\fR
 Print version info\.
-.
 .TP
 \fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
-.
 .TP
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.
-.
 .TP
 \fB\-s\fR, \fB\-\-strategy <name>\fR
 Specify which strategy should be used to resolve conflicts\.
-.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Explain what is happening\. Prints additional information in case of errors/warnings\.
-.
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
-.
 .TP
 \fB\-e\fR, \fB\-\-editor <editor>\fR
 Which editor to use\.
-.
 .TP
 \fB\-N\fR, \fB\-\-namespace\fR=\fIns\fR
 Specify the namespace to use when writing cascading keys (\fBvalidation\fR strategy only)\. See \fIbelow in KDB\fR\.
-.
 .SH "Strategies"
-.
 .TP
 \fBvalidate\fR
 apply metadata as received from base, and then cut+append all keys as imported\. If the appended keys do not have a namespace, the namespace given by \fB\-N\fR is added\.
-.
 .P
 The other strategies are implemented by the merge framework and are documented in elektra\-merge\-strategy(7) \fIelektra\-merge\-strategy\.md\fR\.
-.
 .SH "KDB"
-.
 .TP
 \fB/sw/elektra/kdb/#0/current/format\fR
 The default format if none given\. Defaults to \fBstorage\fR if the key does not exist\.
-.
 .TP
 \fB/sw/elektra/kdb/#0/current/editor\fR
 The default editor, if no \fB\-e\fR option is given\. Defaults to \fB/usr/bin/sensible\-editor\fR, \fB/usr/bin/editor\fR or \fB/usr/bin/vi\fR if the key does not exist\.
-.
 .TP
 \fB/sw/elektra/kdb/#0/current/namespace\fR
 Specifies which default namespace should be used when setting a cascading name\. By default the namespace is user, except \fBkdb\fR is used as root, then \fBsystem\fR is the default (\fBvalidate\fR strategy only)\.
-.
 .SH "EXAMPLES"
 To change the configuration in KDB below \fBuser:/ini\fR with \fB/usr/bin/vim\fR, you would use:
-.
 .br
 \fBkdb editor \-e /usr/bin/vim user:/ini\fR
-.
 .P
 Or set a new editor as default using:
-.
 .br
 \fBkdb set /sw/elektra/kdb/#0/current/editor /usr/bin/nano\fR
-.
 .P
 To change the configuration in KDB below \fBuser\fR in xml format, you would use:
-.
 .br
 \fBkdb editor user xml\fR
-.
 .SH "SEE ALSO"
-.
 .IP "\(bu" 4
 elektra\-merge\-strategy(7) \fIelektra\-merge\-strategy\.md\fR
-.
 .IP "\(bu" 4
 elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
-.
 .IP "" 0
 

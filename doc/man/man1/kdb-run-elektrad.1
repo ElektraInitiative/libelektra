@@ -1,94 +1,59 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "README" "" "March 2020" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "README" "" "April 2021" ""
 .SH "Introduction"
 A server that provides an HTTP API \fIhttp://docs\.elektrad\.apiary\.io\fR to access Elektra remotely, built using Go \fIhttps://golang\.org\fR\.
-.
 .SH "Lifetime of KDB handles"
 Instantiating a KDB Handle for every request is expensive, espescially for big KDB databases, and prevents handling of conflicts\. To mitigate this issue sessions with an associated handle are created\. One hour after the last request these sessions are destroyed and the KDB handle is closed\.
-.
 .SH "Source structure"
 \fB*_handler\.go\fR files contain the HTTP handler functions\.
-.
 .br
 \fB*_handler_test\.go\fR files contain the corresponding handler tests\.
-.
 .br
 \fBtemp\-elektra\.pc\.in\fR that CMAKE leverages to create an intermediate pkg\-config file that tells the GO compiler where it can find the Elektra header files and symbols during the build step\. \fBmiddleware\.go\fR contains the HTTP middleware \- such as user session (and caching of Elektra handles) management\.
-.
 .br
 \fBrouter\.go\fR is responsible for setting up the API routes\.
-.
 .br
 \fBmain\.go\fR is the entry point of the server\.
-.
 .SH "Compiling"
 You can compile \fBelektrad\fR manually or via CMake\.
-.
 .P
 If go\-elektra \fIhttps://github\.com/ElektraInitiative/go\-elektra\fR fails to compile checkout the README\.md \fIhttps://github\.com/ElektraInitiative/go\-elektra/blob/master/README\.md\fR for troubleshooting\.
-.
 .SS "Manually"
-.
 .IP "\(bu" 4
 make sure you have go (>1\.13) installed\.
-.
 .IP "\(bu" 4
 install libelektra \fIhttps://libelektra\.org/\fR\.
-.
 .IP "\(bu" 4
 now run \fBgo build\fR in the elektrad folder with Go modules enabled (GO111MODULE=on)\.
-.
 .IP "" 0
-.
 .P
 The output of \fBgo build\fR is a binary, you can simply run it with:
-.
 .IP "" 4
-.
 .nf
-
 \&\./elektrad
-.
 .fi
-.
 .IP "" 0
-.
 .SS "With CMake"
 Compile Elektra as described in the COMPILE document \fI/doc/COMPILE\.md\fR, make sure to include the \fBweb\fR and \fBkdb\fR tool using the \fB\-DTOOLS\fR flag, e\.g\. \fB\-DTOOLS="kdb;web"\fR\.
-.
 .P
 The binary is located at \fBbuild\-dir/src/tools/web/elektrad\fR and symlinked to \fBbuild\-dir/bin/elektrad\fR\.
-.
 .SS "Installing"
 You can install Elektra as described in the install documentation \fI/doc/INSTALL\.md\fR\.
-.
 .SH "To Run"
 To launch elektrad run the command
-.
 .IP "" 4
-.
 .nf
-
 kdb run\-elektrad
-.
 .fi
-.
 .IP "" 0
-.
 .SS "Flags"
 \fB\-port 33333\fR \- change the port the server uses\.
-.
 .SH "API"
 By default, \fBelektrad\fR runs on \fIhttp://localhost:33333\fR
-.
 .IP "\(bu" 4
 API documentation: https://elektrad\.docs\.apiary\.io/
-.
 .IP "\(bu" 4
 API blueprint: elektrad\.apib \fIhttps://master\.libelektra\.org/doc/api_blueprints/elektrad\.apib\fR
-.
 .IP "" 0
 

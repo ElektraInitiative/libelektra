@@ -1,39 +1,26 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "ELEKTRA\-BACKENDS" "7" "May 2020" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "ELEKTRA\-BACKENDS" "7" "April 2021" ""
 .SH "NAME"
 \fBelektra\-backends\fR \- the backend concept
-.
 .P
 Elektra has introduced \fBbackends\fR to support the storage of key databases in different formats\. Elektra abstracts configuration so that applications can receive and store settings without carrying information about how and where these are actually stored\. It is the purpose of the backends to implement these details\.
-.
 .P
 Since Elektra 0\.8 a backend is composed of many plugins\.
-.
 .SH "MULTIPLE PLUGINS"
-It\'s clear that too many features in one backend is problematic\. It introduces unwanted external dependences and leads to less portable backends\. Many different aspects clutter the code making the backends unmaintainable\. Features of other backends cannot be taken with ease because they are interwoven with other code\.
-.
+It's clear that too many features in one backend is problematic\. It introduces unwanted external dependences and leads to less portable backends\. Many different aspects clutter the code making the backends unmaintainable\. Features of other backends cannot be taken with ease because they are interwoven with other code\.
 .P
 To support the reuse of functionality, they must be useful in different situations\. Separation of concerns is required for that\. Each backend needs to have a specific purpose rather than implementing the full semantics of Elektra\.
-.
 .P
-It was impossible to implement powerful and feature\-rich backends so far because of the lack of modularity\. Desirable features like notification and type checking have always been in the developers\' heads, but there was no place where it would fit in without making the system unmaintainable, complex and full of unwanted external dependences\.
-.
+It was impossible to implement powerful and feature\-rich backends so far because of the lack of modularity\. Desirable features like notification and type checking have always been in the developers' heads, but there was no place where it would fit in without making the system unmaintainable, complex and full of unwanted external dependences\.
 .P
 To solve this dilemma, Elektra uses \fBmultiple plugins\fR together to build up a backend\. The key set processed by one plugin will be passed to the next\. This approach allows us to implement separate features in separate plugins\. Plugins concerned with reading from and writing to permanent storage are called \fBstorage plugins\fR\. We cleaned existing backends from other tasks so that their only job now is related to the storage\. Using this approach, the plugins provide the desired separation of concerns inside a backend\.
-.
 .P
 Each plugin implements a single concrete requirement and it does that well\. This architecture allows plugins to have external dependence\. Not every plugin has the burden to be portable anymore\. That is no problem because the plugins are separate subprojects and maintainers can decide if they should be built for a specific platform or not\. Afterwards users can choose which plugins they want to install and use\. And finally, the administrator can choose which of the plugins should be loaded for each backend\. If a specific feature is not needed, it is not included and does not cause additional overhead\. Given the chosen approach, the core of Elektra can stay minimal\. Most functionality can be moved to plugins\.
-.
 .P
 Now let us look at the \fBdevelopment time\fR with multiple plugins\. The programmer will find many reusable plugins\. Some of them already fulfil given requirements\. While checking the code quality of the plugins, the programmer actually learns how the plugin works\. Given that point of view, the programmer will decide to use Elektra because he or she can choose from a pool of existing plugins\.
-.
 .SH "SEE ALSO"
-.
 .IP "\(bu" 4
 The tool for mounting a backend is kdb\-mount(1) \fIkdb\-mount\.md\fR
-.
 .IP "" 0
 

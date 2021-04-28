@@ -1,282 +1,195 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "KDB" "1" "January 2021" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB" "1" "April 2021" ""
 .SH "NAME"
 \fBkdb\fR \- key database access tools
-.
 .SH "INTRODUCTION"
 \fBkdb\fR provides access to the global key database of Elektra via command\-line\.
-.
 .P
 Concepts are in man page section 7 and are prefixed with \fBelektra\-\fR\. If you do not yet know about Elektra, you should start reading elektra\-introduction(7) \fIelektra\-introduction\.md\fR\. CLI Tools of Elektra are in man page section 1 and are prefixed with \fBkdb\-\fR\.
-.
 .P
 The man pages can also be viewed online at: https://doc\.libelektra\.org/api/latest/html/pages\.html
-.
 .P
 And the page you are currently reading at: https://doc\.libelektra\.org/api/latest/html/md_doc_help_kdb\.html
-.
 .SH "OVERVIEW"
 In this manual we give an overview of the tool suite \fBkdb\fR\. It is part of Elektra’s tools\. The tool suite \fBkdb\fR consists of individual commands\. Most commands are independent and some commands are sharing an executable\. Some commands are written as external scripts\.
-.
 .P
 The included commands can be listed via:
-.
 .br
 \fBkdb\fR
-.
 .P
 External commands can be listed via:
-.
 .br
 \fBkdb list\-tools\fR
-.
 .P
 Only a few commands are enough for daily use\. We can retrieve a key by:
-.
 .br
 \fBkdb get user:/key\fR
-.
 .P
 We store a key permanently with a value given by:
-.
 .br
 \fBkdb set user:/key value\fR
-.
 .P
 We list all available keys arranged below a key by:
-.
 .br
 \fBkdb ls user:/key\fR
-.
 .P
 Documentation of plugins is available using the kdb\-plugin\-info(1) \fIkdb\-plugin\-info\.md\fR tool:
-.
 .br
 \fBkdb plugin\-info\fR
-.
 .P
 Run \fBkdb plugin\-list\fR for a list of plugins:
-.
 .br
 \fBkdb plugin\-list\fR
-.
 .P
 Each of these commands has its own man page for further details\.
-.
 .SH "BASIC OPTIONS"
 Every core\-tool has the following options:
-.
 .TP
 \fB\-H\fR, \fB\-\-help\fR
 Show the man page\.
-.
 .TP
 \fB\-V\fR, \fB\-\-version\fR
 Print version info\.
-.
 .TP
 \fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile, see below\.
-.
 .TP
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.
-.
 .TP
 \fB\-\-\fR
 Do not process any following arguments starting with \fB\-\fR as options\.
-.
 .SH "COMMON OPTIONS"
 Most tools have the following options:
-.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Explain what is happening\. Also shows Configfile and Mountpoint in case of an error/warning
-.
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
 Suppress non\-error messages\.
-.
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Shows the line at which an error happened in case an error or warning is issued
-.
 .SH "KDB"
 The \fBkdb\fR utility reads its own configuration from three sources within the KDB (key database):
-.
 .IP "1." 4
 /sw/kdb/\fBprofile\fR/ (for legacy configuration)
-.
 .IP "2." 4
 /sw/elektra/kdb/#0/%/ (for empty profile, \fB%\fR in Elektra is used to represent emptiness)
-.
 .IP "3." 4
 /sw/elektra/kdb/#0/\fBprofile\fR/ (for current profile, if no \fB\-p\fR or \fB\-\-profile\fR is given, \fBcurrent\fR will be used)
-.
 .IP "" 0
-.
 .P
 Here the last source where a configuration value is found, wins\.
-.
 .P
 For example, to permanently change verbosity one can use:
-.
 .TP
 \fBkdb set /sw/elektra/kdb/#0/current/verbose 1\fR
 Be verbose for every tool\.
-.
 .TP
 \fBkdb set /sw/elektra/kdb/#0/current/quiet 1\fR
 Be quiet for every tool\.
-.
 .P
 If \fB%\fR is passed to \fB\-p\fR or \fB\-\-profile\fR, the KDB will not be consulted for configuration and only the command\-line arguments are used\.
-.
 .SH "PROFILES"
 Profiles allow users to change many/all configuration settings of a tool at once\. It influences from where the KDB entries are read\. Without a \fB\-p\fR or \fB\-\-profile\fR argument following profiles are used (in the order of preference):
-.
 .TP
 \fBcurrent\fR
 Is the profile to be used only if no \fB\-p\fR argument was used\.
-.
 .TP
 \fB%\fR
 Is the fallback profile\. It will be used if keys cannot be found in the main profile\.
-.
 .P
 For example if you use:
-.
 .br
 \fBkdb export \-p admin system\fR
-.
 .P
 It will read its format configuration from \fB/sw/elektra/kdb/#0/admin/format\fR\.
-.
 .P
 If you want different configuration per user or directories, you should prefer to use the \fBuser\fR and \fBdir\fR namespaces\. Then the correct configuration will be chosen automatically according to the current user or current working directory\.
-.
 .P
 Sometimes it is useful to start with default options, for example it is not possible to invert the \fB\-q\fR option\. In such situations one can simply select a non\-existing profile, then \fB\-q\fR works as usual:
-.
 .br
 \fBkdb mount \-p nonexist \-q /abc dir:/abc\fR
-.
 .P
 If \fB%\fR is used as profile name for \fB\-p\fR, the \fBkdb\fR tools disables reading from \fBKDB\fR for their own configuration settings\. Then, they only use command\-line arguments\.
-.
 .P
 To explicitly state the default behavior, we use:
-.
 .br
 \fB\-p current\fR
-.
 .P
 To state that we do not want to read any configuration settings for \fBkdb\fR from KDB, we use:
-.
 .br
 \fB\-p %\fR
-.
+.IP "" 4
+Note that KDB will still be used to perform the actions you want to perform with the \fBkdb\fR tool\.
+.IP "" 0
 .SH "BOOKMARKS"
 Elektra recommends to use rather long paths \fI/doc/tutorials/application\-integration\.md\fR because it ensures flexibility in the future (e\.g\. to use profiles and have a compatible path for new major versions of configuration)\.
-.
 .P
 Long paths are, however, cumbersome to enter in the CLI\. Thus one can define bookmarks\. Bookmarks are keys whose key name starts with \fB+\fR\. They are only recognized by the \fBkdb\fR tool or tools that explicit have support for it\. Your applications should not depend on the presence of a bookmark\.
-.
 .P
 Bookmarks are stored below:
-.
 .br
 \fB/sw/elektra/kdb/#0/current/bookmarks\fR
-.
 .P
 For every key found there, a new bookmark will be introduced\.
-.
 .P
 Bookmarks can be used to start key names by using \fB+\fR (plus) as first character\. The string until the first \fB/\fR will be considered as bookmark\.
-.
 .P
 For example, if you set the bookmark kdb:
-.
 .IP "" 4
-.
 .nf
-
 kdb set user:/sw/elektra/kdb/#0/current/bookmarks
 kdb set user:/sw/elektra/kdb/#0/current/bookmarks/kdb user:/sw/elektra/kdb/#0/current
-.
 .fi
-.
 .IP "" 0
-.
 .P
 You are able to use:
-.
 .IP "" 4
-.
 .nf
-
 kdb ls +kdb/bookmarks
 kdb get +kdb/format
-.
 .fi
-.
 .IP "" 0
-.
 .SH "RETURN VALUES"
-.
 .TP
 0
 successful\.
-.
 .TP
 1
 Invalid options passed\.
-.
 .TP
 2
 Invalid arguments passed\.
-.
 .TP
 3
 Command terminated unsuccessfully without specifying error code\.
-.
 .TP
 4
 Unknown command\.
-.
 .TP
 5
 KDB Error, could not read/write from/to KDB\.
-.
 .TP
 6
 Reserved error code\.
-.
 .TP
 7
 Unknown errors, wrong exceptions thrown\.
-.
 .TP
 8\-10
 Reserved error codes\.
-.
 .TP
 11\-20
 Command\-specific error codes\. See man page of specific command\.
-.
 .SH "SEE ALSO"
-.
 .IP "\(bu" 4
 elektra\-introduction(7) \fIelektra\-introduction\.md\fR
-.
 .IP "\(bu" 4
 kdb(1) \fIkdb\.md\fR
-.
 .IP "\(bu" 4
 Get a big picture about Elektra \fI/doc/BIGPICTURE\.md\fR
-.
 .IP "" 0
 
