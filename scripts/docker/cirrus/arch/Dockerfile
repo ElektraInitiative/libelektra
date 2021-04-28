@@ -10,7 +10,7 @@ RUN pacman -Sy --noconfirm \
     graphviz \
     ninja \
     npm \
-    ruby-ronn \
+    ruby-ronn-ng \
     texlive-most \
     wget \
     yajl
