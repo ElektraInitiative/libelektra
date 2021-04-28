@@ -119,6 +119,7 @@ matrix:
           packages:
             - llvm-12
             - clang-12
+            - libclang-common-12-dev
       env:
         - ENABLE_ASAN=ON
         - CC=clang
@@ -170,6 +171,7 @@ matrix:
           packages:
             - clang-12
             - clang-format-12
+            - libclang-common-12-dev
       env:
         - CC=clang
         - CXX=clang++
