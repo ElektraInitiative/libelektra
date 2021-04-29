@@ -11,7 +11,7 @@ if (DEPENDENCY_PHASE)
 				ERROR_QUIET
 				OUTPUT_VARIABLE JAVA_HOME
 				OUTPUT_STRIP_TRAILING_WHITESPACE)
-		endif()
+		endif ()
 	endif ()
 
 	find_package (JNI QUIET)
