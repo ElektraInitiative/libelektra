@@ -77,8 +77,10 @@ jobs:
         echo "$JAVA_HOME/bin" >> $GITHUB_PATH
         which javac || true
         javac --version || true
-        /usr/libexec/java_home --failfast || true
         cat $JAVA_HOME/../Info.plist || true
+        /usr/libexec/java_home --failfast || true
+        export OTHER_JAVA_HOME=$(/usr/libexec/java_home --failfast) || true
+        cat $OTHER_JAVA_HOME/../Info.plist || true
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
