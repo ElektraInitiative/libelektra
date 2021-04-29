@@ -77,6 +77,7 @@ jobs:
         echo "$JAVA_HOME/bin" >> $GITHUB_PATH
         which javac || true
         javac --version || true
+        /usr/libexec/java_home --failfast || true
         cat $JAVA_HOME/Contents/Info.plist
 
     - name: Configure CMake
