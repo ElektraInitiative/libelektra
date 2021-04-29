@@ -69,11 +69,7 @@ jobs:
         echo "INSTALL_DIR=${{runner.workspace}}/build/install" >> $GITHUB_ENV
         echo "$INSTALL_DIR/bin" >> $GITHUB_PATH
         export JAVA_HOME=$(/usr/libexec/java_home --failfast)
-        echo $JAVA_HOME
         echo "$JAVA_HOME/bin" >> $GITHUB_PATH
-        which javac || true
-        javac --version || true
-        cat $JAVA_HOME/../Info.plist || true
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
@@ -123,6 +119,5 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        echo $PATH
         cmake --build . --target run_all
         kdb run_all
