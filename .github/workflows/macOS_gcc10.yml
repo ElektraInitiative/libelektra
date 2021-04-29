@@ -70,8 +70,6 @@ jobs:
         echo $INSTALL_DIR
         echo "INSTALL_DIR=$INSTALL_DIR" >> $GITHUB_ENV
         echo "$INSTALL_DIR/bin" >> $GITHUB_PATH
-        export JAVA_HOME=$(/usr/libexec/java_home --failfast)
-        echo "$JAVA_HOME/bin" >> $GITHUB_PATH
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
