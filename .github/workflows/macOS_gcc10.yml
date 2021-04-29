@@ -78,7 +78,7 @@ jobs:
         which javac || true
         javac --version || true
         /usr/libexec/java_home --failfast || true
-        cat $JAVA_HOME/Contents/Info.plist
+        cat $JAVA_HOME/../Info.plist || true
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
