@@ -35,7 +35,7 @@ jobs:
     - uses: actions/setup-java@v2
       with:
         distribution: 'adopt' # Use AdoptOpenJDK
-        java-version: '14'
+        java-version: '16'
 
     - name: Install Dependencies
       run: |
