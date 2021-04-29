@@ -129,44 +129,45 @@ mac_task:
     - | # Install Homebrew formulas
       brew update
       brew config
-      brew install openjdk
-      brew install antlr
-      brew install antlr4-cpp-runtime
-      brew install augeas
-      brew install bison
-      brew install boost
-      brew install clang-format
-      brew install dbus
+      brew install openjdk \
+        antlr \
+        antlr4-cpp-runtime \
+        augeas \
+        bison \
+        boost \
+        clang-format \
+        dbus \
+        discount \
+        doxygen \
+        flex \
+        glib \
+        go \
+        gnupg@2.2 \
+        gpgme \
+        gradle \
+        graphviz \
+        libev \
+        libgcrypt \
+        libgit2 \
+        libuv \
+        llvm \
+        lua \
+        moreutils \
+        ninja \
+        npm \
+        oclint/formulae/oclint \
+        openssl \
+        pkg-config \
+        qt \
+        shfmt \
+        swig \
+        tree \
+        xerces-c \
+        yajl \
+        yaml-cpp \
+        zeromq
+
       brew upgrade dbus
-      brew install discount
-      brew install doxygen
-      brew install flex
-      brew install glib
-      brew install go
-      brew install gnupg@2.2
-      brew install gpgme
-      brew install gradle
-      brew install graphviz
-      brew install libev
-      brew install libgcrypt
-      brew install libgit2
-      brew install libuv
-      brew install llvm
-      brew install lua
-      brew install moreutils
-      brew install ninja
-      brew install npm
-      brew install oclint/formulae/oclint
-      brew install openssl
-      brew install pkg-config
-      brew install qt
-      brew install shfmt
-      brew install swig
-      brew install tree
-      brew install xerces-c
-      brew install yajl
-      brew install yaml-cpp
-      brew install zeromq
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
       brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
     - | # Start D-Bus session bus
