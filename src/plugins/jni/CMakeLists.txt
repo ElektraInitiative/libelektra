@@ -4,13 +4,14 @@ include (SafeCheckSymbolExists)
 
 if (DEPENDENCY_PHASE)
 	set (JAVA_HOME $ENV{JAVA_HOME})
-	if (APPLE AND NOT DEFINED ${JAVA_HOME})
-		execute_process (
-			COMMAND "/usr/libexec/java_home --failfast"
-			ERROR_QUIET
-			OUTPUT_VARIABLE JAVA_HOME
-			OUTPUT_STRIP_TRAILING_WHITESPACE)
-		set (ENV{JAVA_HOME} ${JAVA_HOME})
+	if (APPLE)
+		if (NOT DEFINED JAVA_HOME)
+			execute_process (
+				COMMAND "/usr/libexec/java_home" "--failfast"
+				ERROR_QUIET
+				OUTPUT_VARIABLE JAVA_HOME
+				OUTPUT_STRIP_TRAILING_WHITESPACE)
+		endif()
 	endif ()
 
 	find_package (JNI QUIET)
