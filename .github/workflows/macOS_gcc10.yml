@@ -32,6 +32,10 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7 # Not needed with a .ruby-version file
+    - uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt' # Use AdoptOpenJDK
+        java-version: '14'
 
     - name: Install Dependencies
       run: |
@@ -50,7 +54,6 @@ jobs:
         brew install libuv
         brew install lua
         brew install ninja
-        brew install openjdk
         brew install qt
         brew install swig
         brew install yajl
@@ -58,9 +61,6 @@ jobs:
 
     - name: Setup Build Environment
       run: |
-        sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk
-        echo "JAVA_HOME=/Library/Java/JavaVirtualMachines/openjdk.jdk/Contents/Home" >> $GITHUB_ENV
-        echo "/usr/local/opt/openjdk/bin" >> $GITHUB_PATH
         echo "/usr/local/opt/gnupg@2.2/bin" >> $GITHUB_PATH
         gem install test-unit --no-document
         pip2 install cheetah # Required by kdb-gen
@@ -71,6 +71,7 @@ jobs:
         cmake -E make_directory ${{runner.workspace}}/build
         echo "INSTALL_DIR=${{runner.workspace}}/build/install" >> $GITHUB_ENV
         echo "$INSTALL_DIR/bin" >> $GITHUB_PATH
+        echo $JAVA_HOME
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
