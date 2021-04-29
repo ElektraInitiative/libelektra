@@ -66,10 +66,6 @@ jobs:
         brew postinstall dbus
         brew services restart dbus
         cmake -E make_directory ${{runner.workspace}}/build
-        export INSTALL_DIR=${{runner.workspace}}/build/install
-        echo $INSTALL_DIR
-        echo "INSTALL_DIR=$INSTALL_DIR" >> $GITHUB_ENV
-        echo "$INSTALL_DIR/bin" >> $GITHUB_PATH
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
@@ -96,7 +92,6 @@ jobs:
           -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
           -DKDB_DB_FILE="${KDB_DB_FILE:-default.ecf}"
           -DKDB_DB_INIT="${KDB_DB_INIT:-elektra.ecf}"
-          -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR"
         )
         printf '—— CMake Config ——\n'
         for option in "${CMAKE_OPT[@]}"; do printf '%s\n' "$option"; done
