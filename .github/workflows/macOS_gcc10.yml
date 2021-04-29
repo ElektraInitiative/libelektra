@@ -70,7 +70,7 @@ jobs:
         brew services restart dbus
         cmake -E make_directory ${{runner.workspace}}/build
         echo "INSTALL_DIR=${{runner.workspace}}/build/install" >> $GITHUB_ENV
-        echo "$INSTALL_DIR" >> $GITHUB_PATH
+        echo "$INSTALL_DIR/bin" >> $GITHUB_PATH
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable

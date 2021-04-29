@@ -223,7 +223,7 @@ you up to date with the multi-language support provided by Elektra.
 ### GitHub Actions
 
 - Pin GnuPG version to 2.2.x. _(Mihael Pranjić)_
-- Fix issues with `dbus` and Java paths. _(Mihael Pranjić)_
+- Enable `jni` plugin. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
