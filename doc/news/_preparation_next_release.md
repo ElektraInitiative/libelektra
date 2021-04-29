@@ -299,7 +299,9 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Add Fedora 34 images. _(Mihael Pranjić)_
 - We added release images that come with pre-installed dependencies and sudo permissions for each distribution we build packages for. _(Robert Sowula)_
 - Use Clang 12 and Gradle 7.0 in Debian Sid image. _(Mihael Pranjić)_
-- Remove boost dependency from all images. _(Mihael Pranjić)_
+- Remove boost and some unused dependencies from all Docker images. _(Mihael Pranjić)_
+- Use Gradle 7.0 and Ronn-NG `0.10.1.pre1` in Docker images. _(Mihael Pranjić)_
+- Remove unused Debian Buster `doc` image. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -310,7 +312,7 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Use Clang 12 and Python 3.9 for macOS builds. _(Mihael Pranjić)_
 - Pin GnuPG version to 2.2.x. _(Mihael Pranjić)_
 - Update Fedora image to version 34. _(Mihael Pranjić)_
-- Clean up unused dependencies in Arch Linux image. _(Mihael Pranjić)_
+- Clean up unused dependencies in Arch Linux image and add Ronn-NG to generate man pages. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -324,12 +326,13 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 ### Jenkins
 
 - We now build and test on Fedora 34 and 33. Fedora 32 was removed from the CI. _(Mihael Pranjić)_
+- Build release documentation on Debian Sid, due to newer TeX and Doxygen packages. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
 ### Travis
 
-- Update Ubuntu toolchains to GCC 10 and Clang 12. _(Mihael Pranjić)_
+- Update Ubuntu to Focal, use GCC 10 and clean up travis scripts. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
