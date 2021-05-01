@@ -169,7 +169,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added Reviews for all functions contained in the Elektra Core API _(@lawli3t)_
 - Document package names of plugins, bindings and tools. _(Robert Sowula)_
 - Small update in API docu related to different namespaces in returned keys. _(Markus Raab)_
-- <<TODO>>
+- improved docu of [noresolver](/src/plugins/noresolver). _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - Adding info about syncing forks to `doc/GIT.md` _(Klemens Böswirth)_

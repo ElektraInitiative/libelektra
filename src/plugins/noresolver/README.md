@@ -4,8 +4,16 @@
 - infos/provides = resolver
 - infos/needs =
 - infos/placements = rollback getresolver setresolver
-- infos/status = maintained nodep libc configurable unfinished nodoc concept
+- infos/status = maintained nodep libc configurable discouraged
 - infos/description = resolver dummy that always succeeds
+
+## Introduction
+
+`noresolver` is designed for non-file-based storage plugins like [uname](../uname).
+It is a trivial resolver that:
+
+- does not resolve file names but forwards them as given to the storage plugin
+- does not provide any consistency guarantees but storage plugins directly write to the config files
 
 ## Explanation
 
