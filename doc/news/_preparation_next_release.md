@@ -147,7 +147,6 @@ you up to date with the multi-language support provided by Elektra.
 
 - Remove `kdb set` functionality that creates a null key. _(Robert Sowula)_
 - Rename elektraStrnDup to elektraMemDup _(@a-kraschitzer)_
-- Update specmount error message #3666 _(@a-kraschitzer)_
 - Update specmount error message _(@a-kraschitzer)_
 - Update `elektraMemDup` to `void *` and update the documentation. _(Mihael Pranjić)_
 - There have been a few bugfixes for elektrad. _(Klemens Böswirth)_
@@ -174,7 +173,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - Adding info about syncing forks to `doc/GIT.md` _(Klemens Böswirth)_
 - Work on [COMPILE.md](/doc/COMPILE.md) and [INSTALL.md](/doc/INSTALL.md) to help with understanding _(@a-kraschitzer)_
-- Update licensing information (year) _(@a-kraschitzer)_
+- Update and correct licensing information _(@a-kraschitzer)_
 - Rename [RELEASE.md](/doc/todo/RELEASE.md) _(@a-kraschitzer)_
 - Improved documentation for module kdb in Elektra Core. _(@lawli3t)_
 - Improved documentation for module key in Elektra Core. _(@lawli3t)_
