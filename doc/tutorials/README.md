@@ -23,6 +23,7 @@ provides.
 - [Integration of your C Application](application-integration.md)
 - [Plugins Introduction](plugins.md)
 - [Storage Plugins](storage-plugins.md)
+- [Writing a specification](specification.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
 - [High Level API](highlevel.md)
 - [Command Line Options](command-line-options.md)
