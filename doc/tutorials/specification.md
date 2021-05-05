@@ -1,16 +1,5 @@
-summary: How to Write a specification in Elektra
-id: elektra-specification
-categories: Elektra
-tags: cm2021
-status: Published 
-authors: @aaronabebe
-Feedback Link: https://libelektra.org
-
-# How to Write a specification in Elektra<!-- ------------------------ -->
+# How to Write a specification in Elektra
 ## Overview 
-Duration: 1
-
-![elektra-logo](assets/elektra-logo.svg)
 
 ### Introduction
 In this codelab you will learn how to interactively use the `SpecElektra` specification language and `kdb` to write a configuration specification for an example application.
@@ -29,9 +18,7 @@ In this codelab you will learn how to interactively use the `SpecElektra` specif
 - use code generation and `kdb` to create and mount a specification for an example CRUD (Create, Read, Update, Delete) application 
 - define defaults, examples and checks for keys in the validation 
 
-<!-- ------------------------ -->
 ## Example App Overview
-Duration: 1
 
 For this tutorial we will write a specification for a very simple CRUD (Create, Read, Update, Delete) backend application. 
 You need to configure a `port` for the REST server, an `ip` and a SQL `dialect` for the database server the app 
@@ -44,9 +31,7 @@ So the application will need the following configuration options:
 - a backup date
 
 
-<!-- ------------------------ -->
 ## Getting Started
-Duration: 3
 
 Make sure you have `Elektra` installed on your local machine. 
 ```
@@ -59,9 +44,7 @@ SO_VERSION: 5
 Otherwise refer to the [getting started guide](https://www.libelektra.org/getstarted/guide) to install it.
 
 
-<!-- ------------------------ -->
-## Task: Mounting the specification
-Duration: 5
+## Mounting the specification
 
 ### Step 1: Mount a specification file
 
@@ -113,9 +96,7 @@ kdb spec-mount /sw/app/current/\#0 ni
 This specification mount makes sure that the paths where the concrete configuration should be, in this case `app.ni`, are ready to fulfill or specification, in this case `spec.ni`.
 
 
-<!-- ------------------------ -->
-## Task: Adding your first key to the specification 
-Duration: 5
+## Adding your first key to the specification 
 
 
 ### Step 1: Adding the server port
@@ -216,10 +197,7 @@ kdb set /sw/app/current/#0/server/port 123456
 
 Did it work? I hope not. The validation plugin you specified will now correctly validate the port you enter and give you an error.
 
-
-<!-- ------------------------ -->
-## Task: Adding the database keys to the specification
-Duration: 5
+## Adding the database keys to the specification
 
 ### Step 1: Adding the database ip
 
@@ -331,9 +309,7 @@ database/dialect =
  meta:/check/enum = #4
 ```
 
-<!-- ------------------------ -->
-## Task: Adding the backup date
-Duration: 3
+## Adding the backup date
 
 The last key we will add to our application is a `date` key for the annual backup and restart (this should probably not be annually in a real application).
 Here we use the [check/date](https://www.libelektra.org/plugins/date) plugin with the `ISO8601` format.
@@ -406,9 +382,7 @@ database/dialect =
  meta:/check/enum = #4
 ```
 
-<!-- ------------------------ -->
 ## Final specification code
-Duration: 1
 
 After adding all the keys that are necessary for our application to the server, your specification should look something like this:
 
@@ -462,10 +436,7 @@ database/dialect =
  meta:/check/enum = #4
 ```
 
-
-<!-- ------------------------ -->
 ## Summary
-Duration: 1
 
 - You setup and mounted a specification using `kdb mount` and `kdb spec-mount` 
 - You added keys the specification using `kdb meta-set`
@@ -475,9 +446,7 @@ Duration: 1
 - You also added validation checks using different plugins, like `check/port`, `check/ipaddr` or 
 
 
-<!-- ------------------------ -->
 ## Learn more
-Duration: 1
 
 Tutorials on the Elektra homepage: 
 
