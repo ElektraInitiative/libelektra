@@ -66,7 +66,7 @@ Duration: 5
 ### Step 1: Mount a specification file
 
 First you need to mount a specification file, in this case `spec.ni` to the `spec:/` namespace.
-We define the path inside the `spec:/` namespace as `/sw/app/current/\#0`, refer to 
+We define the path inside the `spec:/` namespace as `/sw/app/current/#0`, refer to 
 [the documentation](https://www.libelektra.org/tutorials/integration-of-your-c-application) to find out more about constructing the name.
 
 We also need the specify the plugin we use for writing to the file in the correct format. In this case we choose the `ni` plugin to write to the specification file.
