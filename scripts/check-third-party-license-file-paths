@@ -1,7 +1,6 @@
 #!/bin/bash
 
-for i in `grep -oP "(?<=Files: |\s{7})([^\*].*/.*)" ../doc/THIRD-PARTY-LICENSES`
-do
+for i in $(grep -oP "(?<=Files: |\s{7})([^\*].*/.*)" ../doc/THIRD-PARTY-LICENSES); do
 	echo -n "../$i "
 	eval ls -d "../$i" 2> /dev/null | wc -l
 done
