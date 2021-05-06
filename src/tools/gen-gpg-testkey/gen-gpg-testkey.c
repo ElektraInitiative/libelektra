@@ -12,6 +12,12 @@
 
 #define ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION "elektra testkey (gen-gpg-testkey)"
 
+gpgme_error_t passphrase_cb (void * hook, const char * uid_hint, const char * passphrase_info, int prev_was_bad, int fd)
+{
+	gpgme_io_writen (fd, "\n", 2);
+	return 0;
+}
+
 int main (void)
 {
 	gpgme_error_t err;
@@ -35,6 +41,10 @@ int main (void)
 		return -1;
 	}
 
+	// configure gpgme
+	gpgme_set_pinentry_mode (ctx, GPGME_PINENTRY_MODE_LOOPBACK);
+	gpgme_set_passphrase_cb (ctx, passphrase_cb, NULL);
+
 	// look for the elektra key
 	err = gpgme_op_keylist_start (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, 1 /* secret keys only! */);
 	if (err)
@@ -52,24 +62,13 @@ int main (void)
 
 	if (err && gpg_err_code (err) == GPG_ERR_EOF)
 	{
-		// create the elektra demo key
-		// NOTE new versions of libgpgme provide GPGME_CREATE_NOEXPIRE to create keys that do not expire
-		//      and the parameter 0 means "reasonable expiration date" (for whatever that is).
-		//      However, in older verions (that do not have GPGME_CREATE_NOEXPIRE) an expiration of 0 means
-		//      that the key does not expire.
-		//
-		//      See https://lists.gnupg.org/pipermail/gnupg-commits/2017-February/013351.html
-#ifdef GPGME_CREATE_NOEXPIRE
-		err = gpgme_op_createkey (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, "default", 0, 0, NULL,
-					  GPGME_CREATE_SIGN | GPGME_CREATE_ENCR | GPGME_CREATE_NOEXPIRE | GPGME_CREATE_NOPASSWD);
-#else
-		err = gpgme_op_createkey (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, "default", 0, 0, NULL,
-					  GPGME_CREATE_SIGN | GPGME_CREATE_ENCR | GPGME_CREATE_NOPASSWD);
-#endif
+		err = gpgme_op_createkey (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, NULL, 0, 0, NULL,
+					  GPGME_CREATE_SIGN | GPGME_CREATE_ENCR);
 
 		if (err)
 		{
-			fprintf (stderr, "failed to create GPG test key with error message: %s\n", gpgme_strerror (err));
+			fprintf (stderr, "failed to create GPG test key with error message: %s: %s\n", gpgme_strsource (err),
+				 gpgme_strerror (err));
 			goto cleanup;
 		}
 
