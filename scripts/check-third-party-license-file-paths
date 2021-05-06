@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 for i in $(grep -oP "(?<=Files: |\s{7})([^\*].*/.*)" ../doc/THIRD-PARTY-LICENSES); do
 	echo -n "../$i "
