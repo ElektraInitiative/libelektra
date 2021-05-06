@@ -8,18 +8,10 @@
  */
 
 #include <gpgme.h>
+#include <locale.h>
 #include <stdio.h>
 
-#define ELEKTRA_GEN_GPG_TESTKEY_UNUSED __attribute__ ((unused))
 #define ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION "elektra testkey (gen-gpg-testkey)"
-
-gpgme_error_t passphrase_cb (void * hook ELEKTRA_GEN_GPG_TESTKEY_UNUSED, const char * uid_hint ELEKTRA_GEN_GPG_TESTKEY_UNUSED,
-			     const char * passphrase_info ELEKTRA_GEN_GPG_TESTKEY_UNUSED, int prev_was_bad ELEKTRA_GEN_GPG_TESTKEY_UNUSED,
-			     int fd)
-{
-	gpgme_io_writen (fd, "\n", 2);
-	return 0;
-}
 
 int main (void)
 {
@@ -29,6 +21,13 @@ int main (void)
 	gpgme_genkey_result_t res;
 
 	gpgme_check_version (NULL);
+
+	setlocale (LC_ALL, "");
+	gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
+#ifndef HAVE_W32_SYSTEM
+	gpgme_set_locale (NULL, LC_MESSAGES, setlocale (LC_MESSAGES, NULL));
+#endif
+
 	err = gpgme_engine_check_version (GPGME_PROTOCOL_OpenPGP);
 	if (err)
 	{
@@ -45,28 +44,28 @@ int main (void)
 	}
 
 	// configure gpgme
-	gpgme_set_pinentry_mode (ctx, GPGME_PINENTRY_MODE_LOOPBACK);
-	gpgme_set_passphrase_cb (ctx, passphrase_cb, NULL);
+	gpgme_set_protocol (ctx, GPGME_PROTOCOL_OpenPGP);
+	gpgme_set_armor (ctx, 1);
 
 	// look for the elektra key
 	err = gpgme_op_keylist_start (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, 1 /* secret keys only! */);
 	if (err)
 	{
-		fprintf (stderr, "gpgme error: %s\n", gpgme_strerror (err));
+		fprintf (stderr, "error while looking for the key: %s\n", gpgme_strerror (err));
 		goto cleanup;
 	}
 
 	err = gpgme_op_keylist_next (ctx, &key);
 	if (err && gpg_err_code (err) != GPG_ERR_EOF)
 	{
-		fprintf (stderr, "gpgme error: %s\n", gpgme_strerror (err));
+		fprintf (stderr, "error while looking for the key: %s\n", gpgme_strerror (err));
 		goto cleanup;
 	}
 
 	if (err && gpg_err_code (err) == GPG_ERR_EOF)
 	{
-		err = gpgme_op_createkey (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, NULL, 0, 0, NULL,
-					  GPGME_CREATE_SIGN | GPGME_CREATE_ENCR);
+		// generate a new key
+		err = gpgme_op_createkey (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, NULL, 0, 0, NULL, GPGME_CREATE_NOPASSWD);
 
 		if (err)
 		{
@@ -80,7 +79,7 @@ int main (void)
 	}
 	else
 	{
-		// display the key ID
+		// display the ID of the existing test key
 		fprintf (stdout, "%s", key->subkeys->fpr);
 		gpgme_key_release (key);
 		gpgme_op_keylist_end (ctx);
