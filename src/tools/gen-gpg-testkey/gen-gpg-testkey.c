@@ -10,9 +10,12 @@
 #include <gpgme.h>
 #include <stdio.h>
 
+#define ELEKTRA_GEN_GPG_TESTKEY_UNUSED __attribute__ ((unused))
 #define ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION "elektra testkey (gen-gpg-testkey)"
 
-gpgme_error_t passphrase_cb (void * hook, const char * uid_hint, const char * passphrase_info, int prev_was_bad, int fd)
+gpgme_error_t passphrase_cb (void * hook ELEKTRA_GEN_GPG_TESTKEY_UNUSED, const char * uid_hint ELEKTRA_GEN_GPG_TESTKEY_UNUSED,
+			     const char * passphrase_info ELEKTRA_GEN_GPG_TESTKEY_UNUSED, int prev_was_bad ELEKTRA_GEN_GPG_TESTKEY_UNUSED,
+			     int fd)
 {
 	gpgme_io_writen (fd, "\n", 2);
 	return 0;
