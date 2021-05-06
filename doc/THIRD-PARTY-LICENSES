@@ -25,7 +25,7 @@ Files: scripts/cmake/Modules/FindDiscount.cmake
 Copyright: 2013-2013 Lars Baehren <lbaehren@gmail.com>
 License: BSD-2-clause-discount
 
-Files: scripts/cmake/Modules/FindLua52.cmake
+Files: scripts/cmake/Modules/FindLua.cmake
        scripts/cmake/Modules/FindPython2Interp.cmake
        scripts/cmake/Modules/FindPython2Libs.cmake
 Copyright: 2000-2021 Kitware, Inc. and Contributors
@@ -34,10 +34,6 @@ License: BSD-3-clause-cmake-new
 Files: scripts/cmake/Modules/FindGLib.cmake
 Copyright: 2016 Evan Nemerson <evan@nemerson.com>
 License: MIT
-
-Files: src/plugins/ini/inih-r29/*
-Copyright: 2009, Brush Technology
-License: BSD-3-clause-inih
 
 Files: src/plugins/ni/nickel-1.1.0/*
 Copyright: 2008 Charles Lindsay <charles@chaoslizard.org>
@@ -80,12 +76,12 @@ Files: src/tools/qt-gui/src/markdownconverter/*
 Copyright: 2013 Christian Loose
 License: BSD-3-clause-markdownconverter
 
-Files: scripts/realpath
+Files: scripts/dev/realpath
 Copyright: 2014 Michael Kropat
 License: MIT
 
-Files: src/tools/web/client/public/Roboto-Light.ttf
-       src/tools/web/client/public/Roboto-Regular.ttf
+Files: src/tools/webui/public/Roboto-Light.ttf
+       src/tools/webui/public/Roboto-Regular.ttf
 Copyright: 2012 Google
 License: Apache-2.0
 
