@@ -17,7 +17,7 @@ gpgme_error_t passphrase_cb (void * hook ELEKTRA_GEN_GPG_TESTKEY_UNUSED, const c
 			     const char * passphrase_info ELEKTRA_GEN_GPG_TESTKEY_UNUSED, int prev_was_bad ELEKTRA_GEN_GPG_TESTKEY_UNUSED,
 			     int fd)
 {
-	gpgme_io_writen (fd, "Super-Secret-Passphrase-123456\n", 33);
+	gpgme_io_writen (fd, "\n", 2);
 	return 0;
 }
 
