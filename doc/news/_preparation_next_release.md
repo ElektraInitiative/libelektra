@@ -183,6 +183,7 @@ you up to date with the multi-language support provided by Elektra.
 - Improved documentation for module keytest in Elektra Core. _(@lawli3t)_
 - Improved documentation for module keyset in Elektra Core. _(@lawli3t)_
 - Fixed example in the "mount-configuration-files" tutorial [#3722](https://github.com/ElektraInitiative/libelektra/issues/3722). _(Philipp Oppel)_
+- Update and correct third party licensing information _(@a-kraschitzer)_
 
 ## Tests
 
