@@ -8,7 +8,6 @@
  */
 
 #include <gpgme.h>
-#include <locale.h>
 #include <stdio.h>
 
 #define ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION "elektra testkey (gen-gpg-testkey)"
@@ -21,13 +20,6 @@ int main (void)
 	gpgme_genkey_result_t res;
 
 	gpgme_check_version (NULL);
-
-	setlocale (LC_ALL, "");
-	gpgme_set_locale (NULL, LC_CTYPE, setlocale (LC_CTYPE, NULL));
-#ifndef HAVE_W32_SYSTEM
-	gpgme_set_locale (NULL, LC_MESSAGES, setlocale (LC_MESSAGES, NULL));
-#endif
-
 	err = gpgme_engine_check_version (GPGME_PROTOCOL_OpenPGP);
 	if (err)
 	{
@@ -66,7 +58,6 @@ int main (void)
 	{
 		// generate a new key
 		err = gpgme_op_createkey (ctx, ELEKTRA_GEN_GPG_TESTKEY_DESCRIPTION, NULL, 0, 0, NULL, GPGME_CREATE_NOPASSWD);
-
 		if (err)
 		{
 			fprintf (stderr, "failed to create GPG test key with error message: %s: %s\n", gpgme_strsource (err),
