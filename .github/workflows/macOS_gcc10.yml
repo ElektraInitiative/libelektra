@@ -42,7 +42,7 @@ jobs:
           dbus \
           discount \
           flex \
-          gnupg@2.2 \
+          gnupg \
           gpgme \
           libev \
           libgcrypt \
