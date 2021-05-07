@@ -42,7 +42,6 @@ jobs:
           dbus \
           discount \
           flex \
-          gnupg \
           gpgme \
           libev \
           libgcrypt \
@@ -58,7 +57,6 @@ jobs:
 
     - name: Setup Build Environment
       run: |
-        echo "/usr/local/opt/gnupg@2.2/bin" >> $GITHUB_PATH
         gem install test-unit --no-document
         pip2 install cheetah # Required by kdb-gen
         brew tap homebrew/services

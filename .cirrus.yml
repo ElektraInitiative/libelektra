@@ -142,7 +142,6 @@ mac_task:
         flex \
         glib \
         go \
-        gnupg \
         gpgme \
         gradle \
         graphviz \
