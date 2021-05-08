@@ -62,6 +62,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### Xerces
 
 - Store length of an array in metakey array according to [array decision](../decisions/array.md). _(Robert Sowula)_
+- Fix issue where array could not be created during serialization. _(Robert Sowula)_
 
 ### YAML Smith
 
