@@ -117,6 +117,7 @@ void appendKey (DOMDocument & doc, KeySet const & ks, Key const & parentKey, str
 	// Now create the path
 	Key currentPathKey = parentKey.dup ();
 	string actualName;
+	string previousName;
 	DOMElement * child = nullptr;
 	for (; name != key.end (); name++)
 	{
@@ -128,11 +129,24 @@ void appendKey (DOMDocument & doc, KeySet const & ks, Key const & parentKey, str
 
 		if (!child)
 		{
-			ELEKTRA_LOG_DEBUG ("creating path element %s", actualName.c_str ());
-			child = doc.createElement (asXMLCh (actualName));
-			current->appendChild (child);
+			if (actualName[0] == '#')
+			{
+				if (actualName == "#0") continue;
+
+				ELEKTRA_LOG_DEBUG ("creating array path element %s", previousName.c_str ());
+				child = doc.createElement(asXMLCh (previousName));
+				current->getParentNode()->appendChild (child);
+
+			}
+			else
+			{
+				ELEKTRA_LOG_DEBUG ("creating path element %s", actualName.c_str ());
+				child = doc.createElement (asXMLCh (actualName));
+				current->appendChild (child);
+			}
 		}
 		current = child;
+		previousName = actualName;
 	}
 
 	// Now we are at the key's insertion point and the last key name part, the loop has already set all our elements
