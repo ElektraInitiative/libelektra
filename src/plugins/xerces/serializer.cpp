@@ -134,9 +134,8 @@ void appendKey (DOMDocument & doc, KeySet const & ks, Key const & parentKey, str
 				if (actualName == "#0") continue;
 
 				ELEKTRA_LOG_DEBUG ("creating array path element %s", previousName.c_str ());
-				child = doc.createElement(asXMLCh (previousName));
-				current->getParentNode()->appendChild (child);
-
+				child = doc.createElement (asXMLCh (previousName));
+				current->getParentNode ()->appendChild (child);
 			}
 			else
 			{
