@@ -208,6 +208,11 @@ static void test_keyReference (void)
 	Key * c = keyNew ("user:/c", KEY_END);
 	Key * d;
 	KeySet *ks1, *ks2;
+
+	succeed_if (keyGetRef (0) == -1, "No error on getting refcount of NULL Key");
+	succeed_if (keyDecRef (0) == -1, "No error on decrementing NULL Key");
+	succeed_if (keyIncRef (0) == -1, "No error on incrementing NULL Key");
+
 	succeed_if (keyGetRef (key) == 0, "New created key reference");
 
 	succeed_if (keyIncRef (key) == 1, "keyIncRef return value");
