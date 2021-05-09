@@ -83,14 +83,16 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] Line 306  
-       - [ ] Line 317
+       - [x] Line 306  
+       - [x] Line 317  
+       (impossible to check - overflow)
 - [ ] All possible error states are covered by tests  
-       - [ ] check return value for binary strings  
+       - [x] check return value for binary strings  
        (seems to already happen? tests/abi/testabi_key.c:1007 ff.)  
-       - [ ] check return value for maxSize too small  
+       - [x] check return value for maxSize too small  
        (seems to already happen? tests/abi/testabi_key.c:913)  
-       - [ ] check return value for maxSize > SSIZE_MAX
+       - [x] check return value for maxSize > SSIZE_MAX  
+       (impossible to check - overflow)
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

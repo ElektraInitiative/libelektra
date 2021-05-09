@@ -901,14 +901,17 @@ static void test_keyValue (void)
 	succeed_if (keyValue (0) == 0, "null pointer");
 	succeed_if (keyGetValueSize (0) == -1, "null pointer");
 	succeed_if (keySetString (0, "") == -1, "null pointer");
+	succeed_if_same_string (keyString(0), "(null)");
 
 	key = keyNew ("/", KEY_END);
 	succeed_if (keyGetValueSize (key) == 1, "empty value size");
+	succeed_if_same_string (keyString(key), "");
 
 	keySetString (key, testString);
 	succeed_if (keyGetString (0, ret, 100) == -1, "null pointer");
 	succeed_if (keyGetString (key, 0, 100) == -1, "string null pointer");
 	succeed_if (keyGetString (key, ret, 0) == -1, "length checking");
+	succeed_if_same_string (keyString(key), testString);
 
 	for (i = 1; i < sizeof (testString); i++)
 	{
@@ -1025,6 +1028,7 @@ static void test_keyBinary (void)
 	succeed_if (keyGetBinary (key, ret, 1000) == sizeof (binaryData), "could not get binary data");
 	succeed_if (memcmp (binaryData, ret, sizeof (binaryData)) == 0, "memcmp");
 	succeed_if (keyGetString (key, ret, 1000) == -1, "should be type mismatch");
+	succeed_if_same_string (keyString (key), "(binary)");
 
 	keyDel (key);
 
@@ -1038,6 +1042,7 @@ static void test_keyBinary (void)
 	succeed_if (keyGetBinary (key, ret, 1000) == sizeof (binaryData), "could not get binary data");
 	succeed_if (memcmp (binaryData, ret, sizeof (binaryData)) == 0, "memcmp");
 	succeed_if (keyGetString (key, ret, 1000) == -1, "should be type mismatch");
+	succeed_if_same_string (keyString (key), "(binary)");
 
 	keyDel (key);
 
@@ -1089,6 +1094,7 @@ static void test_keyBinary (void)
 	succeed_if (keyGetBinary (key, ret, 1000) == 1, "could not get binary data");
 	succeed_if (memcmp (binaryData, ret, 1) == 0, "memcmp");
 	succeed_if (keyGetString (key, ret, 1000) == -1, "should be type mismatch");
+	succeed_if_same_string (keyString (key), "(binary)");
 
 	keyDel (key);
 
@@ -1103,6 +1109,7 @@ static void test_keyBinary (void)
 	succeed_if (keyGetBinary (key, ret, 1000) == sizeof (i), "could not get binary data");
 	succeed_if (memcmp ((void *) &i, ret, sizeof (i)) == 0, "memcmp");
 	succeed_if (keyGetString (key, ret, 1000) == -1, "should be type mismatch");
+	succeed_if_same_string (keyString (key), "(binary)");
 
 	i = *(int *) keyValue (key);
 	succeed_if (i == 23, "incorrect int");
@@ -1679,6 +1686,7 @@ static void test_binary (void)
 	succeed_if (keyIsBinary (k), "key is not binary (should be from previous calls)");
 	succeed_if (keyGetBinary (k, data, 1) == 0, "could not get empty binary");
 	succeed_if (keyValue (k) == 0, "did not get back null pointer");
+
 	keyDel (k);
 }
 
