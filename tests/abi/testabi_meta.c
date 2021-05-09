@@ -59,6 +59,32 @@ static void test_basic (void)
 	keyDel (key);
 }
 
+static void test_null_pointer (void)
+{
+	Key * key;
+
+	key = keyNew ("user:/test1", KEY_END);
+	exit_if_fail (key, "could not create new key");
+
+	succeed_if (keyRewindMeta (0) == -1, "Could rewind NULL Key");
+
+	succeed_if (keyGetMeta (0, "test") == 0, "Could get meta of NULL Key");
+	succeed_if (keyGetMeta (key, 0) == 0, "Could get meta of NULL metaName");
+
+	succeed_if (keyMeta (0) == 0, "Could get metadata of NULL Key");
+	succeed_if (keyCurrentMeta (0) == 0, "Could get current meta Key of NULL key");
+	succeed_if (keyNextMeta (0) == 0, "Could get next meta Key of NULL key");
+
+	succeed_if (keyCopyMeta (0, key, "test") == -1, "Could copy metadata to NULL Key");
+	succeed_if (keyCopyMeta (key, 0, "test") == -1, "Could copy metadata from NULL Key");
+
+	succeed_if (keyCopyAllMeta (0, key) == -1, "Could copy all metadata to NULL Key");
+	succeed_if (keyCopyAllMeta (key, 0) == -1, "Could copy all metadata from NULL Key");
+
+	succeed_if (keySetMeta (0, "test", "test"), "Could set metadata to NULL Key");
+	succeed_if (keySetMeta (key, 0, "test"), "Could set metadata with NULL metaName");
+}
+
 static void test_iterate (void)
 {
 	Key * key;
@@ -315,6 +341,25 @@ static void test_copy (void)
 
 	keyDel (key1);
 	keyDel (key2);
+
+
+	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
+	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
+
+	succeed_if (keySetMeta (key2, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
+
+	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 0, "could not copy metavalue");
+
+	printf("test");
+
+	succeed_if (keyGetMeta (key1, "mymeta") == 0, "value of mymeta is not NULL");
+	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
+	// succeed_if (keyGetMeta (key2, "mymeta") == 0, "value of mymeta has not been cleared");
+
+	keyDel (key1);
+	keyDel (key2);
+
 
 	Key * k;
 	Key * c;
@@ -594,6 +639,7 @@ int main (int argc, char ** argv)
 	init (argc, argv);
 
 	test_basic ();
+	test_null_pointer ();
 	test_iterate ();
 	test_size ();
 	test_dup ();
