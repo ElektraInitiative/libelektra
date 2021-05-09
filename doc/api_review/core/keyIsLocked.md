@@ -87,7 +87,7 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-       - [ ] test for null pointer return value
+       - [x] test for null pointer return value
 - [x] All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

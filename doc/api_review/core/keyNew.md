@@ -85,13 +85,14 @@
 - [x] Function code is fully covered by tests
 - [x] All possible error states are covered by tests
 - [ ] All possible enum values are covered by tests  
-       - [ ] KEY_META  
-       - [ ] KEY_FLAGS
+       - [x] KEY_META  
+       - [x] KEY_FLAGS
 - [ ] No inconsistencies between tests and documentation  
        - [ ] Documentation says i can work with `Key *k =keyNew("", KEY_END);`  
        Tests say  
        `k = keyNew ("", KEY_END); succeed_if (k == NULL, "should be invalid"); keyDel (k);`  
-       - [ ] same as above with `keyNew(0)`
+       - [ ] same as above with `keyNew(0)`  
+       TODO
 
 ## Summary
 

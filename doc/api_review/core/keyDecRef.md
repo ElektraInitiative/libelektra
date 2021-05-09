@@ -84,10 +84,10 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - test decrementing key with reference counter = 0
+       - [x] test decrementing key with reference counter = 0
 - [ ] All possible error states are covered by tests  
-       - test decrementing key with reference counter = 0  
-       - test null pointer
+       - [x] test decrementing key with reference counter = 0  
+       - [x] test null pointer
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
