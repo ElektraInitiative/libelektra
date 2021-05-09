@@ -690,6 +690,8 @@ static void test_keyNeedSync (void)
 {
 	printf ("Test key need sync\n");
 
+	succeed_if (keyNeedSync(0) == -1, "No error on NULL Key");
+
 	Key * k = keyNew ("/", KEY_END);
 	succeed_if (keyNeedSync (k), "fresh key should need sync");
 

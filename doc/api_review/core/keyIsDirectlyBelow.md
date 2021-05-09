@@ -85,11 +85,11 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] Line 293  
-       - [ ] Line 326
+       - [x] Line 293  
+       - [x] Line 326
 - [ ] All possible error states are covered by tests  
-       - [ ] Line 293 seems to be checked  
-       - [ ] Line 326 seems to be checked
+       - [x] Line 293 seems to be checked  
+       - [x] Line 326 seems to be checked
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
