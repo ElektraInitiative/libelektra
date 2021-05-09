@@ -50,7 +50,6 @@ if (ADDTESTING_PHASE)
 		configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/testmod_jni.h.in" "${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h")
 
 		add_custom_target (jni_header DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/testmod_jni.h")
-		message (INFO "JNI test activated.")
 	else ()
 		message (WARNING "JNA bindings are required for testing but binding was not enabled. JNI test deactivated.")
 	endif ()
