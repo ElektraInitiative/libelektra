@@ -1,6 +1,6 @@
 # How-To: Write a Plugin
 
-This file serves as a tutorial on how to write a storage plugin (which includes all information to write filter plugins).
+This file serves as a tutorial on how to write a plugin.
 
 ## Types of Plugins
 
@@ -11,7 +11,10 @@ This file serves as a tutorial on how to write a storage plugin (which includes 
 - Filter plugins are simpler than storage plugins.
   They receive configuration settings in the same way as storage plugins but they do not have the responsibility to serialize the configuration
   settings to configuration files.
+  For example, `checker` plugins which validate configuration are filter plugins.
 - Resolver plugins are more complicated and not covered by this tutorial.
+
+This tutorial mostly uses storage plugins as example but also explains differences to filter plugins.
 
 ## Basics
 
@@ -141,7 +144,9 @@ Only for the description an unlimited amount of lines can be
 used (until the end of the file).
 
 For the meaning (semantics) of these clauses, please refer to [contract specification](/doc/CONTRACT.ini).
-The only difference for filter plugins is that their `infos/provides` and `infos/placements` are different.
+For details of how plugins are ordered [look here](/doc/dev/plugins-ordering.md)
+The only difference for filter plugins to storage plugins is that their `infos/provides` and `infos/placements` are different,
+e.g., for checker plugins `presetstorage` usually is enough.
 
 The already mentioned `generate_readme` will produce a list of Keys using the
 information in `README.md`. It would look like (for the third key):
@@ -469,3 +474,10 @@ Some applications want to call Elektra methods directly via native access.
 A `KeySet` is a data structure over which functions can iterate. If you want to start again from to first element,
 you have to explicitly call `rewind()` to set the internal pointer to the start.
 Any plugin expects the passed `KeySet` to be **rewinded**.
+
+## Further Readings
+
+Read more about:
+
+- [contracts](/doc/help/elektra-contracts.md)
+- [of how to write a storage plugin](storage-plugins.md)
