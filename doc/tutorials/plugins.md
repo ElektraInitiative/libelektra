@@ -477,4 +477,7 @@ Any plugin expects the passed `KeySet` to be **rewinded**.
 
 ## Further Readings
 
-- [Details of how to write a storage plugin](doc/tutorials/storage-plugins.md)
+Read more about:
+
+- [contracts](/doc/help/elektra-contracts.md)
+- [of how to write a storage plugin](storage-plugins.md)
