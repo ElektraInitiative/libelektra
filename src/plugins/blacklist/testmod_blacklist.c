@@ -15,18 +15,17 @@
 static void test_blacklist (void)
 {
 	Key * parentKey = keyNew ("user:/tests/blacklist", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user:/tests/blacklist/valid1", KEY_VALUE, "ICE", KEY_META, "check/blacklist", "#1",
-			   KEY_META, "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#1", "EARTH", KEY_END);
-	Key * k2 = keyNew ("user:/tests/blacklist/valid2", KEY_VALUE, "EARTH", KEY_META, "check/blacklist", "#2",
-			   KEY_META, "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#2", "WATER", KEY_END);
-	Key * k3 = keyNew ("user:/tests/blacklist/valid3", KEY_VALUE, "", KEY_META, "check/blacklist", "#1",
-			   KEY_META, "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#1", "EARTH", KEY_END);
-	Key * k4 =
-		keyNew ("user:/tests/blacklist/invalid1", KEY_VALUE, "ICE", KEY_META, "check/blacklist", "#2",
-			KEY_META, "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#1", "EARTH", KEY_META, "check/blacklist/#2", "ICE", KEY_END);
-	Key * k5 =
-		keyNew ("user:/tests/blacklist/invalid2", KEY_VALUE, "FIRE", KEY_META, "check/blacklist", "#0",
-			KEY_META, "check/blacklist/#0", "FIRE", KEY_END);
+	Key * k1 = keyNew ("user:/tests/blacklist/valid1", KEY_VALUE, "ICE", KEY_META, "check/blacklist", "#1", KEY_META,
+			   "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#1", "EARTH", KEY_END);
+	Key * k2 = keyNew ("user:/tests/blacklist/valid2", KEY_VALUE, "EARTH", KEY_META, "check/blacklist", "#2", KEY_META,
+			   "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#2", "WATER", KEY_END);
+	Key * k3 = keyNew ("user:/tests/blacklist/valid3", KEY_VALUE, "", KEY_META, "check/blacklist", "#1", KEY_META, "check/blacklist/#0",
+			   "FIRE", KEY_META, "check/blacklist/#1", "EARTH", KEY_END);
+	Key * k4 = keyNew ("user:/tests/blacklist/invalid1", KEY_VALUE, "ICE", KEY_META, "check/blacklist", "#2", KEY_META,
+			   "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#1", "EARTH", KEY_META, "check/blacklist/#2", "ICE",
+			   KEY_END);
+	Key * k5 = keyNew ("user:/tests/blacklist/invalid2", KEY_VALUE, "FIRE", KEY_META, "check/blacklist", "#0", KEY_META,
+			   "check/blacklist/#0", "FIRE", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
@@ -59,10 +58,10 @@ static void test_blacklist_empty_values (void)
 	Key * parentKey = keyNew ("user:/tests/blacklist", KEY_VALUE, "", KEY_END);
 
 	// empty blacklist value
-	Key * k1 = keyNew ("user:/tests/blacklist/valid1", KEY_VALUE, "ICE", KEY_META, "check/blacklist", "#0",
-			   KEY_META, "check/blacklist/#0", "", KEY_END);
-	Key * k2 = keyNew ("user:/tests/blacklist/invalid1", KEY_VALUE, "", KEY_META, "check/blacklist", "#0",
-			   KEY_META, "check/blacklist/#0", "", KEY_END);
+	Key * k1 = keyNew ("user:/tests/blacklist/valid1", KEY_VALUE, "ICE", KEY_META, "check/blacklist", "#0", KEY_META,
+			   "check/blacklist/#0", "", KEY_END);
+	Key * k2 = keyNew ("user:/tests/blacklist/invalid1", KEY_VALUE, "", KEY_META, "check/blacklist", "#0", KEY_META,
+			   "check/blacklist/#0", "", KEY_END);
 	// empty blacklist array - should not blacklist anything
 	Key * k3 = keyNew ("user:/tests/blacklist/valid2", KEY_VALUE, "", KEY_META, "check/blacklist", "", KEY_END);
 	// no blacklist meta-keys provided
@@ -141,9 +140,9 @@ int main (int argc, char ** argv)
 
 	init (argc, argv);
 
-	test_blacklist();
-	test_blacklist_empty_values();
-	test_blacklist_null_values();
+	test_blacklist ();
+	test_blacklist_empty_values ();
+	test_blacklist_null_values ();
 
 
 	print_result ("testmod_blacklist");

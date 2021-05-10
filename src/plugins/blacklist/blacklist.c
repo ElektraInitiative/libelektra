@@ -108,19 +108,18 @@ bool elektraBlacklistValidateKey (Plugin * handle, Key * key, Key * errorKey)
 }
 
 
-
 int elektraBlacklistGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	if (!elektraStrCmp (keyName (parentKey), "system:/elektra/modules/blacklist"))
 	{
-		KeySet * contract =
-			ksNew (30, keyNew ("system:/elektra/modules/blacklist", KEY_VALUE, "blacklist plugin waits for your orders", KEY_END),
-			       keyNew ("system:/elektra/modules/blacklist/exports", KEY_END),
-			       keyNew ("system:/elektra/modules/blacklist/exports/get", KEY_FUNC, elektraBlacklistGet, KEY_END),
-			       keyNew ("system:/elektra/modules/blacklist/exports/set", KEY_FUNC, elektraBlacklistSet, KEY_END),
-			       keyNew ("system:/elektra/modules/blacklist/exports/validateKey", KEY_FUNC, elektraBlacklistValidateKey, KEY_END),
+		KeySet * contract = ksNew (
+			30, keyNew ("system:/elektra/modules/blacklist", KEY_VALUE, "blacklist plugin waits for your orders", KEY_END),
+			keyNew ("system:/elektra/modules/blacklist/exports", KEY_END),
+			keyNew ("system:/elektra/modules/blacklist/exports/get", KEY_FUNC, elektraBlacklistGet, KEY_END),
+			keyNew ("system:/elektra/modules/blacklist/exports/set", KEY_FUNC, elektraBlacklistSet, KEY_END),
+			keyNew ("system:/elektra/modules/blacklist/exports/validateKey", KEY_FUNC, elektraBlacklistValidateKey, KEY_END),
 #include ELEKTRA_README
-			       keyNew ("system:/elektra/modules/blacklist/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
+			keyNew ("system:/elektra/modules/blacklist/infos/version", KEY_VALUE, PLUGINVERSION, KEY_END), KS_END);
 		ksAppend (returned, contract);
 		ksDel (contract);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
@@ -132,7 +131,8 @@ int elektraBlacklistGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	{
 		const Key * meta = keyGetMeta (cur, "check/blacklist");
 		if (!meta) continue;
-		if (!elektraCheckBlacklist (cur)) {
+		if (!elektraCheckBlacklist (cur))
+		{
 			elektraSetErrorBlacklist (handle, cur, parentKey);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -150,7 +150,8 @@ int elektraBlacklistSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 	{
 		const Key * meta = keyGetMeta (cur, "check/blacklist");
 		if (!meta) continue;
-		if (!elektraCheckBlacklist (cur)) {
+		if (!elektraCheckBlacklist (cur))
+		{
 			elektraSetErrorBlacklist (handle, cur, parentKey);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -160,8 +161,8 @@ int elektraBlacklistSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKT
 }
 
 Plugin * ELEKTRA_PLUGIN_EXPORT
-	{
-		// clang-format off
+{
+	// clang-format off
 		return elektraPluginExport ("blacklist",
 		ELEKTRA_PLUGIN_GET,	&elektraBlacklistGet,
 		ELEKTRA_PLUGIN_SET,	&elektraBlacklistSet,
