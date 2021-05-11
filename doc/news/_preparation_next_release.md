@@ -183,12 +183,6 @@ you up to date with the multi-language support provided by Elektra.
 - Improved documentation for module keytest in Elektra Core. _(@lawli3t)_
 - Improved documentation for module keyset in Elektra Core. _(@lawli3t)_
 - Fixed example in the "mount-configuration-files" tutorial [#3722](https://github.com/ElektraInitiative/libelektra/issues/3722). _(Philipp Oppel)_
-
-## Tests
-
-- Fix failing `testshell_markdown_tutorial_crypto` on Mac OS and other OS with GnuPG version >= 2.3.1. _(Peter Nirschl @petermax2)_
-- <<TODO>>
-- <<TODO>>
 - Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
 - Write notes that `\\` are due to shell recorder, and are not to be copied _(Markus Raab)_
 - Add link to [Go](https://github.com/ElektraInitiative/go-elektra) bindings _(Markus Raab)_
@@ -197,6 +191,12 @@ you up to date with the multi-language support provided by Elektra.
 - Minor rewording in [java-kdb.md](/doc/tutorials/java-kdb.md) _(@aaronabebe)_
 - Added interactive and non-interactive versions of a new tutorial to writing a specification _(@aaronabebe)_
 - Add a short Visual Studio 2019 tutorial _(Dominic Jäger)_
+
+## Tests
+
+- Fix failing `testshell_markdown_tutorial_crypto` on Mac OS and other OS with GnuPG version >= 2.3.1. _(Peter Nirschl @petermax2)_
+- <<TODO>>
+- <<TODO>>
 
 ## Packaging
 
