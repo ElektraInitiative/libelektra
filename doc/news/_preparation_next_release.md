@@ -47,6 +47,10 @@ docker run -it elektra/elektra
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### [email](/src/plugins/email/README.md)
+
+- Introduce email address validation plugin based on regex. _(a-kraschitzer)_
+
 ### <<Plugin1>>
 
 - <<TODO>>
