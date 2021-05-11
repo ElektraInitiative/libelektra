@@ -213,6 +213,7 @@ copied by the `spec` plugin just before) to validate values:
 
 - [type](type/) type checking (CORBA types) with enum functionality
 - [ipaddr](ipaddr/) checks IP addresses using regular expressions
+- [email](email/) checks email addresses using regular expressions
 - [network](network/) by using network APIs
 - [path](path/) by checking files on file system
 - [unit](unit/) validates and normalizes units of memory (e.g. 20KB to 20000 Bytes)
