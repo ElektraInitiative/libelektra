@@ -169,7 +169,7 @@ you up to date with the multi-language support provided by Elektra.
 - Document package names of plugins, bindings and tools. _(Robert Sowula)_
 - Small update in API docu related to different namespaces in returned keys. _(Markus Raab)_
 - improved docu of [noresolver](/src/plugins/noresolver). _(Markus Raab)_
-- <<TODO>>
+- improved plugin tutorial. _(Markus Raab)_
 - <<TODO>>
 - Adding info about syncing forks to `doc/GIT.md` _(Klemens Böswirth)_
 - Work on [COMPILE.md](/doc/COMPILE.md) and [INSTALL.md](/doc/INSTALL.md) to help with understanding _(@a-kraschitzer)_
@@ -186,7 +186,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Tests
 
-- <<TODO>>
+- Fix failing `testshell_markdown_tutorial_crypto` on Mac OS and other OS with GnuPG version >= 2.3.1. _(Peter Nirschl @petermax2)_
 - <<TODO>>
 - <<TODO>>
 - Reworked [METADATA.ini](/doc/METADATA.ini) _(Markus Raab)_
