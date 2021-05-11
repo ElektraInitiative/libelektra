@@ -26,7 +26,7 @@ ARG PARALLEL=8
 ENV C_FLAGS="-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie"
 WORKDIR /app/kdb
 ADD . /app/kdb/
-RUN mkdir build \
+RUN mkdir -p build \
     && cd build \
     && cmake -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
              -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
