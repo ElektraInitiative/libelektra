@@ -1,39 +1,45 @@
 # How to Write a specification in Elektra
-## Overview 
+
+## Overview
 
 ### Introduction
+
 In this codelab you will learn how to interactively use the `SpecElektra` specification language and `kdb` to write a configuration specification for an example application.
 
 ### What you should already know
+
 - how to install elektra
 - very basic elektra commands and concepts (kdb get, kdb set, kdb ls)
 - how to open and use a terminal
 
-### What you’ll Learn 
+### What you’ll Learn
+
 - how to create and mount a specification using `kdb`
 - how to add keys with different types, defaults and examples to your specification and how to validate them
-- the benefits of using `kdb` to generate a specification, instead of writing one by hand 
+- the benefits of using `kdb` to generate a specification, instead of writing one by hand
 
 ### What you'll do
-- use code generation and `kdb` to create and mount a specification for an example CRUD (Create, Read, Update, Delete) application 
-- define defaults, examples and checks for keys in the validation 
+
+- use code generation and `kdb` to create and mount a specification for an example CRUD (Create, Read, Update, Delete) application
+- define defaults, examples and checks for keys in the validation
 
 ## Example App Overview
 
-For this tutorial you will write a specification for a very simple CRUD backend application. 
-You need to configure a `port` for the REST server, an `ip` and a SQL `dialect` for the database server the app 
-will connect to and finally a `date` where all the data will be saved to a backup.  
+For this tutorial you will write a specification for a very simple CRUD backend application.
+You need to configure a `port` for the REST server, an `ip` and a SQL `dialect` for the database server the app
+will connect to and finally a `date` where all the data will be saved to a backup.
 
 So the application will need the following configuration options:
+
 - a server port
-- a database ip 
+- a database ip
 - a database dialect
 - a backup date
 
-
 ## Getting Started
 
-Make sure you have `Elektra` installed on your local machine. 
+Make sure you have `Elektra` installed on your local machine.
+
 ```
 kdb --version
 
@@ -43,17 +49,16 @@ SO_VERSION: 5
 
 Otherwise refer to the [getting started guide](https://www.libelektra.org/getstarted/guide) to install it.
 
-
 ## Mounting the specification
 
 ### Step 1: Mount a specification file
 
 First you need to mount a specification file, in this case `spec.ni` to the `spec:/` namespace.
-You can define the path inside the `spec:/` namespace as `/sw/org/app/current/#0`, refer to 
-[the documentation](https://www.libelektra.org/tutorials/integration-of-your-c-application) to find out more about constructing the name. 
+You can define the path inside the `spec:/` namespace as `/sw/org/app/current/#0`, refer to
+[the documentation](https://www.libelektra.org/tutorials/integration-of-your-c-application) to find out more about constructing the name.
 
-You will also be using the profile `current`, 
-you can find out more about profiles in 
+You will also be using the profile `current`,
+you can find out more about profiles in
 [the documentation](https://www.libelektra.org/plugins/profile) aswell.
 
 You also need the specify the plugin you will use for writing to the file in the correct format. In this case you can choose the `ni` plugin to write to the specification file.
@@ -70,16 +75,16 @@ kdb file spec:/sw/org/app/current/\#0
 
 ### Step 2: Define a mountpoint
 
-Next you can define, that this specification defines a specific mountpoint for a concrete application configuration. 
+Next you can define, that this specification defines a specific mountpoint for a concrete application configuration.
 So you can say the concrete configuraion should be written to `app.ni`.
 
-```sh 
+```sh
 kdb meta-set spec:/sw/org/app/current/\#0 mountpoint app.ni
 ```
 
 Your `spec.ni` file should now look something like this:
 
-```sh 
+```sh
 cat $(kdb file spec:/sw/org/app/current/\#0)
 
 ;Ni1
@@ -99,20 +104,21 @@ kdb spec-mount /sw/org/app/current/\#0 ni
 
 This specification mount makes sure that the paths where the concrete configuration should be, in this case `app.ni`, are ready to fulfill or specification, in this case `spec.ni`.
 
-
-## Adding your first key to the specification 
+## Adding your first key to the specification
 
 ### Step 1: Adding the server port
+
 The first key you will add to our specification will be the port of the server. You add it using the following command below.
 
-```sh 
+```sh
 kdb meta-set spec:/sw/org/app/current/\#0/server/port type short
 ```
 
 What you also specified in the command above is the type of the configuration key. Elektra uses the [CORBA type system](https://www.libelektra.org/plugins/type)
-and will check that keys conform to the type specified. 
+and will check that keys conform to the type specified.
 
-So after adding the initial key your specification should look something like this: 
+So after adding the initial key your specification should look something like this:
+
 ```
 cat $(kdb file spec:/sw/org/app/current/\#0)
 
@@ -130,30 +136,28 @@ server/port =
  meta:/type = short
 ```
 
-
 ### Step 2: Adding more metadata
 
-So with your first key added, you of course want to specify more information for the port. There surely is more information to a port than just the type. 
+So with your first key added, you of course want to specify more information for the port. There surely is more information to a port than just the type.
 What about a `default`, or what about an `example` for a usable port? Maybe a `description` what the port really is for?
 Let's add that next!
 
-```sh 
+```sh
 kdb meta-set spec:/sw/org/app/current/\#0/server/port default 8080
 kdb meta-set spec:/sw/org/app/current/\#0/server/port example 8080
 kdb meta-set spec:/sw/org/app/current/\#0/server/port description "port of the REST server that runs the application"
 ```
 
 Beautiful! Your specification is starting to look like something useful.
-But wait! Shouldn't a port just use values between `1` and `65535`? 
+But wait! Shouldn't a port just use values between `1` and `65535`?
 
-Of course Elektra also has a plugin for that. You can just use the [network](https://www.libelektra.org/plugins/network) checker plugin. 
+Of course Elektra also has a plugin for that. You can just use the [network](https://www.libelektra.org/plugins/network) checker plugin.
 
-
-```sh 
+```sh
 kdb meta-set spec:/sw/org/app/current/\#0/server/port check/port ''
 ```
 
-Nice! 
+Nice!
 You just have to do one more thing when using a new plugin. Elektra needs to remount the spec to use the new plugin.
 Use the command from before:
 
@@ -163,7 +167,7 @@ kdb spec-mount /sw/org/app/current/\#0 ni
 
 Your final specification after adding the port should now look something like this
 
-```sh 
+```sh
 cat $(kdb file spec:/sw/org/app/current/\#0)
 
 ;Ni1
@@ -183,7 +187,7 @@ server/port =
  meta:/default = 8080
 ```
 
-You can now try to read the value of the newly created configuration. 
+You can now try to read the value of the newly created configuration.
 Since you did not set the value to anything yet, you will get the default value back.
 
 ```sh
@@ -192,7 +196,7 @@ kdb get /sw/org/app/current/#0/server/port
 #>8080
 ```
 
-Try to set the port to `123456` now. 
+Try to set the port to `123456` now.
 
 ```sh
 kdb set /sw/org/app/current/#0/server/port 123456
@@ -201,17 +205,16 @@ kdb set /sw/org/app/current/#0/server/port 123456
 
 Did it work? I hope not. The validation plugin you specified will now correctly validate the port you enter and give you an error.
 
-
 ## Adding the database keys to the specification
 
 ### Step 1: Adding the database ip
 
-Next up you will add a key for the database `ip` address. Like with the key before, you will add a `type`, `default`, `example` and a `description` so that the configuration will be easily usable. 
+Next up you will add a key for the database `ip` address. Like with the key before, you will add a `type`, `default`, `example` and a `description` so that the configuration will be easily usable.
 
 Don't forget the most important rule of configurations: **Always add sensible defaults!**
 
-Now let's try something different. What if you change the file manually? Will Elektra pick up on 
-the changes? And save you from writing **a lot** of `kdb` commands? 
+Now let's try something different. What if you change the file manually? Will Elektra pick up on
+the changes? And save you from writing **a lot** of `kdb` commands?
 
 _of course_
 
@@ -247,7 +250,7 @@ server/port =
 
 Alternatively you can of course use `kdb` again to set the configuration values that way. Here are the commands to do that.
 
-```sh 
+```sh
 kdb meta-set spec:/sw/org/app/current/#0/database/ip type string
 kdb meta-set spec:/sw/org/app/current/#0/database/ip default 127.0.0.1
 kdb meta-set spec:/sw/org/app/current/#0/database/ip example 127.0.0.1
@@ -255,17 +258,15 @@ kdb meta-set spec:/sw/org/app/current/#0/database/ip description "ip address of 
 kdb meta-set spec:/sw/org/app/current/#0/database/ip check/ipaddr ''
 ```
 
-
-
 ### Step 2: Adding the database dialect
 
-Next up you will add a key for the SQL `dialect` the database will use. Since there are only a few databases your application will support, 
-you can define the possible dialects via an [enum](https://www.libelektra.org/plugins/type#enums) type. 
+Next up you will add a key for the SQL `dialect` the database will use. Since there are only a few databases your application will support,
+you can define the possible dialects via an [enum](https://www.libelektra.org/plugins/type#enums) type.
 This allows us to prohibit all other possible dialects that are not SQL.
 
 First you define the size of the `enum` type, and then you can add the different `enum` values.
 
-```sh 
+```sh
 kdb meta-set spec:/sw/org/app/current/\#0/database/dialect type enum
 kdb meta-set spec:/sw/org/app/current/\#0/database/dialect check/enum "#4"
 kdb meta-set spec:/sw/org/app/current/\#0/database/dialect check/enum/\#0 postgresql
@@ -330,10 +331,10 @@ database/dialect =
 
 The last key you will add to our application is a `date` key for the annual backup and restart (this should probably not be annually in a real application).
 Here you use the [check/date](https://www.libelektra.org/plugins/date) plugin with the `ISO8601` format.
-You also specify a `check/date/format`. You can find all possible date formats on the [plugin page](https://www.libelektra.org/plugins/date). 
-For this you can use the following commands: 
+You also specify a `check/date/format`. You can find all possible date formats on the [plugin page](https://www.libelektra.org/plugins/date).
+For this you can use the following commands:
 
-```sh 
+```sh
 kdb meta-set spec:/sw/org/app/current/\#0/backup/date type string
 kdb meta-set spec:/sw/org/app/current/\#0/backup/date check/date ISO8601
 kdb meta-set spec:/sw/org/app/current/\#0/backup/date check/date/format "calendardate complete extended"
@@ -403,7 +404,7 @@ database/dialect =
 
 After adding all the keys that are necessary for our application to the server, your specification should look something like this:
 
-```sh 
+```sh
 cat $(kdb file spec:/sw/org/app/current/\#0)
 
 ;Ni1
@@ -453,19 +454,17 @@ database/dialect =
  meta:/check/enum = #4
 ```
 
-
 ## Summary
 
-- You setup and mounted a specification using `kdb mount` and `kdb spec-mount` 
+- You setup and mounted a specification using `kdb mount` and `kdb spec-mount`
 - You added keys the specification using `kdb meta-set`
 - You added different types of keys with `type string` or `type short`
 - You added keys with enum types, to get specific configuration values, with ``
 - You added default parameters, examples and descriptions with `example`, `default`, `description`
-- You also added validation checks using different plugins, like `check/port`, `check/ipaddr` or 
-
+- You also added validation checks using different plugins, like `check/port`, `check/ipaddr` or
 
 ## Learn more
 
-Tutorials on the Elektra homepage: 
+Tutorials on the Elektra homepage:
 
-- [Tutorial Overview](https://www.libelektra.org/tutorials/readme) 
+- [Tutorial Overview](https://www.libelektra.org/tutorials/readme)
