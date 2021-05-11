@@ -150,6 +150,7 @@ you up to date with the multi-language support provided by Elektra.
 - Update specmount error message _(@a-kraschitzer)_
 - Update `elektraMemDup` to `void *` and update the documentation. _(Mihael Pranjić)_
 - There have been a few bugfixes for elektrad. _(Klemens Böswirth)_
+- Update `lodash` and `hosted-git-info` dependencies of `webd` due to security update. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -247,6 +248,7 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - Catch errors when code highlighting fails. _(Mihael Pranjić)_
 - Get rid of unused code: authentication, backend, users, snippets and conversion service. _(Mihael Pranjić)_
 - Fix docsearch sourcemap error. _(Mihael Pranjić)_
+- Update `lodash` dependency due to security update. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
