@@ -31,7 +31,7 @@ WORKDIR /home/elektra/libelektra
 ADD . /home/elektra/libelektra/
 
 # build & install libelektra
-RUN mkdir /home/elektra/libelektra/build
+RUN mkdir -p /home/elektra/libelektra/build
 WORKDIR /home/elektra/libelektra/build
 RUN cmake .. -DTOOLS="kdb;web" && make -j ${PARALLEL} && make install
 
