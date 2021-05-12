@@ -23,7 +23,7 @@ int main (int argc, char ** argv)
 
 	print_result ("testmod_length");
 
-	test_length();
+	test_length ();
 
 	return nbError;
 }

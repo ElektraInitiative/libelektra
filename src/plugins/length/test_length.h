@@ -80,5 +80,3 @@ static void test_length (void)
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();
 }
-
-
