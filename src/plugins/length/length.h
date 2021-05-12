@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Header for length plugin
+ * @brief Header for len plugin
  *
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
