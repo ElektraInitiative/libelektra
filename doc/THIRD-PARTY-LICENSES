@@ -7,39 +7,33 @@ Files: *
 Copyright: Elektra contributors (https://www.libelektra.org/developers/authors)
 License: BSD-3-clause
 
-Files: cmake/Modules/DownloadProject*
+Files: scripts/cmake/Modules/DownloadProject*
 Copyright: 2015 Craig Scott
 License: MIT
 
-Files: cmake/Modules/FindAugeas.cmake
-       cmake/Modules/FindDBus.cmake
-       cmake/Modules/FindGObjectIntrospection.cmake
-       cmake/Modules/FindSystemdJournal.cmake
+Files: scripts/cmake/Modules/FindAugeas.cmake
+       scripts/cmake/Modules/FindDBus.cmake
+       scripts/cmake/Modules/FindGObjectIntrospection.cmake
+       scripts/cmake/Modules/FindSystemdJournal.cmake
 Copyright: 2006 Alexander Neundorf <neundorf@kde.org>
            2008 Kevin Kofler <kevin.kofler@chello.at>
            2010 Pino Toscano <pino@kde.org>
            2013 Martin Briza <mbriza@redhat.com>
 License: BSD-3-clause-cmake
 
-Files: cmake/Modules/FindDiscount.cmake
+Files: scripts/cmake/Modules/FindDiscount.cmake
 Copyright: 2013-2013 Lars Baehren <lbaehren@gmail.com>
 License: BSD-2-clause-discount
 
-Files: cmake/Modules/FindLua52.cmake
-       cmake/Modules/FindPython2Interp.cmake
-       cmake/Modules/FindPython2Libs.cmake
-Copyright: 2001-2010 Kitware, Inc.
-           2011 Bjoern Ricks <bjoern.ricks@gmail.com>
-           2012 Rolf Eike Beer <eike@sf-mail.de>
+Files: scripts/cmake/Modules/FindLua.cmake
+       scripts/cmake/Modules/FindPython2Interp.cmake
+       scripts/cmake/Modules/FindPython2Libs.cmake
+Copyright: 2000-2021 Kitware, Inc. and Contributors
 License: BSD-3-clause-cmake-new
 
-Files: cmake/Modules/FindGLib.cmake
+Files: scripts/cmake/Modules/FindGLib.cmake
 Copyright: 2016 Evan Nemerson <evan@nemerson.com>
 License: MIT
-
-Files: src/plugins/ini/inih-r29/*
-Copyright: 2009, Brush Technology
-License: BSD-3-clause-inih
 
 Files: src/plugins/ni/nickel-1.1.0/*
 Copyright: 2008 Charles Lindsay <charles@chaoslizard.org>
@@ -54,27 +48,27 @@ License: public-domain
  You can use this free for any purpose.  It's in the public domain.
  It has no warranty.
 
-Files: src/tools/rest-frontend/resources/assets/skin/base/util/space.less
+Files: src/tools/website/resources/assets/skin/base/util/space.less
 Copyright: 2015 Ömer Aslanbakan
 License: MIT
 
-Files: src/tools/rest-frontend/public/assets/fonts/lato/*
+Files: src/tools/website/public/assets/fonts/lato/*
 Copyright: 2010-2014 by tyPoland Lukasz Dziedzic (team@latofonts.com) with Reserved Font Name "Lato"
 License: OFL-1.1
 
-Files: src/tools/rest-frontend/public/assets/fonts/libre-franklin/*
+Files: src/tools/website/public/assets/fonts/libre-franklin/*
 Copyright: 2015 Impallari Type (www.impallari.com)
 License: OFL-1.1
 
-Files: src/tools/rest-frontend/public/assets/fonts/font-awesome/*
+Files: src/tools/website/public/assets/fonts/font-awesome/*
 Copyright: 2016 Dave Gandy <dave@fontawesome.io>
 License: OFL-1.1
 
-Files: src/tools/rest-frontend/public/vendor/asciinema/asciinema-player.*
+Files: src/tools/website/public/vendor/asciinema/asciinema-player.*
 Copyright: 2011-2016 Marcin Kulik
 License: Apache-2.0
 
-Files: src/tools/rest-frontend/resources/assets/skin/base/fonts/font-awesome/*
+Files: src/tools/website/resources/assets/skin/base/fonts/font-awesome/*
 Copyright: 2016 Dave Gandy <dave@fontawesome.io>
 License: MIT
 
@@ -82,16 +76,16 @@ Files: src/tools/qt-gui/src/markdownconverter/*
 Copyright: 2013 Christian Loose
 License: BSD-3-clause-markdownconverter
 
-Files: scripts/realpath
+Files: scripts/dev/realpath
 Copyright: 2014 Michael Kropat
 License: MIT
 
-Files: src/tools/web/client/public/Roboto-Light.ttf
-       src/tools/web/client/public/Roboto-Regular.ttf
+Files: src/tools/webui/public/Roboto-Light.ttf
+       src/tools/webui/public/Roboto-Regular.ttf
 Copyright: 2012 Google
 License: Apache-2.0
 
-Files: src/tools/kdb/gen/mustache.hpp: 
+Files: src/tools/kdb/gen/mustache.hpp
 Copyright: 2015-2018 Kevin Wojniak
 License: BSL-1.0
 
