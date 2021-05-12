@@ -40,7 +40,6 @@ static int validateKey(Key *key, Key *parentKey) {
                                                keyString(key));
     } else if (rc == -1) {
         ELEKTRA_SET_OUT_OF_MEMORY_ERROR(parentKey);
-        rc = false;
     }
 
     return rc;
