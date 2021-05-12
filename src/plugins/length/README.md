@@ -36,8 +36,7 @@ kdb set /tests/length/text abcd
 
 # Set a correct string
 kdb set /tests/length/text abc
-kdb get /tests/length/text
-#> abc
+kdb get /tests/length/text#> abc
 
 # Undo modifications to the database
 kdb rm -r /tests/length
@@ -46,4 +45,4 @@ kdb umount /tests/length
 
 ## Limitations
 
-The plugin only checks IP addresses for validity. It is not able to resolve hostnames. If you are looking for a plugin that supports hostnames, check out the [network plugin](../network/).
+The plugin only checks that strings are not longer than a given number. It is not able to set a minimumlength.
