@@ -36,7 +36,7 @@ kdb set /tests/length/text abcd
 
 # Set a correct string
 kdb set /tests/length/text abc
-kdb get /tests/length/text#> abc
+kdb get /tests/length/text
 
 # Undo modifications to the database
 kdb rm -r /tests/length
