@@ -216,6 +216,7 @@ copied by the `spec` plugin just before) to validate values:
 - [network](network/) by using network APIs
 - [path](path/) by checking files on file system
 - [unit](unit/) validates and normalizes units of memory (e.g. 20KB to 20000 Bytes)
+- [length](length/) validates that string length is less or equal to given value
 
 The same but experimental:
 
