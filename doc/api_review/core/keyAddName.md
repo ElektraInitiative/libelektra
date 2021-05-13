@@ -103,7 +103,7 @@
 
 - [ ] Function code is fully covered by tests  
        - [ ] check if we can remove uncovered code  
-       TODO
+       TODO  
        - [x] Line 542
 - [ ] All possible error states are covered by tests  
        - [x] add test case for read-only key  
