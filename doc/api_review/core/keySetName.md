@@ -86,19 +86,19 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] test_bit "CANNOT" fail, so might not be necessary to cover this  
+       - [x] test_bit "CANNOT" fail, so might not be necessary to cover this  
        for now should be made more resistant to future changes
 - [ ] All possible error states are covered by tests  
-       - [ ] test read-only keys
+       - [x] test read-only keys
 - All possible enum values are covered by tests
 - [ ] No inconsistencies between tests and documentation  
-       - [ ] https://github.com/ElektraInitiative/libelektra/blob/master/tests/abi/testabi_key.c#L357  
+       - [x] https://github.com/ElektraInitiative/libelektra/blob/master/tests/abi/testabi_key.c#L357  
        checks for -1 if null pointer is provided  
        documentation says 0 will be returned  
-       - [ ] Documentation says name will be `""` after an invalid name  
+       - [x] Documentation says name will be `""` after an invalid name  
        Tests show that name stays unchanged  
        https://github.com/ElektraInitiative/libelektra/blob/master/tests/abi/testabi_key.c#L601  
-       - [ ] Documentations should include stripping trailing `/`
+       - [x] Documentations should include stripping trailing `/`
 
 ## Summary
 

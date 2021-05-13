@@ -93,13 +93,13 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] no tests for this function
+       - [x] no tests for this function
 - [ ] All possible error states are covered by tests  
-       - [ ] no tests for this function
+       - [x] no tests for this function
 - [ ] All possible enum values are covered by tests  
-       - [ ] no tests for this function
+       - [x] no tests for this function
 - [ ] No inconsistencies between tests and documentation  
-       - [ ] no tests for this function
+       - [x] no tests for this function
 
 ## Summary
 

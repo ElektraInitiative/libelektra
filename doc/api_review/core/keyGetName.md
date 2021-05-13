@@ -109,9 +109,9 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - Lines 365 / 366
+       - [x] Lines 365 / 366
 - [ ] All possible error states are covered by tests  
-       - test empty string
+       - [x] test empty string
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
