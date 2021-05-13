@@ -351,11 +351,8 @@ static void test_copy (void)
 
 	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 0, "could not copy metavalue");
 
-	printf("test");
-
 	succeed_if (keyGetMeta (key1, "mymeta") == 0, "value of mymeta is not NULL");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-	// succeed_if (keyGetMeta (key2, "mymeta") == 0, "value of mymeta has not been cleared");
+	succeed_if (keyGetMeta (key2, "mymeta") == 0, "value of mymeta has not been cleared");
 
 	keyDel (key1);
 	keyDel (key2);
