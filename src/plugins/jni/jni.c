@@ -38,8 +38,7 @@ typedef struct
 	int printException;
 	jmethodID midKeyConstr;
 	jmethodID midKeySetConstr;
-	jmethodID midKeyRelease;
-	jmethodID midKeySetRelease;
+	jmethodID midKeyDecRef;
 	jobject plugin;
 } Data;
 
@@ -76,7 +75,7 @@ static void checkException (Data * data, const char * when, Key * warningKey)
 
 static int call1Arg (Data * data, Key * errorKey, const char * method)
 {
-	jobject jerrorKey = (*data->env)->NewObject (data->env, data->clsKey, data->midKeyConstr, errorKey);
+	jobject jerrorKey = (*data->env)->NewObject (data->env, data->clsKey, data->midKeyConstr, errorKey, true);
 	checkException (data, method, errorKey);
 	if (jerrorKey == 0)
 	{
@@ -101,7 +100,7 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	}
 	checkException (data, method, errorKey);
 
-	(*data->env)->CallVoidMethod (data->env, jerrorKey, data->midKeyRelease);
+	(*data->env)->CallVoidMethod (data->env, jerrorKey, data->midKeyDecRef);
 	checkException (data, method, errorKey);
 
 	return result;
@@ -109,7 +108,7 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 
 static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * method)
 {
-	jobject jks = (*data->env)->NewObject (data->env, data->clsKeySet, data->midKeySetConstr, ks);
+	jobject jks = (*data->env)->NewObject (data->env, data->clsKeySet, data->midKeySetConstr, ks, true);
 	checkException (data, method, errorKey);
 	if (jks == 0)
 	{
@@ -117,7 +116,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 		return -1;
 	}
 
-	jobject jkey = (*data->env)->NewObject (data->env, data->clsKey, data->midKeyConstr, errorKey);
+	jobject jkey = (*data->env)->NewObject (data->env, data->clsKey, data->midKeyConstr, errorKey, true);
 	checkException (data, method, errorKey);
 	if (jkey == 0)
 	{
@@ -142,10 +141,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	}
 	checkException (data, method, errorKey);
 
-	(*data->env)->CallVoidMethod (data->env, jks, data->midKeySetRelease);
-	checkException (data, method, errorKey);
-
-	(*data->env)->CallVoidMethod (data->env, jkey, data->midKeyRelease);
+	(*data->env)->CallVoidMethod (data->env, jkey, data->midKeyDecRef);
 	checkException (data, method, errorKey);
 
 	return result;
@@ -271,31 +267,24 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 		return -1;
 	}
 
-	data->midKeyConstr = (*data->env)->GetMethodID (data->env, data->clsKey, "<init>", "(J)V");
+	data->midKeyConstr = (*data->env)->GetMethodID (data->env, data->clsKey, "<init>", "(JZ)V");
 	if (data->midKeyConstr == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find constructor of Key");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find constructor Key(long, boolean)");
 		return -1;
 	}
 
-	data->midKeySetConstr = (*data->env)->GetMethodID (data->env, data->clsKeySet, "<init>", "(J)V");
+	data->midKeySetConstr = (*data->env)->GetMethodID (data->env, data->clsKeySet, "<init>", "(JZ)V");
 	if (data->midKeySetConstr == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find constructor of KeySet");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find constructor KeySet(long, boolean)");
 		return -1;
 	}
 
-	data->midKeyRelease = (*data->env)->GetMethodID (data->env, data->clsKey, "release", "()V");
-	if (data->midKeyRelease == 0)
+	data->midKeyDecRef = (*data->env)->GetMethodID (data->env, data->clsKey, "decRef", "()V");
+	if (data->midKeyDecRef == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find release of Key");
-		return -1;
-	}
-
-	data->midKeySetRelease = (*data->env)->GetMethodID (data->env, data->clsKeySet, "release", "()V");
-	if (data->midKeySetRelease == 0)
-	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find release of KeySet");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find method of Key::decRef()");
 		return -1;
 	}
 

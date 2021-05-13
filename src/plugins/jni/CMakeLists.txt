@@ -14,7 +14,17 @@ if (DEPENDENCY_PHASE)
 		endif ()
 	endif ()
 
-	find_package (JNI QUIET)
+	find_package (JNI)
+
+	message (INFO "JNI_INCLUDE_DIRS: ${JNI_INCLUDE_DIRS}")
+	message (INFO "JNI_LIBRARIES: ${JNI_LIBRARIES}")
+	message (INFO "JNI_FOUND: ${JNI_FOUND}")
+	message (INFO "JAVA_AWT_LIBRARY: ${JAVA_AWT_LIBRARY}")
+	message (INFO "JAVA_JVM_LIBRARY: ${JAVA_JVM_LIBRARY}")
+	message (INFO "JNI_INCLUDE_DIRS: ${JNI_INCLUDE_DIRS}")
+	message (INFO "JAVA_INCLUDE_PATH: ${JAVA_INCLUDE_PATH}")
+	message (INFO "JAVA_INCLUDE_PATH2: ${JAVA_INCLUDE_PATH2}")
+	message (INFO "JAVA_AWT_INCLUDE_PATH: ${JAVA_AWT_INCLUDE_PATH}")
 
 	if (JNI_FOUND)
 		set (DIRS ${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2} ${JAVA_AWT_INCLUDE_PATH})
@@ -42,7 +52,8 @@ if (ADDTESTING_PHASE)
 	check_binding_was_added ("jna" BINDING_WAS_ADDED)
 
 	if (BUILD_TESTING AND BINDING_WAS_ADDED)
-		add_plugintest (jni MEMLEAK)
+		# add_plugintest (jni MEMLEAK)
+		add_plugintest (jni)
 		include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 		# Generate header file

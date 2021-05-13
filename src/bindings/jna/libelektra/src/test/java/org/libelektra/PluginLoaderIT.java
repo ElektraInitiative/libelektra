@@ -7,7 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.libelektra.exception.InstallationException;
 import org.libelektra.plugin.Echo;
-import org.libelektra.plugin.NativePlugin;
 import org.libelektra.plugin.PropertiesStorage;
 import org.libelektra.plugin.Return;
 

@@ -4,7 +4,6 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import javax.annotation.Nullable;
-import org.libelektra.plugin.NativePlugin;
 
 /**
  * The JNA dynamic proxy interface to libelektra. This proxy is not intended to be used directly by libelektra API
@@ -312,7 +311,7 @@ public interface Elektra extends Library {
 
 	int keyCopyAllMeta (Pointer dest, Pointer source);
 
-	Pointer keyGetMeta (Pointer key, String metaName);
+	@Nullable Pointer keyGetMeta (Pointer key, String metaName);
 
 	int keySetMeta (Pointer key, String metaName, String newMetaString);
 
