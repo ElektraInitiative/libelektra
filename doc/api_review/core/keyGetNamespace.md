@@ -83,10 +83,10 @@
 - [x] Function code is fully covered by tests
 - [x] All possible error states are covered by tests
 - [ ] All possible enum values are covered by tests  
-       - [ ] `KEY_NS_META`  
-       - [ ] `KEY_NS_PROC`  
-       - [ ] `KEY_NS_DIR`  
-       - [ ] `KEY_NS_DEFAULT`
+       - [x] `KEY_NS_META`  
+       - [x] `KEY_NS_PROC`  
+       - [x] `KEY_NS_DIR`  
+       - [x] `KEY_NS_DEFAULT`
 - [x] No inconsistencies between tests and documentation
 
 ## Summary

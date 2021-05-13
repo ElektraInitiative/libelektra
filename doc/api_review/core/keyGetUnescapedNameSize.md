@@ -85,12 +85,12 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] no explicit calls in tests suite
+       - [x] no explicit calls in tests suite
 - [ ] All possible error states are covered by tests  
-       - [ ] no explicit calls in tests suite
+       - [x] no explicit calls in tests suite
 - All possible enum values are covered by tests
 - [ ] No inconsistencies between tests and documentation  
-       - [ ] no explicit calls in tests suite
+       - [x] no explicit calls in tests suite
 
 ## Summary
 

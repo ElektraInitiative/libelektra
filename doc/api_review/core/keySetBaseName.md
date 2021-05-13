@@ -83,11 +83,11 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] Line 1475
+       - [x] Line 1475
 - [ ] All possible error states are covered by tests  
-       - [ ] `baseNamePtr == NULL`  
-       - [ ] `key == NULL`  
-       - [ ] key is read-only
+       - [x] `baseNamePtr == NULL`  
+       - [x] `key == NULL`  
+       - [x] key is read-only
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
