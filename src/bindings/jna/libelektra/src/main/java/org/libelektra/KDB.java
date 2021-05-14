@@ -81,7 +81,7 @@ public class KDB implements AutoCloseable
 	 */
 	@Override public void close () throws KDBException
 	{
-		final Key k = Key.create ("");
+		final Key k = Key.create (Key.KEY_LOCAL_NAME);
 		close (k);
 	}
 
@@ -139,7 +139,6 @@ public class KDB implements AutoCloseable
 	public void close (final Key errorKey) throws KDBException
 	{
 		final int ret = Elektra.INSTANCE.kdbClose (kdb, errorKey.getPointer ());
-
 		if (ret == -1)
 		{
 			throw ExceptionMapperService.getMappedException (errorKey);

@@ -7,8 +7,8 @@ import org.libelektra.Key;
  * <br>
  * Binary key values are currently not supported by this binding.
  */
-public class KeyBinaryTypeNotSupportedException extends KeyException {
+public class KeyBinaryTypeNotSupportedException extends KeyException
+{
 
 	private static final long serialVersionUID = 1L;
-
 }

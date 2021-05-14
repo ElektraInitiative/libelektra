@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import org.libelektra.Elektra.KeyNewArgumentFlags;
 import org.libelektra.exception.KeyBinaryTypeNotSupportedException;
+import org.libelektra.exception.KeyCreateFailedException;
 import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeySetNameFailedException;
 import org.libelektra.exception.PluginMisbehaviorException;
@@ -29,6 +30,12 @@ public class Key implements Iterable<String>
 	public static final int KEY_CP_VALUE = 1 << 2;
 	public static final int KEY_CP_META = 1 << 3;
 	public static final int KEY_CP_ALL = KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META;
+
+	/**
+	 * Use this as name for a new {@link Key} if a local key is required (e.g.
+	 * usable for error feedback used in some API methods)
+	 */
+	public static final String KEY_LOCAL_NAME = Elektra.KEY_LOCAL_NAME;
 
 	@Nullable private Pointer pointer;
 
@@ -86,7 +93,7 @@ public class Key implements Iterable<String>
 	 * Constructor associating a new {@link Key} instance with a JNA pointer
 	 *
 	 * @param pointer Optional JNA {@link Pointer} to key
-	 * @return New {@link Key} instance if {@code pointer}'s is non-null,
+	 * @return New {@link Key} instance if {@code pointer} is non-null,
 	 *         {@link Optional#empty()} otherwise
 	 * @see #release()
 	 */
@@ -103,23 +110,18 @@ public class Key implements Iterable<String>
 	 *             KeyNewArgumentFlags.KEY_VALUE, "custom key value",
 	 *             KeyNewArgumentFlags.KEY_END
 	 * @return New key
+	 * @throws KeyCreateFailedException if the key name is invalid
+	 * @see #KEY_LOCAL_NAME
 	 * @see #release()
 	 */
 	protected static Key create (String name, Object... args)
 	{
-		if (name == null)
-		{
-			throw new IllegalArgumentException ("Name must not be null");
-		}
-		if (name.isBlank ())
-		{
-			System.out.println ("Key with blank name is trying to be created");
-			//			new Throwable ().printStackTrace (System.out);
-		}
-		return new Key (Elektra.INSTANCE.keyNew (
-			name, Arrays.stream (args)
-				      .map (o -> (o instanceof KeyNewArgumentFlags) ? ((KeyNewArgumentFlags) o).getValue () : o)
-				      .toArray ()));
+		return create (Elektra.INSTANCE.keyNew (
+				       name,
+				       Arrays.stream (args)
+					       .map (o -> (o instanceof KeyNewArgumentFlags) ? ((KeyNewArgumentFlags) o).getValue () : o)
+					       .toArray ()))
+			.orElseThrow (KeyCreateFailedException::new);
 	}
 
 	/**
@@ -131,6 +133,8 @@ public class Key implements Iterable<String>
 	 * @param meta  Metadata that should be added to this key, null keys will be
 	 *              filtered away
 	 * @return New key
+	 * @throws KeyCreateFailedException if the key name is invalid
+	 * @see #KEY_LOCAL_NAME
 	 * @see #release()
 	 */
 	public static Key create (String name, @Nullable Object value, Key... meta)
@@ -168,6 +172,8 @@ public class Key implements Iterable<String>
 	 * @param meta Metadata that should be added to this key. Will filter null
 	 *             values.
 	 * @return New key object
+	 * @throws KeyCreateFailedException if the key name is invalid
+	 * @see #KEY_LOCAL_NAME
 	 * @see #release()
 	 */
 	public static Key create (String name, Key... meta)
@@ -188,8 +194,11 @@ public class Key implements Iterable<String>
 	 */
 	public void release ()
 	{
+		System.out.println ("\nKey release() called!");
 		if (cleanable != null)
 		{
+			System.out.println (
+				String.format ("%nKey release() commences clean for native key pointer %s", pointer.toString ()));
 			cleanable.clean ();
 			cleanable = null;
 			pointer = null;
@@ -534,7 +543,7 @@ public class Key implements Iterable<String>
 		System.out.println (String.format ("%nReference increased for Key(%s) - RefCount BEFORE: %d", this.toString (), getRef ()));
 		Elektra.INSTANCE.keyIncRef (getPointer ());
 		System.out.println (String.format ("%nReference increased for Key(%s) - RefCount AFTER: %d", this.toString (), getRef ()));
-		//		new Throwable ().printStackTrace (System.out);
+		// new Throwable ().printStackTrace (System.out);
 	}
 
 	/**
@@ -547,7 +556,7 @@ public class Key implements Iterable<String>
 		System.out.println (String.format ("%nReference decreased for Key(%s) - RefCount BEFORE: %d", this.toString (), getRef ()));
 		Elektra.INSTANCE.keyDecRef (getPointer ());
 		System.out.println (String.format ("%nReference decreased for Key(%s) - RefCount AFTER: %d", this.toString (), getRef ()));
-		//		new Throwable ().printStackTrace (System.out);
+		// new Throwable ().printStackTrace (System.out);
 	}
 
 	/**
@@ -874,8 +883,7 @@ public class Key implements Iterable<String>
 	{
 		if (pointer == null)
 		{
-			// TODO #3825 find out why errokeys with name "" are tried to be cerated, resulting in no object allocation
-			//			throw new KeyReleasedException();
+			throw new KeyReleasedException ();
 		}
 		return pointer;
 	}

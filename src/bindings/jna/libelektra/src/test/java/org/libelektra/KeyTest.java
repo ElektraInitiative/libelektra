@@ -2,10 +2,10 @@ package org.libelektra;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeySetNameFailedException;
 
 public class KeyTest
@@ -75,12 +75,11 @@ public class KeyTest
 		assertEquals ("", key.getString ());
 	}
 
-	@Test public void test_shouldBeNullAfterRelease_shouldPass ()
+	@Test (expected = KeyReleasedException.class) public void test_accessingKeyAfterRelease_shouldThrow ()
 	{
 		Key key = Key.create (KEY_1_NAME, KEY_1_VALUE);
 		key.release ();
-
-		assertNull (key.getPointer ());
+		key.getName ();
 	}
 
 	@Test public void test_createKeyMetadata_shouldPass ()
