@@ -36,47 +36,34 @@ The Java plugin itself needs to have the following methods:
 See [installation](/doc/INSTALL.md).
 The package is called `libelektra5-java`.
 
-### Java Prerequisites on Debian 9
+### Java prerequisites on Debian 10 / Ubuntu 20.04 LTS
 
-openjdk-8 and 9 do not work reliable: jvm crashes without usable backtrace.
+Install package `openjdk-11-jdk`.
 
-When using non-standard paths, you have to set JAVA_HOME before invoking cmake.
-(For example when you unpack Oracle Java to `/usr/local` or `/opt`.)
+If you get an error like the following ensure `JAVA_HOME` is set correctly:
+
+```
+CMake Error at src/bindings/jna/CMakeLists.txt:47 (if):
+  if given arguments:
+
+    "(" "VERSION_GREATER" "6.8.0" ")" "OR" "(" "VERSION_EQUAL" "6.8.0" ")"
+
+  Unknown arguments specified
+
+
+-- Configuring incomplete, errors occurred!
+```
+
 For example:
 
 ```sh
-JAVA_HOME=/usr/local/jdk-9.0.1
+JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ```
 
-### Java Prerequisites on Debian 8
-
-Please install java8 as package, e.g.
-[for debian](http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html)
-and then let cmake actually find jdk8:
-
-```sh
-cd /usr/lib/jvm/ && sudo rm -f default-java && sudo ln -s java-8-oracle default-java
-```
-
-and for the run-time, create the file
-`/etc/ld.so.conf.d/java-8-oracle.conf` with the content (for amd64):
-
-```
-/usr/lib/jvm/default-java/jre/lib/amd64
-/usr/lib/jvm/default-java/lib/amd64
-/usr/lib/jvm/default-java/jre/lib/amd64/server
-```
-
-and run:
-
-```sh
-sudo ldconfig
-```
-
-### Java Prerequisites on macOS
+### Java prerequisites on macOS
 
 macOS includes an old apple specific version of java, based on 1.6.
-However, for the jni plugin version 1.8 of Java is required, so either the openjdk or the oracle jdk has to be installed.
+However, for the jni plugin version 1.9 of Java is required, so either the openjdk or the oracle jdk has to be installed.
 
 Please install oracle's jdk8 via their provided installer.
 After that, you have to set the JAVA_HOME environment variable to the folder where the jdk is installed, usually like
@@ -96,7 +83,7 @@ Afterwards, the jni plugin should be included in the build and compile successfu
 
 #### Troubleshooting
 
-If it should still not find the correct jni version, or says the jni version is not 1.8, then it most likely still searches in the wrong directory for the jni header file.
+If it should still not find the correct jni version, or says the jni version is not 1.9, then it most likely still searches in the wrong directory for the jni header file.
 It has been experienced that if the project has been built already without this environment variable set, the java location is cached.
 As a result, it will be resolved wrong in future builds, even though the environment variable is set.
 To resolve this, it should be enough to delete the CMakeCache.txt file in the build directory and reconfigure the build.
@@ -123,6 +110,14 @@ kdb-full: error while loading shared libraries: libjawt.so: cannot open shared o
 ```
 
 You missed one of the ldconfig steps.
+
+### Running the JNI test
+
+Change to your elektra build folder and execute the following command for running the JNI plugin test and verify it works:
+
+```
+ctest -V -R testmod_jni
+```
 
 ## Plugin Config
 

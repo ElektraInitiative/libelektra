@@ -49,7 +49,15 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin2>>
+### JNI
+
+- Fixed double free issues and re-enabled tests
+- Updated documentation
+- Increased minimum required JDK version to 9
+
+_(Michael Tucek)_
+
+Special thanks to _(Klemens Böswirth)_ for helping with the problem analysis!
 
 ### Dbus
 
@@ -139,7 +147,22 @@ you up to date with the multi-language support provided by Elektra.
 
 - Remove `-Wno-shift-overflow warnings` option from SWIG bindings compile flags. _(Mihael Pranjić)_
 
-### <<Binding2>>
+### JNA
+
+- Gradle wrapper upgraded to 7.0
+- Updated documentation
+- Increased minimum required JDK version to 9
+- Migrated native resource clean-up from `finalize()` to `Cleaner`
+- Extracted exceptions from Key class introducing the following changes
+  - Removed unused `KeyTypeConversionException`
+  - Introduced KeyCreateFailedException, KeyReleasedException
+  - Renamed `KeyInvalidNameException` to `KeySetNameFailedException`
+  - Renamed `KeyTypeMismatchException` to `KeyBinaryTypeNotSupportedException`
+- Introduced `KeySetReleasedException`
+- `KeySet::lookup*` now returns `Optional<Key>`
+- `Key::getMeta` now returns `Optional<Key>`
+- Removed `Key::isNull`
+- Updated tests accordingly
 
 ### <<Binding3>>
 
