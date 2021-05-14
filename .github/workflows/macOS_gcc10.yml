@@ -53,7 +53,7 @@ jobs:
           swig \
           yajl \
           zeromq
-        brew install --cask adoptopenjdk9
+        brew install openjdk@11
 
     - name: Setup Build Environment
       run: |
