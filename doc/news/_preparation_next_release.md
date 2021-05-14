@@ -164,6 +164,8 @@ you up to date with the multi-language support provided by Elektra.
 - Removed `Key::isNull`
 - Updated tests accordingly
 
+_(Michael Tucek)_
+
 ### <<Binding3>>
 
 ## Tools
