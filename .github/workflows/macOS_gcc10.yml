@@ -53,9 +53,7 @@ jobs:
           swig \
           yajl \
           zeromq
-        brew install openjdk@11
-        ln -sfn /usr/local/opt/openjdk@11/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-11.jdk
-        export PATH="/usr/local/opt/openjdk@11/bin:$PATH"
+        brew install --cask adoptopenjdk
 
     - name: Setup Build Environment
       run: |
