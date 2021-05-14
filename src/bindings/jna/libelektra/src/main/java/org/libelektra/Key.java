@@ -194,11 +194,8 @@ public class Key implements Iterable<String>
 	 */
 	public void release ()
 	{
-		System.out.println ("\nKey release() called!");
 		if (cleanable != null)
 		{
-			System.out.println (
-				String.format ("%nKey release() commences clean for native key pointer %s", pointer.toString ()));
 			cleanable.clean ();
 			cleanable = null;
 			pointer = null;
@@ -540,10 +537,7 @@ public class Key implements Iterable<String>
 	 */
 	protected void incRef ()
 	{
-		System.out.println (String.format ("%nReference increased for Key(%s) - RefCount BEFORE: %d", this.toString (), getRef ()));
 		Elektra.INSTANCE.keyIncRef (getPointer ());
-		System.out.println (String.format ("%nReference increased for Key(%s) - RefCount AFTER: %d", this.toString (), getRef ()));
-		// new Throwable ().printStackTrace (System.out);
 	}
 
 	/**
@@ -553,10 +547,7 @@ public class Key implements Iterable<String>
 	 */
 	protected void decRef ()
 	{
-		System.out.println (String.format ("%nReference decreased for Key(%s) - RefCount BEFORE: %d", this.toString (), getRef ()));
 		Elektra.INSTANCE.keyDecRef (getPointer ());
-		System.out.println (String.format ("%nReference decreased for Key(%s) - RefCount AFTER: %d", this.toString (), getRef ()));
-		// new Throwable ().printStackTrace (System.out);
 	}
 
 	/**

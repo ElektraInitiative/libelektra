@@ -76,7 +76,7 @@ tasks.named('build').configure {
 // apply global testing configuration
 tasks.named('test').configure {
 	testLogging {
-		showStandardStreams = true
+		showStandardStreams = false
 		showExceptions = true
 		showCauses = true
 		showStackTraces = true

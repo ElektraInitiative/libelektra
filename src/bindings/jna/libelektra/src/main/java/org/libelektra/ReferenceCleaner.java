@@ -66,26 +66,8 @@ class ReferenceCleaner
 		 */
 		private boolean releaseKey ()
 		{
-			System.out.println (
-				String.format ("%nRelease called for native key pointer %s - RefCount: %d will be decreased ...",
-					       keyPointer.toString (), Elektra.INSTANCE.keyGetRef (keyPointer)));
-
 			Elektra.INSTANCE.keyDecRef (keyPointer);
-
-			int refCnt = Elektra.INSTANCE.keyGetRef (keyPointer);
-			System.out.println (
-				String.format ("%nTrying to delete native key pointer %s - RefCount: %d", keyPointer.toString (), refCnt));
-			if (refCnt < 1)
-			{
-				new Throwable ().printStackTrace (System.out);
-			}
-
-			int result = Elektra.INSTANCE.keyDel (keyPointer);
-
-			System.out.println (
-				String.format ("%nTried to deleted native key pointer %s with result: %d", keyPointer.toString (), result));
-
-			return (result == 0);
+			return (Elektra.INSTANCE.keyDel (keyPointer) == 0);
 		}
 	}
 
@@ -111,15 +93,7 @@ class ReferenceCleaner
 		 */
 		private boolean releaseKeySet ()
 		{
-			System.out.println (
-				String.format ("%nRelease called for native key set pointer %s ...", keySetPointer.toString ()));
-
-			int result = Elektra.INSTANCE.ksDel (keySetPointer);
-
-			System.out.println (String.format ("%nTried to deleted native key set pointer %s with result: %d",
-							   keySetPointer.toString (), result));
-
-			return (result == 0);
+			return (Elektra.INSTANCE.ksDel (keySetPointer) == 0);
 		}
 	}
 
