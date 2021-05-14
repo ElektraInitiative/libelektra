@@ -52,8 +52,7 @@ if (ADDTESTING_PHASE)
 	check_binding_was_added ("jna" BINDING_WAS_ADDED)
 
 	if (BUILD_TESTING AND BINDING_WAS_ADDED)
-		# add_plugintest (jni MEMLEAK)
-		add_plugintest (jni)
+		add_plugintest (jni MEMLEAK)
 		include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 		# Generate header file
