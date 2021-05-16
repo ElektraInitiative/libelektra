@@ -233,6 +233,15 @@ def dockerInit() {
       "./scripts/docker/debian/sid/doc.Dockerfile"
     )
 
+    /*
+     * Debian Bullseye. Used for testing and packaging.
+     */
+    DOCKER_IMAGES.bullseye = dockerUtils.createDockerImageDesc(
+      "debian-bullseye", dockerUtils.&idTesting,
+      "./scripts/docker/debian/bullseye",
+      "./scripts/docker/debian/bullseye/Dockerfile"
+    )
+
     /* Our main target for compatibility is Debian stable
      * (currently buster).
      * Hence we try to build all parts of Elektra via this image.
@@ -383,6 +392,14 @@ def dockerInit() {
       false
     )
 
+    /* Debian bullseye image used to install previously built packages */
+    DOCKER_IMAGES.bullseye_installed = dockerUtils.createDockerImageDesc(
+      "debian-bullseye-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/debian/bullseye/release.Dockerfile",
+      false
+    )
+
     /* Ubuntu focal image used to install previously built packages */
     DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
       "ubuntu-focal-installed", dockerUtils.&idArtifact,
@@ -529,6 +546,14 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG,
+    [TEST.ALL, TEST.MEM, TEST.INSTALL]
+  )
+
+  // Build Elektra on debian bullseye
+  tasks << buildAndTest(
+    "debian-bullseye-full",
+    DOCKER_IMAGES.bullseye,
+    CMAKE_FLAGS_BUILD_ALL,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
@@ -1001,6 +1026,15 @@ def generateArtifactStages() {
     "buster-unstable",
     "buster",
     DOCKER_IMAGES.buster_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
+    "buildPackage/debian/bullseye",
+    DOCKER_IMAGES.bullseye,
+    "bullseye-unstable",
+    "bullseye",
+    DOCKER_IMAGES.bullseye_installed,
     release.&publishDebPackages,
     this.&updateDebianChangelog
   )
