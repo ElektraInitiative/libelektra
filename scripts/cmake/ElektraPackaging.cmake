@@ -113,16 +113,18 @@ if (UNIX)
 	execute_process (COMMAND uname -m OUTPUT_VARIABLE CPACK_PACKAGE_ARCHITECTURE)
 	string (STRIP "${CPACK_PACKAGE_ARCHITECTURE}" CPACK_PACKAGE_ARCHITECTURE)
 
-	# Try to find distro name and distro-specific arch
-	execute_process (COMMAND bash "-c" "grep \"^NAME=\" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g'"
-			 OUTPUT_VARIABLE OS_NAME)
-	execute_process (COMMAND bash "-c" "grep \"^VERSION_ID=\" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g'"
-			 OUTPUT_VARIABLE OS_VERSION_ID)
-	execute_process (COMMAND bash "-c" "grep \"^PRETTY_NAME=\" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g'"
-			 OUTPUT_VARIABLE OS_PRETTY_NAME)
-	string (STRIP "${OS_NAME}" OS_NAME)
-	string (STRIP "${OS_VERSION_ID}" OS_VERSION_ID)
-	string (STRIP "${OS_PRETTY_NAME}" OS_PRETTY_NAME)
+	if (NOT APPLE)
+		# Try to find distro name and distro-specific arch
+		execute_process (COMMAND bash "-c" "grep \"^NAME=\" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g'"
+				 OUTPUT_VARIABLE OS_NAME)
+		execute_process (COMMAND bash "-c" "grep \"^VERSION_ID=\" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g'"
+				 OUTPUT_VARIABLE OS_VERSION_ID)
+		execute_process (COMMAND bash "-c" "grep \"^PRETTY_NAME=\" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g'"
+				 OUTPUT_VARIABLE OS_PRETTY_NAME)
+		string (STRIP "${OS_NAME}" OS_NAME)
+		string (STRIP "${OS_VERSION_ID}" OS_VERSION_ID)
+		string (STRIP "${OS_PRETTY_NAME}" OS_PRETTY_NAME)
+	endif (NOT APPLE)
 	set (OS_DISTRIB "${OS_NAME}${OS_VERSION_ID}")
 	if (NOT OS_DISTRIB)
 		set (OS_DISTRIB "unix")
