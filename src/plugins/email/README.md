@@ -52,6 +52,7 @@ kdb umount /tests/email
 
 The plugin only checks email addresses for validity. It is not able to resolve if the host and or check if the address can receive emails.
 The validation does not completely support the RFC5321. The following valid email addresses are not supported:
+
 - “(ele)ktra@elektra.io”
 - “elektra@elektra.io(io)”
 - “"hi@you"@elektra.io”
