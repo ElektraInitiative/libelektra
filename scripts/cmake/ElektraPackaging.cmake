@@ -118,8 +118,11 @@ if (UNIX)
 			 OUTPUT_VARIABLE OS_NAME)
 	execute_process (COMMAND bash "-c" "grep \"^VERSION_ID=\" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g'"
 			 OUTPUT_VARIABLE OS_VERSION_ID)
+	execute_process (COMMAND bash "-c" "grep \"^PRETTY_NAME=\" /etc/os-release | awk -F= {' print $2'} | sed 's/\"//g'"
+			 OUTPUT_VARIABLE OS_PRETTY_NAME)
 	string (STRIP "${OS_NAME}" OS_NAME)
 	string (STRIP "${OS_VERSION_ID}" OS_VERSION_ID)
+	string (STRIP "${OS_PRETTY_NAME}" OS_PRETTY_NAME)
 	set (OS_DISTRIB "${OS_NAME}${OS_VERSION_ID}")
 	if (NOT OS_DISTRIB)
 		set (OS_DISTRIB "unix")
