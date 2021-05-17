@@ -553,7 +553,8 @@ def generateFullBuildStages() {
   tasks << buildAndTest(
     "debian-bullseye-full",
     DOCKER_IMAGES.bullseye,
-    CMAKE_FLAGS_BUILD_ALL,
+    CMAKE_FLAGS_BUILD_ALL+
+    CMAKE_FLAGS_DEBUG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
