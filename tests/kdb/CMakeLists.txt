@@ -61,7 +61,6 @@ function (check_xcode)
 endfunction (check_xcode)
 
 function (add_kdb_test suffix)
-	set (options "MEMLEAK")
 	set (multiValueArgs "REQUIRED_PLUGINS;LINK_ELEKTRA")
 	cmake_parse_arguments (ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -73,10 +72,7 @@ function (add_kdb_test suffix)
 	endforeach (plugin ${ARG_REQUIRED_PLUGINS})
 
 	set (name testkdb_${suffix})
-	if (ARG_MEMLEAK)
-		set (GTEST_OPTIONS "MEMLEAK")
-	endif (ARG_MEMLEAK)
-	add_gtest (${name} ${GTEST_OPTIONS} KDBTESTS LINK_TOOLS LINK_ELEKTRA ${ARG_LINK_ELEKTRA})
+	add_gtest (${name} KDBTESTS LINK_TOOLS LINK_ELEKTRA ${ARG_LINK_ELEKTRA})
 endfunction (add_kdb_test suffix)
 
 if (CMAKE_SYSTEM_NAME MATCHES FreeBSD)
@@ -93,16 +89,7 @@ if (FEDORA AND ENABLE_ASAN)
 	# - https://issues.libelektra.org/3572
 	message (STATUS "Exclude KDB plugin test because it fails when ASAN is enabled")
 else (FEDORA AND ENABLE_ASAN)
-	if (NOT ENABLE_DEBUG)
-		# The memcheck test for allplugins fails on Ubuntu Bionic, Debian Buster and Debian Bullseye if ENABLE_DEBUG="OFF".
-		#
-		# See also:
-		#
-		# - https://github.com/ElektraInitiative/libelektra/pull/3855
-		# - https://github.com/ElektraInitiative/libelektra/pull/3530
-		set (KDB_TEST_ARGS "MEMLEAK")
-	endif (ENABLE_DEBUG)
-	add_kdb_test (allplugins ${KDB_TEST_ARGS})
+	add_kdb_test (allplugins)
 endif (FEDORA AND ENABLE_ASAN)
 
 add_kdb_test (conflict REQUIRED_PLUGINS error)
