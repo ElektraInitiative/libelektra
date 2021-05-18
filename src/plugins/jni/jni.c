@@ -249,49 +249,49 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	data->clsPlugin = (*data->env)->FindClass (data->env, classname);
 	if (data->clsPlugin == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Cannot find class %s", classname);
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Cannot find class Java plugin class %s", classname);
 		return -1;
 	}
 
 	data->clsKey = (*data->env)->FindClass (data->env, "org/libelektra/Key");
 	if (data->clsKey == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find class Key");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java class Key");
 		return -1;
 	}
 
 	data->clsKeySet = (*data->env)->FindClass (data->env, "org/libelektra/KeySet");
 	if (data->clsKeySet == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find class KeySet");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java class KeySet");
 		return -1;
 	}
 
 	data->midKeyConstr = (*data->env)->GetMethodID (data->env, data->clsKey, "<init>", "(JZ)V");
 	if (data->midKeyConstr == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find constructor Key(long, boolean)");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java constructor Key(long, boolean)");
 		return -1;
 	}
 
 	data->midKeySetConstr = (*data->env)->GetMethodID (data->env, data->clsKeySet, "<init>", "(JZ)V");
 	if (data->midKeySetConstr == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find constructor KeySet(long, boolean)");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java constructor KeySet(long, boolean)");
 		return -1;
 	}
 
 	data->midKeyDecRef = (*data->env)->GetMethodID (data->env, data->clsKey, "decRef", "()V");
 	if (data->midKeyDecRef == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find method of Key::decRef()");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java method of Key::decRef()");
 		return -1;
 	}
 
 	jmethodID midPluginConstructor = (*data->env)->GetMethodID (data->env, data->clsPlugin, "<init>", "()V");
 	if (midPluginConstructor == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find constructor of plugin");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java constructor of plugin %c", classname);
 		return -1;
 	}
 
@@ -299,7 +299,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	checkException (data, "creating plugin", errorKey);
 	if (data->plugin == 0)
 	{
-		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (errorKey, "Cannot create plugin");
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (errorKey, "Cannot create Java plugin %c", classname);
 		return -1;
 	}
 

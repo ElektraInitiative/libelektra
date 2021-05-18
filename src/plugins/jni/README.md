@@ -40,24 +40,11 @@ The package is called `libelektra5-java`.
 
 Install package `openjdk-11-jdk`.
 
-If you get an error like the following ensure `JAVA_HOME` is set correctly:
-
-```
-CMake Error at src/bindings/jna/CMakeLists.txt:47 (if):
-  if given arguments:
-
-    "(" "VERSION_GREATER" "6.8.0" ")" "OR" "(" "VERSION_EQUAL" "6.8.0" ")"
-
-  Unknown arguments specified
-
-
--- Configuring incomplete, errors occurred!
-```
+If you get errors related to `Could NOT find JNI`, please consider setting your `JAVA_HOME` environment variable accordingly.
 
 For example:
-
 ```sh
-JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ```
 
 ### Java prerequisites on macOS
@@ -65,18 +52,18 @@ JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 macOS includes an old apple specific version of java, based on 1.6.
 However, for the jni plugin version 1.9 of Java is required, so either the openjdk or the oracle jdk has to be installed.
 
-Please install oracle's jdk8 via their provided installer.
+Please install oracle's jdk9 via their provided installer.
 After that, you have to set the JAVA_HOME environment variable to the folder where the jdk is installed, usually like
 
 ```sh
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/"
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-9.1.2.1.jdk/Contents/Home/"
 ```
 
 As macOS handles linked libraries differently, there is no ldconfig command.
 Instead you can export an environment variable to tell elektra the location of the java dynamic libraries.
 
 ```sh
-export DYLD_FALLBACK_LIBRARY_PATH="/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib:/Library/Java/JavaVirtualMachines/jdk1.8.0_112.jdk/Contents/Home/jre/lib/server/"
+export DYLD_FALLBACK_LIBRARY_PATH="/Library/Java/JavaVirtualMachines/jdk-9.1.2.1.jdk/Contents/Home/jre/lib:/Library/Java/JavaVirtualMachines/jdk-9.1.2.1.jdk/Contents/Home/jre/lib/server/"
 ```
 
 Afterwards, the jni plugin should be included in the build and compile successfully.
@@ -113,7 +100,7 @@ You missed one of the ldconfig steps.
 
 ### Running the JNI test
 
-Change to your elektra build folder and execute the following command for running the JNI plugin test and verify it works:
+Change to your Eletkra's build folder and execute the following command for running the JNI plugin test and verify it works:
 
 ```
 ctest -V -R testmod_jni

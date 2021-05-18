@@ -27,7 +27,7 @@ if (DEPENDENCY_PHASE)
 			remove_plugin (jni "jni.h does not define JNI_VERSION_9")
 		endif ()
 	else ()
-		remove_plugin (jni "jni not found")
+		remove_plugin (jni "JNI not found, please review your JDK installation and consider setting JAVA_HOME accordingly")
 	endif ()
 endif ()
 
