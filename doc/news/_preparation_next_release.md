@@ -38,6 +38,7 @@ This is the quickest way to get started with Elektra without compiling and other
 The JNI plugin was encountering a double free on open. This has been fixed in conjunction with an update to JNA binding release mechanism. The previously disabled JNI test have been fixed and enabled.
 
 For how to write plugins, please refer to [java-plugins.md](../tutorials/java-plugins.md) as well as the [JNI plugin](../../src/plugins/jni/README.md) and [JNA binding](../../src/bindings/jna/README.md) documentation.
+
 ### <<HIGHLIGHT2>>
 
 ### <<HIGHLIGHT2>>

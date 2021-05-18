@@ -43,6 +43,7 @@ Install package `openjdk-11-jdk`.
 If you get errors related to `Could NOT find JNI`, please consider setting your `JAVA_HOME` environment variable accordingly.
 
 For example:
+
 ```sh
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ```
