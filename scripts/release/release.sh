@@ -187,7 +187,11 @@ build_package() {
 	if [ -z ${VERSION_CODENAME} ]; then
 		OS_ID=$(grep "^ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 		VERSION_ID=$(grep "VERSION_ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
-		VERSION_CODENAME="$OS_ID$VERSION_ID"
+		if [ -z ${OS_ID} ] || [ -z ${VERSION_ID} ]; then
+			VERSION_CODENAME=$(lsb_release -a 2> /dev/null | grep "Codename:" | awk -F: {' print $2'} | sed -e 's/^[ \t]*//')
+		else
+			VERSION_CODENAME="$OS_ID$VERSION_ID"
+		fi
 	fi
 
 	mkdir -p $BASE_DIR/$VERSION/$VERSION_CODENAME
@@ -197,10 +201,11 @@ build_package() {
 }
 
 memcheck() {
-	# With ENABLE_DEBUG="OFF" testkdb_allplugins detects a memleak on buster and bionic,
+	# With ENABLE_DEBUG="OFF" testkdb_allplugins detects a memleak on buster, bullseye and bionic,
 	# therefore the tests are disabled for theses distribitions.
-	# discussed in https://github.com/ElektraInitiative/libelektra/pull/3530
-	if [ "$VERSION_CODENAME" = "buster" ] || [ "$VERSION_CODENAME" = "bionic" ]; then
+	# discussed in: https://github.com/ElektraInitiative/libelektra/pull/3530
+	# see also: https://github.com/ElektraInitiative/libelektra/pull/3855
+	if [ "$VERSION_CODENAME" = "buster" ] || [ "$VERSION_CODENAME" = "bullseye" ] || [ "$VERSION_CODENAME" = "bionic" ]; then
 		cmemcheck 'testkdb_allplugins'
 	else
 		cmemcheck

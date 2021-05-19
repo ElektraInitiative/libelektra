@@ -113,6 +113,12 @@ def dockerInit() {
       './scripts/docker/debian/buster/Dockerfile'
     )
 
+    DOCKER_IMAGES.bullseye = dockerUtils.createDockerImageDesc(
+      'debian-bullseye', dockerUtils.&idTesting,
+      './scripts/docker/debian/bullseye',
+      './scripts/docker/debian/bullseye/Dockerfile'
+    )
+
     DOCKER_IMAGES.focal = dockerUtils.createDockerImageDesc(
       'ubuntu-focal', dockerUtils.&idTesting,
       './scripts/docker/ubuntu/focal',
@@ -142,6 +148,13 @@ def dockerInit() {
       'debian-buster-installed', dockerUtils.&idArtifact,
       './release-artifact/*/buster/',
       './scripts/docker/debian/buster/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.bullseye_installed = dockerUtils.createDockerImageDesc(
+      'debian-bullseye-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/bullseye/',
+      './scripts/docker/debian/bullseye/release.Dockerfile',
       false
     )
 
@@ -208,6 +221,12 @@ def generateReleaseStages() {
   )
 
   tasks << buildRelease(
+    'debian-bullseye',
+    DOCKER_IMAGES.bullseye,
+    params.debian_revision
+  )
+
+  tasks << buildRelease(
     'ubuntu-focal',
     DOCKER_IMAGES.focal,
     params.ubuntu_revision
@@ -263,6 +282,10 @@ def generateDockerBuildStagesWithPackagesInstalled() {
     DOCKER_IMAGES.buster_installed,
     'debian-buster'
   )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.bullseye_installed,
+    'debian-bullseye'
+  )
 
   return tasks
 }
@@ -288,10 +311,13 @@ def generateInstalledPackagesTestStages() {
     'fedora-34-installed',
     DOCKER_IMAGES.fedora_34_installed
   )
-
   tasks << testInstalledPackage(
     'debian-buster-installed',
     DOCKER_IMAGES.buster_installed
+  )
+  tasks << testInstalledPackage(
+    'debian-bullseye-installed',
+    DOCKER_IMAGES.bullseye_installed
   )
 
   return tasks
@@ -308,6 +334,15 @@ def generateDebPackagePublishStages() {
     DOCKER_IMAGES.buster_installed.context,
     'buster',
     'buster',
+    release.&publishDebPackages,
+    params.debian_revision
+  )
+
+  tasks << publish(
+    'debian-bullseye',
+    DOCKER_IMAGES.bullseye_installed.context,
+    'bullseye',
+    'bullseye',
     release.&publishDebPackages,
     params.debian_revision
   )

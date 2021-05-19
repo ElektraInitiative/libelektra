@@ -196,6 +196,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - We now package the ruby bindings, ruby plugin and the gitresolver plugin. _(Robert Sowula)_
 - We added Fedora 34 packages. _(Mihael Pranjić)_
+- We added Debian Bullseye packages. _(Robert Sowula)_
 
 ## Build
 
