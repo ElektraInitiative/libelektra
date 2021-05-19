@@ -95,10 +95,10 @@ static void test_keyCmp (void)
 	succeed_if (keyCmp (k1, k2) < 0, "find_me is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "find_me is smaller");
 
-	keySetName (k1, "user:user_a/a");
+	keySetName (k1, "user:user_a/b");
 	keySetName (k2, "user:user_b/a");
-	succeed_if (keyCmp (k1, k2) == 0, "should be same as owner is not considered");
-	succeed_if (keyCmp (k2, k1) == 0, "should be same as owner is not considered");
+	succeed_if (keyCmp (k1, k2) < 0, "should be same as owner is not considered");
+	succeed_if (keyCmp (k2, k1) > 0, "should be same as owner is not considered");
 
 	keyDel (k1);
 	keyDel (k2);
