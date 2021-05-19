@@ -8,7 +8,6 @@
  */
 
 #include <kdberrors.h>
-#include <regex.h>
 #include <stdio.h>
 
 #include "length.h"
