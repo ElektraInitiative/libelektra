@@ -78,19 +78,10 @@
  *
  * To just get a key object, simple do:
  *
- * @snippet keyNew.c Simple
+ * @snippet keyNew.c With Name
  *
  * keyNew() allocates memory for a key object and keyDel() cleans
  * everything up.
- *
- * We can also give an empty key name and a KEY_END tag with the same
- * effect as before:
- *
- * @snippet keyNew.c Alternative
- *
- * But we can also give the key a proper name right from the start:
- *
- * @snippet keyNew.c With Name
  *
  * If you want the key object to contain a name, value, comment and other
  * meta info read on.
