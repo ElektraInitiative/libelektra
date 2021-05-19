@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 
-#define PLUGIN_NAME "lengthgth"
+#define PLUGIN_NAME "length"
 #include "test_length.h"
 
 
