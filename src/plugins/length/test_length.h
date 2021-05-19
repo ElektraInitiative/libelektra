@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for ipaddr plugin
+ * @brief Tests for length plugin
  *
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
@@ -13,24 +13,6 @@
 
 #include <kdbconfig.h>
 
-#ifdef HAVE_FEATURES_H
-
-#include <features.h>
-// The function `getaddrinfo` used in the `network` plugin leaks memory, if we use the default value for `ai_flags` on systems that use
-// `glibc` 2.19.
-// See also: https://travis-ci.org/ElektraInitiative/libelektra/builds/428298531
-#if defined(__GLIBC__) && defined(__GLIBC_PREREQ)
-#if !(__GLIBC_PREREQ(2, 20))
-#include <string.h>
-#define PLUGIN_LEAKS_MEMORY (strcmp (PLUGIN_NAME, "network") == 0)
-#endif
-#endif
-
-#endif // HAVE_FEATURES_H
-
-#ifndef PLUGIN_LEAKS_MEMORY
-#define PLUGIN_LEAKS_MEMORY 0
-#endif
 
 static void test_length (void)
 {
