@@ -9,7 +9,7 @@
 - infos/metadata = check/length
 - infos/description = validates if input is less or equal to length and throws error otherwise
 
-# IP Address Validation
+# Length Validation
 
 ## Introduction
 
