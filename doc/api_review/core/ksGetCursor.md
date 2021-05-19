@@ -90,8 +90,8 @@
 - [ ] Function code is fully covered by tests  
        - Line 1665
 - [ ] All possible error states are covered by tests  
-       - [ ] add test case if current cursor is at `NULL`  
-       - [ ] add test case if current ks is `NULL`
+       - [x] add test case if current cursor is at `NULL`  
+       - [x] add test case if current ks is `NULL`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

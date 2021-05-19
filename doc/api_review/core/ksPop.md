@@ -88,7 +88,8 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-       - [ ] `ks == NULL`
+       - [ ] `ks == NULL`  
+       // todo
 - All possible enum values are covered by tests
 - [ ] No inconsistencies between tests and documentation
 
