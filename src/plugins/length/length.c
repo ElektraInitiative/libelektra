@@ -15,7 +15,7 @@
 
 static int validateKey (Key * key, Key * parentKey)
 {
-	const Key * meta = keyGetMeta (key, "check/length");
+	const Key * meta = keyGetMeta (key, "check/length/max");
 	if (!meta) return 1;
 	int rc = 0;
 	int c = 0;
@@ -69,7 +69,7 @@ int elektraLengthGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/length");
+		const Key * meta = keyGetMeta (cur, "check/length/max");
 		if (!meta) continue;
 		int rc = validateKey (cur, parentKey);
 		if (!rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
@@ -85,7 +85,7 @@ int elektraLengthSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_
 	ksRewind (returned);
 	while ((cur = ksNext (returned)) != NULL)
 	{
-		const Key * meta = keyGetMeta (cur, "check/length");
+		const Key * meta = keyGetMeta (cur, "check/length/max");
 		if (!meta) continue;
 		int rc = validateKey (cur, parentKey);
 		if (!rc) return ELEKTRA_PLUGIN_STATUS_ERROR;
