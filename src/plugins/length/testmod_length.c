@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief Tests for lengthgth plugin
+ * @brief Tests for length plugin
  *
  * @copyright BSD License (see doc/LICENSE.md or https://www.libelektra.org)
  *
