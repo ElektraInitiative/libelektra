@@ -169,14 +169,14 @@ you up to date with the multi-language support provided by Elektra.
   - `KeySet::lookup*` now returns `Optional<Key>`
   - `Key::getMeta` now returns `Optional<Key>`
   - Example:
-    ```
+    ```java
     // checking whether the key has been found BEFORE API change
     Key found = ks.lookup("/some/key");
     if (found != null) {
       // process found key
     }
     ```
-    ```
+    ```java
     // checking whether the key has been found AFTER API change
     ks.lookup("/some/key").ifPresent(k -> // process found key );
     ```
