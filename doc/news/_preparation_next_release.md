@@ -164,12 +164,27 @@ you up to date with the multi-language support provided by Elektra.
   - Renamed `KeyInvalidNameException` to `KeySetNameFailedException`
   - Renamed `KeyTypeMismatchException` to `KeyBinaryTypeNotSupportedException`
 - Introduced `KeySetReleasedException` being thrown when a release `KeySet` is being accessed
-- `KeySet::lookup*` now returns `Optional<Key>` instead of nullable `Key`, when the specified key was not found
-- `Key::getMeta` now returns `Optional<Key>` instead of nullable `Key`, when the specified meta data key was not found
-- Removed `Key::isNull`
+- Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
+
+  - `KeySet::lookup*` now returns `Optional<Key>`
+  - `Key::getMeta` now returns `Optional<Key>`
+  - Example:
+    ```
+    // checking whether the key has been found BEFORE API change
+    Key found = ks.lookup("/some/key");
+    if (found != null) {
+      // process found key
+    }
+    ```
+    ```
+    // checking whether the key has been found AFTER API change
+    ks.lookup("/some/key").ifPresent(k -> // process found key );
+    ```
+
+* Removed `Key::isNull`
   - `KeyReleasedException` is now being thrown when a release `Key` is being accessed
   - `Key`s with now bacing native key pointer cannot be created anymore
-- Updated tests accordingly
+* Updated tests accordingly
 
 _(Michael Tucek)_
 
