@@ -41,7 +41,7 @@ add_plugin (
 if (ADDTESTING_PHASE)
 	check_binding_was_added ("jna" BINDING_WAS_ADDED)
 
-	if (BUILD_TESTING AND BINDING_WAS_ADDED)
+	if (BUILD_TESTING AND BINDING_WAS_ADDED AND NOT ENABLE_ASAN)
 		add_plugintest (jni MEMLEAK)
 		include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
