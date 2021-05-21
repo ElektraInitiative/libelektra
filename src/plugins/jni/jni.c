@@ -154,9 +154,9 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 
 	// clean up local references
 	//(*data->env)->DeleteLocalRef (data->env, jkey);
-	//checkException (data, method, errorKey);
+	// checkException (data, method, errorKey);
 	//(*data->env)->DeleteLocalRef (data->env, jks);
-	//checkException (data, method, errorKey);
+	// checkException (data, method, errorKey);
 
 	return result;
 }
@@ -339,7 +339,7 @@ int elektraJniClose (Plugin * handle, Key * errorKey)
 
 	// clean up local references
 	//(*data->env)->DeleteLocalRef (data->env, data->plugin);
-	//checkException (data, "close", errorKey);
+	// checkException (data, "close", errorKey);
 
 	(*data->jvm)->DestroyJavaVM (data->jvm);
 	elektraFree (data);
