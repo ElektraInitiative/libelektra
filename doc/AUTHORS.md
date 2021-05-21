@@ -219,3 +219,11 @@ debian packaging, release automation
 - email: robert@sowula.at
 - github user: [robaerd](https://github.com/robaerd)
 - devel/test on: Debian, Ubuntu
+
+## Michael Tucek
+
+work on Java bindings
+
+- email: libelektra@hellwach.at
+- github user: [tucek](https://github.com/tucek)
+- devel/test on: Debian, Ubuntu
