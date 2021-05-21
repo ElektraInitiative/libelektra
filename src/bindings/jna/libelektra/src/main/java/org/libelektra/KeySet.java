@@ -149,8 +149,8 @@ public class KeySet implements Iterable<Key>
 		{
 			cleanable.clean ();
 			cleanable = null;
-			pointer = null;
 		}
+		pointer = null;
 	}
 
 	/**

@@ -198,8 +198,8 @@ public class Key implements Iterable<String>
 		{
 			cleanable.clean ();
 			cleanable = null;
-			pointer = null;
 		}
+		pointer = null;
 	}
 
 	/**
