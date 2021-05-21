@@ -1128,8 +1128,7 @@ def buildPackage(stageName, image, repoName, repoPrefix, installImage,
           // executed in a nested node, causing the current node to wait for the
           // stage on the other node to complete.
             withDockerEnv.withDockerEnvWithoutNode(installImage) {
-              // #3825 disabled due to segfault in testmod_jni
-              // sh "kdb run_all"
+              sh "kdb run_all"
             }
           }
           dir("build/package") {
