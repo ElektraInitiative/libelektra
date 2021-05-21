@@ -72,7 +72,7 @@ public class Key implements Iterable<String>
 	protected Key (long nativePointer, boolean suppressCleanUp)
 	{
 		pointer = new Pointer (nativePointer);
-		incRef ();
+		ReferenceCleaner.keyWrapperCreated (this);
 		cleanable = (suppressCleanUp ? null : ReferenceCleaner.registerKeyCleanUp (this)); // see #3825
 	}
 
@@ -85,7 +85,7 @@ public class Key implements Iterable<String>
 	protected Key (@Nullable Pointer pointer)
 	{
 		this.pointer = pointer;
-		incRef ();
+		ReferenceCleaner.keyWrapperCreated (this);
 		cleanable = ReferenceCleaner.registerKeyCleanUp (this);
 	}
 

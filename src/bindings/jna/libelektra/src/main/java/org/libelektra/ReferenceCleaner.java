@@ -2,6 +2,7 @@ package org.libelektra;
 
 import com.sun.jna.Pointer;
 import java.lang.ref.Cleaner;
+import javax.annotation.Nullable;
 import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeySetReleasedException;
 
@@ -11,7 +12,25 @@ import org.libelektra.exception.KeySetReleasedException;
 class ReferenceCleaner
 {
 
-	private static final Cleaner CLEANER_INSTANCE = Cleaner.create ();
+	/**
+	 * #3825 disabled native automated reference clean-up due to segfaults
+	 */
+	private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = false;
+
+	@Nullable private static final Cleaner CLEANER_INSTANCE = ENABLE_AUTO_NATIVE_REF_CLEANUP ? Cleaner.create () : null;
+
+	/**
+	 * Depending on whether {@link #ENABLE_AUTO_NATIVE_REF_CLEANUP} is {@code true}, {@link Key#incRef()} is called for {@code newKey}.
+	 *
+	 * @param newKey Newly created {@link Key} object wrapping native key resource.
+	 */
+	static void keyWrapperCreated (Key newKey)
+	{
+		if (ENABLE_AUTO_NATIVE_REF_CLEANUP)
+		{
+			newKey.incRef ();
+		}
+	}
 
 	/**
 	 * Registers a {@link Key} for informing the underlying native library about the
@@ -24,7 +43,8 @@ class ReferenceCleaner
 	 */
 	static Cleaner.Cleanable registerKeyCleanUp (Key key)
 	{
-		return CLEANER_INSTANCE.register(key, new KeyCleanupTask (key.getPointer ()));
+		KeyCleanupTask task = new KeyCleanupTask (key.getPointer ());
+		return ENABLE_AUTO_NATIVE_REF_CLEANUP ? CLEANER_INSTANCE.register(key, task) : task::run;
 	}
 
 	/**
@@ -38,7 +58,8 @@ class ReferenceCleaner
 	 */
 	static Cleaner.Cleanable registerKeySetCleanUp (KeySet keySet)
 	{
-		return CLEANER_INSTANCE.register(keySet, new KeySetCleanupTask (keySet.getPointer ()));
+		KeySetCleanupTask task = new KeySetCleanupTask (keySet.getPointer ());
+		return ENABLE_AUTO_NATIVE_REF_CLEANUP ? CLEANER_INSTANCE.register(keySet, task) : task::run;
 	}
 
 	private static class KeyCleanupTask implements Runnable
@@ -66,7 +87,10 @@ class ReferenceCleaner
 		 */
 		private boolean releaseKey ()
 		{
-			Elektra.INSTANCE.keyDecRef (keyPointer);
+			if (ENABLE_AUTO_NATIVE_REF_CLEANUP)
+			{
+				Elektra.INSTANCE.keyDecRef (keyPointer);
+			}
 			return (Elektra.INSTANCE.keyDel (keyPointer) == 0);
 		}
 	}
@@ -99,6 +123,6 @@ class ReferenceCleaner
 
 	private ReferenceCleaner ()
 	{
-		// intentionally left blank
+		// intentionally left blank to prevent instantiation
 	}
 }
