@@ -88,7 +88,7 @@ function (add_plugintest testname)
 
 		cmake_parse_arguments (
 			ARG
-			"MEMLEAK;INSTALL_TEST_DATA;CPP" # optional keywords
+			"MEMLEAK;INSTALL_TEST_DATA;CPP;USE_LINK_RPATH" # optional keywords
 			"" # one value keywords
 			"${MULTI_VALUE_KEYWORDS}" # multi value keywords
 			${ARGN})
@@ -127,6 +127,7 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_ENVIRONMENT)
 		restore_variable (${PLUGIN_NAME} ARG_TIMEOUT)
 		restore_variable (${PLUGIN_NAME} ARG_EXTRA_EXECUTABLES)
+		restore_variable (${PLUGIN_NAME} ARG_USE_LINK_RPATH)
 
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
 
@@ -150,6 +151,10 @@ function (add_plugintest testname)
 		endif (ARG_CPP)
 
 		set (PLUGIN_TARGET_OBJS "")
+		# do not strip rpath
+		if (ARG_USE_LINK_RPATH)
+			set_target_properties (${PLUGIN_NAME} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+		endif ()
 		if (ARG_LINK_PLUGIN)
 			if (NOT ARG_LINK_PLUGIN STREQUAL "<no>")
 				set (PLUGIN_TARGET_OBJS "$<TARGET_OBJECTS:elektra-${ARG_LINK_PLUGIN}-objects>")
