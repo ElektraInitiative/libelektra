@@ -44,7 +44,7 @@ if (ADDTESTING_PHASE)
 	if (BUILD_TESTING
 	    AND BINDING_WAS_ADDED
 	    AND NOT ENABLE_ASAN)
-		add_plugintest (jni MEMLEAK USE_LINK_RPATH)
+		add_plugintest (jni MEMLEAK)
 		include_directories (${CMAKE_CURRENT_BINARY_DIR})
 
 		# Generate header file
