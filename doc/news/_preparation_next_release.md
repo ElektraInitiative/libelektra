@@ -61,7 +61,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 _(Michael Tucek)_
 
-Special thanks to _(Klemens Böswirth)_ for helping with the problem analysis!
+Special thanks to _(Klemens Böswirth)_, _(Mihael Pranjić)_ and _(Robert Sowula)_ for helping with the problem analysis!
 
 ### Dbus
 
