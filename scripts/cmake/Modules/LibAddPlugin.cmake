@@ -88,7 +88,7 @@ function (add_plugintest testname)
 
 		cmake_parse_arguments (
 			ARG
-			"MEMLEAK;INSTALL_TEST_DATA;CPP" # optional keywords
+			"MEMLEAK;INSTALL_TEST_DATA;CPP;USE_LINK_RPATH" # optional keywords
 			"" # one value keywords
 			"${MULTI_VALUE_KEYWORDS}" # multi value keywords
 			${ARGN})
@@ -127,6 +127,7 @@ function (add_plugintest testname)
 		restore_variable (${PLUGIN_NAME} ARG_ENVIRONMENT)
 		restore_variable (${PLUGIN_NAME} ARG_TIMEOUT)
 		restore_variable (${PLUGIN_NAME} ARG_EXTRA_EXECUTABLES)
+		restore_variable (${PLUGIN_NAME} ARG_USE_LINK_RPATH)
 
 		set (TEST_SOURCES $<TARGET_OBJECTS:cframework> ${ARG_OBJECT_SOURCES})
 
@@ -213,7 +214,10 @@ function (add_plugintest testname)
 			TARGET ${testexename}
 			APPEND
 			PROPERTY INCLUDE_DIRECTORIES ${ARG_INCLUDE_DIRECTORIES})
-
+		# do not strip rpath during install
+		if (ARG_USE_LINK_RPATH)
+			set_target_properties (${testexename} PROPERTIES INSTALL_RPATH_USE_LINK_PATH TRUE)
+		endif ()
 		unset (ADDITIONAL_COMPILE_DEFINITIONS)
 
 		foreach (DIR ${ARG_INCLUDE_SYSTEM_DIRECTORIES})
