@@ -3,11 +3,32 @@
 This folder contains all Docker related artifacts.
 
 A list of all Dockerfiles used by the build server can be found in the
-[Jenkinsfile](https://master.libelektra.org/scripts/jenkins/Jenkinsfile).
+[Jenkinsfile](https://master.libelektra.org/scripts/jenkins/Jenkinsfile) and
+[Jenkinsfile.release](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.release).
 
 > **Note:**
 > Any commands in this file are expected to be run from the root
 > of the repository.
+
+## Types of Docker images
+
+We generally have three types of docker images:
+
+1. **Testing/Packaging Docker images**  
+   These Docker images are used in our test and package stages of our CI and are able to perform tasks like api documentation or DEB/RPM package generation.
+   The prefix of the Dockerfile determines for which task a Dockerfile is used.
+   For example a `doc.Dockerfile` has all dependencies to generate the api documentation.
+   A dockerfile with the name `Dockerfile` is used for general full builds and optionally also for package generation.
+   These images do not have any root priviledges.
+2. **Images that test the Elektra packages** _(package.Dockerfile)_  
+   Packages are installed during the image build procedure.
+   These images are only used in the [Jenkinsfile.release](https://master.libelektra.org/scripts/jenkins/Jenkinsfile.release) to run test-suites and archive the results.
+   These images do not have any root priviledges.
+3. **Release images** _(release.Dockerfile)_  
+   Release images install the latest released version of Elektra (from source or packages)
+   and are pushed to either DockerHub or our public Docker registry.
+   During the build stage, tests are executed on the installed version of Elektra.
+   These images are never run as container in our CI as they have permissions to use `sudo`.
 
 ## Downloading Prebuilt Images
 

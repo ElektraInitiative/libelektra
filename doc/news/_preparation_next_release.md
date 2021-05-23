@@ -209,7 +209,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Docker
 
 - Add Fedora 34 images. _(Mihael Pranjić)_
-- <<TODO>>
+- We added release images that come with pre-installed dependencies and sudo permissions for each distribution we build packages for. _(Robert Sowula)_
 - <<TODO>>
 
 ## Infrastructure

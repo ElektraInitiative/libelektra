@@ -147,40 +147,83 @@ def dockerInit() {
     DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
       'debian-buster-installed', dockerUtils.&idArtifact,
       './release-artifact/*/buster/',
-      './scripts/docker/debian/buster/release.Dockerfile',
+      './scripts/docker/debian/buster/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bullseye_installed = dockerUtils.createDockerImageDesc(
       'debian-bullseye-installed', dockerUtils.&idArtifact,
       './release-artifact/*/bullseye/',
-      './scripts/docker/debian/bullseye/release.Dockerfile',
+      './scripts/docker/debian/bullseye/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
       'ubuntu-focal-installed', dockerUtils.&idArtifact,
       './release-artifact/*/focal/',
-      './scripts/docker/ubuntu/focal/release.Dockerfile',
+      './scripts/docker/ubuntu/focal/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
       'ubuntu-bionic-installed', dockerUtils.&idArtifact,
       './release-artifact/*/bionic/',
-      './scripts/docker/ubuntu/bionic/release.Dockerfile',
+      './scripts/docker/ubuntu/bionic/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
       'fedora-33-installed', dockerUtils.&idArtifact,
       './release-artifact/*/fedora33/',
-      './scripts/docker/fedora/33/release.Dockerfile',
+      './scripts/docker/fedora/33/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_34_installed = dockerUtils.createDockerImageDesc(
       'fedora-34-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/fedora34/',
+      './scripts/docker/fedora/34/package.Dockerfile',
+      false
+    )
+
+    /* Install packages for Docker image release */
+    DOCKER_IMAGES.buster_release = dockerUtils.createDockerImageDesc(
+      'debian-buster-release', dockerUtils.&idArtifact,
+      './release-artifact/*/buster/',
+      './scripts/docker/debian/buster/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.bullseye_release = dockerUtils.createDockerImageDesc(
+      'debian-bullseye-release', dockerUtils.&idArtifact,
+      './release-artifact/*/bullseye/',
+      './scripts/docker/debian/bullseye/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.focal_release = dockerUtils.createDockerImageDesc(
+      'ubuntu-focal-release', dockerUtils.&idArtifact,
+      './release-artifact/*/focal/',
+      './scripts/docker/ubuntu/focal/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.bionic_release = dockerUtils.createDockerImageDesc(
+      'ubuntu-bionic-release', dockerUtils.&idArtifact,
+      './release-artifact/*/bionic/',
+      './scripts/docker/ubuntu/bionic/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.fedora_33_release = dockerUtils.createDockerImageDesc(
+      'fedora-33-release', dockerUtils.&idArtifact,
+      './release-artifact/*/fedora33/',
+      './scripts/docker/fedora/33/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.fedora_34_release = dockerUtils.createDockerImageDesc(
+      'fedora-34-release', dockerUtils.&idArtifact,
       './release-artifact/*/fedora34/',
       './scripts/docker/fedora/34/release.Dockerfile',
       false
@@ -433,6 +476,31 @@ def generateImageUploadStages() {
     'publish-alpine',
     DOCKER_IMAGES.alpine_release,
     params.alpine_revision
+  )
+
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.focal_release,
+    'ubuntu-focal'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.bionic_release,
+    'ubuntu-bionic'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.fedora_33_release,
+    'fedora-33'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.fedora_34_release,
+    'fedora-34'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.buster_release,
+    'debian-buster'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.bullseye_release,
+    'debian-bullseye'
   )
 
   return tasks
