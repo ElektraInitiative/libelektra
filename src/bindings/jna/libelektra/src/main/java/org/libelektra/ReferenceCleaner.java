@@ -1,32 +1,28 @@
 package org.libelektra;
 
+import com.sun.jna.Pointer;
 import java.lang.ref.Cleaner;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import javax.annotation.Nullable;
-
 import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeySetReleasedException;
-
-import com.sun.jna.Pointer;
 
 /**
  * Reference clean-up helper for Java representations of Elektra entities with
  * references to native resources
  */
-class ReferenceCleaner {
+class ReferenceCleaner
+{
 
 	/**
 	 * #3825 TOD This constant can be used to disable automated native reference
 	 * clean-up and is intended to be removed after no more occasional segfailts
 	 * have appeared in ci for some time.
 	 */
-	@Deprecated(forRemoval = true)
-	private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = true;
+	@Deprecated (forRemoval = true) private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = true;
 
-	@Nullable
-	private static final Cleaner CLEANER_INSTANCE = ENABLE_AUTO_NATIVE_REF_CLEANUP ? Cleaner.create() : null;
+	@Nullable private static final Cleaner CLEANER_INSTANCE = ENABLE_AUTO_NATIVE_REF_CLEANUP ? Cleaner.create () : null;
 
 	/**
 	 * The garbage collector may call multiple cleanables in parallel. This
@@ -35,7 +31,7 @@ class ReferenceCleaner {
 	 * sets. This is done in order to prevent a possible race condition when
 	 * releasing keys also being part of a key set being released.
 	 */
-	private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+	private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock ();
 
 	/**
 	 * Depending on whether {@link #ENABLE_AUTO_NATIVE_REF_CLEANUP} is {@code true},
@@ -43,9 +39,11 @@ class ReferenceCleaner {
 	 *
 	 * @param newKey Newly created {@link Key} object wrapping native key resource.
 	 */
-	static void keyWrapperCreated(Key newKey) {
-		if (ENABLE_AUTO_NATIVE_REF_CLEANUP) {
-			newKey.incRef();
+	static void keyWrapperCreated (Key newKey)
+	{
+		if (ENABLE_AUTO_NATIVE_REF_CLEANUP)
+		{
+			newKey.incRef ();
 		}
 	}
 
@@ -59,8 +57,9 @@ class ReferenceCleaner {
 	 *         garbage collection
 	 * @throws KeyReleasedException if {@code key} has already been released
 	 */
-	static Cleaner.Cleanable registerKeyCleanUp(Key key) {
-		KeyCleanupTask task = new KeyCleanupTask(key.getPointer());
+	static Cleaner.Cleanable registerKeyCleanUp (Key key)
+	{
+		KeyCleanupTask task = new KeyCleanupTask (key.getPointer ());
 		return ENABLE_AUTO_NATIVE_REF_CLEANUP ? CLEANER_INSTANCE.register(key, task) : task::run;
 	}
 
@@ -74,29 +73,35 @@ class ReferenceCleaner {
 	 *         garbage collection
 	 * @throws KeySetReleasedException if {@code keySet} has already been released
 	 */
-	static Cleaner.Cleanable registerKeySetCleanUp(KeySet keySet) {
-		KeySetCleanupTask task = new KeySetCleanupTask(keySet.getPointer());
+	static Cleaner.Cleanable registerKeySetCleanUp (KeySet keySet)
+	{
+		KeySetCleanupTask task = new KeySetCleanupTask (keySet.getPointer ());
 		return ENABLE_AUTO_NATIVE_REF_CLEANUP ? CLEANER_INSTANCE.register(keySet, task) : task::run;
 	}
 
-	private static class KeyCleanupTask implements Runnable {
+	private static class KeyCleanupTask implements Runnable
+	{
 
 		private final Pointer keyPointer;
 
-		private KeyCleanupTask(Pointer keyPointer) {
+		private KeyCleanupTask (Pointer keyPointer)
+		{
 			this.keyPointer = keyPointer;
 		}
 
-		@Override
-		public void run() {
-			try {
-				lock.readLock().lockInterruptibly();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				throw new RuntimeException("Aquisition of key release lock has been interrupted.", e);
+		@Override public void run ()
+		{
+			try
+			{
+				lock.readLock ().lockInterruptibly ();
 			}
-			releaseKey();
-			lock.readLock().unlock();
+			catch (InterruptedException e)
+			{
+				Thread.currentThread ().interrupt ();
+				throw new RuntimeException ("Aquisition of key release lock has been interrupted.", e);
+			}
+			releaseKey ();
+			lock.readLock ().unlock ();
 		}
 
 		/**
@@ -107,32 +112,39 @@ class ReferenceCleaner {
 		 *         are still other references to the native resource and therefore it
 		 *         was not freed
 		 */
-		private boolean releaseKey() {
-			if (ENABLE_AUTO_NATIVE_REF_CLEANUP) {
-				Elektra.INSTANCE.keyDecRef(keyPointer);
+		private boolean releaseKey ()
+		{
+			if (ENABLE_AUTO_NATIVE_REF_CLEANUP)
+			{
+				Elektra.INSTANCE.keyDecRef (keyPointer);
 			}
-			return (Elektra.INSTANCE.keyDel(keyPointer) == 0);
+			return (Elektra.INSTANCE.keyDel (keyPointer) == 0);
 		}
 	}
 
-	private static class KeySetCleanupTask implements Runnable {
+	private static class KeySetCleanupTask implements Runnable
+	{
 
 		private final Pointer keySetPointer;
 
-		private KeySetCleanupTask(Pointer keySetPointer) {
+		private KeySetCleanupTask (Pointer keySetPointer)
+		{
 			this.keySetPointer = keySetPointer;
 		}
 
-		@Override
-		public void run() {
-			try {
-				lock.writeLock().lockInterruptibly();
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
-				throw new RuntimeException("Aquisition of key set release lock has been interrupted.", e);
+		@Override public void run ()
+		{
+			try
+			{
+				lock.writeLock ().lockInterruptibly ();
 			}
-			releaseKeySet();
-			lock.writeLock().unlock();
+			catch (InterruptedException e)
+			{
+				Thread.currentThread ().interrupt ();
+				throw new RuntimeException ("Aquisition of key set release lock has been interrupted.", e);
+			}
+			releaseKeySet ();
+			lock.writeLock ().unlock ();
 		}
 
 		/**
@@ -141,12 +153,14 @@ class ReferenceCleaner {
 		 *
 		 * @return True, if the native reference actually has been freed
 		 */
-		private boolean releaseKeySet() {
-			return (Elektra.INSTANCE.ksDel(keySetPointer) == 0);
+		private boolean releaseKeySet ()
+		{
+			return (Elektra.INSTANCE.ksDel (keySetPointer) == 0);
 		}
 	}
 
-	private ReferenceCleaner() {
+	private ReferenceCleaner ()
+	{
 		// intentionally left blank to prevent instantiation
 	}
 }
