@@ -418,9 +418,7 @@ public interface Elektra extends Library {
 
 	Pointer elektraKsPopAtCursor (Pointer ks, int cursor);
 
-	// deprecated for removal - (forRemoval = true) not set since not all build
-	// server are using JDK >=9 yet
-	@Deprecated int ksRewind (Pointer ks);
+	@Deprecated(forRemoval = true) int ksRewind (Pointer ks);
 
 	Pointer ksHead (Pointer ks);
 
