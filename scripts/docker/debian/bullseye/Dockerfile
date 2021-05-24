@@ -58,6 +58,7 @@ RUN apt-get update && apt-get -y install \
         libzmq3-dev \
         lintian \
         llvm \
+        lsb-release \
         ninja-build \
         patch \
         patchutils \
