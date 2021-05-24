@@ -13,7 +13,6 @@ BUILD_DIR="$SRC_DIR/build"
 
 PACKAGE_REVISION=${1:-1}
 
-
 find_version_codename() {
 	VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 	if [ -z ${VERSION_CODENAME} ]; then
