@@ -2,12 +2,13 @@ package org.libelektra;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
+import org.libelektra.exception.KeySetReleasedException;
 
 public class KeySetTest
 {
@@ -44,105 +45,120 @@ public class KeySetTest
 
 	@Test public void test_keySetCreate_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+
 		assertEquals (6, ks.length ());
 	}
 
 	@Test public void test_keySetCreateFromPointer_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		final KeySet ks2 = new KeySet (ks.get ());
-		assertEquals (ks.get (), ks2.get ());
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		KeySet ks2 = new KeySet (ks.getPointer ());
+
+		assertEquals (ks.getPointer (), ks2.getPointer ());
 		assertEquals (ks.length (), ks2.length ());
 	}
 
 	@Test public void test_keySetIterator_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		final Iterator<Key> iterator = ks.iterator ();
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		Iterator<Key> iterator = ks.iterator ();
+
 		assertTrue (iterator.hasNext ());
 		// note: compare key pointer instead of key object
-		assertEquals (key.get (), iterator.next ().get ());
+		assertEquals (key.getPointer (), iterator.next ().getPointer ());
 		assertTrue (iterator.hasNext ());
-		assertEquals (key2.get (), iterator.next ().get ());
+		assertEquals (key2.getPointer (), iterator.next ().getPointer ());
 		assertTrue (iterator.hasNext ());
-		assertEquals (key3.get (), iterator.next ().get ());
+		assertEquals (key3.getPointer (), iterator.next ().getPointer ());
 		assertTrue (iterator.hasNext ());
-		assertEquals (key4.get (), iterator.next ().get ());
+		assertEquals (key4.getPointer (), iterator.next ().getPointer ());
 		assertTrue (iterator.hasNext ());
-		assertEquals (key5.get (), iterator.next ().get ());
+		assertEquals (key5.getPointer (), iterator.next ().getPointer ());
 		assertTrue (iterator.hasNext ());
-		assertEquals (key6.get (), iterator.next ().get ());
+		assertEquals (key6.getPointer (), iterator.next ().getPointer ());
 		assertFalse (iterator.hasNext ());
 	}
 
 	@Test public void test_keySetIteratorDelete_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		final Iterator<Key> iterator = ks.iterator ();
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		Iterator<Key> iterator = ks.iterator ();
 		assertTrue (iterator.hasNext ());
 		while (iterator.hasNext ())
 		{
-			final Key next = iterator.next ();
-			if (key3.get ().equals (next.get ()))
+			Key next = iterator.next ();
+			if (key3.getPointer ().equals (next.getPointer ()))
 			{
 				iterator.remove ();
 			}
 		}
+
 		assertFalse (iterator.hasNext ());
 		assertEquals (5, ks.length ());
-		assertTrue (ks.lookup (key3).isNull ());
-		assertNotNull (ks.lookup (key4));
-		assertNotNull (ks.lookup (key2));
+		assertTrue (ks.lookup (key3).isEmpty ());
+		assertTrue (ks.lookup (key4).isPresent ());
+		assertTrue (ks.lookup (key2).isPresent ());
 	}
 
 	@Test public void test_keySetToString_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		final String expected_result = key.toString () + "\n" + key2.toString () + "\n" + key3.toString () + "\n" +
-					       key4.toString () + "\n" + key5.toString () + "\n" + key6.toString ();
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		String expected_result = key.toString () + "\n" + key2.toString () + "\n" + key3.toString () + "\n" + key4.toString () +
+					 "\n" + key5.toString () + "\n" + key6.toString ();
+
 		assertEquals (expected_result, ks.toString ());
 	}
 
 	@Test public void test_keySetDup_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		final KeySet ks2 = ks.dup ();
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		KeySet ks2 = ks.dup ();
+
 		// note: compare pointers, because object will be cloned too
-		assertEquals (ks.at (0).get (), ks2.at (0).get ());
-		assertEquals (ks.at (3).get (), ks2.at (3).get ());
-		assertEquals (ks.at (5).get (), ks2.at (5).get ());
+		assertEquals (ks.at (0).getPointer (), ks2.at (0).getPointer ());
+		assertEquals (ks.at (3).getPointer (), ks2.at (3).getPointer ());
+		assertEquals (ks.at (5).getPointer (), ks2.at (5).getPointer ());
 	}
 
 	@Test public void test_keySetCopy_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		final KeySet ks2 = KeySet.create (6);
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		KeySet ks2 = KeySet.create (6);
 		ks2.copy (ks);
+
 		// note: compare pointers, because object will be cloned
-		assertEquals (ks.at (0).get (), ks2.at (0).get ());
-		assertEquals (ks.at (3).get (), ks2.at (3).get ());
-		assertEquals (ks.at (5).get (), ks2.at (5).get ());
+		assertEquals (ks.at (0).getPointer (), ks2.at (0).getPointer ());
+		assertEquals (ks.at (3).getPointer (), ks2.at (3).getPointer ());
+		assertEquals (ks.at (5).getPointer (), ks2.at (5).getPointer ());
 	}
 
 	@Test public void test_keySetLength_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (10);
+		KeySet ks = KeySet.create (10);
+
 		assertEquals (0, ks.length ());
+
 		ks.append (key);
+
 		assertEquals (1, ks.length ());
+
 		ks.append (key2);
 		ks.append (key3);
 		ks.append (key4);
+
 		assertEquals (4, ks.length ());
+
 		ks.append (key5);
 		ks.append (key6);
+
 		assertEquals (6, ks.length ());
 	}
 
 	@Test public void test_keySetAppend_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (10);
+		KeySet ks = KeySet.create (10);
+
 		assertEquals (1, ks.append (key));
 		assertEquals (2, ks.append (key2));
 		assertEquals (3, ks.append (key3));
@@ -150,9 +166,10 @@ public class KeySetTest
 
 	@Test public void test_keySetAppendKeySet_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (10);
-		final KeySet ks2 = KeySet.create (3, key, key2, key3);
-		final KeySet ks3 = KeySet.create (3, key4, key5, key6);
+		KeySet ks = KeySet.create (10);
+		KeySet ks2 = KeySet.create (3, key, key2, key3);
+		KeySet ks3 = KeySet.create (3, key4, key5, key6);
+
 		assertEquals (3, ks.append (ks2));
 		assertEquals (ks.at (0).getName (), ks2.at (0).getName ());
 		assertEquals (ks.at (0).getString (), ks2.at (0).getString ());
@@ -161,49 +178,82 @@ public class KeySetTest
 
 	@Test public void test_keySetCut_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		final KeySet ks2 = ks.cut (key4);
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		KeySet ks2 = ks.cut (key4);
+
 		assertEquals (3, ks2.length ());
-		assertNotNull (ks2.lookup (key4));
-		assertNotNull (ks2.lookup (key5));
-		assertNotNull (ks2.lookup (key6));
+		assertTrue (ks2.lookup (key4).isPresent ());
+		assertTrue (ks2.lookup (key5).isPresent ());
+		assertTrue (ks2.lookup (key6).isPresent ());
 	}
 
 	@Test public void test_keySetRemove_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+
 		assertEquals (6, ks.length ());
-		assertEquals (key6.get (), ks.remove (5).get ());
+		assertEquals (key6.getPointer (), ks.remove (5).getPointer ());
 		assertEquals (5, ks.length ());
-		assertEquals (key5.get (), ks.remove (4).get ());
+		assertEquals (key5.getPointer (), ks.remove (4).getPointer ());
 		assertEquals (4, ks.length ());
+
 		ks.remove (3);
 		ks.remove (2);
 		ks.remove (1);
+
 		assertEquals (1, ks.length ());
-		assertEquals (key.get (), ks.remove (0).get ());
+		assertEquals (key.getPointer (), ks.remove (0).getPointer ());
 		assertEquals (0, ks.length ());
 	}
 
 	@Test public void test_keySetHeadTail_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		assertEquals (key.get (), ks.head ().get ());
-		assertEquals (key6.get (), ks.tail ().get ());
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+
+		assertEquals (key.getPointer (), ks.head ().getPointer ());
+		assertEquals (key6.getPointer (), ks.tail ().getPointer ());
 	}
 
 
 	@Test public void test_keySetLookup_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		final Key searched_key = ks.lookup (key);
-		assertEquals (searched_key.get (), key.get ());
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		Optional<Key> oFoundKey = ks.lookup (key);
+
+		assertTrue (oFoundKey.isPresent ());
+		assertEquals (oFoundKey.get ().getPointer (), key.getPointer ());
 	}
 
 	@Test public void test_keySetLookupByName_shouldPass ()
 	{
-		final KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
-		final Key searched_key = ks.lookup (key.getName ());
-		assertEquals (searched_key.get (), key.get ());
+		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
+		Optional<Key> oFoundKey = ks.lookup (key.getName ());
+
+		assertTrue (oFoundKey.isPresent ());
+		assertEquals (oFoundKey.get ().getPointer (), key.getPointer ());
+	}
+
+
+	@Test (expected = KeySetReleasedException.class) public void test_accessingKeySetAfterRelease_shouldThrow ()
+	{
+		KeySet keySet = KeySet.create ();
+		keySet.release ();
+		keySet.getPointer ();
+	}
+
+	@Test public void test_keySetLookupMissShouldReturnNull_shouldPass ()
+	{
+		KeySet ks = KeySet.create (5, key2, key3, key4, key5, key6);
+		Optional<Key> oFoundKey = ks.lookup (key);
+
+		assertTrue (oFoundKey.isEmpty ());
+	}
+
+	@Test public void test_keySetLookupByNameMissShouldReturnNull_shouldPass ()
+	{
+		KeySet ks = KeySet.create (5, key2, key3, key4, key5, key6);
+		Optional<Key> oFoundKey = ks.lookup ("NOT_IN_KEY_SET");
+
+		assertTrue (oFoundKey.isEmpty ());
 	}
 }

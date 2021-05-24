@@ -1,7 +1,7 @@
 package org.libelektra;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_META;
 
 import org.junit.After;
@@ -72,12 +72,12 @@ public class GOptsTest
 
 			kdb.get (ks, parentKey);
 
-			assertFalse (ks.lookup (BASE_KEY).isNull ());
-			assertEquals (ks.lookup (BASE_KEY).getString (), "getter");
-			assertFalse (ks.lookup (BASE_KEY + "/getter/keyname").isNull ());
-			assertEquals (ks.lookup (BASE_KEY + "/getter/keyname").getString (), "user:/");
-			assertFalse (ks.lookup (BASE_KEY + "/getter/verbose").isNull ());
-			assertEquals (ks.lookup (BASE_KEY + "/getter/verbose").getString (), "1");
+			assertTrue (ks.lookup (BASE_KEY).isPresent ());
+			assertEquals (ks.lookup (BASE_KEY).get ().getString (), "getter");
+			assertTrue (ks.lookup (BASE_KEY + "/getter/keyname").isPresent ());
+			assertEquals (ks.lookup (BASE_KEY + "/getter/keyname").get ().getString (), "user:/");
+			assertTrue (ks.lookup (BASE_KEY + "/getter/verbose").isPresent ());
+			assertEquals (ks.lookup (BASE_KEY + "/getter/verbose").get ().getString (), "1");
 		}
 	}
 

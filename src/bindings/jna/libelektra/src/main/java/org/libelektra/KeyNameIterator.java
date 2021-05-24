@@ -3,6 +3,7 @@ package org.libelektra;
 import com.sun.jna.Pointer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import org.libelektra.exception.KeyReleasedException;
 
 /**
  * An {@link Iterator} over a {@link Key}'s name parts, separated by /.
@@ -18,11 +19,12 @@ public class KeyNameIterator implements Iterator<String>
 	 * Basic constructor for key name iterator
 	 *
 	 * @param key Key which name is used in iterator
+	 * @throws KeyReleasedException if {@code key} has already been released
 	 */
 	KeyNameIterator (final Key key)
 	{
-		con = Elektra.INSTANCE.keyUnescapedName (key.get ());
-		size = Elektra.INSTANCE.keyGetUnescapedNameSize (key.get ());
+		con = Elektra.INSTANCE.keyUnescapedName (key.getPointer ());
+		size = Elektra.INSTANCE.keyGetUnescapedNameSize (key.getPointer ());
 	}
 
 	/**

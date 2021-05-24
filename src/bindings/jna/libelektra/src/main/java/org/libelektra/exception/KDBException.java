@@ -2,8 +2,8 @@ package org.libelektra.exception;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.libelektra.Key;
-import org.libelektra.exception.model.WarningEntry;
 
 
 /**
@@ -11,6 +11,8 @@ import org.libelektra.exception.model.WarningEntry;
  */
 public abstract class KDBException extends Exception
 {
+	protected static final String META_KEY_NOT_FOUND_VALUE = "(unknown)";
+
 	private static final long serialVersionUID = 1L;
 
 	private final transient Key errorKey;
@@ -23,14 +25,16 @@ public abstract class KDBException extends Exception
 	protected KDBException (final Key k)
 	{
 		errorKey = k;
-		Key warningsKey = k.getMeta ("warnings");
 		warnings = new ArrayList<> ();
-		if (warningsKey.isNull ())
+
+		Optional<String> oWarningsKeyValue = k.getMeta ("warnings").map (Key::getString);
+		if (oWarningsKeyValue.isEmpty ())
 		{
 			return;
 		}
-		final String lastArrayIndex = warningsKey.getString ();
+		final String lastArrayIndex = oWarningsKeyValue.get ();
 		final int arraySize = Integer.valueOf (lastArrayIndex.replaceAll ("^#_*", ""));
+
 		for (int i = 0; i <= arraySize; i++)
 		{
 			warnings.add (new WarningEntry (k, i));
@@ -54,7 +58,7 @@ public abstract class KDBException extends Exception
 	 */
 	public String getErrorNumber ()
 	{
-		return errorKey.getMeta ("error/number").getString ();
+		return errorKey.getMeta ("error/number").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE);
 	}
 
 	/**
@@ -65,12 +69,7 @@ public abstract class KDBException extends Exception
 	 */
 	public String getConfigFile ()
 	{
-		Key configKey = errorKey.getMeta ("error/configfile");
-		if (!configKey.isNull () && !configKey.getString ().isEmpty ())
-		{
-			return configKey.getString ();
-		}
-		return errorKey.getName ();
+		return errorKey.getMeta ("error/configfile").map (Key::getString).filter (s -> !s.isEmpty ()).orElseGet (errorKey::getName);
 	}
 
 	/**
@@ -80,7 +79,7 @@ public abstract class KDBException extends Exception
 	 */
 	public String getMountpoint ()
 	{
-		return errorKey.getMeta ("error/mountpoint").getString ();
+		return errorKey.getMeta ("error/mountpoint").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE);
 	}
 
 	/**
@@ -90,8 +89,8 @@ public abstract class KDBException extends Exception
 	 */
 	public String getDebugInformation ()
 	{
-		return String.format ("At: %s:%s", errorKey.getMeta ("error/file").getString (),
-				      errorKey.getMeta ("error/line").getString ());
+		return String.format ("At: %s:%s", errorKey.getMeta ("error/file").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE),
+				      errorKey.getMeta ("error/line").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE));
 	}
 
 	/**
@@ -101,7 +100,7 @@ public abstract class KDBException extends Exception
 	 */
 	public String getModule ()
 	{
-		return errorKey.getMeta ("error/module").getString ();
+		return errorKey.getMeta ("error/module").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE);
 	}
 
 	/**
@@ -118,7 +117,7 @@ public abstract class KDBException extends Exception
 	 */
 	public String getReason ()
 	{
-		return errorKey.getMeta ("error/reason").getString ();
+		return errorKey.getMeta ("error/reason").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE);
 	}
 
 	/**
@@ -131,11 +130,11 @@ public abstract class KDBException extends Exception
 		builder.append (String.format ("Sorry, module %s issued error %s:", getModule (), getErrorNumber ())).append ("\n");
 		builder.append (getReason ()).append ("\n");
 		builder.append ("Configfile: ").append (getConfigFile ()).append ("\n");
-		if (!errorKey.getMeta ("error/mountpoint").isNull ())
+		if (errorKey.getMeta ("error/mountpoint") != null)
 		{
 			builder.append ("Mountpoint: ").append (getMountpoint ()).append ("\n");
 		}
-		if (!errorKey.getMeta ("error/file").isNull ())
+		if (errorKey.getMeta ("error/file") != null)
 		{
 			builder.append (getDebugInformation ()).append ("\n");
 		}

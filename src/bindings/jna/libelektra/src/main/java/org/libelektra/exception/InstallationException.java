@@ -2,7 +2,6 @@ package org.libelektra.exception;
 
 import java.util.List;
 import org.libelektra.Key;
-import org.libelektra.exception.model.WarningEntry;
 
 public class InstallationException extends PermanentException
 {

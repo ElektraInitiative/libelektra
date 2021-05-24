@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
@@ -35,13 +36,14 @@ public class PropertiesStorage implements Plugin
 		{
 			ks.append (Key.create (root + "/infos/provides", "storage"));
 			ks.append (Key.create (root + "/infos/placements", "getstorage setstorage"));
-			final Key k = ks.lookup (root + "/infos/description");
-			if (!k.isNull ())
+			final Optional<Key> oDescriptionKey = ks.lookup (root + "/infos/description");
+			if (oDescriptionKey.isEmpty ())
 			{
-				// append to description
-				k.setString (k.getString () + "Get + set properties files");
+				return 0;
 			}
-			return 0;
+			// append to description
+			Key descriptionKey = oDescriptionKey.get ();
+			descriptionKey.setString (descriptionKey.getString () + "Get + set properties files");
 		}
 		final Properties properties = new Properties ();
 		try (final BufferedInputStream stream = new BufferedInputStream (new FileInputStream (parentKey.getString ())))

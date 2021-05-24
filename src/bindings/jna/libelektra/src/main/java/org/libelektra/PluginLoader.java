@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.libelektra.exception.InstallationException;
 import org.libelektra.plugin.Echo;
-import org.libelektra.plugin.NativePlugin;
 import org.libelektra.plugin.PropertiesStorage;
 import org.libelektra.plugin.Return;
 
@@ -38,7 +37,7 @@ public class PluginLoader
 	{
 		this.loadedElektraPlugins = new ConcurrentHashMap<> ();
 		this.loadedJavaPlugins = new ConcurrentHashMap<> ();
-		this.errorKey = Key.create ("");
+		this.errorKey = Key.create (Key.KEY_LOCAL_NAME);
 		modules = KeySet.create ();
 	}
 
@@ -74,7 +73,7 @@ public class PluginLoader
 			return plugin;
 		}
 
-		Key error = Key.create ("");
+		Key error = Key.create (Key.KEY_LOCAL_NAME);
 		error.setMeta ("error/number", InstallationException.errorNumber ());
 		error.setMeta ("error/reason", String.format ("I could not find java plugin '%s'", name));
 		throw new InstallationException (error);
