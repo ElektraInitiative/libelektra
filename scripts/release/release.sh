@@ -19,7 +19,7 @@ find_version_codename() {
 		OS_ID=$(grep "^ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 		VERSION_ID=$(grep "VERSION_ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
 		if [ -z ${OS_ID} ] || [ -z ${VERSION_ID} ]; then
-			VERSION_CODENAME=$(lsb_release -a 2> /dev/null | grep "Codename:" | awk -F: {' print $2'} | sed -e 's/^[ \t]*//')
+			VERSION_CODENAME=$(dpkg --status tzdata | grep Provides | cut -f2 -d'-')
 		else
 			VERSION_CODENAME="$OS_ID$VERSION_ID"
 		fi
