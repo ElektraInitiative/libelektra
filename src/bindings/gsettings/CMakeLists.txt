@@ -34,6 +34,17 @@ endif ()
 
 add_binding (gsettings)
 
+macro (add_writer source)
+	# include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
+	set (SOURCES ${source}.c ${source}.h)
+	add_executable (${source} ${SOURCES})
+
+	# TODO: cleanup linked libs
+	target_link_libraries (${source} ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARIES})
+
+	#set_target_properties (${source} PROPERTIES COMPILE_DEFINITIONS HAVE_KDBCONFIG_H)
+endmacro (add_writer)
+
 include_directories (${GLIB_INCLUDE_DIRS})
 add_library (elektrasettings SHARED elektrasettingsbackend.c ${ELEKTRA_HEADERS})
 set (
@@ -59,6 +70,7 @@ if (GELEKTRA_LIBRARY)
 	if (INSTALL_SYSTEM_FILES)
 		install (TARGETS elektrasettings LIBRARY DESTINATION ${GIO_MODULE_DIR})
 	endif ()
+	add_writer ("elektrasettingswriter")
 else ()
 	pkg_get_variable (GIO_MODULE_DIR gio-2.0 giomoduledir)
 	pkg_check_modules (GELEKTRA gelektra-4.0>=0.8.16 QUIET)
@@ -68,6 +80,7 @@ else ()
 	include_directories (${GELEKTRA_INCLUDE_DIRS})
 	target_link_libraries (elektrasettings ${GLIB_LIBRARIES} ${GMODULE_LIBRARIES} ${GIO_LIBRARIES} ${GELEKTRA_LIBRARIES})
 	install (TARGETS elektrasettings LIBRARY DESTINATION ${GIO_MODULE_DIR})
+	add_writer ("elektrasettingswriter")
 endif ()
 
 if (CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
