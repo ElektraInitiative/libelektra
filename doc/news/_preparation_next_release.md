@@ -163,7 +163,7 @@ you up to date with the multi-language support provided by Elektra.
   - Introduced `KeyCreateFailedException`, `KeyReleasedException`
   - Renamed `KeyInvalidNameException` to `KeySetNameFailedException`
   - Renamed `KeyTypeMismatchException` to `KeyBinaryTypeNotSupportedException`
-- Introduced `KeySetReleasedException` being thrown when a release `KeySet` is being accessed
+- Introduced `KeySetReleasedException` being thrown when a released `KeySet` is being accessed
 - Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
 
   - `KeySet::lookup*` now returns `Optional<Key>`
@@ -232,6 +232,7 @@ _(Michael Tucek)_
 - Improved documentation for module keyset in Elektra Core. _(@lawli3t)_
 - Fixed example in the "mount-configuration-files" tutorial [#3722](https://github.com/ElektraInitiative/libelektra/issues/3722). _(Philipp Oppel)_
 - Update and correct third party licensing information _(@a-kraschitzer)_
+- Added contact details to `AUTHORS.md` _(Michael Tucek)_
 
 ## Tests
 

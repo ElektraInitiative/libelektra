@@ -226,4 +226,4 @@ work on Java bindings
 
 - email: libelektra@hellwach.at
 - github user: [tucek](https://github.com/tucek)
-- devel/test on: Debian, Ubuntu
+- devel/test on: Debian (WSL2), Ubuntu (WSL2)
