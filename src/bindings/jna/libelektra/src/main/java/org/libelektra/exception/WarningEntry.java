@@ -1,4 +1,6 @@
-package org.libelektra.exception.model;
+package org.libelektra.exception;
+
+import static org.libelektra.exception.KDBException.META_KEY_NOT_FOUND_VALUE;
 
 import java.util.Arrays;
 import org.libelektra.Key;
@@ -24,13 +26,14 @@ public class WarningEntry
 		char[] underscores = new char[warningIndex.length () - 1];
 		Arrays.fill (underscores, '_');
 		final String warningKeyName = "warnings/#" + new String (underscores) + warningIndex;
-		warningNumber = key.getMeta (warningKeyName + "/number").getString ();
-		reason = key.getMeta (warningKeyName + "/reason").getString ();
-		module = key.getMeta (warningKeyName + "/module").getString ();
-		debugInformation = String.format ("At: %s:%s", key.getMeta (warningKeyName + "/file").getString (),
-						  key.getMeta (warningKeyName + "/line").getString ());
-		mountpoint = key.getMeta (warningKeyName + "/mountpoint").getString ();
-		configFile = key.getMeta (warningKeyName + "/configfile").getString ();
+		warningNumber = key.getMeta (warningKeyName + "/number").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE);
+		reason = key.getMeta (warningKeyName + "/reason").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE);
+		module = key.getMeta (warningKeyName + "/module").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE);
+		debugInformation = String.format (
+			"At: %s:%s", key.getMeta (warningKeyName + "/file").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE),
+			key.getMeta (warningKeyName + "/line").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE));
+		mountpoint = key.getMeta (warningKeyName + "/mountpoint").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE);
+		configFile = key.getMeta (warningKeyName + "/configfile").map (Key::getString).orElse (META_KEY_NOT_FOUND_VALUE);
 	}
 
 	/**

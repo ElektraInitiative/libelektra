@@ -1,12 +1,10 @@
-package org.libelektra;
+package org.libelektra.exception;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
-import org.libelektra.exception.InstallationException;
-import org.libelektra.exception.InternalException;
-import org.libelektra.exception.KDBException;
+import org.libelektra.Key;
 
 public class KDBExceptionTest
 {

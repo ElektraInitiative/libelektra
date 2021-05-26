@@ -1,8 +1,10 @@
 package org.libelektra;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
+import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,9 +36,9 @@ public class KDBTest
 	 */
 	@Test public void test_kdbGet_shouldPass () throws KDBException
 	{
-		try (final KDB kdb = KDB.open (parentKey))
+		try (KDB kdb = KDB.open (parentKey))
 		{
-			final KeySet ks = KeySet.create (10, KeySet.KS_END);
+			KeySet ks = KeySet.create (10, KeySet.KS_END);
 			kdb.get (ks, parentKey);
 			ks.append (key);
 			ks.append (key2);
@@ -44,25 +46,26 @@ public class KDBTest
 		}
 
 		// now retrieve them
-		try (final KDB kdb = KDB.open (parentKey))
+		try (KDB kdb = KDB.open (parentKey))
 		{
-			final KeySet ks = KeySet.create (10, KeySet.KS_END);
+			KeySet ks = KeySet.create (10, KeySet.KS_END);
 			kdb.get (ks, parentKey);
-			final Key k = ks.lookup (key2);
-			assertEquals (key2.toString (), k.toString ());
+			Optional<Key> oFoundKey = ks.lookup (key2);
+			assertTrue (oFoundKey.isPresent ());
+			assertEquals (key2.toString (), oFoundKey.get ().toString ());
 		}
 	}
 
 	@After public void removeCreatedKeys () throws KDBException
 	{
-		try (final KDB kdb = KDB.open (parentKey))
+		try (KDB kdb = KDB.open (parentKey))
 		{
-			final KeySet ks = KeySet.create (10, KeySet.KS_END);
+			KeySet ks = KeySet.create (10, KeySet.KS_END);
 			kdb.get (ks, parentKey);
-			final Iterator<Key> keyIter = ks.iterator ();
+			Iterator<Key> keyIter = ks.iterator ();
 			while (keyIter.hasNext ())
 			{
-				final Key next = keyIter.next ();
+				Key next = keyIter.next ();
 				if (next.toString ().equals (key.toString ()) || next.toString ().equals (key2.toString ()))
 				{
 					keyIter.remove ();

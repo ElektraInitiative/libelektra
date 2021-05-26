@@ -9,8 +9,8 @@ import java.util.NoSuchElementException;
 public class KeySetIterator implements Iterator<Key>
 {
 
-	private int pos = 0;
-	private final KeySet con;
+	private int position = 0;
+	private final KeySet container;
 	private Key current;
 
 	/**
@@ -20,7 +20,7 @@ public class KeySetIterator implements Iterator<Key>
 	 */
 	KeySetIterator (final KeySet container)
 	{
-		con = container;
+		this.container = container;
 	}
 
 	/**
@@ -30,33 +30,33 @@ public class KeySetIterator implements Iterator<Key>
 	 */
 	@Override public boolean hasNext ()
 	{
-		return pos != con.length ();
+		return position != container.length ();
 	}
 
 	/**
-	 * Gets the next value of iteration.
+	 * Gets the next value of iteration
 	 *
 	 * @return Next Key in iteration
+	 * @apiNote {@link Key Keys} returned by this method normally should not be {@link Key#release() released} manually!
 	 */
 	@Override public Key next ()
 	{
-		if (pos == con.length ())
+		if (position == container.length ())
 		{
-			throw new NoSuchElementException ("End of KeySet reached");
+			throw new NoSuchElementException ("End of key set reached");
 		}
 
-		current = con.at (pos);
-		++pos;
+		current = container.at (position);
+		++position;
 		return current;
 	}
 
 	/**
-	 * Removes the element of the iteration.
+	 * Removes the element of the {@link KeySet} backing the iterator
 	 */
 	@Override public void remove ()
 	{
-		final Key key = con.lookup (current, KeySet.KDB_O_POP);
-		key.release ();
-		--pos;
+		container.lookup (current, KeySet.KDB_O_POP).ifPresent (Key::release);
+		--position;
 	}
 }

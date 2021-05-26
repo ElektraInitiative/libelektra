@@ -29,11 +29,15 @@ This is the quickest way to get started with Elektra without compiling and other
 
 ## Highlights
 
-- <<HIGHLIGHT1>>
+- JNI plugin fixed
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-### <<HIGHLIGHT1>>
+### JNI plugin fixed
+
+The JNI plugin was encountering a double free on open. This has been fixed in conjunction with an update to JNA binding release mechanism. The previously disabled JNI test have been fixed and enabled.
+
+For how to write plugins, please refer to [java-plugins.md](../tutorials/java-plugins.md) as well as the [JNI plugin](../../src/plugins/jni/README.md) and [JNA binding](../../src/bindings/jna/README.md) documentation.
 
 ### <<HIGHLIGHT2>>
 
@@ -49,7 +53,15 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin2>>
+### JNI
+
+- Fixed double free issues and re-enabled tests
+- Updated documentation
+- Increased minimum required JDK version to 9
+
+_(Michael Tucek)_
+
+Special thanks to _(Klemens Böswirth)_, _(Mihael Pranjić)_ and _(Robert Sowula)_ for helping with the problem analysis!
 
 ### Dbus
 
@@ -139,7 +151,42 @@ you up to date with the multi-language support provided by Elektra.
 
 - Remove `-Wno-shift-overflow warnings` option from SWIG bindings compile flags. _(Mihael Pranjić)_
 
-### <<Binding2>>
+### JNA
+
+- Gradle wrapper upgraded to 7.0
+- Updated documentation
+- Increased minimum required JDK version to 9
+- Migrated native resource clean-up from `finalize()` to `Cleaner`
+  - Please revisit the documentation for `Key::release` and `KeySet::release` for recommended resource release handling
+- Extracted exceptions from Key class introducing the following changes
+  - Removed unused `KeyTypeConversionException`
+  - Introduced `KeyCreateFailedException`, `KeyReleasedException`
+  - Renamed `KeyInvalidNameException` to `KeySetNameFailedException`
+  - Renamed `KeyTypeMismatchException` to `KeyBinaryTypeNotSupportedException`
+- Introduced `KeySetReleasedException` being thrown when a release `KeySet` is being accessed
+- Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
+
+  - `KeySet::lookup*` now returns `Optional<Key>`
+  - `Key::getMeta` now returns `Optional<Key>`
+  - Example:
+    ```java
+    // checking whether the key has been found BEFORE API change
+    Key found = ks.lookup("/some/key");
+    if (found != null) {
+      // process found key
+    }
+    ```
+    ```java
+    // checking whether the key has been found AFTER API change
+    ks.lookup("/some/key").ifPresent(k -> // process found key );
+    ```
+
+* Removed `Key::isNull`
+  - `KeyReleasedException` is now being thrown when a release `Key` is being accessed
+  - `Key`s with now bacing native key pointer cannot be created anymore
+* Updated tests accordingly
+
+_(Michael Tucek)_
 
 ### <<Binding3>>
 

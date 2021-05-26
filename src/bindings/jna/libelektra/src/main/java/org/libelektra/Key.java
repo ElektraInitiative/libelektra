@@ -5,8 +5,15 @@ import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_META;
 import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_VALUE;
 
 import com.sun.jna.Pointer;
+import java.lang.ref.Cleaner;
 import java.util.Arrays;
+import java.util.Optional;
+import javax.annotation.Nullable;
 import org.libelektra.Elektra.KeyNewArgumentFlags;
+import org.libelektra.exception.KeyBinaryTypeNotSupportedException;
+import org.libelektra.exception.KeyCreateFailedException;
+import org.libelektra.exception.KeyReleasedException;
+import org.libelektra.exception.KeySetNameFailedException;
 import org.libelektra.exception.PluginMisbehaviorException;
 
 /**
@@ -16,8 +23,8 @@ public class Key implements Iterable<String>
 {
 
 	private static final String WARNINGS = "warnings";
-	// constants
 
+	// constants
 	public static final int KEY_CP_NAME = 1 << 0;
 	public static final int KEY_CP_STRING = 1 << 1;
 	public static final int KEY_CP_VALUE = 1 << 2;
@@ -25,96 +32,115 @@ public class Key implements Iterable<String>
 	public static final int KEY_CP_ALL = KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META;
 
 	/**
-	 * Indicates a generic key exception occurred.
+	 * Use this as name for a new {@link Key} if a local key is required (e.g.
+	 * usable for error feedback used in some API methods)
 	 */
-	public static class KeyException extends RuntimeException
-	{
+	public static final String KEY_LOCAL_NAME = Elektra.KEY_LOCAL_NAME;
 
-		private static final long serialVersionUID = 637936674538102511L;
-	}
+	@Nullable private Pointer pointer;
+
+	@Nullable private Cleaner.Cleanable cleanable;
 
 	/**
-	 * Indicates an invalid key name has been used.
-	 */
-	public static class KeyInvalidNameException extends KeyException
-	{
-
-		private static final long serialVersionUID = -7659317176138893895L;
-	}
-
-	/**
-	 * Indicates a key's type conversion failed.
-	 */
-	public static class KeyTypeConversionException extends KeyException
-	{
-
-		private static final long serialVersionUID = -8648296754188373810L;
-	}
-
-	/**
-	 * Indicates a key's type does not match its value.
-	 */
-	public static class KeyTypeMismatchException extends KeyException
-	{
-
-		private static final long serialVersionUID = 8035874860117969698L;
-	}
-
-	private Pointer key;
-
-	/**
-	 * Helper constructor for duplication by pointer in long format
+	 * Constructor associating a new {@link Key} instance with a native pointer in
+	 * long format
 	 *
-	 * @param p Pointer in long format
+	 * @param nativePointer Native pointer to key in long format
+	 * @see #release()
+	 * @implNote Increased the native key's reference counter
 	 */
-	protected Key (final long p)
+	protected Key (long nativePointer)
 	{
-		key = new Pointer (p);
-		incRef ();
+		this(nativePointer, false);
 	}
 
 	/**
-	 * Helper constructor for duplication by pointer
+	 * Constructor associating a new {@link Key} instance with a native pointer in
+	 * long format<br>
+	 * <br>
+	 * Suppressing clean-up has been introduced for usage of this binding as JNI
+	 * plug-in and should normally not be used in any other case.
 	 *
-	 * @param p Pointer as Pointer object
+	 * @param nativePointer   Native pointer to key in long format
+	 * @param suppressCleanUp True to suppress native reference clean-up as soon as
+	 *                        this {@link Key} instance becomes phantom reachable,
+	 *                        false otherwise
+	 * @see #release()
+	 * @implNote Increased the native key's reference counter, even if
+	 *           {@code suppressCleanUp} is {@code true}
 	 */
-	protected Key (final Pointer p)
+	protected Key (long nativePointer, boolean suppressCleanUp)
 	{
-		key = p;
-		incRef ();
+		pointer = new Pointer (nativePointer);
+		ReferenceCleaner.keyWrapperCreated (this);
+		cleanable = (suppressCleanUp ? null : ReferenceCleaner.registerKeyCleanUp (this)); // see #3825
 	}
 
 	/**
-	 * Basic constructor of key class
+	 * Constructor associating a new {@link Key} instance with a JNA pointer
+	 *
+	 * @param pointer JNA {@link Pointer} to key
+	 * @see #release()
+	 */
+	protected Key (@Nullable Pointer pointer)
+	{
+		this.pointer = pointer;
+		ReferenceCleaner.keyWrapperCreated (this);
+		cleanable = ReferenceCleaner.registerKeyCleanUp (this);
+	}
+
+	/**
+	 * Constructor associating a new {@link Key} instance with a JNA pointer
+	 *
+	 * @param pointer Optional JNA {@link Pointer} to key
+	 * @return New {@link Key} instance if {@code pointer} is non-null,
+	 *         {@link Optional#empty()} otherwise
+	 * @see #release()
+	 */
+	protected static Optional<Key> create (@Nullable Pointer pointer)
+	{
+		return Optional.ofNullable (pointer).map (Key::new);
+	}
+
+	/**
+	 * Constructs a new {@link Key} with the specified content and arguments<br>
 	 *
 	 * @param name Key name; first part of key-value pair
 	 * @param args Arguments used for key value. Example:<br>
 	 *             KeyNewArgumentFlags.KEY_VALUE, "custom key value",
 	 *             KeyNewArgumentFlags.KEY_END
-	 * @return New key object
+	 * @return New key
+	 * @throws KeyCreateFailedException if the key name is invalid
+	 * @see #KEY_LOCAL_NAME
+	 * @see #release()
 	 */
-	protected static Key create (final String name, final Object... args)
+	protected static Key create (String name, Object... args)
 	{
-		return new Key (Elektra.INSTANCE.keyNew (
-			name, Arrays.stream (args)
-				      .map (o -> (o instanceof KeyNewArgumentFlags) ? ((KeyNewArgumentFlags) o).getValue () : o)
-				      .toArray ()));
+		return create (Elektra.INSTANCE.keyNew (
+				       name,
+				       Arrays.stream (args)
+					       .map (o -> (o instanceof KeyNewArgumentFlags) ? ((KeyNewArgumentFlags) o).getValue () : o)
+					       .toArray ()))
+			.orElseThrow (KeyCreateFailedException::new);
 	}
 
 	/**
-	 * Basic constructor of key class
+	 * Constructs a new {@link Key} with the specified content and arguments<br>
 	 *
 	 * @param name  Key name; first part of key-value pair
 	 * @param value Key value; will be determine from the object by calling
 	 *              {@link Object#toString()}, null is supported too
 	 * @param meta  Metadata that should be added to this key, null keys will be
 	 *              filtered away
-	 * @return New key object
+	 * @return New key
+	 * @throws KeyCreateFailedException if the key name is invalid
+	 * @see #KEY_LOCAL_NAME
+	 * @see #release()
 	 */
-	public static Key create (final String name, final Object value, final Key... meta)
+	public static Key create (String name, @Nullable Object value, Key... meta)
 	{
 		int size = 0;
-		for (final Key m : meta)
+		for (Key m : meta)
 		{
 			if (m != null)
 			{
@@ -123,14 +149,14 @@ public class Key implements Iterable<String>
 		}
 		// 3 -> KEY_VALUE, value, KEY_END, 4 -> one more for KEY_META
 		size += size > 0 ? 4 : 3;
-		final Object[] args = new Object[size];
+		Object[] args = new Object[size];
 		int cur = 0;
 		args[cur++] = KEY_VALUE;
 		args[cur++] = value != null ? value.toString () : null;
 		if (size > 3)
 		{
 			args[cur++] = KEY_META;
-			for (final Key m : meta)
+			for (Key m : meta)
 			{
 				args[cur++] = m;
 			}
@@ -146,53 +172,38 @@ public class Key implements Iterable<String>
 	 * @param meta Metadata that should be added to this key. Will filter null
 	 *             values.
 	 * @return New key object
+	 * @throws KeyCreateFailedException if the key name is invalid
+	 * @see #KEY_LOCAL_NAME
+	 * @see #release()
 	 */
-	public static Key create (final String name, final Key... meta)
+	public static Key create (String name, Key... meta)
 	{
 		return create (name, null, meta);
 	}
 
 	/**
-	 * Clean-up method to release key reference
+	 * Clean-up method to release key reference by first decrementing its reference
+	 * counter and then trying to free the native reference<br>
+	 * <br>
+	 * Call this method if you do not longer need a {@link Key} and obtained it via
+	 * any of its public methods or the public methods of {@link KeySet}. If you do
+	 * not manually release such {@link Key keys}, they will get cleaned up by
+	 * garbage collection as soon as they get phantom reachable. Therefore its
+	 * encouraged to release {@link Key key instances} as soon as you do not use
+	 * them anymore.
 	 */
 	public void release ()
 	{
-
-		if (key != null)
+		if (cleanable != null)
 		{
-			decRef ();
-			if (getRef () == 0)
-			{
-				Elektra.INSTANCE.keyDel (key);
-			}
+			cleanable.clean ();
+			cleanable = null;
 		}
-		key = null;
+		pointer = null;
 	}
 
 	/**
-	 * Clean-up method to inform underlying c-library about the release of the key
-	 * reference in jna-binding
-	 */
-	@Override protected void finalize () throws Throwable
-	{
-		release ();
-	}
-
-	/**
-	 * Helper function that does null comparison
-	 *
-	 * @return Boolean if key is null
-	 */
-	public boolean isNull ()
-	{
-
-		return key == null;
-	}
-
-	/**
-	 * Basic java function that represents object as String
-	 *
-	 * @return Key name in String format
+	 * @return Key name in string format as returned by {@link #getName()}
 	 */
 	@Override public String toString ()
 	{
@@ -200,9 +211,8 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Iterable interface function
-	 *
-	 * @return Custom KeyNameIterator
+	 * @return New {@link KeyNameIterator} backed by this {@link Key}
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	@Override public java.util.Iterator<String> iterator ()
 	{
@@ -210,9 +220,11 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Data type specific accessor function
-	 *
-	 * @return Key value in boolean format
+	 * @return {@link #getString()} interpreted as boolean value
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
 	 */
 	public boolean getBoolean ()
 	{
@@ -220,9 +232,13 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Data type specific accessor function
-	 *
-	 * @return Key value in byte format
+	 * @return {@link #getString()} parsed as {@code byte}
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable {@code byte}
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
 	 */
 	public byte getByte ()
 	{
@@ -230,9 +246,14 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Data type specific accessor function
-	 *
-	 * @return Key value in short integer format
+	 * @return {@link #getString()} parsed as {@code short}
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable
+	 *                                            {@code short}
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
 	 */
 	public short getShort ()
 	{
@@ -240,9 +261,13 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Data type specific accessor function
-	 *
-	 * @return Key value in integer format
+	 * @return {@link #getString()} parsed as integer
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable integer
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
 	 */
 	public int getInteger ()
 	{
@@ -250,9 +275,13 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Data type specific accessor function
-	 *
-	 * @return Key value in long integer format
+	 * @return {@link #getString()} parsed as {@code long}
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable {@code long}
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
 	 */
 	public long getLong ()
 	{
@@ -260,9 +289,14 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Data type specific accessor function
-	 *
-	 * @return Key value in float format
+	 * @return {@link #getString()} parsed as {@code float}
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable
+	 *                                            {@code float}
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
 	 */
 	public float getFloat ()
 	{
@@ -270,9 +304,14 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Data type specific accessor function
-	 *
-	 * @return Key value in double format
+	 * @return {@link #getString()} parsed as {@code double}
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable
+	 *                                            {@code double}
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
 	 */
 	public double getDouble ()
 	{
@@ -280,73 +319,107 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Data type specific setter function
-	 *
-	 * @param v Boolean value to set
+	 * @return This key's value as string
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
 	 */
-	public void setBoolean (final boolean v)
+	public String getString () throws KeyBinaryTypeNotSupportedException
 	{
-		setString (Boolean.toString (v));
+		if (isBinary ())
+		{
+			throw new KeyBinaryTypeNotSupportedException ();
+		}
+		return Elektra.INSTANCE.keyString (getPointer ());
 	}
 
 	/**
-	 * Data type specific setter function
+	 * Sets the key's value by converting {@code value} to string
 	 *
-	 * @param v Byte value to set
+	 * @param value Value to set
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setByte (final byte v)
+	public void setBoolean (boolean value)
 	{
-		setString (Byte.toString (v));
+		setString (Boolean.toString (value));
 	}
 
 	/**
-	 * Data type specific setter function
+	 * Sets the key's value by converting {@code value} to string
 	 *
-	 * @param v Short integer value to set
+	 * @param value Value to set
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setShort (final short v)
+	public void setByte (byte value)
 	{
-		setString (Short.toString (v));
+		setString (Byte.toString (value));
 	}
 
 	/**
-	 * Data type specific setter function
+	 * Sets the key's value by converting {@code value} to string
 	 *
-	 * @param v Integer value to set
+	 * @param value Value to set
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setInteger (final int v)
+	public void setShort (short value)
 	{
-		setString (Integer.toString (v));
+		setString (Short.toString (value));
 	}
 
 	/**
-	 * Data type specific setter function
+	 * Sets the key's value by converting {@code value} to string
 	 *
-	 * @param v Long integer value to set
+	 * @param value Value to set
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setLong (final long v)
+	public void setInteger (int value)
 	{
-		setString (Long.toString (v));
+		setString (Integer.toString (value));
 	}
 
 	/**
-	 * Data type specific setter function
+	 * Sets the key's value by converting {@code value} to string
 	 *
-	 * @param v Float value to set
+	 * @param value Value to set
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setFloat (final float v)
+	public void setLong (long value)
 	{
-		setString (Float.toString (v));
+		setString (Long.toString (value));
 	}
 
 	/**
-	 * Data type specific setter function
+	 * Sets the key's value by converting {@code value} to string
 	 *
-	 * @param v Double value to set
+	 * @param value Value to set
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setDouble (final double v)
+	public void setFloat (float value)
 	{
-		setString (Double.toString (v));
+		setString (Float.toString (value));
+	}
+
+	/**
+	 * Sets the key's value by converting {@code value} to string
+	 *
+	 * @param value Value to set
+	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 */
+	public void setDouble (double value)
+	{
+		setString (Double.toString (value));
+	}
+
+	/**
+	 * Sets the key's value
+	 *
+	 * @param value Value to set
+	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 */
+	public void setString (String value)
+	{
+		Elektra.INSTANCE.keySetString (getPointer (), value);
 	}
 
 	/**
@@ -355,9 +428,9 @@ public class Key implements Iterable<String>
 	 * @param text Reason for the error
 	 * @param args Custom arguments
 	 */
-	public void setError (final String text, final Object... args)
+	public void setError (String text, Object... args)
 	{
-		final StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
+		StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
 		setMeta ("error", "number description module file line function reason");
 		setMeta ("error/number", PluginMisbehaviorException.errorNumber ());
 		setMeta ("error/description", "jni/java error");
@@ -375,14 +448,19 @@ public class Key implements Iterable<String>
 	 * @param text Reason for the warning
 	 * @param args Custom arguments
 	 */
-	public void addWarning (final String text, final Object... args)
+	public void addWarning (String text, Object... args)
 	{
-		final StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
-		final Key k = getMeta (WARNINGS);
-		final StringBuilder builder = new StringBuilder (WARNINGS + "/#");
-		if (!k.isNull ())
+		StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
+		Optional<String> oMetaKeyValue = getMeta (WARNINGS).map (Key::getString);
+		StringBuilder builder = new StringBuilder (WARNINGS + "/#");
+		if (oMetaKeyValue.isEmpty ())
 		{
-			builder.append (k.getString ());
+			builder.append ("00");
+			setMeta (Key.WARNINGS, "00");
+		}
+		else
+		{
+			builder.append (oMetaKeyValue.get ());
 			builder.setCharAt (11, (char) (builder.charAt (11) + 1));
 			if (builder.charAt (11) > '9')
 			{
@@ -394,11 +472,6 @@ public class Key implements Iterable<String>
 				}
 			}
 			setMeta (Key.WARNINGS, builder.substring (10));
-		}
-		else
-		{
-			builder.append ("00");
-			setMeta (Key.WARNINGS, "00");
 		}
 		setMeta (builder + "", "number description module file line function reason");
 		setMeta (builder + "/number", PluginMisbehaviorException.errorNumber ());
@@ -419,6 +492,8 @@ public class Key implements Iterable<String>
 	 * Duplicates the key
 	 *
 	 * @return New Key object containing the same information as this key
+	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @see #release()
 	 */
 	public Key dup ()
 	{
@@ -429,53 +504,61 @@ public class Key implements Iterable<String>
 	 * Duplicates the key
 	 *
 	 * @param flags what parts of the key to copy (a combination of KEY_CP_* flags)
-	 *
 	 * @return New Key object containing the same information as this key
+	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @see #release()
 	 */
-	public Key dup (final int flags)
+	public Key dup (int flags)
 	{
-		return new Key (Elektra.INSTANCE.keyDup (get (), flags));
+		return new Key (Elektra.INSTANCE.keyDup (getPointer (), flags));
 	}
 
 	/**
-	 * Copies the information from the source key into this key. Does nothing if
-	 * null is provided.
+	 * Copies the information from the {@code source} key into this key. Does
+	 * nothing if {@code source} is {@code null}.
 	 *
 	 * @param source Source Key object containing the information to copy
 	 * @param flags  what parts of the key to copy (a combination of KEY_CP_* flags)
+	 * @throws KeyReleasedException if this or the {@code source} {@link Key} has
+	 *                              already been released
 	 */
-	public void copy (final Key source, final int flags)
+	public void copy (Key source, int flags)
 	{
 		if (source != null)
 		{
-			Elektra.INSTANCE.keyCopy (get (), source.get (), flags);
+			Elektra.INSTANCE.keyCopy (getPointer (), source.getPointer (), flags);
 		}
 	}
 
 	/**
-	 * Increments the reference counter for this key
+	 * Increments the reference counter for the underlying native key
+	 *
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	protected void incRef ()
 	{
-		Elektra.INSTANCE.keyIncRef (key);
+		Elektra.INSTANCE.keyIncRef (getPointer ());
 	}
 
 	/**
-	 * Decrements the reference counter for this key
+	 * Decrements the reference counter for the underlying native key
+	 *
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	protected void decRef ()
 	{
-		Elektra.INSTANCE.keyDecRef (key);
+		Elektra.INSTANCE.keyDecRef (getPointer ());
 	}
 
 	/**
-	 * Gets the reference counter for this key
+	 * Gets the reference counter for the underlying native key
 	 *
-	 * @return Reference counter as integer
+	 * @return Current reference counter value
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public int getRef ()
+	protected int getRef ()
 	{
-		return Elektra.INSTANCE.keyGetRef (get ());
+		return Elektra.INSTANCE.keyGetRef (getPointer ());
 	}
 
 	/**
@@ -483,30 +566,35 @@ public class Key implements Iterable<String>
 	 *
 	 * @return 0 in case of no errors; 1 if key is not found; 2 if metakey is not
 	 *         found
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	public int rewindMeta ()
 	{
-		return Elektra.INSTANCE.keyRewindMeta (get ());
+		return Elektra.INSTANCE.keyRewindMeta (getPointer ());
 	}
 
 	/**
 	 * Gets the next meta information for this key
 	 *
 	 * @return new Key object containing the next meta information
+	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @see #release()
 	 */
 	public Key nextMeta ()
 	{
-		return new Key (Elektra.INSTANCE.keyNextMeta (get ()));
+		return new Key (Elektra.INSTANCE.keyNextMeta (getPointer ()));
 	}
 
 	/**
 	 * Gets the current meta information for this key
 	 *
 	 * @return new Key object containing the current meta information
+	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @see #release()
 	 */
 	public Key currentMeta ()
 	{
-		return new Key (Elektra.INSTANCE.keyNextMeta (get ()));
+		return new Key (Elektra.INSTANCE.keyNextMeta (getPointer ()));
 	}
 
 	/**
@@ -517,14 +605,16 @@ public class Key implements Iterable<String>
 	 * @return 1 if meta was successfully copied, 0 if source doesn't contain the
 	 *         required meta and nothing had to be done, -1 in case of an error or
 	 *         if the source parameter was null
+	 * @throws KeyReleasedException if this or the {@code source} {@link Key} has
+	 *                              already been released
 	 */
-	public int copyMeta (final Key source, final String metaName)
+	public int copyMeta (Key source, String metaName)
 	{
 		if (source == null)
 		{
 			return -1;
 		}
-		return Elektra.INSTANCE.keyCopyMeta (get (), source.get (), metaName);
+		return Elektra.INSTANCE.keyCopyMeta (getPointer (), source.getPointer (), metaName);
 	}
 
 	/**
@@ -534,25 +624,30 @@ public class Key implements Iterable<String>
 	 * @return 1 if meta was successfully copied, 0 if source doesn't contain any
 	 *         meta and nothing had to be done, -1 in case of an error or if the
 	 *         source parameter was null
+	 * @throws KeyReleasedException if this or the {@code source} {@link Key} has
+	 *                              already been released
 	 */
-	public int copyAllMeta (final Key source)
+	public int copyAllMeta (Key source)
 	{
 		if (source == null)
 		{
 			return -1;
 		}
-		return Elektra.INSTANCE.keyCopyAllMeta (get (), source.get ());
+		return Elektra.INSTANCE.keyCopyAllMeta (getPointer (), source.getPointer ());
 	}
 
 	/**
 	 * Getter for meta information
 	 *
 	 * @param metaName Key name of meta information to be fetched
-	 * @return New Key object containing the requested meta information
+	 * @return New Key object containing the requested meta information or
+	 *         {@link Optional#empty()}, if {@code metaName} was not found
+	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @see #release()
 	 */
-	public Key getMeta (final String metaName)
+	public Optional<Key> getMeta (String metaName)
 	{
-		return new Key (Elektra.INSTANCE.keyGetMeta (get (), metaName));
+		return create (Elektra.INSTANCE.keyGetMeta (getPointer (), metaName));
 	}
 
 	/**
@@ -563,10 +658,11 @@ public class Key implements Iterable<String>
 	 * @return -1 in case of an error, 0 if no meta with given name is available for
 	 *         the key and value &gt; 0 representing the size of newMetaString if
 	 *         update successful
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public int setMeta (final String metaName, final String newMetaString)
+	public int setMeta (String metaName, String newMetaString)
 	{
-		return Elektra.INSTANCE.keySetMeta (get (), metaName, newMetaString);
+		return Elektra.INSTANCE.keySetMeta (getPointer (), metaName, newMetaString);
 	}
 
 	/**
@@ -576,24 +672,27 @@ public class Key implements Iterable<String>
 	 * @param other Other Key object that is used in comparison
 	 * @return 0 if key name is equal; -1 if this key name has lower alphabetical
 	 *         order than the other key; 1 if this key has higher alphabetical order
+	 * @throws KeyReleasedException if this or the {@code other} {@link Key} has
+	 *                              already been released
 	 */
-	public int cmp (final Key other)
+	public int cmp (Key other)
 	{
 		if (other == null)
 		{
 			throw new IllegalArgumentException ("other should be a key, not null");
 		}
-		return Integer.signum (Elektra.INSTANCE.keyCmp (get (), other.get ()));
+		return Integer.signum (Elektra.INSTANCE.keyCmp (getPointer (), other.getPointer ()));
 	}
 
 	/**
 	 * Helper function to check if synchronization is necessary
 	 *
 	 * @return 1 if needs sync, 0 if no change done and -1 in case of a null pointer
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	public int needsSync ()
 	{
-		return Elektra.INSTANCE.keyNeedSync (get ());
+		return Elektra.INSTANCE.keyNeedSync (getPointer ());
 	}
 
 	/**
@@ -601,14 +700,16 @@ public class Key implements Iterable<String>
 	 *
 	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is (non-direct) sub-key of other-key
+	 * @throws KeyReleasedException if this or the {@code other} {@link Key} has
+	 *                              already been released
 	 */
-	public boolean isBelow (final Key other)
+	public boolean isBelow (Key other)
 	{
 		if (other == null)
 		{
 			throw new IllegalArgumentException ("other should be a key, not null");
 		}
-		return Elektra.INSTANCE.keyIsBelow (other.get (), get ()) == 1;
+		return Elektra.INSTANCE.keyIsBelow (other.getPointer (), getPointer ()) == 1;
 	}
 
 	/**
@@ -616,14 +717,16 @@ public class Key implements Iterable<String>
 	 *
 	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is other key or (non-direct) sub-key of other-key
+	 * @throws KeyReleasedException if this or the {@code other} {@link Key} has
+	 *                              already been released
 	 */
-	public boolean isBelowOrSame (final Key other)
+	public boolean isBelowOrSame (Key other)
 	{
 		if (other == null)
 		{
 			throw new IllegalArgumentException ("other should be a key, not null");
 		}
-		return Elektra.INSTANCE.keyIsBelowOrSame (other.get (), get ()) == 1;
+		return Elektra.INSTANCE.keyIsBelowOrSame (other.getPointer (), getPointer ()) == 1;
 	}
 
 	/**
@@ -631,164 +734,148 @@ public class Key implements Iterable<String>
 	 *
 	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is direct sub-key of other key ("child")
+	 * @throws KeyReleasedException if this or the {@code other} {@link Key} has
+	 *                              already been released
 	 */
-	public boolean isDirectBelow (final Key other)
+	public boolean isDirectBelow (Key other)
 	{
 		if (other == null)
 		{
 			throw new IllegalArgumentException ("other should be a key, not null");
 		}
-		return Elektra.INSTANCE.keyIsDirectlyBelow (other.get (), get ()) == 1;
+		return Elektra.INSTANCE.keyIsDirectlyBelow (other.getPointer (), getPointer ()) == 1;
 	}
 
 	/**
-	 * Helper function to check if key is binary key
-	 *
-	 * @return Boolean if this key is a binary key
+	 * @return True if the underlying native key's value is of type binary, false
+	 *         otherwise
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	public boolean isBinary ()
 	{
-		return Elektra.INSTANCE.keyIsBinary (get ()) == 1;
+		return Elektra.INSTANCE.keyIsBinary (getPointer ()) == 1;
 	}
 
 	/**
-	 * Helper function to check if key is string key
-	 *
-	 * @return Boolean if this key is a string key
+	 * @return True if the underlying native key's value is a valid string, false
+	 *         otherwise
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	public boolean isString ()
 	{
-		return Elektra.INSTANCE.keyIsString (get ()) == 1;
+		return Elektra.INSTANCE.keyIsString (getPointer ()) == 1;
 	}
 
 	/**
-	 * Helper function to get key name (key part of "key-value" pair)
-	 *
-	 * @return Key name as String
+	 * @return Key name (key part of "key-value" pair)
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	public String getName ()
 	{
-		return Elektra.INSTANCE.keyName (key);
+		return Elektra.INSTANCE.keyName (getPointer ());
 	}
 
 	/**
-	 * Helper function to get key name size
-	 *
 	 * @return Length of key name
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	public int getNameSize ()
 	{
-		return Elektra.INSTANCE.keyGetNameSize (get ());
+		return Elektra.INSTANCE.keyGetNameSize (getPointer ());
 	}
 
 	/**
-	 * Helper function to set key name
+	 * Sets the key's name
 	 *
 	 * @param name New key name to use
-	 * @throws KeyInvalidNameException TODO #3754 detailed exception description
+	 * @throws KeySetNameFailedException if the key name is invalid, the key was
+	 *                                   inserted in a key set before or the key
+	 *                                   name is read-only
+	 * @throws KeyReleasedException      if this {@link Key} has already been
+	 *                                   released
 	 */
-	public void setName (final String name) throws KeyInvalidNameException
+	public void setName (String name)
 	{
-		if (Elektra.INSTANCE.keySetName (get (), name) == -1)
+		if (Elektra.INSTANCE.keySetName (getPointer (), name) == -1)
 		{
-			throw new KeyInvalidNameException ();
+			throw new KeySetNameFailedException ();
 		}
 	}
 
 	/**
-	 * Helper function to get key base name
-	 *
-	 * @return Key base name as String
+	 * @return Key's base name as String
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	public String getBaseName ()
 	{
-		return Elektra.INSTANCE.keyBaseName (get ());
+		return Elektra.INSTANCE.keyBaseName (getPointer ());
 	}
 
 	/**
-	 * Helper function to get key base name length
-	 *
-	 * @return Length of key base name
+	 * @return Length of key's base name
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	public int getBaseNameSize ()
 	{
-		return Elektra.INSTANCE.keyGetBaseNameSize (get ());
+		return Elektra.INSTANCE.keyGetBaseNameSize (getPointer ());
 	}
 
 	/**
-	 * Helper function to set key base name; will replace current base name with new
-	 * base name
+	 * Sets the key's base name; will replace current base name with new base name
 	 *
 	 * @param baseName New key base name to use
-	 * @throws KeyInvalidNameException TODO #3754 detailed exception description
+	 * @throws KeySetNameFailedException if the key name is invalid, the key was
+	 *                                   inserted in a key set before or the key
+	 *                                   name is read-only
+	 * @throws KeyReleasedException      if this {@link Key} has already been
+	 *                                   released
 	 */
-	public void setBaseName (final String baseName) throws KeyInvalidNameException
+	public void setBaseName (String baseName) throws KeySetNameFailedException
 	{
-		if (Elektra.INSTANCE.keySetBaseName (get (), baseName) == -1)
+		if (Elektra.INSTANCE.keySetBaseName (getPointer (), baseName) == -1)
 		{
-			throw new KeyInvalidNameException ();
+			throw new KeySetNameFailedException ();
 		}
 	}
 
 	/**
-	 * Helper function to add key base name; will add given base name to current key
-	 * so that new key is sub key of current key
+	 * Adds key base name; will add given base name to current key so that new key
+	 * is sub key of current key
 	 *
 	 * @param baseName New key base name to add
-	 * @throws KeyInvalidNameException TODO #3754 detailed exception description
+	 * @throws KeySetNameFailedException if the key name is invalid, the key was
+	 *                                   inserted in a key set before or the key
+	 *                                   name is read-only
+	 * @throws KeyReleasedException      if this {@link Key} has already been
+	 *                                   released
 	 */
-	public void addBaseName (final String baseName) throws KeyInvalidNameException
+	public void addBaseName (String baseName) throws KeySetNameFailedException
 	{
-		if (Elektra.INSTANCE.keyAddBaseName (get (), baseName) == -1)
+		if (Elektra.INSTANCE.keyAddBaseName (getPointer (), baseName) == -1)
 		{
-			throw new KeyInvalidNameException ();
+			throw new KeySetNameFailedException ();
 		}
 	}
 
 	/**
-	 * Helper function to get key value size/length
-	 *
-	 * @return Length of key value
+	 * @return Length/Size of key value
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	public int getValueSize ()
 	{
-		return Elektra.INSTANCE.keyGetValueSize (get ());
+		return Elektra.INSTANCE.keyGetValueSize (getPointer ());
 	}
 
 	/**
-	 * Helper function to get representation of key value
-	 *
-	 * @return Key value in String format
-	 * @throws KeyTypeMismatchException TODO #3754 detailed exception description
+	 * @return JNA pointer to the native pointer for this key
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public String getString () throws KeyTypeMismatchException
+	protected Pointer getPointer ()
 	{
-		if (isBinary ())
+		if (pointer == null)
 		{
-			throw new KeyTypeMismatchException ();
+			throw new KeyReleasedException ();
 		}
-		return Elektra.INSTANCE.keyString (key);
-	}
-
-	/**
-	 * Helper function to set new key value
-	 *
-	 * @param newString New key value to set
-	 * @return value &gt; 0 representing saved bytes (+null byte), -1 in case of an
-	 *         error (null key)
-	 */
-	public int setString (final String newString)
-	{
-		return Elektra.INSTANCE.keySetString (get (), newString);
-	}
-
-	/**
-	 * Native pointer used by JNA
-	 *
-	 * @return Native pointer object for this key
-	 */
-	public Pointer get ()
-	{
-		return key;
+		return pointer;
 	}
 }

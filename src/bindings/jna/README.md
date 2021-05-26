@@ -20,12 +20,12 @@ you enable the JNA bindings, e.g., with `cmake -DBINDINGS=jna`, see also
 [COMPILE](/doc/COMPILE.md#bindings). Internally, Gradle will be used to
 actually compile the plugin.
 
-Please note that the [jni plugin](/src/plugins/jni) serves a different purpose. We
-use the jni plugin to develop plugins for Elektra itself, whereas the JNA
-bindings allow to use Elektra to access configuration in Java projects. The jni
+Please note that the [JNI plugin](/src/plugins/jni) serves a different purpose. We
+use the JNI plugin to develop plugins for Elektra itself, whereas the JNA
+bindings allow to use Elektra to access configuration in Java projects. The JNI
 plugin is _not_ required for the JNA bindings to work. But, to develop
-jni plugins, JNA can be used. [Here](libelektra/plugin) are example
-plugins, which need jni at runtime.
+JNI plugins, JNA can be used. [Here](libelektra/plugin) are example
+plugins, which need JNI at runtime.
 
 ### Command line
 
@@ -168,59 +168,11 @@ which can be used to save and load `.properties` files into Elektra.
 
 ### Command Line
 
-You can run unit tests after importing jUnit, JNA and the libelektra java
-library into a project (eclipse, netbeans, intelliJ, ...).
+You can run unit tests by invoking:
 
-Tested library versions are:
-
-- JNA: 4.5.0
-- jUnit: 4.12 [jUnit 3 is not supported]
-- hamcrest-core: 1.13 (required by newer jUnit versions)
-
-Tested JDK versions are:
-
-- Oracle JDK 1.8.0_112 on macOS 10.12 Sierra
-- OpenJDK 1.8.0_121 on Arch Linux
-- OpenJDK 1.9 on Ubuntu
-- Oracle JDK 1.9 build 9+181 on macOS 10.12 Sierra
-
-Both libraries should work on version 4.0 too, though.
-
-It should also be possible to run the tests by command line:
-
-1.  Compile the library and tests (run in root directory; make sure junit4 and
-    jna are installed and/or path is correct). Execute the following commands inside
-    the libelektra folder:
-
-    ```sh
-    mkdir ./target (if it does not exist yet)
-    javac -cp <path to junit and jna and hamcrest*> -d \
-          ./target src/main/java/org/libelektra/*.java \
-          src/main/java/org/libelektra/plugin/*.java \
-          src/test/java/org/libelektra/*.java
-    ```
-
-    If you copied the jna.jar, junit.jar and hamcrest-core.jar directly to the
-    jna directory, the correct path would be `./jna.jar:./junit.jar:./hamcrest-core.jar`
-    (separated by : on Mac and Linux, by ; on Windows), otherwise specify the
-    appropriate locations.
-
-    For Linux users they are usually in `/usr/share/java/jna.jar:/usr/share/java/junit4.jar`
-
-2.  Run all jUnit tests (please note that the -cp parameter now also has to
-    include the target directory we created in the first step, where the compiled
-    classfiles are):
-
-    ```sh
-    java -cp <path to target, junit, jna and hamcrest> org.junit.runner.JUnitCore org.libelektra.AllTests
-    ```
-
-    Or run all tests on their own:
-
-    ```sh
-    java -cp <path to target, junit, jna and hamcrest> org.junit.runner.JUnitCore org.libelektra.KeyTest
-    java -cp <path to target, junit, jna and hamcrest> org.junit.runner.JUnitCore org.libelektra.KeySetTest
-    ```
+```sh
+./gradlew test
+```
 
 ## Limitations
 
