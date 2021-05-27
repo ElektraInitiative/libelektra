@@ -152,16 +152,19 @@ and search for the relevant packages (`clang-format`, `llvm`). Currently we use 
 ###### macOS
 
 On macOS you can install `clang-format` using [Homebrew][] either directly:
+
 ```sh
 brew install clang-format
 ```
 
 or by installing the whole [LLVM](http://llvm.org) infrastructure:
+
 ```sh
 brew install llvm
 ```
 
 Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `11` in certain edge cases. If you want you can also install Clang-Format `11` using LLVM `11`:
+
 ```
 brew install llvm@9
 ```
@@ -171,6 +174,7 @@ brew install llvm@9
 ###### Debian
 
 In Debian the package for Clang-Format `11` is called `clang-format-11`:
+
 ```sh
 apt-get install clang-format-11
 ```
@@ -178,6 +182,7 @@ apt-get install clang-format-11
 ##### Usage
 
 For the basic use cases you can use `clang-format` directly. To do that, just call the tool using the option `-i` and specify the name of the files you want to reformat. For example, if you want to reformat the file `src/bindings/cpp/include/kdb.hpp` you can use the following command:
+
 ```sh
 # On some systems such as Debian the `clang-format` executable also contains
 # the version number. For those systems, please replace `clang-format`,
@@ -186,6 +191,7 @@ clang-format -i src/bindings/cpp/include/kdb.hpp
 ```
 
 While this works fine, if you want to format only a small number of file, formatting multiple files can be quite tedious. For that purpose you can use the script [`reformat-c`](../scripts/dev/reformat-c) that reformats all C and C++ code in Elektra’s code base
+
 ```sh
 scripts/dev/reformat-c # This script will probably take some seconds to execute
 ```
@@ -237,6 +243,7 @@ We use a similar style for CMake as we do for other code:
 We use [`cmake-format`](https://github.com/cheshirekow/cmake_format) to reformat code according to the guidelines given above. Since
 `cmake-format` currently does not support tabs, we use the standard command `unexpand` to fix this issue. For example, to reformat the
 file `CMakeLists.txt` in the root folder of the repository we use the following command:
+
 ```sh
 # This command uses `sponge`, which is part of the [moreutils](https://joeyh.name/code/moreutils/) package.
 cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
@@ -245,16 +252,19 @@ cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 ##### Installation
 
 Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
+
 ```sh
 # Install cmake format `0.6.3` with support for YAML config files
 pip install cmake-format[yaml]==0.6.3
 ```
 
 Please make sure, that you install the correct version (`0.6.3`) of cmake format:
+
 ```sh
 cmake-format --version
 #> 0.6.3
 ```
+
 ... otherwise the formatted code might look quite different
 
 We also use the [moreutils](https://joeyh.name/code/moreutils) in our [CMake formatting script](../scripts/dev/reformat-cmake), which you can install on macOS using [Homebrew][]:
@@ -264,6 +274,7 @@ brew install moreutils
 ```
 
 and on Debian using `apt-get`:
+
 ```
 apt-get install moreutils
 ```
@@ -271,11 +282,13 @@ apt-get install moreutils
 ##### Usage
 
 If you want to reformat the whole codebase you can use the script [`reformat-cmake`](../scripts/dev/reformat-cmake):
+
 ```sh
 scripts/dev/reformat-cmake # Running this script for the whole code base takes some time.
 ```
 
 To reformat specific files add a list of file paths after the command:
+
 ```sh
 # The command below reformats the file `cmake/CMakeLists.txt`.
 scripts/dev/reformat-cmake cmake/CMakeLists.txt
@@ -347,11 +360,13 @@ We use prettier with the Java community plugin for Java code. See [Prettier Java
 ##### Usage
 
 If you want to reformat all Java files in the repository you can use the script [`reformat-java`](../scripts/dev/reformat-java):
+
 ```sh
 scripts/dev/reformat-java
 ```
 
 To reformat specific files add a list of file paths after the command:
+
 ```sh
 # The command below reformats the file `cmake/CMakeLists.txt`.
 scripts/dev/reformat-java src/bindings/jna/libelektra/src/main/java/org/libelektra/KDB.java
@@ -401,6 +416,7 @@ We use [`prettier`][] to format JavaScript, Java and Markdown files.
 ###### macOS
 
 On macOS you can install [`prettier`][] using [Homebrew][]:
+
 ```sh
 brew install prettier
 ```
@@ -408,6 +424,7 @@ brew install prettier
 ###### General
 
 To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
+
 ```sh
 npm install --global prettier prettier-plugin-java
 ```
@@ -415,11 +432,13 @@ npm install --global prettier prettier-plugin-java
 ##### Usage
 
 To format all JavaScript files in the repository you can use the script [`reformat-javascript`](../scripts/dev/reformat-javascript):
+
 ```sh
 scripts/dev/reformat-javascript
 ```
 
 To format only some files, please specify a list of filenames after the command:
+
 ```sh
 scripts/dev/reformat-markdown src/tools/qt-gui/qml/ErrorDialogCreator.js # Reformat this file
 ```
@@ -455,11 +474,13 @@ For information on how to install the tool, please take a look at “JavaScript 
 ##### Usage
 
 You can format all Markdown files in the repository using the script [`reformat-markdown`](../scripts/dev/reformat-markdown):
+
 ```sh
 scripts/dev/reformat-markdown
 ```
 
 To format only some files, please specify a list of filenames after the command:
+
 ```sh
 scripts/dev/reformat-markdown doc/CODING.md # Reformat this file
 ```
@@ -515,6 +536,7 @@ We use [`shfmt`][] to format Shell files in the repository.
 ###### macOS
 
 You can install [`shfmt`] on macOS using [Homebrew][]:
+
 ```sh
 brew install shfmt
 ```
@@ -522,6 +544,7 @@ brew install shfmt
 ###### General
 
 [shfmt’s GitHub release page](https://github.com/mvdan/sh/releases) offers binaries for various operating systems. For example, to install the binary for the current user on Linux you can use the following command:
+
 ```sh
 mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
   curl -L "https://github.com/mvdan/sh/releases/download/v2.6.4/shfmt_v2.6.4_linux_amd64" -o shfmt && \
@@ -529,6 +552,7 @@ mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
 ```
 
 Please note that you have to make sure, that your `PATH` includes `$HOME/bin`, if you use the command above:
+
 ```sh
 export PATH=$PATH:"$HOME/bin"
 ```
@@ -536,11 +560,13 @@ export PATH=$PATH:"$HOME/bin"
 ##### Usage
 
 We provide the script [`reformat-shell`](../scripts/dev/reformat-shell) that formats the whole codebase with [`shfmt`][]:
+
 ```sh
 scripts/dev/reformat-shell
 ```
 
 You can also reformat specific files by listing filenames after the script:
+
 ```sh
 scripts/dev/reformat-shell scripts/dev/reformat-shell # Reformat the source of `reformat-shell`
 ```
