@@ -5,8 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.libelektra.exception.KeyNameException;
 import org.libelektra.exception.KeyReleasedException;
-import org.libelektra.exception.KeySetNameFailedException;
 
 public class KeyTest
 {
@@ -199,7 +199,7 @@ public class KeyTest
 		key.rewindMeta ();
 
 		// check meta
-		Key meta_1 = key.currentMeta ();
+		Key meta_1 = key.nextMeta ();
 
 		assertEquals ("meta:" + KEY_1_META_1_NAME, meta_1.getName ());
 		assertEquals (KEY_1_META_1_VALUE, meta_1.getString ());
@@ -215,7 +215,7 @@ public class KeyTest
 		key2.rewindMeta ();
 
 		// check meta for second key
-		Key meta_1_2 = key2.currentMeta ();
+		Key meta_1_2 = key2.nextMeta ();
 
 		assertEquals ("meta:" + KEY_1_META_1_NAME, meta_1_2.getName ());
 		assertEquals (KEY_1_META_1_VALUE, meta_1_2.getString ());
@@ -296,7 +296,7 @@ public class KeyTest
 		assertEquals (new_keyname, key.getName ());
 	}
 
-	@Test (expected = KeySetNameFailedException.class) public void test_keySetName_shouldFail ()
+	@Test (expected = KeyNameException.class) public void test_keySetName_shouldFail ()
 	{
 		String new_keyname = "some_random/test/stuff_or/whatever"; // initial slash missing
 		Key key = Key.create (KEY_1_NAME, KEY_1_VALUE);

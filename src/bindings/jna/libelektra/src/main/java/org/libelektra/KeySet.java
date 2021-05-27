@@ -1,11 +1,17 @@
 package org.libelektra;
 
+import static org.libelektra.ValidationUtil.argNotNull;
+import static org.libelektra.ValidationUtil.argNotNullOrBlank;
+import static org.libelektra.ValidationUtil.checkKeyPointer;
+
 import com.sun.jna.Pointer;
 import java.lang.ref.Cleaner;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.libelektra.exception.KeySetAppendException;
 import org.libelektra.exception.KeySetReleasedException;
 
 /**
@@ -25,8 +31,8 @@ public class KeySet implements Iterable<Key>
 	@Nullable private Cleaner.Cleanable cleanable;
 
 	/**
-	 * Constructor associating a new {@link KeySet} instance with a native
-	 * pointer in long format
+	 * Constructor associating a new {@link KeySet} instance with a native pointer
+	 * in long format
 	 *
 	 * @param nativePointer Native pointer to key set in long format
 	 */
@@ -36,8 +42,8 @@ public class KeySet implements Iterable<Key>
 	}
 
 	/**
-	 * Constructor associating a new {@link KeySet} instance with a native
-	 * pointer in long format<br>
+	 * Constructor associating a new {@link KeySet} instance with a native pointer
+	 * in long format<br>
 	 * <br>
 	 * Suppressing clean-up has been introduced for usage of this binding as JNI
 	 * plug-in and should normally not be used in any other case.
@@ -63,11 +69,7 @@ public class KeySet implements Iterable<Key>
 	 */
 	protected KeySet (Pointer pointer)
 	{
-		if (pointer == null)
-		{
-			throw new IllegalArgumentException ("Passed pointer must not be null");
-		}
-		this.pointer = pointer;
+		this.pointer = argNotNull (pointer, "Pointer 'pointer'");
 		cleanable = ReferenceCleaner.registerKeySetCleanUp (this);
 	}
 
@@ -112,25 +114,6 @@ public class KeySet implements Iterable<Key>
 	public static KeySet create ()
 	{
 		return create (16);
-	}
-
-	/**
-	 * Basic constructor for key set
-	 *
-	 * @param alloc Length of key set (key count) to be allocated
-	 * @param args  List of initial keys for the key set.
-	 * @return New key set with the given initial data
-	 * @see #release()
-	 */
-	public static KeySet create (int alloc, Key... args)
-	{
-		if (args == null)
-		{
-			return create (alloc);
-		}
-		final Object[] keys = Arrays.copyOf (args, args.length + 1, Object[].class);
-		keys[args.length] = KS_END;
-		return create (alloc, keys);
 	}
 
 	/**
@@ -180,16 +163,13 @@ public class KeySet implements Iterable<Key>
 		return sb.toString ();
 	}
 
-	/*
-	 * Wrapped Methods
-	 */
-
 	/**
 	 * Duplicates the key set
 	 *
-	 * @return New KeySet containing the same key references as this object does@see
-	 *         #release()
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @return New {@link KeySet} containing the same key references as this
+	 *         {@link KeySet} does
+	 * @throws KeySetReleasedException if this {@link KeySet} has already been
+	 *                                 released
 	 * @see #release()
 	 */
 	public KeySet dup ()
@@ -201,155 +181,167 @@ public class KeySet implements Iterable<Key>
 	 * Copies key references from {@code source} to {@code this} {@link KeySet}
 	 *
 	 * @param source Key set that is used as source
-	 * @throws KeySetReleasedException if this {@link KeySet} or the specified {@code source} has already been released
+	 * @throws KeySetReleasedException  if this {@link KeySet} or the specified
+	 *                                  {@code source} has already been released
+	 * @throws IllegalArgumentException if {@code source} is {@code null}
 	 */
 	public void copy (KeySet source)
 	{
-		if (source == null)
-		{
-			throw new IllegalArgumentException ("Passed source key set must not be null");
-		}
+		argNotNull (source, "KeySet 'source'");
 		Elektra.INSTANCE.ksCopy (getPointer (), source.getPointer ());
 	}
 
 	/**
-	 * Helper function to check if synchronization is necessary
+	 * Indicates whether synchronization is necessary
 	 *
-	 * @return 1 if sync is necessary, 0 if no sync is necessary, -1 in case of an
-	 *         error (null key)
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @return True if sync is necessary, false otherwise
+	 * @throws KeySetReleasedException if this {@link KeySet} has already been
+	 *                                 released
 	 */
-	public int needsSync ()
+	public boolean needsSync ()
 	{
-		return Elektra.INSTANCE.ksNeedSync (getPointer ());
+		return Elektra.INSTANCE.ksNeedSync (getPointer ()) > 0;
 	}
 
 	/**
-	 * Helper function that returns key set size
+	 * Indicates the key set size
 	 *
-	 * @return Size of key set (number of possible keys)
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @return Number of keys contained by this key set
+	 * @throws KeySetReleasedException if this {@link KeySet} has already been
+	 *                                 released
 	 */
-	public int length ()
+	public int size ()
 	{
 		return Elektra.INSTANCE.ksGetSize (getPointer ());
 	}
 
 	/**
-	 * Helper function to append key to key set. Does nothing if null is provided.
+	 * Append key to key set
 	 *
-	 * @param key Key to append
-	 * @return Index of key in key set; starting from 1, -1 if null was provided
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @param key {@link Key} to append
+	 * @return This {@link KeySet}, enabling a fluent interface
+	 * @throws IllegalArgumentException if {@code key} is {@code null}
+	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 *                                  released
 	 */
-	public int append (Key key)
+	public KeySet append (Key key)
 	{
-		if (key == null)
+		argNotNull (key, "Key 'key'");
+		if (Elektra.INSTANCE.ksAppendKey (getPointer (), key.getPointer ()) <= 0)
 		{
-			return -1;
+			throw new KeySetAppendException ();
 		}
-		return Elektra.INSTANCE.ksAppendKey (getPointer (), key.getPointer ());
+		return this;
 	}
 
 	/**
-	 * Helper function that appends keys of key set
+	 * Appends keys from key set
 	 *
-	 * @param keySet Key set to append
-	 * @return Highest new index of key in key set; starting from 1, -1 if null was
-	 *         provided
-	 * @throws KeySetReleasedException if this {@link KeySet} or the specified {@code keySet} has already been released
+	 * @param keySet Source {@link KeySet} to append all of its {@link Key keys}
+	 * @return This {@link KeySet}, enabling a fluent interface
+	 * @throws KeySetReleasedException     if this {@link KeySet} or the specified
+	 *                                     {@code keySet} has already been released
+	 * @throws IllegalArgumentException    if {@code keySet} is {@code null}
+	 * @throws KeySetAppendException if adding a key failed
 	 */
-	public int append (KeySet keySet)
+	public KeySet append (KeySet keySet)
 	{
-		if (keySet == null)
-		{
-			return -1;
-		}
-
-		int result = -1;
+		argNotNull (keySet, "KeySet 'keySet'");
 		Iterator<Key> iter = keySet.iterator ();
 		while (iter.hasNext ())
 		{
-			result = Elektra.INSTANCE.ksAppendKey (getPointer (), iter.next ().getPointer ());
+			if (Elektra.INSTANCE.ksAppendKey (getPointer (), iter.next ().getPointer ()) <= 0)
+			{
+				throw new KeySetAppendException ();
+			}
 		}
-		return result;
+		return this;
 	}
 
 	/**
-	 * Helper function that creates new key set with help of a cut point
+	 * Creates new key set with help of a cut point
 	 *
 	 * @param cutpoint Key that is used as cutting point
 	 * @return New KeySet containing all keys until the cutting point, this if null
 	 *         was provided
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code cutpoint} is {@code null}
 	 * @see #release()
 	 */
 	public KeySet cut (Key cutpoint)
 	{
-		if (cutpoint == null)
-		{
-			return this;
-		}
+		argNotNull (cutpoint, "Key 'cutpoint'");
 		return new KeySet (Elektra.INSTANCE.ksCut (getPointer (), cutpoint.getPointer ()));
 	}
 
 	/**
-	 * Helper function that returns key from key set and also removes it from the
-	 * set
+	 * Returns key from key set and also removes it from the set
 	 *
 	 * @param cursor Cursor position of the key to remove; starting from 0
-	 * @return First Key in the set
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @return Key found at given cursor position
+	 * @throws KeySetReleasedException   if this {@link KeySet} has already been
+	 *                                   released
+	 * @throws IndexOutOfBoundsException if position is out of bounds
 	 * @see Key#release()
 	 */
 	public Key remove (int cursor)
 	{
-		return new Key (Elektra.INSTANCE.elektraKsPopAtCursor (getPointer (), cursor));
+		return checkKeyPointer (Elektra.INSTANCE.elektraKsPopAtCursor (getPointer (), cursor), IndexOutOfBoundsException::new);
 	}
 
 	/**
-	 * Helper function that gets the key set head
+	 * Gets the key set head key
 	 *
 	 * @return First element of the key set
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @throws KeySetReleasedException if this {@link KeySet} has already been
+	 *                                 released
+	 * @throws NoSuchElementException  if key set is empty
 	 * @see Key#release()
 	 */
 	public Key head ()
 	{
-		return new Key (Elektra.INSTANCE.ksHead (getPointer ()));
+		return checkKeyPointer (Elektra.INSTANCE.ksHead (getPointer ()), NoSuchElementException::new);
 	}
 
 	/**
-	 * Helper function that gets the key set tail
+	 * Gets the key set tail key
 	 *
 	 * @return Last element of the key set
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @throws KeySetReleasedException if this {@link KeySet} has already been
+	 *                                 released
+	 * @throws NoSuchElementException  if key set is empty
 	 * @see Key#release()
 	 */
 	public Key tail ()
 	{
-		return new Key (Elektra.INSTANCE.ksTail (getPointer ()));
+		return checkKeyPointer (Elektra.INSTANCE.ksTail (getPointer ()), NoSuchElementException::new);
 	}
 
 	/**
-	 * Helper function that gets the Key at the given cursor position
+	 * Gets the key at the given cursor position
 	 *
 	 * @param cursor Cursor position used to fetch key; starting from 0
-	 * @return Key at given cursor position
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @return Key found at specified cursor position
+	 * @throws KeySetReleasedException   if this {@link KeySet} has already been
+	 *                                   released
+	 * @throws IndexOutOfBoundsException if position is out of bounds
 	 * @see Key#release()
 	 */
 	public Key at (int cursor)
 	{
-		return new Key (Elektra.INSTANCE.ksAtCursor (getPointer (), cursor));
+		return checkKeyPointer (Elektra.INSTANCE.ksAtCursor (getPointer (), cursor), IndexOutOfBoundsException::new);
 	}
 
+
 	/**
-	 * Helper function to search for a key in the key set
+	 * Search for a key in the key set
 	 *
 	 * @param find Key used in search
 	 * @return Key if search successful, {@link Optional#empty()} otherwise
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code key} is {@code null}
 	 * @see Key#release()
 	 */
 	public Optional<Key> lookup (Key find)
@@ -358,29 +350,31 @@ public class KeySet implements Iterable<Key>
 	}
 
 	/**
-	 * Helper function to search for a key in the key set
+	 * Search for a key in the key set
 	 *
 	 * @param find    Key used in search
 	 * @param options Custom search options; concatenation of flags
 	 * @return Key if search successful, {@link Optional#empty()} otherwise
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code find} is {@code null}
 	 * @see Key#release()
 	 */
 	public Optional<Key> lookup (Key find, int options)
 	{
-		if (find == null)
-		{
-			return null;
-		}
+		argNotNull (find, "Key 'find'");
 		return Key.create (Elektra.INSTANCE.ksLookup (getPointer (), find.getPointer (), options));
 	}
 
 	/**
-	 * Helper function to search for a key in the key set
+	 * Search for a key in the key set
 	 *
 	 * @param find Key name used in search
 	 * @return Key if search successful, {@link Optional#empty()} otherwise
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code find} is {@link String#isBlank()
+	 *                                  blank}
 	 * @see Key#release()
 	 */
 	public Optional<Key> lookup (String find)
@@ -389,26 +383,27 @@ public class KeySet implements Iterable<Key>
 	}
 
 	/**
-	 * Helper function to search for a key in the key set
+	 * Search for a key in the key set
 	 *
 	 * @param find    Key name used in search
 	 * @param options Custom search options; concatenation of flags
 	 * @return Key if search successful, {@link Optional#empty()} otherwise
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code find} is {@link String#isBlank()
+	 *                                  blank}
 	 * @see Key#release()
 	 */
 	public Optional<Key> lookup (String find, int options)
 	{
-		if (find == null)
-		{
-			return null;
-		}
+		argNotNullOrBlank (find, "String 'find'");
 		return Key.create (Elektra.INSTANCE.ksLookupByName (getPointer (), find, options));
 	}
 
 	/**
 	 * @return JNA pointer to the native pointer for this key set
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been released
+	 * @throws KeySetReleasedException if this {@link KeySet} has already been
+	 *                                 released
 	 */
 	protected Pointer getPointer ()
 	{

@@ -153,17 +153,23 @@ you up to date with the multi-language support provided by Elektra.
 
 ### JNA
 
-- Gradle wrapper upgraded to 7.0.2
+- Gradle wrapper and docker images upgraded to 7.0.2
 - Minumum Gradle version decreased to 6.0
 - Upgraded JNA dependency from 4.5.2 to 5.8.0
-- Updated documentation
 - Increased minimum required JDK version to 11
+- Updated Java binding API documentation
 - Migrated native resource clean-up from `finalize()` to `Cleaner`
   - Please revisit the documentation for `Key::release` and `KeySet::release` for recommended resource release handling
-- Extracted exceptions from Key class introducing the following changes
+- Introduced multiple exceptions when native API calls fail - see updated java doc for details
+- Introduced early parameter validation for values which would otherwise lead to unspecific errors in native API calls
+- Update `Key` API introducing the following changes:
+  - Extracted exceptions from `Key` class
+  - Moved `Elektra.KeyNewArgumentFlags` to `Key.KeyNewArgumentTag`
+  - Changed return value from `int` to `boolean` for:
   - Removed unused `KeyTypeConversionException`
-  - Introduced `KeyCreateFailedException`, `KeyReleasedException`
-  - Renamed `KeyInvalidNameException` to `KeySetNameFailedException`
+  - Introduced `KeyReleasedException` being thrown when a release `Key` is being accessed
+  - Introduced `KeyMetaException`
+  - Renamed `KeyInvalidNameException` to `KeyNameException`
   - Renamed `KeyTypeMismatchException` to `KeyBinaryTypeNotSupportedException`
 - Introduced `KeySetReleasedException` being thrown when a released `KeySet` is being accessed
 - Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
@@ -187,6 +193,28 @@ you up to date with the multi-language support provided by Elektra.
   - `KeyReleasedException` is now being thrown when a release `Key` is being accessed
   - `Key`s with now bacing native key pointer cannot be created anymore
 * Updated tests accordingly
+  - Removed `Key::isNull`
+    - `KeyReleasedException` is now being thrown when a release `Key` is being accessed
+    - `Key`s with now bacing native key pointer cannot be created anymore
+- Updated `KeySet` API introducing the following changes:
+  - Introduced `KeySetReleasedException` being thrown when a release `KeySet` is being accessed
+  - Introduced `KeySetAppendException`
+  - Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
+    - `KeySet::lookup*` now returns `Optional<Key>`
+    - `Key::getMeta` now returns `Optional<Key>`
+    - Example:
+      ```java
+      // checking whether the key has been found BEFORE API change
+      Key found = ks.lookup("/some/key");
+      if (found != null) {
+        // process found key
+      }
+      ```
+      ```java
+      // checking whether the key has been found AFTER API change
+      ks.lookup("/some/key").ifPresent(k -> // process found key );
+      ```
+- Updated tests accordingly
 
 _(Michael Tucek)_
 _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE

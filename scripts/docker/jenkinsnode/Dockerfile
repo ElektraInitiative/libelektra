@@ -84,7 +84,7 @@ RUN service ssh start
 CMD ["/usr/sbin/sshd", "-D", "-e"]
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.0-bin.zip && unzip gradle-7.0-bin.zip && rm gradle-7.0-bin.zip && mv gradle-7.0 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.0.2-bin.zip && unzip gradle-7.0.2-bin.zip && rm gradle-7.0.2-bin.zip && mv gradle-7.0.2 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER jenkins:jenkins

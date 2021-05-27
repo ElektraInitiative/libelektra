@@ -7,22 +7,22 @@ import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeySetReleasedException;
 
 /**
- * Represents session with the Key database. Close after usage, or simply use a
+ * Represents a session with the Key database. Close after usage, or simply use a
  * try-with-resources statement.
  */
 public class KDB implements AutoCloseable
 {
 
-	private final Pointer kdb;
+	private final Pointer pointer;
 
 	/**
-	 * Helper constructor for duplication by pointer
+	 * Constructor associating a new {@link KDB} instance with a JNA pointer
 	 *
-	 * @param p Pointer to another KDB object
+	 * @param pointer JNA {@link Pointer} to KDB
 	 */
-	public KDB (final Pointer p)
+	public KDB (final Pointer pointer)
 	{
-		kdb = p;
+		this.pointer = pointer;
 	}
 
 	/**
@@ -39,7 +39,6 @@ public class KDB implements AutoCloseable
 	public static KDB open (final Key errorKey) throws KDBException
 	{
 		Pointer kdb = Elektra.INSTANCE.kdbOpen (null, errorKey.getPointer ());
-
 		if (kdb == null)
 		{
 			throw ExceptionMapperService.getMappedException (errorKey);
@@ -102,7 +101,7 @@ public class KDB implements AutoCloseable
 	 */
 	public void get (final KeySet keySet, final Key parentKey) throws KDBException
 	{
-		final int ret = Elektra.INSTANCE.kdbGet (kdb, keySet.getPointer (), parentKey.getPointer ());
+		final int ret = Elektra.INSTANCE.kdbGet (pointer, keySet.getPointer (), parentKey.getPointer ());
 		if (ret == -1)
 		{
 			throw ExceptionMapperService.getMappedException (parentKey);
@@ -121,7 +120,7 @@ public class KDB implements AutoCloseable
 	 */
 	public void set (final KeySet keySet, final Key errorKey) throws KDBException
 	{
-		final int ret = Elektra.INSTANCE.kdbSet (kdb, keySet.getPointer (), errorKey.getPointer ());
+		final int ret = Elektra.INSTANCE.kdbSet (pointer, keySet.getPointer (), errorKey.getPointer ());
 		if (ret == -1)
 		{
 			throw ExceptionMapperService.getMappedException (errorKey);
@@ -138,7 +137,7 @@ public class KDB implements AutoCloseable
 	 */
 	public void close (final Key errorKey) throws KDBException
 	{
-		final int ret = Elektra.INSTANCE.kdbClose (kdb, errorKey.getPointer ());
+		final int ret = Elektra.INSTANCE.kdbClose (pointer, errorKey.getPointer ());
 		if (ret == -1)
 		{
 			throw ExceptionMapperService.getMappedException (errorKey);
@@ -200,6 +199,6 @@ public class KDB implements AutoCloseable
 	 */
 	protected Pointer get ()
 	{
-		return kdb;
+		return pointer;
 	}
 }

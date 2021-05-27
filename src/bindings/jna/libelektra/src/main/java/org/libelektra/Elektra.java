@@ -15,7 +15,7 @@ public interface Elektra extends Library {
 	/**
 	 * Singleton instance of the native library proxy.
 	 */
-	Elektra INSTANCE = Native.loadLibrary ("elektra-kdb", Elektra.class);
+	Elektra INSTANCE = Native.load ("elektra-kdb", Elektra.class);
 
 	// KDB methods --------------------------------------------------------------
 
@@ -227,64 +227,7 @@ public interface Elektra extends Library {
 
 	// Key methods --------------------------------------------------------------
 
-	/**
-	 * Enumeration of argument flags for {@link Elektra#keyNew(String, Object...)}.
-	 */
-	enum KeyNewArgumentFlags
-	{
-
-		/**
-		 * Used as a parameter terminator to {@link Elektra#keyNew(String, Object...)}
-		 */
-		KEY_END (0),
-
-		/**
-		 * Flag for the key name
-		 */
-		KEY_NAME (1),
-
-		/**
-		 * Flag for the key data
-		 */
-		KEY_VALUE (1 << 1),
-
-		/**
-		 * Flag for the key comment
-		 */
-		KEY_COMMENT (1 << 3),
-
-		/**
-		 * Flag if the key is binary
-		 */
-		KEY_BINARY (1 << 4),
-
-		/**
-		 * Flag for maximum size to limit value
-		 */
-		KEY_SIZE (1 << 11),
-
-		/**
-		 * Flag for metadata
-		 */
-		KEY_META (1 << 15);
-
-		private final Integer value;
-
-		/**
-		 * @return Integer value recognized by the native library.
-		 */
-		public Integer getValue ()
-		{
-			return value;
-		}
-
-		private KeyNewArgumentFlags (int value)
-		{
-			this.value = Integer.valueOf (value);
-		}
-	}
-
-	public static final String KEY_LOCAL_NAME = "/";
+	static final String KEY_LOCAL_NAME = "/";
 
 	/**
 	 * A practical way to fully create a Key object in one step.<br >
@@ -293,7 +236,6 @@ public interface Elektra extends Library {
 	 * native library: TODO #3754 link to C API documentation
 	 *
 	 * @see #keyDel(Pointer) keyDel()
-	 * @see KeyNewArgumentFlags
 	 *
 	 * @param name A valid name to the key, or {@link #KEY_LOCAL_NAME} to get a
 	 *             simple initialized, but really empty, object.
@@ -310,9 +252,9 @@ public interface Elektra extends Library {
 	 */
 	@Nullable Pointer keyNew (@Nullable String name, @Nullable Object... args);
 
-	Pointer keyDup (Pointer source, int flags);
+	@Nullable Pointer keyDup (Pointer source, int flags);
 
-	int keyCopy (Pointer dest, Pointer source, int flags);
+	@Nullable Pointer keyCopy (Pointer dest, Pointer source, int flags);
 
 	int keyClear (Pointer key); // not needed
 
@@ -327,9 +269,9 @@ public interface Elektra extends Library {
 	/* Meta Info */
 	int keyRewindMeta (Pointer key);
 
-	Pointer keyNextMeta (Pointer key);
+	@Nullable Pointer keyNextMeta (Pointer key);
 
-	Pointer keyCurrentMeta (Pointer key);
+	@Nullable Pointer keyCurrentMeta (Pointer key);
 
 	int keyCopyMeta (Pointer dest, Pointer source, String metaName);
 
@@ -392,9 +334,9 @@ public interface Elektra extends Library {
 
 	// KeySet methods -----------------------------------------------------------
 
-	Pointer ksNew (int alloc, Object... args);
+	@Nullable Pointer ksNew (int alloc, Object... args);
 
-	Pointer ksDup (Pointer source);
+	@Nullable Pointer ksDup (Pointer source);
 
 	int ksCopy (Pointer dest, Pointer source);
 
@@ -410,7 +352,7 @@ public interface Elektra extends Library {
 
 	int ksAppend (Pointer ks, Pointer toAppend);
 
-	Pointer ksCut (Pointer ks, Pointer cutpoint);
+	@Nullable Pointer ksCut (Pointer ks, Pointer cutpoint);
 
 	// TODO #3137 Also elektraKsPopAtCursor should replace the current ksPop. See
 	// also #3189.
@@ -420,15 +362,15 @@ public interface Elektra extends Library {
 
 	@Deprecated (forRemoval = true) int ksRewind (Pointer ks);
 
-	Pointer ksHead (Pointer ks);
+	@Nullable Pointer ksHead (Pointer ks);
 
-	Pointer ksTail (Pointer ks);
+	@Nullable Pointer ksTail (Pointer ks);
 
-	Pointer ksAtCursor (Pointer ks, int cursor);
+	@Nullable Pointer ksAtCursor (Pointer ks, int cursor);
 
-	Pointer ksLookup (Pointer ks, Pointer key, int options);
+	@Nullable Pointer ksLookup (Pointer ks, Pointer key, int options);
 
-	Pointer ksLookupByName (Pointer ks, String name, int options);
+	@Nullable Pointer ksLookupByName (Pointer ks, String name, int options);
 
 	NativePlugin.ElektraPlugin elektraPluginOpen (String pluginName, Pointer modules, Pointer config, Pointer errorKey);
 

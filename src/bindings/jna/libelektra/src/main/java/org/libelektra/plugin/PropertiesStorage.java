@@ -1,6 +1,6 @@
 package org.libelektra.plugin;
 
-import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_END;
+import static org.libelektra.Key.KeyNewArgumentTag.KEY_END;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

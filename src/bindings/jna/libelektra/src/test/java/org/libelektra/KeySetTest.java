@@ -47,7 +47,7 @@ public class KeySetTest
 	{
 		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
 
-		assertEquals (6, ks.length ());
+		assertEquals (6, ks.size ());
 	}
 
 	@Test public void test_keySetCreateFromPointer_shouldPass ()
@@ -56,7 +56,7 @@ public class KeySetTest
 		KeySet ks2 = new KeySet (ks.getPointer ());
 
 		assertEquals (ks.getPointer (), ks2.getPointer ());
-		assertEquals (ks.length (), ks2.length ());
+		assertEquals (ks.size (), ks2.size ());
 	}
 
 	@Test public void test_keySetIterator_shouldPass ()
@@ -95,7 +95,7 @@ public class KeySetTest
 		}
 
 		assertFalse (iterator.hasNext ());
-		assertEquals (5, ks.length ());
+		assertEquals (5, ks.size ());
 		assertTrue (ks.lookup (key3).isEmpty ());
 		assertTrue (ks.lookup (key4).isPresent ());
 		assertTrue (ks.lookup (key2).isPresent ());
@@ -137,31 +137,31 @@ public class KeySetTest
 	{
 		KeySet ks = KeySet.create (10);
 
-		assertEquals (0, ks.length ());
+		assertEquals (0, ks.size ());
 
 		ks.append (key);
 
-		assertEquals (1, ks.length ());
+		assertEquals (1, ks.size ());
 
 		ks.append (key2);
 		ks.append (key3);
 		ks.append (key4);
 
-		assertEquals (4, ks.length ());
+		assertEquals (4, ks.size ());
 
 		ks.append (key5);
 		ks.append (key6);
 
-		assertEquals (6, ks.length ());
+		assertEquals (6, ks.size ());
 	}
 
 	@Test public void test_keySetAppend_shouldPass ()
 	{
 		KeySet ks = KeySet.create (10);
 
-		assertEquals (1, ks.append (key));
-		assertEquals (2, ks.append (key2));
-		assertEquals (3, ks.append (key3));
+		assertEquals (key.getName (), ks.append (key).at (0).getName ());
+		assertEquals (key2.getName (), ks.append (key2).at (1).getName ());
+		assertEquals (key3.getName (), ks.append (key3).at (2).getName ());
 	}
 
 	@Test public void test_keySetAppendKeySet_shouldPass ()
@@ -170,10 +170,10 @@ public class KeySetTest
 		KeySet ks2 = KeySet.create (3, key, key2, key3);
 		KeySet ks3 = KeySet.create (3, key4, key5, key6);
 
-		assertEquals (3, ks.append (ks2));
+		assertEquals (3, ks.append (ks2).size ());
 		assertEquals (ks.at (0).getName (), ks2.at (0).getName ());
 		assertEquals (ks.at (0).getString (), ks2.at (0).getString ());
-		assertEquals (6, ks.append (ks3));
+		assertEquals (6, ks.append (ks3).size ());
 	}
 
 	@Test public void test_keySetCut_shouldPass ()
@@ -181,7 +181,7 @@ public class KeySetTest
 		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
 		KeySet ks2 = ks.cut (key4);
 
-		assertEquals (3, ks2.length ());
+		assertEquals (3, ks2.size ());
 		assertTrue (ks2.lookup (key4).isPresent ());
 		assertTrue (ks2.lookup (key5).isPresent ());
 		assertTrue (ks2.lookup (key6).isPresent ());
@@ -191,19 +191,19 @@ public class KeySetTest
 	{
 		KeySet ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
 
-		assertEquals (6, ks.length ());
+		assertEquals (6, ks.size ());
 		assertEquals (key6.getPointer (), ks.remove (5).getPointer ());
-		assertEquals (5, ks.length ());
+		assertEquals (5, ks.size ());
 		assertEquals (key5.getPointer (), ks.remove (4).getPointer ());
-		assertEquals (4, ks.length ());
+		assertEquals (4, ks.size ());
 
 		ks.remove (3);
 		ks.remove (2);
 		ks.remove (1);
 
-		assertEquals (1, ks.length ());
+		assertEquals (1, ks.size ());
 		assertEquals (key.getPointer (), ks.remove (0).getPointer ());
-		assertEquals (0, ks.length ());
+		assertEquals (0, ks.size ());
 	}
 
 	@Test public void test_keySetHeadTail_shouldPass ()

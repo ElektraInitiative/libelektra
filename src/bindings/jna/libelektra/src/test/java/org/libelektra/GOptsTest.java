@@ -2,7 +2,7 @@ package org.libelektra;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_META;
+import static org.libelektra.Key.KeyNewArgumentTag.KEY_META;
 
 import org.junit.After;
 import org.junit.Before;
@@ -45,7 +45,7 @@ public class GOptsTest
 			final KeySet ks = KeySet.create (10);
 			kdb.get (ks, specParent);
 
-			if (ks.cut (specParent).length () > 0)
+			if (ks.cut (specParent).size () > 0)
 			{
 				throw new IllegalStateException ("Couldn't set up spec, keys exist!");
 			}

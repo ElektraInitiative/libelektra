@@ -17,7 +17,7 @@ class ReferenceCleaner
 
 	/**
 	 * #3825 TODO This constant can be used to disable automated native reference
-	 * clean-up and is intended to be removed after no more occasional segfailts
+	 * clean-up and is intended to be removed after no more occasional segfaults
 	 * have appeared in ci for some time.
 	 */
 	@Deprecated (forRemoval = true) private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = true;
