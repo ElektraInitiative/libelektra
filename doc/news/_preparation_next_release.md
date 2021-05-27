@@ -154,6 +154,7 @@ you up to date with the multi-language support provided by Elektra.
 ### JNA
 
 - Gradle wrapper upgraded to 7.0.2
+- Minumum Gradle version decreased to 6.0
 - Upgraded JNA dependency from 4.5.2 to 5.8.0
 - Updated documentation
 - Increased minimum required JDK version to 11
@@ -187,7 +188,7 @@ you up to date with the multi-language support provided by Elektra.
   - `Key`s with now bacing native key pointer cannot be created anymore
 * Updated tests accordingly
 
-_(Michael Tucek)_
+
 
 ### <<Binding3>>
 
