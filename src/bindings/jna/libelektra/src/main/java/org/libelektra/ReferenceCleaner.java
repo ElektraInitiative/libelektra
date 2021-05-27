@@ -16,7 +16,7 @@ class ReferenceCleaner
 {
 
 	/**
-	 * #3825 TOD This constant can be used to disable automated native reference
+	 * #3825 TODO This constant can be used to disable automated native reference
 	 * clean-up and is intended to be removed after no more occasional segfailts
 	 * have appeared in ci for some time.
 	 */
