@@ -20,11 +20,11 @@ if (DEPENDENCY_PHASE)
 		set (DIRS ${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2} ${JAVA_AWT_INCLUDE_PATH})
 		set (LIBS ${JAVA_MAWT_LIBRARY} ${JNI_LIBRARIES} ${JAVA_AWT_LIBRARY} ${JAVA_JVM_LIBRARY}) # for check_symbol_exists
 		set (CMAKE_REQUIRED_INCLUDES ${DIRS})
-		safe_check_symbol_exists (JNI_VERSION_9 jni.h JNI_CORRECT_VERSION)
+		safe_check_symbol_exists (JNI_VERSION_11 jni.h JNI_CORRECT_VERSION)
 		unset (CMAKE_REQUIRED_INCLUDES)
 
 		if (NOT JNI_CORRECT_VERSION)
-			remove_plugin (jni "jni.h does not define JNI_VERSION_9")
+			remove_plugin (jni "jni.h does not define JNI_VERSION_11")
 		endif ()
 	else ()
 		remove_plugin (jni "JNI not found, please review your JDK installation and consider setting JAVA_HOME accordingly")

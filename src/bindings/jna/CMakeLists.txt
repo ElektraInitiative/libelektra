@@ -1,8 +1,8 @@
 find_program (GRADLE_EXECUTABLE gradle)
 find_package (Java QUIET)
 
-set (MIN_JAVA_VERSION "1.9.0")
-set (MIN_GRADLE_VERSION "6.8.0")
+set (MIN_JAVA_VERSION "11")
+set (MIN_GRADLE_VERSION "6.0")
 
 macro (java_exclude_test test)
 	string (APPEND GRADLE_TEST_EXCLUDES "\t\texcludeTestsMatching '*.${test}'\n")
