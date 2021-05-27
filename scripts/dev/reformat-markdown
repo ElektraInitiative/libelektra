@@ -13,13 +13,6 @@ cd "$SOURCE" || {
 	exit 1
 }
 
-NPX="$(which npx)"
-
-if [ -z "${NPX}" ]; then
-	printf 2>&1 'Please install `npx` (Included in npm >= 5.2.0)\n'
-	exit 1
-fi
-
 if [ $# -gt 0 ]; then
 	markdown_files=$(printf "%s\n" "$@" | grep -x '.*\.md')
 	if [ -z "$markdown_files" ]; then
@@ -28,4 +21,4 @@ if [ $# -gt 0 ]; then
 else
 	markdown_files=$(git ls-files '*.md')
 fi
-printf "%s\n" "$markdown_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "${NPX}" --quiet prettier@1.19.1 --write -- > /dev/null
+printf "%s\n" "$markdown_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs prettier --write -- > /dev/null

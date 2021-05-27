@@ -1,44 +1,22 @@
 #!/bin/sh
 #
-# @author René Schwaiger <sanssecours@me.com>
-# @brief Reformats Java source code
-# @date 10.11.2019
+# @author Michael Tucek <michael@tucek.eu>
+# @brief Reformat Java files (based on reformat-javascript by René Schwaiger <sanssecours@me.com>)
+# @date 27.05.2021
 # @tags reformat
 
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
 
-REQUIRED_VERSION=11
-CLANG_FORMAT=$(command -v clang-format-$REQUIRED_VERSION || command -v clang-format)
-
-if [ -n "$CLANG_FORMAT" ]; then
-	LOCATION="$CLANG_FORMAT"
-	VERSION=$("$CLANG_FORMAT" --version 2> /dev/null)
-	MAJOR_VERSION=$(printf '%s' "$VERSION" | sed -E 's/.* ([0-9]+)\.[0-9].[0-9][ -]?.*/\1/')
-	if [ "${MAJOR_VERSION:-0}" -ne $REQUIRED_VERSION ]; then
-		unset CLANG_FORMAT
-	fi
-fi
-
-if [ -z "${CLANG_FORMAT}" ]; then
-	printf >&2 'ClangFormat:   %s\n' "$LOCATION"
-	printf >&2 'Version Info:  %s\n' "$VERSION"
-	printf >&2 'Major Version: %s\n' "$MAJOR_VERSION"
-	printf >&2 'Please install clang-format %s or later' "$MIN_VERSION"
-	exit 1
-fi
-
 cd "$SOURCE" || {
-	printf >&2 'Unable to change into source directory'
+	printf 'Unable to change into source directory'
 	exit 1
 }
 
 if [ $# -gt 0 ]; then
-	source_files=$(printf "%s\n" "$@" | grep -x -E '.*\.java')
-	if [ -z "$source_files" ]; then
-		exit 0
-	fi
+	java_files=$(printf "%s\n" "$@" | grep -Ex '.*\.java?')
+	[ -z "$java" ] && exit
 else
-	source_files=$(git ls-files '*.java')
+	java=$(git ls-files '*.java')
 fi
-printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CLANG_FORMAT" -style=file -i
+printf "%s\n" "$java" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs prettier --parser java --use-tabs --write -- > /dev/null
