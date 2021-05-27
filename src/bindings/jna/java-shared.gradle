@@ -4,8 +4,8 @@ apply plugin: 'com.github.ben-manes.versions'
 // confugure java plugin
 java {
 	// set target platform version
-	sourceCompatibility = JavaVersion.VERSION_1_9
-	targetCompatibility = JavaVersion.VERSION_1_9
+	sourceCompatibility = JavaVersion.VERSION_11
+	targetCompatibility = JavaVersion.VERSION_11
 
 	// generate sources and javadoc jars
 	withJavadocJar()

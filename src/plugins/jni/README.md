@@ -12,7 +12,7 @@
 Allows you to write plugins in Java.
 
 This plugin needs the JNA bindings to work.
-Furthermore, it requires Java 8 or later.
+Furthermore, it requires Java 11 or later.
 
 While the plugin internally uses JNI (thus the name), the Java
 binding for your Java plugin may use something different, e.g. JNA.
@@ -51,27 +51,27 @@ export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 ### Java prerequisites on macOS
 
 macOS includes an old apple specific version of java, based on 1.6.
-However, for the jni plugin version 1.9 of Java is required, so either the openjdk or the oracle jdk has to be installed.
+However, for the jni plugin JDK version 11 is required, so either the openjdk or the oracle jdk has to be installed.
 
-Please install oracle's jdk9 via their provided installer.
+Please install oracle's jdk11 via their provided installer.
 After that, you have to set the JAVA_HOME environment variable to the folder where the jdk is installed, usually like
 
 ```sh
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-9.1.2.1.jdk/Contents/Home/"
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home/"
 ```
 
 As macOS handles linked libraries differently, there is no ldconfig command.
 Instead you can export an environment variable to tell elektra the location of the java dynamic libraries.
 
 ```sh
-export DYLD_FALLBACK_LIBRARY_PATH="/Library/Java/JavaVirtualMachines/jdk-9.1.2.1.jdk/Contents/Home/jre/lib:/Library/Java/JavaVirtualMachines/jdk-9.1.2.1.jdk/Contents/Home/jre/lib/server/"
+export DYLD_FALLBACK_LIBRARY_PATH="/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home/jre/lib:/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home/jre/lib/server/"
 ```
 
 Afterwards, the jni plugin should be included in the build and compile successfully.
 
 #### Troubleshooting
 
-If it should still not find the correct jni version, or says the jni version is not 1.9, then it most likely still searches in the wrong directory for the jni header file.
+If it should still not find the correct jni version, or says the jni version is not 11, then it most likely still searches in the wrong directory for the jni header file.
 It has been experienced that if the project has been built already without this environment variable set, the java location is cached.
 As a result, it will be resolved wrong in future builds, even though the environment variable is set.
 To resolve this, it should be enough to delete the CMakeCache.txt file in the build directory and reconfigure the build.
