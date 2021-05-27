@@ -188,8 +188,6 @@ you up to date with the multi-language support provided by Elektra.
   - `Key`s with now bacing native key pointer cannot be created anymore
 * Updated tests accordingly
 
-
-
 ### <<Binding3>>
 
 ## Tools
