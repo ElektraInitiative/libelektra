@@ -198,6 +198,7 @@ you up to date with the multi-language support provided by Elektra.
   - Removed `Key::isNull`
     - `KeyReleasedException` is now being thrown when a release `Key` is being accessed
     - `Key`s with now bacing native key pointer cannot be created anymore
+
 - Updated `KeySet` API introducing the following changes:
   - Introduced `KeySetReleasedException` being thrown when a release `KeySet` is being accessed
   - Introduced `KeySetAppendException`
