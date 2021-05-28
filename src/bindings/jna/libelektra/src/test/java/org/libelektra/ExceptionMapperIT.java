@@ -1,12 +1,18 @@
-package org.libelektra.exception;
+package org.libelektra;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.libelektra.Key;
-import org.libelektra.KeySet;
-import org.libelektra.NativePlugin;
+import org.libelektra.exception.ConflictingStateException;
+import org.libelektra.exception.InstallationException;
+import org.libelektra.exception.InterfaceException;
+import org.libelektra.exception.InternalException;
+import org.libelektra.exception.OutOfMemoryException;
+import org.libelektra.exception.PluginMisbehaviorException;
+import org.libelektra.exception.ResourceException;
+import org.libelektra.exception.SemanticValidationException;
+import org.libelektra.exception.SyntacticValidationException;
 
 public class ExceptionMapperIT
 {
@@ -18,7 +24,7 @@ public class ExceptionMapperIT
 
 	@Test (expected = OutOfMemoryException.class) public void kdbSetWithError_shouldMapOutOfMemoryError () throws Exception
 	{
-		String errorNumber = OutOfMemoryException.errorNumber ();
+		String errorNumber = OutOfMemoryException.ERROR_NUMBER;
 		Key temporaryError = Key.create ("user:/temporary/errorkey");
 		temporaryError.setMeta ("error/number", errorNumber);
 		KDBException exception = new OutOfMemoryException (temporaryError);
@@ -27,7 +33,7 @@ public class ExceptionMapperIT
 
 	@Test (expected = InternalException.class) public void kdbSetWithError_shouldMapInternalError () throws Exception
 	{
-		String errorNumber = InternalException.errorNumber ();
+		String errorNumber = InternalException.ERROR_NUMBER;
 		Key temporaryError = Key.create ("user:/temporary/errorkey");
 		temporaryError.setMeta ("error/number", errorNumber);
 		KDBException exception = new InternalException (temporaryError);
@@ -36,7 +42,7 @@ public class ExceptionMapperIT
 
 	@Test (expected = InterfaceException.class) public void kdbSetWithError_shouldMapInterfaceError () throws Exception
 	{
-		String errorNumber = InterfaceException.errorNumber ();
+		String errorNumber = InterfaceException.ERROR_NUMBER;
 		Key temporaryError = Key.create ("user:/temporary/errorkey");
 		temporaryError.setMeta ("error/number", errorNumber);
 		KDBException exception = new InterfaceException (temporaryError);
@@ -45,7 +51,7 @@ public class ExceptionMapperIT
 
 	@Test (expected = InstallationException.class) public void kdbSetWithError_shouldMapInstallationError () throws Exception
 	{
-		String errorNumber = InstallationException.errorNumber ();
+		String errorNumber = InstallationException.ERROR_NUMBER;
 		Key temporaryError = Key.create ("user:/temporary/errorkey");
 		temporaryError.setMeta ("error/number", errorNumber);
 		KDBException exception = new InstallationException (temporaryError);
@@ -54,7 +60,7 @@ public class ExceptionMapperIT
 
 	@Test (expected = PluginMisbehaviorException.class) public void kdbSetWithError_shouldMapPluginMisbehaviorError () throws Exception
 	{
-		String errorNumber = PluginMisbehaviorException.errorNumber ();
+		String errorNumber = PluginMisbehaviorException.ERROR_NUMBER;
 		Key temporaryError = Key.create ("user:/temporary/errorkey");
 		temporaryError.setMeta ("error/number", errorNumber);
 		KDBException exception = new PluginMisbehaviorException (temporaryError);
@@ -63,7 +69,7 @@ public class ExceptionMapperIT
 
 	@Test (expected = ConflictingStateException.class) public void kdbSetWithError_shouldMapConflictError () throws Exception
 	{
-		String errorNumber = ConflictingStateException.errorNumber ();
+		String errorNumber = ConflictingStateException.ERROR_NUMBER;
 		Key temporaryError = Key.create ("user:/temporary/errorkey");
 		temporaryError.setMeta ("error/number", errorNumber);
 		KDBException exception = new ConflictingStateException (temporaryError);
@@ -73,7 +79,7 @@ public class ExceptionMapperIT
 	@Test (expected = SyntacticValidationException.class)
 	public void kdbSetWithError_shouldMapSyntacticValidationError () throws Exception
 	{
-		String errorNumber = SyntacticValidationException.errorNumber ();
+		String errorNumber = SyntacticValidationException.ERROR_NUMBER;
 		Key temporaryError = Key.create ("user:/temporary/errorkey");
 		temporaryError.setMeta ("error/number", errorNumber);
 		KDBException exception = new SyntacticValidationException (temporaryError);
@@ -83,7 +89,7 @@ public class ExceptionMapperIT
 	@Test (expected = SemanticValidationException.class)
 	public void kdbSetWithError_shouldMapSemanticValidationError () throws Exception
 	{
-		String errorNumber = SemanticValidationException.errorNumber ();
+		String errorNumber = SemanticValidationException.ERROR_NUMBER;
 		Key temporaryError = Key.create ("user:/temporary/errorkey");
 		temporaryError.setMeta ("error/number", errorNumber);
 		KDBException exception = new SemanticValidationException (temporaryError);
@@ -122,7 +128,7 @@ public class ExceptionMapperIT
 			return;
 		}
 		Key warningKey = Key.create ("user:/tests/myError");
-		warningKey.setMeta (warningMeta, ResourceException.errorNumber ());
+		warningKey.setMeta (warningMeta, ResourceException.ERROR_NUMBER);
 		final KeySet ks = KeySet.create (10, KeySet.KS_END);
 		ks.append (warningKey);
 		errorPlugin.set (ks, parentKey);
@@ -141,9 +147,9 @@ public class ExceptionMapperIT
 			return;
 		}
 		Key warningKey = Key.create ("user:/tests/myError");
-		warningKey.setMeta (warningMeta, SemanticValidationException.errorNumber ());
+		warningKey.setMeta (warningMeta, SemanticValidationException.ERROR_NUMBER);
 		Key errorKey = Key.create ("user:/tests/myError2");
-		errorKey.setMeta (errorMeta, ResourceException.errorNumber ());
+		errorKey.setMeta (errorMeta, ResourceException.ERROR_NUMBER);
 		final KeySet ks = KeySet.create (10, KeySet.KS_END);
 		ks.append (warningKey);
 		ks.append (errorKey);
@@ -155,7 +161,7 @@ public class ExceptionMapperIT
 		{
 			assertEquals (e.getWarnings ().size (), 1);
 			assertTrue (e instanceof ResourceException);
-			assertEquals (e.getWarnings ().iterator ().next ().getWarningNumber (), SemanticValidationException.errorNumber ());
+			assertEquals (e.getWarnings ().iterator ().next ().getWarningNumber (), SemanticValidationException.ERROR_NUMBER);
 			return;
 		}
 		throw new RuntimeException ("Exception did not trigger");

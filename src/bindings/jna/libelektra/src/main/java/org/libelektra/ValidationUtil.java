@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Utility class for parameter validation
+ * Utility class for parameter and native API return value validation
  */
 class ValidationUtil
 {

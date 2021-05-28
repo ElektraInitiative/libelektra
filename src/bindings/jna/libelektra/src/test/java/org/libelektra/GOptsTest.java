@@ -7,7 +7,6 @@ import static org.libelektra.Key.KeyNewArgumentTag.KEY_META;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.libelektra.exception.KDBException;
 
 public class GOptsTest
 {

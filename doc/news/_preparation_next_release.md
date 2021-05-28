@@ -162,42 +162,22 @@ you up to date with the multi-language support provided by Elektra.
   - Please revisit the documentation for `Key::release` and `KeySet::release` for recommended resource release handling
 - Introduced multiple exceptions when native API calls fail - see updated java doc for details
 - Introduced early parameter validation for values which would otherwise lead to unspecific errors in native API calls
+- Several under the hood improvements
 - Update `Key` API introducing the following changes:
   - Extracted exceptions from `Key` class
+  - Fixed `key::getCurrentMeta`
   - Moved `Elektra.KeyNewArgumentFlags` to `Key.KeyNewArgumentTag`
   - Changed return value from `int` to `boolean` for:
   - Removed unused `KeyTypeConversionException`
-  - Introduced `KeyReleasedException` being thrown when a release `Key` is being accessed
+  - Introduced `KeyReleasedException` being thrown when a released `Key` is being accessed
   - Introduced `KeyMetaException`
   - Renamed `KeyInvalidNameException` to `KeyNameException`
   - Renamed `KeyTypeMismatchException` to `KeyBinaryTypeNotSupportedException`
-- Introduced `KeySetReleasedException` being thrown when a released `KeySet` is being accessed
-- Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
-
-  - `KeySet::lookup*` now returns `Optional<Key>`
-  - `Key::getMeta` now returns `Optional<Key>`
-  - Example:
-    ```java
-    // checking whether the key has been found BEFORE API change
-    Key found = ks.lookup("/some/key");
-    if (found != null) {
-      // process found key
-    }
-    ```
-    ```java
-    // checking whether the key has been found AFTER API change
-    ks.lookup("/some/key").ifPresent(k -> // process found key );
-    ```
-
-* Removed `Key::isNull`
-  - `KeyReleasedException` is now being thrown when a release `Key` is being accessed
-  - `Key`s with now bacing native key pointer cannot be created anymore
-* Updated tests accordingly
   - Removed `Key::isNull`
-    - `KeyReleasedException` is now being thrown when a release `Key` is being accessed
-    - `Key`s with now bacing native key pointer cannot be created anymore
+    - `KeyReleasedException` is now being thrown when a released (= previously `isNull`) `Key` is being accessed
+    - `Key`s with no backing native key pointer cannot be created anymore
 - Updated `KeySet` API introducing the following changes:
-  - Introduced `KeySetReleasedException` being thrown when a release `KeySet` is being accessed
+  - Introduced `KeySetReleasedException` being thrown when a released `KeySet` is being accessed
   - Introduced `KeySetAppendException`
   - Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
     - `KeySet::lookup*` now returns `Optional<Key>`
@@ -214,6 +194,9 @@ you up to date with the multi-language support provided by Elektra.
       // checking whether the key has been found AFTER API change
       ks.lookup("/some/key").ifPresent(k -> // process found key );
       ```
+- Updated `KDB` API introducing the following changes:
+  - Introduced `KDBCLosedException` being thrown when a closed `KDB` session is being accessed
+  - Introduced `KeySet KDB::get(Key parentKey)`
 - Updated tests accordingly
 
 _(Michael Tucek)_

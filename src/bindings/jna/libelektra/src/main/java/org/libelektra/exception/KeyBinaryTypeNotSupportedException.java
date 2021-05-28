@@ -9,6 +9,5 @@ import org.libelektra.Key;
  */
 public class KeyBinaryTypeNotSupportedException extends KeyException
 {
-
 	private static final long serialVersionUID = 1L;
 }
