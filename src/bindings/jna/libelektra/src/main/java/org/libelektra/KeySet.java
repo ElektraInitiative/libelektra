@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.libelektra.exception.KeySetAppendException;
 import org.libelektra.exception.KeySetReleasedException;
@@ -29,6 +30,49 @@ public class KeySet implements Iterable<Key>
 	@Nullable private Pointer pointer;
 
 	@Nullable private Cleaner.Cleanable cleanable;
+
+	/**
+	 * Constructs a new {@link KeySet} with the specified content<br>
+	 * <br>
+	 * Example: KeySet keySet = KeySet.create(10, Key.create("A"), Key.create("B"));
+	 *
+	 * @param alloc Hint indicating the expected size of the key set
+	 * @param args  List of initial arguments for the key set. Example:<br>
+	 *              new Key(...), new Key(...), existing_key_reference,
+	 *              KeySet.KS_END
+	 * @return New key set with the specified initial data
+	 * @see #release()
+	 */
+	@Nonnull public static KeySet create (int alloc, Object... args)
+	{
+		int i = 0;
+		for (i = 0; i < args.length; ++i)
+		{
+			if (args[i] instanceof Key)
+			{
+				Key k = (Key) args[i];
+				args[i] = k.getPointer ();
+			}
+		}
+		if (args.length > 0 && args[i - 1] != KeySet.KS_END)
+		{
+			Object[] sanitized = Arrays.copyOf (args, args.length + 1);
+			sanitized[i] = KeySet.KS_END;
+			return new KeySet (Elektra.INSTANCE.ksNew (alloc > sanitized.length ? alloc : sanitized.length, sanitized));
+		}
+		return new KeySet (Elektra.INSTANCE.ksNew (alloc, args));
+	}
+
+	/**
+	 * Constructs an empty {@link KeySet} with a default allocation hint of 16
+	 *
+	 * @return Newly allocated key set
+	 * @see #release()
+	 */
+	@Nonnull public static KeySet create ()
+	{
+		return create (16);
+	}
 
 	/**
 	 * Constructor associating a new {@link KeySet} instance with a native pointer
@@ -74,57 +118,15 @@ public class KeySet implements Iterable<Key>
 	}
 
 	/**
-	 * Constructs a new {@link KeySet} with the specified content<br>
-	 * <br>
-	 * Example: KeySet keySet = KeySet.create(10, Key.create("A"), Key.create("B"));
-	 *
-	 * @param alloc Hint indicating the expected size of the key set
-	 * @param args  List of initial arguments for the key set. Example:<br>
-	 *              new Key(...), new Key(...), existing_key_reference,
-	 *              KeySet.KS_END
-	 * @return New key set with the specified initial data
-	 * @see #release()
-	 */
-	public static KeySet create (int alloc, Object... args)
-	{
-		int i = 0;
-		for (i = 0; i < args.length; ++i)
-		{
-			if (args[i] instanceof Key)
-			{
-				Key k = (Key) args[i];
-				args[i] = k.getPointer ();
-			}
-		}
-		if (args.length > 0 && args[i - 1] != KeySet.KS_END)
-		{
-			Object[] sanitized = Arrays.copyOf (args, args.length + 1);
-			sanitized[i] = KeySet.KS_END;
-			return new KeySet (Elektra.INSTANCE.ksNew (alloc > sanitized.length ? alloc : sanitized.length, sanitized));
-		}
-		return new KeySet (Elektra.INSTANCE.ksNew (alloc, args));
-	}
-
-	/**
-	 * Constructs an empty {@link KeySet} with a default allocation hint of 16
-	 *
-	 * @return Newly allocated key set
-	 * @see #release()
-	 */
-	public static KeySet create ()
-	{
-		return create (16);
-	}
-
-	/**
 	 * Clean-up method to release key set reference by trying to free the native
 	 * reference<br>
 	 * <br>
 	 * Call this method if you have obtained a {@link KeySet} via any of its public
-	 * methods and you do not longer need it. If you do not manually release such
-	 * {@link KeySet key sets}, they will get cleaned up by garbage collection as
-	 * soon as they get phantom reachable. Therefore its encouraged to release
-	 * {@link KeySet key set instances} as soon as you do not use them anymore.
+	 * methods or {@link KDB#get(Key)} and you do not longer need it. If you do not
+	 * manually release such {@link KeySet key sets}, they will get cleaned up by
+	 * garbage collection as soon as they get phantom reachable. Therefore its
+	 * encouraged to release {@link KeySet key set instances} as soon as you do not
+	 * use them anymore.
 	 */
 	public void release ()
 	{
@@ -172,7 +174,7 @@ public class KeySet implements Iterable<Key>
 	 *                                 released
 	 * @see #release()
 	 */
-	public KeySet dup ()
+	@Nonnull public KeySet dup ()
 	{
 		return new KeySet (Elektra.INSTANCE.ksDup (getPointer ()));
 	}
@@ -224,7 +226,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
 	 *                                  released
 	 */
-	public KeySet append (Key key)
+	@Nonnull public KeySet append (Key key)
 	{
 		argNotNull (key, "Key 'key'");
 		if (Elektra.INSTANCE.ksAppendKey (getPointer (), key.getPointer ()) <= 0)
@@ -239,12 +241,12 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @param keySet Source {@link KeySet} to append all of its {@link Key keys}
 	 * @return This {@link KeySet}, enabling a fluent interface
-	 * @throws KeySetReleasedException     if this {@link KeySet} or the specified
-	 *                                     {@code keySet} has already been released
-	 * @throws IllegalArgumentException    if {@code keySet} is {@code null}
-	 * @throws KeySetAppendException if adding a key failed
+	 * @throws KeySetReleasedException  if this {@link KeySet} or the specified
+	 *                                  {@code keySet} has already been released
+	 * @throws IllegalArgumentException if {@code keySet} is {@code null}
+	 * @throws KeySetAppendException    if adding a key failed
 	 */
-	public KeySet append (KeySet keySet)
+	@Nonnull public KeySet append (KeySet keySet)
 	{
 		argNotNull (keySet, "KeySet 'keySet'");
 		Iterator<Key> iter = keySet.iterator ();
@@ -269,7 +271,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws IllegalArgumentException if {@code cutpoint} is {@code null}
 	 * @see #release()
 	 */
-	public KeySet cut (Key cutpoint)
+	@Nonnull public KeySet cut (Key cutpoint)
 	{
 		argNotNull (cutpoint, "Key 'cutpoint'");
 		return new KeySet (Elektra.INSTANCE.ksCut (getPointer (), cutpoint.getPointer ()));
@@ -285,7 +287,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws IndexOutOfBoundsException if position is out of bounds
 	 * @see Key#release()
 	 */
-	public Key remove (int cursor)
+	@Nonnull public Key remove (int cursor)
 	{
 		return checkKeyPointer (Elektra.INSTANCE.elektraKsPopAtCursor (getPointer (), cursor), IndexOutOfBoundsException::new);
 	}
@@ -299,7 +301,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws NoSuchElementException  if key set is empty
 	 * @see Key#release()
 	 */
-	public Key head ()
+	@Nonnull public Key head ()
 	{
 		return checkKeyPointer (Elektra.INSTANCE.ksHead (getPointer ()), NoSuchElementException::new);
 	}
@@ -313,7 +315,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws NoSuchElementException  if key set is empty
 	 * @see Key#release()
 	 */
-	public Key tail ()
+	@Nonnull public Key tail ()
 	{
 		return checkKeyPointer (Elektra.INSTANCE.ksTail (getPointer ()), NoSuchElementException::new);
 	}
@@ -328,11 +330,10 @@ public class KeySet implements Iterable<Key>
 	 * @throws IndexOutOfBoundsException if position is out of bounds
 	 * @see Key#release()
 	 */
-	public Key at (int cursor)
+	@Nonnull public Key at (int cursor)
 	{
 		return checkKeyPointer (Elektra.INSTANCE.ksAtCursor (getPointer (), cursor), IndexOutOfBoundsException::new);
 	}
-
 
 	/**
 	 * Search for a key in the key set
@@ -344,7 +345,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws IllegalArgumentException if {@code key} is {@code null}
 	 * @see Key#release()
 	 */
-	public Optional<Key> lookup (Key find)
+	@Nonnull public Optional<Key> lookup (Key find)
 	{
 		return lookup (find, 0);
 	}
@@ -360,7 +361,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws IllegalArgumentException if {@code find} is {@code null}
 	 * @see Key#release()
 	 */
-	public Optional<Key> lookup (Key find, int options)
+	@Nonnull public Optional<Key> lookup (Key find, int options)
 	{
 		argNotNull (find, "Key 'find'");
 		return Key.create (Elektra.INSTANCE.ksLookup (getPointer (), find.getPointer (), options));
@@ -377,7 +378,7 @@ public class KeySet implements Iterable<Key>
 	 *                                  blank}
 	 * @see Key#release()
 	 */
-	public Optional<Key> lookup (String find)
+	@Nonnull public Optional<Key> lookup (String find)
 	{
 		return lookup (find, 0);
 	}
@@ -394,7 +395,7 @@ public class KeySet implements Iterable<Key>
 	 *                                  blank}
 	 * @see Key#release()
 	 */
-	public Optional<Key> lookup (String find, int options)
+	@Nonnull public Optional<Key> lookup (String find, int options)
 	{
 		argNotNullOrBlank (find, "String 'find'");
 		return Key.create (Elektra.INSTANCE.ksLookupByName (getPointer (), find, options));
@@ -405,7 +406,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws KeySetReleasedException if this {@link KeySet} has already been
 	 *                                 released
 	 */
-	protected Pointer getPointer ()
+	@Nonnull protected Pointer getPointer ()
 	{
 		if (pointer == null)
 		{

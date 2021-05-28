@@ -74,7 +74,7 @@ public class PluginLoader
 		}
 
 		Key error = Key.create (Key.KEY_LOCAL_NAME);
-		error.setMeta ("error/number", InstallationException.errorNumber ());
+		error.setMeta ("error/number", InstallationException.ERROR_NUMBER);
 		error.setMeta ("error/reason", String.format ("I could not find java plugin '%s'", name));
 		throw new InstallationException (error);
 	}

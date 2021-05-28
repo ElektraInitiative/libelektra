@@ -5,9 +5,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import java.util.ArrayList;
 import java.util.List;
-import org.libelektra.exception.ExceptionMapperService;
 import org.libelektra.exception.InstallationException;
-import org.libelektra.exception.KDBException;
 import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeySetReleasedException;
 
@@ -36,7 +34,7 @@ public class NativePlugin implements Plugin
 		if (elektraPlugin == null)
 		{
 			Key temporaryError = Key.create ("user:/temporary/errorkey");
-			temporaryError.setMeta ("error/number", InstallationException.errorNumber ());
+			temporaryError.setMeta ("error/number", InstallationException.ERROR_NUMBER);
 			temporaryError.setMeta ("error/reason", String.format ("I could not find plugin '%s'", pluginName));
 			throw new InstallationException (temporaryError);
 		}
@@ -113,7 +111,7 @@ public class NativePlugin implements Plugin
 		int returnValue = elektraPlugin.kdbSet.invoke (elektraPlugin, keySet.getPointer (), errorKey.getPointer ());
 		if (returnValue == -1)
 		{
-			throw ExceptionMapperService.getMappedException (errorKey);
+			throw KDBException.getMappedException (errorKey);
 		}
 		return returnValue;
 	}
@@ -136,7 +134,7 @@ public class NativePlugin implements Plugin
 		int returnValue = elektraPlugin.kdbGet.invoke (elektraPlugin, keySet.getPointer (), errorKey.getPointer ());
 		if (returnValue == -1)
 		{
-			throw ExceptionMapperService.getMappedException (errorKey);
+			throw KDBException.getMappedException (errorKey);
 		}
 		return returnValue;
 	}

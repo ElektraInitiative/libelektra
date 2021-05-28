@@ -1,56 +1,83 @@
 package org.libelektra;
 
-import org.libelektra.exception.KDBException;
+import javax.annotation.Nonnull;
 
 /**
- * This is a Java representation of a plugin.
+ * Java representation of an Elektra plugin
  */
 public interface Plugin {
 
 	/**
-	 * Gets the config which was used to configure the plugin
-	 *
-	 * @return A KeySet containing the configuration of the plugin
+	 * Return value for plugin methods: An error occurred inside the plugin function
 	 */
-	KeySet getConfig ();
+	static final int PLUGIN_STATUS_ERROR = -1;
 
 	/**
-	 * Calls the open function of the plugin.
-	 *
-	 * @param conf     a configuration keyset
-	 * @param errorKey a key
-	 * @return the plugin's return value for open
+	 * Return value for plugin methods: Everything went fine
 	 */
-	int open (KeySet conf, Key errorKey);
+	static final int PLUGIN_STATUS_SUCCESS = 1;
 
 	/**
-	 * Calls the get function of the plugin.
+	 * Return value for plugin methods: Everything went fine and the function **did not** update the given key set / configuration
+	 */
+	static final int PLUGIN_STATUS_NO_UPDATE = 0;
+
+	/**
+	 * Return value for plugin methods: Everything went fine and a cache was hit
+	 */
+	static final int PLUGIN_STATUS_CACHE_HIT = 2;
+
+	/**
+	 * @return {@link KeySet} containing the plugin configuration
+	 */
+	@Nonnull KeySet getConfig ();
+
+	/**
+	 * @return Name of the plugin
+	 */
+	@Nonnull String getName ();
+
+	/**
+	 * Calls the plugin's open function
 	 *
-	 * @param ks        a keyset
-	 * @param parentKey a key
-	 * @throws KDBException when Elektra could not set the keyset
+	 * @param config   Plugin configuration key set
+	 * @param errorKey Used to store warnings and error information
+	 * @return Plugin's return value for open
+	 * @see #PLUGIN_STATUS_SUCCESS
+	 * @see #PLUGIN_STATUS_ERROR
+	 */
+	int open (KeySet config, Key errorKey);
+
+	/**
+	 * Calls the plugin's get function
+	 *
+	 * @param keySet    Key set to store the retrieved keys in
+	 * @param parentKey Parent key for retrieval
+	 * @throws KDBException if Elektra could not set the key set
 	 * @return the plugin's return value for get
+	 * @see #PLUGIN_STATUS_SUCCESS
+	 * @see #PLUGIN_STATUS_ERROR
 	 */
-	int get (KeySet ks, Key parentKey) throws KDBException;
+	int get (KeySet keySet, Key parentKey) throws KDBException;
 
 	/**
 	 * Calls the set function of the plugin.
 	 *
-	 * @param ks        a keyset
+	 * @param keySet    a keyset
 	 * @param parentKey a key
 	 * @throws KDBException when Elektra could not set the keyset
 	 * @return the plugin's return value for set
 	 */
-	int set (KeySet ks, Key parentKey) throws KDBException;
+	int set (KeySet keySet, Key parentKey) throws KDBException;
 
 	/**
 	 * Calls the error function of the plugin.
 	 *
-	 * @param ks        a keyset
+	 * @param keySet    a keyset
 	 * @param parentKey a key
 	 * @return the plugin's return value for error
 	 */
-	int error (KeySet ks, Key parentKey);
+	int error (KeySet keySet, Key parentKey);
 
 	/**
 	 * Calls the close function of the plugin.
@@ -59,11 +86,4 @@ public interface Plugin {
 	 * @return the plugin's return value for close
 	 */
 	int close (Key parentKey);
-
-	/**
-	 * Returns the plugin name
-	 *
-	 * @return plugin name
-	 */
-	String getName ();
 }

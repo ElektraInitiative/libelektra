@@ -1,25 +1,26 @@
-package org.libelektra.exception;
+package org.libelektra;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
-import org.libelektra.Key;
+import org.libelektra.exception.InstallationException;
+import org.libelektra.exception.InternalException;
 
 public class KDBExceptionTest
 {
 
 	@Test public void KdbException_shouldCorrectlyExtractMetadata ()
 	{
-		String errorNumber = InstallationException.errorNumber ();
-		String configFile = "file.conf";
-		String mountpoint = "system:/test";
-		String file = "kdb.c";
-		String line = "50";
-		String module = "kdb";
-		String reason = "This is a testerror";
+		var errorNumber = InstallationException.ERROR_NUMBER;
+		var configFile = "file.conf";
+		var mountpoint = "system:/test";
+		var file = "kdb.c";
+		var line = "50";
+		var module = "kdb";
+		var reason = "This is a testerror";
 
-		Key errorKey = Key.create ("user:/temporary/errorkey");
+		var errorKey = Key.create ("user:/temporary/errorkey");
 		errorKey.setMeta ("error/number", errorNumber);
 		errorKey.setMeta ("error/configfile", configFile);
 		errorKey.setMeta ("error/mountpoint", mountpoint);
@@ -36,14 +37,14 @@ public class KDBExceptionTest
 		assertEquals (module, exception.getModule ());
 		assertEquals (reason, exception.getReason ());
 
-		String expectedDebugInformation = String.format ("At: %s:%s", file, line);
+		var expectedDebugInformation = String.format (KDBException.MSG_DEBUGINFO, file, line);
 		assertEquals (expectedDebugInformation, exception.getDebugInformation ());
 
 		StringBuilder builder = new StringBuilder ();
-		builder.append (String.format ("Sorry, module %s issued error %s:", module, errorNumber)).append ("\n");
+		builder.append (String.format (KDBException.MSG_MODULE_ERRROR_NUMBER, module, errorNumber)).append ("\n");
 		builder.append (reason).append ("\n");
-		builder.append ("Configfile: ").append (configFile).append ("\n");
-		builder.append ("Mountpoint: ").append (mountpoint).append ("\n");
+		builder.append (KDBException.MSG_CONFIGFILE).append (configFile).append ("\n");
+		builder.append (KDBException.MSG_MOUNTPOINT).append (mountpoint).append ("\n");
 		builder.append (expectedDebugInformation).append ("\n");
 		String expectedErrorMessage = builder.toString ();
 
@@ -54,11 +55,11 @@ public class KDBExceptionTest
 
 	@Test public void KdbException_shouldCorrectlyProvideConfigFileIfEmpty ()
 	{
-		String errorNumber = InstallationException.errorNumber ();
-		String reason = "This is a testerror";
-		String errorKeyName = "user:/temporary/errorkey";
+		var errorNumber = InstallationException.ERROR_NUMBER;
+		var reason = "This is a testerror";
+		var errorKeyName = "user:/temporary/errorkey";
 
-		Key errorKey = Key.create (errorKeyName);
+		var errorKey = Key.create (errorKeyName);
 		errorKey.setMeta ("error/number", errorNumber);
 		errorKey.setMeta ("error/reason", reason);
 
@@ -68,7 +69,7 @@ public class KDBExceptionTest
 
 	@Test public void KdbException_shouldCorrectlyDecodeWarnings ()
 	{
-		Key errorKey = Key.create ("user:/temporary/warningkey");
+		var errorKey = Key.create ("user:/temporary/warningkey");
 		errorKey.setMeta ("warnings", "#1");
 		errorKey.setMeta ("warnings/#0/number", "C01100");
 		errorKey.setMeta ("warnings/#0/reason", "Test reason");
@@ -102,5 +103,36 @@ public class KDBExceptionTest
 		assertEquals ("At: testfile 2:1", exception.getWarnings ().get (1).getDebugInformation ());
 		assertEquals ("test2", exception.getWarnings ().get (1).getMountpoint ());
 		assertEquals ("testconfig 2", exception.getWarnings ().get (1).getConfigFile ());
+	}
+
+	@Test public void warningEntry_shouldBePardsedCorrectly ()
+	{
+		var errorNumber = InstallationException.ERROR_NUMBER;
+		var configFile = "file.conf";
+		var mountpoint = "system:/test";
+		var file = "kdb.c";
+		var line = "50";
+		var module = "kdb";
+		var reason = "This is a testerror";
+
+		var warningKey = Key.create ("user:/temporary/errorkey");
+		warningKey.setMeta ("warnings/#0/number", errorNumber);
+		warningKey.setMeta ("warnings/#0/configfile", configFile);
+		warningKey.setMeta ("warnings/#0/mountpoint", mountpoint);
+		warningKey.setMeta ("warnings/#0/file", file);
+		warningKey.setMeta ("warnings/#0/line", line);
+		warningKey.setMeta ("warnings/#0/module", module);
+		warningKey.setMeta ("warnings/#0/reason", reason);
+
+		var warningEntry = new KDBException.WarningEntry (warningKey, 0);
+
+		assertEquals (errorNumber, warningEntry.getWarningNumber ());
+		assertEquals (configFile, warningEntry.getConfigFile ());
+		assertEquals (mountpoint, warningEntry.getMountpoint ());
+		assertEquals (module, warningEntry.getModule ());
+		assertEquals (reason, warningEntry.getReason ());
+
+		var expectedDebugInformation = String.format (KDBException.MSG_DEBUGINFO, file, line);
+		assertEquals (expectedDebugInformation, warningEntry.getDebugInformation ());
 	}
 }

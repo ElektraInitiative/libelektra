@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.libelektra.exception.KeyBinaryTypeNotSupportedException;
 import org.libelektra.exception.KeyException;
@@ -120,6 +121,98 @@ public class Key implements Iterable<String>
 	@Nullable private Cleaner.Cleanable cleanable;
 
 	/**
+	 * Constructs a new {@link Key} instance associated with a JNA pointer
+	 *
+	 * @param pointer Optional JNA {@link Pointer} to key
+	 * @return New {@link Key} instance if {@code pointer} is non-null,
+	 *         {@link Optional#empty()} otherwise
+	 * @see #release()
+	 */
+	@Nonnull protected static Optional<Key> create (@Nullable Pointer pointer)
+	{
+		return Optional.ofNullable (pointer).map (Key::new);
+	}
+
+	/**
+	 * Constructs a new {@link Key} with the specified content and arguments<br>
+	 *
+	 * @param name Key name; first part of key-value pair
+	 * @param args Arguments used for key value<br>
+	 *             Example:<br>
+	 *             {@link KeyNewArgumentTag#KEY_VALUE}, "custom key value",
+	 *             {@link KeyNewArgumentTag#KEY_END}
+	 * @return New key
+	 * @throws KeyNameException if the key name is invalid
+	 * @see #KEY_LOCAL_NAME
+	 * @see #release()
+	 */
+	@Nonnull protected static Key create (String name, Object... args)
+	{
+		return create (Elektra.INSTANCE.keyNew (
+				       name, Arrays.stream (args)
+						     .map (o -> (o instanceof KeyNewArgumentTag) ? ((KeyNewArgumentTag) o).value : o)
+						     .toArray ()))
+			.orElseThrow (KeyNameException::new);
+	}
+
+	/**
+	 * Constructs a new {@link Key} with the specified content and arguments<br>
+	 *
+	 * @param name  Key name; first part of key-value pair
+	 * @param value Key value; will be determine from the object by calling
+	 *              {@link Object#toString()}, null is supported too
+	 * @param meta  Metadata that should be added to this key, null keys will be
+	 *              filtered away
+	 * @return New key
+	 * @throws KeyNameException if the key name is invalid
+	 * @see #KEY_LOCAL_NAME
+	 * @see #release()
+	 */
+	@Nonnull public static Key create (String name, @Nullable Object value, Key... meta)
+	{
+		int size = 0;
+		for (Key m : meta)
+		{
+			if (m != null)
+			{
+				size++;
+			}
+		}
+		// 3 -> KEY_VALUE, value, KEY_END, 4 -> one more for KEY_META
+		size += size > 0 ? 4 : 3;
+		Object[] args = new Object[size];
+		int cur = 0;
+		args[cur++] = KEY_VALUE;
+		args[cur++] = value != null ? value.toString () : null;
+		if (size > 3)
+		{
+			args[cur++] = KEY_META;
+			for (Key m : meta)
+			{
+				args[cur++] = m;
+			}
+		}
+		args[cur] = KEY_END;
+		return create (name, args);
+	}
+
+	/**
+	 * Basic constructor of key class
+	 *
+	 * @param name Key name; first part of key-value pair
+	 * @param meta Metadata that should be added to this key. Will filter null
+	 *             values.
+	 * @return New key object
+	 * @throws KeyNameException if the key name is invalid
+	 * @see #KEY_LOCAL_NAME
+	 * @see #release()
+	 */
+	@Nonnull public static Key create (String name, Key... meta)
+	{
+		return create (name, null, meta);
+	}
+
+	/**
 	 * Constructor associating a new {@link Key} instance with a native pointer in
 	 * long format
 	 *
@@ -166,98 +259,6 @@ public class Key implements Iterable<String>
 		this.pointer = pointer;
 		ReferenceCleaner.keyWrapperCreated (this);
 		cleanable = ReferenceCleaner.registerKeyCleanUp (this);
-	}
-
-	/**
-	 * Constructs a new {@link Key} instance associated with a JNA pointer
-	 *
-	 * @param pointer Optional JNA {@link Pointer} to key
-	 * @return New {@link Key} instance if {@code pointer} is non-null,
-	 *         {@link Optional#empty()} otherwise
-	 * @see #release()
-	 */
-	protected static Optional<Key> create (@Nullable Pointer pointer)
-	{
-		return Optional.ofNullable (pointer).map (Key::new);
-	}
-
-	/**
-	 * Constructs a new {@link Key} with the specified content and arguments<br>
-	 *
-	 * @param name Key name; first part of key-value pair
-	 * @param args Arguments used for key value<br>
-	 *             Example:<br>
-	 *             {@link KeyNewArgumentTag#KEY_VALUE}, "custom key value",
-	 *             {@link KeyNewArgumentTag#KEY_END}
-	 * @return New key
-	 * @throws KeyNameException if the key name is invalid
-	 * @see #KEY_LOCAL_NAME
-	 * @see #release()
-	 */
-	protected static Key create (String name, Object... args)
-	{
-		return create (Elektra.INSTANCE.keyNew (
-				       name, Arrays.stream (args)
-						     .map (o -> (o instanceof KeyNewArgumentTag) ? ((KeyNewArgumentTag) o).value : o)
-						     .toArray ()))
-			.orElseThrow (KeyNameException::new);
-	}
-
-	/**
-	 * Constructs a new {@link Key} with the specified content and arguments<br>
-	 *
-	 * @param name  Key name; first part of key-value pair
-	 * @param value Key value; will be determine from the object by calling
-	 *              {@link Object#toString()}, null is supported too
-	 * @param meta  Metadata that should be added to this key, null keys will be
-	 *              filtered away
-	 * @return New key
-	 * @throws KeyNameException if the key name is invalid
-	 * @see #KEY_LOCAL_NAME
-	 * @see #release()
-	 */
-	public static Key create (String name, @Nullable Object value, Key... meta)
-	{
-		int size = 0;
-		for (Key m : meta)
-		{
-			if (m != null)
-			{
-				size++;
-			}
-		}
-		// 3 -> KEY_VALUE, value, KEY_END, 4 -> one more for KEY_META
-		size += size > 0 ? 4 : 3;
-		Object[] args = new Object[size];
-		int cur = 0;
-		args[cur++] = KEY_VALUE;
-		args[cur++] = value != null ? value.toString () : null;
-		if (size > 3)
-		{
-			args[cur++] = KEY_META;
-			for (Key m : meta)
-			{
-				args[cur++] = m;
-			}
-		}
-		args[cur] = KEY_END;
-		return create (name, args);
-	}
-
-	/**
-	 * Basic constructor of key class
-	 *
-	 * @param name Key name; first part of key-value pair
-	 * @param meta Metadata that should be added to this key. Will filter null
-	 *             values.
-	 * @return New key object
-	 * @throws KeyNameException if the key name is invalid
-	 * @see #KEY_LOCAL_NAME
-	 * @see #release()
-	 */
-	public static Key create (String name, Key... meta)
-	{
-		return create (name, null, meta);
 	}
 
 	/**
@@ -404,7 +405,7 @@ public class Key implements Iterable<String>
 	 * @throws KeyReleasedException               if this {@link Key} has already
 	 *                                            been released
 	 */
-	public String getString () throws KeyBinaryTypeNotSupportedException
+	@Nonnull public String getString () throws KeyBinaryTypeNotSupportedException
 	{
 		if (isBinary ())
 		{
@@ -511,7 +512,7 @@ public class Key implements Iterable<String>
 	{
 		StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
 		setMeta ("error", "number description module file line function reason");
-		setMeta ("error/number", PluginMisbehaviorException.errorNumber ());
+		setMeta ("error/number", PluginMisbehaviorException.ERROR_NUMBER);
 		setMeta ("error/description", "jni/java error");
 		setMeta ("error/module", e[1].getClassName () + " " + e[1].getMethodName ());
 		setMeta ("error/file", e[1].getFileName ());
@@ -553,7 +554,7 @@ public class Key implements Iterable<String>
 			setMeta (Key.WARNINGS, builder.substring (10));
 		}
 		setMeta (builder + "", "number description module file line function reason");
-		setMeta (builder + "/number", PluginMisbehaviorException.errorNumber ());
+		setMeta (builder + "/number", PluginMisbehaviorException.ERROR_NUMBER);
 		setMeta (builder + "/description", "jni/java warning");
 		setMeta (builder + "/module", e[1].getClassName () + " " + e[1].getMethodName ());
 		setMeta (builder + "/file", e[1].getFileName ());
@@ -573,7 +574,7 @@ public class Key implements Iterable<String>
 	 * @see #copy(Key, int)
 	 * @see #release()
 	 */
-	public Key dup ()
+	@Nonnull public Key dup ()
 	{
 		return dup (KEY_CP_ALL);
 	}
@@ -591,7 +592,7 @@ public class Key implements Iterable<String>
 	 * @see #copy(Key, int)
 	 * @see #release()
 	 */
-	public Key dup (int flags)
+	@Nonnull public Key dup (int flags)
 	{
 		Pointer result = Elektra.INSTANCE.keyDup (getPointer (), flags);
 		if (result == null)
@@ -677,7 +678,7 @@ public class Key implements Iterable<String>
 	 * @see #currentMeta()
 	 * @see #release()
 	 */
-	public Key nextMeta ()
+	@Nonnull public Key nextMeta ()
 	{
 		return checkKeyPointer (Elektra.INSTANCE.keyNextMeta (getPointer ()), NoSuchElementException::new);
 	}
@@ -693,7 +694,7 @@ public class Key implements Iterable<String>
 	 * @see #nextMeta()
 	 * @see #release()
 	 */
-	public Key currentMeta ()
+	@Nonnull public Key currentMeta ()
 	{
 		return checkKeyPointer (Elektra.INSTANCE.keyCurrentMeta (getPointer ()), NoSuchElementException::new);
 	}
@@ -761,7 +762,7 @@ public class Key implements Iterable<String>
 	 *                                  {@link String#isBlank() blank}
 	 * @see #release()
 	 */
-	public Optional<Key> getMeta (String metaName)
+	@Nonnull public Optional<Key> getMeta (String metaName)
 	{
 		argNotNullOrBlank (metaName, "String 'metaName'");
 		return create (Elektra.INSTANCE.keyGetMeta (getPointer (), metaName));
@@ -911,7 +912,7 @@ public class Key implements Iterable<String>
 	 * @return Key name (key part of "key-value" pair)
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public String getName ()
+	@Nonnull public String getName ()
 	{
 		return Elektra.INSTANCE.keyName (getPointer ());
 	}
@@ -950,7 +951,7 @@ public class Key implements Iterable<String>
 	 * @return Key's base name as String
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public String getBaseName ()
+	@Nonnull public String getBaseName ()
 	{
 		return Elektra.INSTANCE.keyBaseName (getPointer ());
 	}
@@ -1019,7 +1020,7 @@ public class Key implements Iterable<String>
 	 * @return JNA pointer to the native pointer for this key
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	protected Pointer getPointer ()
+	@Nonnull protected Pointer getPointer ()
 	{
 		if (pointer == null)
 		{

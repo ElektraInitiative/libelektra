@@ -7,6 +7,5 @@ import org.libelektra.Key;
  */
 public class KeyReleasedException extends RuntimeException
 {
-
 	private static final long serialVersionUID = 1L;
 }

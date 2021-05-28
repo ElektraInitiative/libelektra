@@ -162,8 +162,10 @@ you up to date with the multi-language support provided by Elektra.
   - Please revisit the documentation for `Key::release` and `KeySet::release` for recommended resource release handling
 - Introduced multiple exceptions when native API calls fail - see updated java doc for details
 - Introduced early parameter validation for values which would otherwise lead to unspecific errors in native API calls
+- Several under the hood improvements
 - Update `Key` API introducing the following changes:
   - Extracted exceptions from `Key` class
+  - Fixed `key::getCurrentMeta`
   - Moved `Elektra.KeyNewArgumentFlags` to `Key.KeyNewArgumentTag`
   - Changed return value from `int` to `boolean` for:
   - Removed unused `KeyTypeConversionException`
@@ -214,6 +216,9 @@ you up to date with the multi-language support provided by Elektra.
       // checking whether the key has been found AFTER API change
       ks.lookup("/some/key").ifPresent(k -> // process found key );
       ```
+- Updated `KDB` API introducing the following changes:
+  - Introduced `KDBCLosedException` being thrown when a closed `KDB` session is being accessed
+  - Introduced `KeySet KDB::get(Key parentKey)`
 - Updated tests accordingly
 
 _(Michael Tucek)_
