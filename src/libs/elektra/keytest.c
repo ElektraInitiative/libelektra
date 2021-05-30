@@ -33,6 +33,11 @@
  * @ingroup key
  * @brief Methods to do various tests on Keys
  *
+ * With exception of the parameters of keyCmp(), the following contract holds for all parameters of type Key:
+ * @pre The Key has been properly initialized via keyNew()
+ * @invariant All parts of the Key remain unchanged
+ * @post All parts of the Key are unchanged
+ *
  * To use them:
  * @code
 #include <kdb.h>

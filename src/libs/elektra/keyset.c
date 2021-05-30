@@ -576,6 +576,11 @@ Key *k2 = keyNew("user:/b", KEY_END);
  * Do not strcmp the keyName() yourself, because
  * the result differs from simple ascii comparison.
  *
+ * @pre The Keys @p k1 and @p k2 have been properly initialized via keyNew() or are NULL
+ * @invariant All parts of the Keys remain unchanged
+ * @post All parts of the Keys are unchanged
+ * @post If the result is 0, @p k1 and @p k2 cannot be used in the same KeySet
+ *
  * @param k1 the first Key to be compared
  * @param k2 the second Key to be compared
  *
