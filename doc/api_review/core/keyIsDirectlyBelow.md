@@ -22,11 +22,11 @@
        - [ ] move description from examples to documentation body
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] add
+       - [x] add
 - [ ] `@post`  
-       - [ ] add
+       - [x] add
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
        - [ ] 'check is below key' -> 'check is directly below key'

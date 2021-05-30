@@ -21,11 +21,11 @@
        - [ ] add description about behavior of namespace comparison
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] add
+       - [x] add
 - [ ] `@post`  
-       - [ ] add
+       - [x] add
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
        - [ ] remove `@return` in favor of `@retval`'s?  
