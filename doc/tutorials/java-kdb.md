@@ -2,8 +2,7 @@
 
 ## Introduction
 
-When programming in Java it is possible to access the key database, changing values of existing keys or adding new ones and a few other things. It is also possible to write plugins for Elektra in Java but we will focus on using the Java
-binding in this tutorial.
+When programming in Java it is possible to access the key database, changing values of existing keys or adding new ones and a few other things. It is also possible to write plugins for Elektra in Java but we will focus on using the Java binding in this tutorial.
 
 ## First Steps
 
@@ -12,109 +11,143 @@ In order to use `kdb` you need to include the dependency in your project. [Here]
 After that you can start loading a `KDB` object as follows:
 
 ```java
-Key key = Key.create("user:/kdbsession/javabinding");
+Key key = Key.create(Key.KEY_LOCAL_NAME);
 try (KDB kdb = KDB.open(key)) {
-    // Your code to manipulate keys
+    // code to manipulate keys
 } catch (KDB.KDBException e) {
     e.printStackTrace();
+} finally {
+    key.release(); // optional clean-up
 }
 ```
 
-Note that `KDB` implements `AutoClosable` which allows [try-with-resouces](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
+Note that `KDB` implements `AutoClosable` which allows [`try-with-resouces`](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
 
-You can also pass a `Key` object with an empty string on the first line. The passed key (`user:/kdbsession/javabinding` in this case) is being used for the session and stores warnings and error information.
+The key being passend to `KDB::open` is used to store warnings and error information. The special key name `Key.KEY_LOCAL_NAME` is used to create a key only used locally for transferring this information. If an error occurs, it will be mapped to the appropriate specialization of `KDBException`.
+
+The following code is equivalent and preferred, if you do not want to reuse an existing key for transferring warnings and error information:
+
+```java
+try (KDB kdb = KDB.open()) {
+    // code to manipulate keys
+} catch (KDB.KDBException e) {
+    e.printStackTrace();
+    e.releaseErrorKey(); // optional clean-up
+}
+```
+
+## A word about releasing native ressources
+
+There are 3 kinds of native resources having to be cleaned up properly to prevent memory leaks: `KeySet`, `Key` and `KDB` or rather their backing native key set, key or KDB session.
+
+Fortunately the only resource you are strictly required to release is `KDB` via either `KDB::close` or `try-with-resouces`. For `KeySet` and `Key` the garbage collector cleans them up automatically using a [`Cleaner`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ref/Cleaner.html). Nonetheless, it might be a good idea to clean up these native resources as soon as they are no longer needed, since we do not have any control of when or if the garbage collector cleans up after us.
 
 ## Fetching keys
 
-First I will show you how you can retrieve a key which is already part of the database. The first thing we need to do is to create a `KeySet` in which our keys will be stored.
+First let's retrieve a key which is already part of the key database. The first thing we need to do is to create a `KeySet` your keys are going to be stored in:
 
 ```java
-KeySet set = KeySet.create();
+var keySet = KeySet.create();
 ```
 
-Now we load all keys and provide a parent key from which all keys below will be loaded
+Now we load all keys located below a sepcific parent key:
 
 ```java
-kdb.get(set, Key.create("user:/"));
+var parentKey = Key.create("user:/");
+kdb.get(keySet, parentKey);
 ```
 
 Now we can simply fetch the desired key's value as follows:
 
 ```java
-String str = set.lookup("user:/my/presaved/key").getString()
+var value = keySet.lookup("user:/my/presaved/key").map(Key::getStringAndRelease).orElseThrow();
 ```
 
 So for example if you had executed the command below via shell, before starting the application:
 
 ```bash
-kdb set user:/my/test it_works!
+kdb set user:/my/presaved/key it_works!
 ```
 
-The method call would return `it_works!`.
+`value` would equals `it_works!`.
 
-```java
-String str = set.lookup("user:/my/test").getString()
-System.out.println(str)    // prints "it works!"
+Afterward, we may clean-up no longer needed native resources:
+
+```
+parentKey.release();
+keySet.release();
 ```
 
 ## Saving Keys
 
-Next I will show you how to save a new key into the database. First we need need to create an empty `KeySet` again. We also **need to fetch** all keys for the namespace before we will be able to save a new key.
+Next let's save a new key to the key database. Again, first we need need to create an empty `KeySet`. We also **need to fetch** all keys for the namespace before we will be able to save a new key.
 
 ```java
-KeySet set = KeySet.create();
-Key namespace = Key.create("user:/");
-kdb.get(set, namespace);    // Fetch all keys for the namespace
-set.append(Key.create("user:/somekey", "myValue"));
-kdb.set(set, key);
+var keyNamespace = Key.create("user:/");
+var keySet = kdb.get(keyNamespace); // fetch all keys for the namespace
+var keyToStore = Key.create("user:/somekey", "myValue");
+keySet.append(keyToStore);
+kdb.set(keySet, keyToStore);
+
+// optional clean-up
+keySet.release();
+keyNamespace.release();
+keyToStore.release();
 ```
 
 If you try to save a key without fetching it beforehand, a `KDBException` will be thrown, telling you to call get before set.
 
-The _user_ namespace is accessible without special rights, but if you try to write to _system_ you will need to have root
-privileges. Take a look at [TESTING.md](/doc/TESTING.md) to see how to access the system namespace as non-root user. This should only be done in testing
-environments though as it is not intended for productive systems.
+The _user_ namespace is accessible without special rights, but if you try to write to _system_ you will need to have root privileges. Take a look at [TESTING.md](/doc/TESTING.md) to see how to access the system namespace as non-root user. This should only be done in testing environments though as it is not intended for productive systems.
 
 ## Examples
 
 ### Traversing Keys in a `KeySet`
 
 ```java
-Key key = Key.create("user:/errors");
-try (KDB kdb = KDB.open(key)) {
-    KeySet set = KeySet.create();
-    Key namespace = Key.create("user:/");     // Select a namespace from which all keys should be fetched
-    kdb.get(set, namespace);                  // Fetch all keys into the set object
-    for (int i = 0; i < set.length(); i++) {  // Traverse the set
-        String keyAndValue = String.format("%s: %s",
-                set.at(i).getName(),          // Fetch the key's name
-                set.at(i).getString());       // Fetch the key's value
-        System.out.println(keyAndValue);
+var keyNamespace = Key.create("user:/");            // select a namespace from which all keys should be fetched
+try (KDB kdb = KDB.open()) {
+    var keySet = kdb.get(keyNamespace);             // fetch all keys int new key set
+    for (int i = 0; i < keySet.length(); i++) {     // traverse the set
+        var currentKey = keySet.at(i);
+        System.out.println(String.format("%s: %s",
+                currentKey.getName(),               // fetch the key's name
+                currentKey.getStringAndRelease())); // fetch the key's value and release the key returned by KeySet::at
     }
+    keySet.release(); // optional clean-up
 } catch (KDB.KDBException e) {
     e.printStackTrace();
+    e.releaseErrorKey(); // optional clean-up
+} finally {
+    keyNamespace.release(); // optional clean-up
 }
 ```
 
-First we create a new `KDB` object and fetch all keys for the desired namespace, in this example the `user` namespace. Since it saves all
-keys in our passed `set` variable we can then iterate through it by a simple for loop.
-The `at(int)` method gives us the key on the corresponding position which we will print out in this example.
+First we create a new `KDB` session and fetch all keys for the desired namespace, in this example the whole `user` namespace. Since all all keys are put in the passed `keySet` variable we can then iterate through it.
+The `at(int)` method return a new `Key` object for the native key with the corresponding position within the `keySet`.
+
+Of course, alternatively a for each loop can be used:
+
+```java
+var keyNamespace = Key.create("user:/");            // select a namespace from which all keys should be fetched
+try (KDB kdb = KDB.open()) {
+    var keySet = kdb.get(keyNamespace);             // fetch all keys int new key set
+    for (var currentKey : keySet) {                 // traverse the set
+        System.out.println(String.format("%s: %s",
+                currentKey.getName(),               // fetch the key's name
+                currentKey.getStringAndRelease())); // fetch the key's value and release the key returned by KeySet::at
+    }
+    keySet.release(); // optional clean-up
+} catch (KDB.KDBException e) {
+    e.printStackTrace();
+    e.releaseErrorKey(); // optional clean-up
+} finally {
+    keyNamespace.release(); // optional clean-up
+}
+```
 
 ### Read Multiple Keys From KDB
 
-[This](../../examples/external/java/read-keys-example) example shows how to read multiple keys. It provides comments for further clarification.
-Before building and running this example, add first your jar file like described [here](../../examples/external/java/read-keys-example/README.md).
-Then build the project with this command from the root directory:
-
-```sh
-mvn clean package
-```
-
-Afterwards run it with (change VERSION in the command below!):
-
-```sh
-java -cp target/read-keys-example-jar-with-dependencies.jar:lib/libelektra-VERSION.jar org.libelektra.app.App
-```
+[This](../../examples/external/java/read-keys-example) example shows how to read multiple keys. It provides comments for further clarification. Further information can be found [here](../../examples/external/java/read-keys-example/README.md).
 
 ## Java Plugin Tutorial
 

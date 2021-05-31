@@ -256,8 +256,6 @@ public interface Elektra extends Library {
 
 	@Nullable Pointer keyCopy (Pointer dest, Pointer source, int flags);
 
-	int keyClear (Pointer key); // not needed
-
 	int keyDel (Pointer key);
 
 	int keyIncRef (Pointer key);
@@ -301,19 +299,15 @@ public interface Elektra extends Library {
 
 	int keyGetNameSize (Pointer key);
 
-	int keyGetName (Pointer key, String returnedName, int maxSize); // not needed
-
 	int keySetName (Pointer key, String newname);
 
 	Pointer keyUnescapedName (Pointer key);
 
 	int keyGetUnescapedNameSize (Pointer key);
 
-	String keyBaseName (Pointer key); // not implemented
+	String keyBaseName (Pointer key);
 
-	int keyGetBaseNameSize (Pointer key); // not implemented
-
-	int keyGetBaseName (Pointer key, String returned, int maxSize); // not needed
+	int keyGetBaseNameSize (Pointer key);
 
 	int keySetBaseName (Pointer key, String baseName);
 
@@ -324,8 +318,6 @@ public interface Elektra extends Library {
 	int keyGetValueSize (Pointer key);
 
 	String keyString (Pointer key);
-
-	int keyGetString (Pointer key, String returnedString, int maxSize); // not needed
 
 	int keySetString (Pointer key, String newString);
 
@@ -340,8 +332,6 @@ public interface Elektra extends Library {
 
 	int ksCopy (Pointer dest, Pointer source);
 
-	int ksClear (Pointer ks); // not needed
-
 	int ksDel (Pointer ks);
 
 	int ksNeedSync (Pointer ks);
@@ -354,13 +344,11 @@ public interface Elektra extends Library {
 
 	@Nullable Pointer ksCut (Pointer ks, Pointer cutpoint);
 
-	// TODO #3137 Also elektraKsPopAtCursor should replace the current ksPop. See
-	// also #3189.
-	Pointer ksPop (Pointer ks);
-
 	Pointer elektraKsPopAtCursor (Pointer ks, int cursor);
 
-	@Deprecated (forRemoval = true) int ksRewind (Pointer ks);
+	// TODO #3171 only imported for rewinding the internal iterator of key sets
+	// being passed to plugins
+	int ksRewind (Pointer ks);
 
 	@Nullable Pointer ksHead (Pointer ks);
 

@@ -8,7 +8,7 @@ public abstract class ValidationException extends KDBException
 	private static final long serialVersionUID = 1L;
 	public static final String ERROR_NUMBER = "C03000";
 
-	public ValidationException (Key k)
+	protected ValidationException (Key k)
 	{
 		super (k);
 	}

@@ -239,23 +239,19 @@ public class KeySet implements Iterable<Key>
 	/**
 	 * Appends keys from key set
 	 *
-	 * @param keySet Source {@link KeySet} to append all of its {@link Key keys}
+	 * @param source Source {@link KeySet} to append all of its {@link Key keys}
 	 * @return This {@link KeySet}, enabling a fluent interface
 	 * @throws KeySetReleasedException  if this {@link KeySet} or the specified
-	 *                                  {@code keySet} has already been released
-	 * @throws IllegalArgumentException if {@code keySet} is {@code null}
-	 * @throws KeySetAppendException    if adding a key failed
+	 *                                  {@code source} has already been released
+	 * @throws IllegalArgumentException if {@code source} is {@code null}
+	 * @throws KeySetAppendException    if appending the {@code source} failed
 	 */
-	@Nonnull public KeySet append (KeySet keySet)
+	@Nonnull public KeySet append (KeySet source)
 	{
-		argNotNull (keySet, "KeySet 'keySet'");
-		Iterator<Key> iter = keySet.iterator ();
-		while (iter.hasNext ())
+		argNotNull (source, "KeySet 'keySet'");
+		if (Elektra.INSTANCE.ksAppend (getPointer (), source.getPointer ()) < 0)
 		{
-			if (Elektra.INSTANCE.ksAppendKey (getPointer (), iter.next ().getPointer ()) <= 0)
-			{
-				throw new KeySetAppendException ();
-			}
+			throw new KeySetAppendException ();
 		}
 		return this;
 	}

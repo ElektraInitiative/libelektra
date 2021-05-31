@@ -8,7 +8,7 @@ public abstract class PermanentException extends KDBException
 	private static final long serialVersionUID = 1L;
 	public static final String ERROR_NUMBER = "C01000";
 
-	public PermanentException (Key k)
+	protected PermanentException (Key k)
 	{
 		super (k);
 	}

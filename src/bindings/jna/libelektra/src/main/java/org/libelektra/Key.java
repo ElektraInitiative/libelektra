@@ -312,6 +312,24 @@ public class Key implements Iterable<String>
 	}
 
 	/**
+	 * Return the key's value and releases this key
+	 *
+	 * @return {@link #getString()} interpreted as boolean value
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
+	 * @apiNote This convenience method is primarily intended for facilityting early
+	 *          clean up in the case when a `Key` obtained via any of its public
+	 *          methods or the public methods of {@link KeySet} is just being read
+	 *          once and is not needed afterwards.
+	 */
+	public boolean getBooleanAndRelease ()
+	{
+		return Boolean.parseBoolean (getString ());
+	}
+
+	/**
 	 * @return {@link #getString()} parsed as {@code byte}
 	 * @throws NumberFormatException              if the {@link #getString()} does
 	 *                                            not return a parsable {@code byte}
@@ -321,6 +339,26 @@ public class Key implements Iterable<String>
 	 *                                            been released
 	 */
 	public byte getByte ()
+	{
+		return Byte.parseByte (getString ());
+	}
+
+	/**
+	 * Return the key's value and releases this key
+	 *
+	 * @return {@link #getString()} parsed as {@code byte}
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable {@code byte}
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
+	 * @apiNote This convenience method is primarily intended for facilityting early
+	 *          clean up in the case when a `Key` obtained via any of its public
+	 *          methods or the public methods of {@link KeySet} is just being read
+	 *          once and is not needed afterwards.
+	 */
+	public byte getByteAndRelease ()
 	{
 		return Byte.parseByte (getString ());
 	}
@@ -341,6 +379,27 @@ public class Key implements Iterable<String>
 	}
 
 	/**
+	 * Return the key's value and releases this key
+	 *
+	 * @return {@link #getString()} parsed as {@code short}
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable
+	 *                                            {@code short}
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
+	 * @apiNote This convenience method is primarily intended for facilityting early
+	 *          clean up in the case when a `Key` obtained via any of its public
+	 *          methods or the public methods of {@link KeySet} is just being read
+	 *          once and is not needed afterwards.
+	 */
+	public short getShortAndRelease ()
+	{
+		return Short.parseShort (getString ());
+	}
+
+	/**
 	 * @return {@link #getString()} parsed as integer
 	 * @throws NumberFormatException              if the {@link #getString()} does
 	 *                                            not return a parsable integer
@@ -349,7 +408,27 @@ public class Key implements Iterable<String>
 	 * @throws KeyReleasedException               if this {@link Key} has already
 	 *                                            been released
 	 */
-	public int getInteger ()
+	public int getInt ()
+	{
+		return Integer.parseInt (getString ());
+	}
+
+	/**
+	 * Return the key's value and releases this key
+	 *
+	 * @return {@link #getString()} parsed as integer
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable integer
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
+	 * @apiNote This convenience method is primarily intended for facilityting early
+	 *          clean up in the case when a `Key` obtained via any of its public
+	 *          methods or the public methods of {@link KeySet} is just being read
+	 *          once and is not needed afterwards.
+	 */
+	public int getIntAndRelease ()
 	{
 		return Integer.parseInt (getString ());
 	}
@@ -364,6 +443,26 @@ public class Key implements Iterable<String>
 	 *                                            been released
 	 */
 	public long getLong ()
+	{
+		return Long.parseLong (getString ());
+	}
+
+	/**
+	 * Return the key's value and releases this key
+	 *
+	 * @return {@link #getString()} parsed as {@code long}
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable {@code long}
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
+	 * @apiNote This convenience method is primarily intended for facilityting early
+	 *          clean up in the case when a `Key` obtained via any of its public
+	 *          methods or the public methods of {@link KeySet} is just being read
+	 *          once and is not needed afterwards.
+	 */
+	public long getLongAndRelease ()
 	{
 		return Long.parseLong (getString ());
 	}
@@ -384,6 +483,27 @@ public class Key implements Iterable<String>
 	}
 
 	/**
+	 * Return the key's value and releases this key
+	 *
+	 * @return {@link #getString()} parsed as {@code float}
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable
+	 *                                            {@code float}
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
+	 * @apiNote This convenience method is primarily intended for facilityting early
+	 *          clean up in the case when a `Key` obtained via any of its public
+	 *          methods or the public methods of {@link KeySet} is just being read
+	 *          once and is not needed afterwards.
+	 */
+	public float getFloatAndRelease ()
+	{
+		return Float.parseFloat (getString ());
+	}
+
+	/**
 	 * @return {@link #getString()} parsed as {@code double}
 	 * @throws NumberFormatException              if the {@link #getString()} does
 	 *                                            not return a parsable
@@ -394,6 +514,27 @@ public class Key implements Iterable<String>
 	 *                                            been released
 	 */
 	public double getDouble ()
+	{
+		return Double.parseDouble (getString ());
+	}
+
+	/**
+	 * Return the key's value and releases this key
+	 *
+	 * @return {@link #getString()} parsed as {@code double}
+	 * @throws NumberFormatException              if the {@link #getString()} does
+	 *                                            not return a parsable
+	 *                                            {@code double}
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
+	 * @apiNote This convenience method is primarily intended for facilityting early
+	 *          clean up in the case when a `Key` obtained via any of its public
+	 *          methods or the public methods of {@link KeySet} is just being read
+	 *          once and is not needed afterwards.
+	 */
+	public double getDoubleAndRelease ()
 	{
 		return Double.parseDouble (getString ());
 	}
@@ -412,6 +553,26 @@ public class Key implements Iterable<String>
 			throw new KeyBinaryTypeNotSupportedException ();
 		}
 		return Elektra.INSTANCE.keyString (getPointer ());
+	}
+
+	/**
+	 * Return the key's value and releases this key
+	 *
+	 * @return This key's value as string
+	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
+	 *                                            type binary
+	 * @throws KeyReleasedException               if this {@link Key} has already
+	 *                                            been released
+	 * @apiNote This convenience method is primarily intended for facilityting early
+	 *          clean up in the case when a `Key` obtained via any of its public
+	 *          methods or the public methods of {@link KeySet} is just being read
+	 *          once and is not needed afterwards.
+	 */
+	@Nonnull public String getStringAndRelease () throws KeyBinaryTypeNotSupportedException
+	{
+		var value = getString ();
+		release ();
+		return value;
 	}
 
 	/**
@@ -531,7 +692,7 @@ public class Key implements Iterable<String>
 	public void addWarning (String text, Object... args)
 	{
 		StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
-		Optional<String> oMetaKeyValue = getMeta (WARNINGS).map (Key::getString);
+		Optional<String> oMetaKeyValue = getMeta (WARNINGS).map (Key::getStringAndRelease);
 		StringBuilder builder = new StringBuilder (WARNINGS + "/#");
 		if (oMetaKeyValue.isEmpty ())
 		{

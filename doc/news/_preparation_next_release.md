@@ -165,9 +165,11 @@ you up to date with the multi-language support provided by Elektra.
 - Several under the hood improvements
 - Update `Key` API introducing the following changes:
   - Extracted exceptions from `Key` class
-  - Fixed `key::getCurrentMeta`
+  - Fixed `Key::getCurrentMeta`
   - Moved `Elektra.KeyNewArgumentFlags` to `Key.KeyNewArgumentTag`
   - Changed return value from `int` to `boolean` for:
+  - Added `Key::get*AndRelease` convenience methods
+  - Renamed `Key::getInteger` to `Key::getInt`
   - Removed unused `KeyTypeConversionException`
   - Introduced `KeyReleasedException` being thrown when a released `Key` is being accessed
   - Introduced `KeyMetaException`
@@ -195,8 +197,9 @@ you up to date with the multi-language support provided by Elektra.
       ks.lookup("/some/key").ifPresent(k -> // process found key );
       ```
 - Updated `KDB` API introducing the following changes:
-  - Introduced `KDBCLosedException` being thrown when a closed `KDB` session is being accessed
-  - Introduced `KeySet KDB::get(Key parentKey)`
+  - Introduced `KDBClosedException` being thrown when a closed `KDB` session is being accessed
+  - Introduced `KDB::get(Key parentKey)`
+  - Introduced `KDB::open()`
 - Updated tests accordingly
 
 _(Michael Tucek)_

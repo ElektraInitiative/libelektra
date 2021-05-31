@@ -20,7 +20,28 @@ public class KDB implements AutoCloseable
 	private Pointer pointer;
 
 	/**
-	 * Opens KDB session using the specified {@code errorKey} to store possible
+	 * Opens a new KDB session
+	 *
+	 * @return New KDB session
+	 * @throws KDBException             if opening the session fails - see
+	 *                                  specialization of {@link KDBException}
+	 * @throws KeyReleasedException     if {@code errorKey} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code errorKey} is {@code null}
+	 */
+	@Nonnull public static KDB open () throws KDBException
+	{
+		final Key errorKey = Key.create (Key.KEY_LOCAL_NAME);
+		var session = checkKDBPointer (Elektra.INSTANCE.kdbOpen (null, errorKey.getPointer ()), errorKey);
+
+		// errorKey is being released if no KDBException occurred
+		errorKey.release ();
+
+		return session;
+	}
+
+	/**
+	 * Opens a new KDB session using the specified {@code errorKey} to store possible
 	 * warnings and error information
 	 *
 	 * @param errorKey Used to store warnings and error information
@@ -206,6 +227,8 @@ public class KDB implements AutoCloseable
 	{
 		final Key errorKey = Key.create (Key.KEY_LOCAL_NAME);
 		close (errorKey);
+
+		// errorKey is being released if no KDBException occurred
 		errorKey.release ();
 	}
 
