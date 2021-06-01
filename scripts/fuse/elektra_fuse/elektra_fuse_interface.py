@@ -227,10 +227,7 @@ def setxattr(path, name, value, options, position=0):
     
     name = _ensure_meta_prefix(name)
 
-    try:
-        meta_map[name] = value.decode()
-    except UnicodeDecodeError:
-        meta_map[name] = '' #meta keys cannot contain binary data (apparantly) (TODO: check)
+    meta_map[name] = value.decode() #meta keys cannot contain binary data, decoding must succeed
     update_meta_map(path, meta_map)
 
 #deletes a file, i.e. the backing Elektra key

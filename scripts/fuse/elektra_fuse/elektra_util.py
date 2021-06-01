@@ -93,8 +93,8 @@ def create_key(os_path):
             ks.append(key)
         keys_modified = db.set(ks, path)
         if keys_modified != 1:
-            raise OSError(errno.EIO) #occurs when creating keys in cascading namespace (why?)
-            #TODO: could also be an attempt to create already existing key
+            raise OSError(errno.EIO)
+            #could also be an attempt to create an already existing key. in this rare case the error code does not fit.
 
 def get_meta_map(os_path):
     key, _ = get_key_and_keyset(os_path)
