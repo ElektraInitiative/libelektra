@@ -23,7 +23,7 @@ import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.PluginMisbehaviorException;
 
 /**
- * Key represents an native Elektra key providing acces to its name, value and
+ * Key represents an native Elektra key providing access to its name, value and
  * meta information
  */
 public class Key implements Iterable<String>
@@ -326,7 +326,7 @@ public class Key implements Iterable<String>
 	 */
 	public boolean getBooleanAndRelease ()
 	{
-		return Boolean.parseBoolean (getString ());
+		return Boolean.parseBoolean (getStringAndRelease ());
 	}
 
 	/**
@@ -360,7 +360,7 @@ public class Key implements Iterable<String>
 	 */
 	public byte getByteAndRelease ()
 	{
-		return Byte.parseByte (getString ());
+		return Byte.parseByte (getStringAndRelease ());
 	}
 
 	/**
@@ -396,7 +396,7 @@ public class Key implements Iterable<String>
 	 */
 	public short getShortAndRelease ()
 	{
-		return Short.parseShort (getString ());
+		return Short.parseShort (getStringAndRelease ());
 	}
 
 	/**
@@ -430,7 +430,7 @@ public class Key implements Iterable<String>
 	 */
 	public int getIntAndRelease ()
 	{
-		return Integer.parseInt (getString ());
+		return Integer.parseInt (getStringAndRelease ());
 	}
 
 	/**
@@ -464,7 +464,7 @@ public class Key implements Iterable<String>
 	 */
 	public long getLongAndRelease ()
 	{
-		return Long.parseLong (getString ());
+		return Long.parseLong (getStringAndRelease ());
 	}
 
 	/**
@@ -500,7 +500,7 @@ public class Key implements Iterable<String>
 	 */
 	public float getFloatAndRelease ()
 	{
-		return Float.parseFloat (getString ());
+		return Float.parseFloat (getStringAndRelease ());
 	}
 
 	/**
@@ -536,7 +536,7 @@ public class Key implements Iterable<String>
 	 */
 	public double getDoubleAndRelease ()
 	{
-		return Double.parseDouble (getString ());
+		return Double.parseDouble (getStringAndRelease ());
 	}
 
 	/**
@@ -579,88 +579,97 @@ public class Key implements Iterable<String>
 	 * Sets the key's value by converting {@code value} to string
 	 *
 	 * @param value Value to set
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setBoolean (boolean value)
+	public Key setBoolean (boolean value)
 	{
-		setString (Boolean.toString (value));
+		return setString (Boolean.toString (value));
 	}
 
 	/**
 	 * Sets the key's value by converting {@code value} to string
 	 *
 	 * @param value Value to set
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setByte (byte value)
+	public Key setByte (byte value)
 	{
-		setString (Byte.toString (value));
+		return setString (Byte.toString (value));
 	}
 
 	/**
 	 * Sets the key's value by converting {@code value} to string
 	 *
 	 * @param value Value to set
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setShort (short value)
+	public Key setShort (short value)
 	{
-		setString (Short.toString (value));
+		return setString (Short.toString (value));
 	}
 
 	/**
 	 * Sets the key's value by converting {@code value} to string
 	 *
 	 * @param value Value to set
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setInteger (int value)
+	public Key setInt (int value)
 	{
-		setString (Integer.toString (value));
+		return setString (Integer.toString (value));
 	}
 
 	/**
 	 * Sets the key's value by converting {@code value} to string
 	 *
 	 * @param value Value to set
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setLong (long value)
+	public Key setLong (long value)
 	{
-		setString (Long.toString (value));
+		return setString (Long.toString (value));
 	}
 
 	/**
 	 * Sets the key's value by converting {@code value} to string
 	 *
 	 * @param value Value to set
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setFloat (float value)
+	public Key setFloat (float value)
 	{
-		setString (Float.toString (value));
+		return setString (Float.toString (value));
 	}
 
 	/**
 	 * Sets the key's value by converting {@code value} to string
 	 *
 	 * @param value Value to set
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setDouble (double value)
+	public Key setDouble (double value)
 	{
-		setString (Double.toString (value));
+		return setString (Double.toString (value));
 	}
 
 	/**
 	 * Sets the key's value
 	 *
 	 * @param value Value to set
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
-	public void setString (String value)
+	public Key setString (String value)
 	{
 		Elektra.INSTANCE.keySetString (getPointer (), value);
+		return this;
 	}
 
 	/**
@@ -668,8 +677,9 @@ public class Key implements Iterable<String>
 	 *
 	 * @param text Reason for the error
 	 * @param args Custom arguments
+	 * @return This {@link Key}, enabling a fluent interface
 	 */
-	public void setError (String text, Object... args)
+	public Key setError (String text, Object... args)
 	{
 		StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
 		setMeta ("error", "number description module file line function reason");
@@ -681,6 +691,7 @@ public class Key implements Iterable<String>
 		setMeta ("error/mountpoint", getName ());
 		setMeta ("error/configfile", getString ());
 		setMeta ("error/reason", String.format (text, args));
+		return this;
 	}
 
 	/**
@@ -688,8 +699,9 @@ public class Key implements Iterable<String>
 	 *
 	 * @param text Reason for the warning
 	 * @param args Custom arguments
+	 * @return This {@link Key}, enabling a fluent interface
 	 */
-	public void addWarning (String text, Object... args)
+	public Key addWarning (String text, Object... args)
 	{
 		StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
 		Optional<String> oMetaKeyValue = getMeta (WARNINGS).map (Key::getStringAndRelease);
@@ -723,6 +735,7 @@ public class Key implements Iterable<String>
 		setMeta (builder + "/mountpoint", getName ());
 		setMeta (builder + "/configfile", getString ());
 		setMeta (builder + "/reason", String.format (text, args));
+		return this;
 	}
 
 	/**
@@ -764,12 +777,13 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Copies the information from the {@code source} key into this key.
+	 * Copies the information from the {@code source} key into <b>this</b> key.
 	 *
 	 * @param source Source Key object containing the information to copy
 	 * @param flags  Flags indicating which parts of the key to copy<br>
 	 *               Example:<br>
 	 *               {@link #KEY_CP_NAME} | {@link #KEY_CP_VALUE}
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyException             if copying failed
 	 * @throws KeyReleasedException     if this or the {@code source} {@link Key}
 	 *                                  has already been released
@@ -777,33 +791,38 @@ public class Key implements Iterable<String>
 	 * @see #dup()
 	 * @see #dup(int)
 	 */
-	public void copy (Key source, int flags)
+	public Key copy (Key source, int flags)
 	{
 		argNotNull (source, "Key 'source'");
 		if (Elektra.INSTANCE.keyCopy (getPointer (), source.getPointer (), flags) == null)
 		{
 			throw new KeyException ();
 		}
+		return this;
 	}
 
 	/**
 	 * Increments the reference counter for the underlying native key
 	 *
 	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @return This {@link Key}, enabling a fluent interface
 	 */
-	protected void incRef ()
+	protected Key incRef ()
 	{
 		Elektra.INSTANCE.keyIncRef (getPointer ());
+		return this;
 	}
 
 	/**
 	 * Decrements the reference counter for the underlying native key
 	 *
 	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @return This {@link Key}, enabling a fluent interface
 	 */
-	protected void decRef ()
+	protected Key decRef ()
 	{
 		Elektra.INSTANCE.keyDecRef (getPointer ());
+		return this;
 	}
 
 	/**
@@ -821,12 +840,14 @@ public class Key implements Iterable<String>
 	 * Rewinds the internal iterator for meta information of this key
 	 *
 	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @see #nextMeta()
 	 * @see #currentMeta()
 	 */
-	public void rewindMeta ()
+	public Key rewindMeta ()
 	{
 		Elektra.INSTANCE.keyRewindMeta (getPointer ());
+		return this;
 	}
 
 	/**
@@ -934,6 +955,7 @@ public class Key implements Iterable<String>
 	 *
 	 * @param metaName      Key name of meta information to be set
 	 * @param newMetaString Meta value to be set
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyMetaException         if {@code metaName} is invalid
 	 * @throws KeyReleasedException     if this {@link Key} has already been
 	 *                                  released
@@ -941,7 +963,7 @@ public class Key implements Iterable<String>
 	 *                                  {@link String#isBlank() blank} or
 	 *                                  {@code newMetaString} is {@code null}
 	 */
-	public void setMeta (String metaName, String newMetaString)
+	public Key setMeta (String metaName, String newMetaString)
 	{
 		argNotNullOrBlank (metaName, "String 'metaName'");
 		argNotNull (newMetaString, "String 'newMetaString'");
@@ -949,25 +971,28 @@ public class Key implements Iterable<String>
 		{
 			throw new KeyMetaException ();
 		}
+		return this;
 	}
 
 	/**
 	 * Removes meta information
 	 *
 	 * @param metaName Key name of meta information to be removed
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyMetaException         if {@code metaName} is invalid
 	 * @throws KeyReleasedException     if this {@link Key} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code metaName} is
 	 *                                  {@link String#isBlank() blank}
 	 */
-	public void removeMeta (String metaName)
+	public Key removeMeta (String metaName)
 	{
 		argNotNullOrBlank (metaName, "String 'metaName'");
 		if (Elektra.INSTANCE.keySetMeta (getPointer (), metaName, null) != 0)
 		{
 			throw new KeyMetaException ();
 		}
+		return this;
 	}
 
 	/**
@@ -1091,6 +1116,7 @@ public class Key implements Iterable<String>
 	 * Sets the key's name
 	 *
 	 * @param name New key name to use
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyNameException         if {@code name} is invalid, the key was
 	 *                                  inserted in a key set before or the key name
 	 *                                  is read-only
@@ -1099,13 +1125,14 @@ public class Key implements Iterable<String>
 	 * @throws IllegalArgumentException if {@code baseName} is
 	 *                                  {@link String#isBlank() blank}
 	 */
-	public void setName (String name)
+	public Key setName (String name)
 	{
 		argNotNullOrBlank (name, "String 'name'");
 		if (Elektra.INSTANCE.keySetName (getPointer (), name) == -1)
 		{
 			throw new KeyNameException ();
 		}
+		return this;
 	}
 
 	/**
@@ -1130,6 +1157,7 @@ public class Key implements Iterable<String>
 	 * Sets the key's base name; will replace current base name with new base name
 	 *
 	 * @param baseName New key base name to use
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyNameException         if {@code baseName} is invalid, the key was
 	 *                                  inserted in a key set before or the key name
 	 *                                  is read-only
@@ -1137,13 +1165,14 @@ public class Key implements Iterable<String>
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code baseName} is {@code null}
 	 */
-	public void setBaseName (String baseName) throws KeyNameException
+	public Key setBaseName (String baseName) throws KeyNameException
 	{
 		argNotNull (baseName, "String 'baseName'");
 		if (Elektra.INSTANCE.keySetBaseName (getPointer (), baseName) == -1)
 		{
 			throw new KeyNameException ();
 		}
+		return this;
 	}
 
 	/**
@@ -1151,6 +1180,7 @@ public class Key implements Iterable<String>
 	 * is sub key of current key
 	 *
 	 * @param baseName New key base name to add
+	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyNameException         if {@code baseName} is invalid, the key was
 	 *                                  inserted in a key set before or the key name
 	 *                                  is read-only
@@ -1159,13 +1189,14 @@ public class Key implements Iterable<String>
 	 * @throws IllegalArgumentException if {@code baseName} is
 	 *                                  {@link String#isBlank() blank}
 	 */
-	public void addBaseName (String baseName)
+	public Key addBaseName (String baseName)
 	{
 		argNotNullOrBlank (baseName, "String 'baseName'");
 		if (Elektra.INSTANCE.keyAddBaseName (getPointer (), baseName) == -1)
 		{
 			throw new KeyNameException ();
 		}
+		return this;
 	}
 
 	/**

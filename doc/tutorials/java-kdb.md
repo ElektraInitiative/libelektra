@@ -11,7 +11,7 @@ In order to use `kdb` you need to include the dependency in your project. [Here]
 After that you can start loading a `KDB` object as follows:
 
 ```java
-Key key = Key.create(Key.KEY_LOCAL_NAME);
+var key = Key.create(Key.KEY_LOCAL_NAME);
 try (KDB kdb = KDB.open(key)) {
     // code to manipulate keys
 } catch (KDB.KDBException e) {
@@ -60,7 +60,7 @@ kdb.get(keySet, parentKey);
 Now we can simply fetch the desired key's value as follows:
 
 ```java
-var value = keySet.lookup("user:/my/presaved/key").map(Key::getStringAndRelease).orElseThrow();
+String value = keySet.lookup("user:/my/presaved/key").map(Key::getStringAndRelease).orElseThrow();
 ```
 
 So for example if you had executed the command below via shell, before starting the application:
@@ -83,9 +83,9 @@ keySet.release();
 Next let's save a new key to the key database. Again, first we need need to create an empty `KeySet`. We also **need to fetch** all keys for the namespace before we will be able to save a new key.
 
 ```java
-var keyNamespace = Key.create("user:/");
-var keySet = kdb.get(keyNamespace); // fetch all keys for the namespace
-var keyToStore = Key.create("user:/somekey", "myValue");
+var keyNamespace = Key.create("user:/");                 // create key representing the namespace to fetch
+var keySet = kdb.get(keyNamespace);                      // fetch all keys for the namespace into a new key set
+var keyToStore = Key.create("user:/somekey", "myValue"); // create key with value to store
 keySet.append(keyToStore);
 kdb.set(keySet, keyToStore);
 

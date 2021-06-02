@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.libelektra.exception.KeySetAppendException;
@@ -25,42 +26,41 @@ public class KeySet implements Iterable<Key>
 	public static final int KDB_O_NONE = 0;
 	public static final int KDB_O_DEL = 1;
 	public static final int KDB_O_POP = 1 << 1;
-	public static final Pointer KS_END = null;
+
+	private static final Pointer KS_END = null;
 
 	@Nullable private Pointer pointer;
 
 	@Nullable private Cleaner.Cleanable cleanable;
 
 	/**
-	 * Constructs a new {@link KeySet} with the specified content<br>
+	 * Constructs a new {@link KeySet} containing the specified {@link Key keys}<br>
+	 * <br>
+	 * Example: KeySet keySet = KeySet.create(Key.create("A"), Key.create("B"));
+	 *
+	 * @param keys List of initial keys for the key set
+	 * @return New key set containing the specified initial keys
+	 * @see #release()
+	 */
+	@Nonnull public static KeySet create (Key... keys)
+	{
+		return create (keys.length, keys);
+	}
+
+	/**
+	 * Constructs a new {@link KeySet} containing the specified {@link Key keys}<br>
 	 * <br>
 	 * Example: KeySet keySet = KeySet.create(10, Key.create("A"), Key.create("B"));
 	 *
-	 * @param alloc Hint indicating the expected size of the key set
-	 * @param args  List of initial arguments for the key set. Example:<br>
-	 *              new Key(...), new Key(...), existing_key_reference,
-	 *              KeySet.KS_END
-	 * @return New key set with the specified initial data
+	 * @param allocationHint Hint indicating the expected size of the key set
+	 * @param keys           List of initial keys for the key set
+	 * @return New key set containing the specified initial keys
 	 * @see #release()
 	 */
-	@Nonnull public static KeySet create (int alloc, Object... args)
+	@Nonnull public static KeySet create (int allocationHint, Key... keys)
 	{
-		int i = 0;
-		for (i = 0; i < args.length; ++i)
-		{
-			if (args[i] instanceof Key)
-			{
-				Key k = (Key) args[i];
-				args[i] = k.getPointer ();
-			}
-		}
-		if (args.length > 0 && args[i - 1] != KeySet.KS_END)
-		{
-			Object[] sanitized = Arrays.copyOf (args, args.length + 1);
-			sanitized[i] = KeySet.KS_END;
-			return new KeySet (Elektra.INSTANCE.ksNew (alloc > sanitized.length ? alloc : sanitized.length, sanitized));
-		}
-		return new KeySet (Elektra.INSTANCE.ksNew (alloc, args));
+		Object[] args = Stream.concat (Arrays.stream (keys).map (Key::getPointer), Stream.of (KS_END)).toArray ();
+		return new KeySet (Elektra.INSTANCE.ksNew (allocationHint >= args.length ? allocationHint : args.length, args));
 	}
 
 	/**
@@ -180,17 +180,19 @@ public class KeySet implements Iterable<Key>
 	}
 
 	/**
-	 * Copies key references from {@code source} to {@code this} {@link KeySet}
+	 * Copies key references from {@code source} to <b>this</b> {@link KeySet}
 	 *
 	 * @param source Key set that is used as source
+	 * @return This {@link KeySet}, enabling a fluent interface
 	 * @throws KeySetReleasedException  if this {@link KeySet} or the specified
 	 *                                  {@code source} has already been released
 	 * @throws IllegalArgumentException if {@code source} is {@code null}
 	 */
-	public void copy (KeySet source)
+	public KeySet copy (KeySet source)
 	{
 		argNotNull (source, "KeySet 'source'");
 		Elektra.INSTANCE.ksCopy (getPointer (), source.getPointer ());
+		return this;
 	}
 
 	/**

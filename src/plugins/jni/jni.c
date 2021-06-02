@@ -38,6 +38,8 @@ typedef struct
 	int printException;
 	jmethodID midKeyConstr;
 	jmethodID midKeySetConstr;
+	// #3825 comment out the following 1 line if reference counter increase on Java Key creation is dissabled
+	// (ReferenceCleaner.ENABLE_AUTO_NATIVE_REF_CLEANUP = false)
 	jmethodID midKeyDecRef;
 	jobject plugin;
 } Data;
@@ -100,10 +102,10 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	}
 	checkException (data, method, errorKey);
 
-	// #3825 commented out since reference counter increase on Java Key creation is dissabled
+	// #3825 comment out the following 2 lines if reference counter increase on Java Key creation is dissabled
 	// (ReferenceCleaner.ENABLE_AUTO_NATIVE_REF_CLEANUP = false)
-	//(*data->env)->CallVoidMethod (data->env, jerrorKey, data->midKeyDecRef);
-	// checkException (data, method, errorKey);
+	(*data->env)->CallVoidMethod (data->env, jerrorKey, data->midKeyDecRef);
+	checkException (data, method, errorKey);
 
 	// clean up local references
 	(*data->env)->DeleteLocalRef (data->env, jerrorKey);
@@ -147,10 +149,10 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	}
 	checkException (data, method, errorKey);
 
-	// #3825 commented out since reference counter increase on Java Key creation is dissabled
+	// #3825 comment out the following 2 lines if reference counter increase on Java Key creation is dissabled
 	// (ReferenceCleaner.ENABLE_AUTO_NATIVE_REF_CLEANUP = false)
-	//(*data->env)->CallVoidMethod (data->env, jkey, data->midKeyDecRef);
-	// checkException (data, method, errorKey);
+	(*data->env)->CallVoidMethod (data->env, jkey, data->midKeyDecRef);
+	checkException (data, method, errorKey);
 
 	// clean up local references
 	(*data->env)->DeleteLocalRef (data->env, jkey);
@@ -219,7 +221,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	JavaVMOption options[2];
 	options[0].optionString = classpath;
 	options[1].optionString = option;
-	vmArgs.version = JNI_VERSION_1_8;
+	vmArgs.version = JNI_VERSION_10;
 	vmArgs.nOptions = 2;
 	vmArgs.options = options;
 	vmArgs.ignoreUnrecognized = ign;
@@ -295,6 +297,8 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 		return -1;
 	}
 
+	// #3825 comment out the following 6 lines if reference counter increase on Java Key creation is dissabled
+	// (ReferenceCleaner.ENABLE_AUTO_NATIVE_REF_CLEANUP = false)
 	data->midKeyDecRef = (*data->env)->GetMethodID (data->env, data->clsKey, "decRef", "()V");
 	if (data->midKeyDecRef == 0)
 	{

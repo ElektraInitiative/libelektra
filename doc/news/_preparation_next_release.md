@@ -167,20 +167,22 @@ you up to date with the multi-language support provided by Elektra.
   - Extracted exceptions from `Key` class
   - Fixed `Key::getCurrentMeta`
   - Moved `Elektra.KeyNewArgumentFlags` to `Key.KeyNewArgumentTag`
-  - Changed return value from `int` to `boolean` for:
-  - Added `Key::get*AndRelease` convenience methods
-  - Renamed `Key::getInteger` to `Key::getInt`
-  - Removed unused `KeyTypeConversionException`
-  - Introduced `KeyReleasedException` being thrown when a released `Key` is being accessed
-  - Introduced `KeyMetaException`
+  - Changed return types from `int` to `boolean` or enabled a fluent interface where appropriate
+  - Renamed `Key::*Integer` to `Key::*Int`
   - Renamed `KeyInvalidNameException` to `KeyNameException`
   - Renamed `KeyTypeMismatchException` to `KeyBinaryTypeNotSupportedException`
+  - Introduced `Key::get*AndRelease` convenience methods
+  - Introduced `KeyReleasedException` being thrown when a released `Key` is being accessed
+  - Introduced `KeyMetaException`
+  - Removed unused `KeyTypeConversionException`
   - Removed `Key::isNull`
     - `KeyReleasedException` is now being thrown when a released (= previously `isNull`) `Key` is being accessed
     - `Key`s with no backing native key pointer cannot be created anymore
 - Updated `KeySet` API introducing the following changes:
   - Introduced `KeySetReleasedException` being thrown when a released `KeySet` is being accessed
   - Introduced `KeySetAppendException`
+  - Changed return type enabling a fluent interface where appropriate
+  - Removed `KeySet::create(int, Object[])`
   - Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
     - `KeySet::lookup*` now returns `Optional<Key>`
     - `Key::getMeta` now returns `Optional<Key>`
@@ -198,8 +200,11 @@ you up to date with the multi-language support provided by Elektra.
       ```
 - Updated `KDB` API introducing the following changes:
   - Introduced `KDBClosedException` being thrown when a closed `KDB` session is being accessed
-  - Introduced `KDB::get(Key parentKey)`
+  - Introduced `KDB::get(Key)`
   - Introduced `KDB::open()`
+  - Introduced `KDB::open(KeySet)`
+  - Introduced `KDB::goptsContract(String[], String[], Key, KeySet)
+  - Changed return type enabling a fluent interface where appropriate
 - Updated tests accordingly
 
 _(Michael Tucek)_

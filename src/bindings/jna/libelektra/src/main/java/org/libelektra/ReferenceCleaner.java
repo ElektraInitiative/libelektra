@@ -17,9 +17,16 @@ class ReferenceCleaner
 {
 
 	/**
-	 * #3825 TODO This constant can be used to disable automated native reference
+	 * #3868 TODO This constant can be used to disable automated native reference
 	 * clean-up and is intended to be removed after no more occasional segfaults
 	 * have appeared in ci for some time
+	 *
+	 * If set to {@code false}:
+	 * <ul>
+	 * <li>automated release for Key and KeySet via Cleaner triggered by garbage collection is disabled</li>
+	 * <li>increasing a key's reference counter when a Java Key representation is created is disabled</li>
+	 * <li>decreasing a key's reference counter and calling keyDel when a Java Key representation is released is disabled</li>
+	 * </ul>
 	 */
 	@Deprecated (forRemoval = true) private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = true;
 
@@ -118,8 +125,9 @@ class ReferenceCleaner
 			if (ENABLE_AUTO_NATIVE_REF_CLEANUP)
 			{
 				Elektra.INSTANCE.keyDecRef (keyPointer);
+				return (Elektra.INSTANCE.keyDel (keyPointer) == 0);
 			}
-			return (Elektra.INSTANCE.keyDel (keyPointer) == 0);
+			return false;
 		}
 	}
 

@@ -17,152 +17,132 @@ import org.libelektra.exception.SyntacticValidationException;
 public class ExceptionMapperIT
 {
 
-	private Key parentKey = Key.create ("user:/tests/javabinding");
+	private final Key parentKey = Key.create ("user:/tests/javabinding");
 	private final String errorMeta = "trigger/error";
 	private final String warningMeta = "trigger/warnings";
 	private final String errorPluginName = "error";
 
+	private static Key buildTempKey (String errorNumber)
+	{
+		return Key.create ("user:/temporary/errorkey").setMeta ("error/number", errorNumber);
+	}
+
 	@Test (expected = OutOfMemoryException.class) public void kdbSetWithError_shouldMapOutOfMemoryError () throws Exception
 	{
-		String errorNumber = OutOfMemoryException.ERROR_NUMBER;
-		Key temporaryError = Key.create ("user:/temporary/errorkey");
-		temporaryError.setMeta ("error/number", errorNumber);
-		KDBException exception = new OutOfMemoryException (temporaryError);
-		passErrorToPluginAndExecute (exception);
+		passErrorToPluginAndExecute (new OutOfMemoryException (buildTempKey (OutOfMemoryException.ERROR_NUMBER)));
 	}
 
 	@Test (expected = InternalException.class) public void kdbSetWithError_shouldMapInternalError () throws Exception
 	{
-		String errorNumber = InternalException.ERROR_NUMBER;
-		Key temporaryError = Key.create ("user:/temporary/errorkey");
-		temporaryError.setMeta ("error/number", errorNumber);
-		KDBException exception = new InternalException (temporaryError);
-		passErrorToPluginAndExecute (exception);
+		passErrorToPluginAndExecute (new InternalException (buildTempKey (InternalException.ERROR_NUMBER)));
 	}
 
 	@Test (expected = InterfaceException.class) public void kdbSetWithError_shouldMapInterfaceError () throws Exception
 	{
-		String errorNumber = InterfaceException.ERROR_NUMBER;
-		Key temporaryError = Key.create ("user:/temporary/errorkey");
-		temporaryError.setMeta ("error/number", errorNumber);
-		KDBException exception = new InterfaceException (temporaryError);
-		passErrorToPluginAndExecute (exception);
+		passErrorToPluginAndExecute (new InterfaceException (buildTempKey (InterfaceException.ERROR_NUMBER)));
 	}
 
 	@Test (expected = InstallationException.class) public void kdbSetWithError_shouldMapInstallationError () throws Exception
 	{
-		String errorNumber = InstallationException.ERROR_NUMBER;
-		Key temporaryError = Key.create ("user:/temporary/errorkey");
-		temporaryError.setMeta ("error/number", errorNumber);
-		KDBException exception = new InstallationException (temporaryError);
-		passErrorToPluginAndExecute (exception);
+		passErrorToPluginAndExecute (new InstallationException (buildTempKey (InstallationException.ERROR_NUMBER)));
 	}
 
 	@Test (expected = PluginMisbehaviorException.class) public void kdbSetWithError_shouldMapPluginMisbehaviorError () throws Exception
 	{
-		String errorNumber = PluginMisbehaviorException.ERROR_NUMBER;
-		Key temporaryError = Key.create ("user:/temporary/errorkey");
-		temporaryError.setMeta ("error/number", errorNumber);
-		KDBException exception = new PluginMisbehaviorException (temporaryError);
-		passErrorToPluginAndExecute (exception);
+		passErrorToPluginAndExecute (new PluginMisbehaviorException (buildTempKey (PluginMisbehaviorException.ERROR_NUMBER)));
 	}
 
 	@Test (expected = ConflictingStateException.class) public void kdbSetWithError_shouldMapConflictError () throws Exception
 	{
-		String errorNumber = ConflictingStateException.ERROR_NUMBER;
-		Key temporaryError = Key.create ("user:/temporary/errorkey");
-		temporaryError.setMeta ("error/number", errorNumber);
-		KDBException exception = new ConflictingStateException (temporaryError);
-		passErrorToPluginAndExecute (exception);
+		passErrorToPluginAndExecute (new ConflictingStateException (buildTempKey (ConflictingStateException.ERROR_NUMBER)));
 	}
 
 	@Test (expected = SyntacticValidationException.class)
 	public void kdbSetWithError_shouldMapSyntacticValidationError () throws Exception
 	{
-		String errorNumber = SyntacticValidationException.ERROR_NUMBER;
-		Key temporaryError = Key.create ("user:/temporary/errorkey");
-		temporaryError.setMeta ("error/number", errorNumber);
-		KDBException exception = new SyntacticValidationException (temporaryError);
-		passErrorToPluginAndExecute (exception);
+		passErrorToPluginAndExecute (new SyntacticValidationException (buildTempKey (SyntacticValidationException.ERROR_NUMBER)));
 	}
 
 	@Test (expected = SemanticValidationException.class)
 	public void kdbSetWithError_shouldMapSemanticValidationError () throws Exception
 	{
-		String errorNumber = SemanticValidationException.ERROR_NUMBER;
-		Key temporaryError = Key.create ("user:/temporary/errorkey");
-		temporaryError.setMeta ("error/number", errorNumber);
-		KDBException exception = new SemanticValidationException (temporaryError);
-		passErrorToPluginAndExecute (exception);
+		passErrorToPluginAndExecute (new SemanticValidationException (buildTempKey (SemanticValidationException.ERROR_NUMBER)));
 	}
 
 	private void passErrorToPluginAndExecute (KDBException exception) throws KDBException
 	{
-		NativePlugin errorPlugin = null;
+		NativePlugin errorPlugin;
 		try
 		{
 			errorPlugin = new NativePlugin (errorPluginName, parentKey, KeySet.create ());
 		}
 		catch (InstallationException e)
 		{
-			// On some builds are not able to load the native error plugin
+			// some builds are not able to load the native error plugin
 			throw exception;
 		}
-		Key errorKey = Key.create ("user:/tests/myError");
-		errorKey.setMeta (errorMeta, exception.getErrorNumber ());
-		final KeySet ks = KeySet.create (10, KeySet.KS_END);
-		ks.append (errorKey);
-		errorPlugin.set (ks, parentKey);
+		var errorKey = Key.create ("user:/tests/myError").setMeta (errorMeta, exception.getErrorNumber ());
+		var keySet = KeySet.create (errorKey);
+		errorPlugin.set (keySet, parentKey);
+
+		// optional clean-up
+		keySet.release ();
+		errorKey.release ();
 	}
 
 	@Test public void kdbSetWithWarning_shouldNotTriggerException () throws Exception
 	{
-		NativePlugin errorPlugin = null;
+		NativePlugin errorPlugin;
 		try
 		{
 			errorPlugin = new NativePlugin (errorPluginName, parentKey, KeySet.create ());
 		}
 		catch (InstallationException e)
 		{
-			// On some builds are not able to load the native error plugin
+			// some builds are not able to load the native error plugin
 			return;
 		}
-		Key warningKey = Key.create ("user:/tests/myError");
-		warningKey.setMeta (warningMeta, ResourceException.ERROR_NUMBER);
-		final KeySet ks = KeySet.create (10, KeySet.KS_END);
-		ks.append (warningKey);
-		errorPlugin.set (ks, parentKey);
+		var warningKey = Key.create ("user:/tests/myError").setMeta (warningMeta, ResourceException.ERROR_NUMBER);
+		var keySet = KeySet.create (warningKey);
+		errorPlugin.set (keySet, parentKey);
+
+		// optional clean-up
+		keySet.release ();
+		warningKey.release ();
 	}
 
 	@Test public void kdbSetWithWarningAndError_shouldHaveWarnings () throws Exception
 	{
-		NativePlugin errorPlugin = null;
+		NativePlugin errorPlugin;
 		try
 		{
 			errorPlugin = new NativePlugin (errorPluginName, parentKey, KeySet.create ());
 		}
 		catch (InstallationException e)
 		{
-			// On some builds are not able to load the native error plugin
+			// some builds are not able to load the native error plugin
 			return;
 		}
-		Key warningKey = Key.create ("user:/tests/myError");
-		warningKey.setMeta (warningMeta, SemanticValidationException.ERROR_NUMBER);
-		Key errorKey = Key.create ("user:/tests/myError2");
-		errorKey.setMeta (errorMeta, ResourceException.ERROR_NUMBER);
-		final KeySet ks = KeySet.create (10, KeySet.KS_END);
-		ks.append (warningKey);
-		ks.append (errorKey);
+		var warningKey = Key.create ("user:/tests/myError").setMeta (warningMeta, SemanticValidationException.ERROR_NUMBER);
+		var errorKey = Key.create ("user:/tests/myError2").setMeta (errorMeta, ResourceException.ERROR_NUMBER);
+		var keySet = KeySet.create (warningKey, errorKey);
 		try
 		{
-			errorPlugin.set (ks, parentKey);
+			errorPlugin.set (keySet, parentKey);
 		}
 		catch (KDBException e)
 		{
-			assertEquals (e.getWarnings ().size (), 1);
+			assertEquals (1, e.getWarnings ().size ());
 			assertTrue (e instanceof ResourceException);
-			assertEquals (e.getWarnings ().iterator ().next ().getWarningNumber (), SemanticValidationException.ERROR_NUMBER);
+			assertEquals (SemanticValidationException.ERROR_NUMBER, e.getWarnings ().iterator ().next ().getWarningNumber ());
 			return;
+		}
+		finally
+		{
+			// optional clean-up
+			keySet.release ();
+			warningKey.release ();
+			errorKey.release ();
 		}
 		throw new RuntimeException ("Exception did not trigger");
 	}

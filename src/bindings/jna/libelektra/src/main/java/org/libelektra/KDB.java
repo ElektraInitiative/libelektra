@@ -23,15 +23,12 @@ public class KDB implements AutoCloseable
 	 * Opens a new KDB session
 	 *
 	 * @return New KDB session
-	 * @throws KDBException             if opening the session fails - see
-	 *                                  specialization of {@link KDBException}
-	 * @throws KeyReleasedException     if {@code errorKey} has already been
-	 *                                  released
-	 * @throws IllegalArgumentException if {@code errorKey} is {@code null}
+	 * @throws KDBException if opening the session fails - see specialization of
+	 *                      {@link KDBException}
 	 */
 	@Nonnull public static KDB open () throws KDBException
 	{
-		final Key errorKey = Key.create (Key.KEY_LOCAL_NAME);
+		var errorKey = Key.create (Key.KEY_LOCAL_NAME);
 		var session = checkKDBPointer (Elektra.INSTANCE.kdbOpen (null, errorKey.getPointer ()), errorKey);
 
 		// errorKey is being released if no KDBException occurred
@@ -41,8 +38,8 @@ public class KDB implements AutoCloseable
 	}
 
 	/**
-	 * Opens a new KDB session using the specified {@code errorKey} to store possible
-	 * warnings and error information
+	 * Opens a new KDB session using the specified {@code errorKey} to store
+	 * possible warnings and error information
 	 *
 	 * @param errorKey Used to store warnings and error information
 	 * @return New KDB session
@@ -56,6 +53,32 @@ public class KDB implements AutoCloseable
 	{
 		argNotNull (errorKey, "Key 'errorKey'");
 		return checkKDBPointer (Elektra.INSTANCE.kdbOpen (null, errorKey.getPointer ()), errorKey);
+	}
+
+	/**
+	 * Opens KDB session using the specified {@code errorKey} to store possible
+	 * warnings and error information
+	 *
+	 * @param contract Contract that will be ensured by
+	 *                 {@link Elektra#kdbOpen(Pointer, Pointer)}
+	 * @return New KDB session
+	 * @throws KDBException             if opening the session fails - see
+	 *                                  specialization of {@link KDBException}
+	 * @throws KeySetReleasedException  if {@code contract} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code contract} or {@code errorKey} is
+	 *                                  {@code null}
+	 */
+	@Nonnull public static KDB open (KeySet contract) throws KDBException
+	{
+		argNotNull (contract, "KeySet 'contract'");
+		var errorKey = Key.create (Key.KEY_LOCAL_NAME);
+		var session = open (contract, errorKey);
+
+		// errorKey is being released if no KDBException occurred
+		errorKey.release ();
+
+		return session;
 	}
 
 	/**
@@ -92,6 +115,69 @@ public class KDB implements AutoCloseable
 	}
 
 	/**
+	 * Closes the KDB session and frees native resources associated with it
+	 *
+	 * @throws KDBException       if opening the session fails - see specialization
+	 *                            of {@link KDBException}
+	 * @throws KDBClosedException if this session has already been closed
+	 */
+	@Override public void close () throws KDBException
+	{
+		var errorKey = Key.create (Key.KEY_LOCAL_NAME);
+		close (errorKey);
+
+		// errorKey is being released if no KDBException occurred
+		errorKey.release ();
+	}
+
+	/**
+	 * Closes the KDB session and frees native resources associated with it
+	 *
+	 * @param errorKey Key holding error and warning information
+	 * @throws KDBException             if opening the session fails - see
+	 *                                  specialization of {@link KDBException}
+	 * @throws KDBClosedException       if this session has already been closed
+	 * @throws KeyReleasedException     if {@code parentKey} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code errorKey} is {@code null}
+	 */
+	public void close (Key errorKey) throws KDBException
+	{
+		argNotNull (errorKey, "Key 'errorKey'");
+		if (Elektra.INSTANCE.kdbClose (getPointer (), errorKey.getPointer ()) != 0)
+		{
+			throw KDBException.getMappedException (errorKey);
+		}
+		pointer = null;
+	}
+
+	/**
+	 * Creates a {@link KeySet contract} for use with {@link KDB#open(KeySet, Key)}
+	 * that mounts and configures the {@code gopts} plugin
+	 *
+	 * @param args        the arguments that will be converted into argc and argv
+	 *                    for gopts
+	 * @param env         the environment variables that gopts will use
+	 * @param parentKey   the parent key that gopts will use
+	 * @param goptsConfig the config KeySet used for mounting gopts
+	 * @return new {@link KeySet} containing the contract
+	 * @throws IllegalArgumentException if any of the arguments are {@code null}
+	 * @throws KeySetReleasedException  if {@code goptsConfig} has already been
+	 *                                  released
+	 * @throws KeyReleasedException     if {@code parentKey} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if any of the specified parameters is
+	 *                                  {@code null}
+	 * @see KeySet#release()
+	 */
+	public static KeySet goptsContract (String[] args, String[] env, Key parentKey, KeySet goptsConfig)
+	{
+		var keySet = KeySet.create ();
+		goptsContract (keySet, args, env, parentKey, goptsConfig);
+		return keySet;
+	}
+
+	/**
 	 * Creates a {@link KeySet contract} for use with {@link KDB#open(KeySet, Key)}
 	 * that mounts and configures the {@code gopts} plugin
 	 *
@@ -116,8 +202,8 @@ public class KDB implements AutoCloseable
 		argNotNull (env, "String[] 'env'");
 		argNotNull (parentKey, "Key 'parentKey'");
 		argNotNull (goptsConfig, "KeySet 'goptsConfig'");
-		String argsString = compactStringArray (args);
-		String envString = compactStringArray (env);
+		var argsString = compactStringArray (args);
+		var envString = compactStringArray (env);
 
 		Elektra.INSTANCE.elektraGOptsContractFromStrings (contract.getPointer (), argsString.length (), argsString,
 								  envString.length (), envString, parentKey.getPointer (),
@@ -126,7 +212,7 @@ public class KDB implements AutoCloseable
 
 	@Nonnull private static String compactStringArray (String[] array)
 	{
-		StringBuilder builder = new StringBuilder ();
+		var builder = new StringBuilder ();
 		for (String string : array)
 		{
 			builder.append (string).append ('\0');
@@ -173,6 +259,7 @@ public class KDB implements AutoCloseable
 	 *
 	 * @param keySet    {@link KeySet} used to store the fetched keys
 	 * @param parentKey Root key which name is used to fetch keys below it
+	 * @return This {@link KDB} session, enabling a fluent interface
 	 * @throws KDBException             if loading keys fails - see specialization
 	 *                                  of {@link KDBException}
 	 * @throws KDBClosedException       if this session has already been closed
@@ -182,11 +269,12 @@ public class KDB implements AutoCloseable
 	 * @throws IllegalArgumentException if {@code keySet} or {@code parentKey} is
 	 *                                  {@code null}
 	 */
-	public void get (KeySet keySet, Key parentKey) throws KDBException
+	public KDB get (KeySet keySet, Key parentKey) throws KDBException
 	{
 		argNotNull (keySet, "KeySet 'keySet'");
 		argNotNull (parentKey, "Key 'parentKey'");
 		checkKDBReturnValue (Elektra.INSTANCE.kdbGet (getPointer (), keySet.getPointer (), parentKey.getPointer ()), parentKey);
+		return this;
 	}
 
 	/**
@@ -214,43 +302,6 @@ public class KDB implements AutoCloseable
 		{
 			throw KDBException.getMappedException (errorKey);
 		}
-	}
-
-	/**
-	 * Closes the KDB session and frees native resources associated with it
-	 *
-	 * @throws KDBException       if opening the session fails - see specialization
-	 *                            of {@link KDBException}
-	 * @throws KDBClosedException if this session has already been closed
-	 */
-	@Override public void close () throws KDBException
-	{
-		final Key errorKey = Key.create (Key.KEY_LOCAL_NAME);
-		close (errorKey);
-
-		// errorKey is being released if no KDBException occurred
-		errorKey.release ();
-	}
-
-	/**
-	 * Closes the KDB session and frees native resources associated with it
-	 *
-	 * @param errorKey Key holding error and warning information
-	 * @throws KDBException             if opening the session fails - see
-	 *                                  specialization of {@link KDBException}
-	 * @throws KDBClosedException       if this session has already been closed
-	 * @throws KeyReleasedException     if {@code parentKey} has already been
-	 *                                  released
-	 * @throws IllegalArgumentException if {@code errorKey} is {@code null}
-	 */
-	public void close (Key errorKey) throws KDBException
-	{
-		argNotNull (errorKey, "Key 'errorKey'");
-		if (Elektra.INSTANCE.kdbClose (getPointer (), errorKey.getPointer ()) != 0)
-		{
-			throw KDBException.getMappedException (errorKey);
-		}
-		pointer = null;
 	}
 
 	/**
