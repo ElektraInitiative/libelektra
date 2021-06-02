@@ -5,8 +5,8 @@ from pathlib import Path
 
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
 
-import mock_context
-import elektra_fuse_interface
+from . import mock_context
+from . import elektra_fuse_interface
 import kdb
 
 #fuse references: https://www.cs.hmc.edu/~geoff/classes/hmc.cs135.201109/homework/fuse/fuse_doc.html

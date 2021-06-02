@@ -2,11 +2,12 @@
 
 FROM ubuntu:focal 
 
+RUN ls
 RUN apt-get -y update
 RUN apt-get -y update
 
 #install everything for fuse
-RUN apt-get -y install libfuse-dev fuse python3-pip
+RUN apt-get -y install fuse python3-pip
 RUN pip3 install fusepy psutil
 
 #install convinience packages for interactive use
@@ -27,6 +28,8 @@ WORKDIR /root
 #create mountpoint
 RUN mkdir /root/mount
 
-#copy source
-COPY ./elektra_fuse /root/elektra_fuse
+#copy source, build & install elektra_fuse wheel
+COPY ./elektra_fuse_wheel /root/elektra_fuse_wheel
 COPY ./docker /root/docker
+
+RUN cd /root/elektra_fuse_wheel && ./build.sh && ./install.sh

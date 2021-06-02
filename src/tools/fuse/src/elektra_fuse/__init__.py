@@ -1,10 +1,12 @@
-#!/usr/bin/env python3
 import argparse, logging, logging.handlers
 from fuse import FUSE
-from rootlevel_resolver import RootlevelResolver
-import elektra_util
+from .rootlevel_resolver import RootlevelResolver
+from . import elektra_util
 
 if __name__ == '__main__':
+	main()
+
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('mountpoint')
     parser.add_argument('-f', '--foreground', default = False)

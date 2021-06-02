@@ -1,0 +1,3 @@
+[console_scripts]
+elektra_fuse = elektra_fuse:main
+

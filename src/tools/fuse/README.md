@@ -1,4 +1,4 @@
-# elektra-fuse
+# README.md
 
 Mount [elektra](https://www.libelektra.org)'s KDB as a [fuse(py)](https://github.com/fusepy/fusepy) filesystem.
 
@@ -11,12 +11,15 @@ This enables users to interact with Elektra
 - without the need to learn other tooling of libelektra
 - with additional features: e.g. the ability to effortlessly write binary keys
 
-## Quickstart
+## Installation and Quickstart
 
 ### Docker
 
-Ensure docker is installed and run:
+The package comes with a preconfigured docker environment for expirimentation/debugging/developement.
+
+Ensure docker is installed and run
 ```sh
+cd src/tools/fuse/docker
 ./run_new_container.sh
 ```
 This (re)creates the container if necessary and starts an interactive session with keys for testing already created (see `docker/create_keys.sh`).
@@ -25,19 +28,25 @@ For debugging purposes, a logfile is written to `~/nohup.out` inside the contain
 
 ### Native
 
-Required Elektra version: >= 0.9.4
+System requirements:
+- Elektra of version at least 0.9.5 with the python binding installed (for example, `libelektra5-all` satisfies this)
+- `fuse` (for example via the debian package `fuse`) 
+- `python3 >= 3.8`, `pip3`
 
-Required (debian) packages:
-- libfuse-dev
-- fuse
-- libelektra5-all (not in official repositories, follow [these](https://www.libelektra.org/installation/installation) instructions)
+Required python3 packages (will be installed by `pip3` automatically if not present):
+- `fusepy>=3.0.1`
+- `psutil>=5.8.0`
 
-Required (python3) packages:
-- fusepy psutil
+Build the `elektra_fuse` python3-wheel and install it using `pip3` with:
+```
+./build.sh && sudo ./install.sh
+```
+This, if needed, will also install the python-requirements `fusepy` and `psutil`.
+`install.sh` is run as root in order to make the new shell command `elektra_fuse` globally available (if run as a normal user, `$PATH` needs to be adapted as specified in the command's output).
 
-Mount the filesystem below the (already existing) directory `<mount point>` (as root-user) with
+Now, to mount the filesystem below the (already existing) directory `<mount point>` (as root-user), run:
 ```sh
-sudo ./elektra_fuse/elektra_fuse.py <mount point>
+sudo elektra_fuse <mount point>
 ```
 
 ## Filesystem Structure
@@ -56,16 +65,15 @@ Below any such pid-directory, the elektra key database is mounted bidirectionall
 - `system:`
 - `dir:`
 - `spec:`
+- `proc:`
+- `cascading:`, corresponding to the `/` namespace in Elektra:
+	This is useful for inspection purposes, but beware that write operations in this namespace are disabled.
 
 Exceptions:
 - `default:` (only exists for cascading lookups)
-- `proc:` (to be implemented in future version (read-only))
 
-Furthermore, there is `cascading:`, which correspons to the `/` Elektra-namespace.
-This is useful for inspection purposes, but beware:
-Write operations in this namespace produce unexpected effects (and create operations might fail), as for the same "address" a write operation can be resolved to a different real key then the corresponding read operation.
 
-These first two layers, (e.g `mountpoint/12/system:`) are read only. Deeper layers support writing: any change is directly updated in the backing Elektra-Key-Database.
+These first two layers, (e.g `mountpoint/12/system:`) are read only. Deeper layers (expect the cascading namespace) support writing: any change is directly updated in the backing Elektra-Key-Database.
 
 ### Process Context Mocking
 
@@ -76,7 +84,7 @@ The mocked attributes are:
 - the user and group (for the `user:` namespace)
 - working directory (for the `dir:` namespace)
 - environment variables (for the `proc:` namespace)
-- in the future: the process arguments
+- the process arguments (for the `proc:` namespace)
 
 
 ### Example file system structure
@@ -179,5 +187,3 @@ If a value is to be written that cannot be decoded using the systems default enc
 - Moving an ``@elektra.value``-file corrupts the filesystem/key database (See this [issue](https://issues.libelektra.org/3648)). As editors like `vim` may move a file during editing, such editors cannot reliably be used on these pseudo-files.
 - Only works on POSIX-compatible systems with support for FUSE (via fusepy)
 - chmod/chown is not implemented (i.e. does nothing and reports success) and does not signal a "not supported error" to enable compatibility with common tools like `cp`.
-- Access related errorcodes not yet implemented (e.g. normal user tries to write to system:/) (defaulting to read only fs - error)
-- Everything that is labled as `TODO` in the source.

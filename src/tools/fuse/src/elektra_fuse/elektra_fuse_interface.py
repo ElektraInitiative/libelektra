@@ -6,9 +6,9 @@ from pathlib import Path
 from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
 
 #project imports
-import elektra_util
-from elektra_util import *
-import mock_context
+from . import elektra_util
+from .elektra_util import *
+from . import mock_context
 
 startup_time = time.time()
 
