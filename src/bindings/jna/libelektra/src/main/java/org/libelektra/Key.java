@@ -817,12 +817,10 @@ public class Key implements Iterable<String>
 	 * Decrements the reference counter for the underlying native key
 	 *
 	 * @throws KeyReleasedException if this {@link Key} has already been released
-	 * @return This {@link Key}, enabling a fluent interface
 	 */
-	protected Key decRef ()
+	protected void decRef ()
 	{
 		Elektra.INSTANCE.keyDecRef (getPointer ());
-		return this;
 	}
 
 	/**
