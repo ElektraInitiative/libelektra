@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-
 import org.libelektra.Key;
 import org.libelektra.KeySet;
 import org.libelektra.Plugin;
@@ -40,12 +39,12 @@ public class PropertiesStorage implements Plugin
 			{
 				return 0;
 			}
-			
+
 			// append to description
 			var descriptionKey = oDescriptionKey.get ();
 			descriptionKey.setString (descriptionKey.getString () + "Get + set properties files");
 		}
-		
+
 		var properties = new Properties ();
 		try (var stream = new BufferedInputStream (new FileInputStream (parentKey.getString ())))
 		{

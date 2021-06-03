@@ -162,10 +162,10 @@ public class Key implements Iterable<String>
 	 */
 	@Nonnull protected static Key create (String name, Object... args)
 	{
-		return create (Elektra.INSTANCE.keyNew (name,
-							Arrays.stream (args)
-								.map (o -> (o instanceof CreateArgumentTag) ? ((CreateArgumentTag) o).value : o)
-								.toArray ()))
+		return create (Elektra.INSTANCE.keyNew (
+				       name, Arrays.stream (args)
+						     .map (o -> (o instanceof CreateArgumentTag) ? ((CreateArgumentTag) o).value : o)
+						     .toArray ()))
 			.orElseThrow (KeyNameException::new);
 	}
 

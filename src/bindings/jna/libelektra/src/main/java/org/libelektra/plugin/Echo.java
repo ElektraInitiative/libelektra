@@ -8,7 +8,7 @@ public class Echo implements Plugin
 {
 
 	private KeySet conf;
-	
+
 	public static final String PLUGIN_NAME = "Echo";
 
 	public Echo ()
@@ -22,7 +22,7 @@ public class Echo implements Plugin
 		return conf;
 	}
 
-	@Override public int open ( KeySet conf, Key errorKey)
+	@Override public int open (KeySet conf, Key errorKey)
 	{
 		System.out.println ("open plugin");
 		System.out.println (errorKey);
