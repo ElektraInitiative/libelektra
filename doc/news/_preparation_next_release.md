@@ -153,40 +153,68 @@ you up to date with the multi-language support provided by Elektra.
 
 ### JNA
 
-- Gradle wrapper upgraded to 7.0
-- Updated documentation
-- Increased minimum required JDK version to 9
+- Gradle wrapper and docker images upgraded to 7.0.2
+- Minumum Gradle version decreased to 6.0
+- Upgraded JNA dependency from 4.5.2 to 5.8.0
+- Increased minimum required JDK version to 11
+- Updated Java binding API documentation
 - Migrated native resource clean-up from `finalize()` to `Cleaner`
   - Please revisit the documentation for `Key::release` and `KeySet::release` for recommended resource release handling
-- Extracted exceptions from Key class introducing the following changes
-  - Removed unused `KeyTypeConversionException`
-  - Introduced `KeyCreateFailedException`, `KeyReleasedException`
-  - Renamed `KeyInvalidNameException` to `KeySetNameFailedException`
+  - Currently automated native key and key set resource clean-up is deactivated due to some possible race conditions wich might result in double free errors (#3869). Manual key release is also disabled to not break current API release semantic. This leads to memory leaks, which is a known issue and will be resolved in an upcoming release.
+- Introduced multiple exceptions when native API calls fail - see updated java doc for details
+- Introduced early parameter validation for values which would otherwise lead to unspecific errors in native API calls
+- Several under the hood improvements
+- Update `Key` API introducing the following changes:
+  - Extracted exceptions from `Key` class
+  - Fixed `Key::getCurrentMeta`
+  - Moved `Elektra.KeyNewArgumentFlags` to `Key.NewArgumentTag`
+  - Changed return types from `int` to `boolean` or enabled a fluent interface where appropriate
+  - Renamed `Key::*Integer` to `Key::*Int`
+  - Renamed `KeyInvalidNameException` to `KeyNameException`
   - Renamed `KeyTypeMismatchException` to `KeyBinaryTypeNotSupportedException`
-- Introduced `KeySetReleasedException` being thrown when a released `KeySet` is being accessed
-- Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
-
-  - `KeySet::lookup*` now returns `Optional<Key>`
-  - `Key::getMeta` now returns `Optional<Key>`
-  - Example:
-    ```java
-    // checking whether the key has been found BEFORE API change
-    Key found = ks.lookup("/some/key");
-    if (found != null) {
-      // process found key
-    }
-    ```
-    ```java
-    // checking whether the key has been found AFTER API change
-    ks.lookup("/some/key").ifPresent(k -> // process found key );
-    ```
-
-* Removed `Key::isNull`
-  - `KeyReleasedException` is now being thrown when a release `Key` is being accessed
-  - `Key`s with now bacing native key pointer cannot be created anymore
-* Updated tests accordingly
+  - Introduced `Key::get*AndRelease` convenience methods
+  - Introduced `Key::createNameless`
+  - Introduced `KeyReleasedException` being thrown when a released `Key` is being accessed
+  - Introduced `KeyMetaException`
+  - Removed unused `KeyTypeConversionException`
+  - Removed `Key::needsSync`
+  - Removed `Key::isNull`
+    - `KeyReleasedException` is now being thrown when a released (= previously `isNull`) `Key` is being accessed
+    - `Key`s with no backing native key pointer cannot be created anymore
+- Updated `KeySet` API introducing the following changes:
+  - Changed return type enabling a fluent interface where appropriate
+  - Renamed `KeySet::head` to `KeySet::first`
+  - Renamed `KeySet::tail` to `KeySet::last`
+  - Introduced `KeySetReleasedException` being thrown when a released `KeySet` is being accessed
+  - Introduced `KeySetAppendException`
+  - Removed `KeySet::create(int, Object[])`
+  - Removed `KeySet::needsSync`
+  - Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
+    - `KeySet::lookup*` now returns `Optional<Key>`
+    - `Key::getMeta` now returns `Optional<Key>`
+    - Example:
+      ```java
+      // checking whether the key has been found BEFORE API change
+      Key found = ks.lookup("/some/key");
+      if (found != null) {
+        // process found key
+      }
+      ```
+      ```java
+      // checking whether the key has been found AFTER API change
+      ks.lookup("/some/key").ifPresent(k -> // process found key );
+      ```
+- Updated `KDB` API introducing the following changes:
+  - Introduced `KDBClosedException` being thrown when a closed `KDB` session is being accessed
+  - Introduced `KDB::get(Key)`
+  - Introduced `KDB::open()`
+  - Introduced `KDB::open(KeySet)`
+  - Introduced `KDB::goptsContract(String[], String[], Key, KeySet)
+  - Changed return type enabling a fluent interface where appropriate
+- Updated tests accordingly
 
 _(Michael Tucek)_
+_(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 
 ### <<Binding3>>
 

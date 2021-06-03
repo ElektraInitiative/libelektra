@@ -2,61 +2,62 @@ package org.libelektra;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import org.libelektra.exception.KeySetReleasedException;
 
 /**
- * An {@link Iterator} over a {@link KeySet} resulting in {@link Key}s.
+ * An {@link Iterator} for a {@link KeySet} returning {@link Key}s
  */
 public class KeySetIterator implements Iterator<Key>
 {
 
+	private final KeySet keySet;
 	private int position = 0;
-	private final KeySet container;
 	private Key current;
 
 	/**
-	 * Basic constructor for key set iterator
-	 *
-	 * @param container KeySet which is used in iterator
+	 * @param keySet {@link KeySet} backing this iterator
 	 */
-	KeySetIterator (final KeySet container)
+	KeySetIterator (final KeySet keySet)
 	{
-		this.container = container;
+		this.keySet = keySet;
 	}
 
 	/**
-	 * Checks if another value is available
-	 *
-	 * @return Boolean if another value is available
+	 * @return True, if another value is available, false otherwise
+	 * @throws KeySetReleasedException if this backing {@link KeySet} has already
+	 *                                 been released
 	 */
 	@Override public boolean hasNext ()
 	{
-		return position != container.length ();
+		return position != keySet.size ();
 	}
 
 	/**
-	 * Gets the next value of iteration
+	 * Gets the next value
 	 *
-	 * @return Next Key in iteration
-	 * @apiNote {@link Key Keys} returned by this method normally should not be {@link Key#release() released} manually!
+	 * @return Next key in iteration
+	 * @throws KeySetReleasedException if this backing {@link KeySet} has already
+	 *                                 been released
+	 * @throws NoSuchElementException  if end of key set is reached
+	 * @apiNote {@link Key Keys} returned by this method normally should not be
+	 *          {@link Key#release() released} manually!
 	 */
 	@Override public Key next ()
 	{
-		if (position == container.length ())
-		{
-			throw new NoSuchElementException ("End of key set reached");
-		}
-
-		current = container.at (position);
+		current = keySet.at (position);
 		++position;
 		return current;
 	}
 
 	/**
 	 * Removes the element of the {@link KeySet} backing the iterator
+	 *
+	 * @throws KeySetReleasedException if this backing {@link KeySet} has already
+	 *                                 been released
 	 */
 	@Override public void remove ()
 	{
-		container.lookup (current, KeySet.KDB_O_POP).ifPresent (Key::release);
+		keySet.lookup (current, KeySet.KDB_O_POP).ifPresent (Key::release);
 		--position;
 	}
 }

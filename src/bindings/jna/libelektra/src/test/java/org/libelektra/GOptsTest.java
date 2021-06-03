@@ -2,12 +2,11 @@ package org.libelektra;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_META;
+import static org.libelektra.Key.CreateArgumentTag.KEY_META;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.libelektra.exception.KDBException;
 
 public class GOptsTest
 {
@@ -17,8 +16,8 @@ public class GOptsTest
 
 	@Before public void setupSpec () throws KDBException
 	{
-		KeySet spec = KeySet.create (
-			10, Key.create (SPEC_BASE_KEY, KEY_META, "command", ""),
+		var specKeySet = KeySet.create (
+			Key.create (SPEC_BASE_KEY, KEY_META, "command", ""),
 			Key.create (SPEC_BASE_KEY + "/printversion", KEY_META, "description",
 				    "print version information and exit (ignoring all other options/commands/parameters)", KEY_META, "opt",
 				    "v", KEY_META, "opt/arg", "none", KEY_META, "opt/long", "version"),
@@ -38,58 +37,71 @@ public class GOptsTest
 				    "indexed", KEY_META, "args/index", "1"),
 			Key.create (SPEC_BASE_KEY + "/dynamic/#", KEY_META, "description", "dynamically call a user-supplied command",
 				    KEY_META, "args", "remaining"));
+		var specParentKey = Key.create (SPEC_BASE_KEY);
 
-		Key specParent = Key.create (SPEC_BASE_KEY);
-		try (final KDB kdb = KDB.open (specParent))
+		try (KDB kdb = KDB.open ())
 		{
-			final KeySet ks = KeySet.create (10);
-			kdb.get (ks, specParent);
-
-			if (ks.cut (specParent).length () > 0)
+			var keySet = kdb.get (specParentKey);
+			if (keySet.cut (specParentKey).size () > 0)
 			{
 				throw new IllegalStateException ("Couldn't set up spec, keys exist!");
 			}
-
-			ks.append (spec);
-			kdb.set (ks, specParent);
+			keySet.append (specKeySet);
+			kdb.set (keySet, specParentKey);
+			keySet.release (); // optional clean-up
+		}
+		finally
+		{
+			// optional clean-up
+			specKeySet.release ();
+			specParentKey.release ();
 		}
 	}
 
 	@Test public void test_gopts () throws KDBException
 	{
-		String[] args = new String[] { "test", "get", "-v", "user:/" };
-		String[] env = new String[0];
+		var args = new String[] { "test", "get", "-v", "user:/" };
+		var env = new String[0];
 
-		KeySet config = KeySet.create (10);
-		KeySet contract = KeySet.create (10);
+		var config = KeySet.create ();
+		var parentKey = Key.create (BASE_KEY);
+		var contract = KDB.goptsContract (args, env, parentKey, config);
 
-		Key parentKey = Key.create (BASE_KEY);
-		KDB.goptsContract (contract, args, env, parentKey, config);
-
-		try (final KDB kdb = KDB.open (contract, parentKey))
+		try (final KDB kdb = KDB.open (contract))
 		{
-			KeySet ks = KeySet.create (10);
+			var keySet = kdb.get (parentKey);
 
-			kdb.get (ks, parentKey);
+			assertTrue (keySet.lookup (BASE_KEY).isPresent ());
+			assertEquals (keySet.lookup (BASE_KEY).get ().getString (), "getter");
+			assertTrue (keySet.lookup (BASE_KEY + "/getter/keyname").isPresent ());
+			assertEquals (keySet.lookup (BASE_KEY + "/getter/keyname").get ().getString (), "user:/");
+			assertTrue (keySet.lookup (BASE_KEY + "/getter/verbose").isPresent ());
+			assertEquals (keySet.lookup (BASE_KEY + "/getter/verbose").get ().getString (), "1");
 
-			assertTrue (ks.lookup (BASE_KEY).isPresent ());
-			assertEquals (ks.lookup (BASE_KEY).get ().getString (), "getter");
-			assertTrue (ks.lookup (BASE_KEY + "/getter/keyname").isPresent ());
-			assertEquals (ks.lookup (BASE_KEY + "/getter/keyname").get ().getString (), "user:/");
-			assertTrue (ks.lookup (BASE_KEY + "/getter/verbose").isPresent ());
-			assertEquals (ks.lookup (BASE_KEY + "/getter/verbose").get ().getString (), "1");
+			keySet.release (); // optional clean-up
+		}
+		finally
+		{
+			// optional clean-up
+			config.release ();
+			parentKey.release ();
+			contract.release ();
 		}
 	}
 
 	@After public void removeSpec () throws KDBException
 	{
-		Key specParent = Key.create (SPEC_BASE_KEY);
-		try (final KDB kdb = KDB.open (specParent))
+		var specParentKey = Key.create (SPEC_BASE_KEY);
+		try (final KDB kdb = KDB.open (specParentKey))
 		{
-			final KeySet ks = KeySet.create (10);
-			kdb.get (ks, specParent);
-			ks.cut (specParent);
-			kdb.set (ks, specParent);
+			var keySet = kdb.get (specParentKey);
+			keySet.cut (specParentKey);
+			kdb.set (keySet, specParentKey);
+			keySet.release (); // optional clean-up
+		}
+		finally
+		{
+			specParentKey.release (); // optional clean-up
 		}
 	}
 }

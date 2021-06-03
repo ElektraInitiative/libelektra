@@ -1,6 +1,6 @@
 # Hello, Elektra
 
-This basic tutorial shows you how to compile and run a very basic Elektra application. For this tutorial we assume that you installed [Elektra](/doc/INSTALL.md) and [CMake](http://cmake.org) on your machine. We also assume that you work a Unix based OS like Linux or macOS.
+This basic tutorial shows you how to compile and run a very basic Elektra application. For this tutorial we assume that you installed [Elektra](/doc/INSTALL.md) and [CMake](https://cmake.org) on your machine. We also assume that you work a Unix based OS like Linux or macOS.
 
 1. Create a folder called `Hello` somewhere on your disk
 2. Copy the file `examples/helloElektra.c` to the folder `Hello` you just created

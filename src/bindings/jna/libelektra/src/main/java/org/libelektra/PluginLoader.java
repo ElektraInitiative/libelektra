@@ -37,7 +37,7 @@ public class PluginLoader
 	{
 		this.loadedElektraPlugins = new ConcurrentHashMap<> ();
 		this.loadedJavaPlugins = new ConcurrentHashMap<> ();
-		this.errorKey = Key.create (Key.KEY_LOCAL_NAME);
+		this.errorKey = Key.createNameless ();
 		modules = KeySet.create ();
 	}
 
@@ -73,8 +73,8 @@ public class PluginLoader
 			return plugin;
 		}
 
-		Key error = Key.create (Key.KEY_LOCAL_NAME);
-		error.setMeta ("error/number", InstallationException.errorNumber ());
+		Key error = Key.createNameless ();
+		error.setMeta ("error/number", InstallationException.ERROR_NUMBER);
 		error.setMeta ("error/reason", String.format ("I could not find java plugin '%s'", name));
 		throw new InstallationException (error);
 	}

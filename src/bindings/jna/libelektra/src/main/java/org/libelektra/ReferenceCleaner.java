@@ -4,23 +4,31 @@ import com.sun.jna.Pointer;
 import java.lang.ref.Cleaner;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeySetReleasedException;
 
 /**
- * Reference clean-up helper for Java representations of Elektra entities with
- * references to native resources
+ * Reference clean-up helper for Java representations with references to native
+ * Elektra resources
  */
 class ReferenceCleaner
 {
 
 	/**
-	 * #3825 TOD This constant can be used to disable automated native reference
-	 * clean-up and is intended to be removed after no more occasional segfailts
-	 * have appeared in ci for some time.
+	 * #3868 TODO This constant can be used to disable automated native reference
+	 * clean-up and is intended to be removed after no more occasional segfaults
+	 * have appeared in ci for some time
+	 *
+	 * If set to {@code false}:
+	 * <ul>
+	 * <li>automated release for Key and KeySet via Cleaner triggered by garbage collection is disabled</li>
+	 * <li>increasing a key's reference counter when a Java Key representation is created is disabled</li>
+	 * <li>decreasing a key's reference counter and calling keyDel when a Java Key representation is released is disabled</li>
+	 * </ul>
 	 */
-	@Deprecated (forRemoval = true) private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = true;
+	@Deprecated (forRemoval = true) private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = false;
 
 	@Nullable private static final Cleaner CLEANER_INSTANCE = ENABLE_AUTO_NATIVE_REF_CLEANUP ? Cleaner.create () : null;
 
@@ -57,7 +65,7 @@ class ReferenceCleaner
 	 *         garbage collection
 	 * @throws KeyReleasedException if {@code key} has already been released
 	 */
-	static Cleaner.Cleanable registerKeyCleanUp (Key key)
+	@Nonnull static Cleaner.Cleanable registerKeyCleanUp (Key key)
 	{
 		KeyCleanupTask task = new KeyCleanupTask (key.getPointer ());
 		return ENABLE_AUTO_NATIVE_REF_CLEANUP ? CLEANER_INSTANCE.register(key, task) : task::run;
@@ -73,7 +81,7 @@ class ReferenceCleaner
 	 *         garbage collection
 	 * @throws KeySetReleasedException if {@code keySet} has already been released
 	 */
-	static Cleaner.Cleanable registerKeySetCleanUp (KeySet keySet)
+	@Nonnull static Cleaner.Cleanable registerKeySetCleanUp (KeySet keySet)
 	{
 		KeySetCleanupTask task = new KeySetCleanupTask (keySet.getPointer ());
 		return ENABLE_AUTO_NATIVE_REF_CLEANUP ? CLEANER_INSTANCE.register(keySet, task) : task::run;
@@ -117,8 +125,9 @@ class ReferenceCleaner
 			if (ENABLE_AUTO_NATIVE_REF_CLEANUP)
 			{
 				Elektra.INSTANCE.keyDecRef (keyPointer);
+				return (Elektra.INSTANCE.keyDel (keyPointer) == 0);
 			}
-			return (Elektra.INSTANCE.keyDel (keyPointer) == 0);
+			return false;
 		}
 	}
 

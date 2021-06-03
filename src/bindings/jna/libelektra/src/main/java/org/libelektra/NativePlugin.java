@@ -5,26 +5,33 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import java.util.ArrayList;
 import java.util.List;
-import org.libelektra.exception.ExceptionMapperService;
 import org.libelektra.exception.InstallationException;
-import org.libelektra.exception.KDBException;
 import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeySetReleasedException;
 
 /**
- * This class can be used to load native Elektra plugins to be used by Java directly
+ * This class can be used to load native Elektra plugins to be used by Java
+ * directly
  */
 public class NativePlugin implements Plugin
 {
 
 	private ElektraPlugin elektraPlugin;
 
+	// TODO shouldn't natove plugin be closable: Elektra.INSTANCE.elektraPluginOpen
+	// TODO has Plugin::open to be called for native plugin? and if not, because
+	// elektra did that already, isn't Plugin the wrong interface
+	// TODO is there a need for Java plugins directly being accessed via Java
+	// binding and not through elektra? (don't think so - @markus2330 also don't
+	// thinks so -> scheduled for removal)
+
 	/**
 	 * Constructor for loading an Elektra plugin
+	 *
 	 * @param pluginName The plugin name
-	 * @param errorKey The errorKey
-	 * @param modules TODO #3754 add parameter description
-	 * @throws InstallationException if the plugin does not exist
+	 * @param errorKey   The errorKey
+	 * @param modules    TODO #3754 add parameter description
+	 * @throws InstallationException   if the plugin does not exist
 	 * @throws KeySetReleasedException if {@code modules} has already been released
 	 * @throws KeyReleasedException    if {@code errorKey} has already been released
 	 */
@@ -36,7 +43,7 @@ public class NativePlugin implements Plugin
 		if (elektraPlugin == null)
 		{
 			Key temporaryError = Key.create ("user:/temporary/errorkey");
-			temporaryError.setMeta ("error/number", InstallationException.errorNumber ());
+			temporaryError.setMeta ("error/number", InstallationException.ERROR_NUMBER);
 			temporaryError.setMeta ("error/reason", String.format ("I could not find plugin '%s'", pluginName));
 			throw new InstallationException (temporaryError);
 		}
@@ -44,11 +51,13 @@ public class NativePlugin implements Plugin
 
 	/**
 	 * Constructor for loading an Elektra plugin
+	 *
 	 * @param pluginName The plugin name
-	 * @param errorKey The errorKey
-	 * @param config TODO #3754 add parameter description and update other
-	 * @param modules TODO #3754 add parameter description and update other
-	 * @throws KeySetReleasedException if {@code modules} or {@code config} has already been released
+	 * @param errorKey   The errorKey
+	 * @param config     TODO #3754 add parameter description and update other
+	 * @param modules    TODO #3754 add parameter description and update other
+	 * @throws KeySetReleasedException if {@code modules} or {@code config} has
+	 *                                 already been released
 	 * @throws KeyReleasedException    if {@code errorKey} has already been released
 	 */
 	public NativePlugin (String pluginName, KeySet modules, KeySet config, Key errorKey)
@@ -77,7 +86,7 @@ public class NativePlugin implements Plugin
 	 *
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
 	 * @return 0 if success or -1 otherwise
-	 * @throws KeyReleasedException    if {@code errorKey} has already been released
+	 * @throws KeyReleasedException if {@code errorKey} has already been released
 	 */
 	public int kdbOpen (Key errorKey)
 	{
@@ -101,19 +110,19 @@ public class NativePlugin implements Plugin
 	 * @param keySet   The KeySet to transform
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
 	 * @return 0 if success or -1 otherwise
-	 * @throws KDBException if return value was -1
+	 * @throws KDBException            if return value was -1
 	 * @throws KeySetReleasedException if {@code keySet} has already been released
 	 * @throws KeyReleasedException    if {@code errorKey} has already been released
 	 */
 	@Override public int set (KeySet keySet, Key errorKey) throws KDBException
 	{
-		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code
-		// KeySet} API
+		// TODO #3171 since internal cursor is not yet removed, we have to rewind it,
+		// even if we already removed it from {@code KeySet} API
 		Elektra.INSTANCE.ksRewind (keySet.getPointer ());
 		int returnValue = elektraPlugin.kdbSet.invoke (elektraPlugin, keySet.getPointer (), errorKey.getPointer ());
 		if (returnValue == -1)
 		{
-			throw ExceptionMapperService.getMappedException (errorKey);
+			throw KDBException.getMappedException (errorKey);
 		}
 		return returnValue;
 	}
@@ -124,19 +133,19 @@ public class NativePlugin implements Plugin
 	 * @param keySet   The KeySet you want returned
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
 	 * @return 0 if success or -1 otherwise
-	 * @throws KDBException if return value was -1
+	 * @throws KDBException            if return value was -1
 	 * @throws KeySetReleasedException if {@code keySet} has already been released
 	 * @throws KeyReleasedException    if {@code errorKey} has already been released
 	 */
 	@Override public int get (KeySet keySet, Key errorKey) throws KDBException
 	{
-		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code
-		// KeySet} API
+		// TODO #3171 since internal cursor is not yet removed, we have to rewind it,
+		// even if we already removed it from {@code KeySet} API
 		Elektra.INSTANCE.ksRewind (keySet.getPointer ());
 		int returnValue = elektraPlugin.kdbGet.invoke (elektraPlugin, keySet.getPointer (), errorKey.getPointer ());
 		if (returnValue == -1)
 		{
-			throw ExceptionMapperService.getMappedException (errorKey);
+			throw KDBException.getMappedException (errorKey);
 		}
 		return returnValue;
 	}
@@ -145,15 +154,16 @@ public class NativePlugin implements Plugin
 	 * Called in case an error happened
 	 *
 	 * @param keySet   The affected KeySet
-	 * @param errorKey must be a valid key, e.g. created with Key.create() and contains error information
+	 * @param errorKey must be a valid key, e.g. created with Key.create() and
+	 *                 contains error information
 	 * @return 0 if success or -1 otherwise
 	 * @throws KeySetReleasedException if {@code keySet} has already been released
 	 * @throws KeyReleasedException    if {@code errorKey} has already been released
 	 */
 	@Override public int error (KeySet keySet, Key errorKey)
 	{
-		// TODO #3171 since internal cursor is not yet removed, we have to rewind it, even if we already removed it from {@code
-		// KeySet} API
+		// TODO #3171 since internal cursor is not yet removed, we have to rewind it,
+		// even if we already removed it from {@code KeySet} API
 		Elektra.INSTANCE.ksRewind (keySet.getPointer ());
 		return elektraPlugin.kdbError.invoke (elektraPlugin, keySet.getPointer (), errorKey.getPointer ());
 	}
@@ -198,7 +208,6 @@ public class NativePlugin implements Plugin
 		public KdbSet kdbSet;
 		public KdbError kdbError;
 		public String name;
-
 
 		@Override protected List<String> getFieldOrder ()
 		{

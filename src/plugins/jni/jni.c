@@ -38,7 +38,8 @@ typedef struct
 	int printException;
 	jmethodID midKeyConstr;
 	jmethodID midKeySetConstr;
-	jmethodID midKeyDecRef;
+	// TODO #3869 remove comment from the following 1 line when automated clean-up has been fixed
+	// jmethodID midKeyDecRef;
 	jobject plugin;
 } Data;
 
@@ -100,8 +101,7 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	}
 	checkException (data, method, errorKey);
 
-	// #3825 commented out since reference counter increase on Java Key creation is dissabled
-	// (ReferenceCleaner.ENABLE_AUTO_NATIVE_REF_CLEANUP = false)
+	// TODO #3869 remove comment from the following 2 lines when automated clean-up has been fixed
 	//(*data->env)->CallVoidMethod (data->env, jerrorKey, data->midKeyDecRef);
 	// checkException (data, method, errorKey);
 
@@ -147,8 +147,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	}
 	checkException (data, method, errorKey);
 
-	// #3825 commented out since reference counter increase on Java Key creation is dissabled
-	// (ReferenceCleaner.ENABLE_AUTO_NATIVE_REF_CLEANUP = false)
+	// TODO #3869 remove comment from the following 2 lines when automated clean-up has been fixed
 	//(*data->env)->CallVoidMethod (data->env, jkey, data->midKeyDecRef);
 	// checkException (data, method, errorKey);
 
@@ -219,7 +218,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	JavaVMOption options[2];
 	options[0].optionString = classpath;
 	options[1].optionString = option;
-	vmArgs.version = JNI_VERSION_1_8;
+	vmArgs.version = JNI_VERSION_10;
 	vmArgs.nOptions = 2;
 	vmArgs.options = options;
 	vmArgs.ignoreUnrecognized = ign;
@@ -295,12 +294,13 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 		return -1;
 	}
 
-	data->midKeyDecRef = (*data->env)->GetMethodID (data->env, data->clsKey, "decRef", "()V");
-	if (data->midKeyDecRef == 0)
-	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java method of Key::decRef()");
-		return -1;
-	}
+	// TODO #3869 remove comment from the following 6 lines when automated clean-up has been fixed
+	// data->midKeyDecRef = (*data->env)->GetMethodID (data->env, data->clsKey, "decRef", "()V");
+	// if (data->midKeyDecRef == 0)
+	//{
+	//	ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java method of Key::decRef()");
+	//	return -1;
+	//}
 
 	jmethodID midPluginConstructor = (*data->env)->GetMethodID (data->env, data->clsPlugin, "<init>", "()V");
 	if (midPluginConstructor == 0)
