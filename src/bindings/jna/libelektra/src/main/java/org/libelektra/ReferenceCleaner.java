@@ -28,7 +28,7 @@ class ReferenceCleaner
 	 * <li>decreasing a key's reference counter and calling keyDel when a Java Key representation is released is disabled</li>
 	 * </ul>
 	 */
-	@Deprecated (forRemoval = true) private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = true;
+	@Deprecated (forRemoval = true) private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = false;
 
 	@Nullable private static final Cleaner CLEANER_INSTANCE = ENABLE_AUTO_NATIVE_REF_CLEANUP ? Cleaner.create () : null;
 

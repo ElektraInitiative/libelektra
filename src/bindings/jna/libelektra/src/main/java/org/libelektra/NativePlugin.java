@@ -22,7 +22,8 @@ public class NativePlugin implements Plugin
 	// TODO has Plugin::open to be called for native plugin? and if not, because
 	// elektra did that already, isn't Plugin the wrong interface
 	// TODO is there a need for Java plugins directly being accessed via Java
-	// binding and not through elektra? (don't think so)
+	// binding and not through elektra? (don't think so - @markus2330 also don't
+	// thinks so -> scheduled for removal)
 
 	/**
 	 * Constructor for loading an Elektra plugin
@@ -116,8 +117,7 @@ public class NativePlugin implements Plugin
 	@Override public int set (KeySet keySet, Key errorKey) throws KDBException
 	{
 		// TODO #3171 since internal cursor is not yet removed, we have to rewind it,
-		// even if we already removed it from {@code
-		// KeySet} API
+		// even if we already removed it from {@code KeySet} API
 		Elektra.INSTANCE.ksRewind (keySet.getPointer ());
 		int returnValue = elektraPlugin.kdbSet.invoke (elektraPlugin, keySet.getPointer (), errorKey.getPointer ());
 		if (returnValue == -1)
@@ -140,8 +140,7 @@ public class NativePlugin implements Plugin
 	@Override public int get (KeySet keySet, Key errorKey) throws KDBException
 	{
 		// TODO #3171 since internal cursor is not yet removed, we have to rewind it,
-		// even if we already removed it from {@code
-		// KeySet} API
+		// even if we already removed it from {@code KeySet} API
 		Elektra.INSTANCE.ksRewind (keySet.getPointer ());
 		int returnValue = elektraPlugin.kdbGet.invoke (elektraPlugin, keySet.getPointer (), errorKey.getPointer ());
 		if (returnValue == -1)
@@ -164,8 +163,7 @@ public class NativePlugin implements Plugin
 	@Override public int error (KeySet keySet, Key errorKey)
 	{
 		// TODO #3171 since internal cursor is not yet removed, we have to rewind it,
-		// even if we already removed it from {@code
-		// KeySet} API
+		// even if we already removed it from {@code KeySet} API
 		Elektra.INSTANCE.ksRewind (keySet.getPointer ());
 		return elektraPlugin.kdbError.invoke (elektraPlugin, keySet.getPointer (), errorKey.getPointer ());
 	}

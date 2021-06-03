@@ -38,9 +38,8 @@ typedef struct
 	int printException;
 	jmethodID midKeyConstr;
 	jmethodID midKeySetConstr;
-	// #3825 comment out the following 1 line if reference counter increase on Java Key creation is dissabled
-	// (ReferenceCleaner.ENABLE_AUTO_NATIVE_REF_CLEANUP = false)
-	jmethodID midKeyDecRef;
+	// TODO #3869 remove comment from the following 1 line when automated clean-up has been fixed
+	// jmethodID midKeyDecRef;
 	jobject plugin;
 } Data;
 
@@ -102,10 +101,9 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	}
 	checkException (data, method, errorKey);
 
-	// #3825 comment out the following 2 lines if reference counter increase on Java Key creation is dissabled
-	// (ReferenceCleaner.ENABLE_AUTO_NATIVE_REF_CLEANUP = false)
-	(*data->env)->CallVoidMethod (data->env, jerrorKey, data->midKeyDecRef);
-	checkException (data, method, errorKey);
+	// TODO #3869 remove comment from the following 2 lines when automated clean-up has been fixed
+	//(*data->env)->CallVoidMethod (data->env, jerrorKey, data->midKeyDecRef);
+	// checkException (data, method, errorKey);
 
 	// clean up local references
 	(*data->env)->DeleteLocalRef (data->env, jerrorKey);
@@ -149,10 +147,9 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	}
 	checkException (data, method, errorKey);
 
-	// #3825 comment out the following 2 lines if reference counter increase on Java Key creation is dissabled
-	// (ReferenceCleaner.ENABLE_AUTO_NATIVE_REF_CLEANUP = false)
-	(*data->env)->CallVoidMethod (data->env, jkey, data->midKeyDecRef);
-	checkException (data, method, errorKey);
+	// TODO #3869 remove comment from the following 2 lines when automated clean-up has been fixed
+	//(*data->env)->CallVoidMethod (data->env, jkey, data->midKeyDecRef);
+	// checkException (data, method, errorKey);
 
 	// clean up local references
 	(*data->env)->DeleteLocalRef (data->env, jkey);
@@ -297,14 +294,13 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 		return -1;
 	}
 
-	// #3825 comment out the following 6 lines if reference counter increase on Java Key creation is dissabled
-	// (ReferenceCleaner.ENABLE_AUTO_NATIVE_REF_CLEANUP = false)
-	data->midKeyDecRef = (*data->env)->GetMethodID (data->env, data->clsKey, "decRef", "()V");
-	if (data->midKeyDecRef == 0)
-	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java method of Key::decRef()");
-		return -1;
-	}
+	// TODO #3869 remove comment from the following 6 lines when automated clean-up has been fixed
+	// data->midKeyDecRef = (*data->env)->GetMethodID (data->env, data->clsKey, "decRef", "()V");
+	// if (data->midKeyDecRef == 0)
+	//{
+	//	ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java method of Key::decRef()");
+	//	return -1;
+	//}
 
 	jmethodID midPluginConstructor = (*data->env)->GetMethodID (data->env, data->clsPlugin, "<init>", "()V");
 	if (midPluginConstructor == 0)

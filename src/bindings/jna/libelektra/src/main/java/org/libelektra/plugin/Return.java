@@ -14,27 +14,27 @@ public class Return implements Plugin
 		return KeySet.create ();
 	}
 
-	@Override public int open (final KeySet conf, final Key errorKey)
+	@Override public int open (KeySet conf, Key errorKey)
 	{
 		return 0;
 	}
 
-	@Override public int get (final KeySet ks, final Key parentKey)
+	@Override public int get (KeySet keySet, Key parentKey)
 	{
 		return 10;
 	}
 
-	@Override public int set (final KeySet ks, final Key parentKey)
+	@Override public int set (KeySet keySet, Key parentKey)
 	{
 		return 20;
 	}
 
-	@Override public int error (final KeySet ks, final Key parentKey)
+	@Override public int error (KeySet keySet, Key parentKey)
 	{
 		return 30;
 	}
 
-	@Override public int close (final Key parentKey)
+	@Override public int close (Key parentKey)
 	{
 		return 0;
 	}

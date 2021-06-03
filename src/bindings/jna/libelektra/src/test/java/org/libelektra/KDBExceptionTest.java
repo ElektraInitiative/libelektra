@@ -40,7 +40,7 @@ public class KDBExceptionTest
 		assertEquals (expectedDebugInformation, exception.getDebugInformation ());
 
 		var builder = new StringBuilder ();
-		builder.append (String.format (KDBException.MSG_MODULE_ERRROR_NUMBER, module, errorNumber)).append ("\n");
+		builder.append (String.format (KDBException.MSG_MODULE_ERROR_NUMBER, module, errorNumber)).append ("\n");
 		builder.append (reason).append ("\n");
 		builder.append (KDBException.MSG_CONFIGFILE).append (configFile).append ("\n");
 		builder.append (KDBException.MSG_MOUNTPOINT).append (mountpoint).append ("\n");

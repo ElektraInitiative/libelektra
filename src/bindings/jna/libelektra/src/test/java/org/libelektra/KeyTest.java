@@ -60,6 +60,11 @@ public class KeyTest
 	static final String KEY_12_NAME = "/key_test/10/key_name/sub/1";
 	static final String KEY_12_VALUE = "blub3";
 
+	@Test public void test_createNameless_shouldPass ()
+	{
+		Key.createNameless().getPointer();
+	}
+	
 	@Test public void test_createKey_shouldPass ()
 	{
 		var key = Key.create (KEY_1_NAME, KEY_1_VALUE);

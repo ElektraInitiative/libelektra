@@ -227,7 +227,7 @@ public interface Elektra extends Library {
 
 	// Key methods --------------------------------------------------------------
 
-	static final String KEY_LOCAL_NAME = "/";
+	static final String KEY_NAME_SIMPLE_INITALIZED_BUT_EMPTY_OBJECT = "/";
 
 	/**
 	 * A practical way to fully create a Key object in one step.<br >
@@ -237,7 +237,7 @@ public interface Elektra extends Library {
 	 *
 	 * @see #keyDel(Pointer) keyDel()
 	 *
-	 * @param name A valid name to the key, or {@link #KEY_LOCAL_NAME} to get a
+	 * @param name A valid name to the key, or {@link #KEY_NAME_SIMPLE_INITALIZED_BUT_EMPTY_OBJECT} to get a
 	 *             simple initialized, but really empty, object.
 	 * @param args Argument flags, each followed by a corresponding value, if
 	 *             appropriate.

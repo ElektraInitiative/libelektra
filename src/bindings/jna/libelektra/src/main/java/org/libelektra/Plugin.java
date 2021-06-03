@@ -10,22 +10,17 @@ public interface Plugin {
 	/**
 	 * Return value for plugin methods: An error occurred inside the plugin function
 	 */
-	static final int PLUGIN_STATUS_ERROR = -1;
+	static final int STATUS_ERROR = -1;
 
 	/**
 	 * Return value for plugin methods: Everything went fine
 	 */
-	static final int PLUGIN_STATUS_SUCCESS = 1;
+	static final int STATUS_SUCCESS = 1;
 
 	/**
 	 * Return value for plugin methods: Everything went fine and the function **did not** update the given key set / configuration
 	 */
-	static final int PLUGIN_STATUS_NO_UPDATE = 0;
-
-	/**
-	 * Return value for plugin methods: Everything went fine and a cache was hit
-	 */
-	static final int PLUGIN_STATUS_CACHE_HIT = 2;
+	static final int STATUS_NO_UPDATE = 0;
 
 	/**
 	 * @return {@link KeySet} containing the plugin configuration
@@ -43,8 +38,8 @@ public interface Plugin {
 	 * @param config   Plugin configuration key set
 	 * @param errorKey Used to store warnings and error information
 	 * @return Plugin's return value for open
-	 * @see #PLUGIN_STATUS_SUCCESS
-	 * @see #PLUGIN_STATUS_ERROR
+	 * @see #STATUS_SUCCESS
+	 * @see #STATUS_ERROR
 	 */
 	int open (KeySet config, Key errorKey);
 
@@ -55,8 +50,8 @@ public interface Plugin {
 	 * @param parentKey Parent key for retrieval
 	 * @throws KDBException if Elektra could not set the key set
 	 * @return the plugin's return value for get
-	 * @see #PLUGIN_STATUS_SUCCESS
-	 * @see #PLUGIN_STATUS_ERROR
+	 * @see #STATUS_SUCCESS
+	 * @see #STATUS_ERROR
 	 */
 	int get (KeySet keySet, Key parentKey) throws KDBException;
 

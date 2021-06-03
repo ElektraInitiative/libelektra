@@ -13,6 +13,6 @@ public class ExceptionMapperTest
 		var errorKey = Key.create ("user:/temporary/errorkey").setMeta ("error/number", errorNumber);
 		var mappedException = KDBException.getMappedException (errorKey);
 
-		assertEquals (String.format (KDBException.MSG_UNKNOWN_ERRROR_NUMBER, errorNumber), mappedException.getReason ());
+		assertEquals (String.format (KDBException.MSG_UNKNOWN_ERROR_NUMBER, errorNumber), mappedException.getReason ());
 	}
 }

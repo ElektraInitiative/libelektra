@@ -28,7 +28,7 @@ public class KDB implements AutoCloseable
 	 */
 	@Nonnull public static KDB open () throws KDBException
 	{
-		var errorKey = Key.create (Key.KEY_LOCAL_NAME);
+		var errorKey = Key.createNameless ();
 		var session = checkKDBPointer (Elektra.INSTANCE.kdbOpen (null, errorKey.getPointer ()), errorKey);
 
 		// errorKey is being released if no KDBException occurred
@@ -48,6 +48,7 @@ public class KDB implements AutoCloseable
 	 * @throws KeyReleasedException     if {@code errorKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code errorKey} is {@code null}
+	 * @see Key#createNameless()
 	 */
 	@Nonnull public static KDB open (Key errorKey) throws KDBException
 	{
@@ -72,7 +73,7 @@ public class KDB implements AutoCloseable
 	@Nonnull public static KDB open (KeySet contract) throws KDBException
 	{
 		argNotNull (contract, "KeySet 'contract'");
-		var errorKey = Key.create (Key.KEY_LOCAL_NAME);
+		var errorKey = Key.createNameless ();
 		var session = open (contract, errorKey);
 
 		// errorKey is being released if no KDBException occurred
@@ -97,6 +98,7 @@ public class KDB implements AutoCloseable
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code contract} or {@code errorKey} is
 	 *                                  {@code null}
+	 * @see Key#createNameless()
 	 */
 	@Nonnull public static KDB open (KeySet contract, Key errorKey) throws KDBException
 	{
@@ -123,7 +125,7 @@ public class KDB implements AutoCloseable
 	 */
 	@Override public void close () throws KDBException
 	{
-		var errorKey = Key.create (Key.KEY_LOCAL_NAME);
+		var errorKey = Key.createNameless ();
 		close (errorKey);
 
 		// errorKey is being released if no KDBException occurred
@@ -140,6 +142,7 @@ public class KDB implements AutoCloseable
 	 * @throws KeyReleasedException     if {@code parentKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code errorKey} is {@code null}
+	 * @see Key#createNameless()
 	 */
 	public void close (Key errorKey) throws KDBException
 	{
@@ -289,6 +292,7 @@ public class KDB implements AutoCloseable
 	 * @throws KDBClosedException      if this session has already been closed
 	 * @throws KeySetReleasedException if {@code keySet} has already been released
 	 * @throws KeyReleasedException    if {@code errorKey} has already been released
+	 * @see Key#createNameless()
 	 */
 	public KDB set (KeySet keySet, Key errorKey) throws KDBException
 	{

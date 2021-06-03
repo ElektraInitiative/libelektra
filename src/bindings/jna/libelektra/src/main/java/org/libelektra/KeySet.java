@@ -22,7 +22,7 @@ import org.libelektra.exception.KeySetReleasedException;
 public class KeySet implements Iterable<Key>
 {
 
-	// constants
+	// constants - TODO document meaning and usage
 	public static final int KDB_O_NONE = 0;
 	public static final int KDB_O_DEL = 1;
 	public static final int KDB_O_POP = 1 << 1;
@@ -196,18 +196,6 @@ public class KeySet implements Iterable<Key>
 	}
 
 	/**
-	 * Indicates whether synchronization is necessary
-	 *
-	 * @return True if sync is necessary, false otherwise
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been
-	 *                                 released
-	 */
-	public boolean needsSync ()
-	{
-		return Elektra.INSTANCE.ksNeedSync (getPointer ()) > 0;
-	}
-
-	/**
 	 * Indicates the key set size
 	 *
 	 * @return Number of keys contained by this key set
@@ -299,7 +287,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws NoSuchElementException  if key set is empty
 	 * @see Key#release()
 	 */
-	@Nonnull public Key head ()
+	@Nonnull public Key first ()
 	{
 		return checkKeyPointer (Elektra.INSTANCE.ksHead (getPointer ()), NoSuchElementException::new);
 	}
@@ -313,7 +301,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws NoSuchElementException  if key set is empty
 	 * @see Key#release()
 	 */
-	@Nonnull public Key tail ()
+	@Nonnull public Key last ()
 	{
 		return checkKeyPointer (Elektra.INSTANCE.ksTail (getPointer ()), NoSuchElementException::new);
 	}

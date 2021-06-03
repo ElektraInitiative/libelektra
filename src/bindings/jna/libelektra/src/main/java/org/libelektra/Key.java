@@ -1,8 +1,8 @@
 package org.libelektra;
 
-import static org.libelektra.Key.KeyNewArgumentTag.KEY_END;
-import static org.libelektra.Key.KeyNewArgumentTag.KEY_META;
-import static org.libelektra.Key.KeyNewArgumentTag.KEY_VALUE;
+import static org.libelektra.Key.CreateArgumentTag.KEY_END;
+import static org.libelektra.Key.CreateArgumentTag.KEY_META;
+import static org.libelektra.Key.CreateArgumentTag.KEY_VALUE;
 import static org.libelektra.ValidationUtil.argNotNull;
 import static org.libelektra.ValidationUtil.argNotNullOrBlank;
 import static org.libelektra.ValidationUtil.checkKeyPointer;
@@ -34,7 +34,7 @@ public class Key implements Iterable<String>
 	/**
 	 * Argument tags for use with {@link #create(String, Object...)}
 	 */
-	public enum KeyNewArgumentTag {
+	public enum CreateArgumentTag {
 
 		/**
 		 * Used as a parameter terminator
@@ -73,7 +73,7 @@ public class Key implements Iterable<String>
 
 		public final Integer value;
 
-		private KeyNewArgumentTag (int value)
+		private CreateArgumentTag (int value)
 		{
 			this.value = Integer.valueOf (value);
 		}
@@ -110,12 +110,6 @@ public class Key implements Iterable<String>
 	 */
 	public static final int KEY_CP_ALL = KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META;
 
-	/**
-	 * Use this as name for a new {@link Key} if a local key is required (e.g.
-	 * usable for error feedback used in some API methods)
-	 */
-	public static final String KEY_LOCAL_NAME = Elektra.KEY_LOCAL_NAME;
-
 	@Nullable private Pointer pointer;
 
 	@Nullable private Cleaner.Cleanable cleanable;
@@ -134,24 +128,44 @@ public class Key implements Iterable<String>
 	}
 
 	/**
+	 * Constructs a temporary nameless {@link Key} which cannot be saved to the key
+	 * data base but used for transferring warnings and error information.
+	 *
+	 * @return New nameless key
+	 * @see #release()
+	 */
+	@Nonnull public static Key createNameless ()
+	{
+		// TODO passing NULL to keyNew should do the trick, but keyNew documentation is
+		// obviously wrong about that at the moment - therefore we ar currently passing
+		// "/"
+		// TODO it may be even better to completely remove errorKey parameters from the
+		// Java API and implicitly create a temporary key for transferring warnings and
+		// error information, since it should always get mapped to the appropriate
+		// exception anyways
+		return create (Elektra.INSTANCE.keyNew (Elektra.KEY_NAME_SIMPLE_INITALIZED_BUT_EMPTY_OBJECT))
+			.orElseThrow (IllegalStateException::new);
+	}
+
+	/**
 	 * Constructs a new {@link Key} with the specified content and arguments<br>
 	 *
 	 * @param name Key name; first part of key-value pair
 	 * @param args Arguments used for key value<br>
 	 *             Example:<br>
-	 *             {@link KeyNewArgumentTag#KEY_VALUE}, "custom key value",
-	 *             {@link KeyNewArgumentTag#KEY_END}
+	 *             {@link CreateArgumentTag#KEY_VALUE}, "custom key value",
+	 *             {@link CreateArgumentTag#KEY_END}
 	 * @return New key
 	 * @throws KeyNameException if the key name is invalid
-	 * @see #KEY_LOCAL_NAME
+	 * @see CreateArgumentTag
 	 * @see #release()
 	 */
 	@Nonnull protected static Key create (String name, Object... args)
 	{
-		return create (Elektra.INSTANCE.keyNew (
-				       name, Arrays.stream (args)
-						     .map (o -> (o instanceof KeyNewArgumentTag) ? ((KeyNewArgumentTag) o).value : o)
-						     .toArray ()))
+		return create (Elektra.INSTANCE.keyNew (name,
+							Arrays.stream (args)
+								.map (o -> (o instanceof CreateArgumentTag) ? ((CreateArgumentTag) o).value : o)
+								.toArray ()))
 			.orElseThrow (KeyNameException::new);
 	}
 
@@ -165,7 +179,6 @@ public class Key implements Iterable<String>
 	 *              filtered away
 	 * @return New key
 	 * @throws KeyNameException if the key name is invalid
-	 * @see #KEY_LOCAL_NAME
 	 * @see #release()
 	 */
 	@Nonnull public static Key create (String name, @Nullable Object value, Key... meta)
@@ -204,7 +217,6 @@ public class Key implements Iterable<String>
 	 *             values.
 	 * @return New key object
 	 * @throws KeyNameException if the key name is invalid
-	 * @see #KEY_LOCAL_NAME
 	 * @see #release()
 	 */
 	@Nonnull public static Key create (String name, Key... meta)
@@ -298,6 +310,11 @@ public class Key implements Iterable<String>
 	{
 		return new KeyNameIterator (this);
 	}
+
+	// TODO #3869 think about whether to remove get*AndRelease methods once
+	// automated clean-up works flawlessly
+	// also see
+	// https://github.com/ElektraInitiative/libelektra/pull/3863#discussion_r644677508
 
 	/**
 	 * @return {@link #getString()} interpreted as boolean value
@@ -1013,17 +1030,6 @@ public class Key implements Iterable<String>
 	{
 		argNotNull (other, "Key 'other'");
 		return Integer.signum (Elektra.INSTANCE.keyCmp (getPointer (), other.getPointer ()));
-	}
-
-	/**
-	 * Checks whether synchronization is necessary
-	 *
-	 * @return True, if this key needs sync, false if no change was done
-	 * @throws KeyReleasedException if this {@link Key} has already been released
-	 */
-	public boolean needsSync ()
-	{
-		return Elektra.INSTANCE.keyNeedSync (getPointer ()) > 0;
 	}
 
 	/**

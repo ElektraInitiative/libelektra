@@ -26,10 +26,11 @@ import org.libelektra.exception.SyntacticValidationException;
 public abstract class KDBException extends Exception
 {
 
-	protected static final String META_KEY_NOT_FOUND_VALUE = "(unknown)";
-	protected static final String MSG_UNKNOWN_ERRROR_NUMBER =
+	protected static final String VALUE_META_KEY_NOT_FOUND = "(unknown)";
+
+	protected static final String MSG_UNKNOWN_ERROR_NUMBER =
 		"Sorry, could not map error number '%s'. Please report this incident at https://issues.libelektra.org/";
-	protected static final String MSG_MODULE_ERRROR_NUMBER = "Sorry, module %s issued error %s:";
+	protected static final String MSG_MODULE_ERROR_NUMBER = "Sorry, module %s issued error %s:";
 	protected static final String MSG_CONFIGFILE = "Configfile: ";
 	protected static final String MSG_MOUNTPOINT = "Mountpoint: ";
 	protected static final String MSG_DEBUGINFO = "At: %s:%s";
@@ -53,7 +54,7 @@ public abstract class KDBException extends Exception
 	@Nonnull public static KDBException getMappedException (Key errorKey)
 	{
 		argNotNull (errorKey, "Key 'errorKey'");
-		String errorNumber = errorKey.getMeta ("error/number").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE);
+		String errorNumber = errorKey.getMeta ("error/number").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
 
 		if (errorNumber.equals (ResourceException.ERROR_NUMBER))
 		{
@@ -92,7 +93,7 @@ public abstract class KDBException extends Exception
 			return new SemanticValidationException (errorKey);
 		}
 
-		errorKey.setMeta ("error/reason", String.format (MSG_UNKNOWN_ERRROR_NUMBER, errorNumber));
+		errorKey.setMeta ("error/reason", String.format (MSG_UNKNOWN_ERROR_NUMBER, errorNumber));
 		return new InternalException (errorKey);
 	}
 
@@ -146,7 +147,7 @@ public abstract class KDBException extends Exception
 	 */
 	@Nonnull public String getErrorNumber ()
 	{
-		return errorKey.getMeta ("error/number").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE);
+		return errorKey.getMeta ("error/number").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
@@ -170,7 +171,7 @@ public abstract class KDBException extends Exception
 	 */
 	@Nonnull public String getMountpoint ()
 	{
-		return errorKey.getMeta ("error/mountpoint").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE);
+		return errorKey.getMeta ("error/mountpoint").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
@@ -181,8 +182,8 @@ public abstract class KDBException extends Exception
 	@Nonnull public String getDebugInformation ()
 	{
 		return String.format (MSG_DEBUGINFO,
-				      errorKey.getMeta ("error/file").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE),
-				      errorKey.getMeta ("error/line").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE));
+				      errorKey.getMeta ("error/file").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND),
+				      errorKey.getMeta ("error/line").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND));
 	}
 
 	/**
@@ -192,7 +193,7 @@ public abstract class KDBException extends Exception
 	 */
 	@Nonnull public String getModule ()
 	{
-		return errorKey.getMeta ("error/module").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE);
+		return errorKey.getMeta ("error/module").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
@@ -202,7 +203,7 @@ public abstract class KDBException extends Exception
 	 */
 	@Nonnull public String getReason ()
 	{
-		return errorKey.getMeta ("error/reason").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE);
+		return errorKey.getMeta ("error/reason").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
@@ -214,7 +215,7 @@ public abstract class KDBException extends Exception
 	@Override public String getMessage ()
 	{
 		StringBuilder builder = new StringBuilder ();
-		builder.append (String.format (MSG_MODULE_ERRROR_NUMBER, getModule (), getErrorNumber ())).append ("\n");
+		builder.append (String.format (MSG_MODULE_ERROR_NUMBER, getModule (), getErrorNumber ())).append ("\n");
 		builder.append (getReason ()).append ("\n");
 		builder.append (MSG_CONFIGFILE).append (getConfigFile ()).append ("\n");
 		errorKey.getMeta ("error/mountpoint")
@@ -269,19 +270,19 @@ public abstract class KDBException extends Exception
 			Arrays.fill (underscores, '_');
 			final String warningKeyName = "warnings/#" + new String (underscores) + warningIndex;
 			warningNumber =
-				key.getMeta (warningKeyName + "/number").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE);
-			reason = key.getMeta (warningKeyName + "/reason").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE);
-			module = key.getMeta (warningKeyName + "/module").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE);
+				key.getMeta (warningKeyName + "/number").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+			reason = key.getMeta (warningKeyName + "/reason").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+			module = key.getMeta (warningKeyName + "/module").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
 			debugInformation = String.format (
 				MSG_DEBUGINFO,
-				key.getMeta (warningKeyName + "/file").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE),
-				key.getMeta (warningKeyName + "/line").map (Key::getStringAndRelease).orElse (META_KEY_NOT_FOUND_VALUE));
+				key.getMeta (warningKeyName + "/file").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND),
+				key.getMeta (warningKeyName + "/line").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND));
 			mountpoint = key.getMeta (warningKeyName + "/mountpoint")
 					     .map (Key::getStringAndRelease)
-					     .orElse (META_KEY_NOT_FOUND_VALUE);
+					     .orElse (VALUE_META_KEY_NOT_FOUND);
 			configFile = key.getMeta (warningKeyName + "/configfile")
 					     .map (Key::getStringAndRelease)
-					     .orElse (META_KEY_NOT_FOUND_VALUE);
+					     .orElse (VALUE_META_KEY_NOT_FOUND);
 		}
 
 		/**

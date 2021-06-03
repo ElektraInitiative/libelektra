@@ -208,8 +208,8 @@ public class KeySetTest
 	{
 		var ks = KeySet.create (6, key, key2, key3, key4, key5, key6);
 
-		assertEquals (key.getPointer (), ks.head ().getPointer ());
-		assertEquals (key6.getPointer (), ks.tail ().getPointer ());
+		assertEquals (key.getPointer (), ks.first ().getPointer ());
+		assertEquals (key6.getPointer (), ks.last ().getPointer ());
 	}
 
 	@Test public void test_keySetLookup_shouldPass ()

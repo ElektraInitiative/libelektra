@@ -2,7 +2,7 @@ package org.libelektra;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.libelektra.Key.KeyNewArgumentTag.KEY_META;
+import static org.libelektra.Key.CreateArgumentTag.KEY_META;
 
 import org.junit.After;
 import org.junit.Before;

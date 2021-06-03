@@ -160,29 +160,35 @@ you up to date with the multi-language support provided by Elektra.
 - Updated Java binding API documentation
 - Migrated native resource clean-up from `finalize()` to `Cleaner`
   - Please revisit the documentation for `Key::release` and `KeySet::release` for recommended resource release handling
+  - Currently automated native key and key set resource clean-up is deactivated due to some possible race conditions wich might result in double free errors (#3869). Manual key release is also disabled to not break current API release semantic. This leads to memory leaks, which is a known issue and will be resolved in an upcoming release.
 - Introduced multiple exceptions when native API calls fail - see updated java doc for details
 - Introduced early parameter validation for values which would otherwise lead to unspecific errors in native API calls
 - Several under the hood improvements
 - Update `Key` API introducing the following changes:
   - Extracted exceptions from `Key` class
   - Fixed `Key::getCurrentMeta`
-  - Moved `Elektra.KeyNewArgumentFlags` to `Key.KeyNewArgumentTag`
+  - Moved `Elektra.KeyNewArgumentFlags` to `Key.NewArgumentTag`
   - Changed return types from `int` to `boolean` or enabled a fluent interface where appropriate
   - Renamed `Key::*Integer` to `Key::*Int`
   - Renamed `KeyInvalidNameException` to `KeyNameException`
   - Renamed `KeyTypeMismatchException` to `KeyBinaryTypeNotSupportedException`
   - Introduced `Key::get*AndRelease` convenience methods
+  - Introduced `Key::createNameless`
   - Introduced `KeyReleasedException` being thrown when a released `Key` is being accessed
   - Introduced `KeyMetaException`
   - Removed unused `KeyTypeConversionException`
+  - Removed `Key::needsSync`
   - Removed `Key::isNull`
     - `KeyReleasedException` is now being thrown when a released (= previously `isNull`) `Key` is being accessed
     - `Key`s with no backing native key pointer cannot be created anymore
 - Updated `KeySet` API introducing the following changes:
+  - Changed return type enabling a fluent interface where appropriate
+  - Renamed `KeySet::head` to `KeySet::first`
+  - Renamed `KeySet::tail` to `KeySet::last`
   - Introduced `KeySetReleasedException` being thrown when a released `KeySet` is being accessed
   - Introduced `KeySetAppendException`
-  - Changed return type enabling a fluent interface where appropriate
   - Removed `KeySet::create(int, Object[])`
+  - Removed `KeySet::needsSync`
   - Methods which have been returning a nullable `Key`, now return an `Optional<Key>´
     - `KeySet::lookup*` now returns `Optional<Key>`
     - `Key::getMeta` now returns `Optional<Key>`
