@@ -821,7 +821,7 @@ def buildImageWithPackagesStage(image, previousTaskName) {
 }
 
 /**
- * Builds and publishes an image to the official Docker Hub.
+ * Builds and publishes an image to the official DockerHub and Elektra's pubic Docker registry.
  *
  * The image is tagged with a version number and additional
  * with 'latest'.
@@ -842,25 +842,56 @@ def publishImageToDockerHub(image, previousTaskName=null, imageRevision='1', tag
         if (previousTaskName) {
           copyReleaseArtifact(previousTaskName)
         }
-        docker.withRegistry('',
-                            'docker-hub-official-elektrabot') {
-          def cpus = dockerUtils.cpuCount()
-          def i = docker.build(
-            image.id,"""\
+        // publish to DockerHub
+        publishImageToRegistry(
+          '',
+          'docker-hub-official-elektrabot',
+          image,
+          imageRevision,
+          tagImageIdentifier,
+          isLatest
+        )
+        // publish to Elektra public registry
+        publishImageToRegistry(
+          "https://${PipelineConfig.instance.registry}",
+          'docker-hub-elektra-jenkins',
+          image,
+          imageRevision,
+          tagImageIdentifier,
+          isLatest
+        )
+      }
+    }
+  }]
+}
+
+
+/**
+ * Build an publish an image to a specified Docker registry
+ *
+ * @param  dockerRegistryUrl           Url of the Docker registry
+ * @param  dockerRegistryCredentialsId Jenkins credentials id to authenticate Docker registry
+ * @param  image                       image to be build and pushed
+ * @param  imageRevision               stage name under which the artifact got archived
+ * @param  tagImageIdentifier          suffix of the image tag, e.g. alpine, focal, etc.
+ * @param  isLatest                    true if the image should additionally be tagged with 'latest', otherwise false
+ */
+def publishImageToRegistry(dockerRegistryUrl, dockerRegistryCredentialsId, image, imageRevision, tagImageIdentifier, isLatest) {
+  docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
+    def cpus = dockerUtils.cpuCount()
+    def i = docker.build(
+      image.id,"""\
 --pull \
 --squash \
 --build-arg PARALLEL=${cpus} \
 -f ${image.file} ${image.context}"""
-          )
-          def dockerVersionTag = "${RELEASE_VERSION}-${imageRevision}-${tagImageIdentifier}"
-          i.push(dockerVersionTag)
-          if (isLatest) {
-            i.push('latest')
-          }
-        }
-      }
+    )
+    def dockerVersionTag = "${RELEASE_VERSION}-${imageRevision}-${tagImageIdentifier}"
+    i.push(dockerVersionTag)
+    if (isLatest) {
+      i.push('latest')
     }
-  }]
+  }
 }
 
 /**
