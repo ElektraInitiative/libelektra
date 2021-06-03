@@ -1,2 +1,2 @@
 elektra_fuse ~/mount/
-~/docker/create_keys.sh
+~/elektra_fuse/docker/create_keys.sh

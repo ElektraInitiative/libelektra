@@ -91,7 +91,7 @@ def getattr(path, fh=None):
 # returns true iff the namespace of the given path is read only
 def _namespace_is_writable(os_path):
     namespace = Path(os_path).parts[1]
-    return not namespace in ["cascading:", "proc:", "spec:"]
+    return not namespace in ["cascading:", "proc:"]
 
 # throws OSError(errno.EROFS) (read only file system) if the namespace of the given path is read only
 def _ensure_namespace_is_writable(os_path):

@@ -29,7 +29,6 @@ WORKDIR /root
 RUN mkdir /root/mount
 
 #copy source, build & install elektra_fuse wheel
-COPY ./elektra_fuse_wheel /root/elektra_fuse_wheel
-COPY ./docker /root/docker
+COPY ./ /root/elektra_fuse/
 
-RUN cd /root/elektra_fuse_wheel && ./build.sh && ./install.sh
+RUN cd /root/elektra_fuse && ./build.sh && ./install.sh
