@@ -187,43 +187,43 @@ def dockerInit() {
     )
 
     /* Install packages for Docker image release */
-    DOCKER_IMAGES.buster_release = dockerUtils.createDockerImageDesc(
-      'debian-buster-release', dockerUtils.&idArtifact,
+    DOCKER_IMAGES.buster_release = createDockerImageDescForRelease(
+      'elektra/elektra',
       './release-artifact/*/buster/',
       './scripts/docker/debian/buster/release.Dockerfile',
       false
     )
 
-    DOCKER_IMAGES.bullseye_release = dockerUtils.createDockerImageDesc(
-      'debian-bullseye-release', dockerUtils.&idArtifact,
+    DOCKER_IMAGES.bullseye_release = createDockerImageDescForRelease(
+      'elektra/elektra',
       './release-artifact/*/bullseye/',
       './scripts/docker/debian/bullseye/release.Dockerfile',
       false
     )
 
-    DOCKER_IMAGES.focal_release = dockerUtils.createDockerImageDesc(
-      'ubuntu-focal-release', dockerUtils.&idArtifact,
+    DOCKER_IMAGES.focal_release = createDockerImageDescForRelease(
+      'elektra/elektra',
       './release-artifact/*/focal/',
       './scripts/docker/ubuntu/focal/release.Dockerfile',
       false
     )
 
-    DOCKER_IMAGES.bionic_release = dockerUtils.createDockerImageDesc(
-      'ubuntu-bionic-release', dockerUtils.&idArtifact,
+    DOCKER_IMAGES.bionic_release = createDockerImageDescForRelease(
+      'elektra/elektra',
       './release-artifact/*/bionic/',
       './scripts/docker/ubuntu/bionic/release.Dockerfile',
       false
     )
 
-    DOCKER_IMAGES.fedora_33_release = dockerUtils.createDockerImageDesc(
-      'fedora-33-release', dockerUtils.&idArtifact,
+    DOCKER_IMAGES.fedora_33_release = createDockerImageDescForRelease(
+      'elektra/elektra',
       './release-artifact/*/fedora33/',
       './scripts/docker/fedora/33/release.Dockerfile',
       false
     )
 
-    DOCKER_IMAGES.fedora_34_release = dockerUtils.createDockerImageDesc(
-      'fedora-34-release', dockerUtils.&idArtifact,
+    DOCKER_IMAGES.fedora_34_release = createDockerImageDescForRelease(
+      'elektra/elektra',
       './release-artifact/*/fedora34/',
       './scripts/docker/fedora/34/release.Dockerfile',
       false
@@ -473,8 +473,8 @@ def generateImageUploadStages() {
   def tasks = [:]
 
   tasks << publishImageToDockerHub(
-    'publish-alpine',
     DOCKER_IMAGES.alpine_release,
+    null, // no artifacts need to be imported
     params.alpine_revision,
     'alpine',
     true // additionally tag with 'latest'
@@ -826,17 +826,22 @@ def buildImageWithPackagesStage(image, previousTaskName) {
  * The image is tagged with a version number and additional
  * with 'latest'.
  *
- * @param  stageName           name of the stage
  * @param  image               image to be build and pushed
+ * @param  previousTaskName    stage name under which the artifact got archived
  * @param  imageRevision       revision number of the image
  * @param  tagImageIdentifier  suffix of the image tag, e.g. alpine, focal, etc.
  * @param  isLatest            true if the image should additionally be tagged with 'latest', otherwise false
  */
-def publishImageToDockerHub(stageName, image, imageRevision='1', tagImageIdentifier, isLatest=false) {
+def publishImageToDockerHub(image, previousTaskName=null, imageRevision='1', tagImageIdentifier, isLatest=false) {
+  def stageName="publish-${tagImageIdentifier}"
   return [(stageName): {
     stage(stageName) {
       node(PipelineConfig.instance.dockerNodeLabel) {
         checkout scm
+        // copy generated packages to be installed if needed
+        if (previousTaskName) {
+          copyReleaseArtifact(previousTaskName)
+        }
         docker.withRegistry('',
                             'docker-hub-official-elektrabot') {
           def cpus = dockerUtils.cpuCount()
