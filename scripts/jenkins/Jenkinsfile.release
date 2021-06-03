@@ -472,7 +472,7 @@ def generatePublishStages() {
 def generateImageUploadStages() {
   def tasks = [:]
 
-  tasks << publishImageToDockerHub(
+  tasks << publishImage(
     DOCKER_IMAGES.alpine_release,
     null, // no artifacts need to be imported
     params.alpine_revision,
@@ -480,37 +480,37 @@ def generateImageUploadStages() {
     true // additionally tag with 'latest'
   )
 
-  tasks << publishImageToDockerHub(
+  tasks << publishImage(
     DOCKER_IMAGES.focal_release,
     'ubuntu-focal',
     ubuntu_revision,
     'focal'
   )
-  tasks << publishImageToDockerHub(
+  tasks << publishImage(
     DOCKER_IMAGES.bionic_release,
     'ubuntu-bionic',
     ubuntu_revision,
     'bionic'
   )
-  tasks << publishImageToDockerHub(
+  tasks << publishImage(
     DOCKER_IMAGES.fedora_33_release,
     'fedora-33',
     fedora_revision,
     'fedora33'
   )
-  tasks << publishImageToDockerHub(
+  tasks << publishImage(
     DOCKER_IMAGES.fedora_34_release,
     'fedora-34',
     fedora_revision,
     'fedora34'
   )
-  tasks << publishImageToDockerHub(
+  tasks << publishImage(
     DOCKER_IMAGES.buster_release,
     'debian-buster',
     debian_revision,
     'buster'
   )
-  tasks << publishImageToDockerHub(
+  tasks << publishImage(
     DOCKER_IMAGES.bullseye_release,
     'debian-bullseye',
     debian_revision,
@@ -832,7 +832,7 @@ def buildImageWithPackagesStage(image, previousTaskName) {
  * @param  tagImageIdentifier  suffix of the image tag, e.g. alpine, focal, etc.
  * @param  isLatest            true if the image should additionally be tagged with 'latest', otherwise false
  */
-def publishImageToDockerHub(image, previousTaskName=null, imageRevision='1', tagImageIdentifier, isLatest=false) {
+def publishImage(image, previousTaskName=null, imageRevision='1', tagImageIdentifier, isLatest=false) {
   def stageName="publish-${tagImageIdentifier}"
   return [(stageName): {
     stage(stageName) {
