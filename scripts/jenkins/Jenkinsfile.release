@@ -475,32 +475,46 @@ def generateImageUploadStages() {
   tasks << publishImageToDockerHub(
     'publish-alpine',
     DOCKER_IMAGES.alpine_release,
-    params.alpine_revision
+    params.alpine_revision,
+    'alpine',
+    true // additionally tag with 'latest'
   )
 
-  tasks << buildImageWithPackagesStage(
+  tasks << publishImageToDockerHub(
     DOCKER_IMAGES.focal_release,
-    'ubuntu-focal'
+    'ubuntu-focal',
+    ubuntu_revision,
+    'focal'
   )
-  tasks << buildImageWithPackagesStage(
+  tasks << publishImageToDockerHub(
     DOCKER_IMAGES.bionic_release,
-    'ubuntu-bionic'
+    'ubuntu-bionic',
+    ubuntu_revision,
+    'bionic'
   )
-  tasks << buildImageWithPackagesStage(
+  tasks << publishImageToDockerHub(
     DOCKER_IMAGES.fedora_33_release,
-    'fedora-33'
+    'fedora-33',
+    fedora_revision,
+    'fedora33'
   )
-  tasks << buildImageWithPackagesStage(
+  tasks << publishImageToDockerHub(
     DOCKER_IMAGES.fedora_34_release,
-    'fedora-34'
+    'fedora-34',
+    fedora_revision,
+    'fedora34'
   )
-  tasks << buildImageWithPackagesStage(
+  tasks << publishImageToDockerHub(
     DOCKER_IMAGES.buster_release,
-    'debian-buster'
+    'debian-buster',
+    debian_revision,
+    'buster'
   )
-  tasks << buildImageWithPackagesStage(
+  tasks << publishImageToDockerHub(
     DOCKER_IMAGES.bullseye_release,
-    'debian-bullseye'
+    'debian-bullseye',
+    debian_revision,
+    'bullseye'
   )
 
   return tasks
@@ -812,11 +826,13 @@ def buildImageWithPackagesStage(image, previousTaskName) {
  * The image is tagged with a version number and additional
  * with 'latest'.
  *
- * @param  stageName         name of the stage
- * @param  image             image to be build and pushed
- * @param  imageRevision     revision number of the image
+ * @param  stageName           name of the stage
+ * @param  image               image to be build and pushed
+ * @param  imageRevision       revision number of the image
+ * @param  tagImageIdentifier  suffix of the image tag, e.g. alpine, focal, etc.
+ * @param  isLatest            true if the image should additionally be tagged with 'latest', otherwise false
  */
-def publishImageToDockerHub(stageName, image, imageRevision='1') {
+def publishImageToDockerHub(stageName, image, imageRevision='1', tagImageIdentifier, isLatest=false) {
   return [(stageName): {
     stage(stageName) {
       node(PipelineConfig.instance.dockerNodeLabel) {
@@ -831,10 +847,11 @@ def publishImageToDockerHub(stageName, image, imageRevision='1') {
 --build-arg PARALLEL=${cpus} \
 -f ${image.file} ${image.context}"""
           )
-
-          def dockerVersionTag = "${RELEASE_VERSION}-${imageRevision}"
+          def dockerVersionTag = "${RELEASE_VERSION}-${imageRevision}-${tagImageIdentifier}"
           i.push(dockerVersionTag)
-          i.push('latest')
+          if (isLatest) {
+            i.push('latest')
+          }
         }
       }
     }
