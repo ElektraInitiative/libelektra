@@ -26,9 +26,15 @@ We generally have three types of docker images:
    These images do not have any root priviledges.
 3. **Release images** _(release.Dockerfile)_  
    Release images install the latest released version of Elektra (from source or packages)
-   and are pushed to either DockerHub or our public Docker registry.
+   and are pushed to DockerHub and our public Docker registry.
    During the build stage, tests are executed on the installed version of Elektra.
    These images are never run as container in our CI as they have permissions to use `sudo`.
+
+## Downloading Released Images
+
+We provide Docker images containing an installed version of Elektra with multiple base images.
+You can view all available images Docker images on [DockerHub](https://hub.docker.com/r/elektra/elektra).
+To start for example a Ubuntu Focal based Elektra container with the Elektra version `0.9.5`, run `docker run -it elektra/elektra:0.9.5-1-focal`
 
 ## Downloading Prebuilt Images
 
