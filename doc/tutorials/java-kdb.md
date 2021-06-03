@@ -11,7 +11,7 @@ In order to use `kdb` you need to include the dependency in your project. [Here]
 After that you can start loading a `KDB` object as follows:
 
 ```java
-var key = Key.create(Key.KEY_LOCAL_NAME);
+var key = Key.createNameless();
 try (KDB kdb = KDB.open(key)) {
     // code to manipulate keys
 } catch (KDB.KDBException e) {
