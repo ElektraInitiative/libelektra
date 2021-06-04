@@ -4,27 +4,9 @@ ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8
 ENV LC_ALL C.UTF-8
 
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get -y install strace \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create User:Group
-# The id is important as jenkins docker agents use the same id that is running
-# on the slaves to execute containers
-ARG JENKINS_GROUPID
-RUN groupadd \
-    -g ${JENKINS_GROUPID} \
-    -f \
-    jenkins
-
-ARG JENKINS_USERID
-RUN useradd \
-    --create-home \
-    --uid ${JENKINS_USERID} \
-    --gid ${JENKINS_GROUPID} \
-    --shell "/bin/bash" \
-    jenkins
+ARG USERID=1000
+RUN adduser elektra --uid ${USERID} \
+    && adduser elektra sudo
 
 ENV ELEKTRA_ROOT=/opt/elektra/
 RUN mkdir -p ${ELEKTRA_ROOT}
@@ -32,13 +14,25 @@ COPY ./*.deb ${ELEKTRA_ROOT}
 COPY ./*.ddeb ${ELEKTRA_ROOT}
 
 RUN apt-get update \
+    && apt-get -y install \
+        sudo \
+        vim \
     && apt-get -y install ${ELEKTRA_ROOT}/* \
     && rm -rf /var/lib/apt/lists/*
 
+RUN rm -rf ${ELEKTRA_ROOT}
+
 RUN kdb mount-info \
     && mkdir -p `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .` || true \
-    && chown -R ${JENKINS_USERID} `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .` \
-    && chown -R ${JENKINS_USERID} `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .` \
-    && chown -R ${JENKINS_USERID} `kdb sget system:/info/elektra/constants/cmake/BUILTIN_DATA_FOLDER .`
+    && chown -R ${USERID} `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .` \
+    && chown -R ${USERID} `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .` \
+    && chown -R ${USERID} `kdb sget system:/info/elektra/constants/cmake/BUILTIN_DATA_FOLDER .`
 
-USER ${JENKINS_USERID}
+RUN kdb run_all
+
+RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+
+USER ${USERID}
+WORKDIR /home/elektra
+
+CMD ["/bin/bash","-l"]

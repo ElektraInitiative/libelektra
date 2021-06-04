@@ -1120,17 +1120,8 @@ def buildPackage(stageName, image, repoName, repoPrefix, installImage,
       // tests these packages and publishes them.
       def postCl = {
         dir(targetDir) {
+          // during the buildImage step the packages are installed and kdb run_all is executed
           dockerUtils.buildImage(installImage)
-          // must not be run in targetDir because `withDockerEnv` checks out git
-          // repo in current directory which would overwrite build/package dir
-          dir("../packageTesting") {
-          // Do not call withDockerEnv(..) {} directly because this step would be
-          // executed in a nested node, causing the current node to wait for the
-          // stage on the other node to complete.
-            withDockerEnv.withDockerEnvWithoutNode(installImage) {
-              sh "kdb run_all"
-            }
-          }
           dir("build/package") {
             if (isMaster()) {
               publishPackagesFun(

@@ -13,6 +13,21 @@ BUILD_DIR="$SRC_DIR/build"
 
 PACKAGE_REVISION=${1:-1}
 
+find_version_codename() {
+	VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
+	if [ -z ${VERSION_CODENAME} ]; then
+		OS_ID=$(grep "^ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
+		VERSION_ID=$(grep "VERSION_ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
+		if [ -z ${OS_ID} ] || [ -z ${VERSION_ID} ]; then
+			VERSION_CODENAME=$(dpkg --status tzdata | grep Provides | cut -f2 -d'-')
+		else
+			VERSION_CODENAME="$OS_ID$VERSION_ID"
+		fi
+	fi
+
+	echo "Version codename: ${VERSION_CODENAME}"
+}
+
 install_elektra() {
 	echo "Installing elektra..."
 	rm -rf $BUILD_DIR
@@ -184,16 +199,6 @@ build_package() {
 	mkdir $BUILD_DIR
 	cd $BUILD_DIR
 
-	if [ -z ${VERSION_CODENAME} ]; then
-		OS_ID=$(grep "^ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
-		VERSION_ID=$(grep "VERSION_ID=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
-		if [ -z ${OS_ID} ] || [ -z ${VERSION_ID} ]; then
-			VERSION_CODENAME=$(lsb_release -a 2> /dev/null | grep "Codename:" | awk -F: {' print $2'} | sed -e 's/^[ \t]*//')
-		else
-			VERSION_CODENAME="$OS_ID$VERSION_ID"
-		fi
-	fi
-
 	mkdir -p $BASE_DIR/$VERSION/$VERSION_CODENAME
 	$SCRIPTS_DIR/packaging/package.sh "$PACKAGE_REVISION" 2> $BASE_DIR/$VERSION/$VERSION_CODENAME/elektra_$PVERSION.build.error > $BASE_DIR/$VERSION/$VERSION_CODENAME/elektra_$PVERSION.build
 
@@ -219,7 +224,8 @@ cmemcheck() {
 }
 
 # get version codename
-VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
+VERSION_CODENAME=""
+find_version_codename
 install_elektra
 run_updates
 git_tag

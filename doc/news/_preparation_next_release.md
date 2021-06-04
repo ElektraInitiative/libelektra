@@ -285,7 +285,7 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 ### Docker
 
 - Add Fedora 34 images. _(Mihael Pranjić)_
-- <<TODO>>
+- We added release images that come with pre-installed dependencies and sudo permissions for each distribution we build packages for. _(Robert Sowula)_
 - <<TODO>>
 
 ## Infrastructure
