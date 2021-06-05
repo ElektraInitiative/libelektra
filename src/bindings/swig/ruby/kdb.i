@@ -29,7 +29,7 @@ Please note, this documentation will show C++ types too (e.g. std::string).
 /* docstring for module implemented for swig >= 3.0.18 */
 %module(docstring=DOCSTRING) kdb
 #pragma SWIG nowarn=317 // Disable warning: Specialization of non-template
-
+#pragma SWIG nowarn=378 // Disable warning: operator!= ignored
 
 
 %include "attribute.i"

@@ -15,7 +15,7 @@ cd "$SOURCE" || {
 
 NPX="$(which npx)"
 
-if [ -z "${PRETTIER}" ]; then
+if [ -z "${NPX}" ]; then
 	printf 2>&1 'Please install `npx` (Included in npm >= 5.2.0)\n'
 	exit 1
 fi
@@ -27,4 +27,4 @@ else
 	# The file `TooltipCreator.js` contains the text `.pragma library`, which is not valid JavaScript code.
 	javascript_files=$(git ls-files '*.js' '*.jsx' | grep -v 'src/tools/qt-gui/qml/TooltipCreator.js')
 fi
-printf "%s\n" "$javascript_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "${NPX}" --quiet prettier@1.19.1 --write -- > /dev/null
+printf "%s\n" "$javascript_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "${NPX}" --quiet prettier@2.2.1 --write -- > /dev/null

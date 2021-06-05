@@ -5,7 +5,7 @@ module.exports = [
   "$urlRouterProvider",
   "$locationProvider",
   "webStructure",
-  function(
+  function (
     $stateProvider,
     $urlRouterProvider,
     $locationProvider,
@@ -26,7 +26,7 @@ module.exports = [
       .state("main", {
         abstract: true,
         templateUrl: "pages/main/template.html",
-        controller: "MainController as ctrl"
+        controller: "MainController as ctrl",
       })
       .state("main.error", {
         abstract: true,
@@ -34,22 +34,22 @@ module.exports = [
         templateUrl: "pages/main/error/template.html",
         ncyBreadcrumb: {
           label: "APP.BREADCRUMBS.MAIN.ERROR",
-          parent: "main.home"
-        }
+          parent: "main.home",
+        },
       })
       .state("main.error.404", {
         url: "/404",
         templateUrl: "pages/main/error/404.html",
         ncyBreadcrumb: {
           label: "APP.BREADCRUMBS.MAIN.ERROR.404",
-          parent: "main.error"
-        }
+          parent: "main.error",
+        },
       })
       .state("main.home", {
         url: "/home",
         templateUrl: "pages/main/website/home.html",
         controller: "WebsiteHomeController as ctrl",
-        ncyBreadcrumb: { label: "APP.BREADCRUMBS.MAIN.HOME" }
+        ncyBreadcrumb: { label: "APP.BREADCRUMBS.MAIN.HOME" },
       })
       .state("main.news", {
         url: "/news/:file",
@@ -59,9 +59,9 @@ module.exports = [
         resolve: {
           files: [
             "news",
-            function(news) {
+            function (news) {
               return news;
-            }
+            },
           ],
           currentFile: [
             "$q",
@@ -70,7 +70,7 @@ module.exports = [
             "$stateParams",
             "WebsiteService",
             "files",
-            function(
+            function (
               $q,
               $timeout,
               $state,
@@ -80,16 +80,16 @@ module.exports = [
             ) {
               var deferred = $q.defer();
 
-              $timeout(function() {
+              $timeout(function () {
                 if ($stateParams.file === null) {
                   $state.go("main.news", {
-                    file: files.filter(function(elem) {
+                    file: files.filter(function (elem) {
                       return elem.type === "file";
-                    })[0].slug
+                    })[0].slug,
                   });
                   deferred.reject();
                 } else {
-                  var filtered = files.filter(function(elem) {
+                  var filtered = files.filter(function (elem) {
                     return (
                       elem.type === "file" && elem.slug === $stateParams.file
                     );
@@ -98,7 +98,7 @@ module.exports = [
                     $state.go("main.news", { file: files[0].slug });
                     deferred.reject();
                   } else {
-                    WebsiteService.loadFile(filtered[0].file).then(function(
+                    WebsiteService.loadFile(filtered[0].file).then(function (
                       data
                     ) {
                       var file = filtered[0];
@@ -110,24 +110,24 @@ module.exports = [
               });
 
               return deferred.promise;
-            }
-          ]
+            },
+          ],
         },
         ncyBreadcrumb: {
           label: "APP.BREADCRUMBS.MAIN.NEWS",
-          parent: "main.home"
-        }
+          parent: "main.home",
+        },
       })
       .state("main.dyn", {
         abstract: true,
         template: "<div ui-view></div>",
-        ncyBreadcrumb: { parent: "main.home" }
+        ncyBreadcrumb: { parent: "main.home" },
       });
 
     /* CONFIGURE DYNAMIC PAGES */
 
     // read the structure file and handle entries
-    webStructure.forEach(function(entry) {
+    webStructure.forEach(function (entry) {
       consumeEntry(entry);
     });
 
@@ -135,7 +135,7 @@ module.exports = [
     function consumeEntry(entry) {
       switch (entry.type) {
         case "submenu":
-          entry.children.forEach(function(child) {
+          entry.children.forEach(function (child) {
             consumeEntry(child);
           });
           break;
@@ -148,9 +148,9 @@ module.exports = [
             data: { name: entry.name, ref: entry.ref },
             resolve: {
               files: [
-                function() {
+                function () {
                   return entry.children;
-                }
+                },
               ],
               currentFile: [
                 "$q",
@@ -159,7 +159,7 @@ module.exports = [
                 "$stateParams",
                 "WebsiteService",
                 "files",
-                function(
+                function (
                   $q,
                   $timeout,
                   $state,
@@ -169,16 +169,16 @@ module.exports = [
                 ) {
                   var deferred = $q.defer();
 
-                  $timeout(function() {
+                  $timeout(function () {
                     if ($stateParams.file === null) {
                       $state.go("main.dyn." + entry.ref, {
-                        file: files.filter(function(elem) {
+                        file: files.filter(function (elem) {
                           return elem.type === "file";
-                        })[0].slug
+                        })[0].slug,
                       });
                       deferred.reject();
                     } else {
-                      var filtered = files.filter(function(elem) {
+                      var filtered = files.filter(function (elem) {
                         return (
                           elem.type === "file" &&
                           elem.slug === $stateParams.file
@@ -186,14 +186,14 @@ module.exports = [
                       });
                       if (filtered.length === 0) {
                         $state.go("main.dyn." + entry.ref, {
-                          file: files.filter(function(elem) {
+                          file: files.filter(function (elem) {
                             return elem.type === "file";
-                          })[0].slug
+                          })[0].slug,
                         });
                         deferred.reject();
                       } else {
                         WebsiteService.loadFile(filtered[0].options.path).then(
-                          function(data) {
+                          function (data) {
                             var file = filtered[0];
                             file.content = data;
                             deferred.resolve(file);
@@ -204,18 +204,18 @@ module.exports = [
                   });
 
                   return deferred.promise;
-                }
-              ]
+                },
+              ],
             },
             ncyBreadcrumb: {
               label: "APP.BREADCRUMBS.MAIN.DYN." + entry.ref.toUpperCase(),
-              parent: "main.dyn"
-            }
+              parent: "main.dyn",
+            },
           });
           break;
         default:
           break;
       }
     }
-  }
+  },
 ];

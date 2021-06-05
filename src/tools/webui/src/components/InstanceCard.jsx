@@ -27,7 +27,7 @@ export default class InstanceCard extends React.Component {
       host: props.host,
       description: props.description,
       visibility: props.visibility,
-      hostError: ""
+      hostError: "",
     };
   }
 
@@ -110,8 +110,8 @@ export default class InstanceCard extends React.Component {
                 hintText="e.g. my webserver"
                 value={name}
                 disabled={id === "my"}
-                onChange={evt => this.setState({ name: evt.target.value })}
-                onKeyPress={e => {
+                onChange={(evt) => this.setState({ name: evt.target.value })}
+                onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     this.handleCreate();
                   }
@@ -126,19 +126,19 @@ export default class InstanceCard extends React.Component {
                 errorText={hostError}
                 value={host}
                 disabled={id === "my"}
-                onChange={evt => {
+                onChange={(evt) => {
                   const newHost = evt.target.value;
                   this.setState({ host: newHost });
                   const [, matchedHost] = newHost.match(HOST_REGEX) || [];
                   if (!matchedHost) {
                     this.setState({
-                      hostError: "invalid host, use http://host:port syntax"
+                      hostError: "invalid host, use http://host:port syntax",
                     });
                   } else {
                     this.setState({ hostError: "" });
                   }
                 }}
-                onKeyPress={e => {
+                onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     this.handleCreate();
                   }
@@ -163,10 +163,10 @@ export default class InstanceCard extends React.Component {
                 floatingLabelFixed={true}
                 value={description}
                 disabled={id === "my"}
-                onChange={evt =>
+                onChange={(evt) =>
                   this.setState({ description: evt.target.value })
                 }
-                onKeyPress={e => {
+                onKeyPress={(e) => {
                   if (e.key === "Enter") {
                     this.handleCreate();
                   }
@@ -182,7 +182,7 @@ export default class InstanceCard extends React.Component {
                 value={visibility}
                 disabled={id === "my"}
               >
-                {Object.keys(VISIBILITY_LEVELS).map(lvl => (
+                {Object.keys(VISIBILITY_LEVELS).map((lvl) => (
                   <MenuItem key={lvl} value={lvl} primaryText={">= " + lvl} />
                 ))}
               </SelectField>

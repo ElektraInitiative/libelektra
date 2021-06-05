@@ -1,47 +1,31 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "ELEKTRA\-HIGHLEVEL\-GEN" "7" "May 2020" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "ELEKTRA\-HIGHLEVEL\-GEN" "7" "June 2021" ""
 .SH "NAME"
 \fBelektra\-highlevel\-gen\fR \- High\-level API code\-generation advanced features
-.
 .P
 This document focuses on the advanced features of the high\-level API code\-generator template\. We assume you already familiarized yourself with the basic features explained in \fBkdb\-gen\-highlevel(1)\fR \fIkdb\-gen\-highlevel\.md\fR\.
-.
 .SH "Configuration Options"
 The parameters that are relevant to the concepts described here are (for the rest see `kdb\-gen\-highlevel(1) \fIkdb\-gen\-highlevel\.md\fR):
-.
 .IP "\(bu" 4
 \fBembeddedSpec\fR: allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR
-.
 .IP "\(bu" 4
 \fBspecValidation\fR: allowed values: \fBnone\fR (default), \fBminimal\fR
-.
 .IP "\(bu" 4
 \fBenumConv\fR: allowed values: \fBstrcmp\fR, \fBswitch\fR, \fBauto\fR (default)
-.
 .IP "" 0
-.
 .P
-Using \fBembeddedSpec\fR you can configure how much of the specification is embedded into your application\. By default we use \fBfull\fR\. This means the full specification is embedded into your application\'s binary\. Since this can drastically increase the size of the binary, you can also choose \fBdefaults\fR or \fBnone\fR\. The \fBdefaults\fR setting embeds a reduced version of the specification, which only contains the metadata required by \fBelektraOpen\fR\. By setting \fBembeddedSpec=none\fR you can also remove this reduced specification\.
-.
+Using \fBembeddedSpec\fR you can configure how much of the specification is embedded into your application\. By default we use \fBfull\fR\. This means the full specification is embedded into your application's binary\. Since this can drastically increase the size of the binary, you can also choose \fBdefaults\fR or \fBnone\fR\. The \fBdefaults\fR setting embeds a reduced version of the specification, which only contains the metadata required by \fBelektraOpen\fR\. By setting \fBembeddedSpec=none\fR you can also remove this reduced specification\.
 .P
-The advantage of using \fBfull\fR is that your application is contained in a single executable file\. If you don\'t use \fBfull\fR, the code\-generator produces an additional \fB\.spec\.eqd\fR file and omits specload function (called \fBexitForSpecload\fR by default)\. This file contains the full specification in quickdump format\. You can either mount it directly via \fBquickdump\fR, or if you want the features of \fBspecload\fR use a \fBspecload\fR configuration like this: \fBapp=/usr/bin/cat args=#0 args/#0="path\-to\-spec\-output\-file"\fR\.
-.
+The advantage of using \fBfull\fR is that your application is contained in a single executable file\. If you don't use \fBfull\fR, the code\-generator produces an additional \fB\.spec\.eqd\fR file and omits specload function (called \fBexitForSpecload\fR by default)\. This file contains the full specification in quickdump format\. You can either mount it directly via \fBquickdump\fR, or if you want the features of \fBspecload\fR use a \fBspecload\fR configuration like this: \fBapp=/usr/bin/cat args=#0 args/#0="path\-to\-spec\-output\-file"\fR\.
 .P
-Setting \fBembeddedSpec=none\fR is only recommended, if you must have the minimal binary size and you know what you are doing\. In this case no defaults are passed to \fBelektraOpen\fR and defaults are only handled via the \fBspec\fR plugin\. If the specification/configuration isn\'t mounted, the getter functions may fail\.
-.
+Setting \fBembeddedSpec=none\fR is only recommended, if you must have the minimal binary size and you know what you are doing\. In this case no defaults are passed to \fBelektraOpen\fR and defaults are only handled via the \fBspec\fR plugin\. If the specification/configuration isn't mounted, the getter functions may fail\.
 .P
 To avoid this case of a misconfigured mountpoint, you can use \fBspecValidation=minimal\fR\. It is by far not a perfect solution, but it will cause the initialization function (by default named \fBloadConfiguration\fR) to fail, if the specification is not mounted at the expected mountpoint or if the specification was not \fBspec\-mount\fRed\.
-.
 .SH "Enums"
 We support the mapping of a set of string values to a native C \fBenum\fR\. To use this feature, you need to write your specification the same way that the enum part of the \fBtype\fR plugin expects\.
-.
 .IP "" 4
-.
 .nf
-
 [myenum]
 type=enum
 check/enum=#_4
@@ -50,18 +34,12 @@ check/enum/#1=red
 check/enum/#2=green
 check/enum/#4=blue
 default=blue
-.
 .fi
-.
 .IP "" 0
-.
 .P
 The above specification will generate the following C \fBenum\fR:
-.
 .IP "" 4
-.
 .nf
-
 typedef enum
 {
     ELEKTRA_ENUM_MYENUM_NONE = 0,
@@ -69,21 +47,14 @@ typedef enum
     ELEKTRA_ENUM_MYENUM_GREEN = 2,
     ELEKTRA_ENUM_MYENUM_BLUE = 4,
 } ElektraEnumMyenum;
-.
 .fi
-.
 .IP "" 0
-.
 .P
 As you can see the integer values of the different enum values are taken from the indices of the \fBcheck/enum/#\fR array\. You may also use e\.g\. \fBgen/enum/#2/value=1 << 1\fR to set a different value\. The \fBgen/enum/#/value\fR values are inserted literally into the C files, so the values must be valid C code\. The name of the enum may be configured via \fBgen/enum/type\fR\. If you want to use an existing \fBenum\fR and map its values to strings you can turn the generation of the enum off, by adding \fBgen/enum/create=0\fR\. In this case you have to add a header that defines the \fBenum\fR or \fBtypedef\fRs it, to the \fBheaders\fR parameter of the code\-generator invocation\.
-.
 .P
 Like with any other key, the code\-generator produces \fBstatic inline\fR getter and setter functions for the key\. Since there are no generic functions for the conversion of the strings into the enum values, we also generate those:
-.
 .IP "" 4
-.
 .nf
-
 ELEKTRA_KEY_TO_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 ELEKTRA_TO_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 ELEKTRA_TO_CONST_STRING_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
@@ -92,108 +63,78 @@ ELEKTRA_GET_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 ELEKTRA_SET_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
 ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (ElektraEnumMyenum, EnumMyenum);
-.
 .fi
-.
 .IP "" 0
-.
 .P
 These functions are not generated per key, but per enum type\. If multiple keys use the same enum type (both need to define the full metadata, including the full set of values), we only generate one set of these functions\.
-.
 .P
-The getter and setter functions won\'t be explained here, they work like any of the other getter and setter functions of the high\-level API\.
-.
+The getter and setter functions won't be explained here, they work like any of the other getter and setter functions of the high\-level API\.
 .P
 The other three functions are used to convert between the string values and the generated \fBenum\fR\. You may find these useful in your application\. You can call them via e\.g\. \fBELEKTRA_KEY_TO (EnumMyenum)\fR\. The difference between \fBELEKTRA_TO_STRING\fR and \fBELEKTRA_TO_CONST_STRING\fR is that the first returns a \fBchar *\fR allocated via \fBelektraMalloc\fR, while the second returns a static \fBconstchar *\fR\.
-.
 .P
 Both \fBELEKTRA_TO_STRING\fR and \fBELEKTRA_TO_CONST_STRING\fR are always implemented via a straightforward \fBswitch\fR statement\. The implementation of \fBELEKTRA_KEY_TO\fR on the other hand can be changed via the \fBenumConv\fR parameter\. If you set \fBenumConv=strcmp\fR, we will generate a code analogous to:
-.
 .IP "" 4
-.
 .nf
-
-if (strcmp (string, "none") == 0) { /* \.\.\. */ }
-if (strcmp (string, "red") == 0) { /* \.\.\. */ }
-if (strcmp (string, "green") == 0) { /* \.\.\. */ }
-if (strcmp (string, "blue") == 0) { /* \.\.\. */ }
-.
+if (strcmp (string, "none") == 0) { /* \|\.\|\.\|\. */ }
+if (strcmp (string, "red") == 0) { /* \|\.\|\.\|\. */ }
+if (strcmp (string, "green") == 0) { /* \|\.\|\.\|\. */ }
+if (strcmp (string, "blue") == 0) { /* \|\.\|\.\|\. */ }
 .fi
-.
 .IP "" 0
-.
 .P
 This code is not really optimal, since we really only need to look at the first character to determine the correct enum value\. This is where \fBenumConv=switch\fR comes in\. With this option, we generate a series of (nested, if necessary) switch/case statements:
-.
 .IP "" 4
-.
 .nf
-
 switch (string[0])
 {
-case \'b\': /* blue */
-case \'g\': /* green */
-case \'n\': /* none */
-case \'r\': /* red */
+case 'b': /* blue */
+case 'g': /* green */
+case 'n': /* none */
+case 'r': /* red */
 }
-.
 .fi
-.
 .IP "" 0
-.
 .P
 Of course this version also has its own problems\. Take for example the the enum with the values: \fBblue\fR, \fBblueish\fR and \fBbrown\fR\. With \fBenumConv=switch\fR this would generate the following code:
-.
 .IP "" 4
-.
 .nf
-
 switch (string[0])
 {
-case \'b\':
+case 'b':
     switch (string[1])
     {
-    case \'l\':
+    case 'l':
         switch (string[2])
         {
-        case \'u\':
+        case 'u':
             switch (string[3])
             {
-            case \'e\':
+            case 'e':
                 switch (string[4])
                 {
-                case \'i\': /* blueish */
+                case 'i': /* blueish */
                 }
                 /* blue */
             }
             break;
         }
         break;
-        case \'r\': /* brown */
+        case 'r': /* brown */
     }
     break;
 }
-.
 .fi
-.
 .IP "" 0
-.
 .P
-This is already quite hard to read and \fBblueish\fR isn\'t even that long\.
-.
+This is already quite hard to read and \fBblueish\fR isn't even that long\.
 .P
-To provide a compromise between readability and performance, we default to \fBenumConv=auto\fR\. This options uses the switch version, if the depth is less than 3, and the \fBstrcmp\fR version in all other cases\. A depth of \fBn\fR means looking at the first \fBn\fR characters \fBstring[0], string[1], \.\.\., string[n\-1]\fR\. In other words a depth of \fBn\fR uses \fBn\fR switch statements\.
-.
+To provide a compromise between readability and performance, we default to \fBenumConv=auto\fR\. This options uses the switch version, if the depth is less than 3, and the \fBstrcmp\fR version in all other cases\. A depth of \fBn\fR means looking at the first \fBn\fR characters \fBstring[0], string[1], \|\.\|\.\|\., string[n\-1]\fR\. In other words a depth of \fBn\fR uses \fBn\fR switch statements\.
 .SH "Structs"
 The \fBhighlevel\fR template also has support for structs\. By setting \fBtype = struct\fR on a key, you can enable the generation of a native C \fBstruct\fR for the keys below it\.
-.
 .P
 We will look at this simple example:
-.
 .IP "" 4
-.
 .nf
-
 [mystruct]
 type=struct
 check/type=any
@@ -206,74 +147,50 @@ default=""
 [mystruct/b]
 type=long
 default=8
-.
 .fi
-.
 .IP "" 0
-.
 .P
-Note: That we set \fBcheck/type=any\fR and \fBdefault=""\fR\. This is to avoid problems with the \fBtype\fR plugin, which doesn\'t know about \fBstruct\fRs\.
-.
+Note: That we set \fBcheck/type=any\fR and \fBdefault=""\fR\. This is to avoid problems with the \fBtype\fR plugin, which doesn't know about \fBstruct\fRs\.
 .P
 The generated struct looks like this:
-.
 .IP "" 4
-.
 .nf
-
 typedef struct ElektraStructMystruct
 {
     const char * a;
     kdb_long_t b;
 } ElektraStructMystruct;
-.
 .fi
-.
 .IP "" 0
-.
 .P
 Similar to enums, you can customise the generated struct via additional metadata:
-.
 .IP "\(bu" 4
-.
+Metadata for the key with \fBtype=struct\fR:
 .IP "\(bu" 4
 \fBgen/struct/type\fR can be used to set the name of the generated struct\.
-.
 .IP "\(bu" 4
-\fBgen/struct/create=0\fR disables the struct generation and only generates the accessor functions\. Use this to use structs defined elsewhere\. Don\'t forget to include the needed header in the \fBheaders\fR parameter\.
-.
+\fBgen/struct/create=0\fR disables the struct generation and only generates the accessor functions\. Use this to use structs defined elsewhere\. Don't forget to include the needed header in the \fBheaders\fR parameter\.
 .IP "\(bu" 4
 \fBgen/struct/alloc\fR (values \fB0\fR, \fB1\fR) sets whether the struct is \fIallocating\fR\. This changes how the getter works and also has some other implications\. By default structs are non\-allocating\.
-.
 .IP "\(bu" 4
 \fBgen/struct/depth\fR sets the how many levels below the \fBtype=struct\fR key, we will include in the generated struct\. Note that keys ending in \fB/#\fR (i\.e\. array keys) count as one level above\. So \fBmystruct/x/#\fR would be included with the default \fBgen/struct/depth=1\fR\.
-.
 .IP "" 0
 
-.
 .IP "\(bu" 4
-.
+Metadata for keys corresponding to fields of the struct:
 .IP "\(bu" 4
 \fBgen/struct/field\fR sets the name of the field in the generated struct\.
-.
 .IP "\(bu" 4
-\fBgen/struct/field/ignore=1\fR ignores this key during struct generation, i\.e\. we don\'t create a field for it\.
-.
+\fBgen/struct/field/ignore=1\fR ignores this key during struct generation, i\.e\. we don't create a field for it\.
 .IP "\(bu" 4
 \fBgen/array/sizefield\fR sets the name of the field used to store the size of arrays\. Only useful on array keys\. For example, by default the size of the array key \fBmystruct/x/#\fR is stored in \fBxSize\fR, while the array is accessed via the field \fBx\fR\.
-.
 .IP "" 0
 
-.
 .IP "" 0
-.
 .P
 We will also generate getter and setter functions:
-.
 .IP "" 4
-.
 .nf
-
 ELEKTRA_GET_SIGNATURE (ElektraStructMystruct *, StructMystruct);
 // or ELEKTRA_GET_OUT_PTR_SIGNATURE (ElektraStructMystruct, StructMystruct);
 ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraStructMystruct *, StructMystruct);
@@ -281,36 +198,24 @@ ELEKTRA_GET_ARRAY_ELEMENT_SIGNATURE (ElektraStructMystruct *, StructMystruct);
 
 ELEKTRA_SET_SIGNATURE (const ElektraStructMystruct *, StructMystruct);
 ELEKTRA_SET_ARRAY_ELEMENT_SIGNATURE (const ElektraStructMystruct *, StructMystruct);
-.
 .fi
-.
 .IP "" 0
-.
 .P
-The difference between \fBELEKTRA_GET_SIGNATURE\fR and \fBELEKTRA_GET_OUT_PTR_SIGNATURE\fR is explained in the next section\. Both versions are called via \fBELEKTRA_GET (\.\.\.) (\.\.\.)\fR\.
-.
+The difference between \fBELEKTRA_GET_SIGNATURE\fR and \fBELEKTRA_GET_OUT_PTR_SIGNATURE\fR is explained in the next section\. Both versions are called via \fBELEKTRA_GET (\|\.\|\.\|\.) (\|\.\|\.\|\.)\fR\.
 .P
 Allocating structs also generate \fBELEKTRA_STRUCT_FREE (/* struct name */)\fR, which is used to free the allocated memory\.
-.
 .SS "Allocating vs\. Non\-Allocating"
 The main difference between allocating and non\-allocating structs, is how their getter function works\.
-.
 .P
 Allocating structs use a getter similar to the one primitive types, strings and enums use\. It returns a pointer to a newly allocated struct, which has to be freed using the generated \fBELEKTRA_STRUCT_FREE\fR function\.
-.
 .P
-Non\-allocating structs meanwhile use a different kind of getter declared via \fBELEKTRA_GET_OUT_PTR_SIGNATURE\fR instead of \fBELEKTRA_GET_SIGNATURE\fR\. This version doesn\'t return a pointer, instead it takes a pointer to an existing struct and only sets its fields\. This is why you have to use the convenience macros \fBelektraFillStruct\fR and \fBelektraFillStructV\fR for these structs\.
-.
+Non\-allocating structs meanwhile use a different kind of getter declared via \fBELEKTRA_GET_OUT_PTR_SIGNATURE\fR instead of \fBELEKTRA_GET_SIGNATURE\fR\. This version doesn't return a pointer, instead it takes a pointer to an existing struct and only sets its fields\. This is why you have to use the convenience macros \fBelektraFillStruct\fR and \fBelektraFillStructV\fR for these structs\.
 .P
 Non\-allocating structs are also more limited than their allocating counterparts\. They do not support arrays or struct references\. They also cannot be for unions\. Their main advantage is that you can use non\-allocating structs without (additional) \fBmalloc\fR/\fBfree\fR, by providing a stack allocated pointer to the getter function\.
-.
 .SS "Struct references"
 Structs cannot be nested, but they can reference each other\. This allows for complex and possibly recursive structures\. Take for example:
-.
 .IP "" 4
-.
 .nf
-
 [person/#]
 type=struct
 check/type=any
@@ -337,49 +242,33 @@ default=""
 default=""
 check/reference=recursive
 check/reference/restrict=\.\./\.\./\.\./person/#
-.
 .fi
-.
 .IP "" 0
-.
 .P
 This results in a struct like this:
-.
 .IP "" 4
-.
 .nf
-
 typedef struct ElektraStructPerson
 {
     struct ElektraStructPerson * mother;
-    kdb_long_long_t childrenSize;
-    struct ElektraStructPerson ** children;
-    const char * name;
+	kdb_long_long_t childrenSize;
+	struct ElektraStructPerson ** children;
+	const char * name;
 } ElektraStructPerson;
-.
 .fi
-.
 .IP "" 0
-.
 .P
 As you can see an instance of \fBElektraStructPerson\fR may reference different instances\. To declare this we must add a key with \fBtype=struct_ref\fR\. We use the metakeys of the \fBreference\fR plugin (which should be mounted to validate reference) to define what struct we want to reference\. We also again set \fBcheck/type=any\fR and \fBdefault=""\fR to please the \fBtype\fR plugin\.
-.
 .P
 Struct references are also supported as arrays, in which case the \fBcheck/reference\fR keys must be on a different key than the rest of the metadata, because of how the \fBreference\fR plugin works\. The example above shows this with \fBperson/#/children\fR and \fBperson/#/children/#\fR\.
-.
 .P
 If you access an element of the \fBperson/#\fR array via the getter function, we will recursively read the references structs\. Writing structs that contain struct references or setting \fBstruct_ref\fR keys directly is not supported\.
-.
 .P
 Struct references can also exist outside of structs and maybe accessed directly via the generated accessor functions\. Please, be careful when handling struct references, since invalid references will cause fatal errors\.
-.
 .SH "Unions"
 The most advanced feature of the code\-generator are unions\. Sometimes we want a reference inside a struct, but it is not always to the same struct\. For example in a menu structure, we might have a list of entries that are either submenus or actual items that execute a command\.
-.
 .IP "" 4
-.
 .nf
-
 [menu/#]
 type=struct
 check/type=any
@@ -440,73 +329,50 @@ check/enum/#0 = item
 check/enum/#1 = menu
 gen/enum/type=MenuEntryType
 default = item
-.
 .fi
-.
 .IP "" 0
-.
 .P
 As you can see the unions feature requires quite a bit more setup\. We will start with \fBmenu/#/entries/#\fR\. It is set to \fBtype=struct_ref\fR like you would do for normal struct reference, but the accompanying \fBmenu/#/entries\fR uses \fBcheck/reference/restrict\fR as an array\. This tells the \fBreference\fR plugin that any of the given reference restrictions are allowed\. Therefore we could be referencing one of several structs and the code\-generator has to deal with that somehow\.
-.
 .P
 To allow alternative references, we need to define \fBgen/reference/discriminator/union\fR and \fBgen/reference/discriminator/enum\fR on the key with \fBtype=struct_ref\fR\. The former of these defines the name of the native C \fBunion\fR the code\-generator creates:
-.
 .IP "" 4
-.
 .nf
-
 typedef union {
     struct ElektraStructMenu * item;
     struct ElektraStructMenu * menu;
 } MenuEntry;
-.
 .fi
-.
 .IP "" 0
-.
 .P
 The other required metakey defines which enum shall be used as a discriminator between the union values:
-.
 .IP "" 4
-.
 .nf
-
 typedef enum {
     ELEKTRA_ENUM_MENU_ENTRY_TYPE_ITEM = 0,
     ELEKTRA_ENUM_MENU_ENTRY_TYPE_MENU = 1
 } MenuEntryType;
-.
 .fi
-.
 .IP "" 0
-.
 .P
 Each of the possibly referenced structs must have a discriminator key\. This key must be part of the struct, it must have \fBtype=discriminator\fR and should have \fBcheck/type=enum\fR\. All the discriminator keys must also set \fBgen/enum/type\fR to the same value as chosen for \fBgen/reference/discriminator/enum\fR and all of them have to define the same enum, via the \fBcheck/enum/#\fR array\. The values also have to match the values of the \fBgen/reference/restrict/#/discriminator\fR metakeys on the \fBtype=struct_ref\fR key\.
-.
 .P
 The generated structs will then look like this:
-.
 .IP "" 4
-.
 .nf
-
 typedef struct Menu
 {
-    const char * name;
-    kdb_long_long_t entriesSize;
-    MenuEntryType * entryTypes;
-    MenuEntry * entries;
+	const char * name;
+	kdb_long_long_t entriesSize;
+	MenuEntryType * entryTypes;
+	MenuEntry * entries;
 } Menu;
 
 typedef struct Item
 {
-    const char * name;
-    const cahr * command;
+	const char * name;
+	const cahr * command;
 } Menu;
-.
 .fi
-.
 .IP "" 0
-.
 .P
-As you can see the discriminator field is excluded from the struct itself and stored in a separate array\. We do generate getter and free functions for unions, but we don\'t recommend using them directly\. There are no setter functions for unions, because they involve struct references\.
+As you can see the discriminator field is excluded from the struct itself and stored in a separate array\. We do generate getter and free functions for unions, but we don't recommend using them directly\. There are no setter functions for unions, because they involve struct references\.

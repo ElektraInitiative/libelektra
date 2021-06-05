@@ -51,10 +51,7 @@ if (ADDTESTING_PHASE)
 			dbusrecv
 			TEST_LINK_LIBRARIES ${STATIC_LIBRARIES}
 			TEST_LINK_ELEKTRA elektra-io-uv
-			INCLUDE_SYSTEM_DIRECTORIES
-				${libuv_INCLUDE_DIRS}
-				COMPONENT
-				libelektra${SO_VERSION}-dbus)
+			INCLUDE_SYSTEM_DIRECTORIES ${libuv_INCLUDE_DIRS} COMPONENT libelektra${SO_VERSION}-dbus)
 
 		# add sources manually because add_plugintest does not support generator expressions for additional source files
 		if (BUILD_FULL OR BUILD_STATIC)

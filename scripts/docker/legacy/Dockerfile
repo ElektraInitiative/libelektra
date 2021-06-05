@@ -32,7 +32,7 @@ RUN apt-get -qq update && apt-get -qq -y install \
 	libzmq3-dev \
 	checkinstall \
 	valgrind \
-&& gem install ronn \
+&& gem install ronn-ng -v 0.10.1.pre1 \
 && rm -rf /var/lib/apt/lists/*
 
 COPY buildelektra.sh /bin/buildelektra

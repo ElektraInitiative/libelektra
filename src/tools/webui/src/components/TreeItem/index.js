@@ -30,7 +30,7 @@ import RenameDialog from "./dialogs/RenameDialog.jsx";
 import { parseEnum } from "./utils";
 import { ARRAY_KEY_REGEX, prettyPrintArrayIndex } from "../../utils";
 
-const getParentPath = path => {
+const getParentPath = (path) => {
   const pp = path.split("/");
   pp.pop();
   return pp.join("/");
@@ -45,33 +45,33 @@ export default class TreeItem extends Component {
         edit: false,
         settings: false,
         remove: false,
-        rename: false
+        rename: false,
       },
       saved: false,
       err: false,
-      savedTimeout: false
+      savedTimeout: false,
     };
   }
 
-  handleOpen = dialog => e => {
+  handleOpen = (dialog) => (e) => {
     e.stopPropagation();
     const { dialogs } = this.state;
     this.props.resetBatchUndo();
     this.setState({ dialogs: { ...dialogs, [dialog]: true } });
   };
 
-  handleClose = dialog => () => {
+  handleClose = (dialog) => () => {
     const { dialogs } = this.state;
     this.setState({ dialogs: { ...dialogs, [dialog]: false } });
   };
 
-  handleDelete = item => {
+  handleDelete = (item) => {
     const {
       instanceId,
       deleteKey,
       setMetaKey,
       sendNotification,
-      kdbState
+      kdbState,
     } = this.props;
 
     if (item && item.parent) {
@@ -90,7 +90,7 @@ export default class TreeItem extends Component {
       .then(() => {
         if (Array.isArray(item.children) && item.children.length > 0) {
           return Promise.all(
-            item.children.map(child =>
+            item.children.map((child) =>
               deleteKey(
                 instanceId,
                 child.path,
@@ -121,11 +121,11 @@ export default class TreeItem extends Component {
     );
   };
 
-  handleEdit = value => {
+  handleEdit = (value) => {
     const { savedTimeout } = this.state;
     const { instanceId, setKey, item } = this.props;
     const { path } = item;
-    return setKey(instanceId, path, value).then(res => {
+    return setKey(instanceId, path, value).then((res) => {
       if (res && res.error) {
         return this.setState({ err: true });
       }
@@ -135,7 +135,7 @@ export default class TreeItem extends Component {
         saved: true,
         savedTimeout: setTimeout(() => {
           this.setState({ saved: false });
-        }, 1500)
+        }, 1500),
       });
     });
   };
@@ -143,7 +143,7 @@ export default class TreeItem extends Component {
   renderSpecialValue = (id, { value, meta, onChange, label }) => {
     if (meta["check/type"]) {
       if (meta["check/type"] === "enum") {
-        const valueFn = i => {
+        const valueFn = (i) => {
           return meta[`check/enum/#${i}`];
         };
         const options = parseEnum(valueFn);
@@ -183,7 +183,7 @@ export default class TreeItem extends Component {
         value: val,
         meta,
         onChange,
-        label
+        label,
       });
       if (special) return special;
     }
@@ -224,7 +224,9 @@ export default class TreeItem extends Component {
 
   keyExists = (path, name) => {
     const { instanceId, getKey } = this.props;
-    return getKey(instanceId, path + "/" + name).then(res => res && res.result);
+    return getKey(instanceId, path + "/" + name).then(
+      (res) => res && res.result
+    );
   };
 
   render() {
@@ -240,7 +242,7 @@ export default class TreeItem extends Component {
       deleteMetaKey,
       sendNotification,
       refreshPath,
-      moveKey
+      moveKey,
     } = this.props;
 
     const rootLevel = item && item.path ? !item.path.includes("/") : false;
@@ -294,7 +296,7 @@ export default class TreeItem extends Component {
               display: "flex",
               alignItems: "center",
               height: 48,
-              opacity: keyExists ? 1 : 0.4
+              opacity: keyExists ? 1 : 0.4,
             }}
           >
             <b style={titleStyle} onClick={this.handleOpen("rename")}>
@@ -353,7 +355,7 @@ export default class TreeItem extends Component {
               onChange,
               onKeyPress,
               label,
-              onError
+              onError,
             }) =>
               this.renderValue("addValueField", {
                 value,
@@ -362,7 +364,7 @@ export default class TreeItem extends Component {
                 onChange,
                 onKeyPress,
                 label,
-                onError
+                onError,
               })
             }
             keyExists={this.keyExists}
@@ -382,7 +384,7 @@ export default class TreeItem extends Component {
           <RenameDialog
             item={item}
             open={this.state.dialogs.rename}
-            onRename={name =>
+            onRename={(name) =>
               moveKey(
                 instanceId,
                 item.path,
@@ -450,7 +452,7 @@ export default class TreeItem extends Component {
             setMeta={(key, value) =>
               setMetaKey(instanceId, item.path, key, value)
             }
-            deleteMeta={key => deleteMetaKey(instanceId, item.path, key)}
+            deleteMeta={(key) => deleteMetaKey(instanceId, item.path, key)}
             onClose={this.handleClose("settings")}
             onEdit={this.handleEdit}
             instanceVisibility={instanceVisibility}
@@ -459,7 +461,7 @@ export default class TreeItem extends Component {
           {!(meta && meta["restrict/remove"] === "1") && (
             <ActionButton
               icon={<ActionDelete />}
-              onClick={e => {
+              onClick={(e) => {
                 this.handleDelete(item);
                 e.preventDefault();
               }}

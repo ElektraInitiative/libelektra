@@ -62,7 +62,7 @@ export default class ErrorSnackbar extends React.Component {
           window.open("http://issues.libelektra.org/new", "_blank")
         }
       />,
-      <FlatButton label="dismiss" primary={true} onClick={this.handleClose} />
+      <FlatButton label="dismiss" primary={true} onClick={this.handleClose} />,
     ];
 
     return [
@@ -96,7 +96,7 @@ export default class ErrorSnackbar extends React.Component {
             onClick={this.showDetails}
           />
         )}
-      </Dialog>
+      </Dialog>,
     ];
   }
 }

@@ -13,7 +13,7 @@ import {
   SET_KEY_SUCCESS,
   MOVE_KEY_SUCCESS,
   COPY_KEY_SUCCESS,
-  CREATE_KEY_SUCCESS
+  CREATE_KEY_SUCCESS,
 } from "../actions";
 
 const insertPath = (state, path) =>
@@ -32,7 +32,7 @@ export default function pathReducer(state = [], action) {
     case DELETE_KEY_SUCCESS: {
       const { path } = action && action.request;
       const data = action && action.kdb;
-      return state.filter(p => {
+      return state.filter((p) => {
         const restricted =
           data &&
           data[p] &&
@@ -52,21 +52,21 @@ export default function pathReducer(state = [], action) {
     case COPY_KEY_SUCCESS: {
       const { from, to } = action && action.request;
       const copiedPaths = state.filter(
-        p => p === from || p.startsWith(from + "/")
+        (p) => p === from || p.startsWith(from + "/")
       );
       return copiedPaths
-        .map(p => p.replace(from, to))
+        .map((p) => p.replace(from, to))
         .reduce(insertPath, state);
     }
 
     case MOVE_KEY_SUCCESS: {
       const { from, to } = action && action.request;
       const newState = state.filter(
-        p => p !== from && !p.startsWith(from + "/")
+        (p) => p !== from && !p.startsWith(from + "/")
       );
       const newChildren = state
-        .filter(p => p.startsWith(from + "/"))
-        .map(p => {
+        .filter((p) => p.startsWith(from + "/"))
+        .map((p) => {
           const name = p.split("/").pop();
           return to + "/" + name;
         });

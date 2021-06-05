@@ -72,8 +72,8 @@ CMAKE_FLAGS_BUILD_ALL = [
 CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
 
 CMAKE_FLAGS_CLANG = [
-  'CMAKE_C_COMPILER': 'clang-11',
-  'CMAKE_CXX_COMPILER': 'clang++-11'
+  'CMAKE_C_COMPILER': 'clang',
+  'CMAKE_CXX_COMPILER': 'clang++'
 ]
 
 CMAKE_FLAGS_MMAP = [
@@ -271,15 +271,6 @@ def dockerInit() {
       "debian-buster-i386", dockerUtils.&idTesting,
       "./scripts/docker/debian/buster",
       "./scripts/docker/debian/buster/i386.Dockerfile"
-    )
-
-    /* Build Elektra's documentation with this image.
-     * Also contains latex for pdf creation.
-     */
-    DOCKER_IMAGES.buster_doc = dockerUtils.createDockerImageDesc(
-      "debian-buster-doc", dockerUtils.&idTesting,
-      "./scripts/docker/debian/buster",
-      "./scripts/docker/debian/buster/doc.Dockerfile"
     )
 
     /* A Debian oldstable image used for testing backwards compatibility.
@@ -728,7 +719,7 @@ def buildTodo() {
 '''
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.buster_doc) {
+      withDockerEnv(DOCKER_IMAGES.sid_doc) {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
         recordIssues(tools: [taskScanner(ignoreCase: true, includePattern: openTaskPatterns, lowTags: 'TODO,FIXME')])

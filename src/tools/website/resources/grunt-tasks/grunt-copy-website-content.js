@@ -5,11 +5,11 @@ var path = require("path");
 
 var resolve_path = require("./helper/resolve-path");
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   grunt.registerMultiTask(
     "copy-website-content",
     "Copies website content to a specific target directory.",
-    function() {
+    function () {
       var self = this;
 
       var root_dir = resolve_path(this.data.repo_root);
@@ -19,7 +19,7 @@ module.exports = function(grunt) {
 
       /* MAIN FUNCTION */
 
-      this.build = function() {
+      this.build = function () {
         // remove old website content entirely and/or create dir
         fs.emptyDirSync(target_dir);
 
@@ -32,11 +32,11 @@ module.exports = function(grunt) {
         var news = grunt.file.readJSON(input_news_file);
 
         // iterate through menu points and handle them
-        structure.forEach(function(entry) {
+        structure.forEach(function (entry) {
           self.handleMenuEntry(entry);
         });
 
-        news.forEach(function(post) {
+        news.forEach(function (post) {
           if (post.type === "file") {
             self.handleNewsPost(post);
           }
@@ -50,7 +50,7 @@ module.exports = function(grunt) {
 
       /* HELPING FUNCTIONS */
 
-      this.handleNewsPost = function(post) {
+      this.handleNewsPost = function (post) {
         var file = path.join(target_dir, post.file);
         var dir = path.dirname(file);
         // first create dir
@@ -59,13 +59,13 @@ module.exports = function(grunt) {
         }
         // now read and copy
         var content = fs.readFileSync(path.join(root_dir, post.file), {
-          encoding: "utf8"
+          encoding: "utf8",
         });
         content = self.ensureProperFileContentFormat(post.file, content);
         fs.writeFileSync(file, content);
       };
 
-      this.handleMenuEntry = function(entry) {
+      this.handleMenuEntry = function (entry) {
         switch (entry.type) {
           case "submenu":
           case "listfiles":
@@ -87,13 +87,13 @@ module.exports = function(grunt) {
         }
       };
 
-      this.handleEntryWithChildren = function(entry) {
-        entry.children.forEach(function(child) {
+      this.handleEntryWithChildren = function (entry) {
+        entry.children.forEach(function (child) {
           self.handleMenuEntry(child);
         });
       };
 
-      this.handleFileEntry = function(entry) {
+      this.handleFileEntry = function (entry) {
         var file = path.join(target_dir, entry.options.path);
         var dir = path.dirname(file);
         // first create dir
@@ -102,7 +102,7 @@ module.exports = function(grunt) {
         }
         // now read and copy
         var content = fs.readFileSync(path.join(root_dir, entry.options.path), {
-          encoding: "utf8"
+          encoding: "utf8",
         });
         content = self.ensureProperFileContentFormat(
           entry.options.path,
@@ -111,7 +111,7 @@ module.exports = function(grunt) {
         fs.writeFileSync(file, content);
       };
 
-      this.ensureProperFileContentFormat = function(filepath, content) {
+      this.ensureProperFileContentFormat = function (filepath, content) {
         switch (path.extname(filepath)) {
           case "":
           case ".md":
@@ -136,11 +136,11 @@ module.exports = function(grunt) {
         return content;
       };
 
-      this.replaceTabBySpaces = function(text) {
+      this.replaceTabBySpaces = function (text) {
         return text.replace(new RegExp("\t", "g"), "    ");
       };
 
-      this.reformatReadmeInfoBlock = function(text) {
+      this.reformatReadmeInfoBlock = function (text) {
         var lines = text.split("\n");
         // iterate to last infos line
         var lastInfoLine = 0;
@@ -157,98 +157,99 @@ module.exports = function(grunt) {
         return lines.join("\n");
       };
 
-      this.ensureAbsoluteLinkPaths = function(filepath, text) {
-        return text.replace(/\[([^\]]+)\]\(([^\)]+)\)/gi, function(
-          match,
-          text,
-          url
-        ) {
-          if (url.indexOf("://") > -1 || url.charAt(0) === "#") {
-            return match;
-          } else {
-            if (url.charAt(0) === "/") {
-              return "[" + text + "](" + url.substr(1) + ")";
+      this.ensureAbsoluteLinkPaths = function (filepath, text) {
+        return text.replace(
+          /\[([^\]]+)\]\(([^\)]+)\)/gi,
+          function (match, text, url) {
+            if (url.indexOf("://") > -1 || url.charAt(0) === "#") {
+              return match;
             } else {
-              return (
-                "[" + text + "](" + path.join(path.dirname(filepath), url) + ")"
-              );
+              if (url.charAt(0) === "/") {
+                return "[" + text + "](" + url.substr(1) + ")";
+              } else {
+                return (
+                  "[" +
+                  text +
+                  "](" +
+                  path.join(path.dirname(filepath), url) +
+                  ")"
+                );
+              }
             }
           }
-        });
+        );
       };
 
-      this.ensureLinkToFile = function(text) {
-        return text.replace(/\[([^\]]+)\]\(([^\)]+)\)/gi, function(
-          match,
-          text,
-          url
-        ) {
-          if (url.indexOf("://") > -1 || url.charAt(0) === "#") {
-            return match;
-          } else {
-            var file = path.normalize(path.join(root_dir, url));
-            try {
-              if (fs.statSync(file).isDirectory()) {
-                var target_files = grunt.config().app.website
-                  .target_file_dir_links;
-                for (var i = 0; i < target_files.length; i++) {
-                  try {
-                    if (
-                      fs.statSync(path.join(file, target_files[i])).isFile()
-                    ) {
-                      return (
-                        "[" +
-                        text +
-                        "](" +
-                        path.join(url, target_files[i]) +
-                        ")"
-                      );
+      this.ensureLinkToFile = function (text) {
+        return text.replace(
+          /\[([^\]]+)\]\(([^\)]+)\)/gi,
+          function (match, text, url) {
+            if (url.indexOf("://") > -1 || url.charAt(0) === "#") {
+              return match;
+            } else {
+              var file = path.normalize(path.join(root_dir, url));
+              try {
+                if (fs.statSync(file).isDirectory()) {
+                  var target_files = grunt.config().app.website
+                    .target_file_dir_links;
+                  for (var i = 0; i < target_files.length; i++) {
+                    try {
+                      if (
+                        fs.statSync(path.join(file, target_files[i])).isFile()
+                      ) {
+                        return (
+                          "[" +
+                          text +
+                          "](" +
+                          path.join(url, target_files[i]) +
+                          ")"
+                        );
+                      }
+                    } catch (error) {
+                      // do nothing
                     }
-                  } catch (error) {
-                    // do nothing
                   }
                 }
+                // otherwise keep the current link
+                return match;
+              } catch (error) {
+                return match;
               }
-              // otherwise keep the current link
-              return match;
-            } catch (error) {
-              return match;
             }
           }
-        });
+        );
       };
 
-      this.copyImages = function(filepath, text) {
-        return text.replace(/!\[([^\]]+)\]\(([^\)]+)\)/gi, function(
-          match,
-          text,
-          url
-        ) {
-          if (url.indexOf("://") > -1 || url.charAt(0) === "#") {
-            // do nothing for external images and refs
-            return match;
-          } else {
-            var file = path.normalize(path.join(root_dir, url));
-            try {
-              if (fs.statSync(file).isFile()) {
-                fs.copySync(file, path.normalize(path.join(target_dir, url)));
-                return match;
-              } else {
-                // the linked target is no file and therefore no image
-                throw false;
+      this.copyImages = function (filepath, text) {
+        return text.replace(
+          /!\[([^\]]+)\]\(([^\)]+)\)/gi,
+          function (match, text, url) {
+            if (url.indexOf("://") > -1 || url.charAt(0) === "#") {
+              // do nothing for external images and refs
+              return match;
+            } else {
+              var file = path.normalize(path.join(root_dir, url));
+              try {
+                if (fs.statSync(file).isFile()) {
+                  fs.copySync(file, path.normalize(path.join(target_dir, url)));
+                  return match;
+                } else {
+                  // the linked target is no file and therefore no image
+                  throw false;
+                }
+              } catch (error) {
+                // could not copy file, image not available
+                grunt.log.warn(
+                  "Warning: File " +
+                    filepath +
+                    " contains not available image " +
+                    url
+                );
+                return "";
               }
-            } catch (error) {
-              // could not copy file, image not available
-              grunt.log.warn(
-                "Warning: File " +
-                  filepath +
-                  " contains not available image " +
-                  url
-              );
-              return "";
             }
           }
-        });
+        );
       };
 
       // finally, run the build!

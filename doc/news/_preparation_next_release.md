@@ -32,6 +32,9 @@ This is the quickest way to get started with Elektra without compiling and other
 - JNI plugin fixed
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
+- Fresh Fedora 34 packages
+- Documentation Improvements & Cleanups
+- GCC 11 and Clang 12 compatibility
 
 ### JNI plugin fixed
 
@@ -150,6 +153,7 @@ you up to date with the multi-language support provided by Elektra.
 ### SWIG
 
 - Remove `-Wno-shift-overflow warnings` option from SWIG bindings compile flags. _(Mihael Pranjić)_
+- Suppress SWIG/Ruby bindings warning about `operator != ignored`. _(Mihael Pranjić)_
 
 ### JNA
 
@@ -231,7 +235,10 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 
 ## Scripts
 
-- <<TODO>>
+- Require clang-format 12 for reformatting C and Java. _(Mihael Pranjić)_
+- Use basename of release file in `generate-hashsums`. _(Mihael Pranjić)_
+- Use `shfmt` v3.2.4 to reformat shell scripts. _(Mihael Pranjić)_
+- Use `cmake-format` v0.6.13 (`cmakelang`) to reformat CMake. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -261,10 +268,15 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Fixed example in the "mount-configuration-files" tutorial [#3722](https://github.com/ElektraInitiative/libelektra/issues/3722). _(Philipp Oppel)_
 - Update and correct third party licensing information _(@a-kraschitzer)_
 - Added contact details to `AUTHORS.md` _(Michael Tucek)_
+- Use Ronn-NG instead of unmaintained ronn to generate man pages. _(Mihael Pranjić)_
+- Re-generate man pages to add missing information and remove unnecessary symbols and escaping. _(Mihael Pranjić)_
+- Update `doc/Doxyfile` to Doxygen 1.9.1 and fix a syntax error with the `FILTER_PATTERNS` directive. _(Mihael Pranjić)_
 
 ## Tests
 
 - Fix failing `testshell_markdown_tutorial_crypto` on Mac OS and other OS with GnuPG version >= 2.3.1. _(Peter Nirschl @petermax2)_
+- Use clang-format 12 for Restyled and update Restyled version. _(Mihael Pranjić)_
+- Update all Restyled formatters to current versions. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -279,13 +291,18 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 ### CMake
 
 - Disable binding tests when `BUILD_TESTING` is disabled. _(Robert Sowula)_
-- <<TODO>>
+- Remove unused `FindCppCMS.cmake` CMake module and unused `Boost` variables. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### Docker
 
 - Add Fedora 34 images. _(Mihael Pranjić)_
 - We added release images that come with pre-installed dependencies and sudo permissions for each distribution we build packages for. _(Robert Sowula)_
+- Use Clang 12 and Gradle 7.0 in Debian Sid image. _(Mihael Pranjić)_
+- Remove boost and some unused dependencies from all Docker images. _(Mihael Pranjić)_
+- Use Gradle 7.0 and Ronn-NG `0.10.1.pre1` in Docker images. _(Mihael Pranjić)_
+- Remove unused Debian Buster `doc` image. _(Mihael Pranjić)_
+- <<TODO>>
 - <<TODO>>
 
 ## Infrastructure
@@ -295,6 +312,7 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Use Clang 12 and Python 3.9 for macOS builds. _(Mihael Pranjić)_
 - Pin GnuPG version to 2.2.x. _(Mihael Pranjić)_
 - Update Fedora image to version 34. _(Mihael Pranjić)_
+- Clean up unused dependencies in Arch Linux image and add Ronn-NG to generate man pages. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -308,12 +326,13 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 ### Jenkins
 
 - We now build and test on Fedora 34 and 33. Fedora 32 was removed from the CI. _(Mihael Pranjić)_
+- Build release documentation on Debian Sid, due to newer TeX and Doxygen packages. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
 ### Travis
 
-- <<TODO>>
+- Update Ubuntu to Focal, use GCC 10 and clean up travis scripts. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 

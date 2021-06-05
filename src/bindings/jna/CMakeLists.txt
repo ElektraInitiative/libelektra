@@ -13,7 +13,10 @@ macro (java_test_needs_plugin test plugin)
 	if (plugin_index GREATER -1)
 		java_exclude_test (${test})
 	endif (plugin_index GREATER -1)
-endmacro (java_test_needs_plugin test plugin)
+endmacro (
+	java_test_needs_plugin
+	test
+	plugin)
 
 if (Java_JAVAC_EXECUTABLE)
 

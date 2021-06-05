@@ -12,7 +12,7 @@ import {
   errorResponse,
   dontShowDB,
   setSessionID,
-  getSessionID
+  getSessionID,
 } from "./utils";
 
 import {
@@ -20,7 +20,7 @@ import {
   createInstance,
   getInstance as getDBInstance,
   updateInstance,
-  deleteInstance
+  deleteInstance,
 } from "../db";
 
 import { getSingleInstance } from "../config";
@@ -30,7 +30,7 @@ import remoteKdb from "../connector";
 // match VISIBILITY@HOST, while ignoring tailing slashes
 const SINGLE_INSTANCE_REGEX = /^((.*)\@)?(https?\:\/\/[^\/]*)(\/.*)?$/;
 
-const makeMyInstance = str => {
+const makeMyInstance = (str) => {
   if (!str) return false;
   const [, , visibility, host] = str.match(SINGLE_INSTANCE_REGEX);
   if (!host) {
@@ -44,17 +44,17 @@ const makeMyInstance = str => {
     id: "my",
     name: "My",
     description: "Single instance mode",
-    visibility: visibility || "user"
+    visibility: visibility || "user",
   };
 };
 
-const getInstance = id =>
+const getInstance = (id) =>
   id === "my" ? getSingleInstance().then(makeMyInstance) : getDBInstance(id);
 
 const getInstances = () =>
-  getSingleInstance().then(host => {
+  getSingleInstance().then((host) => {
     if (!host) return getDBInstances();
-    return getDBInstances().then(instances =>
+    return getDBInstances().then((instances) =>
       instances.concat([makeMyInstance(host)])
     );
   });
@@ -64,141 +64,143 @@ export default function initInstanceRoutes(app) {
     .route("/api/instances")
     .get((req, res) =>
       getInstances()
-        .then(output => successResponse(res, output))
-        .catch(err => errorResponse(res, err))
+        .then((output) => successResponse(res, output))
+        .catch((err) => errorResponse(res, err))
     )
     .post((req, res) =>
       createInstance(req.body)
-        .then(output => successResponse(res.status(201), output))
-        .catch(err => errorResponse(res, err))
+        .then((output) => successResponse(res.status(201), output))
+        .catch((err) => errorResponse(res, err))
     );
 
   app
     .route("/api/instances/:id")
     .get((req, res) =>
       getInstance(req.params.id)
-        .then(output => successResponse(res, output))
-        .catch(err => errorResponse(res, err))
+        .then((output) => successResponse(res, output))
+        .catch((err) => errorResponse(res, err))
     )
     .put((req, res) =>
       updateInstance(req.params.id, req.body)
-        .then(output => successResponse(res, output))
-        .catch(err => errorResponse(res, err))
+        .then((output) => successResponse(res, output))
+        .catch((err) => errorResponse(res, err))
     )
     .delete((req, res) =>
       deleteInstance(req.params.id)
-        .then(output => successResponse(res, output))
-        .catch(err => errorResponse(res, err))
+        .then((output) => successResponse(res, output))
+        .catch((err) => errorResponse(res, err))
     );
 
   app.get("/api/instances/:id/version", (req, res) =>
     getInstance(req.params.id)
-      .then(instance => {
+      .then((instance) => {
         if (!instance || !instance.host) {
           throw new APIError("Instance not found or invalid (no host)");
         }
         return remoteKdb.version(instance.host);
       })
-      .then(instanceRes =>
+      .then((instanceRes) =>
         setSessionID(req.params.id, req.session, instanceRes)
       )
-      .then(output => successResponse(res, output))
-      .catch(err => errorResponse(res, err))
+      .then((output) => successResponse(res, output))
+      .catch((err) => errorResponse(res, err))
   );
 
   app.get("/api/instances/:id/kdb", (req, res) =>
     getInstance(req.params.id)
-      .then(instance => {
+      .then((instance) => {
         if (!instance || !instance.host) {
           throw new APIError("Instance not found or invalid (no host)");
         }
         return remoteKdb.get(instance.host, {
-          sessionId: getSessionID(instance.id, req.session)
+          sessionId: getSessionID(instance.id, req.session),
         });
       })
-      .then(instanceRes =>
+      .then((instanceRes) =>
         setSessionID(req.params.id, req.session, instanceRes)
       )
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(dontShowDB)
-      .then(output => successResponse(res, output))
-      .catch(err => errorResponse(res, err))
+      .then((output) => successResponse(res, output))
+      .catch((err) => errorResponse(res, err))
   );
 
   app
     .route("/api/instances/:id/kdb/*")
     .get((req, res) =>
       getInstance(req.params.id)
-        .then(instance => {
+        .then((instance) => {
           const qs = req._parsedUrl.query;
           return remoteKdb.get(instance.host, {
             query: qs ? "?" + qs : "",
             sessionId: getSessionID(instance.id, req.session),
-            path: req.params[0]
+            path: req.params[0],
           });
         })
-        .then(instanceRes =>
+        .then((instanceRes) =>
           setSessionID(req.params.id, req.session, instanceRes)
         )
-        .then(res => res.json())
+        .then((res) => res.json())
         .then(dontShowDB)
-        .then(output => successResponse(res, output))
-        .catch(err => errorResponse(res, err))
+        .then((output) => successResponse(res, output))
+        .catch((err) => errorResponse(res, err))
     )
     .put((req, res) =>
       getInstance(req.params.id)
-        .then(instance => remoteKdb.set(instance.host, req.params[0], req.body))
-        .then(instanceRes =>
+        .then((instance) =>
+          remoteKdb.set(instance.host, req.params[0], req.body)
+        )
+        .then((instanceRes) =>
           setSessionID(req.params.id, req.session, instanceRes)
         )
-        .then(output => successResponse(res, output))
-        .catch(err => errorResponse(res, err))
+        .then((output) => successResponse(res, output))
+        .catch((err) => errorResponse(res, err))
     )
     .delete((req, res) =>
       getInstance(req.params.id)
-        .then(instance => remoteKdb.rm(instance.host, req.params[0]))
-        .then(instanceRes =>
+        .then((instance) => remoteKdb.rm(instance.host, req.params[0]))
+        .then((instanceRes) =>
           setSessionID(req.params.id, req.session, instanceRes)
         )
-        .then(output => successResponse(res, output))
-        .catch(err => errorResponse(res, err))
+        .then((output) => successResponse(res, output))
+        .catch((err) => errorResponse(res, err))
     );
 
   app.get("/api/instances/:id/kdbFind/*", (req, res) =>
     getInstance(req.params.id)
-      .then(instance => remoteKdb.find(instance.host, req.params[0]))
-      .then(instanceRes =>
+      .then((instance) => remoteKdb.find(instance.host, req.params[0]))
+      .then((instanceRes) =>
         setSessionID(req.params.id, req.session, instanceRes)
       )
-      .then(output => successResponse(res, output))
-      .catch(err => errorResponse(res, err))
+      .then((output) => successResponse(res, output))
+      .catch((err) => errorResponse(res, err))
   );
 
   app.post("/api/instances/:id/kdbMv/*", (req, res) =>
     getInstance(req.params.id)
-      .then(instance => remoteKdb.mv(instance.host, req.params[0], req.body))
-      .then(instanceRes =>
+      .then((instance) => remoteKdb.mv(instance.host, req.params[0], req.body))
+      .then((instanceRes) =>
         setSessionID(req.params.id, req.session, instanceRes)
       )
       .then(() => res.status(204).send())
-      .catch(err => errorResponse(res, err))
+      .catch((err) => errorResponse(res, err))
   );
 
   app.post("/api/instances/:id/kdbCp/*", (req, res) =>
     getInstance(req.params.id)
-      .then(instance => remoteKdb.cp(instance.host, req.params[0], req.body))
-      .then(instanceRes =>
+      .then((instance) => remoteKdb.cp(instance.host, req.params[0], req.body))
+      .then((instanceRes) =>
         setSessionID(req.params.id, req.session, instanceRes)
       )
       .then(() => res.status(204).send())
-      .catch(err => errorResponse(res, err))
+      .catch((err) => errorResponse(res, err))
   );
 
   app
     .route("/api/instances/:id/kdbMeta/*")
     .post((req, res) =>
       getInstance(req.params.id)
-        .then(instance =>
+        .then((instance) =>
           remoteKdb.setmeta(
             instance.host,
             req.params[0],
@@ -206,21 +208,21 @@ export default function initInstanceRoutes(app) {
             req.body.value
           )
         )
-        .then(instanceRes =>
+        .then((instanceRes) =>
           setSessionID(req.params.id, req.session, instanceRes)
         )
         .then(() => res.status(204).send())
-        .catch(err => errorResponse(res, err))
+        .catch((err) => errorResponse(res, err))
     )
     .delete((req, res) =>
       getInstance(req.params.id)
-        .then(instance =>
+        .then((instance) =>
           remoteKdb.rmmeta(instance.host, req.params[0], req.body.key)
         )
-        .then(instanceRes =>
+        .then((instanceRes) =>
           setSessionID(req.params.id, req.session, instanceRes)
         )
         .then(() => res.status(204).send())
-        .catch(err => errorResponse(res, err))
+        .catch((err) => errorResponse(res, err))
     );
 }

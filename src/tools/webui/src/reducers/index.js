@@ -30,5 +30,5 @@ export default combineReducers({
   notification: notificationReducer,
   undoHistory: undoHistoryReducer,
   batchUndo: batchUndoReducer,
-  kdbFind: kdbFindReducer
+  kdbFind: kdbFindReducer,
 });

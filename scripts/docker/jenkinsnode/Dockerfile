@@ -11,7 +11,6 @@ RUN apt-get -y install \
   discount \
   git \
   libaugeas-dev \
-  libboost-all-dev \
   libcurl4-gnutls-dev \
   libdbus-1-dev \
   libev-dev \
@@ -31,11 +30,9 @@ RUN apt-get -y install \
   libzmq3-dev \
   openjdk-8-jdk-headless \
   openssh-server \
-  python-all \
-  python-dev \
+  python3-dev \
   python3-all \
   ruby-dev \
-  ruby-ronn \
   swig \
   unzip \
   valgrind \

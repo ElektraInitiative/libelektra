@@ -37,7 +37,7 @@ class App extends React.Component {
   componentWillMount() {
     const { store, history } = this.props;
     // single instance mode
-    store.dispatch(fetchInstance("my")).then(instance => {
+    store.dispatch(fetchInstance("my")).then((instance) => {
       if (!instance || instance.error) {
         console.log("single instance mode: %coff", "font-weight: bold");
       } else {
@@ -53,11 +53,11 @@ class App extends React.Component {
         <Route
           exact
           path="/:path"
-          render={props => <Menu subpage={getSubpage(props)} />}
+          render={(props) => <Menu subpage={getSubpage(props)} />}
         />
         <Route
           path="/:path/:id"
-          render={props => (
+          render={(props) => (
             <Menu
               subpage={getSubpage(props)}
               singleInstanceMode={getSingleInstance(props)}

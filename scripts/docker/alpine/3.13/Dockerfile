@@ -12,7 +12,6 @@ RUN apk update \
         git \
         gtest-dev \
         ninja \
-        ronn \
         yaml-cpp-dev
 
 # Google Test

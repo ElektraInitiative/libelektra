@@ -17,18 +17,18 @@ import ConnectedCreateInstanceCard from "../../containers/ConnectedCreateInstanc
 const containerStyle = {
   display: "flex",
   flexWrap: "wrap",
-  minHeight: "500px"
+  minHeight: "500px",
 };
 
 const cellStyle = {
   flex: 1,
-  maxWidth: "700px"
+  maxWidth: "700px",
 };
 
 const Home = ({ instances, status }) => (
   <div style={containerStyle}>
     {instances &&
-      instances.map(instance => (
+      instances.map((instance) => (
         <div key={instance.id} style={cellStyle}>
           <ConnectedInstanceCard
             id={instance.id}

@@ -20,7 +20,6 @@ RUN apt-get update && apt-get -y install \
         git-buildpackage \
         graphviz \
         libaugeas-dev \
-        libboost-dev \
         libdbus-1-dev \
         libgit2-dev \
         libgpgme-dev \
@@ -37,8 +36,6 @@ RUN apt-get update && apt-get -y install \
         ninja-build \
         openjdk-11-jdk \
         pkg-config \
-        python-all \
-        python-dev \
         python3-all \
         python3-dev \
         qtbase5-dev \

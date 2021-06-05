@@ -52,17 +52,18 @@ installation of self-compiled Elektra (such as how to uninstall it).
 > If they are not available, some of the functionality gets disabled automatically.
 > The core of Elektra never depends on other libraries.
 
-To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
+To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn-ng](https://github.com/apjanke/ronn-ng/blob/master/INSTALLING.md):
 
 ```sh
-apt-get install doxygen graphviz ruby-ronn
+apt-get install doxygen graphviz
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 Or on RPM based systems:
 
 ```sh
 sudo yum install -y doxygen docbook-style-xsl graphviz ruby
-gem install ronn
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 Or on macOS using brew:
@@ -70,7 +71,7 @@ Or on macOS using brew:
 ```sh
 brew install doxygen graphviz
 brew install ruby # in case ruby is not already installed
-gem install ronn
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 To build PDF documentation you need `pdflatex` with
@@ -89,7 +90,7 @@ A small subset of build dependencies to get you started:
 - for CentOS:
 
 ```sh
-sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
+sudo yum install -y libdb-devel GConf2-devel libxml2-devel yajl-devel   \
 libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
 java-1.8.0-openjdk-devel jna ruby-devel byacc
 ```
@@ -97,7 +98,7 @@ java-1.8.0-openjdk-devel jna ruby-devel byacc
 - for Ubuntu:
 
 ```sh
-sudo apt install -y libboost-dev libxerces-c-dev libxml2-dev libyajl-dev \
+sudo apt install -y libxerces-c-dev libxml2-dev libyajl-dev \
 libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
 dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison
 ```
@@ -439,9 +440,9 @@ cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
 
 #### BUILD_DOCUMENTATION
 
-Build documentation with doxygen (API) and ronn (man pages).
+Build documentation with doxygen (API) and ronn-ng (man pages).
 
-If ronn is not found, already compiled man pages will be
+If ronn-ng is not found, already compiled man pages will be
 used instead.
 
 > Note: Turning off building the documentation, also turns off
@@ -683,10 +684,10 @@ sudo make install
 cd ..
 ```
 
-Also, no ronn was available, thus you need to do:
+Also, no ronn-ng was available, thus you need to do:
 
 ```sh
-gem install ronn
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 ### Cross Compiling

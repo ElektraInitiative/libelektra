@@ -9,7 +9,7 @@ module.exports = [
   "webStructure",
   "config",
   "$translate",
-  function(
+  function (
     $rootScope,
     $scope,
     Logger,
@@ -32,7 +32,7 @@ module.exports = [
         document
           .querySelector('meta[name="build-date"]')
           .getAttribute("content")
-      )
+      ),
     };
     $scope.builddate.timezoneOffset =
       $scope.builddate.date.getTimezoneOffset() / -60;
@@ -60,20 +60,20 @@ module.exports = [
     //
     //        }
 
-    this.scrollToTop = function() {
+    this.scrollToTop = function () {
       $anchorScroll();
     };
 
     Logger.info("Main template ready");
 
     // init after view has been loaded (template parsed, translation happend)
-    angular.element(document).ready(function() {
+    angular.element(document).ready(function () {
       docsearch({
         apiKey: "7d1e7bc1f97b53de246aaefa29484be9",
         indexName: "elektra",
         inputSelector: "#searchboxdocsearch",
-        debug: false // Set debug to true if you want to inspect the dropdown
+        debug: false, // Set debug to true if you want to inspect the dropdown
       });
     });
-  }
+  },
 ];

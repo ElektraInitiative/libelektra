@@ -15,7 +15,7 @@ export {
   createInstance,
   getInstance,
   updateInstance,
-  deleteInstance
+  deleteInstance,
 } from "./instances";
 
 export {
@@ -26,7 +26,7 @@ export {
   deleteCluster,
   getClusterInstances,
   addInstanceToCluster,
-  removeInstanceFromCluster
+  removeInstanceFromCluster,
 } from "./clusters";
 
 export { virtualKdb } from "./utils";

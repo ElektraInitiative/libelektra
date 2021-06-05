@@ -22,7 +22,7 @@ export default class TreeView extends React.Component {
     this.state = { selection: [], unfolded: [], data: props.data };
   }
 
-  componentWillReceiveProps = nextProps => {
+  componentWillReceiveProps = (nextProps) => {
     if (this.props.data !== nextProps.data) {
       this.setState({ data: nextProps.data });
     }
@@ -42,7 +42,7 @@ export default class TreeView extends React.Component {
     }
   };
 
-  updateUnfolded = unfolded => {
+  updateUnfolded = (unfolded) => {
     const { instanceId, updateInstance, searching } = this.props;
     this.setState({ unfolded });
     if (!searching) {
@@ -50,7 +50,7 @@ export default class TreeView extends React.Component {
     }
   };
 
-  refreshPath = path => {
+  refreshPath = (path) => {
     const { getKey, instanceId } = this.props;
     return getKey(instanceId, path);
   };
@@ -60,7 +60,7 @@ export default class TreeView extends React.Component {
     if (!noRecursive && Array.isArray(item.children)) {
       return Promise.all([
         mainPromise,
-        ...item.children.map(child => this.refreshPath(child.path))
+        ...item.children.map((child) => this.refreshPath(child.path)),
       ]);
     } else {
       return mainPromise;
@@ -83,7 +83,7 @@ export default class TreeView extends React.Component {
     const actionName = evt && (evt.altKey || evt.ctrlKey) ? "copied" : "moved";
 
     Promise.all(
-      selection.map(sel =>
+      selection.map((sel) =>
         action(instanceId, sel.path, target.path + "/" + sel.name)
       )
     ).then(() =>
@@ -117,14 +117,14 @@ export default class TreeView extends React.Component {
         item={item}
         inputs={inputs}
         instanceId={instanceId}
-        pathExists={path => kdb && kdb[path]}
+        pathExists={(path) => kdb && kdb[path]}
         instanceVisibility={instanceVisibility}
         refreshPath={this.refreshPath}
       />
     );
   };
 
-  handleSearch = input => item => {
+  handleSearch = (input) => (item) => {
     // check name and path first
     const regex = new RegExp(`.*${input}.*`, "gi");
     if (item.name.match(regex) || item.path.match(regex)) {
@@ -163,10 +163,10 @@ export default class TreeView extends React.Component {
   createOpener() {
     const tree = this;
     return class Opener extends React.Component {
-      onClick = event => {
+      onClick = (event) => {
         const { onClick, item } = this.props;
         const { unfolded } = tree.state;
-        const newUnfolded = unfolded.filter(p => p !== item.path);
+        const newUnfolded = unfolded.filter((p) => p !== item.path);
         if (newUnfolded.length === unfolded.length) {
           newUnfolded.push(item.path);
         }
@@ -182,7 +182,7 @@ export default class TreeView extends React.Component {
             {...rest}
             tabIndex="0"
             onClick={this.onClick}
-            onKeyPress={e => {
+            onKeyPress={(e) => {
               if (e.key === "Enter") {
                 this.onClick(e);
               }
@@ -202,11 +202,13 @@ export default class TreeView extends React.Component {
       click: [
         function unfoldOnSelectionByPath(item) {
           if (!this.isSelected(item) && item.children) {
-            const newUnfolded = unfolded.filter(p => p !== item.path);
+            const newUnfolded = unfolded.filter((p) => p !== item.path);
             if (newUnfolded.length === unfolded.length) {
               newUnfolded.push(item.path);
               tree.updateUnfolded(newUnfolded);
-              const newVal = this.state.get().unfolded.filter(i => i !== item);
+              const newVal = this.state
+                .get()
+                .unfolded.filter((i) => i !== item);
               if (newVal.length === this.state.get().unfolded.length)
                 newVal.push(item);
               this.state.set({ unfolded: newVal });
@@ -219,27 +221,27 @@ export default class TreeView extends React.Component {
               this.inputs.get().ancestors,
               this.inputs.get().model
             );
-        }
+        },
       ],
       fold: [
         function unfoldByPath(item) {
-          const isFolded = !unfolded.find(p => p === item.path);
+          const isFolded = !unfolded.find((p) => p === item.path);
           if (!isFolded) {
-            const newVal = this.state.get().unfolded.filter(i => i !== item);
+            const newVal = this.state.get().unfolded.filter((i) => i !== item);
             if (newVal.length === this.state.get().unfolded.length)
               newVal.push(item);
             this.state.set({ unfolded: newVal });
           }
           return isFolded;
-        }
-      ]
+        },
+      ],
     };
 
     return (
       <ExplorerView
         dragndrop={{
           drop: this.handleDrop,
-          droppable: true /* allow dropping to keys without children */
+          droppable: true /* allow dropping to keys without children */,
         }}
         model={data}
         category="children"
@@ -255,7 +257,7 @@ export default class TreeView extends React.Component {
         transition={{
           transitionName: "ExplorerViewTransition",
           transitionEnterTimeout: 200,
-          transitionLeaveTimeout: 200
+          transitionLeaveTimeout: 200,
         }}
         openerOpts={{ position: "left" }}
         labels={{ "search.placeholder": "Filter keys..." }}

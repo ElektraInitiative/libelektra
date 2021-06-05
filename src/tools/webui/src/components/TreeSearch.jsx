@@ -27,14 +27,14 @@ export default class TreeSearch extends React.Component {
     this.state = { value: "" };
   }
 
-  handleChange = value => {
+  handleChange = (value) => {
     this.setState({ value });
   };
 
-  handleFind = value => {
+  handleFind = (value) => {
     const { instanceId, findKey, clearSearch, sendNotification } = this.props;
     if (value && value.length > 0) {
-      findKey(instanceId, value).then(res => {
+      findKey(instanceId, value).then((res) => {
         if (res && res.type === "FIND_KEY_SUCCESS") {
           return sendNotification("search completed successfully!");
         }
@@ -64,7 +64,7 @@ export default class TreeSearch extends React.Component {
         value={value}
         onChange={this.handleChange}
         onDebounced={this.handleFind}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             this.handleFind(value);
           }

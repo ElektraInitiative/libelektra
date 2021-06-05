@@ -45,8 +45,10 @@ endif ()
 if (OPENSSL_FOUND)
 
 	# try to compile and link a minimal sample program against libcrypto
-	try_compile (HAS_OPENSSL_4SURE "${CMAKE_BINARY_DIR}" "${PROJECT_SOURCE_DIR}/src/plugins/crypto/compile_openssl.c"
-		     CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${OPENSSL_INCLUDE_DIR} -DLINK_LIBRARIES:PATH=${OPENSSL_LIBRARIES})
+	try_compile (
+		HAS_OPENSSL_4SURE "${CMAKE_BINARY_DIR}"
+		"${PROJECT_SOURCE_DIR}/src/plugins/crypto/compile_openssl.c"
+		CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${OPENSSL_INCLUDE_DIR} -DLINK_LIBRARIES:PATH=${OPENSSL_LIBRARIES})
 
 	if (NOT HAS_OPENSSL_4SURE)
 		message (STATUS "OpenSSL compile/linker test failed")

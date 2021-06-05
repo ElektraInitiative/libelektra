@@ -7,8 +7,10 @@ elseif (APPLE)
 	set (ELEKTRA_GOPTS_OSX ON)
 	set (gopts_source gopts_osx.h)
 else ()
-	try_compile (SYSCTL_TEST ${CMAKE_CURRENT_BINARY_DIR} "${CMAKE_SOURCE_DIR}/src/plugins/gopts/sysctl_test.c"
-		     OUTPUT_VARIABLE SYSCTL_TEST_OUTPUT)
+	try_compile (
+		SYSCTL_TEST ${CMAKE_CURRENT_BINARY_DIR}
+		"${CMAKE_SOURCE_DIR}/src/plugins/gopts/sysctl_test.c"
+		OUTPUT_VARIABLE SYSCTL_TEST_OUTPUT)
 
 	if (SYSCTL_TEST)
 		set (ELEKTRA_GOPTS_SYSCTL ON)

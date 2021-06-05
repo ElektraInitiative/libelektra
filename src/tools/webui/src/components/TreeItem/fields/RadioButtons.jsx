@@ -36,10 +36,10 @@ export default class RadioButtons extends Component {
           display: "inline-block",
           position: "relative",
           top: 7,
-          marginTop: -11
+          marginTop: -11,
         }}
       >
-        {options.map(option => (
+        {options.map((option) => (
           <RadioButton
             tabIndex="0"
             className="value"

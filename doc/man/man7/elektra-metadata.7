@@ -1,60 +1,40 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "ELEKTRA\-METADATA" "7" "May 2020" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "ELEKTRA\-METADATA" "7" "June 2021" ""
 .SH "NAME"
 \fBelektra\-metadata\fR \- metadata
-.
 .P
 \fBMetadata\fR is data about data\. In earlier versions of Elektra, there has been a limited number of metadata entries suited for \fBfilesys\fR\. For \fBfilesys\fR this was efficient, but it was of limited use for every other backend\. This situation has now changed fundamentally by introducing arbitrary metadata\.
-.
 .SH "Rationale"
 Metadata has different purposes:
-.
 .IP "\(bu" 4
 Traditionally Elektra used metadata to carry file system semantics\. The backend \fBfilesys\fR stores file metadata (File metadata in POSIX is returned by \fBstat()\fR) in a \fIstruct\fR with the same name\. It contains a file type (directory, symbolic link,\.\.) as well as other metadata like uid, gid, owner, mode, atime, mtime and ctime\. into the \fBKey\fR objects\. This solution, however, only makes sense when each file shelters only one \fBKey\fR object\.
-.
 .IP "\(bu" 4
 The metaname \fBbinary\fR shows if a \fBKey\fR object contains binary data\. Otherwise it has a null\-terminated C string\.
-.
 .IP "\(bu" 4
 An application can set and get a flag in \fBKey\fR objects\.
-.
 .IP "\(bu" 4
 Comments and owner, together with the items above, were the only metadata possible before arbitrary metadata was introduced\.
-.
 .IP "\(bu" 4
 Further metadata can hold information on how to check and validate keys using types or regular expressions\. Additional constraints concerning the validity of values can be convenient\. Maximum length, forbidden characters and a specified range are examples of further constraints\.
-.
 .IP "\(bu" 4
 They can denote when the value has changed or can be informal comments about the content or the character set being used\.
-.
 .IP "\(bu" 4
 They can express the information the user has about the key, for example, comments in different languages\. Language specific information can be supported by simply adding a unique language code to the metaname\.
-.
 .IP "\(bu" 4
 They can represent information to be used by storage plugins\. Information can be stored as syntactic, semantic or additional information rather than text in the key database\. This could be ordering or version information\.
-.
 .IP "\(bu" 4
 They can be interpreted by plugins, which is the most important purpose of metadata\. Nearly all kinds of metadata mentioned above can belong to this category\.
-.
 .IP "\(bu" 4
 Metadata is used to pass error or warning information from plugins to the application\. The application can decide to present it to the user\. The information is uniquely identified by numerical codes\. Metadata can also embed descriptive text specifying a reason for the error\.
-.
 .IP "\(bu" 4
 Applications can remember something about keys in metadata\. Such metadata generalizes the application\-defined flag\.
-.
 .IP "\(bu" 4
 A more advanced idea is to use metadata to generate forms in a programmatic way\. While it is certainly possible to store the necessary expressive metadata, it is plenty of work to define the semantics needed to do that\.
-.
 .IP "" 0
-.
 .SH "Usage"
 Every key\-value pair can have an arbitrary number of metakeys with metavalues attached\. Identical to keys, metakeys are unique, but only within its key they are attached to\.
-.
 .P
 To create a metakey, use kdb\-meta\-set(1) \fIkdb\-meta\-set\.md\fR, to get metadata kdb\-meta\-get(1) \fIkdb\-meta\-get\.md\fR\.
-.
 .P
 The preferred way to use metadata is to set all metadata in the \fBspec\fR namespace and let the \fBspec\fR plugin copy the metadata to all other namespaces\.

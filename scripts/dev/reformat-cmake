@@ -13,10 +13,10 @@ SCRIPTS_DIR=$(dirname "$0")
 # before we save the output of the command.
 CMAKE_FORMAT="$(which cmake-format)" && CMAKE_FORMAT_VERSION="$("$CMAKE_FORMAT" 2>&1 --version)"
 
-if [ -z "${CMAKE_FORMAT}" ] || [ "$CMAKE_FORMAT_VERSION" != "0.6.3" ]; then
+if [ -z "${CMAKE_FORMAT}" ] || [ "$CMAKE_FORMAT_VERSION" != "0.6.13" ]; then
 	printf >&2 'cmake-format: %s\n' "$CMAKE_FORMAT"
 	printf >&2 'Version:      %s\n' "$CMAKE_FORMAT_VERSION"
-	printf >&2 'Please install `cmake-format` version 0.6.3\n'
+	printf >&2 'Please install `cmake-format` version 0.6.13\n'
 	exit 1
 fi
 

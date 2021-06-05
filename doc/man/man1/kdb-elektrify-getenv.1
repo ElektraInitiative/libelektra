@@ -1,285 +1,180 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "KDB\-ELEKTRIFY\-GETENV" "1" "September 2020" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-ELEKTRIFY\-GETENV" "1" "June 2021" ""
 .SH "NAME"
 \fBkdb\-elektrify\-getenv\fR \- elektrify the environment of applications
-.
 .SH "SYNOPSIS"
-.
 .nf
-
 kdb elektrify\-getenv <application> <options>
-.
 .fi
-.
 .SH "EXAMPLE"
-.
 .nf
-
 kdb elektrify\-getenv curl \-\-elektra\-version
 kdb elektrify\-getenv curl https://www\.libelektra\.org
 kdb set system:/elektra/intercept/getenv/override/http_proxy http://www\.example\.com/
 kdb elektrify\-getenv curl https://www\.libelektra\.org
-.
 .fi
-.
 .P
 By using \fBkdb elektrify\-getenv\fR the last curl invocation will use a different http proxy\. Or you can also reload while the application is running:
-.
 .IP "" 4
-.
 .nf
-
 ELEKTRA_RELOAD_TIMEOUT=100 kdb elektrify\-getenv firefox
 kdb set system:/elektra/intercept/getenv/override/http_proxy http://www\.example\.com
-.
 .fi
-.
 .IP "" 0
-.
 .SH "DESCRIPTION"
 When an application is elektrified using libelektragetenv, it does not only request \fBenviron\fR, but also Elektra for every getenv(3) and secure_getenv(3) library call\.
-.
 .P
 Its main purpose is to:
-.
 .IP "\(bu" 4
 have a standard ways to modify the environment
-.
 .IP "\(bu" 4
 make relogin (or even restart!) of applications unnecessary
-.
 .IP "\(bu" 4
 allow a hierarchical structure for environment
-.
 .IP "\(bu" 4
 allow settings to only apply for individual applications or only in special context
-.
 .IP "\(bu" 4
 still preserve the advantages (inheriting of environment to subprocesses)
-.
 .IP "\(bu" 4
 availability of same environment in at, cron and similar scripts
-.
 .IP "" 0
-.
 .P
 It is implemented using a LD_PRELOAD technique, see \fIUSAGE\fR below for global activation\.
-.
 .SH "LOOKUPS"
 The main purpose of this approach is to finally have a well\-defined way to set and get environment variables\. Elektra’s variables will be in use immediately for every newly started application (no relogin necessary)\.
-.
 .P
 To do so, getenv(3) will lookup multiple sources next to searching in the environment (environ)\. As running example will use \fBgetenv("HOME") \-> /path/to/home\fR:
-.
 .IP "1." 4
 Given commandline parameters will always be preferred (see \fIOPTIONS\fR below)\.
-.
 .IP
 E\.g\. \fBkdb elektrify\-getenv <app> \-\-elektra:HOME=/path/to/home\fR
-.
 .IP "2." 4
 Then \fB/elektra/intercept/getenv/override/<key>\fR will be looked up, where \fIkey\fR is the parameter to \fBgetenv\fR\. If found, the key will be returned, if it is a null keys, \fBgetenv\fR will return \fBNULL\fR\.
-.
 .IP
 E\.g\. \fBkdb set user:/elektra/intercept/getenv/override/HOME /path/to/home\fR
-.
 .IP "3." 4
 Then environment will be requested\.
-.
 .IP
 E\.g\. \fBHOME=/path/to/home kdb elektrify\-getenv <application>\fR
-.
 .IP "4." 4
 Then \fB/elektra/intercept/getenv/fallback/<key>\fR will be looked up\. If found, the key will be returned, if it is a null keys, \fBgetenv\fR will return \fBNULL\fR\.
-.
 .IP
 E\.g\. \fBkdb set user:/elektra/intercept/getenv/fallback/HOME /path/to/home\fR
-.
 .IP "" 0
-.
 .SH "OPTIONS"
-When \fBelektrify\-getenv\fR is active, every application additionally accepts Elektra’s getenv options\. Interleaving Elektra’s and the application\'s options is allowed\. Elektra will parse its options (starting with \-\-elektra) first and discard them before the other application is started\. Therefore the application will not see that they even existed, e\.g\.: given \fBkdb elektrify\-getenv <application> \-V \-\-elektra\-debug \-L\fR the application will be called with \fB<application> \-V \-L\fR\.
-.
+When \fBelektrify\-getenv\fR is active, every application additionally accepts Elektra’s getenv options\. Interleaving Elektra’s and the application's options is allowed\. Elektra will parse its options (starting with \-\-elektra) first and discard them before the other application is started\. Therefore the application will not see that they even existed, e\.g\.: given \fBkdb elektrify\-getenv <application> \-V \-\-elektra\-debug \-L\fR the application will be called with \fB<application> \-V \-L\fR\.
 .SS "Internal Options"
-.
 .TP
 \fB\-\-elektra\-help\fR
 Outputs this help\.
-.
 .TP
 \fB\-\-elektra\-version\fR
 Gives version information\.
-.
 .TP
 \fB\-\-elektra\-debug=file\fR, \fBELEKTRA_DEBUG\fR or \fB/elektra/intercept/getenv/option/debug\fR
 Trace all getenv(3) calls to a file\. stderr if no file is given, e\.g\. \fBkdb set user:/elektra/intercept/getenv/option/debug ""\fR\. Note that null values (no forth argument), will disable debug messages\. See examples below\.
-.
 .TP
 \fB\-\-elektra\-clearenv\fR, \fBELEKTRA_CLEARENV\fR or \fB/elektra/intercept/getenv/option/clearenv\fR
 Call clearenv(3) before entering main\. This is a recommended security feature\. Elektra itself, if configured that way, will still be able to use the environment\.
-.
 .TP
 \fB\-\-elektra\-reload\-timeout=time_in_ms\fR, \fBELEKTRA_RELOAD_TIMEOUT\fR or \fB/elektra/intercept/getenv/option/reload_timeout\fR
 Activate a timeout based feature when a time is given in ms (and is not 0)\.
-.
 .P
 Internal Options are available in three different variants:
-.
 .IP "1." 4
 as commandline parameter: \fB\-\-elektra\-<option>\fR, which are \fInot\fR passed through exec(3) calls\.
-.
 .IP "2." 4
 as environment variable: \fBELEKTRA_<OPTION>\fR\. which might be passed through exec(3) calls, but are removed by clearenv(3) calls\.
-.
 .IP "3." 4
 as Elektra KDB entry: \fB/elektra/intercept/getenv/option/<option>\fR, which are the way to achieve an option to be enabled for every application\.
-.
 .IP
 E\.g\. \fBkdb set user:/elektra/intercept/getenv/option/clearenv ""\fR to clear the environment for all applications started by that user (note that at least \fBPATH\fR should to be set using \fBkdb set user:/elektra/intercept/getenv/fallback/PATH "/bin:/usr/bin"\fR then)\.
-.
 .IP
 Note, that null keys are equal to non\-set options\. E\.g\. \fBkdb set system:/elektra/intercept/getenv/option/debug "/tmp/elektra\.log"\fR and \fBkdb set user:/elektra/intercept/getenv/option/debug\fR will activate logging for the system, except for the current user\.
-.
 .IP "" 0
-.
 .SS "Contextual Options"
-.
 .TP
 \fB\-\-elektra%<name>%=<value>\fR or \fB/elektra/intercept/getenv/layer/<name>\fR
 Add the contextual information (=layer) \fB%<name>%\fR with its value \fB<value>\fR\. Note that \fB%name%\fR is predefined with \fBargv[0]\fR and \fB%basename%\fR with \fBbasename(argv[0])\fR\.
-.
 .P
 Values can contain / to form hierarchies, e\.g\. \fB\-\-elektra%name%=app/profile\fR
-.
 .SS "Options for Applications"
-.
 .TP
 \fB\-\-elektra:key=value\fR, \fB/elektra/intercept/getenv/override/<key>\fR or \fB/elektra/intercept/getenv/fallback/<key>\fR
 set a key\-value to be preferred, i\.e\. the first to considered as explained in \fILOOKUP\fR\.
-.
 .P
 Keys can contain / to form hierarchies, e\.g\. \fB\-\-elektra:my/HOME=/path/to/home\fR\.
-.
 .SH "USAGE"
 To always use Elektra’s getenv environment, simply add the output to the file:
-.
 .IP "" 4
-.
 .nf
-
 kdb elektrify\-getenv | tail \-1 | sudo tee \-a /etc/ld\.so\.preload
-.
 .fi
-.
 .IP "" 0
-.
 .P
 Or in a more Elektra\-like way with mounting:
-.
 .IP "" 4
-.
 .nf
-
 sudo kdb mount /etc/ld\.so\.preload system:/ld/preload line null
 sudo kdb set "system:/ld/preload/new"  `kdb elektrify\-getenv | tail \-1`
-.
 .fi
-.
 .IP "" 0
-.
 .SH "CONTEXT"
 The metadata \fBcontext\fR in the specification can be used to facilitate a context\-dependent lookup\. In its metavalue all replacements of \fB%<name>%\fR will be replaced by the given contextual options \fB\-\-elektra%<name>%=<value>\fR and \fB/elektra/intercept/getenv/layer/<name>\fR keys\.
-.
 .P
 E\.g\. to have a different home directory for any user and application:
-.
 .IP "" 4
-.
 .nf
-
 kdb set user:/elektra/intercept/getenv/layer/user markus
 kdb set user:/users/markus/konqueror/HOME /home/download
 kdb meta\-set spec:/elektra/intercept/getenv/override/HOME context  /users/%user%/%name%/HOME
-.
 .fi
-.
 .IP "" 0
-.
 .P
 Or to have a different lock/suspend program per computer (that all have the same config):
-.
 .IP "" 4
-.
 .nf
-
 kdb mount\-info system:/elektra/intercept/getenv/info            # must be below /elektra/intercept/getenv to be available
 kdb meta\-set spec:/elektra/intercept/getenv/layer/hostname override/#0 system:/elektra/intercept/getenv/info/uname/nodename
 kdb meta\-set spec:/elektra/intercept/getenv/override/lock context /elektra/intercept/getenv/info/lock/%hostname%
 kdb set user:/elektra/intercept/getenv/info/lock/computer1 "systemctl suspend \-i"
 kdb set user:/elektra/intercept/getenv/info/lock/computer2 "xset dpms force off && xtrlock"
 `kdb getenv lock`  # call the appropriate lock method for the current computer
-.
 .fi
-.
 .IP "" 0
-.
 .SH "BUGS"
 Some applications do not use \fBgetenv(3)\fR or \fBsecure_getenv(3)\fR for requesting the environment, e\.g\. shells\. This approach cannot work for them\.
-.
 .P
 In the startup\-phase (before main is even entered), \fBgetenv(3)\fR will not consider \fB/elektra/intercept/getenv/override/\fR or \fB/elektra/intercept/getenv/fallback\fR\.
-.
 .P
 Elektra internally tries to avoid using the environment\. Some resolvers, however, use it to conform to some specifications, e\.g\. XDG\. Depending on the setup you use, these parameters might be used\. For more information see:
-.
 .IP "" 4
-.
 .nf
-
 kdb plugin\-info resolver
-.
 .fi
-.
 .IP "" 0
-.
 .P
 For these parameters, \fB/elektra/intercept/getenv/override/\fR or \fB/elektra/intercept/getenv/fallback\fR will \fInot\fR be used internally, but will be used if applications request them, too\.
-.
 .P
-If you use the standard resolvers, the bug won\'t have any effect\.
-.
+If you use the standard resolvers, the bug won't have any effect\.
 .P
 Also note that \fB\-\-elektra\-debug\fR or \fBELEKTRA_DEBUG\fR does \fInot\fR log \fBgetenv(3)\fR used by plugins during the startup\-phase\.
-.
 .P
-Command line arguments apply always to the outmost command, e\.g\. \fBnice ls \-\-elektra:COLUMNS=20\fR won\'t have any effect because only for \fBnice\fR \fBCOLUMNS\fR will be set\.
-.
+Command line arguments apply always to the outmost command, e\.g\. \fBnice ls \-\-elektra:COLUMNS=20\fR won't have any effect because only for \fBnice\fR \fBCOLUMNS\fR will be set\.
 .SH "EXAMPLES"
 For illustration this section gives some more examples\.
-.
 .IP "" 4
-.
 .nf
-
 kdb elektrify\-getenv man man \-\-elektra:MANWIDTH=40
-.
 .fi
-.
 .IP "" 0
-.
 .P
 Will use MANWIDTH 40 for this invocation of man man\. This feature is handy, if an option is only available by environment, but not by command\-line arguments, because sometimes environment variables are not trivial to set (e\.g\. in Makefiles)\.
-.
 .P
 Debugging:
-.
 .IP "" 4
-.
 .nf
-
 # system wide to stderr (not recommended!):
 sudo kdb set system:/elektra/intercept/getenv/option/debug ""
 # system wide to /var/log/elektra\.log:
@@ -288,50 +183,30 @@ sudo kdb set system:/elektra/intercept/getenv/option/debug "/var/log/error\.log"
 kdb set user:/elektra/intercept/getenv/option/debug "$HOME/\.elektra\.log"
 # or disable it for my user:
 kdb set user:/elektra/intercept/getenv/option/debug
-.
 .fi
-.
 .IP "" 0
-.
 .P
 Some more examples:
-.
 .IP "" 4
-.
 .nf
-
 kdb set user:/elektra/intercept/getenv/override/MANOPT \-\- "\-\-regex \-LC"
 kdb elektrify\-getenv getenv MANOPT   # to check if it is set as expected
 kdb getenv MANOPT   # if /etc/ld\.so\.preload is active
-.
 .fi
-.
 .IP "" 0
-.
 .P
 Will permanently and user\-wide change MANOPT to include \-\-regex, and \-LC so that regular expressions will be used (note \fBman echo\fR will return many man pages then) and that they will be shown in English\. This feature is handy to change the default behavior of applications (either system, user or directory\-wide)\.
-.
 .IP "" 4
-.
 .nf
-
 kdb set system:/elektra/intercept/getenv/override/HTTP_PROXY http://proxy\.hogege\.com:8000/
-.
 .fi
-.
 .IP "" 0
-.
 .P
 Will permanently and system\-wide change the proxy for all applications that honor HTTP_PROXY, e\.g\. w3m\. We can also link \fBhttp_proxy\fR to the value of \fBHTTP_PROXY\fR:
-.
 .IP "" 4
-.
 .nf
-
 kdb meta\-set spec:/elektra/intercept/getenv/override/http_proxy "override/#0" /elektra/intercept/getenv/override/HTTP_PROXY
 kdb get /elektra/intercept/getenv/override/http_proxy
-.
 .fi
-.
 .IP "" 0
 

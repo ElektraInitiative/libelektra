@@ -1,4 +1,4 @@
-FROM archlinux/base
+FROM archlinux:base
 
 RUN pacman -Sy --noconfirm \
     awk \
@@ -8,7 +8,7 @@ RUN pacman -Sy --noconfirm \
     lua \
     make \
     ninja \
-    ruby-ronn \
+    rubygems \
     swig \
     tar
 
@@ -39,3 +39,7 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 USER ${JENKINS_USERID}
+
+# Ronn-NG
+ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/3.0.0/bin"
+RUN gem install ronn-ng -v 0.10.1.pre1 && ronn --version
