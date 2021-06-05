@@ -34,9 +34,17 @@ kdb set dir:/dirkey "Key from /root/dirkeys/b"
 cd /root/dirkeys
 kdb set dir:/dirkey "Key from /root/dirkeys"
 
-
 #create dummy processes (that expose different values in dir:)
 cd /root/dirkeys/a
 sudo -u testuser -i nohup sleep infinity &
 cd /root/dirkeys/b
 sudo -u root -i nohup sleep infinity &
+
+#gopts example (adapted from test_gopts.py)
+cd /root/elektra_fuse/docker/
+./create_gopts_keys.py
+gcc -o do_nothing do_nothing.c
+nohup ./do_nothing get -v user:/ &
+echo $! > /root/pid_of_process_using_gopts
+#create key that is masked by a proc: key in this example
+kdb set user:/tests/python/gopts/getter/keyname "I am some key originating from user: and do not come from a command line argument."

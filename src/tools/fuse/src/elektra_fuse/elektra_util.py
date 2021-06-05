@@ -1,15 +1,20 @@
 from pathlib import Path
 import os, re, errno, sys
-
+import logging
 import kdb
 
 elektra_namespaces = ["user:", "system:", "dir:", "spec:", "cascading:", "proc:"]
 
+parent_key = None # not yet set
 dir_file_special_name = "®elektra.value"
 xattr_kdb_file = "®elektra.file"
-
-#translates from filesystem (that are below the "pid"-level) paths to elektra paths (e.g. '/user:/dir/@elektra.value' -> 'user:/dir', '/cascading:/key' -> '/key') 
+#translates from filesystem (that are below the "pid"-level) paths to elektra paths (e.g. '/user:/dir/@elektra.value' -> 'user:/dir', '/cascading:/key' -> '/key', assuming parent_key == "/") 
 def os_path_to_elektra_path(os_path):
+
+    #inject parent_key after namespace into os_path
+    namespace, *rest = Path(os_path).parts[1:]
+    os_path = str(Path(namespace, parent_key.name[1:], *rest))
+
     elektra_path = os_path
     if Path(elektra_path).name == dir_file_special_name:
         elektra_path = str(Path(elektra_path).parent).strip("/")
@@ -30,8 +35,23 @@ def _get_kdb_instance():
     config = kdb.KeySet(0)
     contract = kdb.KeySet(0)
     custom_envp = [ "%s=%s" % (k, v) for (k, v) in os.environ.items() ]
-    kdb.goptsContract (contract, sys.argv, custom_envp, kdb.Key(), config)
-    return kdb.KDB(contract)
+    kdb.goptsContract (contract, sys.argv, custom_envp, parent_key, config)
+    db = kdb.KDB(contract)
+
+    #monkey patch db.get as
+        #- proc:/ keys are only available through a cascading lookup (See manpage elektra-namespaces: "Keys in the namespace proc ... are ignored by kdbGet ... ")
+        #- we don't want spec: keys to appear in the cascading namespace 
+    orig_get = db.get
+    def patched_get(ks, orig_root):
+        justified_root = re.sub("^proc:/", "/", str(orig_root))
+        status = orig_get(ks, justified_root)
+        if kdb.Key(orig_root).isCascading():
+            for key_to_remove in ks.filter(lambda key: key.isSpec()):
+                ks.remove(key_to_remove)
+        return status
+
+    db.get = patched_get
+    return db
 
 def size_of_file(os_path):
     return len(file_contents(os_path))

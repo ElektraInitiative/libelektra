@@ -25,8 +25,9 @@ RUN apt-get -y install libelektra5-all
 
 WORKDIR /root
 
-#create mountpoint
+#create mountpoints
 RUN mkdir /root/mount
+RUN mkdir /root/mount_gopts_example
 
 #copy source, build & install elektra_fuse wheel
 COPY ./ /root/elektra_fuse/
