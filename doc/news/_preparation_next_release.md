@@ -29,9 +29,7 @@ This is the quickest way to get started with Elektra without compiling and other
 
 ## Highlights
 
-- JNI plugin fixed
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+- Java fixes: JNI plugin fixed and JNA bindings improved
 - Fresh Fedora 34 packages
 - Documentation Improvements & Cleanups
 - GCC 11 and Clang 12 compatibility
@@ -42,19 +40,9 @@ The JNI plugin was encountering a double free on open. This has been fixed in co
 
 For how to write plugins, please refer to [java-plugins.md](../tutorials/java-plugins.md) as well as the [JNI plugin](../../src/plugins/jni/README.md) and [JNA binding](../../src/bindings/jna/README.md) documentation.
 
-### <<HIGHLIGHT2>>
-
-### <<HIGHLIGHT2>>
-
 ## Plugins
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
-
-### <<Plugin1>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### JNI
 
@@ -94,56 +82,17 @@ Special thanks to _(Klemens Böswirth)_, _(Mihael Pranjić)_ and _(Robert Sowula
 
 - Silence Clang 12 warnings about suspicious string literal concatenation. _(Mihael Pranjić)_
 
-### Zeromqrecv
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ### Lua
 
 - Removed outdated information from docs _(@a-kraschitzer)_
-
-### <<Plugin3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
 
-### Compatibility
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ### Core
 
 - Remove keyCompareBy(Name)?Owner _(@a-kraschitzer)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library1>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library2>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -218,9 +167,6 @@ you up to date with the multi-language support provided by Elektra.
 - Updated tests accordingly
 
 _(Michael Tucek)_
-_(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
-
-### <<Binding3>>
 
 ## Tools
 
@@ -230,8 +176,6 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Update `elektraMemDup` to `void *` and update the documentation. _(Mihael Pranjić)_
 - There have been a few bugfixes for elektrad. _(Klemens Böswirth)_
 - Update `lodash` and `hosted-git-info` dependencies of `webd` due to security update. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Scripts
 
@@ -239,8 +183,6 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Use basename of release file in `generate-hashsums`. _(Mihael Pranjić)_
 - Use `shfmt` v3.2.4 to reformat shell scripts. _(Mihael Pranjić)_
 - Use `cmake-format` v0.6.13 (`cmakelang`) to reformat CMake. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Documentation
 
@@ -253,7 +195,6 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Small update in API docu related to different namespaces in returned keys. _(Markus Raab)_
 - improved docu of [noresolver](/src/plugins/noresolver). _(Markus Raab)_
 - improved plugin tutorial. _(Markus Raab)_
-- <<TODO>>
 - Adding info about syncing forks to `doc/GIT.md` _(Klemens Böswirth)_
 - Work on [COMPILE.md](/doc/COMPILE.md) and [INSTALL.md](/doc/INSTALL.md) to help with understanding _(@a-kraschitzer)_
 - Update and correct licensing information _(@a-kraschitzer)_
@@ -277,8 +218,6 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Fix failing `testshell_markdown_tutorial_crypto` on Mac OS and other OS with GnuPG version >= 2.3.1. _(Peter Nirschl @petermax2)_
 - Use clang-format 12 for Restyled and update Restyled version. _(Mihael Pranjić)_
 - Update all Restyled formatters to current versions. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Packaging
 
@@ -292,7 +231,6 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 
 - Disable binding tests when `BUILD_TESTING` is disabled. _(Robert Sowula)_
 - Remove unused `FindCppCMS.cmake` CMake module and unused `Boost` variables. _(Mihael Pranjić)_
-- <<TODO>>
 
 ### Docker
 
@@ -302,8 +240,6 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Remove boost and some unused dependencies from all Docker images. _(Mihael Pranjić)_
 - Use Gradle 7.0 and Ronn-NG `0.10.1.pre1` in Docker images. _(Mihael Pranjić)_
 - Remove unused Debian Buster `doc` image. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Infrastructure
 
@@ -313,28 +249,20 @@ _(Michael Tucek)_ TODO PLEASE REMOVE LINE ON RELEASE
 - Pin GnuPG version to 2.2.x. _(Mihael Pranjić)_
 - Update Fedora image to version 34. _(Mihael Pranjić)_
 - Clean up unused dependencies in Arch Linux image and add Ronn-NG to generate man pages. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ### GitHub Actions
 
 - Pin GnuPG version to 2.2.x. _(Mihael Pranjić)_
 - Enable `jni` plugin and fix `JAVA_HOME` detection. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ### Jenkins
 
 - We now build and test on Fedora 34 and 33. Fedora 32 was removed from the CI. _(Mihael Pranjić)_
 - Build release documentation on Debian Sid, due to newer TeX and Doxygen packages. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ### Travis
 
 - Update Ubuntu to Focal, use GCC 10 and clean up travis scripts. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Website
 
@@ -346,16 +274,22 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - Get rid of unused code: authentication, backend, users, snippets and conversion service. _(Mihael Pranjić)_
 - Fix docsearch sourcemap error. _(Mihael Pranjić)_
 - Update `lodash` dependency due to security update. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Elektrify KDE _(Dardan Haxhimustafa)_, _(Felix Resch)_ and _(Mihael Pranjić)_
+- 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth)_
+- Improve Java Development Experience _(Michael Tucek)_
+- Elektrify GNOME _(Mihael Pranjić)_
+- Continious Releases _(Robert Sowula)_
+- KDB access using FUSE _(Alexander Firbas)_
+- Default TOML plugin _(Jakob Fischer)_
+- Improve Plugin Framework _(Vid Leskovar)_
+- Improve 3-way merge _(Dominic Jäger)_
+- Shell completion _(Ulrike Schäfer)_
+- Ansible bindings _(Thomas Waser)_
 
 ## Statistics
 
