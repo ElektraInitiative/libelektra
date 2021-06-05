@@ -34,7 +34,6 @@ RUN apt-get update && apt-get -y install \
         lcov \
         libantlr4-runtime-dev \
         libaugeas-dev \
-        libboost-dev \
         libc6-dbg \
         libcurl4-gnutls-dev \
         libdbus-1-dev \
@@ -62,7 +61,7 @@ RUN apt-get update && apt-get -y install \
         patch \
         patchutils \
         pkg-config \
-        python-all \
+        python3-all \
         python3-pip \
         python3-all \
         qtbase5-dev \
@@ -129,7 +128,7 @@ RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
-ENV SHFMT_VERSION=v2.6.3
+ENV SHFMT_VERSION=v3.2.4
 ENV PATH="${SHFMT_PATH}:${PATH}"
 RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \
@@ -137,7 +136,7 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # cmake-format
-RUN pip install cmake-format[yaml]==0.6.3
+RUN pip3 install cmake-format[yaml]==0.6.13
 
 # Coveralls
 ENV COVERALLS_VIRTUALENV_PATH=/home/jenkins/coveralls
