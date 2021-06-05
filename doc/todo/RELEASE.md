@@ -25,7 +25,6 @@ If no release critical problems are found during testing, continue.
 - `CMakeLists.txt`
 - Increment version in output of `doc/tutorials/hello-elektra.md`
 - Increment <Version> of libelektra in `examples/external/java/read-keys-example/pom.xml` and `src/bindings/jna/README.md`
-- Increment the Elektra version in `scripts/docker/alpine/*/release.Dockerfile`
 - Change `VERSION` variable in build-server:
   - Go to https://build.libelektra.org
   - Select "Manage Jenkins" -> "Configure System"
@@ -83,6 +82,10 @@ If no release critical problems are found during testing, continue.
 - Run linkchecker to verify that all download links of the current release are working:
   `mkdir build && cd build && make html && ../scripts/link-checker external-links.txt`
 - Wait for master build to finish and verify website is correct
+
+# Post-Release updates (depend on release artifacts)
+
+- Increment the Elektra version in `scripts/docker/alpine/*/release.Dockerfile`
 
 ### Preperation for next release
 
