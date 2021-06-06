@@ -34,7 +34,7 @@ endforeach ()
 
 set (
 	CPACK_RPM_BUILDREQUIRES
-	"make, git augeas-devel, boost-devel, cmake3, docbook-style-xsl, doxygen
+	"make, git augeas-devel, cmake3, docbook-style-xsl, doxygen
 	discount, gawk, gcc-c++, GConf2-devel, graphviz, libcurl-devel, libdb-devel,
 	libdrm-devel, libgit2-devel, libxml2-devel, lua-devel, python3-devel, python-devel,
 	qt5-qtdeclarative-devel, qt5-qtsvg-devel, swig, systemd-devel, yajl-devel,

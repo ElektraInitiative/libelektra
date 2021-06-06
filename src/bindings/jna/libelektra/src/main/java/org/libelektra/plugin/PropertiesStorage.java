@@ -1,13 +1,12 @@
 package org.libelektra.plugin;
 
-import static org.libelektra.Elektra.KeyNewArgumentFlags.KEY_END;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
@@ -23,56 +22,58 @@ public class PropertiesStorage implements Plugin
 		return KeySet.create ();
 	}
 
-	@Override public int open (final KeySet conf, final Key errorKey)
+	@Override public int open (KeySet conf, Key errorKey)
 	{
 		return 0;
 	}
 
-	@Override public int get (final KeySet ks, final Key parentKey)
+	@Override public int get (KeySet keySet, Key parentKey)
 	{
-		final String root = "system:/elektra/modules/jni";
-		if (parentKey.isBelowOrSame (Key.create (root, KEY_END)))
+		var root = "system:/elektra/modules/jni";
+		if (parentKey.isBelowOrSame (Key.create (root)))
 		{
-			ks.append (Key.create (root + "/infos/provides", "storage"));
-			ks.append (Key.create (root + "/infos/placements", "getstorage setstorage"));
-			final Key k = ks.lookup (root + "/infos/description");
-			if (!k.isNull ())
+			keySet.append (Key.create (root + "/infos/provides", "storage"));
+			keySet.append (Key.create (root + "/infos/placements", "getstorage setstorage"));
+			Optional<Key> oDescriptionKey = keySet.lookup (root + "/infos/description");
+			if (oDescriptionKey.isEmpty ())
 			{
-				// append to description
-				k.setString (k.getString () + "Get + set properties files");
+				return 0;
 			}
-			return 0;
+
+			// append to description
+			var descriptionKey = oDescriptionKey.get ();
+			descriptionKey.setString (descriptionKey.getString () + "Get + set properties files");
 		}
-		final Properties properties = new Properties ();
-		try (final BufferedInputStream stream = new BufferedInputStream (new FileInputStream (parentKey.getString ())))
+
+		var properties = new Properties ();
+		try (var stream = new BufferedInputStream (new FileInputStream (parentKey.getString ())))
 		{
 			properties.load (stream);
 		}
-		catch (final IOException e)
+		catch (IOException e)
 		{
 			parentKey.setError ("Could not read file");
 			return -1;
 		}
-		for (final Map.Entry<Object, Object> e : properties.entrySet ())
+		for (Map.Entry<Object, Object> e : properties.entrySet ())
 		{
-			ks.append (Key.create (parentKey.getName () + "/" + e.getKey (), e.getValue ()));
+			keySet.append (Key.create (parentKey.getName () + "/" + e.getKey (), e.getValue ()));
 		}
 		return 0;
 	}
 
-	@Override public int set (final KeySet ks, final Key parentKey)
+	@Override public int set (KeySet keySet, Key parentKey)
 	{
-		final Properties properties = new Properties ();
-		for (final Key k : ks)
+		var properties = new Properties ();
+		for (var key : keySet)
 		{
-			final String newName = k.getName ().substring (parentKey.getNameSize ());
-			properties.setProperty (newName, k.getString ());
+			properties.setProperty (key.getName ().substring (parentKey.getNameSize ()), key.getString ());
 		}
-		try (final BufferedOutputStream stream = new BufferedOutputStream (new FileOutputStream (parentKey.getString ())))
+		try (var stream = new BufferedOutputStream (new FileOutputStream (parentKey.getString ())))
 		{
 			properties.store (stream, "written by elektra using Java Properties");
 		}
-		catch (final IOException e)
+		catch (IOException e)
 		{
 			parentKey.setError ("Could not write file");
 			return -1;
@@ -80,12 +81,12 @@ public class PropertiesStorage implements Plugin
 		return 0;
 	}
 
-	@Override public int error (final KeySet ks, final Key parentKey)
+	@Override public int error (KeySet keySet, Key parentKey)
 	{
 		return 0;
 	}
 
-	@Override public int close (final Key parentKey)
+	@Override public int close (Key parentKey)
 	{
 		return 0;
 	}

@@ -43,7 +43,7 @@ export default class ToggleButton extends React.Component {
           width: "auto",
           position: "relative",
           top: 6,
-          marginTop: -11
+          marginTop: -11,
         }}
         disabled={
           (meta && meta.hasOwnProperty("binary")) ||

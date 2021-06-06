@@ -35,9 +35,7 @@ set_source_files_properties (
 	write.hpp
 	write.cpp
 	log.hpp
-	PROPERTIES
-	COMPILE_FLAGS
-	"-Wconversion")
+	PROPERTIES COMPILE_FLAGS "-Wconversion")
 # ——————————————————————————————————————————————————————————
 
 add_plugin (

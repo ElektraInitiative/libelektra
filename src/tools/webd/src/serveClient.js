@@ -20,7 +20,7 @@ import { join as joinPath } from "path";
 export default function createRouter({
   path,
   index = "index.html",
-  dist = "build"
+  dist = "build",
 }) {
   const router = new express.Router();
 

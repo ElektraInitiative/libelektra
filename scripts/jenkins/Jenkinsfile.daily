@@ -82,7 +82,7 @@ def cleanupDocker(targetNode) {
         stage(taskname) {
             node(targetNode) {
                 dockerImages().each {
-                    if (it ==~ /^hub.libelektra.org.*-installed$/) {
+                    if (it ==~ /^hub.libelektra.org.*-release$/) {
                         // keep latest release and master image
                         retainNewestImages(it, 5, '', 'master\\|release')
                         retainNewestImages(it, 1, 'release', 'none')

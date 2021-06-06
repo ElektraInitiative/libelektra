@@ -296,7 +296,10 @@ select_library_configurations (PYTHON2)
 unset (PYTHON2_FOUND)
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (Python2Libs REQUIRED_VARS PYTHON2_LIBRARIES PYTHON2_INCLUDE_DIRS VERSION_VAR PYTHON2LIBS_VERSION_STRING)
+find_package_handle_standard_args (
+	Python2Libs
+	REQUIRED_VARS PYTHON2_LIBRARIES PYTHON2_INCLUDE_DIRS
+	VERSION_VAR PYTHON2LIBS_VERSION_STRING)
 
 # PYTHON2_ADD_MODULE(<name> src1 src2 ... srcN) is used to build modules for python. PYTHON2_WRITE_MODULES_HEADER(<filename>) writes a
 # header file you can include in your sources to initialize the static python modules

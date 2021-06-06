@@ -38,8 +38,8 @@ typedef struct
 	int printException;
 	jmethodID midKeyConstr;
 	jmethodID midKeySetConstr;
-	jmethodID midKeyRelease;
-	jmethodID midKeySetRelease;
+	// TODO #3869 remove comment from the following 1 line when automated clean-up has been fixed
+	// jmethodID midKeyDecRef;
 	jobject plugin;
 } Data;
 
@@ -76,7 +76,7 @@ static void checkException (Data * data, const char * when, Key * warningKey)
 
 static int call1Arg (Data * data, Key * errorKey, const char * method)
 {
-	jobject jerrorKey = (*data->env)->NewObject (data->env, data->clsKey, data->midKeyConstr, errorKey);
+	jobject jerrorKey = (*data->env)->NewObject (data->env, data->clsKey, data->midKeyConstr, errorKey, true);
 	checkException (data, method, errorKey);
 	if (jerrorKey == 0)
 	{
@@ -101,7 +101,12 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 	}
 	checkException (data, method, errorKey);
 
-	(*data->env)->CallVoidMethod (data->env, jerrorKey, data->midKeyRelease);
+	// TODO #3869 remove comment from the following 2 lines when automated clean-up has been fixed
+	//(*data->env)->CallVoidMethod (data->env, jerrorKey, data->midKeyDecRef);
+	// checkException (data, method, errorKey);
+
+	// clean up local references
+	(*data->env)->DeleteLocalRef (data->env, jerrorKey);
 	checkException (data, method, errorKey);
 
 	return result;
@@ -109,7 +114,7 @@ static int call1Arg (Data * data, Key * errorKey, const char * method)
 
 static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * method)
 {
-	jobject jks = (*data->env)->NewObject (data->env, data->clsKeySet, data->midKeySetConstr, ks);
+	jobject jks = (*data->env)->NewObject (data->env, data->clsKeySet, data->midKeySetConstr, ks, true);
 	checkException (data, method, errorKey);
 	if (jks == 0)
 	{
@@ -117,7 +122,7 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 		return -1;
 	}
 
-	jobject jkey = (*data->env)->NewObject (data->env, data->clsKey, data->midKeyConstr, errorKey);
+	jobject jkey = (*data->env)->NewObject (data->env, data->clsKey, data->midKeyConstr, errorKey, true);
 	checkException (data, method, errorKey);
 	if (jkey == 0)
 	{
@@ -142,10 +147,14 @@ static int call2Arg (Data * data, KeySet * ks, Key * errorKey, const char * meth
 	}
 	checkException (data, method, errorKey);
 
-	(*data->env)->CallVoidMethod (data->env, jks, data->midKeySetRelease);
-	checkException (data, method, errorKey);
+	// TODO #3869 remove comment from the following 2 lines when automated clean-up has been fixed
+	//(*data->env)->CallVoidMethod (data->env, jkey, data->midKeyDecRef);
+	// checkException (data, method, errorKey);
 
-	(*data->env)->CallVoidMethod (data->env, jkey, data->midKeyRelease);
+	// clean up local references
+	(*data->env)->DeleteLocalRef (data->env, jkey);
+	checkException (data, method, errorKey);
+	(*data->env)->DeleteLocalRef (data->env, jks);
 	checkException (data, method, errorKey);
 
 	return result;
@@ -209,7 +218,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	JavaVMOption options[2];
 	options[0].optionString = classpath;
 	options[1].optionString = option;
-	vmArgs.version = JNI_VERSION_1_8;
+	vmArgs.version = JNI_VERSION_10;
 	vmArgs.nOptions = 2;
 	vmArgs.options = options;
 	vmArgs.ignoreUnrecognized = ign;
@@ -253,56 +262,50 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	data->clsPlugin = (*data->env)->FindClass (data->env, classname);
 	if (data->clsPlugin == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Cannot find class %s", classname);
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Cannot find class Java plugin class %s", classname);
 		return -1;
 	}
 
 	data->clsKey = (*data->env)->FindClass (data->env, "org/libelektra/Key");
 	if (data->clsKey == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find class Key");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java class Key");
 		return -1;
 	}
 
 	data->clsKeySet = (*data->env)->FindClass (data->env, "org/libelektra/KeySet");
 	if (data->clsKeySet == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find class KeySet");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java class KeySet");
 		return -1;
 	}
 
-	data->midKeyConstr = (*data->env)->GetMethodID (data->env, data->clsKey, "<init>", "(J)V");
+	data->midKeyConstr = (*data->env)->GetMethodID (data->env, data->clsKey, "<init>", "(JZ)V");
 	if (data->midKeyConstr == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find constructor of Key");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java constructor Key(long, boolean)");
 		return -1;
 	}
 
-	data->midKeySetConstr = (*data->env)->GetMethodID (data->env, data->clsKeySet, "<init>", "(J)V");
+	data->midKeySetConstr = (*data->env)->GetMethodID (data->env, data->clsKeySet, "<init>", "(JZ)V");
 	if (data->midKeySetConstr == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find constructor of KeySet");
+		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java constructor KeySet(long, boolean)");
 		return -1;
 	}
 
-	data->midKeyRelease = (*data->env)->GetMethodID (data->env, data->clsKey, "release", "()V");
-	if (data->midKeyRelease == 0)
-	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find release of Key");
-		return -1;
-	}
-
-	data->midKeySetRelease = (*data->env)->GetMethodID (data->env, data->clsKeySet, "release", "()V");
-	if (data->midKeySetRelease == 0)
-	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find release of KeySet");
-		return -1;
-	}
+	// TODO #3869 remove comment from the following 6 lines when automated clean-up has been fixed
+	// data->midKeyDecRef = (*data->env)->GetMethodID (data->env, data->clsKey, "decRef", "()V");
+	// if (data->midKeyDecRef == 0)
+	//{
+	//	ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find Java method of Key::decRef()");
+	//	return -1;
+	//}
 
 	jmethodID midPluginConstructor = (*data->env)->GetMethodID (data->env, data->clsPlugin, "<init>", "()V");
 	if (midPluginConstructor == 0)
 	{
-		ELEKTRA_SET_RESOURCE_ERROR (errorKey, "Cannot find constructor of plugin");
+		ELEKTRA_SET_RESOURCE_ERRORF (errorKey, "Cannot find Java constructor of plugin %s", classname);
 		return -1;
 	}
 
@@ -310,7 +313,7 @@ int elektraJniOpen (Plugin * handle, Key * errorKey)
 	checkException (data, "creating plugin", errorKey);
 	if (data->plugin == 0)
 	{
-		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERROR (errorKey, "Cannot create plugin");
+		ELEKTRA_SET_PLUGIN_MISBEHAVIOR_ERRORF (errorKey, "Cannot create Java plugin %s", classname);
 		return -1;
 	}
 
@@ -333,6 +336,10 @@ int elektraJniClose (Plugin * handle, Key * errorKey)
 	}
 
 	int ret = call1Arg (data, errorKey, "close");
+
+	// clean up local references
+	(*data->env)->DeleteLocalRef (data->env, data->plugin);
+	checkException (data, "close", errorKey);
 
 	(*data->jvm)->DestroyJavaVM (data->jvm);
 	elektraFree (data);

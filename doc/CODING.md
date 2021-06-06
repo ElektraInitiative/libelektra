@@ -133,7 +133,7 @@ ensure that you have the correct version of all our reformatting tools at hand.
 
 #### Clang Format
 
-To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) (version `9`) to format all C and C++ code in the repository. Since our build servers also check the style for every pull request you might want to make sure you reformat your C/C++ code changes with this tool.
+To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) (version `12`) to format all C and C++ code in the repository. Since our build servers also check the style for every pull request you might want to make sure you reformat your C/C++ code changes with this tool.
 
 To find out which version of `clang-format` a certain build server uses please check:
 
@@ -141,7 +141,7 @@ To find out which version of `clang-format` a certain build server uses please c
 - the [Travis configuration file ](../.travis.yml), and
 - the [Cirrus configuration file](../.cirrus.yml)
 
-and search for the relevant packages (`clang-format`, `llvm`). Currently we use clang-format `9`
+and search for the relevant packages (`clang-format`, `llvm`). Currently we use clang-format `12`
 
 - in the [Travis configuration file ](../.travis.yml),
 - in the [Debian sid Docker container](../scripts/docker/debian/sid/Dockerfile) on the Jenkins build server, and
@@ -163,10 +163,10 @@ or by installing the whole [LLVM](http://llvm.org) infrastructure:
 brew install llvm
 ```
 
-. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `11` in certain edge cases. If you want you can also install Clang-Format `11` using LLVM `11`:
+. Please note, that both of these commands will install current versions of `clang-format` that might format code a little bit differently than Clang-Format `12` in certain edge cases. If you want you can also install a specific version of LLVM and Clang-Format: e.g. Clang-Format `11` using LLVM `11`:
 
 ```
-brew install llvm@9
+brew install llvm@11
 ```
 
 .
@@ -175,10 +175,10 @@ brew install llvm@9
 
 ###### Debian
 
-In Debian the package for Clang-Format `11` is called `clang-format-11`:
+In Debian (Sid) the package for Clang-Format `12` is called `clang-format-12`:
 
 ```sh
-apt-get install clang-format-11
+apt-get install clang-format-12
 ```
 
 .
@@ -190,7 +190,7 @@ For the basic use cases you can use `clang-format` directly. To do that, just ca
 ```sh
 # On some systems such as Debian the `clang-format` executable also contains
 # the version number. For those systems, please replace `clang-format`,
-# with `clang-format-11` in the command below.
+# with `clang-format-12` in the command below.
 clang-format -i src/bindings/cpp/include/kdb.hpp
 ```
 
@@ -262,15 +262,15 @@ cmake-format CMakeLists.txt | unexpand | sponge CMakeLists.txt
 Since `cmake-format` is written in [Python](https://www.python.org) you usually install it via Python’s package manager `pip`:
 
 ```sh
-# Install cmake format `0.6.3` with support for YAML config files
-pip install cmake-format[yaml]==0.6.3
+# Install cmakelang `0.6.13` with support for YAML config files
+pip install cmakelang[yaml]==0.6.13
 ```
 
-. Please make sure, that you install the correct version (`0.6.3`) of cmake format:
+. Please make sure, that you install the correct version (`0.6.13`) of cmake format:
 
 ```sh
 cmake-format --version
-#> 0.6.3
+#> 0.6.13
 ```
 
 , since otherwise the formatted code might look quite different.
@@ -442,7 +442,7 @@ brew install prettier
 To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
 
 ```sh
-npm install --global prettier@1.19.1
+npm install --global prettier@2.2.1
 ```
 
 .
@@ -573,7 +573,7 @@ brew install shfmt
 
 ```sh
 mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
-  curl -L "https://github.com/mvdan/sh/releases/download/v2.6.4/shfmt_v2.6.4_linux_amd64" -o shfmt && \
+  curl -L "https://github.com/mvdan/sh/releases/download/v3.2.4/shfmt_v3.2.4_linux_amd64" -o shfmt && \
   chmod u+x shfmt
 ```
 

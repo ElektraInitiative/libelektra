@@ -23,7 +23,6 @@ RUN apt-get update && apt-get -y install \
         git-buildpackage \
         graphviz \
         libaugeas-dev \
-        libboost-dev \
         libcurl4-gnutls-dev \
         libdbus-1-dev \
         libgit2-dev \
@@ -45,8 +44,6 @@ RUN apt-get update && apt-get -y install \
         ninja-build \
         openjdk-11-jdk \
         pkg-config \
-        python-all \
-        python-dev \
         python3-all \
         python3-dev \
         qtbase5-dev \
@@ -101,7 +98,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.0.2-bin.zip && unzip gradle-7.0.2-bin.zip && rm gradle-7.0.2-bin.zip && mv gradle-7.0.2 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}

@@ -3,20 +3,16 @@ package org.libelektra;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.libelektra.exception.KDBException;
-import org.libelektra.exception.mapper.ExceptionMapperService;
 
 public class ExceptionMapperTest
 {
 
 	@Test public void kdbSetWithError_shouldThrowInternalExceptionOnUnmappedError () throws Exception
 	{
-		String errorNumber = "abc123";
-		Key temporaryError = Key.create ("user:/temporary/errorkey");
-		temporaryError.setMeta ("error/number", errorNumber);
-		KDBException mappedException = ExceptionMapperService.getMappedException (temporaryError);
-		assertEquals ("Sorry, could not map error number '" + errorNumber +
-				      "'. Please report this incident at https://issues.libelektra.org/",
-			      mappedException.getReason ());
+		var errorNumber = "abc123";
+		var errorKey = Key.create ("user:/temporary/errorkey").setMeta ("error/number", errorNumber);
+		var mappedException = KDBException.getMappedException (errorKey);
+
+		assertEquals (String.format (KDBException.MSG_UNKNOWN_ERROR_NUMBER, errorNumber), mappedException.getReason ());
 	}
 }

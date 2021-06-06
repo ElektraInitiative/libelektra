@@ -18,7 +18,7 @@ import {
   CREATE_KEY_FAILURE,
   DISMISS_ERROR,
   GET_KDB_FAILURE,
-  GET_KDB_SUCCESS
+  GET_KDB_SUCCESS,
 } from "../actions";
 
 export default function errorReducer(state = false, action) {

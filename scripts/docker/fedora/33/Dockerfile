@@ -4,7 +4,6 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         augeas-devel \
         bison \
         bison-devel \
-        boost-devel \
         cmake \
         curl \
         dbus-devel \
@@ -62,7 +61,6 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         zlib-devel \
     && dnf debuginfo-install -y \
         bison \
-        boost \
         flex \
         glib2 \
         glibc \
@@ -99,7 +97,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.0.2-bin.zip && unzip gradle-7.0.2-bin.zip && rm gradle-7.0.2-bin.zip && mv gradle-7.0.2 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 ENV JAVA_HOME=/etc/alternatives/jre
 RUN alternatives --auto java && alternatives --auto javac

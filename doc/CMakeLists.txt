@@ -80,8 +80,8 @@ if (DOXYGEN_FOUND)
 
 	# fix usage with wine: https://github.com/ElektraInitiative/libelektra/pull/340#discussion_r44044444
 	find_util (markdownlinkconverter MARKDOWN_LINK_CONVERTER "")
-	if (DOXYGEN_VERSION VERSION_GREATER "1.8.11")
-		set (MARKDOWN_LINK_CONVERTER "\\\"${MARKDOWN_LINK_CONVERTER}\\\"")
+	if (DOXYGEN_VERSION VERSION_GREATER "1.9.0")
+		set (MARKDOWN_LINK_CONVERTER "${MARKDOWN_LINK_CONVERTER}")
 	endif ()
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile" @ONLY)
@@ -122,8 +122,7 @@ if (DOXYGEN_FOUND)
 		add_custom_command (
 			OUTPUT ${DOCSET_PATH}
 			COMMAND make
-			COMMAND
-				${CMAKE_COMMAND} ARGS -D DOCSET_PATH=${DOCSET_PATH} -D ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png -P
+			COMMAND ${CMAKE_COMMAND} ARGS -D DOCSET_PATH=${DOCSET_PATH} -D ICON_PATH=${CMAKE_SOURCE_DIR}/doc/images/icon.png -P
 				${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraDocSet.cmake
 			DEPENDS ${OUTPUT_DIRECTORY}/html/index.html markdownlinkconverter
 			WORKING_DIRECTORY ${OUTPUT_DIRECTORY}/html)

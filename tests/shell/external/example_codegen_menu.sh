@@ -41,12 +41,12 @@ do_tests() {
 	EXPECTED_MENU=$(mktemp)
 	cat > "$EXPECTED_MENU" <<- 'EOF'
 		Main Menu:
-		
+
 		  [1] Menu 1
 		  [2] Menu 2
-		
+
 		Please select what to do (Ctrl-D = quit): 
-		
+
 	EOF
 
 	"$KDB" meta-set "user:/sw/example/menu/#0/current/menu" "array" "#4"

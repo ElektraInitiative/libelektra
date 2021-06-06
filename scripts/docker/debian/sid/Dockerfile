@@ -11,8 +11,8 @@ RUN apt-get update && apt-get -y install \
         bison \
         build-essential \
         checkinstall \
-        clang-11 \
-        clang-format-11 \
+        clang-12 \
+        clang-format-12 \
         cmake \
         curl \
         dh-lua \
@@ -26,7 +26,6 @@ RUN apt-get update && apt-get -y install \
         lcov \
         libantlr4-runtime-dev \
         libaugeas-dev \
-        libboost-all-dev \
         libc6-dbg \
         libdbus-1-dev \
         libev-dev \
@@ -46,7 +45,7 @@ RUN apt-get update && apt-get -y install \
         libyajl-dev \
         libyaml-cpp-dev \
         libzmq3-dev \
-        llvm \
+        llvm-12 \
         moreutils \
         ninja-build \
         npm \
@@ -54,7 +53,7 @@ RUN apt-get update && apt-get -y install \
         pkg-config \
         python3-dev \
         python3-pip \
-        ronn \
+        ruby \
         ruby-dev \
         sloccount \
         swig4.0 \
@@ -65,10 +64,13 @@ RUN apt-get update && apt-get -y install \
         wget \
     && rm -rf /var/lib/apt/lists/*
 
+# Add Clang 12 to path
+ENV PATH="/usr/lib/llvm-12/bin:$PATH"
+
 # Update cache for shared libraries
 RUN ldconfig
 
-RUN pip3 install cmake-format[yaml]==0.6.3
+RUN pip3 install cmake-format[yaml]==0.6.13
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
@@ -81,7 +83,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # Prettier
-RUN npm install --global prettier@1.19.1
+RUN npm install --global prettier@2.2.1
 
 # hyperfine
 ARG HYPERFINE_VERSION=1.5.0
@@ -109,7 +111,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.0.2-bin.zip && unzip gradle-7.0.2-bin.zip && rm gradle-7.0.2-bin.zip && mv gradle-7.0.2 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
@@ -119,9 +121,13 @@ RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
-ENV SHFMT_VERSION=v2.6.3
+ENV SHFMT_VERSION=v3.2.4
 ENV PATH="${SHFMT_PATH}:${PATH}"
 RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \
     && curl -L "https://github.com/mvdan/sh/releases/download/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_amd64" -o shfmt \
     && chmod a+x shfmt
+
+# Ronn-NG
+ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/2.7.0/bin"
+RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version

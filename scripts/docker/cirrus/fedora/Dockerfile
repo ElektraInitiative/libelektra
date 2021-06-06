@@ -4,7 +4,6 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         augeas-devel \
         bison \
         bison-devel \
-        boost-devel \
         cmake \
         curl \
         dbus-devel \
@@ -60,7 +59,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.0-bin.zip && unzip gradle-7.0-bin.zip && rm gradle-7.0-bin.zip && mv gradle-7.0 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.0.2-bin.zip && unzip gradle-7.0.2-bin.zip && rm gradle-7.0.2-bin.zip && mv gradle-7.0.2 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 ENV JAVA_HOME=/etc/alternatives/jre
 RUN alternatives --auto java && alternatives --auto javac

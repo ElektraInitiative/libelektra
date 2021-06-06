@@ -1,5 +1,5 @@
 language: cpp
-dist: bionic
+dist: focal
 
 #
 # Define the build matrix
@@ -14,14 +14,12 @@ matrix:
       compiler: gcc
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
-            - g++-8
+            - g++-10
       env:
         - ENABLE_ASAN=ON
-        - CC_COMPILER=gcc-8
-        - CXX_COMPILER=g++-8
+        - CC=gcc-10
+        - CXX=g++-10
         # Build less stuff so the build does not hit the timeout limit that often
         - TOOLS=kdb
         - BINDINGS=cpp
@@ -113,17 +111,10 @@ matrix:
     - os: linux
       name: 🐧 Clang ASAN
       compiler: clang
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-bionic-7
-            - ubuntu-toolchain-r-test
-          packages:
-            - clang-7
       env:
         - ENABLE_ASAN=ON
-        - CC_COMPILER=clang-7
-        - CXX_COMPILER=clang++-7
+        - CC=clang
+        - CXX=clang++
       script:
         - ninja
         - ninja run_all
@@ -135,15 +126,13 @@ matrix:
       compiler: gcc
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
-            - g++-8
+            - g++-10
       env:
         - BUILD_FULL=ON
         - BUILD_SHARED=OFF
-        - CC_COMPILER=gcc-8
-        - CXX_COMPILER=g++-8
+        - CC=gcc-10
+        - CXX=g++-10
       script:
         - ninja
         - output="$(ninja install 2>&1)" || printf '%s' "$output"
@@ -155,46 +144,33 @@ matrix:
       compiler: gcc
       addons:
         apt:
-          sources:
-            - ubuntu-toolchain-r-test
           packages:
-            - g++-8
+            - g++-10
       env:
-        - CC_COMPILER=gcc-8
-        - CXX_COMPILER=g++-8
+        - CC=gcc-10
+        - CXX=g++-10
 
     - os: linux
       name: 🐧 Clang
       compiler: clang
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-bionic
-          packages:
-            - clang-7
-            - clang-format-9
       env:
-        - CC_COMPILER=clang-7
-        - CXX_COMPILER=clang++-7
+        - CC=clang
+        - CXX=clang++
 
 before_install:
   - |
-    if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
-      [ -n "$CC_COMPILER" ] && export CC="$CC_COMPILER"
-      [ -n "$CXX_COMPILER" ] && export CXX="$CXX_COMPILER"
-      sudo apt-get -qq update
-      sudo apt-get install ninja-build
-      sudo apt-get install devscripts # contains `checkbashisms`
-      sudo apt-get install libboost-all-dev
-      sudo apt-get install libyaml-cpp-dev
-      sudo apt-get install libuv-dev
-      sudo apt-get install libdbus-1-dev
-      sudo apt-get install libev-dev
-      sudo apt-get install libzmq3-dev
-      sudo apt-get install libxerces-c-dev
-      sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
-      sudo pip install cmake-format[yaml]==0.6.3
-    fi
+    sudo apt-get -qq update
+    sudo apt-get install ninja-build
+    sudo apt-get install devscripts # contains `checkbashisms`
+    sudo apt-get install libyaml-cpp-dev
+    sudo apt-get install libuv1-dev
+    sudo apt-get install libdbus-1-dev
+    sudo apt-get install libev-dev
+    sudo apt-get install libzmq3-dev
+    sudo apt-get install libxerces-c-dev
+    sudo apt-get install python3-pip
+    sudo apt-get install moreutils # contains `sponge` required by `reformat-cmake`
+    sudo pip3 install cmake-format[yaml]==0.6.13
 
 #
 # Source is checked out in $TRAVIS_BUILD_DIR
@@ -203,12 +179,12 @@ before_install:
 before_script:
   - |
     cd $TRAVIS_BUILD_DIR
-    if [ "$TRAVIS_OS_NAME" = 'linux' ]; then
-      CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
-      export PATH=$PATH:"$PWD/install/bin"
-      export LD_LIBRARY_PATH="$PWD/install/lib"
-    fi
+    CMAKE_OPT+=(-DCMAKE_INSTALL_PREFIX="$PWD/install")
+    export PATH=$PATH:"$PWD/install/bin"
+    export LD_LIBRARY_PATH="$PWD/install/lib"
     SYSTEM_DIR="$PWD/kdbsystem"
+    export CC_FOR_BUILD="$CC"
+    export CXX_FOR_BUILD="$CXX"
     mkdir build && cd build
     CMAKE_OPT+=(
       -GNinja

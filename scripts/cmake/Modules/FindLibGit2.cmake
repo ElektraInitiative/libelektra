@@ -21,7 +21,10 @@ if (NOT LibGit2_VERSION_HEADER STREQUAL LibGit2_VERSION_HEADER-NOTFOUND)
 endif (NOT LibGit2_VERSION_HEADER STREQUAL LibGit2_VERSION_HEADER-NOTFOUND)
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (LibGit2 REQUIRED_VARS LibGit2_LIBRARIES LibGit2_INCLUDE_DIR VERSION_VAR LibGit2_VERSION)
+find_package_handle_standard_args (
+	LibGit2
+	REQUIRED_VARS LibGit2_LIBRARIES LibGit2_INCLUDE_DIR
+	VERSION_VAR LibGit2_VERSION)
 
 mark_as_advanced (LibGit2_INCLUDE_DIR LibGit2_LIBRARIES)
 

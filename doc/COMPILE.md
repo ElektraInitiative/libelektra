@@ -52,17 +52,18 @@ installation of self-compiled Elektra (such as how to uninstall it).
 > If they are not available, some of the functionality gets disabled automatically.
 > The core of Elektra never depends on other libraries.
 
-To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn](https://github.com/rtomayko/ronn/blob/master/INSTALLING#files):
+To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn-ng](https://github.com/apjanke/ronn-ng/blob/master/INSTALLING.md):
 
 ```sh
-apt-get install doxygen graphviz ruby-ronn
+apt-get install doxygen graphviz
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 Or on RPM based systems:
 
 ```sh
 sudo yum install -y doxygen docbook-style-xsl graphviz ruby
-gem install ronn
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 Or on macOS using brew:
@@ -70,7 +71,7 @@ Or on macOS using brew:
 ```sh
 brew install doxygen graphviz
 brew install ruby # in case ruby is not already installed
-gem install ronn
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 To build PDF documentation you need `pdflatex` with
@@ -89,7 +90,7 @@ A small subset of build dependencies to get you started:
 - for CentOS:
 
 ```sh
-sudo yum install -y boost-devel libdb-devel GConf2-devel libxml2-devel yajl-devel   \
+sudo yum install -y libdb-devel GConf2-devel libxml2-devel yajl-devel   \
 libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
 java-1.8.0-openjdk-devel jna ruby-devel byacc
 ```
@@ -97,7 +98,7 @@ java-1.8.0-openjdk-devel jna ruby-devel byacc
 - for Ubuntu:
 
 ```sh
-sudo apt install -y libboost-dev libxerces-c-dev libxml2-dev libyajl-dev \
+sudo apt install -y libxerces-c-dev libxml2-dev libyajl-dev \
 libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
 dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison
 ```
@@ -147,13 +148,13 @@ For a list of compilers we test with have a look at:
 
 Here is an additional list of compilers used by developers (for build servers, see links above):
 
-| Compiler | Version                                         | Target                    |
-| -------- | ----------------------------------------------- | ------------------------- |
-| gcc      | gcc (Debian 8.3.0-6) 8.3.0                      | x86_64-linux-gnu          |
-| gcc      | gcc (GCC) 10.2.1 20201125 (Red Hat 10.2.1-9)    | x86_64-redhat-linux       |
-| gcc      | gcc-10 (Homebrew GCC 10.2.0_3) 10.2.0           | x86_64-apple-darwin20     |
-| clang    | clang version 11.0.0 (Fedora 11.0.0-2.fc33)     | x86_64-unknown-linux-gnu  |
-| clang    | Apple clang version 12.0.0 (clang-1200.0.32.29) | x86_64-apple-darwin20.2.0 |
+| Compiler | Version                                           | Target                    |
+| -------- | ------------------------------------------------- | ------------------------- |
+| gcc      | gcc (Debian 8.3.0-6) 8.3.0                        | x86_64-linux-gnu          |
+| gcc      | gcc (GCC) 11.1.1 20210531 (Red Hat 11.1.1-3)      | x86_64-redhat-linux       |
+| gcc      | gcc-11 (Homebrew GCC 11.1.0_1) 11.1.0             | x86_64-apple-darwin20     |
+| clang    | clang version 12.0.0 (Fedora 12.0.0-0.3.rc1.fc34) | x86_64-unknown-linux-gnu  |
+| clang    | Apple clang version 12.0.5 (clang-1205.0.22.9)    | x86_64-apple-darwin20.5.0 |
 
 > (¹) OpenBSD ships an old version of GCC per default, which can not compile Elektra.
 > A manual installation of egcc/eg++ is required. Note that not every OpenBSD
@@ -439,9 +440,9 @@ cmake -DBUILD_SHARED=ON -DBUILD_FULL=ON -DBUILD_STATIC=OFF ..
 
 #### BUILD_DOCUMENTATION
 
-Build documentation with doxygen (API) and ronn (man pages).
+Build documentation with doxygen (API) and ronn-ng (man pages).
 
-If ronn is not found, already compiled man pages will be
+If ronn-ng is not found, already compiled man pages will be
 used instead.
 
 > Note: Turning off building the documentation, also turns off
@@ -683,10 +684,10 @@ sudo make install
 cd ..
 ```
 
-Also, no ronn was available, thus you need to do:
+Also, no ronn-ng was available, thus you need to do:
 
 ```sh
-gem install ronn
+gem install ronn-ng -v 0.10.1.pre1
 ```
 
 ### Cross Compiling

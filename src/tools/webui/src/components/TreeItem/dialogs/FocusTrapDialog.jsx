@@ -24,7 +24,7 @@ const FocusTrapDialog = ({
       focusTrapOptions={{
         clickOutsideDeactivates: true,
         escapeDeactivates: false,
-        returnFocusOnDeactivate: false
+        returnFocusOnDeactivate: false,
       }}
     >
       {children}

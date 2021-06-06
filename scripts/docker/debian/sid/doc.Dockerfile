@@ -10,7 +10,6 @@ RUN apt-get update && apt-get -y install \
 RUN apt-get -y install \
         doxygen \
         graphviz \
-        ronn \
         ruby \
         ruby-dev \
         sloccount \
@@ -51,3 +50,7 @@ RUN useradd \
     jenkins
 
 USER ${JENKINS_USERID}
+
+# Ronn-NG
+ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/2.7.0/bin"
+RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version

@@ -72,8 +72,8 @@ CMAKE_FLAGS_BUILD_ALL = [
 CMAKE_FLAGS_COVERAGE = ['ENABLE_COVERAGE': 'ON']
 
 CMAKE_FLAGS_CLANG = [
-  'CMAKE_C_COMPILER': 'clang-11',
-  'CMAKE_CXX_COMPILER': 'clang++-11'
+  'CMAKE_C_COMPILER': 'clang',
+  'CMAKE_CXX_COMPILER': 'clang++'
 ]
 
 CMAKE_FLAGS_MMAP = [
@@ -233,6 +233,15 @@ def dockerInit() {
       "./scripts/docker/debian/sid/doc.Dockerfile"
     )
 
+    /*
+     * Debian Bullseye. Used for testing and packaging.
+     */
+    DOCKER_IMAGES.bullseye = dockerUtils.createDockerImageDesc(
+      "debian-bullseye", dockerUtils.&idTesting,
+      "./scripts/docker/debian/bullseye",
+      "./scripts/docker/debian/bullseye/Dockerfile"
+    )
+
     /* Our main target for compatibility is Debian stable
      * (currently buster).
      * Hence we try to build all parts of Elektra via this image.
@@ -262,15 +271,6 @@ def dockerInit() {
       "debian-buster-i386", dockerUtils.&idTesting,
       "./scripts/docker/debian/buster",
       "./scripts/docker/debian/buster/i386.Dockerfile"
-    )
-
-    /* Build Elektra's documentation with this image.
-     * Also contains latex for pdf creation.
-     */
-    DOCKER_IMAGES.buster_doc = dockerUtils.createDockerImageDesc(
-      "debian-buster-doc", dockerUtils.&idTesting,
-      "./scripts/docker/debian/buster",
-      "./scripts/docker/debian/buster/doc.Dockerfile"
     )
 
     /* A Debian oldstable image used for testing backwards compatibility.
@@ -380,6 +380,14 @@ def dockerInit() {
       "debian-buster-installed", dockerUtils.&idArtifact,
       "./build/package",
       "./scripts/docker/debian/buster/release.Dockerfile",
+      false
+    )
+
+    /* Debian bullseye image used to install previously built packages */
+    DOCKER_IMAGES.bullseye_installed = dockerUtils.createDockerImageDesc(
+      "debian-bullseye-installed", dockerUtils.&idArtifact,
+      "./build/package",
+      "./scripts/docker/debian/bullseye/release.Dockerfile",
       false
     )
 
@@ -529,6 +537,15 @@ def generateFullBuildStages() {
     DOCKER_IMAGES.sid,
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG,
+    [TEST.ALL, TEST.MEM, TEST.INSTALL]
+  )
+
+  // Build Elektra on debian bullseye
+  tasks << buildAndTest(
+    "debian-bullseye-full",
+    DOCKER_IMAGES.bullseye,
+    CMAKE_FLAGS_BUILD_ALL+
+    CMAKE_FLAGS_DEBUG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
@@ -702,7 +719,7 @@ def buildTodo() {
 '''
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.buster_doc) {
+      withDockerEnv(DOCKER_IMAGES.sid_doc) {
         sh "sloccount --duplicates --wide --details ${WORKSPACE} > sloccount.sc"
         step([$class: 'SloccountPublisher', ignoreBuildFailure: true])
         recordIssues(tools: [taskScanner(ignoreCase: true, includePattern: openTaskPatterns, lowTags: 'TODO,FIXME')])
@@ -1005,6 +1022,15 @@ def generateArtifactStages() {
     this.&updateDebianChangelog
   )
   tasks << buildPackage(
+    "buildPackage/debian/bullseye",
+    DOCKER_IMAGES.bullseye,
+    "bullseye-unstable",
+    "bullseye",
+    DOCKER_IMAGES.bullseye_installed,
+    release.&publishDebPackages,
+    this.&updateDebianChangelog
+  )
+  tasks << buildPackage(
     "buildPackage/ubuntu/bionic",
     DOCKER_IMAGES.bionic,
     "bionic-unstable",
@@ -1085,17 +1111,8 @@ def buildPackage(stageName, image, repoName, repoPrefix, installImage,
       // tests these packages and publishes them.
       def postCl = {
         dir(targetDir) {
+          // during the buildImage step the packages are installed and kdb run_all is executed
           dockerUtils.buildImage(installImage)
-          // must not be run in targetDir because `withDockerEnv` checks out git
-          // repo in current directory which would overwrite build/package dir
-          dir("../packageTesting") {
-          // Do not call withDockerEnv(..) {} directly because this step would be
-          // executed in a nested node, causing the current node to wait for the
-          // stage on the other node to complete.
-            withDockerEnv.withDockerEnvWithoutNode(installImage) {
-              sh "kdb run_all"
-            }
-          }
           dir("build/package") {
             if (isMaster()) {
               publishPackagesFun(

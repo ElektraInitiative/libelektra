@@ -11,7 +11,6 @@ RUN apt-get -y install \
   discount \
   git \
   libaugeas-dev \
-  libboost-all-dev \
   libcurl4-gnutls-dev \
   libdbus-1-dev \
   libev-dev \
@@ -31,11 +30,9 @@ RUN apt-get -y install \
   libzmq3-dev \
   openjdk-8-jdk-headless \
   openssh-server \
-  python-all \
-  python-dev \
+  python3-dev \
   python3-all \
   ruby-dev \
-  ruby-ronn \
   swig \
   unzip \
   valgrind \
@@ -84,7 +81,7 @@ RUN service ssh start
 CMD ["/usr/sbin/sshd", "-D", "-e"]
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.0.2-bin.zip && unzip gradle-7.0.2-bin.zip && rm gradle-7.0.2-bin.zip && mv gradle-7.0.2 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER jenkins:jenkins

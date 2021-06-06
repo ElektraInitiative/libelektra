@@ -1,146 +1,98 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "KDB\-GEN\-HIGHLEVEL" "1" "May 2020" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-GEN\-HIGHLEVEL" "1" "June 2021" ""
 .SH "NAME"
 \fBkdb\-gen\-highlevel\fR \- High\-level API code\-generator template
-.
 .SH "SYNOPSIS"
-\fBkdb gen highlevel <parentKey> <outputName> [parameters\.\.\.]\fR
-.
+\fBkdb gen highlevel <parentKey> <outputName> [parameters\|\.\|\.\|\.]\fR
 .TP
 \fB<parentKey>\fR
 the parent key to use, MUST be in the \fBspec\fR namespace
-.
 .TP
 \fB<outputName>\fR
 the base name of the output files\. \fB\.c\fR will be appended for the source file and \fB\.h\fR for the header file\.
-.
 .TP
-\fB[parameters\.\.\.]\fR
+\fB[parameters\|\.\|\.\|\.]\fR
 see \fIbelow\fR
-.
 .SH "DESCRIPTION"
 This command invokes the code\-generator with the template for the high\-level API\.
-.
 .P
 The input for this template is a specification\. Keys below the \fBparentKey\fR which have a \fBtype\fR metakey are considered part of this specification\. Every such key must also either have a \fBdefault\fR metadata or alternatively must be marked with the \fBrequire\fR metakey\. Keys marked with \fBrequire\fR must be set by the user, otherwise the initialization of the Elektra handle will fail\.
-.
 .P
 The \fBtype\fR metakey may only have one of the following values: \fBenum\fR, \fBstring\fR, \fBboolean\fR, \fBchar\fR, \fBoctet\fR, \fBshort\fR, \fBunsigned_short\fR, \fBlong\fR, \fBunsigned_long\fR, \fBlong_long\fR, \fBunsigned_long_long\fR, \fBfloat\fR, \fBdouble\fR, \fBlong_double\fR, \fBstruct\fR, \fBstruct_ref\fR and \fBdiscriminator\fR\. Most of these values correspond to the values supported by the high\-level API, the remaining values (\fBenum\fR, \fBstruct\fR, \fBstruct_ref\fR, \fBdiscriminator\fR) are treated specially and are part of advanced concepts\. For more information on these concepts take a look at elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR\. If one of the advanced \fBtype\fR values is used, you should also set \fBcheck/type = any\fR; otherwise the \fBtype\fR plugin may produce an error\.
-.
 .P
 The template produces at least three output files: \fB<outputName>\.c\fR, \fB<outputName>\.h\fR and \fB<outputName>\.mount\.sh\fR\. The \fB\.c\fR file only contains implementations, therefore its precise content will not be documented\.
-.
 .P
 The header (\fB\.h\fR) file contains the following parts:
-.
 .IP "1." 4
 Generated \fBenum\fRs and \fBstruct\fRs
-.
 .IP "2." 4
 Declarations for generated accessor functions
-.
 .IP "3." 4
 Tags for accessing keys
-.
 .IP "4." 4
 \fBstatic inline\fR accessor functions for all tags
-.
 .IP "5." 4
 Declarations of initialization functions
-.
 .IP "6." 4
 Convenience accessor macros
-.
 .IP "" 0
-.
 .P
 Anything else that may be part of the header file is not considered public API and may be subject to change at any point in time\. There is also no guarantee of full compatibility between Elektra version for the documented parts of the header, however, we try to have as little breaking changes as possible for the six parts listed above\.
-.
 .P
 The \fB\.mount\.sh\fR file is a shell script that can be used to mount the specification for the application\. You can either use it as a basis for your own script, or wrap it in another script that correctly sets \fBAPP_PATH\fR or \fBSPEC_FILE\fR (depending on your configuration)\. If the generated script happens to use the correct paths already, you can of course use it directly as well\.
-.
 .P
 For detailed information about the contents of the header file see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR\.
-.
 .SH "PARAMETERS"
-.
 .IP "\(bu" 4
 \fBinitFn\fR: Changes the name of the initialization function (default: \fBloadConfiguration\fR)
-.
 .IP "\(bu" 4
 \fBhelpFn\fR: Changes the name of the function that prints the generated help message (default: \fBprintHelpMessage\fR)
-.
 .IP "\(bu" 4
 \fBspecloadFn\fR: Changes the name of the function that checks for "specload mode" (default: \fBexitForSpecload\fR)
-.
 .IP "\(bu" 4
 \fBtagPrefix\fR: Changes the prefix of the generated tags (default: \fBELEKTRA_TAG_\fR)
-.
 .IP "\(bu" 4
 \fBembedHelpFallback\fR: Switches whether a fallback help message should be embedded; allowed values: \fB1\fR (default), \fB0\fR If enabled (\fB1\fR), a help message will be generated from the specification passed to the code\-generator and embedded into the application\. This message will be used, if the normal help message could not be generated at runtime\.
-.
 .IP "\(bu" 4
-.
+\fBenumConv\fR: Switches how enum conversion should be done; allowed values: \fBdefault\fR (default), \fBswitch\fR, \fBstrcmp\fR
 .IP "\(bu" 4
 \fBstrcmp\fR: uses a simple series of \fBif (strcmp(*, *) == 0)\fR to convert strings into enums
-.
 .IP "\(bu" 4
 \fBswitch\fR: constructs a series of \fBswitch\fR statements to convert strings into enums
-.
 .IP "\(bu" 4
 \fBauto\fR: uses a \fBswitch\fR up to a depth of 2, then switches to \fBstrcmp\fR
-.
 .IP "" 0
 
-.
 .IP "\(bu" 4
 \fBheaders\fR: Comma\-separated (\fB,\fR) list of additional header files to include\. For each of the listed headers we will generate an \fB#include "*"\fR statement
-.
 .IP "\(bu" 4
 \fBgenSetters\fR: Switches whether setters should be generated at all; allowed values: \fB1\fR (default), \fB0\fR
-.
 .IP "\(bu" 4
 \fBembeddedSpec\fR: Changes how much of the specification is embedded into the application; allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR
-.
 .IP "\(bu" 4
 \fBspecValidation\fR: Changes how the specification will be validated on application start\-up; allowed values: \fBnone\fR (default), \fBminimal\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR
-.
 .IP "" 0
-.
 .SH "EXAMPLES"
 The simplest invocation is:
-.
 .P
 \fBkdb gen highlevel /sw/org/app/#0/current config\fR
-.
 .P
 However, it is not recommended to have the code\-generator read from the KDB, so one should instead use:
-.
 .P
 \fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config\fR
-.
 .P
-If you don\'t want to embed the full specification in your binary, we recommend:
-.
+If you don't want to embed the full specification in your binary, we recommend:
 .P
 \fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config embeddedSpec=defaults specValidation=minimal\fR
-.
 .P
 For the minimal binary size you may use (this comes with its own drawbacks, see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR):
-.
 .P
 \fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config embeddedSpec=none specValidation=minimal\fR
-.
 .SH "SEE ALSO"
-.
 .IP "\(bu" 4
 kdb(1) \fIkdb\.md\fR for general information about the \fBkdb\fR tool\.
-.
 .IP "\(bu" 4
 elektra\-spec(7) \fIelektra\-spec\.md\fR for an explanation of the \fBspec\fR namespace\.
-.
 .IP "" 0
 

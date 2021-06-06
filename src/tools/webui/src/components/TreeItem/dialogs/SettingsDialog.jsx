@@ -26,7 +26,7 @@ import {
   visibility,
   toElektraBool,
   fromElektraBool,
-  isNumberType
+  isNumberType,
 } from "../../../utils";
 import { KEY_TYPES } from "./utils";
 import validateType, { validateRange } from "../fields/validateType";
@@ -46,7 +46,7 @@ export default class SettingsDialog extends Component {
       rangeStr: false,
       defaultError: false,
       defaultStr: false,
-      paused: false
+      paused: false,
     };
   }
 
@@ -57,7 +57,7 @@ export default class SettingsDialog extends Component {
       regexStr,
       rangeStr,
       defaultError,
-      defaultStr
+      defaultStr,
     } = this.state;
     if (regexError) {
       this.handleEdit("check/validation", IMMEDIATE)(regexStr);
@@ -91,7 +91,7 @@ export default class SettingsDialog extends Component {
       } else if (!validationRegex.test(data)) {
         return this.setState({
           regexError: "current value does not match regex",
-          regexStr
+          regexStr,
         });
       }
     }
@@ -108,7 +108,7 @@ export default class SettingsDialog extends Component {
     this.setState({ rangeError: false, rangeStr: false });
   };
 
-  ensureDefaultValue = defaultStr => {
+  ensureDefaultValue = (defaultStr) => {
     const { meta } = this.props;
     if (defaultStr) {
       const err = validateType(meta, defaultStr);
@@ -119,7 +119,7 @@ export default class SettingsDialog extends Component {
     this.setState({ defaultError: false, defaultStr: false });
   };
 
-  handleEdit = (key, debounced = false) => value => {
+  handleEdit = (key, debounced = false) => (value) => {
     const { data, setMeta, deleteMeta } = this.props;
 
     if (!debounced || debounced === IMMEDIATE) {
@@ -177,8 +177,8 @@ export default class SettingsDialog extends Component {
             saved: true,
             timeout: setTimeout(() => {
               this.setState({ [key]: { ...this.state[key], saved: false } });
-            }, 1500)
-          }
+            }, 1500),
+          },
         });
       });
     }
@@ -218,10 +218,10 @@ export default class SettingsDialog extends Component {
                 saved: true,
                 timeout: setTimeout(() => {
                   this.setState({
-                    binary: { ...this.state.binary, saved: false }
+                    binary: { ...this.state.binary, saved: false },
                   });
-                }, 1500)
-              }
+                }, 1500),
+              },
             });
           });
       }
@@ -246,10 +246,10 @@ export default class SettingsDialog extends Component {
   renderEnum() {
     return (
       <EnumSubDialog
-        onChange={i => this.handleEdit(`check/enum/#${i}`)}
-        value={i => this.props.meta && this.props.meta[`check/enum/#${i}`]}
-        saved={i => this.getSaved(`check/enum/#${i}`)}
-        deleteMeta={i => this.props.deleteMeta(`check/enum/#${i}`)}
+        onChange={(i) => this.handleEdit(`check/enum/#${i}`)}
+        value={(i) => this.props.meta && this.props.meta[`check/enum/#${i}`]}
+        saved={(i) => this.getSaved(`check/enum/#${i}`)}
+        deleteMeta={(i) => this.props.deleteMeta(`check/enum/#${i}`)}
       />
     );
   }
@@ -265,7 +265,7 @@ export default class SettingsDialog extends Component {
     );
   }
 
-  handleVisibilityChange = val => {
+  handleVisibilityChange = (val) => {
     const { instanceVisibility } = this.props;
     if (val === this.getMeta("visibility", "user")) {
       // visibility was not changed, ignore
@@ -288,7 +288,7 @@ export default class SettingsDialog extends Component {
       sendNotification,
       onUndo,
       onClose,
-      refreshKey
+      refreshKey,
     } = this.props;
     onClose();
     const steps = [];
@@ -311,7 +311,7 @@ export default class SettingsDialog extends Component {
         label="Abort"
         secondary={true}
         onClick={this.handleAbort}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             this.handleAbort();
           }
@@ -321,12 +321,12 @@ export default class SettingsDialog extends Component {
         label="Done"
         primary={true}
         onClick={onClose}
-        onKeyPress={e => {
+        onKeyPress={(e) => {
           if (e.key === "Enter") {
             onClose();
           }
         }}
-      />
+      />,
     ];
 
     const type = this.getMeta("check/type", "any");
@@ -358,7 +358,7 @@ export default class SettingsDialog extends Component {
               onChange={this.handleEdit("description", IMMEDIATE)}
               onDebounced={this.handleEdit("description", DEBOUNCED)}
               value={this.getMeta("description", "")}
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   onClose();
                 }
@@ -378,13 +378,13 @@ export default class SettingsDialog extends Component {
                 this.setState({ paused: false });
               }}
               value={visibility}
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   onClose();
                 }
               }}
             >
-              {Object.keys(VISIBILITY_LEVELS).map(lvl => (
+              {Object.keys(VISIBILITY_LEVELS).map((lvl) => (
                 <MenuItem key={lvl} value={lvl} primaryText={lvl} />
               ))}
             </SelectField>
@@ -404,7 +404,7 @@ export default class SettingsDialog extends Component {
               onChange={this.handleEdit("example", IMMEDIATE)}
               onDebounced={this.handleEdit("example", DEBOUNCED)}
               value={this.getMeta("example", "")}
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   onClose();
                 }
@@ -421,7 +421,7 @@ export default class SettingsDialog extends Component {
               onChange={this.handleEdit("default", IMMEDIATE)}
               onDebounced={this.handleEdit("default", DEBOUNCED)}
               value={this.getMeta("default", "")}
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   onClose();
                 }
@@ -439,7 +439,7 @@ export default class SettingsDialog extends Component {
               onCheck={this.handleBinary}
               label="binary"
               disabled={this.getMeta("restrict/binary", "0") === "1"}
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   onClose();
                 }
@@ -456,7 +456,7 @@ export default class SettingsDialog extends Component {
               }
               label="restrict/binary"
               disabled={!!isBinary}
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   onClose();
                 }
@@ -474,7 +474,7 @@ export default class SettingsDialog extends Component {
                 this.handleEdit("restrict/write")(toElektraBool(val))
               }
               label="restrict/write"
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   onClose();
                 }
@@ -490,7 +490,7 @@ export default class SettingsDialog extends Component {
                 this.handleEdit("restrict/remove")(toElektraBool(val))
               }
               label="restrict/remove"
-              onKeyPress={e => {
+              onKeyPress={(e) => {
                 if (e.key === "Enter") {
                   onClose();
                 }
@@ -538,7 +538,7 @@ export default class SettingsDialog extends Component {
                     }
                   }}
                   value={type}
-                  onKeyPress={e => {
+                  onKeyPress={(e) => {
                     if (e.key === "Enter") {
                       onClose();
                     }
@@ -584,7 +584,7 @@ export default class SettingsDialog extends Component {
                     onChange={this.handleEdit("check/validation", IMMEDIATE)}
                     onDebounced={this.handleEdit("check/validation", DEBOUNCED)}
                     value={this.getMeta("check/validation", "")}
-                    onKeyPress={e => {
+                    onKeyPress={(e) => {
                       if (e.key === "Enter") {
                         onClose();
                       }
@@ -607,7 +607,7 @@ export default class SettingsDialog extends Component {
                       DEBOUNCED
                     )}
                     value={this.getMeta("check/validation/message", "")}
-                    onKeyPress={e => {
+                    onKeyPress={(e) => {
                       if (e.key === "Enter") {
                         onClose();
                       }

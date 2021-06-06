@@ -8,26 +8,22 @@
 
 import fetch from "node-fetch";
 
-const encodePath = path =>
-  path
-    .split("/")
-    .map(encodeURIComponent)
-    .join("/");
+const encodePath = (path) => path.split("/").map(encodeURIComponent).join("/");
 
-const version = host => fetch(`${host}/version`).then(res => res.json());
+const version = (host) => fetch(`${host}/version`).then((res) => res.json());
 
 const getRoot = (host, sessionId, query = "") =>
   fetch(`${host}/kdb${query}`, {
     headers: {
-      Cookie: sessionId
-    }
+      Cookie: sessionId,
+    },
   });
 
 const getPath = (host, path, sessionId, query = "") =>
   fetch(`${host}/kdb/${encodePath(path)}${query}`, {
     headers: {
-      Cookie: sessionId
-    }
+      Cookie: sessionId,
+    },
   });
 
 const get = (host, { path, query, sessionId } = {}) =>
@@ -36,21 +32,23 @@ const get = (host, { path, query, sessionId } = {}) =>
     : getRoot(host, sessionId, query);
 
 const find = (host, query) =>
-  fetch(`${host}/kdbFind/${encodeURIComponent(query)}`).then(res => res.json());
+  fetch(`${host}/kdbFind/${encodeURIComponent(query)}`).then((res) =>
+    res.json()
+  );
 
 const set = (host, path, value) =>
   fetch(`${host}/kdb/${encodePath(path)}`, {
     method: "PUT",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(value || "")
-  }).then(res => {
+    body: JSON.stringify(value || ""),
+  }).then((res) => {
     return { status: res.status };
   });
 
 const rm = (host, path) =>
-  fetch(`${host}/kdb/${encodePath(path)}`, { method: "DELETE" }).then(res => {
+  fetch(`${host}/kdb/${encodePath(path)}`, { method: "DELETE" }).then((res) => {
     return { status: res.status };
   });
 
@@ -58,10 +56,10 @@ const mv = (host, path, destination) =>
   fetch(`${host}/kdbMv/${encodePath(path)}`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify(destination || "")
-  }).then(res => {
+    body: JSON.stringify(destination || ""),
+  }).then((res) => {
     return { status: res.status };
   });
 
@@ -69,10 +67,10 @@ const cp = (host, path, destination) =>
   fetch(`${host}/kdbCp/${encodePath(path)}`, {
     method: "POST",
     headers: {
-      "Content-Type": "text/plain"
+      "Content-Type": "text/plain",
     },
-    body: JSON.stringify(destination || "")
-  }).then(res => {
+    body: JSON.stringify(destination || ""),
+  }).then((res) => {
     return { status: res.status };
   });
 
@@ -80,10 +78,10 @@ const setmeta = (host, path, key, value) =>
   fetch(`${host}/kdbMeta/${encodePath(path)}`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ key, value })
-  }).then(res => {
+    body: JSON.stringify({ key, value }),
+  }).then((res) => {
     return { status: res.status };
   });
 
@@ -91,10 +89,10 @@ const rmmeta = (host, path, key) =>
   fetch(`${host}/kdbMeta/${encodePath(path)}`, {
     method: "DELETE",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ key })
-  }).then(res => {
+    body: JSON.stringify({ key }),
+  }).then((res) => {
     return { status: res.status };
   });
 

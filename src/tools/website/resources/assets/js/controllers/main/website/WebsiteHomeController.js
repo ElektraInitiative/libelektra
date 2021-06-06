@@ -4,10 +4,10 @@ module.exports = [
   "$scope",
   "Logger",
   "news",
-  function($scope, Logger, news) {
+  function ($scope, Logger, news) {
     var vm = this;
 
-    news = news.filter(function(elem) {
+    news = news.filter(function (elem) {
       return elem.type === "file";
     });
     if (news.length > 5) {
@@ -27,10 +27,10 @@ module.exports = [
         "simply",
         "correctly",
         "easily",
-        "finally"
-      ]
+        "finally",
+      ],
     };
 
     Logger.info("Home controller ready");
-  }
+  },
 ];

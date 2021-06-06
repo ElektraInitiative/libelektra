@@ -3,36 +3,34 @@ package org.libelektra;
 import com.sun.jna.Pointer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import org.libelektra.exception.KeyReleasedException;
 
 /**
- * An {@link Iterator} over a {@link Key}'s name parts, separated by /.
+ * An {@link Iterator} for a {@link Key}'s name parts (separated by /)
  */
 public class KeyNameIterator implements Iterator<String>
 {
 
-	private int pos = 0;
+	private final Pointer keyPointer;
+	private int position = 0;
 	private int size = 0;
-	private final Pointer con;
 
 	/**
-	 * Basic constructor for key name iterator
-	 *
 	 * @param key Key which name is used in iterator
+	 * @throws KeyReleasedException if {@code key} has already been released
 	 */
 	KeyNameIterator (final Key key)
 	{
-		con = Elektra.INSTANCE.keyUnescapedName (key.get ());
-		size = Elektra.INSTANCE.keyGetUnescapedNameSize (key.get ());
+		keyPointer = Elektra.INSTANCE.keyUnescapedName (key.getPointer ());
+		size = Elektra.INSTANCE.keyGetUnescapedNameSize (key.getPointer ());
 	}
 
 	/**
-	 * Checks if another value is available
-	 *
-	 * @return Boolean if another value is available
+	 * @return True, if another value is available, false otherwise
 	 */
 	@Override public boolean hasNext ()
 	{
-		return pos < size;
+		return position < size;
 	}
 
 	/**
@@ -42,20 +40,19 @@ public class KeyNameIterator implements Iterator<String>
 	 */
 	@Override public String next ()
 	{
-		if (pos == size)
+		if (position == size)
 		{
 			throw new NoSuchElementException ("End of key names reached");
 		}
 
-		final String ret = con.getString (pos);
-		pos += ret.length () + 1;
+		final String ret = keyPointer.getString (position);
+		position += ret.length () + 1;
 		return ret;
 	}
 
 	/**
-	 * NOT SUPPORTED
-	 *
-	 * @throws UnsupportedOperationException TODO #3754 detailed exception description
+	 * @throws UnsupportedOperationException because removal of key name parts is
+	 *                                       not supported by this iterator
 	 */
 	@Override public void remove ()
 	{

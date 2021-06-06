@@ -1,124 +1,87 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "ELEKTRA\-GLOSSARY" "7" "December 2020" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "ELEKTRA\-GLOSSARY" "7" "June 2021" ""
 .SH "NAME"
 \fBelektra\-glossary\fR \- glossary of Elektra
-.
 .SH "Introduction"
-.
 .IP "\(bu" 4
-\fBConfiguration settings\fR: customize applications towards the users\' needs\. It fulfills following properties:
-.
+\fBConfiguration settings\fR: customize applications towards the users' needs\. It fulfills following properties:
 .IP "\(bu" 4
 It is provided by the execution environment\.
-.
 .IP "\(bu" 4
 It can be changed by the maintainer, user, or system administrator of the software\.
-.
 .IP "\(bu" 4
 It consists of a key name, a \fBconfiguration value\fR, and potentially \fBmetadata\fR\.
-.
 .IP "" 0
 
-.
 .IP "\(bu" 4
 A \fBconfiguration file\fR: is a file containing configuration settings\.
-.
 .IP "\(bu" 4
 \fBConfiguration storage\fR: makes configuration settings persistent\. The application will read the configuration at every start from the configuration storage, but it is only stored if a user changes settings\.
-.
 .IP "\(bu" 4
 \fBKey databases\fR: are used for configuration storages because of these constraints\. They can do fast key lookups and the keys can be structured hierarchically by defining separators in the key names\.
-.
 .IP "\(bu" 4
 \fBGlobal key database\fR: provides global access to all configuration storages of all applications in a system\. Abbreviated as \fBKDB\fR\.
-.
 .IP "\(bu" 4
 \fBLibElektra\fR: is a set of libraries \fI/src/libs/\fR to access configuration parameters in a global, hierarchical key database\.
-.
 .IP "\(bu" 4
 \fBSpecElektra\fR: is a specification language \fI/doc/METADATA\.ini\fR that allows us to describe the content of the global key database\.
-.
 .IP "\(bu" 4
 \fBElektra\fR: is a framework consisting of LibElektra, SpecElektra, and a collection of tools\.
-.
 .IP "\(bu" 4
 To \fBelektrify\fR an application: to change the application so that it uses LibElektra afterwards\.
-.
 .IP "\(bu" 4
-\fBElektra Initiative\fR: is a community that develops LibElektra, expands SpecElektra, improves Elektra\'s tooling and helps to elektrify applications\.
-.
+\fBElektra Initiative\fR: is a community that develops LibElektra, expands SpecElektra, improves Elektra's tooling and helps to elektrify applications\.
 .IP "\(bu" 4
-\fBOption\fR, more specifically \fBCommand\-line option\fR: is a special argument passed on the command\-line\. \fBShort options\fR are single characters prefixed with \'\-\'; \fBLong options\fR are arbitrarily long and start with \'\-\-\'\.
-.
+\fBOption\fR, more specifically \fBCommand\-line option\fR: is a special argument passed on the command\-line\. \fBShort options\fR are single characters prefixed with '\-'; \fBLong options\fR are arbitrarily long and start with '\-\-'\.
 .IP "" 0
-.
 .SH "Technical Concepts"
-.
 .TP
 Backends \fIelektra\-backends\.md\fR
 A collection of \fBplugins\fR to be \fBmounted\fR\. A \fBbackend\fR typically is responsible to read and write a configuration file\.
-.
 .TP
 Bootstrapping \fIelektra\-bootstrapping\.md\fR
 To read the mounting configuration and mount during \fBkdbOpen()\fR\.
-.
 .TP
 Cascading \fIelektra\-cascading\.md\fR
 To consider multiple places to look for a key\.
-.
 .TP
 Contracts \fIelektra\-contracts\.md\fR
 Contracts state the purpose, functionality and requirements of \fBplugins\fR\.
-.
 .TP
 Mounting \fIelektra\-mounting\.md\fR
 To persistently and permanently include a \fBbackend\fR in the \fBglobal key database\fR\. The \fBmountpoint\fR is the key where the backend is mounted to\. All keys of the backend are below that key\.
-.
 .TP
 Key name \fI/doc/KEYNAMES\.md\fR
 All keys in the KDB have a name\. This name is the keys unique identifier and follows a particular structure\. For more information take look at the keyname documentation \fI/doc/KEYNAMES\.md\fR\.
-.
 .TP
 Key name part \fI/doc/KEYNAMES\.md\fR
 Key names consist of a series parts (and a namespace)\.
-.
 .TP
 Key base name \fI/doc/KEYNAMES\.md\fR
 The last part of a key name\.
-.
 .TP
 Namespaces \fIelektra\-namespaces\.md\fR
 Allow us to have multiple keys for the same purpose and otherwise the same key name\.
-.
 .TP
 Plugins \fI/src/plugins\fR
 The unit of implementation for a feature\.
-.
 .TP
 Metadata \fIelektra\-metadata\.md\fR
 Allows us to describe configuration settings\.
-.
 .SH "Details"
-.
 .TP
 Sync Flag \fIelektra\-sync\-flag\.md\fR
 Marks keys that were changed and need to be written out to disc\.
-.
 .TP
 Null Keys, Null Values \fIelektra\-values\.md\fR
 The absence of keys or values\.
-.
 .TP
 \fBpop\fR
 used in \fBksPop()\fR and @ref KDB_O_POP means to remove a key from a keyset\.
-.
 .TP
 \fBdelete\fR
 or abbr\. del, used in \fBkeyDel()\fR, \fBksDel()\fR and @ref KDB_O_DEL means to free a key or keyset\. The memory can be used for something else afterwards\.
-.
 .TP
 \fBremove\fR
 means that the key\-value information in the physical database will be removed permanently\.

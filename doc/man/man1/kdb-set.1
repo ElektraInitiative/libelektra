@@ -1,118 +1,82 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "KDB\-SET" "1" "April 2021" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-SET" "1" "June 2021" ""
 .SH "NAME"
 \fBkdb\-set\fR \- Set the value of a key
-.
 .SH "SYNOPSIS"
 \fBkdb set <key name> <value>\fR
-.
 .P
 Where \fBkey name\fR is the name of the key you wish to set the value of (or create) and \fBvalue\fR is the value you would like to set the key to\.
-.
 .SH "DESCRIPTION"
 This command allows the user to set the value of an individual key\.
-.
 .SH "EMPTY VALUES"
 To set a key to an empty value, \fB""\fR should be passed for the \fBvalue\fR argument\.
-.
 .SH "NEGATIVE VALUES"
 To set a key to a negative value, \fB\-\-\fR has to be used to stop option processing\. (see example below)
-.
 .SH "OPTIONS"
-.
 .TP
 \fB\-H\fR, \fB\-\-help\fR
 Show the man page\.
-.
 .TP
 \fB\-V\fR, \fB\-\-version\fR
 Print version info\.
-.
 .TP
 \fB\-p\fR, \fB\-\-profile <profile>\fR
 Use a different kdb profile\.
-.
 .TP
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.
-.
 .TP
 \fB\-q\fR, \fB\-\-quiet\fR
 Suppress non\-error messages\.
-.
 .TP
 \fB\-N\fR, \fB\-\-namespace=NS\fR
 Specify the namespace to use when writing cascading keys\. See \fIbelow in KDB\fR\.
-.
 .TP
 \fB\-\-\fR
 Do not process any following arguments starting with \fB\-\fR as options\.
-.
 .TP
 \fB\-v\fR, \fB\-\-verbose\fR
 Explain what is happening\. Prints additional information in case of errors/warnings\.
-.
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
-.
 .SH "KDB"
-.
 .TP
 \fB/sw/elektra/kdb/#0/current/verbose\fR
 Same as \fB\-v\fR: Explain what is happening\.
-.
 .TP
 \fB/sw/elektra/kdb/#0/current/quiet\fR
 Same as \fB\-q\fR: Suppress default messages\.
-.
 .TP
 \fB/sw/elektra/kdb/#0/current/namespace\fR
 Specifies which default namespace should be used when setting a cascading name\. By default the namespace is user, except \fBkdb\fR is used as root, then \fBsystem\fR is the default\.
-.
 .SH "EXAMPLES"
 To set a Key to the value \fBHello World!\fR:
-.
 .br
 \fBkdb set user:/example/key "Hello World!"\fR
-.
 .P
 To set a key to an empty value:
-.
 .br
 \fBkdb set user:/example/key ""\fR
-.
 .P
 To set a key to a negative value:
-.
 .br
 \fBkdb set \-\- /tests/neg \-3\fR
-.
 .P
 To create bookmarks:
-.
 .br
 \fBkdb set user:/sw/elektra/kdb/#0/current/bookmarks ""\fR
-.
 .P
 Followed by:
-.
 .br
 \fBkdb set user:/sw/elektra/kdb/#0/current/bookmarks/kdb user:/sw/elektra/kdb/#0/current\fR
-.
 .SH "SEE ALSO"
-.
 .IP "\(bu" 4
 kdb(1) \fIkdb\.md\fR for how to configure the kdb utility and use the bookmarks\.
-.
 .IP "\(bu" 4
 elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
-.
 .IP "\(bu" 4
 elektra\-values(7) \fIelektra\-values\.md\fR for the difference between empty and null values\.
-.
 .IP "" 0
 

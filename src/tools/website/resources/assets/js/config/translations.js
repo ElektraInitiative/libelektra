@@ -3,7 +3,7 @@
 module.exports = [
   "$translateProvider",
   "config",
-  function($translateProvider, config) {
+  function ($translateProvider, config) {
     // configure translations
     $translateProvider
       .useSanitizeValueStrategy("sanitizeParameters")
@@ -14,5 +14,5 @@ module.exports = [
       )
       .fallbackLanguage(config.translations.default)
       .preferredLanguage(config.translations.default);
-  }
+  },
 ];

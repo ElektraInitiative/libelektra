@@ -10,7 +10,7 @@ export const KEY_TYPES = [
   { type: "long_long", name: "Number (long_long)" },
   { type: "unsigned_long_long", name: "Positive Number (unsigned_long_long)" },
   { type: "float", name: "Floating Point Number (float)" },
-  { type: "double", name: "Floating Point Number (double)" }
+  { type: "double", name: "Floating Point Number (double)" },
 ];
 
 export const HANDLED_METADATA = [
@@ -26,5 +26,5 @@ export const HANDLED_METADATA = [
   "check/validation",
   "check/validation/message",
   "visibility",
-  "binary"
+  "binary",
 ];

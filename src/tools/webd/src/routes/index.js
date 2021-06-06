@@ -19,8 +19,8 @@ import initClusterRoutes from "./clusters";
 export default function initRoutes(app) {
   app.get("/api/version", (req, res) =>
     getVersions()
-      .then(output => successResponse(res, output))
-      .catch(err => errorResponse(res, err))
+      .then((output) => successResponse(res, output))
+      .catch((err) => errorResponse(res, err))
   );
 
   initInstanceRoutes(app);

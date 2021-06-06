@@ -7,7 +7,7 @@
 
 // CustomEvent polyfill from MDN (https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent)
 
-(function() {
+(function () {
   if (typeof window.CustomEvent === "function") return false;
 
   function CustomEvent(event, params) {
@@ -38,14 +38,14 @@
  */
 // @version 0.7.22
 "undefined" == typeof WeakMap &&
-  !(function() {
+  !(function () {
     var e = Object.defineProperty,
       t = Date.now() % 1e9,
-      n = function() {
+      n = function () {
         this.name = "__st" + ((1e9 * Math.random()) >>> 0) + (t++ + "__");
       };
     (n.prototype = {
-      set: function(t, n) {
+      set: function (t, n) {
         var o = t[this.name];
         return (
           o && o[0] === t
@@ -54,22 +54,22 @@
           this
         );
       },
-      get: function(e) {
+      get: function (e) {
         var t;
         return (t = e[this.name]) && t[0] === e ? t[1] : void 0;
       },
-      delete: function(e) {
+      delete: function (e) {
         var t = e[this.name];
         return t && t[0] === e ? ((t[0] = t[1] = void 0), !0) : !1;
       },
-      has: function(e) {
+      has: function (e) {
         var t = e[this.name];
         return t ? t[0] === e : !1;
-      }
+      },
     }),
       (window.WeakMap = n);
   })(),
-  (function(e) {
+  (function (e) {
     function t(e) {
       E.push(e), b || ((b = !0), w(o));
     }
@@ -84,21 +84,21 @@
       b = !1;
       var e = E;
       (E = []),
-        e.sort(function(e, t) {
+        e.sort(function (e, t) {
           return e.uid_ - t.uid_;
         });
       var t = !1;
-      e.forEach(function(e) {
+      e.forEach(function (e) {
         var n = e.takeRecords();
         r(e), n.length && (e.callback_(n, e), (t = !0));
       }),
         t && o();
     }
     function r(e) {
-      e.nodes_.forEach(function(t) {
+      e.nodes_.forEach(function (t) {
         var n = v.get(t);
         n &&
-          n.forEach(function(t) {
+          n.forEach(function (t) {
             t.observer === e && t.removeTransientObservers();
           });
       });
@@ -176,16 +176,16 @@
       else {
         var h = [],
           g = String(Math.random());
-        window.addEventListener("message", function(e) {
+        window.addEventListener("message", function (e) {
           if (e.data === g) {
             var t = h;
             (h = []),
-              t.forEach(function(e) {
+              t.forEach(function (e) {
                 e();
               });
           }
         }),
-          (w = function(e) {
+          (w = function (e) {
             h.push(e), window.postMessage(g, "*");
           });
       }
@@ -193,7 +193,7 @@
         E = [],
         _ = 0;
       a.prototype = {
-        observe: function(e, t) {
+        observe: function (e, t) {
           if (
             ((e = n(e)),
             (!t.childList && !t.attributes && !t.characterData) ||
@@ -214,8 +214,8 @@
           r || ((r = new m(this, e, t)), o.push(r), this.nodes_.push(e)),
             r.addListeners();
         },
-        disconnect: function() {
-          this.nodes_.forEach(function(e) {
+        disconnect: function () {
+          this.nodes_.forEach(function (e) {
             for (var t = v.get(e), n = 0; n < t.length; n++) {
               var o = t[n];
               if (o.observer === this) {
@@ -226,14 +226,14 @@
           }, this),
             (this.records_ = []);
         },
-        takeRecords: function() {
+        takeRecords: function () {
           var e = this.records_;
           return (this.records_ = []), e;
-        }
+        },
       };
       var y, N;
       (m.prototype = {
-        enqueue: function(e) {
+        enqueue: function (e) {
           var n = this.observer.records_,
             o = n.length;
           if (n.length > 0) {
@@ -243,10 +243,10 @@
           } else t(this.observer);
           n[o] = e;
         },
-        addListeners: function() {
+        addListeners: function () {
           this.addListeners_(this.target);
         },
-        addListeners_: function(e) {
+        addListeners_: function (e) {
           var t = this.options;
           t.attributes && e.addEventListener("DOMAttrModified", this, !0),
             t.characterData &&
@@ -255,10 +255,10 @@
             (t.childList || t.subtree) &&
               e.addEventListener("DOMNodeRemoved", this, !0);
         },
-        removeListeners: function() {
+        removeListeners: function () {
           this.removeListeners_(this.target);
         },
-        removeListeners_: function(e) {
+        removeListeners_: function (e) {
           var t = this.options;
           t.attributes && e.removeEventListener("DOMAttrModified", this, !0),
             t.characterData &&
@@ -267,17 +267,17 @@
             (t.childList || t.subtree) &&
               e.removeEventListener("DOMNodeRemoved", this, !0);
         },
-        addTransientObserver: function(e) {
+        addTransientObserver: function (e) {
           if (e !== this.target) {
             this.addListeners_(e), this.transientObservedNodes.push(e);
             var t = v.get(e);
             t || v.set(e, (t = [])), t.push(this);
           }
         },
-        removeTransientObservers: function() {
+        removeTransientObservers: function () {
           var e = this.transientObservedNodes;
           (this.transientObservedNodes = []),
-            e.forEach(function(e) {
+            e.forEach(function (e) {
               this.removeListeners_(e);
               for (var t = v.get(e), n = 0; n < t.length; n++)
                 if (t[n] === this) {
@@ -286,7 +286,7 @@
                 }
             }, this);
         },
-        handleEvent: function(e) {
+        handleEvent: function (e) {
           switch ((e.stopImmediatePropagation(), e.type)) {
             case "DOMAttrModified":
               var t = e.attrName,
@@ -296,7 +296,7 @@
               (r.attributeName = t), (r.attributeNamespace = n);
               var a =
                 e.attrChange === MutationEvent.ADDITION ? null : e.prevValue;
-              i(o, function(e) {
+              i(o, function (e) {
                 return !e.attributes ||
                   (e.attributeFilter &&
                     e.attributeFilter.length &&
@@ -312,7 +312,7 @@
               var o = e.target,
                 r = u("characterData", o),
                 a = e.prevValue;
-              i(o, function(e) {
+              i(o, function (e) {
                 return e.characterData
                   ? e.characterDataOldValue
                     ? c(a)
@@ -336,66 +336,66 @@
                 (r.removedNodes = s),
                 (r.previousSibling = p),
                 (r.nextSibling = m),
-                i(e.relatedNode, function(e) {
+                i(e.relatedNode, function (e) {
                   return e.childList ? r : void 0;
                 });
           }
           l();
-        }
+        },
       }),
         (e.JsMutationObserver = a),
         e.MutationObserver ||
           ((e.MutationObserver = a), (a._isPolyfilled = !0));
     }
   })(self),
-  (function(e) {
+  (function (e) {
     "use strict";
     if (!window.performance) {
       var t = Date.now();
       window.performance = {
-        now: function() {
+        now: function () {
           return Date.now() - t;
-        }
+        },
       };
     }
     window.requestAnimationFrame ||
-      (window.requestAnimationFrame = (function() {
+      (window.requestAnimationFrame = (function () {
         var e =
           window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
         return e
-          ? function(t) {
-              return e(function() {
+          ? function (t) {
+              return e(function () {
                 t(performance.now());
               });
             }
-          : function(e) {
+          : function (e) {
               return window.setTimeout(e, 1e3 / 60);
             };
       })()),
       window.cancelAnimationFrame ||
-        (window.cancelAnimationFrame = (function() {
+        (window.cancelAnimationFrame = (function () {
           return (
             window.webkitCancelAnimationFrame ||
             window.mozCancelAnimationFrame ||
-            function(e) {
+            function (e) {
               clearTimeout(e);
             }
           );
         })());
-    var n = (function() {
+    var n = (function () {
       var e = document.createEvent("Event");
       return e.initEvent("foo", !0, !0), e.preventDefault(), e.defaultPrevented;
     })();
     if (!n) {
       var o = Event.prototype.preventDefault;
-      Event.prototype.preventDefault = function() {
+      Event.prototype.preventDefault = function () {
         this.cancelable &&
           (o.call(this),
           Object.defineProperty(this, "defaultPrevented", {
-            get: function() {
+            get: function () {
               return !0;
             },
-            configurable: !0
+            configurable: !0,
           }));
       };
     }
@@ -403,7 +403,7 @@
     if (
       ((!window.CustomEvent ||
         (r && "function" != typeof window.CustomEvent)) &&
-        ((window.CustomEvent = function(e, t) {
+        ((window.CustomEvent = function (e, t) {
           t = t || {};
           var n = document.createEvent("CustomEvent");
           return (
@@ -420,7 +420,7 @@
       !window.Event || (r && "function" != typeof window.Event))
     ) {
       var i = window.Event;
-      (window.Event = function(e, t) {
+      (window.Event = function (e, t) {
         t = t || {};
         var n = document.createEvent("Event");
         return n.initEvent(e, Boolean(t.bubbles), Boolean(t.cancelable)), n;
@@ -429,14 +429,14 @@
     }
   })(window.WebComponents),
   (window.CustomElements = window.CustomElements || { flags: {} }),
-  (function(e) {
+  (function (e) {
     var t = e.flags,
       n = [],
-      o = function(e) {
+      o = function (e) {
         n.push(e);
       },
-      r = function() {
-        n.forEach(function(t) {
+      r = function () {
+        n.forEach(function (t) {
           t(e);
         });
       };
@@ -450,9 +450,9 @@
         !window.ShadowDOMPolyfill &&
         (!window.HTMLImports || window.HTMLImports.useNative));
   })(window.CustomElements),
-  window.CustomElements.addModule(function(e) {
+  window.CustomElements.addModule(function (e) {
     function t(e, t) {
-      n(e, function(e) {
+      n(e, function (e) {
         return t(e) ? !0 : void o(e, t);
       }),
         o(e, t);
@@ -489,7 +489,7 @@
     var a = window.HTMLImports ? window.HTMLImports.IMPORT_LINK_TYPE : "none";
     (e.forDocumentTree = r), (e.forSubtree = t);
   }),
-  window.CustomElements.addModule(function(e) {
+  window.CustomElements.addModule(function (e) {
     function t(e, t) {
       return n(e, t) || o(e, t);
     }
@@ -497,7 +497,7 @@
       return e.upgrade(t, n) ? !0 : void (n && a(t));
     }
     function o(e, t) {
-      b(e, function(e) {
+      b(e, function (e) {
         return n(e, t) ? !0 : void 0;
       });
     }
@@ -511,7 +511,7 @@
     }
     function a(e) {
       _
-        ? r(function() {
+        ? r(function () {
             d(e);
           })
         : d(e);
@@ -523,13 +523,13 @@
     }
     function s(e) {
       u(e),
-        b(e, function(e) {
+        b(e, function (e) {
           u(e);
         });
     }
     function u(e) {
       _
-        ? r(function() {
+        ? r(function () {
             c(e);
           })
         : c(e);
@@ -561,21 +561,17 @@
             r = r.parentNode;
           var i =
             (r && (r.URL || r._URL || (r.host && r.host.localName))) || "";
-          i = i
-            .split("/?")
-            .shift()
-            .split("/")
-            .pop();
+          i = i.split("/?").shift().split("/").pop();
         }
         console.group("mutations (%d) [%s]", n.length, i || "");
       }
       var a = l(e);
-      n.forEach(function(e) {
+      n.forEach(function (e) {
         "childList" === e.type &&
-          (M(e.addedNodes, function(e) {
+          (M(e.addedNodes, function (e) {
             e.localName && t(e, a);
           }),
-          M(e.removedNodes, function(e) {
+          M(e.removedNodes, function (e) {
             e.localName && s(e);
           }));
       }),
@@ -612,7 +608,7 @@
       M = Array.prototype.forEach.call.bind(Array.prototype.forEach),
       O = Element.prototype.createShadowRoot;
     O &&
-      (Element.prototype.createShadowRoot = function() {
+      (Element.prototype.createShadowRoot = function () {
         var e = O.call(this);
         return window.CustomElements.watchShadow(this), e;
       }),
@@ -624,7 +620,7 @@
       (e.attached = a),
       (e.takeRecords = m);
   }),
-  window.CustomElements.addModule(function(e) {
+  window.CustomElements.addModule(function (e) {
     function t(t, o) {
       if (
         ("template" === t.localName &&
@@ -674,7 +670,7 @@
     var a = e.flags;
     (e.upgrade = t), (e.upgradeWithDefinition = n), (e.implementPrototype = o);
   }),
-  window.CustomElements.addModule(function(e) {
+  window.CustomElements.addModule(function (e) {
     function t(t, o) {
       var s = o || {};
       if (!t)
@@ -719,11 +715,11 @@
     function n(e) {
       if (!e.setAttribute._polyfilled) {
         var t = e.setAttribute;
-        e.setAttribute = function(e, n) {
+        e.setAttribute = function (e, n) {
           o.call(this, e, n, t);
         };
         var n = e.removeAttribute;
-        (e.removeAttribute = function(e) {
+        (e.removeAttribute = function (e) {
           o.call(this, e, null, n);
         }),
           (e.setAttribute._polyfilled = !0);
@@ -779,7 +775,7 @@
       y[e] = t;
     }
     function l(e) {
-      return function() {
+      return function () {
         return s(e);
       };
     }
@@ -800,7 +796,7 @@
     }
     function m(e, t) {
       var n = e[t];
-      e[t] = function() {
+      e[t] = function () {
         var e = n.apply(this, arguments);
         return h(e), e;
       };
@@ -819,7 +815,7 @@
         "font-face-uri",
         "font-face-format",
         "font-face-name",
-        "missing-glyph"
+        "missing-glyph",
       ],
       y = {},
       N = "http://www.w3.org/1999/xhtml",
@@ -827,10 +823,10 @@
       O = document.createElementNS.bind(document);
     (w =
       Object.__proto__ || E
-        ? function(e, t) {
+        ? function (e, t) {
             return e instanceof t;
           }
-        : function(e, t) {
+        : function (e, t) {
             if (e instanceof t) return !0;
             for (var n = e; n; ) {
               if (n === t.prototype) return !0;
@@ -849,16 +845,16 @@
       (e.getRegisteredDefinition = u),
       (document.register = document.registerElement);
   }),
-  (function(e) {
+  (function (e) {
     function t() {
       i(window.wrap(document)), (window.CustomElements.ready = !0);
       var e =
         window.requestAnimationFrame ||
-        function(e) {
+        function (e) {
           setTimeout(e, 16);
         };
-      e(function() {
-        setTimeout(function() {
+      e(function () {
+        setTimeout(function () {
           (window.CustomElements.readyTime = Date.now()),
             window.HTMLImports &&
               (window.CustomElements.elapsed =
@@ -873,14 +869,14 @@
       o = e.initializeModules;
     e.isIE;
     if (n) {
-      var r = function() {};
+      var r = function () {};
       (e.watchShadow = r),
         (e.upgrade = r),
         (e.upgradeAll = r),
         (e.upgradeDocumentTree = r),
         (e.upgradeSubtree = r),
         (e.takeRecords = r),
-        (e["instanceof"] = function(e, t) {
+        (e["instanceof"] = function (e, t) {
           return e instanceof t;
         });
     } else o();
@@ -891,11 +887,11 @@
         (window.ShadowDOMPolyfill
           ? ((window.wrap = window.ShadowDOMPolyfill.wrapIfNeeded),
             (window.unwrap = window.ShadowDOMPolyfill.unwrapIfNeeded))
-          : (window.wrap = window.unwrap = function(e) {
+          : (window.wrap = window.unwrap = function (e) {
               return e;
             })),
       window.HTMLImports &&
-        (window.HTMLImports.__importsParsingHook = function(e) {
+        (window.HTMLImports.__importsParsingHook = function (e) {
           e["import"] && a(wrap(e["import"]));
         }),
       "complete" === document.readyState || e.flags.eager)
@@ -914,7 +910,7 @@
     } else t();
   })(window.CustomElements);
 if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
-  Math.imul = function(a, b) {
+  Math.imul = function (a, b) {
     var ah = (a >>> 16) & 0xffff;
     var al = a & 0xffff;
     var bh = (b >>> 16) & 0xffff;
@@ -936,7 +932,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  */
-!(function(t) {
+!(function (t) {
   if ("object" == typeof exports && "undefined" != typeof module)
     module.exports = t();
   else if ("function" == typeof define && define.amd) define([], t);
@@ -952,7 +948,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
         : this),
       (e.React = t());
   }
-})(function() {
+})(function () {
   return (function t(e, n, r) {
     function o(u, a) {
       if (!n[u]) {
@@ -966,7 +962,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
         var l = (n[u] = { exports: {} });
         e[u][0].call(
           l.exports,
-          function(t) {
+          function (t) {
             var n = e[u][1][t];
             return o(n || t);
           },
@@ -990,13 +986,13 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
   })(
     {
       1: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t) {
             var e = { "=": "=0", ":": "=2" };
             return (
               "$" +
-              ("" + t).replace(/[=:]/g, function(t) {
+              ("" + t).replace(/[=:]/g, function (t) {
                 return e[t];
               })
             );
@@ -1006,22 +1002,22 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             return (
               "" +
               ("." === t[0] && "$" === t[1] ? t.substring(2) : t.substring(1))
-            ).replace(/(=0|=2)/g, function(t) {
+            ).replace(/(=0|=2)/g, function (t) {
               return e[t];
             });
           }
           var i = { escape: r, unescape: o };
           e.exports = i;
         },
-        {}
+        {},
       ],
       2: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = t(20),
             o =
               (t(24),
-              function(t) {
+              function (t) {
                 var e = this;
                 if (e.instancePool.length) {
                   var n = e.instancePool.pop();
@@ -1029,7 +1025,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 }
                 return new e(t);
               }),
-            i = function(t, e) {
+            i = function (t, e) {
               var n = this;
               if (n.instancePool.length) {
                 var r = n.instancePool.pop();
@@ -1037,7 +1033,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               return new n(t, e);
             },
-            u = function(t, e, n) {
+            u = function (t, e, n) {
               var r = this;
               if (r.instancePool.length) {
                 var o = r.instancePool.pop();
@@ -1045,7 +1041,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               return new r(t, e, n);
             },
-            a = function(t, e, n, r) {
+            a = function (t, e, n, r) {
               var o = this;
               if (o.instancePool.length) {
                 var i = o.instancePool.pop();
@@ -1053,14 +1049,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               return new o(t, e, n, r);
             },
-            s = function(t) {
+            s = function (t) {
               var e = this;
               t instanceof e || r("25"),
                 t.destructor(),
                 e.instancePool.length < e.poolSize && e.instancePool.push(t);
             },
             c = o,
-            l = function(t, e) {
+            l = function (t, e) {
               var n = t;
               return (
                 (n.instancePool = []),
@@ -1075,14 +1071,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               oneArgumentPooler: o,
               twoArgumentPooler: i,
               threeArgumentPooler: u,
-              fourArgumentPooler: a
+              fourArgumentPooler: a,
             };
           e.exports = f;
         },
-        { 20: 20, 24: 24 }
+        { 20: 20, 24: 24 },
       ],
       3: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = t(26),
             o = t(4),
@@ -1104,7 +1100,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 forEach: o.forEach,
                 count: o.count,
                 toArray: o.toArray,
-                only: p
+                only: p,
               },
               Component: i,
               PureComponent: u,
@@ -1114,12 +1110,12 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               PropTypes: l,
               createClass: a.createClass,
               createFactory: y,
-              createMixin: function(t) {
+              createMixin: function (t) {
                 return t;
               },
               DOM: s,
               version: f,
-              __spread: v
+              __spread: v,
             };
           e.exports = m;
         },
@@ -1134,11 +1130,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
           5: 5,
           6: 6,
           8: 8,
-          9: 9
-        }
+          9: 9,
+        },
       ],
       4: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t) {
             return ("" + t).replace(E, "$&/");
@@ -1209,11 +1205,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             b = y.twoArgumentPooler,
             g = y.fourArgumentPooler,
             E = /\/+/g;
-          (o.prototype.destructor = function() {
+          (o.prototype.destructor = function () {
             (this.func = null), (this.context = null), (this.count = 0);
           }),
             y.addPoolingTo(o, b),
-            (a.prototype.destructor = function() {
+            (a.prototype.destructor = function () {
               (this.result = null),
                 (this.keyPrefix = null),
                 (this.func = null),
@@ -1226,14 +1222,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             map: l,
             mapIntoWithKeyPrefixInternal: c,
             count: p,
-            toArray: d
+            toArray: d,
           };
           e.exports = x;
         },
-        { 2: 2, 21: 21, 22: 22, 9: 9 }
+        { 2: 2, 21: 21, 22: 22, 9: 9 },
       ],
       5: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t) {
             return t;
@@ -1295,7 +1291,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             return t;
           }
           function s(t, e) {
-            return function() {
+            return function () {
               var n = t.apply(this, arguments),
                 r = e.apply(this, arguments);
               if (null == n) return r;
@@ -1305,7 +1301,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             };
           }
           function c(t, e) {
-            return function() {
+            return function () {
               t.apply(this, arguments), e.apply(this, arguments);
             };
           }
@@ -1344,48 +1340,48 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               componentWillUpdate: "DEFINE_MANY",
               componentDidUpdate: "DEFINE_MANY",
               componentWillUnmount: "DEFINE_MANY",
-              updateComponent: "OVERRIDE_BASE"
+              updateComponent: "OVERRIDE_BASE",
             },
             x = {
-              displayName: function(t, e) {
+              displayName: function (t, e) {
                 t.displayName = e;
               },
-              mixins: function(t, e) {
+              mixins: function (t, e) {
                 if (e) for (var n = 0; n < e.length; n++) i(t, e[n]);
               },
-              childContextTypes: function(t, e) {
+              childContextTypes: function (t, e) {
                 t.childContextTypes = d({}, t.childContextTypes, e);
               },
-              contextTypes: function(t, e) {
+              contextTypes: function (t, e) {
                 t.contextTypes = d({}, t.contextTypes, e);
               },
-              getDefaultProps: function(t, e) {
+              getDefaultProps: function (t, e) {
                 t.getDefaultProps
                   ? (t.getDefaultProps = s(t.getDefaultProps, e))
                   : (t.getDefaultProps = e);
               },
-              propTypes: function(t, e) {
+              propTypes: function (t, e) {
                 t.propTypes = d({}, t.propTypes, e);
               },
-              statics: function(t, e) {
+              statics: function (t, e) {
                 u(t, e);
               },
-              autobind: function() {}
+              autobind: function () {},
             },
             _ = {
-              replaceState: function(t, e) {
+              replaceState: function (t, e) {
                 this.updater.enqueueReplaceState(this, t),
                   e && this.updater.enqueueCallback(this, e, "replaceState");
               },
-              isMounted: function() {
+              isMounted: function () {
                 return this.updater.isMounted(this);
-              }
+              },
             },
-            P = function() {};
+            P = function () {};
           d(P.prototype, y.prototype, _);
           var w = {
-            createClass: function(t) {
-              var e = r(function(t, n, r) {
+            createClass: function (t) {
+              var e = r(function (t, n, r) {
                 this.__reactAutoBindPairs.length && f(this),
                   (this.props = t),
                   (this.context = n),
@@ -1408,17 +1404,17 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               return e;
             },
             injection: {
-              injectMixin: function(t) {
+              injectMixin: function (t) {
                 g.push(t);
-              }
-            }
+              },
+            },
           };
           e.exports = w;
         },
-        { 11: 11, 12: 12, 20: 20, 23: 23, 24: 24, 25: 25, 26: 26, 6: 6, 9: 9 }
+        { 11: 11, 12: 12, 20: 20, 23: 23, 24: 24, 25: 25, 26: 26, 6: 6, 9: 9 },
       ],
       6: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t, e, n) {
             (this.props = t),
@@ -1431,7 +1427,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             u = (t(17), t(23));
           t(24), t(25);
           (r.prototype.isReactComponent = {}),
-            (r.prototype.setState = function(t, e) {
+            (r.prototype.setState = function (t, e) {
               "object" != typeof t &&
                 "function" != typeof t &&
                 null != t &&
@@ -1439,24 +1435,24 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 this.updater.enqueueSetState(this, t),
                 e && this.updater.enqueueCallback(this, e, "setState");
             }),
-            (r.prototype.forceUpdate = function(t) {
+            (r.prototype.forceUpdate = function (t) {
               this.updater.enqueueForceUpdate(this),
                 t && this.updater.enqueueCallback(this, t, "forceUpdate");
             });
           e.exports = r;
         },
-        { 11: 11, 17: 17, 20: 20, 23: 23, 24: 24, 25: 25 }
+        { 11: 11, 17: 17, 20: 20, 23: 23, 24: 24, 25: 25 },
       ],
       7: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = { current: null };
           e.exports = r;
         },
-        {}
+        {},
       ],
       8: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = t(9),
             o = r.createFactory,
@@ -1592,14 +1588,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               stop: o("stop"),
               svg: o("svg"),
               text: o("text"),
-              tspan: o("tspan")
+              tspan: o("tspan"),
             };
           e.exports = i;
         },
-        { 9: 9 }
+        { 9: 9 },
       ],
       9: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t) {
             return void 0 !== t.ref;
@@ -1612,17 +1608,17 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             a = (t(25), t(17), Object.prototype.hasOwnProperty),
             s = t(10),
             c = { key: !0, ref: !0, __self: !0, __source: !0 },
-            l = function(t, e, n, r, o, i, u) {
+            l = function (t, e, n, r, o, i, u) {
               return {
                 $$typeof: s,
                 type: t,
                 key: e,
                 ref: n,
                 props: u,
-                _owner: i
+                _owner: i,
               };
             };
-          (l.createElement = function(t, e, n) {
+          (l.createElement = function (t, e, n) {
             var i,
               s = {},
               f = null,
@@ -1647,14 +1643,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             }
             return l(t, f, p, 0, 0, u.current, s);
           }),
-            (l.createFactory = function(t) {
+            (l.createFactory = function (t) {
               var e = l.createElement.bind(null, t);
               return (e.type = t), e;
             }),
-            (l.cloneAndReplaceKey = function(t, e) {
+            (l.cloneAndReplaceKey = function (t, e) {
               return l(t.type, e, t.ref, t._self, t._source, t._owner, t.props);
             }),
-            (l.cloneElement = function(t, e, n) {
+            (l.cloneElement = function (t, e, n) {
               var s,
                 f = i({}, t.props),
                 p = t.key,
@@ -1681,15 +1677,15 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               return l(t.type, p, d, 0, 0, y, f);
             }),
-            (l.isValidElement = function(t) {
+            (l.isValidElement = function (t) {
               return "object" == typeof t && null !== t && t.$$typeof === s;
             }),
             (e.exports = l);
         },
-        { 10: 10, 17: 17, 25: 25, 26: 26, 7: 7 }
+        { 10: 10, 17: 17, 25: 25, 26: 26, 7: 7 },
       ],
       10: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r =
             ("function" == typeof Symbol &&
@@ -1698,46 +1694,46 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             60103;
           e.exports = r;
         },
-        {}
+        {},
       ],
       11: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r =
             (t(25),
             {
-              isMounted: function(t) {
+              isMounted: function (t) {
                 return !1;
               },
-              enqueueCallback: function(t, e) {},
-              enqueueForceUpdate: function(t) {},
-              enqueueReplaceState: function(t, e) {},
-              enqueueSetState: function(t, e) {}
+              enqueueCallback: function (t, e) {},
+              enqueueForceUpdate: function (t) {},
+              enqueueReplaceState: function (t, e) {},
+              enqueueSetState: function (t, e) {},
             });
           e.exports = r;
         },
-        { 25: 25 }
+        { 25: 25 },
       ],
       12: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = {};
           e.exports = r;
         },
-        {}
+        {},
       ],
       13: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = t(9),
             o = r.isValidElement,
             i = t(28);
           e.exports = i(o);
         },
-        { 28: 28, 9: 9 }
+        { 28: 28, 9: 9 },
       ],
       14: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t, e, n) {
             (this.props = t),
@@ -1757,38 +1753,38 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             (r.prototype.isPureReactComponent = !0),
             (e.exports = r);
         },
-        { 11: 11, 23: 23, 26: 26, 6: 6 }
+        { 11: 11, 23: 23, 26: 26, 6: 6 },
       ],
       15: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = t(26),
             o = t(3),
             i = r(o, {
               __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: {
-                ReactCurrentOwner: t(7)
-              }
+                ReactCurrentOwner: t(7),
+              },
             });
           e.exports = i;
         },
-        { 26: 26, 3: 3, 7: 7 }
+        { 26: 26, 3: 3, 7: 7 },
       ],
       16: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           e.exports = "15.5.4";
         },
-        {}
+        {},
       ],
       17: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           e.exports = !1;
         },
-        {}
+        {},
       ],
       18: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t) {
             var e = t && ((o && t[o]) || t[i]);
@@ -1798,10 +1794,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             i = "@@iterator";
           e.exports = r;
         },
-        {}
+        {},
       ],
       19: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t) {
             return i.isValidElement(t) || o("143"), t;
@@ -1811,10 +1807,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
           t(24);
           e.exports = r;
         },
-        { 20: 20, 24: 24, 9: 9 }
+        { 20: 20, 24: 24, 9: 9 },
       ],
       20: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t) {
             for (
@@ -1836,10 +1832,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
           }
           e.exports = r;
         },
-        {}
+        {},
       ],
       21: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t, e) {
             return t && "object" == typeof t && null != t.key
@@ -1903,41 +1899,41 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             f = ":";
           e.exports = i;
         },
-        { 1: 1, 10: 10, 18: 18, 20: 20, 24: 24, 25: 25, 7: 7 }
+        { 1: 1, 10: 10, 18: 18, 20: 20, 24: 24, 25: 25, 7: 7 },
       ],
       22: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t) {
-            return function() {
+            return function () {
               return t;
             };
           }
-          var o = function() {};
+          var o = function () {};
           (o.thatReturns = r),
             (o.thatReturnsFalse = r(!1)),
             (o.thatReturnsTrue = r(!0)),
             (o.thatReturnsNull = r(null)),
-            (o.thatReturnsThis = function() {
+            (o.thatReturnsThis = function () {
               return this;
             }),
-            (o.thatReturnsArgument = function(t) {
+            (o.thatReturnsArgument = function (t) {
               return t;
             }),
             (e.exports = o);
         },
-        {}
+        {},
       ],
       23: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = {};
           e.exports = r;
         },
-        {}
+        {},
       ],
       24: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t, e, n, r, i, u, a, s) {
             if ((o(e), !t)) {
@@ -1950,7 +1946,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 var l = [n, r, i, u, a, s],
                   f = 0;
                 (c = new Error(
-                  e.replace(/%s/g, function() {
+                  e.replace(/%s/g, function () {
                     return l[f++];
                   })
                 )),
@@ -1959,22 +1955,22 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               throw ((c.framesToPop = 1), c);
             }
           }
-          var o = function(t) {};
+          var o = function (t) {};
           e.exports = r;
         },
-        {}
+        {},
       ],
       25: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = t(22),
             o = r;
           e.exports = o;
         },
-        { 22: 22 }
+        { 22: 22 },
       ],
       26: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t) {
             if (null === t || void 0 === t)
@@ -1986,7 +1982,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
           var o = Object.getOwnPropertySymbols,
             i = Object.prototype.hasOwnProperty,
             u = Object.prototype.propertyIsEnumerable;
-          e.exports = (function() {
+          e.exports = (function () {
             try {
               if (!Object.assign) return !1;
               var t = new String("abc");
@@ -1997,7 +1993,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               if (
                 "0123456789" !==
                 Object.getOwnPropertyNames(e)
-                  .map(function(t) {
+                  .map(function (t) {
                     return e[t];
                   })
                   .join("")
@@ -2005,7 +2001,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 return !1;
               var r = {};
               return (
-                "abcdefghijklmnopqrst".split("").forEach(function(t) {
+                "abcdefghijklmnopqrst".split("").forEach(function (t) {
                   r[t] = t;
                 }),
                 "abcdefghijklmnopqrst" ===
@@ -2016,7 +2012,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             }
           })()
             ? Object.assign
-            : function(t, e) {
+            : function (t, e) {
                 for (var n, a, s = r(t), c = 1; c < arguments.length; c++) {
                   n = Object(arguments[c]);
                   for (var l in n) i.call(n, l) && (s[l] = n[l]);
@@ -2029,34 +2025,34 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 return s;
               };
         },
-        {}
+        {},
       ],
       27: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           function r(t, e, n, r, o) {}
           e.exports = r;
         },
-        { 24: 24, 25: 25, 30: 30 }
+        { 24: 24, 25: 25, 30: 30 },
       ],
       28: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = t(29);
-          e.exports = function(t) {
+          e.exports = function (t) {
             return r(t, !1);
           };
         },
-        { 29: 29 }
+        { 29: 29 },
       ],
       29: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           var r = t(22),
             o = t(24),
             i = (t(25), t(30)),
             u = t(27);
-          e.exports = function(t, e) {
+          e.exports = function (t, e) {
             function n(t) {
               var e = t && ((_ && t[_]) || t[P]);
               if ("function" == typeof e) return e;
@@ -2335,11 +2331,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 object: l("object"),
                 string: l("string"),
                 symbol: l("symbol"),
-                any: (function() {
+                any: (function () {
                   return c(r.thatReturnsNull);
                 })(),
                 arrayOf: f,
-                element: (function() {
+                element: (function () {
                   function e(e, n, r, o, i) {
                     var u = e[n];
                     if (!t(u)) {
@@ -2360,7 +2356,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   return c(e);
                 })(),
                 instanceOf: p,
-                node: (function() {
+                node: (function () {
                   function t(t, e, n, r, o) {
                     return m(t[e])
                       ? null
@@ -2379,7 +2375,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 objectOf: y,
                 oneOf: d,
                 oneOfType: h,
-                shape: v
+                shape: v,
               };
             return (
               (s.prototype = Error.prototype),
@@ -2389,21 +2385,21 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             );
           };
         },
-        { 22: 22, 24: 24, 25: 25, 27: 27, 30: 30 }
+        { 22: 22, 24: 24, 25: 25, 27: 27, 30: 30 },
       ],
       30: [
-        function(t, e, n) {
+        function (t, e, n) {
           "use strict";
           e.exports = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";
         },
-        {}
-      ]
+        {},
+      ],
     },
     {},
     [15]
   )(15);
 });
-!(function(f) {
+!(function (f) {
   if ("object" == typeof exports && "undefined" != typeof module)
     module.exports = f();
   else if ("function" == typeof define && define.amd) define([], f);
@@ -2423,7 +2419,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
       throw Error("React module should be required before createClass");
     g.createReactClass = f();
   }
-})(function() {
+})(function () {
   return (function e(t, n, r) {
     function s(o, u) {
       if (!n[o]) {
@@ -2437,7 +2433,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
         var l = (n[o] = { exports: {} });
         t[o][0].call(
           l.exports,
-          function(e) {
+          function (e) {
             var n = t[o][1][e];
             return s(n || e);
           },
@@ -2461,7 +2457,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
   })(
     {
       1: [
-        function(require, module, exports) {
+        function (require, module, exports) {
           "use strict";
           function identity(fn) {
             return fn;
@@ -2587,7 +2583,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               return one;
             }
             function createMergedResultFunction(one, two) {
-              return function() {
+              return function () {
                 var a = one.apply(this, arguments),
                   b = two.apply(this, arguments);
                 if (null == a) return b;
@@ -2601,7 +2597,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               };
             }
             function createChainedFunction(one, two) {
-              return function() {
+              return function () {
                 one.apply(this, arguments), two.apply(this, arguments);
               };
             }
@@ -2621,7 +2617,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
             }
             function createClass(spec) {
-              var Constructor = identity(function(props, context, updater) {
+              var Constructor = identity(function (props, context, updater) {
                 this.__reactAutoBindPairs.length && bindAutoBindMethods(this),
                   (this.props = props),
                   (this.context = context),
@@ -2676,32 +2672,32 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 componentWillUpdate: "DEFINE_MANY",
                 componentDidUpdate: "DEFINE_MANY",
                 componentWillUnmount: "DEFINE_MANY",
-                updateComponent: "OVERRIDE_BASE"
+                updateComponent: "OVERRIDE_BASE",
               },
               RESERVED_SPEC_KEYS = {
-                displayName: function(Constructor, displayName) {
+                displayName: function (Constructor, displayName) {
                   Constructor.displayName = displayName;
                 },
-                mixins: function(Constructor, mixins) {
+                mixins: function (Constructor, mixins) {
                   if (mixins)
                     for (var i = 0; i < mixins.length; i++)
                       mixSpecIntoComponent(Constructor, mixins[i]);
                 },
-                childContextTypes: function(Constructor, childContextTypes) {
+                childContextTypes: function (Constructor, childContextTypes) {
                   Constructor.childContextTypes = _assign(
                     {},
                     Constructor.childContextTypes,
                     childContextTypes
                   );
                 },
-                contextTypes: function(Constructor, contextTypes) {
+                contextTypes: function (Constructor, contextTypes) {
                   Constructor.contextTypes = _assign(
                     {},
                     Constructor.contextTypes,
                     contextTypes
                   );
                 },
-                getDefaultProps: function(Constructor, getDefaultProps) {
+                getDefaultProps: function (Constructor, getDefaultProps) {
                   Constructor.getDefaultProps
                     ? (Constructor.getDefaultProps = createMergedResultFunction(
                         Constructor.getDefaultProps,
@@ -2709,35 +2705,35 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       ))
                     : (Constructor.getDefaultProps = getDefaultProps);
                 },
-                propTypes: function(Constructor, propTypes) {
+                propTypes: function (Constructor, propTypes) {
                   Constructor.propTypes = _assign(
                     {},
                     Constructor.propTypes,
                     propTypes
                   );
                 },
-                statics: function(Constructor, statics) {
+                statics: function (Constructor, statics) {
                   mixStaticSpecIntoComponent(Constructor, statics);
                 },
-                autobind: function() {}
+                autobind: function () {},
               },
               IsMountedMixin = {
-                componentDidMount: function() {
+                componentDidMount: function () {
                   this.__isMounted = !0;
                 },
-                componentWillUnmount: function() {
+                componentWillUnmount: function () {
                   this.__isMounted = !1;
-                }
+                },
               },
               ReactClassMixin = {
-                replaceState: function(newState, callback) {
+                replaceState: function (newState, callback) {
                   this.updater.enqueueReplaceState(this, newState, callback);
                 },
-                isMounted: function() {
+                isMounted: function () {
                   return !!this.__isMounted;
-                }
+                },
               },
-              ReactClassComponent = function() {};
+              ReactClassComponent = function () {};
             return (
               _assign(
                 ReactClassComponent.prototype,
@@ -2753,10 +2749,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             MIXINS_KEY = "mixins";
           module.exports = factory;
         },
-        { 4: 4, 5: 5, 6: 6, 7: 7 }
+        { 4: 4, 5: 5, 6: 6, 7: 7 },
       ],
       2: [
-        function(require, module, exports) {
+        function (require, module, exports) {
           "use strict";
           var factory = require(1),
             ReactNoopUpdateQueue = new React.Component().updater;
@@ -2766,41 +2762,41 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             ReactNoopUpdateQueue
           );
         },
-        { 1: 1 }
+        { 1: 1 },
       ],
       3: [
-        function(require, module, exports) {
+        function (require, module, exports) {
           "use strict";
           function makeEmptyFunction(arg) {
-            return function() {
+            return function () {
               return arg;
             };
           }
-          var emptyFunction = function() {};
+          var emptyFunction = function () {};
           (emptyFunction.thatReturns = makeEmptyFunction),
             (emptyFunction.thatReturnsFalse = makeEmptyFunction(!1)),
             (emptyFunction.thatReturnsTrue = makeEmptyFunction(!0)),
             (emptyFunction.thatReturnsNull = makeEmptyFunction(null)),
-            (emptyFunction.thatReturnsThis = function() {
+            (emptyFunction.thatReturnsThis = function () {
               return this;
             }),
-            (emptyFunction.thatReturnsArgument = function(arg) {
+            (emptyFunction.thatReturnsArgument = function (arg) {
               return arg;
             }),
             (module.exports = emptyFunction);
         },
-        {}
+        {},
       ],
       4: [
-        function(require, module, exports) {
+        function (require, module, exports) {
           "use strict";
           var emptyObject = {};
           module.exports = emptyObject;
         },
-        {}
+        {},
       ],
       5: [
-        function(require, module, exports) {
+        function (require, module, exports) {
           "use strict";
           function invariant(condition, format, a, b, c, d, e, f) {
             if ((validateFormat(format), !condition)) {
@@ -2813,7 +2809,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 var args = [a, b, c, d, e, f],
                   argIndex = 0;
                 (error = new Error(
-                  format.replace(/%s/g, function() {
+                  format.replace(/%s/g, function () {
                     return args[argIndex++];
                   })
                 )),
@@ -2822,22 +2818,22 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               throw ((error.framesToPop = 1), error);
             }
           }
-          var validateFormat = function(format) {};
+          var validateFormat = function (format) {};
           module.exports = invariant;
         },
-        {}
+        {},
       ],
       6: [
-        function(require, module, exports) {
+        function (require, module, exports) {
           "use strict";
           var emptyFunction = require(3),
             warning = emptyFunction;
           module.exports = warning;
         },
-        { 3: 3 }
+        { 3: 3 },
       ],
       7: [
-        function(require, module, exports) {
+        function (require, module, exports) {
           "use strict";
           function toObject(val) {
             if (null === val || void 0 === val)
@@ -2849,7 +2845,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
           var getOwnPropertySymbols = Object.getOwnPropertySymbols,
             hasOwnProperty = Object.prototype.hasOwnProperty,
             propIsEnumerable = Object.prototype.propertyIsEnumerable;
-          module.exports = (function() {
+          module.exports = (function () {
             try {
               if (!Object.assign) return !1;
               var test1 = new String("abc");
@@ -2863,7 +2859,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               if (
                 "0123456789" !==
                 Object.getOwnPropertyNames(test2)
-                  .map(function(n) {
+                  .map(function (n) {
                     return test2[n];
                   })
                   .join("")
@@ -2871,7 +2867,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 return !1;
               var test3 = {};
               return (
-                "abcdefghijklmnopqrst".split("").forEach(function(letter) {
+                "abcdefghijklmnopqrst".split("").forEach(function (letter) {
                   test3[letter] = letter;
                 }),
                 "abcdefghijklmnopqrst" ===
@@ -2882,7 +2878,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             }
           })()
             ? Object.assign
-            : function(target, source) {
+            : function (target, source) {
                 for (
                   var from, symbols, to = toObject(target), s = 1;
                   s < arguments.length;
@@ -2901,8 +2897,8 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 return to;
               };
         },
-        {}
-      ]
+        {},
+      ],
     },
     {},
     [2]
@@ -2920,7 +2916,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
  * of patent rights can be found in the PATENTS file in the same directory.
  *
  */
-!(function(e) {
+!(function (e) {
   if ("object" == typeof exports && "undefined" != typeof module)
     module.exports = e(require("react"));
   else if ("function" == typeof define && define.amd) define(["react"], e);
@@ -2936,9 +2932,9 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
         : this),
       (t.ReactDOM = e(t.React));
   }
-})(function(e) {
-  return (function(t) {
-    return (function() {
+})(function (e) {
+  return (function (t) {
+    return (function () {
       return (function e(t, n, r) {
         function o(a, s) {
           if (!n[a]) {
@@ -2952,7 +2948,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
             var c = (n[a] = { exports: {} });
             t[a][0].call(
               c.exports,
-              function(e) {
+              function (e) {
                 var n = t[a][1][e];
                 return o(n || e);
               },
@@ -2976,7 +2972,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
       })(
         {
           1: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = {
                 Properties: {
@@ -3027,31 +3023,31 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   "aria-rowcount": 0,
                   "aria-rowindex": 0,
                   "aria-rowspan": 0,
-                  "aria-setsize": 0
+                  "aria-setsize": 0,
                 },
                 DOMAttributeNames: {},
-                DOMPropertyNames: {}
+                DOMPropertyNames: {},
               };
               t.exports = r;
             },
-            {}
+            {},
           ],
           2: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(33),
                 o = e(131),
                 i = {
-                  focusDOMComponent: function() {
+                  focusDOMComponent: function () {
                     o(r.getNodeFromInstance(this));
-                  }
+                  },
                 };
               t.exports = i;
             },
-            { 131: 131, 33: 33 }
+            { 131: 131, 33: 33 },
           ],
           3: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return (
@@ -3169,7 +3165,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   f.canUseDOM &&
                   "TextEvent" in window &&
                   !C &&
-                  !(function() {
+                  !(function () {
                     var e = window.opera;
                     return (
                       "object" == typeof e &&
@@ -3184,19 +3180,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   beforeInput: {
                     phasedRegistrationNames: {
                       bubbled: "onBeforeInput",
-                      captured: "onBeforeInputCapture"
+                      captured: "onBeforeInputCapture",
                     },
                     dependencies: [
                       "topCompositionEnd",
                       "topKeyPress",
                       "topTextInput",
-                      "topPaste"
-                    ]
+                      "topPaste",
+                    ],
                   },
                   compositionEnd: {
                     phasedRegistrationNames: {
                       bubbled: "onCompositionEnd",
-                      captured: "onCompositionEndCapture"
+                      captured: "onCompositionEndCapture",
                     },
                     dependencies: [
                       "topBlur",
@@ -3204,13 +3200,13 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       "topKeyDown",
                       "topKeyPress",
                       "topKeyUp",
-                      "topMouseDown"
-                    ]
+                      "topMouseDown",
+                    ],
                   },
                   compositionStart: {
                     phasedRegistrationNames: {
                       bubbled: "onCompositionStart",
-                      captured: "onCompositionStartCapture"
+                      captured: "onCompositionStartCapture",
                     },
                     dependencies: [
                       "topBlur",
@@ -3218,13 +3214,13 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       "topKeyDown",
                       "topKeyPress",
                       "topKeyUp",
-                      "topMouseDown"
-                    ]
+                      "topMouseDown",
+                    ],
                   },
                   compositionUpdate: {
                     phasedRegistrationNames: {
                       bubbled: "onCompositionUpdate",
-                      captured: "onCompositionUpdateCapture"
+                      captured: "onCompositionUpdateCapture",
                     },
                     dependencies: [
                       "topBlur",
@@ -3232,24 +3228,24 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       "topKeyDown",
                       "topKeyPress",
                       "topKeyUp",
-                      "topMouseDown"
-                    ]
-                  }
+                      "topMouseDown",
+                    ],
+                  },
                 },
                 k = !1,
                 P = null,
                 S = {
                   eventTypes: T,
-                  extractEvents: function(e, t, n, r) {
+                  extractEvents: function (e, t, n, r) {
                     return [u(e, t, n, r), p(e, t, n, r)];
-                  }
+                  },
                 };
               t.exports = S;
             },
-            { 123: 123, 19: 19, 20: 20, 78: 78, 82: 82 }
+            { 123: 123, 19: 19, 20: 20, 78: 78, 82: 82 },
           ],
           4: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 return e + t.charAt(0).toUpperCase() + t.substring(1);
@@ -3288,11 +3284,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   strokeDashoffset: !0,
                   strokeMiterlimit: !0,
                   strokeOpacity: !0,
-                  strokeWidth: !0
+                  strokeWidth: !0,
                 },
                 i = ["Webkit", "ms", "Moz", "O"];
-              Object.keys(o).forEach(function(e) {
-                i.forEach(function(t) {
+              Object.keys(o).forEach(function (e) {
+                i.forEach(function (t) {
                   o[r(t, e)] = o[e];
                 });
               });
@@ -3303,32 +3299,32 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     backgroundImage: !0,
                     backgroundPositionX: !0,
                     backgroundPositionY: !0,
-                    backgroundRepeat: !0
+                    backgroundRepeat: !0,
                   },
                   backgroundPosition: {
                     backgroundPositionX: !0,
-                    backgroundPositionY: !0
+                    backgroundPositionY: !0,
                   },
                   border: { borderWidth: !0, borderStyle: !0, borderColor: !0 },
                   borderBottom: {
                     borderBottomWidth: !0,
                     borderBottomStyle: !0,
-                    borderBottomColor: !0
+                    borderBottomColor: !0,
                   },
                   borderLeft: {
                     borderLeftWidth: !0,
                     borderLeftStyle: !0,
-                    borderLeftColor: !0
+                    borderLeftColor: !0,
                   },
                   borderRight: {
                     borderRightWidth: !0,
                     borderRightStyle: !0,
-                    borderRightColor: !0
+                    borderRightColor: !0,
                   },
                   borderTop: {
                     borderTopWidth: !0,
                     borderTopStyle: !0,
-                    borderTopColor: !0
+                    borderTopColor: !0,
                   },
                   font: {
                     fontStyle: !0,
@@ -3336,21 +3332,21 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     fontWeight: !0,
                     fontSize: !0,
                     lineHeight: !0,
-                    fontFamily: !0
+                    fontFamily: !0,
                   },
                   outline: {
                     outlineWidth: !0,
                     outlineStyle: !0,
-                    outlineColor: !0
-                  }
+                    outlineColor: !0,
+                  },
                 },
                 s = { isUnitlessNumber: o, shorthandPropertyExpansions: a };
               t.exports = s;
             },
-            {}
+            {},
           ],
           5: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(4),
                 o = e(123),
@@ -3359,7 +3355,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 s = e(140),
                 u =
                   (e(142),
-                  s(function(e) {
+                  s(function (e) {
                     return a(e);
                   })),
                 l = !1,
@@ -3375,7 +3371,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   (c = "styleFloat");
               }
               var d = {
-                createMarkupForStyles: function(e, t) {
+                createMarkupForStyles: function (e, t) {
                   var n = "";
                   for (var r in e)
                     if (e.hasOwnProperty(r)) {
@@ -3384,7 +3380,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                   return n || null;
                 },
-                setValueForStyles: function(e, t, n) {
+                setValueForStyles: function (e, t, n) {
                   var o = e.style;
                   for (var a in t)
                     if (t.hasOwnProperty(a)) {
@@ -3397,7 +3393,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         else o[a] = "";
                       }
                     }
-                }
+                },
               };
               t.exports = d;
             },
@@ -3409,11 +3405,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               142: 142,
               4: 4,
               58: 58,
-              94: 94
-            }
+              94: 94,
+            },
           ],
           6: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 if (!(e instanceof t))
@@ -3423,7 +3419,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = e(24),
                 a =
                   (e(137),
-                  (function() {
+                  (function () {
                     function e(t) {
                       r(this, e),
                         (this._callbacks = null),
@@ -3431,13 +3427,13 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         (this._arg = t);
                     }
                     return (
-                      (e.prototype.enqueue = function(e, t) {
+                      (e.prototype.enqueue = function (e, t) {
                         (this._callbacks = this._callbacks || []),
                           this._callbacks.push(e),
                           (this._contexts = this._contexts || []),
                           this._contexts.push(t);
                       }),
-                      (e.prototype.notifyAll = function() {
+                      (e.prototype.notifyAll = function () {
                         var e = this._callbacks,
                           t = this._contexts,
                           n = this._arg;
@@ -3449,19 +3445,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           (e.length = 0), (t.length = 0);
                         }
                       }),
-                      (e.prototype.checkpoint = function() {
+                      (e.prototype.checkpoint = function () {
                         return this._callbacks ? this._callbacks.length : 0;
                       }),
-                      (e.prototype.rollback = function(e) {
+                      (e.prototype.rollback = function (e) {
                         this._callbacks &&
                           this._contexts &&
                           ((this._callbacks.length = e),
                           (this._contexts.length = e));
                       }),
-                      (e.prototype.reset = function() {
+                      (e.prototype.reset = function () {
                         (this._callbacks = null), (this._contexts = null);
                       }),
-                      (e.prototype.destructor = function() {
+                      (e.prototype.destructor = function () {
                         this.reset();
                       }),
                       e
@@ -3469,10 +3465,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   })());
               t.exports = i.addPoolingTo(a);
             },
-            { 112: 112, 137: 137, 24: 24 }
+            { 112: 112, 137: 137, 24: 24 },
           ],
           7: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = e.nodeName && e.nodeName.toLowerCase();
@@ -3575,7 +3571,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   change: {
                     phasedRegistrationNames: {
                       bubbled: "onChange",
-                      captured: "onChangeCapture"
+                      captured: "onChangeCapture",
                     },
                     dependencies: [
                       "topBlur",
@@ -3585,9 +3581,9 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       "topInput",
                       "topKeyDown",
                       "topKeyUp",
-                      "topSelectionChange"
-                    ]
-                  }
+                      "topSelectionChange",
+                    ],
+                  },
                 },
                 N = null,
                 M = null,
@@ -3604,16 +3600,16 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   k("input") &&
                   (!document.documentMode || document.documentMode > 11));
               var D = {
-                  get: function() {
+                  get: function () {
                     return O.get.call(this);
                   },
-                  set: function(e) {
+                  set: function (e) {
                     (I = "" + e), O.set.call(this, e);
-                  }
+                  },
                 },
                 L = {
                   eventTypes: S,
-                  extractEvents: function(e, t, n, o) {
+                  extractEvents: function (e, t, n, o) {
                     var i,
                       a,
                       s = t ? E.getNodeFromInstance(t) : window;
@@ -3640,7 +3636,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       }
                     }
                     a && a(e, s, t), "topBlur" === e && y(t, s);
-                  }
+                  },
                 };
               t.exports = L;
             },
@@ -3653,11 +3649,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               19: 19,
               33: 33,
               71: 71,
-              80: 80
-            }
+              80: 80,
+            },
           ],
           8: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 return (
@@ -3706,14 +3702,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 d = (e(33), e(58), e(93)),
                 f = e(114),
                 h = e(115),
-                m = d(function(e, t, n) {
+                m = d(function (e, t, n) {
                   e.insertBefore(t, n);
                 }),
                 v = p.dangerouslyReplaceNodeWithMarkup,
                 g = {
                   dangerouslyReplaceNodeWithMarkup: v,
                   replaceDelimitedText: l,
-                  processUpdates: function(e, t) {
+                  processUpdates: function (e, t) {
                     for (var n = 0; n < t.length; n++) {
                       var s = t[n];
                       switch (s.type) {
@@ -3733,14 +3729,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           a(e, s.fromNode);
                       }
                     }
-                  }
+                  },
                 };
               t.exports = g;
             },
-            { 114: 114, 115: 115, 13: 13, 33: 33, 58: 58, 9: 9, 93: 93 }
+            { 114: 114, 115: 115, 13: 13, 33: 33, 58: 58, 9: 9, 93: 93 },
           ],
           9: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 if (h) {
@@ -3775,7 +3771,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   children: [],
                   html: null,
                   text: null,
-                  toString: u
+                  toString: u,
                 };
               }
               var c = e(10),
@@ -3788,7 +3784,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   ("undefined" != typeof navigator &&
                     "string" == typeof navigator.userAgent &&
                     /\bEdge\/\d/.test(navigator.userAgent)),
-                m = d(function(e, t, n) {
+                m = d(function (e, t, n) {
                   11 === t.node.nodeType ||
                   (1 === t.node.nodeType &&
                     "object" === t.node.nodeName.toLowerCase() &&
@@ -3804,22 +3800,22 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 (l.queueText = s),
                 (t.exports = l);
             },
-            { 10: 10, 114: 114, 115: 115, 93: 93 }
+            { 10: 10, 114: 114, 115: 115, 93: 93 },
           ],
           10: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = {
                 html: "http://www.w3.org/1999/xhtml",
                 mathml: "http://www.w3.org/1998/Math/MathML",
-                svg: "http://www.w3.org/2000/svg"
+                svg: "http://www.w3.org/2000/svg",
               };
               t.exports = r;
             },
-            {}
+            {},
           ],
           11: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 return (e & t) === t;
@@ -3833,7 +3829,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     HAS_NUMERIC_VALUE: 8,
                     HAS_POSITIVE_NUMERIC_VALUE: 24,
                     HAS_OVERLOADED_BOOLEAN_VALUE: 32,
-                    injectDOMPropertyConfig: function(e) {
+                    injectDOMPropertyConfig: function (e) {
                       var t = i,
                         n = e.Properties || {},
                         a = e.DOMAttributeNamespaces || {},
@@ -3861,7 +3857,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                             hasOverloadedBooleanValue: r(
                               f,
                               t.HAS_OVERLOADED_BOOLEAN_VALUE
-                            )
+                            ),
                           };
                         if (
                           (h.hasBooleanValue +
@@ -3878,7 +3874,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           c.hasOwnProperty(p) && (h.mutationMethod = c[p]),
                           (s.properties[p] = h);
                       }
-                    }
+                    },
                   }),
                 a =
                   ":A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD",
@@ -3891,7 +3887,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   properties: {},
                   getPossibleStandardName: null,
                   _isCustomAttributeFunctions: [],
-                  isCustomAttribute: function(e) {
+                  isCustomAttribute: function (e) {
                     for (
                       var t = 0;
                       t < s._isCustomAttributeFunctions.length;
@@ -3900,14 +3896,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       if ((0, s._isCustomAttributeFunctions[t])(e)) return !0;
                     return !1;
                   },
-                  injection: i
+                  injection: i,
                 };
               t.exports = s;
             },
-            { 112: 112, 137: 137 }
+            { 112: 112, 137: 137 },
           ],
           12: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return (
@@ -3939,19 +3935,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 u = {},
                 l = {},
                 c = {
-                  createMarkupForID: function(e) {
+                  createMarkupForID: function (e) {
                     return i.ID_ATTRIBUTE_NAME + "=" + a(e);
                   },
-                  setAttributeForID: function(e, t) {
+                  setAttributeForID: function (e, t) {
                     e.setAttribute(i.ID_ATTRIBUTE_NAME, t);
                   },
-                  createMarkupForRoot: function() {
+                  createMarkupForRoot: function () {
                     return i.ROOT_ATTRIBUTE_NAME + '=""';
                   },
-                  setAttributeForRoot: function(e) {
+                  setAttributeForRoot: function (e) {
                     e.setAttribute(i.ROOT_ATTRIBUTE_NAME, "");
                   },
-                  createMarkupForProperty: function(e, t) {
+                  createMarkupForProperty: function (e, t) {
                     var n = i.properties.hasOwnProperty(e)
                       ? i.properties[e]
                       : null;
@@ -3969,10 +3965,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         : e + "=" + a(t)
                       : null;
                   },
-                  createMarkupForCustomAttribute: function(e, t) {
+                  createMarkupForCustomAttribute: function (e, t) {
                     return r(e) && null != t ? e + "=" + a(t) : "";
                   },
-                  setValueForProperty: function(e, t, n) {
+                  setValueForProperty: function (e, t, n) {
                     var r = i.properties.hasOwnProperty(t)
                       ? i.properties[t]
                       : null;
@@ -3997,16 +3993,16 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     } else if (i.isCustomAttribute(t))
                       return void c.setValueForAttribute(e, t, n);
                   },
-                  setValueForAttribute: function(e, t, n) {
+                  setValueForAttribute: function (e, t, n) {
                     r(t) &&
                       (null == n
                         ? e.removeAttribute(t)
                         : e.setAttribute(t, "" + n));
                   },
-                  deleteValueForAttribute: function(e, t) {
+                  deleteValueForAttribute: function (e, t) {
                     e.removeAttribute(t);
                   },
-                  deleteValueForProperty: function(e, t) {
+                  deleteValueForProperty: function (e, t) {
                     var n = i.properties.hasOwnProperty(t)
                       ? i.properties[t]
                       : null;
@@ -4018,14 +4014,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         n.hasBooleanValue ? (e[o] = !1) : (e[o] = "");
                       } else e.removeAttribute(n.attributeName);
                     } else i.isCustomAttribute(t) && e.removeAttribute(t);
-                  }
+                  },
                 };
               t.exports = c;
             },
-            { 11: 11, 111: 111, 142: 142, 33: 33, 58: 58 }
+            { 11: 11, 111: 111, 142: 142, 33: 33, 58: 58 },
           ],
           13: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(112),
                 o = e(9),
@@ -4035,7 +4031,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 u =
                   (e(137),
                   {
-                    dangerouslyReplaceNodeWithMarkup: function(e, t) {
+                    dangerouslyReplaceNodeWithMarkup: function (e, t) {
                       if (
                         (i.canUseDOM || r("56"),
                         t || r("57"),
@@ -4045,14 +4041,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         var n = a(t, s)[0];
                         e.parentNode.replaceChild(n, e);
                       } else o.replaceChildWithTree(e, t);
-                    }
+                    },
                   });
               t.exports = u;
             },
-            { 112: 112, 123: 123, 128: 128, 129: 129, 137: 137, 9: 9 }
+            { 112: 112, 123: 123, 128: 128, 129: 129, 137: 137, 9: 9 },
           ],
           14: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = [
                 "ResponderEventPlugin",
@@ -4061,14 +4057,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 "EnterLeaveEventPlugin",
                 "ChangeEventPlugin",
                 "SelectEventPlugin",
-                "BeforeInputEventPlugin"
+                "BeforeInputEventPlugin",
               ];
               t.exports = r;
             },
-            {}
+            {},
           ],
           15: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(19),
                 o = e(33),
@@ -4076,16 +4072,16 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 a = {
                   mouseEnter: {
                     registrationName: "onMouseEnter",
-                    dependencies: ["topMouseOut", "topMouseOver"]
+                    dependencies: ["topMouseOut", "topMouseOver"],
                   },
                   mouseLeave: {
                     registrationName: "onMouseLeave",
-                    dependencies: ["topMouseOut", "topMouseOver"]
-                  }
+                    dependencies: ["topMouseOut", "topMouseOver"],
+                  },
                 },
                 s = {
                   eventTypes: a,
-                  extractEvents: function(e, t, n, s) {
+                  extractEvents: function (e, t, n, s) {
                     if (
                       "topMouseOver" === e &&
                       (n.relatedTarget || n.fromElement)
@@ -4120,14 +4116,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       r.accumulateEnterLeaveDispatches(m, v, c, p),
                       [m, v]
                     );
-                  }
+                  },
                 };
               t.exports = s;
             },
-            { 19: 19, 33: 33, 84: 84 }
+            { 19: 19, 33: 33, 84: 84 },
           ],
           16: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return (
@@ -4162,46 +4158,46 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 c = e(98),
                 p = (e(137), {}),
                 d = null,
-                f = function(e, t) {
+                f = function (e, t) {
                   e &&
                     (s.executeDispatchesInOrder(e, t),
                     e.isPersistent() || e.constructor.release(e));
                 },
-                h = function(e) {
+                h = function (e) {
                   return f(e, !0);
                 },
-                m = function(e) {
+                m = function (e) {
                   return f(e, !1);
                 },
-                v = function(e) {
+                v = function (e) {
                   return "." + e._rootNodeID;
                 },
                 g = {
                   injection: {
                     injectEventPluginOrder: a.injectEventPluginOrder,
-                    injectEventPluginsByName: a.injectEventPluginsByName
+                    injectEventPluginsByName: a.injectEventPluginsByName,
                   },
-                  putListener: function(e, t, n) {
+                  putListener: function (e, t, n) {
                     "function" != typeof n && i("94", t, typeof n);
                     var r = v(e);
                     (p[t] || (p[t] = {}))[r] = n;
                     var o = a.registrationNameModules[t];
                     o && o.didPutListener && o.didPutListener(e, t, n);
                   },
-                  getListener: function(e, t) {
+                  getListener: function (e, t) {
                     var n = p[t];
                     if (o(t, e._currentElement.type, e._currentElement.props))
                       return null;
                     var r = v(e);
                     return n && n[r];
                   },
-                  deleteListener: function(e, t) {
+                  deleteListener: function (e, t) {
                     var n = a.registrationNameModules[t];
                     n && n.willDeleteListener && n.willDeleteListener(e, t);
                     var r = p[t];
                     r && delete r[v(e)];
                   },
-                  deleteAllListeners: function(e) {
+                  deleteAllListeners: function (e) {
                     var t = v(e);
                     for (var n in p)
                       if (p.hasOwnProperty(n) && p[n][t]) {
@@ -4210,7 +4206,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           delete p[n][t];
                       }
                   },
-                  extractEvents: function(e, t, n, r) {
+                  extractEvents: function (e, t, n, r) {
                     for (var o, i = a.plugins, s = 0; s < i.length; s++) {
                       var u = i[s];
                       if (u) {
@@ -4220,29 +4216,29 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     return o;
                   },
-                  enqueueEvents: function(e) {
+                  enqueueEvents: function (e) {
                     e && (d = l(d, e));
                   },
-                  processEventQueue: function(e) {
+                  processEventQueue: function (e) {
                     var t = d;
                     (d = null),
                       e ? c(t, h) : c(t, m),
                       d && i("95"),
                       u.rethrowCaughtError();
                   },
-                  __purge: function() {
+                  __purge: function () {
                     p = {};
                   },
-                  __getListenerBank: function() {
+                  __getListenerBank: function () {
                     return p;
-                  }
+                  },
                 };
               t.exports = g;
             },
-            { 112: 112, 137: 137, 17: 17, 18: 18, 50: 50, 91: 91, 98: 98 }
+            { 112: 112, 137: 137, 17: 17, 18: 18, 50: 50, 91: 91, 98: 98 },
           ],
           17: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r() {
                 if (s)
@@ -4287,10 +4283,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   registrationNameModules: {},
                   registrationNameDependencies: {},
                   possibleRegistrationNames: null,
-                  injectEventPluginOrder: function(e) {
+                  injectEventPluginOrder: function (e) {
                     s && a("101"), (s = Array.prototype.slice.call(e)), r();
                   },
-                  injectEventPluginsByName: function(e) {
+                  injectEventPluginsByName: function (e) {
                     var t = !1;
                     for (var n in e)
                       if (e.hasOwnProperty(n)) {
@@ -4300,7 +4296,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       }
                     t && r();
                   },
-                  getPluginModuleForEvent: function(e) {
+                  getPluginModuleForEvent: function (e) {
                     var t = e.dispatchConfig;
                     if (t.registrationName)
                       return (
@@ -4316,7 +4312,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     return null;
                   },
-                  _resetEventPlugins: function() {
+                  _resetEventPlugins: function () {
                     s = null;
                     for (var e in u) u.hasOwnProperty(e) && delete u[e];
                     l.plugins.length = 0;
@@ -4324,14 +4320,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     for (var n in t) t.hasOwnProperty(n) && delete t[n];
                     var r = l.registrationNameModules;
                     for (var o in r) r.hasOwnProperty(o) && delete r[o];
-                  }
+                  },
                 };
               t.exports = l;
             },
-            { 112: 112, 137: 137 }
+            { 112: 112, 137: 137 },
           ],
           18: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return (
@@ -4412,12 +4408,12 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   (e(137),
                   e(142),
                   {
-                    injectComponentTree: function(e) {
+                    injectComponentTree: function (e) {
                       d = e;
                     },
-                    injectTreeTraversal: function(e) {
+                    injectTreeTraversal: function (e) {
                       f = e;
-                    }
+                    },
                   }),
                 g = {
                   isEndish: r,
@@ -4427,35 +4423,35 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   executeDispatchesInOrder: s,
                   executeDispatchesInOrderStopAtTrue: l,
                   hasDispatches: p,
-                  getInstanceFromNode: function(e) {
+                  getInstanceFromNode: function (e) {
                     return d.getInstanceFromNode(e);
                   },
-                  getNodeFromInstance: function(e) {
+                  getNodeFromInstance: function (e) {
                     return d.getNodeFromInstance(e);
                   },
-                  isAncestor: function(e, t) {
+                  isAncestor: function (e, t) {
                     return f.isAncestor(e, t);
                   },
-                  getLowestCommonAncestor: function(e, t) {
+                  getLowestCommonAncestor: function (e, t) {
                     return f.getLowestCommonAncestor(e, t);
                   },
-                  getParentInstance: function(e) {
+                  getParentInstance: function (e) {
                     return f.getParentInstance(e);
                   },
-                  traverseTwoPhase: function(e, t, n) {
+                  traverseTwoPhase: function (e, t, n) {
                     return f.traverseTwoPhase(e, t, n);
                   },
-                  traverseEnterLeave: function(e, t, n, r, o) {
+                  traverseEnterLeave: function (e, t, n, r, o) {
                     return f.traverseEnterLeave(e, t, n, r, o);
                   },
-                  injection: v
+                  injection: v,
                 };
               t.exports = g;
             },
-            { 112: 112, 137: 137, 142: 142, 50: 50 }
+            { 112: 112, 137: 137, 142: 142, 50: 50 },
           ],
           19: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n) {
                 var r = t.dispatchConfig.phasedRegistrationNames[n];
@@ -4514,14 +4510,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   accumulateTwoPhaseDispatches: l,
                   accumulateTwoPhaseDispatchesSkipTarget: c,
                   accumulateDirectDispatches: d,
-                  accumulateEnterLeaveDispatches: p
+                  accumulateEnterLeaveDispatches: p,
                 };
               t.exports = y;
             },
-            { 142: 142, 16: 16, 18: 18, 91: 91, 98: 98 }
+            { 142: 142, 16: 16, 18: 18, 91: 91, 98: 98 },
           ],
           20: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 (this._root = e),
@@ -4532,17 +4528,17 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = e(24),
                 a = e(106);
               o(r.prototype, {
-                destructor: function() {
+                destructor: function () {
                   (this._root = null),
                     (this._startText = null),
                     (this._fallbackText = null);
                 },
-                getText: function() {
+                getText: function () {
                   return "value" in this._root
                     ? this._root.value
                     : this._root[a()];
                 },
-                getData: function() {
+                getData: function () {
                   if (this._fallbackText) return this._fallbackText;
                   var e,
                     t,
@@ -4557,15 +4553,15 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   return (
                     (this._fallbackText = o.slice(e, s)), this._fallbackText
                   );
-                }
+                },
               }),
                 i.addPoolingTo(r),
                 (t.exports = r);
             },
-            { 106: 106, 143: 143, 24: 24 }
+            { 106: 106, 143: 143, 24: 24 },
           ],
           21: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(11),
                 o = r.injection.MUST_USE_PROPERTY,
@@ -4722,17 +4718,17 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     itemRef: 0,
                     results: 0,
                     security: 0,
-                    unselectable: 0
+                    unselectable: 0,
                   },
                   DOMAttributeNames: {
                     acceptCharset: "accept-charset",
                     className: "class",
                     htmlFor: "for",
-                    httpEquiv: "http-equiv"
+                    httpEquiv: "http-equiv",
                   },
                   DOMPropertyNames: {},
                   DOMMutationMethods: {
-                    value: function(e, t) {
+                    value: function (e, t) {
                       if (null == t) return e.removeAttribute("value");
                       "number" !== e.type || !1 === e.hasAttribute("value")
                         ? e.setAttribute("value", "" + t)
@@ -4740,21 +4736,21 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           !e.validity.badInput &&
                           e.ownerDocument.activeElement !== e &&
                           e.setAttribute("value", "" + t);
-                    }
-                  }
+                    },
+                  },
                 };
               t.exports = l;
             },
-            { 11: 11 }
+            { 11: 11 },
           ],
           22: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = { "=": "=0", ":": "=2" };
                 return (
                   "$" +
-                  ("" + e).replace(/[=:]/g, function(e) {
+                  ("" + e).replace(/[=:]/g, function (e) {
                     return t[e];
                   })
                 );
@@ -4766,17 +4762,17 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   ("." === e[0] && "$" === e[1]
                     ? e.substring(2)
                     : e.substring(1))
-                ).replace(/(=0|=2)/g, function(e) {
+                ).replace(/(=0|=2)/g, function (e) {
                   return t[e];
                 });
               }
               var i = { escape: r, unescape: o };
               t.exports = i;
             },
-            {}
+            {},
           ],
           23: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 null != e.checkedLink && null != e.valueLink && s("87");
@@ -4809,10 +4805,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     hidden: !0,
                     radio: !0,
                     reset: !0,
-                    submit: !0
+                    submit: !0,
                   }),
                 f = {
-                  value: function(e, t, n) {
+                  value: function (e, t, n) {
                     return !e[t] ||
                       d[e.type] ||
                       e.onChange ||
@@ -4823,18 +4819,18 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           "You provided a `value` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultValue`. Otherwise, set either `onChange` or `readOnly`."
                         );
                   },
-                  checked: function(e, t, n) {
+                  checked: function (e, t, n) {
                     return !e[t] || e.onChange || e.readOnly || e.disabled
                       ? null
                       : new Error(
                           "You provided a `checked` prop to a form field without an `onChange` handler. This will render a read-only field. If the field should be mutable use `defaultChecked`. Otherwise, set either `onChange` or `readOnly`."
                         );
                   },
-                  onChange: p.func
+                  onChange: p.func,
                 },
                 h = {},
                 m = {
-                  checkPropTypes: function(e, t, n) {
+                  checkPropTypes: function (e, t, n) {
                     for (var r in f) {
                       if (f.hasOwnProperty(r))
                         var o = f[r](t, r, e, "prop", null, u);
@@ -4843,15 +4839,15 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         ((h[o.message] = !0), a(n));
                     }
                   },
-                  getValue: function(e) {
+                  getValue: function (e) {
                     return e.valueLink ? (o(e), e.valueLink.value) : e.value;
                   },
-                  getChecked: function(e) {
+                  getChecked: function (e) {
                     return e.checkedLink
                       ? (i(e), e.checkedLink.value)
                       : e.checked;
                   },
-                  executeOnChange: function(e, t) {
+                  executeOnChange: function (e, t) {
                     return e.valueLink
                       ? (o(e), e.valueLink.requestChange(t.target.value))
                       : e.checkedLink
@@ -4859,19 +4855,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       : e.onChange
                       ? e.onChange.call(void 0, t)
                       : void 0;
-                  }
+                  },
                 };
               t.exports = m;
             },
-            { 112: 112, 120: 120, 137: 137, 142: 142, 145: 145, 64: 64 }
+            { 112: 112, 120: 120, 137: 137, 142: 142, 145: 145, 64: 64 },
           ],
           24: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(112),
                 o =
                   (e(137),
-                  function(e) {
+                  function (e) {
                     var t = this;
                     if (t.instancePool.length) {
                       var n = t.instancePool.pop();
@@ -4879,7 +4875,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     return new t(e);
                   }),
-                i = function(e, t) {
+                i = function (e, t) {
                   var n = this;
                   if (n.instancePool.length) {
                     var r = n.instancePool.pop();
@@ -4887,7 +4883,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   }
                   return new n(e, t);
                 },
-                a = function(e, t, n) {
+                a = function (e, t, n) {
                   var r = this;
                   if (r.instancePool.length) {
                     var o = r.instancePool.pop();
@@ -4895,7 +4891,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   }
                   return new r(e, t, n);
                 },
-                s = function(e, t, n, r) {
+                s = function (e, t, n, r) {
                   var o = this;
                   if (o.instancePool.length) {
                     var i = o.instancePool.pop();
@@ -4903,7 +4899,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   }
                   return new o(e, t, n, r);
                 },
-                u = function(e) {
+                u = function (e) {
                   var t = this;
                   e instanceof t || r("25"),
                     e.destructor(),
@@ -4911,7 +4907,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       t.instancePool.push(e);
                 },
                 l = o,
-                c = function(e, t) {
+                c = function (e, t) {
                   var n = e;
                   return (
                     (n.instancePool = []),
@@ -4926,14 +4922,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   oneArgumentPooler: o,
                   twoArgumentPooler: i,
                   threeArgumentPooler: a,
-                  fourArgumentPooler: s
+                  fourArgumentPooler: s,
                 };
               t.exports = p;
             },
-            { 112: 112, 137: 137 }
+            { 112: 112, 137: 137 },
           ],
           25: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return (
@@ -5017,26 +5013,26 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   topTransitionEnd: l("transitionend") || "transitionend",
                   topVolumeChange: "volumechange",
                   topWaiting: "waiting",
-                  topWheel: "wheel"
+                  topWheel: "wheel",
                 },
                 m = "_reactListenersID" + String(Math.random()).slice(2),
                 v = i({}, s, {
                   ReactEventListener: null,
                   injection: {
-                    injectReactEventListener: function(e) {
+                    injectReactEventListener: function (e) {
                       e.setHandleTopLevel(v.handleTopLevel),
                         (v.ReactEventListener = e);
-                    }
+                    },
                   },
-                  setEnabled: function(e) {
+                  setEnabled: function (e) {
                     v.ReactEventListener && v.ReactEventListener.setEnabled(e);
                   },
-                  isEnabled: function() {
+                  isEnabled: function () {
                     return !(
                       !v.ReactEventListener || !v.ReactEventListener.isEnabled()
                     );
                   },
-                  listenTo: function(e, t) {
+                  listenTo: function (e, t) {
                     for (
                       var n = t,
                         o = r(n),
@@ -5107,33 +5103,33 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         (o[u] = !0));
                     }
                   },
-                  trapBubbledEvent: function(e, t, n) {
+                  trapBubbledEvent: function (e, t, n) {
                     return v.ReactEventListener.trapBubbledEvent(e, t, n);
                   },
-                  trapCapturedEvent: function(e, t, n) {
+                  trapCapturedEvent: function (e, t, n) {
                     return v.ReactEventListener.trapCapturedEvent(e, t, n);
                   },
-                  supportsEventPageXY: function() {
+                  supportsEventPageXY: function () {
                     if (!document.createEvent) return !1;
                     var e = document.createEvent("MouseEvent");
                     return null != e && "pageX" in e;
                   },
-                  ensureScrollValueMonitoring: function() {
+                  ensureScrollValueMonitoring: function () {
                     if (
                       (void 0 === o && (o = v.supportsEventPageXY()), !o && !d)
                     ) {
                       var e = u.refreshScrollValues;
                       v.ReactEventListener.monitorScrollValue(e), (d = !0);
                     }
-                  }
+                  },
                 });
               t.exports = v;
             },
-            { 107: 107, 109: 109, 143: 143, 17: 17, 51: 51, 90: 90 }
+            { 107: 107, 109: 109, 143: 143, 17: 17, 51: 51, 90: 90 },
           ],
           26: [
-            function(e, t, n) {
-              (function(n) {
+            function (e, t, n) {
+              (function (n) {
                 "use strict";
                 function r(e, t, n, r) {
                   var o = void 0 === e[n];
@@ -5146,12 +5142,12 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 e(142);
                 void 0 !== n && n.env;
                 var u = {
-                  instantiateChildren: function(e, t, n, o) {
+                  instantiateChildren: function (e, t, n, o) {
                     if (null == e) return null;
                     var i = {};
                     return s(e, r, i), i;
                   },
-                  updateChildren: function(e, t, n, r, s, u, l, c, p) {
+                  updateChildren: function (e, t, n, r, s, u, l, c, p) {
                     if (t || e) {
                       var d, f;
                       for (d in t)
@@ -5179,34 +5175,34 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           o.unmountComponent(f, !1));
                     }
                   },
-                  unmountChildren: function(e, t) {
+                  unmountChildren: function (e, t) {
                     for (var n in e)
                       if (e.hasOwnProperty(n)) {
                         var r = e[n];
                         o.unmountComponent(r, t);
                       }
-                  }
+                  },
                 };
                 t.exports = u;
               }.call(this, void 0));
             },
-            { 108: 108, 116: 116, 117: 117, 142: 142, 22: 22, 66: 66 }
+            { 108: 108, 116: 116, 117: 117, 142: 142, 22: 22, 66: 66 },
           ],
           27: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(8),
                 o = e(37),
                 i = {
                   processChildrenUpdates: o.dangerouslyProcessChildrenUpdates,
-                  replaceNodeWithMarkup: r.dangerouslyReplaceNodeWithMarkup
+                  replaceNodeWithMarkup: r.dangerouslyReplaceNodeWithMarkup,
                 };
               t.exports = i;
             },
-            { 37: 37, 8: 8 }
+            { 37: 37, 8: 8 },
           ],
           28: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(112),
                 o = (e(137), !1),
@@ -5214,20 +5210,20 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   replaceNodeWithMarkup: null,
                   processChildrenUpdates: null,
                   injection: {
-                    injectEnvironment: function(e) {
+                    injectEnvironment: function (e) {
                       o && r("104"),
                         (i.replaceNodeWithMarkup = e.replaceNodeWithMarkup),
                         (i.processChildrenUpdates = e.processChildrenUpdates),
                         (o = !0);
-                    }
-                  }
+                    },
+                  },
                 };
               t.exports = i;
             },
-            { 112: 112, 137: 137 }
+            { 112: 112, 137: 137 },
           ],
           29: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {}
               function o(e) {
@@ -5251,14 +5247,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 y =
                   (e(142),
                   { ImpureClass: 0, PureClass: 1, StatelessFunctional: 2 });
-              r.prototype.render = function() {
+              r.prototype.render = function () {
                 var e = d.get(this)._currentElement.type,
                   t = e(this.props, this.context, this.updater);
                 return t;
               };
               var _ = 1,
                 C = {
-                  construct: function(e) {
+                  construct: function (e) {
                     (this._currentElement = e),
                       (this._rootNodeID = 0),
                       (this._compositeType = null),
@@ -5278,7 +5274,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       (this._pendingCallbacks = null),
                       (this._calledComponentWillUnmount = !1);
                   },
-                  mountComponent: function(e, t, n, s) {
+                  mountComponent: function (e, t, n, s) {
                     (this._context = s),
                       (this._mountOrder = _++),
                       (this._hostParent = t),
@@ -5330,14 +5326,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       b
                     );
                   },
-                  _constructComponent: function(e, t, n, r) {
+                  _constructComponent: function (e, t, n, r) {
                     return this._constructComponentWithoutOwner(e, t, n, r);
                   },
-                  _constructComponentWithoutOwner: function(e, t, n, r) {
+                  _constructComponentWithoutOwner: function (e, t, n, r) {
                     var o = this._currentElement.type;
                     return e ? new o(t, n, r) : o(t, n, r);
                   },
-                  performInitialMountWithErrorHandling: function(
+                  performInitialMountWithErrorHandling: function (
                     e,
                     t,
                     n,
@@ -5363,7 +5359,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     return i;
                   },
-                  performInitialMount: function(e, t, n, r, o) {
+                  performInitialMount: function (e, t, n, r, o) {
                     var i = this._instance;
                     i.componentWillMount &&
                       (i.componentWillMount(),
@@ -5388,10 +5384,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       )
                     );
                   },
-                  getHostNode: function() {
+                  getHostNode: function () {
                     return h.getHostNode(this._renderedComponent);
                   },
-                  unmountComponent: function(e) {
+                  unmountComponent: function (e) {
                     if (this._renderedComponent) {
                       var t = this._instance;
                       if (
@@ -5421,7 +5417,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         d.remove(t);
                     }
                   },
-                  _maskContext: function(e) {
+                  _maskContext: function (e) {
                     var t = this._currentElement.type,
                       n = t.contextTypes;
                     if (!n) return m;
@@ -5429,10 +5425,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     for (var o in n) r[o] = e[o];
                     return r;
                   },
-                  _processContext: function(e) {
+                  _processContext: function (e) {
                     return this._maskContext(e);
                   },
-                  _processChildContext: function(e) {
+                  _processChildContext: function (e) {
                     var t,
                       n = this._currentElement.type,
                       r = this._instance;
@@ -5450,14 +5446,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     return e;
                   },
-                  _checkContextTypes: function(e, t, n) {},
-                  receiveComponent: function(e, t, n) {
+                  _checkContextTypes: function (e, t, n) {},
+                  receiveComponent: function (e, t, n) {
                     var r = this._currentElement,
                       o = this._context;
                     (this._pendingElement = null),
                       this.updateComponent(t, r, e, o, n);
                   },
-                  performUpdateIfNecessary: function(e) {
+                  performUpdateIfNecessary: function (e) {
                     null != this._pendingElement
                       ? h.receiveComponent(
                           this,
@@ -5476,7 +5472,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         )
                       : (this._updateBatchNumber = null);
                   },
-                  updateComponent: function(e, t, n, r, o) {
+                  updateComponent: function (e, t, n, r, o) {
                     var i = this._instance;
                     null == i &&
                       a("136", this.getName() || "ReactCompositeComponent");
@@ -5508,7 +5504,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           (i.state = p),
                           (i.context = s));
                   },
-                  _processPendingState: function(e, t) {
+                  _processPendingState: function (e, t) {
                     var n = this._instance,
                       r = this._pendingStateQueue,
                       o = this._pendingReplaceState;
@@ -5529,7 +5525,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     return i;
                   },
-                  _performComponentUpdate: function(e, t, n, r, o, i) {
+                  _performComponentUpdate: function (e, t, n, r, o, i) {
                     var a,
                       s,
                       u,
@@ -5548,7 +5544,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           .getReactMountReady()
                           .enqueue(l.componentDidUpdate.bind(l, a, s, u), l);
                   },
-                  _updateRenderedComponent: function(e, t) {
+                  _updateRenderedComponent: function (e, t) {
                     var n = this._renderedComponent,
                       r = n._currentElement,
                       o = this._renderValidatedComponent();
@@ -5572,13 +5568,13 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       this._replaceNodeWithMarkup(i, u, n);
                     }
                   },
-                  _replaceNodeWithMarkup: function(e, t, n) {
+                  _replaceNodeWithMarkup: function (e, t, n) {
                     l.replaceNodeWithMarkup(e, t, n);
                   },
-                  _renderValidatedComponentWithoutOwnerOrContext: function() {
+                  _renderValidatedComponentWithoutOwnerOrContext: function () {
                     return this._instance.render();
                   },
-                  _renderValidatedComponent: function() {
+                  _renderValidatedComponent: function () {
                     var e;
                     if (this._compositeType !== y.StatelessFunctional) {
                       c.current = this;
@@ -5597,16 +5593,16 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       e
                     );
                   },
-                  attachRef: function(e, t) {
+                  attachRef: function (e, t) {
                     var n = this.getPublicInstance();
                     null == n && a("110");
                     var r = t.getPublicInstance();
                     (n.refs === m ? (n.refs = {}) : n.refs)[e] = r;
                   },
-                  detachRef: function(e) {
+                  detachRef: function (e) {
                     delete this.getPublicInstance().refs[e];
                   },
-                  getName: function() {
+                  getName: function () {
                     var e = this._currentElement.type,
                       t = this._instance && this._instance.constructor;
                     return (
@@ -5617,13 +5613,13 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       null
                     );
                   },
-                  getPublicInstance: function() {
+                  getPublicInstance: function () {
                     var e = this._instance;
                     return this._compositeType === y.StatelessFunctional
                       ? null
                       : e;
                   },
-                  _instantiateReactComponent: null
+                  _instantiateReactComponent: null,
                 };
               t.exports = C;
             },
@@ -5642,11 +5638,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               57: 57,
               58: 58,
               62: 62,
-              66: 66
-            }
+              66: 66,
+            },
           ],
           30: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(33),
                 o = e(47),
@@ -5665,22 +5661,22 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 unmountComponentAtNode: i.unmountComponentAtNode,
                 version: u,
                 unstable_batchedUpdates: s.batchedUpdates,
-                unstable_renderSubtreeIntoContainer: p
+                unstable_renderSubtreeIntoContainer: p,
               };
               "undefined" != typeof __REACT_DEVTOOLS_GLOBAL_HOOK__ &&
                 "function" == typeof __REACT_DEVTOOLS_GLOBAL_HOOK__.inject &&
                 __REACT_DEVTOOLS_GLOBAL_HOOK__.inject({
                   ComponentTree: {
                     getClosestInstanceFromNode: r.getClosestInstanceFromNode,
-                    getNodeFromInstance: function(e) {
+                    getNodeFromInstance: function (e) {
                       return (
                         e._renderedComponent && (e = c(e)),
                         e ? r.getNodeFromInstance(e) : null
                       );
-                    }
+                    },
                   },
                   Mount: i,
-                  Reconciler: a
+                  Reconciler: a,
                 });
               t.exports = d;
             },
@@ -5694,11 +5690,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               66: 66,
               71: 71,
               72: 72,
-              96: 96
-            }
+              96: 96,
+            },
           ],
           31: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 if (e) {
@@ -5741,7 +5737,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     r.getReactMountReady().enqueue(a, {
                       inst: e,
                       registrationName: t,
-                      listener: n
+                      listener: n,
                     });
                 }
               }
@@ -5769,7 +5765,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   case "iframe":
                   case "object":
                     e._wrapperState.listeners = [
-                      T.trapBubbledEvent("topLoad", "load", t)
+                      T.trapBubbledEvent("topLoad", "load", t),
                     ];
                     break;
                   case "video":
@@ -5783,26 +5779,26 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     break;
                   case "source":
                     e._wrapperState.listeners = [
-                      T.trapBubbledEvent("topError", "error", t)
+                      T.trapBubbledEvent("topError", "error", t),
                     ];
                     break;
                   case "img":
                     e._wrapperState.listeners = [
                       T.trapBubbledEvent("topError", "error", t),
-                      T.trapBubbledEvent("topLoad", "load", t)
+                      T.trapBubbledEvent("topLoad", "load", t),
                     ];
                     break;
                   case "form":
                     e._wrapperState.listeners = [
                       T.trapBubbledEvent("topReset", "reset", t),
-                      T.trapBubbledEvent("topSubmit", "submit", t)
+                      T.trapBubbledEvent("topSubmit", "submit", t),
                     ];
                     break;
                   case "input":
                   case "select":
                   case "textarea":
                     e._wrapperState.listeners = [
-                      T.trapBubbledEvent("topInvalid", "invalid", t)
+                      T.trapBubbledEvent("topInvalid", "invalid", t),
                     ];
                 }
               }
@@ -5863,7 +5859,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 W = {
                   children: null,
                   dangerouslySetInnerHTML: null,
-                  suppressContentEditableWarning: null
+                  suppressContentEditableWarning: null,
                 },
                 H = 11,
                 q = {
@@ -5889,7 +5885,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   topSuspend: "suspend",
                   topTimeUpdate: "timeupdate",
                   topVolumeChange: "volumechange",
-                  topWaiting: "waiting"
+                  topWaiting: "waiting",
                 },
                 K = {
                   area: !0,
@@ -5906,7 +5902,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   param: !0,
                   source: !0,
                   track: !0,
-                  wbr: !0
+                  wbr: !0,
                 },
                 z = { listing: !0, pre: !0, textarea: !0 },
                 Y = v({ menuitem: !0 }, K),
@@ -5916,7 +5912,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 $ = 1;
               (h.displayName = "ReactDOMComponent"),
                 (h.Mixin = {
-                  mountComponent: function(e, t, n, r) {
+                  mountComponent: function (e, t, n, r) {
                     (this._rootNodeID = $++),
                       (this._domID = n._idCounter++),
                       (this._hostParent = t),
@@ -6026,7 +6022,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     return d;
                   },
-                  _createOpenTagMarkupAndPutListeners: function(e, t) {
+                  _createOpenTagMarkupAndPutListeners: function (e, t) {
                     var n = "<" + this._currentElement.type;
                     for (var r in t)
                       if (t.hasOwnProperty(r)) {
@@ -6052,7 +6048,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           (n += " " + E.createMarkupForRoot()),
                         (n += " " + E.createMarkupForID(this._domID)));
                   },
-                  _createContentMarkup: function(e, t, n) {
+                  _createContentMarkup: function (e, t, n) {
                     var r = "",
                       o = t.dangerouslySetInnerHTML;
                     if (null != o) null != o.__html && (r = o.__html);
@@ -6067,7 +6063,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     return z[this._tag] && "\n" === r.charAt(0) ? "\n" + r : r;
                   },
-                  _createInitialChildren: function(e, t, n, r) {
+                  _createInitialChildren: function (e, t, n, r) {
                     var o = t.dangerouslySetInnerHTML;
                     if (null != o) null != o.__html && _.queueHTML(r, o.__html);
                     else {
@@ -6083,12 +6079,12 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           _.queueChild(r, s[u]);
                     }
                   },
-                  receiveComponent: function(e, t, n) {
+                  receiveComponent: function (e, t, n) {
                     var r = this._currentElement;
                     (this._currentElement = e),
                       this.updateComponent(t, r, e, n);
                   },
-                  updateComponent: function(e, t, n, r) {
+                  updateComponent: function (e, t, n, r) {
                     var i = t.props,
                       a = this._currentElement.props;
                     switch (this._tag) {
@@ -6124,7 +6120,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         e.getReactMountReady().enqueue(p, this);
                     }
                   },
-                  _updateDOMProperties: function(e, t, n) {
+                  _updateDOMProperties: function (e, t, n) {
                     var r, o, a;
                     for (r in e)
                       if (
@@ -6188,7 +6184,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     a && y.setValueForStyles(U(this), a, this);
                   },
-                  _updateDOMChildren: function(e, t, n, r) {
+                  _updateDOMChildren: function (e, t, n, r) {
                     var o = V[typeof e.children] ? e.children : null,
                       i = V[typeof t.children] ? t.children : null,
                       a =
@@ -6210,10 +6206,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         ? a !== s && this.updateMarkup("" + s)
                         : null != l && this.updateChildren(l, n, r);
                   },
-                  getHostNode: function() {
+                  getHostNode: function () {
                     return U(this);
                   },
-                  unmountComponent: function(e) {
+                  unmountComponent: function (e) {
                     switch (this._tag) {
                       case "audio":
                       case "form":
@@ -6238,9 +6234,9 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       (this._domID = 0),
                       (this._wrapperState = null);
                   },
-                  getPublicInstance: function() {
+                  getPublicInstance: function () {
                     return U(this);
-                  }
+                  },
                 }),
                 v(h.prototype, h.Mixin, O.Mixin),
                 (t.exports = h);
@@ -6272,19 +6268,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               61: 61,
               68: 68,
               9: 9,
-              95: 95
-            }
+              95: 95,
+            },
           ],
           32: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = { hasCachedChildNodes: 1 };
               t.exports = r;
             },
-            {}
+            {},
           ],
           33: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 return (
@@ -6356,23 +6352,21 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 m = f,
                 v =
                   "__reactInternalInstance$" +
-                  Math.random()
-                    .toString(36)
-                    .slice(2),
+                  Math.random().toString(36).slice(2),
                 g = {
                   getClosestInstanceFromNode: u,
                   getInstanceFromNode: l,
                   getNodeFromInstance: c,
                   precacheChildNodes: s,
                   precacheNode: i,
-                  uncacheNode: a
+                  uncacheNode: a,
                 };
               t.exports = g;
             },
-            { 11: 11, 112: 112, 137: 137, 32: 32 }
+            { 11: 11, 112: 112, 137: 137, 32: 32 },
           ],
           34: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 return {
@@ -6385,21 +6379,21 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     : null,
                   _node: t,
                   _tag: t ? t.nodeName.toLowerCase() : null,
-                  _namespaceURI: t ? t.namespaceURI : null
+                  _namespaceURI: t ? t.namespaceURI : null,
                 };
               }
               var o = (e(118), 9);
               t.exports = r;
             },
-            { 118: 118 }
+            { 118: 118 },
           ],
           35: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(143),
                 o = e(9),
                 i = e(33),
-                a = function(e) {
+                a = function (e) {
                   (this._currentElement = null),
                     (this._hostNode = null),
                     (this._hostParent = null),
@@ -6407,7 +6401,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     (this._domID = 0);
                 };
               r(a.prototype, {
-                mountComponent: function(e, t, n, r) {
+                mountComponent: function (e, t, n, r) {
                   var a = n._idCounter++;
                   (this._domID = a),
                     (this._hostParent = t),
@@ -6420,43 +6414,43 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   }
                   return e.renderToStaticMarkup ? "" : "<!--" + s + "-->";
                 },
-                receiveComponent: function() {},
-                getHostNode: function() {
+                receiveComponent: function () {},
+                getHostNode: function () {
                   return i.getNodeFromInstance(this);
                 },
-                unmountComponent: function() {
+                unmountComponent: function () {
                   i.uncacheNode(this);
-                }
+                },
               }),
                 (t.exports = a);
             },
-            { 143: 143, 33: 33, 9: 9 }
+            { 143: 143, 33: 33, 9: 9 },
           ],
           36: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = { useCreateElement: !0, useFiber: !1 };
               t.exports = r;
             },
-            {}
+            {},
           ],
           37: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(8),
                 o = e(33),
                 i = {
-                  dangerouslyProcessChildrenUpdates: function(e, t) {
+                  dangerouslyProcessChildrenUpdates: function (e, t) {
                     var n = o.getNodeFromInstance(e);
                     r.processUpdates(n, t);
-                  }
+                  },
                 };
               t.exports = i;
             },
-            { 33: 33, 8: 8 }
+            { 33: 33, 8: 8 },
           ],
           38: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r() {
                 this._rootNodeID && d.updateWrapper(this);
@@ -6507,7 +6501,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   (e(137),
                   e(142),
                   {
-                    getHostProps: function(e, t) {
+                    getHostProps: function (e, t) {
                       var n = l.getValue(t),
                         r = l.getChecked(t);
                       return s(
@@ -6515,7 +6509,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           type: void 0,
                           step: void 0,
                           min: void 0,
-                          max: void 0
+                          max: void 0,
                         },
                         t,
                         {
@@ -6524,11 +6518,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           value: null != n ? n : e._wrapperState.initialValue,
                           checked:
                             null != r ? r : e._wrapperState.initialChecked,
-                          onChange: e._wrapperState.onChange
+                          onChange: e._wrapperState.onChange,
                         }
                       );
                     },
-                    mountWrapper: function(e, t) {
+                    mountWrapper: function (e, t) {
                       var n = t.defaultValue;
                       e._wrapperState = {
                         initialChecked:
@@ -6536,10 +6530,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         initialValue: null != t.value ? t.value : n,
                         listeners: null,
                         onChange: i.bind(e),
-                        controlled: o(t)
+                        controlled: o(t),
                       };
                     },
-                    updateWrapper: function(e) {
+                    updateWrapper: function (e) {
                       var t = e._currentElement.props,
                         n = t.checked;
                       null != n &&
@@ -6565,7 +6559,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                             null != t.defaultChecked &&
                             (r.defaultChecked = !!t.defaultChecked);
                     },
-                    postMountWrapper: function(e) {
+                    postMountWrapper: function (e) {
                       var t = e._currentElement.props,
                         n = c.getNodeFromInstance(e);
                       switch (t.type) {
@@ -6589,7 +6583,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         (n.defaultChecked = !n.defaultChecked),
                         (n.defaultChecked = !n.defaultChecked),
                         "" !== r && (n.name = r);
-                    }
+                    },
                   });
               t.exports = d;
             },
@@ -6601,16 +6595,16 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               143: 143,
               23: 23,
               33: 33,
-              71: 71
-            }
+              71: 71,
+            },
           ],
           39: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = "";
                 return (
-                  i.Children.forEach(e, function(e) {
+                  i.Children.forEach(e, function (e) {
                     null != e &&
                       ("string" == typeof e || "number" == typeof e
                         ? (t += e)
@@ -6625,7 +6619,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 s = e(40),
                 u = (e(142), !1),
                 l = {
-                  mountWrapper: function(e, t, n) {
+                  mountWrapper: function (e, t, n) {
                     var o = null;
                     if (null != n) {
                       var i = n;
@@ -6651,25 +6645,25 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     e._wrapperState = { selected: a };
                   },
-                  postMountWrapper: function(e) {
+                  postMountWrapper: function (e) {
                     var t = e._currentElement.props;
                     null != t.value &&
                       a.getNodeFromInstance(e).setAttribute("value", t.value);
                   },
-                  getHostProps: function(e, t) {
+                  getHostProps: function (e, t) {
                     var n = o({ selected: void 0, children: void 0 }, t);
                     null != e._wrapperState.selected &&
                       (n.selected = e._wrapperState.selected);
                     var i = r(t.children);
                     return i && (n.children = i), n;
-                  }
+                  },
                 };
               t.exports = l;
             },
-            { 120: 120, 142: 142, 143: 143, 33: 33, 40: 40 }
+            { 120: 120, 142: 142, 143: 143, 33: 33, 40: 40 },
           ],
           40: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r() {
                 if (this._rootNodeID && this._wrapperState.pendingUpdate) {
@@ -6710,30 +6704,30 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 l = e(71),
                 c = (e(142), !1),
                 p = {
-                  getHostProps: function(e, t) {
+                  getHostProps: function (e, t) {
                     return a({}, t, {
                       onChange: e._wrapperState.onChange,
-                      value: void 0
+                      value: void 0,
                     });
                   },
-                  mountWrapper: function(e, t) {
+                  mountWrapper: function (e, t) {
                     var n = s.getValue(t);
                     (e._wrapperState = {
                       pendingUpdate: !1,
                       initialValue: null != n ? n : t.defaultValue,
                       listeners: null,
                       onChange: i.bind(e),
-                      wasMultiple: Boolean(t.multiple)
+                      wasMultiple: Boolean(t.multiple),
                     }),
                       void 0 === t.value ||
                         void 0 === t.defaultValue ||
                         c ||
                         (c = !0);
                   },
-                  getSelectValueContext: function(e) {
+                  getSelectValueContext: function (e) {
                     return e._wrapperState.initialValue;
                   },
-                  postUpdateWrapper: function(e) {
+                  postUpdateWrapper: function (e) {
                     var t = e._currentElement.props;
                     e._wrapperState.initialValue = void 0;
                     var n = e._wrapperState.wasMultiple;
@@ -6746,14 +6740,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         (null != t.defaultValue
                           ? o(e, Boolean(t.multiple), t.defaultValue)
                           : o(e, Boolean(t.multiple), t.multiple ? [] : ""));
-                  }
+                  },
                 };
               t.exports = p;
             },
-            { 142: 142, 143: 143, 23: 23, 33: 33, 71: 71 }
+            { 142: 142, 143: 143, 23: 23, 33: 33, 71: 71 },
           ],
           41: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return e === n && t === r;
@@ -6850,10 +6844,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 d = { getOffsets: p ? o : i, setOffsets: p ? a : s };
               t.exports = d;
             },
-            { 105: 105, 106: 106, 123: 123 }
+            { 105: 105, 106: 106, 123: 123 },
           ],
           42: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(112),
                 o = e(143),
@@ -6864,7 +6858,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 l =
                   (e(137),
                   e(118),
-                  function(e) {
+                  function (e) {
                     (this._currentElement = e),
                       (this._stringText = "" + e),
                       (this._hostNode = null),
@@ -6875,7 +6869,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       (this._commentNodes = null);
                   });
               o(l.prototype, {
-                mountComponent: function(e, t, n, r) {
+                mountComponent: function (e, t, n, r) {
                   var o = n._idCounter++,
                     i = " react-text: " + o + " ";
                   if (
@@ -6902,7 +6896,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     ? f
                     : "<!--" + i + "-->" + f + "<!-- /react-text -->";
                 },
-                receiveComponent: function(e, t) {
+                receiveComponent: function (e, t) {
                   if (e !== this._currentElement) {
                     this._currentElement = e;
                     var n = "" + e;
@@ -6913,7 +6907,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                   }
                 },
-                getHostNode: function() {
+                getHostNode: function () {
                   var e = this._commentNodes;
                   if (e) return e;
                   if (!this._closingComment)
@@ -6937,11 +6931,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     e
                   );
                 },
-                unmountComponent: function() {
+                unmountComponent: function () {
                   (this._closingComment = null),
                     (this._commentNodes = null),
                     s.uncacheNode(this);
-                }
+                },
               }),
                 (t.exports = l);
             },
@@ -6953,11 +6947,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               33: 33,
               8: 8,
               9: 9,
-              95: 95
-            }
+              95: 95,
+            },
           ],
           43: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r() {
                 this._rootNodeID && c.updateWrapper(this);
@@ -6976,18 +6970,18 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   (e(137),
                   e(142),
                   {
-                    getHostProps: function(e, t) {
+                    getHostProps: function (e, t) {
                       return (
                         null != t.dangerouslySetInnerHTML && i("91"),
                         a({}, t, {
                           value: void 0,
                           defaultValue: void 0,
                           children: "" + e._wrapperState.initialValue,
-                          onChange: e._wrapperState.onChange
+                          onChange: e._wrapperState.onChange,
                         })
                       );
                     },
-                    mountWrapper: function(e, t) {
+                    mountWrapper: function (e, t) {
                       var n = s.getValue(t),
                         r = n;
                       if (null == n) {
@@ -7004,10 +6998,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       e._wrapperState = {
                         initialValue: "" + r,
                         listeners: null,
-                        onChange: o.bind(e)
+                        onChange: o.bind(e),
                       };
                     },
-                    updateWrapper: function(e) {
+                    updateWrapper: function (e) {
                       var t = e._currentElement.props,
                         n = u.getNodeFromInstance(e),
                         r = s.getValue(t);
@@ -7019,18 +7013,18 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       null != t.defaultValue &&
                         (n.defaultValue = t.defaultValue);
                     },
-                    postMountWrapper: function(e) {
+                    postMountWrapper: function (e) {
                       var t = u.getNodeFromInstance(e),
                         n = t.textContent;
                       n === e._wrapperState.initialValue && (t.value = n);
-                    }
+                    },
                   });
               t.exports = c;
             },
-            { 112: 112, 137: 137, 142: 142, 143: 143, 23: 23, 33: 33, 71: 71 }
+            { 112: 112, 137: 137, 142: 142, 143: 143, 23: 23, 33: 33, 71: 71 },
           ],
           44: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 "_hostNode" in e || u("33"), "_hostNode" in t || u("33");
@@ -7076,13 +7070,13 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 getLowestCommonAncestor: r,
                 getParentInstance: i,
                 traverseTwoPhase: a,
-                traverseEnterLeave: s
+                traverseEnterLeave: s,
               };
             },
-            { 112: 112, 137: 137 }
+            { 112: 112, 137: 137 },
           ],
           45: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(120),
                 o = e(30),
@@ -7091,10 +7085,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 (r.__SECRET_INJECTED_REACT_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = i),
                 (t.exports = i);
             },
-            { 120: 120, 30: 30 }
+            { 120: 120, 30: 30 },
           ],
           46: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r() {
                 this.reinitializeTransaction();
@@ -7105,34 +7099,34 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 s = e(129),
                 u = {
                   initialize: s,
-                  close: function() {
+                  close: function () {
                     d.isBatchingUpdates = !1;
-                  }
+                  },
                 },
                 l = { initialize: s, close: i.flushBatchedUpdates.bind(i) },
                 c = [l, u];
               o(r.prototype, a, {
-                getTransactionWrappers: function() {
+                getTransactionWrappers: function () {
                   return c;
-                }
+                },
               });
               var p = new r(),
                 d = {
                   isBatchingUpdates: !1,
-                  batchedUpdates: function(e, t, n, r, o, i) {
+                  batchedUpdates: function (e, t, n, r, o, i) {
                     var a = d.isBatchingUpdates;
                     return (
                       (d.isBatchingUpdates = !0),
                       a ? e(t, n, r, o, i) : p.perform(e, null, t, n, r, o, i)
                     );
-                  }
+                  },
                 };
               t.exports = d;
             },
-            { 129: 129, 143: 143, 71: 71, 89: 89 }
+            { 129: 129, 143: 143, 71: 71, 89: 89 },
           ],
           47: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r() {
                 x ||
@@ -7146,14 +7140,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     EnterLeaveEventPlugin: u,
                     ChangeEventPlugin: a,
                     SelectEventPlugin: b,
-                    BeforeInputEventPlugin: i
+                    BeforeInputEventPlugin: i,
                   }),
                   y.HostComponent.injectGenericComponentClass(p),
                   y.HostComponent.injectTextComponentClass(m),
                   y.DOMProperty.injectDOMPropertyConfig(o),
                   y.DOMProperty.injectDOMPropertyConfig(l),
                   y.DOMProperty.injectDOMPropertyConfig(C),
-                  y.EmptyComponent.injectEmptyComponentFactory(function(e) {
+                  y.EmptyComponent.injectEmptyComponentFactory(function (e) {
                     return new f(e);
                   }),
                   y.Updates.injectReconcileTransaction(_),
@@ -7201,11 +7195,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               7: 7,
               73: 73,
               74: 74,
-              75: 75
-            }
+              75: 75,
+            },
           ],
           48: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r =
                 ("function" == typeof Symbol &&
@@ -7214,28 +7208,28 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 60103;
               t.exports = r;
             },
-            {}
+            {},
           ],
           49: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r,
                 o = {
-                  injectEmptyComponentFactory: function(e) {
+                  injectEmptyComponentFactory: function (e) {
                     r = e;
-                  }
+                  },
                 },
                 i = {
-                  create: function(e) {
+                  create: function (e) {
                     return r(e);
-                  }
+                  },
                 };
               (i.injection = o), (t.exports = i);
             },
-            {}
+            {},
           ],
           50: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n) {
                 try {
@@ -7248,35 +7242,35 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = {
                   invokeGuardedCallback: r,
                   invokeGuardedCallbackWithCatch: r,
-                  rethrowCaughtError: function() {
+                  rethrowCaughtError: function () {
                     if (o) {
                       var e = o;
                       throw ((o = null), e);
                     }
-                  }
+                  },
                 };
               t.exports = i;
             },
-            {}
+            {},
           ],
           51: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 o.enqueueEvents(e), o.processEventQueue(!1);
               }
               var o = e(16),
                 i = {
-                  handleTopLevel: function(e, t, n, i) {
+                  handleTopLevel: function (e, t, n, i) {
                     r(o.extractEvents(e, t, n, i));
-                  }
+                  },
                 };
               t.exports = i;
             },
-            { 16: 16 }
+            { 16: 16 },
           ],
           52: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 for (; e._hostParent; ) e = e._hostParent;
@@ -7317,41 +7311,41 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 f = e(102),
                 h = e(134);
               s(o.prototype, {
-                destructor: function() {
+                destructor: function () {
                   (this.topLevelType = null),
                     (this.nativeEvent = null),
                     (this.ancestors.length = 0);
-                }
+                },
               }),
                 c.addPoolingTo(o, c.twoArgumentPooler);
               var m = {
                 _enabled: !0,
                 _handleTopLevel: null,
                 WINDOW_HANDLE: l.canUseDOM ? window : null,
-                setHandleTopLevel: function(e) {
+                setHandleTopLevel: function (e) {
                   m._handleTopLevel = e;
                 },
-                setEnabled: function(e) {
+                setEnabled: function (e) {
                   m._enabled = !!e;
                 },
-                isEnabled: function() {
+                isEnabled: function () {
                   return m._enabled;
                 },
-                trapBubbledEvent: function(e, t, n) {
+                trapBubbledEvent: function (e, t, n) {
                   return n
                     ? u.listen(n, t, m.dispatchEvent.bind(null, e))
                     : null;
                 },
-                trapCapturedEvent: function(e, t, n) {
+                trapCapturedEvent: function (e, t, n) {
                   return n
                     ? u.capture(n, t, m.dispatchEvent.bind(null, e))
                     : null;
                 },
-                monitorScrollValue: function(e) {
+                monitorScrollValue: function (e) {
                   var t = a.bind(null, e);
                   u.listen(window, "scroll", t);
                 },
-                dispatchEvent: function(e, t) {
+                dispatchEvent: function (e, t) {
                   if (m._enabled) {
                     var n = o.getPooled(e, t);
                     try {
@@ -7360,7 +7354,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       o.release(n);
                     }
                   }
-                }
+                },
               };
               t.exports = m;
             },
@@ -7372,19 +7366,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               143: 143,
               24: 24,
               33: 33,
-              71: 71
-            }
+              71: 71,
+            },
           ],
           53: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = { logTopLevelRenders: !1 };
               t.exports = r;
             },
-            {}
+            {},
           ],
           54: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return s || a("111", e.type), new s(e);
@@ -7399,25 +7393,25 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 s = (e(137), null),
                 u = null,
                 l = {
-                  injectGenericComponentClass: function(e) {
+                  injectGenericComponentClass: function (e) {
                     s = e;
                   },
-                  injectTextComponentClass: function(e) {
+                  injectTextComponentClass: function (e) {
                     u = e;
-                  }
+                  },
                 },
                 c = {
                   createInternalComponent: r,
                   createInstanceForText: o,
                   isTextComponent: i,
-                  injection: l
+                  injection: l,
                 };
               t.exports = c;
             },
-            { 112: 112, 137: 137 }
+            { 112: 112, 137: 137 },
           ],
           55: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(11),
                 o = e(16),
@@ -7435,14 +7429,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   EventPluginUtils: i.injection,
                   EventEmitter: u.injection,
                   HostComponent: l.injection,
-                  Updates: c.injection
+                  Updates: c.injection,
                 };
               t.exports = p;
             },
-            { 11: 11, 16: 16, 18: 18, 25: 25, 28: 28, 49: 49, 54: 54, 71: 71 }
+            { 11: 11, 16: 16, 18: 18, 25: 25, 28: 28, 49: 49, 54: 54, 71: 71 },
           ],
           56: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return i(document.documentElement, e);
@@ -7452,7 +7446,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 a = e(131),
                 s = e(132),
                 u = {
-                  hasSelectionCapabilities: function(e) {
+                  hasSelectionCapabilities: function (e) {
                     var t = e && e.nodeName && e.nodeName.toLowerCase();
                     return (
                       t &&
@@ -7461,16 +7455,16 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         "true" === e.contentEditable)
                     );
                   },
-                  getSelectionInformation: function() {
+                  getSelectionInformation: function () {
                     var e = s();
                     return {
                       focusedElem: e,
                       selectionRange: u.hasSelectionCapabilities(e)
                         ? u.getSelection(e)
-                        : null
+                        : null,
                     };
                   },
-                  restoreSelection: function(e) {
+                  restoreSelection: function (e) {
                     var t = s(),
                       n = e.focusedElem,
                       o = e.selectionRange;
@@ -7479,7 +7473,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       (u.hasSelectionCapabilities(n) && u.setSelection(n, o),
                       a(n));
                   },
-                  getSelection: function(e) {
+                  getSelection: function (e) {
                     var t;
                     if ("selectionStart" in e)
                       t = { start: e.selectionStart, end: e.selectionEnd };
@@ -7492,12 +7486,12 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       n.parentElement() === e &&
                         (t = {
                           start: -n.moveStart("character", -e.value.length),
-                          end: -n.moveEnd("character", -e.value.length)
+                          end: -n.moveEnd("character", -e.value.length),
                         });
                     } else t = o.getOffsets(e);
                     return t || { start: 0, end: 0 };
                   },
-                  setSelection: function(e, t) {
+                  setSelection: function (e, t) {
                     var n = t.start,
                       r = t.end;
                     if ((void 0 === r && (r = n), "selectionStart" in e))
@@ -7514,48 +7508,48 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         i.moveEnd("character", r - n),
                         i.select();
                     } else o.setOffsets(e, t);
-                  }
+                  },
                 };
               t.exports = u;
             },
-            { 126: 126, 131: 131, 132: 132, 41: 41 }
+            { 126: 126, 131: 131, 132: 132, 41: 41 },
           ],
           57: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = {
-                remove: function(e) {
+                remove: function (e) {
                   e._reactInternalInstance = void 0;
                 },
-                get: function(e) {
+                get: function (e) {
                   return e._reactInternalInstance;
                 },
-                has: function(e) {
+                has: function (e) {
                   return void 0 !== e._reactInternalInstance;
                 },
-                set: function(e, t) {
+                set: function (e, t) {
                   e._reactInternalInstance = t;
-                }
+                },
               };
               t.exports = r;
             },
-            {}
+            {},
           ],
           58: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               t.exports = { debugTool: null };
             },
-            {}
+            {},
           ],
           59: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(92),
                 o = /^<\!\-\-/,
                 i = {
                   CHECKSUM_ATTR_NAME: "data-react-checksum",
-                  addChecksumToMarkup: function(e) {
+                  addChecksumToMarkup: function (e) {
                     var t = r(e);
                     return o.test(e)
                       ? e
@@ -7564,17 +7558,17 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           " " + i.CHECKSUM_ATTR_NAME + '="' + t + '"$&'
                         );
                   },
-                  canReuseMarkup: function(e, t) {
+                  canReuseMarkup: function (e, t) {
                     var n = t.getAttribute(i.CHECKSUM_ATTR_NAME);
                     return (n = n && parseInt(n, 10)), r(e) === n;
-                  }
+                  },
                 };
               t.exports = i;
             },
-            { 92: 92 }
+            { 92: 92 },
           ],
           60: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 for (var n = Math.min(e.length, t.length), r = 0; r < n; r++)
@@ -7669,43 +7663,43 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 D = 11,
                 L = {},
                 U = 1,
-                F = function() {
+                F = function () {
                   this.rootID = U++;
                 };
               (F.prototype.isReactComponent = {}),
-                (F.prototype.render = function() {
+                (F.prototype.render = function () {
                   return this.props.child;
                 }),
                 (F.isReactTopLevelWrapper = !0);
               var j = {
                 TopLevelWrapper: F,
                 _instancesByReactRootID: L,
-                scrollMonitor: function(e, t) {
+                scrollMonitor: function (e, t) {
                   t();
                 },
-                _updateRootComponent: function(e, t, n, r, o) {
+                _updateRootComponent: function (e, t, n, r, o) {
                   return (
-                    j.scrollMonitor(r, function() {
+                    j.scrollMonitor(r, function () {
                       T.enqueueElementInternal(e, t, n),
                         o && T.enqueueCallbackInternal(e, o);
                     }),
                     e
                   );
                 },
-                _renderNewRootComponent: function(e, t, n, r) {
+                _renderNewRootComponent: function (e, t, n, r) {
                   c(t) || f("37"), g.ensureScrollValueMonitoring();
                   var o = S(e, !1);
                   k.batchedUpdates(s, o, t, n, r);
                   var i = o._instance.rootID;
                   return (L[i] = o), o;
                 },
-                renderSubtreeIntoContainer: function(e, t, n, r) {
+                renderSubtreeIntoContainer: function (e, t, n, r) {
                   return (
                     (null != e && E.has(e)) || f("38"),
                     j._renderSubtreeIntoContainer(e, t, n, r)
                   );
                 },
-                _renderSubtreeIntoContainer: function(e, t, n, r) {
+                _renderSubtreeIntoContainer: function (e, t, n, r) {
                   T.validateCallback(r, "ReactDOM.render"),
                     v.isValidElement(t) ||
                       f(
@@ -7732,7 +7726,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       var m = c._renderedComponent.getPublicInstance(),
                         g =
                           r &&
-                          function() {
+                          function () {
                             r.call(m);
                           };
                       return j._updateRootComponent(c, s, a, n, g), m;
@@ -7748,10 +7742,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       ._renderedComponent.getPublicInstance();
                   return r && r.call(x), x;
                 },
-                render: function(e, t, n) {
+                render: function (e, t, n) {
                   return j._renderSubtreeIntoContainer(null, e, t, n);
                 },
-                unmountComponentAtNode: function(e) {
+                unmountComponentAtNode: function (e) {
                   c(e) || f("40");
                   var t = d(e);
                   return t
@@ -7760,7 +7754,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       !0)
                     : (l(e), 1 === e.nodeType && e.hasAttribute(O), !1);
                 },
-                _mountImageIntoNode: function(e, t, n, i, a) {
+                _mountImageIntoNode: function (e, t, n, i, a) {
                   if ((c(t) || f("41"), i)) {
                     var s = o(t);
                     if (x.canReuseMarkup(e, s))
@@ -7782,7 +7776,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     for (; t.lastChild; ) t.removeChild(t.lastChild);
                     h.insertTreeBefore(t, e, null);
                   } else N(t, e), y.precacheNode(n, t.firstChild);
-                }
+                },
               };
               t.exports = j;
             },
@@ -7808,11 +7802,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               66: 66,
               70: 70,
               71: 71,
-              9: 9
-            }
+              9: 9,
+            },
           ],
           61: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n) {
                 return {
@@ -7821,7 +7815,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   fromIndex: null,
                   fromNode: null,
                   toIndex: n,
-                  afterNode: t
+                  afterNode: t,
                 };
               }
               function o(e, t, n) {
@@ -7831,7 +7825,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   fromIndex: e._mountIndex,
                   fromNode: d.getHostNode(e),
                   toIndex: n,
-                  afterNode: t
+                  afterNode: t,
                 };
               }
               function i(e, t) {
@@ -7841,7 +7835,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   fromIndex: e._mountIndex,
                   fromNode: t,
                   toIndex: null,
-                  afterNode: null
+                  afterNode: null,
                 };
               }
               function a(e) {
@@ -7851,7 +7845,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   fromIndex: null,
                   fromNode: null,
                   toIndex: null,
-                  afterNode: null
+                  afterNode: null,
                 };
               }
               function s(e) {
@@ -7861,7 +7855,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   fromIndex: null,
                   fromNode: null,
                   toIndex: null,
-                  afterNode: null
+                  afterNode: null,
                 };
               }
               function u(e, t) {
@@ -7879,10 +7873,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   (e(137),
                   {
                     Mixin: {
-                      _reconcilerInstantiateChildren: function(e, t, n) {
+                      _reconcilerInstantiateChildren: function (e, t, n) {
                         return f.instantiateChildren(e, t, n);
                       },
-                      _reconcilerUpdateChildren: function(e, t, n, r, o, i) {
+                      _reconcilerUpdateChildren: function (e, t, n, r, o, i) {
                         var a;
                         return (
                           (a = h(t, 0)),
@@ -7900,7 +7894,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           a
                         );
                       },
-                      mountChildren: function(e, t, n) {
+                      mountChildren: function (e, t, n) {
                         var r = this._reconcilerInstantiateChildren(e, t, n);
                         this._renderedChildren = r;
                         var o = [],
@@ -7920,22 +7914,22 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           }
                         return o;
                       },
-                      updateTextContent: function(e) {
+                      updateTextContent: function (e) {
                         var t = this._renderedChildren;
                         f.unmountChildren(t, !1);
                         for (var n in t) t.hasOwnProperty(n) && c("118");
                         l(this, [s(e)]);
                       },
-                      updateMarkup: function(e) {
+                      updateMarkup: function (e) {
                         var t = this._renderedChildren;
                         f.unmountChildren(t, !1);
                         for (var n in t) t.hasOwnProperty(n) && c("118");
                         l(this, [a(e)]);
                       },
-                      updateChildren: function(e, t, n) {
+                      updateChildren: function (e, t, n) {
                         this._updateChildren(e, t, n);
                       },
-                      _updateChildren: function(e, t, n) {
+                      _updateChildren: function (e, t, n) {
                         var r = this._renderedChildren,
                           o = {},
                           i = [],
@@ -7970,28 +7964,28 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           c && l(this, c), (this._renderedChildren = a);
                         }
                       },
-                      unmountChildren: function(e) {
+                      unmountChildren: function (e) {
                         var t = this._renderedChildren;
                         f.unmountChildren(t, e),
                           (this._renderedChildren = null);
                       },
-                      moveChild: function(e, t, n, r) {
+                      moveChild: function (e, t, n, r) {
                         if (e._mountIndex < r) return o(e, t, n);
                       },
-                      createChild: function(e, t, n) {
+                      createChild: function (e, t, n) {
                         return r(n, t, e._mountIndex);
                       },
-                      removeChild: function(e, t) {
+                      removeChild: function (e, t) {
                         return i(e, t);
                       },
-                      _mountChildAtIndex: function(e, t, n, r, o, i) {
+                      _mountChildAtIndex: function (e, t, n, r, o, i) {
                         return (e._mountIndex = r), this.createChild(e, n, t);
                       },
-                      _unmountChild: function(e, t) {
+                      _unmountChild: function (e, t) {
                         var n = this.removeChild(e, t);
                         return (e._mountIndex = null), n;
-                      }
-                    }
+                      },
+                    },
                   });
               t.exports = m;
             },
@@ -8005,11 +7999,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               57: 57,
               58: 58,
               66: 66,
-              97: 97
-            }
+              97: 97,
+            },
           ],
           62: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(112),
                 o = e(120),
@@ -8019,7 +8013,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     HOST: 0,
                     COMPOSITE: 1,
                     EMPTY: 2,
-                    getType: function(e) {
+                    getType: function (e) {
                       return null === e || !1 === e
                         ? i.EMPTY
                         : o.isValidElement(e)
@@ -8027,14 +8021,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                           ? i.COMPOSITE
                           : i.HOST
                         : void r("26", e);
-                    }
+                    },
                   });
               t.exports = i;
             },
-            { 112: 112, 120: 120, 137: 137 }
+            { 112: 112, 120: 120, 137: 137 },
           ],
           63: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return !(
@@ -8047,30 +8041,30 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i =
                   (e(137),
                   {
-                    addComponentAsRefTo: function(e, t, n) {
+                    addComponentAsRefTo: function (e, t, n) {
                       r(n) || o("119"), n.attachRef(t, e);
                     },
-                    removeComponentAsRefFrom: function(e, t, n) {
+                    removeComponentAsRefFrom: function (e, t, n) {
                       r(n) || o("120");
                       var i = n.getPublicInstance();
                       i &&
                         i.refs[t] === e.getPublicInstance() &&
                         n.detachRef(t);
-                    }
+                    },
                   });
               t.exports = i;
             },
-            { 112: 112, 137: 137 }
+            { 112: 112, 137: 137 },
           ],
           64: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               t.exports = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";
             },
-            {}
+            {},
           ],
           65: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 this.reinitializeTransaction(),
@@ -8087,53 +8081,53 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 c = e(70),
                 p = {
                   initialize: u.getSelectionInformation,
-                  close: u.restoreSelection
+                  close: u.restoreSelection,
                 },
                 d = {
-                  initialize: function() {
+                  initialize: function () {
                     var e = s.isEnabled();
                     return s.setEnabled(!1), e;
                   },
-                  close: function(e) {
+                  close: function (e) {
                     s.setEnabled(e);
-                  }
+                  },
                 },
                 f = {
-                  initialize: function() {
+                  initialize: function () {
                     this.reactMountReady.reset();
                   },
-                  close: function() {
+                  close: function () {
                     this.reactMountReady.notifyAll();
-                  }
+                  },
                 },
                 h = [p, d, f],
                 m = {
-                  getTransactionWrappers: function() {
+                  getTransactionWrappers: function () {
                     return h;
                   },
-                  getReactMountReady: function() {
+                  getReactMountReady: function () {
                     return this.reactMountReady;
                   },
-                  getUpdateQueue: function() {
+                  getUpdateQueue: function () {
                     return c;
                   },
-                  checkpoint: function() {
+                  checkpoint: function () {
                     return this.reactMountReady.checkpoint();
                   },
-                  rollback: function(e) {
+                  rollback: function (e) {
                     this.reactMountReady.rollback(e);
                   },
-                  destructor: function() {
+                  destructor: function () {
                     i.release(this.reactMountReady),
                       (this.reactMountReady = null);
-                  }
+                  },
                 };
               o(r.prototype, l, m), a.addPoolingTo(r), (t.exports = r);
             },
-            { 143: 143, 24: 24, 25: 25, 56: 56, 58: 58, 6: 6, 70: 70, 89: 89 }
+            { 143: 143, 24: 24, 25: 25, 56: 56, 58: 58, 6: 6, 70: 70, 89: 89 },
           ],
           66: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r() {
                 o.attachRefs(this, this._currentElement);
@@ -8143,7 +8137,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   (e(58),
                   e(142),
                   {
-                    mountComponent: function(e, t, n, o, i, a) {
+                    mountComponent: function (e, t, n, o, i, a) {
                       var s = e.mountComponent(t, n, o, i, a);
                       return (
                         e._currentElement &&
@@ -8152,13 +8146,13 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         s
                       );
                     },
-                    getHostNode: function(e) {
+                    getHostNode: function (e) {
                       return e.getHostNode();
                     },
-                    unmountComponent: function(e, t) {
+                    unmountComponent: function (e, t) {
                       o.detachRefs(e, e._currentElement), e.unmountComponent(t);
                     },
-                    receiveComponent: function(e, t, n, i) {
+                    receiveComponent: function (e, t, n, i) {
                       var a = e._currentElement;
                       if (t !== a || i !== e._context) {
                         var s = o.shouldUpdateRefs(a, t);
@@ -8170,17 +8164,17 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                             n.getReactMountReady().enqueue(r, e);
                       }
                     },
-                    performUpdateIfNecessary: function(e, t, n) {
+                    performUpdateIfNecessary: function (e, t, n) {
                       e._updateBatchNumber === n &&
                         e.performUpdateIfNecessary(t);
-                    }
+                    },
                   });
               t.exports = i;
             },
-            { 142: 142, 58: 58, 67: 67 }
+            { 142: 142, 58: 58, 67: 67 },
           ],
           67: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n) {
                 "function" == typeof e
@@ -8194,13 +8188,13 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               var i = e(63),
                 a = {};
-              (a.attachRefs = function(e, t) {
+              (a.attachRefs = function (e, t) {
                 if (null !== t && "object" == typeof t) {
                   var n = t.ref;
                   null != n && r(n, e, t._owner);
                 }
               }),
-                (a.shouldUpdateRefs = function(e, t) {
+                (a.shouldUpdateRefs = function (e, t) {
                   var n = null,
                     r = null;
                   null !== e &&
@@ -8215,7 +8209,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     n !== o || ("string" == typeof o && i !== r)
                   );
                 }),
-                (a.detachRefs = function(e, t) {
+                (a.detachRefs = function (e, t) {
                   if (null !== t && "object" == typeof t) {
                     var n = t.ref;
                     null != n && o(n, e, t._owner);
@@ -8223,10 +8217,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 }),
                 (t.exports = a);
             },
-            { 63: 63 }
+            { 63: 63 },
           ],
           68: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 this.reinitializeTransaction(),
@@ -8239,27 +8233,27 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 a = e(89),
                 s = (e(58), e(69)),
                 u = [],
-                l = { enqueue: function() {} },
+                l = { enqueue: function () {} },
                 c = {
-                  getTransactionWrappers: function() {
+                  getTransactionWrappers: function () {
                     return u;
                   },
-                  getReactMountReady: function() {
+                  getReactMountReady: function () {
                     return l;
                   },
-                  getUpdateQueue: function() {
+                  getUpdateQueue: function () {
                     return this.updateQueue;
                   },
-                  destructor: function() {},
-                  checkpoint: function() {},
-                  rollback: function() {}
+                  destructor: function () {},
+                  checkpoint: function () {},
+                  rollback: function () {},
                 };
               o(r.prototype, a, c), i.addPoolingTo(r), (t.exports = r);
             },
-            { 143: 143, 24: 24, 58: 58, 69: 69, 89: 89 }
+            { 143: 143, 24: 24, 58: 58, 69: 69, 89: 89 },
           ],
           69: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 if (!(e instanceof t))
@@ -8268,27 +8262,27 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var o = e(70),
                 i =
                   (e(142),
-                  (function() {
+                  (function () {
                     function e(t) {
                       r(this, e), (this.transaction = t);
                     }
                     return (
-                      (e.prototype.isMounted = function(e) {
+                      (e.prototype.isMounted = function (e) {
                         return !1;
                       }),
-                      (e.prototype.enqueueCallback = function(e, t, n) {
+                      (e.prototype.enqueueCallback = function (e, t, n) {
                         this.transaction.isInTransaction() &&
                           o.enqueueCallback(e, t, n);
                       }),
-                      (e.prototype.enqueueForceUpdate = function(e) {
+                      (e.prototype.enqueueForceUpdate = function (e) {
                         this.transaction.isInTransaction() &&
                           o.enqueueForceUpdate(e);
                       }),
-                      (e.prototype.enqueueReplaceState = function(e, t) {
+                      (e.prototype.enqueueReplaceState = function (e, t) {
                         this.transaction.isInTransaction() &&
                           o.enqueueReplaceState(e, t);
                       }),
-                      (e.prototype.enqueueSetState = function(e, t) {
+                      (e.prototype.enqueueSetState = function (e, t) {
                         this.transaction.isInTransaction() &&
                           o.enqueueSetState(e, t);
                       }),
@@ -8297,10 +8291,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   })());
               t.exports = i;
             },
-            { 142: 142, 70: 70 }
+            { 142: 142, 70: 70 },
           ],
           70: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 u.enqueueUpdate(e);
@@ -8325,11 +8319,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   (e(137),
                   e(142),
                   {
-                    isMounted: function(e) {
+                    isMounted: function (e) {
                       var t = s.get(e);
                       return !!t && !!t._renderedComponent;
                     },
-                    enqueueCallback: function(e, t, n) {
+                    enqueueCallback: function (e, t, n) {
                       l.validateCallback(t, n);
                       var o = i(e);
                       if (!o) return null;
@@ -8338,17 +8332,17 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         : (o._pendingCallbacks = [t]),
                         r(o);
                     },
-                    enqueueCallbackInternal: function(e, t) {
+                    enqueueCallbackInternal: function (e, t) {
                       e._pendingCallbacks
                         ? e._pendingCallbacks.push(t)
                         : (e._pendingCallbacks = [t]),
                         r(e);
                     },
-                    enqueueForceUpdate: function(e) {
+                    enqueueForceUpdate: function (e) {
                       var t = i(e, "forceUpdate");
                       t && ((t._pendingForceUpdate = !0), r(t));
                     },
-                    enqueueReplaceState: function(e, t, n) {
+                    enqueueReplaceState: function (e, t, n) {
                       var o = i(e, "replaceState");
                       o &&
                         ((o._pendingStateQueue = [t]),
@@ -8361,7 +8355,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                             : (o._pendingCallbacks = [n])),
                         r(o));
                     },
-                    enqueueSetState: function(e, t) {
+                    enqueueSetState: function (e, t) {
                       var n = i(e, "setState");
                       n &&
                         ((
@@ -8369,19 +8363,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         ).push(t),
                         r(n));
                     },
-                    enqueueElementInternal: function(e, t, n) {
+                    enqueueElementInternal: function (e, t, n) {
                       (e._pendingElement = t), (e._context = n), r(e);
                     },
-                    validateCallback: function(e, t) {
+                    validateCallback: function (e, t) {
                       e && "function" != typeof e && a("122", t, o(e));
-                    }
+                    },
                   });
               t.exports = l;
             },
-            { 112: 112, 119: 119, 137: 137, 142: 142, 57: 57, 58: 58, 71: 71 }
+            { 112: 112, 119: 119, 137: 137, 142: 142, 57: 57, 58: 58, 71: 71 },
           ],
           71: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r() {
                 (P.ReactReconcileTransaction && b) || c("123");
@@ -8447,29 +8441,29 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 C = !1,
                 b = null,
                 E = {
-                  initialize: function() {
+                  initialize: function () {
                     this.dirtyComponentsLength = g.length;
                   },
-                  close: function() {
+                  close: function () {
                     this.dirtyComponentsLength !== g.length
                       ? (g.splice(0, this.dirtyComponentsLength), T())
                       : (g.length = 0);
-                  }
+                  },
                 },
                 x = {
-                  initialize: function() {
+                  initialize: function () {
                     this.callbackQueue.reset();
                   },
-                  close: function() {
+                  close: function () {
                     this.callbackQueue.notifyAll();
-                  }
+                  },
                 },
                 w = [E, x];
               p(o.prototype, v, {
-                getTransactionWrappers: function() {
+                getTransactionWrappers: function () {
                   return w;
                 },
-                destructor: function() {
+                destructor: function () {
                   (this.dirtyComponentsLength = null),
                     d.release(this.callbackQueue),
                     (this.callbackQueue = null),
@@ -8478,7 +8472,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     ),
                     (this.reconcileTransaction = null);
                 },
-                perform: function(e, t, n) {
+                perform: function (e, t, n) {
                   return v.perform.call(
                     this,
                     this.reconcileTransaction.perform,
@@ -8487,10 +8481,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     t,
                     n
                   );
-                }
+                },
               }),
                 f.addPoolingTo(o);
-              var T = function() {
+              var T = function () {
                   for (; g.length || C; ) {
                     if (g.length) {
                       var e = o.getPooled();
@@ -8504,15 +8498,15 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   }
                 },
                 k = {
-                  injectReconcileTransaction: function(e) {
+                  injectReconcileTransaction: function (e) {
                     e || c("126"), (P.ReactReconcileTransaction = e);
                   },
-                  injectBatchingStrategy: function(e) {
+                  injectBatchingStrategy: function (e) {
                     e || c("127"),
                       "function" != typeof e.batchedUpdates && c("128"),
                       "boolean" != typeof e.isBatchingUpdates && c("129"),
                       (b = e);
-                  }
+                  },
                 },
                 P = {
                   ReactReconcileTransaction: null,
@@ -8520,7 +8514,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   enqueueUpdate: u,
                   flushBatchedUpdates: T,
                   injection: k,
-                  asap: l
+                  asap: l,
                 };
               t.exports = P;
             },
@@ -8532,22 +8526,22 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               53: 53,
               6: 6,
               66: 66,
-              89: 89
-            }
+              89: 89,
+            },
           ],
           72: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               t.exports = "15.5.4";
             },
-            {}
+            {},
           ],
           73: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = {
                   xlink: "http://www.w3.org/1999/xlink",
-                  xml: "http://www.w3.org/XML/1998/namespace"
+                  xml: "http://www.w3.org/XML/1998/namespace",
                 },
                 o = {
                   accentHeight: "accent-height",
@@ -8788,7 +8782,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   y2: 0,
                   yChannelSelector: "yChannelSelector",
                   z: 0,
-                  zoomAndPan: "zoomAndPan"
+                  zoomAndPan: "zoomAndPan",
                 },
                 i = {
                   Properties: {},
@@ -8802,19 +8796,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     xlinkType: r.xlink,
                     xmlBase: r.xml,
                     xmlLang: r.xml,
-                    xmlSpace: r.xml
+                    xmlSpace: r.xml,
                   },
-                  DOMAttributeNames: {}
+                  DOMAttributeNames: {},
                 };
-              Object.keys(o).forEach(function(e) {
+              Object.keys(o).forEach(function (e) {
                 (i.Properties[e] = 0), o[e] && (i.DOMAttributeNames[e] = o[e]);
               }),
                 (t.exports = i);
             },
-            {}
+            {},
           ],
           74: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 if ("selectionStart" in e && u.hasSelectionCapabilities(e))
@@ -8825,7 +8819,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     anchorNode: t.anchorNode,
                     anchorOffset: t.anchorOffset,
                     focusNode: t.focusNode,
-                    focusOffset: t.focusOffset
+                    focusOffset: t.focusOffset,
                   };
                 }
                 if (document.selection) {
@@ -8834,7 +8828,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     parentElement: n.parentElement(),
                     text: n.text,
                     top: n.boundingTop,
-                    left: n.boundingLeft
+                    left: n.boundingLeft,
                   };
                 }
               }
@@ -8869,7 +8863,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   select: {
                     phasedRegistrationNames: {
                       bubbled: "onSelect",
-                      captured: "onSelectCapture"
+                      captured: "onSelectCapture",
                     },
                     dependencies: [
                       "topBlur",
@@ -8879,9 +8873,9 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       "topKeyUp",
                       "topMouseDown",
                       "topMouseUp",
-                      "topSelectionChange"
-                    ]
-                  }
+                      "topSelectionChange",
+                    ],
+                  },
                 },
                 m = null,
                 v = null,
@@ -8890,7 +8884,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 _ = !1,
                 C = {
                   eventTypes: h,
-                  extractEvents: function(e, t, n, r) {
+                  extractEvents: function (e, t, n, r) {
                     if (!_) return null;
                     var i = t ? s.getNodeFromInstance(t) : window;
                     switch (e) {
@@ -8915,9 +8909,9 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     return null;
                   },
-                  didPutListener: function(e, t, n) {
+                  didPutListener: function (e, t, n) {
                     "onSelect" === t && (_ = !0);
-                  }
+                  },
                 };
               t.exports = C;
             },
@@ -8929,11 +8923,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               19: 19,
               33: 33,
               56: 56,
-              80: 80
-            }
+              80: 80,
+            },
           ],
           75: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return "." + e._rootNodeID;
@@ -9027,24 +9021,24 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 "transitionEnd",
                 "volumeChange",
                 "waiting",
-                "wheel"
-              ].forEach(function(e) {
+                "wheel",
+              ].forEach(function (e) {
                 var t = e[0].toUpperCase() + e.slice(1),
                   n = "on" + t,
                   r = "top" + t,
                   o = {
                     phasedRegistrationNames: {
                       bubbled: n,
-                      captured: n + "Capture"
+                      captured: n + "Capture",
                     },
-                    dependencies: [r]
+                    dependencies: [r],
                   };
                 (E[e] = o), (x[r] = o);
               });
               var w = {},
                 T = {
                   eventTypes: E,
-                  extractEvents: function(e, t, n, r) {
+                  extractEvents: function (e, t, n, r) {
                     var o = x[e];
                     if (!o) return null;
                     var a;
@@ -9139,19 +9133,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     var u = a.getPooled(o, t, n, r);
                     return s.accumulateTwoPhaseDispatches(u), u;
                   },
-                  didPutListener: function(e, t, n) {
+                  didPutListener: function (e, t, n) {
                     if ("onClick" === t && !o(e._tag)) {
                       var i = r(e),
                         s = u.getNodeFromInstance(e);
                       w[i] || (w[i] = a.listen(s, "click", C));
                     }
                   },
-                  willDeleteListener: function(e, t) {
+                  willDeleteListener: function (e, t) {
                     if ("onClick" === t && !o(e._tag)) {
                       var n = r(e);
                       w[n].remove(), delete w[n];
                     }
-                  }
+                  },
                 };
               t.exports = T;
             },
@@ -9173,11 +9167,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               86: 86,
               87: 87,
               88: 88,
-              99: 99
-            }
+              99: 99,
+            },
           ],
           76: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
@@ -9186,32 +9180,32 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = {
                   animationName: null,
                   elapsedTime: null,
-                  pseudoElement: null
+                  pseudoElement: null,
                 };
               o.augmentClass(r, i), (t.exports = r);
             },
-            { 80: 80 }
+            { 80: 80 },
           ],
           77: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
               }
               var o = e(80),
                 i = {
-                  clipboardData: function(e) {
+                  clipboardData: function (e) {
                     return "clipboardData" in e
                       ? e.clipboardData
                       : window.clipboardData;
-                  }
+                  },
                 };
               o.augmentClass(r, i), (t.exports = r);
             },
-            { 80: 80 }
+            { 80: 80 },
           ],
           78: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
@@ -9220,10 +9214,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = { data: null };
               o.augmentClass(r, i), (t.exports = r);
             },
-            { 80: 80 }
+            { 80: 80 },
           ],
           79: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
@@ -9232,10 +9226,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = { dataTransfer: null };
               o.augmentClass(r, i), (t.exports = r);
             },
-            { 84: 84 }
+            { 84: 84 },
           ],
           80: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 (this.dispatchConfig = e),
@@ -9275,7 +9269,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     "isDefaultPrevented",
                     "isPropagationStopped",
                     "_dispatchListeners",
-                    "_dispatchInstances"
+                    "_dispatchInstances",
                   ]),
                 u = {
                   type: null,
@@ -9284,14 +9278,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   eventPhase: null,
                   bubbles: null,
                   cancelable: null,
-                  timeStamp: function(e) {
+                  timeStamp: function (e) {
                     return e.timeStamp || Date.now();
                   },
                   defaultPrevented: null,
-                  isTrusted: null
+                  isTrusted: null,
                 };
               o(r.prototype, {
-                preventDefault: function() {
+                preventDefault: function () {
                   this.defaultPrevented = !0;
                   var e = this.nativeEvent;
                   e &&
@@ -9301,7 +9295,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         (e.returnValue = !1),
                     (this.isDefaultPrevented = a.thatReturnsTrue));
                 },
-                stopPropagation: function() {
+                stopPropagation: function () {
                   var e = this.nativeEvent;
                   e &&
                     (e.stopPropagation
@@ -9310,20 +9304,20 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         (e.cancelBubble = !0),
                     (this.isPropagationStopped = a.thatReturnsTrue));
                 },
-                persist: function() {
+                persist: function () {
                   this.isPersistent = a.thatReturnsTrue;
                 },
                 isPersistent: a.thatReturnsFalse,
-                destructor: function() {
+                destructor: function () {
                   var e = this.constructor.Interface;
                   for (var t in e) this[t] = null;
                   for (var n = 0; n < s.length; n++) this[s[n]] = null;
-                }
+                },
               }),
                 (r.Interface = u),
-                (r.augmentClass = function(e, t) {
+                (r.augmentClass = function (e, t) {
                   var n = this,
-                    r = function() {};
+                    r = function () {};
                   r.prototype = n.prototype;
                   var a = new r();
                   o(a, e.prototype),
@@ -9336,10 +9330,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i.addPoolingTo(r, i.fourArgumentPooler),
                 (t.exports = r);
             },
-            { 129: 129, 142: 142, 143: 143, 24: 24 }
+            { 129: 129, 142: 142, 143: 143, 24: 24 },
           ],
           81: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
@@ -9348,10 +9342,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = { relatedTarget: null };
               o.augmentClass(r, i), (t.exports = r);
             },
-            { 87: 87 }
+            { 87: 87 },
           ],
           82: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
@@ -9360,10 +9354,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = { data: null };
               o.augmentClass(r, i), (t.exports = r);
             },
-            { 80: 80 }
+            { 80: 80 },
           ],
           83: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
@@ -9382,28 +9376,28 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   repeat: null,
                   locale: null,
                   getModifierState: s,
-                  charCode: function(e) {
+                  charCode: function (e) {
                     return "keypress" === e.type ? i(e) : 0;
                   },
-                  keyCode: function(e) {
+                  keyCode: function (e) {
                     return "keydown" === e.type || "keyup" === e.type
                       ? e.keyCode
                       : 0;
                   },
-                  which: function(e) {
+                  which: function (e) {
                     return "keypress" === e.type
                       ? i(e)
                       : "keydown" === e.type || "keyup" === e.type
                       ? e.keyCode
                       : 0;
-                  }
+                  },
                 };
               o.augmentClass(r, u), (t.exports = r);
             },
-            { 100: 100, 101: 101, 87: 87, 99: 99 }
+            { 100: 100, 101: 101, 87: 87, 99: 99 },
           ],
           84: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
@@ -9421,12 +9415,12 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   altKey: null,
                   metaKey: null,
                   getModifierState: a,
-                  button: function(e) {
+                  button: function (e) {
                     var t = e.button;
                     return "which" in e ? t : 2 === t ? 2 : 4 === t ? 1 : 0;
                   },
                   buttons: null,
-                  relatedTarget: function(e) {
+                  relatedTarget: function (e) {
                     return (
                       e.relatedTarget ||
                       (e.fromElement === e.srcElement
@@ -9434,23 +9428,23 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                         : e.fromElement)
                     );
                   },
-                  pageX: function(e) {
+                  pageX: function (e) {
                     return "pageX" in e
                       ? e.pageX
                       : e.clientX + i.currentScrollLeft;
                   },
-                  pageY: function(e) {
+                  pageY: function (e) {
                     return "pageY" in e
                       ? e.pageY
                       : e.clientY + i.currentScrollTop;
-                  }
+                  },
                 };
               o.augmentClass(r, s), (t.exports = r);
             },
-            { 101: 101, 87: 87, 90: 90 }
+            { 101: 101, 87: 87, 90: 90 },
           ],
           85: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
@@ -9465,14 +9459,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   metaKey: null,
                   ctrlKey: null,
                   shiftKey: null,
-                  getModifierState: i
+                  getModifierState: i,
                 };
               o.augmentClass(r, a), (t.exports = r);
             },
-            { 101: 101, 87: 87 }
+            { 101: 101, 87: 87 },
           ],
           86: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
@@ -9481,14 +9475,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = {
                   propertyName: null,
                   elapsedTime: null,
-                  pseudoElement: null
+                  pseudoElement: null,
                 };
               o.augmentClass(r, i), (t.exports = r);
             },
-            { 80: 80 }
+            { 80: 80 },
           ],
           87: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
@@ -9496,37 +9490,37 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var o = e(80),
                 i = e(102),
                 a = {
-                  view: function(e) {
+                  view: function (e) {
                     if (e.view) return e.view;
                     var t = i(e);
                     if (t.window === t) return t;
                     var n = t.ownerDocument;
                     return n ? n.defaultView || n.parentWindow : window;
                   },
-                  detail: function(e) {
+                  detail: function (e) {
                     return e.detail || 0;
-                  }
+                  },
                 };
               o.augmentClass(r, a), (t.exports = r);
             },
-            { 102: 102, 80: 80 }
+            { 102: 102, 80: 80 },
           ],
           88: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r) {
                 return o.call(this, e, t, n, r);
               }
               var o = e(84),
                 i = {
-                  deltaX: function(e) {
+                  deltaX: function (e) {
                     return "deltaX" in e
                       ? e.deltaX
                       : "wheelDeltaX" in e
                       ? -e.wheelDeltaX
                       : 0;
                   },
-                  deltaY: function(e) {
+                  deltaY: function (e) {
                     return "deltaY" in e
                       ? e.deltaY
                       : "wheelDeltaY" in e
@@ -9536,19 +9530,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       : 0;
                   },
                   deltaZ: null,
-                  deltaMode: null
+                  deltaMode: null,
                 };
               o.augmentClass(r, i), (t.exports = r);
             },
-            { 84: 84 }
+            { 84: 84 },
           ],
           89: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(112),
                 o = (e(137), {}),
                 i = {
-                  reinitializeTransaction: function() {
+                  reinitializeTransaction: function () {
                     (this.transactionWrappers = this.getTransactionWrappers()),
                       this.wrapperInitData
                         ? (this.wrapperInitData.length = 0)
@@ -9557,10 +9551,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   },
                   _isInTransaction: !1,
                   getTransactionWrappers: null,
-                  isInTransaction: function() {
+                  isInTransaction: function () {
                     return !!this._isInTransaction;
                   },
-                  perform: function(e, t, n, o, i, a, s, u) {
+                  perform: function (e, t, n, o, i, a, s, u) {
                     this.isInTransaction() && r("27");
                     var l, c;
                     try {
@@ -9582,7 +9576,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     }
                     return c;
                   },
-                  initializeAll: function(e) {
+                  initializeAll: function (e) {
                     for (
                       var t = this.transactionWrappers, n = e;
                       n < t.length;
@@ -9602,7 +9596,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       }
                     }
                   },
-                  closeAll: function(e) {
+                  closeAll: function (e) {
                     this.isInTransaction() || r("28");
                     for (
                       var t = this.transactionWrappers, n = e;
@@ -9624,28 +9618,28 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       }
                     }
                     this.wrapperInitData.length = 0;
-                  }
+                  },
                 };
               t.exports = i;
             },
-            { 112: 112, 137: 137 }
+            { 112: 112, 137: 137 },
           ],
           90: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = {
                 currentScrollLeft: 0,
                 currentScrollTop: 0,
-                refreshScrollValues: function(e) {
+                refreshScrollValues: function (e) {
                   (r.currentScrollLeft = e.x), (r.currentScrollTop = e.y);
-                }
+                },
               };
               t.exports = r;
             },
-            {}
+            {},
           ],
           91: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 return (
@@ -9665,10 +9659,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               e(137);
               t.exports = r;
             },
-            { 112: 112, 137: 137 }
+            { 112: 112, 137: 137 },
           ],
           92: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 for (
@@ -9690,16 +9684,16 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var o = 65521;
               t.exports = r;
             },
-            {}
+            {},
           ],
           93: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
-              var r = function(e) {
+              var r = function (e) {
                 return "undefined" != typeof MSApp &&
                   MSApp.execUnsafeLocalFunction
-                  ? function(t, n, r, o) {
-                      MSApp.execUnsafeLocalFunction(function() {
+                  ? function (t, n, r, o) {
+                      MSApp.execUnsafeLocalFunction(function () {
                         return e(t, n, r, o);
                       });
                     }
@@ -9707,10 +9701,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               };
               t.exports = r;
             },
-            {}
+            {},
           ],
           94: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n) {
                 return null == t || "boolean" == typeof t || "" === t
@@ -9723,10 +9717,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = (e(142), o.isUnitlessNumber);
               t.exports = r;
             },
-            { 142: 142, 4: 4 }
+            { 142: 142, 4: 4 },
           ],
           95: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = "" + e,
@@ -9768,10 +9762,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var i = /["'&<>]/;
               t.exports = o;
             },
-            {}
+            {},
           ],
           96: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 if (null == e) return null;
@@ -9796,12 +9790,12 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               137: 137,
               142: 142,
               33: 33,
-              57: 57
-            }
+              57: 57,
+            },
           ],
           97: [
-            function(e, t, n) {
-              (function(n) {
+            function (e, t, n) {
+              (function (n) {
                 "use strict";
                 function r(e, t, n, r) {
                   if (e && "object" == typeof e) {
@@ -9819,20 +9813,20 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 void 0 !== n && n.env, (t.exports = o);
               }.call(this, void 0));
             },
-            { 117: 117, 142: 142, 22: 22 }
+            { 117: 117, 142: 142, 22: 22 },
           ],
           98: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n) {
                 Array.isArray(e) ? e.forEach(t, n) : e && t.call(n, e);
               }
               t.exports = r;
             },
-            {}
+            {},
           ],
           99: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t,
@@ -9846,10 +9840,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               t.exports = r;
             },
-            {}
+            {},
           ],
           100: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 if (e.key) {
@@ -9877,7 +9871,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   Menu: "ContextMenu",
                   Apps: "ContextMenu",
                   Scroll: "ScrollLock",
-                  MozPrintableKey: "Unidentified"
+                  MozPrintableKey: "Unidentified",
                 },
                 a = {
                   8: "Backspace",
@@ -9915,14 +9909,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   123: "F12",
                   144: "NumLock",
                   145: "ScrollLock",
-                  224: "Meta"
+                  224: "Meta",
                 };
               t.exports = r;
             },
-            { 99: 99 }
+            { 99: 99 },
           ],
           101: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = this,
@@ -9938,14 +9932,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 Alt: "altKey",
                 Control: "ctrlKey",
                 Meta: "metaKey",
-                Shift: "shiftKey"
+                Shift: "shiftKey",
               };
               t.exports = o;
             },
-            {}
+            {},
           ],
           102: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = e.target || e.srcElement || window;
@@ -9956,10 +9950,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               t.exports = r;
             },
-            {}
+            {},
           ],
           103: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 for (var t; (t = e._renderedNodeType) === o.COMPOSITE; )
@@ -9973,10 +9967,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var o = e(62);
               t.exports = r;
             },
-            { 62: 62 }
+            { 62: 62 },
           ],
           104: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = e && ((o && e[o]) || e[i]);
@@ -9986,10 +9980,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = "@@iterator";
               t.exports = r;
             },
-            {}
+            {},
           ],
           105: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 for (; e && e.firstChild; ) e = e.firstChild;
@@ -10013,10 +10007,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               t.exports = i;
             },
-            {}
+            {},
           ],
           106: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r() {
                 return (
@@ -10033,10 +10027,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = null;
               t.exports = r;
             },
-            { 123: 123 }
+            { 123: 123 },
           ],
           107: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 var n = {};
@@ -10062,7 +10056,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   animationend: r("Animation", "AnimationEnd"),
                   animationiteration: r("Animation", "AnimationIteration"),
                   animationstart: r("Animation", "AnimationStart"),
-                  transitionend: r("Transition", "TransitionEnd")
+                  transitionend: r("Transition", "TransitionEnd"),
                 },
                 s = {},
                 u = {};
@@ -10076,10 +10070,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   delete a.transitionend.transition),
                 (t.exports = o);
             },
-            { 123: 123 }
+            { 123: 123 },
           ],
           108: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 if (e) {
@@ -10127,7 +10121,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   (e(121),
                   e(137),
                   e(142),
-                  function(e) {
+                  function (e) {
                     this.construct(e);
                   });
               s(p.prototype, u, { _instantiateReactComponent: i }),
@@ -10141,11 +10135,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               143: 143,
               29: 29,
               49: 49,
-              54: 54
-            }
+              54: 54,
+            },
           ],
           109: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 if (!i.canUseDOM || (t && !("addEventListener" in document)))
@@ -10176,10 +10170,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   !0 !== document.implementation.hasFeature("", "")),
                 (t.exports = r);
             },
-            { 123: 123 }
+            { 123: 123 },
           ],
           110: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = e && e.nodeName && e.nodeName.toLowerCase();
@@ -10200,14 +10194,14 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 text: !0,
                 time: !0,
                 url: !0,
-                week: !0
+                week: !0,
               };
               t.exports = r;
             },
-            {}
+            {},
           ],
           111: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return '"' + o(e) + '"';
@@ -10215,10 +10209,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var o = e(95);
               t.exports = r;
             },
-            { 95: 95 }
+            { 95: 95 },
           ],
           112: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 for (
@@ -10236,24 +10230,24 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 n +=
                   " for the full message or use the non-minified dev environment for full errors and additional helpful warnings.";
                 var o = new Error(n);
-                throw ((o.name = "Invariant Violation"),
-                (o.framesToPop = 1),
-                o);
+                throw (
+                  ((o.name = "Invariant Violation"), (o.framesToPop = 1), o)
+                );
               }
               t.exports = r;
             },
-            {}
+            {},
           ],
           113: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(60);
               t.exports = r.renderSubtreeIntoContainer;
             },
-            { 60: 60 }
+            { 60: 60 },
           ],
           114: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r,
                 o = e(123),
@@ -10261,7 +10255,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 a = /^[ \r\n\t\f]/,
                 s = /<(!--|link|noscript|meta|script|style)[ \r\n\t\f\/>]/,
                 u = e(93),
-                l = u(function(e, t) {
+                l = u(function (e, t) {
                   if (e.namespaceURI !== i.svg || "innerHTML" in e)
                     e.innerHTML = t;
                   else {
@@ -10275,7 +10269,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 var c = document.createElement("div");
                 (c.innerHTML = " "),
                   "" === c.innerHTML &&
-                    (l = function(e, t) {
+                    (l = function (e, t) {
                       if (
                         (e.parentNode && e.parentNode.replaceChild(e, e),
                         a.test(t) || ("<" === t[0] && s.test(t)))
@@ -10291,15 +10285,15 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               t.exports = l;
             },
-            { 10: 10, 123: 123, 93: 93 }
+            { 10: 10, 123: 123, 93: 93 },
           ],
           115: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(123),
                 o = e(95),
                 i = e(114),
-                a = function(e, t) {
+                a = function (e, t) {
                   if (t) {
                     var n = e.firstChild;
                     if (n && n === e.lastChild && 3 === n.nodeType)
@@ -10309,16 +10303,16 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 };
               r.canUseDOM &&
                 ("textContent" in document.documentElement ||
-                  (a = function(e, t) {
+                  (a = function (e, t) {
                     if (3 === e.nodeType) return void (e.nodeValue = t);
                     i(e, o(t));
                   })),
                 (t.exports = a);
             },
-            { 114: 114, 123: 123, 95: 95 }
+            { 114: 114, 123: 123, 95: 95 },
           ],
           116: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 var n = null === e || !1 === e,
@@ -10332,10 +10326,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               t.exports = r;
             },
-            {}
+            {},
           ],
           117: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 return e && "object" == typeof e && null != e.key
@@ -10408,81 +10402,81 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               137: 137,
               142: 142,
               22: 22,
-              48: 48
-            }
+              48: 48,
+            },
           ],
           118: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = (e(143), e(129)),
                 o = (e(142), r);
               t.exports = o;
             },
-            { 129: 129, 142: 142, 143: 143 }
+            { 129: 129, 142: 142, 143: 143 },
           ],
           119: [
-            function(t, n, r) {
+            function (t, n, r) {
               "use strict";
               var o = e.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
               n.exports = o.ReactCurrentOwner;
             },
-            {}
+            {},
           ],
           120: [
-            function(t, n, r) {
+            function (t, n, r) {
               "use strict";
               n.exports = e;
             },
-            {}
+            {},
           ],
           121: [
-            function(t, n, r) {
+            function (t, n, r) {
               "use strict";
               var o = e.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
               n.exports = o.getNextDebugID;
             },
-            {}
+            {},
           ],
           122: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(129),
                 o = {
-                  listen: function(e, t, n) {
+                  listen: function (e, t, n) {
                     return e.addEventListener
                       ? (e.addEventListener(t, n, !1),
                         {
-                          remove: function() {
+                          remove: function () {
                             e.removeEventListener(t, n, !1);
-                          }
+                          },
                         })
                       : e.attachEvent
                       ? (e.attachEvent("on" + t, n),
                         {
-                          remove: function() {
+                          remove: function () {
                             e.detachEvent("on" + t, n);
-                          }
+                          },
                         })
                       : void 0;
                   },
-                  capture: function(e, t, n) {
+                  capture: function (e, t, n) {
                     return e.addEventListener
                       ? (e.addEventListener(t, n, !0),
                         {
-                          remove: function() {
+                          remove: function () {
                             e.removeEventListener(t, n, !0);
-                          }
+                          },
                         })
                       : { remove: r };
                   },
-                  registerDefault: function() {}
+                  registerDefault: function () {},
                 };
               t.exports = o;
             },
-            { 129: 129 }
+            { 129: 129 },
           ],
           123: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = !(
                   "undefined" == typeof window ||
@@ -10495,27 +10489,27 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   canUseEventListeners:
                     r && !(!window.addEventListener && !window.attachEvent),
                   canUseViewport: r && !!window.screen,
-                  isInWorker: !r
+                  isInWorker: !r,
                 };
               t.exports = o;
             },
-            {}
+            {},
           ],
           124: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
-                return e.replace(o, function(e, t) {
+                return e.replace(o, function (e, t) {
                   return t.toUpperCase();
                 });
               }
               var o = /-(.)/g;
               t.exports = r;
             },
-            {}
+            {},
           ],
           125: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return o(e.replace(i, "ms-"));
@@ -10524,10 +10518,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = /^-ms-/;
               t.exports = r;
             },
-            { 124: 124 }
+            { 124: 124 },
           ],
           126: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 return (
@@ -10545,10 +10539,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var o = e(139);
               t.exports = r;
             },
-            { 139: 139 }
+            { 139: 139 },
           ],
           127: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = e.length;
@@ -10583,10 +10577,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var a = e(137);
               t.exports = i;
             },
-            { 137: 137 }
+            { 137: 137 },
           ],
           128: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = e.match(c);
@@ -10615,41 +10609,41 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 c = /^\s*<(\w+)/;
               t.exports = o;
             },
-            { 123: 123, 127: 127, 133: 133, 137: 137 }
+            { 123: 123, 127: 127, 133: 133, 137: 137 },
           ],
           129: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
-                return function() {
+                return function () {
                   return e;
                 };
               }
-              var o = function() {};
+              var o = function () {};
               (o.thatReturns = r),
                 (o.thatReturnsFalse = r(!1)),
                 (o.thatReturnsTrue = r(!0)),
                 (o.thatReturnsNull = r(null)),
-                (o.thatReturnsThis = function() {
+                (o.thatReturnsThis = function () {
                   return this;
                 }),
-                (o.thatReturnsArgument = function(e) {
+                (o.thatReturnsArgument = function (e) {
                   return e;
                 }),
                 (t.exports = o);
             },
-            {}
+            {},
           ],
           130: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = {};
               t.exports = r;
             },
-            {}
+            {},
           ],
           131: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 try {
@@ -10658,10 +10652,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               t.exports = r;
             },
-            {}
+            {},
           ],
           132: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 if (
@@ -10678,10 +10672,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               t.exports = r;
             },
-            {}
+            {},
           ],
           133: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return (
@@ -10708,7 +10702,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   col: [
                     2,
                     "<table><tbody></tbody><colgroup>",
-                    "</colgroup></table>"
+                    "</colgroup></table>",
                   ],
                   legend: [1, "<fieldset>", "</fieldset>"],
                   param: [1, "<object>", "</object>"],
@@ -10721,7 +10715,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   tfoot: l,
                   thead: l,
                   td: c,
-                  th: c
+                  th: c,
                 };
               [
                 "circle",
@@ -10741,31 +10735,31 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 "rect",
                 "stop",
                 "text",
-                "tspan"
-              ].forEach(function(e) {
+                "tspan",
+              ].forEach(function (e) {
                 (d[e] = p), (s[e] = !0);
               }),
                 (t.exports = r);
             },
-            { 123: 123, 137: 137 }
+            { 123: 123, 137: 137 },
           ],
           134: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return e.Window && e instanceof e.Window
                   ? {
                       x: e.pageXOffset || e.document.documentElement.scrollLeft,
-                      y: e.pageYOffset || e.document.documentElement.scrollTop
+                      y: e.pageYOffset || e.document.documentElement.scrollTop,
                     }
                   : { x: e.scrollLeft, y: e.scrollTop };
               }
               t.exports = r;
             },
-            {}
+            {},
           ],
           135: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return e.replace(o, "-$1").toLowerCase();
@@ -10773,10 +10767,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var o = /([A-Z])/g;
               t.exports = r;
             },
-            {}
+            {},
           ],
           136: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return o(e).replace(i, "-ms-");
@@ -10785,10 +10779,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 i = /^ms-/;
               t.exports = r;
             },
-            { 135: 135 }
+            { 135: 135 },
           ],
           137: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r, i, a, s, u) {
                 if ((o(t), !e)) {
@@ -10801,7 +10795,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     var c = [n, r, i, a, s, u],
                       p = 0;
                     (l = new Error(
-                      t.replace(/%s/g, function() {
+                      t.replace(/%s/g, function () {
                         return c[p++];
                       })
                     )),
@@ -10810,13 +10804,13 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   throw ((l.framesToPop = 1), l);
                 }
               }
-              var o = function(e) {};
+              var o = function (e) {};
               t.exports = r;
             },
-            {}
+            {},
           ],
           138: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = e ? e.ownerDocument || e : document,
@@ -10832,10 +10826,10 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               }
               t.exports = r;
             },
-            {}
+            {},
           ],
           139: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 return o(e) && 3 == e.nodeType;
@@ -10843,23 +10837,23 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var o = e(138);
               t.exports = r;
             },
-            { 138: 138 }
+            { 138: 138 },
           ],
           140: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 var t = {};
-                return function(n) {
+                return function (n) {
                   return t.hasOwnProperty(n) || (t[n] = e.call(this, n)), t[n];
                 };
               }
               t.exports = r;
             },
-            {}
+            {},
           ],
           141: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t) {
                 return e === t
@@ -10885,19 +10879,19 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var i = Object.prototype.hasOwnProperty;
               t.exports = o;
             },
-            {}
+            {},
           ],
           142: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(129),
                 o = r;
               t.exports = o;
             },
-            { 129: 129 }
+            { 129: 129 },
           ],
           143: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e) {
                 if (null === e || void 0 === e)
@@ -10909,7 +10903,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
               var o = Object.getOwnPropertySymbols,
                 i = Object.prototype.hasOwnProperty,
                 a = Object.prototype.propertyIsEnumerable;
-              t.exports = (function() {
+              t.exports = (function () {
                 try {
                   if (!Object.assign) return !1;
                   var e = new String("abc");
@@ -10920,7 +10914,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                   if (
                     "0123456789" !==
                     Object.getOwnPropertyNames(t)
-                      .map(function(e) {
+                      .map(function (e) {
                         return t[e];
                       })
                       .join("")
@@ -10928,7 +10922,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     return !1;
                   var r = {};
                   return (
-                    "abcdefghijklmnopqrst".split("").forEach(function(e) {
+                    "abcdefghijklmnopqrst".split("").forEach(function (e) {
                       r[e] = e;
                     }),
                     "abcdefghijklmnopqrst" ===
@@ -10939,7 +10933,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 }
               })()
                 ? Object.assign
-                : function(e, t) {
+                : function (e, t) {
                     for (var n, s, u = r(e), l = 1; l < arguments.length; l++) {
                       n = Object(arguments[l]);
                       for (var c in n) i.call(n, c) && (u[c] = n[c]);
@@ -10952,34 +10946,34 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     return u;
                   };
             },
-            {}
+            {},
           ],
           144: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               function r(e, t, n, r, o) {}
               t.exports = r;
             },
-            { 137: 137, 142: 142, 147: 147 }
+            { 137: 137, 142: 142, 147: 147 },
           ],
           145: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(146);
-              t.exports = function(e) {
+              t.exports = function (e) {
                 return r(e, !1);
               };
             },
-            { 146: 146 }
+            { 146: 146 },
           ],
           146: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               var r = e(129),
                 o = e(137),
                 i = (e(142), e(147)),
                 a = e(144);
-              t.exports = function(e, t) {
+              t.exports = function (e, t) {
                 function n(e) {
                   var t = e && ((E && e[E]) || e[x]);
                   if ("function" == typeof t) return t;
@@ -11261,11 +11255,11 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     object: c("object"),
                     string: c("string"),
                     symbol: c("symbol"),
-                    any: (function() {
+                    any: (function () {
                       return l(r.thatReturnsNull);
                     })(),
                     arrayOf: p,
-                    element: (function() {
+                    element: (function () {
                       function t(t, n, r, o, i) {
                         var a = t[n];
                         if (!e(a)) {
@@ -11286,7 +11280,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                       return l(t);
                     })(),
                     instanceOf: d,
-                    node: (function() {
+                    node: (function () {
                       function e(e, t, n, r, o) {
                         return g(e[t])
                           ? null
@@ -11305,7 +11299,7 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     objectOf: h,
                     oneOf: f,
                     oneOfType: m,
-                    shape: v
+                    shape: v,
                   };
                 return (
                   (u.prototype = Error.prototype),
@@ -11315,15 +11309,15 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 );
               };
             },
-            { 129: 129, 137: 137, 142: 142, 144: 144, 147: 147 }
+            { 129: 129, 137: 137, 142: 142, 144: 144, 147: 147 },
           ],
           147: [
-            function(e, t, n) {
+            function (e, t, n) {
               "use strict";
               t.exports = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";
             },
-            {}
-          ]
+            {},
+          ],
         },
         {},
         [45]
@@ -11333,8 +11327,8 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
 });
 /*! http://mths.be/fromcodepoint v0.1.0 by @mathias */
 if (!String.fromCodePoint) {
-  (function() {
-    var defineProperty = (function() {
+  (function () {
+    var defineProperty = (function () {
       // IE 8 only supports `Object.defineProperty` on DOM elements
       try {
         var object = {};
@@ -11345,7 +11339,7 @@ if (!String.fromCodePoint) {
     })();
     var stringFromCharCode = String.fromCharCode;
     var floor = Math.floor;
-    var fromCodePoint = function() {
+    var fromCodePoint = function () {
       var MAX_SIZE = 0x4000;
       var codeUnits = [];
       var highSurrogate;
@@ -11388,7 +11382,7 @@ if (!String.fromCodePoint) {
       defineProperty(String, "fromCodePoint", {
         value: fromCodePoint,
         configurable: true,
-        writable: true
+        writable: true,
       });
     } else {
       String.fromCodePoint = fromCodePoint;
@@ -11398,9 +11392,9 @@ if (!String.fromCodePoint) {
 
 /*! http://mths.be/codepointat v0.1.0 by @mathias */
 if (!String.prototype.codePointAt) {
-  (function() {
+  (function () {
     "use strict"; // needed to support `apply`/`call` with `undefined`/`null`
-    var codePointAt = function(position) {
+    var codePointAt = function (position) {
       if (this == null) {
         throw TypeError();
       }
@@ -11438,7 +11432,7 @@ if (!String.prototype.codePointAt) {
       Object.defineProperty(String.prototype, "codePointAt", {
         value: codePointAt,
         configurable: true,
-        writable: true
+        writable: true,
       });
     } else {
       String.prototype.codePointAt = codePointAt;
@@ -11476,7 +11470,7 @@ function registerAsciinemaPlayerElement() {
 
   function fixEscapeCodes(text) {
     if (text) {
-      var f = function(match, p1, offset, string) {
+      var f = function (match, p1, offset, string) {
         return String.fromCodePoint(parseInt(p1, 16));
       };
 
@@ -11489,7 +11483,7 @@ function registerAsciinemaPlayerElement() {
     }
   }
 
-  AsciinemaPlayerProto.createdCallback = function() {
+  AsciinemaPlayerProto.createdCallback = function () {
     var self = this;
 
     var opts = merge(
@@ -11509,20 +11503,20 @@ function registerAsciinemaPlayerElement() {
       attribute(this, "author-url", "authorURL"),
       attribute(this, "author-img-url", "authorImgURL"),
       {
-        onCanPlay: function() {
+        onCanPlay: function () {
           self.dispatchEvent(new CustomEvent("loadedmetadata"));
           self.dispatchEvent(new CustomEvent("loadeddata"));
           self.dispatchEvent(new CustomEvent("canplay"));
           self.dispatchEvent(new CustomEvent("canplaythrough"));
         },
 
-        onPlay: function() {
+        onPlay: function () {
           self.dispatchEvent(new CustomEvent("play"));
         },
 
-        onPause: function() {
+        onPause: function () {
           self.dispatchEvent(new CustomEvent("pause"));
-        }
+        },
       }
     );
 
@@ -11533,50 +11527,50 @@ function registerAsciinemaPlayerElement() {
     );
   };
 
-  AsciinemaPlayerProto.attachedCallback = function() {
+  AsciinemaPlayerProto.attachedCallback = function () {
     var self = this;
-    setTimeout(function() {
+    setTimeout(function () {
       self.dispatchEvent(new CustomEvent("attached"));
     }, 0);
   };
 
-  AsciinemaPlayerProto.detachedCallback = function() {
+  AsciinemaPlayerProto.detachedCallback = function () {
     asciinema.player.js.UnmountPlayer(this);
     this.player = undefined;
   };
 
-  AsciinemaPlayerProto.play = function() {
+  AsciinemaPlayerProto.play = function () {
     this.player.play();
   };
 
-  AsciinemaPlayerProto.pause = function() {
+  AsciinemaPlayerProto.pause = function () {
     this.player.pause();
   };
 
   Object.defineProperty(AsciinemaPlayerProto, "duration", {
-    get: function() {
+    get: function () {
       return this.player.getDuration() || 0;
     },
 
-    set: function(value) {}
+    set: function (value) {},
   });
 
   Object.defineProperty(AsciinemaPlayerProto, "currentTime", {
-    get: function() {
+    get: function () {
       return this.player.getCurrentTime();
     },
 
-    set: function(value) {
+    set: function (value) {
       this.player.setCurrentTime(value);
-    }
+    },
   });
 
   document.registerElement("asciinema-player", {
-    prototype: AsciinemaPlayerProto
+    prototype: AsciinemaPlayerProto,
   });
 }
 
-(function() {
+(function () {
   var g,
     aa = aa || {},
     ba = this;
@@ -11639,13 +11633,13 @@ function registerAsciinemaPlayerElement() {
     if (!b) throw Error();
     if (2 < arguments.length) {
       var d = Array.prototype.slice.call(arguments, 2);
-      return function() {
+      return function () {
         var c = Array.prototype.slice.call(arguments);
         Array.prototype.unshift.apply(c, d);
         return b.apply(a, c);
       };
     }
-    return function() {
+    return function () {
       return b.apply(a, arguments);
     };
   }
@@ -11663,7 +11657,7 @@ function registerAsciinemaPlayerElement() {
     b.Zd = a.prototype;
     b.prototype = new c();
     b.prototype.constructor = b;
-    b.base = function(b, c, f) {
+    b.base = function (b, c, f) {
       for (
         var d = Array(arguments.length - 2), e = 2;
         e < arguments.length;
@@ -11674,17 +11668,17 @@ function registerAsciinemaPlayerElement() {
     };
   }
   var ra = String.prototype.trim
-      ? function(b) {
+      ? function (b) {
           return b.trim();
         }
-      : function(b) {
+      : function (b) {
           return b.replace(/^[\s\xa0]+|[\s\xa0]+$/g, "");
         },
     sa = String.prototype.repeat
-      ? function(b, a) {
+      ? function (b, a) {
           return b.repeat(a);
         }
-      : function(b, a) {
+      : function (b, a) {
           return Array(a + 1).join(b);
         };
   function ta(b, a) {
@@ -11752,16 +11746,16 @@ function registerAsciinemaPlayerElement() {
     Ja = Da(1),
     Ka = Da(16777216);
   g = Aa.prototype;
-  g.Pf = function() {
+  g.Pf = function () {
     return 0 < this.Na.length ? this.Na[0] : this.Nc;
   };
-  g.wd = function() {
+  g.wd = function () {
     if (this.Fb()) return -this.mb().wd();
     for (var b = 0, a = 1, c = 0; c < this.Na.length; c++)
       var d = La(this, c), b = b + (0 <= d ? d : Ha + d) * a, a = a * Ha;
     return b;
   };
-  g.toString = function(b) {
+  g.toString = function (b) {
     b = b || 10;
     if (2 > b || 36 < b) throw Error("radix out of range: " + b);
     if (this.ic()) return "0";
@@ -11778,34 +11772,34 @@ function registerAsciinemaPlayerElement() {
   function La(b, a) {
     return 0 > a ? 0 : a < b.Na.length ? b.Na[a] : b.Nc;
   }
-  g.ic = function() {
+  g.ic = function () {
     if (0 != this.Nc) return !1;
     for (var b = 0; b < this.Na.length; b++) if (0 != this.Na[b]) return !1;
     return !0;
   };
-  g.Fb = function() {
+  g.Fb = function () {
     return -1 == this.Nc;
   };
-  g.yf = function(b) {
+  g.yf = function (b) {
     return 0 < this.compare(b);
   };
-  g.zf = function(b) {
+  g.zf = function (b) {
     return 0 <= this.compare(b);
   };
-  g.Ve = function() {
+  g.Ve = function () {
     return 0 > this.compare(Ka);
   };
-  g.We = function(b) {
+  g.We = function (b) {
     return 0 >= this.compare(b);
   };
-  g.compare = function(b) {
+  g.compare = function (b) {
     b = this.Ae(b);
     return b.Fb() ? -1 : b.ic() ? 0 : 1;
   };
-  g.mb = function() {
+  g.mb = function () {
     return this.If().add(Ja);
   };
-  g.add = function(b) {
+  g.add = function (b) {
     for (
       var a = Math.max(this.Na.length, b.Na.length), c = [], d = 0, e = 0;
       e <= a;
@@ -11820,17 +11814,13 @@ function registerAsciinemaPlayerElement() {
     }
     return new Aa(c, c[c.length - 1] & -2147483648 ? -1 : 0);
   };
-  g.Ae = function(b) {
+  g.Ae = function (b) {
     return this.add(b.mb());
   };
-  g.multiply = function(b) {
+  g.multiply = function (b) {
     if (this.ic() || b.ic()) return Fa;
     if (this.Fb())
-      return b.Fb()
-        ? this.mb().multiply(b.mb())
-        : this.mb()
-            .multiply(b)
-            .mb();
+      return b.Fb() ? this.mb().multiply(b.mb()) : this.mb().multiply(b).mb();
     if (b.Fb()) return this.multiply(b.mb()).mb();
     if (this.Ve() && b.Ve()) return Ea(this.wd() * b.wd());
     for (var a = this.Na.length + b.Na.length, c = [], d = 0; d < 2 * a; d++)
@@ -11889,11 +11879,11 @@ function registerAsciinemaPlayerElement() {
     }
     return c;
   }
-  g.If = function() {
+  g.If = function () {
     for (var b = this.Na.length, a = [], c = 0; c < b; c++) a[c] = ~this.Na[c];
     return new Aa(a, ~this.Nc);
   };
-  g.shiftLeft = function(b) {
+  g.shiftLeft = function (b) {
     var a = b >> 5;
     b %= 32;
     for (
@@ -11907,7 +11897,7 @@ function registerAsciinemaPlayerElement() {
           : La(this, e - a);
     return new Aa(d, this.Nc);
   };
-  g.ad = function(b) {
+  g.ad = function (b) {
     var a = b >> 5;
     b %= 32;
     for (var c = this.Na.length - a, d = [], e = 0; e < c; e++)
@@ -11922,36 +11912,36 @@ function registerAsciinemaPlayerElement() {
   }
   g = Pa.prototype;
   g.yc = "";
-  g.set = function(b) {
+  g.set = function (b) {
     this.yc = "" + b;
   };
-  g.append = function(b, a, c) {
+  g.append = function (b, a, c) {
     this.yc += String(b);
     if (null != a)
       for (var d = 1; d < arguments.length; d++) this.yc += arguments[d];
     return this;
   };
-  g.clear = function() {
+  g.clear = function () {
     this.yc = "";
   };
-  g.toString = function() {
+  g.toString = function () {
     return this.yc;
   };
   var Qa = Array.prototype.indexOf
-      ? function(b, a, c) {
+      ? function (b, a, c) {
           return Array.prototype.indexOf.call(b, a, c);
         }
-      : function(b, a, c) {
+      : function (b, a, c) {
           c = null == c ? 0 : 0 > c ? Math.max(0, b.length + c) : c;
           if (ca(b)) return ca(a) && 1 == a.length ? b.indexOf(a, c) : -1;
           for (; c < b.length; c++) if (c in b && b[c] === a) return c;
           return -1;
         },
     Ra = Array.prototype.forEach
-      ? function(b, a, c) {
+      ? function (b, a, c) {
           Array.prototype.forEach.call(b, a, c);
         }
-      : function(b, a, c) {
+      : function (b, a, c) {
           for (var d = b.length, e = ca(b) ? b.split("") : b, f = 0; f < d; f++)
             f in e && a.call(c, e[f], f, b);
         };
@@ -11980,7 +11970,7 @@ function registerAsciinemaPlayerElement() {
     for (var c = Array(b.length), d = 0; d < b.length; d++)
       c[d] = { index: d, value: b[d] };
     var e = a || Wa;
-    Va(c, function(a, b) {
+    Va(c, function (a, b) {
       return e(a.value, b.value) || a.index - b.index;
     });
     for (d = 0; d < b.length; d++) b[d] = c[d].value;
@@ -12000,11 +11990,11 @@ function registerAsciinemaPlayerElement() {
   var db;
   if ("undefined" === typeof q) var q = {};
   if ("undefined" === typeof eb)
-    var eb = function() {
+    var eb = function () {
       throw Error("No *print-fn* fn set for evaluation environment");
     };
   if ("undefined" === typeof fb)
-    var fb = function() {
+    var fb = function () {
       throw Error("No *print-err-fn* fn set for evaluation environment");
     };
   var gb = null;
@@ -12065,13 +12055,13 @@ function registerAsciinemaPlayerElement() {
         return Cb.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  Cb.c = function(b, a) {
+  Cb.c = function (b, a) {
     return b[a];
   };
-  Cb.A = function(b, a, c) {
+  Cb.A = function (b, a, c) {
     return Eb(Cb, b[a], c);
   };
-  Cb.N = function(b) {
+  Cb.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -12081,7 +12071,7 @@ function registerAsciinemaPlayerElement() {
   Cb.L = 2;
   function Fb(b) {
     return Gb(
-      function(a, b) {
+      function (a, b) {
         a.push(b);
         return a;
       },
@@ -12128,7 +12118,7 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  A.c = function(b, a) {
+  A.c = function (b, a) {
     if (null != b && null != b.aa) return b.aa(b, a);
     var c = A[p(null == b ? null : b)];
     if (null != c) return c.c ? c.c(b, a) : c.call(null, b, a);
@@ -12136,7 +12126,7 @@ function registerAsciinemaPlayerElement() {
     if (null != c) return c.c ? c.c(b, a) : c.call(null, b, a);
     throw wb("IIndexed.-nth", b);
   };
-  A.l = function(b, a, c) {
+  A.l = function (b, a, c) {
     if (null != b && null != b.la) return b.la(b, a, c);
     var d = A[p(null == b ? null : b)];
     if (null != d) return d.l ? d.l(b, a, c) : d.call(null, b, a, c);
@@ -12174,7 +12164,7 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  Wb.c = function(b, a) {
+  Wb.c = function (b, a) {
     if (null != b && null != b.V) return b.V(b, a);
     var c = Wb[p(null == b ? null : b)];
     if (null != c) return c.c ? c.c(b, a) : c.call(null, b, a);
@@ -12182,7 +12172,7 @@ function registerAsciinemaPlayerElement() {
     if (null != c) return c.c ? c.c(b, a) : c.call(null, b, a);
     throw wb("ILookup.-lookup", b);
   };
-  Wb.l = function(b, a, c) {
+  Wb.l = function (b, a, c) {
     if (null != b && null != b.H) return b.H(b, a, c);
     var d = Wb[p(null == b ? null : b)];
     if (null != d) return d.l ? d.l(b, a, c) : d.call(null, b, a, c);
@@ -12303,7 +12293,7 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  pc.c = function(b, a) {
+  pc.c = function (b, a) {
     if (null != b && null != b.Ga) return b.Ga(b, a);
     var c = pc[p(null == b ? null : b)];
     if (null != c) return c.c ? c.c(b, a) : c.call(null, b, a);
@@ -12311,7 +12301,7 @@ function registerAsciinemaPlayerElement() {
     if (null != c) return c.c ? c.c(b, a) : c.call(null, b, a);
     throw wb("IReduce.-reduce", b);
   };
-  pc.l = function(b, a, c) {
+  pc.l = function (b, a, c) {
     if (null != b && null != b.Ha) return b.Ha(b, a, c);
     var d = pc[p(null == b ? null : b)];
     if (null != d) return d.l ? d.l(b, a, c) : d.call(null, b, a, c);
@@ -12508,7 +12498,7 @@ function registerAsciinemaPlayerElement() {
           throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
       }
     };
-  Vc.c = function(b, a) {
+  Vc.c = function (b, a) {
     if (null != b && null != b.je) return b.je(b, a);
     var c = Vc[p(null == b ? null : b)];
     if (null != c) return c.c ? c.c(b, a) : c.call(null, b, a);
@@ -12516,7 +12506,7 @@ function registerAsciinemaPlayerElement() {
     if (null != c) return c.c ? c.c(b, a) : c.call(null, b, a);
     throw wb("ISwap.-swap!", b);
   };
-  Vc.l = function(b, a, c) {
+  Vc.l = function (b, a, c) {
     if (null != b && null != b.ke) return b.ke(b, a, c);
     var d = Vc[p(null == b ? null : b)];
     if (null != d) return d.l ? d.l(b, a, c) : d.call(null, b, a, c);
@@ -12524,7 +12514,7 @@ function registerAsciinemaPlayerElement() {
     if (null != d) return d.l ? d.l(b, a, c) : d.call(null, b, a, c);
     throw wb("ISwap.-swap!", b);
   };
-  Vc.M = function(b, a, c, d) {
+  Vc.M = function (b, a, c, d) {
     if (null != b && null != b.le) return b.le(b, a, c, d);
     var e = Vc[p(null == b ? null : b)];
     if (null != e) return e.M ? e.M(b, a, c, d) : e.call(null, b, a, c, d);
@@ -12532,7 +12522,7 @@ function registerAsciinemaPlayerElement() {
     if (null != e) return e.M ? e.M(b, a, c, d) : e.call(null, b, a, c, d);
     throw wb("ISwap.-swap!", b);
   };
-  Vc.Z = function(b, a, c, d, e) {
+  Vc.Z = function (b, a, c, d, e) {
     if (null != b && null != b.me) return b.me(b, a, c, d, e);
     var f = Vc[p(null == b ? null : b)];
     if (null != f)
@@ -12565,7 +12555,7 @@ function registerAsciinemaPlayerElement() {
     this.m = 1073741824;
     this.J = 0;
   }
-  Zc.prototype.Se = function(b, a) {
+  Zc.prototype.Se = function (b, a) {
     return this.Of.append(a);
   };
   function $c(b) {
@@ -12575,10 +12565,10 @@ function registerAsciinemaPlayerElement() {
   }
   var ad =
     "undefined" !== typeof Math.imul && 0 !== Math.imul(4294967295, 5)
-      ? function(b, a) {
+      ? function (b, a) {
           return Math.imul(b, a);
         }
-      : function(b, a) {
+      : function (b, a) {
           var c = b & 65535,
             d = a & 65535;
           return (
@@ -12696,18 +12686,18 @@ function registerAsciinemaPlayerElement() {
     this.J = 4096;
   }
   g = ld.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return this.$b;
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return a instanceof ld ? this.$b === a.$b : !1;
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return C.c(b, this);
@@ -12716,40 +12706,40 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return C.c(b, this);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return C.l(b, this, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return C.c(b, this);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return C.l(b, this, a);
   };
-  g.P = function() {
+  g.P = function () {
     return this.ib;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new ld(this.gb, this.name, this.$b, this.Qc, a);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.Qc;
     return null != b ? b : (this.Qc = b = jd(ed(this.name), hd(this.gb)));
   };
-  g.hd = function() {
+  g.hd = function () {
     return this.name;
   };
-  g.jd = function() {
+  g.jd = function () {
     return this.gb;
   };
-  g.R = function(b, a) {
+  g.R = function (b, a) {
     return Dc(a, this.$b);
   };
   var nd = function nd(a) {
@@ -12762,14 +12752,14 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  nd.h = function(b) {
+  nd.h = function (b) {
     if (b instanceof ld) return b;
     var a = b.indexOf("/");
     return 1 > a
       ? nd.c(null, b)
       : nd.c(b.substring(0, a), b.substring(a + 1, b.length));
   };
-  nd.c = function(b, a) {
+  nd.c = function (b, a) {
     var c = null != b ? [v.h(b), v.h("/"), v.h(a)].join("") : a;
     return new ld(b, a, c, null, null);
   };
@@ -12826,20 +12816,20 @@ function registerAsciinemaPlayerElement() {
         return F.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  F.h = function() {
+  F.h = function () {
     return !0;
   };
-  F.c = function(b, a) {
+  F.c = function (b, a) {
     return null == b ? null == a : b === a || sc(b, a);
   };
-  F.A = function(b, a, c) {
+  F.A = function (b, a, c) {
     for (;;)
       if (F.c(b, a))
         if (y(c)) (b = a), (a = w(c)), (c = y(c));
         else return F.c(a, w(c));
       else return !1;
   };
-  F.N = function(b) {
+  F.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -12850,7 +12840,7 @@ function registerAsciinemaPlayerElement() {
   function rd(b) {
     this.s = b;
   }
-  rd.prototype.next = function() {
+  rd.prototype.next = function () {
     if (null != this.s) {
       var b = w(this.s);
       this.s = y(this.s);
@@ -12883,28 +12873,28 @@ function registerAsciinemaPlayerElement() {
   }
   var xd = td(0, 0);
   Jb["null"] = !0;
-  Kb["null"] = function() {
+  Kb["null"] = function () {
     return 0;
   };
-  Date.prototype.K = function(b, a) {
+  Date.prototype.K = function (b, a) {
     return a instanceof Date && this.valueOf() === a.valueOf();
   };
   Date.prototype.Ac = q;
-  Date.prototype.dc = function(b, a) {
+  Date.prototype.dc = function (b, a) {
     if (a instanceof Date) return Wa(this.valueOf(), a.valueOf());
     throw Error(
       [v.h("Cannot compare "), v.h(this), v.h(" to "), v.h(a)].join("")
     );
   };
-  sc.number = function(b, a) {
+  sc.number = function (b, a) {
     return b === a;
   };
   Hb["function"] = !0;
   lc["function"] = !0;
-  mc["function"] = function() {
+  mc["function"] = function () {
     return null;
   };
-  tc._ = function(b) {
+  tc._ = function (b) {
     return ja(b);
   };
   function yd(b) {
@@ -12915,7 +12905,7 @@ function registerAsciinemaPlayerElement() {
     this.m = 32768;
     this.J = 0;
   }
-  Bd.prototype.pc = function() {
+  Bd.prototype.pc = function () {
     return this.I;
   };
   function Cd(b) {
@@ -13022,10 +13012,10 @@ function registerAsciinemaPlayerElement() {
     this.v = b;
     this.i = a;
   }
-  Pd.prototype.ka = function() {
+  Pd.prototype.ka = function () {
     return this.i < this.v.length;
   };
-  Pd.prototype.next = function() {
+  Pd.prototype.next = function () {
     var b = this.v[this.i];
     this.i += 1;
     return b;
@@ -13038,15 +13028,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = Db.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -13055,20 +13045,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -13078,68 +13068,68 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.aa = function(b, a) {
+  g.aa = function (b, a) {
     var c = a + this.i;
     if (0 <= c && c < this.v.length) return this.v[c];
     throw Error("Index out of bounds");
   };
-  g.la = function(b, a, c) {
+  g.la = function (b, a, c) {
     b = a + this.i;
     return 0 <= b && b < this.v.length ? this.v[b] : c;
   };
-  g.$ = function() {
+  g.$ = function () {
     return new Pd(this.v, this.i);
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     return this.i + 1 < this.v.length ? new Db(this.v, this.i + 1, null) : null;
   };
-  g.W = function() {
+  g.W = function () {
     var b = this.v.length - this.i;
     return 0 > b ? 0 : b;
   };
-  g.Tc = function() {
+  g.Tc = function () {
     var b = this.W(null);
     return 0 < b ? new Td(this, b - 1, null) : null;
   };
-  g.U = function() {
+  g.U = function () {
     return ud(this);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return qd;
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Jd(this.v, a, this.v[this.i], this.i + 1);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Jd(this.v, a, c, this.i);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return this.v[this.i];
   };
-  g.cb = function() {
+  g.cb = function () {
     return this.i + 1 < this.v.length ? new Db(this.v, this.i + 1, null) : qd;
   };
-  g.S = function() {
+  g.S = function () {
     return this.i < this.v.length ? this : null;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Db(this.v, this.i, a);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  Db.prototype[yb] = function() {
+  Db.prototype[yb] = function () {
     return sd(this);
   };
   function Wd(b) {
@@ -13153,15 +13143,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 8192;
   }
   g = Td.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -13170,20 +13160,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -13193,51 +13183,51 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     return 0 < this.i ? new Td(this.Id, this.i - 1, null) : null;
   };
-  g.W = function() {
+  g.W = function () {
     return this.i + 1;
   };
-  g.U = function() {
+  g.U = function () {
     return ud(this);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return A.c(this.Id, this.i);
   };
-  g.cb = function() {
+  g.cb = function () {
     return 0 < this.i ? new Td(this.Id, this.i - 1, null) : qd;
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Td(this.Id, this.i, a);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  Td.prototype[yb] = function() {
+  Td.prototype[yb] = function () {
     return sd(this);
   };
   function Zd(b) {
@@ -13250,7 +13240,7 @@ function registerAsciinemaPlayerElement() {
       else return w(b);
     }
   }
-  sc._ = function(b, a) {
+  sc._ = function (b, a) {
     return b === a;
   };
   var ae = function ae(a) {
@@ -13268,21 +13258,21 @@ function registerAsciinemaPlayerElement() {
         return ae.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  ae.B = function() {
+  ae.B = function () {
     return be;
   };
-  ae.h = function(b) {
+  ae.h = function (b) {
     return b;
   };
-  ae.c = function(b, a) {
+  ae.c = function (b, a) {
     return null != b ? Ob(b, a) : Ob(qd, a);
   };
-  ae.A = function(b, a, c) {
+  ae.A = function (b, a, c) {
     for (;;)
       if (u(c)) (b = ae.c(b, a)), (a = w(c)), (c = y(c));
       else return ae.c(b, a);
   };
-  ae.N = function(b) {
+  ae.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -13386,7 +13376,7 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  C.c = function(b, a) {
+  C.c = function (b, a) {
     return null == b
       ? null
       : null != b && (b.m & 256 || q === b.sf)
@@ -13403,7 +13393,7 @@ function registerAsciinemaPlayerElement() {
       ? Wb.c(b, a)
       : null;
   };
-  C.l = function(b, a, c) {
+  C.l = function (b, a, c) {
     return null != b
       ? null != b && (b.m & 256 || q === b.sf)
         ? b.H(null, a, c)
@@ -13437,15 +13427,15 @@ function registerAsciinemaPlayerElement() {
         );
     }
   };
-  K.l = function(b, a, c) {
+  K.l = function (b, a, c) {
     return null != b ? Yb(b, a, c) : ee([a, c]);
   };
-  K.A = function(b, a, c, d) {
+  K.A = function (b, a, c, d) {
     for (;;)
       if (((b = K.l(b, a, c)), u(d))) (a = w(d)), (c = Zd(d)), (d = y(y(d)));
       else return b;
   };
-  K.N = function(b) {
+  K.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -13468,13 +13458,13 @@ function registerAsciinemaPlayerElement() {
         return L.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  L.h = function(b) {
+  L.h = function (b) {
     return b;
   };
-  L.c = function(b, a) {
+  L.c = function (b, a) {
     return null == b ? null : ac(b, a);
   };
-  L.A = function(b, a, c) {
+  L.A = function (b, a, c) {
     for (;;) {
       if (null == b) return null;
       b = L.c(b, a);
@@ -13482,7 +13472,7 @@ function registerAsciinemaPlayerElement() {
       else return b;
     }
   };
-  L.N = function(b) {
+  L.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -13509,14 +13499,14 @@ function registerAsciinemaPlayerElement() {
     this.J = 0;
   }
   g = ge.prototype;
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new ge(this.C, a);
   };
   g.jf = q;
-  g.call = (function() {
+  g.call = (function () {
     function b(
       a,
       b,
@@ -13708,7 +13698,7 @@ function registerAsciinemaPlayerElement() {
       return a.C.B ? a.C.B() : a.C.call(null);
     }
     var R = null,
-      R = function(
+      R = function (
         zb,
         Ba,
         Ia,
@@ -13999,95 +13989,95 @@ function registerAsciinemaPlayerElement() {
     R.rf = b;
     return R;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.B = function() {
+  g.B = function () {
     return this.C.B ? this.C.B() : this.C.call(null);
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.C.h ? this.C.h(b) : this.C.call(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.C.c ? this.C.c(b, a) : this.C.call(null, b, a);
   };
-  g.l = function(b, a, c) {
+  g.l = function (b, a, c) {
     return this.C.l ? this.C.l(b, a, c) : this.C.call(null, b, a, c);
   };
-  g.M = function(b, a, c, d) {
+  g.M = function (b, a, c, d) {
     return this.C.M ? this.C.M(b, a, c, d) : this.C.call(null, b, a, c, d);
   };
-  g.Z = function(b, a, c, d, e) {
+  g.Z = function (b, a, c, d, e) {
     return this.C.Z
       ? this.C.Z(b, a, c, d, e)
       : this.C.call(null, b, a, c, d, e);
   };
-  g.Da = function(b, a, c, d, e, f) {
+  g.Da = function (b, a, c, d, e, f) {
     return this.C.Da
       ? this.C.Da(b, a, c, d, e, f)
       : this.C.call(null, b, a, c, d, e, f);
   };
-  g.Za = function(b, a, c, d, e, f, h) {
+  g.Za = function (b, a, c, d, e, f, h) {
     return this.C.Za
       ? this.C.Za(b, a, c, d, e, f, h)
       : this.C.call(null, b, a, c, d, e, f, h);
   };
-  g.Ia = function(b, a, c, d, e, f, h, k) {
+  g.Ia = function (b, a, c, d, e, f, h, k) {
     return this.C.Ia
       ? this.C.Ia(b, a, c, d, e, f, h, k)
       : this.C.call(null, b, a, c, d, e, f, h, k);
   };
-  g.$a = function(b, a, c, d, e, f, h, k, l) {
+  g.$a = function (b, a, c, d, e, f, h, k, l) {
     return this.C.$a
       ? this.C.$a(b, a, c, d, e, f, h, k, l)
       : this.C.call(null, b, a, c, d, e, f, h, k, l);
   };
-  g.Oa = function(b, a, c, d, e, f, h, k, l, n) {
+  g.Oa = function (b, a, c, d, e, f, h, k, l, n) {
     return this.C.Oa
       ? this.C.Oa(b, a, c, d, e, f, h, k, l, n)
       : this.C.call(null, b, a, c, d, e, f, h, k, l, n);
   };
-  g.Pa = function(b, a, c, d, e, f, h, k, l, n, m) {
+  g.Pa = function (b, a, c, d, e, f, h, k, l, n, m) {
     return this.C.Pa
       ? this.C.Pa(b, a, c, d, e, f, h, k, l, n, m)
       : this.C.call(null, b, a, c, d, e, f, h, k, l, n, m);
   };
-  g.Qa = function(b, a, c, d, e, f, h, k, l, n, m, t) {
+  g.Qa = function (b, a, c, d, e, f, h, k, l, n, m, t) {
     return this.C.Qa
       ? this.C.Qa(b, a, c, d, e, f, h, k, l, n, m, t)
       : this.C.call(null, b, a, c, d, e, f, h, k, l, n, m, t);
   };
-  g.Ra = function(b, a, c, d, e, f, h, k, l, n, m, t, x) {
+  g.Ra = function (b, a, c, d, e, f, h, k, l, n, m, t, x) {
     return this.C.Ra
       ? this.C.Ra(b, a, c, d, e, f, h, k, l, n, m, t, x)
       : this.C.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x);
   };
-  g.Sa = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z) {
+  g.Sa = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z) {
     return this.C.Sa
       ? this.C.Sa(b, a, c, d, e, f, h, k, l, n, m, t, x, z)
       : this.C.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z);
   };
-  g.Ta = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E) {
+  g.Ta = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E) {
     return this.C.Ta
       ? this.C.Ta(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E)
       : this.C.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E);
   };
-  g.Ua = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H) {
+  g.Ua = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H) {
     return this.C.Ua
       ? this.C.Ua(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H)
       : this.C.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H);
   };
-  g.Va = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J) {
+  g.Va = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J) {
     return this.C.Va
       ? this.C.Va(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J)
       : this.C.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J);
   };
-  g.Wa = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M) {
+  g.Wa = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M) {
     return this.C.Wa
       ? this.C.Wa(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M)
       : this.C.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M);
   };
-  g.Xa = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q) {
+  g.Xa = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q) {
     return this.C.Xa
       ? this.C.Xa(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q)
       : this.C.call(
@@ -14113,7 +14103,7 @@ function registerAsciinemaPlayerElement() {
           Q
         );
   };
-  g.Ya = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q, W) {
+  g.Ya = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q, W) {
     return this.C.Ya
       ? this.C.Ya(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q, W)
       : this.C.call(
@@ -14140,7 +14130,7 @@ function registerAsciinemaPlayerElement() {
           W
         );
   };
-  g.he = function(
+  g.he = function (
     b,
     a,
     c,
@@ -14177,11 +14167,13 @@ function registerAsciinemaPlayerElement() {
   }
   function je(b) {
     var a = null != b;
-    return (a
-    ? null != b
-      ? b.m & 131072 || q === b.uf || (b.m ? 0 : ub(lc, b))
-      : ub(lc, b)
-    : a)
+    return (
+      a
+        ? null != b
+          ? b.m & 131072 || q === b.uf || (b.m ? 0 : ub(lc, b))
+          : ub(lc, b)
+        : a
+    )
       ? mc(b)
       : null;
   }
@@ -14198,13 +14190,13 @@ function registerAsciinemaPlayerElement() {
         return ke.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  ke.h = function(b) {
+  ke.h = function (b) {
     return b;
   };
-  ke.c = function(b, a) {
+  ke.c = function (b, a) {
     return null == b ? null : gc(b, a);
   };
-  ke.A = function(b, a, c) {
+  ke.A = function (b, a, c) {
     for (;;) {
       if (null == b) return null;
       b = ke.c(b, a);
@@ -14212,7 +14204,7 @@ function registerAsciinemaPlayerElement() {
       else return b;
     }
   };
-  ke.N = function(b) {
+  ke.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -14290,8 +14282,8 @@ function registerAsciinemaPlayerElement() {
     var a = [];
     ua(
       b,
-      (function(a, b) {
-        return function(a, c) {
+      (function (a, b) {
+        return function (a, c) {
           return b.push(c);
         };
       })(b, a)
@@ -14352,13 +14344,13 @@ function registerAsciinemaPlayerElement() {
         return Ce.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  Ce.h = function() {
+  Ce.h = function () {
     return !0;
   };
-  Ce.c = function(b, a) {
+  Ce.c = function (b, a) {
     return !F.c(b, a);
   };
-  Ce.A = function(b, a, c) {
+  Ce.A = function (b, a, c) {
     if (F.c(b, a)) return !1;
     b = De([b, a]);
     for (a = c; ; ) {
@@ -14371,7 +14363,7 @@ function registerAsciinemaPlayerElement() {
       } else return !0;
     }
   };
-  Ce.N = function(b) {
+  Ce.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -14422,7 +14414,7 @@ function registerAsciinemaPlayerElement() {
   function Ge(b) {
     return F.c(b, Ee)
       ? Ee
-      : function(a, c) {
+      : function (a, c) {
           var d = b.c ? b.c(a, c) : b.call(null, a, c);
           return "number" === typeof d
             ? d
@@ -14457,7 +14449,7 @@ function registerAsciinemaPlayerElement() {
     return Ke(b, a);
   }
   function Ke(b, a) {
-    return He(function(a, d) {
+    return He(function (a, d) {
       var c = b.h ? b.h(a) : b.call(null, a),
         f = b.h ? b.h(d) : b.call(null, d),
         h = Ge(Ee);
@@ -14548,19 +14540,19 @@ function registerAsciinemaPlayerElement() {
         return Re.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  Re.B = function() {
+  Re.B = function () {
     return 0;
   };
-  Re.h = function(b) {
+  Re.h = function (b) {
     return b;
   };
-  Re.c = function(b, a) {
+  Re.c = function (b, a) {
     return b + a;
   };
-  Re.A = function(b, a, c) {
+  Re.A = function (b, a, c) {
     return Gb(Re, b + a, c);
   };
-  Re.N = function(b) {
+  Re.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -14583,19 +14575,19 @@ function registerAsciinemaPlayerElement() {
         return Se.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  Se.B = function() {
+  Se.B = function () {
     return 1;
   };
-  Se.h = function(b) {
+  Se.h = function (b) {
     return b;
   };
-  Se.c = function(b, a) {
+  Se.c = function (b, a) {
     return b * a;
   };
-  Se.A = function(b, a, c) {
+  Se.A = function (b, a, c) {
     return Gb(Se, b * a, c);
   };
-  Se.N = function(b) {
+  Se.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -14625,18 +14617,18 @@ function registerAsciinemaPlayerElement() {
         return v.A(arguments[0], new Db(c.slice(1), 0, null));
     }
   };
-  v.B = function() {
+  v.B = function () {
     return "";
   };
-  v.h = function(b) {
+  v.h = function (b) {
     return null == b ? "" : "" + b;
   };
-  v.A = function(b, a) {
+  v.A = function (b, a) {
     for (var c = new Pa("" + v.h(b)), d = a; ; )
       if (u(d)) (c = c.append("" + v.h(w(d)))), (d = y(d));
       else return c.toString();
   };
-  v.N = function(b) {
+  v.N = function (b) {
     var a = w(b);
     b = y(b);
     return v.A(a, b);
@@ -14673,15 +14665,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 8192;
   }
   g = Ve.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -14690,20 +14682,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, this.count);
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -14713,58 +14705,58 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     return 1 === this.count ? null : this.kc;
   };
-  g.W = function() {
+  g.W = function () {
     return this.count;
   };
-  g.Bc = function() {
+  g.Bc = function () {
     return this.first;
   };
-  g.Cc = function() {
+  g.Cc = function () {
     return this.cb(null);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return this.first;
   };
-  g.cb = function() {
+  g.cb = function () {
     return 1 === this.count ? qd : this.kc;
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Ve(a, this.first, this.kc, this.count, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return new Ve(this.meta, a, this, this.count + 1, null);
   };
-  Ve.prototype[yb] = function() {
+  Ve.prototype[yb] = function () {
     return sd(this);
   };
   function We(b) {
@@ -14773,15 +14765,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 8192;
   }
   g = We.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -14790,20 +14782,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -14813,68 +14805,70 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     return null;
   };
-  g.W = function() {
+  g.W = function () {
     return 0;
   };
-  g.Bc = function() {
+  g.Bc = function () {
     return null;
   };
-  g.Cc = function() {
+  g.Cc = function () {
     throw Error("Can't pop empty list");
   };
-  g.U = function() {
+  g.U = function () {
     return vd;
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (null != a
       ? a.m & 33554432 || q === a.Wf || (a.m ? 0 : ub(yc, a))
       : ub(yc, a)) || oe(a)
       ? null == D(a)
       : !1;
   };
-  g.pa = function() {
+  g.pa = function () {
     return this;
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return null;
   };
-  g.cb = function() {
+  g.cb = function () {
     return qd;
   };
-  g.S = function() {
+  g.S = function () {
     return null;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new We(a);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return new Ve(this.meta, a, null, 1, null);
   };
   var qd = new We(null);
-  We.prototype[yb] = function() {
+  We.prototype[yb] = function () {
     return sd(this);
   };
   function Xe(b) {
-    return (null != b
-    ? b.m & 134217728 || q === b.Zf || (b.m ? 0 : ub(Ac, b))
-    : ub(Ac, b))
+    return (
+      null != b
+        ? b.m & 134217728 || q === b.Zf || (b.m ? 0 : ub(Ac, b))
+        : ub(Ac, b)
+    )
       ? Bc(b)
       : Gb(ae, qd, b);
   }
@@ -14884,7 +14878,7 @@ function registerAsciinemaPlayerElement() {
       else break;
     return Ye.A(0 < c.length ? new Db(c.slice(0), 0, null) : null);
   };
-  Ye.A = function(b) {
+  Ye.A = function (b) {
     if (b instanceof Db && 0 === b.i) var a = b.v;
     else
       a: for (a = []; ; )
@@ -14899,7 +14893,7 @@ function registerAsciinemaPlayerElement() {
       } else return c;
   };
   Ye.L = 0;
-  Ye.N = function(b) {
+  Ye.N = function (b) {
     return Ye.A(D(b));
   };
   function Ze(b, a, c, d) {
@@ -14911,15 +14905,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 8192;
   }
   g = Ze.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -14928,20 +14922,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -14951,49 +14945,49 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     return null == this.kc ? null : D(this.kc);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return this.first;
   };
-  g.cb = function() {
+  g.cb = function () {
     return null == this.kc ? qd : this.kc;
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Ze(a, this.first, this.kc, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return new Ze(null, a, this, null);
   };
-  Ze.prototype[yb] = function() {
+  Ze.prototype[yb] = function () {
     return sd(this);
   };
   function Vd(b, a) {
@@ -15021,18 +15015,18 @@ function registerAsciinemaPlayerElement() {
     this.J = 4096;
   }
   g = N.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return [v.h(":"), v.h(this.fa)].join("");
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return a instanceof N ? this.fa === a.fa : !1;
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return C.c(b, this);
@@ -15041,36 +15035,36 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return C.c(b, this);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return C.l(b, this, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return C.c(b, this);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return C.l(b, this, a);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.Qc;
     return null != b
       ? b
       : (this.Qc = b = (jd(ed(this.name), hd(this.gb)) + 2654435769) | 0);
   };
-  g.hd = function() {
+  g.hd = function () {
     return this.name;
   };
-  g.jd = function() {
+  g.jd = function () {
     return this.gb;
   };
-  g.R = function(b, a) {
+  g.R = function (b, a) {
     return Dc(a, [v.h(":"), v.h(this.fa)].join(""));
   };
   function af(b) {
@@ -15089,7 +15083,7 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  bf.h = function(b) {
+  bf.h = function (b) {
     if (b instanceof N) return b;
     if (b instanceof ld) {
       if (null != b && (b.J & 4096 || q === b.Pe)) var a = b.jd(null);
@@ -15103,7 +15097,7 @@ function registerAsciinemaPlayerElement() {
           : new N(null, a[0], b, null))
       : null;
   };
-  bf.c = function(b, a) {
+  bf.c = function (b, a) {
     var c = b instanceof N ? cf(b) : b instanceof ld ? cf(b) : b,
       d = a instanceof N ? cf(a) : a instanceof ld ? cf(a) : a;
     return new N(
@@ -15123,10 +15117,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 1;
   }
   g = df.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
   function ef(b) {
@@ -15134,9 +15128,9 @@ function registerAsciinemaPlayerElement() {
       ((b.s = b.Vc.B ? b.Vc.B() : b.Vc.call(null)), (b.Vc = null));
     return b.s;
   }
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -15145,20 +15139,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -15168,56 +15162,56 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     this.S(null);
     return null == this.s ? null : y(this.s);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     this.S(null);
     return null == this.s ? null : w(this.s);
   };
-  g.cb = function() {
+  g.cb = function () {
     this.S(null);
     return null != this.s ? pd(this.s) : qd;
   };
-  g.S = function() {
+  g.S = function () {
     ef(this);
     if (null == this.s) return null;
     for (var b = this.s; ; )
       if (b instanceof df) b = ef(b);
       else return (this.s = b), D(this.s);
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new df(a, this.Vc, this.s, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  df.prototype[yb] = function() {
+  df.prototype[yb] = function () {
     return sd(this);
   };
   function ff(b, a) {
@@ -15226,16 +15220,16 @@ function registerAsciinemaPlayerElement() {
     this.m = 2;
     this.J = 0;
   }
-  ff.prototype.add = function(b) {
+  ff.prototype.add = function (b) {
     this.ba[this.end] = b;
     return (this.end += 1);
   };
-  ff.prototype.Ea = function() {
+  ff.prototype.Ea = function () {
     var b = new gf(this.ba, 0, this.end);
     this.ba = null;
     return b;
   };
-  ff.prototype.W = function() {
+  ff.prototype.W = function () {
     return this.end;
   };
   function hf(b) {
@@ -15249,23 +15243,23 @@ function registerAsciinemaPlayerElement() {
     this.J = 0;
   }
   g = gf.prototype;
-  g.W = function() {
+  g.W = function () {
     return this.end - this.bb;
   };
-  g.aa = function(b, a) {
+  g.aa = function (b, a) {
     return this.v[this.bb + a];
   };
-  g.la = function(b, a, c) {
+  g.la = function (b, a, c) {
     return 0 <= a && a < this.end - this.bb ? this.v[this.bb + a] : c;
   };
-  g.Me = function() {
+  g.Me = function () {
     if (this.bb === this.end) throw Error("-drop-first of empty chunk");
     return new gf(this.v, this.bb + 1, this.end);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Jd(this.v, a, this.v[this.bb], this.bb + 1);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Jd(this.v, a, c, this.bb);
   };
   function jf(b, a, c, d) {
@@ -15277,15 +15271,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 1536;
   }
   g = jf.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -15294,20 +15288,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -15317,58 +15311,58 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     if (1 < Kb(this.Ea)) return new jf(Oc(this.Ea), this.Xb, this.meta, null);
     var b = vc(this.Xb);
     return null == b ? null : b;
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.meta);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return A.c(this.Ea, 0);
   };
-  g.cb = function() {
+  g.cb = function () {
     return 1 < Kb(this.Ea)
       ? new jf(Oc(this.Ea), this.Xb, this.meta, null)
       : null == this.Xb
       ? qd
       : this.Xb;
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.ge = function() {
+  g.ge = function () {
     return this.Ea;
   };
-  g.Jd = function() {
+  g.Jd = function () {
     return null == this.Xb ? qd : this.Xb;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new jf(this.Ea, this.Xb, a, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  g.Ne = function() {
+  g.Ne = function () {
     return null == this.Xb ? null : this.Xb;
   };
-  jf.prototype[yb] = function() {
+  jf.prototype[yb] = function () {
     return sd(this);
   };
   function kf(b, a) {
@@ -15403,30 +15397,30 @@ function registerAsciinemaPlayerElement() {
           return P.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
       }
     };
-  P.B = function() {
+  P.B = function () {
     return new df(
       null,
-      function() {
+      function () {
         return null;
       },
       null,
       null
     );
   };
-  P.h = function(b) {
+  P.h = function (b) {
     return new df(
       null,
-      function() {
+      function () {
         return b;
       },
       null,
       null
     );
   };
-  P.c = function(b, a) {
+  P.c = function (b, a) {
     return new df(
       null,
-      function() {
+      function () {
         var c = D(b);
         return c
           ? te(c)
@@ -15438,11 +15432,11 @@ function registerAsciinemaPlayerElement() {
       null
     );
   };
-  P.A = function(b, a, c) {
+  P.A = function (b, a, c) {
     return (function e(a, b) {
       return new df(
         null,
-        function() {
+        function () {
           var c = D(a);
           return c
             ? te(c)
@@ -15457,7 +15451,7 @@ function registerAsciinemaPlayerElement() {
       );
     })(P.c(b, a), c);
   };
-  P.N = function(b) {
+  P.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -15480,21 +15474,21 @@ function registerAsciinemaPlayerElement() {
         return of.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  of.B = function() {
+  of.B = function () {
     return Ic(be);
   };
-  of.h = function(b) {
+  of.h = function (b) {
     return b;
   };
-  of.c = function(b, a) {
+  of.c = function (b, a) {
     return Jc(b, a);
   };
-  of.A = function(b, a, c) {
+  of.A = function (b, a, c) {
     for (;;)
       if (((b = Jc(b, a)), u(c))) (a = w(c)), (c = y(c));
       else return b;
   };
-  of.N = function(b) {
+  of.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -15829,32 +15823,32 @@ function registerAsciinemaPlayerElement() {
   }
   function wf() {
     "undefined" === typeof db &&
-      ((db = function(b) {
+      ((db = function (b) {
         this.Af = b;
         this.m = 393216;
         this.J = 0;
       }),
-      (db.prototype.T = function(b, a) {
+      (db.prototype.T = function (b, a) {
         return new db(a);
       }),
-      (db.prototype.P = function() {
+      (db.prototype.P = function () {
         return this.Af;
       }),
-      (db.prototype.ka = function() {
+      (db.prototype.ka = function () {
         return !1;
       }),
-      (db.prototype.next = function() {
+      (db.prototype.next = function () {
         return Error("No such element");
       }),
-      (db.prototype.remove = function() {
+      (db.prototype.remove = function () {
         return Error("Unsupported operation");
       }),
-      (db.Wc = function() {
+      (db.Wc = function () {
         return new T(null, 1, 5, U, [xf], null);
       }),
       (db.rc = !0),
       (db.Ub = "cljs.core/t_cljs$core24610"),
-      (db.Fc = function(b, a) {
+      (db.Fc = function (b, a) {
         return Dc(a, "cljs.core/t_cljs$core24610");
       }));
     return new db(yf);
@@ -15863,30 +15857,30 @@ function registerAsciinemaPlayerElement() {
     this.s = b;
     this.i = a;
   }
-  zf.prototype.ka = function() {
+  zf.prototype.ka = function () {
     return this.i < this.s.length;
   };
-  zf.prototype.next = function() {
+  zf.prototype.next = function () {
     var b = this.s.charAt(this.i);
     this.i += 1;
     return b;
   };
-  zf.prototype.remove = function() {
+  zf.prototype.remove = function () {
     return Error("Unsupported operation");
   };
   function Af(b, a) {
     this.v = b;
     this.i = a;
   }
-  Af.prototype.ka = function() {
+  Af.prototype.ka = function () {
     return this.i < this.v.length;
   };
-  Af.prototype.next = function() {
+  Af.prototype.next = function () {
     var b = this.v[this.i];
     this.i += 1;
     return b;
   };
-  Af.prototype.remove = function() {
+  Af.prototype.remove = function () {
     return Error("Unsupported operation");
   };
   var Bf = {},
@@ -15895,17 +15889,17 @@ function registerAsciinemaPlayerElement() {
     this.cd = b;
     this.wb = a;
   }
-  Df.prototype.ka = function() {
+  Df.prototype.ka = function () {
     this.cd === Bf
       ? ((this.cd = Cf), (this.wb = D(this.wb)))
       : this.cd === this.wb && (this.wb = y(this.cd));
     return null != this.wb;
   };
-  Df.prototype.next = function() {
+  Df.prototype.next = function () {
     if (this.ka()) return (this.cd = this.wb), w(this.wb);
     throw Error("No such element");
   };
-  Df.prototype.remove = function() {
+  Df.prototype.remove = function () {
     return Error("Unsupported operation");
   };
   function Ef(b) {
@@ -15926,57 +15920,57 @@ function registerAsciinemaPlayerElement() {
   function Ff(b) {
     this.ae = b;
   }
-  Ff.prototype.add = function(b) {
+  Ff.prototype.add = function (b) {
     this.ae.push(b);
     return this;
   };
-  Ff.prototype.remove = function() {
+  Ff.prototype.remove = function () {
     return this.ae.shift();
   };
-  Ff.prototype.Td = function() {
+  Ff.prototype.Td = function () {
     return 0 === this.ae.length;
   };
-  Ff.prototype.toString = function() {
+  Ff.prototype.toString = function () {
     return [v.h("Many: "), v.h(this.ae)].join("");
   };
   var Gf = {};
   function Hf(b) {
     this.I = b;
   }
-  Hf.prototype.add = function(b) {
+  Hf.prototype.add = function (b) {
     return this.I === Gf ? ((this.I = b), this) : new Ff([this.I, b]);
   };
-  Hf.prototype.remove = function() {
+  Hf.prototype.remove = function () {
     if (this.I === Gf)
       throw Error("" + v.h("Removing object from empty buffer"));
     var b = this.I;
     this.I = Gf;
     return b;
   };
-  Hf.prototype.Td = function() {
+  Hf.prototype.Td = function () {
     return this.I === Gf;
   };
-  Hf.prototype.toString = function() {
+  Hf.prototype.toString = function () {
     return [v.h("Single: "), v.h(this.I)].join("");
   };
   function If() {}
-  If.prototype.add = function(b) {
+  If.prototype.add = function (b) {
     return new Hf(b);
   };
-  If.prototype.remove = function() {
+  If.prototype.remove = function () {
     throw Error("" + v.h("Removing object from empty buffer"));
   };
-  If.prototype.Td = function() {
+  If.prototype.Td = function () {
     return !0;
   };
-  If.prototype.toString = function() {
+  If.prototype.toString = function () {
     return "Empty";
   };
   var Jf = new If(),
     Lf = function Lf(a) {
       return new df(
         null,
-        function() {
+        function () {
           if (a.ka())
             for (var c = [], d = 0; ; ) {
               var e = a.ka();
@@ -15998,7 +15992,7 @@ function registerAsciinemaPlayerElement() {
     this.ze = e;
     this.Hf = f;
   }
-  Mf.prototype.step = function() {
+  Mf.prototype.step = function () {
     if (this.wb !== Gf) return !0;
     for (;;)
       if (this.wb === Gf)
@@ -16020,10 +16014,10 @@ function registerAsciinemaPlayerElement() {
         } else this.wb = this.buffer.remove();
       else return !0;
   };
-  Mf.prototype.ka = function() {
+  Mf.prototype.ka = function () {
     return this.step();
   };
-  Mf.prototype.next = function() {
+  Mf.prototype.next = function () {
     if (this.ka()) {
       var b = this.wb;
       this.wb = Gf;
@@ -16031,23 +16025,23 @@ function registerAsciinemaPlayerElement() {
     }
     throw Error("No such element");
   };
-  Mf.prototype.remove = function() {
+  Mf.prototype.remove = function () {
     return Error("Unsupported operation");
   };
-  Mf.prototype[yb] = function() {
+  Mf.prototype[yb] = function () {
     return sd(this);
   };
   function Nf(b, a) {
     var c = new Mf(Jf, Gf, !1, null, a, !1);
-    c.Sb = (function() {
-      var a = (function(a) {
-        return (function() {
+    c.Sb = (function () {
+      var a = (function (a) {
+        return (function () {
           function b(b, c) {
             a.buffer = a.buffer.add(c);
             return b;
           }
           var c = null,
-            c = function(a, c) {
+            c = function (a, c) {
               switch (arguments.length) {
                 case 0:
                   return null;
@@ -16058,10 +16052,10 @@ function registerAsciinemaPlayerElement() {
               }
               throw Error("Invalid arity: " + (arguments.length - 1));
             };
-          c.B = function() {
+          c.B = function () {
             return null;
           };
-          c.h = function(a) {
+          c.h = function (a) {
             return a;
           };
           c.c = b;
@@ -16106,7 +16100,7 @@ function registerAsciinemaPlayerElement() {
     throw Error([v.h("Argument must be an integer: "), v.h(b)].join(""));
   }
   function Sf(b) {
-    return (function() {
+    return (function () {
       function a(a, c) {
         return sb(b.c ? b.c(a, c) : b.call(null, a, c));
       }
@@ -16117,7 +16111,7 @@ function registerAsciinemaPlayerElement() {
         return sb(b.B ? b.B() : b.call(null));
       }
       var e = null,
-        f = (function() {
+        f = (function () {
           function a(a, b, d) {
             var e = null;
             if (2 < arguments.length) {
@@ -16137,7 +16131,7 @@ function registerAsciinemaPlayerElement() {
             return sb(d);
           }
           a.L = 2;
-          a.N = function(a) {
+          a.N = function (a) {
             var b = w(a);
             a = y(a);
             var d = w(a);
@@ -16147,7 +16141,7 @@ function registerAsciinemaPlayerElement() {
           a.A = c;
           return a;
         })(),
-        e = function(b, e, l) {
+        e = function (b, e, l) {
           switch (arguments.length) {
             case 0:
               return d.call(this);
@@ -16176,7 +16170,7 @@ function registerAsciinemaPlayerElement() {
     })();
   }
   function Tf(b) {
-    return (function() {
+    return (function () {
       function a(a) {
         if (0 < arguments.length)
           for (var c = 0, e = Array(arguments.length - 0); c < e.length; )
@@ -16184,11 +16178,11 @@ function registerAsciinemaPlayerElement() {
         return b;
       }
       a.L = 0;
-      a.N = function(a) {
+      a.N = function (a) {
         D(a);
         return b;
       };
-      a.A = function() {
+      a.A = function () {
         return b;
       };
       return a;
@@ -16216,14 +16210,14 @@ function registerAsciinemaPlayerElement() {
         );
     }
   };
-  Uf.B = function() {
+  Uf.B = function () {
     return Pe;
   };
-  Uf.h = function(b) {
+  Uf.h = function (b) {
     return b;
   };
-  Uf.c = function(b, a) {
-    return (function() {
+  Uf.c = function (b, a) {
+    return (function () {
       function c(c, d, e) {
         c = a.l ? a.l(c, d, e) : a.call(null, c, d, e);
         return b.h ? b.h(c) : b.call(null, c);
@@ -16241,7 +16235,7 @@ function registerAsciinemaPlayerElement() {
         return b.h ? b.h(c) : b.call(null, c);
       }
       var h = null,
-        k = (function() {
+        k = (function () {
           function c(a, b, c, e) {
             var f = null;
             if (3 < arguments.length) {
@@ -16256,7 +16250,7 @@ function registerAsciinemaPlayerElement() {
             return b.h ? b.h(c) : b.call(null, c);
           }
           c.L = 3;
-          c.N = function(a) {
+          c.N = function (a) {
             var b = w(a);
             a = y(a);
             var c = w(a);
@@ -16268,7 +16262,7 @@ function registerAsciinemaPlayerElement() {
           c.A = d;
           return c;
         })(),
-        h = function(a, b, h, t) {
+        h = function (a, b, h, t) {
           switch (arguments.length) {
             case 0:
               return f.call(this);
@@ -16299,8 +16293,8 @@ function registerAsciinemaPlayerElement() {
       return h;
     })();
   };
-  Uf.l = function(b, a, c) {
-    return (function() {
+  Uf.l = function (b, a, c) {
+    return (function () {
       function d(d, e, f) {
         d = c.l ? c.l(d, e, f) : c.call(null, d, e, f);
         d = a.h ? a.h(d) : a.call(null, d);
@@ -16322,7 +16316,7 @@ function registerAsciinemaPlayerElement() {
         return b.h ? b.h(d) : b.call(null, d);
       }
       var k = null,
-        l = (function() {
+        l = (function () {
           function d(a, b, c, d) {
             var f = null;
             if (3 < arguments.length) {
@@ -16338,7 +16332,7 @@ function registerAsciinemaPlayerElement() {
             return b.h ? b.h(d) : b.call(null, d);
           }
           d.L = 3;
-          d.N = function(a) {
+          d.N = function (a) {
             var b = w(a);
             a = y(a);
             var c = w(a);
@@ -16350,7 +16344,7 @@ function registerAsciinemaPlayerElement() {
           d.A = e;
           return d;
         })(),
-        k = function(a, b, c, k) {
+        k = function (a, b, c, k) {
           switch (arguments.length) {
             case 0:
               return h.call(this);
@@ -16381,9 +16375,9 @@ function registerAsciinemaPlayerElement() {
       return k;
     })();
   };
-  Uf.A = function(b, a, c, d) {
-    return (function(a) {
-      return (function() {
+  Uf.A = function (b, a, c, d) {
+    return (function (a) {
+      return (function () {
         function b(a) {
           var b = null;
           if (0 < arguments.length) {
@@ -16403,7 +16397,7 @@ function registerAsciinemaPlayerElement() {
             } else return b;
         }
         b.L = 0;
-        b.N = function(a) {
+        b.N = function (a) {
           a = D(a);
           return c(a);
         };
@@ -16412,7 +16406,7 @@ function registerAsciinemaPlayerElement() {
       })();
     })(Xe(Vd(b, Vd(a, Vd(c, d)))));
   };
-  Uf.N = function(b) {
+  Uf.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -16445,11 +16439,11 @@ function registerAsciinemaPlayerElement() {
         );
     }
   };
-  Vf.h = function(b) {
+  Vf.h = function (b) {
     return b;
   };
-  Vf.c = function(b, a) {
-    return (function() {
+  Vf.c = function (b, a) {
+    return (function () {
       function c(c, d, e) {
         return b.M ? b.M(a, c, d, e) : b.call(null, a, c, d, e);
       }
@@ -16463,7 +16457,7 @@ function registerAsciinemaPlayerElement() {
         return b.h ? b.h(a) : b.call(null, a);
       }
       var h = null,
-        k = (function() {
+        k = (function () {
           function c(a, b, c, e) {
             var f = null;
             if (3 < arguments.length) {
@@ -16477,7 +16471,7 @@ function registerAsciinemaPlayerElement() {
             return he(b, a, c, d, e, Wd([f]));
           }
           c.L = 3;
-          c.N = function(a) {
+          c.N = function (a) {
             var b = w(a);
             a = y(a);
             var c = w(a);
@@ -16489,7 +16483,7 @@ function registerAsciinemaPlayerElement() {
           c.A = d;
           return c;
         })(),
-        h = function(a, b, h, t) {
+        h = function (a, b, h, t) {
           switch (arguments.length) {
             case 0:
               return f.call(this);
@@ -16520,8 +16514,8 @@ function registerAsciinemaPlayerElement() {
       return h;
     })();
   };
-  Vf.l = function(b, a, c) {
-    return (function() {
+  Vf.l = function (b, a, c) {
+    return (function () {
       function d(d, e, f) {
         return b.Z ? b.Z(a, c, d, e, f) : b.call(null, a, c, d, e, f);
       }
@@ -16535,7 +16529,7 @@ function registerAsciinemaPlayerElement() {
         return b.c ? b.c(a, c) : b.call(null, a, c);
       }
       var k = null,
-        l = (function() {
+        l = (function () {
           function d(a, b, c, d) {
             var f = null;
             if (3 < arguments.length) {
@@ -16549,7 +16543,7 @@ function registerAsciinemaPlayerElement() {
             return he(b, a, c, d, e, Wd([f, h]));
           }
           d.L = 3;
-          d.N = function(a) {
+          d.N = function (a) {
             var b = w(a);
             a = y(a);
             var c = w(a);
@@ -16561,7 +16555,7 @@ function registerAsciinemaPlayerElement() {
           d.A = e;
           return d;
         })(),
-        k = function(a, b, c, k) {
+        k = function (a, b, c, k) {
           switch (arguments.length) {
             case 0:
               return h.call(this);
@@ -16592,8 +16586,8 @@ function registerAsciinemaPlayerElement() {
       return k;
     })();
   };
-  Vf.M = function(b, a, c, d) {
-    return (function() {
+  Vf.M = function (b, a, c, d) {
+    return (function () {
       function e(e, f, h) {
         return b.Da ? b.Da(a, c, d, e, f, h) : b.call(null, a, c, d, e, f, h);
       }
@@ -16607,7 +16601,7 @@ function registerAsciinemaPlayerElement() {
         return b.l ? b.l(a, c, d) : b.call(null, a, c, d);
       }
       var l = null,
-        n = (function() {
+        n = (function () {
           function e(a, b, c, d) {
             var e = null;
             if (3 < arguments.length) {
@@ -16621,7 +16615,7 @@ function registerAsciinemaPlayerElement() {
             return he(b, a, c, d, e, Wd([f, h, k]));
           }
           e.L = 3;
-          e.N = function(a) {
+          e.N = function (a) {
             var b = w(a);
             a = y(a);
             var c = w(a);
@@ -16633,7 +16627,7 @@ function registerAsciinemaPlayerElement() {
           e.A = f;
           return e;
         })(),
-        l = function(a, b, c, d) {
+        l = function (a, b, c, d) {
           switch (arguments.length) {
             case 0:
               return k.call(this);
@@ -16664,8 +16658,8 @@ function registerAsciinemaPlayerElement() {
       return l;
     })();
   };
-  Vf.A = function(b, a, c, d, e) {
-    return (function() {
+  Vf.A = function (b, a, c, d, e) {
+    return (function () {
       function f(a) {
         var b = null;
         if (0 < arguments.length) {
@@ -16679,7 +16673,7 @@ function registerAsciinemaPlayerElement() {
         return uf(b, a, c, d, P.c(e, f));
       }
       f.L = 0;
-      f.N = function(a) {
+      f.N = function (a) {
         a = D(a);
         return h(a);
       };
@@ -16687,7 +16681,7 @@ function registerAsciinemaPlayerElement() {
       return f;
     })();
   };
-  Vf.N = function(b) {
+  Vf.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -16703,7 +16697,7 @@ function registerAsciinemaPlayerElement() {
     return (function d(a, f) {
       return new df(
         null,
-        function() {
+        function () {
           var e = D(f);
           if (e) {
             if (te(e)) {
@@ -16711,7 +16705,7 @@ function registerAsciinemaPlayerElement() {
                 if (m < l)
                   lf(
                     n,
-                    (function() {
+                    (function () {
                       var d = a + m,
                         e = A.c(k, m);
                       return b.c ? b.c(d, e) : b.call(null, d, e);
@@ -16722,7 +16716,7 @@ function registerAsciinemaPlayerElement() {
               return kf(n.Ea(), d(a + l, Rc(e)));
             }
             return Vd(
-              (function() {
+              (function () {
                 var d = w(e);
                 return b.c ? b.c(a, d) : b.call(null, a, d);
               })(),
@@ -16745,19 +16739,19 @@ function registerAsciinemaPlayerElement() {
     this.m = 6455296;
   }
   g = Xf.prototype;
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return this === a;
   };
-  g.pc = function() {
+  g.pc = function () {
     return this.state;
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.Md = function(b, a, c) {
+  g.Md = function (b, a, c) {
     for (var d, e = D(this.hb), f = null, h = 0, k = 0; ; )
       if (k < h)
         (d = f.aa(null, k)),
@@ -16779,14 +16773,14 @@ function registerAsciinemaPlayerElement() {
           (k = 0);
       else return null;
   };
-  g.Ld = function(b, a, c) {
+  g.Ld = function (b, a, c) {
     this.hb = K.l(this.hb, a, c);
     return this;
   };
-  g.Nd = function(b, a) {
+  g.Nd = function (b, a) {
     return (this.hb = L.c(this.hb, a));
   };
-  g.U = function() {
+  g.U = function () {
     return ja(this);
   };
   var Yf = function Yf(a) {
@@ -16800,16 +16794,16 @@ function registerAsciinemaPlayerElement() {
         return Yf.A(arguments[0], new Db(c.slice(1), 0, null));
     }
   };
-  Yf.h = function(b) {
+  Yf.h = function (b) {
     return new Xf(b, null, null, null);
   };
-  Yf.A = function(b, a) {
+  Yf.A = function (b, a) {
     var c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
       d = C.c(c, mb),
       c = C.c(c, Zf);
     return new Xf(b, d, c, null);
   };
-  Yf.N = function(b) {
+  Yf.N = function (b) {
     var a = w(b);
     b = y(b);
     return Yf.A(a, b);
@@ -16848,7 +16842,7 @@ function registerAsciinemaPlayerElement() {
         );
     }
   };
-  ag.c = function(b, a) {
+  ag.c = function (b, a) {
     if (b instanceof Xf) {
       var c = b.state;
       c = a.h ? a.h(c) : a.call(null, c);
@@ -16856,7 +16850,7 @@ function registerAsciinemaPlayerElement() {
     } else c = Vc.c(b, a);
     return c;
   };
-  ag.l = function(b, a, c) {
+  ag.l = function (b, a, c) {
     if (b instanceof Xf) {
       var d = b.state;
       a = a.c ? a.c(d, c) : a.call(null, d, c);
@@ -16864,7 +16858,7 @@ function registerAsciinemaPlayerElement() {
     } else b = Vc.l(b, a, c);
     return b;
   };
-  ag.M = function(b, a, c, d) {
+  ag.M = function (b, a, c, d) {
     if (b instanceof Xf) {
       var e = b.state;
       a = a.l ? a.l(e, c, d) : a.call(null, e, c, d);
@@ -16872,12 +16866,12 @@ function registerAsciinemaPlayerElement() {
     } else b = Vc.M(b, a, c, d);
     return b;
   };
-  ag.A = function(b, a, c, d, e) {
+  ag.A = function (b, a, c, d, e) {
     return b instanceof Xf
       ? $f(b, uf(a, b.state, c, d, e))
       : Vc.Z(b, a, c, d, e);
   };
-  ag.N = function(b) {
+  ag.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -16894,10 +16888,10 @@ function registerAsciinemaPlayerElement() {
     this.m = 32768;
     this.J = 0;
   }
-  bg.prototype.Re = function(b, a) {
+  bg.prototype.Re = function (b, a) {
     return (this.state = a);
   };
-  bg.prototype.pc = function() {
+  bg.prototype.pc = function () {
     return this.state;
   };
   var cg = function cg(a) {
@@ -16923,9 +16917,9 @@ function registerAsciinemaPlayerElement() {
         );
     }
   };
-  cg.h = function(b) {
-    return function(a) {
-      return (function() {
+  cg.h = function (b) {
+    return function (a) {
+      return (function () {
         function c(c, d) {
           var e = b.h ? b.h(d) : b.call(null, d);
           return a.c ? a.c(c, e) : a.call(null, c, e);
@@ -16937,7 +16931,7 @@ function registerAsciinemaPlayerElement() {
           return a.B ? a.B() : a.call(null);
         }
         var f = null,
-          h = (function() {
+          h = (function () {
             function c(a, b, c) {
               var e = null;
               if (2 < arguments.length) {
@@ -16952,7 +16946,7 @@ function registerAsciinemaPlayerElement() {
               return a.c ? a.c(c, d) : a.call(null, c, d);
             }
             c.L = 2;
-            c.N = function(a) {
+            c.N = function (a) {
               var b = w(a);
               a = y(a);
               var c = w(a);
@@ -16962,7 +16956,7 @@ function registerAsciinemaPlayerElement() {
             c.A = d;
             return c;
           })(),
-          f = function(a, b, f) {
+          f = function (a, b, f) {
             switch (arguments.length) {
               case 0:
                 return e.call(this);
@@ -16995,10 +16989,10 @@ function registerAsciinemaPlayerElement() {
       })();
     };
   };
-  cg.c = function(b, a) {
+  cg.c = function (b, a) {
     return new df(
       null,
-      function() {
+      function () {
         var c = D(a);
         if (c) {
           if (te(c)) {
@@ -17006,7 +17000,7 @@ function registerAsciinemaPlayerElement() {
               if (h < e)
                 lf(
                   f,
-                  (function() {
+                  (function () {
                     var a = A.c(d, h);
                     return b.h ? b.h(a) : b.call(null, a);
                   })()
@@ -17016,7 +17010,7 @@ function registerAsciinemaPlayerElement() {
             return kf(f.Ea(), cg.c(b, Rc(c)));
           }
           return Vd(
-            (function() {
+            (function () {
               var a = w(c);
               return b.h ? b.h(a) : b.call(null, a);
             })(),
@@ -17029,10 +17023,10 @@ function registerAsciinemaPlayerElement() {
       null
     );
   };
-  cg.l = function(b, a, c) {
+  cg.l = function (b, a, c) {
     return new df(
       null,
-      function() {
+      function () {
         var d = D(a),
           e = D(c);
         if (d && e) {
@@ -17048,10 +17042,10 @@ function registerAsciinemaPlayerElement() {
       null
     );
   };
-  cg.M = function(b, a, c, d) {
+  cg.M = function (b, a, c, d) {
     return new df(
       null,
-      function() {
+      function () {
         var e = D(a),
           f = D(c),
           h = D(d);
@@ -17069,11 +17063,11 @@ function registerAsciinemaPlayerElement() {
       null
     );
   };
-  cg.A = function(b, a, c, d, e) {
+  cg.A = function (b, a, c, d, e) {
     var f = function k(a) {
       return new df(
         null,
-        function() {
+        function () {
           var b = cg.c(D, a);
           return Pf(Pe, b) ? Vd(cg.c(w, b), k(cg.c(pd, b))) : null;
         },
@@ -17082,15 +17076,15 @@ function registerAsciinemaPlayerElement() {
       );
     };
     return cg.c(
-      (function() {
-        return function(a) {
+      (function () {
+        return function (a) {
           return S(b, a);
         };
       })(f),
       f(ae.A(e, d, Wd([c, a])))
     );
   };
-  cg.N = function(b) {
+  cg.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -17105,7 +17099,7 @@ function registerAsciinemaPlayerElement() {
   function dg(b, a) {
     return new df(
       null,
-      function() {
+      function () {
         if (0 < b) {
           var c = D(a);
           return c ? Vd(w(c), dg(b - 1, pd(c))) : null;
@@ -17119,11 +17113,11 @@ function registerAsciinemaPlayerElement() {
   function eg(b, a) {
     return new df(
       null,
-      (function(c) {
-        return function() {
+      (function (c) {
+        return function () {
           return c(b, a);
         };
-      })(function(a, b) {
+      })(function (a, b) {
         for (;;) {
           var c = D(b);
           if (0 < a && c) {
@@ -17140,7 +17134,7 @@ function registerAsciinemaPlayerElement() {
   }
   function fg(b) {
     return cg.l(
-      function(a) {
+      function (a) {
         return a;
       },
       b,
@@ -17148,9 +17142,9 @@ function registerAsciinemaPlayerElement() {
     );
   }
   function gg(b) {
-    return function(a) {
-      return (function(c) {
-        return (function() {
+    return function (a) {
+      return (function (c) {
+        return (function () {
           function d(d, e) {
             var f = B(c);
             if (u(u(f) ? (b.h ? b.h(e) : b.call(null, e)) : f)) return d;
@@ -17164,7 +17158,7 @@ function registerAsciinemaPlayerElement() {
             return a.B ? a.B() : a.call(null);
           }
           var h = null,
-            h = function(a, b) {
+            h = function (a, b) {
               switch (arguments.length) {
                 case 0:
                   return f.call(this);
@@ -17186,11 +17180,11 @@ function registerAsciinemaPlayerElement() {
   function hg(b, a) {
     return new df(
       null,
-      (function(c) {
-        return function() {
+      (function (c) {
+        return function () {
           return c(b, a);
         };
-      })(function(a, b) {
+      })(function (a, b) {
         for (;;) {
           var c = D(b),
             d;
@@ -17206,7 +17200,7 @@ function registerAsciinemaPlayerElement() {
   var ig = function ig(a) {
     return new df(
       null,
-      function() {
+      function () {
         var c = D(a);
         return c ? P.c(c, ig.h ? ig.h(c) : ig.call(null, c)) : null;
       },
@@ -17217,7 +17211,7 @@ function registerAsciinemaPlayerElement() {
   function jg(b) {
     return new df(
       null,
-      function() {
+      function () {
         return Vd(b, jg(b));
       },
       null,
@@ -17232,7 +17226,7 @@ function registerAsciinemaPlayerElement() {
       c,
       new df(
         null,
-        function() {
+        function () {
           var d = a.h ? a.h(c) : a.call(null, c);
           return lg.c ? lg.c(a, d) : lg.call(null, a, d);
         },
@@ -17245,8 +17239,8 @@ function registerAsciinemaPlayerElement() {
     return S(P, Eb(cg, b, a));
   }
   function ng(b) {
-    return function(a) {
-      return (function() {
+    return function (a) {
+      return (function () {
         function c(c, d) {
           return u(b.h ? b.h(d) : b.call(null, d))
             ? a.c
@@ -17261,7 +17255,7 @@ function registerAsciinemaPlayerElement() {
           return a.B ? a.B() : a.call(null);
         }
         var f = null,
-          f = function(a, b) {
+          f = function (a, b) {
             switch (arguments.length) {
               case 0:
                 return e.call(this);
@@ -17282,7 +17276,7 @@ function registerAsciinemaPlayerElement() {
   function og(b, a) {
     return new df(
       null,
-      function() {
+      function () {
         var c = D(a);
         if (c) {
           if (te(c)) {
@@ -17322,20 +17316,20 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  qg.B = function() {
+  qg.B = function () {
     return be;
   };
-  qg.h = function(b) {
+  qg.h = function (b) {
     return b;
   };
-  qg.c = function(b, a) {
+  qg.c = function (b, a) {
     return null != b
       ? null != b && (b.J & 4 || q === b.lf)
         ? nc(Kc(Gb(Jc, Ic(b), a)), je(b))
         : Gb(Ob, b, a)
       : Gb(ae, qd, a);
   };
-  qg.l = function(b, a, c) {
+  qg.l = function (b, a, c) {
     return null != b && (b.J & 4 || q === b.lf)
       ? nc(Kc(Qe(a, of, Ic(b), c)), je(b))
       : Qe(a, ae, b, c);
@@ -17344,7 +17338,7 @@ function registerAsciinemaPlayerElement() {
   function rg(b, a) {
     return Kc(
       Gb(
-        function(a, d) {
+        function (a, d) {
           return of.c(a, b.h ? b.h(d) : b.call(null, d));
         },
         Ic(be),
@@ -17355,7 +17349,7 @@ function registerAsciinemaPlayerElement() {
   function sg(b, a, c) {
     return new df(
       null,
-      function() {
+      function () {
         var d = D(c);
         if (d) {
           var e = dg(b, d);
@@ -17375,7 +17369,7 @@ function registerAsciinemaPlayerElement() {
         ? K.l(
             a,
             e,
-            (function() {
+            (function () {
               var c = C.c(a, e);
               return tg.l ? tg.l(c, f, d) : tg.call(null, c, f, d);
             })()
@@ -17420,7 +17414,7 @@ function registerAsciinemaPlayerElement() {
           );
       }
     };
-  ug.l = function(b, a, c) {
+  ug.l = function (b, a, c) {
     a = D(a);
     var d = w(a);
     return (a = y(a))
@@ -17428,13 +17422,13 @@ function registerAsciinemaPlayerElement() {
       : K.l(
           b,
           d,
-          (function() {
+          (function () {
             var a = C.c(b, d);
             return c.h ? c.h(a) : c.call(null, a);
           })()
         );
   };
-  ug.M = function(b, a, c, d) {
+  ug.M = function (b, a, c, d) {
     a = D(a);
     var e = w(a);
     return (a = y(a))
@@ -17442,13 +17436,13 @@ function registerAsciinemaPlayerElement() {
       : K.l(
           b,
           e,
-          (function() {
+          (function () {
             var a = C.c(b, e);
             return c.c ? c.c(a, d) : c.call(null, a, d);
           })()
         );
   };
-  ug.Z = function(b, a, c, d, e) {
+  ug.Z = function (b, a, c, d, e) {
     a = D(a);
     var f = w(a);
     return (a = y(a))
@@ -17456,13 +17450,13 @@ function registerAsciinemaPlayerElement() {
       : K.l(
           b,
           f,
-          (function() {
+          (function () {
             var a = C.c(b, f);
             return c.l ? c.l(a, d, e) : c.call(null, a, d, e);
           })()
         );
   };
-  ug.Da = function(b, a, c, d, e, f) {
+  ug.Da = function (b, a, c, d, e, f) {
     a = D(a);
     var h = w(a);
     return (a = y(a))
@@ -17470,20 +17464,20 @@ function registerAsciinemaPlayerElement() {
       : K.l(
           b,
           h,
-          (function() {
+          (function () {
             var a = C.c(b, h);
             return c.M ? c.M(a, d, e, f) : c.call(null, a, d, e, f);
           })()
         );
   };
-  ug.A = function(b, a, c, d, e, f, h) {
+  ug.A = function (b, a, c, d, e, f, h) {
     var k = D(a);
     a = w(k);
     return (k = y(k))
       ? K.l(b, a, he(ug, C.c(b, a), k, c, d, Wd([e, f, h])))
       : K.l(b, a, he(c, C.c(b, a), d, e, f, Wd([h])));
   };
-  ug.N = function(b) {
+  ug.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -17503,7 +17497,7 @@ function registerAsciinemaPlayerElement() {
     return K.l(
       b,
       a,
-      (function() {
+      (function () {
         var d = C.c(b, a);
         return c.h ? c.h(d) : c.call(null, d);
       })()
@@ -17513,7 +17507,7 @@ function registerAsciinemaPlayerElement() {
     return K.l(
       b,
       a,
-      (function() {
+      (function () {
         var e = C.c(b, a);
         return c.c ? c.c(e, d) : c.call(null, e, d);
       })()
@@ -17525,7 +17519,7 @@ function registerAsciinemaPlayerElement() {
     return K.l(
       b,
       d,
-      (function() {
+      (function () {
         var f = C.c(b, d);
         return e.l ? e.l(f, a, c) : e.call(null, f, a, c);
       })()
@@ -17568,7 +17562,7 @@ function registerAsciinemaPlayerElement() {
       null,
       null,
       null,
-      null
+      null,
     ]);
   }
   function Bg(b) {
@@ -17650,10 +17644,10 @@ function registerAsciinemaPlayerElement() {
     this.start = e;
     this.end = f;
   }
-  Jg.prototype.ka = function() {
+  Jg.prototype.ka = function () {
     return this.i < this.end;
   };
-  Jg.prototype.next = function() {
+  Jg.prototype.next = function () {
     32 === this.i - this.base &&
       ((this.v = Gg(this.Ka, this.i)), (this.base += 32));
     var b = this.v[this.i & 31];
@@ -17690,15 +17684,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 139268;
   }
   g = T.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -17707,20 +17701,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -17730,18 +17724,18 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return "number" === typeof a ? this.la(null, a, c) : c;
   };
-  g.Sc = function(b, a, c) {
+  g.Sc = function (b, a, c) {
     b = 0;
     for (var d = c; ; )
       if (b < this.F) {
@@ -17767,13 +17761,13 @@ function registerAsciinemaPlayerElement() {
       } else return d;
   };
   g.fe = q;
-  g.aa = function(b, a) {
+  g.aa = function (b, a) {
     return (0 <= a && a < this.F ? Gg(this, a) : Fg(a, this.F))[a & 31];
   };
-  g.la = function(b, a, c) {
+  g.la = function (b, a, c) {
     return 0 <= a && a < this.F ? Gg(this, a)[a & 31] : c;
   };
-  g.ec = function(b, a, c) {
+  g.ec = function (b, a, c) {
     if (0 <= a && a < this.F)
       return Cg(this) <= a
         ? ((b = Bb(this.ha)),
@@ -17794,29 +17788,29 @@ function registerAsciinemaPlayerElement() {
         v.h(a),
         v.h(" out of bounds  [0,"),
         v.h(this.F),
-        v.h("]")
+        v.h("]"),
       ].join("")
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return Kg(this, 0, this.F);
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.W = function() {
+  g.W = function () {
     return this.F;
   };
-  g.fd = function() {
+  g.fd = function () {
     return this.aa(null, 0);
   };
-  g.gd = function() {
+  g.gd = function () {
     return this.aa(null, 1);
   };
-  g.Bc = function() {
+  g.Bc = function () {
     return 0 < this.F ? this.aa(null, this.F - 1) : null;
   };
-  g.Cc = function() {
+  g.Cc = function () {
     if (0 === this.F) throw Error("Can't pop empty vector");
     if (1 === this.F) return nc(be, this.meta);
     if (1 < this.F - Cg(this))
@@ -17836,14 +17830,14 @@ function registerAsciinemaPlayerElement() {
       ? new T(this.meta, c, this.shift - 5, a.v[0], b, null)
       : new T(this.meta, c, this.shift, a, b, null);
   };
-  g.Tc = function() {
+  g.Tc = function () {
     return 0 < this.F ? new Td(this, this.F - 1, null) : null;
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     if (a instanceof T)
       if (this.F === G(a))
         for (var c = this.$(null), d = Yc(a); ; )
@@ -17855,7 +17849,7 @@ function registerAsciinemaPlayerElement() {
       else return !1;
     else return Ud(this, a);
   };
-  g.Rc = function() {
+  g.Rc = function () {
     var b = this.F,
       a = this.shift,
       c = new zg({}, Bb(this.root.v)),
@@ -17892,18 +17886,18 @@ function registerAsciinemaPlayerElement() {
         null,
         null,
         null,
-        null
+        null,
       ];
     ve(d, 0, e, 0, d.length);
     return new Ng(b, a, c, e);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(be, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Lg(this, a, 0, this.F);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     b = 0;
     for (var d = c; ; )
       if (b < this.F) {
@@ -17927,14 +17921,14 @@ function registerAsciinemaPlayerElement() {
         d = e;
       } else return d;
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     if ("number" === typeof a) return this.ec(null, a, c);
     throw Error("Vector's key for assoc must be a number.");
   };
-  g.zc = function(b, a) {
+  g.zc = function (b, a) {
     return Ae(a) ? 0 <= a && a < this.F : !1;
   };
-  g.S = function() {
+  g.S = function () {
     if (0 === this.F) var b = null;
     else if (32 >= this.F) b = new Db(this.ha, 0, null);
     else {
@@ -17951,10 +17945,10 @@ function registerAsciinemaPlayerElement() {
     }
     return b;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new T(a, this.F, this.shift, this.root, this.ha, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     if (32 > this.F - Cg(this)) {
       for (var c = this.ha.length, d = Array(c + 1), e = 0; ; )
         if (e < c) (d[e] = this.ha[e]), (e += 1);
@@ -17971,9 +17965,9 @@ function registerAsciinemaPlayerElement() {
       : (d = Eg(this, this.shift, this.root, new zg(null, this.ha)));
     return new T(this.meta, this.F + 1, c, d, [a], null);
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return this.aa(null, b);
@@ -17982,21 +17976,21 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return this.aa(null, b);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return this.la(null, b, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.aa(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.la(null, b, a);
   };
   var U = new zg(null, [
@@ -18031,7 +18025,7 @@ function registerAsciinemaPlayerElement() {
       null,
       null,
       null,
-      null
+      null,
     ]),
     be = new T(null, 0, 5, U, [], vd);
   function Pg(b) {
@@ -18048,7 +18042,7 @@ function registerAsciinemaPlayerElement() {
           c = e;
       else return Kc(d);
   }
-  T.prototype[yb] = function() {
+  T.prototype[yb] = function () {
     return sd(this);
   };
   function Qg(b) {
@@ -18060,11 +18054,11 @@ function registerAsciinemaPlayerElement() {
       else break;
     return Rg.A(0 < c.length ? new Db(c.slice(0), 0, null) : null);
   };
-  Rg.A = function(b) {
+  Rg.A = function (b) {
     return b instanceof Db && 0 === b.i ? Pg(b.v) : Qg(b);
   };
   Rg.L = 0;
-  Rg.N = function(b) {
+  Rg.N = function (b) {
     return Rg.A(D(b));
   };
   function Og(b, a, c, d, e, f) {
@@ -18078,15 +18072,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 1536;
   }
   g = Og.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -18095,20 +18089,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -18118,73 +18112,73 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     if (this.bb + 1 < this.node.length) {
       var b = new Og(this.Ab, this.node, this.i, this.bb + 1, null, null);
       return null == b ? null : b;
     }
     return this.Ne(null);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(be, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Lg(this.Ab, a, this.i + this.bb, G(this.Ab));
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Mg(this.Ab, a, c, this.i + this.bb, G(this.Ab));
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return this.node[this.bb];
   };
-  g.cb = function() {
+  g.cb = function () {
     if (this.bb + 1 < this.node.length) {
       var b = new Og(this.Ab, this.node, this.i, this.bb + 1, null, null);
       return null == b ? qd : b;
     }
     return this.Jd(null);
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.ge = function() {
+  g.ge = function () {
     var b = this.node;
     return new gf(b, this.bb, b.length);
   };
-  g.Jd = function() {
+  g.Jd = function () {
     var b = this.i + this.node.length;
     return b < Kb(this.Ab)
       ? new Og(this.Ab, Gg(this.Ab, b), b, 0, null, null)
       : qd;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Og(this.Ab, this.node, this.i, this.bb, a, null);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  g.Ne = function() {
+  g.Ne = function () {
     var b = this.i + this.node.length;
     return b < Kb(this.Ab)
       ? new Og(this.Ab, Gg(this.Ab, b), b, 0, null, null)
       : null;
   };
-  Og.prototype[yb] = function() {
+  Og.prototype[yb] = function () {
     return sd(this);
   };
   function Sg(b, a, c, d, e) {
@@ -18197,15 +18191,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = Sg.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -18214,20 +18208,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -18237,18 +18231,18 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return "number" === typeof a ? this.la(null, a, c) : c;
   };
-  g.Sc = function(b, a, c) {
+  g.Sc = function (b, a, c) {
     b = this.start;
     for (var d = 0; ; )
       if (b < this.end) {
@@ -18260,17 +18254,17 @@ function registerAsciinemaPlayerElement() {
         b += 1;
       } else return c;
   };
-  g.aa = function(b, a) {
+  g.aa = function (b, a) {
     return 0 > a || this.end <= this.start + a
       ? Fg(a, this.end - this.start)
       : A.c(this.Ka, this.start + a);
   };
-  g.la = function(b, a, c) {
+  g.la = function (b, a, c) {
     return 0 > a || this.end <= this.start + a
       ? c
       : A.l(this.Ka, this.start + a, c);
   };
-  g.ec = function(b, a, c) {
+  g.ec = function (b, a, c) {
     b = this.start + a;
     if (0 > a || this.end + 1 <= b)
       throw Error(
@@ -18279,7 +18273,7 @@ function registerAsciinemaPlayerElement() {
           v.h(a),
           v.h(" out of bounds [0,"),
           v.h(this.W(null)),
-          v.h("]")
+          v.h("]"),
         ].join("")
       );
     a = this.meta;
@@ -18288,56 +18282,56 @@ function registerAsciinemaPlayerElement() {
     b += 1;
     return Tg(a, c, this.start, d > b ? d : b, null);
   };
-  g.$ = function() {
+  g.$ = function () {
     return null != this.Ka && q === this.Ka.fe
       ? Kg(this.Ka, this.start, this.end)
       : new Df(Bf, this);
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.W = function() {
+  g.W = function () {
     return this.end - this.start;
   };
-  g.Bc = function() {
+  g.Bc = function () {
     return A.c(this.Ka, this.end - 1);
   };
-  g.Cc = function() {
+  g.Cc = function () {
     if (this.start === this.end) throw Error("Can't pop empty vector");
     return Tg(this.meta, this.Ka, this.start, this.end - 1, null);
   };
-  g.Tc = function() {
+  g.Tc = function () {
     return this.start !== this.end
       ? new Td(this, this.end - this.start - 1, null)
       : null;
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(be, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return null != this.Ka && q === this.Ka.fe
       ? Lg(this.Ka, a, this.start, this.end)
       : Fd(this, a);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return null != this.Ka && q === this.Ka.fe
       ? Mg(this.Ka, a, c, this.start, this.end)
       : Gd(this, a, c);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     if ("number" === typeof a) return this.ec(null, a, c);
     throw Error("Subvec's key for assoc must be a number.");
   };
-  g.S = function() {
+  g.S = function () {
     var b = this;
-    return (function(a) {
+    return (function (a) {
       return function d(e) {
         return e === b.end
           ? null
@@ -18345,8 +18339,8 @@ function registerAsciinemaPlayerElement() {
               A.c(b.Ka, e),
               new df(
                 null,
-                (function() {
-                  return function() {
+                (function () {
+                  return function () {
                     return d(e + 1);
                   };
                 })(a),
@@ -18357,10 +18351,10 @@ function registerAsciinemaPlayerElement() {
       };
     })(this)(b.start);
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return Tg(a, this.Ka, this.start, this.end, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Tg(
       this.meta,
       kc(this.Ka, this.end, a),
@@ -18369,9 +18363,9 @@ function registerAsciinemaPlayerElement() {
       null
     );
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return this.aa(null, b);
@@ -18380,24 +18374,24 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return this.aa(null, b);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return this.la(null, b, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.aa(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.la(null, b, a);
   };
-  Sg.prototype[yb] = function() {
+  Sg.prototype[yb] = function () {
     return sd(this);
   };
   function Tg(b, a, c, d, e) {
@@ -18436,7 +18430,7 @@ function registerAsciinemaPlayerElement() {
     this.m = 275;
   }
   g = Ng.prototype;
-  g.Ec = function(b, a) {
+  g.Ec = function (b, a) {
     if (this.root.ma) {
       if (32 > this.F - Cg(this)) this.ha[this.F & 31] = a;
       else {
@@ -18473,7 +18467,7 @@ function registerAsciinemaPlayerElement() {
             null,
             null,
             null,
-            null
+            null,
           ];
         d[0] = a;
         this.ha = d;
@@ -18510,7 +18504,7 @@ function registerAsciinemaPlayerElement() {
               null,
               null,
               null,
-              null
+              null,
             ],
             e = this.shift + 5;
           d[0] = this.root;
@@ -18524,7 +18518,7 @@ function registerAsciinemaPlayerElement() {
     }
     throw Error("conj! after persistent!");
   };
-  g.kd = function() {
+  g.kd = function () {
     if (this.root.ma) {
       this.root.ma = null;
       var b = this.F - Cg(this),
@@ -18534,7 +18528,7 @@ function registerAsciinemaPlayerElement() {
     }
     throw Error("persistent! called twice");
   };
-  g.Dc = function(b, a, c) {
+  g.Dc = function (b, a, c) {
     if ("number" === typeof a) return Wg(this, a, c);
     throw Error("TransientVector's key for assoc! must be a number.");
   };
@@ -18543,8 +18537,8 @@ function registerAsciinemaPlayerElement() {
       if (0 <= a && a < b.F) {
         if (Cg(b) <= a) b.ha[a & 31] = c;
         else {
-          var d = (function() {
-            return (function() {
+          var d = (function () {
+            return (function () {
               return function f(d, k) {
                 var h = Ug(b.root.ma, k);
                 if (0 === d) h.v[a & 31] = c;
@@ -18567,33 +18561,33 @@ function registerAsciinemaPlayerElement() {
           v.h("Index "),
           v.h(a),
           v.h(" out of bounds for TransientVector of length"),
-          v.h(b.F)
+          v.h(b.F),
         ].join("")
       );
     }
     throw Error("assoc! after persistent!");
   }
-  g.W = function() {
+  g.W = function () {
     if (this.root.ma) return this.F;
     throw Error("count after persistent!");
   };
-  g.aa = function(b, a) {
+  g.aa = function (b, a) {
     if (this.root.ma)
       return (0 <= a && a < this.F ? Gg(this, a) : Fg(a, this.F))[a & 31];
     throw Error("nth after persistent!");
   };
-  g.la = function(b, a, c) {
+  g.la = function (b, a, c) {
     return 0 <= a && a < this.F ? this.aa(null, a) : c;
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return "number" === typeof a ? this.la(null, a, c) : c;
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return this.V(null, b);
@@ -18602,31 +18596,31 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return this.V(null, b);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return this.H(null, b, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.V(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.H(null, b, a);
   };
   function Xg() {
     this.m = 2097152;
     this.J = 0;
   }
-  Xg.prototype.equiv = function(b) {
+  Xg.prototype.equiv = function (b) {
     return this.K(null, b);
   };
-  Xg.prototype.K = function() {
+  Xg.prototype.K = function () {
     return !1;
   };
   var Yg = new Xg();
@@ -18634,17 +18628,19 @@ function registerAsciinemaPlayerElement() {
     return ye(
       qe(a) && !re(a)
         ? G(b) === G(a)
-          ? (null != b
-            ? b.m & 1048576 || q === b.Vf || (b.m ? 0 : ub(qc, b))
-            : ub(qc, b))
+          ? (
+              null != b
+                ? b.m & 1048576 || q === b.Vf || (b.m ? 0 : ub(qc, b))
+                : ub(qc, b)
+            )
             ? Oe(
-                function(b, d, e) {
+                function (b, d, e) {
                   return F.c(C.l(a, d, Yg), e) ? !0 : new Bd(!1);
                 },
                 !0,
                 b
               )
-            : Pf(function(b) {
+            : Pf(function (b) {
                 return F.c(C.l(a, w(b), Yg), Zd(b));
               }, b)
           : null
@@ -18658,11 +18654,11 @@ function registerAsciinemaPlayerElement() {
     this.xf = d;
     this.Te = e;
   }
-  $g.prototype.ka = function() {
+  $g.prototype.ka = function () {
     var b = this.i < this.Je;
     return b ? b : this.Te.ka();
   };
-  $g.prototype.next = function() {
+  $g.prototype.next = function () {
     if (this.i < this.Je) {
       var b = Nd(this.xf, this.i);
       this.i += 1;
@@ -18670,13 +18666,13 @@ function registerAsciinemaPlayerElement() {
     }
     return this.Te.next();
   };
-  $g.prototype.remove = function() {
+  $g.prototype.remove = function () {
     return Error("Unsupported operation");
   };
   function ah(b) {
     this.s = b;
   }
-  ah.prototype.next = function() {
+  ah.prototype.next = function () {
     if (null != this.s) {
       var b = w(this.s),
         a = I(b, 0, null),
@@ -18689,7 +18685,7 @@ function registerAsciinemaPlayerElement() {
   function bh(b) {
     this.s = b;
   }
-  bh.prototype.next = function() {
+  bh.prototype.next = function () {
     if (null != this.s) {
       var b = w(this.s);
       this.s = y(this.s);
@@ -18771,15 +18767,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 0;
   }
   g = dh.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -18788,20 +18784,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -18811,55 +18807,55 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.ib;
   };
-  g.La = function() {
+  g.La = function () {
     return this.i < this.v.length - 2
       ? new dh(this.v, this.i + 2, this.ib)
       : null;
   };
-  g.W = function() {
+  g.W = function () {
     return (this.v.length - this.i) / 2;
   };
-  g.U = function() {
+  g.U = function () {
     return ud(this);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.ib);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return new T(null, 2, 5, U, [this.v[this.i], this.v[this.i + 1]], null);
   };
-  g.cb = function() {
+  g.cb = function () {
     return this.i < this.v.length - 2
       ? new dh(this.v, this.i + 2, this.ib)
       : qd;
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new dh(this.v, this.i, a);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  dh.prototype[yb] = function() {
+  dh.prototype[yb] = function () {
     return sd(this);
   };
   function eh(b, a, c) {
@@ -18867,10 +18863,10 @@ function registerAsciinemaPlayerElement() {
     this.i = a;
     this.F = c;
   }
-  eh.prototype.ka = function() {
+  eh.prototype.ka = function () {
     return this.i < this.F;
   };
-  eh.prototype.next = function() {
+  eh.prototype.next = function () {
     var b = new T(null, 2, 5, U, [this.v[this.i], this.v[this.i + 1]], null);
     this.i += 2;
     return b;
@@ -18884,28 +18880,28 @@ function registerAsciinemaPlayerElement() {
     this.J = 139268;
   }
   g = r.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.keys = function() {
+  g.keys = function () {
     return sd(fh(this));
   };
-  g.entries = function() {
+  g.entries = function () {
     return new ah(D(D(this)));
   };
-  g.values = function() {
+  g.values = function () {
     return sd(gh(this));
   };
-  g.has = function(b) {
+  g.has = function (b) {
     return Be(this, b);
   };
-  g.get = function(b, a) {
+  g.get = function (b, a) {
     return this.H(null, b, a);
   };
-  g.forEach = function(b) {
+  g.forEach = function (b) {
     for (var a, c, d = D(this), e = null, f = 0, h = 0; ; )
       if (h < f)
         (a = e.aa(null, h)),
@@ -18927,14 +18923,14 @@ function registerAsciinemaPlayerElement() {
           (h = 0);
       else return null;
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     b = ch(this.v, a);
     return -1 === b ? c : this.v[b + 1];
   };
-  g.Sc = function(b, a, c) {
+  g.Sc = function (b, a, c) {
     b = this.v.length;
     for (var d = 0; ; )
       if (d < b) {
@@ -18945,20 +18941,20 @@ function registerAsciinemaPlayerElement() {
         d += 2;
       } else return c;
   };
-  g.$ = function() {
+  g.$ = function () {
     return new eh(this.v, 0, 2 * this.F);
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.W = function() {
+  g.W = function () {
     return this.F;
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = wd(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     if (qe(a) && !re(a)) {
       var c = this.v.length;
       if (this.F === a.W(null))
@@ -18973,19 +18969,19 @@ function registerAsciinemaPlayerElement() {
       else return !1;
     } else return !1;
   };
-  g.Rc = function() {
+  g.Rc = function () {
     return new hh({}, this.v.length, Bb(this.v));
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(yf, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Le(this, a);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Me(this, a, c);
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     if (0 <= ch(this.v, a)) {
       var c = this.v.length,
         d = c - 2;
@@ -18998,7 +18994,7 @@ function registerAsciinemaPlayerElement() {
       }
     } else return this;
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     b = ch(this.v, a);
     if (-1 === b) {
       if (this.F < ih) {
@@ -19017,17 +19013,17 @@ function registerAsciinemaPlayerElement() {
     a[b + 1] = c;
     return new r(this.meta, this.F, a, null);
   };
-  g.zc = function(b, a) {
+  g.zc = function (b, a) {
     return -1 !== ch(this.v, a);
   };
-  g.S = function() {
+  g.S = function () {
     var b = this.v;
     return 0 <= b.length - 2 ? new dh(b, 0, null) : null;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new r(a, this.F, this.v, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     if (se(a)) return this.O(null, A.c(a, 0), A.c(a, 1));
     for (var c = this, d = D(a); ; ) {
       if (null == d) return c;
@@ -19039,9 +19035,9 @@ function registerAsciinemaPlayerElement() {
         );
     }
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return this.V(null, b);
@@ -19050,21 +19046,21 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return this.V(null, b);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return this.H(null, b, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.V(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.H(null, b, a);
   };
   var yf = new r(null, 0, [], xd),
@@ -19080,7 +19076,7 @@ function registerAsciinemaPlayerElement() {
       } else break;
     return new r(null, a.length / 2, a, null);
   }
-  r.prototype[yb] = function() {
+  r.prototype[yb] = function () {
     return sd(this);
   };
   function hh(b, a, c) {
@@ -19091,18 +19087,18 @@ function registerAsciinemaPlayerElement() {
     this.J = 56;
   }
   g = hh.prototype;
-  g.W = function() {
+  g.W = function () {
     if (u(this.Uc)) return Te(this.Zc);
     throw Error("count after persistent!");
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     if (u(this.Uc)) return (b = ch(this.v, a)), -1 === b ? c : this.v[b + 1];
     throw Error("lookup after persistent!");
   };
-  g.Ec = function(b, a) {
+  g.Ec = function (b, a) {
     if (u(this.Uc)) {
       if (
         null != a
@@ -19117,12 +19113,12 @@ function registerAsciinemaPlayerElement() {
       }
     } else throw Error("conj! after persistent!");
   };
-  g.kd = function() {
+  g.kd = function () {
     if (u(this.Uc))
       return (this.Uc = !1), new r(null, Te(this.Zc), this.v, null);
     throw Error("persistent! called twice");
   };
-  g.Dc = function(b, a, c) {
+  g.Dc = function (b, a, c) {
     if (u(this.Uc)) {
       b = ch(this.v, a);
       if (-1 === b) {
@@ -19184,7 +19180,7 @@ function registerAsciinemaPlayerElement() {
     this.ud = c;
     this.Mb = d;
   }
-  qh.prototype.advance = function() {
+  qh.prototype.advance = function () {
     for (var b = this.v.length; ; )
       if (this.i < b) {
         var a = this.v[this.i],
@@ -19198,11 +19194,11 @@ function registerAsciinemaPlayerElement() {
         if (a) return !0;
       } else return !1;
   };
-  qh.prototype.ka = function() {
+  qh.prototype.ka = function () {
     var b = null != this.ud;
     return b ? b : (b = null != this.Mb) ? b : this.advance();
   };
-  qh.prototype.next = function() {
+  qh.prototype.next = function () {
     if (null != this.ud) {
       var b = this.ud;
       this.ud = null;
@@ -19213,7 +19209,7 @@ function registerAsciinemaPlayerElement() {
     if (this.advance()) return this.next();
     throw Error("No such element");
   };
-  qh.prototype.remove = function() {
+  qh.prototype.remove = function () {
     return Error("Unsupported operation");
   };
   function rh(b, a, c) {
@@ -19224,20 +19220,20 @@ function registerAsciinemaPlayerElement() {
     this.m = 0;
   }
   g = rh.prototype;
-  g.Hc = function(b) {
+  g.Hc = function (b) {
     if (b === this.ma) return this;
     var a = Ue(this.oa),
       c = Array(0 > a ? 4 : 2 * (a + 1));
     ve(this.v, 0, c, 0, 2 * a);
     return new rh(b, this.oa, c);
   };
-  g.rd = function() {
+  g.rd = function () {
     return sh(this.v, 0, null);
   };
-  g.Kc = function(b, a) {
+  g.Kc = function (b, a) {
     return ph(this.v, b, a);
   };
-  g.tc = function(b, a, c, d) {
+  g.tc = function (b, a, c, d) {
     var e = 1 << ((a >>> b) & 31);
     if (0 === (this.oa & e)) return d;
     var f = Ue(this.oa & (e - 1)),
@@ -19245,7 +19241,7 @@ function registerAsciinemaPlayerElement() {
       f = this.v[2 * f + 1];
     return null == e ? f.tc(b + 5, a, c, d) : lh(c, e) ? f : d;
   };
-  g.Lb = function(b, a, c, d, e, f) {
+  g.Lb = function (b, a, c, d, e, f) {
     var h = 1 << ((c >>> a) & 31),
       k = Ue(this.oa & (h - 1));
     if (0 === (this.oa & h)) {
@@ -19303,7 +19299,7 @@ function registerAsciinemaPlayerElement() {
           null,
           null,
           null,
-          null
+          null,
         ];
         k[(c >>> a) & 31] = th.Lb(b, a + 5, c, d, e, f);
         for (e = d = 0; ; )
@@ -19352,7 +19348,7 @@ function registerAsciinemaPlayerElement() {
     b.v[k] = e;
     return b;
   };
-  g.Kb = function(b, a, c, d, e) {
+  g.Kb = function (b, a, c, d, e) {
     var f = 1 << ((a >>> b) & 31),
       h = Ue(this.oa & (f - 1));
     if (0 === (this.oa & f)) {
@@ -19390,7 +19386,7 @@ function registerAsciinemaPlayerElement() {
           null,
           null,
           null,
-          null
+          null,
         ];
         h[(a >>> b) & 31] = th.Kb(b + 5, a, c, d, e);
         for (d = c = 0; ; )
@@ -19439,7 +19435,7 @@ function registerAsciinemaPlayerElement() {
     d[h] = c;
     return new rh(null, e, d);
   };
-  g.sd = function(b, a, c) {
+  g.sd = function (b, a, c) {
     var d = 1 << ((a >>> b) & 31);
     if (0 === (this.oa & d)) return this;
     var e = Ue(this.oa & (d - 1)),
@@ -19458,7 +19454,7 @@ function registerAsciinemaPlayerElement() {
       ? new rh(null, this.oa ^ d, nh(this.v, e))
       : this;
   };
-  g.$ = function() {
+  g.$ = function () {
     return new qh(this.v, 0, null, null);
   };
   var th = new rh(null, 0, []);
@@ -19467,7 +19463,7 @@ function registerAsciinemaPlayerElement() {
     this.i = a;
     this.Mb = c;
   }
-  wh.prototype.ka = function() {
+  wh.prototype.ka = function () {
     for (var b = this.v.length; ; ) {
       if (null != this.Mb && this.Mb.ka()) return !0;
       if (this.i < b) {
@@ -19477,11 +19473,11 @@ function registerAsciinemaPlayerElement() {
       } else return !1;
     }
   };
-  wh.prototype.next = function() {
+  wh.prototype.next = function () {
     if (this.ka()) return this.Mb.next();
     throw Error("No such element");
   };
-  wh.prototype.remove = function() {
+  wh.prototype.remove = function () {
     return Error("Unsupported operation");
   };
   function uh(b, a, c) {
@@ -19492,13 +19488,13 @@ function registerAsciinemaPlayerElement() {
     this.m = 0;
   }
   g = uh.prototype;
-  g.Hc = function(b) {
+  g.Hc = function (b) {
     return b === this.ma ? this : new uh(b, this.F, Bb(this.v));
   };
-  g.rd = function() {
+  g.rd = function () {
     return xh(this.v, 0, null);
   };
-  g.Kc = function(b, a) {
+  g.Kc = function (b, a) {
     for (var c = this.v.length, d = 0, e = a; ; )
       if (d < c) {
         var f = this.v[d];
@@ -19506,11 +19502,11 @@ function registerAsciinemaPlayerElement() {
         d += 1;
       } else return e;
   };
-  g.tc = function(b, a, c, d) {
+  g.tc = function (b, a, c, d) {
     var e = this.v[(a >>> b) & 31];
     return null != e ? e.tc(b + 5, a, c, d) : d;
   };
-  g.Lb = function(b, a, c, d, e, f) {
+  g.Lb = function (b, a, c, d, e, f) {
     var h = (c >>> a) & 31,
       k = this.v[h];
     if (null == k)
@@ -19518,7 +19514,7 @@ function registerAsciinemaPlayerElement() {
     a = k.Lb(b, a + 5, c, d, e, f);
     return a === k ? this : oh(this, b, h, a);
   };
-  g.Kb = function(b, a, c, d, e) {
+  g.Kb = function (b, a, c, d, e) {
     var f = (a >>> b) & 31,
       h = this.v[f];
     if (null == h)
@@ -19526,7 +19522,7 @@ function registerAsciinemaPlayerElement() {
     b = h.Kb(b + 5, a, c, d, e);
     return b === h ? this : new uh(null, this.F, mh(this.v, f, b));
   };
-  g.sd = function(b, a, c) {
+  g.sd = function (b, a, c) {
     var d = (a >>> b) & 31,
       e = this.v[d];
     if (null != e) {
@@ -19556,7 +19552,7 @@ function registerAsciinemaPlayerElement() {
     }
     return this;
   };
-  g.$ = function() {
+  g.$ = function () {
     return new wh(this.v, 0, null);
   };
   function yh(b, a, c) {
@@ -19576,23 +19572,23 @@ function registerAsciinemaPlayerElement() {
     this.m = 0;
   }
   g = vh.prototype;
-  g.Hc = function(b) {
+  g.Hc = function (b) {
     if (b === this.ma) return this;
     var a = Array(2 * (this.F + 1));
     ve(this.v, 0, a, 0, 2 * this.F);
     return new vh(b, this.fc, this.F, a);
   };
-  g.rd = function() {
+  g.rd = function () {
     return sh(this.v, 0, null);
   };
-  g.Kc = function(b, a) {
+  g.Kc = function (b, a) {
     return ph(this.v, b, a);
   };
-  g.tc = function(b, a, c, d) {
+  g.tc = function (b, a, c, d) {
     b = yh(this.v, this.F, c);
     return 0 > b ? d : lh(c, this.v[b]) ? this.v[b + 1] : d;
   };
-  g.Lb = function(b, a, c, d, e, f) {
+  g.Lb = function (b, a, c, d, e, f) {
     if (c === this.fc) {
       a = yh(this.v, this.F, d);
       if (-1 === a) {
@@ -19630,7 +19626,7 @@ function registerAsciinemaPlayerElement() {
       f
     );
   };
-  g.Kb = function(b, a, c, d, e) {
+  g.Kb = function (b, a, c, d, e) {
     return a === this.fc
       ? ((b = yh(this.v, this.F, c)),
         -1 === b
@@ -19652,7 +19648,7 @@ function registerAsciinemaPlayerElement() {
           e
         );
   };
-  g.sd = function(b, a, c) {
+  g.sd = function (b, a, c) {
     b = yh(this.v, this.F, c);
     return -1 === b
       ? this
@@ -19660,7 +19656,7 @@ function registerAsciinemaPlayerElement() {
       ? null
       : new vh(null, this.fc, this.F - 1, nh(this.v, Te(b)));
   };
-  g.$ = function() {
+  g.$ = function () {
     return new qh(this.v, 0, null, null);
   };
   function zh(b, a, c, d, e) {
@@ -19673,15 +19669,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 0;
   }
   g = zh.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -19690,20 +19686,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -19713,57 +19709,57 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     return null == this.s
       ? sh(this.Nb, this.i + 2, null)
       : sh(this.Nb, this.i, y(this.s));
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return null == this.s
       ? new T(null, 2, 5, U, [this.Nb[this.i], this.Nb[this.i + 1]], null)
       : w(this.s);
   };
-  g.cb = function() {
+  g.cb = function () {
     var b =
       null == this.s
         ? sh(this.Nb, this.i + 2, null)
         : sh(this.Nb, this.i, y(this.s));
     return null != b ? b : qd;
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new zh(a, this.Nb, this.i, this.s, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  zh.prototype[yb] = function() {
+  zh.prototype[yb] = function () {
     return sd(this);
   };
   function sh(b, a, c) {
@@ -19788,15 +19784,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 0;
   }
   g = Ah.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -19805,20 +19801,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -19828,50 +19824,50 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     return xh(this.Nb, this.i, y(this.s));
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return w(this.s);
   };
-  g.cb = function() {
+  g.cb = function () {
     var b = xh(this.Nb, this.i, y(this.s));
     return null != b ? b : qd;
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Ah(a, this.Nb, this.i, this.s, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  Ah.prototype[yb] = function() {
+  Ah.prototype[yb] = function () {
     return sd(this);
   };
   function xh(b, a, c) {
@@ -19890,15 +19886,15 @@ function registerAsciinemaPlayerElement() {
     this.cf = a;
     this.ye = c;
   }
-  Bh.prototype.ka = function() {
+  Bh.prototype.ka = function () {
     return !this.ye || this.cf.ka();
   };
-  Bh.prototype.next = function() {
+  Bh.prototype.next = function () {
     if (this.ye) return this.cf.next();
     this.ye = !0;
     return new T(null, 2, 5, U, [null, this.fb], null);
   };
-  Bh.prototype.remove = function() {
+  Bh.prototype.remove = function () {
     return Error("Unsupported operation");
   };
   function Ch(b, a, c, d, e, f) {
@@ -19912,28 +19908,28 @@ function registerAsciinemaPlayerElement() {
     this.J = 139268;
   }
   g = Ch.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.keys = function() {
+  g.keys = function () {
     return sd(fh(this));
   };
-  g.entries = function() {
+  g.entries = function () {
     return new ah(D(D(this)));
   };
-  g.values = function() {
+  g.values = function () {
     return sd(gh(this));
   };
-  g.has = function(b) {
+  g.has = function (b) {
     return Be(this, b);
   };
-  g.get = function(b, a) {
+  g.get = function (b, a) {
     return this.H(null, b, a);
   };
-  g.forEach = function(b) {
+  g.forEach = function (b) {
     for (var a, c, d = D(this), e = null, f = 0, h = 0; ; )
       if (h < f)
         (a = e.aa(null, h)),
@@ -19955,10 +19951,10 @@ function registerAsciinemaPlayerElement() {
           (h = 0);
       else return null;
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return null == a
       ? this.eb
         ? this.fb
@@ -19967,7 +19963,7 @@ function registerAsciinemaPlayerElement() {
       ? c
       : this.root.tc(0, id(a), a, c);
   };
-  g.Sc = function(b, a, c) {
+  g.Sc = function (b, a, c) {
     b = this.eb
       ? a.l
         ? a.l(c, null, this.fb)
@@ -19975,30 +19971,30 @@ function registerAsciinemaPlayerElement() {
       : c;
     return Cd(b) ? B(b) : null != this.root ? Ed(this.root.Kc(a, b)) : b;
   };
-  g.$ = function() {
+  g.$ = function () {
     var b = this.root ? Yc(this.root) : wf();
     return this.eb ? new Bh(this.fb, b, !1) : b;
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.W = function() {
+  g.W = function () {
     return this.F;
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = wd(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Zg(this, a);
   };
-  g.Rc = function() {
+  g.Rc = function () {
     return new Dh({}, this.root, this.F, this.eb, this.fb);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(jh, this.meta);
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     if (null == a)
       return this.eb
         ? new Ch(this.meta, this.F - 1, this.root, !1, null, null)
@@ -20009,7 +20005,7 @@ function registerAsciinemaPlayerElement() {
       ? this
       : new Ch(this.meta, this.F - 1, c, this.eb, this.fb, null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     if (null == a)
       return this.eb && c === this.fb
         ? this
@@ -20027,24 +20023,24 @@ function registerAsciinemaPlayerElement() {
       ? this
       : new Ch(this.meta, b.I ? this.F + 1 : this.F, a, this.eb, this.fb, null);
   };
-  g.zc = function(b, a) {
+  g.zc = function (b, a) {
     return null == a
       ? this.eb
       : null == this.root
       ? !1
       : this.root.tc(0, id(a), a, we) !== we;
   };
-  g.S = function() {
+  g.S = function () {
     if (0 < this.F) {
       var b = null != this.root ? this.root.rd() : null;
       return this.eb ? Vd(new T(null, 2, 5, U, [null, this.fb], null), b) : b;
     }
     return null;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Ch(a, this.F, this.root, this.eb, this.fb, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     if (se(a)) return this.O(null, A.c(a, 0), A.c(a, 1));
     for (var c = this, d = D(a); ; ) {
       if (null == d) return c;
@@ -20056,9 +20052,9 @@ function registerAsciinemaPlayerElement() {
         );
     }
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return this.V(null, b);
@@ -20067,21 +20063,21 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return this.V(null, b);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return this.H(null, b, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.V(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.H(null, b, a);
   };
   var jh = new Ch(null, 0, null, !1, null, xd);
@@ -20093,7 +20089,7 @@ function registerAsciinemaPlayerElement() {
           d = f;
       else return Kc(e);
   }
-  Ch.prototype[yb] = function() {
+  Ch.prototype[yb] = function () {
     return sd(this);
   };
   function Dh(b, a, c, d, e) {
@@ -20120,11 +20116,11 @@ function registerAsciinemaPlayerElement() {
     throw Error("assoc! after persistent!");
   }
   g = Dh.prototype;
-  g.W = function() {
+  g.W = function () {
     if (this.ma) return this.count;
     throw Error("count after persistent!");
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return null == a
       ? this.eb
         ? this.fb
@@ -20133,7 +20129,7 @@ function registerAsciinemaPlayerElement() {
       ? null
       : this.root.tc(0, id(a), a);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return null == a
       ? this.eb
         ? this.fb
@@ -20142,7 +20138,7 @@ function registerAsciinemaPlayerElement() {
       ? c
       : this.root.tc(0, id(a), a, c);
   };
-  g.Ec = function(b, a) {
+  g.Ec = function (b, a) {
     a: if (this.ma)
       if (
         null != a
@@ -20164,14 +20160,14 @@ function registerAsciinemaPlayerElement() {
     else throw Error("conj! after persistent");
     return c;
   };
-  g.kd = function() {
+  g.kd = function () {
     if (this.ma) {
       this.ma = null;
       var b = new Ch(null, this.count, this.root, this.eb, this.fb, null);
     } else throw Error("persistent! called twice");
     return b;
   };
-  g.Dc = function(b, a, c) {
+  g.Dc = function (b, a, c) {
     return Eh(this, a, c);
   };
   function Fh(b, a, c) {
@@ -20189,15 +20185,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 0;
   }
   g = Gh.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -20206,20 +20202,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -20229,57 +20225,57 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     var b = w(this.stack),
       b = Fh(this.wc ? b.right : b.left, y(this.stack), this.wc);
     return null == b ? null : new Gh(null, b, this.wc, this.F - 1, null);
   };
-  g.W = function() {
+  g.W = function () {
     return 0 > this.F ? G(y(this)) + 1 : this.F;
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     var b = this.stack;
     return null == b ? null : hc(b);
   };
-  g.cb = function() {
+  g.cb = function () {
     var b = w(this.stack),
       b = Fh(this.wc ? b.right : b.left, y(this.stack), this.wc);
     return null != b ? new Gh(null, b, this.wc, this.F - 1, null) : qd;
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Gh(a, this.stack, this.wc, this.F, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  Gh.prototype[yb] = function() {
+  Gh.prototype[yb] = function () {
     return sd(this);
   };
   function Ih(b, a, c) {
@@ -20344,13 +20340,13 @@ function registerAsciinemaPlayerElement() {
   var Ph = function Ph(a, c, d) {
     var e =
       null != a.left
-        ? (function() {
+        ? (function () {
             var e = a.left;
             return Ph.l ? Ph.l(e, c, d) : Ph.call(null, e, c, d);
           })()
         : d;
     if (Cd(e)) return e;
-    var f = (function() {
+    var f = (function () {
       var d = a.key,
         f = a.I;
       return c.l ? c.l(e, d, f) : c.call(null, e, d, f);
@@ -20372,12 +20368,12 @@ function registerAsciinemaPlayerElement() {
     this.J = 0;
   }
   g = Lh.prototype;
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -20387,14 +20383,14 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -20403,108 +20399,108 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.Fe = function(b) {
+  g.Fe = function (b) {
     return b.Ie(this);
   };
-  g.vd = function() {
+  g.vd = function () {
     return new Kh(this.key, this.I, this.left, this.right, null);
   };
-  g.cc = function() {
+  g.cc = function () {
     return this;
   };
-  g.Ee = function(b) {
+  g.Ee = function (b) {
     return b.He(this);
   };
-  g.replace = function(b, a, c, d) {
+  g.replace = function (b, a, c, d) {
     return new Lh(b, a, c, d, null);
   };
-  g.He = function(b) {
+  g.He = function (b) {
     return new Lh(b.key, b.I, this, b.right, null);
   };
-  g.Ie = function(b) {
+  g.Ie = function (b) {
     return new Lh(b.key, b.I, b.left, this, null);
   };
-  g.Kc = function(b, a) {
+  g.Kc = function (b, a) {
     return Ph(this, b, a);
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.la(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return this.la(null, a, c);
   };
-  g.aa = function(b, a) {
+  g.aa = function (b, a) {
     if (0 === a) return this.key;
     if (1 === a) return this.I;
     throw Error("Index out of bounds");
   };
-  g.la = function(b, a, c) {
+  g.la = function (b, a, c) {
     return 0 === a ? this.key : 1 === a ? this.I : c;
   };
-  g.ec = function(b, a, c) {
+  g.ec = function (b, a, c) {
     return new T(null, 2, 5, U, [this.key, this.I], null).ec(null, a, c);
   };
-  g.P = function() {
+  g.P = function () {
     return null;
   };
-  g.W = function() {
+  g.W = function () {
     return 2;
   };
-  g.fd = function() {
+  g.fd = function () {
     return this.key;
   };
-  g.gd = function() {
+  g.gd = function () {
     return this.I;
   };
-  g.Bc = function() {
+  g.Bc = function () {
     return this.I;
   };
-  g.Cc = function() {
+  g.Cc = function () {
     return new T(null, 1, 5, U, [this.key], null);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return be;
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Fd(this, a);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Gd(this, a, c);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return K.l(new T(null, 2, 5, U, [this.key, this.I], null), a, c);
   };
-  g.zc = function(b, a) {
+  g.zc = function (b, a) {
     return 0 === a || 1 === a;
   };
-  g.S = function() {
+  g.S = function () {
     var b = this.key;
     return Ob(Ob(qd, this.I), b);
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return nc(new T(null, 2, 5, U, [this.key, this.I], null), a);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return new T(null, 3, 5, U, [this.key, this.I, a], null);
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return this.aa(null, b);
@@ -20513,24 +20509,24 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return this.aa(null, b);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return this.la(null, b, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.aa(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.la(null, b, a);
   };
-  Lh.prototype[yb] = function() {
+  Lh.prototype[yb] = function () {
     return sd(this);
   };
   function Kh(b, a, c, d, e) {
@@ -20543,12 +20539,12 @@ function registerAsciinemaPlayerElement() {
     this.J = 0;
   }
   g = Kh.prototype;
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -20558,14 +20554,14 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -20574,30 +20570,30 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.Fe = function(b) {
+  g.Fe = function (b) {
     return new Kh(this.key, this.I, this.left, b, null);
   };
-  g.vd = function() {
+  g.vd = function () {
     throw Error("red-black tree invariant violation");
   };
-  g.cc = function() {
+  g.cc = function () {
     return new Lh(this.key, this.I, this.left, this.right, null);
   };
-  g.Ee = function(b) {
+  g.Ee = function (b) {
     return new Kh(this.key, this.I, b, this.right, null);
   };
-  g.replace = function(b, a, c, d) {
+  g.replace = function (b, a, c, d) {
     return new Kh(b, a, c, d, null);
   };
-  g.He = function(b) {
+  g.He = function (b) {
     return this.left instanceof Kh
       ? new Kh(
           this.key,
@@ -20616,7 +20612,7 @@ function registerAsciinemaPlayerElement() {
         )
       : new Lh(b.key, b.I, this, b.right, null);
   };
-  g.Ie = function(b) {
+  g.Ie = function (b) {
     return this.right instanceof Kh
       ? new Kh(
           this.key,
@@ -20635,79 +20631,79 @@ function registerAsciinemaPlayerElement() {
         )
       : new Lh(b.key, b.I, b.left, this, null);
   };
-  g.Kc = function(b, a) {
+  g.Kc = function (b, a) {
     return Ph(this, b, a);
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.la(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return this.la(null, a, c);
   };
-  g.aa = function(b, a) {
+  g.aa = function (b, a) {
     if (0 === a) return this.key;
     if (1 === a) return this.I;
     throw Error("Index out of bounds");
   };
-  g.la = function(b, a, c) {
+  g.la = function (b, a, c) {
     return 0 === a ? this.key : 1 === a ? this.I : c;
   };
-  g.ec = function(b, a, c) {
+  g.ec = function (b, a, c) {
     return new T(null, 2, 5, U, [this.key, this.I], null).ec(null, a, c);
   };
-  g.P = function() {
+  g.P = function () {
     return null;
   };
-  g.W = function() {
+  g.W = function () {
     return 2;
   };
-  g.fd = function() {
+  g.fd = function () {
     return this.key;
   };
-  g.gd = function() {
+  g.gd = function () {
     return this.I;
   };
-  g.Bc = function() {
+  g.Bc = function () {
     return this.I;
   };
-  g.Cc = function() {
+  g.Cc = function () {
     return new T(null, 1, 5, U, [this.key], null);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return be;
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Fd(this, a);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Gd(this, a, c);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return K.l(new T(null, 2, 5, U, [this.key, this.I], null), a, c);
   };
-  g.zc = function(b, a) {
+  g.zc = function (b, a) {
     return 0 === a || 1 === a;
   };
-  g.S = function() {
+  g.S = function () {
     var b = this.key;
     return Ob(Ob(qd, this.I), b);
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return nc(new T(null, 2, 5, U, [this.key, this.I], null), a);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return new T(null, 3, 5, U, [this.key, this.I, a], null);
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return this.aa(null, b);
@@ -20716,42 +20712,42 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return this.aa(null, b);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return this.la(null, b, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.aa(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.la(null, b, a);
   };
-  Kh.prototype[yb] = function() {
+  Kh.prototype[yb] = function () {
     return sd(this);
   };
   var Qh = function Qh(a, c, d, e, f) {
       if (null == c) return new Kh(d, e, null, null, null);
-      var h = (function() {
+      var h = (function () {
         var e = c.key;
         return a.c ? a.c(d, e) : a.call(null, d, e);
       })();
       if (0 === h) return (f[0] = c), null;
       if (0 > h)
         return (
-          (h = (function() {
+          (h = (function () {
             var h = c.left;
             return Qh.Z ? Qh.Z(a, h, d, e, f) : Qh.call(null, a, h, d, e, f);
           })()),
           null != h ? c.Ee(h) : null
         );
-      h = (function() {
+      h = (function () {
         var h = c.right;
         return Qh.Z ? Qh.Z(a, h, d, e, f) : Qh.call(null, a, h, d, e, f);
       })();
@@ -20762,7 +20758,7 @@ function registerAsciinemaPlayerElement() {
       if (null == c) return a;
       if (a instanceof Kh) {
         if (c instanceof Kh) {
-          var d = (function() {
+          var d = (function () {
             var d = a.right,
               f = c.left;
             return Rh.c ? Rh.c(d, f) : Rh.call(null, d, f);
@@ -20787,7 +20783,7 @@ function registerAsciinemaPlayerElement() {
           a.key,
           a.I,
           a.left,
-          (function() {
+          (function () {
             var d = a.right;
             return Rh.c ? Rh.c(d, c) : Rh.call(null, d, c);
           })(),
@@ -20798,14 +20794,14 @@ function registerAsciinemaPlayerElement() {
         return new Kh(
           c.key,
           c.I,
-          (function() {
+          (function () {
             var d = c.left;
             return Rh.c ? Rh.c(a, d) : Rh.call(null, a, d);
           })(),
           c.right,
           null
         );
-      d = (function() {
+      d = (function () {
         var d = a.right,
           f = c.left;
         return Rh.c ? Rh.c(d, f) : Rh.call(null, d, f);
@@ -20822,14 +20818,14 @@ function registerAsciinemaPlayerElement() {
     },
     Sh = function Sh(a, c, d, e) {
       if (null != c) {
-        var f = (function() {
+        var f = (function () {
           var e = c.key;
           return a.c ? a.c(d, e) : a.call(null, d, e);
         })();
         if (0 === f) return (e[0] = c), Rh(c.left, c.right);
         if (0 > f)
           return (
-            (f = (function() {
+            (f = (function () {
               var f = c.left;
               return Sh.M ? Sh.M(a, f, d, e) : Sh.call(null, a, f, d, e);
             })()),
@@ -20839,7 +20835,7 @@ function registerAsciinemaPlayerElement() {
                 : new Kh(c.key, c.I, f, c.right, null)
               : null
           );
-        f = (function() {
+        f = (function () {
           var f = c.right;
           return Sh.M ? Sh.M(a, f, d, e) : Sh.call(null, a, f, d, e);
         })();
@@ -20860,7 +20856,7 @@ function registerAsciinemaPlayerElement() {
         ? c.replace(
             f,
             c.I,
-            (function() {
+            (function () {
               var f = c.left;
               return Th.M ? Th.M(a, f, d, e) : Th.call(null, a, f, d, e);
             })(),
@@ -20870,7 +20866,7 @@ function registerAsciinemaPlayerElement() {
             f,
             c.I,
             c.left,
-            (function() {
+            (function () {
               var f = c.right;
               return Th.M ? Th.M(a, f, d, e) : Th.call(null, a, f, d, e);
             })()
@@ -20886,7 +20882,7 @@ function registerAsciinemaPlayerElement() {
     this.J = 8192;
   }
   g = Uh.prototype;
-  g.forEach = function(b) {
+  g.forEach = function (b) {
     for (var a, c, d = D(this), e = null, f = 0, h = 0; ; )
       if (h < f)
         (a = e.aa(null, h)),
@@ -20908,22 +20904,22 @@ function registerAsciinemaPlayerElement() {
           (h = 0);
       else return null;
   };
-  g.get = function(b, a) {
+  g.get = function (b, a) {
     return this.H(null, b, a);
   };
-  g.entries = function() {
+  g.entries = function () {
     return new ah(D(D(this)));
   };
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.keys = function() {
+  g.keys = function () {
     return sd(fh(this));
   };
-  g.values = function() {
+  g.values = function () {
     return sd(gh(this));
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
   function Vh(b, a) {
@@ -20935,39 +20931,39 @@ function registerAsciinemaPlayerElement() {
         c = 0 > d ? c.left : c.right;
       } else return null;
   }
-  g.has = function(b) {
+  g.has = function (b) {
     return Be(this, b);
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     b = Vh(this, a);
     return null != b ? b.I : c;
   };
-  g.Sc = function(b, a, c) {
+  g.Sc = function (b, a, c) {
     return null != this.mc ? Ed(Ph(this.mc, a, c)) : c;
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.W = function() {
+  g.W = function () {
     return this.F;
   };
-  g.Tc = function() {
+  g.Tc = function () {
     return 0 < this.F ? Ih(this.mc, !1, this.F) : null;
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = wd(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Zg(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return new Uh(this.Cb, null, 0, this.meta, 0);
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     var c = [null],
       d = Sh(this.Cb, this.mc, a, c);
     return null == d
@@ -20976,7 +20972,7 @@ function registerAsciinemaPlayerElement() {
         : new Uh(this.Cb, null, 0, this.meta, null)
       : new Uh(this.Cb, d.cc(), this.F - 1, this.meta, null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     b = [null];
     var d = Qh(this.Cb, this.mc, a, c, b);
     return null == d
@@ -20992,16 +20988,16 @@ function registerAsciinemaPlayerElement() {
             ))
       : new Uh(this.Cb, d.cc(), this.F + 1, this.meta, null);
   };
-  g.zc = function(b, a) {
+  g.zc = function (b, a) {
     return null != Vh(this, a);
   };
-  g.S = function() {
+  g.S = function () {
     return 0 < this.F ? Ih(this.mc, !0, this.F) : null;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Uh(this.Cb, this.mc, this.F, a, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     if (se(a)) return this.O(null, A.c(a, 0), A.c(a, 1));
     for (var c = this, d = D(a); ; ) {
       if (null == d) return c;
@@ -21013,9 +21009,9 @@ function registerAsciinemaPlayerElement() {
         );
     }
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return this.V(null, b);
@@ -21024,25 +21020,25 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return this.V(null, b);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return this.H(null, b, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.V(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.H(null, b, a);
   };
   var Wh = new Uh(Ee, null, 0, null, xd);
-  Uh.prototype[yb] = function() {
+  Uh.prototype[yb] = function () {
     return sd(this);
   };
   var V = function V(a) {
@@ -21051,7 +21047,7 @@ function registerAsciinemaPlayerElement() {
       else break;
     return V.A(0 < c.length ? new Db(c.slice(0), 0, null) : null);
   };
-  V.A = function(b) {
+  V.A = function (b) {
     for (var a = D(b), c = Ic(jh); ; )
       if (a) {
         b = y(y(a));
@@ -21062,7 +21058,7 @@ function registerAsciinemaPlayerElement() {
       } else return Kc(c);
   };
   V.L = 0;
-  V.N = function(b) {
+  V.N = function (b) {
     return V.A(D(b));
   };
   var Xh = function Xh(a) {
@@ -21071,12 +21067,12 @@ function registerAsciinemaPlayerElement() {
       else break;
     return Xh.A(0 < c.length ? new Db(c.slice(0), 0, null) : null);
   };
-  Xh.A = function(b) {
+  Xh.A = function (b) {
     b = b instanceof Db && 0 === b.i ? b.v : Fb(b);
     return ee(b);
   };
   Xh.L = 0;
-  Xh.N = function(b) {
+  Xh.N = function (b) {
     return Xh.A(D(b));
   };
   function Yh(b) {
@@ -21099,15 +21095,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 0;
   }
   g = Zh.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -21116,20 +21112,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -21139,58 +21135,66 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.ib;
   };
-  g.La = function() {
-    var b = (null != this.da
-    ? this.da.m & 128 || q === this.da.Kd || (this.da.m ? 0 : ub(Tb, this.da))
-    : ub(Tb, this.da))
+  g.La = function () {
+    var b = (
+      null != this.da
+        ? this.da.m & 128 ||
+          q === this.da.Kd ||
+          (this.da.m ? 0 : ub(Tb, this.da))
+        : ub(Tb, this.da)
+    )
       ? this.da.La(null)
       : y(this.da);
     return null == b ? null : new Zh(b, this.ib);
   };
-  g.U = function() {
+  g.U = function () {
     return ud(this);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.ib);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return this.da.Ja(null).fd(null);
   };
-  g.cb = function() {
-    var b = (null != this.da
-    ? this.da.m & 128 || q === this.da.Kd || (this.da.m ? 0 : ub(Tb, this.da))
-    : ub(Tb, this.da))
+  g.cb = function () {
+    var b = (
+      null != this.da
+        ? this.da.m & 128 ||
+          q === this.da.Kd ||
+          (this.da.m ? 0 : ub(Tb, this.da))
+        : ub(Tb, this.da)
+    )
       ? this.da.La(null)
       : y(this.da);
     return null != b ? new Zh(b, this.ib) : qd;
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Zh(this.da, a);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  Zh.prototype[yb] = function() {
+  Zh.prototype[yb] = function () {
     return sd(this);
   };
   function fh(b) {
@@ -21206,15 +21210,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 0;
   }
   g = ai.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -21223,20 +21227,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -21246,58 +21250,66 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.P = function() {
+  g.P = function () {
     return this.ib;
   };
-  g.La = function() {
-    var b = (null != this.da
-    ? this.da.m & 128 || q === this.da.Kd || (this.da.m ? 0 : ub(Tb, this.da))
-    : ub(Tb, this.da))
+  g.La = function () {
+    var b = (
+      null != this.da
+        ? this.da.m & 128 ||
+          q === this.da.Kd ||
+          (this.da.m ? 0 : ub(Tb, this.da))
+        : ub(Tb, this.da)
+    )
       ? this.da.La(null)
       : y(this.da);
     return null == b ? null : new ai(b, this.ib);
   };
-  g.U = function() {
+  g.U = function () {
     return ud(this);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.ib);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Xd(a, this);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     return Yd(a, c, this);
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return this.da.Ja(null).gd(null);
   };
-  g.cb = function() {
-    var b = (null != this.da
-    ? this.da.m & 128 || q === this.da.Kd || (this.da.m ? 0 : ub(Tb, this.da))
-    : ub(Tb, this.da))
+  g.cb = function () {
+    var b = (
+      null != this.da
+        ? this.da.m & 128 ||
+          q === this.da.Kd ||
+          (this.da.m ? 0 : ub(Tb, this.da))
+        : ub(Tb, this.da)
+    )
       ? this.da.La(null)
       : y(this.da);
     return null != b ? new ai(b, this.ib) : qd;
   };
-  g.S = function() {
+  g.S = function () {
     return this;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new ai(this.da, a);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  ai.prototype[yb] = function() {
+  ai.prototype[yb] = function () {
     return sd(this);
   };
   function gh(b) {
@@ -21309,15 +21321,15 @@ function registerAsciinemaPlayerElement() {
       else break;
     return bi.A(0 < c.length ? new Db(c.slice(0), 0, null) : null);
   };
-  bi.A = function(b) {
+  bi.A = function (b) {
     return u(Qf(Pe, b))
-      ? Ne(function(a, b) {
+      ? Ne(function (a, b) {
           return ae.c(u(a) ? a : yf, b);
         }, b)
       : null;
   };
   bi.L = 0;
-  bi.N = function(b) {
+  bi.N = function (b) {
     return bi.A(D(b));
   };
   var ci = function ci(a) {
@@ -21329,21 +21341,21 @@ function registerAsciinemaPlayerElement() {
       1 < c.length ? new Db(c.slice(1), 0, null) : null
     );
   };
-  ci.A = function(b, a) {
+  ci.A = function (b, a) {
     return u(Qf(Pe, a))
       ? Ne(
-          (function(a) {
-            return function(b, c) {
+          (function (a) {
+            return function (b, c) {
               return Gb(a, u(b) ? b : yf, D(c));
             };
-          })(function(a, d) {
+          })(function (a, d) {
             var c = w(d),
               f = Zd(d);
             return Be(a, c)
               ? K.l(
                   a,
                   c,
-                  (function() {
+                  (function () {
                     var d = C.c(a, c);
                     return b.c ? b.c(d, f) : b.call(null, d, f);
                   })()
@@ -21355,7 +21367,7 @@ function registerAsciinemaPlayerElement() {
       : null;
   };
   ci.L = 1;
-  ci.N = function(b) {
+  ci.N = function (b) {
     var a = w(b);
     b = y(b);
     return ci.A(a, b);
@@ -21377,14 +21389,14 @@ function registerAsciinemaPlayerElement() {
   function mi(b) {
     this.ue = b;
   }
-  mi.prototype.ka = function() {
+  mi.prototype.ka = function () {
     return this.ue.ka();
   };
-  mi.prototype.next = function() {
+  mi.prototype.next = function () {
     if (this.ue.ka()) return this.ue.next().ha[0];
     throw Error("No such element");
   };
-  mi.prototype.remove = function() {
+  mi.prototype.remove = function () {
     return Error("Unsupported operation");
   };
   function ni(b, a, c) {
@@ -21395,25 +21407,25 @@ function registerAsciinemaPlayerElement() {
     this.J = 139268;
   }
   g = ni.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.keys = function() {
+  g.keys = function () {
     return sd(D(this));
   };
-  g.entries = function() {
+  g.entries = function () {
     return new bh(D(D(this)));
   };
-  g.values = function() {
+  g.values = function () {
     return sd(D(this));
   };
-  g.has = function(b) {
+  g.has = function (b) {
     return Be(this, b);
   };
-  g.forEach = function(b) {
+  g.forEach = function (b) {
     for (var a, c, d = D(this), e = null, f = 0, h = 0; ; )
       if (h < f)
         (a = e.aa(null, h)),
@@ -21435,32 +21447,32 @@ function registerAsciinemaPlayerElement() {
           (h = 0);
       else return null;
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return Xb(this.hc, a) ? a : c;
   };
-  g.$ = function() {
+  g.$ = function () {
     return new mi(Yc(this.hc));
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.W = function() {
+  g.W = function () {
     return Kb(this.hc);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = wd(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       ne(a) &&
       G(this) === G(a) &&
       Oe(
-        (function() {
-          return function(b, d) {
+        (function () {
+          return function (b, d) {
             var c = Be(a, d);
             return c ? c : new Bd(!1);
           };
@@ -21470,27 +21482,27 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.Rc = function() {
+  g.Rc = function () {
     return new oi(Ic(this.hc));
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(pi, this.meta);
   };
-  g.ie = function(b, a) {
+  g.ie = function (b, a) {
     return new ni(this.meta, ac(this.hc, a), null);
   };
-  g.S = function() {
+  g.S = function () {
     return fh(this.hc);
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new ni(a, this.hc, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return new ni(this.meta, K.l(this.hc, a, null), null);
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return this.V(null, b);
@@ -21499,21 +21511,21 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return this.V(null, b);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return this.H(null, b, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.V(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.H(null, b, a);
   };
   var pi = new ni(null, yf, xd);
@@ -21523,7 +21535,7 @@ function registerAsciinemaPlayerElement() {
       else break;
     return Kc(c);
   }
-  ni.prototype[yb] = function() {
+  ni.prototype[yb] = function () {
     return sd(this);
   };
   function oi(b) {
@@ -21532,23 +21544,23 @@ function registerAsciinemaPlayerElement() {
     this.m = 259;
   }
   g = oi.prototype;
-  g.Ec = function(b, a) {
+  g.Ec = function (b, a) {
     this.lc = Lc(this.lc, a, null);
     return this;
   };
-  g.kd = function() {
+  g.kd = function () {
     return new ni(null, Kc(this.lc), null);
   };
-  g.W = function() {
+  g.W = function () {
     return G(this.lc);
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return Wb.l(this.lc, a, we) === we ? c : a;
   };
-  g.call = (function() {
+  g.call = (function () {
     function b(a, b, c) {
       return Wb.l(this.lc, b, we) === we ? c : b;
     }
@@ -21556,7 +21568,7 @@ function registerAsciinemaPlayerElement() {
       return Wb.l(this.lc, b, we) === we ? null : b;
     }
     var c = null,
-      c = function(c, e, f) {
+      c = function (c, e, f) {
         switch (arguments.length) {
           case 2:
             return a.call(this, 0, e);
@@ -21569,13 +21581,13 @@ function registerAsciinemaPlayerElement() {
     c.l = b;
     return c;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return Wb.l(this.lc, b, we) === we ? null : b;
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return Wb.l(this.lc, b, we) === we ? a : b;
   };
   function qi(b, a, c) {
@@ -21586,25 +21598,25 @@ function registerAsciinemaPlayerElement() {
     this.J = 8192;
   }
   g = qi.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.keys = function() {
+  g.keys = function () {
     return sd(D(this));
   };
-  g.entries = function() {
+  g.entries = function () {
     return new bh(D(D(this)));
   };
-  g.values = function() {
+  g.values = function () {
     return sd(D(this));
   };
-  g.has = function(b) {
+  g.has = function (b) {
     return Be(this, b);
   };
-  g.forEach = function(b) {
+  g.forEach = function (b) {
     for (var a, c, d = D(this), e = null, f = 0, h = 0; ; )
       if (h < f)
         (a = e.aa(null, h)),
@@ -21626,33 +21638,33 @@ function registerAsciinemaPlayerElement() {
           (h = 0);
       else return null;
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     b = Vh(this.ac, a);
     return null != b ? b.key : c;
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.W = function() {
+  g.W = function () {
     return G(this.ac);
   };
-  g.Tc = function() {
+  g.Tc = function () {
     return 0 < G(this.ac) ? cg.c($h, Bc(this.ac)) : null;
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = wd(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       ne(a) &&
       G(this) === G(a) &&
       Oe(
-        (function() {
-          return function(b, d) {
+        (function () {
+          return function (b, d) {
             var c = Be(a, d);
             return c ? c : new Bd(!1);
           };
@@ -21662,24 +21674,24 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.pa = function() {
+  g.pa = function () {
     return new qi(this.meta, Lb(this.ac), 0);
   };
-  g.ie = function(b, a) {
+  g.ie = function (b, a) {
     return new qi(this.meta, L.c(this.ac, a), null);
   };
-  g.S = function() {
+  g.S = function () {
     return fh(this.ac);
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new qi(a, this.ac, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return new qi(this.meta, K.l(this.ac, a, null), null);
   };
-  g.call = (function() {
+  g.call = (function () {
     var b = null,
-      b = function(a, b, d) {
+      b = function (a, b, d) {
         switch (arguments.length) {
           case 2:
             return this.V(null, b);
@@ -21688,25 +21700,25 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return this.V(null, b);
     };
-    b.l = function(a, b, d) {
+    b.l = function (a, b, d) {
       return this.H(null, b, d);
     };
     return b;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.h = function(b) {
+  g.h = function (b) {
     return this.V(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     return this.H(null, b, a);
   };
   var ri = new qi(null, Wh, xd);
-  qi.prototype[yb] = function() {
+  qi.prototype[yb] = function () {
     return sd(this);
   };
   function si(b) {
@@ -21726,11 +21738,11 @@ function registerAsciinemaPlayerElement() {
       else break;
     return ti.A(0 < c.length ? new Db(c.slice(0), 0, null) : null);
   };
-  ti.A = function(b) {
+  ti.A = function (b) {
     return Gb(Ob, ri, b);
   };
   ti.L = 0;
-  ti.N = function(b) {
+  ti.N = function (b) {
     return ti.A(D(b));
   };
   function cf(b) {
@@ -21756,24 +21768,24 @@ function registerAsciinemaPlayerElement() {
         );
     }
   };
-  ui.c = function(b, a) {
+  ui.c = function (b, a) {
     return a;
   };
-  ui.l = function(b, a, c) {
+  ui.l = function (b, a, c) {
     return (b.h ? b.h(a) : b.call(null, a)) > (b.h ? b.h(c) : b.call(null, c))
       ? a
       : c;
   };
-  ui.A = function(b, a, c, d) {
+  ui.A = function (b, a, c, d) {
     return Gb(
-      function(a, c) {
+      function (a, c) {
         return ui.l(b, a, c);
       },
       ui.l(b, a, c),
       d
     );
   };
-  ui.N = function(b) {
+  ui.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -21786,7 +21798,7 @@ function registerAsciinemaPlayerElement() {
   function vi(b, a) {
     return new df(
       null,
-      function() {
+      function () {
         var c = D(a);
         if (c) {
           var d = w(c);
@@ -21804,10 +21816,10 @@ function registerAsciinemaPlayerElement() {
     this.end = a;
     this.step = c;
   }
-  wi.prototype.ka = function() {
+  wi.prototype.ka = function () {
     return 0 < this.step ? this.i < this.end : this.i > this.end;
   };
-  wi.prototype.next = function() {
+  wi.prototype.next = function () {
     var b = this.i;
     this.i += this.step;
     return b;
@@ -21822,15 +21834,15 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = xi.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return $c(this);
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.indexOf = (function() {
+  g.indexOf = (function () {
     var b = null,
-      b = function(a, b) {
+      b = function (a, b) {
         switch (arguments.length) {
           case 1:
             return Md(this, a, 0);
@@ -21839,20 +21851,20 @@ function registerAsciinemaPlayerElement() {
         }
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
-    b.h = function(a) {
+    b.h = function (a) {
       return Md(this, a, 0);
     };
-    b.c = function(a, b) {
+    b.c = function (a, b) {
       return Md(this, a, b);
     };
     return b;
   })();
-  g.lastIndexOf = (function() {
+  g.lastIndexOf = (function () {
     function b(a) {
       return Od(this, a, G(this));
     }
     var a = null,
-      a = function(a, d) {
+      a = function (a, d) {
         switch (arguments.length) {
           case 1:
             return b.call(this, a);
@@ -21862,30 +21874,30 @@ function registerAsciinemaPlayerElement() {
         throw Error("Invalid arity: " + (arguments.length - 1));
       };
     a.h = b;
-    a.c = function(a, b) {
+    a.c = function (a, b) {
       return Od(this, a, b);
     };
     return a;
   })();
-  g.aa = function(b, a) {
+  g.aa = function (b, a) {
     if (0 <= a && a < this.W(null)) return this.start + a * this.step;
     if (0 <= a && this.start > this.end && 0 === this.step) return this.start;
     throw Error("Index out of bounds");
   };
-  g.la = function(b, a, c) {
+  g.la = function (b, a, c) {
     return 0 <= a && a < this.W(null)
       ? this.start + a * this.step
       : 0 <= a && this.start > this.end && 0 === this.step
       ? this.start
       : c;
   };
-  g.$ = function() {
+  g.$ = function () {
     return new wi(this.start, this.end, this.step);
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.La = function() {
+  g.La = function () {
     return 0 < this.step
       ? this.start + this.step < this.end
         ? new xi(this.meta, this.start + this.step, this.end, this.step, null)
@@ -21894,25 +21906,25 @@ function registerAsciinemaPlayerElement() {
       ? new xi(this.meta, this.start + this.step, this.end, this.step, null)
       : null;
   };
-  g.W = function() {
+  g.W = function () {
     return sb(this.S(null))
       ? 0
       : Math.ceil((this.end - this.start) / this.step);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this.w;
     return null != b ? b : (this.w = b = ud(this));
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return Ud(this, a);
   };
-  g.pa = function() {
+  g.pa = function () {
     return nc(qd, this.meta);
   };
-  g.Ga = function(b, a) {
+  g.Ga = function (b, a) {
     return Fd(this, a);
   };
-  g.Ha = function(b, a, c) {
+  g.Ha = function (b, a, c) {
     for (b = this.start; ; )
       if (0 < this.step ? b < this.end : b > this.end) {
         c = a.c ? a.c(c, b) : a.call(null, c, b);
@@ -21920,15 +21932,15 @@ function registerAsciinemaPlayerElement() {
         b += this.step;
       } else return c;
   };
-  g.Ja = function() {
+  g.Ja = function () {
     return null == this.S(null) ? null : this.start;
   };
-  g.cb = function() {
+  g.cb = function () {
     return null != this.S(null)
       ? new xi(this.meta, this.start + this.step, this.end, this.step, null)
       : qd;
   };
-  g.S = function() {
+  g.S = function () {
     return 0 < this.step
       ? this.start < this.end
         ? this
@@ -21941,13 +21953,13 @@ function registerAsciinemaPlayerElement() {
       ? null
       : this;
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new xi(a, this.start, this.end, this.step, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return Vd(a, this);
   };
-  xi.prototype[yb] = function() {
+  xi.prototype[yb] = function () {
     return sd(this);
   };
   function yi(b, a, c) {
@@ -21958,7 +21970,7 @@ function registerAsciinemaPlayerElement() {
   }
   function Ai(b) {
     var a = w;
-    return (function() {
+    return (function () {
       function c(c, d, e) {
         return new T(
           null,
@@ -21967,7 +21979,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             a.l ? a.l(c, d, e) : a.call(null, c, d, e),
-            b.l ? b.l(c, d, e) : b.call(null, c, d, e)
+            b.l ? b.l(c, d, e) : b.call(null, c, d, e),
           ],
           null
         );
@@ -21980,7 +21992,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             a.c ? a.c(c, d) : a.call(null, c, d),
-            b.c ? b.c(c, d) : b.call(null, c, d)
+            b.c ? b.c(c, d) : b.call(null, c, d),
           ],
           null
         );
@@ -22006,7 +22018,7 @@ function registerAsciinemaPlayerElement() {
         );
       }
       var h = null,
-        k = (function() {
+        k = (function () {
           function c(a, b, c, e) {
             var f = null;
             if (3 < arguments.length) {
@@ -22027,7 +22039,7 @@ function registerAsciinemaPlayerElement() {
             );
           }
           c.L = 3;
-          c.N = function(a) {
+          c.N = function (a) {
             var b = w(a);
             a = y(a);
             var c = w(a);
@@ -22039,7 +22051,7 @@ function registerAsciinemaPlayerElement() {
           c.A = d;
           return c;
         })(),
-        h = function(a, b, h, t) {
+        h = function (a, b, h, t) {
           switch (arguments.length) {
             case 0:
               return f.call(this);
@@ -22086,7 +22098,7 @@ function registerAsciinemaPlayerElement() {
         D(h) &&
           Dc(
             b,
-            (function() {
+            (function () {
               var a = Ci.h(f);
               return u(a) ? a : "...";
             })()
@@ -22103,7 +22115,7 @@ function registerAsciinemaPlayerElement() {
               (Dc(b, d),
               Dc(
                 b,
-                (function() {
+                (function () {
                   var a = Ci.h(f);
                   return u(a) ? a : "...";
                 })()
@@ -22144,17 +22156,17 @@ function registerAsciinemaPlayerElement() {
     "\f": "\\f",
     "\n": "\\n",
     "\r": "\\r",
-    "\t": "\\t"
+    "\t": "\\t",
   };
   function Gi(b) {
     return [
       v.h('"'),
       v.h(
-        b.replace(RegExp('[\\\\"\b\f\n\r\t]', "g"), function(a) {
+        b.replace(RegExp('[\\\\"\b\f\n\r\t]', "g"), function (a) {
           return Fi[a];
         })
       ),
-      v.h('"')
+      v.h('"'),
     ].join("");
   }
   function Hi(b, a) {
@@ -22176,7 +22188,7 @@ function registerAsciinemaPlayerElement() {
       return (
         Dc(a, "#js "),
         Ki(
-          cg.c(function(a) {
+          cg.c(function (a) {
             return new T(null, 2, 5, U, [bf.h(a), b[a]], null);
           }, ue(b)),
           a,
@@ -22188,7 +22200,7 @@ function registerAsciinemaPlayerElement() {
     if (ia(b)) {
       var d = b.name;
       c = u(
-        (function() {
+        (function () {
           var a = null == d;
           return a ? a : /^[\s\xa0]*$/.test(d);
         })()
@@ -22199,7 +22211,7 @@ function registerAsciinemaPlayerElement() {
     }
     if (b instanceof Date)
       return (
-        (c = function(a, b) {
+        (c = function (a, b) {
           for (var c = "" + v.h(a); ; )
             if (G(c) < b) c = [v.h("0"), v.h(c)].join("");
             else return c;
@@ -22222,7 +22234,7 @@ function registerAsciinemaPlayerElement() {
             ".",
             c(b.getUTCMilliseconds(), 3),
             "-",
-            '00:00"'
+            '00:00"',
           ])
         )
       );
@@ -22234,7 +22246,7 @@ function registerAsciinemaPlayerElement() {
       );
     d = b.constructor.name;
     c = u(
-      (function() {
+      (function () {
         var a = null == d;
         return a ? a : /^[\s\xa0]*$/.test(d);
       })()
@@ -22287,7 +22299,7 @@ function registerAsciinemaPlayerElement() {
   function Pi(b, a, c, d, e) {
     return Y(
       d,
-      function(a, b, d) {
+      function (a, b, d) {
         var e = cc(a);
         c.l ? c.l(e, b, d) : c.call(null, e, b, d);
         Dc(b, " ");
@@ -22310,154 +22322,154 @@ function registerAsciinemaPlayerElement() {
       : Pi(null, b, d, a, c);
   }
   bg.prototype.na = q;
-  bg.prototype.R = function(b, a, c) {
+  bg.prototype.R = function (b, a, c) {
     Dc(a, "#object [cljs.core.Volatile ");
     Ji(new r(null, 1, [Qi, this.state], null), a, c);
     return Dc(a, "]");
   };
   Db.prototype.na = q;
-  Db.prototype.R = function(b, a, c) {
+  Db.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   df.prototype.na = q;
-  df.prototype.R = function(b, a, c) {
+  df.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Gh.prototype.na = q;
-  Gh.prototype.R = function(b, a, c) {
+  Gh.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   zh.prototype.na = q;
-  zh.prototype.R = function(b, a, c) {
+  zh.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Lh.prototype.na = q;
-  Lh.prototype.R = function(b, a, c) {
+  Lh.prototype.R = function (b, a, c) {
     return Y(a, Ji, "[", " ", "]", c, this);
   };
   dh.prototype.na = q;
-  dh.prototype.R = function(b, a, c) {
+  dh.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   qi.prototype.na = q;
-  qi.prototype.R = function(b, a, c) {
+  qi.prototype.R = function (b, a, c) {
     return Y(a, Ji, "#{", " ", "}", c, this);
   };
   Og.prototype.na = q;
-  Og.prototype.R = function(b, a, c) {
+  Og.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Ze.prototype.na = q;
-  Ze.prototype.R = function(b, a, c) {
+  Ze.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Td.prototype.na = q;
-  Td.prototype.R = function(b, a, c) {
+  Td.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Ch.prototype.na = q;
-  Ch.prototype.R = function(b, a, c) {
+  Ch.prototype.R = function (b, a, c) {
     return Ki(this, a, c);
   };
   Ah.prototype.na = q;
-  Ah.prototype.R = function(b, a, c) {
+  Ah.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Sg.prototype.na = q;
-  Sg.prototype.R = function(b, a, c) {
+  Sg.prototype.R = function (b, a, c) {
     return Y(a, Ji, "[", " ", "]", c, this);
   };
   Uh.prototype.na = q;
-  Uh.prototype.R = function(b, a, c) {
+  Uh.prototype.R = function (b, a, c) {
     return Ki(this, a, c);
   };
   ni.prototype.na = q;
-  ni.prototype.R = function(b, a, c) {
+  ni.prototype.R = function (b, a, c) {
     return Y(a, Ji, "#{", " ", "}", c, this);
   };
   jf.prototype.na = q;
-  jf.prototype.R = function(b, a, c) {
+  jf.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Xf.prototype.na = q;
-  Xf.prototype.R = function(b, a, c) {
+  Xf.prototype.R = function (b, a, c) {
     Dc(a, "#object [cljs.core.Atom ");
     Ji(new r(null, 1, [Qi, this.state], null), a, c);
     return Dc(a, "]");
   };
   ai.prototype.na = q;
-  ai.prototype.R = function(b, a, c) {
+  ai.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Kh.prototype.na = q;
-  Kh.prototype.R = function(b, a, c) {
+  Kh.prototype.R = function (b, a, c) {
     return Y(a, Ji, "[", " ", "]", c, this);
   };
   T.prototype.na = q;
-  T.prototype.R = function(b, a, c) {
+  T.prototype.R = function (b, a, c) {
     return Y(a, Ji, "[", " ", "]", c, this);
   };
   We.prototype.na = q;
-  We.prototype.R = function(b, a) {
+  We.prototype.R = function (b, a) {
     return Dc(a, "()");
   };
   r.prototype.na = q;
-  r.prototype.R = function(b, a, c) {
+  r.prototype.R = function (b, a, c) {
     return Ki(this, a, c);
   };
   xi.prototype.na = q;
-  xi.prototype.R = function(b, a, c) {
+  xi.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Mf.prototype.na = q;
-  Mf.prototype.R = function(b, a, c) {
+  Mf.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Zh.prototype.na = q;
-  Zh.prototype.R = function(b, a, c) {
+  Zh.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   Ve.prototype.na = q;
-  Ve.prototype.R = function(b, a, c) {
+  Ve.prototype.R = function (b, a, c) {
     return Y(a, Ji, "(", " ", ")", c, this);
   };
   ld.prototype.Ac = q;
-  ld.prototype.dc = function(b, a) {
+  ld.prototype.dc = function (b, a) {
     if (a instanceof ld) return md(this, a);
     throw Error(
       [v.h("Cannot compare "), v.h(this), v.h(" to "), v.h(a)].join("")
     );
   };
   N.prototype.Ac = q;
-  N.prototype.dc = function(b, a) {
+  N.prototype.dc = function (b, a) {
     if (a instanceof N) return $e(this, a);
     throw Error(
       [v.h("Cannot compare "), v.h(this), v.h(" to "), v.h(a)].join("")
     );
   };
   Sg.prototype.Ac = q;
-  Sg.prototype.dc = function(b, a) {
+  Sg.prototype.dc = function (b, a) {
     if (se(a)) return Fe(this, a);
     throw Error(
       [v.h("Cannot compare "), v.h(this), v.h(" to "), v.h(a)].join("")
     );
   };
   T.prototype.Ac = q;
-  T.prototype.dc = function(b, a) {
+  T.prototype.dc = function (b, a) {
     if (se(a)) return Fe(this, a);
     throw Error(
       [v.h("Cannot compare "), v.h(this), v.h(" to "), v.h(a)].join("")
     );
   };
   Lh.prototype.Ac = q;
-  Lh.prototype.dc = function(b, a) {
+  Lh.prototype.dc = function (b, a) {
     if (se(a)) return Fe(this, a);
     throw Error(
       [v.h("Cannot compare "), v.h(this), v.h(" to "), v.h(a)].join("")
     );
   };
   Kh.prototype.Ac = q;
-  Kh.prototype.dc = function(b, a) {
+  Kh.prototype.dc = function (b, a) {
     if (se(a)) return Fe(this, a);
     throw Error(
       [v.h("Cannot compare "), v.h(this), v.h(" to "), v.h(a)].join("")
@@ -22478,9 +22490,7 @@ function registerAsciinemaPlayerElement() {
     throw wb("IEncodeJS.-clj-\x3ejs", a);
   };
   function Vi(b) {
-    return (null != b
-    ? q === b.pf || (b.qc ? 0 : ub(Ti, b))
-    : ub(Ti, b))
+    return (null != b ? q === b.pf || (b.qc ? 0 : ub(Ti, b)) : ub(Ti, b))
       ? Ui(b)
       : "string" === typeof b ||
         "number" === typeof b ||
@@ -22549,11 +22559,9 @@ function registerAsciinemaPlayerElement() {
     var a = Wd([$i, !0]),
       c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
       d = C.c(c, $i);
-    return (function(b, c, d, k) {
+    return (function (b, c, d, k) {
       return function n(e) {
-        return (null != e
-        ? q === e.mf || (e.qc ? 0 : ub(Xi, e))
-        : ub(Xi, e))
+        return (null != e ? q === e.mf || (e.qc ? 0 : ub(Xi, e)) : ub(Xi, e))
           ? Yi(e, S(Xh, a))
           : xe(e)
           ? Bi(cg.c(n, e))
@@ -22564,13 +22572,13 @@ function registerAsciinemaPlayerElement() {
           : vb(e) === Object
           ? qg.c(
               yf,
-              (function() {
-                return (function(a, b, c, d) {
+              (function () {
+                return (function (a, b, c, d) {
                   return function J(f) {
                     return new df(
                       null,
-                      (function(a, b, c, d) {
-                        return function() {
+                      (function (a, b, c, d) {
+                        return function () {
                           for (;;) {
                             var a = D(f);
                             if (a) {
@@ -22588,7 +22596,7 @@ function registerAsciinemaPlayerElement() {
                                         U,
                                         [
                                           d.h ? d.h(m) : d.call(null, m),
-                                          n(e[m])
+                                          n(e[m]),
                                         ],
                                         null
                                       );
@@ -22641,8 +22649,8 @@ function registerAsciinemaPlayerElement() {
     )(b);
   }
   function aj(b) {
-    return (function(a) {
-      return (function() {
+    return (function (a) {
+      return (function () {
         function c(a) {
           var b = null;
           if (0 < arguments.length) {
@@ -22658,7 +22666,7 @@ function registerAsciinemaPlayerElement() {
           return d;
         }
         c.L = 0;
-        c.N = function(a) {
+        c.N = function (a) {
           a = D(a);
           return d(a);
         };
@@ -22698,21 +22706,21 @@ function registerAsciinemaPlayerElement() {
     return vf(C.c(dj.h(a), b));
   }
   function ij(b, a, c, d) {
-    ag.c(b, function() {
+    ag.c(b, function () {
       return B(a);
     });
-    ag.c(c, function() {
+    ag.c(c, function () {
       return B(d);
     });
   }
   var jj = function jj(a, c, d) {
-    var e = (function() {
+    var e = (function () {
         var c = B(d);
         return c.h ? c.h(a) : c.call(null, a);
       })(),
       e = u(u(e) ? (e.h ? e.h(c) : e.call(null, c)) : e) ? !0 : null;
     if (u(e)) return e;
-    e = (function() {
+    e = (function () {
       for (var e = hj(c); ; )
         if (0 < G(e)) {
           var h = w(e);
@@ -22721,7 +22729,7 @@ function registerAsciinemaPlayerElement() {
         } else return null;
     })();
     if (u(e)) return e;
-    e = (function() {
+    e = (function () {
       for (var e = hj(a); ; )
         if (0 < G(e)) {
           var h = w(e);
@@ -22737,7 +22745,7 @@ function registerAsciinemaPlayerElement() {
   }
   var lj = function lj(a, c, d, e, f, h, k, l) {
     var n = Gb(
-        function(e, h) {
+        function (e, h) {
           var k = I(h, 0, null);
           I(h, 1, null);
           if (gj(B(d), c, k)) {
@@ -22754,7 +22762,7 @@ function registerAsciinemaPlayerElement() {
                   v.h(k),
                   v.h(" and "),
                   v.h(w(m)),
-                  v.h(", and neither is preferred")
+                  v.h(", and neither is preferred"),
                 ].join("")
               );
             return m;
@@ -22764,7 +22772,7 @@ function registerAsciinemaPlayerElement() {
         null,
         B(e)
       ),
-      m = (function() {
+      m = (function () {
         var a;
         if ((a = null == n)) (a = B(e)), (a = a.h ? a.h(l) : a.call(null, l));
         return u(a) ? new T(null, 2, 5, U, [l, a], null) : n;
@@ -22784,7 +22792,7 @@ function registerAsciinemaPlayerElement() {
         v.h("No method in multimethod '"),
         v.h(b),
         v.h("' for dispatch value: "),
-        v.h(a)
+        v.h(a),
       ].join("")
     );
   }
@@ -22801,7 +22809,7 @@ function registerAsciinemaPlayerElement() {
     this.J = 4352;
   }
   g = nj.prototype;
-  g.call = (function() {
+  g.call = (function () {
     function b(
       a,
       b,
@@ -23158,7 +23166,7 @@ function registerAsciinemaPlayerElement() {
       return c.B ? c.B() : c.call(null);
     }
     var R = null,
-      R = function(
+      R = function (
         R,
         Ba,
         Ia,
@@ -23449,40 +23457,40 @@ function registerAsciinemaPlayerElement() {
     R.rf = b;
     return R;
   })();
-  g.apply = function(b, a) {
+  g.apply = function (b, a) {
     return this.call.apply(this, [this].concat(Bb(a)));
   };
-  g.B = function() {
+  g.B = function () {
     var b = this.D.B ? this.D.B() : this.D.call(null),
       a = oj(this, b);
     u(a) || mj(this.name, b);
     return a.B ? a.B() : a.call(null);
   };
-  g.h = function(b) {
+  g.h = function (b) {
     var a = this.D.h ? this.D.h(b) : this.D.call(null, b),
       c = oj(this, a);
     u(c) || mj(this.name, a);
     return c.h ? c.h(b) : c.call(null, b);
   };
-  g.c = function(b, a) {
+  g.c = function (b, a) {
     var c = this.D.c ? this.D.c(b, a) : this.D.call(null, b, a),
       d = oj(this, c);
     u(d) || mj(this.name, c);
     return d.c ? d.c(b, a) : d.call(null, b, a);
   };
-  g.l = function(b, a, c) {
+  g.l = function (b, a, c) {
     var d = this.D.l ? this.D.l(b, a, c) : this.D.call(null, b, a, c),
       e = oj(this, d);
     u(e) || mj(this.name, d);
     return e.l ? e.l(b, a, c) : e.call(null, b, a, c);
   };
-  g.M = function(b, a, c, d) {
+  g.M = function (b, a, c, d) {
     var e = this.D.M ? this.D.M(b, a, c, d) : this.D.call(null, b, a, c, d),
       f = oj(this, e);
     u(f) || mj(this.name, e);
     return f.M ? f.M(b, a, c, d) : f.call(null, b, a, c, d);
   };
-  g.Z = function(b, a, c, d, e) {
+  g.Z = function (b, a, c, d, e) {
     var f = this.D.Z
         ? this.D.Z(b, a, c, d, e)
         : this.D.call(null, b, a, c, d, e),
@@ -23490,7 +23498,7 @@ function registerAsciinemaPlayerElement() {
     u(h) || mj(this.name, f);
     return h.Z ? h.Z(b, a, c, d, e) : h.call(null, b, a, c, d, e);
   };
-  g.Da = function(b, a, c, d, e, f) {
+  g.Da = function (b, a, c, d, e, f) {
     var h = this.D.Da
         ? this.D.Da(b, a, c, d, e, f)
         : this.D.call(null, b, a, c, d, e, f),
@@ -23498,7 +23506,7 @@ function registerAsciinemaPlayerElement() {
     u(k) || mj(this.name, h);
     return k.Da ? k.Da(b, a, c, d, e, f) : k.call(null, b, a, c, d, e, f);
   };
-  g.Za = function(b, a, c, d, e, f, h) {
+  g.Za = function (b, a, c, d, e, f, h) {
     var k = this.D.Za
         ? this.D.Za(b, a, c, d, e, f, h)
         : this.D.call(null, b, a, c, d, e, f, h),
@@ -23506,7 +23514,7 @@ function registerAsciinemaPlayerElement() {
     u(l) || mj(this.name, k);
     return l.Za ? l.Za(b, a, c, d, e, f, h) : l.call(null, b, a, c, d, e, f, h);
   };
-  g.Ia = function(b, a, c, d, e, f, h, k) {
+  g.Ia = function (b, a, c, d, e, f, h, k) {
     var l = this.D.Ia
         ? this.D.Ia(b, a, c, d, e, f, h, k)
         : this.D.call(null, b, a, c, d, e, f, h, k),
@@ -23516,7 +23524,7 @@ function registerAsciinemaPlayerElement() {
       ? n.Ia(b, a, c, d, e, f, h, k)
       : n.call(null, b, a, c, d, e, f, h, k);
   };
-  g.$a = function(b, a, c, d, e, f, h, k, l) {
+  g.$a = function (b, a, c, d, e, f, h, k, l) {
     var n = this.D.$a
         ? this.D.$a(b, a, c, d, e, f, h, k, l)
         : this.D.call(null, b, a, c, d, e, f, h, k, l),
@@ -23526,7 +23534,7 @@ function registerAsciinemaPlayerElement() {
       ? m.$a(b, a, c, d, e, f, h, k, l)
       : m.call(null, b, a, c, d, e, f, h, k, l);
   };
-  g.Oa = function(b, a, c, d, e, f, h, k, l, n) {
+  g.Oa = function (b, a, c, d, e, f, h, k, l, n) {
     var m = this.D.Oa
         ? this.D.Oa(b, a, c, d, e, f, h, k, l, n)
         : this.D.call(null, b, a, c, d, e, f, h, k, l, n),
@@ -23536,7 +23544,7 @@ function registerAsciinemaPlayerElement() {
       ? t.Oa(b, a, c, d, e, f, h, k, l, n)
       : t.call(null, b, a, c, d, e, f, h, k, l, n);
   };
-  g.Pa = function(b, a, c, d, e, f, h, k, l, n, m) {
+  g.Pa = function (b, a, c, d, e, f, h, k, l, n, m) {
     var t = this.D.Pa
         ? this.D.Pa(b, a, c, d, e, f, h, k, l, n, m)
         : this.D.call(null, b, a, c, d, e, f, h, k, l, n, m),
@@ -23546,7 +23554,7 @@ function registerAsciinemaPlayerElement() {
       ? x.Pa(b, a, c, d, e, f, h, k, l, n, m)
       : x.call(null, b, a, c, d, e, f, h, k, l, n, m);
   };
-  g.Qa = function(b, a, c, d, e, f, h, k, l, n, m, t) {
+  g.Qa = function (b, a, c, d, e, f, h, k, l, n, m, t) {
     var x = this.D.Qa
         ? this.D.Qa(b, a, c, d, e, f, h, k, l, n, m, t)
         : this.D.call(null, b, a, c, d, e, f, h, k, l, n, m, t),
@@ -23556,7 +23564,7 @@ function registerAsciinemaPlayerElement() {
       ? z.Qa(b, a, c, d, e, f, h, k, l, n, m, t)
       : z.call(null, b, a, c, d, e, f, h, k, l, n, m, t);
   };
-  g.Ra = function(b, a, c, d, e, f, h, k, l, n, m, t, x) {
+  g.Ra = function (b, a, c, d, e, f, h, k, l, n, m, t, x) {
     var z = this.D.Ra
         ? this.D.Ra(b, a, c, d, e, f, h, k, l, n, m, t, x)
         : this.D.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x),
@@ -23566,7 +23574,7 @@ function registerAsciinemaPlayerElement() {
       ? E.Ra(b, a, c, d, e, f, h, k, l, n, m, t, x)
       : E.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x);
   };
-  g.Sa = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z) {
+  g.Sa = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z) {
     var E = this.D.Sa
         ? this.D.Sa(b, a, c, d, e, f, h, k, l, n, m, t, x, z)
         : this.D.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z),
@@ -23576,7 +23584,7 @@ function registerAsciinemaPlayerElement() {
       ? H.Sa(b, a, c, d, e, f, h, k, l, n, m, t, x, z)
       : H.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z);
   };
-  g.Ta = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E) {
+  g.Ta = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E) {
     var H = this.D.Ta
         ? this.D.Ta(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E)
         : this.D.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E),
@@ -23586,7 +23594,7 @@ function registerAsciinemaPlayerElement() {
       ? J.Ta(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E)
       : J.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E);
   };
-  g.Ua = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H) {
+  g.Ua = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H) {
     var J = this.D.Ua
         ? this.D.Ua(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H)
         : this.D.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H),
@@ -23596,7 +23604,7 @@ function registerAsciinemaPlayerElement() {
       ? M.Ua(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H)
       : M.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H);
   };
-  g.Va = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J) {
+  g.Va = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J) {
     var M = this.D.Va
         ? this.D.Va(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J)
         : this.D.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J),
@@ -23606,7 +23614,7 @@ function registerAsciinemaPlayerElement() {
       ? Q.Va(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J)
       : Q.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J);
   };
-  g.Wa = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M) {
+  g.Wa = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M) {
     var Q = this.D.Wa
         ? this.D.Wa(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M)
         : this.D.call(
@@ -23636,7 +23644,7 @@ function registerAsciinemaPlayerElement() {
       ? W.Wa(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M)
       : W.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M);
   };
-  g.Xa = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q) {
+  g.Xa = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q) {
     var W = this.D.Xa
         ? this.D.Xa(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q)
         : this.D.call(
@@ -23667,7 +23675,7 @@ function registerAsciinemaPlayerElement() {
       ? oa.Xa(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q)
       : oa.call(null, b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q);
   };
-  g.Ya = function(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q, W) {
+  g.Ya = function (b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q, W) {
     var oa = this.D.Ya
         ? this.D.Ya(b, a, c, d, e, f, h, k, l, n, m, t, x, z, E, H, J, M, Q, W)
         : this.D.call(
@@ -23721,7 +23729,7 @@ function registerAsciinemaPlayerElement() {
           W
         );
   };
-  g.he = function(
+  g.he = function (
     b,
     a,
     c,
@@ -23774,13 +23782,13 @@ function registerAsciinemaPlayerElement() {
     c = c.h ? c.h(a) : c.call(null, a);
     return u(c) ? c : lj(b.name, a, b.Rd, b.Vd, b.Lf, b.Ud, b.Gd, b.wf);
   }
-  g.hd = function() {
+  g.hd = function () {
     return Sc(this.name);
   };
-  g.jd = function() {
+  g.jd = function () {
     return Tc(this.name);
   };
-  g.U = function() {
+  g.U = function () {
     return ja(this);
   };
   function rj(b, a) {
@@ -23790,23 +23798,23 @@ function registerAsciinemaPlayerElement() {
     this.J = 2048;
   }
   g = rj.prototype;
-  g.toString = function() {
+  g.toString = function () {
     return this.Oc;
   };
-  g.equiv = function(b) {
+  g.equiv = function (b) {
     return this.K(null, b);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return a instanceof rj && this.Oc === a.Oc;
   };
-  g.R = function(b, a) {
+  g.R = function (b, a) {
     return Dc(a, [v.h('#uuid "'), v.h(this.Oc), v.h('"')].join(""));
   };
-  g.U = function() {
+  g.U = function () {
     null == this.w && (this.w = id(this.Oc));
     return this.w;
   };
-  g.dc = function(b, a) {
+  g.dc = function (b, a) {
     return Wa(this.Oc, a.Oc);
   };
   var sj = new N(null, "hook", "hook", 750265408),
@@ -24159,8 +24167,8 @@ function registerAsciinemaPlayerElement() {
     return Vd(
       c,
       pg(
-        (function(a) {
-          return function(b) {
+        (function (a) {
+          return function (b) {
             return a === b;
           };
         })(c),
@@ -24183,20 +24191,20 @@ function registerAsciinemaPlayerElement() {
         return xo.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  xo.B = function() {
+  xo.B = function () {
     return pi;
   };
-  xo.h = function(b) {
+  xo.h = function (b) {
     return b;
   };
-  xo.c = function(b, a) {
+  xo.c = function (b, a) {
     return G(b) < G(a) ? Gb(ae, a, b) : Gb(ae, b, a);
   };
-  xo.A = function(b, a, c) {
+  xo.A = function (b, a, c) {
     b = wo(G, ae.A(c, a, Wd([b])));
     return Gb(qg, w(b), pd(b));
   };
-  xo.N = function(b) {
+  xo.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -24217,13 +24225,13 @@ function registerAsciinemaPlayerElement() {
         return yo.A(arguments[0], arguments[1], new Db(c.slice(2), 0, null));
     }
   };
-  yo.h = function(b) {
+  yo.h = function (b) {
     return b;
   };
-  yo.c = function(b, a) {
+  yo.c = function (b, a) {
     return G(b) < G(a)
       ? Gb(
-          function(b, d) {
+          function (b, d) {
             return Be(a, d) ? ke.c(b, d) : b;
           },
           b,
@@ -24231,10 +24239,10 @@ function registerAsciinemaPlayerElement() {
         )
       : Gb(ke, b, a);
   };
-  yo.A = function(b, a, c) {
+  yo.A = function (b, a, c) {
     return Gb(yo, b, ae.c(c, a));
   };
-  yo.N = function(b) {
+  yo.N = function (b) {
     var a = w(b),
       c = y(b);
     b = w(c);
@@ -24248,7 +24256,7 @@ function registerAsciinemaPlayerElement() {
       [hi, ji, Am, gi, Dm, sk, Dk, ii, om, ki]
     );
     return Gb(
-      function(a, d) {
+      function (a, d) {
         var c = I(d, 0, null),
           f = I(d, 1, null);
         return Be(b, c) ? K.l(a, f, C.c(b, c)) : a;
@@ -24262,26 +24270,20 @@ function registerAsciinemaPlayerElement() {
       d = c.shift();
     if ("undefined" == typeof d)
       throw Error("[goog.string.format] Template required");
-    return d.replace(/%([0\-\ \+]*)(\d+)?(\.(\d+))?([%sfdiu])/g, function(
-      a,
-      b,
-      d,
-      k,
-      l,
-      n,
-      m,
-      t
-    ) {
-      if ("%" == n) return "%";
-      var e = c.shift();
-      if ("undefined" == typeof e)
-        throw Error("[goog.string.format] Not enough arguments");
-      arguments[0] = e;
-      return Ao.gc[n].apply(null, arguments);
-    });
+    return d.replace(
+      /%([0\-\ \+]*)(\d+)?(\.(\d+))?([%sfdiu])/g,
+      function (a, b, d, k, l, n, m, t) {
+        if ("%" == n) return "%";
+        var e = c.shift();
+        if ("undefined" == typeof e)
+          throw Error("[goog.string.format] Not enough arguments");
+        arguments[0] = e;
+        return Ao.gc[n].apply(null, arguments);
+      }
+    );
   }
   Ao.gc = {};
-  Ao.gc.s = function(b, a, c) {
+  Ao.gc.s = function (b, a, c) {
     return isNaN(c) || "" == c || b.length >= Number(c)
       ? b
       : (b =
@@ -24289,7 +24291,7 @@ function registerAsciinemaPlayerElement() {
             ? b + sa(" ", Number(c) - b.length)
             : sa(" ", Number(c) - b.length) + b);
   };
-  Ao.gc.f = function(b, a, c, d, e) {
+  Ao.gc.f = function (b, a, c, d, e) {
     d = b.toString();
     isNaN(e) || "" == e || (d = parseFloat(b).toFixed(e));
     var f =
@@ -24311,7 +24313,7 @@ function registerAsciinemaPlayerElement() {
       : ((a = 0 <= a.indexOf("0", 0) ? "0" : " "), (d = f + sa(a, b) + d));
     return d;
   };
-  Ao.gc.d = function(b, a, c, d, e, f, h, k) {
+  Ao.gc.d = function (b, a, c, d, e, f, h, k) {
     return Ao.gc.f(parseInt(b, 10), a, c, d, 0, f, h, k);
   };
   Ao.gc.i = Ao.gc.d;
@@ -24326,7 +24328,7 @@ function registerAsciinemaPlayerElement() {
     return b.replace(d, c);
   }
   function Co(b) {
-    return (function() {
+    return (function () {
       function a(a) {
         var b = null;
         if (0 < arguments.length) {
@@ -24343,7 +24345,7 @@ function registerAsciinemaPlayerElement() {
         return b.h ? b.h(a) : b.call(null, a);
       }
       a.L = 0;
-      a.N = function(a) {
+      a.N = function (a) {
         a = D(a);
         return c(a);
       };
@@ -24387,11 +24389,11 @@ function registerAsciinemaPlayerElement() {
     var a = Wd([Rk, null]);
     return qg.c(
       u(b) ? b : yf,
-      (function() {
+      (function () {
         return (function d(a) {
           return new df(
             null,
-            function() {
+            function () {
               for (var b = a; ; )
                 if ((b = D(b))) {
                   if (te(b)) {
@@ -24438,13 +24440,13 @@ function registerAsciinemaPlayerElement() {
   Yf.h(19);
   function Jo(b) {
     return Gb(
-      function(a, b) {
+      function (a, b) {
         var c = I(b, 0, null),
           e = I(b, 1, null);
         return Do(a, e, "" + v.h(c));
       },
       b,
-      Ie(function(a) {
+      Ie(function (a) {
         return -G(Zd(a));
       })
     );
@@ -24471,7 +24473,7 @@ function registerAsciinemaPlayerElement() {
       if (null != c) return c.h ? c.h(a) : c.call(null, a);
       throw wb("Schema.explain", a);
     };
-  No["function"] = function(b) {
+  No["function"] = function (b) {
     var a = b.schema$utils$schema;
     return u(a)
       ? No(a)
@@ -24498,10 +24500,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = Oo.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "_":
         return this.nc;
@@ -24509,11 +24511,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -24527,7 +24529,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -24536,19 +24538,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -1432036169 ^ wd(a);
         };
       })(
@@ -24558,7 +24560,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -24566,17 +24568,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [yk, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new Oo(this.nc, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(yk, a) : O.call(null, yk, a))
       ? new Oo(c, this.o, this.j, null)
       : new Oo(this.nc, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(null, 1, 5, U, [new T(null, 2, 5, U, [yk, this.nc], null)], null),
@@ -24584,13 +24586,13 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Oo(this.nc, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
-  g.vb = function() {
+  g.vb = function () {
     return wl;
   };
   var Po = new Oo(null, null, null, null);
@@ -24604,10 +24606,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = Qo.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "p?":
         return this.yb;
@@ -24617,11 +24619,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -24637,7 +24639,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             new T(null, 2, 5, U, [Tn, this.yb], null),
-            new T(null, 2, 5, U, [Tm, this.Yb], null)
+            new T(null, 2, 5, U, [Tm, this.Yb], null),
           ],
           null
         ),
@@ -24645,7 +24647,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -24654,19 +24656,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 2 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 2041221968 ^ wd(a);
         };
       })(
@@ -24676,7 +24678,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -24685,19 +24687,19 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 2, [Tm, null, Tn, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new Qo(this.yb, this.Yb, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Tn, a) : O.call(null, Tn, a))
       ? new Qo(c, this.Yb, this.o, this.j, null)
       : u(O.c ? O.c(Tm, a) : O.call(null, Tm, a))
       ? new Qo(this.yb, c, this.o, this.j, null)
       : new Qo(this.yb, this.Yb, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -24707,7 +24709,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             new T(null, 2, 5, U, [Tn, this.yb], null),
-            new T(null, 2, 5, U, [Tm, this.Yb], null)
+            new T(null, 2, 5, U, [Tm, this.Yb], null),
           ],
           null
         ),
@@ -24715,13 +24717,13 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Qo(this.yb, this.Yb, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
-  g.vb = function() {
+  g.vb = function () {
     return F.c(this.yb, Ae)
       ? bo
       : F.c(this.yb, af)
@@ -24746,10 +24748,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = So.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "p":
         return this.p;
@@ -24757,11 +24759,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -24775,7 +24777,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -24784,19 +24786,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -1892592712 ^ wd(a);
         };
       })(
@@ -24806,7 +24808,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -24814,17 +24816,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [co, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new So(this.p, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(co, a) : O.call(null, co, a))
       ? new So(c, this.o, this.j, null)
       : new So(this.p, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(null, 1, 5, U, [new T(null, 2, 5, U, [co, this.p], null)], null),
@@ -24832,18 +24834,18 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new So(this.p, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
-  g.vb = function() {
+  g.vb = function () {
     var b = Yk.h(je(this));
     b = Ob(qd, b);
     return Ob(b, Bl);
   };
-  RegExp.prototype.vb = function() {
+  RegExp.prototype.vb = function () {
     return nd.h(
       [v.h('#"'), v.h(("" + v.h(this)).slice(1, -1)), v.h('"')].join("")
     );
@@ -24855,26 +24857,26 @@ function registerAsciinemaPlayerElement() {
     Xo = Ro(af);
   Ro(kd);
   "undefined" === typeof Mo &&
-    ((Mo = function(b) {
+    ((Mo = function (b) {
       this.Cf = b;
       this.m = 393216;
       this.J = 0;
     }),
-    (Mo.prototype.T = function(b, a) {
+    (Mo.prototype.T = function (b, a) {
       return new Mo(a);
     }),
-    (Mo.prototype.P = function() {
+    (Mo.prototype.P = function () {
       return this.Cf;
     }),
-    (Mo.prototype.vb = function() {
+    (Mo.prototype.vb = function () {
       return yl;
     }),
-    (Mo.Wc = function() {
+    (Mo.Wc = function () {
       return new T(null, 1, 5, U, [Tj], null);
     }),
     (Mo.rc = !0),
     (Mo.Ub = "schema.core/t_schema$core26781"),
-    (Mo.Fc = function(b, a) {
+    (Mo.Fc = function (b, a) {
       return Dc(a, "schema.core/t_schema$core26781");
     }));
   function Yo(b, a, c, d) {
@@ -24886,10 +24888,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = Yo.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "schema":
         return this.ja;
@@ -24897,11 +24899,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -24915,7 +24917,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -24924,19 +24926,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -805411239 ^ wd(a);
         };
       })(
@@ -24946,7 +24948,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -24954,17 +24956,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [Fj, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new Yo(this.ja, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Fj, a) : O.call(null, Fj, a))
       ? new Yo(c, this.o, this.j, null)
       : new Yo(this.ja, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(null, 1, 5, U, [new T(null, 2, 5, U, [Fj, this.ja], null)], null),
@@ -24972,13 +24974,13 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Yo(this.ja, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
-  g.vb = function() {
+  g.vb = function () {
     var b = No(this.ja);
     b = Ob(qd, b);
     return Ob(b, Zl);
@@ -24993,10 +24995,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = Zo.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "preds-and-schemas":
         return this.Zb;
@@ -25006,11 +25008,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -25026,7 +25028,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             new T(null, 2, 5, U, [Fl, this.Zb], null),
-            new T(null, 2, 5, U, [Om, this.Ib], null)
+            new T(null, 2, 5, U, [Om, this.Ib], null),
           ],
           null
         ),
@@ -25034,7 +25036,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -25043,19 +25045,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 2 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 1418435858 ^ wd(a);
         };
       })(
@@ -25065,7 +25067,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -25074,19 +25076,19 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 2, [Fl, null, Om, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new Zo(this.Zb, this.Ib, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Fl, a) : O.call(null, Fl, a))
       ? new Zo(c, this.Ib, this.o, this.j, null)
       : u(O.c ? O.c(Om, a) : O.call(null, Om, a))
       ? new Zo(this.Zb, c, this.o, this.j, null)
       : new Zo(this.Zb, this.Ib, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -25096,7 +25098,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             new T(null, 2, 5, U, [Fl, this.Zb], null),
-            new T(null, 2, 5, U, [Om, this.Ib], null)
+            new T(null, 2, 5, U, [Om, this.Ib], null),
           ],
           null
         ),
@@ -25104,19 +25106,19 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Zo(this.Zb, this.Ib, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
-  g.vb = function() {
+  g.vb = function () {
     return Vd(
       jk,
       P.c(
         mg(
-          (function() {
-            return function(b) {
+          (function () {
+            return function (b) {
               var a = I(b, 0, null);
               b = I(b, 1, null);
               return new T(null, 2, 5, U, [nd.h(Ko(a)), No(b)], null);
@@ -25140,10 +25142,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = ap.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "k":
         return this.k;
@@ -25151,11 +25153,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -25169,7 +25171,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -25178,19 +25180,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -1508333161 ^ wd(a);
         };
       })(
@@ -25200,7 +25202,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -25208,17 +25210,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [Wl, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new ap(this.k, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Wl, a) : O.call(null, Wl, a))
       ? new ap(c, this.o, this.j, null)
       : new ap(this.k, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(null, 1, 5, U, [new T(null, 2, 5, U, [Wl, this.k], null)], null),
@@ -25226,10 +25228,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new ap(this.k, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function bp(b) {
@@ -25251,11 +25253,11 @@ function registerAsciinemaPlayerElement() {
   function dp(b) {
     return qg.c(
       yf,
-      (function() {
+      (function () {
         return (function c(b) {
           return new df(
             null,
-            function() {
+            function () {
               for (;;) {
                 var d = D(b);
                 if (d) {
@@ -25295,13 +25297,13 @@ function registerAsciinemaPlayerElement() {
       })()
     );
   }
-  r.prototype.vb = function() {
+  r.prototype.vb = function () {
     return dp(this);
   };
-  Ch.prototype.vb = function() {
+  Ch.prototype.vb = function () {
     return dp(this);
   };
-  ni.prototype.vb = function() {
+  ni.prototype.vb = function () {
     return si(new T(null, 1, 5, U, [No(w(this))], null));
   };
   function ep(b, a, c, d, e, f) {
@@ -25315,10 +25317,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = ep.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "schema":
         return this.ja;
@@ -25330,11 +25332,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -25351,7 +25353,7 @@ function registerAsciinemaPlayerElement() {
           [
             new T(null, 2, 5, U, [Fj, this.ja], null),
             new T(null, 2, 5, U, [lm, this.Gb], null),
-            new T(null, 2, 5, U, [Pk, this.name], null)
+            new T(null, 2, 5, U, [Pk, this.name], null),
           ],
           null
         ),
@@ -25359,7 +25361,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -25368,19 +25370,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 3 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -197981045 ^ wd(a);
         };
       })(
@@ -25390,7 +25392,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -25400,7 +25402,7 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(
       new ni(null, new r(null, 3, [Fj, null, Pk, null, lm, null], null), null),
       a
@@ -25408,7 +25410,7 @@ function registerAsciinemaPlayerElement() {
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new ep(this.ja, this.Gb, this.name, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Fj, a) : O.call(null, Fj, a))
       ? new ep(c, this.Gb, this.name, this.o, this.j, null)
       : u(O.c ? O.c(lm, a) : O.call(null, lm, a))
@@ -25417,7 +25419,7 @@ function registerAsciinemaPlayerElement() {
       ? new ep(this.ja, this.Gb, c, this.o, this.j, null)
       : new ep(this.ja, this.Gb, this.name, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -25428,7 +25430,7 @@ function registerAsciinemaPlayerElement() {
           [
             new T(null, 2, 5, U, [Fj, this.ja], null),
             new T(null, 2, 5, U, [lm, this.Gb], null),
-            new T(null, 2, 5, U, [Pk, this.name], null)
+            new T(null, 2, 5, U, [Pk, this.name], null),
           ],
           null
         ),
@@ -25436,24 +25438,24 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new ep(this.ja, this.Gb, this.name, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function fp(b, a) {
     return new ep(b, !1, a, null, null, null);
   }
   function gp(b) {
-    var a = zi(function(a) {
+    var a = zi(function (a) {
         return a instanceof ep && sb(lm.h(a));
       }, b),
       c = I(a, 0, null),
       d = I(a, 1, null),
       e = zi(
-        (function() {
-          return function(a) {
+        (function () {
+          return function (a) {
             var b = a instanceof ep;
             return b ? lm.h(a) : b;
           };
@@ -25466,8 +25468,8 @@ function registerAsciinemaPlayerElement() {
       !(
         1 >= G(h) &&
         Pf(
-          (function() {
-            return function(a) {
+          (function () {
+            return function (a) {
               return !(a instanceof ep);
             };
           })(a, c, d, e, f, h),
@@ -25482,26 +25484,26 @@ function registerAsciinemaPlayerElement() {
             b,
             "a valid sequence schema consists of zero or more `one` elements, ",
             "followed by zero or more `optional` elements, followed by an optional ",
-            "schema that will match the remaining elements."
+            "schema that will match the remaining elements.",
           ])
         )
       );
     return new T(null, 2, 5, U, [P.c(c, f), w(h)], null);
   }
-  T.prototype.vb = function() {
+  T.prototype.vb = function () {
     var b = this,
       a = gp(b),
       c = I(a, 0, null),
       d = I(a, 1, null);
     return Qg(
       P.c(
-        (function() {
-          return (function(a, b, c, d) {
+        (function () {
+          return (function (a, b, c, d) {
             return function n(e) {
               return new df(
                 null,
-                (function() {
-                  return function() {
+                (function () {
+                  return function () {
                     for (;;) {
                       var a = D(e);
                       if (a) {
@@ -25509,7 +25511,7 @@ function registerAsciinemaPlayerElement() {
                           var b = Qc(a),
                             c = G(b),
                             d = hf(c);
-                          return (function() {
+                          return (function () {
                             for (var a = 0; ; )
                               if (a < c) {
                                 var e = A.c(b, a),
@@ -25529,7 +25531,7 @@ function registerAsciinemaPlayerElement() {
                         }
                         var f = w(a);
                         return Vd(
-                          (function() {
+                          (function () {
                             var a = u(f.Gb) ? $n : vk;
                             var b = No(Fj.h(f));
                             var c = Pk.h(f);
@@ -25569,10 +25571,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = hp.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "klass":
         return this.Wb;
@@ -25582,11 +25584,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -25602,7 +25604,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             new T(null, 2, 5, U, [Yj, this.Wb], null),
-            new T(null, 2, 5, U, [Fj, this.ja], null)
+            new T(null, 2, 5, U, [Fj, this.ja], null),
           ],
           null
         ),
@@ -25610,7 +25612,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -25619,19 +25621,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 2 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -1486476872 ^ wd(a);
         };
       })(
@@ -25641,7 +25643,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -25650,19 +25652,19 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 2, [Fj, null, Yj, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new hp(this.Wb, this.ja, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Yj, a) : O.call(null, Yj, a))
       ? new hp(c, this.ja, this.o, this.j, null)
       : u(O.c ? O.c(Fj, a) : O.call(null, Fj, a))
       ? new hp(this.Wb, c, this.o, this.j, null)
       : new hp(this.Wb, this.ja, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -25672,7 +25674,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             new T(null, 2, 5, U, [Yj, this.Wb], null),
-            new T(null, 2, 5, U, [Fj, this.ja], null)
+            new T(null, 2, 5, U, [Fj, this.ja], null),
           ],
           null
         ),
@@ -25680,13 +25682,13 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new hp(this.Wb, this.ja, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
-  g.vb = function() {
+  g.vb = function () {
     var b = nd.h(Oi(Wd([this.Wb])));
     var a = No(this.ja);
     a = Ob(qd, a);
@@ -25698,15 +25700,15 @@ function registerAsciinemaPlayerElement() {
     return ie(new hp(b, a, null, null, null), new r(null, 1, [Qm, c], null));
   }
   function jp(b) {
-    b = zi(function(a) {
+    b = zi(function (a) {
       return a instanceof ep;
     }, b);
     var a = I(b, 0, null),
       c = I(b, 1, null);
     return P.c(
       cg.c(
-        (function() {
-          return function(a) {
+        (function () {
+          return function (a) {
             return No(a.ja);
           };
         })(b, a, c),
@@ -25725,10 +25727,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = kp.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "output-schema":
         return this.Ob;
@@ -25738,11 +25740,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -25758,7 +25760,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             new T(null, 2, 5, U, [Sk, this.Ob], null),
-            new T(null, 2, 5, U, [fl, this.Eb], null)
+            new T(null, 2, 5, U, [fl, this.Eb], null),
           ],
           null
         ),
@@ -25766,7 +25768,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -25775,19 +25777,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 2 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -2054647546 ^ wd(a);
         };
       })(
@@ -25797,7 +25799,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -25806,19 +25808,19 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 2, [Sk, null, fl, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new kp(this.Ob, this.Eb, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Sk, a) : O.call(null, Sk, a))
       ? new kp(c, this.Eb, this.o, this.j, null)
       : u(O.c ? O.c(fl, a) : O.call(null, fl, a))
       ? new kp(this.Ob, c, this.o, this.j, null)
       : new kp(this.Ob, this.Eb, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -25828,7 +25830,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             new T(null, 2, 5, U, [Sk, this.Ob], null),
-            new T(null, 2, 5, U, [fl, this.Eb], null)
+            new T(null, 2, 5, U, [fl, this.Eb], null),
           ],
           null
         ),
@@ -25836,13 +25838,13 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new kp(this.Ob, this.Eb, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
-  g.vb = function() {
+  g.vb = function () {
     if (1 < G(this.Eb)) {
       var b = No(this.Ob);
       var a = cg.c(jp, this.Eb);
@@ -25864,10 +25866,10 @@ function registerAsciinemaPlayerElement() {
   }
   if ("undefined" === typeof op) var op = Yf.h(null);
   if ("undefined" === typeof pp)
-    var pp = (function() {
+    var pp = (function () {
       var b = {};
-      b.warn = (function() {
-        return (function() {
+      b.warn = (function () {
+        return (function () {
           function a(a) {
             var c = null;
             if (0 < arguments.length) {
@@ -25887,7 +25889,7 @@ function registerAsciinemaPlayerElement() {
             );
           }
           a.L = 0;
-          a.N = function(a) {
+          a.N = function (a) {
             a = D(a);
             return b(a);
           };
@@ -25895,8 +25897,8 @@ function registerAsciinemaPlayerElement() {
           return a;
         })();
       })(b);
-      b.error = (function() {
-        return (function() {
+      b.error = (function () {
+        return (function () {
           function a(a) {
             var c = null;
             if (0 < arguments.length) {
@@ -25916,7 +25918,7 @@ function registerAsciinemaPlayerElement() {
             );
           }
           a.L = 0;
-          a.N = function(a) {
+          a.N = function (a) {
             a = D(a);
             return b(a);
           };
@@ -25974,13 +25976,13 @@ function registerAsciinemaPlayerElement() {
     return u(yp.h ? yp.h(a) : yp.call(null, a)) ? b : Eb(v, a, cg.c(zp, c));
   }
   function Bp(b) {
-    var a = (function() {
-      var a = (function() {
+    var a = (function () {
+      var a = (function () {
         var a = fe(b);
         return a ? ((a = b.displayName), u(a) ? a : b.name) : a;
       })();
       if (u(a)) return a;
-      a = (function() {
+      a = (function () {
         var a = null != b ? (b.J & 4096 || q === b.Pe ? !0 : !1) : !1;
         return a ? cf(b) : a;
       })();
@@ -25998,7 +26000,7 @@ function registerAsciinemaPlayerElement() {
   var Fp =
     "undefined" === typeof window || null == window.document
       ? Ep
-      : (function() {
+      : (function () {
           var b = window,
             a = b.requestAnimationFrame;
           if (u(a)) return a;
@@ -26013,7 +26015,7 @@ function registerAsciinemaPlayerElement() {
     return b.cljsMountOrder - a.cljsMountOrder;
   }
   if ("undefined" === typeof Hp)
-    var Hp = function() {
+    var Hp = function () {
       return null;
     };
   function Ip(b) {
@@ -26033,8 +26035,8 @@ function registerAsciinemaPlayerElement() {
   function Kp(b) {
     if (b.Yd) return null;
     b.Yd = !0;
-    b = (function(a) {
-      return function() {
+    b = (function (a) {
+      return function () {
         a.Yd = !1;
         return Lp(a);
       };
@@ -26057,7 +26059,7 @@ function registerAsciinemaPlayerElement() {
       }
     return Jp(b, "afterRender");
   }
-  Ip.prototype.enqueue = function(b, a) {
+  Ip.prototype.enqueue = function (b, a) {
     null == this[b] && (this[b] = []);
     this[b].push(a);
     return Kp(this);
@@ -26169,8 +26171,8 @@ function registerAsciinemaPlayerElement() {
         d =
           null == d
             ? (b.De = Oe(
-                (function() {
-                  return function(a, b, c) {
+                (function () {
+                  return function (a, b, c) {
                     a.push(b);
                     a.push(c);
                     return a;
@@ -26232,52 +26234,52 @@ function registerAsciinemaPlayerElement() {
     this.J = 114690;
   }
   g = cq.prototype;
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Zp(this, a, c, "Atom:");
   };
-  g.P = function() {
+  g.P = function () {
     return this.meta;
   };
-  g.U = function() {
+  g.U = function () {
     return ja(this);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return this === a;
   };
-  g.Hb = function(b, a) {
+  g.Hb = function (b, a) {
     var c = this.state;
     this.state = a;
     null != this.hb && Yp(this, c, a);
     return a;
   };
-  g.je = function(b, a) {
+  g.je = function (b, a) {
     return this.Hb(null, a.h ? a.h(this.state) : a.call(null, this.state));
   };
-  g.ke = function(b, a, c) {
+  g.ke = function (b, a, c) {
     return this.Hb(
       null,
       a.c ? a.c(this.state, c) : a.call(null, this.state, c)
     );
   };
-  g.le = function(b, a, c, d) {
+  g.le = function (b, a, c, d) {
     return this.Hb(
       null,
       a.l ? a.l(this.state, c, d) : a.call(null, this.state, c, d)
     );
   };
-  g.me = function(b, a, c, d, e) {
+  g.me = function (b, a, c, d, e) {
     return this.Hb(null, uf(a, this.state, c, d, e));
   };
-  g.Md = function(b, a, c) {
+  g.Md = function (b, a, c) {
     return Yp(this, a, c);
   };
-  g.Ld = function(b, a, c) {
+  g.Ld = function (b, a, c) {
     return Wp(this, a, c);
   };
-  g.Nd = function(b, a) {
+  g.Nd = function (b, a) {
     return Xp(this, a);
   };
-  g.pc = function() {
+  g.pc = function () {
     Up(this);
     return this.state;
   };
@@ -26292,16 +26294,16 @@ function registerAsciinemaPlayerElement() {
         return dq.A(arguments[0], new Db(c.slice(1), 0, null));
     }
   };
-  dq.h = function(b) {
+  dq.h = function (b) {
     return new cq(b, null, null, null);
   };
-  dq.A = function(b, a) {
+  dq.A = function (b, a) {
     var c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
       d = C.c(c, mb),
       c = C.c(c, Zf);
     return new cq(b, d, c, null);
   };
-  dq.N = function(b) {
+  dq.N = function (b) {
     var a = w(b);
     b = y(b);
     return dq.A(a, b);
@@ -26372,16 +26374,16 @@ function registerAsciinemaPlayerElement() {
     null != c && (b.Xe = c);
   }
   g = fq.prototype;
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Zp(this, a, c, [v.h("Reaction "), v.h(id(this)), v.h(":")].join(""));
   };
-  g.U = function() {
+  g.U = function () {
     return ja(this);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return this === a;
   };
-  g.xe = function() {
+  g.xe = function () {
     var b = this.state,
       a = this.Pc;
     this.Tb = this.state = this.Pc = null;
@@ -26406,58 +26408,58 @@ function registerAsciinemaPlayerElement() {
       if (c < a) (d = b[c]), d.h ? d.h(this) : d.call(null, this), (c += 1);
       else return null;
   };
-  g.Hb = function(b, a) {
+  g.Hb = function (b, a) {
     var c = this.state;
     this.state = a;
     this.Kf(c, a);
     Yp(this, c, a);
     return a;
   };
-  g.je = function(b, a) {
+  g.je = function (b, a) {
     var c = this;
     return c.Hb(
       null,
-      (function() {
+      (function () {
         var b = gq(c);
         return a.h ? a.h(b) : a.call(null, b);
       })()
     );
   };
-  g.ke = function(b, a, c) {
+  g.ke = function (b, a, c) {
     var d = this;
     return d.Hb(
       null,
-      (function() {
+      (function () {
         var b = gq(d);
         return a.c ? a.c(b, c) : a.call(null, b, c);
       })()
     );
   };
-  g.le = function(b, a, c, d) {
+  g.le = function (b, a, c, d) {
     var e = this;
     return e.Hb(
       null,
-      (function() {
+      (function () {
         var b = gq(e);
         return a.l ? a.l(b, c, d) : a.call(null, b, c, d);
       })()
     );
   };
-  g.me = function(b, a, c, d, e) {
+  g.me = function (b, a, c, d, e) {
     return this.Hb(null, uf(a, gq(this), c, d, e));
   };
-  g.Md = function(b, a, c) {
+  g.Md = function (b, a, c) {
     return Yp(this, a, c);
   };
-  g.Ld = function(b, a, c) {
+  g.Ld = function (b, a, c) {
     return Wp(this, a, c);
   };
-  g.Nd = function(b, a) {
+  g.Nd = function (b, a) {
     var c = le(this.hb);
     Xp(this, a);
     return !c && le(this.hb) && null == this.Tb ? this.xe() : null;
   };
-  g.pc = function() {
+  g.pc = function () {
     var b = this.ee;
     if (null != b) throw b;
     (b = null == Op) && aq();
@@ -26492,8 +26494,8 @@ function registerAsciinemaPlayerElement() {
       ((jq = iq(null)),
       hq(d, c),
       (d.Db = b),
-      (d.Tb = (function() {
-        return function() {
+      (d.Tb = (function () {
+        return function () {
           return Np.h ? Np.h(a) : Np.call(null, a);
         };
       })(d, e)),
@@ -26530,7 +26532,7 @@ function registerAsciinemaPlayerElement() {
         c =
           !0 === b.cljsLegacyRender
             ? a.call(b, b)
-            : (function() {
+            : (function () {
                 var c = nq(b, b.props);
                 switch (G(c)) {
                   case 1:
@@ -26550,8 +26552,8 @@ function registerAsciinemaPlayerElement() {
       if (se(c)) return pq.h ? pq.h(c) : pq.call(null, c);
       if (ze(c))
         (c = oq(c)
-          ? (function(a, b, c, h) {
-              return (function() {
+          ? (function (a, b, c, h) {
+              return (function () {
                 function a(a) {
                   var c = null;
                   if (0 < arguments.length) {
@@ -26570,7 +26572,7 @@ function registerAsciinemaPlayerElement() {
                   return pq.h ? pq.h(a) : pq.call(null, a);
                 }
                 a.L = 0;
-                a.N = function(a) {
+                a.N = function (a) {
                   a = D(a);
                   return b(a);
                 };
@@ -26589,13 +26591,13 @@ function registerAsciinemaPlayerElement() {
       1,
       [
         ym,
-        function() {
+        function () {
           var b = this.cljsRatom;
           this.cljsIsDirty = !1;
           return null == b
             ? kq(
-                (function(a, b) {
-                  return function() {
+                (function (a, b) {
+                  return function () {
                     a: {
                       var a = mq;
                       mq = b;
@@ -26613,7 +26615,7 @@ function registerAsciinemaPlayerElement() {
                 this
               )
             : bq(b, !1);
-        }
+        },
       ],
       null
     );
@@ -26623,22 +26625,22 @@ function registerAsciinemaPlayerElement() {
       case "getDefaultProps":
         throw Error("getDefaultProps not supported");
       case "getInitialState":
-        return (function() {
-          return function() {
+        return (function () {
+          return function () {
             var b = this.cljsState;
             b = null != b ? b : (this.cljsState = dq.h(null));
             return $f(b, a.call(this, this));
           };
         })(b, c);
       case "componentWillReceiveProps":
-        return (function() {
-          return function(b) {
+        return (function () {
+          return function (b) {
             return a.call(this, this, nq(this, b));
           };
         })(b, c);
       case "shouldComponentUpdate":
-        return (function() {
-          return function(b) {
+        return (function () {
+          return function (b) {
             var c = Cp;
             if (c) return c;
             var c = this.props.argv,
@@ -26652,33 +26654,33 @@ function registerAsciinemaPlayerElement() {
           };
         })(b, c);
       case "componentWillUpdate":
-        return (function() {
-          return function(b) {
+        return (function () {
+          return function (b) {
             return a.call(this, this, nq(this, b));
           };
         })(b, c);
       case "componentDidUpdate":
-        return (function() {
-          return function(b) {
+        return (function () {
+          return function (b) {
             return a.call(this, this, nq(this, b));
           };
         })(b, c);
       case "componentWillMount":
-        return (function() {
-          return function() {
+        return (function () {
+          return function () {
             this.cljsMountOrder = Dp += 1;
             return null == a ? null : a.call(this, this);
           };
         })(b, c);
       case "componentDidMount":
-        return (function() {
-          return function() {
+        return (function () {
+          return function () {
             return a.call(this, this);
           };
         })(b, c);
       case "componentWillUnmount":
-        return (function() {
-          return function() {
+        return (function () {
+          return function () {
             var b = this.cljsRatom;
             null != b && eq(b);
             this.cljsIsDirty = !1;
@@ -26694,9 +26696,9 @@ function registerAsciinemaPlayerElement() {
     return u(c) ? c : a;
   }
   var uq = new r(null, 3, [bm, null, go, null, Hl, null], null),
-    vq = (function(b) {
-      return (function(a) {
-        return function(c) {
+    vq = (function (b) {
+      return (function (a) {
+        return function (c) {
           var d = C.c(B(a), c);
           if (null != d) return d;
           d = b.h ? b.h(c) : b.call(null, c);
@@ -26707,7 +26709,7 @@ function registerAsciinemaPlayerElement() {
     })(Ap);
   function wq(b) {
     return Oe(
-      function(a, b, d) {
+      function (a, b, d) {
         return K.l(a, bf.h(vq.h ? vq.h(b) : vq.call(null, b)), d);
       },
       yf,
@@ -26715,7 +26717,7 @@ function registerAsciinemaPlayerElement() {
     );
   }
   function xq(b) {
-    var a = (function() {
+    var a = (function () {
         var a = nm.h(b);
         return u(a) ? a : vn.h(b);
       })(),
@@ -26724,7 +26726,7 @@ function registerAsciinemaPlayerElement() {
       e =
         "" +
         v.h(
-          (function() {
+          (function () {
             var a = xk.h(b);
             return u(a) ? a : Bp(d);
           })()
@@ -26737,8 +26739,8 @@ function registerAsciinemaPlayerElement() {
         f = e;
     }
     a = Oe(
-      (function() {
-        return function(a, b, c) {
+      (function () {
+        return function (a, b, c) {
           return K.l(a, b, tq(b, c));
         };
       })(a, c, d, e, f),
@@ -26749,7 +26751,7 @@ function registerAsciinemaPlayerElement() {
   }
   function yq(b) {
     return Oe(
-      function(a, b, d) {
+      function (a, b, d) {
         a[cf(b)] = d;
         return a;
       },
@@ -26785,7 +26787,7 @@ function registerAsciinemaPlayerElement() {
       : me(b)
       ? Wi(b)
       : ze(b)
-      ? (function() {
+      ? (function () {
           function a(a) {
             var b = null;
             if (0 < arguments.length) {
@@ -26799,7 +26801,7 @@ function registerAsciinemaPlayerElement() {
             return S(b, a);
           }
           a.L = 0;
-          a.N = function(a) {
+          a.N = function (a) {
             a = D(a);
             return c(a);
           };
@@ -26831,7 +26833,7 @@ function registerAsciinemaPlayerElement() {
           "password",
           null,
           "search",
-          null
+          null,
         ],
         null
       ),
@@ -26854,8 +26856,8 @@ function registerAsciinemaPlayerElement() {
             if (!F.c(f, d))
               return Mp.enqueue(
                 "afterRender",
-                (function() {
-                  return function() {
+                (function () {
+                  return function () {
                     return Iq.h ? Iq.h(a) : Iq.call(null, a);
                   };
                 })(f, c, d, e)
@@ -26877,7 +26879,7 @@ function registerAsciinemaPlayerElement() {
     b.cljsDOMValue = c.target.value;
     u(b.cljsInputDirty) ||
       ((b.cljsInputDirty = !0),
-      Mp.enqueue("afterRender", function() {
+      Mp.enqueue("afterRender", function () {
         return Iq(b);
       }));
     return a.h ? a.h(c) : a.call(null, c);
@@ -26886,7 +26888,7 @@ function registerAsciinemaPlayerElement() {
     var a = mq;
     if (
       u(
-        (function() {
+        (function () {
           var a = null != b;
           return a
             ? ((a = b.hasOwnProperty("onChange")),
@@ -26902,8 +26904,8 @@ function registerAsciinemaPlayerElement() {
       a.cljsRenderedValue = d;
       delete b.value;
       b.defaultValue = d;
-      b.onChange = (function(b, c, d, e) {
-        return function(b) {
+      b.onChange = (function (b, c, d, e) {
+        return function (b) {
           return Jq(a, e, b);
         };
       })(b, c, d, e);
@@ -26919,14 +26921,14 @@ function registerAsciinemaPlayerElement() {
         jl,
         Iq,
         Vm,
-        function(b) {
+        function (b) {
           return (b.cljsInputLive = null);
         },
         Cm,
-        function(b, a, c, d) {
+        function (b, a, c, d) {
           Kq(c);
           return Mq.M ? Mq.M(b, a, c, d) : Mq.call(null, b, a, c, d);
-        }
+        },
       ],
       null
     );
@@ -27047,9 +27049,11 @@ function registerAsciinemaPlayerElement() {
         : Tq.call(null, b)
       : Bq(b)
       ? cf(b)
-      : (null != b
-        ? b.m & 2147483648 || q === b.na || (b.m ? 0 : ub(Ec, b))
-        : ub(Ec, b))
+      : (
+          null != b
+            ? b.m & 2147483648 || q === b.na || (b.m ? 0 : ub(Ec, b))
+            : ub(Ec, b)
+        )
       ? Oi(Wd([b]))
       : b;
   }
@@ -27072,8 +27076,8 @@ function registerAsciinemaPlayerElement() {
         return qp.createElement.apply(
           null,
           Oe(
-            (function() {
-              return function(a, b, c) {
+            (function () {
+              return function (a, b, c) {
                 b >= d && a.push(Rq(c));
                 return a;
               };
@@ -27103,8 +27107,8 @@ function registerAsciinemaPlayerElement() {
       return Vq().render(
         b.B ? b.B() : b.call(null),
         a,
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             var d = Cp;
             Cp = !1;
             try {
@@ -27129,14 +27133,14 @@ function registerAsciinemaPlayerElement() {
   function Zq(b, a, c) {
     aq();
     return Xq(
-      function() {
+      function () {
         return Rq(fe(b) ? (b.B ? b.B() : b.call(null)) : b);
       },
       a,
       c
     );
   }
-  Gq = function(b) {
+  Gq = function (b) {
     return Vq().findDOMNode(b);
   };
   function $q(b) {
@@ -27152,7 +27156,7 @@ function registerAsciinemaPlayerElement() {
   function ar(b, a) {
     return Zq(b, a, null);
   }
-  da("reagent.core.force_update_all", function() {
+  da("reagent.core.force_update_all", function () {
     aq();
     aq();
     for (var b = D(gh(B(Wq))), a = null, c = 0, d = 0; ; )
@@ -27246,7 +27250,7 @@ function registerAsciinemaPlayerElement() {
       si(Ye(157)),
       new r(null, 1, [uk, Nk], null),
       si(Ye(155)),
-      new r(null, 1, [uk, El], null)
+      new r(null, 1, [uk, El], null),
     ]),
     dr = Je(
       [xj, zj, qk, Bk, Fk, Mk, Nk, gl, ml, El, hm, mm, Bm, Zn],
@@ -27331,7 +27335,7 @@ function registerAsciinemaPlayerElement() {
           ),
           new r(null, 1, [uk, Bk], null),
           si(Ye(127)),
-          new r(null, 1, [on, Sl], null)
+          new r(null, 1, [on, Sl], null),
         ]),
         Je(
           [
@@ -27421,7 +27425,7 @@ function registerAsciinemaPlayerElement() {
                 126
               )
             ),
-            si(Ye(93))
+            si(Ye(93)),
           ],
           [
             ro,
@@ -27432,7 +27436,7 @@ function registerAsciinemaPlayerElement() {
             new r(null, 2, [on, Em, uk, hm], null),
             new r(null, 1, [on, Sl], null),
             new r(null, 2, [on, Ij, uk, qk], null),
-            new r(null, 1, [uk, Nk], null)
+            new r(null, 1, [uk, Nk], null),
           ]
         ),
         ee([
@@ -27634,7 +27638,7 @@ function registerAsciinemaPlayerElement() {
               255
             )
           ),
-          new r(null, 1, [on, Nl], null)
+          new r(null, 1, [on, Nl], null),
         ]),
         ee([
           Ok,
@@ -27744,7 +27748,7 @@ function registerAsciinemaPlayerElement() {
           si(Ye(127)),
           new r(null, 1, [on, Sl], null),
           Al,
-          Hn
+          Hn,
         ]),
         ee([
           br,
@@ -27826,7 +27830,7 @@ function registerAsciinemaPlayerElement() {
           ),
           new r(null, 2, [on, Pl, uk, qk], null),
           si(Ye(127)),
-          new r(null, 1, [on, Sl], null)
+          new r(null, 1, [on, Sl], null),
         ]),
         ee([
           br,
@@ -27908,7 +27912,7 @@ function registerAsciinemaPlayerElement() {
           ),
           new r(null, 1, [uk, Bk], null),
           si(Ye(127)),
-          new r(null, 1, [on, Sl], null)
+          new r(null, 1, [on, Sl], null),
         ]),
         ee([
           Ok,
@@ -28019,7 +28023,7 @@ function registerAsciinemaPlayerElement() {
           si(Ye(7)),
           new r(null, 1, [uk, qk], null),
           Al,
-          Rj
+          Rj,
         ]),
         ee([
           br,
@@ -28124,7 +28128,7 @@ function registerAsciinemaPlayerElement() {
               127
             )
           ),
-          new r(null, 1, [on, Sl], null)
+          new r(null, 1, [on, Sl], null),
         ]),
         ee([
           Ok,
@@ -28210,7 +28214,7 @@ function registerAsciinemaPlayerElement() {
           ),
           new r(null, 1, [uk, Bk], null),
           si(Ye(127)),
-          new r(null, 1, [on, Sl], null)
+          new r(null, 1, [on, Sl], null),
         ]),
         ee([
           Ok,
@@ -28296,7 +28300,7 @@ function registerAsciinemaPlayerElement() {
           ),
           new r(null, 2, [on, Em, uk, mm], null),
           si(Ye(127)),
-          new r(null, 1, [on, Sl], null)
+          new r(null, 1, [on, Sl], null),
         ]),
         ee([
           br,
@@ -28390,7 +28394,7 @@ function registerAsciinemaPlayerElement() {
           ),
           new r(null, 2, [on, Ij, uk, qk], null),
           si(Ye(127)),
-          new r(null, 1, [on, Sl], null)
+          new r(null, 1, [on, Sl], null),
         ]),
         ee([
           br,
@@ -28472,7 +28476,7 @@ function registerAsciinemaPlayerElement() {
           ),
           new r(null, 1, [uk, Bm], null),
           si(Ye(127)),
-          new r(null, 1, [on, Sl], null)
+          new r(null, 1, [on, Sl], null),
         ]),
         ee([
           br,
@@ -28583,7 +28587,7 @@ function registerAsciinemaPlayerElement() {
           ),
           new r(null, 1, [uk, qk], null),
           si(Ye(127)),
-          new r(null, 1, [on, Sl], null)
+          new r(null, 1, [on, Sl], null),
         ]),
         ee([
           br,
@@ -28688,12 +28692,12 @@ function registerAsciinemaPlayerElement() {
               127
             )
           ),
-          new r(null, 1, [on, Sl], null)
-        ])
+          new r(null, 1, [on, Sl], null),
+        ]),
       ]
     );
   function er(b, a) {
-    return Qf(function(b) {
+    return Qf(function (b) {
       var c = I(b, 0, null);
       b = I(b, 1, null);
       return u(c.h ? c.h(a) : c.call(null, a)) ? b : null;
@@ -28726,7 +28730,7 @@ function registerAsciinemaPlayerElement() {
     (function gr(a) {
       return new df(
         null,
-        function() {
+        function () {
           for (;;) {
             var c = D(a);
             if (c) {
@@ -28762,7 +28766,7 @@ function registerAsciinemaPlayerElement() {
     kr = Ro(ze),
     lr = new r(null, 3, [yn, Vo, tj, Vo, Nn, Uo], null),
     mr;
-  mr = (function(b) {
+  mr = (function (b) {
     if (!D(b) || !(Rf(G(b)) || $d(b) instanceof ld))
       throw Error(
         Io(
@@ -28772,11 +28776,11 @@ function registerAsciinemaPlayerElement() {
       );
     return new Zo(
       Qg(
-        (function() {
+        (function () {
           return (function c(b) {
             return new df(
               null,
-              function() {
+              function () {
                 for (;;) {
                   var d = D(b);
                   if (d) {
@@ -28796,7 +28800,7 @@ function registerAsciinemaPlayerElement() {
                                 [
                                   v.h("Conditional predicate "),
                                   v.h(m),
-                                  v.h(" must be a function")
+                                  v.h(" must be a function"),
                                 ].join("")
                               )
                             );
@@ -28826,7 +28830,7 @@ function registerAsciinemaPlayerElement() {
                           [
                             v.h("Conditional predicate "),
                             v.h(k),
-                            v.h(" must be a function")
+                            v.h(" must be a function"),
                           ].join("")
                         )
                       );
@@ -28859,7 +28863,7 @@ function registerAsciinemaPlayerElement() {
       se,
       new T(null, 3, 5, U, [fp(Vo, "r"), fp(Vo, "g"), fp(Vo, "b")], null),
       Tf(!0),
-      Vo
+      Vo,
     ])
   );
   var nr = ee([
@@ -28876,7 +28880,7 @@ function registerAsciinemaPlayerElement() {
       bp(Zj),
       Uo,
       bp(Jk),
-      Uo
+      Uo,
     ]),
     or = new r(
       null,
@@ -28894,7 +28898,7 @@ function registerAsciinemaPlayerElement() {
     ),
     qr = new T(null, 1, 5, U, [pr], null),
     rr = D(
-      og(function(b) {
+      og(function (b) {
         return $o(b);
       }, fh(null))
     );
@@ -28928,10 +28932,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = sr.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "width":
         return this.width;
@@ -28973,11 +28977,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -29009,7 +29013,7 @@ function registerAsciinemaPlayerElement() {
             new T(null, 2, 5, U, [el, this.ea], null),
             new T(null, 2, 5, U, [Nm, this.Aa], null),
             new T(null, 2, 5, U, [Vn, this.ya], null),
-            new T(null, 2, 5, U, [rm, this.za], null)
+            new T(null, 2, 5, U, [rm, this.za], null),
           ],
           null
         ),
@@ -29017,7 +29021,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -29045,26 +29049,26 @@ function registerAsciinemaPlayerElement() {
           el,
           Nm,
           Vn,
-          rm
+          rm,
         ],
         null
       ),
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 18 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -1452363486 ^ wd(a);
         };
       })(
@@ -29074,7 +29078,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -29099,7 +29103,7 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(
       new ni(
         null,
@@ -29142,7 +29146,7 @@ function registerAsciinemaPlayerElement() {
             ko,
             null,
             po,
-            null
+            null,
           ],
           null
         ),
@@ -29175,7 +29179,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(cl, a) : O.call(null, cl, a))
       ? new sr(
           c,
@@ -29632,7 +29636,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -29658,7 +29662,7 @@ function registerAsciinemaPlayerElement() {
             new T(null, 2, 5, U, [el, this.ea], null),
             new T(null, 2, 5, U, [Nm, this.Aa], null),
             new T(null, 2, 5, U, [Vn, this.ya], null),
-            new T(null, 2, 5, U, [rm, this.za], null)
+            new T(null, 2, 5, U, [rm, this.za], null),
           ],
           null
         ),
@@ -29666,7 +29670,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new sr(
       this.width,
       this.height,
@@ -29691,7 +29695,7 @@ function registerAsciinemaPlayerElement() {
       this.w
     );
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function tr(b) {
@@ -29736,7 +29740,7 @@ function registerAsciinemaPlayerElement() {
             el,
             Nm,
             Vn,
-            rm
+            rm,
           ])
         )
       ),
@@ -29769,7 +29773,7 @@ function registerAsciinemaPlayerElement() {
                 Gn,
                 Vn,
                 ko,
-                po
+                po,
               ],
               [
                 nr,
@@ -29789,13 +29793,13 @@ function registerAsciinemaPlayerElement() {
                 Vo,
                 new Yo(new T(null, 1, 5, U, [qr], null), null, null, null),
                 Xo,
-                Vo
+                Vo,
               ]
             ),
-            null
+            null,
           ])
         ),
-        function(b) {
+        function (b) {
           return tr(qg.c(yf, b));
         }
       )
@@ -29808,12 +29812,12 @@ function registerAsciinemaPlayerElement() {
       U,
       [
         fp(Vo, ie(cn, new r(null, 1, [Fj, dn], null))),
-        fp(nr, ie(zk, new r(null, 1, [Fj, Fn], null)))
+        fp(nr, ie(zk, new r(null, 1, [Fj, Fn], null))),
       ],
       null
     ),
     vr;
-  vr = function(b, a) {
+  vr = function (b, a) {
     return new T(null, 2, 5, U, [b, a], null);
   };
   Lo(vr, lp(pr, new T(null, 1, 5, U, [ur], null)));
@@ -29826,7 +29830,7 @@ function registerAsciinemaPlayerElement() {
       null
     ),
     xr;
-  xr = function(b) {
+  xr = function (b) {
     return vr(32, b);
   };
   Lo(xr, lp(pr, new T(null, 1, 5, U, [wr], null)));
@@ -29845,7 +29849,7 @@ function registerAsciinemaPlayerElement() {
       U,
       [
         fp(Po, ie(zm, new r(null, 1, [Fj, Bj], null))),
-        fp(Po, ie(zk, new r(null, 1, [Fj, Bj], null)))
+        fp(Po, ie(zk, new r(null, 1, [Fj, Bj], null))),
       ],
       null
     );
@@ -29859,10 +29863,10 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  ir.h = function(b) {
+  ir.h = function (b) {
     return ir.c(b, yf);
   };
-  ir.c = function(b, a) {
+  ir.c = function (b, a) {
     return Qg(kg(b, xr(a)));
   };
   ir.L = 2;
@@ -29875,7 +29879,7 @@ function registerAsciinemaPlayerElement() {
       U,
       [
         fp(Po, ie(zm, new r(null, 1, [Fj, Bj], null))),
-        fp(Po, ie(fk, new r(null, 1, [Fj, Bj], null)))
+        fp(Po, ie(fk, new r(null, 1, [Fj, Bj], null))),
       ],
       null
     ),
@@ -29887,7 +29891,7 @@ function registerAsciinemaPlayerElement() {
       [
         fp(Po, ie(zm, new r(null, 1, [Fj, Bj], null))),
         fp(Po, ie(fk, new r(null, 1, [Fj, Bj], null))),
-        fp(Po, ie(zk, new r(null, 1, [Fj, Bj], null)))
+        fp(Po, ie(zk, new r(null, 1, [Fj, Bj], null))),
       ],
       null
     );
@@ -29901,10 +29905,10 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  jr.c = function(b, a) {
+  jr.c = function (b, a) {
     return jr.l(b, a, yf);
   };
-  jr.l = function(b, a, c) {
+  jr.l = function (b, a, c) {
     b = ir.c(b, c);
     return Qg(kg(a, b));
   };
@@ -29919,7 +29923,7 @@ function registerAsciinemaPlayerElement() {
       null
     ),
     Gr;
-  Gr = function(b) {
+  Gr = function (b) {
     return S(ti, yi(8, b, 8));
   };
   Lo(Gr, lp(qi, new T(null, 1, 5, U, [Fr], null)));
@@ -29962,7 +29966,7 @@ function registerAsciinemaPlayerElement() {
         124,
         96,
         105,
-        114
+        114,
       ],
       [
         8804,
@@ -29995,7 +29999,7 @@ function registerAsciinemaPlayerElement() {
         8800,
         9830,
         9227,
-        9148
+        9148,
       ]
     ),
     Kr = new T(
@@ -30005,12 +30009,12 @@ function registerAsciinemaPlayerElement() {
       U,
       [
         fp(Vo, ie(zm, new r(null, 1, [Fj, qo], null))),
-        fp(Vo, ie(fk, new r(null, 1, [Fj, qo], null)))
+        fp(Vo, ie(fk, new r(null, 1, [Fj, qo], null))),
       ],
       null
     ),
     Lr;
-  Lr = function(b, a) {
+  Lr = function (b, a) {
     return tr(
       Je(
         [
@@ -30031,7 +30035,7 @@ function registerAsciinemaPlayerElement() {
           Gn,
           Vn,
           ko,
-          po
+          po,
         ],
         [
           yf,
@@ -30051,7 +30055,7 @@ function registerAsciinemaPlayerElement() {
           0,
           null,
           ak,
-          a
+          a,
         ]
       )
     );
@@ -30096,10 +30100,10 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  Vr.h = function(b) {
+  Vr.h = function (b) {
     return Vr.c(b, 1);
   };
-  Vr.c = function(b, a) {
+  Vr.c = function (b, a) {
     var c = null != b && (b.m & 64 || q === b.G) ? S(V, b) : b,
       d = C.c(c, cl),
       e = C.c(c, Gn),
@@ -30109,8 +30113,8 @@ function registerAsciinemaPlayerElement() {
     return vg(
       c,
       el,
-      (function(b, c, d, e, f, h, k) {
-        return function(c) {
+      (function (b, c, d, e, f, h, k) {
+        return function (c) {
           return Qg(
             P.A(
               dg(h, c),
@@ -30138,10 +30142,10 @@ function registerAsciinemaPlayerElement() {
         throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
     }
   };
-  Xr.h = function(b) {
+  Xr.h = function (b) {
     return Xr.c(b, 1);
   };
-  Xr.c = function(b, a) {
+  Xr.c = function (b, a) {
     var c = null != b && (b.m & 64 || q === b.G) ? S(V, b) : b,
       d = C.c(c, cl),
       e = C.c(c, Gn),
@@ -30151,8 +30155,8 @@ function registerAsciinemaPlayerElement() {
     return vg(
       c,
       el,
-      (function(b, c, d, e, f, h, k) {
-        return function(c) {
+      (function (b, c, d, e, f, h, k) {
+        return function (c) {
           return Qg(
             P.A(
               dg(h, c),
@@ -30245,11 +30249,11 @@ function registerAsciinemaPlayerElement() {
     return bs(
       c,
       e < f
-        ? (function() {
+        ? (function () {
             var b = e - a;
             return 0 > b ? 0 : b;
           })()
-        : (function() {
+        : (function () {
             var b = e - a;
             return f > b ? f : b;
           })()
@@ -30265,12 +30269,12 @@ function registerAsciinemaPlayerElement() {
     return bs(
       c,
       e > f
-        ? (function() {
+        ? (function () {
             var b = h - 1,
               c = e + a;
             return b < c ? b : c;
           })()
-        : (function() {
+        : (function () {
             var b = e + a;
             return f < b ? f : b;
           })()
@@ -30388,8 +30392,8 @@ function registerAsciinemaPlayerElement() {
       n = k - 1,
       d = I(
         hg(
-          (function(a, b, c, d, e, f, h, k) {
-            return function(a) {
+          (function (a, b, c, d, e, f, h, k) {
+            return function (a) {
               return k >= a;
             };
           })(l, n, b, c, c, d, e, f, h, k),
@@ -30411,8 +30415,8 @@ function registerAsciinemaPlayerElement() {
       d = I(
         Xe(
           vi(
-            (function(a, b, c, d, e, f, h) {
-              return function(a) {
+            (function (a, b, c, d, e, f, h) {
+              return function (a) {
                 return h > a;
               };
             })(l, b, c, c, d, e, f, h, k),
@@ -30549,8 +30553,8 @@ function registerAsciinemaPlayerElement() {
     return vg(
       a,
       el,
-      (function(a, b, c, d, e, f, h, k, l, Q) {
-        return function(a) {
+      (function (a, b, c, d, e, f, h, k, l, Q) {
+        return function (a) {
           var b = dg(h, a);
           a = vt(Nd(a, h), f, Q);
           var c = kg(l - h - 1, ir.c(k, Q));
@@ -30571,8 +30575,8 @@ function registerAsciinemaPlayerElement() {
     return vg(
       a,
       el,
-      (function(a, b, c, d, e, f, h, k, l, Q, W) {
-        return function(b) {
+      (function (a, b, c, d, e, f, h, k, l, Q, W) {
+        return function (b) {
           var c = kg(k, ir.c(l, W)),
             d = wt(Nd(b, k), a, W);
           return Qg(
@@ -30580,7 +30584,7 @@ function registerAsciinemaPlayerElement() {
           );
         };
       })(
-        (function() {
+        (function () {
           var a = h - 1;
           return e < a ? e : a;
         })(),
@@ -30608,12 +30612,12 @@ function registerAsciinemaPlayerElement() {
     return ug.l(
       c,
       new T(null, 2, 5, U, [el, h], null),
-      (function(a, b, c, d, e, f, h, k, l, Q) {
-        return function(b) {
+      (function (a, b, c, d, e, f, h, k, l, Q) {
+        return function (b) {
           return Qg(P.A(dg(h, b), kg(a, xr(Q)), Wd([eg(h + a, b)])));
         };
       })(
-        (function() {
+        (function () {
           var b = k - f;
           return a < b ? a : b;
         })(),
@@ -30640,8 +30644,8 @@ function registerAsciinemaPlayerElement() {
     return ug.l(
       c,
       new T(null, 2, 5, U, [el, h], null),
-      (function(b, c, d, e, f, h, k, l, M) {
-        return function(b) {
+      (function (b, c, d, e, f, h, k, l, M) {
+        return function (b) {
           return Qg(
             dg(
               l,
@@ -30669,8 +30673,8 @@ function registerAsciinemaPlayerElement() {
     return vg(
       c,
       el,
-      (function(b, c, d, e, f, h, k, m) {
-        return function(c) {
+      (function (b, c, d, e, f, h, k, m) {
+        return function (c) {
           return Qg(
             k <= m
               ? P.A(
@@ -30697,8 +30701,8 @@ function registerAsciinemaPlayerElement() {
     return vg(
       c,
       el,
-      (function(b, c, d, e, f, h, k, m) {
-        return function(c) {
+      (function (b, c, d, e, f, h, k, m) {
+        return function (c) {
           return Qg(
             k <= m
               ? P.A(
@@ -30725,14 +30729,14 @@ function registerAsciinemaPlayerElement() {
     return ug.l(
       n,
       new T(null, 2, 5, U, [el, h], null),
-      (function(a, b, c, d, e, f, h, k, m, l, n, R) {
-        return function(a) {
+      (function (a, b, c, d, e, f, h, k, m, l, n, R) {
+        return function (a) {
           return Qg(P.A(dg(b, a), eg(b + c, a), Wd([kg(c, xr(R))])));
         };
       })(
         n,
         m,
-        (function() {
+        (function () {
           var b = k - m;
           return a < b ? a : b;
         })(),
@@ -30757,12 +30761,12 @@ function registerAsciinemaPlayerElement() {
         fp(
           new T(null, 1, 5, U, [Vo], null),
           ie(Kn, new r(null, 1, [Fj, new T(null, 1, 5, U, [dn], null)], null))
-        )
+        ),
       ],
       null
     ),
     It;
-  It = function(b) {
+  It = function (b) {
     return S(String.fromCodePoint, b);
   };
   Lo(It, lp(To, new T(null, 1, 5, U, [Ht], null)));
@@ -30783,7 +30787,7 @@ function registerAsciinemaPlayerElement() {
       null
     ),
     Lt;
-  Lt = function(b) {
+  Lt = function (b) {
     b = D(b);
     var a = w(b),
       c = y(b);
@@ -30811,7 +30815,7 @@ function registerAsciinemaPlayerElement() {
   }
   var Nt = Error();
   var Ot = D(
-    og(function(b) {
+    og(function (b) {
       return $o(b);
     }, fh(null))
   );
@@ -30831,10 +30835,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = Pt.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "parser-state":
         return this.Rb;
@@ -30848,11 +30852,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -30870,7 +30874,7 @@ function registerAsciinemaPlayerElement() {
             new T(null, 2, 5, U, [Rl, this.Rb], null),
             new T(null, 2, 5, U, [ek, this.Qb], null),
             new T(null, 2, 5, U, [mk, this.Pb], null),
-            new T(null, 2, 5, U, [X, this.screen], null)
+            new T(null, 2, 5, U, [X, this.screen], null),
           ],
           null
         ),
@@ -30878,7 +30882,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -30887,19 +30891,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 4 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -156373259 ^ wd(a);
         };
       })(
@@ -30909,7 +30913,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -30920,7 +30924,7 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(
       new ni(
         null,
@@ -30940,7 +30944,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Rl, a) : O.call(null, Rl, a))
       ? new Pt(c, this.Qb, this.Pb, this.screen, this.o, this.j, null)
       : u(O.c ? O.c(ek, a) : O.call(null, ek, a))
@@ -30959,7 +30963,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -30971,7 +30975,7 @@ function registerAsciinemaPlayerElement() {
             new T(null, 2, 5, U, [Rl, this.Rb], null),
             new T(null, 2, 5, U, [ek, this.Qb], null),
             new T(null, 2, 5, U, [mk, this.Pb], null),
-            new T(null, 2, 5, U, [X, this.screen], null)
+            new T(null, 2, 5, U, [X, this.screen], null),
           ],
           null
         ),
@@ -30979,10 +30983,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Pt(this.Rb, this.Qb, this.Pb, this.screen, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function Qt(b) {
@@ -31014,14 +31018,14 @@ function registerAsciinemaPlayerElement() {
                 mk,
                 new T(null, 1, 5, U, [Wo], null),
                 X,
-                sr
+                sr,
               ],
               null
             ),
-            null
+            null,
           ])
         ),
-        function(b) {
+        function (b) {
           return Qt(qg.c(yf, b));
         }
       )
@@ -31034,12 +31038,12 @@ function registerAsciinemaPlayerElement() {
       U,
       [
         fp(Vo, ie(zm, new r(null, 1, [Fj, qo], null))),
-        fp(Vo, ie(fk, new r(null, 1, [Fj, qo], null)))
+        fp(Vo, ie(fk, new r(null, 1, [Fj, qo], null))),
       ],
       null
     ),
     St;
-  St = function(b, a) {
+  St = function (b, a) {
     return Qt(new r(null, 4, [Rl, qk, ek, be, mk, be, X, Lr(b, a)], null));
   };
   Lo(St, lp(Pt, new T(null, 1, 5, U, [Rt], null)));
@@ -31078,8 +31082,8 @@ function registerAsciinemaPlayerElement() {
                   return vg(
                     b,
                     X,
-                    (function() {
-                      return function(a) {
+                    (function () {
+                      return function (a) {
                         return es(K.l(a, xn, !0));
                       };
                     })(d)
@@ -31128,8 +31132,8 @@ function registerAsciinemaPlayerElement() {
                                                       return vg(
                                                         b,
                                                         X,
-                                                        (function() {
-                                                          return function(a) {
+                                                        (function () {
+                                                          return function (a) {
                                                             return gt(os(a));
                                                           };
                                                         })(l, k, h, f, a, e, d)
@@ -31209,8 +31213,8 @@ function registerAsciinemaPlayerElement() {
                   return vg(
                     b,
                     X,
-                    (function() {
-                      return function(a) {
+                    (function () {
+                      return function (a) {
                         return es(K.l(a, xn, !1));
                       };
                     })(d)
@@ -31259,8 +31263,8 @@ function registerAsciinemaPlayerElement() {
                                                       return vg(
                                                         b,
                                                         X,
-                                                        (function() {
-                                                          return function(a) {
+                                                        (function () {
+                                                          return function (a) {
                                                             return ps(ht(a));
                                                           };
                                                         })(l, k, h, f, a, e, d)
@@ -31306,15 +31310,15 @@ function registerAsciinemaPlayerElement() {
     }
   }
   function Vt(b) {
-    b = cg.c(function(a) {
+    b = cg.c(function (a) {
       return a - 48;
     }, b);
     b = cg.l(
       Se,
       Xe(b),
       lg(
-        (function() {
-          return function(a) {
+        (function () {
+          return function (a) {
             return 10 * a;
           };
         })(b),
@@ -31323,7 +31327,7 @@ function registerAsciinemaPlayerElement() {
     );
     return Gb(Re, 0, b);
   }
-  var Wt = aj(function(b) {
+  var Wt = aj(function (b) {
     a: for (var a = be, c = be; ; ) {
       var d = w(b);
       if (u(d))
@@ -31400,8 +31404,8 @@ function registerAsciinemaPlayerElement() {
     return vg(
       b,
       X,
-      (function(a) {
-        return function(b) {
+      (function (a) {
+        return function (b) {
           return $r(is(b, a), 0);
         };
       })(a)
@@ -31412,8 +31416,8 @@ function registerAsciinemaPlayerElement() {
     return vg(
       b,
       X,
-      (function(a) {
-        return function(b) {
+      (function (a) {
+        return function (b) {
           return $r(hs(b, a), 0);
         };
       })(a)
@@ -31437,7 +31441,7 @@ function registerAsciinemaPlayerElement() {
     return vg(
       b,
       X,
-      (function() {
+      (function () {
         switch (a) {
           case 0:
             return At;
@@ -31456,7 +31460,7 @@ function registerAsciinemaPlayerElement() {
     return vg(
       b,
       X,
-      (function() {
+      (function () {
         switch (a) {
           case 0:
             return xt;
@@ -31523,8 +31527,8 @@ function registerAsciinemaPlayerElement() {
   function Du(b) {
     var a = C.c(mk.h(b), 0);
     return Gb(
-      (function(a) {
-        return function(b, c) {
+      (function (a) {
+        return function (b, c) {
           return Tt(b, a, c);
         };
       })(a),
@@ -31535,8 +31539,8 @@ function registerAsciinemaPlayerElement() {
   function Eu(b) {
     var a = C.c(mk.h(b), 0);
     return Gb(
-      (function(a) {
-        return function(b, c) {
+      (function (a) {
+        return function (b, c) {
           return Ut(b, a, c);
         };
       })(a),
@@ -31706,15 +31710,15 @@ function registerAsciinemaPlayerElement() {
   }
   function Ju(b) {
     var a = Yt(b, 0, 1) - 1,
-      c = (function() {
+      c = (function () {
         var a = null == b ? null : Yt(b, 1, null);
         return null == a ? null : a - 1;
       })();
     return vg(
       b,
       X,
-      (function(a, b) {
-        return function(c) {
+      (function (a, b) {
+        return function (c) {
           c = null != c && (c.m & 64 || q === c.G) ? S(V, c) : c;
           var d = C.c(c, po),
             e = u(b) ? b : d - 1;
@@ -31725,7 +31729,7 @@ function registerAsciinemaPlayerElement() {
     );
   }
   function Ku(b, a) {
-    var c = (function() {
+    var c = (function () {
       switch (a) {
         case 8:
           return Zt;
@@ -31760,19 +31764,19 @@ function registerAsciinemaPlayerElement() {
   var Lu = Je(
     [sj, Ij, Rj, Wj, tl, Nl, Pl, Sl, Vl, tm, Em, En, Hn, ro],
     [
-      function(b) {
+      function (b) {
         return b;
       },
-      function(b, a) {
+      function (b, a) {
         var c = C.c(mk.h(b), 0);
         try {
           if (null === c)
             try {
               if (
                 u(
-                  (function() {
-                    return (function() {
-                      return function(a) {
+                  (function () {
+                    return (function () {
+                      return function (a) {
                         return 64 <= a && 95 >= a;
                       };
                     })(
@@ -31872,18 +31876,18 @@ function registerAsciinemaPlayerElement() {
           else throw h;
         }
       },
-      function(b) {
+      function (b) {
         return b;
       },
-      function(b) {
+      function (b) {
         return b;
       },
       Ku,
-      function(b, a) {
+      function (b, a) {
         return wg(b, X, st, a);
       },
-      function(b, a) {
-        var c = (function() {
+      function (b, a) {
+        var c = (function () {
           switch (a) {
             case 64:
               return iu;
@@ -31953,27 +31957,27 @@ function registerAsciinemaPlayerElement() {
         })();
         return u(c) ? (c.h ? c.h(b) : c.call(null, b)) : b;
       },
-      function(b) {
+      function (b) {
         return b;
       },
-      function(b, a) {
+      function (b, a) {
         return K.l(b, ek, ae.c(ek.h(b), a));
       },
-      function(b) {
+      function (b) {
         return b;
       },
-      function(b, a) {
+      function (b, a) {
         return K.l(b, mk, ae.c(mk.h(b), a));
       },
-      function(b) {
+      function (b) {
         return b;
       },
-      function(b) {
+      function (b) {
         return b;
       },
-      function(b) {
+      function (b) {
         return K.A(b, mk, be, Wd([ek, be]));
-      }
+      },
     ]
   );
   function Mu(b, a) {
@@ -31996,7 +32000,7 @@ function registerAsciinemaPlayerElement() {
     }
   }
   function Nu(b, a) {
-    var c = rg(function(a) {
+    var c = rg(function (a) {
       return a.codePointAt(0);
     }, a);
     return Mu(b, c);
@@ -32014,7 +32018,7 @@ function registerAsciinemaPlayerElement() {
           v.h(";"),
           v.h(d),
           v.h(";"),
-          v.h(e)
+          v.h(e),
         ].join("");
       }
       throw Nt;
@@ -32025,9 +32029,9 @@ function registerAsciinemaPlayerElement() {
           try {
             if (
               u(
-                (function() {
-                  return (function() {
-                    return function(a) {
+                (function () {
+                  return (function () {
+                    return function (a) {
                       return 8 > a;
                     };
                   })(f)(a);
@@ -32043,9 +32047,9 @@ function registerAsciinemaPlayerElement() {
                 try {
                   if (
                     u(
-                      (function() {
-                        return (function() {
-                          return function(a) {
+                      (function () {
+                        return (function () {
+                          return function (a) {
                             return 16 > a;
                           };
                         })(
@@ -32097,8 +32101,8 @@ function registerAsciinemaPlayerElement() {
     return a < c ? a : c;
   }
   function Tu(b) {
-    return (function(a) {
-      return function() {
+    return (function (a) {
+      return function () {
         return ((new Date().getTime() - a.getTime()) / 1e3) * b;
       };
     })(new Date());
@@ -32107,11 +32111,11 @@ function registerAsciinemaPlayerElement() {
     return document[b];
   }
   function Vu(b) {
-    return function(a) {
+    return function (a) {
       var c = new bg(null);
       Wc(c, c);
-      return (function(c) {
-        return (function() {
+      return (function (c) {
+        return (function () {
           function d(d, e) {
             if (B(c) === c) {
               var f = Wc(c, e);
@@ -32119,14 +32123,14 @@ function registerAsciinemaPlayerElement() {
             }
             var h = Wc(
               c,
-              (function() {
+              (function () {
                 var a = B(c);
                 return b.c ? b.c(a, e) : b.call(null, a, e);
               })()
             );
             return Cd(h)
               ? Dd(
-                  (function() {
+                  (function () {
                     var b = B(h);
                     return a.c ? a.c(d, b) : a.call(null, d, b);
                   })()
@@ -32142,7 +32146,7 @@ function registerAsciinemaPlayerElement() {
             return a.B ? a.B() : a.call(null);
           }
           var k = null,
-            k = function(a, b) {
+            k = function (a, b) {
               switch (arguments.length) {
                 case 0:
                   return h.call(this);
@@ -32162,15 +32166,15 @@ function registerAsciinemaPlayerElement() {
     };
   }
   function Wu(b, a) {
-    return function(c) {
+    return function (c) {
       var d = new bg(null);
       Wc(d, d);
-      return (function(d) {
-        return (function() {
+      return (function (d) {
+        return (function () {
           function e(e, f) {
             for (;;)
               if (B(d) === d) {
-                var h = (function() {
+                var h = (function () {
                   var b = e,
                     f = Wc(d, a);
                   return c.c ? c.c(b, f) : c.call(null, b, f);
@@ -32182,7 +32186,7 @@ function registerAsciinemaPlayerElement() {
               } else {
                 var m = Wc(
                   d,
-                  (function() {
+                  (function () {
                     var a = B(d),
                       c = f;
                     return b.c ? b.c(a, c) : b.call(null, a, c);
@@ -32190,7 +32194,7 @@ function registerAsciinemaPlayerElement() {
                 );
                 return Cd(m)
                   ? Dd(
-                      (function() {
+                      (function () {
                         var a = e,
                           b = B(m);
                         return c.c ? c.c(a, b) : c.call(null, a, b);
@@ -32209,7 +32213,7 @@ function registerAsciinemaPlayerElement() {
             return c.B ? c.B() : c.call(null);
           }
           var l = null,
-            l = function(a, b) {
+            l = function (a, b) {
               switch (arguments.length) {
                 case 0:
                   return k.call(this);
@@ -32229,7 +32233,7 @@ function registerAsciinemaPlayerElement() {
     };
   }
   function Xu(b, a) {
-    return cg.c(function(a) {
+    return cg.c(function (a) {
       var c = I(a, 0, null);
       a = I(a, 1, null);
       return new T(null, 2, 5, U, [c, b.h ? b.h(a) : b.call(null, a)], null);
@@ -32238,7 +32242,7 @@ function registerAsciinemaPlayerElement() {
   var Yu = function Yu(a, c) {
     return new df(
       null,
-      function() {
+      function () {
         if (D(a)) {
           if (D(c)) {
             var d = w(a),
@@ -32250,14 +32254,14 @@ function registerAsciinemaPlayerElement() {
             return e < h
               ? Vd(
                   d,
-                  (function() {
+                  (function () {
                     var d = pd(a);
                     return Yu.c ? Yu.c(d, c) : Yu.call(null, d, c);
                   })()
                 )
               : Vd(
                   f,
-                  (function() {
+                  (function () {
                     var d = pd(c);
                     return Yu.c ? Yu.c(a, d) : Yu.call(null, a, d);
                   })()
@@ -32282,7 +32286,7 @@ function registerAsciinemaPlayerElement() {
     return new T(null, 2, 5, U, [c / b, d], null);
   }
   function av(b) {
-    return cg.h(function(a) {
+    return cg.h(function (a) {
       var c = I(a, 0, null),
         d = I(a, 1, null);
       return u(b) ? new T(null, 2, 5, U, [c < b ? c : b, d], null) : a;
@@ -32301,7 +32305,7 @@ function registerAsciinemaPlayerElement() {
     return $d(vi(Vf.c(dv, b), a));
   }
   function fv(b, a) {
-    return Wu(function(a, d) {
+    return Wu(function (a, d) {
       I(a, 0, null);
       var c = I(a, 1, null),
         f = I(d, 0, null),
@@ -32317,7 +32321,7 @@ function registerAsciinemaPlayerElement() {
     }, new T(null, 2, 5, U, [0, a], null));
   }
   function gv() {
-    return Vu(function(b, a) {
+    return Vu(function (b, a) {
       var c = I(b, 0, null);
       I(b, 1, null);
       var d = I(a, 0, null),
@@ -32326,9 +32330,9 @@ function registerAsciinemaPlayerElement() {
     });
   }
   function hv() {
-    return function(b) {
-      return (function(a) {
-        return (function() {
+    return function (b) {
+      return (function (a) {
+        return (function () {
           function c(c, d) {
             var e = I(d, 0, null),
               f = I(d, 1, null),
@@ -32344,7 +32348,7 @@ function registerAsciinemaPlayerElement() {
             return b.B ? b.B() : b.call(null);
           }
           var f = null,
-            f = function(a, b) {
+            f = function (a, b) {
               switch (arguments.length) {
                 case 0:
                   return e.call(this);
@@ -32366,11 +32370,11 @@ function registerAsciinemaPlayerElement() {
   function iv(b, a, c, d) {
     return Of(
       Uf.A(
-        ng(function(a) {
+        ng(function (a) {
           return F.c(Zd(a), "o");
         }),
         cg.h(
-          Ai(function(a) {
+          Ai(function (a) {
             return Nd(a, 2);
           })
         ),
@@ -32387,7 +32391,7 @@ function registerAsciinemaPlayerElement() {
     if (D(a)) {
       var c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
         d = C.c(c, $i);
-      return (function(a, b, c, d) {
+      return (function (a, b, c, d) {
         return function n(e) {
           return xe(e)
             ? Bi(cg.c(n, e))
@@ -32396,8 +32400,8 @@ function registerAsciinemaPlayerElement() {
             : rb(e)
             ? Kc(
                 Gb(
-                  (function() {
-                    return function(a, b) {
+                  (function () {
+                    return function (a, b) {
                       return of.c(a, n(b));
                     };
                   })(a, b, c, d),
@@ -32408,8 +32412,8 @@ function registerAsciinemaPlayerElement() {
             : vb(e) === Object
             ? Kc(
                 Gb(
-                  (function(a, b, c, d) {
-                    return function(a, b) {
+                  (function (a, b, c, d) {
+                    return function (a, b) {
                       var c = d.h ? d.h(b) : d.call(null, b),
                         f = n(e[b]);
                       return Lc(a, c, f);
@@ -32440,10 +32444,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = kv.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "cursor":
         return this.cursor;
@@ -32453,11 +32457,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -32473,7 +32477,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             new T(null, 2, 5, U, [ll, this.cursor], null),
-            new T(null, 2, 5, U, [el, this.ea], null)
+            new T(null, 2, 5, U, [el, this.ea], null),
           ],
           null
         ),
@@ -32481,7 +32485,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -32490,19 +32494,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 2 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 1528554851 ^ wd(a);
         };
       })(
@@ -32512,7 +32516,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -32521,19 +32525,19 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 2, [el, null, ll, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new kv(this.cursor, this.ea, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(ll, a) : O.call(null, ll, a))
       ? new kv(c, this.ea, this.o, this.j, null)
       : u(O.c ? O.c(el, a) : O.call(null, el, a))
       ? new kv(this.cursor, c, this.o, this.j, null)
       : new kv(this.cursor, this.ea, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -32543,7 +32547,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [
             new T(null, 2, 5, U, [ll, this.cursor], null),
-            new T(null, 2, 5, U, [el, this.ea], null)
+            new T(null, 2, 5, U, [el, this.ea], null),
           ],
           null
         ),
@@ -32551,10 +32555,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new kv(this.cursor, this.ea, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function lv(b, a) {
@@ -32563,7 +32567,7 @@ function registerAsciinemaPlayerElement() {
   function mv(b) {
     return qg.c(
       yf,
-      cg.c(function(a) {
+      cg.c(function (a) {
         var b = I(a, 0, null);
         a = I(a, 1, null);
         var d = U,
@@ -32591,8 +32595,8 @@ function registerAsciinemaPlayerElement() {
       d = Ne(
         Re,
         cg.c(
-          (function() {
-            return function(a) {
+          (function () {
+            return function (a) {
               return G(w(a));
             };
           })(c),
@@ -32608,10 +32612,10 @@ function registerAsciinemaPlayerElement() {
     );
   }
   g.yd = q;
-  g.Ad = function() {
+  g.Ad = function () {
     return Qg(gh(el.h(this)));
   };
-  g.zd = function() {
+  g.zd = function () {
     return ll.h(this);
   };
   function qv(b) {
@@ -32667,10 +32671,10 @@ function registerAsciinemaPlayerElement() {
     throw "only asciicast v1 and v2 formats can be opened";
   }
   Pt.prototype.yd = q;
-  Pt.prototype.Ad = function() {
+  Pt.prototype.Ad = function () {
     return rg(Lt, el.h(X.h(this)));
   };
-  Pt.prototype.zd = function() {
+  Pt.prototype.zd = function () {
     return ll.h(X.h(this));
   };
   var vv;
@@ -32696,7 +32700,7 @@ function registerAsciinemaPlayerElement() {
       window.postMessage &&
       window.addEventListener &&
       !yv("Presto") &&
-      (b = function() {
+      (b = function () {
         var a = document.createElement("IFRAME");
         a.style.display = "none";
         a.src = "";
@@ -32711,23 +32715,23 @@ function registerAsciinemaPlayerElement() {
             "file:" == b.location.protocol
               ? "*"
               : b.location.protocol + "//" + b.location.host,
-          a = pa(function(a) {
+          a = pa(function (a) {
             if (("*" == d || a.origin == d) && a.data == c)
               this.port1.onmessage();
           }, this);
         b.addEventListener("message", a, !1);
         this.port1 = {};
         this.port2 = {
-          postMessage: function() {
+          postMessage: function () {
             b.postMessage(c, d);
-          }
+          },
         };
       });
     if ("undefined" !== typeof b && !yv("Trident") && !yv("MSIE")) {
       var a = new b(),
         c = {},
         d = c;
-      a.port1.onmessage = function() {
+      a.port1.onmessage = function () {
         if (void 0 !== c.next) {
           c = c.next;
           var a = c.ed;
@@ -32735,7 +32739,7 @@ function registerAsciinemaPlayerElement() {
           a();
         }
       };
-      return function(b) {
+      return function (b) {
         d.next = { ed: b };
         d = d.next;
         a.port2.postMessage(0);
@@ -32743,9 +32747,9 @@ function registerAsciinemaPlayerElement() {
     }
     return "undefined" !== typeof document &&
       "onreadystatechange" in document.createElement("SCRIPT")
-      ? function(a) {
+      ? function (a) {
           var b = document.createElement("SCRIPT");
-          b.onreadystatechange = function() {
+          b.onreadystatechange = function () {
             b.onreadystatechange = null;
             b.parentNode.removeChild(b);
             b = null;
@@ -32754,7 +32758,7 @@ function registerAsciinemaPlayerElement() {
           };
           document.documentElement.appendChild(b);
         }
-      : function(a) {
+      : function (a) {
           ba.setTimeout(a, 0);
         };
   }
@@ -32766,7 +32770,7 @@ function registerAsciinemaPlayerElement() {
   var Cv = 0,
     Dv = {};
   Bv.prototype.pd = !1;
-  Bv.prototype.od = function() {
+  Bv.prototype.od = function () {
     if (this.Wd) for (; this.Wd.length; ) this.Wd.shift()();
   };
   function Ev() {
@@ -32799,7 +32803,7 @@ function registerAsciinemaPlayerElement() {
   var Mv;
   a: {
     var Nv = "",
-      Ov = (function() {
+      Ov = (function () {
         var b = vv;
         if (Iv) return /rv\:([^\);]+)(\)|;)/.exec(b);
         if (Hv) return /Edge\/([\d\.]+)/.exec(b);
@@ -32819,7 +32823,7 @@ function registerAsciinemaPlayerElement() {
   }
   var bb = {};
   function Qv(b) {
-    return Za(b, function() {
+    return Za(b, function () {
       for (
         var a = 0,
           c = ra(String(Mv)).split("."),
@@ -32871,10 +32875,10 @@ function registerAsciinemaPlayerElement() {
     this.defaultPrevented = this.Lc = !1;
     this.bf = !0;
   }
-  Wv.prototype.stopPropagation = function() {
+  Wv.prototype.stopPropagation = function () {
     this.Lc = !0;
   };
-  Wv.prototype.preventDefault = function() {
+  Wv.prototype.preventDefault = function () {
     this.defaultPrevented = !0;
     this.bf = !1;
   };
@@ -32934,13 +32938,13 @@ function registerAsciinemaPlayerElement() {
     }
   }
   qa(Xv, Wv);
-  Xv.prototype.stopPropagation = function() {
+  Xv.prototype.stopPropagation = function () {
     Xv.Zd.stopPropagation.call(this);
     this.qd.stopPropagation
       ? this.qd.stopPropagation()
       : (this.qd.cancelBubble = !0);
   };
-  Xv.prototype.preventDefault = function() {
+  Xv.prototype.preventDefault = function () {
     Xv.Zd.preventDefault.call(this);
     var b = this.qd;
     if (b.preventDefault) b.preventDefault();
@@ -32973,7 +32977,7 @@ function registerAsciinemaPlayerElement() {
     this.kb = {};
     this.xd = 0;
   }
-  bw.prototype.add = function(b, a, c, d, e) {
+  bw.prototype.add = function (b, a, c, d, e) {
     var f = b.toString();
     b = this.kb[f];
     b || ((b = this.kb[f] = []), this.xd++);
@@ -32983,7 +32987,7 @@ function registerAsciinemaPlayerElement() {
       : ((a = new $v(a, this.src, f, !!d, e)), (a.Hd = c), b.push(a));
     return a;
   };
-  bw.prototype.remove = function(b, a, c, d) {
+  bw.prototype.remove = function (b, a, c, d) {
     b = b.toString();
     if (!(b in this.kb)) return !1;
     var e = this.kb[b];
@@ -33001,17 +33005,17 @@ function registerAsciinemaPlayerElement() {
       Ua(b.kb[c], a) &&
       (aw(a), 0 == b.kb[c].length && (delete b.kb[c], b.xd--));
   }
-  bw.prototype.se = function(b, a, c, d) {
+  bw.prototype.se = function (b, a, c, d) {
     b = this.kb[b.toString()];
     var e = -1;
     b && (e = cw(b, a, c, d));
     return -1 < e ? b[e] : null;
   };
-  bw.prototype.hasListener = function(b, a) {
+  bw.prototype.hasListener = function (b, a) {
     var c = void 0 !== b,
       d = c ? b.toString() : "",
       e = void 0 !== a;
-    return va(this.kb, function(b) {
+    return va(this.kb, function (b) {
       for (var f = 0; f < b.length; ++f)
         if (!((c && b[f].type != d) || (e && b[f].capture != a))) return !0;
       return !1;
@@ -33052,10 +33056,10 @@ function registerAsciinemaPlayerElement() {
   function kw() {
     var b = mw,
       a = Uv
-        ? function(c) {
+        ? function (c) {
             return b.call(a.src, a.listener, c);
           }
-        : function(c) {
+        : function (c) {
             c = b.call(a.src, a.listener, c);
             if (!c) return c;
           };
@@ -33155,7 +33159,7 @@ function registerAsciinemaPlayerElement() {
   function iw(b) {
     if (ia(b)) return b;
     b[rw] ||
-      (b[rw] = function(a) {
+      (b[rw] = function (a) {
         return b.handleEvent(a);
       });
     return b[rw];
@@ -33169,13 +33173,13 @@ function registerAsciinemaPlayerElement() {
   qa(sw, Bv);
   sw.prototype[Yv] = !0;
   g = sw.prototype;
-  g.addEventListener = function(b, a, c, d) {
+  g.addEventListener = function (b, a, c, d) {
     hw(this, b, a, c, d);
   };
-  g.removeEventListener = function(b, a, c, d) {
+  g.removeEventListener = function (b, a, c, d) {
     nw(this, b, a, c, d);
   };
-  g.dispatchEvent = function(b) {
+  g.dispatchEvent = function (b) {
     var a,
       c = this.we;
     if (c) for (a = []; c; c = c.we) a.push(c);
@@ -33203,7 +33207,7 @@ function registerAsciinemaPlayerElement() {
         (h = b.currentTarget = a[f]), (e = tw(h, d, !1, b) && e);
     return e;
   };
-  g.od = function() {
+  g.od = function () {
     sw.Zd.od.call(this);
     if (this.Jb) {
       var b = this.Jb,
@@ -33232,10 +33236,10 @@ function registerAsciinemaPlayerElement() {
     }
     return e && 0 != d.bf;
   }
-  g.se = function(b, a, c, d) {
+  g.se = function (b, a, c, d) {
     return this.Jb.se(String(b), a, c, d);
   };
-  g.hasListener = function(b, a) {
+  g.hasListener = function (b, a) {
     return this.Jb.hasListener(void 0 !== b ? String(b) : void 0, a);
   };
   function uw(b, a, c) {
@@ -33269,7 +33273,7 @@ function registerAsciinemaPlayerElement() {
             "MSXML2.XMLHTTP.6.0",
             "MSXML2.XMLHTTP.3.0",
             "MSXML2.XMLHTTP",
-            "Microsoft.XMLHTTP"
+            "Microsoft.XMLHTTP",
           ],
           c = 0;
         c < a.length;
@@ -33321,24 +33325,24 @@ function registerAsciinemaPlayerElement() {
     } else b && this.addAll(b);
   }
   g = Dw.prototype;
-  g.Yc = function() {
+  g.Yc = function () {
     Ew(this);
     for (var b = [], a = 0; a < this.jb.length; a++)
       b.push(this.jc[this.jb[a]]);
     return b;
   };
-  g.Xc = function() {
+  g.Xc = function () {
     Ew(this);
     return this.jb.concat();
   };
-  g.Td = function() {
+  g.Td = function () {
     return 0 == this.Gc;
   };
-  g.clear = function() {
+  g.clear = function () {
     this.jc = {};
     this.Gc = this.jb.length = 0;
   };
-  g.remove = function(b) {
+  g.remove = function (b) {
     return Object.prototype.hasOwnProperty.call(this.jc, b)
       ? (delete this.jc[b],
         this.Gc--,
@@ -33366,29 +33370,29 @@ function registerAsciinemaPlayerElement() {
       b.jb.length = a;
     }
   }
-  g.get = function(b, a) {
+  g.get = function (b, a) {
     return Object.prototype.hasOwnProperty.call(this.jc, b) ? this.jc[b] : a;
   };
-  g.set = function(b, a) {
+  g.set = function (b, a) {
     Object.prototype.hasOwnProperty.call(this.jc, b) ||
       (this.Gc++, this.jb.push(b));
     this.jc[b] = a;
   };
-  g.addAll = function(b) {
+  g.addAll = function (b) {
     if (b instanceof Dw) {
       var a = b.Xc();
       b = b.Yc();
     } else (a = xa(b)), (b = wa(b));
     for (var c = 0; c < a.length; c++) this.set(a[c], b[c]);
   };
-  g.forEach = function(b, a) {
+  g.forEach = function (b, a) {
     for (var c = this.Xc(), d = 0; d < c.length; d++) {
       var e = c[d],
         f = this.get(e);
       b.call(a, f, e, this);
     }
   };
-  g.clone = function() {
+  g.clone = function () {
     return new Dw(this);
   };
   var Fw = /^(?:([^:/?#.]+):)?(?:\/\/(?:([^/?#]*)@)?([^/#?]*?)(?::([0-9]+))?(?=[/#?]|$))?([^?#]+)?(?:\?([^#]*))?(?:#([\s\S]*))?$/;
@@ -33419,14 +33423,14 @@ function registerAsciinemaPlayerElement() {
     return c;
   }
   g = Gw.prototype;
-  g.hf = function() {
+  g.hf = function () {
     if (!this.pd && ((this.pd = !0), this.od(), 0 != Cv)) {
       var b = ja(this);
       delete Dv[b];
     }
     Ua(Kw, this);
   };
-  g.send = function(b, a, c, d) {
+  g.send = function (b, a, c, d) {
     if (this.ca)
       throw Error(
         "[goog.net.XhrIo] Object is active with another request\x3d" +
@@ -33443,7 +33447,7 @@ function registerAsciinemaPlayerElement() {
     this.ca.onreadystatechange = pa(this.Ze, this);
     this.Mf &&
       "onprogress" in this.ca &&
-      ((this.ca.onprogress = pa(function(a) {
+      ((this.ca.onprogress = pa(function (a) {
         this.Ye(a, !0);
       }, this)),
       this.ca.upload && (this.ca.upload.onprogress = pa(this.Ye, this)));
@@ -33456,7 +33460,7 @@ function registerAsciinemaPlayerElement() {
     b = c || "";
     var e = this.headers.clone();
     d &&
-      Cw(d, function(a, b) {
+      Cw(d, function (a, b) {
         e.set(b, a);
       });
     d = Sa(e.Xc());
@@ -33468,7 +33472,7 @@ function registerAsciinemaPlayerElement() {
         "Content-Type",
         "application/x-www-form-urlencoded;charset\x3dutf-8"
       );
-    e.forEach(function(a, b) {
+    e.forEach(function (a, b) {
       this.ca.setRequestHeader(b, a);
     }, this);
     this.af && (this.ca.responseType = this.af);
@@ -33497,7 +33501,7 @@ function registerAsciinemaPlayerElement() {
   function Ta(b) {
     return "content-type" == b.toLowerCase();
   }
-  g.df = function() {
+  g.df = function () {
     "undefined" != typeof aa &&
       this.ca &&
       (this.dispatchEvent("timeout"), this.abort(8));
@@ -33512,7 +33516,7 @@ function registerAsciinemaPlayerElement() {
     b.re ||
       ((b.re = !0), b.dispatchEvent("complete"), b.dispatchEvent("error"));
   }
-  g.abort = function() {
+  g.abort = function () {
     this.ca &&
       this.oc &&
       ((this.oc = !1),
@@ -33523,17 +33527,17 @@ function registerAsciinemaPlayerElement() {
       this.dispatchEvent("abort"),
       Qw(this));
   };
-  g.od = function() {
+  g.od = function () {
     this.ca &&
       (this.oc &&
         ((this.oc = !1), (this.Jc = !0), this.ca.abort(), (this.Jc = !1)),
       Qw(this, !0));
     Gw.Zd.od.call(this);
   };
-  g.Ze = function() {
+  g.Ze = function () {
     this.pd || (this.te || this.Sd || this.Jc ? Rw(this) : this.Jf());
   };
-  g.Jf = function() {
+  g.Jf = function () {
     Rw(this);
   };
   function Rw(b) {
@@ -33578,7 +33582,7 @@ function registerAsciinemaPlayerElement() {
         }
       }
   }
-  g.Ye = function(b, a) {
+  g.Ye = function (b, a) {
     this.dispatchEvent(Uw(b, "progress"));
     this.dispatchEvent(Uw(b, a ? "downloadprogress" : "uploadprogress"));
   };
@@ -33587,7 +33591,7 @@ function registerAsciinemaPlayerElement() {
       type: a,
       lengthComputable: b.lengthComputable,
       loaded: b.loaded,
-      total: b.total
+      total: b.total,
     };
   }
   function Qw(b, a) {
@@ -33617,11 +33621,11 @@ function registerAsciinemaPlayerElement() {
       return -1;
     }
   }
-  g.getResponseHeader = function(b) {
+  g.getResponseHeader = function (b) {
     if (this.ca && 4 == Sw(this))
       return (b = this.ca.getResponseHeader(b)), null === b ? void 0 : b;
   };
-  g.getAllResponseHeaders = function() {
+  g.getAllResponseHeaders = function () {
     return this.ca && 4 == Sw(this) ? this.ca.getAllResponseHeaders() : "";
   };
   var Vw,
@@ -33685,10 +33689,10 @@ function registerAsciinemaPlayerElement() {
           throw Error([v.h("Invalid arity: "), v.h(arguments.length)].join(""));
       }
     };
-  dx.h = function(b) {
+  dx.h = function (b) {
     return b;
   };
-  dx.c = function(b, a) {
+  dx.c = function (b, a) {
     return cx(b, a);
   };
   dx.L = 2;
@@ -33703,7 +33707,7 @@ function registerAsciinemaPlayerElement() {
     this.length = c;
     this.v = d;
   }
-  fx.prototype.pop = function() {
+  fx.prototype.pop = function () {
     if (0 === this.length) return null;
     var b = this.v[this.ha];
     this.v[this.ha] = null;
@@ -33711,7 +33715,7 @@ function registerAsciinemaPlayerElement() {
     --this.length;
     return b;
   };
-  fx.prototype.unshift = function(b) {
+  fx.prototype.unshift = function (b) {
     this.v[this.head] = b;
     this.head = (this.head + 1) % this.v.length;
     this.length += 1;
@@ -33721,7 +33725,7 @@ function registerAsciinemaPlayerElement() {
     b.length + 1 === b.v.length && b.resize();
     b.unshift(a);
   }
-  fx.prototype.resize = function() {
+  fx.prototype.resize = function () {
     var b = Array(2 * this.v.length);
     return this.ha < this.head
       ? (ex(this.v, this.ha, b, 0, this.length),
@@ -33755,17 +33759,17 @@ function registerAsciinemaPlayerElement() {
     this.m = 2;
     this.J = 0;
   }
-  jx.prototype.oe = function() {
+  jx.prototype.oe = function () {
     return this.ba.length === this.n;
   };
-  jx.prototype.ld = function() {
+  jx.prototype.ld = function () {
     return this.ba.pop();
   };
-  jx.prototype.ne = function(b, a) {
+  jx.prototype.ne = function (b, a) {
     gx(this.ba, a);
     return this;
   };
-  jx.prototype.W = function() {
+  jx.prototype.W = function () {
     return this.ba.length;
   };
   function kx(b, a) {
@@ -33774,17 +33778,17 @@ function registerAsciinemaPlayerElement() {
     this.m = 2;
     this.J = 0;
   }
-  kx.prototype.oe = function() {
+  kx.prototype.oe = function () {
     return !1;
   };
-  kx.prototype.ld = function() {
+  kx.prototype.ld = function () {
     return this.ba.pop();
   };
-  kx.prototype.ne = function(b, a) {
+  kx.prototype.ne = function (b, a) {
     this.ba.length !== this.n && this.ba.unshift(a);
     return this;
   };
-  kx.prototype.W = function() {
+  kx.prototype.W = function () {
     return this.ba.length;
   };
   if ("undefined" === typeof lx) var lx = {};
@@ -33826,28 +33830,28 @@ function registerAsciinemaPlayerElement() {
   var tx;
   function ux(b) {
     "undefined" === typeof tx &&
-      ((tx = function(a, b) {
+      ((tx = function (a, b) {
         this.I = a;
         this.Bf = b;
         this.m = 425984;
         this.J = 0;
       }),
-      (tx.prototype.T = function(a, b) {
+      (tx.prototype.T = function (a, b) {
         return new tx(this.I, b);
       }),
-      (tx.prototype.P = function() {
+      (tx.prototype.P = function () {
         return this.Bf;
       }),
-      (tx.prototype.pc = function() {
+      (tx.prototype.pc = function () {
         return this.I;
       }),
-      (tx.Wc = function() {
+      (tx.Wc = function () {
         return new T(null, 2, 5, U, [Jm, sn], null);
       }),
       (tx.rc = !0),
       (tx.Ub =
         "cljs.core.async.impl.channels/t_cljs$core$async$impl$channels26425"),
-      (tx.Fc = function(a, b) {
+      (tx.Fc = function (a, b) {
         return Dc(
           b,
           "cljs.core.async.impl.channels/t_cljs$core$async$impl$channels26425"
@@ -33880,8 +33884,8 @@ function registerAsciinemaPlayerElement() {
         if (c.xb(null)) {
           var e = c.tb(null);
           rx(
-            (function(a) {
-              return function() {
+            (function (a) {
+              return function () {
                 return a.h ? a.h(!0) : a.call(null, !0);
               };
             })(e, c, d, a, b)
@@ -33893,12 +33897,12 @@ function registerAsciinemaPlayerElement() {
     hx(b.Mc, Tf(!1));
     b.md();
   }
-  xx.prototype.Od = function(b, a, c) {
+  xx.prototype.Od = function (b, a, c) {
     var d = this;
     if ((b = d.closed) || !c.xb(null)) return ux(!b);
     if (
       u(
-        (function() {
+        (function () {
           var a = d.ba;
           return u(a) ? sb(d.ba.oe(null)) : a;
         })()
@@ -33912,8 +33916,8 @@ function registerAsciinemaPlayerElement() {
             var f = e.tb(null),
               h = d.ba.ld(null);
             rx(
-              (function(a, b) {
-                return function() {
+              (function (a, b) {
+                return function () {
                   return a.h ? a.h(b) : a.call(null, b);
                 };
               })(f, h, e, c, b, this)
@@ -33925,7 +33929,7 @@ function registerAsciinemaPlayerElement() {
       c && yx(this);
       return ux(!0);
     }
-    e = (function() {
+    e = (function () {
       for (;;) {
         var a = d.bd.pop();
         if (u(a)) {
@@ -33938,8 +33942,8 @@ function registerAsciinemaPlayerElement() {
         (f = bx(e)),
         c.tb(null),
         rx(
-          (function(b) {
-            return function() {
+          (function (b) {
+            return function () {
               return b.h ? b.h(a) : b.call(null, a);
             };
           })(f, e, b, this)
@@ -33950,7 +33954,7 @@ function registerAsciinemaPlayerElement() {
     u(c.nd(null)) && gx(d.Mc, new vx(c, a));
     return null;
   };
-  xx.prototype.pe = function(b, a) {
+  xx.prototype.pe = function (b, a) {
     var c = this;
     if (a.xb(null)) {
       if (null != c.ba && 0 < G(c.ba)) {
@@ -33964,8 +33968,8 @@ function registerAsciinemaPlayerElement() {
                 var l = h.tb(null);
                 a.tb(null);
                 rx(
-                  (function(a) {
-                    return function() {
+                  (function (a) {
+                    return function () {
                       return a.h ? a.h(!0) : a.call(null, !0);
                     };
                   })(l, h, k, f, d, e, this)
@@ -33980,7 +33984,7 @@ function registerAsciinemaPlayerElement() {
         }
         return e;
       }
-      d = (function() {
+      d = (function () {
         for (;;) {
           var a = c.Mc.pop();
           if (u(a)) {
@@ -33993,8 +33997,8 @@ function registerAsciinemaPlayerElement() {
           (e = bx(d.Vb)),
           a.tb(null),
           rx(
-            (function(a) {
-              return function() {
+            (function (a) {
+              return function () {
                 return a.h ? a.h(!0) : a.call(null, !0);
               };
             })(e, d, this)
@@ -34005,12 +34009,12 @@ function registerAsciinemaPlayerElement() {
         return (
           u(c.ba) && (c.Bb.h ? c.Bb.h(c.ba) : c.Bb.call(null, c.ba)),
           u(
-            (function() {
+            (function () {
               var b = a.xb(null);
               return u(b) ? a.tb(null) : b;
             })()
           )
-            ? ((d = (function() {
+            ? ((d = (function () {
                 var a = c.ba;
                 return u(a) ? 0 < G(c.ba) : a;
               })()),
@@ -34023,13 +34027,13 @@ function registerAsciinemaPlayerElement() {
     }
     return null;
   };
-  xx.prototype.md = function() {
+  xx.prototype.md = function () {
     var b = this;
     if (!b.closed)
       for (
         b.closed = !0,
           u(
-            (function() {
+            (function () {
               var a = b.ba;
               return u(a) ? 0 === b.Mc.length : a;
             })()
@@ -34042,7 +34046,7 @@ function registerAsciinemaPlayerElement() {
           if (a.xb(null)) {
             var c = a.tb(null),
               d = u(
-                (function() {
+                (function () {
                   var a = b.ba;
                   return u(a) ? 0 < G(b.ba) : a;
                 })()
@@ -34050,8 +34054,8 @@ function registerAsciinemaPlayerElement() {
                 ? b.ba.ld(null)
                 : null;
             rx(
-              (function(a, b) {
-                return function() {
+              (function (a, b) {
+                return function () {
                   return a.h ? a.h(b) : a.call(null, b);
                 };
               })(c, d, a, this)
@@ -34078,9 +34082,9 @@ function registerAsciinemaPlayerElement() {
       0,
       b,
       !1,
-      (function() {
-        return (function(a) {
-          return (function() {
+      (function () {
+        return (function (a) {
+          return (function () {
             function b(b, c) {
               try {
                 return a.c ? a.c(b, c) : a.call(null, b, c);
@@ -34096,7 +34100,7 @@ function registerAsciinemaPlayerElement() {
               }
             }
             var f = null,
-              f = function(a, d) {
+              f = function (a, d) {
                 switch (arguments.length) {
                   case 1:
                     return c.call(this, a);
@@ -34116,34 +34120,34 @@ function registerAsciinemaPlayerElement() {
   var Cx;
   function Dx(b) {
     "undefined" === typeof Cx &&
-      ((Cx = function(a, b) {
+      ((Cx = function (a, b) {
         this.Db = a;
         this.Df = b;
         this.m = 393216;
         this.J = 0;
       }),
-      (Cx.prototype.T = function(a, b) {
+      (Cx.prototype.T = function (a, b) {
         return new Cx(this.Db, b);
       }),
-      (Cx.prototype.P = function() {
+      (Cx.prototype.P = function () {
         return this.Df;
       }),
-      (Cx.prototype.xb = function() {
+      (Cx.prototype.xb = function () {
         return !0;
       }),
-      (Cx.prototype.nd = function() {
+      (Cx.prototype.nd = function () {
         return !0;
       }),
-      (Cx.prototype.tb = function() {
+      (Cx.prototype.tb = function () {
         return this.Db;
       }),
-      (Cx.Wc = function() {
+      (Cx.Wc = function () {
         return new T(null, 2, 5, U, [uo, pm], null);
       }),
       (Cx.rc = !0),
       (Cx.Ub =
         "cljs.core.async.impl.ioc-helpers/t_cljs$core$async$impl$ioc_helpers30400"),
-      (Cx.Fc = function(a, b) {
+      (Cx.Fc = function (a, b) {
         return Dc(
           b,
           "cljs.core.async.impl.ioc-helpers/t_cljs$core$async$impl$ioc_helpers30400"
@@ -34163,7 +34167,7 @@ function registerAsciinemaPlayerElement() {
   function Fx(b, a, c) {
     c = c.pe(
       0,
-      Dx(function(c) {
+      Dx(function (c) {
         b[2] = c;
         b[1] = a;
         return Ex(b);
@@ -34175,7 +34179,7 @@ function registerAsciinemaPlayerElement() {
     c = c.Od(
       0,
       d,
-      Dx(function(c) {
+      Dx(function (c) {
         b[2] = c;
         b[1] = a;
         return Ex(b);
@@ -34190,8 +34194,8 @@ function registerAsciinemaPlayerElement() {
         0,
         a,
         Dx(
-          (function() {
-            return function() {
+          (function () {
+            return function () {
               return null;
             };
           })(c)
@@ -34208,7 +34212,7 @@ function registerAsciinemaPlayerElement() {
         e = b[5];
       if (
         u(
-          (function() {
+          (function () {
             var b = e;
             return u(b) ? sb(a) : b;
           })()
@@ -34217,7 +34221,7 @@ function registerAsciinemaPlayerElement() {
         throw e;
       if (
         u(
-          (function() {
+          (function () {
             var a = e;
             return u(a)
               ? ((a = c), u(a) ? F.c(Ek, d) || e instanceof d : a)
@@ -34233,7 +34237,7 @@ function registerAsciinemaPlayerElement() {
       }
       if (
         u(
-          (function() {
+          (function () {
             var b = e;
             return u(b) ? sb(c) && sb(Hk.h(a)) : b;
           })()
@@ -34243,7 +34247,7 @@ function registerAsciinemaPlayerElement() {
       else {
         if (
           u(
-            (function() {
+            (function () {
               var b = e;
               return u(b) ? ((b = sb(c)) ? Hk.h(a) : b) : b;
             })()
@@ -34255,7 +34259,7 @@ function registerAsciinemaPlayerElement() {
         }
         if (
           u(
-            (function() {
+            (function () {
               var b = sb(e);
               return b ? Hk.h(a) : b;
             })()
@@ -34281,11 +34285,11 @@ function registerAsciinemaPlayerElement() {
     this.m = 2155872256;
     this.J = 0;
   }
-  Jx.prototype.S = function() {
+  Jx.prototype.S = function () {
     var b = this.key;
     return Ob(Ob(qd, this.I), b);
   };
-  Jx.prototype.R = function(b, a, c) {
+  Jx.prototype.R = function (b, a, c) {
     return Y(a, Ji, "[", " ", "]", c, this);
   };
   function Kx(b, a, c) {
@@ -34315,7 +34319,7 @@ function registerAsciinemaPlayerElement() {
     this.m = 2155872256;
     this.J = 0;
   }
-  Mx.prototype.put = function(b, a) {
+  Mx.prototype.put = function (b, a) {
     var c = Array(15),
       d = Lx(this.header, b, this.level, c).forward[0];
     if (null != d && d.key === b) return (d.I = a);
@@ -34333,7 +34337,7 @@ function registerAsciinemaPlayerElement() {
         ? ((c = c[0].forward), (d.forward[0] = c[0]), (c[0] = d))
         : null;
   };
-  Mx.prototype.remove = function(b) {
+  Mx.prototype.remove = function (b) {
     var a = Array(15),
       c = Lx(this.header, b, this.level, a).forward[0];
     if (null != c && c.key === b) {
@@ -34364,13 +34368,13 @@ function registerAsciinemaPlayerElement() {
       null != e ? (--d, (c = e)) : --d;
     }
   }
-  Mx.prototype.S = function() {
-    return (function(b) {
+  Mx.prototype.S = function () {
+    return (function (b) {
       return function c(d) {
         return new df(
           null,
-          (function() {
-            return function() {
+          (function () {
+            return function () {
               return null == d
                 ? null
                 : Vd(new T(null, 2, 5, U, [d.key, d.I], null), c(d.forward[0]));
@@ -34382,11 +34386,11 @@ function registerAsciinemaPlayerElement() {
       };
     })(this)(this.header.forward[0]);
   };
-  Mx.prototype.R = function(b, a, c) {
+  Mx.prototype.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -34406,8 +34410,8 @@ function registerAsciinemaPlayerElement() {
     var e = Bx(null, null);
     Ox.put(a, e);
     sx(
-      (function(a, b, c) {
-        return function() {
+      (function (a, b, c) {
+        return function () {
           Ox.remove(c);
           return $w(a);
         };
@@ -34426,40 +34430,40 @@ function registerAsciinemaPlayerElement() {
     var c = F.c(b, 0) ? null : b;
     return Bx("number" === typeof c ? new jx(ix(c), c) : c, a);
   }
-  var Tx = (function(b) {
+  var Tx = (function (b) {
     "undefined" === typeof Vw &&
-      ((Vw = function(a, b, d) {
+      ((Vw = function (a, b, d) {
         this.Db = a;
         this.Ke = b;
         this.Ef = d;
         this.m = 393216;
         this.J = 0;
       }),
-      (Vw.prototype.T = function(a, b) {
+      (Vw.prototype.T = function (a, b) {
         return new Vw(this.Db, this.Ke, b);
       }),
-      (Vw.prototype.P = function() {
+      (Vw.prototype.P = function () {
         return this.Ef;
       }),
-      (Vw.prototype.xb = function() {
+      (Vw.prototype.xb = function () {
         return !0;
       }),
-      (Vw.prototype.nd = function() {
+      (Vw.prototype.nd = function () {
         return this.Ke;
       }),
-      (Vw.prototype.tb = function() {
+      (Vw.prototype.tb = function () {
         return this.Db;
       }),
-      (Vw.Wc = function() {
+      (Vw.Wc = function () {
         return new T(null, 3, 5, U, [uo, dk, fo], null);
       }),
       (Vw.rc = !0),
       (Vw.Ub = "cljs.core.async/t_cljs$core$async30534"),
-      (Vw.Fc = function(a, b) {
+      (Vw.Fc = function (a, b) {
         return Dc(b, "cljs.core.async/t_cljs$core$async30534");
       }));
     return new Vw(b, !0, yf);
-  })(function() {
+  })(function () {
     return null;
   });
   function Ux(b, a) {
@@ -34481,47 +34485,47 @@ function registerAsciinemaPlayerElement() {
   function Wx() {
     var b = Yf.h(!0);
     "undefined" === typeof Ww &&
-      ((Ww = function(a, b) {
+      ((Ww = function (a, b) {
         this.Ic = a;
         this.Ff = b;
         this.m = 393216;
         this.J = 0;
       }),
-      (Ww.prototype.T = (function() {
-        return function(a, b) {
+      (Ww.prototype.T = (function () {
+        return function (a, b) {
           return new Ww(this.Ic, b);
         };
       })(b)),
-      (Ww.prototype.P = (function() {
-        return function() {
+      (Ww.prototype.P = (function () {
+        return function () {
           return this.Ff;
         };
       })(b)),
-      (Ww.prototype.xb = (function() {
-        return function() {
+      (Ww.prototype.xb = (function () {
+        return function () {
           return B(this.Ic);
         };
       })(b)),
-      (Ww.prototype.nd = (function() {
-        return function() {
+      (Ww.prototype.nd = (function () {
+        return function () {
           return !0;
         };
       })(b)),
-      (Ww.prototype.tb = (function() {
-        return function() {
+      (Ww.prototype.tb = (function () {
+        return function () {
           $f(this.Ic, null);
           return !0;
         };
       })(b)),
-      (Ww.Wc = (function() {
-        return function() {
+      (Ww.Wc = (function () {
+        return function () {
           return new T(null, 2, 5, U, [cm, Kl], null);
         };
       })(b)),
       (Ww.rc = !0),
       (Ww.Ub = "cljs.core.async/t_cljs$core$async30556"),
-      (Ww.Fc = (function() {
-        return function(a, b) {
+      (Ww.Fc = (function () {
+        return function (a, b) {
           return Dc(b, "cljs.core.async/t_cljs$core$async30556");
         };
       })(b)));
@@ -34529,35 +34533,35 @@ function registerAsciinemaPlayerElement() {
   }
   function Xx(b, a) {
     "undefined" === typeof Xw &&
-      ((Xw = function(a, b, e) {
+      ((Xw = function (a, b, e) {
         this.Ic = a;
         this.ed = b;
         this.Gf = e;
         this.m = 393216;
         this.J = 0;
       }),
-      (Xw.prototype.T = function(a, b) {
+      (Xw.prototype.T = function (a, b) {
         return new Xw(this.Ic, this.ed, b);
       }),
-      (Xw.prototype.P = function() {
+      (Xw.prototype.P = function () {
         return this.Gf;
       }),
-      (Xw.prototype.xb = function() {
+      (Xw.prototype.xb = function () {
         return ax(this.Ic);
       }),
-      (Xw.prototype.nd = function() {
+      (Xw.prototype.nd = function () {
         return !0;
       }),
-      (Xw.prototype.tb = function() {
+      (Xw.prototype.tb = function () {
         bx(this.Ic);
         return this.ed;
       }),
-      (Xw.Wc = function() {
+      (Xw.Wc = function () {
         return new T(null, 3, 5, U, [cm, Ik, Lm], null);
       }),
       (Xw.rc = !0),
       (Xw.Ub = "cljs.core.async/t_cljs$core$async30559"),
-      (Xw.Fc = function(a, b) {
+      (Xw.Fc = function (a, b) {
         return Dc(b, "cljs.core.async/t_cljs$core$async30559");
       }));
     return new Xw(b, a, yf);
@@ -34567,22 +34571,22 @@ function registerAsciinemaPlayerElement() {
       e = G(a),
       f = Vx(e),
       h = Hm.h(c),
-      k = (function() {
+      k = (function () {
         for (var c = 0; ; )
           if (c < e) {
             var k = u(h) ? c : f[c],
               m = Nd(a, k),
               t = se(m) ? (m.h ? m.h(0) : m.call(null, 0)) : null,
               x = u(t)
-                ? (function() {
+                ? (function () {
                     var a = m.h ? m.h(1) : m.call(null, 1);
                     return Zw(
                       t,
                       a,
                       Xx(
                         d,
-                        (function(a, c, d, e, f) {
-                          return function(a) {
+                        (function (a, c, d, e, f) {
+                          return function (a) {
                             a = new T(null, 2, 5, U, [a, f], null);
                             return b.h ? b.h(a) : b.call(null, a);
                           };
@@ -34594,8 +34598,8 @@ function registerAsciinemaPlayerElement() {
                     m,
                     Xx(
                       d,
-                      (function(a, c, d) {
-                        return function(a) {
+                      (function (a, c, d) {
+                        return function (a) {
                           a = new T(null, 2, 5, U, [a, d], null);
                           return b.h ? b.h(a) : b.call(null, a);
                         };
@@ -34611,10 +34615,10 @@ function registerAsciinemaPlayerElement() {
                   U,
                   [
                     B(x),
-                    (function() {
+                    (function () {
                       var a = t;
                       return u(a) ? a : m;
-                    })()
+                    })(),
                   ],
                   null
                 )
@@ -34625,7 +34629,7 @@ function registerAsciinemaPlayerElement() {
     return u(k)
       ? k
       : Be(c, Ek) &&
-        ((k = (function() {
+        ((k = (function () {
           var a = ax(d);
           return u(a) ? bx(d) : a;
         })()),
@@ -34636,11 +34640,11 @@ function registerAsciinemaPlayerElement() {
   function Zx(b, a) {
     var c = Qx(1);
     rx(
-      (function(c) {
-        return function() {
-          var d = (function() {
-              return (function(a) {
-                return (function() {
+      (function (c) {
+        return function () {
+          var d = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -34665,7 +34669,7 @@ function registerAsciinemaPlayerElement() {
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -34679,8 +34683,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function() {
-                  return function(c) {
+                (function () {
+                  return function (c) {
                     var d = c[1];
                     return 7 === d
                       ? ((c[2] = c[2]), (c[1] = 3), Z)
@@ -34717,7 +34721,7 @@ function registerAsciinemaPlayerElement() {
                 c
               );
             })(),
-            f = (function() {
+            f = (function () {
               var a = d.B ? d.B() : d.call(null);
               a[6] = c;
               return a;
@@ -34742,8 +34746,8 @@ function registerAsciinemaPlayerElement() {
     var e = null != d && (d.m & 64 || q === d.G) ? S(V, d) : d;
     b[1] = a;
     a = Yx(
-      (function() {
-        return function(a) {
+      (function () {
+        return function (a) {
           b[2] = a;
           return Ex(b);
         };
@@ -34779,17 +34783,17 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = fy.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return C.l(this.j, a, c);
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -34800,22 +34804,22 @@ function registerAsciinemaPlayerElement() {
       P.c(be, this.j)
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(0, this, 0, be, u(this.j) ? Yc(this.j) : wf());
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 0 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 1082393681 ^ wd(a);
         };
       })(
@@ -34825,24 +34829,24 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return null != a && this.constructor === a.constructor && F.c(this.j, a.j);
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(pi, a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new fy(this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return new fy(this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(P.c(be, this.j));
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new fy(a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function gy(b, a, c) {
@@ -34853,17 +34857,17 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = gy.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return C.l(this.j, a, c);
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -34874,22 +34878,22 @@ function registerAsciinemaPlayerElement() {
       P.c(be, this.j)
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(0, this, 0, be, u(this.j) ? Yc(this.j) : wf());
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 0 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -1020675721 ^ wd(a);
         };
       })(
@@ -34899,24 +34903,24 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return null != a && this.constructor === a.constructor && F.c(this.j, a.j);
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(pi, a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new gy(this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return new gy(this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(P.c(be, this.j));
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new gy(a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function hy(b, a, c, d) {
@@ -34928,10 +34932,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = hy.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "position":
         return this.position;
@@ -34939,11 +34943,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -34964,7 +34968,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -34973,19 +34977,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -2136325183 ^ wd(a);
         };
       })(
@@ -34995,7 +34999,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -35003,17 +35007,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [ln, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new hy(this.position, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(ln, a) : O.call(null, ln, a))
       ? new hy(c, this.o, this.j, null)
       : new hy(this.position, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -35028,10 +35032,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new hy(this.position, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function iy(b) {
@@ -35045,17 +35049,17 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = jy.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return C.l(this.j, a, c);
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -35066,22 +35070,22 @@ function registerAsciinemaPlayerElement() {
       P.c(be, this.j)
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(0, this, 0, be, u(this.j) ? Yc(this.j) : wf());
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 0 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 1945704126 ^ wd(a);
         };
       })(
@@ -35091,24 +35095,24 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return null != a && this.constructor === a.constructor && F.c(this.j, a.j);
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(pi, a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new jy(this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return new jy(this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(P.c(be, this.j));
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new jy(a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function ky(b, a, c) {
@@ -35119,17 +35123,17 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = ky.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return C.l(this.j, a, c);
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -35140,22 +35144,22 @@ function registerAsciinemaPlayerElement() {
       P.c(be, this.j)
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(0, this, 0, be, u(this.j) ? Yc(this.j) : wf());
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 0 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 2001377313 ^ wd(a);
         };
       })(
@@ -35165,24 +35169,24 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return null != a && this.constructor === a.constructor && F.c(this.j, a.j);
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(pi, a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new ky(this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return new ky(this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(P.c(be, this.j));
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new ky(a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function ly(b, a, c) {
@@ -35193,17 +35197,17 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = ly.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return C.l(this.j, a, c);
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -35214,22 +35218,22 @@ function registerAsciinemaPlayerElement() {
       P.c(be, this.j)
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(0, this, 0, be, u(this.j) ? Yc(this.j) : wf());
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 0 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 1662385780 ^ wd(a);
         };
       })(
@@ -35239,24 +35243,24 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return null != a && this.constructor === a.constructor && F.c(this.j, a.j);
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(pi, a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new ly(this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return new ly(this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(P.c(be, this.j));
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new ly(a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function my(b, a, c, d) {
@@ -35268,10 +35272,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = my.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "show":
         return this.show;
@@ -35279,11 +35283,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -35304,7 +35308,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -35313,19 +35317,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 1380979759 ^ wd(a);
         };
       })(
@@ -35335,7 +35339,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -35343,17 +35347,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [to, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new my(this.show, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(to, a) : O.call(null, to, a))
       ? new my(c, this.o, this.j, null)
       : new my(this.show, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -35368,10 +35372,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new my(this.show, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function ny(b, a, c, d) {
@@ -35383,10 +35387,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = ny.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "show":
         return this.show;
@@ -35394,11 +35398,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -35419,7 +35423,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -35428,19 +35432,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -1875838466 ^ wd(a);
         };
       })(
@@ -35450,7 +35454,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -35458,17 +35462,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [to, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new ny(this.show, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(to, a) : O.call(null, to, a))
       ? new ny(c, this.o, this.j, null)
       : new ny(this.show, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -35483,10 +35487,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new ny(this.show, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function oy(b) {
@@ -35503,10 +35507,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = py.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "width":
         return this.width;
@@ -35518,11 +35522,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -35539,7 +35543,7 @@ function registerAsciinemaPlayerElement() {
           [
             new T(null, 2, 5, U, [cl, this.width], null),
             new T(null, 2, 5, U, [po, this.height], null),
-            new T(null, 2, 5, U, [sl, this.duration], null)
+            new T(null, 2, 5, U, [sl, this.duration], null),
           ],
           null
         ),
@@ -35547,7 +35551,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -35556,19 +35560,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 3 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 2110730596 ^ wd(a);
         };
       })(
@@ -35578,7 +35582,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -35588,7 +35592,7 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(
       new ni(null, new r(null, 3, [cl, null, sl, null, po, null], null), null),
       a
@@ -35603,7 +35607,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(cl, a) : O.call(null, cl, a))
       ? new py(c, this.height, this.duration, this.o, this.j, null)
       : u(O.c ? O.c(po, a) : O.call(null, po, a))
@@ -35619,7 +35623,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -35630,7 +35634,7 @@ function registerAsciinemaPlayerElement() {
           [
             new T(null, 2, 5, U, [cl, this.width], null),
             new T(null, 2, 5, U, [po, this.height], null),
-            new T(null, 2, 5, U, [sl, this.duration], null)
+            new T(null, 2, 5, U, [sl, this.duration], null),
           ],
           null
         ),
@@ -35638,10 +35642,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new py(this.width, this.height, this.duration, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function qy(b, a, c, d) {
@@ -35653,10 +35657,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = qy.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "loading":
         return this.uc;
@@ -35664,11 +35668,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -35682,7 +35686,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -35691,19 +35695,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 1609009220 ^ wd(a);
         };
       })(
@@ -35713,7 +35717,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -35721,17 +35725,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [Gm, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new qy(this.uc, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Gm, a) : O.call(null, Gm, a))
       ? new qy(c, this.o, this.j, null)
       : new qy(this.uc, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(null, 1, 5, U, [new T(null, 2, 5, U, [Gm, this.uc], null)], null),
@@ -35739,10 +35743,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new qy(this.uc, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function ry(b) {
@@ -35757,10 +35761,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = sy.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "playing":
         return this.vc;
@@ -35768,11 +35772,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -35786,7 +35790,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -35795,19 +35799,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -2119286176 ^ wd(a);
         };
       })(
@@ -35817,7 +35821,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -35825,17 +35829,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [gn, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new sy(this.vc, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(gn, a) : O.call(null, gn, a))
       ? new sy(c, this.o, this.j, null)
       : new sy(this.vc, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(null, 1, 5, U, [new T(null, 2, 5, U, [gn, this.vc], null)], null),
@@ -35843,10 +35847,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new sy(this.vc, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function ty(b) {
@@ -35860,17 +35864,17 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = uy.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     return C.l(this.j, a, c);
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -35881,22 +35885,22 @@ function registerAsciinemaPlayerElement() {
       P.c(be, this.j)
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(0, this, 0, be, u(this.j) ? Yc(this.j) : wf());
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 0 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -1080034109 ^ wd(a);
         };
       })(
@@ -35906,24 +35910,24 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return null != a && this.constructor === a.constructor && F.c(this.j, a.j);
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(pi, a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new uy(this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return new uy(this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(P.c(be, this.j));
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new uy(a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function vy(b, a, c, d) {
@@ -35935,10 +35939,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = vy.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "screen":
         return this.screen;
@@ -35946,11 +35950,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -35971,7 +35975,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -35980,19 +35984,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return -1861248332 ^ wd(a);
         };
       })(
@@ -36002,7 +36006,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -36010,17 +36014,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [X, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new vy(this.screen, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(X, a) : O.call(null, X, a))
       ? new vy(c, this.o, this.j, null)
       : new vy(this.screen, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -36035,10 +36039,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new vy(this.screen, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function wy(b) {
@@ -36053,10 +36057,10 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = xy.prototype;
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "time":
         return this.time;
@@ -36064,11 +36068,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -36089,7 +36093,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -36098,19 +36102,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 1 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 463038319 ^ wd(a);
         };
       })(
@@ -36120,7 +36124,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -36128,17 +36132,17 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(new ni(null, new r(null, 1, [Vk, null], null), null), a)
       ? L.c(nc(qg.c(yf, this), this.o), a)
       : new xy(this.time, this.o, vf(L.c(this.j, a)), null);
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Vk, a) : O.call(null, Vk, a))
       ? new xy(c, this.o, this.j, null)
       : new xy(this.time, this.o, K.l(this.j, a, c), null);
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -36153,10 +36157,10 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new xy(this.time, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
   function yy(b) {
@@ -36219,7 +36223,7 @@ function registerAsciinemaPlayerElement() {
       throw wb("Source.change-speed", a);
     };
   if ("undefined" === typeof qj)
-    var qj = (function() {
+    var qj = (function () {
       var b = Yf.h(yf),
         a = Yf.h(yf),
         c = Yf.h(yf),
@@ -36227,8 +36231,8 @@ function registerAsciinemaPlayerElement() {
         e = C.l(yf, Pn, cj());
       return new nj(
         nd.c("asciinema.player.source", "make-source"),
-        (function() {
-          return function(a, b) {
+        (function () {
+          return function (a, b) {
             var c = null != b && (b.m & 64 || q === b.G) ? S(V, b) : b,
               c = C.c(c, nl);
             return u(c) ? c : ik;
@@ -36244,8 +36248,8 @@ function registerAsciinemaPlayerElement() {
     })();
   function Gy() {
     return cg.c(
-      (function(b) {
-        return function(a) {
+      (function (b) {
+        return function (a) {
           a *= b;
           return new T(null, 2, 5, U, [a, a], null);
         };
@@ -36259,11 +36263,11 @@ function registerAsciinemaPlayerElement() {
       d = Yf.h(null),
       e = Qx(1);
     rx(
-      (function(a, c, d, e) {
-        return function() {
-          var f = (function() {
-              return (function(a) {
-                return (function() {
+      (function (a, c, d, e) {
+        return function () {
+          var f = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -36288,7 +36292,7 @@ function registerAsciinemaPlayerElement() {
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -36302,15 +36306,15 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function(a, c, d, e) {
-                  return function(f) {
+                (function (a, c, d, e) {
+                  return function (f) {
                     var h = f[1];
                     if (1 === h) return Fx(f, 2, c);
                     if (2 === h) {
                       var k = f[2],
-                        m = (function() {
-                          return (function(a, b, c, d, e, f) {
-                            return function(a) {
+                        m = (function () {
+                          return (function (a, b, c, d, e, f) {
+                            return function (a) {
                               $f(f, a);
                               return $w(e);
                             };
@@ -36329,7 +36333,7 @@ function registerAsciinemaPlayerElement() {
                 e
               );
             })(),
-            h = (function() {
+            h = (function () {
               var b = f.B ? f.B() : f.call(null);
               b[6] = a;
               return b;
@@ -36338,17 +36342,17 @@ function registerAsciinemaPlayerElement() {
         };
       })(e, a, c, d)
     );
-    return (function(a, b, c) {
-      return function(d) {
+    return (function (a, b, c) {
+      return function (d) {
         u(d) && $w(a);
         d = Qx(null);
         var e = Qx(1);
         rx(
-          (function(a, b, c, d, e) {
-            return function() {
-              var f = (function() {
-                  return (function(a) {
-                    return (function() {
+          (function (a, b, c, d, e) {
+            return function () {
+              var f = (function () {
+                  return (function (a) {
+                    return (function () {
                       function b(b) {
                         for (;;) {
                           a: try {
@@ -36376,14 +36380,14 @@ function registerAsciinemaPlayerElement() {
                           null,
                           null,
                           null,
-                          null
+                          null,
                         ];
                         a[0] = d;
                         a[1] = 1;
                         return a;
                       }
                       var d = null,
-                        d = function(a) {
+                        d = function (a) {
                           switch (arguments.length) {
                             case 0:
                               return c.call(this);
@@ -36399,8 +36403,8 @@ function registerAsciinemaPlayerElement() {
                       return d;
                     })();
                   })(
-                    (function(a, b, c, d, e) {
-                      return function(a) {
+                    (function (a, b, c, d, e) {
+                      return function (a) {
                         var c = a[1];
                         if (1 === c) return Fx(a, 2, d);
                         if (2 === c) {
@@ -36419,7 +36423,7 @@ function registerAsciinemaPlayerElement() {
                     e
                   );
                 })(),
-                h = (function() {
+                h = (function () {
                   var b = f.B ? f.B() : f.call(null);
                   b[6] = a;
                   return b;
@@ -36433,12 +36437,12 @@ function registerAsciinemaPlayerElement() {
     })(a, c, d);
   }
   function Iy(b, a, c, d) {
-    return Hy(function(e) {
+    return Hy(function (e) {
       if ("string" === typeof b)
         return Lw(
           b,
-          (function() {
-            return function(b) {
+          (function () {
+            return function (b) {
               b = b.target;
               try {
                 var f = b.ca ? b.ca.responseText : "";
@@ -36458,11 +36462,11 @@ function registerAsciinemaPlayerElement() {
     var a = Qx(null),
       c = Qx(1);
     rx(
-      (function(a, c) {
-        return function() {
-          var d = (function() {
-              return (function(a) {
-                return (function() {
+      (function (a, c) {
+        return function () {
+          var d = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -36495,14 +36499,14 @@ function registerAsciinemaPlayerElement() {
                       null,
                       null,
                       null,
-                      null
+                      null,
                     ];
                     a[0] = d;
                     a[1] = 1;
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -36516,8 +36520,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function(a, c) {
-                  return function(a) {
+                (function (a, c) {
+                  return function (a) {
                     var d = a[1];
                     if (7 === d)
                       return (d = a[7]), (d = Px(1e3 * d)), Fx(a, 10, d);
@@ -36598,7 +36602,7 @@ function registerAsciinemaPlayerElement() {
                 c
               );
             })(),
-            e = (function() {
+            e = (function () {
               var b = d.B ? d.B() : d.call(null);
               b[6] = a;
               return b;
@@ -36612,11 +36616,11 @@ function registerAsciinemaPlayerElement() {
   function Ky(b, a, c, d, e, f) {
     var h = Qx(1);
     rx(
-      (function(h) {
-        return function() {
-          var k = (function() {
-              return (function(a) {
-                return (function() {
+      (function (h) {
+        return function () {
+          var k = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -36649,14 +36653,14 @@ function registerAsciinemaPlayerElement() {
                       null,
                       null,
                       null,
-                      null
+                      null,
                     ];
                     a[0] = d;
                     a[1] = 1;
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -36670,8 +36674,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function() {
-                  return function(h) {
+                (function () {
+                  return function (h) {
                     var k = h[1];
                     if (7 === k) return (h[2] = h[2]), (h[1] = 3), Z;
                     if (1 === k) {
@@ -36750,9 +36754,11 @@ function registerAsciinemaPlayerElement() {
                     if (5 === k) return (k = h[11]), (h[1] = u(k) ? 8 : 9), Z;
                     if (14 === k) return (h[2] = h[2]), (h[1] = 10), Z;
                     if (16 === k)
-                      throw ((k = h[10]),
-                      (h = [v.h("No matching clause: "), v.h(k)].join("")),
-                      Error(h));
+                      throw (
+                        ((k = h[10]),
+                        (h = [v.h("No matching clause: "), v.h(k)].join("")),
+                        Error(h))
+                      );
                     return 10 === k
                       ? ((h[2] = h[2]), (h[1] = 7), Z)
                       : 8 === k
@@ -36763,7 +36769,7 @@ function registerAsciinemaPlayerElement() {
                 h
               );
             })(),
-            n = (function() {
+            n = (function () {
               var a = k.B ? k.B() : k.call(null);
               a[6] = h;
               return a;
@@ -36777,11 +36783,11 @@ function registerAsciinemaPlayerElement() {
   function Ly(b, a, c, d, e, f, h) {
     var k = Qx(1);
     rx(
-      (function(k) {
-        return function() {
-          var l = (function() {
-              return (function(a) {
-                return (function() {
+      (function (k) {
+        return function () {
+          var l = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -36813,14 +36819,14 @@ function registerAsciinemaPlayerElement() {
                       null,
                       null,
                       null,
-                      null
+                      null,
                     ];
                     a[0] = d;
                     a[1] = 1;
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -36834,8 +36840,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function() {
-                  return function(k) {
+                (function () {
+                  return function (k) {
                     var m = k[1];
                     if (7 === m) return (m = k[7]), (k[2] = m), (k[1] = 9), Z;
                     if (1 === m) return Gx(k, 2, b, ty(!0));
@@ -36872,7 +36878,7 @@ function registerAsciinemaPlayerElement() {
                 k
               );
             })(),
-            m = (function() {
+            m = (function () {
               var a = l.B ? l.B() : l.call(null);
               a[6] = k;
               return a;
@@ -36892,11 +36898,11 @@ function registerAsciinemaPlayerElement() {
       l = Qx(10),
       n = Qx(1);
     rx(
-      (function(b, d, e, f, h, k, l, n) {
-        return function() {
-          var m = (function() {
-              return (function(a) {
-                return (function() {
+      (function (b, d, e, f, h, k, l, n) {
+        return function () {
+          var m = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -36940,14 +36946,14 @@ function registerAsciinemaPlayerElement() {
                       null,
                       null,
                       null,
-                      null
+                      null,
                     ];
                     a[0] = d;
                     a[1] = 1;
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -36961,8 +36967,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function(b, d, e, f, h, k, m, l) {
-                  return function(b) {
+                (function (b, d, e, f, h, k, m, l) {
+                  return function (b) {
                     var e,
                       f,
                       n,
@@ -37602,7 +37608,7 @@ function registerAsciinemaPlayerElement() {
                 n
               );
             })(),
-            t = (function() {
+            t = (function () {
               var a = m.B ? m.B() : m.call(null);
               a[6] = b;
               return a;
@@ -37616,10 +37622,10 @@ function registerAsciinemaPlayerElement() {
   function Ny(b) {
     var a = window.requestIdleCallback;
     return u(a)
-      ? ((b = (function(a, b) {
+      ? ((b = (function (a, b) {
           return function f(c) {
-            return (function(a) {
-              return function() {
+            return (function (a) {
+              return function () {
                 if (D(c)) {
                   var b = f(pd(c));
                   return a.h ? a.h(b) : a.call(null, b);
@@ -37644,11 +37650,11 @@ function registerAsciinemaPlayerElement() {
       k = C.c(c, Mm),
       l = Qx(1);
     rx(
-      (function(b, c, d, e, f, h, k, l, M) {
-        return function() {
-          var m = (function() {
-              return (function(a) {
-                return (function() {
+      (function (b, c, d, e, f, h, k, l, M) {
+        return function () {
+          var m = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -37684,14 +37690,14 @@ function registerAsciinemaPlayerElement() {
                       null,
                       null,
                       null,
-                      null
+                      null,
                     ];
                     a[0] = d;
                     a[1] = 1;
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -37705,8 +37711,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function(b, c, d, e, f, h, k, m, l) {
-                  return function(b) {
+                (function (b, c, d, e, f, h, k, m, l) {
+                  return function (b) {
                     var c = b[1];
                     if (7 === c)
                       return (
@@ -37784,9 +37790,11 @@ function registerAsciinemaPlayerElement() {
                       );
                     if (16 === c) return (b[2] = null), (b[1] = 17), Z;
                     if (10 === c)
-                      throw ((c = b[7]),
-                      (b = [v.h("No matching clause: "), v.h(c)].join("")),
-                      Error(b));
+                      throw (
+                        ((c = b[7]),
+                        (b = [v.h("No matching clause: "), v.h(c)].join("")),
+                        Error(b))
+                      );
                     return 8 === c
                       ? ((d = b[2]), (b[9] = d), (b[1] = u(l) ? 15 : 16), Z)
                       : null;
@@ -37803,7 +37811,7 @@ function registerAsciinemaPlayerElement() {
                 M
               );
             })(),
-            n = (function() {
+            n = (function () {
               var a = m.B ? m.B() : m.call(null);
               a[6] = b;
               return a;
@@ -37830,38 +37838,38 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = Py.prototype;
-  g.Dd = function() {
+  g.Dd = function () {
     var b = Qx(null);
     Oy(this, b);
     u(this.Y) && this.bc(null);
     return b;
   };
-  g.Cd = function() {
+  g.Cd = function () {
     Ux(this.Fa, new T(null, 1, 5, U, [vm], null));
     return Ux(this.Fa, new T(null, 1, 5, U, [lk], null));
   };
-  g.bc = function() {
+  g.bc = function () {
     $w(this.ab);
     return Ux(this.Fa, new T(null, 1, 5, U, [dl], null));
   };
-  g.xc = function() {
+  g.xc = function () {
     return Ux(this.Fa, new T(null, 1, 5, U, [vm], null));
   };
-  g.Fd = function() {
+  g.Fd = function () {
     $w(this.ab);
     return Ux(this.Fa, new T(null, 1, 5, U, [Ll], null));
   };
-  g.Ed = function(b, a) {
+  g.Ed = function (b, a) {
     $w(this.ab);
     return Ux(this.Fa, new T(null, 2, 5, U, [Jn, a], null));
   };
-  g.Bd = function(b, a) {
+  g.Bd = function (b, a) {
     return Ux(this.Fa, new T(null, 2, 5, U, [jm, a], null));
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "recording-ch-fn":
         return this.pb;
@@ -37885,11 +37893,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -37912,7 +37920,7 @@ function registerAsciinemaPlayerElement() {
             new T(null, 2, 5, U, [Im, this.Y], null),
             new T(null, 2, 5, U, [bn, this.lb], null),
             new T(null, 2, 5, U, [Mj, this.ob], null),
-            new T(null, 2, 5, U, [Mm, this.nb], null)
+            new T(null, 2, 5, U, [Mm, this.nb], null),
           ],
           null
         ),
@@ -37920,7 +37928,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -37929,19 +37937,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 9 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 1201370539 ^ wd(a);
         };
       })(
@@ -37951,7 +37959,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -37967,7 +37975,7 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(
       new ni(
         null,
@@ -37992,7 +38000,7 @@ function registerAsciinemaPlayerElement() {
             Mm,
             null,
             bn,
-            null
+            null,
           ],
           null
         ),
@@ -38016,7 +38024,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(Zk, a) : O.call(null, Zk, a))
       ? new Py(
           c,
@@ -38167,7 +38175,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -38184,7 +38192,7 @@ function registerAsciinemaPlayerElement() {
             new T(null, 2, 5, U, [Im, this.Y], null),
             new T(null, 2, 5, U, [bn, this.lb], null),
             new T(null, 2, 5, U, [Mj, this.ob], null),
-            new T(null, 2, 5, U, [Mm, this.nb], null)
+            new T(null, 2, 5, U, [Mm, this.nb], null),
           ],
           null
         ),
@@ -38192,7 +38200,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Py(
       this.pb,
       this.Fa,
@@ -38208,10 +38216,10 @@ function registerAsciinemaPlayerElement() {
       this.w
     );
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
-  pj(ik, function(b, a) {
+  pj(ik, function (b, a) {
     var c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
       d = C.c(c, cl),
       e = C.c(c, po),
@@ -38231,11 +38239,11 @@ function registerAsciinemaPlayerElement() {
     var d = Qx(null),
       e = Qx(1);
     rx(
-      (function(d, e) {
-        return function() {
-          var f = (function() {
-              return (function(a) {
-                return (function() {
+      (function (d, e) {
+        return function () {
+          var f = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -38265,14 +38273,14 @@ function registerAsciinemaPlayerElement() {
                       null,
                       null,
                       null,
-                      null
+                      null,
                     ];
                     a[0] = d;
                     a[1] = 1;
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -38286,8 +38294,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function(d, e) {
-                  return function(d) {
+                (function (d, e) {
+                  return function (d) {
                     var f = d[1];
                     if (1 === f)
                       return (
@@ -38324,7 +38332,7 @@ function registerAsciinemaPlayerElement() {
                 e
               );
             })(),
-            h = (function() {
+            h = (function () {
               var a = f.B ? f.B() : f.call(null);
               a[6] = d;
               return a;
@@ -38338,11 +38346,11 @@ function registerAsciinemaPlayerElement() {
   function Ry(b, a, c, d) {
     var e = Qx(1);
     rx(
-      (function(e) {
-        return function() {
-          var f = (function() {
-              return (function(a) {
-                return (function() {
+      (function (e) {
+        return function () {
+          var f = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -38372,14 +38380,14 @@ function registerAsciinemaPlayerElement() {
                       null,
                       null,
                       null,
-                      null
+                      null,
                     ];
                     a[0] = d;
                     a[1] = 1;
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -38393,8 +38401,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function() {
-                  return function(e) {
+                (function () {
+                  return function (e) {
                     var f = e[1];
                     if (7 === f)
                       return Gx(
@@ -38435,7 +38443,7 @@ function registerAsciinemaPlayerElement() {
                 e
               );
             })(),
-            k = (function() {
+            k = (function () {
               var a = f.B ? f.B() : f.call(null);
               a[6] = e;
               return a;
@@ -38461,37 +38469,37 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = Sy.prototype;
-  g.Dd = function() {
+  g.Dd = function () {
     $f(this.ia, Qx(null));
     $f(this.rb, Qy(this.width, this.height, B(this.ia)));
     u(this.Y) && this.bc(null);
     return B(this.ia);
   };
-  g.Cd = function() {
+  g.Cd = function () {
     return this.xc(null);
   };
-  g.bc = function() {
+  g.bc = function () {
     if (u(B(this.Ma))) return null;
     var b = Qx(null);
     $f(this.Ma, b);
     return Ry(B(this.ia), B(this.rb), this.speed, b);
   };
-  g.xc = function() {
+  g.xc = function () {
     return u(B(this.Ma)) ? ($w(B(this.Ma)), $f(this.Ma, null)) : null;
   };
-  g.Fd = function() {
+  g.Fd = function () {
     return u(B(this.Ma)) ? this.xc(null) : this.bc(null);
   };
-  g.Ed = function() {
+  g.Ed = function () {
     return null;
   };
-  g.Bd = function() {
+  g.Bd = function () {
     return null;
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "speed":
         return this.speed;
@@ -38511,11 +38519,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -38536,7 +38544,7 @@ function registerAsciinemaPlayerElement() {
             new T(null, 2, 5, U, [po, this.height], null),
             new T(null, 2, 5, U, [zl, this.ia], null),
             new T(null, 2, 5, U, [pn, this.rb], null),
-            new T(null, 2, 5, U, [Xl, this.Ma], null)
+            new T(null, 2, 5, U, [Xl, this.Ma], null),
           ],
           null
         ),
@@ -38544,7 +38552,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -38553,19 +38561,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 7 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 1937333797 ^ wd(a);
         };
       })(
@@ -38575,7 +38583,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -38589,7 +38597,7 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(
       new ni(
         null,
@@ -38610,7 +38618,7 @@ function registerAsciinemaPlayerElement() {
             pn,
             null,
             po,
-            null
+            null,
           ],
           null
         ),
@@ -38632,7 +38640,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(wk, a) : O.call(null, wk, a))
       ? new Sy(
           c,
@@ -38737,7 +38745,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -38752,7 +38760,7 @@ function registerAsciinemaPlayerElement() {
             new T(null, 2, 5, U, [po, this.height], null),
             new T(null, 2, 5, U, [zl, this.ia], null),
             new T(null, 2, 5, U, [pn, this.rb], null),
-            new T(null, 2, 5, U, [Xl, this.Ma], null)
+            new T(null, 2, 5, U, [Xl, this.Ma], null),
           ],
           null
         ),
@@ -38760,7 +38768,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Sy(
       this.speed,
       this.Y,
@@ -38774,10 +38782,10 @@ function registerAsciinemaPlayerElement() {
       this.w
     );
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
-  pj(kn, function(b, a) {
+  pj(kn, function (b, a) {
     var c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a;
     C.c(c, Zm);
     var d = C.c(c, cl),
@@ -38795,11 +38803,11 @@ function registerAsciinemaPlayerElement() {
   function Uy(b, a) {
     var c = Qx(1);
     rx(
-      (function(c) {
-        return function() {
-          var d = (function() {
-              return (function(a) {
-                return (function() {
+      (function (c) {
+        return function () {
+          var d = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -38831,14 +38839,14 @@ function registerAsciinemaPlayerElement() {
                       null,
                       null,
                       null,
-                      null
+                      null,
                     ];
                     a[0] = d;
                     a[1] = 1;
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -38852,8 +38860,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function() {
-                  return function(c) {
+                (function () {
+                  return function (c) {
                     var d = c[1];
                     if (7 === d) return (c[2] = !1), (c[1] = 8), Z;
                     if (20 === d) return (c[2] = !1), (c[1] = 21), Z;
@@ -38936,7 +38944,7 @@ function registerAsciinemaPlayerElement() {
                 c
               );
             })(),
-            f = (function() {
+            f = (function () {
               var a = d.B ? d.B() : d.call(null);
               a[6] = c;
               return a;
@@ -38950,8 +38958,8 @@ function registerAsciinemaPlayerElement() {
     var c = new EventSource(b),
       d = Yf.h(null);
     Ux(a, ry(!0));
-    c.onopen = (function(b, c) {
-      return function() {
+    c.onopen = (function (b, c) {
+      return function () {
         var b = Sx(1e4, cg.h(Ty));
         $f(c, b);
         Uy(b, a);
@@ -38959,15 +38967,15 @@ function registerAsciinemaPlayerElement() {
         return Ux(a, ry(!1));
       };
     })(c, d);
-    c.onerror = (function(b, c) {
-      return function() {
+    c.onerror = (function (b, c) {
+      return function () {
         $w(B(c));
         $f(c, null);
         return Ux(a, ry(!0));
       };
     })(c, d);
-    return (c.onmessage = (function(a, b) {
-      return function(a) {
+    return (c.onmessage = (function (a, b) {
+      return function (a) {
         var c = B(b);
         return u(c) ? Ux(c, a.data) : null;
       };
@@ -38985,34 +38993,34 @@ function registerAsciinemaPlayerElement() {
     this.J = 139264;
   }
   g = Wy.prototype;
-  g.Dd = function() {
+  g.Dd = function () {
     $f(this.ia, Qx(null));
     return u(this.Y) ? this.bc(null) : null;
   };
-  g.Cd = function() {
+  g.Cd = function () {
     return this.xc(null);
   };
-  g.bc = function() {
+  g.bc = function () {
     if (u(B(this.zb))) return null;
     $f(this.zb, !0);
     return Vy(this.url, B(this.ia));
   };
-  g.xc = function() {
+  g.xc = function () {
     return null;
   };
-  g.Fd = function() {
+  g.Fd = function () {
     return this.bc(null);
   };
-  g.Ed = function() {
+  g.Ed = function () {
     return null;
   };
-  g.Bd = function() {
+  g.Bd = function () {
     return null;
   };
-  g.V = function(b, a) {
+  g.V = function (b, a) {
     return this.H(null, a, null);
   };
-  g.H = function(b, a, c) {
+  g.H = function (b, a, c) {
     switch (a instanceof N ? a.fa : null) {
       case "msg-ch":
         return this.ia;
@@ -39026,11 +39034,11 @@ function registerAsciinemaPlayerElement() {
         return C.l(this.j, a, c);
     }
   };
-  g.R = function(b, a, c) {
+  g.R = function (b, a, c) {
     return Y(
       a,
-      (function() {
-        return function(b) {
+      (function () {
+        return function (b) {
           return Y(a, Ji, "", " ", "", c, b);
         };
       })(this),
@@ -39048,7 +39056,7 @@ function registerAsciinemaPlayerElement() {
             new T(null, 2, 5, U, [zl, this.ia], null),
             new T(null, 2, 5, U, [Zm, this.url], null),
             new T(null, 2, 5, U, [Im, this.Y], null),
-            new T(null, 2, 5, U, [qm, this.zb], null)
+            new T(null, 2, 5, U, [qm, this.zb], null),
           ],
           null
         ),
@@ -39056,7 +39064,7 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.$ = function() {
+  g.$ = function () {
     return new $g(
       0,
       this,
@@ -39065,19 +39073,19 @@ function registerAsciinemaPlayerElement() {
       u(this.j) ? Yc(this.j) : wf()
     );
   };
-  g.P = function() {
+  g.P = function () {
     return this.o;
   };
-  g.W = function() {
+  g.W = function () {
     return 4 + G(this.j);
   };
-  g.U = function() {
+  g.U = function () {
     var b = this,
       a = this.w;
     if (null != a) return a;
-    var c = (function() {
-      return (function() {
-        return function(a) {
+    var c = (function () {
+      return (function () {
+        return function (a) {
           return 187678783 ^ wd(a);
         };
       })(
@@ -39087,7 +39095,7 @@ function registerAsciinemaPlayerElement() {
     })();
     return (this.w = c);
   };
-  g.K = function(b, a) {
+  g.K = function (b, a) {
     return (
       null != a &&
       this.constructor === a.constructor &&
@@ -39098,7 +39106,7 @@ function registerAsciinemaPlayerElement() {
       F.c(this.j, a.j)
     );
   };
-  g.ga = function(b, a) {
+  g.ga = function (b, a) {
     return Be(
       new ni(
         null,
@@ -39118,7 +39126,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.O = function(b, a, c) {
+  g.O = function (b, a, c) {
     return u(O.c ? O.c(zl, a) : O.call(null, zl, a))
       ? new Wy(c, this.url, this.Y, this.zb, this.o, this.j, null)
       : u(O.c ? O.c(Zm, a) : O.call(null, Zm, a))
@@ -39137,7 +39145,7 @@ function registerAsciinemaPlayerElement() {
           null
         );
   };
-  g.S = function() {
+  g.S = function () {
     return D(
       P.c(
         new T(
@@ -39149,7 +39157,7 @@ function registerAsciinemaPlayerElement() {
             new T(null, 2, 5, U, [zl, this.ia], null),
             new T(null, 2, 5, U, [Zm, this.url], null),
             new T(null, 2, 5, U, [Im, this.Y], null),
-            new T(null, 2, 5, U, [qm, this.zb], null)
+            new T(null, 2, 5, U, [qm, this.zb], null),
           ],
           null
         ),
@@ -39157,13 +39165,13 @@ function registerAsciinemaPlayerElement() {
       )
     );
   };
-  g.T = function(b, a) {
+  g.T = function (b, a) {
     return new Wy(this.ia, this.url, this.Y, this.zb, a, this.j, this.w);
   };
-  g.X = function(b, a) {
+  g.X = function (b, a) {
     return se(a) ? this.O(null, A.c(a, 0), A.c(a, 1)) : Gb(Ob, this, a);
   };
-  pj(fm, function(b, a) {
+  pj(fm, function (b, a) {
     var c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
       c = C.c(c, Dm),
       d = Yf.h(null),
@@ -39181,7 +39189,7 @@ function registerAsciinemaPlayerElement() {
         "mozFullScreenElement",
         "webkitFullscreenElement",
         "webkitCurrentFullScreenElement",
-        "msFullscreenElement"
+        "msFullscreenElement",
       ],
       null
     );
@@ -39199,7 +39207,7 @@ function registerAsciinemaPlayerElement() {
               "webkitExitFullscreen",
               "webkitCancelFullScreen",
               "mozCancelFullScreen",
-              "msExitFullscreen"
+              "msExitFullscreen",
             ],
             null
           )
@@ -39215,7 +39223,7 @@ function registerAsciinemaPlayerElement() {
             "webkitRequestFullscreen",
             "webkitRequestFullScreen",
             "mozRequestFullScreen",
-            "msRequestFullscreen"
+            "msRequestFullscreen",
           ],
           null
         )),
@@ -39224,20 +39232,20 @@ function registerAsciinemaPlayerElement() {
     return b;
   }
   r.prototype.yd = q;
-  r.prototype.Ad = function() {
+  r.prototype.Ad = function () {
     return el.h(this);
   };
-  r.prototype.zd = function() {
+  r.prototype.zd = function () {
     return ll.h(this);
   };
   function Yy(b, a) {
-    return function(c) {
+    return function (c) {
       var d = a.h ? a.h(c) : a.call(null, c);
       return u(d) ? (Ux(b, d), c.stopPropagation()) : null;
     };
   }
   function Zy(b, a) {
-    return Yy(b, function() {
+    return Yy(b, function () {
       return a;
     });
   }
@@ -39258,10 +39266,10 @@ function registerAsciinemaPlayerElement() {
       v.h(c),
       v.h(","),
       v.h(b),
-      v.h(")")
+      v.h(")"),
     ].join("");
   }
-  var bz = aj(function(b) {
+  var bz = aj(function (b) {
     b = null != b && (b.m & 64 || q === b.G) ? S(V, b) : b;
     var a = C.c(b, Jk),
       c = C.c(b, ll);
@@ -39289,7 +39297,7 @@ function registerAsciinemaPlayerElement() {
             h,
             u(a) ? "bright" : null,
             u(c) ? "underline" : null,
-            u(d) ? "cursor" : null
+            u(d) ? "cursor" : null,
           ],
           null
         )
@@ -39316,13 +39324,13 @@ function registerAsciinemaPlayerElement() {
           : null,
         u(se.h ? se.h(b) : se.call(null, b))
           ? new r(null, 1, [Xk, az(b)], null)
-          : null
+          : null,
       ])
     );
     return bi.A(
       Wd([
         u(a) ? new r(null, 1, [un, a], null) : null,
-        u(b) ? new r(null, 1, [dm, b], null) : null
+        u(b) ? new r(null, 1, [dm, b], null) : null,
       ])
     );
   });
@@ -39332,8 +39340,8 @@ function registerAsciinemaPlayerElement() {
       d = vg(
         d,
         ll,
-        (function() {
-          return function(b) {
+        (function () {
+          return function (b) {
             return u(b) ? B(a) : b;
           };
         })(b, c, d)
@@ -39380,8 +39388,8 @@ function registerAsciinemaPlayerElement() {
         Km,
         Bi(
           Wf(
-            (function() {
-              return function(a, b) {
+            (function () {
+              return function (a, b) {
                 return ie(
                   new T(null, 3, 5, U, [cz, b, c], null),
                   new r(null, 1, [gk, a], null)
@@ -39390,7 +39398,7 @@ function registerAsciinemaPlayerElement() {
             })(b),
             b
           )
-        )
+        ),
       ],
       null
     );
@@ -39401,15 +39409,15 @@ function registerAsciinemaPlayerElement() {
     null
   );
   function hz(b, a, c, d, e) {
-    var f = iq(function() {
+    var f = iq(function () {
         var a = B(c);
         return u(gz.h ? gz.h(a) : gz.call(null, a))
           ? [v.h("font-"), v.h(a)].join("")
           : null;
       }),
       h = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             var d = B(b),
               e = B(a),
               f = B(c),
@@ -39425,32 +39433,32 @@ function registerAsciinemaPlayerElement() {
                     cl,
                     [v.h(d), v.h("ch")].join(""),
                     po,
-                    [v.h(1.3333333333 * e), v.h("em")].join("")
+                    [v.h(1.3333333333 * e), v.h("em")].join(""),
                   ],
                   null
                 ),
-                f
+                f,
               ])
             );
           };
         })(f)
       ),
       k = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return Qu(B(d));
           };
         })(f, h)
       ),
       l = iq(
-        (function(b, c, d) {
-          return function() {
+        (function (b, c, d) {
+          return function () {
             return rg(
-              (function(a, b, c) {
-                return function(d) {
+              (function (a, b, c) {
+                return function (d) {
                   return iq(
-                    (function(a, b, c) {
-                      return function() {
+                    (function (a, b, c) {
+                      return function () {
                         return C.c(B(c), d);
                       };
                     })(a, b, c)
@@ -39463,35 +39471,35 @@ function registerAsciinemaPlayerElement() {
         })(f, h, k)
       ),
       n = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return Ru(B(d));
           };
         })(f, h, k, l)
       ),
       m = iq(
-        (function(a, b, c, d, e) {
-          return function() {
+        (function (a, b, c, d, e) {
+          return function () {
             return yn.h(B(e));
           };
         })(f, h, k, l, n)
       ),
       t = iq(
-        (function(a, b, c, d, e) {
-          return function() {
+        (function (a, b, c, d, e) {
+          return function () {
             return tj.h(B(e));
           };
         })(f, h, k, l, n, m)
       ),
       x = iq(
-        (function(a, b, c, d, e) {
-          return function() {
+        (function (a, b, c, d, e) {
+          return function () {
             return Nn.h(B(e));
           };
         })(f, h, k, l, n, m, t)
       );
-    return (function(a, b, c, d, f, h, k, m) {
-      return function() {
+    return (function (a, b, c, d, f, h, k, m) {
+      return function () {
         return new T(
           null,
           3,
@@ -39501,11 +39509,11 @@ function registerAsciinemaPlayerElement() {
             Fm,
             new r(null, 2, [un, B(a), dm, B(b)], null),
             Wf(
-              (function(a, b, c, d, f, h, k, m) {
-                return function(l, n) {
+              (function (a, b, c, d, f, h, k, m) {
+                return function (l, n) {
                   var t = iq(
-                    (function(a, b, c, d, e, f, h, k) {
-                      return function() {
+                    (function (a, b, c, d, e, f, h, k) {
+                      return function () {
                         var a = B(k);
                         return u(a) ? ((a = F.c(l, B(h))) ? B(f) : a) : a;
                       };
@@ -39518,7 +39526,7 @@ function registerAsciinemaPlayerElement() {
                 };
               })(a, b, c, d, f, h, k, m),
               B(d)
-            )
+            ),
           ],
           null
         );
@@ -39549,13 +39557,13 @@ function registerAsciinemaPlayerElement() {
               1,
               [
                 zn,
-                '\x3cdefs\x3e \x3cmask id\x3d"small-triangle-mask"\x3e \x3crect width\x3d"100%" height\x3d"100%" fill\x3d"white"/\x3e \x3cpolygon points\x3d"508.01270189221935 433.01270189221935, 208.0127018922194 259.8076211353316, 208.01270189221927 606.217782649107" fill\x3d"black"\x3e\x3c/polygon\x3e \x3c/mask\x3e \x3c/defs\x3e \x3cpolygon points\x3d"808.0127018922194 433.01270189221935, 58.01270189221947 -1.1368683772161603e-13, 58.01270189221913 866.0254037844386" mask\x3d"url(#small-triangle-mask)" fill\x3d"white"\x3e\x3c/polygon\x3e \x3cpolyline points\x3d"481.2177826491071 333.0127018922194, 134.80762113533166 533.0127018922194" stroke\x3d"white" stroke-width\x3d"90"\x3e\x3c/polyline\x3e'
+                '\x3cdefs\x3e \x3cmask id\x3d"small-triangle-mask"\x3e \x3crect width\x3d"100%" height\x3d"100%" fill\x3d"white"/\x3e \x3cpolygon points\x3d"508.01270189221935 433.01270189221935, 208.0127018922194 259.8076211353316, 208.01270189221927 606.217782649107" fill\x3d"black"\x3e\x3c/polygon\x3e \x3c/mask\x3e \x3c/defs\x3e \x3cpolygon points\x3d"808.0127018922194 433.01270189221935, 58.01270189221947 -1.1368683772161603e-13, 58.01270189221913 866.0254037844386" mask\x3d"url(#small-triangle-mask)" fill\x3d"white"\x3e\x3c/polygon\x3e \x3cpolyline points\x3d"481.2177826491071 333.0127018922194, 134.80762113533166 533.0127018922194" stroke\x3d"white" stroke-width\x3d"90"\x3e\x3c/polyline\x3e',
               ],
               null
-            )
+            ),
           ],
           null
-        )
+        ),
       ],
       null
     );
@@ -39576,7 +39584,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [yj, new r(null, 1, [nn, "M1,0 L11,6 L1,12 Z"], null)],
           null
-        )
+        ),
       ],
       null
     );
@@ -39605,7 +39613,7 @@ function registerAsciinemaPlayerElement() {
           U,
           [yj, new r(null, 1, [nn, "M8,0 L11,0 L11,12 L8,12 Z"], null)],
           null
-        )
+        ),
       ],
       null
     );
@@ -39631,7 +39639,7 @@ function registerAsciinemaPlayerElement() {
               1,
               [nn, "M12,0 L7,0 L9,2 L7,4 L8,5 L10,3 L12,5 Z"],
               null
-            )
+            ),
           ],
           null
         ),
@@ -39647,10 +39655,10 @@ function registerAsciinemaPlayerElement() {
               1,
               [nn, "M0,12 L0,7 L2,9 L4,7 L5,8 L3,10 L5,12 Z"],
               null
-            )
+            ),
           ],
           null
-        )
+        ),
       ],
       null
     );
@@ -39676,7 +39684,7 @@ function registerAsciinemaPlayerElement() {
               1,
               [nn, "M7,5 L7,0 L9,2 L11,0 L12,1 L10,3 L12,5 Z"],
               null
-            )
+            ),
           ],
           null
         ),
@@ -39692,17 +39700,17 @@ function registerAsciinemaPlayerElement() {
               1,
               [nn, "M5,7 L0,7 L2,9 L0,11 L1,12 L3,10 L5,12 Z"],
               null
-            )
+            ),
           ],
           null
-        )
+        ),
       ],
       null
     );
   }
   function GA(b, a) {
-    return (function(a) {
-      return function() {
+    return (function (a) {
+      return function () {
         return new T(
           null,
           3,
@@ -39711,7 +39719,7 @@ function registerAsciinemaPlayerElement() {
           [
             $k,
             new r(null, 1, [Ql, a], null),
-            new T(null, 1, 5, U, [u(B(b)) ? DA : CA], null)
+            new T(null, 1, 5, U, [u(B(b)) ? DA : CA], null),
           ],
           null
         );
@@ -39746,7 +39754,7 @@ function registerAsciinemaPlayerElement() {
       a.preventDefault();
       return Xy(a.currentTarget.parentNode.parentNode.parentNode);
     }
-    return function() {
+    return function () {
       return new T(
         null,
         4,
@@ -39756,27 +39764,27 @@ function registerAsciinemaPlayerElement() {
           tn,
           new r(null, 1, [Ql, b], null),
           new T(null, 1, 5, U, [EA], null),
-          new T(null, 1, 5, U, [FA], null)
+          new T(null, 1, 5, U, [FA], null),
         ],
         null
       );
     };
   }
   function LA(b, a) {
-    var c = Yy(a, function(a) {
+    var c = Yy(a, function (a) {
         var b = a.currentTarget.offsetWidth,
           c = a.currentTarget.getBoundingClientRect();
         return iy(Su(a.clientX - c.left, b) / b);
       }),
       d = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return [v.h(100 * B(b)), v.h("%")].join("");
           };
         })(c)
       );
-    return (function(a, b) {
-      return function() {
+    return (function (a, b) {
+      return function () {
         return new T(
           null,
           2,
@@ -39811,16 +39819,16 @@ function registerAsciinemaPlayerElement() {
                           1,
                           [dm, new r(null, 1, [cl, B(b)], null)],
                           null
-                        )
+                        ),
                       ],
                       null
-                    )
+                    ),
                   ],
                   null
-                )
+                ),
               ],
               null
-            )
+            ),
           ],
           null
         );
@@ -39828,8 +39836,8 @@ function registerAsciinemaPlayerElement() {
     })(c, d);
   }
   function MA(b, a, c, d) {
-    return (function(e) {
-      return function() {
+    return (function (e) {
+      return function () {
         return new T(
           null,
           5,
@@ -39840,20 +39848,20 @@ function registerAsciinemaPlayerElement() {
             new T(null, 3, 5, U, [GA, b, d], null),
             new T(null, 3, 5, U, [JA, a, c], null),
             new T(null, 1, 5, U, [KA], null),
-            new T(null, 3, 5, U, [LA, e, d], null)
+            new T(null, 3, 5, U, [LA, e, d], null),
           ],
           null
         );
       };
     })(
-      iq(function() {
+      iq(function () {
         return B(a) / B(c);
       })
     );
   }
   function NA(b) {
-    return (function(a) {
-      return function() {
+    return (function (a) {
+      return function () {
         return new T(
           null,
           3,
@@ -39883,13 +39891,13 @@ function registerAsciinemaPlayerElement() {
                       U,
                       [so, new T(null, 1, 5, U, [BA], null)],
                       null
-                    )
+                    ),
                   ],
                   null
-                )
+                ),
               ],
               null
-            )
+            ),
           ],
           null
         );
@@ -39900,7 +39908,7 @@ function registerAsciinemaPlayerElement() {
     return new T(null, 2, 5, U, [Ak, new T(null, 1, 5, U, [wn], null)], null);
   }
   function PA(b) {
-    return Qf(function(a) {
+    return Qf(function (a) {
       return b[a];
     }, new T(
       null,
@@ -39914,7 +39922,7 @@ function registerAsciinemaPlayerElement() {
   function QA(b) {
     var a = u(PA(b))
       ? null
-      : (function() {
+      : (function () {
           switch (b.key) {
             case " ":
               return new ly(null, null, null);
@@ -40006,11 +40014,11 @@ function registerAsciinemaPlayerElement() {
                       [no, new r(null, 1, [jo, c], null), a],
                       null
                     )
-                  : a
+                  : a,
               ],
               null
             )
-          : null
+          : null,
       ],
       null
     );
@@ -40019,11 +40027,11 @@ function registerAsciinemaPlayerElement() {
     var a = Sx(1, cg.h(oy)),
       c = Qx(1);
     rx(
-      (function(c) {
-        return function() {
-          var d = (function() {
-              return (function(a) {
-                return (function() {
+      (function (c) {
+        return function () {
+          var d = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -40054,14 +40062,14 @@ function registerAsciinemaPlayerElement() {
                       null,
                       null,
                       null,
-                      null
+                      null,
                     ];
                     a[0] = d;
                     a[1] = 1;
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -40075,8 +40083,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function() {
-                  return function(c) {
+                (function () {
+                  return function (c) {
                     var d = c[1];
                     if (7 === d) return (c[7] = c[2]), Gx(c, 12, a, !1);
                     if (1 === d) return (c[2] = null), (c[1] = 2), Z;
@@ -40110,7 +40118,7 @@ function registerAsciinemaPlayerElement() {
                 c
               );
             })(),
-            f = (function() {
+            f = (function () {
               var a = d.B ? d.B() : d.call(null);
               a[6] = c;
               return a;
@@ -40125,11 +40133,11 @@ function registerAsciinemaPlayerElement() {
     var c = Yf.h(a),
       d = Qx(1);
     rx(
-      (function(a, c) {
-        return function() {
-          var d = (function() {
-              return (function(a) {
-                return (function() {
+      (function (a, c) {
+        return function () {
+          var d = (function () {
+              return (function (a) {
+                return (function () {
                   function b(b) {
                     for (;;) {
                       a: try {
@@ -40161,14 +40169,14 @@ function registerAsciinemaPlayerElement() {
                       null,
                       null,
                       null,
-                      null
+                      null,
                     ];
                     a[0] = d;
                     a[1] = 1;
                     return a;
                   }
                   var d = null,
-                    d = function(a) {
+                    d = function (a) {
                       switch (arguments.length) {
                         case 0:
                           return c.call(this);
@@ -40182,8 +40190,8 @@ function registerAsciinemaPlayerElement() {
                   return d;
                 })();
               })(
-                (function(a, c) {
-                  return function(d) {
+                (function (a, c) {
+                  return function (d) {
                     var e = d[1];
                     if (7 === e) {
                       var f = d[7];
@@ -40244,9 +40252,9 @@ function registerAsciinemaPlayerElement() {
                         (m = d[10]),
                         (h = ag.c(
                           b,
-                          (function() {
-                            return (function(a, b) {
-                              return function(a) {
+                          (function () {
+                            return (function (a, b) {
+                              return function (a) {
                                 return cy(b, a);
                               };
                             })(k, f, m, k, f, m, e, a, c);
@@ -40312,7 +40320,7 @@ function registerAsciinemaPlayerElement() {
                 c
               );
             })(),
-            e = (function() {
+            e = (function () {
               var b = d.B ? d.B() : d.call(null);
               b[6] = a;
               return b;
@@ -40328,30 +40336,30 @@ function registerAsciinemaPlayerElement() {
     var d = Yy(a, SA),
       e = Yy(a, TA),
       f = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return Gm.h(B(b));
           };
         })(c, d, e)
       ),
       h = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return bl.h(B(b));
           };
         })(c, d, e, f)
       ),
       k = iq(
-        (function(a, b, c, d, e) {
-          return function() {
+        (function (a, b, c, d, e) {
+          return function () {
             var a = B(d);
             return u(a) ? a : B(e);
           };
         })(c, d, e, f, h)
       ),
       l = iq(
-        (function(a, c, d, e, f, h) {
-          return function() {
+        (function (a, c, d, e, f, h) {
+          return function () {
             var a = Ck.h(B(b));
             a = u(a) ? a : sb(B(h));
             return u(a) ? "hud" : null;
@@ -40359,67 +40367,67 @@ function registerAsciinemaPlayerElement() {
         })(c, d, e, f, h, k)
       ),
       n = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             var a = em.h(B(b));
             return [v.h("asciinema-theme-"), v.h(a)].join("");
           };
         })(c, d, e, f, h, k, l)
       ),
       m = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             var a = cl.h(B(b));
             return u(a) ? a : 80;
           };
         })(c, d, e, f, h, k, l, n)
       ),
       t = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             var a = po.h(B(b));
             return u(a) ? a : 24;
           };
         })(c, d, e, f, h, k, l, n, m)
       ),
       x = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return sk.h(B(b));
           };
         })(c, d, e, f, h, k, l, n, m, t)
       ),
       z = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return X.h(B(b));
           };
         })(c, d, e, f, h, k, l, n, m, t, x)
       ),
       E = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return hl.h(B(b));
           };
         })(c, d, e, f, h, k, l, n, m, t, x, z)
       ),
       H = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return gn.h(B(b));
           };
         })(c, d, e, f, h, k, l, n, m, t, x, z, E)
       ),
       J = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return Oj.h(B(b));
           };
         })(c, d, e, f, h, k, l, n, m, t, x, z, E, H)
       ),
       M = iq(
-        (function() {
-          return function() {
+        (function () {
+          return function () {
             return sl.h(B(b));
           };
         })(c, d, e, f, h, k, l, n, m, t, x, z, E, H, J)
@@ -40430,7 +40438,7 @@ function registerAsciinemaPlayerElement() {
       ab = C.c(W, fi),
       R = C.c(W, gi),
       zb = C.c(W, hi);
-    return (function(
+    return (function (
       b,
       c,
       d,
@@ -40454,7 +40462,7 @@ function registerAsciinemaPlayerElement() {
       oa,
       ab
     ) {
-      return function() {
+      return function () {
         return new T(
           null,
           3,
@@ -40477,10 +40485,10 @@ function registerAsciinemaPlayerElement() {
                   ? new T(null, 5, 5, U, [UA, R, W, oa, ab], null)
                   : null,
                 u(B(h)) ? null : new T(null, 2, 5, U, [NA, a], null),
-                u(B(e)) ? new T(null, 1, 5, U, [OA], null) : null
+                u(B(e)) ? new T(null, 1, 5, U, [OA], null) : null,
               ],
               null
-            )
+            ),
           ],
           null
         );
@@ -40490,8 +40498,8 @@ function registerAsciinemaPlayerElement() {
   function YA(b) {
     var a = Qx(null),
       c = Qx(new kx(ix(1), 1));
-    return (function(a, c) {
-      return function() {
+    return (function (a, c) {
+      return function () {
         return zq(
           new r(
             null,
@@ -40500,14 +40508,14 @@ function registerAsciinemaPlayerElement() {
               jn,
               "asciinema-player",
               Cm,
-              (function(a, c) {
-                return function() {
+              (function (a, c) {
+                return function () {
                   return XA(b, a, c);
                 };
               })(a, c),
               Wk,
-              (function(a, c) {
-                return function() {
+              (function (a, c) {
+                return function () {
                   var d = zy(Dl.h(B(b))),
                     e = VA(c);
                   Zx(e, a);
@@ -40515,11 +40523,11 @@ function registerAsciinemaPlayerElement() {
                 };
               })(a, c),
               Vm,
-              (function() {
-                return function() {
+              (function () {
+                return function () {
                   return Ay(Dl.h(B(b)));
                 };
-              })(a, c)
+              })(a, c),
             ],
             null
           )
@@ -40536,7 +40544,7 @@ function registerAsciinemaPlayerElement() {
     return K.l(c, wk, d);
   }
   fy.prototype.ub = q;
-  fy.prototype.sb = function(b, a) {
+  fy.prototype.sb = function (b, a) {
     var c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
       d = C.c(c, Oj),
       e = C.c(c, sl),
@@ -40545,7 +40553,7 @@ function registerAsciinemaPlayerElement() {
     return c;
   };
   gy.prototype.ub = q;
-  gy.prototype.sb = function(b, a) {
+  gy.prototype.sb = function (b, a) {
     var c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
       d = C.c(c, Oj),
       e = C.c(c, sl),
@@ -40554,7 +40562,7 @@ function registerAsciinemaPlayerElement() {
     return c;
   };
   hy.prototype.ub = q;
-  hy.prototype.sb = function(b, a) {
+  hy.prototype.sb = function (b, a) {
     var c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
       d = C.c(c, sl),
       e = C.c(c, Dl);
@@ -40562,10 +40570,10 @@ function registerAsciinemaPlayerElement() {
     return c;
   };
   jy.prototype.ub = q;
-  jy.prototype.sb = function(b, a) {
+  jy.prototype.sb = function (b, a) {
     return ZA(
-      (function() {
-        return function(a) {
+      (function () {
+        return function (a) {
           return a / 2;
         };
       })(this),
@@ -40573,10 +40581,10 @@ function registerAsciinemaPlayerElement() {
     );
   };
   ky.prototype.ub = q;
-  ky.prototype.sb = function(b, a) {
+  ky.prototype.sb = function (b, a) {
     return ZA(
-      (function() {
-        return function(a) {
+      (function () {
+        return function (a) {
           return 2 * a;
         };
       })(this),
@@ -40584,20 +40592,20 @@ function registerAsciinemaPlayerElement() {
     );
   };
   ly.prototype.ub = q;
-  ly.prototype.sb = function(b, a) {
+  ly.prototype.sb = function (b, a) {
     Dy(Dl.h(a));
     return a;
   };
   my.prototype.ub = q;
-  my.prototype.sb = function(b, a) {
+  my.prototype.sb = function (b, a) {
     return K.l(a, hl, to.h(this));
   };
   ny.prototype.ub = q;
-  ny.prototype.sb = function(b, a) {
+  ny.prototype.sb = function (b, a) {
     return K.l(a, Ck, to.h(this));
   };
   py.prototype.ub = q;
-  py.prototype.sb = function(b, a) {
+  py.prototype.sb = function (b, a) {
     var c = null != b && (b.m & 64 || q === b.G) ? S(V, b) : b;
     C.c(c, cl);
     C.c(c, po);
@@ -40612,26 +40620,26 @@ function registerAsciinemaPlayerElement() {
     return K.A(c, cl, u(d) ? d : h, Wd([po, u(e) ? e : k, sl, f]));
   };
   qy.prototype.ub = q;
-  qy.prototype.sb = function(b, a) {
+  qy.prototype.sb = function (b, a) {
     return K.l(a, Gm, Gm.h(this));
   };
   uy.prototype.ub = q;
-  uy.prototype.sb = function(b, a) {
+  uy.prototype.sb = function (b, a) {
     var c = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
       d = C.c(c, ii);
     u(d) && (Lp(Mp), d.B ? d.B() : d.call(null));
     return c;
   };
   xy.prototype.ub = q;
-  xy.prototype.sb = function(b, a) {
+  xy.prototype.sb = function (b, a) {
     return K.l(a, Oj, Vk.h(this));
   };
   function $A() {
     return cg.l(
-      function(b, a) {
+      function (b, a) {
         return new T(null, 2, 5, U, [b, new my(a, null, null, null)], null);
       },
-      lg(function(b) {
+      lg(function (b) {
         return b + 0.5;
       }, 0.5),
       ig(new T(null, 2, 5, U, [!1, !0], null))
@@ -40653,7 +40661,7 @@ function registerAsciinemaPlayerElement() {
     return u(b) ? De([b]) : pi;
   }
   sy.prototype.ub = q;
-  sy.prototype.sb = function(b, a) {
+  sy.prototype.sb = function (b, a) {
     var c = null != b && (b.m & 64 || q === b.G) ? S(V, b) : b;
     C.c(c, gn);
     var d = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
@@ -40669,18 +40677,18 @@ function registerAsciinemaPlayerElement() {
     return bB(d);
   };
   sy.prototype.Ge = q;
-  sy.prototype.de = function(b, a) {
+  sy.prototype.de = function (b, a) {
     return cB(a);
   };
   vy.prototype.ub = q;
-  vy.prototype.sb = function(b, a) {
+  vy.prototype.sb = function (b, a) {
     var c = K.l(a, X, X.h(this)),
       c = null != c && (c.m & 64 || q === c.G) ? S(V, c) : c,
       d = C.c(c, Ml);
     return u(d) ? aB(bB(c)) : c;
   };
   vy.prototype.Ge = q;
-  vy.prototype.de = function(b, a) {
+  vy.prototype.de = function (b, a) {
     return cB(a);
   };
   function dB(b) {
@@ -40690,8 +40698,8 @@ function registerAsciinemaPlayerElement() {
           Se,
           Xe(b),
           lg(
-            (function() {
-              return function(a) {
+            (function () {
+              return function (a) {
                 return 60 * a;
               };
             })(b),
@@ -40710,7 +40718,7 @@ function registerAsciinemaPlayerElement() {
           Yk,
           nk,
           ao,
-          function(b) {
+          function (b) {
             return null != b
               ? q === b.yd
                 ? !0
@@ -40718,7 +40726,7 @@ function registerAsciinemaPlayerElement() {
                 ? !1
                 : ub(Pu, b)
               : ub(Pu, b);
-          }
+          },
         ],
         null
       )
@@ -40732,7 +40740,7 @@ function registerAsciinemaPlayerElement() {
       null
     ),
     gB;
-  gB = function(b) {
+  gB = function (b) {
     b = b.replace(RegExp("\\s", "g"), "");
     b = JSON.parse(atob(b));
     b = Zi(b);
@@ -40748,7 +40756,7 @@ function registerAsciinemaPlayerElement() {
           Yk,
           nk,
           ao,
-          function(b) {
+          function (b) {
             return null != b
               ? q === b.yd
                 ? !0
@@ -40756,7 +40764,7 @@ function registerAsciinemaPlayerElement() {
                 ? !1
                 : ub(Pu, b)
               : ub(Pu, b);
-          }
+          },
         ],
         null
       )
@@ -40769,12 +40777,12 @@ function registerAsciinemaPlayerElement() {
       [
         fp(To, ie(kk, new r(null, 1, [Fj, Qj], null))),
         fp(Vo, ie(zm, new r(null, 1, [Fj, qo], null))),
-        fp(Vo, ie(fk, new r(null, 1, [Fj, qo], null)))
+        fp(Vo, ie(fk, new r(null, 1, [Fj, qo], null))),
       ],
       null
     ),
     jB;
-  jB = function(b, a, c) {
+  jB = function (b, a, c) {
     return Nu(St(u(a) ? a : 80, u(c) ? c : 24), b);
   };
   Lo(jB, lp(hB, new T(null, 1, 5, U, [iB], null)));
@@ -40806,7 +40814,7 @@ function registerAsciinemaPlayerElement() {
       x = C.c(c, Am),
       z = C.l(c, um, !1),
       E = C.l(c, Dm, !1),
-      H = (function() {
+      H = (function () {
         var a = dB(h);
         return u(a) ? a : 0;
       })(),
@@ -40815,7 +40823,7 @@ function registerAsciinemaPlayerElement() {
       x = C.c(J, X),
       J = C.c(J, Vk),
       M = u(J) ? J : sb(x) && 0 < H ? H : null,
-      J = (function() {
+      J = (function () {
         var a = Je(
           [wk, Dk, cl, nl, am, om, um, Dm, Mm, po],
           [f, H, k, l, n, t, z, E, M, d]
@@ -40828,7 +40836,7 @@ function registerAsciinemaPlayerElement() {
           [Oj, X, sk, wk, Ck, bl, cl, sl, Dl, Ml, em, Gm, gn, po],
           [H, u(x) ? x : lB, e, f, !1, !1, k, null, J, null, m, !1, !1, d]
         ),
-        di(c)
+        di(c),
       ])
     );
   }
@@ -40839,7 +40847,7 @@ function registerAsciinemaPlayerElement() {
     ar ? Zq(c, b, null) : $q.call(null, c, b);
     return a;
   }
-  eb = (function() {
+  eb = (function () {
     function b(b) {
       var c = null;
       if (0 < arguments.length) {
@@ -40853,14 +40861,14 @@ function registerAsciinemaPlayerElement() {
       return console.log.apply(console, Fb(a));
     }
     b.L = 0;
-    b.N = function(b) {
+    b.N = function (b) {
       b = D(b);
       return a(b);
     };
     b.A = a;
     return b;
   })();
-  fb = (function() {
+  fb = (function () {
     function b(b) {
       var c = null;
       if (0 < arguments.length) {
@@ -40874,7 +40882,7 @@ function registerAsciinemaPlayerElement() {
       return console.error.apply(console, Fb(a));
     }
     b.L = 0;
-    b.N = function(b) {
+    b.N = function (b) {
       b = D(b);
       return a(b);
     };
@@ -40892,10 +40900,10 @@ function registerAsciinemaPlayerElement() {
     }
   };
   da("asciinema.player.js.CreatePlayer", oB);
-  oB.c = function(b, a) {
+  oB.c = function (b, a) {
     return oB.l(b, a, yf);
   };
-  oB.l = function(b, a, c) {
+  oB.l = function (b, a, c) {
     a = Zi(a);
     c = zo(Zi(c));
     b = nB(b, a, c);
@@ -40905,14 +40913,14 @@ function registerAsciinemaPlayerElement() {
         5,
         [
           Dn,
-          (function(a, b, c) {
-            return function() {
+          (function (a, b, c) {
+            return function () {
               return Oj.h(B(c));
             };
           })(a, c, b),
           uj,
-          (function(a, b, c) {
-            return function(a) {
+          (function (a, b, c) {
+            return function (a) {
               var b = B(c),
                 b = null != b && (b.m & 64 || q === b.G) ? S(V, b) : b;
               C.c(b, sl);
@@ -40921,14 +40929,14 @@ function registerAsciinemaPlayerElement() {
             };
           })(a, c, b),
           Ym,
-          (function(a, b, c) {
-            return function() {
+          (function (a, b, c) {
+            return function () {
               return sl.h(B(c));
             };
           })(a, c, b),
           In,
-          (function(a, b, c) {
-            return function() {
+          (function (a, b, c) {
+            return function () {
               var a = B(c),
                 a = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
                 a = C.c(a, Dl);
@@ -40936,21 +40944,21 @@ function registerAsciinemaPlayerElement() {
             };
           })(a, c, b),
           qn,
-          (function(a, b, c) {
-            return function() {
+          (function (a, b, c) {
+            return function () {
               var a = B(c),
                 a = null != a && (a.m & 64 || q === a.G) ? S(V, a) : a,
                 a = C.c(a, Dl);
               return Cy(a);
             };
-          })(a, c, b)
+          })(a, c, b),
         ],
         null
       )
     );
   };
   oB.L = 3;
-  da("asciinema.player.js.UnmountPlayer", function(b) {
+  da("asciinema.player.js.UnmountPlayer", function (b) {
     b = "string" === typeof b ? document.getElementById(b) : b;
     ag.l(Wq, L, b);
     return Vq().unmountComponentAtNode(b);

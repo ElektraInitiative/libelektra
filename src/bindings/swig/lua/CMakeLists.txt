@@ -29,12 +29,9 @@ else ()
 	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (
 			swig-lua
-			LANGUAGE
-			lua
-			SOURCES
-			kdb.i
-			TYPE
-			MODULE)
+			LANGUAGE lua
+			SOURCES kdb.i
+			TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	swig_link_libraries (swig-lua elektra-core elektra-kdb ${LUA_LIBRARIES})
 	set_target_properties (swig-lua PROPERTIES OUTPUT_NAME kdb)

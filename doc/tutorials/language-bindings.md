@@ -150,5 +150,5 @@ getReason()
 ```
 
 Please also keep the wording identical for consistency.
-Take a look how the Java Binding implemented it in the
-[KDBException](../../src/bindings/jna/libelektra/src/main/java/org/libelektra/exception/KDBException.java)
+Take a look how the Java binding implemented it in the
+[KDBException](../../src/bindings/jna/libelektra/src/main/java/org/libelektra/KDBException.java)

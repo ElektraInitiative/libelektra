@@ -27,7 +27,7 @@ export default class AdditionalMetakeysSubDialog extends Component {
   constructor(props, ...args) {
     super(props, ...args);
     this.state = {
-      items: props && props.meta ? this.parseMetadata(props.meta) || [] : []
+      items: props && props.meta ? this.parseMetadata(props.meta) || [] : [],
     };
   }
 
@@ -40,30 +40,30 @@ export default class AdditionalMetakeysSubDialog extends Component {
 
   // filter metakeys that are not handled otherwise and convert them
   // to a key/value object format
-  parseMetadata = meta => {
+  parseMetadata = (meta) => {
     const keys = Object.keys(meta)
-      .filter(k => !HANDLED_METADATA.find(m => k.startsWith(m)))
-      .filter(k => meta[k] !== undefined);
-    return keys.map(k => {
+      .filter((k) => !HANDLED_METADATA.find((m) => k.startsWith(m)))
+      .filter((k) => meta[k] !== undefined);
+    return keys.map((k) => {
       return { key: k, value: meta[k] };
     });
   };
 
   // update value of a metakey
-  updateValue = key => value => {
+  updateValue = (key) => (value) => {
     const { items } = this.state;
     this.setState({
-      items: items.map(item => {
+      items: items.map((item) => {
         if (item.key === key) {
           return { key, value };
         }
         return item;
-      })
+      }),
     });
   };
 
   // delete a metakey
-  deleteItem = item => {
+  deleteItem = (item) => {
     if (
       window.confirm(
         "Do you really want to delete the '" + item.key + "' metakey?"
@@ -108,7 +108,7 @@ export default class AdditionalMetakeysSubDialog extends Component {
       return alert("Empty/invalid metakey name.");
     }
 
-    if (HANDLED_METADATA.find(m => name.startsWith(m))) {
+    if (HANDLED_METADATA.find((m) => name.startsWith(m))) {
       return alert(
         "Cannot add metakey '" +
           name +
@@ -117,7 +117,7 @@ export default class AdditionalMetakeysSubDialog extends Component {
       );
     }
 
-    if (this.state.items.find(item => name === item.key)) {
+    if (this.state.items.find((item) => name === item.key)) {
       return alert(
         "Cannot add metakey '" +
           name +
@@ -140,11 +140,11 @@ export default class AdditionalMetakeysSubDialog extends Component {
               style={{
                 fontSize: "1.1em",
                 color: "rgba(0, 0, 0, 0.4)",
-                marginTop: 16
+                marginTop: 16,
               }}
             >
               No additional metadata defined yet.
-            </div>
+            </div>,
           ];
 
     return [
@@ -162,7 +162,7 @@ export default class AdditionalMetakeysSubDialog extends Component {
           onClick={this.createKey}
         />
       </h2>,
-      ...renderedItems
+      ...renderedItems,
     ];
   }
 }

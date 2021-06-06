@@ -14,7 +14,7 @@ export function APIError(message) {
 }
 APIError.prototype = Error.prototype;
 
-export const prettyprint = obj => JSON.stringify(obj, null, 2);
+export const prettyprint = (obj) => JSON.stringify(obj, null, 2);
 
 export const successResponse = (res, output) =>
   output ? res.json(output) : res.send();
@@ -25,10 +25,7 @@ export const errorResponse = (res, err) => {
   }
   const errObj =
     err instanceof Error ? { name: err.name, message: err.message } : err;
-  return res
-    .status(400)
-    .type("application/json")
-    .json({ error: errObj });
+  return res.status(400).type("application/json").json({ error: errObj });
 };
 
 const sessionRegex = /session=([a-zA-Z0-9-]*)/;
@@ -59,9 +56,9 @@ export const setSessionID = (instanceId, cookie, response) => {
 };
 
 // don't show the internal database via the API
-export const dontShowDB = output => {
+export const dontShowDB = (output) => {
   if (output && Array.isArray(output.ls)) {
-    output.ls = output.ls.filter(path => !path.startsWith(ROOT_PATH));
+    output.ls = output.ls.filter((path) => !path.startsWith(ROOT_PATH));
   }
   return output;
 };

@@ -9,7 +9,7 @@
 import {
   ADD_INSTANCE,
   UNADD_INSTANCE,
-  CREATE_INSTANCE_SUCCESS
+  CREATE_INSTANCE_SUCCESS,
 } from "../actions";
 
 // controls the state of the card container (for adding instances)

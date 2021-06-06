@@ -14,7 +14,7 @@ import {
   SET_META_SUCCESS,
   DELETE_META_SUCCESS,
   COPY_KEY_SUCCESS,
-  CREATE_KEY_SUCCESS
+  CREATE_KEY_SUCCESS,
 } from "../actions";
 
 const updateState = (state, { id, path, value, meta, exists }) => {
@@ -30,14 +30,14 @@ const updateState = (state, { id, path, value, meta, exists }) => {
     exists:
       typeof exists !== "undefined"
         ? exists
-        : state[id] && state[id][path] && state[id][path].exists
+        : state[id] && state[id][path] && state[id][path].exists,
   };
   return {
     ...state,
     [id]: {
       ...state[id],
-      [path]: updatedPart
-    }
+      [path]: updatedPart,
+    },
   };
 };
 
@@ -76,7 +76,7 @@ export default function keyReducer(state = {}, action) {
       return updateState(state, {
         id,
         path,
-        meta: { ...meta, [key]: undefined }
+        meta: { ...meta, [key]: undefined },
       });
     }
 
@@ -97,7 +97,7 @@ export default function keyReducer(state = {}, action) {
               res[key] = data;
             }
             return res;
-          }, {})
+          }, {}),
       };
     }
 
@@ -120,7 +120,7 @@ export default function keyReducer(state = {}, action) {
               }
             }
             return res;
-          }, {})
+          }, {}),
       };
     }
 

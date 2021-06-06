@@ -100,12 +100,9 @@ else ()
 	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (
 			swig-ruby
-			LANGUAGE
-			ruby
-			SOURCES
-			kdb.i
-			TYPE
-			MODULE)
+			LANGUAGE ruby
+			SOURCES kdb.i
+			TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8) # set the compiler settings for the generated file  (has to be done for each module
 	# separately)
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
@@ -116,12 +113,9 @@ else ()
 	else (CMAKE_VERSION VERSION_LESS 3.8)
 		swig_add_library (
 			swig-ruby-tools
-			LANGUAGE
-			ruby
-			SOURCES
-			kdbtools.i
-			TYPE
-			MODULE)
+			LANGUAGE ruby
+			SOURCES kdbtools.i
+			TYPE MODULE)
 	endif (CMAKE_VERSION VERSION_LESS 3.8)
 	set_source_files_properties (${swig_generated_file_fullname} PROPERTIES COMPILE_FLAGS "${SWIG_COMPILE_FLAGS}")
 

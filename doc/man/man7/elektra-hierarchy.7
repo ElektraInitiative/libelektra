@@ -1,48 +1,32 @@
-.\" generated with Ronn/v0.7.3
-.\" http://github.com/rtomayko/ronn/tree/0.7.3
-.
-.TH "ELEKTRA\-HIERARCHY" "7" "September 2020" "" ""
-.
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "ELEKTRA\-HIERARCHY" "7" "June 2021" ""
 .SH "NAME"
 \fBelektra\-hierarchy\fR \- standard hierarchyThese mount points are always available\.
-.
 .SH "system:/elektra/modules"
 Information about currently loaded modules\.
-.
 .SH "system:/elektra/mountpoints"
 The mount points present in the system\.
-.
 .SH "system:/elektra/version"
 Version information\.Use \fBkdb mount\-info\fR to mount these mount points\.
-.
 .SH "system:/info/elektra/constants"
 Gives information about how Elektra was build\.
-.
 .SH "system:/info/elektra/uname"
 System Information given with \fBuname\fR\.
-.
 .SH "system:/info/elektra/desktop"
 System Information about currently running desktop\.
-.
 .SH "system:/info/elektra/metadata"
 Gives information about which metadata is currently understood by Elektra\.
-.
 .P
 \fBMETADATA\.ini\fR needs to be mounted there\.
-.
 .SH "system:/info/elektra/contract"
-Gives information about clauses in plugin\'s contract that is currently understood\.
-.
+Gives information about clauses in plugin's contract that is currently understood\.
 .P
 \fBCONTRACT\.ini\fR needs to be mounted there\.
-.
 .SH "SEE ALSO"
-.
 .IP "\(bu" 4
 see namespaces tutorial \fI/doc/tutorials/namespaces\.md\fR
-.
 .IP "\(bu" 4
 elektra\-namespaces(7) \fIelektra\-namespaces\.md\fR
-.
 .IP "" 0
 

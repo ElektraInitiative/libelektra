@@ -113,6 +113,12 @@ def dockerInit() {
       './scripts/docker/debian/buster/Dockerfile'
     )
 
+    DOCKER_IMAGES.bullseye = dockerUtils.createDockerImageDesc(
+      'debian-bullseye', dockerUtils.&idTesting,
+      './scripts/docker/debian/bullseye',
+      './scripts/docker/debian/bullseye/Dockerfile'
+    )
+
     DOCKER_IMAGES.focal = dockerUtils.createDockerImageDesc(
       'ubuntu-focal', dockerUtils.&idTesting,
       './scripts/docker/ubuntu/focal',
@@ -141,33 +147,83 @@ def dockerInit() {
     DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
       'debian-buster-installed', dockerUtils.&idArtifact,
       './release-artifact/*/buster/',
-      './scripts/docker/debian/buster/release.Dockerfile',
+      './scripts/docker/debian/buster/package.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.bullseye_installed = dockerUtils.createDockerImageDesc(
+      'debian-bullseye-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/bullseye/',
+      './scripts/docker/debian/bullseye/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
       'ubuntu-focal-installed', dockerUtils.&idArtifact,
       './release-artifact/*/focal/',
-      './scripts/docker/ubuntu/focal/release.Dockerfile',
+      './scripts/docker/ubuntu/focal/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
       'ubuntu-bionic-installed', dockerUtils.&idArtifact,
       './release-artifact/*/bionic/',
-      './scripts/docker/ubuntu/bionic/release.Dockerfile',
+      './scripts/docker/ubuntu/bionic/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
       'fedora-33-installed', dockerUtils.&idArtifact,
       './release-artifact/*/fedora33/',
-      './scripts/docker/fedora/33/release.Dockerfile',
+      './scripts/docker/fedora/33/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_34_installed = dockerUtils.createDockerImageDesc(
       'fedora-34-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/fedora34/',
+      './scripts/docker/fedora/34/package.Dockerfile',
+      false
+    )
+
+    /* Install packages for Docker image release */
+    DOCKER_IMAGES.buster_release = createDockerImageDescForRelease(
+      'elektra/elektra',
+      './release-artifact/*/buster/',
+      './scripts/docker/debian/buster/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.bullseye_release = createDockerImageDescForRelease(
+      'elektra/elektra',
+      './release-artifact/*/bullseye/',
+      './scripts/docker/debian/bullseye/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.focal_release = createDockerImageDescForRelease(
+      'elektra/elektra',
+      './release-artifact/*/focal/',
+      './scripts/docker/ubuntu/focal/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.bionic_release = createDockerImageDescForRelease(
+      'elektra/elektra',
+      './release-artifact/*/bionic/',
+      './scripts/docker/ubuntu/bionic/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.fedora_33_release = createDockerImageDescForRelease(
+      'elektra/elektra',
+      './release-artifact/*/fedora33/',
+      './scripts/docker/fedora/33/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.fedora_34_release = createDockerImageDescForRelease(
+      'elektra/elektra',
       './release-artifact/*/fedora34/',
       './scripts/docker/fedora/34/release.Dockerfile',
       false
@@ -176,10 +232,10 @@ def dockerInit() {
     /* Build Elektra's documentation with this image.
      * Also contains latex for pdf creation.
      */
-    DOCKER_IMAGES.buster_doc = dockerUtils.createDockerImageDesc(
-      'debian-buster-doc', dockerUtils.&idTesting,
-      './scripts/docker/debian/buster',
-      './scripts/docker/debian/buster/doc.Dockerfile'
+    DOCKER_IMAGES.sid_doc = dockerUtils.createDockerImageDesc(
+      'debian-sid-doc', dockerUtils.&idTesting,
+      './scripts/docker/debian/sid',
+      './scripts/docker/debian/sid/doc.Dockerfile'
     )
 
     /*
@@ -205,6 +261,12 @@ def generateReleaseStages() {
     DOCKER_IMAGES.buster,
     params.debian_revision,
     true // bundle repository
+  )
+
+  tasks << buildRelease(
+    'debian-bullseye',
+    DOCKER_IMAGES.bullseye,
+    params.debian_revision
   )
 
   tasks << buildRelease(
@@ -263,6 +325,10 @@ def generateDockerBuildStagesWithPackagesInstalled() {
     DOCKER_IMAGES.buster_installed,
     'debian-buster'
   )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.bullseye_installed,
+    'debian-bullseye'
+  )
 
   return tasks
 }
@@ -288,10 +354,13 @@ def generateInstalledPackagesTestStages() {
     'fedora-34-installed',
     DOCKER_IMAGES.fedora_34_installed
   )
-
   tasks << testInstalledPackage(
     'debian-buster-installed',
     DOCKER_IMAGES.buster_installed
+  )
+  tasks << testInstalledPackage(
+    'debian-bullseye-installed',
+    DOCKER_IMAGES.bullseye_installed
   )
 
   return tasks
@@ -308,6 +377,15 @@ def generateDebPackagePublishStages() {
     DOCKER_IMAGES.buster_installed.context,
     'buster',
     'buster',
+    release.&publishDebPackages,
+    params.debian_revision
+  )
+
+  tasks << publish(
+    'debian-bullseye',
+    DOCKER_IMAGES.bullseye_installed.context,
+    'bullseye',
+    'bullseye',
     release.&publishDebPackages,
     params.debian_revision
   )
@@ -394,10 +472,49 @@ def generatePublishStages() {
 def generateImageUploadStages() {
   def tasks = [:]
 
-  tasks << publishImageToDockerHub(
-    'publish-alpine',
+  tasks << publishImage(
     DOCKER_IMAGES.alpine_release,
-    params.alpine_revision
+    null, // no artifacts need to be imported
+    params.alpine_revision,
+    'alpine',
+    true // additionally tag with 'latest'
+  )
+
+  tasks << publishImage(
+    DOCKER_IMAGES.focal_release,
+    'ubuntu-focal',
+    ubuntu_revision,
+    'focal'
+  )
+  tasks << publishImage(
+    DOCKER_IMAGES.bionic_release,
+    'ubuntu-bionic',
+    ubuntu_revision,
+    'bionic'
+  )
+  tasks << publishImage(
+    DOCKER_IMAGES.fedora_33_release,
+    'fedora-33',
+    fedora_revision,
+    'fedora33'
+  )
+  tasks << publishImage(
+    DOCKER_IMAGES.fedora_34_release,
+    'fedora-34',
+    fedora_revision,
+    'fedora34'
+  )
+  tasks << publishImage(
+    DOCKER_IMAGES.buster_release,
+    'debian-buster',
+    debian_revision,
+    'buster'
+  )
+  tasks << publishImage(
+    DOCKER_IMAGES.bullseye_release,
+    'debian-bullseye',
+    debian_revision,
+    'bullseye'
   )
 
   return tasks
@@ -602,7 +719,7 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.buster_doc) {
+      withDockerEnv(DOCKER_IMAGES.sid_doc) {
         configureGitUser()
 
         dir('build') {
@@ -704,38 +821,77 @@ def buildImageWithPackagesStage(image, previousTaskName) {
 }
 
 /**
- * Builds and publishes an image to the official Docker Hub.
+ * Builds and publishes an image to the official DockerHub and Elektra's pubic Docker registry.
  *
  * The image is tagged with a version number and additional
  * with 'latest'.
  *
- * @param  stageName         name of the stage
- * @param  image             image to be build and pushed
- * @param  imageRevision     revision number of the image
+ * @param  image               image to be build and pushed
+ * @param  previousTaskName    stage name under which the artifact got archived
+ * @param  imageRevision       revision number of the image
+ * @param  tagImageIdentifier  suffix of the image tag, e.g. alpine, focal, etc.
+ * @param  isLatest            true if the image should additionally be tagged with 'latest', otherwise false
  */
-def publishImageToDockerHub(stageName, image, imageRevision='1') {
+def publishImage(image, previousTaskName=null, imageRevision='1', tagImageIdentifier, isLatest=false) {
+  def stageName="publish-${tagImageIdentifier}"
   return [(stageName): {
     stage(stageName) {
       node(PipelineConfig.instance.dockerNodeLabel) {
         checkout scm
-        docker.withRegistry('',
-                            'docker-hub-official-elektrabot') {
-          def cpus = dockerUtils.cpuCount()
-          def i = docker.build(
-            image.id,"""\
+        // copy generated packages to be installed if needed
+        if (previousTaskName) {
+          copyReleaseArtifact(previousTaskName)
+        }
+        // publish to DockerHub
+        publishImageToRegistry(
+          '',
+          'docker-hub-official-elektrabot',
+          image,
+          imageRevision,
+          tagImageIdentifier,
+          isLatest
+        )
+        // publish to Elektra public registry
+        publishImageToRegistry(
+          "https://${PipelineConfig.instance.registry}",
+          'docker-hub-elektra-jenkins',
+          image,
+          imageRevision,
+          tagImageIdentifier,
+          isLatest
+        )
+      }
+    }
+  }]
+}
+
+
+/**
+ * Build an publish an image to a specified Docker registry
+ *
+ * @param  dockerRegistryUrl           Url of the Docker registry
+ * @param  dockerRegistryCredentialsId Jenkins credentials id to authenticate Docker registry
+ * @param  image                       image to be build and pushed
+ * @param  imageRevision               stage name under which the artifact got archived
+ * @param  tagImageIdentifier          suffix of the image tag, e.g. alpine, focal, etc.
+ * @param  isLatest                    true if the image should additionally be tagged with 'latest', otherwise false
+ */
+def publishImageToRegistry(dockerRegistryUrl, dockerRegistryCredentialsId, image, imageRevision, tagImageIdentifier, isLatest) {
+  docker.withRegistry(dockerRegistryUrl, dockerRegistryCredentialsId) {
+    def cpus = dockerUtils.cpuCount()
+    def i = docker.build(
+      image.id,"""\
 --pull \
 --squash \
 --build-arg PARALLEL=${cpus} \
 -f ${image.file} ${image.context}"""
-          )
-
-          def dockerVersionTag = "${RELEASE_VERSION}-${imageRevision}"
-          i.push(dockerVersionTag)
-          i.push('latest')
-        }
-      }
+    )
+    def dockerVersionTag = "${RELEASE_VERSION}-${imageRevision}-${tagImageIdentifier}"
+    i.push(dockerVersionTag)
+    if (isLatest) {
+      i.push('latest')
     }
-  }]
+  }
 }
 
 /**

@@ -5,7 +5,7 @@ if (BUILD_DOCUMENTATION)
 	if (RONN_LOC)
 		add_custom_target (man ALL)
 	else (RONN_LOC)
-		message ("Sorry, I cannot find ronn (https://github.com/rtomayko/ronn), thus generating the man pages will not work. "
+		message ("Sorry, I cannot find ronn-ng (https://github.com/apjanke/ronn-ng), thus generating the man pages will not work. "
 			 "I will install the man pages directly from the repository instead.")
 	endif (RONN_LOC)
 endif (BUILD_DOCUMENTATION)

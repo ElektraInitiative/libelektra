@@ -29,7 +29,6 @@ RUN apt-get update && apt-get -y install \
         icheck \
         lcov \
         libaugeas-dev \
-        libboost-all-dev \
         libdbus-1-dev \
         libev-dev \
         libgirepository1.0-dev \
@@ -55,8 +54,8 @@ RUN apt-get update && apt-get -y install \
         patch \
         patchutils \
         pkg-config \
-        python-all \
-        python-pip \
+        python3-all \
+        python3-pip \
         python3-all \
         qtbase5-dev \
         qtdeclarative5-dev \
@@ -146,7 +145,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-6.8.3-bin.zip && unzip gradle-6.8.3-bin.zip && rm gradle-6.8.3-bin.zip && mv gradle-6.8.3 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.0.2-bin.zip && unzip gradle-7.0.2-bin.zip && rm gradle-7.0.2-bin.zip && mv gradle-7.0.2 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
@@ -160,7 +159,7 @@ RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
-ENV SHFMT_VERSION=v2.6.3
+ENV SHFMT_VERSION=v3.2.4
 ENV PATH="${SHFMT_PATH}:${PATH}"
 RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \
@@ -168,7 +167,7 @@ RUN mkdir -p "${SHFMT_PATH}" \
     && chmod a+x shfmt
 
 # cmake-format
-RUN pip install cmake-format[yaml]==0.6.3
+RUN pip3 install cmake-format[yaml]==0.6.13
 
 # Coveralls
 ENV COVERALLS_VIRTUALENV_PATH=/home/jenkins/coveralls
