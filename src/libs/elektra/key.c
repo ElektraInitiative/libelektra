@@ -128,15 +128,15 @@
  *   @snippet keyNew.c With Everything
  *
  *
- * @param name a valid name to the key, or NULL to get a simple
- * 	initialized, but really empty, object
+ * @param name a valid name to the key (see keySetName())
  *
  * @return a pointer to a new allocated and initialized Key object.
  * @retval NULL on allocation error or if an invalid @p name was passed (see keySetName()).
  *
  * @since 1.0.0
  * @ingroup key
- * @see keyDel()
+ * @see keyDel() for deallocating a created Key object
+ * @see keySetName() for rules about which names are considered valid
  */
 Key * keyNew (const char * name, ...)
 {
