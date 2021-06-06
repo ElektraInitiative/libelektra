@@ -183,6 +183,7 @@ _(Michael Tucek)_
 - Use basename of release file in `generate-hashsums`. _(Mihael Pranjić)_
 - Use `shfmt` v3.2.4 to reformat shell scripts. _(Mihael Pranjić)_
 - Use `cmake-format` v0.6.13 (`cmakelang`) to reformat CMake. _(Mihael Pranjić)_
+- Aptly repositories are now automatically created if they do not exist during a package release. _(Robert Sowula)_
 
 ## Documentation
 
