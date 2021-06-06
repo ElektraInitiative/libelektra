@@ -473,7 +473,7 @@ ssize_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSiz
  *
  * .., . and / will be handled as in filesystem paths. A valid name will be build
  * out of the (valid) name what you pass, e.g. user:///sw/../sw//././MyApp -> user:/sw/MyApp
- * 
+ *
  * Trailing slashes will be stripped.
  *
  * On invalid names, the name stays unchanged.
