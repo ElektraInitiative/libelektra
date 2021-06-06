@@ -89,8 +89,8 @@
        - [x] KEY_FLAGS
 - [ ] No inconsistencies between tests and documentation  
        - [x] Documentation says i can work with `Key *k =keyNew("", KEY_END);`  
-         Tests say  
-         `k = keyNew ("", KEY_END); succeed_if (k == NULL, "should be invalid"); keyDel (k);`  
+       Tests say  
+       `k = keyNew ("", KEY_END); succeed_if (k == NULL, "should be invalid"); keyDel (k);`  
        - [x] same as above with `keyNew(0)`
 
 ## Summary
