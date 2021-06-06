@@ -24,10 +24,8 @@ static int validateKey (Key * key, Key * parentKey)
 
 	const char * text = keyString (key);
 
-	while (text[c] != '\0')
-	{
-		c++;
-	}
+	c = strlen(text);
+
 	if (c <= i)
 	{
 		rc = true;
