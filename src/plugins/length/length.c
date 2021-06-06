@@ -7,10 +7,9 @@
  *
  */
 
-#include <kdberrors.h>
-#include <stdio.h>
-
 #include "length.h"
+#include <kdberrors.h>
+#include <stdlib.h>
 
 
 static int validateKey (Key * key, Key * parentKey)
@@ -20,8 +19,8 @@ static int validateKey (Key * key, Key * parentKey)
 	int rc = 0;
 	int c = 0;
 	const char * length = keyString (meta);
-	int i;
-	sscanf (length, "%d", &i);
+	long i;
+	i = strtol(length, NULL, 10);
 
 	const char * text = keyString (key);
 
