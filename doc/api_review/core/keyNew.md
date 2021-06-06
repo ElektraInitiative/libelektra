@@ -77,8 +77,8 @@
 
 - [x] Function is easily extensible, e.g., with flags
 - [ ] Documentation does not impose limits, that would hinder further extensions  
-       - [ ] Docs say `Key *k = keyNew(0);` has same effect
-      as `Key *k =keyNew("", KEY_END);`
+       - [x] Docs say `Key *k = keyNew(0);` has same effect  
+       as `Key *k =keyNew("", KEY_END);`
 
 ### Tests
 
@@ -88,11 +88,10 @@
        - [x] KEY_META  
        - [x] KEY_FLAGS
 - [ ] No inconsistencies between tests and documentation  
-       - [ ] Documentation says i can work with `Key *k =keyNew("", KEY_END);`  
-       Tests say  
-       `k = keyNew ("", KEY_END); succeed_if (k == NULL, "should be invalid"); keyDel (k);`  
-       - [ ] same as above with `keyNew(0)`  
-       TODO
+       - [x] Documentation says i can work with `Key *k =keyNew("", KEY_END);`  
+         Tests say  
+         `k = keyNew ("", KEY_END); succeed_if (k == NULL, "should be invalid"); keyDel (k);`  
+       - [x] same as above with `keyNew(0)`
 
 ## Summary
 

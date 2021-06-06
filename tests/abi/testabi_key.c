@@ -72,6 +72,10 @@ static void test_keyNewSpecial (void)
 	succeed_if_same_string (keyName (k), "/");
 	keyDel (k);
 
+	k = keyNew (0, KEY_END);
+	succeed_if (k == NULL, "should be invalid");
+	keyDel (k);
+
 	k = keyNew ("", KEY_END);
 	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
@@ -79,7 +83,6 @@ static void test_keyNewSpecial (void)
 	k = keyNew ("invalid", KEY_END);
 	succeed_if (k == NULL, "should be invalid");
 	keyDel (k);
-
 
 	k = keyNew ("other invalid", KEY_END);
 	succeed_if (k == NULL, "should be invalid");
