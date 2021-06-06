@@ -1460,8 +1460,8 @@ static void test_ksAppend (void)
 	KeySet * ks = ksNew (0, KS_END);
 	succeed_if (ksAppendKey (0, key) == -1, "No error on NULL pointer");
 	succeed_if (ksAppendKey (ks, 0) == -1, "No error on NULL pointer");
-	ksDel(ks);
-	keyDel(key);
+	ksDel (ks);
+	keyDel (key);
 
 	KeySet * returned =
 #include "data_keyset.c"
