@@ -42,7 +42,7 @@ static int validateKey (Key * key, Key * parentKey)
 	if (!rc)
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-			parentKey, "Length check of key %s with value %s failed. Maximum length is %d but the given string is %d",
+			parentKey, "Length check of key '%s' with value '%s' failed. Maximum length is %d but the given string has length %d",
 			keyName (key), keyString (key), i, c);
 	}
 
