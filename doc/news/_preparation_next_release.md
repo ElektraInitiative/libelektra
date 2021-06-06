@@ -53,7 +53,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### Length
 
 - Implement a plugin that validates that a string length is less or equal to given number. _(Philipp Oppel)_
-_(Michael Tucek)_
+  _(Michael Tucek)_
 
 Special thanks to _(Klemens Böswirth)_, _(Mihael Pranjić)_ and _(Robert Sowula)_ for helping with the problem analysis!
 
