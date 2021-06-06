@@ -13,7 +13,7 @@
 
 ## Introduction
 
-This plugins purpose is to check the maximum length of strings. For example if check/length/max is set to 3, Strings with more than 3 characters will not validate (e.g. "abcd"), whereas "abc" would validate.
+This plugins purpose is to check the maximum length of strings. For example if `check/length/max` is set to 3, Strings with more than 3 characters will not validate (e.g. "abcd"), whereas "abc" would validate.
 
 ## Installation
 
@@ -24,7 +24,7 @@ The package is called `libelektra5-experimental`.
 
 ```sh
 # Mount `length` plugin to cascading namespace `/tests/length`
-kdb mount config.dump /tests/length dump length
+kdb mount config.dump /tests/length length
 
 # Check the validity of the string stored in `/tests/length/text`
 kdb meta-set /tests/length/text check/length/max 3
@@ -46,4 +46,4 @@ kdb umount /tests/length
 
 ## Limitations
 
-The plugin only checks that strings are not longer than a given number. It is not able to set a minimumlength.
+The plugin only checks that strings are not longer than a given number. It is not possible to set a minimum length.
