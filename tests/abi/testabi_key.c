@@ -1949,26 +1949,26 @@ static void test_keyBaseName (void)
 	Key * k = keyNew ("user:///foo\\///bar\\/foo_bar\\/", KEY_END);
 	succeed_if_same_string (keyName (k), "user:/foo\\//bar\\/foo_bar\\/");
 	succeed_if_same_string (keyBaseName (k), "bar/foo_bar/");
-	succeed_if (keyGetBaseNameSize(k) == 13, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 13, "wrong base name size");
 
 	keySetName (k, "system:/");
 	succeed_if_same_string (keyBaseName (k), "");
-	succeed_if (keyGetBaseNameSize(k) == 1, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 1, "wrong base name size");
 
 	keySetName (k, "system:/valid//////");
 	succeed_if_same_string (keyName (k), "system:/valid");
 	succeed_if_same_string (keyBaseName (k), "valid");
-	succeed_if (keyGetBaseNameSize(k) == 6, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 6, "wrong base name size");
 
 	keySetName (k, "system://////valid//////");
 	succeed_if_same_string (keyName (k), "system:/valid");
 	succeed_if_same_string (keyBaseName (k), "valid");
-	succeed_if (keyGetBaseNameSize(k) == 6, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 6, "wrong base name size");
 
 	keySetName (k, "system:///.///valid//.////");
 	succeed_if_same_string (keyName (k), "system:/valid");
 	succeed_if_same_string (keyBaseName (k), "valid");
-	succeed_if (keyGetBaseNameSize(k) == 6, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 6, "wrong base name size");
 
 	keySetName (k, "user:/");
 	succeed_if_same_string (keyBaseName (k), "");
@@ -1977,57 +1977,57 @@ static void test_keyBaseName (void)
 	keySetName (k, "user:/valid//////");
 	succeed_if_same_string (keyName (k), "user:/valid");
 	succeed_if_same_string (keyBaseName (k), "valid");
-	succeed_if (keyGetBaseNameSize(k) == 6, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 6, "wrong base name size");
 
 	keySetName (k, "user://////valid//////");
 	succeed_if_same_string (keyName (k), "user:/valid");
 	succeed_if_same_string (keyBaseName (k), "valid");
-	succeed_if (keyGetBaseNameSize(k) == 6, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 6, "wrong base name size");
 
 	keySetName (k, "user:///.///valid//.////");
 	succeed_if_same_string (keyName (k), "user:/valid");
 	succeed_if_same_string (keyBaseName (k), "valid");
-	succeed_if (keyGetBaseNameSize(k) == 6, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 6, "wrong base name size");
 
 	keySetName (k, "user:///foo\\///bar\\/foo_bar\\/");
 	succeed_if_same_string (keyName (k), "user:/foo\\//bar\\/foo_bar\\/");
 	succeed_if_same_string (keyBaseName (k), "bar/foo_bar/");
-	succeed_if (keyGetBaseNameSize(k) == 13, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 13, "wrong base name size");
 
 	keySetName (k, "user://////foo_bar\\/");
 	succeed_if_same_string (keyName (k), "user:/foo_bar\\/");
 	succeed_if_same_string (keyBaseName (k), "foo_bar/");
-	succeed_if (keyGetBaseNameSize(k) == 9, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 9, "wrong base name size");
 
 	keySetName (k, "user://////%");
 	succeed_if_same_string (keyName (k), "user:/%");
 	succeed_if_same_string (keyBaseName (k), "");
-	succeed_if (keyGetBaseNameSize(k) == 1, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 1, "wrong base name size");
 
 	keySetName (k, "user://////\\%");
 	succeed_if_same_string (keyName (k), "user:/\\%");
 	succeed_if_same_string (keyBaseName (k), "%");
-	succeed_if (keyGetBaseNameSize(k) == 2, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 2, "wrong base name size");
 
 	keySetName (k, "user://////\\\\%");
 	succeed_if_same_string (keyName (k), "user:/\\\\%");
 	succeed_if_same_string (keyBaseName (k), "\\%");
-	succeed_if (keyGetBaseNameSize(k) == 3, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 3, "wrong base name size");
 
 	keySetName (k, "system:/\\\\valid/\\\\base");
 	succeed_if_same_string (keyName (k), "system:/\\\\valid/\\\\base");
 	succeed_if_same_string (keyBaseName (k), "\\base");
-	succeed_if (keyGetBaseNameSize(k) == 6, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 6, "wrong base name size");
 
 	keySetName (k, "system:/\\/valid/\\/base");
 	succeed_if_same_string (keyName (k), "system:/\\/valid/\\/base");
 	succeed_if_same_string (keyBaseName (k), "/base"); // wanted?
-	succeed_if (keyGetBaseNameSize(k) == 6, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 6, "wrong base name size");
 
 	keySetName (k, "system:/valid\\\\/base");
 	succeed_if_same_string (keyName (k), "system:/valid\\\\/base");
 	succeed_if_same_string (keyBaseName (k), "base");
-	succeed_if (keyGetBaseNameSize(k) == 5, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 5, "wrong base name size");
 
 	keySetName (k, "user://////\\\\%");
 	succeed_if_same_string (keyName (k), "user:/\\\\%");
