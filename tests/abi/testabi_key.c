@@ -901,17 +901,17 @@ static void test_keyValue (void)
 	succeed_if (keyValue (0) == 0, "null pointer");
 	succeed_if (keyGetValueSize (0) == -1, "null pointer");
 	succeed_if (keySetString (0, "") == -1, "null pointer");
-	succeed_if_same_string (keyString(0), "(null)");
+	succeed_if_same_string (keyString (0), "(null)");
 
 	key = keyNew ("/", KEY_END);
 	succeed_if (keyGetValueSize (key) == 1, "empty value size");
-	succeed_if_same_string (keyString(key), "");
+	succeed_if_same_string (keyString (key), "");
 
 	keySetString (key, testString);
 	succeed_if (keyGetString (0, ret, 100) == -1, "null pointer");
 	succeed_if (keyGetString (key, 0, 100) == -1, "string null pointer");
 	succeed_if (keyGetString (key, ret, 0) == -1, "length checking");
-	succeed_if_same_string (keyString(key), testString);
+	succeed_if_same_string (keyString (key), testString);
 
 	for (i = 1; i < sizeof (testString); i++)
 	{
