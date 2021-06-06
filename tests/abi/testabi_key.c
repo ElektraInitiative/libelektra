@@ -1972,7 +1972,7 @@ static void test_keyBaseName (void)
 
 	keySetName (k, "user:/");
 	succeed_if_same_string (keyBaseName (k), "");
-	succeed_if (keyGetBaseNameSize(k) == 1, "wrong base name size");
+	succeed_if (keyGetBaseNameSize (k) == 1, "wrong base name size");
 
 	keySetName (k, "user:/valid//////");
 	succeed_if_same_string (keyName (k), "user:/valid");
