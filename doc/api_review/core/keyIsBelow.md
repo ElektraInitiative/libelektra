@@ -89,7 +89,7 @@
 - [ ] All possible error states are covered by tests  
        - [x] 214 seems to be tested  
        - [x] 256 seems to be tested  
-       - [ ] add test for cascading key vs root key
+       - [x] add test for cascading key vs root key
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

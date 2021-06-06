@@ -186,7 +186,13 @@ static void test_below (void)
 	keySetName (k2, "system:/a/a/a/a/a/a");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
-	// TODO add test for cascading Keys
+	keySetName (k1, "/");
+	keySetName (k2, "user:/something");
+	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
+
+	keySetName (k1, "user:");
+	keySetName (k2, "/something");
+	succeed_if (keyIsBelow (k1, k2) == 0, "should be below");
 
 	keyDel (k1);
 	keyDel (k2);
