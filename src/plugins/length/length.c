@@ -20,11 +20,11 @@ static int validateKey (Key * key, Key * parentKey)
 	int c = 0;
 	const char * length = keyString (meta);
 	long i;
-	i = strtol(length, NULL, 10);
+	i = strtol (length, NULL, 10);
 
 	const char * text = keyString (key);
 
-	c = strlen(text);
+	c = strlen (text);
 
 	if (c <= i)
 	{
@@ -39,7 +39,8 @@ static int validateKey (Key * key, Key * parentKey)
 	if (!rc)
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
-			parentKey, "Length check of key '%s' with value '%s' failed. Maximum length is %d but the given string has length %d",
+			parentKey,
+			"Length check of key '%s' with value '%s' failed. Maximum length is %d but the given string has length %d",
 			keyName (key), keyString (key), i, c);
 	}
 
