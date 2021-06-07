@@ -3,7 +3,7 @@
 - guid: 9af4a71a-4e03-46a8-badb-5d76ac548144
 - author: Mihael Pranjić
 - pubDate: Mon, 07 Jun 2021 09:48:41 +0200
-- shortDesc: Java Fixes and Compatibility Improvements
+- shortDesc: Java Fixes, Documentation Updates, GCC 11 and Clang 12 Compatibility
 
 We are proud to release Elektra 0.9.6.
 
@@ -22,7 +22,7 @@ This is the quickest way to get started with Elektra without compiling and other
 ## Highlights
 
 - Java fixes: JNI plugin fixed and JNA bindings improved
-- Fresh Fedora 34 packages
+- Fedora 34 and Debian Bullseye packages added
 - Documentation Improvements & Cleanups
 - GCC 11 and Clang 12 compatibility
 
@@ -46,11 +46,7 @@ _(Michael Tucek)_
 
 Special thanks to _(Klemens Böswirth)_, _(Mihael Pranjić)_ and _(Robert Sowula)_ for helping with the problem analysis!
 
-### Dbus
-
-- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
-
-### Dbusrecv
+### Dbus, Dbusrecv and Zeromqsend
 
 - Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
 
@@ -58,17 +54,9 @@ Special thanks to _(Klemens Böswirth)_, _(Mihael Pranjić)_ and _(Robert Sowula
 
 - Store length of an array in metakey array according to [array decision](../decisions/array.md). _(Robert Sowula)_
 
-### YAML Smith
+### YAML Smith and Yan LR
 
-- Removed plugin _(René Schwaiger)_
-
-### Yan LR
-
-- Removed plugin _(René Schwaiger)_
-
-### Zeromqsend
-
-- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
+- Removed plugins. _(René Schwaiger)_
 
 ### ni
 
@@ -214,7 +202,7 @@ _(Michael Tucek)_
 
 ## Packaging
 
-- We now package the ruby bindings, ruby plugin and the gitresolver plugin. _(Robert Sowula)_
+- We now package the Ruby bindings, ruby plugin and the gitresolver plugin. _(Robert Sowula)_
 - We added Fedora 34 packages. _(Mihael Pranjić)_
 - We added Debian Bullseye packages. _(Robert Sowula)_
 
@@ -230,7 +218,7 @@ _(Michael Tucek)_
 - Add Fedora 34 images. _(Mihael Pranjić)_
 - We added release images that come with pre-installed dependencies and sudo permissions for each distribution we build packages for. _(Robert Sowula)_
 - Use Clang 12 and Gradle 7.0 in Debian Sid image. _(Mihael Pranjić)_
-- Remove boost and some unused dependencies from all Docker images. _(Mihael Pranjić)_
+- Remove Boost and some unused dependencies from all Docker images. _(Mihael Pranjić)_
 - Use Gradle 7.0 and Ronn-NG `0.10.1.pre1` in Docker images. _(Mihael Pranjić)_
 - Remove unused Debian Buster `doc` image. _(Mihael Pranjić)_
 
@@ -286,7 +274,11 @@ We are currently working on following topics:
 
 ## Statistics
 
-<<`scripts/git-release-stats 0.9.VER-1 0.9.6`>>
+We closed [39 issues](https://github.com/ElektraInitiative/libelektra/milestone/27?closed=1) for this release.
+
+About 17 authors changed 627 files with 15988 insertions(+) and 16768 deletions(-) in 465 commits.
+
+Thanks to all authors for making this release possible!
 
 ## Join the Initiative!
 
@@ -303,7 +295,11 @@ or [GitHub](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektr
 
 The [hashsums are:](https://github.com/ElektraInitiative/ftp/blob/master/releases/elektra-0.9.6.tar.gz.hashsum?raw=true)
 
-<<`scripts/generate-hashsums elektra-0.9.6.tar.gz`>>
+- name: elektra-0.9.6.tar.gz
+- size: 7649484
+- md5sum: e471277ca43a73f222c5e2d32ac19efc
+- sha1: 97c2acd4c651dd79feabc96b09ce6a28152dc1bf
+- sha256: 89a464952600ebfa6e675723a73a2b19f0942c27eee7b193224e50704b68866d
 
 The release tarball is also available signed using GnuPG from
 [here](https://www.libelektra.org/ftp/elektra/releases/elektra-0.9.6.tar.gz.gpg) or on
