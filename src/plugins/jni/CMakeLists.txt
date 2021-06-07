@@ -18,7 +18,7 @@ if (DEPENDENCY_PHASE)
 
 	if (JNI_FOUND)
 		set (DIRS ${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2} ${JAVA_AWT_INCLUDE_PATH})
-		set (LIBS ${JAVA_MAWT_LIBRARY} ${JNI_LIBRARIES} ${JAVA_AWT_LIBRARY} ${JAVA_JVM_LIBRARY}) # for check_symbol_exists
+		set (LIBS ${CMAKE_THREAD_LIBS_INIT} ${JAVA_MAWT_LIBRARY} ${JNI_LIBRARIES} ${JAVA_AWT_LIBRARY} ${JAVA_JVM_LIBRARY}) # for check_symbol_exists
 		set (CMAKE_REQUIRED_INCLUDES ${DIRS})
 		safe_check_symbol_exists (JNI_VERSION_10 jni.h JNI_CORRECT_VERSION)
 
@@ -30,6 +30,9 @@ if (DEPENDENCY_PHASE)
 		remove_plugin (jni "JNI not found, please review your JDK installation and consider setting JAVA_HOME accordingly")
 	endif ()
 endif ()
+
+message(INFO "JNI LIBS: ${LIBS}")
+message(INFO "JNI CMAKE_THREAD_LIBS_INIT: ${CMAKE_THREAD_LIBS_INIT}")
 
 add_plugin (
 	jni
