@@ -80,7 +80,7 @@ If no release critical problems are found during testing, continue.
   - Add download links to release notes (api-docu, release tarball)
   - Add hash sums to release notes
 - Run linkchecker to verify that all download links of the current release are working:
-  `mkdir -p build && cd build && make html && ../scripts/link-checker external-links.txt`
+  `mkdir -p build && cd build && cmake .. && make html && ../scripts/link-checker external-links.txt`
 - Wait for master build to finish and verify website is correct
 
 # Post-Release updates (depend on release artifacts)
