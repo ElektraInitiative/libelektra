@@ -61,6 +61,8 @@ def _mock_process_context_and_run(process_context, func, args, kwargs):
 
     try:
         return func(*args, **kwargs)
+    except kdb.kdb.KeyInvalidName:
+        raise OSError(errno.ENOENT)
     except kdb.Exception as e:
         exception_message = str(e).lower()
 
