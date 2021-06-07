@@ -761,9 +761,7 @@ ${WORKSPACE}/build/doc/man ./"""
           }
         }
 
-        warnings parserConfigurations: [
-          [parserName: 'Doxygen', pattern: 'build/doc/doxygen.log']
-        ]
+        recordIssues(tools: [doxygen(pattern: 'build/doc/doxygen.log')])
 
         deleteDir()
       }
