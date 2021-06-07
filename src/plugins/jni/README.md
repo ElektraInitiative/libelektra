@@ -36,6 +36,7 @@ The Java plugin itself needs to have the following methods:
 See [installation](/doc/INSTALL.md).
 The package is called `libelektra5-java`.
 To actually mount plugins, you will additionally need `java-elektra`.
+Furthermore, at least JNA version 5.5 is required.
 
 ## Plugin Config
 
@@ -51,17 +52,21 @@ Additionally, you can set:
 - ignore allows you to ignore broken options, default: `false`
 - print allows you to print java exceptions for debugging purposes
 
-If Elektra is already installed:
+If Elektra and a recent jna.jar (adapt path below) is already installed, following should output some debug logs and this README:
 
 ```sh
 kdb plugin-info -c classname=org/libelektra/plugin/Echo,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print= jni
-kdb mount -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print= file.properties /jni jni classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print=
 ```
 
-Additionally, the Java implementation can request any other additional
-configuration, read about it below in the section (specific java plugin).
-If you are reading this page on GitHub, you won't see it, because the
-plugins dynamically append text after the end of this page.
+> Note: The Java implementation of the plugin can request any other additional
+> plugin configuration, read about it in the end of the output of plugin-info.
+> Plugins dynamically append text after the end of this page.
+
+You can also mount plugins (see [open issues](https://issues.libelektra.org/3881)):
+
+```sh
+kdb mount -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print= file.properties /jni jni classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print=
+```
 
 ## Compiling the Plugin
 
@@ -114,7 +119,6 @@ If it should still not find the correct jni version, or says the jni version is 
 It has been experienced that if the project has been built already without this environment variable set, the Java location is cached.
 As a result, it will be resolved wrong in future builds, even though the environment variable is set.
 To resolve this, it should be enough to delete the CMakeCache.txt file in the build directory and reconfigure the build.
-
 
 ## Development
 
