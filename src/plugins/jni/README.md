@@ -68,9 +68,10 @@ You can also mount plugins (see [open issues](https://issues.libelektra.org/3881
 kdb mount -c classname=org/libelektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print= file.properties /jni jni classname=org/libelektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print=
 ```
 
-## Compiling the Plugin
+## Compiling
 
-Enable the plugin using (`ALL;-EXPERIMENTAL` is default):
+If you do not want to use pre-compiled versions, you can compile the plugin yourself.
+Start by enabling the plugin using (`ALL;-EXPERIMENTAL` is default):
 
 ```sh
 cmake -DPLUGINS="ALL;-EXPERIMENTAL;jni" /path/to/libelektra
