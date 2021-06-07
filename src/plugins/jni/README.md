@@ -65,7 +65,7 @@ kdb plugin-info -c classname=org/libelektra/plugin/Echo,classpath=.:/usr/share/j
 You can also mount plugins (see [open issues](https://issues.libelektra.org/3881)):
 
 ```sh
-kdb mount -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print= file.properties /jni jni classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print=
+kdb mount -c classname=org/libelektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print= file.properties /jni jni classname=org/libelektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print=
 ```
 
 ## Compiling the Plugin
