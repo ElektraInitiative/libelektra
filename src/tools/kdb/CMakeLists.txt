@@ -21,23 +21,15 @@ if (BUILD_SHARED)
 	add_executable (kdb $<TARGET_OBJECTS:kdb-objects>)
 	add_dependencies (kdb kdb_gen_templates_generated)
 
-	# link kdb with CMAKE_THREAD_LIBS_INIT, if jni plugin is included
-	set (NOT_INCLUDED "")
-	plugin_check_if_included ("jni")
-	if (NOT_INCLUDED)
-		target_link_libraries (kdb elektra-core elektra-kdb elektratools elektra-opts elektra-merge)
-	else ()
-		find_package (Threads)
-		message (INFO "LINKING kdb with ${CMAKE_THREAD_LIBS_INIT}")
-		target_link_libraries (
-			kdb
-			${CMAKE_THREAD_LIBS_INIT}
-			elektra-core
-			elektra-kdb
-			elektratools
-			elektra-opts
-			elektra-merge)
-	endif ()
+	find_package (Threads)
+	target_link_libraries (
+		kdb
+		${CMAKE_THREAD_LIBS_INIT}
+		elektra-core
+		elektra-kdb
+		elektratools
+		elektra-opts
+		elektra-merge)
 
 	install (
 		TARGETS kdb
