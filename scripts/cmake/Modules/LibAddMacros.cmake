@@ -330,7 +330,7 @@ endmacro (add_toolheaders)
 #
 # ~~~
 macro (remove_plugin name reason)
-	if (NOT ${reason} STREQUAL "silent")
+	if (NOT "${reason}" STREQUAL "silent")
 		message (STATUS "Exclude plugin ${name} because ${reason}")
 	endif ()
 

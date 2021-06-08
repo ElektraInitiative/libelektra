@@ -4,7 +4,7 @@
 - infos/provides =
 - infos/needs =
 - infos/placements = getstorage setstorage
-- infos/status = maintained unittest configurable global memleak experimental discouraged
+- infos/status = maintained unittest configurable global memleak experimental
 - infos/description = generic Java plugin
 
 ## Introduction
@@ -35,77 +35,8 @@ The Java plugin itself needs to have the following methods:
 
 See [installation](/doc/INSTALL.md).
 The package is called `libelektra5-java`.
-
-### Java prerequisites on Debian 10 / Ubuntu 20.04 LTS
-
-Install package `openjdk-11-jdk`.
-
-If you get errors related to `Could NOT find JNI`, please consider setting your `JAVA_HOME` environment variable accordingly.
-
-For example:
-
-```sh
-export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-```
-
-### Java prerequisites on macOS
-
-macOS includes an old apple specific version of java, based on 1.6.
-However, for the jni plugin JDK version 11 is required, so either the openjdk or the oracle jdk has to be installed.
-
-Please install oracle's jdk11 via their provided installer.
-After that, you have to set the JAVA_HOME environment variable to the folder where the jdk is installed, usually like
-
-```sh
-export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home/"
-```
-
-As macOS handles linked libraries differently, there is no ldconfig command.
-Instead you can export an environment variable to tell elektra the location of the java dynamic libraries.
-
-```sh
-export DYLD_FALLBACK_LIBRARY_PATH="/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home/jre/lib:/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home/jre/lib/server/"
-```
-
-Afterwards, the jni plugin should be included in the build and compile successfully.
-
-#### Troubleshooting
-
-If it should still not find the correct jni version, or says the jni version is not 11, then it most likely still searches in the wrong directory for the jni header file.
-It has been experienced that if the project has been built already without this environment variable set, the java location is cached.
-As a result, it will be resolved wrong in future builds, even though the environment variable is set.
-To resolve this, it should be enough to delete the CMakeCache.txt file in the build directory and reconfigure the build.
-
-### Enabling the Plugin
-
-Then enable the plugin using (`ALL;-EXPERIMENTAL` is default):
-
-```sh
-cmake -DPLUGINS="ALL;-EXPERIMENTAL;jni" /path/to/libelektra
-```
-
-Running
-
-```sh
-kdb-full
-```
-
-should work then (needs BUILD_FULL cmake option), if you get one of these:
-
-```
-kdb-full: error while loading shared libraries: libmawt.so: cannot open shared object file: No such file or directory
-kdb-full: error while loading shared libraries: libjawt.so: cannot open shared object file: No such file or directory
-```
-
-You missed one of the ldconfig steps.
-
-### Running the JNI test
-
-Change to your Eletkra's build folder and execute the following command for running the JNI plugin test and verify it works:
-
-```
-ctest -V -R testmod_jni
-```
+To actually mount plugins, you will additionally need `java-elektra`.
+Furthermore, at least JNA version 5.5 is required.
 
 ## Plugin Config
 
@@ -121,24 +52,74 @@ Additionally, you can set:
 - ignore allows you to ignore broken options, default: `false`
 - print allows you to print java exceptions for debugging purposes
 
-E.g.
+If Elektra and a recent jna.jar (adapt path below) is already installed, following should output some debug logs and this README:
 
 ```sh
-kdb plugin-info -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/libelektra/src/bindings/jna,print= jni
-kdb plugin-check -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/libelektra/src/bindings/jna,print= jni
-kdb mount -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/src/bindings/jna,print= file.properties /jni jni classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/lib/java:/path/to/libelektra/src/bindings/jna,print=
+kdb plugin-info -c classname=org/libelektra/plugin/Echo,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print= jni
 ```
 
-Or if `.jar` is already installed:
+> Note: The Java implementation of the plugin can request any other additional
+> plugin configuration, read about it in the end of the output of plugin-info.
+> Plugins dynamically append text after the end of this page.
+
+You can also mount plugins (see [open issues](https://issues.libelektra.org/3881)):
 
 ```sh
-bin/kdb mount -c classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/elektra.jar,print= file.properties /jni jni classname=elektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/elektra.jar,print=
+kdb mount -c classname=org/libelektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print= file.properties /jni jni classname=org/libelektra/plugin/PropertiesStorage,classpath=.:/usr/share/java/jna.jar:/usr/share/java/libelektra.jar,print=
 ```
 
-Additionally, the java implementation can request any other additional
-configuration, read about it below in the section (specific java plugin).
-If you are reading this page on GitHub, you won't see it, because the
-plugins dynamically append text after the end of this page.
+## Compiling
+
+If you do not want to use pre-compiled versions, you can compile the plugin yourself.
+Start by enabling the plugin using (`ALL;-EXPERIMENTAL` is default):
+
+```sh
+cmake -DPLUGINS="ALL;-EXPERIMENTAL;jni" /path/to/libelektra
+```
+
+### on Debian 10 / Ubuntu 20.04 LTS
+
+Install package `openjdk-11-jdk` and make sure that no older Java versions are present in `/usr/lib/jvm`.
+
+If you have manually installed Java, you might get errors related to `Could NOT find JNI` during `cmake`.
+In this case, please consider setting your `JAVA_HOME` environment variable accordingly.
+
+### on macOS
+
+Older macOS include an old apple specific version of Java, based on 1.6.
+However, for the jni plugin JDK version 11 is required, so either the openjdk or the oracle jdk has to be installed.
+
+For example, install oracle's jdk11 via their provided installer.
+After that, you have to set the JAVA_HOME environment variable to the folder where the jdk is installed, usually like
+
+```sh
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home/"
+```
+
+As macOS handles linked libraries differently, there is no ldconfig command.
+Instead you can export an environment variable to tell Elektra the location of Java's dynamic libraries.
+
+```sh
+export DYLD_FALLBACK_LIBRARY_PATH="/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home/jre/lib:/Library/Java/JavaVirtualMachines/jdk-11.jdk/Contents/Home/jre/lib/server/"
+```
+
+Afterwards, the jni plugin should be included in the build and compile successfully.
+
+### Running the JNI test
+
+Make sure to run the test after compiling the plugin.
+Change to your Elektra's build folder and execute the following command for running the JNI plugin test and verify it works:
+
+```
+ctest -V -R testmod_jni
+```
+
+### Troubleshooting
+
+If it should still not find the correct jni version, or says the jni version is not 11, then it most likely still searches in the wrong directory for the jni header file.
+It has been experienced that if the project has been built already without this environment variable set, the Java location is cached.
+As a result, it will be resolved wrong in future builds, even though the environment variable is set.
+To resolve this, it should be enough to delete the CMakeCache.txt file in the build directory and reconfigure the build.
 
 ## Development
 
@@ -154,13 +135,9 @@ Also explained
 [JNI Functions](https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/functions.html)
 [Invocation](https://docs.oracle.com/javase/7/docs/technotes/guides/jni/spec/invocation.html)
 
-## Issues
+## Open Issues
 
-Argumentation for discouraged:
-
-- You cannot use the plugin with openjdk:
-  You get a linker error because of some missing private SUN symbols.
-  In Debian9 it crashes with openjdk8/9.
-- Only a single java plugin can be loaded
-- When this plugin is enabled, valgrind detects memory problems even if
+- Only a single Java plugin can be loaded
+- Java plugins cannot be used from an Java application
+- If this plugin is enabled, valgrind detects memory problems even if
   the plugin is not mounted.
