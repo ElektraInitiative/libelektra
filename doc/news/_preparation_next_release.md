@@ -21,11 +21,15 @@ Elektra serves as a universal and secure framework to access
 configuration settings in a global, hierarchical key database.
 For more information, visit [https://libelektra.org](https://libelektra.org).
 
-You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
+You can also read the news [on our website](https://www.libelektra.org/news/0.9.<<VERSION>>-release).
 
 You can try out the latest Elektra release using our docker image [elektra/elektra](https://hub.docker.com/r/elektra/elektra).
-This is the quickest way to get started with Elektra without compiling and other obstacles, simply run
-`docker run -it elektra/elektra`.
+This is the quickest way to get started with Elektra without compiling and other obstacles, simply run:
+
+```sh
+docker pull elektra/elektra
+docker run -it elektra/elektra
+```
 
 ## Highlights
 
@@ -235,7 +239,7 @@ please contact us via our issue tracker [on GitHub](http://issues.libelektra.org
 
 [Permalink to this NEWS entry](https://www.libelektra.org/news/0.9.<<VERSION>>-release)
 
-For more information, see [https://libelektra.org](https://libelektra.org)
+For more information, see [https://libelektra.org](https://libelektra.org).
 
 Best regards,
 [Elektra Initiative](https://www.libelektra.org/developers/authors)
