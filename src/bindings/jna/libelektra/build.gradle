@@ -1,6 +1,15 @@
 // apply project configuration for java libraries
 apply from: "$rootProject.projectDir/java-library.gradle"
 
+// apply optional test override
+File testExclusions = new File('test-exclusion.gradle')
+if (testExclusions.exists()) {
+	apply from: testExclusions
+	logger.lifecycle("Test exclusions have been applied.")
+} else {
+	logger.lifecycle("Test exclusions file not found.")
+}
+
 // apply project dependencies
 apply from: 'dependencies.gradle'
 
