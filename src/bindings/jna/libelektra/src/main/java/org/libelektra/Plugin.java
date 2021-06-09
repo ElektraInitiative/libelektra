@@ -8,6 +8,11 @@ import javax.annotation.Nonnull;
 public interface Plugin {
 
 	/**
+	 * This is the root key of the JNI plugin wrapping a Java plugin for use by Elektra
+	 */
+	static final String JNI_MODULE_CONTRACT_ROOT = "system:/elektra/modules/jni";
+
+	/**
 	 * Return value for plugin methods: An error occurred inside the plugin function
 	 */
 	static final int STATUS_ERROR = -1;

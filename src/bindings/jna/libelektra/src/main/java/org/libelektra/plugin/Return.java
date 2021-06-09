@@ -7,7 +7,7 @@ import org.libelektra.Plugin;
 public class Return implements Plugin
 {
 
-	public static final String PLUGIN_NAME = "Return";
+	private static final String PLUGIN_NAME = "Return";
 
 	@Override public KeySet getConfig ()
 	{
