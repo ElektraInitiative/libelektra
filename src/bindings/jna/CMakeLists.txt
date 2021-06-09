@@ -57,24 +57,6 @@ if (Java_JAVAC_EXECUTABLE)
 				set (GRADLE_TEST_EXCLUDES "")
 				java_test_needs_plugin (GOptsTest gopts)
 
-				if ((CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-				    AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15)
-				    OR (NOT BUILD_TESTING))
-					# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not
-					# installed in the system
-					java_exclude_test (ExceptionMapperIT)
-					java_exclude_test (ExceptionMapperTest)
-					java_exclude_test (GOptsTest)
-					java_exclude_test (KDBExceptionTest)
-					java_exclude_test (KDBTest)
-					java_exclude_test (KeyNameIteratorTest)
-					java_exclude_test (KeySetTest)
-					java_exclude_test (KeyTest)
-					java_exclude_test (PluginLoaderIT)
-					java_exclude_test (ReturnTest)
-					java_exclude_test (WarningEntryTest)
-				endif ()
-
 				# first fill the elektra version in the pom file @ONLY to avoid replacing pom.xml placeholders which also
 				# use the format ${}
 				configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/version-settings.gradle.in"
@@ -141,6 +123,10 @@ if (Java_JAVAC_EXECUTABLE)
 					${JNA_BINDING_SOURCE_DIRECTORY_TEST_PLUGIN}/ReturnTest.java
 					${JNA_BINDING_PREFIX}/build.gradle
 					${JNA_BINDING_PREFIX}/dependencies.gradle
+					plugins/build.gradle
+					plugins/dependencies.gradle
+					plugins/whitelist/src/main/java/org/libelektra/plugin/WhitelistPlugin.java
+					plugins/whitelist/src/test/java/org/libelektra/plugin/WhitelistPluginTests.java
 					build.gradle
 					gradle.properties
 					java-library.gradle
@@ -180,8 +166,14 @@ if (Java_JAVAC_EXECUTABLE)
 					DESTINATION "share/java"
 					COMPONENT java-elektra)
 
-				# add gradle test to execute with ctest in the testing phase
-				if (BUILD_TESTING AND NOT ENABLE_ASAN)
+				# we cannot set DYLD_LIBRARY_PATH on new macOS versions, making the kdb tests fail if its not installed in
+				# the system
+				if (BUILD_TESTING
+				    AND NOT ENABLE_ASAN
+				    AND NOT
+					((CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+					 AND NOT (CMAKE_SYSTEM_VERSION VERSION_LESS 15)
+					 OR (NOT BUILD_TESTING)))
 					add_test (
 						NAME testjna_gradle
 						COMMAND ${GRADLE_EXECUTABLE} -q --console=plain test
