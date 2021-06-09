@@ -37,14 +37,12 @@ static void test_blacklist (void)
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k4);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k5);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
@@ -77,21 +75,18 @@ static void test_blacklist_empty_values (void)
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k2);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k3);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet should have failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k4);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
 	ksDel (ks);
@@ -103,8 +98,8 @@ static void test_blacklist_empty_values (void)
 static void test_blacklist_null_values (void)
 {
 	Key * parentKey = keyNew ("user:/tests/blacklist", KEY_VALUE, "", KEY_END);
-	Key * k1 = keyNew ("user:/tests/blacklist/valid1", KEY_VALUE, "", KEY_META, "check/blacklist", NULL, KEY_END);
-	Key * k2 = keyNew ("user:/tests/blacklist/valid2", KEY_VALUE, NULL, KEY_META, "check/blacklist", NULL, KEY_END);
+	Key * k1 = keyNew ("user:/tests/blacklist/valid1", KEY_VALUE, "", KEY_END);
+	Key * k2 = keyNew ("user:/tests/blacklist/valid2", KEY_VALUE, NULL, KEY_END);
 	Key * k3 = keyNew ("user:/tests/blacklist/valid3", KEY_VALUE, NULL, KEY_META, "check/blacklist", "", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
@@ -117,14 +112,12 @@ static void test_blacklist_null_values (void)
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k2);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet should have failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
 	ksAppendKey (ks, k3);
-	ksRewind (ks);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbSet failed");
 	ksDel (ks);
