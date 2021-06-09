@@ -29,7 +29,7 @@ static void blacklistValidValues (const Key * key, KeySet * validValues)
 		const Key * blacklistKey = keyGetMeta (key, elem);
 		const char * name = keyString (blacklistKey);
 		Key * k = keyNew ("user:/0", KEY_BINARY, KEY_SIZE, sizeof (kdb_unsigned_long_long_t), KEY_END);
-		keySetBaseName(k, name);
+		keySetBaseName (k, name);
 		ksAppendKey (validValues, k);
 		++index;
 		elektraWriteArrayNumber (indexStart, index);
@@ -124,24 +124,26 @@ int elektraBlacklistGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
-	for (elektraCursor it = 0; it < ksGetSize (returned); ++it) {
-    	Key * cur = ksAtCursor (returned, it);
-    	const Key * meta = keyGetMeta (cur, "check/blacklist");
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
+	{
+		Key * cur = ksAtCursor (returned, it);
+		const Key * meta = keyGetMeta (cur, "check/blacklist");
 		if (!meta) continue;
 		if (!elektraCheckBlacklist (cur))
 		{
 			elektraSetErrorBlacklist (handle, cur, parentKey);
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
-    }
+	}
 
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 }
 
 int elektraBlacklistSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey ELEKTRA_UNUSED)
 {
-	for (elektraCursor it = 0; it < ksGetSize (returned); ++it) {
-    	Key * cur = ksAtCursor (returned, it);
+	for (elektraCursor it = 0; it < ksGetSize (returned); ++it)
+	{
+		Key * cur = ksAtCursor (returned, it);
 		const Key * meta = keyGetMeta (cur, "check/blacklist");
 		if (!meta) continue;
 		if (!elektraCheckBlacklist (cur))

@@ -21,8 +21,8 @@ static void test_blacklist (void)
 			   "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#2", "WATER", KEY_END);
 	Key * k3 = keyNew ("user:/tests/blacklist/valid3", KEY_VALUE, "", KEY_META, "check/blacklist", "#1", KEY_META, "check/blacklist/#0",
 			   "FIRE", KEY_META, "check/blacklist/#1", "EARTH", KEY_END);
-	Key * k4 = keyNew ("user:/tests/blacklist/valid4", KEY_VALUE, "WATER", KEY_META, "check/blacklist", "#0", KEY_META, "check/blacklist/#0",
-			   "COLD/WATER", KEY_END);
+	Key * k4 = keyNew ("user:/tests/blacklist/valid4", KEY_VALUE, "WATER", KEY_META, "check/blacklist", "#0", KEY_META,
+			   "check/blacklist/#0", "COLD/WATER", KEY_END);
 	Key * k5 = keyNew ("user:/tests/blacklist/invalid1", KEY_VALUE, "ICE", KEY_META, "check/blacklist", "#2", KEY_META,
 			   "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#1", "EARTH", KEY_META, "check/blacklist/#2", "ICE",
 			   KEY_END);
