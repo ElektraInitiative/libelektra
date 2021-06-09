@@ -117,6 +117,9 @@ you up to date with the multi-language support provided by Elektra.
 - Removed `KeySet::lookup(Key, int)` and `KeySet::lookup(String, int)` as well as accompanying flag definitions `KeySet::KDB_O_NONE`, `KeySet::KDB_O_DEL` and `KeySet::KDB_O_POP`. Please use `KeySet::lookup(Key)` and `KeySet::lookup(String)` instead. Instead of `KeySet::KDB_O_DEL`, please consider using `Key::release`. The proper replacement for `KeySet::KDB_O_POP` is `KeySet::remove(Key)` or `KeySet::remove(String)`.
 
 _(Michael Tucek)_
+### JNA
+
+- added example Java JNI plugin `whitelist` _(Michael Tucek)_
 
 ### <<Binding2>>
 
