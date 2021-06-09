@@ -37,26 +37,25 @@ The package is called `libelektra5-extra`.
 ## Examples
 
 ```sh
-# Backup-and-Restore:/tests/blacklist
-sudo kdb mount blacklist.ecf user:/tests/blacklist dump blacklist
+sudo kdb mount blacklist.ecf /tests/blacklist blacklist
 
 # valid initial value + setup valid blacklist list
-kdb set user:/tests/blacklist ""
-kdb set user:/tests/blacklist/value water
-kdb meta-set user:/tests/blacklist/value check/blacklist '#1'
-kdb meta-set user:/tests/blacklist/value check/blacklist/#0 fire
-kdb meta-set user:/tests/blacklist/value check/blacklist/#1 air
+kdb set /tests/blacklist ""
+kdb set /tests/blacklist/value water
+kdb meta-set spec:/tests/blacklist/value check/blacklist '#1'
+kdb meta-set spec:/tests/blacklist/value check/blacklist/#0 fire
+kdb meta-set spec:/tests/blacklist/value check/blacklist/#1 air
 
 # should succeed
-kdb set user:/tests/blacklist/value earth
+kdb set /tests/blacklist/value earth
 
-# should fail with error C03200
-kdb set user:/tests/blacklist/value fire
+# should fail
+kdb set /tests/blacklist/value fire
 # RET:5
 # ERROR:C03200
 
-# should fail with error C03200
-kdb set user:/tests/blacklist/value air
+# should fail
+kdb set /tests/blacklist/value air
 # RET:5
 # ERROR:C03200
 ```
@@ -64,19 +63,21 @@ kdb set user:/tests/blacklist/value air
 It is also possible to blacklist empty values:
 
 ```sh
-kdb set user:/tests/blacklist/empty water
-kdb meta-set user:/tests/blacklist/empty check/blacklist '#0'
-kdb meta-set user:/tests/blacklist/empty check/blacklist/#0 ''
+kdb set /tests/blacklist/empty water
+kdb meta-set spec:/tests/blacklist/empty check/blacklist '#0'
+kdb meta-set spec:/tests/blacklist/empty check/blacklist/#0 ''
 
 # should succeed
-kdb set user:/tests/blacklist/empty earth
+kdb set /tests/blacklist/empty earth
 
-# should fail with error C03200
-kdb set user:/tests/blacklist/empty ''
+# should fail
+kdb set /tests/blacklist/empty ''
 # RET:5
 # ERROR:C03200
 
 # Undo changes
-kdb rm -r user:/tests/blacklist
-sudo kdb umount user:/tests/blacklist
+kdb rm -r spec:/tests/blacklist
+kdb rm -r user:/tests/blacklist || kdb rm -r system:/tests/blacklist
+# sudo kdb umount spec:/tests/blacklist
+sudo kdb umount /tests/blacklist
 ```
