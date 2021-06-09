@@ -62,6 +62,6 @@ public class ReturnTest
 
 	@Test public void test_returnGetName_ShouldBeReturn ()
 	{
-		assertEquals (Return.PLUGIN_NAME, returnPlugin.getName ());
+		assertEquals ("Return", returnPlugin.getName ());
 	}
 }

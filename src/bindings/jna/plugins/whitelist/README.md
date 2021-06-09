@@ -1,0 +1,8 @@
+- infos = Information about Prime plugin is in keys below
+- infos/author = Michael Tucek <michael@tucek.eu>
+- infos/licence = BSD
+- infos/provides = check
+- infos/needs =
+- infos/placements = postgetstorage presetstorage
+- infos/status = implemented
+- infos/description = Checker/filter plug-in ensuring only prime integers are set

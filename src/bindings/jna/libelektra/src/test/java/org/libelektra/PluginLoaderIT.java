@@ -6,9 +6,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.libelektra.exception.InstallationException;
-import org.libelektra.plugin.Echo;
-import org.libelektra.plugin.PropertiesStorage;
-import org.libelektra.plugin.Return;
 
 public class PluginLoaderIT
 {
@@ -18,40 +15,6 @@ public class PluginLoaderIT
 	@Before public void setup ()
 	{
 		pluginLoader = new PluginLoader ();
-	}
-
-	@Test public void loadEchoJavaPlugin_shouldWorkCorrectly () throws Exception
-	{
-		Plugin plugin = pluginLoader.loadJavaPlugin (Echo.PLUGIN_NAME);
-
-		assertTrue (plugin instanceof Echo);
-	}
-
-	@Test public void loadReturnJavaPlugin_shouldWorkCorrectly () throws Exception
-	{
-		Plugin plugin = pluginLoader.loadJavaPlugin (Return.PLUGIN_NAME);
-
-		assertTrue (plugin instanceof Return);
-	}
-
-	@Test public void loadPropertiesStorageJavaPlugin_shouldWorkCorrectly () throws Exception
-	{
-		Plugin plugin = pluginLoader.loadJavaPlugin (PropertiesStorage.PLUGIN_NAME);
-
-		assertTrue (plugin instanceof PropertiesStorage);
-	}
-
-	@Test public void loadEchoJavaPluginTwice_shouldWorkCorrectly () throws Exception
-	{
-		Plugin plugin1 = pluginLoader.loadJavaPlugin (Echo.PLUGIN_NAME);
-		Plugin plugin2 = pluginLoader.loadJavaPlugin (Echo.PLUGIN_NAME);
-
-		assertEquals (plugin1, plugin2);
-	}
-
-	@Test (expected = InstallationException.class) public void loadNonExistingJavaPluginTwice_shouldThrowException () throws Exception
-	{
-		pluginLoader.loadJavaPlugin ("Does not exist");
 	}
 
 	@Test (expected = InstallationException.class)
