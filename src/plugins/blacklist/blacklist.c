@@ -28,9 +28,8 @@ static void blacklistValidValues (const Key * key, KeySet * validValues)
 	{
 		const Key * blacklistKey = keyGetMeta (key, elem);
 		const char * name = keyString (blacklistKey);
-		kdb_unsigned_long_long_t val = index;
-		Key * k = keyNew ("user:/", KEY_BINARY, KEY_SIZE, sizeof (kdb_unsigned_long_long_t), KEY_VALUE, &val, KEY_END);
-		keyAddName (k, name);
+		Key * k = keyNew ("user:/0", KEY_BINARY, KEY_SIZE, sizeof (kdb_unsigned_long_long_t), KEY_END);
+		keySetBaseName(k, name);
 		ksAppendKey (validValues, k);
 		++index;
 		elektraWriteArrayNumber (indexStart, index);

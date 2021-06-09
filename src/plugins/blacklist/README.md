@@ -42,9 +42,10 @@ sudo kdb mount blacklist.ecf /tests/blacklist blacklist
 # valid initial value + setup valid blacklist list
 kdb set /tests/blacklist ""
 kdb set /tests/blacklist/value water
-kdb meta-set spec:/tests/blacklist/value check/blacklist '#1'
+kdb meta-set spec:/tests/blacklist/value check/blacklist '#2'
 kdb meta-set spec:/tests/blacklist/value check/blacklist/#0 fire
 kdb meta-set spec:/tests/blacklist/value check/blacklist/#1 air
+kdb meta-set spec:/tests/blacklist/value check/blacklist/#2 cold/water
 
 # should succeed
 kdb set /tests/blacklist/value earth
@@ -56,6 +57,11 @@ kdb set /tests/blacklist/value fire
 
 # should fail
 kdb set /tests/blacklist/value air
+# RET:5
+# ERROR:C03200
+
+# should fail
+kdb set /tests/blacklist/value cold/water
 # RET:5
 # ERROR:C03200
 ```

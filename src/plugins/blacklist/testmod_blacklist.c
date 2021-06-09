@@ -21,14 +21,18 @@ static void test_blacklist (void)
 			   "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#2", "WATER", KEY_END);
 	Key * k3 = keyNew ("user:/tests/blacklist/valid3", KEY_VALUE, "", KEY_META, "check/blacklist", "#1", KEY_META, "check/blacklist/#0",
 			   "FIRE", KEY_META, "check/blacklist/#1", "EARTH", KEY_END);
-	Key * k4 = keyNew ("user:/tests/blacklist/invalid1", KEY_VALUE, "ICE", KEY_META, "check/blacklist", "#2", KEY_META,
+	Key * k4 = keyNew ("user:/tests/blacklist/valid4", KEY_VALUE, "WATER", KEY_META, "check/blacklist", "#0", KEY_META, "check/blacklist/#0",
+			   "COLD/WATER", KEY_END);
+	Key * k5 = keyNew ("user:/tests/blacklist/invalid1", KEY_VALUE, "ICE", KEY_META, "check/blacklist", "#2", KEY_META,
 			   "check/blacklist/#0", "FIRE", KEY_META, "check/blacklist/#1", "EARTH", KEY_META, "check/blacklist/#2", "ICE",
 			   KEY_END);
-	Key * k5 = keyNew ("user:/tests/blacklist/invalid2", KEY_VALUE, "FIRE", KEY_META, "check/blacklist", "#0", KEY_META,
+	Key * k6 = keyNew ("user:/tests/blacklist/invalid2", KEY_VALUE, "FIRE", KEY_META, "check/blacklist", "#0", KEY_META,
 			   "check/blacklist/#0", "FIRE", KEY_END);
+	Key * k7 = keyNew ("user:/tests/blacklist/invalid3", KEY_VALUE, "COLD/WATER", KEY_META, "check/blacklist", "#0", KEY_META,
+			   "check/blacklist/#0", "COLD/WATER", KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
-	KeySet * ks = ksNew (3, k1, k2, k3, KS_END);
+	KeySet * ks = ksNew (4, k1, k2, k3, k4, KS_END);
 	PLUGIN_OPEN ("blacklist");
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "kdbGet failed");
@@ -36,13 +40,19 @@ static void test_blacklist (void)
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k4);
+	ksAppendKey (ks, k5);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
 
 	ks = ksNew (20, KS_END);
-	ksAppendKey (ks, k5);
+	ksAppendKey (ks, k6);
+	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
+	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
+	ksDel (ks);
+
+	ks = ksNew (20, KS_END);
+	ksAppendKey (ks, k7);
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbGet should have failed");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR, "kdbSet should have failed");
 	ksDel (ks);
