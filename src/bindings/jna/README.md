@@ -30,7 +30,7 @@ Please note that the [JNI plugin](/src/plugins/jni) serves a different purpose. 
 use the JNI plugin to develop plugins for Elektra itself, whereas the JNA
 bindings allow to use Elektra to access configuration in Java projects. The JNI
 plugin is _not_ required for the JNA bindings to work. But, to develop
-JNI plugins, JNA can be used. [Here](libelektra/plugin) are example
+JNI plugins, JNA can be used. [Here](libelektra/src/main/java/org/libelektra/plugin/README.md) are example
 plugins, which need JNI at runtime.
 
 ### Command line
