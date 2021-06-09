@@ -1,0 +1,9 @@
+subprojects { subProject ->
+	if (subProject.name != 'converter' && subProject.name != 'module') {
+		// include java project configuration
+		apply from: "../../java-library.gradle"
+
+		// include project dependencies
+		apply from: '../dependencies.gradle'
+	}
+}
