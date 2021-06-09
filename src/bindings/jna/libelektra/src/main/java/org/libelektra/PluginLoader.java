@@ -5,7 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.libelektra.exception.InstallationException;
 
 /**
- * This class can be used to load Plugins from Elektra. It also loads self implemented Java plugins.
+ * This class can be used to load Plugins from Elektra. It also loads self
+ * implemented Java plugins.
  */
 public class PluginLoader
 {
@@ -15,15 +16,14 @@ public class PluginLoader
 	private KeySet modules;
 
 	/**
-	 * Instantiates a new PluginLoader with the possibility to add a custom error key
+	 * Instantiates a new PluginLoader with the possibility to add a custom error
+	 * key
 	 *
-	 * @param errorKey
-	 *            The custom error key
+	 * @param errorKey The custom error key
 	 */
 	public PluginLoader (Key errorKey)
 	{
 		this.loadedElektraPlugins = new ConcurrentHashMap<> ();
-		this.loadedJavaPlugins = new ConcurrentHashMap<> ();
 		this.errorKey = errorKey;
 	}
 
@@ -33,7 +33,6 @@ public class PluginLoader
 	public PluginLoader ()
 	{
 		this.loadedElektraPlugins = new ConcurrentHashMap<> ();
-		this.loadedJavaPlugins = new ConcurrentHashMap<> ();
 		this.errorKey = Key.create ();
 		modules = KeySet.create ();
 	}
@@ -41,11 +40,9 @@ public class PluginLoader
 	/**
 	 * This plugin loads a Native Elektra Plugin.
 	 *
-	 * @param name
-	 *            the plugin name
+	 * @param name the plugin name
 	 * @return the Plugin
-	 * @throws InstallationException
-	 *             if the plugin does not exist
+	 * @throws InstallationException if the plugin does not exist
 	 */
 	public Plugin loadElektraPlugin (String name) throws InstallationException
 	{

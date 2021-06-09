@@ -120,6 +120,9 @@ you up to date with the multi-language support provided by Elektra.
 - Native library proxy interface `Elektra` is now package private (previously was public).
 
 _(Michael Tucek)_
+### JNA
+
+- added example Java JNI plugin `whitelist` _(Michael Tucek)_
 
 ### <<Binding2>>
 
