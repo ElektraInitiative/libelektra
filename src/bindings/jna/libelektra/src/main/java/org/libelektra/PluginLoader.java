@@ -11,7 +11,6 @@ public class PluginLoader
 {
 
 	private Key errorKey;
-	private final Map<String, Plugin> loadedJavaPlugins;
 	private final Map<String, Plugin> loadedElektraPlugins;
 	private KeySet modules;
 
