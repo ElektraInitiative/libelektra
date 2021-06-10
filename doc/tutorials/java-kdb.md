@@ -23,7 +23,7 @@ try (KDB kdb = KDB.open(key)) {
 
 Note that `KDB` implements `AutoClosable` which allows [`try-with-resouces`](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
 
-The key being passend to `KDB::open` is used to store warnings and error information. The special key name `Key.KEY_LOCAL_NAME` is used to create a key only used locally for transferring this information. If an error occurs, it will be mapped to the appropriate specialization of `KDBException`.
+The key being passend to `KDB::open` is used to store warnings and error information. If an error occurs, it will be mapped to the appropriate specialization of `KDBException`.
 
 The following code is equivalent and preferred, if you do not want to reuse an existing key for transferring warnings and error information:
 

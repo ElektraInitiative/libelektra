@@ -124,7 +124,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- JNI docu updates. _(Markus Raab)_
+- JNI docu updates and small fixes. _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
