@@ -82,13 +82,13 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] several cases in switches for enums not covered  
-       - [ ] ns == `key->ukey[0]`
+       - [x] several cases in switches for enums not covered  
+       - [x] ns == `key->ukey[0]`
 - [ ] All possible error states are covered by tests  
-       - [ ] key == `NULL`  
-       - [ ] ns == `KEY_NS_NONE`
+       - [x] key == `NULL`  
+       - [x] ns == `KEY_NS_NONE`
 - [ ] All possible enum values are covered by tests  
-       - [ ] several cases in switches for enums not covered
+       - [x] several cases in switches for enums not covered
 - [x] No inconsistencies between tests and documentation
 
 ## Summary

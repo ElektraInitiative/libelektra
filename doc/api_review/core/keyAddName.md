@@ -102,11 +102,11 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] check if we can remove uncovered code  
-       - [ ] Line 542
+       - [x] check if we can remove uncovered code  
+       - [x] Line 542
 - [ ] All possible error states are covered by tests  
-       - [ ] add test case for read-only key  
-       - [ ] test invalid name
+       - [x] add test case for read-only key  
+       - [x] test invalid name
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

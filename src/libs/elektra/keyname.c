@@ -474,7 +474,9 @@ ssize_t keyGetUnescapedName (const Key * key, char * returnedName, size_t maxSiz
  * .., . and / will be handled as in filesystem paths. A valid name will be build
  * out of the (valid) name what you pass, e.g. user:///sw/../sw//././MyApp -> user:/sw/MyApp
  *
- * On invalid names, NULL or "" the name will be "" afterwards.
+ * Trailing slashes will be stripped.
+ *
+ * On invalid names, the name stays unchanged.
  *
  * @return size of the new Key name in bytes, including NULL terminator
  * @retval -1 if @p key or @p keyName is NULL or @p keyName is empty or invalid
@@ -1289,7 +1291,7 @@ const char * keyBaseName (const Key * key)
  * @param key the Key to get the size of the basename from
  *
  * @return size in bytes of the Key's basename including NULL terminator
- * @retval -1 if the Key's basename is NULL
+ * @retval -1 if the Key or the Key's basename is NULL
  *
  * @since 1.0.0
  * @ingroup keyname
@@ -1652,7 +1654,7 @@ ssize_t keyAddBaseName (Key * key, const char * baseName)
  * @param baseName the new basename for the Key
  *
  * @return the size in bytes of the new key name
- * @retval -1 on NULL pointers
+ * @retval -1 if Key is NULL
  * @retval -1 if Key was inserted into KeySet before
  * @retval -1 if Key is read-only
  * @retval -1 on allocation errors
