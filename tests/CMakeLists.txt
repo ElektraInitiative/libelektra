@@ -35,6 +35,7 @@ if (ENABLE_TESTING)
 	add_subdirectory (${googletest_SOURCE_DIR} ${googletest_BINARY_DIR} EXCLUDE_FROM_ALL)
 
 	set_property (TARGET gtest PROPERTY COMPILE_FLAGS "-Wno-undef")
+	set_property (TARGET gtest_main PROPERTY COMPILE_FLAGS "-Wno-undef")
 endif (ENABLE_TESTING)
 
 # don't call add_headers in a loop
