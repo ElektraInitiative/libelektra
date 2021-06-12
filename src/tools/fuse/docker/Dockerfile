@@ -2,7 +2,6 @@
 
 FROM ubuntu:focal 
 
-RUN ls
 RUN apt-get -y update
 RUN apt-get -y update
 
@@ -32,4 +31,4 @@ RUN mkdir /root/mount_gopts_example
 #copy source, build & install elektra_fuse wheel
 COPY ./ /root/elektra_fuse/
 
-RUN cd /root/elektra_fuse && ./build.sh && ./install.sh
+RUN cd /root/elektra_fuse && make build && make install

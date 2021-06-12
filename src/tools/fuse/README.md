@@ -39,10 +39,10 @@ Required python3 packages (will be installed by `pip3` automatically if not pres
 
 Build the `elektra_fuse` python3-wheel and install it using `pip3` with:
 ```
-./build.sh && sudo ./install.sh
+make build && sudo make install
 ```
 This, if needed, will also install the python-requirements `fusepy` and `psutil`.
-`install.sh` is run as root in order to make the new shell command `elektra_fuse` globally available (if run as a normal user, `$PATH` needs to be adapted as specified in the command's output).
+`make install` is run as root in order to make the new shell command `elektra_fuse` globally available (if run as a normal user, `$PATH` needs to be adapted as specified in the command's output).
 
 Now, to mount the filesystem below the (already existing) directory `<mount point>` (as root-user), run:
 ```sh
