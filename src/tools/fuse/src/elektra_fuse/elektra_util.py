@@ -1,5 +1,5 @@
 from pathlib import Path
-import os, re, errno, sys
+import os, re, errno, sys, subprocess
 import logging
 import kdb
 
@@ -62,11 +62,9 @@ def is_directory_empty(os_path):
    
 #performs function of the "kdb file" command 
 def get_kdb_file(os_path):
-    with _get_kdb_instance() as db:
-        elektra_path = os_path_to_elektra_path(os_path)
-        x = kdb.Key(elektra_path)
-        db.get(kdb.KeySet(), x)
-        return x.value 
+    elektra_path = os_path_to_elektra_path(os_path)
+    resolved_file_path = subprocess.check_output(["kdb", "file", elektra_path]).decode().strip()
+    return resolved_file_path
 
 def update_key_value(os_path: str, new_value: bytes):
     # kdb.kdb.KDBException, may be thrown

@@ -31,4 +31,5 @@ RUN mkdir /root/mount_gopts_example
 #copy source, build & install elektra_fuse wheel
 COPY ./ /root/elektra_fuse/
 
+#LICENSE.md will not be included inside the package built inside the container (to do that, the build context of docker would need to include the project root)
 RUN cd /root/elektra_fuse && make build && make install
