@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-import errno, stat, re, os, psutil, logging, subprocess
+import errno, stat, re, os
 from pathlib import Path
 
-from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
+from fuse import FuseOSError, Operations, LoggingMixIn
 
 from . import mock_context
 from . import elektra_fuse_interface
-import kdb
 
 #fuse references: https://www.cs.hmc.edu/~geoff/classes/hmc.cs135.201109/homework/fuse/fuse_doc.html
 #                 https://libfuse.github.io/doxygen/structfuse__operations.html#a729e53d36acc05a7a8985a1a3bbfac1e
@@ -225,7 +224,6 @@ class RootlevelResolver(LoggingMixIn, Operations):
             else:
                 raise OSError(errno.ENOENT)
 
-            return
         
         process_context, path_suffix = self.resolve_proc_path(path)
         return mock_context.run_as(process_context, elektra_fuse_interface.listxattr, path_suffix)

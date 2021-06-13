@@ -1,6 +1,5 @@
 from pathlib import Path
 import os, re, errno, sys, subprocess
-import logging
 import kdb
 
 elektra_namespaces = ["user:", "system:", "dir:", "spec:", "cascading:", "proc:"]
@@ -120,7 +119,7 @@ def get_meta_map(os_path):
 def has_meta(os_path, name):
     try:
         meta_map = get_meta_map(os_path)
-        return name in get_meta_map(os_path)
+        return name in meta_map
     except KeyError:
         return False
     

@@ -45,4 +45,4 @@ def main():
     elif args.logger == "stdout":
         pass
 
-    fuse = FUSE(RootlevelResolver(args.mountpoint), args.mountpoint, foreground = args.foreground, allow_other = args.allow_other, nothreads = args.nothreads)
+    FUSE(RootlevelResolver(args.mountpoint), args.mountpoint, foreground = args.foreground, allow_other = args.allow_other, nothreads = args.nothreads)

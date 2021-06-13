@@ -1,18 +1,12 @@
 #stdlib imports
-import errno, stat, time, re, psutil, logging, subprocess, os
+import errno, stat, time, subprocess, os
 from pathlib import Path
-
-#fuse imports
-from fuse import FUSE, FuseOSError, Operations, LoggingMixIn
 
 #project imports
 from . import elektra_util
 from .elektra_util import *
-from . import mock_context
 
 startup_time = time.time()
-
-#TODO: give appropriate error codes (instead of readonly fs) when non-authenticated user tries to do illegal things
 
 #the following methods map 1:1 to the FUSE interface
 
@@ -178,12 +172,11 @@ def _ensure_no_meta_prefix(name):
 def listxattr(path):
     try:
         meta_map = get_meta_map(path)
+        return [elektra_util.xattr_kdb_file] + [_ensure_no_meta_prefix(keyname) for keyname in meta_map.keys()]
     except KeyError:
         return dict()
         # if key does not really exist (intermediate directories) return an empty map insted of an error
         # as to not confuse tools like xattr
-    
-    return [elektra_util.xattr_kdb_file] + [_ensure_no_meta_prefix(keyname) for keyname in get_meta_map(path).keys()]
 
 #returns the value of an xattr key
 def getxattr(path, name, position=0):
