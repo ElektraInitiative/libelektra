@@ -87,7 +87,7 @@ RUN update-alternatives --set lua-interpreter /usr/bin/lua5.3
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
-ARG GTEST_VER=release-1.10.0
+ARG GTEST_VER=release-1.11.0
 RUN mkdir -p ${GTEST_ROOT} \
     && cd /tmp \
     && curl -o gtest.tar.gz \
