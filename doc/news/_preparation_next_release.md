@@ -53,7 +53,9 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin2>>
+### Blacklist
+
+- Implement a blacklist plugin that rejects values specified in a metadata array. _(Robert Sowula)_
 
 - <<TODO>>
 - <<TODO>>
