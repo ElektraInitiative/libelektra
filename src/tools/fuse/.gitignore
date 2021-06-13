@@ -5,3 +5,4 @@ src/*.egg-info/*
 __pycache__/
 *.so
 *~
+src/elektra_fuse.egg-info/*

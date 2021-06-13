@@ -6,6 +6,7 @@ This tool enables the inspection and modification of the KDB, in the form of a c
 In the simplest case, an Elektra key appears as a file with the key name as file path and with the key value as file content.
 
 This enables users to interact with Elektra
+
 - using standard unix tooling, making Elektra more accessible
 - with standard system/library procedures
 - without the need to learn other tooling of libelektra
@@ -18,33 +19,40 @@ This enables users to interact with Elektra
 The package comes with a preconfigured docker environment for expirimentation/debugging/developement.
 
 Ensure docker is installed and run
+
 ```sh
 cd src/tools/fuse/docker
 ./run_new_container.sh
 ```
+
 This (re)creates the container if necessary and starts an interactive session with keys for testing already created (see `docker/create_keys.sh`).
 The filesystem is mounted below `~/mount`.
-For debugging purposes, a logfile is written to `~/nohup.out` inside the container. 
+For debugging purposes, a logfile is written to `~/nohup.out` inside the container.
 
 ### Native
 
 System requirements:
+
 - Elektra of version at least 0.9.5 with the python binding installed (for example, `libelektra5-all` satisfies this)
-- `fuse` (for example via the debian package `fuse`) 
+- `fuse` (for example via the debian package `fuse`)
 - `python3 >= 3.8`, `pip3`
 
 Required python3 packages (will be installed by `pip3` automatically if not present):
+
 - `fusepy>=3.0.1`
 - `psutil>=5.8.0`
 
 Build the `elektra_fuse` python3-wheel and install it using `pip3` with:
+
 ```
 make build && sudo make install
 ```
+
 This, if needed, will also install the python-requirements `fusepy` and `psutil`.
 `make install` is run as root in order to make the new shell command `elektra_fuse` globally available (if run as a normal user, `$PATH` needs to be adapted as specified in the command's output).
 
 Now, to mount the filesystem below the (already existing) directory `<mount point>` (as root-user), run:
+
 ```sh
 sudo elektra_fuse <mount point>
 ```
@@ -67,11 +75,11 @@ Below any such pid-directory, the elektra key database is mounted bidirectionall
 - `spec:`
 - `proc:`
 - `cascading:`, corresponding to the `/` namespace in Elektra:
-	This is useful for inspection purposes, but beware that write operations in this namespace are disabled.
+  This is useful for inspection purposes, but beware that write operations in this namespace are disabled.
 
 Exceptions:
-- `default:` (only exists for cascading lookups)
 
+- `default:` (only exists for cascading lookups)
 
 These first two layers, (e.g `mountpoint/12/system:`) are read only. Deeper layers (expect the cascading namespace) support writing: any change is directly updated in the backing Elektra-Key-Database.
 
@@ -81,11 +89,11 @@ All Elektra operations are performed "from the perspective" of the respective pr
 This is done by only calling libelektra/kdb from special "mock"-processes that mimic all of the relevant attributes Elektra uses to resolve its keys.
 
 The mocked attributes are:
+
 - the user and group (for the `user:` namespace)
 - working directory (for the `dir:` namespace)
 - environment variables (for the `proc:` namespace)
 - the process arguments (for the `proc:` namespace)
-
 
 ### Example file system structure
 
@@ -112,12 +120,12 @@ The filesystem structure mounted below the mountpoint could present as follows: 
 |           `-- name
 
 ```
+
 as obtained with
+
 ```sh
 tree -L 4 mountpoint
 ```
-
-
 
 ## Assumptions and special behaviour
 
@@ -165,6 +173,7 @@ To enable interoperability with other tools, the `meta:/` prefix is must not be 
 Furthermore, no binary values for these attributes are allowed. (As libelektra does not accept those).
 
 An example usage might be:
+
 ```
 #set the metadata metakeyname=metakeyvalue on the key keyname
 xattr -w metakeyname metakeyvalue keyname
@@ -184,6 +193,6 @@ If a value is to be written that cannot be decoded using the systems default enc
 
 ## Known issues
 
-- Moving an ``@elektra.value``-file corrupts the filesystem/key database (See this [issue](https://issues.libelektra.org/3648)). As editors like `vim` may move a file during editing, such editors cannot reliably be used on these pseudo-files.
+- Moving an `@elektra.value`-file corrupts the filesystem/key database (See this [issue](https://issues.libelektra.org/3648)). As editors like `vim` may move a file during editing, such editors cannot reliably be used on these pseudo-files.
 - Only works on POSIX-compatible systems with support for FUSE (via fusepy)
 - chmod/chown is not implemented (i.e. does nothing and reports success) and does not signal a "not supported error" to enable compatibility with common tools like `cp`.
