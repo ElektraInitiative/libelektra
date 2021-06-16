@@ -161,10 +161,10 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, gchar
 	}
 
 	// TODO: mpranj check if sync needed here
-	if (gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
-	{
-		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
-	}
+// 	if (gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
+// 	{
+// 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
+// 	}
 	return TRUE;
 }
 
