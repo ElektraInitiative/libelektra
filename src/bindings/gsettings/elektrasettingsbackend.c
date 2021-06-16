@@ -161,10 +161,10 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, gchar
 	}
 
 	// TODO: mpranj check if sync needed here
-// 	if (gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
-// 	{
-// 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
-// 	}
+	// if (gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
+	// {
+	// 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
+	// }
 	return TRUE;
 }
 
@@ -341,7 +341,7 @@ static gboolean elektra_settings_backend_write_tree (GSettingsBackend * backend,
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Function writeTree. ", "We have to loop the tree and add the keys");
 	g_tree_foreach (tree, elektra_settings_keyset_from_tree, esb->gks);
 
-	elektra_settings_backend_sync (backend); // has own lock
+	elektra_settings_backend_sync (backend);
 
 	/* Notify the GSettings about the changed tree */
 	g_settings_backend_changed_tree (G_SETTINGS_BACKEND (backend), tree, origin_tag);
@@ -425,10 +425,16 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	GElektraKey * cutpoint = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
 
 	gchar * gsettingspath = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
-	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s!", "GSEttings Path: ", gsettingspath);
-	g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingspath, NULL);
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s", "keypathname: ", keypathname);
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s", "GSEttings Path: ", gsettingspath);
 
-	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s!", "Cutpoint", gelektra_key_name (cutpoint));
+	// TODO: mpranj, can we detect if keys are below a path?
+	g_settings_backend_path_changed (G_SETTINGS_BACKEND (user_data), gsettingspath, NULL);
+
+	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Cutpoint", gelektra_key_name (cutpoint));
+	// TODO: mpranj, the cutpoint does not work for keys below a subscribed path ... !!!
+	// e.g.: some/subscribed/path
+	// doing a cut to some/subscribed/path/specific/interest does not yield correct result here
 	GElektraKeySet * subscribed = gelektra_keyset_cut (ks, cutpoint);
 
 	// TODO: remove notifications about non-subscribed keys (DEBUG)
@@ -441,7 +447,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 		while ((item = gelektra_keyset_at (ks, pos)) != NULL)
 		{
 			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1, "/"));
-			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s!", "Skipped non-subscribed key", gsettingskeyname);
+			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: gsettings_path: %s, keyname: %s", "Skipped non-subscribed key", gsettingskeyname, gelektra_key_name (item));
 			g_free (gsettingskeyname);
 			pos++;
 		}
