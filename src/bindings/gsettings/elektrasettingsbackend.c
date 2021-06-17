@@ -458,6 +458,12 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 				g_free (gsettingskeyname);
 				found = 1;
 			}
+			else
+			{
+				gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (cur), -1, "/") + 1, -1, 	"/"));
+				g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s, %s", ">> Key not below", gsettingskeyname, keypathname);
+				g_free (gsettingskeyname);
+			}
 			pos++;
 		}
 	}
