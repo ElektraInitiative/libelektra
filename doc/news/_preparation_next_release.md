@@ -67,6 +67,12 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### Python
+
+- Fix format string overflow and add error checking when appending to `sys.path`. _(Mihael Pranjić)_
+- <<TODO>>
+- <<TODO>>
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
