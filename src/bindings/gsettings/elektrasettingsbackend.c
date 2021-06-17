@@ -424,8 +424,10 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) user_data;
 
 	// TODO: mpranj, maybe dup is not needed? (or can it result in a race?)
-	GElektraKeySet * gks_keys = gelektra_keyset_dup (esb->subscription_gks_keys);
-	GElektraKeySet * gks_paths = gelektra_keyset_dup (esb->subscription_gks_paths);
+	// GElektraKeySet * gks_keys = gelektra_keyset_dup (esb->subscription_gks_keys);
+	// GElektraKeySet * gks_paths = gelektra_keyset_dup (esb->subscription_gks_paths);
+	GElektraKeySet * gks_keys = esb->subscription_gks_keys;
+	GElektraKeySet * gks_paths = esb->subscription_gks_paths;
 
 	const gchar * gsettingspath = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s", "keypathname: ", keypathname);
