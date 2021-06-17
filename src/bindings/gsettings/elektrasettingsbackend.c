@@ -561,8 +561,18 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Subscribe to:", name);
 	gchar * lookupPath = g_strconcat ("/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
+	GElektraKeySet * ks = 0;
 
-	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks_keys, lookupPath, GELEKTRA_KDB_O_NONE);
+	if (g_str_has_suffix (name, "/"))
+	{
+		ks = esb->subscription_gks_paths;
+	}
+	else
+	{
+		ks = esb->subscription_gks_keys;
+	}
+
+	GElektraKey * gkey = gelektra_keyset_lookup_byname (ks, lookupPath, GELEKTRA_KDB_O_NONE);
 	if (gkey != NULL)
 	{
 		(*(guint *) gelektra_key_getvalue (gkey))++; // TODO: violation of the C API
@@ -578,7 +588,7 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
 				 KEY_END);
 	g_free (pathToSubscribe);
 
-	if (gelektra_keyset_append (esb->subscription_gks_keys, gkey) == -1)
+	if (gelektra_keyset_append (ks, gkey) == -1)
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Could not append the key to subscription keyset!");
 		return;
@@ -597,8 +607,18 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "Unsubscribe:", name);
 	gchar * lookupPath = g_strconcat ("/", G_ELEKTRA_SETTINGS_PATH, name, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
+	GElektraKeySet * ks = 0;
 
-	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->subscription_gks_keys, lookupPath, GELEKTRA_KDB_O_NONE);
+	if (g_str_has_suffix (name, "/"))
+	{
+		ks = esb->subscription_gks_paths;
+	}
+	else
+	{
+		ks = esb->subscription_gks_keys;
+	}
+
+	GElektraKey * gkey = gelektra_keyset_lookup_byname (ks, lookupPath, GELEKTRA_KDB_O_NONE);
 	// TODO CHECK VALUE BEFORE working with it
 	if (gkey != NULL)
 	{
@@ -607,7 +627,7 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 		if (*counter == 0)
 		{
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Subscription found deleting");
-			gelektra_keyset_lookup (esb->subscription_gks_keys, gkey, GELEKTRA_KDB_O_POP);
+			gelektra_keyset_lookup (ks, gkey, GELEKTRA_KDB_O_POP);
 		}
 		g_free (lookupPath);
 		return;
