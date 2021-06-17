@@ -34,6 +34,7 @@ typedef struct
 	GElektraKeySet * gks;
 
 	GElektraKeySet * subscription_gks_keys;
+	GElektraKeySet * subscription_gks_paths;
 
 	GDBusConnection * dbus_connections[2];
 } ElektraSettingsBackend;
@@ -421,7 +422,9 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	gchar const * keypathname = g_variant_get_string (variant, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) user_data;
 
-	GElektraKeySet * ks = gelektra_keyset_dup (esb->subscription_gks_keys);
+	// TODO: mpranj, maybe dup is not needed? (or can it result in a race?)
+	GElektraKeySet * gks_keys = gelektra_keyset_dup (esb->subscription_gks_keys);
+	// GElektraKeySet * gks_paths = gelektra_keyset_dup (esb->subscription_gks_paths);
 
 	GElektraKey * cutpoint = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
 
@@ -436,16 +439,16 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	// TODO: mpranj, the cutpoint does not work for keys below a subscribed path ... !!!
 	// e.g.: some/subscribed/path
 	// doing a cut to some/subscribed/path/specific/interest does not yield correct result here
-	GElektraKeySet * subscribed = gelektra_keyset_cut (ks, cutpoint);
+	GElektraKeySet * subscribed_keys = gelektra_keyset_cut (gks_keys, cutpoint);
 
 	// TODO: remove notifications about non-subscribed keys (DEBUG)
-	if (gelektra_keyset_len (subscribed) == 0)
+	if (gelektra_keyset_len (subscribed_keys) == 0)
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "No keys in subscribed keyset");
 
 		GElektraKey * item;
 		gssize pos = 0;
-		while ((item = gelektra_keyset_at (ks, pos)) != NULL)
+		while ((item = gelektra_keyset_at (gks_keys, pos)) != NULL)
 		{
 			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1, "/"));
 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: gsettings_path: %s, keyname: %s", "Skipped non-subscribed key", gsettingskeyname, gelektra_key_name (item));
@@ -456,7 +459,7 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 
 	GElektraKey * item;
 	gssize pos = 0;
-	while ((item = gelektra_keyset_at (subscribed, pos)) != NULL)
+	while ((item = gelektra_keyset_at (subscribed_keys, pos)) != NULL)
 	{
 		gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1, "/"));
 
@@ -524,7 +527,7 @@ static void elektra_settings_backend_subscribe (GSettingsBackend * backend, cons
 	if (gkey != NULL)
 	{
 		(*(guint *) gelektra_key_getvalue (gkey))++; // TODO: violation of the C API
-		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Key is already subscribed, adding to subscription");
+		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s", "Key is already subscribed, incrementing subscription count.");
 		return;
 	}
 	g_free (lookupPath);
@@ -588,6 +591,7 @@ static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 	esb->gkdb = gelektra_kdb_open (NULL, esb->gkey);
 	esb->gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	esb->subscription_gks_keys = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
+	esb->subscription_gks_paths = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey);
 	elektra_settings_check_bus_connection (esb);
 }
