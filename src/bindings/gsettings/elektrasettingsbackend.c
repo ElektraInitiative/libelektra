@@ -450,6 +450,10 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 			g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
 			g_free (gsettingskeyname);
 		}
+		else
+		{
+			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Not subscribed to key", keypathname);
+		}
 	}
 
 // 	GElektraKey * cutpoint = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
