@@ -202,11 +202,12 @@ static GVariant * elektra_settings_backend_read (GSettingsBackend * backend, con
 	if (default_value)
 	{
 		ret = elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_SYSTEM, G_ELEKTRA_SETTINGS_PATH, key, NULL),
-						     expected_type);
+						    expected_type);
 	}
 	else
 	{
-		ret = elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL), expected_type);
+		ret = elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL),
+						    expected_type);
 	}
 
 	return ret;
@@ -233,7 +234,7 @@ static GVariant * elektra_settings_backend_read_user_value (GSettingsBackend * b
 	       "Expected_type is:", g_variant_type_peek_string (expected_type));
 
 	GVariant * ret = elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL),
-					     expected_type);
+						       expected_type);
 	return ret;
 }
 
@@ -261,8 +262,8 @@ static gboolean elektra_settings_backend_write (GSettingsBackend * backend, cons
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s %s %s", "Function write_key: ", key, "value is:", g_variant_print (value, TRUE));
 
-	gboolean ret = elektra_settings_write_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL),
-					      value);
+	gboolean ret =
+		elektra_settings_write_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL), value);
 
 	elektra_settings_backend_sync (backend);
 
@@ -415,7 +416,7 @@ static gboolean elektra_settings_backend_get_writable (GSettingsBackend * backen
 
 static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UNUSED, const gchar * sender_name G_GNUC_UNUSED,
 					  const gchar * object_path G_GNUC_UNUSED, const gchar * interface_name G_GNUC_UNUSED,
-					  const gchar * /*signal_*/name G_GNUC_UNUSED, GVariant * parameters, gpointer user_data)
+					  const gchar * /*signal_*/ name G_GNUC_UNUSED, GVariant * parameters, gpointer user_data)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s.", "dbus signal that key has changed", g_variant_print (parameters, FALSE));
 	GVariant * variant = g_variant_get_child_value (parameters, 0);
@@ -452,18 +453,21 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 		{
 			if (gelektra_key_isbeloworsame (needle, cur))
 			{
-				gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (needle), -1, "/") + 1, -1, 	"/"));
+				gchar * gsettingskeyname =
+					g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (needle), -1, "/") + 1, -1, "/"));
 				g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Key below subscribed path changed", gsettingskeyname);
 				g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
 				g_free (gsettingskeyname);
 				found = 1;
+				break;
 			}
-			else
-			{
-				gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (cur), -1, "/") + 1, -1, 	"/"));
-				g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s, %s", ">> Key not below", gsettingskeyname, keypathname);
-				g_free (gsettingskeyname);
-			}
+			// DEBUG output
+			// 			else
+			// 			{
+			// 				gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (cur), -1,
+			// "/") + 1, -1, 	"/")); 				g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s, %s", ">> Key not below",
+			// gsettingskeyname, keypathname); 				g_free (gsettingskeyname);
+			// 			}
 			pos++;
 		}
 	}
@@ -473,41 +477,40 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Not subscribed to key", keypathname);
 	}
 
-// 	GElektraKey * cutpoint = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
-// 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Cutpoint", gelektra_key_name (cutpoint));
-// 	// TODO: mpranj, the cutpoint does not work for keys below a subscribed path ... !!!
-// 	// e.g.: some/subscribed/path
-// 	// doing a cut to some/subscribed/path/specific/interest does not yield correct result here
-// 	GElektraKeySet * subscribed_keys = gelektra_keyset_cut (gks_keys, cutpoint);
-// 
-// 	// TODO: remove notifications about non-subscribed keys (DEBUG)
-// 	if (gelektra_keyset_len (subscribed_keys) == 0)
-// 	{
-// 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "No keys in subscribed keyset");
-// 
-// 		GElektraKey * item;
-// 		gssize pos = 0;
-// 		while ((item = gelektra_keyset_at (gks_keys, pos)) != NULL)
-// 		{
-// 			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1, "/"));
-// 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: gsettings_path: %s, keyname: %s", "Skipped non-subscribed key", gsettingskeyname, gelektra_key_name (item));
-// 			g_free (gsettingskeyname);
-// 			pos++;
-// 		}
-// 	}
-// 
-// 	GElektraKey * item;
-// 	gssize pos = 0;
-// 	while ((item = gelektra_keyset_at (subscribed_keys, pos)) != NULL)
-// 	{
-// 		gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1, "/"));
-// 
-// 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s!", "Subscribed key changed", gsettingskeyname);
-// 		g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
-// 
-// 		g_free (gsettingskeyname);
-// 		pos++;
-// 	}
+	// 	GElektraKey * cutpoint = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
+	// 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Cutpoint", gelektra_key_name (cutpoint));
+	// 	// TODO: mpranj, the cutpoint does not work for keys below a subscribed path ... !!!
+	// 	// e.g.: some/subscribed/path
+	// 	// doing a cut to some/subscribed/path/specific/interest does not yield correct result here
+	// 	GElektraKeySet * subscribed_keys = gelektra_keyset_cut (gks_keys, cutpoint);
+	//
+	// 	// TODO: remove notifications about non-subscribed keys (DEBUG)
+	// 	if (gelektra_keyset_len (subscribed_keys) == 0)
+	// 	{
+	// 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "No keys in subscribed keyset");
+	//
+	// 		GElektraKey * item;
+	// 		gssize pos = 0;
+	// 		while ((item = gelektra_keyset_at (gks_keys, pos)) != NULL)
+	// 		{
+	// 			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1,
+	// "/")); 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: gsettings_path: %s, keyname: %s", "Skipped non-subscribed key",
+	// gsettingskeyname, gelektra_key_name (item)); 			g_free (gsettingskeyname); 			pos++;
+	// 		}
+	// 	}
+	//
+	// 	GElektraKey * item;
+	// 	gssize pos = 0;
+	// 	while ((item = gelektra_keyset_at (subscribed_keys, pos)) != NULL)
+	// 	{
+	// 		gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1, "/"));
+	//
+	// 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s!", "Subscribed key changed", gsettingskeyname);
+	// 		g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
+	//
+	// 		g_free (gsettingskeyname);
+	// 		pos++;
+	// 	}
 
 	g_variant_unref (variant);
 }
@@ -646,7 +649,7 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Init new ElektraSettingsBackend");
- 	esb->gkey = gelektra_key_new (G_ELEKTRA_SETTINGS_USER G_ELEKTRA_SETTINGS_PATH, KEY_END);
+	esb->gkey = gelektra_key_new (G_ELEKTRA_SETTINGS_USER G_ELEKTRA_SETTINGS_PATH, KEY_END);
 	esb->gkdb = gelektra_kdb_open (NULL, esb->gkey);
 	esb->gks = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	esb->subscription_gks_keys = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
