@@ -424,36 +424,47 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 
 	// TODO: mpranj, maybe dup is not needed? (or can it result in a race?)
 	GElektraKeySet * gks_keys = gelektra_keyset_dup (esb->subscription_gks_keys);
-	// GElektraKeySet * gks_paths = gelektra_keyset_dup (esb->subscription_gks_paths);
-
-
+	GElektraKeySet * gks_paths = gelektra_keyset_dup (esb->subscription_gks_paths);
 
 	const gchar * gsettingspath = g_strdup (g_strstr_len (g_strstr_len (keypathname, -1, "/") + 1, -1, "/"));
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s", "keypathname: ", keypathname);
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s", "GSEttings Path: ", gsettingspath);
 
-	if (g_str_has_suffix (keypathname, "/"))
-	{
-		// TODO: filter only subscribed paths here
+	// we do not expect paths here
+	g_assert (!g_str_has_suffix (keypathname, "/"));
 
-		// TODO: mpranj, can we detect if keys are below a path?
-		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Subscribed path changed", gsettingspath);
-		g_settings_backend_path_changed (G_SETTINGS_BACKEND (user_data), gsettingspath, NULL);
+	GElektraKey * gkey = gelektra_keyset_lookup_byname (gks_keys, keypathname, GELEKTRA_KDB_O_NONE);
+	int found = 0;
+	if (gkey)
+	{
+		gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (gkey), -1, "/") + 1, -1, "/"));
+		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Subscribed key changed", gsettingskeyname);
+		g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
+		g_free (gsettingskeyname);
+		found = 1;
 	}
 	else
 	{
-		GElektraKey * gkey = gelektra_keyset_lookup_byname (gks_keys, keypathname, GELEKTRA_KDB_O_NONE);
-		if (gkey)
+		GElektraKey * needle = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
+		GElektraKey * cur;
+		gssize pos = 0;
+		while ((cur = gelektra_keyset_at (gks_paths, pos)) != NULL)
 		{
-			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (gkey), -1, "/") + 1, -1, "/"));
-			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Subscribed key changed", gsettingskeyname);
-			g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
-			g_free (gsettingskeyname);
+			if (gelektra_key_isbeloworsame (needle, cur))
+			{
+				gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (needle), -1, "/") + 1, -1, 	"/"));
+				g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Key below subscribed path changed", gsettingskeyname);
+				g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
+				g_free (gsettingskeyname);
+				found = 1;
+			}
+			pos++;
 		}
-		else
-		{
-			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Not subscribed to key", keypathname);
-		}
+	}
+
+	if (!found)
+	{
+		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Not subscribed to key", keypathname);
 	}
 
 // 	GElektraKey * cutpoint = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
