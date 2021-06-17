@@ -81,10 +81,13 @@ static int Python_AppendToSysPath (const char * path)
 
 	PyObject * sysPath = PySys_GetObject ((char *) "path");
 	PyObject * pyPath = PyUnicode_FromString (path);
+
 	if (PyList_Append (sysPath, pyPath) == -1)
 	{
+		Py_DECREF (pyPath);
 		return 0;
 	}
+
 	Py_DECREF (pyPath);
 	return 1;
 }
