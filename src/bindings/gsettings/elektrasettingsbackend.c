@@ -85,6 +85,7 @@ G_DEFINE_TYPE (ElektraSettingsBackend, elektra_settings_backend, G_TYPE_SETTINGS
 static void elektra_settings_backend_sync (GSettingsBackend * backend)
 {
 	// TODO conflict management
+	// TODO: do we enforce the latest write or use three-way merge?
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 
 	if (gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
