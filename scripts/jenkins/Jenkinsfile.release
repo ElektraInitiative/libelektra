@@ -72,7 +72,7 @@ stage('Release') {
   parallel generateReleaseStages()
 }
 
-stage('Build docker images for package testing') {
+stage('Build website and docker images for package testing') {
   parallel generateDockerBuildStagesWithPackagesInstalled()
 }
 
@@ -89,6 +89,10 @@ stage('Publish') {
 
 stage('Upload release Docker images') {
   parallel generateImageUploadStages()
+}
+
+stage('Main repository and website publish') {
+  parallel generateFinalPublishStages()
 }
 
 /**************/
@@ -247,6 +251,14 @@ def dockerInit() {
       './scripts/docker/alpine/*/release.Dockerfile',
       false
     )
+
+    /* Image building the libelektra.org website */
+    DOCKER_IMAGES.website = dockerUtils.createDockerImageDesc(
+      "website-release", dockerUtils.&idArtifact,
+      ".",
+      "./scripts/docker/website/Dockerfile",
+      false
+    )
   }
 }
 
@@ -329,6 +341,9 @@ def generateDockerBuildStagesWithPackagesInstalled() {
     DOCKER_IMAGES.bullseye_installed,
     'debian-bullseye'
   )
+
+  // build website
+  tasks << buildWebsite('debian-buster')
 
   return tasks
 }
@@ -457,11 +472,20 @@ def generatePublishStages() {
 
   // publish source package built in debian-buster stage
   tasks << publishSource('debian-buster')
+
+  tasks << buildAndPublishMaven()
+
+  return tasks
+}
+
+def generateFinalPublishStages() {
+  def tasks = [:]
+
   // publish main repo which got modified during the
   // debian-buster release stage
   tasks << publishMainRepo('debian-buster')
-
-  tasks << buildAndPublishMaven()
+  // publish website
+  tasks << release.deployWebsite(DOCKER_IMAGES.website)
 
   return tasks
 }
@@ -764,6 +788,34 @@ ${WORKSPACE}/build/doc/man ./"""
         recordIssues(tools: [doxygen(pattern: 'build/doc/doxygen.log')])
 
         deleteDir()
+      }
+    }
+  }]
+}
+
+def buildWebsite(mainRepoArtifactStageName) {
+  def stageName = 'buildWebsite'
+  return [(stageName): {
+    stage(stageName) {
+      node(PipelineConfig.instance.dockerNodeLabel) {
+        echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
+        configureGitUser()
+        copyArtifacts(
+          filter: "artifacts/${mainRepoArtifactStageName}/libelektra.bundle",
+          fingerprintArtifacts: true,
+          projectName: '${JOB_NAME}',
+          selector: specific('${BUILD_NUMBER}')
+        )
+
+        dir('libelektra') {
+          deleteDir()
+          git branch: 'master',
+              url: 'https://github.com/ElektraInitiative/libelektra.git'
+          sh "git bundle verify ${WORKSPACE}/artifacts/${artifactStageName}/libelektra.bundle"
+          sh "git pull --ff-only ${WORKSPACE}/artifacts/${artifactStageName}/libelektra.bundle"
+
+          dockerUtils.buildImage(DOCKER_IMAGES.website)
+        }
       }
     }
   }]
