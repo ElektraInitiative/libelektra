@@ -35,6 +35,12 @@ properties([
       description: 'Alpine Docker image revision.',
       name: 'alpine_revision',
       trim: true
+    ),
+    string(
+      defaultValue: '1',
+      description: 'Maven package revision.',
+      name: 'maven_revision',
+      trim: true
     )
   ])
 ])
@@ -835,9 +841,13 @@ def buildAndPublishMaven() {
                          string(credentialsId: 'maven-signing-passphrase', variable: 'PASS'),
                          usernamePassword(credentialsId: 'sonatype-credentials', passwordVariable: 'SONATYPE_PASSWORD', usernameVariable: 'SONATYPE_USERNAME')]) {
           checkout scm
+          def mavenReleaseVersion = RELEASE_VERSION
+          if (params.maven_revision != '1') {
+              mavenReleaseVersion += "-${params.maven_revision}"
+          }
           dir('src/bindings/jna') {
             sh """\
-gradle -PreleaseVersion=${RELEASE_VERSION} \
+gradle -PreleaseVersion=${mavenReleaseVersion} \
 -PsonatypeUsername=${SONATYPE_USERNAME} -PsonatypePassword=${SONATYPE_PASSWORD} \
 -Psigning.secretKeyRingFile=${KEY} -Psigning.keyId=07235980 -Psigning.password=\"${PASS}\" \
 publishToSonatype closeAndReleaseSonatypeStagingRepository"""
