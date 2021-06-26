@@ -41,6 +41,11 @@ properties([
       description: 'Maven package revision.',
       name: 'maven_revision',
       trim: true
+    ),
+    booleanParam(
+      defaultValue: true,
+      description: 'True if the statistics and hashsums should be automatically inserted into release notes and moved to final name.',
+      name: 'populate_release_notes'
     )
   ])
 ])
@@ -597,13 +602,12 @@ def buildRelease(stageName, image, packageRevision='1',
             }
 
             dir ('libelektra') {
-              sh "scripts/release/populate-release-notes.sh ${RELEASE_VERSION} ../${RELEASE_VERSION}/"
-              sh "git add doc/news"
-              sh "git commit -m 'release: add hashsums and statistics to release notes'"
-            }
-
-            if (bundleRepo) {
-              dir('libelektra') {
+              if (params.populate_release_notes) {
+                sh "scripts/release/populate-release-notes.sh ${RELEASE_VERSION} ../${RELEASE_VERSION}/"
+                sh "git add doc/news"
+                sh "git commit -m 'release: add hashsums and statistics to release notes'"
+              }
+              if (bundleRepo) {
                 sh 'git bundle create libelektra.bundle --all'
                 utils.archive(['libelektra.bundle'])
               }
