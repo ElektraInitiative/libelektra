@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# @brief Inserts hashsums of source archive and git statistics into release notes 
+# @brief Inserts hashsums of source archive and git statistics into release notes
 #  	     and sets final name of release notes.
 set -ex
 
@@ -24,7 +24,7 @@ generate_git_release_stats_minimal() {
 	PREVIOUS_RELEASE_MAJOR_MINOR_VERSION=$(echo $PREVIOUS_RELEASE | grep -Po '^\d+.\d+')
 	STATS=$($SCRIPTS_DIR/git-release-stats $PREVIOUS_RELEASE $KDB_VERSION)
 	# extract necessary fields from stats
-	NUM_AUTHORS=$(echo $STATS | grep -o  Author | wc -l)
+	NUM_AUTHORS=$(echo $STATS | grep -o Author | wc -l)
 	FILES_CHANGED=$(echo $STATS | grep -Po "\d+ files changed" | grep -Po "\d+")
 	INSERTIONS=$(echo $STATS | grep -Po "\d+ insertions" | grep -Po "\d+")
 	DELETIONS=$(echo $STATS | grep -Po "\d+ deletions" | grep -Po "\d+")
@@ -53,5 +53,3 @@ sed -i "s/<<VERSION>>/$KDB_VERSION_PATCH/g" "$RELEASE_NOTE_PATH"
 
 generate_hashsums
 generate_git_release_stats_minimal
-
-
