@@ -7,6 +7,6 @@
  *
  */
 
-#define PREFIX "user:/tests/toml"
+#define PREFIX "user:/"
 
 #include "testmod_toml.inc.c"
