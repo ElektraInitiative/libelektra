@@ -16,7 +16,7 @@
 #include "toml.h"
 #include "utility.h"
 
-#define PREFIX "user:/tests/toml"
+static const char * prefix = NULL;
 
 #define TEST_WR_HEAD                                                                                                                       \
 	printf ("Start Test: %s\n", __func__);                                                                                             \
@@ -125,6 +125,8 @@
 
 static void testRead (void);
 static void testWriteRead (void);
+static void testReadRoot (void);
+static void testWriteReadRoot (void);
 static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadMustError (const char * filename);
 static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected);
@@ -162,8 +164,13 @@ int main (int argc, char ** argv)
 {
 	init (argc, argv);
 
+	printf ("### Testing with user:/tests/toml ###\n");
 	testRead ();
 	testWriteRead ();
+
+	printf ("### Testing with user:/ ###\n");
+	testReadRoot ();
+	testWriteReadRoot ();
 
 	print_result ("testmod_toml");
 	return nbError;
@@ -171,6 +178,9 @@ int main (int argc, char ** argv)
 
 static void testRead (void)
 {
+#define PREFIX "user:/tests/toml"
+	prefix = PREFIX;
+
 	testReadCompare ("toml/basic.toml",
 #include "toml/basic.h"
 	);
@@ -231,10 +241,14 @@ static void testRead (void)
 	testReadMustError ("toml/bad_date_invalid_feb.toml");
 	testReadMustError ("toml/bad_string_single_with_nl_literal.toml");
 	testReadMustError ("toml/bad_string_single_with_nl_basic.toml");
+
+	prefix = NULL;
+#undef PREFIX
 }
 
 static void testWriteRead (void)
 {
+	prefix = "user:/tests/toml";
 	testWriteReadAssignments ();
 	testWriteReadArray ();
 	testWriteReadArrayNested ();
@@ -260,6 +274,108 @@ static void testWriteRead (void)
 	testWriteReadInlineTableInArray ();
 	testWriteReadArrayInlineTableAlternating ();
 	testWriteReadOrderTableNonTable ();
+	prefix = NULL;
+}
+
+static void testReadRoot (void)
+{
+#define PREFIX "user:/"
+	prefix = PREFIX;
+
+	testReadCompare ("toml/basic.toml",
+#include "toml/basic.h"
+	);
+	testReadCompare ("toml/string_utf8.toml",
+#include "toml/string_utf8.h"
+	);
+	testReadCompare ("toml/string_basic_escape.toml",
+#include "toml/string_basic_escape.h"
+	);
+	testReadCompare ("toml/string_multiline.toml",
+#include "toml/string_multiline.h"
+	);
+	testReadCompare ("toml/string_null.toml",
+#include "toml/string_null.h"
+	);
+	testReadCompare ("toml/string_base64.toml",
+#include "toml/string_base64.h"
+	);
+	testReadCompare ("toml/date.toml",
+#include "toml/date.h"
+	);
+	testReadCompare ("toml/array.toml",
+#include "toml/array.h"
+	);
+	testReadCompare ("toml/simple_table.toml",
+#include "toml/simple_table.h"
+	);
+	testReadCompare ("toml/table_array.toml",
+#include "toml/table_array.h"
+	);
+	testReadCompare ("toml/table_array_nested.toml",
+#include "toml/table_array_nested.h"
+	);
+	testReadCompare ("toml/table_array_table_mixed.toml",
+#include "toml/table_array_table_mixed.h"
+	);
+	testReadCompare ("toml/inline_table.toml",
+#include "toml/inline_table.h"
+	);
+	testReadCompare ("toml/inline_table_empty.toml",
+#include "toml/inline_table_empty.h"
+	);
+	testReadCompare ("toml/inline_table_multiline_values.toml",
+#include "toml/inline_table_multiline_values.h"
+	);
+	testReadCompare ("toml/comment.toml",
+#include "toml/comment.h"
+	);
+
+	testReadMustError ("toml/bad_duplicate_key_01.toml");
+	testReadMustError ("toml/bad_duplicate_key_02.toml");
+	testReadMustError ("toml/bad_duplicate_key_03.toml");
+	testReadMustError ("toml/bad_empty_assignment.toml");
+	testReadMustError ("toml/bad_bare_string_rhs.toml");
+	testReadMustError ("toml/bad_date_invalid_day.toml");
+	testReadMustError ("toml/bad_date_invalid_month.toml");
+	testReadMustError ("toml/bad_date_invalid_year.toml");
+	testReadMustError ("toml/bad_date_invalid_feb.toml");
+	testReadMustError ("toml/bad_string_single_with_nl_literal.toml");
+	testReadMustError ("toml/bad_string_single_with_nl_basic.toml");
+
+	prefix = NULL;
+#undef PREFIX
+}
+
+static void testWriteReadRoot (void)
+{
+	prefix = "user:/";
+	testWriteReadAssignments ();
+	testWriteReadArray ();
+	testWriteReadArrayNested ();
+	testWriteReadTableArray ();
+	testWriteReadTableArrayWithComments ();
+	testWriteReadTable ();
+	testWriteReadTableNested ();
+	testWriteReadInlineTable ();
+	testWriteReadInlineTableNested ();
+	testWriteReadString ();
+	testWriteReadNull ();
+	// testWriteReadBase64();
+	testWriteReadInteger ();
+	testWriteReadIntegerOtherBase ();
+	testWriteReadFloat ();
+	testWriteReadDate ();
+	testWriteReadBoolean ();
+	testWriteReadCheckSparseHierarchy ();
+	testWriteReadComments ();
+	testWriteReadCommentsArray ();
+	testWriteReadSimpleTableInTableArray ();
+	testWriteReadSimpleTableBeforeTableArray ();
+	testWriteReadInlineTableInArray ();
+	testWriteReadArrayInlineTableAlternating ();
+	testWriteReadOrderTableNonTable ();
+	prefix = NULL;
 }
 
 static void testWriteReadNull (void)
@@ -1185,7 +1301,7 @@ static void testWriteReadCommentsArray (void)
 static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 {
 	const char * filename = "test_write_read.toml";
-	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
+	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
@@ -1224,7 +1340,7 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 static void testReadCompare (const char * filename, KeySet * expected)
 {
 	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
-	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
+	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
 	KeySet * ks = ksNew (0, KS_END);
@@ -1254,7 +1370,7 @@ static void testReadCompare (const char * filename, KeySet * expected)
 static void testReadMustError (const char * filename)
 {
 	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
-	Key * parentKey = keyNew (PREFIX, KEY_VALUE, srcdir_file (filename), KEY_END);
+	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
 	KeySet * ks = ksNew (0, KS_END);
@@ -1277,7 +1393,7 @@ static void printError (Key * parent)
 static Key * addKey (KeySet * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
 		     const char * array, const char * tomltype, int order)
 {
-	Key * key = keyNew (PREFIX "/", KEY_END);
+	Key * key = keyNew (prefix, KEY_END);
 	if (name != NULL)
 	{
 		keyAddName (key, name);

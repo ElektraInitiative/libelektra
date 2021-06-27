@@ -220,8 +220,21 @@ char * getRelativeName (Key * parent, Key * key)
 	size_t pos = 0;
 	char * name = (char *) elektraCalloc (sizeof (char) * nameSize);
 	bool placeDot = false;
-	const char * keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
-	const char * keyStop = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (key);
+	const char * keyPart;
+	const char * keyStop;
+
+	if (keyGetUnescapedNameSize (parent) == 3)
+	{
+		// root key -> needs special treatment
+		keyPart = ((const char *) keyUnescapedName (key)) + 2;
+		keyStop = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (key);
+	}
+	else
+	{
+		keyPart = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (parent);
+		keyStop = ((const char *) keyUnescapedName (key)) + keyGetUnescapedNameSize (key);
+	}
+
 
 	if (isTableArray (parent))
 	{ // skip array index

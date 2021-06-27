@@ -61,11 +61,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin3>>
+### TOML
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Fixed a bug ([#3896](https://issues.libelektra.org/3896)) that caused the `toml` plugin to swallow the first letter of
+  all keys (after the namespace), if the parent key was a root key (e.g. `user:/`). _(Klemens Böswirth)_
 
 ### Python
 
