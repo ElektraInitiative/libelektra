@@ -7,19 +7,19 @@
  */
 
 %{
+#include <kdbassert.h>
+#include <kdbhelper.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
-#include <kdbassert.h>
-#include <stdbool.h>
-#include <kdbhelper.h>
 
+#include "codepoint.h"
+#include "driver.h"
+#include "error.h"
 #include "parser.h"
 #include "scalar.h"
-#include "driver.h"
-#include "codepoint.h"
-#include "error.h"
 #include "utility.h"
 
 #define BASIC_TERMINATOR '\"'
@@ -234,17 +234,19 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 %%
 
-void initializeLexer(FILE * file) {
+void initializeLexer (FILE * file)
+{
 	yylineno = 1;
-	BEGIN(0);
-    yyrestart(file);
+	BEGIN (0);
+	yyrestart (file);
 	// yy_flush_buffer(YY_CURRENT_BUFFER);
 	// yyin = file;
 }
 
-void clearLexer(void) {
+void clearLexer (void)
+{
 	// yy_delete_buffer(YY_CURRENT_BUFFER);
-	yylex_destroy();
+	yylex_destroy ();
 }
 
 static inline bool validAscii (char c)
@@ -287,10 +289,18 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 			}
 			terminatorCount++;
 		}
-		else if (!isMultiline && c == '\n') {
+		else if (!isMultiline && c == '\n')
+		{
 			driverError (driver, ERROR_SYNTACTIC, yylineno,
-				     "Malformed Input: Found newline while reading a non-multiline string, but newline is only allowed in multiline strings.");
-			return bufferConsume(buffer);
+				     "Malformed Input: Found newline while reading a non-multiline string, but newline is only allowed in "
+				     "multiline strings.");
+			return bufferConsume (buffer);
+		}
+		else if (c == 0x00)
+		{
+			driverError (driver, ERROR_SYNTACTIC, yylineno,
+				     "Malformed Input: Found end of file while reading string, expected to find closing string quotes.");
+			return bufferConsume (buffer);
 		}
 		else if (validAscii (c))
 		{
@@ -311,6 +321,10 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 		{
 			unput (c);
 			readNonAsciiChar (buffer, driver);
+		}
+		if (terminatorCount > 0 && c != terminatorChar)
+		{
+			terminatorCount = 0;
 		}
 	}
 	return bufferConsume (buffer);
@@ -438,8 +452,9 @@ static void handlePossibleLineEndingBackslash (Buffer * buffer, Driver * driver)
 		c = input ();
 		if (c != '\n')
 		{
-			driverError (driver, ERROR_SYNTACTIC, yylineno,
-				     "Malformed Input: Invalid line ending sequence, expected newline after carriage return, but got 0x%02X", c);
+			driverError (
+				driver, ERROR_SYNTACTIC, yylineno,
+				"Malformed Input: Invalid line ending sequence, expected newline after carriage return, but got 0x%02X", c);
 		}
 		else
 		{
