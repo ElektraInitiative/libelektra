@@ -19,17 +19,21 @@
 
 #define METAKEY_COMMENT_PREFIX "!!ELEKTRA_META"
 
-bool shouldWriteMetakey (const char * metaName)
+bool shouldWriteMetakey (const Key * meta)
 {
 	const char * blackList[] = { "order", "origvalue", "tomltype", NULL };
 	for (size_t i = 0; blackList[i] != NULL; i++)
 	{
-		if (elektraStrCmp (metaName, blackList[i]) == 0)
+		if (elektraStrCmp (keyName (meta), blackList[i]) == 0)
 		{
 			return false;
 		}
 	}
-	if (elektraStrNCmp (metaName, "comment/", 8) == 0)
+	if (elektraStrNCmp (keyName (meta), "comment/", 8) == 0)
+	{
+		return false;
+	}
+	else if (elektraStrCmp (keyName (meta), "type") && elektraStrCmp (keyString (meta), "binary") != 0)
 	{
 		return false;
 	}
@@ -43,7 +47,7 @@ bool isMetakeyComment (const char * comment)
 
 int writeMetakeyAsComment (const Key * meta, FILE * f)
 {
-	ELEKTRA_ASSERT (shouldWriteMetakey (keyName (meta)), "Metakey should already have been checked for writing eligibility");
+	ELEKTRA_ASSERT (shouldWriteMetakey (meta), "Metakey should already have been checked for writing eligibility");
 	int result = 0;
 	if (meta != NULL && f != NULL)
 	{

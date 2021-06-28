@@ -14,7 +14,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-bool shouldWriteMetakey (const char * metaName);
+bool shouldWriteMetakey (const Key * meta);
 bool isMetakeyComment (const char * comment);
 int writeMetakeyAsComment (const Key * meta, FILE * f);
 int assignMetakeyFromComment (Key * key, const char * comment);
