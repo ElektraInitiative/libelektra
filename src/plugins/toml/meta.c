@@ -25,7 +25,7 @@ bool shouldWriteMetakey (const Key * meta)
 	{
 		return false;
 	}
-	const char * blackList[] = { "order", "origvalue", "tomltype", NULL };
+	const char * blackList[] = { "order", "origvalue", "tomltype", "array", "binary", NULL };
 	for (size_t i = 0; blackList[i] != NULL; i++)
 	{
 		if (elektraStrCmp (keyName (meta), blackList[i]) == 0)
@@ -37,9 +37,14 @@ bool shouldWriteMetakey (const Key * meta)
 	{
 		return false;
 	}
-	else if (elektraStrCmp (keyName (meta), "type") && elektraStrCmp (keyString (meta), "binary") != 0)
+	else if (elektraStrCmp (keyName (meta), "type") == 0)
 	{
-		return false;
+		if (elektraStrCmp (keyString (meta), "binary") == 0)
+			return true;
+		else
+		{
+			return false;
+		}
 	}
 	return true;
 }
@@ -47,6 +52,20 @@ bool shouldWriteMetakey (const Key * meta)
 bool isMetakeyComment (const char * comment)
 {
 	return comment != NULL && elektraStrNCmp (comment, METAKEY_COMMENT_PREFIX, sizeof (METAKEY_COMMENT_PREFIX) - 1) == 0;
+}
+
+bool hasWriteableMetakeys (Key * key)
+{
+	keyRewindMeta (key);
+	const Key * meta;
+	while ((meta = keyNextMeta (key)) != NULL)
+	{
+		if (shouldWriteMetakey (meta))
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 int writeMetakeyAsComment (const Key * meta, FILE * f)
@@ -59,7 +78,6 @@ int writeMetakeyAsComment (const Key * meta, FILE * f)
 		result |= fputs (keyName (meta), f) == EOF;
 		result |= fputs (" ", f) == EOF;
 		result |= fputs (keyString (meta), f) == EOF;
-		result |= fputc ('\n', f) == EOF;
 	}
 	return result;
 }

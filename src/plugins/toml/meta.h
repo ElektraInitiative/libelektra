@@ -16,6 +16,7 @@
 
 bool shouldWriteMetakey (const Key * meta);
 bool isMetakeyComment (const char * comment);
+bool hasWriteableMetakeys (Key * key);
 int writeMetakeyAsComment (const Key * meta, FILE * f);
 int assignMetakeyFromComment (Key * key, const char * comment);
 
