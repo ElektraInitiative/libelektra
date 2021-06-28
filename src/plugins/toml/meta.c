@@ -21,6 +21,10 @@
 
 bool shouldWriteMetakey (const Key * meta)
 {
+	if (meta == NULL)
+	{
+		return false;
+	}
 	const char * blackList[] = { "order", "origvalue", "tomltype", NULL };
 	for (size_t i = 0; blackList[i] != NULL; i++)
 	{
@@ -42,7 +46,7 @@ bool shouldWriteMetakey (const Key * meta)
 
 bool isMetakeyComment (const char * comment)
 {
-	return elektraStrNCmp (comment, METAKEY_COMMENT_PREFIX, sizeof (METAKEY_COMMENT_PREFIX) - 1) == 0;
+	return comment != NULL && elektraStrNCmp (comment, METAKEY_COMMENT_PREFIX, sizeof (METAKEY_COMMENT_PREFIX) - 1) == 0;
 }
 
 int writeMetakeyAsComment (const Key * meta, FILE * f)
