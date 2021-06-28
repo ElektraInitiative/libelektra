@@ -40,7 +40,9 @@ bool shouldWriteMetakey (const Key * meta)
 	else if (elektraStrCmp (keyName (meta), "type") == 0)
 	{
 		if (elektraStrCmp (keyString (meta), "binary") == 0)
+		{
 			return true;
+		}
 		else
 		{
 			return false;

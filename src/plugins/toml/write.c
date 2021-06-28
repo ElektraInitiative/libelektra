@@ -198,45 +198,28 @@ static void writerError (Writer * writer, int err, const char * format, ...)
 	}
 }
 
-// We may need an additional newline before starting with comments in a list, otherwise
-// a comment preceding a value may be written as an inline comment of the previous value.
-static bool needNewlineBeforeComment (Node * node)
-{
-	if (isListElement (node))
-	{
-		if (!isFirstChildren (node))
-		{
-			for (size_t prevIndex = 0; prevIndex + 1 < node->parent->childCount; prevIndex++)
-			{
-				if (node->parent->children[prevIndex + 1] == node)
-				{
-					if (!hasInlineComment (node->parent->children[prevIndex]))
-					{
-						return true;
-					}
-				}
-			}
-		}
-	}
-	return false;
-}
 
 static int writeTree (Node * node, Writer * writer)
 {
 	int result = 0;
 	CommentList * comments = NULL;
-	bool listElement = isListElement (node);
 
 	if (keyCmp (node->key, writer->rootKey) != 0)
 	{
 		comments = collectComments (node->key, writer);
-		bool needNewline = needNewlineBeforeComment (node);
-		if ((comments != NULL || hasWriteableMetakeys (node->key)) && needNewline)
+		bool hasComments = comments != NULL || hasWriteableMetakeys (node->key);
+
+		// Comments/Metakeys will be dropped if parent is an inline table
+		if (hasComments && node->parent->type != NT_INLINE_TABLE)
 		{
-			result |= fputc ('\n', writer->f) == EOF;
+			bool needNewline = needNewlineBeforeComment (node);
+			if (hasComments && needNewline)
+			{
+				result |= fputc ('\n', writer->f) == EOF;
+			}
+			result |= writePrecedingComments (comments, writer);
+			result |= writeMetakeys (node->key, writer);
 		}
-		result |= writePrecedingComments (comments, writer);
-		result |= writeMetakeys (node->key, writer);
 	}
 
 	if (node->type == NT_SIMPLE_TABLE)
@@ -272,6 +255,7 @@ static int writeTree (Node * node, Writer * writer)
 		result |= writeScalar (node->key, writer);
 	}
 
+	bool listElement = isListElement (node);
 	if (listElement)
 	{
 		if (!isLastChild (node))
@@ -690,4 +674,27 @@ static void freeComments (CommentList * comments)
 		elektraFree (comments);
 		comments = next;
 	}
+}
+
+// We may need an additional newline before starting with comments in a list, otherwise
+// a comment preceding a value may be written as an inline comment of the previous value.
+static bool needNewlineBeforeComment (Node * node)
+{
+	if (isListElement (node))
+	{
+		if (!isFirstChildren (node))
+		{
+			for (size_t prevIndex = 0; prevIndex + 1 < node->parent->childCount; prevIndex++)
+			{
+				if (node->parent->children[prevIndex + 1] == node)
+				{
+					if (!hasInlineComment (node->parent->children[prevIndex]))
+					{
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
 }
