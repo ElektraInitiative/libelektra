@@ -285,8 +285,7 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 				bufferAddChar (buffer, c, driver);
 			}
 			terminatorCount++;
-		}
-		else if (!isMultiline && c == '\n') {
+		} else if (!isMultiline && c == '\n') {
 			driverError (driver, ERROR_SYNTACTIC, yylineno,
 				     "Malformed Input: Found newline in non-multiline string, but is only allowed in multiline strings");
 			return bufferConsume(buffer);
@@ -310,6 +309,9 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 		{
 			unput (c);
 			readNonAsciiChar (buffer, driver);
+		}
+		if (terminatorCount > 0 && c != terminatorChar) {
+			terminatorCount = 0;
 		}
 	}
 	return bufferConsume (buffer);
