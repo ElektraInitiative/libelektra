@@ -308,6 +308,7 @@ static void testRead (void)
 static void testWriteRead (void)
 {
 	prefix = "user:/tests/toml";
+	testWriteReadEmptyKeyName ();
 	testWriteReadAssignments ();
 	testWriteReadArray ();
 	testWriteReadArrayNested ();
@@ -321,7 +322,6 @@ static void testWriteRead (void)
 	testWriteReadNull ();
 	// testWriteReadBase64();
 	testWriteReadInteger ();
-	testWriteReadIntegerOtherBase ();
 	testWriteReadFloat ();
 	testWriteReadDate ();
 	testWriteReadBoolean ();
@@ -333,6 +333,8 @@ static void testWriteRead (void)
 	testWriteReadInlineTableInArray ();
 	testWriteReadArrayInlineTableAlternating ();
 	testWriteReadOrderTableNonTable ();
+	testWriteReadMetakeysBasic ();
+	testWriteReadMetakeysInArrays ();
 	prefix = NULL;
 }
 
@@ -343,6 +345,12 @@ static void testReadRoot (void)
 
 	testReadCompare ("toml/basic.toml",
 #include "toml/basic.h"
+	);
+	testReadCompare ("toml/integer.toml",
+#include "toml/integer.h"
+	);
+	testReadCompare ("toml/key_names_empty.toml",
+#include "toml/key_names_empty.h"
 	);
 	testReadCompare ("toml/string_utf8.toml",
 #include "toml/string_utf8.h"
@@ -401,6 +409,11 @@ static void testReadRoot (void)
 	testReadMustError ("toml/bad_date_invalid_feb.toml");
 	testReadMustError ("toml/bad_string_single_with_nl_literal.toml");
 	testReadMustError ("toml/bad_string_single_with_nl_basic.toml");
+	testReadMustError ("toml/integer_overflow/binary.toml");
+	testReadMustError ("toml/integer_overflow/octal.toml");
+	testReadMustError ("toml/integer_overflow/decimal.toml");
+	testReadMustError ("toml/integer_overflow/decimal_under.toml");
+	testReadMustError ("toml/integer_overflow/hexadecimal.toml");
 
 	prefix = NULL;
 #undef PREFIX

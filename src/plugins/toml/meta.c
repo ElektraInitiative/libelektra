@@ -93,7 +93,7 @@ int assignMetakeyFromComment (Key * key, const char * comment)
 	const char * value = nameEnd + 1;
 	if (value != NULL)
 	{
-		char * nameDup = elektraStrNDup (name, nameEnd - name + 1);
+		char * nameDup = elektraMemDup (name, nameEnd - name + 1);
 		if (nameDup == NULL)
 		{
 			return ERROR_MEMORY;
