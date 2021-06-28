@@ -170,8 +170,8 @@ void driverExitKey (Driver * driver)
 	if (existing != NULL && !isTableArray (existing))
 	{
 		// Only allow table array keys to be read multiple times
-		driverError (driver, ERROR_SEMANTIC, driver->currLine, "Malformed input: Multiple occurences of keyname: '%s'",
-			     keyName (existing));
+		driverError (driver, ERROR_SEMANTIC, driver->currLine,
+			     "Malformed input: Multiple occurences of keyname '%s', but keynames must be unique.", keyName (existing));
 	}
 
 	pushCurrKey (driver);
@@ -316,11 +316,12 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 			}
 			else
 			{
-				driverError (driver, ERROR_SEMANTIC, name->line,
-					     "Malformed input: Invalid simple key: '%s' contains invalid characters, only alphanumeric, "
-					     "underline, "
-					     "hyphen allowed",
-					     name->str);
+				driverError (
+					driver, ERROR_SEMANTIC, name->line,
+					"Malformed input: Invalid bare simple key: '%s' contains invalid characters, only alphanumeric, "
+					"underline, "
+					"hyphen allowed. Consider adding quotations around the string.",
+					name->str);
 			}
 			elektraFree (first);
 			elektraFree (second);
@@ -330,9 +331,10 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 	default: // check validity
 		if (!isValidBareString (name->str))
 		{
-			driverError (driver, ERROR_SEMANTIC, name->line,
-				     "Malformed input: Invalid simple key: '%s' contains invalid characters, only alphanumeric, underline, "
-				     "hyphen allowed");
+			driverError (
+				driver, ERROR_SEMANTIC, name->line,
+				"Malformed input: Invalid bare simple key: '%s' contains invalid characters, only alphanumeric, underline, "
+				"hyphen allowed. Consider adding quotations around the string.");
 		}
 		break;
 	}
@@ -360,7 +362,9 @@ void driverExitValue (Driver * driver, Scalar * scalar)
 	switch (scalar->type)
 	{
 	case SCALAR_STRING_BARE: // No bare on rhs allowed
-		driverError (driver, ERROR_SEMANTIC, scalar->line, "Malformed input: Found bare string on rhs, but is not allowed");
+		driverError (
+			driver, ERROR_SEMANTIC, scalar->line,
+			"Malformed input: Found a bare string value, which is not allowed. Consider adding quotations around the string.");
 		break;
 	case SCALAR_DATE_OFFSET_DATETIME:
 	case SCALAR_DATE_LOCAL_DATETIME:
