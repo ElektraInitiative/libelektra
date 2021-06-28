@@ -432,7 +432,7 @@ static int writeScalar (Key * key, Writer * writer)
 		}
 		else
 		{
-			writerError(writer, ERROR_SYNTACTIC, "Expected a boolean value of either 0 or 1, but got %s", valueStr);
+			writerError (writer, ERROR_SYNTACTIC, "Expected a boolean value of either 0 or 1, but got %s", valueStr);
 			result = 1;
 		}
 	}

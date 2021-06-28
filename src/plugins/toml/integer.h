@@ -13,7 +13,7 @@
 
 #include <stdbool.h>
 
-bool isValidIntegerAnyBase(const char * str);
+bool isValidIntegerAnyBase (const char * str);
 bool isValidInteger (const char * str, unsigned long long base);
 
 
