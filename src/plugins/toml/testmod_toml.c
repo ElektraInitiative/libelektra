@@ -9,6 +9,7 @@
 
 #include <kdb.h>
 #include <kdbassert.h>
+#include <kdblogger.h>
 #include <kdbprivate.h>
 #include <tests.h>
 #include <tests_plugin.h>
@@ -123,6 +124,7 @@ static const char * prefix = NULL;
 		if (lastKey != NULL) keySetMeta (lastKey, "binary", NULL);                                                                 \
 	}
 
+static void testRoundtrip (const char * filePath);
 static void testRead (void);
 static void testWriteRead (void);
 static void testReadRoot (void);
@@ -161,6 +163,10 @@ static Key * addKey (KeySet * ks, const char * name, const char * value, size_t 
 		     const char * array, const char * tomltype, int order);
 static void setComment (Key * key, const char * comment, const char * start, size_t spaces, size_t index);
 
+static bool roundtripFile (const char * filenameIn, const char * filenameOut);
+static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * filenameB);
+static void test_toml_1_0_0 (void);
+
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
@@ -168,6 +174,7 @@ int main (int argc, char ** argv)
 	printf ("### Testing with user:/tests/toml ###\n");
 	testRead ();
 	testWriteRead ();
+	test_toml_1_0_0 ();
 
 	printf ("### Testing with user:/ ###\n");
 	testReadRoot ();
@@ -175,6 +182,29 @@ int main (int argc, char ** argv)
 
 	print_result ("testmod_toml");
 	return nbError;
+}
+
+static void test_toml_1_0_0 (void)
+{
+#define PATH_PREFIX "toml/checks_toml_1_0_0/"
+	testRoundtrip (PATH_PREFIX "roundtrip.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/array_redefined_table_array.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/empty_assignment.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/floats.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/key_redefinition.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/key_redefinition_quotes.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/no_keyname.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/table_redefine_value.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/table_redefinition.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/two_assignments_one_line.toml");
+	// TODO: These reads should fail, but they do not fail yet
+	// testReadMustError (PATH_PREFIX "invalid_read/apostroph_too_much.toml");
+	// testReadMustError (PATH_PREFIX "invalid_read/inline_appending.toml");
+	// testReadMustError (PATH_PREFIX "invalid_read/inline_appending2.toml");
+	// testReadMustError (PATH_PREFIX "invalid_read/integer_redefined_table.toml");
+	// testReadMustError (PATH_PREFIX "invalid_read/simple_redefined_table_array.toml");
+	// testReadMustError (PATH_PREFIX "invalid_read/table_array_simple_table_same_name.toml");
+#undef PATH_PREFIX
 }
 
 static void testRead (void)
@@ -1332,9 +1362,45 @@ static void testWriteReadCommentsArray (void)
 	TEST_WR_FOOT;
 }
 
-static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
+static void testRoundtrip (const char * filePath)
 {
-	const char * filename = "test_write_read.toml";
+	char fileOut[512];
+	snprintf (fileOut, 512, "%s.out", filePath);
+	bool roundtripSuccess = roundtripFile (filePath, fileOut);
+	succeed_if (roundtripSuccess, "Could not roundtrip file!");
+	if (roundtripSuccess)
+	{
+		succeed_if (compareFilesIgnoreWhitespace (filePath, fileOut), "Roundtripped files do not match!");
+	}
+	remove (fileOut);
+}
+
+static KeySet * readFile (const char * filename)
+{
+	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
+	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("toml");
+	KeySet * ks = ksNew (0, KS_END);
+
+	int getStatus = plugin->kdbGet (plugin, ks, parentKey);
+	succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read keys");
+
+	if (getStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	{
+		printError (parentKey);
+		ksDel (ks);
+		ks = NULL;
+	}
+	PLUGIN_CLOSE ();
+	keyDel (parentKey);
+	return ks;
+}
+
+static bool writeFile (const char * filename, KeySet * ksWrite)
+{
+	bool success = true;
+	ELEKTRA_LOG_DEBUG ("Writing '%s'\n", filename);
 	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
@@ -1345,30 +1411,41 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 	if (setStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		printError (parentKey);
+		success = false;
 	}
-	else
-	{
-		KeySet * ksRead = ksNew (0, KS_END);
-		int getStatus = plugin->kdbGet (plugin, ksRead, parentKey);
-		succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read written keys");
-		if (getStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
-		{
-			printError (parentKey);
-		}
-		else
-		{
-			compare_keyset (expected, ksRead);
-			/*printf ("EXPECTED:\n");
-			dumpKS (expected);
-			printf ("READ:\n");
-			dumpKS (ksRead);*/
-		}
-		ksDel (ksRead);
-	}
-
 	PLUGIN_CLOSE ();
 	keyDel (parentKey);
+	return success;
+}
+
+static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
+{
+	const char * filename = "test_write_read.toml";
+
+	if (writeFile (filename, ksWrite))
+	{
+		{
+			KeySet * ksRead = readFile (filename);
+			if (ksRead != NULL)
+			{
+				compare_keyset (expected, ksRead);
+				ksDel (ksRead);
+			}
+		}
+	}
 	remove (filename);
+}
+
+static bool roundtripFile (const char * filenameIn, const char * filenameOut)
+{
+	KeySet * ksRead = readFile (filenameIn);
+	if (ksRead == NULL)
+	{
+		return false;
+	}
+	bool success = writeFile (filenameOut, ksRead);
+	ksDel (ksRead);
+	return success;
 }
 
 static void testReadCompare (const char * filename, KeySet * expected)
@@ -1487,4 +1564,73 @@ static void setComment (Key * key, const char * comment, const char * start, siz
 
 	snprintf (commentKey, 128, "%s/space", commentBase);
 	setPlainIntMeta (key, commentKey, spaces);
+}
+
+static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * filenameB)
+{
+	const int LINE_SIZE = 512;
+	const char * WHITELIST_CHARS = " \t\"'";
+	FILE * fA = fopen (filenameA, "r");
+	FILE * fB = fopen (filenameB, "r");
+	char lineA[LINE_SIZE];
+	char lineB[LINE_SIZE];
+
+	size_t line = 0;
+
+	if (fA == NULL)
+	{
+		printf ("Could not open file '%s'\n", filenameA);
+		return false;
+	}
+	if (fB == NULL)
+	{
+		printf ("Could not open file '%s'\n", filenameB);
+		return false;
+	}
+
+	while (1)
+	{
+		char * ptrA = fgets (lineA, LINE_SIZE, fA);
+		char * ptrB = fgets (lineB, LINE_SIZE, fB);
+		line++;
+		while (1)
+		{
+			while (ptrA != NULL && *ptrA != 0 && strchr (WHITELIST_CHARS, (int) *ptrA) != NULL)
+			{
+				ptrA++;
+			}
+			while (ptrB != NULL && *ptrB != 0 && strchr (WHITELIST_CHARS, (int) *ptrB) != NULL)
+			{
+				ptrB++;
+			}
+			if (ptrA == NULL || ptrB == NULL)
+			{
+				if (ptrA == NULL && ptrB == NULL)
+				{
+					return true;
+				}
+				else if (ptrA != NULL)
+				{
+					printf ("Second file at EOF, but first file not:\n%s", ptrA);
+					return false;
+				}
+				else if (ptrB != NULL)
+				{
+					printf ("First file at EOF, but second file not:\n%s", ptrB);
+					return false;
+				}
+			}
+			if (*ptrA != *ptrB)
+			{
+				printf ("Lines do not match at line %lu:\nfirst file:\n%ssecond file:\n%s", line, lineA, lineB);
+				return false;
+			}
+			if (*ptrA == 0)
+			{
+				break;
+			}
+			ptrA++;
+			ptrB++;
+		}
+	}
 }
