@@ -12,6 +12,7 @@
 
 #include <kdbassert.h>
 #include <kdbhelper.h>
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -20,20 +21,20 @@
 #define SEP_NUM_NZERO_START SEPARATED_DIGITS_DIFF_START ("[1-9]", "[0-9]")
 #define DIG2 "[0-9]{2,2}"
 #define DIG4 "[0-9]{4,4}"
+#define AFTER_DOT "\\." SEPARATED_DIGITS ("[0-9]")
 
 #define FULL_DATE "(" DIG4 "-" DIG2 "-" DIG2 ")"
 #define PARTIAL_TIME "(" DIG2 ":" DIG2 ":" DIG2 "(\\.[0-9]+)?)"
 #define TIME_OFFSET "(Z|([+-]" DIG2 ":" DIG2 "))"
 #define TIME_SEPARATOR "[T ]"
 
-const char * binStr = "^0b" SEPARATED_DIGITS ("[01]") "$";
-const char * octStr = "^0o" SEPARATED_DIGITS ("[0-7]") "$";
-const char * hexStr = "^0x" SEPARATED_DIGITS ("[0-9a-fA-F]") "$";
-
 const char * decStr = "^[+-]?" SEP_NUM_NZERO_START "$";
-const char * floatStr = "^[+-]?(0|" SEP_NUM_NZERO_START ")"			// PRE-DOT DIGITS
-						"(\\." SEPARATED_DIGITS("[0-9]") ")?"		// OPTIONAL AFTER-DOT DIGITS
-						"([eE][+-]?" SEPARATED_DIGITS("[0-9]") ")?$";		// OPTIONAL EXPONENT DIGITS
+const char * floatStr = "^[+-]?(0|" SEP_NUM_NZERO_START
+			")" // PRE-DOT DIGITS
+			"((" AFTER_DOT
+			")|" // NEED EITHER DOT AND NUMBERS
+			"("
+			"(" AFTER_DOT ")?[eE][+-]?" SEPARATED_DIGITS ("[0-9]") "))$"; // OR DOT+NUMBERS+EXPONENT+NUMBERS
 const char * floatSpecialStr = "^[+-]?(nan|inf)$";
 // const char * bareStr = "^[a-zA-Z0-9_-]+$";
 
@@ -59,22 +60,10 @@ TypeChecker * createTypeChecker (void)
 	{
 		return NULL;
 	}
-	result |= regcomp (&typeChecker->regexBin, binStr, REG_EXTENDED);
-	ELEKTRA_ASSERT (result == 0, "Binary regex could not be compiled: '%s'", binStr);
-	result |= regcomp (&typeChecker->regexOct, octStr, REG_EXTENDED);
-	ELEKTRA_ASSERT (result == 0, "Octal regex could not be compiled: '%s'", octStr);
-	result |= regcomp (&typeChecker->regexDec, decStr, REG_EXTENDED);
-	ELEKTRA_ASSERT (result == 0, "Decimal regex could not be compiled: '%s'", decStr);
-	result |= regcomp (&typeChecker->regexHex, hexStr, REG_EXTENDED);
-	ELEKTRA_ASSERT (result == 0, "Hex regex could not be compiled: '%s'", hexStr);
-
 	result |= regcomp (&typeChecker->regexFloat, floatStr, REG_EXTENDED);
 	ELEKTRA_ASSERT (result == 0, "Float regex could not be compiled: '%s'", floatStr);
 	result |= regcomp (&typeChecker->regexFloatSpecial, floatSpecialStr, REG_EXTENDED);
 	ELEKTRA_ASSERT (result == 0, "Special Floats regex could not be compiled: '%s'", floatSpecialStr);
-
-	// result |= regcomp (&typeChecker->regexBare, bareStr, REG_EXTENDED);
-	// ELEKTRA_ASSERT (result == 0, "Bare regex could not be compiled: '%s'", bareStr);
 
 	result |= regcomp (&typeChecker->regexOffsetDt, offsetDateTimeStr, REG_EXTENDED);
 	ELEKTRA_ASSERT (result == 0, "Offset datetime regex could not be compiled: '%s'", offsetDateTimeStr);
@@ -93,45 +82,14 @@ void destroyTypeChecker (TypeChecker * checker)
 {
 	if (checker != NULL)
 	{
-		regfree (&checker->regexBin);
-		regfree (&checker->regexOct);
-		regfree (&checker->regexDec);
-		regfree (&checker->regexHex);
 		regfree (&checker->regexFloat);
 		regfree (&checker->regexFloatSpecial);
-		// regfree (&checker->regexBare);
 		regfree (&checker->regexOffsetDt);
 		regfree (&checker->regexLocalDt);
 		regfree (&checker->regexLocalDate);
 		regfree (&checker->regexLocalTime);
 		elektraFree (checker);
 	}
-}
-
-bool isNumber (TypeChecker * checker, const char * str)
-{
-	return isBinary (checker, str) || isOctal (checker, str) || isDecimal (checker, str) || isHexadecimal (checker, str) ||
-	       isFloat (checker, str);
-}
-
-bool isBinary (TypeChecker * checker, const char * str)
-{
-	return regexec (&checker->regexBin, str, 0, NULL, 0) == 0;
-}
-
-bool isOctal (TypeChecker * checker, const char * str)
-{
-	return regexec (&checker->regexOct, str, 0, NULL, 0) == 0;
-}
-
-bool isDecimal (TypeChecker * checker, const char * str)
-{
-	return regexec (&checker->regexDec, str, 0, NULL, 0) == 0;
-}
-
-bool isHexadecimal (TypeChecker * checker, const char * str)
-{
-	return regexec (&checker->regexHex, str, 0, NULL, 0) == 0;
 }
 
 bool isFloat (TypeChecker * checker, const char * str)

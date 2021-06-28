@@ -148,7 +148,6 @@ static void testWriteReadSimpleTableInTableArray (void);
 static void testWriteReadSimpleTableBeforeTableArray (void);
 static void testWriteReadString (void);
 static void testWriteReadInteger (void);
-static void testWriteReadIntegerOtherBase (void);
 static void testWriteReadFloat (void);
 static void testWriteReadDate (void);
 static void testWriteReadBoolean (void);
@@ -215,6 +214,9 @@ static void testRead (void)
 	testReadCompare ("toml/basic.toml",
 #include "toml/basic.h"
 	);
+	testReadCompare("toml/integer.toml",
+#include "toml/integer.h"
+	);
 	testReadCompare ("toml/key_names_empty.toml",
 #include "toml/key_names_empty.h"
 	);
@@ -275,6 +277,11 @@ static void testRead (void)
 	testReadMustError ("toml/bad_date_invalid_feb.toml");
 	testReadMustError ("toml/bad_string_single_with_nl_literal.toml");
 	testReadMustError ("toml/bad_string_single_with_nl_basic.toml");
+	testReadMustError ("toml/integer_overflow/binary.toml");
+	testReadMustError ("toml/integer_overflow/octal.toml");
+	testReadMustError ("toml/integer_overflow/decimal.toml");
+	testReadMustError ("toml/integer_overflow/decimal_under.toml");
+	testReadMustError ("toml/integer_overflow/hexadecimal.toml");
 
 	prefix = NULL;
 #undef PREFIX
@@ -398,7 +405,6 @@ static void testWriteReadRoot (void)
 	testWriteReadNull ();
 	// testWriteReadBase64();
 	testWriteReadInteger ();
-	testWriteReadIntegerOtherBase ();
 	testWriteReadFloat ();
 	testWriteReadDate ();
 	testWriteReadBoolean ();
@@ -1056,92 +1062,81 @@ static void testWriteReadInteger (void)
 {
 	TEST_WR_HEAD;
 
-	WRITE_KV ("int1", "+1337");
-	DUP_EXPECTED;
-	SET_ORDER (0);
-	SET_TYPE ("long_long");
-
-	WRITE_KV ("int2", "-666");
-	DUP_EXPECTED;
-	SET_ORDER (1);
-	SET_TYPE ("long_long");
-
-	WRITE_KV ("int3", "0");
-	DUP_EXPECTED;
-	SET_ORDER (2);
-	SET_TYPE ("long_long");
-
-	WRITE_KV ("int4", "3000");
-	DUP_EXPECTED;
-	SET_ORDER (3);
-	SET_TYPE ("long_long");
-
-	WRITE_KV ("int5", "+1_999_000");
-	DUP_EXPECTED;
-	SET_ORDER (4);
-	VALUE_TO_ORIG_NEW_VALUE ("+1999000");
-	SET_TYPE ("long_long");
-
-	TEST_WR_FOOT;
-}
-
-static void testWriteReadIntegerOtherBase (void)
-{
-	TEST_WR_HEAD;
-
-	WRITE_KV ("hex1", "0xA_Baf00");
+	WRITE_KV ("binary_min", "0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
 	SET_ORDER (0);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("11251456");
+	VALUE_TO_ORIG_NEW_VALUE("0");
 	SET_TYPE ("unsigned_long_long");
 
-	WRITE_KV ("hex2", "0x00_1");
+	WRITE_KV ("binary_max", "0b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111");
 	SET_ORDER (1);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("1");
+	VALUE_TO_ORIG_NEW_VALUE("18446744073709551615");
 	SET_TYPE ("unsigned_long_long");
 
-	WRITE_KV ("hex3", "0x0_0");
+	WRITE_KV ("binary_overflow", "0b1_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
 	SET_ORDER (2);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("0");
-	SET_TYPE ("unsigned_long_long");
+	SET_TYPE ("string");
 
-	WRITE_KV ("oct1", "0o13_37");
+
+	WRITE_KV ("octal_min", "0o0000000000000000000000");
 	SET_ORDER (3);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("735");
+	VALUE_TO_ORIG_NEW_VALUE("0");
 	SET_TYPE ("unsigned_long_long");
 
-	WRITE_KV ("oct2", "0o0_000");
+	WRITE_KV ("octal_max", "0o1777777777777777777777");
 	SET_ORDER (4);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("0");
+	VALUE_TO_ORIG_NEW_VALUE("18446744073709551615");
 	SET_TYPE ("unsigned_long_long");
 
-	WRITE_KV ("oct3", "0o1_3_3_7");
+	WRITE_KV ("octal_overflow", "0o2000000000000000000000");
 	SET_ORDER (5);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("735");
+	SET_TYPE ("string");
+
+
+	WRITE_KV("decimal_min", "-9_223_372_036_854_775_808");
+	SET_ORDER(6);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE("-9223372036854775808");
+	SET_TYPE("long_long");
+
+	WRITE_KV("decimal_max", "+9_223_372_036_854_775_807");
+	SET_ORDER(7);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE("+9223372036854775807");
+	SET_TYPE("long_long");
+
+	WRITE_KV("decimal_underflow", "-9_223_372_036_854_775_809");
+	SET_ORDER(8);
+	DUP_EXPECTED;
+	SET_TYPE("string");
+
+	WRITE_KV("decimal_overflow", "9_223_372_036_854_775_808");
+	SET_ORDER(9);
+	DUP_EXPECTED;
+	SET_TYPE("string");
+
+
+	WRITE_KV ("hexadecimal_min", "0x0000_0000_0000_0000");
+	SET_ORDER (10);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE("0");
 	SET_TYPE ("unsigned_long_long");
 
-	WRITE_KV ("bin1", "0b0_0_0_0");
-	SET_ORDER (6);
+	WRITE_KV ("hexadecimal_max", "0xFFFF_FFFF_FFFF_FFFF");
+	SET_ORDER (11);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("0");
+	VALUE_TO_ORIG_NEW_VALUE("18446744073709551615");
 	SET_TYPE ("unsigned_long_long");
 
-	WRITE_KV ("bin2", "0b100_0");
-	SET_ORDER (7);
+	WRITE_KV ("hexadecimal_overflow", "0x1_0000_0000_0000_0000");
+	SET_ORDER (12);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("8");
-	SET_TYPE ("unsigned_long_long");
-
-	WRITE_KV ("bin3", "0b000");
-	SET_ORDER (8);
-	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("0");
-	SET_TYPE ("unsigned_long_long");
+	SET_TYPE ("string");
 
 	TEST_WR_FOOT;
 }

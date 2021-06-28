@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
 
 #include "codepoint.h"
 #include "driver.h"
@@ -21,6 +22,8 @@
 #include "parser.h"
 #include "scalar.h"
 #include "utility.h"
+#include "type.h"
+#include "integer.h"
 
 #define BASIC_TERMINATOR '\"'
 #define LITERAL_TERMINATOR '\''
@@ -149,7 +152,17 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 }
 
 {decimal_pm} {
-	yylval.scalar = createScalarDup (SCALAR_INTEGER_DEC, yytext, yylineno);
+	if (isValidInteger (yytext, 10))
+	{
+		yylval.scalar = createScalarDup (SCALAR_INTEGER_DEC, yytext, yylineno);
+	}
+	else
+	{
+		yylval.scalar = NULL;
+		driverError (driver, ERROR_SEMANTIC, yylineno,
+			     "Found decimal number that is too big or small, must be in range [%lld, %lld], but found %s", LLONG_MIN,
+			     LLONG_MAX, yytext);
+	}
 	return DECIMAL;
 }
 
@@ -159,17 +172,41 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 }
 
 "0x"{hex_char}("_"?{hex_char})* {
-	yylval.scalar = createScalarDup (SCALAR_INTEGER_HEX, yytext, yylineno);
+	if (isValidInteger (yytext, 16))
+	{
+		yylval.scalar = createScalarDup (SCALAR_INTEGER_HEX, yytext, yylineno);
+	}
+	else
+	{
+		yylval.scalar = NULL;
+		driverError (driver, ERROR_SEMANTIC, yylineno, "Found hexadecimal number that is too big, maximum is 0x%llX, but found %s", ULLONG_MAX, yytext);
+	}
 	return HEXADECIMAL;
 }
 
 "0o"{oct_char}("_"?{oct_char})* {
-	yylval.scalar = createScalarDup (SCALAR_INTEGER_OCT, yytext, yylineno);
+	if (isValidInteger (yytext, 8))
+	{
+		yylval.scalar = createScalarDup (SCALAR_INTEGER_OCT, yytext, yylineno);
+	}
+	else
+	{
+		yylval.scalar = NULL;
+		driverError (driver, ERROR_SEMANTIC, yylineno, "Found octal number that is too big, maximum is 0o%llo, but found %s", ULLONG_MAX, yytext);
+	}
 	return OCTAL;
 }
 
 "0b"{bin_char}("_"?{bin_char})* {
-	yylval.scalar = createScalarDup (SCALAR_INTEGER_BIN, yytext, yylineno);
+	if (isValidInteger (yytext, 2))
+	{
+		yylval.scalar = createScalarDup (SCALAR_INTEGER_BIN, yytext, yylineno);
+	}
+	else
+	{
+		yylval.scalar = NULL;
+		driverError (driver, ERROR_SEMANTIC, yylineno, "Found binary number that is too big, maximum is 64 bits, but found %s", yytext);
+	}
 	return BINARY;
 }
 
