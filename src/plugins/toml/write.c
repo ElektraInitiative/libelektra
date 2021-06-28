@@ -19,12 +19,12 @@
 #include <string.h>
 
 #include "error.h"
+#include "integer.h"
 #include "node.h"
 #include "prepare.h"
 #include "type.h"
 #include "utility.h"
 #include "write.h"
-#include "integer.h"
 
 typedef enum
 {
@@ -75,7 +75,6 @@ static bool isListElement (Node * node);
 static bool isLastChild (Node * node);
 static bool hasInlineComment (Node * node);
 static bool isMultilineString (const char * str);
-static bool isTrue (const char * boolStr);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
@@ -423,13 +422,25 @@ static int writeScalar (Key * key, Writer * writer)
 
 	if (type != NULL && elektraStrCmp (keyString (type), "boolean") == 0)
 	{
-		result |= fputs (isTrue (valueStr) ? "true" : "false", writer->f) == EOF;
+		if (elektraStrCmp (valueStr, "0") == 0)
+		{
+			result |= fputs ("false", writer->f) == EOF;
+		}
+		else if (elektraStrCmp (valueStr, "1") == 0)
+		{
+			result |= fputs ("true", writer->f) == EOF;
+		}
+		else
+		{
+			writerError(writer, ERROR_SYNTACTIC, "Expected a boolean value of either 0 or 1, but got %s", valueStr);
+			result = 1;
+		}
 	}
 	else if (type != NULL && elektraStrCmp (keyString (type), "string") == 0)
 	{
 		result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
 	}
-	else if (isFloat (writer->checker, valueStr) || isValidIntegerAnyBase(valueStr) || isDateTime (writer->checker, valueStr))
+	else if (isFloat (writer->checker, valueStr) || isValidIntegerAnyBase (valueStr) || isDateTime (writer->checker, valueStr))
 	{
 		result |= fputs (valueStr, writer->f) == EOF;
 	}
@@ -453,18 +464,6 @@ static int writeQuoted (const char * value, char quoteChar, int quouteCount, Wri
 		result |= fputc (quoteChar, writer->f) == EOF;
 	}
 	return result;
-}
-
-static bool isTrue (const char * boolStr)
-{
-	if (elektraStrCmp (boolStr, "true") == 0 || elektraStrCmp (boolStr, "1") == 0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
 }
 
 static bool isMultilineString (const char * str)
