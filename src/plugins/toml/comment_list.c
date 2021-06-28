@@ -17,6 +17,7 @@
 #include <string.h>
 
 #include "error.h"
+#include "meta.h"
 #include "utility.h"
 
 static int keyAddComment (Key * key, const char * commentStr, size_t index, size_t spaceCount);
@@ -80,7 +81,14 @@ int keyAddCommentList (Key * key, CommentList * root)
 	int err = 0;
 	while (root != NULL && err == 0)
 	{
-		err = keyAddComment (key, root->str, index++, root->spaceCount);
+		if (isMetakeyComment (root->str))
+		{
+			err = assignMetakeyFromComment (key, root->str);
+		}
+		else
+		{
+			err = keyAddComment (key, root->str, index++, root->spaceCount);
+		}
 		root = root->next;
 	}
 	return err;

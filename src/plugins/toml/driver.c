@@ -937,7 +937,10 @@ static bool handleSpecialStrings (const char * string, Key * key)
 static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, char terminator, int terminatorCount,
 				  Driver * driver)
 {
-	if (elektraStrLen (translatedStr) > 1) // only assign it on non-empty strings, otherwise the type plugin complains
+	const Key * metaType = keyGetMeta (key, "type");
+	// Don't overwrite "binary" typed metakeys -> See base64 plugin meta mode
+	// Don't assign it empty strings, otherwise the type plugin complains
+	if ((metaType == NULL || elektraStrCmp (keyString (metaType), "binary") != 0) && elektraStrLen (translatedStr) > 1)
 	{
 		keySetMeta (key, "type", "string");
 	}
