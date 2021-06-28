@@ -317,7 +317,7 @@ docu_task:
     - >
       set --
       -DBUILD_PDF=ON
-      -DPLUGINS='dump;list;resolver_fm_hpu_b;spec;sync;yajl'
+      -DPLUGINS='toml;base64;list;resolver_fm_hpu_b;spec;sync;yajl'
       -DTOOLS='ALL;web;website'
     - *generate
     - *build
