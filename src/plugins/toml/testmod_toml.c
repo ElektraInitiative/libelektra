@@ -131,6 +131,7 @@ static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadMustError (const char * filename);
 static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected);
 static void testWriteReadAssignments (void);
+static void testWriteReadEmptyKeyName (void);
 static void testWriteReadArray (void);
 static void testWriteReadArrayNested (void);
 static void testWriteReadInlineTable (void);
@@ -183,6 +184,9 @@ static void testRead (void)
 
 	testReadCompare ("toml/basic.toml",
 #include "toml/basic.h"
+	);
+	testReadCompare ("toml/key_names_empty.toml",
+#include "toml/key_names_empty.h"
 	);
 	testReadCompare ("toml/string_utf8.toml",
 #include "toml/string_utf8.h"
@@ -350,6 +354,7 @@ static void testReadRoot (void)
 static void testWriteReadRoot (void)
 {
 	prefix = "user:/";
+	testWriteReadEmptyKeyName ();
 	testWriteReadAssignments ();
 	testWriteReadArray ();
 	testWriteReadArrayNested ();
@@ -376,6 +381,24 @@ static void testWriteReadRoot (void)
 	testWriteReadArrayInlineTableAlternating ();
 	testWriteReadOrderTableNonTable ();
 	prefix = NULL;
+}
+
+static void testWriteReadEmptyKeyName (void)
+{
+	TEST_WR_HEAD;
+
+	WRITE_KV ("%", "discouraged, but valid");
+	SET_ORDER (0);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
+
+	WRITE_KV ("%/%", "also discouraged, but valid");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
+
+
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadNull (void)
