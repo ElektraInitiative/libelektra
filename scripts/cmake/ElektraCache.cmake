@@ -134,7 +134,7 @@ set (
 
 set (
 	KDB_DEFAULT_STORAGE
-	"dump"
+	"toml"
 	CACHE STRING "This storage plugin will be used initially (as default and for bootstrapping).")
 
 if (KDB_DEFAULT_STORAGE STREQUAL "storage")
