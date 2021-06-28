@@ -1370,7 +1370,8 @@ static void testRoundtrip (const char * filePath)
 	succeed_if (roundtripSuccess, "Could not roundtrip file!");
 	if (roundtripSuccess)
 	{
-		succeed_if (compareFilesIgnoreWhitespace (filePath, fileOut), "Roundtripped files do not match!");
+		succeed_if (compareFilesIgnoreWhitespace (srcdir_file (filePath), srcdir_file (fileOut)),
+			    "Roundtripped files do not match!");
 	}
 	remove (fileOut);
 }
