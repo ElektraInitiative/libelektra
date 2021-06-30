@@ -64,13 +64,13 @@ static void test_elektraStrLen (void)
 #define TEST_VALIDATE_NAME_OK(NAME, MSG)                                                                                                   \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		succeed_if (elektraKeyNameValidate (NAME, false), MSG " ok");                                                              \
+		succeed_if (elektraKeyNameValidate (NAME, false, false), MSG " ok");                                                       \
 	} while (0)
 
 #define TEST_VALIDATE_NAME_NOK(NAME, MSG)                                                                                                  \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		succeed_if (!elektraKeyNameValidate (NAME, false), MSG "not ok");                                                          \
+		succeed_if (!elektraKeyNameValidate (NAME, false, false), MSG "not ok");                                                   \
 	} while (0)
 
 static void test_elektraKeyNameValidate (void)
