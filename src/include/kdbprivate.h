@@ -603,7 +603,7 @@ int keyIsUser (const Key * key);
 
 elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len);
 
-bool elektraKeyNameValidate (const char * name, bool isComplete, bool isRoot);
+bool elektraKeyNameValidate (const char * name, bool isComplete);
 void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_t * canonicalSizePtr, size_t offset, size_t * usizePtr);
 void elektraKeyNameUnescape (const char * name, char * unescapedName);
 size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);

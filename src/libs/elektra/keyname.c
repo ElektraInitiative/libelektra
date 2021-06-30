@@ -498,7 +498,7 @@ ssize_t keySetName (Key * key, const char * newName)
 	if (test_bit (key->flags, KEY_FLAG_RO_NAME)) return -1;
 	if (newName == NULL || strlen (newName) == 0) return -1;
 
-	if (!elektraKeyNameValidate (newName, true, false))
+	if (!elektraKeyNameValidate (newName, true))
 	{
 		// error invalid name
 		return -1;
@@ -582,7 +582,7 @@ ssize_t keyAddName (Key * key, const char * newName)
 
 	if (strlen (newName) == 0) return key->keySize;
 
-	if (!elektraKeyNameValidate (newName, false, key->keyUSize == 3))
+	if (!elektraKeyNameValidate (newName, false))
 	{
 		// error invalid name suffix
 		return -1;
@@ -756,15 +756,13 @@ int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
  *
  * @param name       The escaped key name to check
  * @param isComplete Whether or not @p name is supposed to be a complete key name
- * @param isRoot     Whether or not the existing key is a root key. Only used, if
- *                   @p isComplete is `false`.
  *
  * @retval #true If @p name is a valid key name.
  * @retval #false Otherwise
  *
  * @ingroup keyname
  */
-bool elektraKeyNameValidate (const char * name, bool isComplete, bool isRoot)
+bool elektraKeyNameValidate (const char * name, bool isComplete)
 {
 	if (name == NULL || (strlen (name) == 0 && isComplete)) return 0;
 
@@ -791,30 +789,6 @@ bool elektraKeyNameValidate (const char * name, bool isComplete, bool isRoot)
 		if (*name != '/')
 		{
 			ELEKTRA_LOG_DEBUG ("Illegal name start; expected (namespace +) slash: %s", name);
-			return 0;
-		}
-
-		const char * n = name + 1;
-		while (*n == '/')
-		{
-			++n;
-		}
-		if (*n == '%' && *(n + 1) == '\0')
-		{
-			ELEKTRA_LOG_DEBUG ("Illegal escaped part; first part cannot be empty (collides with root key): %s", name);
-			return 0;
-		}
-	}
-	else if (isRoot)
-	{
-		const char * n = name;
-		while (*n == '/')
-		{
-			++n;
-		}
-		if (*n == '%' && *(n + 1) == '\0')
-		{
-			ELEKTRA_LOG_DEBUG ("Illegal escaped part; first part cannot be empty (collides with root key): %s", name);
 			return 0;
 		}
 	}
@@ -1489,12 +1463,6 @@ static size_t keyAddBaseNameInternal (Key * key, const char * baseName)
 	size_t escapedSize;
 	char * escaped = NULL;
 	int hasPath = key->keyUSize > 3;
-
-	if (!hasPath && baseName[0] == '\0')
-	{
-		// can't add empty part to root key
-		return key->keySize;
-	}
 
 	if (baseName == NULL)
 	{

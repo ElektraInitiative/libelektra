@@ -14,16 +14,16 @@
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		const char * p = prefix;                                                                                                   \
-		succeed_if_fmt (elektraKeyNameValidate (name, p == NULL, p != NULL && p[strlen (p) - 1] == '/'),                           \
-				"'%s' + '%s' SHOULD BE a valid key name", p == NULL ? "" : p, name);                                       \
+		succeed_if_fmt (elektraKeyNameValidate (name, p == NULL), "'%s' + '%s' SHOULD BE a valid key name", p == NULL ? "" : p,    \
+				name);                                                                                                     \
 	} while (0)
 
 #define TEST_VALIDATE_ERROR(name, prefix)                                                                                                  \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
 		const char * p = prefix;                                                                                                   \
-		succeed_if_fmt (!elektraKeyNameValidate (name, p == NULL, p != NULL && p[strlen (p) - 1] == '/'),                          \
-				"'%s' + '%s' SHOULD NOT BE a valid key name", p == NULL ? "" : p, name);                                   \
+		succeed_if_fmt (!elektraKeyNameValidate (name, p == NULL), "'%s' + '%s' SHOULD NOT BE a valid key name",                   \
+				p == NULL ? "" : p, name);                                                                                 \
 	} while (0)
 
 static void test_validate (void)
@@ -353,8 +353,7 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("..", "system:/elektra/mountpoints");
 	TEST_VALIDATE_OK ("..", "system:/elektra");
 
-	succeed_if (!elektraKeyNameValidate (NULL, true, true), "(NULL) SHOULD NOT BE a valid complete key name");
-	succeed_if (!elektraKeyNameValidate (NULL, true, false), "(NULL) SHOULD NOT BE a valid complete key name");
+	succeed_if (!elektraKeyNameValidate (NULL, true), "(NULL) SHOULD NOT BE a valid complete key name");
 
 	TEST_VALIDATE_ERROR ("", NULL);
 	TEST_VALIDATE_ERROR ("user/", NULL);
@@ -410,14 +409,15 @@ static void test_validate (void)
 	TEST_VALIDATE_ERROR ("/\\#0/\\#1", NULL);
 	TEST_VALIDATE_ERROR ("/\\#0/..", "/");
 
-	TEST_VALIDATE_ERROR ("/%", NULL);
+	// TODO (kodebach): new root names
+	/*TEST_VALIDATE_ERROR ("/%", NULL);
 	TEST_VALIDATE_ERROR ("//%", NULL);
 	TEST_VALIDATE_ERROR ("///%", NULL);
 	TEST_VALIDATE_ERROR ("user:/%", NULL);
 	TEST_VALIDATE_ERROR ("user://%", NULL);
 	TEST_VALIDATE_ERROR ("user:///%", NULL);
 	TEST_VALIDATE_ERROR ("%", "/");
-	TEST_VALIDATE_ERROR ("%", "user:/");
+	TEST_VALIDATE_ERROR ("%", "user:/");*/
 }
 
 #undef TEST_VALIDATE_OK
