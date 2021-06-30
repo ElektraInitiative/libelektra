@@ -142,9 +142,8 @@ static const char * prefix = NULL;
 
 static void testRoundtrip (const char * filePath);
 static void testRead (void);
-static void testWriteRead (void);
 static void testReadRoot (void);
-static void testWriteReadRoot (void);
+static void testWriteRead (const char * _prefix);
 static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadMustError (const char * filename);
 static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected);
@@ -182,7 +181,7 @@ static void setComment (Key * key, const char * comment, const char * start, siz
 
 static bool roundtripFile (const char * filenameIn, const char * filenameOut);
 static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * filenameB);
-static void test_toml_1_0_0 (void);
+static void test_toml_1_0_0 (const char * _prefix);
 
 int main (int argc, char ** argv)
 {
@@ -190,19 +189,21 @@ int main (int argc, char ** argv)
 
 	printf ("### Testing with user:/tests/toml ###\n");
 	testRead ();
-	testWriteRead ();
-	test_toml_1_0_0 ();
+	testWriteRead ("user:/tests/toml");
+	test_toml_1_0_0 ("user:/tests/toml");
 
 	printf ("### Testing with user:/ ###\n");
 	testReadRoot ();
-	testWriteReadRoot ();
+	testWriteRead ("user:/");
+	test_toml_1_0_0 ("user:/");
 
 	print_result ("testmod_toml");
 	return nbError;
 }
 
-static void test_toml_1_0_0 (void)
+static void test_toml_1_0_0 (const char * _prefix)
 {
+	prefix = _prefix;
 #define PATH_PREFIX "toml/checks_toml_1_0_0/"
 	testRoundtrip (PATH_PREFIX "roundtrip.toml");
 	testReadMustError (PATH_PREFIX "invalid_read/array_redefined_table_array.toml");
@@ -222,6 +223,8 @@ static void test_toml_1_0_0 (void)
 	// testReadMustError (PATH_PREFIX "invalid_read/simple_redefined_table_array.toml");
 	// testReadMustError (PATH_PREFIX "invalid_read/table_array_simple_table_same_name.toml");
 #undef PATH_PREFIX
+
+	prefix = NULL;
 }
 
 static void testRead (void)
@@ -283,6 +286,7 @@ static void testRead (void)
 	testReadCompare ("toml/comment.toml",
 #include "toml/comment.h"
 	);
+#undef PREFIX
 
 	testReadMustError ("toml/bad_duplicate_key_01.toml");
 	testReadMustError ("toml/bad_duplicate_key_02.toml");
@@ -302,13 +306,16 @@ static void testRead (void)
 	testReadMustError ("toml/integer_overflow/hexadecimal.toml");
 
 	prefix = NULL;
-#undef PREFIX
 }
 
-static void testWriteRead (void)
+static void testWriteRead (const char * _prefix)
 {
-	prefix = "user:/tests/toml";
-	testWriteReadEmptyKeyName ();
+	prefix = _prefix;
+	// TODO (kodebach): new root name
+	if (strcmp (prefix, "user:/") != 0)
+	{
+		testWriteReadEmptyKeyName ();
+	}
 	testWriteReadAssignments ();
 	testWriteReadArray ();
 	testWriteReadArrayNested ();
@@ -349,9 +356,9 @@ static void testReadRoot (void)
 	testReadCompare ("toml/integer.toml",
 #include "toml/integer.h"
 	);
-	testReadCompare ("toml/key_names_empty.toml",
-#include "toml/key_names_empty.h"
-	);
+	//	testReadCompare ("toml/key_names_empty.toml",
+	//#include "toml/key_names_empty.h"
+	//	);
 	testReadCompare ("toml/string_utf8.toml",
 #include "toml/string_utf8.h"
 	);
@@ -397,6 +404,7 @@ static void testReadRoot (void)
 	testReadCompare ("toml/comment.toml",
 #include "toml/comment.h"
 	);
+#undef PREFIX
 
 	testReadMustError ("toml/bad_duplicate_key_01.toml");
 	testReadMustError ("toml/bad_duplicate_key_02.toml");
@@ -415,40 +423,6 @@ static void testReadRoot (void)
 	testReadMustError ("toml/integer_overflow/decimal_under.toml");
 	testReadMustError ("toml/integer_overflow/hexadecimal.toml");
 
-	prefix = NULL;
-#undef PREFIX
-}
-
-static void testWriteReadRoot (void)
-{
-	prefix = "user:/";
-	testWriteReadEmptyKeyName ();
-	testWriteReadAssignments ();
-	testWriteReadArray ();
-	testWriteReadArrayNested ();
-	testWriteReadTableArray ();
-	testWriteReadTableArrayWithComments ();
-	testWriteReadTable ();
-	testWriteReadTableNested ();
-	testWriteReadInlineTable ();
-	testWriteReadInlineTableNested ();
-	testWriteReadString ();
-	testWriteReadNull ();
-	// testWriteReadBase64();
-	testWriteReadInteger ();
-	testWriteReadFloat ();
-	testWriteReadDate ();
-	testWriteReadBoolean ();
-	testWriteReadCheckSparseHierarchy ();
-	testWriteReadComments ();
-	testWriteReadCommentsArray ();
-	testWriteReadSimpleTableInTableArray ();
-	testWriteReadSimpleTableBeforeTableArray ();
-	testWriteReadInlineTableInArray ();
-	testWriteReadArrayInlineTableAlternating ();
-	testWriteReadOrderTableNonTable ();
-	testWriteReadMetakeysBasic ();
-	testWriteReadMetakeysInArrays ();
 	prefix = NULL;
 }
 
@@ -1540,7 +1514,7 @@ static void testReadCompare (const char * filename, KeySet * expected)
 
 	if (getStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
-		printError (parentKey);
+		output_error (parentKey);
 	}
 	else
 	{

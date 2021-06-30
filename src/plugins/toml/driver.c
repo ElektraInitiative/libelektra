@@ -167,7 +167,7 @@ void driverExitKey (Driver * driver)
 		return;
 	}
 	Key * existing = ksLookup (driver->keys, driver->currKey, 0);
-	if (existing != NULL && !isTableArray (existing))
+	if (existing != NULL && !isTableArray (existing) && keyCmp (existing, driver->root) != 0)
 	{
 		// Only allow table array keys to be read multiple times
 		driverError (driver, ERROR_SEMANTIC, driver->currLine,

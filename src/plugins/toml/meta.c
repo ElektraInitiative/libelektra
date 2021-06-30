@@ -25,7 +25,7 @@ bool shouldWriteMetakey (const Key * meta)
 	{
 		return false;
 	}
-	const char * blackList[] = { "order", "origvalue", "tomltype", "array", "binary", NULL };
+	const char * blackList[] = { "meta:/order", "meta:/origvalue", "meta:/tomltype", "meta:/array", "meta:/binary", NULL };
 	for (size_t i = 0; blackList[i] != NULL; i++)
 	{
 		if (elektraStrCmp (keyName (meta), blackList[i]) == 0)
@@ -33,11 +33,11 @@ bool shouldWriteMetakey (const Key * meta)
 			return false;
 		}
 	}
-	if (elektraStrNCmp (keyName (meta), "comment/", 8) == 0)
+	if (elektraStrNCmp (keyName (meta), "meta:/comment/", 8) == 0)
 	{
 		return false;
 	}
-	else if (elektraStrCmp (keyName (meta), "type") == 0)
+	else if (elektraStrCmp (keyName (meta), "meta:/type") == 0)
 	{
 		if (elektraStrCmp (keyString (meta), "binary") == 0)
 		{
@@ -91,7 +91,7 @@ int assignMetakeyFromComment (Key * key, const char * comment)
 	const char * name = comment + sizeof (METAKEY_COMMENT_PREFIX);
 	const char * nameEnd = strchr (name, ' ');
 	const char * value = nameEnd + 1;
-	if (value != NULL)
+	if (nameEnd != NULL)
 	{
 		char * nameDup = elektraMemDup (name, nameEnd - name + 1);
 		if (nameDup == NULL)
