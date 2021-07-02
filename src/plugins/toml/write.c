@@ -20,7 +20,6 @@
 
 #include "error.h"
 #include "integer.h"
-#include "meta.h"
 #include "node.h"
 #include "prepare.h"
 #include "type.h"
@@ -63,7 +62,6 @@ static int writeClosingSequence (Node * node, Writer * writer);
 static int writeTableArrayHeader (const char * name, Writer * writer);
 static int writeScalar (Key * key, Writer * writer);
 static int writeQuoted (const char * value, char quoteChar, int quouteCount, Writer * writer);
-static int writeMetakeys (Key * key, Writer * writer);
 static int writePrecedingComments (const CommentList * commentList, Writer * writer);
 static int writeInlineComment (const CommentList * commentList, bool emitNewline, Writer * writer);
 static int writeComment (const CommentList * comment, Writer * writer);
@@ -207,9 +205,9 @@ static int writeTree (Node * node, Writer * writer)
 	if (keyCmp (node->key, writer->rootKey) != 0)
 	{
 		comments = collectComments (node->key, writer);
-		bool hasComments = comments != NULL || hasWriteableMetakeys (node->key);
+		bool hasComments = comments != NULL;
 
-		// Comments/Metakeys will be dropped if parent is an inline table
+		// Comments will be dropped if parent is an inline table
 		if (hasComments && node->parent->type != NT_INLINE_TABLE)
 		{
 			bool needNewline = needNewlineBeforeComment (node);
@@ -218,7 +216,6 @@ static int writeTree (Node * node, Writer * writer)
 				result |= fputc ('\n', writer->f) == EOF;
 			}
 			result |= writePrecedingComments (comments, writer);
-			result |= writeMetakeys (node->key, writer);
 		}
 	}
 
@@ -500,22 +497,6 @@ static bool isMultilineString (const char * str)
 	return false;
 }
 
-static int writeMetakeys (Key * key, Writer * writer)
-{
-	int result = 0;
-	keyRewindMeta (key);
-	const Key * meta;
-	while ((meta = keyNextMeta (key)) != NULL)
-	{
-		if (shouldWriteMetakey (meta))
-		{
-			result |= writeMetakeyAsComment (meta, writer->f);
-			result |= writeNewline (writer);
-		}
-	}
-	return result;
-}
-
 static int writePrecedingComments (const CommentList * commentList, Writer * writer)
 {
 	int result = 0;
@@ -584,8 +565,6 @@ static int writeFileTrailingComments (Key * parent, Writer * writer)
 		result |= writePrecedingComments (comments, writer);
 		freeComments (comments);
 	}
-
-	result |= writeMetakeys (parent, writer);
 
 	return result;
 }

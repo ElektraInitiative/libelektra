@@ -66,7 +66,6 @@ CommentList * commentListAddNewlines (CommentList * back, size_t newlineCount);
 /**
  * @brief Assigns all entries of the given CommentList to the given key as comment metakeys.
  *
- * When encountering a Metakey comment, it will set the corresponding metakey entries on the key instead.
  *
  * @param key The key on which to assign the metakeys
  * @param root The CommentList linked list which should be added to the Key
