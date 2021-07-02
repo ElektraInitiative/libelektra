@@ -8,43 +8,42 @@
  */
 
 #include "length.h"
+#include <kdbease.h>
 #include <kdberrors.h>
 #include <stdlib.h>
 
 
-static int validateKey (Key * key, Key * parentKey)
+static bool validateKey (Key * key, Key * parentKey)
 {
 	const Key * meta = keyGetMeta (key, "check/length/max");
-	if (!meta) return 1;
-	int rc = 0;
-	int c = 0;
-	const char * length = keyString (meta);
-	long i;
-	i = strtol (length, NULL, 10);
-
-	const char * text = keyString (key);
-
-	c = strlen (text);
-
-	if (c <= i)
+	if (meta == NULL)
 	{
-		rc = true;
-	}
-	else
-	{
-		rc = false;
+		return true;
 	}
 
+	kdb_unsigned_long_long_t max;
+	if (!elektraKeyToUnsignedLongLong (meta, &max))
+	{
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
+			parentKey, "Couldn't read check/length/max value '%s' on key '%s'. It should be a non-negative integer.",
+			keyString (meta), keyName (key));
+		return false;
+	}
 
-	if (!rc)
+	// subtract nul-terminator, if string value
+	size_t length = keyGetValueSize (key) - (keyIsString (key) ? 1 : 0);
+
+	if (length > max)
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (
 			parentKey,
-			"Length check of key '%s' with value '%s' failed. Maximum length is %ld but the given string has length %d",
-			keyName (key), keyString (key), i, c);
+			"Length check of key '%s' with value '%s' failed. Maximum length is " ELEKTRA_UNSIGNED_LONG_LONG_F
+			" but the given string has length %zd",
+			keyName (key), keyString (key), max, length);
+		return false;
 	}
 
-	return rc;
+	return true;
 }
 
 int elektraLengthGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
