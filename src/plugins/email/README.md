@@ -13,7 +13,7 @@
 
 ## Introduction
 
-This plugin validates email addresses using regular expressions.
+This plugin validates email addresses using regular expressions. The plugin does not support the full RFC5321 spec. For more information see [Limitations](#Limitations) below.
 
 ## Installation
 
@@ -65,16 +65,16 @@ kdb umount /tests/email
 The plugin only checks email addresses for validity. It is not able to resolve if the host and or check if the address can receive emails.
 The validation does not completely support the RFC5321. The following valid email addresses are not supported:
 
-- “(ele)ktra@elektra.io”
-- “elektra@elektra.io(io)”
-- “"hi@you"@elektra.io”
-- “"hi you"@elektra.io”
-- “" "@elektra.io”
-- “"<\"@\\".!.#%\$@@elektra.io”
-- “cow@[dead::beef]”
-- “1@[23456789]”
+- `(ele)ktra@elektra.io`
+- `elektra@elektra.io(io)`
+- `"hi@you"@elektra.io`
+- `"hi you"@elektra.io`
+- `" "@elektra.io`
+- `"<\"@\\".!.#%\$@@elektra.io`
+- `cow@[dead::beef]`
+- `1@[23456789]`
 
 There is no validation of top level domains and no length check. The following invalid email addresses will be allowed:
 
-- “valid+part@nonexistenttopleveldomain”
-- “1234567890123456789012345678901234567890123456789012345678901234+x@example.com”
+- `valid+part@nonexistenttopleveldomain`
+- `1234567890123456789012345678901234567890123456789012345678901234+x@example.com`
