@@ -54,6 +54,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 
 ### Blacklist
+
 ### Length
 
 - Implement a plugin that validates that a string length is less or equal to given number. _(Philipp Oppel)_
