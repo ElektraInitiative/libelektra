@@ -1,15 +1,15 @@
-# How to Write a specification in Elektra
+# How to Write a Specification in Elektra
 
 ## Overview
 
 ### Introduction
 
-In this codelab you will learn how to interactively use the `SpecElektra` specification language and `kdb` to write a configuration specification for an example application.
+In this tutorial you will learn how to interactively use the `SpecElektra` specification language and `kdb` to write a configuration specification for an example application.
 
 ### What you should already know
 
-- how to install elektra
-- very basic elektra commands and concepts (kdb get, kdb set, kdb ls)
+- how to install Elektra
+- basic Elektra commands and concepts (kdb get, kdb set, kdb ls)
 - how to open and use a terminal
 
 ### What you’ll Learn
@@ -20,12 +20,12 @@ In this codelab you will learn how to interactively use the `SpecElektra` specif
 
 ### What you'll do
 
-- use code generation and `kdb` to create and mount a specification for an example CRUD (Create, Read, Update, Delete) application
+- use `kdb` to create and mount a specification for an example CRUD (Create, Read, Update, Delete) application
 - define defaults, examples and checks for keys in the validation
 
 ## Example App Overview
 
-For this tutorial you will write a specification for a very simple CRUD backend application.
+For this tutorial you will write a specification for a simple CRUD backend application.
 You need to configure a `port` and a `secure` property, that toggles SSL usage, for the REST server.
 An `ip` and a SQL `dialect` for the database server the app
 will connect to and finally a `date` where all the data will be saved to a backup.
@@ -40,7 +40,7 @@ So the application will need the following configuration options:
 
 ## Getting Started
 
-Make sure you have `Elektra` installed on your local machine.
+Make sure you have `Elektra` installed on your local machine:
 
 ```
 kdb --version
@@ -51,9 +51,9 @@ SO_VERSION: 5
 
 Otherwise refer to the [getting started guide](https://www.libelektra.org/getstarted/guide) to install it.
 
-## Mounting the specification
+## Mounting the Specification
 
-### Step 1: Mount a specification file
+### Step 1: Mount a Specification File
 
 First you need to mount a specification file, in this case `spec.ni` to the `spec:/` namespace.
 You can define the path inside the `spec:/` namespace as `/sw/org/app/#0/current`, refer to

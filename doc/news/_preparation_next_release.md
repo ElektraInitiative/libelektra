@@ -132,6 +132,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - JNI docu updates. _(Markus Raab)_
+- Add [/doc/tutorial/specification.md]. _(Aaron Abebe <aaron.abebe@gmail.com>)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
