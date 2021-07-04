@@ -745,19 +745,19 @@ def publishSource(artifactStageName) {
           sh 'git add ./releases'
 
           // move release logs to git
-          RELEASE_ARTIFACT_STAGES.each { stageName ->
+          RELEASE_ARTIFACT_STAGES.each {
             dir ('../') {
               sh 'rm -rf ./release-artifact'
-              copyReleaseArtifact(stageName)
+              copyReleaseArtifact(it)
               // remove package directory so it doesn't get copied
               sh 'rm -rf ./release-artifact/*/package'
               sh 'rm -rf ./release-artifact/*/*.tar.gz*'
             }
-            sh "mkdir -p ./release-logs/${RELEASE_VERSION}/${stageName}/"
-            sh "mv ../release-artifact/*/* ./release-logs/${RELEASE_VERSION}/${stageName}/"
-
-            sh 'git add ./release-logs'
+            sh "mkdir -p ./release-logs/${RELEASE_VERSION}/${it}/"
+            sh "mv ../release-artifact/*/* ./release-logs/${RELEASE_VERSION}/${it}/"
           }
+
+          sh 'git add ./release-logs'
 
           sh "git commit -a -m 'release: add ${RELEASE_VERSION}'"
           pushGitRepo('ftp')
