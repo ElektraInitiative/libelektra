@@ -63,6 +63,9 @@ DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
 RELEASE_VERSION = '' // release version, set during release build and used
                      // by the documentation stage
 
+RELEASE_ARTIFACT_STAGES = [] // Main release stage names, populated during buildRelease().
+                              // Used to reference the artifacts of these stages
+
 // Stages
 stage('Init docker images') {
   dockerInit()
@@ -594,6 +597,8 @@ def buildRelease(stageName, image, packageRevision='1',
             sh "mv release.tar.gz ${stageName}-release.tar.gz"
             utils.archive(["${stageName}-release.tar.gz"])
 
+            RELEASE_ARTIFACT_STAGES << stageName
+
             script {
               RELEASE_VERSION = sh(
                 script: 'sh libelektra/scripts/release/get-installed-version.sh',
@@ -661,7 +666,7 @@ def publish(correspondingReleaseStageName, context, repoName,
         copyReleaseArtifact(correspondingReleaseStageName)
         dir('copy') {
           deleteDir()
-          sh "mv ../${context}* ./"
+          sh "mv ../package/${context}* ./"
 
           publishPackagesFun(
             'doc.libelektra.org',
@@ -693,8 +698,25 @@ def publishSource(artifactStageName) {
           deleteDir()
           git branch: 'master',
               url: 'https://github.com/ElektraInitiative/ftp.git'
+          // move release tarball to git
           sh 'cp ../release-artifact/*/*.tar.gz* ./releases/'
           sh 'git add ./releases'
+
+          // move release logs to git
+          RELEASE_ARTIFACT_STAGES.each { stageName ->
+            dir ('../') {
+              sh 'rm -rf ./release-artifact'
+              copyReleaseArtifact(stageName)
+              // remove package directory so it doesn't get copied
+              sh 'rm -rf ./release-artifact/*/package'
+              sh 'rm -rf ./release-artifact/*/*.tar.gz*'
+            }
+            sh "mkdir -p ./release-logs/${RELEASE_VERSION}/${stageName}/"
+            sh "mv ../release-artifact/*/* ./release-logs/${RELEASE_VERSION}/${stageName}/"
+
+            sh 'git add ./release-logs'
+          }
+
           sh "git commit -a -m 'release: add ${RELEASE_VERSION}'"
           pushGitRepo('ftp')
           withCredentials([sshUserPrivateKey(credentialsId: "community-ssh-git", keyFileVariable: "privateSshKey", usernameVariable: 'GIT_USERNAME')]) {
