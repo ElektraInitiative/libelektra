@@ -25,7 +25,8 @@ else () # Build library
 		${LIBEV_LIBRARIES}
 		INCLUDE_SYSTEM_DIRECTORIES
 		${LIBEV_INCLUDE_DIRS}
-		COMPONENT io-ev-elektra)
+		COMPONENT
+		io-ev-elektra)
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
 			@ONLY)

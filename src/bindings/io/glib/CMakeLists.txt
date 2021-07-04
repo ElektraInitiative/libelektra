@@ -30,7 +30,8 @@ else ()
 		${GLib_LIBRARY}
 		INCLUDE_SYSTEM_DIRECTORIES
 		${GLib_INCLUDE_DIRS}
-		COMPONENT io-glib-elektra)
+		COMPONENT
+		io-glib-elektra)
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
 			@ONLY)

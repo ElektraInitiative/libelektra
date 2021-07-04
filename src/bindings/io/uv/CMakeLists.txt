@@ -39,7 +39,8 @@ else ()
 		${libuv_INCLUDE_DIRS}
 		COMPILE_DEFINITIONS
 		${HAVE_LIBUV_VERSION}
-		COMPONENT io-uv-elektra)
+		COMPONENT
+		io-uv-elektra)
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_UV_LIBRARY}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${IO_UV_LIBRARY}.pc" @ONLY)
 
