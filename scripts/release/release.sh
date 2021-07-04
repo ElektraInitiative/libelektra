@@ -72,7 +72,7 @@ run_updates() {
 
 git_tag() {
 	cd $SRC_DIR
-	PREVIOUS_RELEASE_TAG=$(git tag -l '[0-9].[0-9].[0-9]' | tail -n1)
+	PREVIOUS_RELEASE_TAG=$(get_current_git_version_tag)
 	if [ $PREVIOUS_RELEASE_TAG != $VERSION ]; then
 		git tag $VERSION -m "Release $VERSION" # needed by `make source-package` and `git-release-stats
 	else
@@ -99,6 +99,14 @@ update_fedora_changelog() {
 	git commit -m "release: update fedora/changelog"
 }
 
+get_current_git_version_tag() {
+	git tag -l '[0-9].[0-9].[0-9]' | tail -n1
+}
+
+get_previous_git_version_tag() {
+	git tag -l '[0-9].[0-9].[0-9]' | tail -n2 | head -n1)
+}
+
 export_git_log() {
 	cd "$SRC_DIR"
 	GIT_LOG_DIR="$BASE_DIR/$VERSION/git"
@@ -106,8 +114,8 @@ export_git_log() {
 	# export git diff since 1 day (changes done in pipeline)
 	git log -p --since="1 days ago" > "$GIT_LOG_DIR/master.log"
 	# get latest two version tags
-	PREVIOUS_RELEASE=$(git tag -l '[0-9].[0-9].[0-9]' | tail -n2 | head -n1)
-	CURRENT_RELEASE=$(git tag -l '[0-9].[0-9].[0-9]' | tail -n1)
+	PREVIOUS_RELEASE=$(get_previous_git_version_tag)
+	CURRENT_RELEASE=$(get_current_git_version_tag)
 	# generate git statistics
 	$SCRIPTS_DIR/git-release-stats "$PREVIOUS_RELEASE" "$CURRENT_RELEASE" > "$GIT_LOG_DIR/statistics"
 }
@@ -153,7 +161,6 @@ run_checks() {
 	for file in *.so; do
 		readelf -a "$file" > $BASE_DIR/"$VERSION"/readelf/readelf-"$file"
 	done
-
 }
 
 create_source_package() {
@@ -199,10 +206,10 @@ build_package() {
 	mkdir $BUILD_DIR
 	cd $BUILD_DIR
 
-	mkdir -p $BASE_DIR/$VERSION/$VERSION_CODENAME
-	$SCRIPTS_DIR/packaging/package.sh "$PACKAGE_REVISION" 2> $BASE_DIR/$VERSION/$VERSION_CODENAME/elektra_$PVERSION.build.error > $BASE_DIR/$VERSION/$VERSION_CODENAME/elektra_$PVERSION.build
+	mkdir -p $BASE_DIR/$VERSION/package/$VERSION_CODENAME
+	$SCRIPTS_DIR/packaging/package.sh "$PACKAGE_REVISION" 2> $BASE_DIR/$VERSION/package/$VERSION_CODENAME/elektra_$PVERSION.build.error > $BASE_DIR/$VERSION/package/$VERSION_CODENAME/elektra_$PVERSION.build
 
-	mv $BUILD_DIR/package/* $BASE_DIR/$VERSION/$VERSION_CODENAME/
+	mv $BUILD_DIR/package/* $BASE_DIR/$VERSION/package/$VERSION_CODENAME/
 }
 
 memcheck() {
@@ -236,5 +243,5 @@ run_checks
 create_source_package
 build_package
 cd $BASE_DIR
-$SCRIPTS_DIR/release/sign-packages.sh $BASE_DIR/$VERSION/$VERSION_CODENAME
+$SCRIPTS_DIR/release/sign-packages.sh $BASE_DIR/$VERSION/package/$VERSION_CODENAME
 tar -czvf release.tar.gz ./$VERSION
