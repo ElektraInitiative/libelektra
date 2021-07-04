@@ -156,7 +156,13 @@ run_checks() {
 	cd $BUILD_DIR/D && find . | cut -sd / -f $DESTDIR_DEPTH- | sort > $BASE_DIR/"$VERSION"/installed_files
 
 	# create diff of installed files
-	diff $BASE_DIR/"$VERSION"/installed_files $PREVIOUS_RELEASE_LOGS/installed_files > $BASE_DIR/"$VERSION"/installed_files_diff
+	# diff returns 0 if no diff, 1 if diff and 2 on errors
+	DIFF_RET_VAL=0
+	diff $BASE_DIR/"$VERSION"/installed_files $PREVIOUS_RELEASE_LOGS/installed_files > $BASE_DIR/"$VERSION"/installed_files_diff || DIFF_RET_VAL=$?
+	if [ "$DIFF_RET_VAL" -gt "1" ]; then
+	    echo "diff command returned status code $DIFF_RET_VAL"
+	    exit 1
+	fi
 
 	# get size of libs
 	cd ${WORKSPACE}/system/lib/
