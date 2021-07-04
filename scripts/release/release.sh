@@ -160,8 +160,8 @@ run_checks() {
 	DIFF_RET_VAL=0
 	diff $BASE_DIR/"$VERSION"/installed_files $PREVIOUS_RELEASE_LOGS/installed_files > $BASE_DIR/"$VERSION"/installed_files_diff || DIFF_RET_VAL=$?
 	if [ "$DIFF_RET_VAL" -gt "1" ]; then
-	    echo "diff command returned status code $DIFF_RET_VAL"
-	    exit 1
+		echo "diff command returned status code $DIFF_RET_VAL"
+		exit 1
 	fi
 
 	# get size of libs
