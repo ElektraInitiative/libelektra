@@ -10,8 +10,19 @@ SRC_DIR="$BASE_DIR/libelektra"
 SCRIPTS_DIR="$SRC_DIR/scripts"
 PACKAGING_DIR="$SCRIPTS_DIR/packaging"
 BUILD_DIR="$SRC_DIR/build"
+PREVIOUS_RELEASE_LOGS="$BASE_DIR/prev-release-logs"
+
+get_current_git_version_tag() {
+	git tag -l '[0-9].[0-9].[0-9]' | tail -n1
+}
+get_previous_git_version_tag() {
+	git tag -l '[0-9].[0-9].[0-9]' | tail -n2 | head -n1
+}
+
+cd $SRC_DIR
 
 PACKAGE_REVISION=${1:-1}
+PREVIOUS_RELEASE_VERSION=${2:-$(get_previous_git_version_tag)}
 
 find_version_codename() {
 	VERSION_CODENAME=$(grep "VERSION_CODENAME=" /etc/os-release | awk -F= {' print $2'} | sed s/\"//g)
@@ -99,14 +110,6 @@ update_fedora_changelog() {
 	git commit -m "release: update fedora/changelog"
 }
 
-get_current_git_version_tag() {
-	git tag -l '[0-9].[0-9].[0-9]' | tail -n1
-}
-
-get_previous_git_version_tag() {
-	git tag -l '[0-9].[0-9].[0-9]' | tail -n2 | head -n1)
-}
-
 export_git_log() {
 	cd "$SRC_DIR"
 	GIT_LOG_DIR="$BASE_DIR/$VERSION/git"
@@ -151,6 +154,9 @@ run_checks() {
 	DESTDIR=D make install
 	DESTDIR_DEPTH=$(printf $BUILD_DIR/D | awk -F"/" '{print NF-1}')
 	cd $BUILD_DIR/D && find . | cut -sd / -f $DESTDIR_DEPTH- | sort > $BASE_DIR/"$VERSION"/installed_files
+
+	# create diff of installed files
+	diff $BASE_DIR/"$VERSION"/installed_files $PREVIOUS_RELEASE_LOGS/installed_files > $BASE_DIR/"$VERSION"/installed_files_diff
 
 	# get size of libs
 	cd ${WORKSPACE}/system/lib/
