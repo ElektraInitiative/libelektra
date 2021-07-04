@@ -146,7 +146,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Packaging
 
-- <<TODO>>
+- Add packages for following bindings: `glib`, `io_ev`, `io_glib` and `io_uv`. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 

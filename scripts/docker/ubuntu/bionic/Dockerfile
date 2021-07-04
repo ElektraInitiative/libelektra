@@ -22,11 +22,13 @@ RUN apt-get update && apt-get -y install \
         libaugeas-dev \
         libdbus-1-dev \
         libgit2-dev \
+        libglib2.0-dev \
         libgpgme-dev \
         liblua5.3-dev \
         libmarkdown2-dev \
         libssl-dev \
         libsystemd-dev \
+        libuv1-dev \
         libxerces-c-dev \
         libxml2-dev \
         libyajl-dev \
