@@ -46,6 +46,12 @@ properties([
       defaultValue: true,
       description: 'True if the statistics and hashsums should be automatically inserted into release notes and moved to final name.',
       name: 'populate_release_notes'
+    ),
+    string(
+      defaultValue: '',
+      description: '[OPTIONAL] Override previous release version. Use if latest git version tag does not correspond to previous released Elektra version.',
+      name: 'previous_release',
+      trim: true
     )
   ])
 ])
@@ -60,8 +66,9 @@ pipelineConfig {
 DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
                      // dockerInit()
 
-RELEASE_VERSION = '' // release version, set during release build and used
+RELEASE_VERSION = '' // Release version, set during release build and used
                      // by the documentation stage
+PREVIOUS_RELEASE_VERSION = '' // Version of previous Elektra release
 
 RELEASE_ARTIFACT_STAGES = [] // Main release stage names, populated during buildRelease().
                               // Used to reference the artifacts of these stages
@@ -69,6 +76,10 @@ RELEASE_ARTIFACT_STAGES = [] // Main release stage names, populated during build
 // Stages
 stage('Init docker images') {
   dockerInit()
+}
+
+stage ('Init release environment') {
+  initVariables()
 }
 
 stage('Pull docker images') {
@@ -112,6 +123,29 @@ stage('Main repository and website publish') {
 /**************/
 /* Generators */
 /**************/
+
+/**
+ * Determine previous released Elektra version
+ *
+ * Defaults to latest git version tag.
+ * Can be overriden by passing a specific version for parameter 'previous_release'
+ */
+def initVariables() {
+  node('master') {
+    checkout scm
+    if (params.previous_release?.trim()) {
+      PREVIOUS_RELEASE_VERSION = params.previous_release
+    } else {
+      script {
+        PREVIOUS_RELEASE_VERSION = sh(
+          script: "git tag -l '[0-9].[0-9].[0-9]' | tail -n1",
+          returnStdout: true
+        ).trim()
+      }
+    }
+    echo "PREVIOUS_RELEASE_VERSION: ${PREVIOUS_RELEASE_VERSION}"
+  }
+}
 
 /**
  *  Populate DOCKER_IMAGES with data
@@ -593,7 +627,15 @@ def buildRelease(stageName, image, packageRevision='1',
               deleteDir()
               checkout scm
             }
-            sh "sh libelektra/scripts/release/release.sh ${packageRevision}"
+            dir('ftp') {
+              deleteDir()
+              git branch: 'master',
+                  url: 'https://github.com/ElektraInitiative/ftp.git'
+            }
+            dir('prev-release-logs') {
+              sh "cp -R ../ftp/release-logs/${PREVIOUS_RELEASE_VERSION}/${stageName}/* ./"
+            }
+            sh "sh libelektra/scripts/release/release.sh ${packageRevision} ${PREVIOUS_RELEASE_VERSION}"
             sh "mv release.tar.gz ${stageName}-release.tar.gz"
             utils.archive(["${stageName}-release.tar.gz"])
 
@@ -606,7 +648,7 @@ def buildRelease(stageName, image, packageRevision='1',
               ).trim()
             }
 
-            dir ('libelektra') {
+            dir('libelektra') {
               if (params.populate_release_notes) {
                 sh "scripts/release/populate-release-notes.sh ${RELEASE_VERSION} ../${RELEASE_VERSION}/"
                 sh "git add doc/news"
