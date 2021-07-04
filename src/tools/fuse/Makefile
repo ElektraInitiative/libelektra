@@ -1,5 +1,9 @@
 .PHONY: build clean install
 
+# Use this makefile to install elektra_fuse in pips default install location (used in the docker dev-environment),
+# and cmake to install it along Elektra.
+
+
 build: clean
 	python3 ./setup.py bdist_wheel
 

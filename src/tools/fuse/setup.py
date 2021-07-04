@@ -6,6 +6,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='elektra_fuse',
+
     version='1.0.0',
 
     description='Mount libelektra\'s key database as a FUSE-filesystem.', 
@@ -29,10 +30,4 @@ setup(
     python_requires='>=3.8',
 
     install_requires=['fusepy>=3.0.1', "psutil>=5.8.0"], 
-
-    entry_points={
-        'console_scripts': [
-            'elektra_fuse=elektra_fuse:main',
-        ],
-    },
 )
