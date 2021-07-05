@@ -616,7 +616,7 @@ function (generate_manpage NAME)
 		cmake_parse_arguments (
 			ARG
 			"" # optional keywords
-			"SECTION;FILENAME;COMPONENT" # one value keywords
+			"SECTION;FILENAME;COMPONENT;GENERATED_FROM" # one value keywords
 			"" # multi value keywords
 			${ARGN})
 
@@ -630,6 +630,12 @@ function (generate_manpage NAME)
 			set (MDFILE ${ARG_FILENAME})
 		else ()
 			set (MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
+		endif ()
+
+		if (ARG_GENERATED_FROM)
+			set (SOURCE_FILE ${ARG_GENERATED_FROM})
+		else ()
+			set (SOURCE_FILE ${MDFILE})
 		endif ()
 
 		if (ARG_COMPONENT)
@@ -646,7 +652,8 @@ function (generate_manpage NAME)
 		find_package (Git)
 
 		if (RONN_LOC AND GIT_EXECUTABLE)
-			execute_process (COMMAND ${GIT_EXECUTABLE} log -1 --format="%ad" --date=short -- ${MDFILE} OUTPUT_VARIABLE DATE)
+			execute_process (COMMAND ${GIT_EXECUTABLE} log -1 --format="%ad" --date=short -- "${SOURCE_FILE}"
+					 OUTPUT_VARIABLE DATE)
 			string (STRIP "${DATE}" DATE)
 
 			if (NOT DATE)

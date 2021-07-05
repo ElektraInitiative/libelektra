@@ -38,6 +38,7 @@ else ()
 		CODE "execute_process (COMMAND npm install --unsafe-perm WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX}/${install_directory} OUTPUT_QUIET)"
 	)
 
-	generate_manpage (kdb-run-${tool} FILENAME ${CMAKE_CURRENT_BINARY_DIR}/README.md)
+	generate_manpage (kdb-run-${tool} FILENAME "${CMAKE_CURRENT_BINARY_DIR}/README.md" GENERATED_FROM
+			  "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 endif ()
