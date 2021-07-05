@@ -652,19 +652,13 @@ function (generate_manpage NAME)
 		find_package (Git)
 
 		if (RONN_LOC AND GIT_EXECUTABLE)
-			execute_process (COMMAND ${GIT_EXECUTABLE} log -1 --format="%ad" --date=short -- "${SOURCE_FILE}"
-					 OUTPUT_VARIABLE DATE)
-			string (STRIP "${DATE}" DATE)
-
-			if (NOT DATE)
-				string (TIMESTAMP DATE "%Y-%m-%d")
-			endif (NOT DATE)
-
 			add_custom_command (
 				OUTPUT ${OUTFILE}
 				DEPENDS ${MDFILE}
-				COMMAND ${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D DATE=${DATE} -D MDFILE=${MDFILE} -D
-					MANPAGE=${OUTFILE} -P ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
+				COMMAND
+					${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D GIT_COMMAND=${GIT_EXECUTABLE} -D
+					MDFILE=${MDFILE} -D SOURCE_FILE=${SOURCE_FILE} -D MANPAGE=${OUTFILE} -P
+					${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
 		endif (RONN_LOC AND GIT_EXECUTABLE)
