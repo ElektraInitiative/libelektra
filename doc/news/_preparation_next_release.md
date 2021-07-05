@@ -133,7 +133,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - JNI docu updates and small fixes. _(Markus Raab)_
 - <<TODO>>
-- <<TODO>>
+- The manpages now use the date of the last change recorded in git. _(Klemens Böswirth)_
 - <<TODO>>
 
 ## Tests

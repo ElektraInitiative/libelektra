@@ -638,24 +638,28 @@ function (generate_manpage NAME)
 			set (HAS_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 		endif ()
 
-		set (MAN_PAGE_LOCATION "doc/man/man${SECTION}/${NAME}.${SECTION}")
+		set (MAN_PAGE_DIR "doc/man/man${SECTION}")
+		set (MAN_PAGE_LOCATION "${MAN_PAGE_DIR}/${NAME}.${SECTION}")
 		set (OUTFILE "${CMAKE_SOURCE_DIR}/${MAN_PAGE_LOCATION}")
 
-		if (RONN_LOC)
+		if (RONN_LOC AND GIT_EXECUTABLE)
+			execute_process (COMMAND ${GIT_EXECUTABLE} log -1 --format="%ad" --date=short -- ${MDFILE} OUTPUT_VARIABLE DATE)
+			string (STRIP ${DATE} DATE)
+
 			add_custom_command (
 				OUTPUT ${OUTFILE}
 				DEPENDS ${MDFILE}
-				COMMAND ${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D DIFF_COMMAND=${DIFF_COMMAND} -D
-					MDFILE=${MDFILE} -D MANPAGE=${OUTFILE} -P ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
+				COMMAND ${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D DATE=${DATE} -D MDFILE=${MDFILE} -D
+					MANPAGE=${OUTFILE} -P ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
-		endif (RONN_LOC)
+		endif (RONN_LOC AND GIT_EXECUTABLE)
 
 		if (NOT EXISTS "${OUTFILE}")
 			message (
 				WARNING
 					"\nThe file “${MAN_PAGE_LOCATION}” does currently not exist. \
-If you have not done so already, please install `ronn-ng`. \
+If you have not done so already, please install `ronn-ng` and `git`. \
 Afterwards make sure you set the CMake option `BUILD_DOCUMENTATION` to ON, \
 and generate “${NAME}.${SECTION}” using the current build system (${CMAKE_GENERATOR}). \
 After that please commit the file ${MAN_PAGE_LOCATION}. \
