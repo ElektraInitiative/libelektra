@@ -33,6 +33,8 @@ docker run -it elektra/elektra
 
 ## Highlights
 
+- add FUSE tool _(Alexander Firbas)_
+
 - <<HIGHLIGHT1>>
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
