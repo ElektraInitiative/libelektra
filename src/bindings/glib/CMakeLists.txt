@@ -44,7 +44,10 @@ target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LDFLAGS})
 
 install (TARGETS ${GELEKTRA_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT glib-elektra)
 
-install (FILES ${GELEKTRA_HDR_FILES} DESTINATION include/${TARGET_INCLUDE_FOLDER} COMPONENT glib-elektra)
+install (
+	FILES ${GELEKTRA_HDR_FILES}
+	DESTINATION include/${TARGET_INCLUDE_FOLDER}
+	COMPONENT glib-elektra)
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/gelektra-constants.h.in" "${CMAKE_CURRENT_BINARY_DIR}/gelektra-constants.h" @ONLY)
 
