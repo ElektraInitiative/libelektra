@@ -642,9 +642,16 @@ function (generate_manpage NAME)
 		set (MAN_PAGE_LOCATION "${MAN_PAGE_DIR}/${NAME}.${SECTION}")
 		set (OUTFILE "${CMAKE_SOURCE_DIR}/${MAN_PAGE_LOCATION}")
 
+		find_program (RONN_LOC ronn)
+		find_package (Git)
+
 		if (RONN_LOC AND GIT_EXECUTABLE)
 			execute_process (COMMAND ${GIT_EXECUTABLE} log -1 --format="%ad" --date=short -- ${MDFILE} OUTPUT_VARIABLE DATE)
-			string (STRIP ${DATE} DATE)
+			string (STRIP "${DATE}" DATE)
+
+			if (NOT DATE)
+				string (TIMESTAMP DATE "%Y-%m-%d")
+			endif (NOT DATE)
 
 			add_custom_command (
 				OUTPUT ${OUTFILE}
