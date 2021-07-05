@@ -1,4 +1,15 @@
-# README.md
+- infos = Mount the KDB as a FUSE-filesystem
+- infos/author = Alexander Firbas <alexanderfirbas@gmail.com>
+- infos/licence = BSD
+- infos/provides = 
+- infos/needs =
+- infos/recommends =
+- infos/placements = 
+- infos/status = 
+- infos/metadata =
+- infos/description = Mount the KDB as a FUSE-filesystem
+
+# FUSE Tool
 
 Mount [elektra](https://www.libelektra.org)'s KDB as a [fuse(py)](https://github.com/fusepy/fusepy) filesystem.
 
