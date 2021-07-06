@@ -87,8 +87,7 @@ G_DEFINE_TYPE (ElektraSettingsBackend, elektra_settings_backend, G_TYPE_SETTINGS
  */
 static void elektra_settings_backend_sync (GSettingsBackend * backend)
 {
-	// TODO conflict management
-	// TODO: do we enforce the latest write or use three-way merge?
+	// TODO: use three-way merge when ready
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 
 	if (gelektra_kdb_set (esb->gkdb, esb->gks_user, esb->gkey_user) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks_user, esb->gkey_user) == -1)
@@ -104,7 +103,6 @@ static GVariant * elektra_settings_read_string (GElektraKdb * kdb, GElektraKeySe
 	gelektra_kdb_get (kdb, ks, parentKey);
 	/* Lookup the requested key */
 	GElektraKey * gkey = gelektra_keyset_lookup_byname (ks, keypathname, GELEKTRA_KDB_O_NONE);
-	// TODO: copy key string/data before releasing lock
 	/* free the passed path string */
 	g_free (keypathname);
 	if (gkey == NULL)
@@ -165,11 +163,6 @@ static gboolean elektra_settings_write_string (GSettingsBackend * backend, gchar
 		gelektra_key_setstring (gkey, string_value);
 	}
 
-	// TODO: mpranj check if sync needed here
-	// if (gelektra_kdb_set (esb->gkdb, esb->gks, esb->gkey) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks, esb->gkey) == -1)
-	// {
-	// 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
-	// }
 	return TRUE;
 }
 
@@ -429,9 +422,6 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	const gchar * keypathname = g_variant_get_string (variant, NULL);
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) user_data;
 
-	// TODO: mpranj, maybe dup is not needed? (or can it result in a race?)
-	// GElektraKeySet * gks_keys = gelektra_keyset_dup (esb->subscription_gks_keys);
-	// GElektraKeySet * gks_paths = gelektra_keyset_dup (esb->subscription_gks_paths);
 	GElektraKeySet * gks_keys = esb->subscription_gks_keys;
 	GElektraKeySet * gks_paths = esb->subscription_gks_paths;
 
@@ -469,13 +459,6 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 				found = 1;
 				break;
 			}
-			// DEBUG output
-			// 			else
-			// 			{
-			// 				gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (cur), -1,
-			// "/") + 1, -1, 	"/")); 				g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s, %s", ">> Key not below",
-			// gsettingskeyname, keypathname); 				g_free (gsettingskeyname);
-			// 			}
 			pos++;
 		}
 	}
@@ -484,41 +467,6 @@ static void elektra_settings_key_changed (GDBusConnection * connection G_GNUC_UN
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Not subscribed to key", keypathname);
 	}
-
-	// 	GElektraKey * cutpoint = gelektra_key_new (keypathname, KEY_VALUE, "", KEY_END);
-	// 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s", "Cutpoint", gelektra_key_name (cutpoint));
-	// 	// TODO: mpranj, the cutpoint does not work for keys below a subscribed path ... !!!
-	// 	// e.g.: some/subscribed/path
-	// 	// doing a cut to some/subscribed/path/specific/interest does not yield correct result here
-	// 	GElektraKeySet * subscribed_keys = gelektra_keyset_cut (gks_keys, cutpoint);
-	//
-	// 	// TODO: remove notifications about non-subscribed keys (DEBUG)
-	// 	if (gelektra_keyset_len (subscribed_keys) == 0)
-	// 	{
-	// 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "No keys in subscribed keyset");
-	//
-	// 		GElektraKey * item;
-	// 		gssize pos = 0;
-	// 		while ((item = gelektra_keyset_at (gks_keys, pos)) != NULL)
-	// 		{
-	// 			gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1,
-	// "/")); 			g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: gsettings_path: %s, keyname: %s", "Skipped non-subscribed key",
-	// gsettingskeyname, gelektra_key_name (item)); 			g_free (gsettingskeyname); 			pos++;
-	// 		}
-	// 	}
-	//
-	// 	GElektraKey * item;
-	// 	gssize pos = 0;
-	// 	while ((item = gelektra_keyset_at (subscribed_keys, pos)) != NULL)
-	// 	{
-	// 		gchar * gsettingskeyname = g_strdup (g_strstr_len (g_strstr_len (gelektra_key_name (item), -1, "/") + 1, -1, "/"));
-	//
-	// 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s: %s!", "Subscribed key changed", gsettingskeyname);
-	// 		g_settings_backend_changed (G_SETTINGS_BACKEND (user_data), gsettingskeyname, NULL);
-	//
-	// 		g_free (gsettingskeyname);
-	// 		pos++;
-	// 	}
 
 	g_variant_unref (variant);
 }
@@ -699,7 +647,6 @@ static void elektra_settings_backend_class_init (GSettingsBackendClass * class)
 	class->sync = elektra_settings_backend_sync;
 }
 
-// TODO check if this is changeable at runtime
 void g_io_module_load (GIOModule * module)
 {
 	g_type_module_use (G_TYPE_MODULE (module));
