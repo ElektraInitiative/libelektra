@@ -136,7 +136,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Gsettings
 
-- Fix keynames used in `gsettings` bindings. _(Mihael Pranjić)_
+- Fix user and default (system) namespaces and key names. _(Mihael Pranjić)_
+- Rewrite `dbus` change notification mechanism. _(Mihael Pranjić)_
 
 ## Tools
 
