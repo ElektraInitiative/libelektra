@@ -46,7 +46,7 @@ System requirements:
 
 - Elektra of version at least 0.9.5 with the python binding installed (for example, `libelektra5-all` satisfies this)
 - `fuse` (for example via the debian package `fuse`)
-- `python3 >= 3.8`, `pip3`
+- `python3 >= 3.8`, `pip3`, `python3-wheel`
 
 Required python3 packages (will be installed by `pip3` automatically if not present):
 
