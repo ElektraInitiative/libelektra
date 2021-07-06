@@ -891,8 +891,8 @@ def buildWebsite(mainRepoArtifactStageName) {
           deleteDir()
           git branch: 'master',
               url: 'https://github.com/ElektraInitiative/libelektra.git'
-          sh "git bundle verify ${WORKSPACE}/artifacts/${artifactStageName}/libelektra.bundle"
-          sh "git pull --ff-only ${WORKSPACE}/artifacts/${artifactStageName}/libelektra.bundle"
+          sh "git bundle verify ${WORKSPACE}/artifacts/${mainRepoArtifactStageName}/libelektra.bundle"
+          sh "git pull --ff-only ${WORKSPACE}/artifacts/${mainRepoArtifactStageName}/libelektra.bundle"
 
           dockerUtils.buildImage(DOCKER_IMAGES.website)
         }
