@@ -13,10 +13,10 @@
 // logger configuration to be changed by you
 // please do not include changes here to PRs
 // unless you want to change the defaults.
-// #define USE_STDERR_SINK
+#define USE_STDERR_SINK
 #define USE_SYSLOG_SINK
 // #define USE_FILE_SINK
-#define NO_FILTER
+// #define NO_FILTER
 
 
 #define _GNU_SOURCE /* For asprintf */
@@ -108,7 +108,7 @@ static int elektraLogFile (int level ELEKTRA_UNUSED, const char * function ELEKT
 #endif
 	if (!elektraLoggerFileHandle)
 	{
-		elektraLoggerFileHandle = fopen ("/tmp/elektra.log", "a");
+		elektraLoggerFileHandle = fopen ("elektra.log", "a");
 	}
 	int ret = fprintf (elektraLoggerFileHandle, "%s", msg);
 	fflush (elektraLoggerFileHandle);
