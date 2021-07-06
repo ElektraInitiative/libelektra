@@ -29,9 +29,12 @@ typedef struct
 {
 	GSettingsBackend backend;
 	/*< private >*/
-	GElektraKey * gkey_user;
 	GElektraKdb * gkdb;
+	GElektraKey * gkey_user;
+	GElektraKey * gkey_system;
+	GElektraKey * gkey_error;
 	GElektraKeySet * gks_user;
+	GElektraKeySet * gks_system;
 
 	GElektraKeySet * subscription_gks_keys;
 	GElektraKeySet * subscription_gks_paths;
@@ -96,12 +99,11 @@ static void elektra_settings_backend_sync (GSettingsBackend * backend)
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Sync state");
 }
 
-static GVariant * elektra_settings_read_string (GSettingsBackend * backend, gchar * keypathname, const GVariantType * expected_type)
+static GVariant * elektra_settings_read_string (GElektraKdb * kdb, GElektraKeySet * ks, GElektraKey * parentKey, gchar * keypathname, const GVariantType * expected_type)
 {
-	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
-	gelektra_kdb_get (esb->gkdb, esb->gks_user, esb->gkey_user);
+	gelektra_kdb_get (kdb, ks, parentKey);
 	/* Lookup the requested key */
-	GElektraKey * gkey = gelektra_keyset_lookup_byname (esb->gks_user, keypathname, GELEKTRA_KDB_O_NONE);
+	GElektraKey * gkey = gelektra_keyset_lookup_byname (ks, keypathname, GELEKTRA_KDB_O_NONE);
 	// TODO: copy key string/data before releasing lock
 	/* free the passed path string */
 	g_free (keypathname);
@@ -200,15 +202,16 @@ static GVariant * elektra_settings_backend_read (GSettingsBackend * backend, con
 	       g_variant_type_peek_string (expected_type), "and we", (default_value ? "" : "do not "), "want the default_value");
 
 	GVariant * ret = 0;
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 	if (default_value)
 	{
-		ret = elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_SYSTEM, G_ELEKTRA_SETTINGS_PATH, key, NULL),
-						    expected_type);
+		gchar * path = g_strconcat (G_ELEKTRA_SETTINGS_SYSTEM, G_ELEKTRA_SETTINGS_PATH, key, NULL);
+		ret = elektra_settings_read_string (esb->gkdb, esb->gks_system, esb->gkey_system, path, expected_type);
 	}
 	else
 	{
-		ret = elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL),
-						    expected_type);
+		gchar * path = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL);
+		ret = elektra_settings_read_string (esb->gkdb, esb->gks_user, esb->gkey_user, path, expected_type);
 	}
 
 	return ret;
@@ -234,8 +237,10 @@ static GVariant * elektra_settings_backend_read_user_value (GSettingsBackend * b
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s %s. %s %s.", "Function read_user_value:", key,
 	       "Expected_type is:", g_variant_type_peek_string (expected_type));
 
-	GVariant * ret = elektra_settings_read_string (backend, g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL),
-						       expected_type);
+	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
+	gchar * path = g_strconcat (G_ELEKTRA_SETTINGS_USER, G_ELEKTRA_SETTINGS_PATH, key, NULL);
+	GVariant * ret = elektra_settings_read_string (esb->gkdb, esb->gks_user, esb->gkey_user, path, expected_type);
+
 	return ret;
 }
 
@@ -652,12 +657,16 @@ static void elektra_settings_backend_unsubscribe (GSettingsBackend * backend, co
 static void elektra_settings_backend_init (ElektraSettingsBackend * esb)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Init new ElektraSettingsBackend");
+	esb->gkey_error = gelektra_key_new (0);
 	esb->gkey_user = gelektra_key_new (G_ELEKTRA_SETTINGS_USER G_ELEKTRA_SETTINGS_PATH, KEY_END);
-	esb->gkdb = gelektra_kdb_open (NULL, esb->gkey_user);
+	esb->gkey_system = gelektra_key_new (G_ELEKTRA_SETTINGS_SYSTEM G_ELEKTRA_SETTINGS_PATH, KEY_END);
+	esb->gkdb = gelektra_kdb_open (NULL, esb->gkey_error);
 	esb->gks_user = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
+	esb->gks_system = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	esb->subscription_gks_keys = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	esb->subscription_gks_paths = gelektra_keyset_new (0, GELEKTRA_KEYSET_END);
 	gelektra_kdb_get (esb->gkdb, esb->gks_user, esb->gkey_user);
+	gelektra_kdb_get (esb->gkdb, esb->gks_system, esb->gkey_system);
 	elektra_settings_check_bus_connection (esb);
 }
 
@@ -668,8 +677,7 @@ static void elektra_settings_backend_finalize (GObject * object)
 {
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s.", "Finalize ElektraSettingsBackend");
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) object;
-	GElektraKey * errorkey = gelektra_key_new (0);
-	gelektra_kdb_close (esb->gkdb, errorkey);
+	gelektra_kdb_close (esb->gkdb, esb->gkey_error);
 	// TODO error handling
 	G_OBJECT_CLASS (elektra_settings_backend_parent_class)->finalize (object);
 }
