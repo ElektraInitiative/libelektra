@@ -18,7 +18,7 @@ In the simplest case, an Elektra key appears as a file with the key name as file
 
 This enables users to interact with Elektra
 
-- using standard unix tooling, making Elektra more accessible
+- using standard Unix tooling, making Elektra more accessible
 - with standard system/library procedures
 - without the need to learn other tooling of libelektra
 - with additional features: e.g. the ability to effortlessly write binary keys
@@ -138,7 +138,7 @@ as obtained with
 tree -L 4 mountpoint
 ```
 
-## Assumptions and special behaviour
+## Assumptions and special behavior
 
 Elektra cannot map perfectly to the structure of a classical filesystem as described [here](https://www.libelektra.org/docgettingstarted/big-picture).
 Whenever deviations are necessary, the goal is to maximize usability and adhere to the expectations of common Unix tools.
@@ -167,7 +167,7 @@ E.g. recursively deleting directories with `rm -r` containing `@elektra.value` f
 ### "Leaf"-Keys that act as as directories
 
 Keys at the bottom of the hierarchy are normally treated as files. However in certain cases, like explicitly creating directories using `mkdir`, this would result in files being displayed, making it impossible to expand the hierarchy using standard tools.
-Therefore, when a directory is created, the special meta-key `fuse/directory` is set to override this behaviour.
+Therefore, when a directory is created, the special metakey `fuse/directory` is set to override this behavior.
 
 ### Filesystem attributes
 
@@ -200,7 +200,7 @@ For futher reference, see `xattr(1)` on how to read/write/list these attributes.
 
 ## Binary-Keys
 
-If a value is to be written that cannot be decoded using the systems default encoding, it is treated as binary, and the appropriate `meta:/binary` meta-key is set.
+If a value is to be written that cannot be decoded using the systems default encoding, it is treated as binary, and the appropriate `meta:/binary` metakey is set.
 
 ## Known issues
 
