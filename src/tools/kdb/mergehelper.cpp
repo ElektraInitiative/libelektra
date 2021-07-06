@@ -138,7 +138,7 @@ Key prependNamespace (Key const & root, std::string const & ns)
 	Key ret = root.dup ();
 	if (ret.isCascading ())
 	{
-		ret.setName (ns + root.getName ());
+		ret.setName (ns + ":" + root.getName ());
 	}
 	return ret;
 }
