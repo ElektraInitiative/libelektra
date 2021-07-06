@@ -166,6 +166,7 @@ _(Michael Tucek)_
 - ZeroMQ Hub: fix compilation and man page. _(Markus Raab)_
 - Configure packaging for FUSE tool. _(Alexander Firbas)_
 - ambiguous write operations now disabled in kdb _(Alexander Firbas)_
+- ambiguous write operations now disabled in kdb
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
