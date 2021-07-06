@@ -3,35 +3,35 @@
 - Test 1
 
   ```sh
-  # Backup-and-Restore:/tests/msr
+  # Backup-and-Restore:user:/tests/msr
   # testcomment
-  kdb set /tests/msr/a a
-  kdb set /tests/msr/b b
+  kdb set user:/tests/msr/a a
+  kdb set user:/tests/msr/b b
   # RET:0
   # should yield 'a'
-  kdb get /tests/msr/a
+  kdb get user:/tests/msr/a
   #> a
   # STDERR:
-  kdb get /tests/msr/c
+  kdb get user:/tests/msr/c
   # Expected:
   # RET:11
-  # STDERR:Did not find key '/tests/msr/c'
-  kdb rm -r /tests/msr
+  # STDERR:Did not find key 'user:/tests/msr/c'
+  kdb rm -r user:/tests/msr
   ```
 
 - Test 2
 
   ```sh
-  kdb set /tests/msr/x x
-  kdb set /tests/msr/y y
-  kdb get /tests/msr/x
+  kdb set user:/tests/msr/x x
+  kdb set user:/tests/msr/y y
+  kdb get user:/tests/msr/x
   #> x
-  kdb get /tests/msr/y
+  kdb get user:/tests/msr/y
   #> y
-  kdb export /tests/msr mini
+  kdb export user:/tests/msr mini
   # STDOUT-REGEX: (\[\]⏎)?x=x⏎y=y
-  kdb ls /tests/msr
-  kdb rm -r /tests/msr
+  kdb ls user:/tests/msr
+  kdb rm -r user:/tests/msr
   ```
 
 - Test 3
