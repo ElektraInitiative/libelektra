@@ -165,6 +165,8 @@ _(Michael Tucek)_
 - Really add all tools when using `-DTOOLS=ALL`. _(Markus Raab)_
 - ZeroMQ Hub: fix compilation and man page. _(Markus Raab)_
 - Configure packaging for FUSE tool. _(Alexander Firbas)_
+- ambiguous write operations now disabled in kdb _(Alexander Firbas)_
+- <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - `webd`: update npm dependencies. _(Mihael Pranjić)_
