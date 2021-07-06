@@ -33,7 +33,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	string keyname = parentKey.getName ();
 
 	bool cascadingWrite = keyname[0] == '/';
-	
+
 	KeySet conf;
 	kdb.get (conf, parentKey);
 	Key k = conf.lookup (parentKey);
@@ -80,7 +80,7 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	}
 
 	if (!cl.quiet && cascadingWrite) std::cout << "Using name " << k.getName () << std::endl;
-	
+
 	kdb.set (conf, parentKey);
 	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 	printError (cerr, k, cl.verbose, cl.debug);

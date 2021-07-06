@@ -45,7 +45,7 @@ int SetCommand::execute (Cmdline const & cl)
 	Key key = conf.lookup (name);
 
 	std::ostringstream toprint;
-	
+
 	if (!key && cascadingWrite)
 	{
 		cerr << "Aborting: A cascading write to a non-existent key is ambiguous." << endl;

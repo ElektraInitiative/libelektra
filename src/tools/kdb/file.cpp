@@ -27,7 +27,7 @@ int FileCommand::execute (Cmdline const & cl)
 
 	KeySet conf;
 	Key x = cl.createKey (0);
-	
+
 	if (!x.isValid ())
 	{
 		throw invalid_argument (cl.arguments[0] + " is not a valid keyname");
