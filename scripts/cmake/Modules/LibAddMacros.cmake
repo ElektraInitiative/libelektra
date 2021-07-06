@@ -616,7 +616,7 @@ function (generate_manpage NAME)
 		cmake_parse_arguments (
 			ARG
 			"" # optional keywords
-			"SECTION;FILENAME;COMPONENT" # one value keywords
+			"SECTION;FILENAME;COMPONENT;GENERATED_FROM" # one value keywords
 			"" # multi value keywords
 			${ARGN})
 
@@ -632,30 +632,42 @@ function (generate_manpage NAME)
 			set (MDFILE ${CMAKE_CURRENT_SOURCE_DIR}/${NAME}.md)
 		endif ()
 
+		if (ARG_GENERATED_FROM)
+			set (SOURCE_FILE ${ARG_GENERATED_FROM})
+		else ()
+			set (SOURCE_FILE ${MDFILE})
+		endif ()
+
 		if (ARG_COMPONENT)
 			set (HAS_COMPONENT ${ARG_COMPONENT})
 		else ()
 			set (HAS_COMPONENT ${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 		endif ()
 
-		set (MAN_PAGE_LOCATION "doc/man/man${SECTION}/${NAME}.${SECTION}")
+		set (MAN_PAGE_DIR "doc/man/man${SECTION}")
+		set (MAN_PAGE_LOCATION "${MAN_PAGE_DIR}/${NAME}.${SECTION}")
 		set (OUTFILE "${CMAKE_SOURCE_DIR}/${MAN_PAGE_LOCATION}")
 
-		if (RONN_LOC)
+		find_program (RONN_LOC ronn)
+		find_package (Git)
+
+		if (RONN_LOC AND GIT_EXECUTABLE)
 			add_custom_command (
 				OUTPUT ${OUTFILE}
 				DEPENDS ${MDFILE}
-				COMMAND ${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D DIFF_COMMAND=${DIFF_COMMAND} -D
-					MDFILE=${MDFILE} -D MANPAGE=${OUTFILE} -P ${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
+				COMMAND
+					${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D GIT_COMMAND=${GIT_EXECUTABLE} -D
+					MDFILE=${MDFILE} -D SOURCE_FILE=${SOURCE_FILE} -D MANPAGE=${OUTFILE} -P
+					${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
-		endif (RONN_LOC)
+		endif (RONN_LOC AND GIT_EXECUTABLE)
 
 		if (NOT EXISTS "${OUTFILE}")
 			message (
 				WARNING
 					"\nThe file “${MAN_PAGE_LOCATION}” does currently not exist. \
-If you have not done so already, please install `ronn-ng`. \
+If you have not done so already, please install `ronn-ng` and `git`. \
 Afterwards make sure you set the CMake option `BUILD_DOCUMENTATION` to ON, \
 and generate “${NAME}.${SECTION}” using the current build system (${CMAKE_GENERATOR}). \
 After that please commit the file ${MAN_PAGE_LOCATION}. \
