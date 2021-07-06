@@ -11,14 +11,14 @@
 
 int main (int argc, char ** argv)
 {
-  GApplication * app;
-  int status;
+	GApplication * app;
+	int status;
 
-  app = g_application_new ("org.libelektra.ElektraSettingsWriter", G_APPLICATION_IS_SERVICE);
+	app = g_application_new ("org.libelektra.ElektraSettingsWriter", G_APPLICATION_IS_SERVICE);
 
-  status = g_application_run (app, argc, argv);
+	status = g_application_run (app, argc, argv);
 
-  g_object_unref (app);
+	g_object_unref (app);
 
-  return status;
+	return status;
 }

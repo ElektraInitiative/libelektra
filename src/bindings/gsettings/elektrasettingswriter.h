@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 
-#include <glib.h>
 #include <gio/gio.h>
+#include <glib.h>
 
 #endif // ELEKTRA_SETTINGS_WRITER_H

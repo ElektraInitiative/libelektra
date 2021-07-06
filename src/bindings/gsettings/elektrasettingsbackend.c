@@ -90,7 +90,8 @@ static void elektra_settings_backend_sync (GSettingsBackend * backend)
 	// TODO: use three-way merge when ready
 	ElektraSettingsBackend * esb = (ElektraSettingsBackend *) backend;
 
-	if (gelektra_kdb_set (esb->gkdb, esb->gks_user, esb->gkey_user) == -1 || gelektra_kdb_get (esb->gkdb, esb->gks_user, esb->gkey_user) == -1)
+	if (gelektra_kdb_set (esb->gkdb, esb->gks_user, esb->gkey_user) == -1 ||
+	    gelektra_kdb_get (esb->gkdb, esb->gks_user, esb->gkey_user) == -1)
 	{
 		g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Error on sync!");
 		return;
@@ -98,7 +99,8 @@ static void elektra_settings_backend_sync (GSettingsBackend * backend)
 	g_log (G_LOG_DOMAIN, G_LOG_LEVEL_DEBUG, "%s\n", "Sync state");
 }
 
-static GVariant * elektra_settings_read_string (GElektraKdb * kdb, GElektraKeySet * ks, GElektraKey * parentKey, gchar * keypathname, const GVariantType * expected_type)
+static GVariant * elektra_settings_read_string (GElektraKdb * kdb, GElektraKeySet * ks, GElektraKey * parentKey, gchar * keypathname,
+						const GVariantType * expected_type)
 {
 	gelektra_kdb_get (kdb, ks, parentKey);
 	/* Lookup the requested key */
