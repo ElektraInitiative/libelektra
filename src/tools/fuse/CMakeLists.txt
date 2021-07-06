@@ -11,8 +11,7 @@ endif ()
 execute_process (
 	COMMAND ${Python3_EXECUTABLE} -c "import pip,wheel"
 	RESULT_VARIABLE EXIT_CODE
-	OUTPUT_QUIET
-)
+	OUTPUT_QUIET)
 
 if (NOT EXIT_CODE EQUAL 0)
 	remove_tool (fuse "python3-modules pip and wheel not both available")
@@ -24,8 +23,8 @@ install (CODE "execute_process(COMMAND
 		${Python3_EXECUTABLE} setup.py bdist_wheel
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )")
 
-# Install the package (the .whl file) and its dependencies (which are fetched from PyPI) into a subdirectory of the global
-# installation location (--target)
+# Install the package (the .whl file) and its dependencies (which are fetched from PyPI) into a subdirectory of the global installation
+# location (--target)
 install (CODE "execute_process(COMMAND
 		${Python3_EXECUTABLE} -m pip install --target \"${CMAKE_INSTALL_PREFIX}/fuse\" --no-cache-dir ./dist/elektra_fuse-1.0.0-py3-none-any.whl
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )")
