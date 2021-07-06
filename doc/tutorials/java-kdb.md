@@ -60,7 +60,7 @@ kdb.get(keySet, parentKey);
 Now we can simply fetch the desired key's value as follows:
 
 ```java
-String value = keySet.lookup("user:/my/presaved/key").map(Key::getStringAndRelease).orElseThrow();
+String value = keySet.lookup("user:/my/presaved/key").map(Key::getString).orElseThrow();
 ```
 
 So for example if you had executed the command below via shell, before starting the application:

@@ -107,14 +107,6 @@ public class KeyTest
 		assertEquals (key.getPointer (), key2.getPointer ()); // equal pointer
 	}
 
-	@Test (expected = KeyReleasedException.class) public void test_keyAccessAfterGetBooleanAndRelease_shouldFail ()
-	{
-		var key = Key.create (KEY_3_NAME, KEY_3_VALUE);
-		key.getBooleanAndRelease ();
-
-		key.getPointer ();
-	}
-
 	@Test public void test_keyWithBooleanValue_shouldPass ()
 	{
 		var key = Key.create (KEY_2_NAME, KEY_2_VALUE);
@@ -129,14 +121,6 @@ public class KeyTest
 
 		assertFalse (key.getBoolean ());
 		assertEquals (key.getString (), "false");
-	}
-
-	@Test (expected = KeyReleasedException.class) public void test_keyAccessAfterGetByteAndRelease_shouldFail ()
-	{
-		var key = Key.create (KEY_3_NAME, KEY_3_VALUE);
-		key.getByteAndRelease ();
-
-		key.getPointer ();
 	}
 
 	@Test public void test_keyWithByteValue_shouldPass ()
@@ -154,14 +138,6 @@ public class KeyTest
 		assertEquals (Byte.parseByte (KEY_4_VALUE), key.getByte ());
 	}
 
-	@Test (expected = KeyReleasedException.class) public void test_keyAccessAfterGetShortAndRelease_shouldFail ()
-	{
-		var key = Key.create (KEY_3_NAME, KEY_3_VALUE);
-		key.getShortAndRelease ();
-
-		key.getPointer ();
-	}
-
 	@Test public void test_keyWithShortValue_shouldPass ()
 	{
 		var key = Key.create (KEY_4_NAME, KEY_4_VALUE);
@@ -175,14 +151,6 @@ public class KeyTest
 
 		// assert only to trigger key.getShort() function which throws exception
 		assertEquals (Short.parseShort (KEY_5_VALUE), key.getShort ());
-	}
-
-	@Test (expected = KeyReleasedException.class) public void test_keyAccessAfterGetIntAndRelease_shouldFail ()
-	{
-		var key = Key.create (KEY_3_NAME, KEY_3_VALUE);
-		key.getIntAndRelease ();
-
-		key.getPointer ();
 	}
 
 	@Test public void test_keyWithIntValue_shouldPass ()
@@ -200,14 +168,6 @@ public class KeyTest
 		assertEquals (Long.parseLong (KEY_6_VALUE), key.getInt ());
 	}
 
-	@Test (expected = KeyReleasedException.class) public void test_keyAccessAfterGetLongAndRelease_shouldFail ()
-	{
-		var key = Key.create (KEY_3_NAME, KEY_3_VALUE);
-		key.getLongAndRelease ();
-
-		key.getPointer ();
-	}
-
 	@Test public void test_keyWithLongValue_shouldPass ()
 	{
 		var key = Key.create (KEY_6_NAME, KEY_6_VALUE);
@@ -223,27 +183,11 @@ public class KeyTest
 		assertEquals (1L, key.getLong ());
 	}
 
-	@Test (expected = KeyReleasedException.class) public void test_keyAccessAfterGetFloatAndRelease_shouldFail ()
-	{
-		var key = Key.create (KEY_3_NAME, KEY_3_VALUE);
-		key.getFloatAndRelease ();
-
-		key.getPointer ();
-	}
-
 	@Test public void test_keyWithFloatValue_shouldPass ()
 	{
 		var key = Key.create (KEY_8_NAME, KEY_8_VALUE);
 
 		assertEquals (Float.parseFloat (KEY_8_VALUE), key.getFloat (), 0.0f);
-	}
-
-	@Test (expected = KeyReleasedException.class) public void test_keyAccessAfterGetDoubleAndRelease_shouldFail ()
-	{
-		var key = Key.create (KEY_3_NAME, KEY_3_VALUE);
-		key.getDoubleAndRelease ();
-
-		key.getPointer ();
 	}
 
 	@Test public void test_keyWithDoubleValue_shouldPass ()
