@@ -198,42 +198,42 @@ def dockerInit() {
     /* Install and test the built packages with theses images. */
     DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
       'debian-buster-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/buster/',
+      './release-artifact/*/package/buster/',
       './scripts/docker/debian/buster/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bullseye_installed = dockerUtils.createDockerImageDesc(
       'debian-bullseye-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/bullseye/',
+      './release-artifact/*/package/bullseye/',
       './scripts/docker/debian/bullseye/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
       'ubuntu-focal-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/focal/',
+      './release-artifact/*/package/focal/',
       './scripts/docker/ubuntu/focal/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
       'ubuntu-bionic-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/bionic/',
+      './release-artifact/*/package/bionic/',
       './scripts/docker/ubuntu/bionic/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
       'fedora-33-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/fedora33/',
+      './release-artifact/*/package/fedora33/',
       './scripts/docker/fedora/33/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_34_installed = dockerUtils.createDockerImageDesc(
       'fedora-34-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/fedora34/',
+      './release-artifact/*/package/fedora34/',
       './scripts/docker/fedora/34/package.Dockerfile',
       false
     )
@@ -241,42 +241,42 @@ def dockerInit() {
     /* Install packages for Docker image release */
     DOCKER_IMAGES.buster_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/buster/',
+      './release-artifact/*/package/buster/',
       './scripts/docker/debian/buster/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bullseye_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/bullseye/',
+      './release-artifact/*/package/bullseye/',
       './scripts/docker/debian/bullseye/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.focal_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/focal/',
+      './release-artifact/*/package/focal/',
       './scripts/docker/ubuntu/focal/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bionic_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/bionic/',
+      './release-artifact/*/package/bionic/',
       './scripts/docker/ubuntu/bionic/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_33_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/fedora33/',
+      './release-artifact/*/package/fedora33/',
       './scripts/docker/fedora/33/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_34_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/fedora34/',
+      './release-artifact/*/package/fedora34/',
       './scripts/docker/fedora/34/release.Dockerfile',
       false
     )
