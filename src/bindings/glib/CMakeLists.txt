@@ -42,9 +42,12 @@ target_compile_options (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_CFLAGS_OTHER})
 target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC elektra-core elektra-kdb)
 target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_LDFLAGS})
 
-install (TARGETS ${GELEKTRA_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX})
+install (TARGETS ${GELEKTRA_LIBRARY} LIBRARY DESTINATION lib${LIB_SUFFIX} COMPONENT glib-elektra)
 
-install (FILES ${GELEKTRA_HDR_FILES} DESTINATION include/${TARGET_INCLUDE_FOLDER})
+install (
+	FILES ${GELEKTRA_HDR_FILES}
+	DESTINATION include/${TARGET_INCLUDE_FOLDER}
+	COMPONENT glib-elektra)
 
 configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/gelektra-constants.h.in" "${CMAKE_CURRENT_BINARY_DIR}/gelektra-constants.h" @ONLY)
 
@@ -53,7 +56,7 @@ configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/gelektra.pc.in" "${CMAKE_CURRENT_BI
 install (
 	FILES "${CMAKE_CURRENT_BINARY_DIR}/${GELEKTRA_LIBRARY}.pc"
 	DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
-	COMPONENT libelektra-dev)
+	COMPONENT glib-elektra)
 
 if (BUILD_TESTING)
 	add_subdirectory (tests)

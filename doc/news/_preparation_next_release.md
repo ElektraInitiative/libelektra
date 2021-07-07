@@ -148,7 +148,7 @@ Currently the binding's automated clean-up of native keys and key sets is deacti
 
 ## Packaging
 
-- <<TODO>>
+- Add packages for following bindings: `glib`, `io_ev`, `io_glib` and `io_uv`. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 
