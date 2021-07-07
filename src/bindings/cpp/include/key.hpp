@@ -543,7 +543,7 @@ inline Key::const_reverse_iterator Key::crend () const noexcept
 
 
 /**
- * Constructs an empty, invalid key.
+ * Constructs a key with the name `/`.
  *
  * @note That this is not a null key, so the key will
  * evaluate to true.

@@ -29,7 +29,9 @@ else ()
 		LINK_LIBRARIES
 		${GLib_LIBRARY}
 		INCLUDE_SYSTEM_DIRECTORIES
-		${GLib_INCLUDE_DIRS})
+		${GLib_INCLUDE_DIRS}
+		COMPONENT
+		io-glib-elektra)
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
 			@ONLY)
@@ -37,7 +39,7 @@ else ()
 	install (
 		FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
 		DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
-		COMPONENT libelektra-dev)
+		COMPONENT io-glib-elektra)
 
 	# Build test
 	if (BUILD_TESTING)

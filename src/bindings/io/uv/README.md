@@ -13,7 +13,7 @@ For the purpose of I/O bindings please read the
 ## Installation
 
 See [installation](/doc/INSTALL.md).
-This binding is currently **not** part of a released package.
+The package is called `io-uv-elektra`.
 
 ## Requirements
 

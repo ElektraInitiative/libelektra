@@ -17,14 +17,15 @@ If no release critical problems are found during testing, continue.
 - Update `doc/COMPILE.md` to reflect actually tested setups
 - Run `scripts/dev/update-infos-status` with arguments for heuristics (--auto) and check
   transitions in plugin status: especially from/to experimental
-- Write release notes (without hash sums, guid or proper download links)
-- `cp doc/todo/NEWS.md doc/news/_preparation_next_release.md`
+- Write release notes with guid (but without giving a final name, hashsums, statistics, proper download links or replacing the `<<VERSION>>` placeholder)
+  > NOTE: hashsums and statistics get automatically inserted into release notes through the release pipeline
 
 ### Increment Version Number
 
 - `CMakeLists.txt`
 - Increment version in output of `doc/tutorials/hello-elektra.md`
 - Increment <Version> of libelektra in `examples/external/java/read-keys-example/pom.xml` and `src/bindings/jna/README.md`
+- Increment the Elektra version in `scripts/docker/alpine/*/release.Dockerfile`
 - Change `VERSION` variable in build-server:
   - Go to https://build.libelektra.org
   - Select "Manage Jenkins" -> "Configure System"
@@ -37,8 +38,10 @@ If no release critical problems are found during testing, continue.
 ## When Source Code is considered ready
 
 - Trigger release pipeline with parameters:
-  The revision parameters should be set to 1 (default).
-  On a package revision release (version does not change, only package revision) the revision parameters need to be incremented.
+  - The revision parameters should be set to 1 (default).  
+    On a package revision release (version does not change, only package revision) the revision parameters need to be incremented.
+  - The populate_release_notes parameter should be set to true (default).  
+    If set to false, the automatic insertion of hashsums, statistics and moving the release notes to its final name, is disabled.
 - Download artifacts after release build is finished and pipeline waits for input:
   To download the artifacts either open the "Artifacts" tab on Blue Ocean or open this URL
   `https://build.libelektra.org/job/libelektra-release/<BUILD_NUMBER>/artifact/artifacts/`
@@ -75,17 +78,11 @@ If no release critical problems are found during testing, continue.
   - On the prompt "Publish Release?" select "Yes" to publish the artifacts
 - Verify that debs.libelektra.org and rpms.libelektra.org contain the released packages.
 - Complete release notes:
-  - Move release notes to final name, add links where to download release
-  - Clean the git statistics in git/statistics and add them to the release notes (formatting, remove uninteresting data)
-  - Add download links to release notes (api-docu, release tarball)
-  - Add hash sums to release notes
+  - Verify that download links are valid
+  - Check if statistics and hashsums are present
 - Run linkchecker to verify that all download links of the current release are working:
   `mkdir -p build && cd build && cmake .. && make html && ../scripts/link-checker external-links.txt`
-- Wait for master build to finish and verify website is correct
-
-# Post-Release updates (depend on release artifacts)
-
-- Increment the Elektra version in `scripts/docker/alpine/*/release.Dockerfile`
+- Verify if website is correct
 
 ### Preperation for next release
 

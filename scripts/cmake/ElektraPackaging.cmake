@@ -34,6 +34,10 @@ set (
 	libelektra${SO_VERSION}-yajl
 	libelektra${SO_VERSION}-yamlcpp
 	libelektra${SO_VERSION}-zeromq
+	glib-elektra
+	io-ev-elektra
+	io-glib-elektra
+	io-uv-elektra
 	java-elektra
 	lua-elektra
 	ruby-elektra
@@ -248,6 +252,26 @@ if (UNIX)
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-RUBY_DEPENDS "libelektra${SO_VERSION}" "ruby-elektra")
 	check_component_dependencies (ruby libelektra${SO_VERSION}-ruby PLUGIN)
 
+	set (CPACK_COMPONENT_GLIB-ELEKTRA_DISPLAY_NAME "glib-elektra")
+	set (CPACK_COMPONENT_GLIB-ELEKTRA_DESCRIPTION "This package contains the 'glib' binding.")
+	set (CPACK_COMPONENT_GLIB-ELEKTRA_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (glib glib-elektra BINDING)
+
+	set (CPACK_COMPONENT_IO-EV-ELEKTRA_DISPLAY_NAME "io-ev-elektra")
+	set (CPACK_COMPONENT_IO-EV-ELEKTRA_DESCRIPTION "This package contains the 'io_ev' binding.")
+	set (CPACK_COMPONENT_IO-EV-ELEKTRA-IO-EV_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (io_ev io-ev-elektra BINDING)
+
+	set (CPACK_COMPONENT_IO-GLIB-ELEKTRA_DISPLAY_NAME "io-glib-elektra")
+	set (CPACK_COMPONENT_IO-GLIB-ELEKTRA_DESCRIPTION "This package contains the 'io_glib' binding.")
+	set (CPACK_COMPONENT_IO-GLIB-ELEKTRA_DEPENDS "libelektra${SO_VERSION}" "glib-elektra")
+	check_component_dependencies (io_glib io-glib-elektra BINDING)
+
+	set (CPACK_COMPONENT_IO-UV-ELEKTRA_DISPLAY_NAME "io-uv-elektra")
+	set (CPACK_COMPONENT_IO-UV-ELEKTRA_DESCRIPTION "This package contains the 'io_uv' binding.")
+	set (CPACK_COMPONENT_IO-UV-ELEKTRA_DEPENDS "libelektra${SO_VERSION}")
+	check_component_dependencies (io_uv io-uv-elektra BINDING)
+
 	set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DISPLAY_NAME "elektra-bin-extra")
 	set (CPACK_COMPONENT_ELEKTRA-BIN-EXTRA_DESCRIPTION
 	     "This package contains extra command line utilities for Elektra written in non-shell languages like python.")
@@ -283,6 +307,9 @@ if (UNIX)
 		"libelektra${SO_VERSION}-xerces"
 		"libelektra${SO_VERSION}-yajl"
 		"libelektra${SO_VERSION}-yamlcpp"
+		"io-ev-elektra"
+		"io-glib-elektra"
+		"io-uv-elektra"
 		"lua-elektra"
 		"elektra-bin"
 		"elektra-qt-gui"
