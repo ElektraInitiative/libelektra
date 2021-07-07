@@ -348,8 +348,8 @@ static void test_ksCopy (void)
 	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
 	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
 	succeed_if (ksCopy (0, ks) == -1, "No error on NULL pointer");
-	succeed_if (ksCopy (ks, 0) == 0, "Deleted ks");
-	succeed_if (ksGetSize (ks) == 0, "ks has no keys");
+	succeed_if (ksCopy (ks, 0) == 0, "Could not delete ks with ksCopy");
+	succeed_if (ksGetSize (ks) == 0, "ks has keys after deleting with ksCopy");
 	ksDel (ks);
 
 	other = ksNew (0, KS_END);
@@ -2781,6 +2781,7 @@ static void test_simpleLookup (void)
 	succeed_if_same_string (keyString (returnedKey), keyString (dup));
 	succeed_if (ksGetSize (ks) == 1, "key deleted from keyset");
 
+keyDel (searchKey);
 	ksDel (ks);
 }
 
