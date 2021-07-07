@@ -134,6 +134,8 @@ Currently the binding's automated clean-up of native keys and key sets is deacti
 ## Documentation
 
 - JNI docu updates and small fixes. _(Markus Raab)_
+- Small updates in notification tutorial. _(Markus Raab)_
+- <<TODO>>
 - <<TODO>>
 - The manpages now use the date of the last change recorded in git. _(Klemens Böswirth)_
 - <<TODO>>
