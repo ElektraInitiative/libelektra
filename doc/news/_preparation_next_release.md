@@ -127,7 +127,7 @@ Currently the binding's automated clean-up of native keys and key sets is deacti
 
 ## Scripts
 
-- <<TODO>>
+- Add a script that automates the process of inserting source archive hashsums and git statistics into the release notes during a release. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 
@@ -182,8 +182,8 @@ Currently the binding's automated clean-up of native keys and key sets is deacti
 
 ### Jenkins
 
-- <<TODO>>
-- <<TODO>>
+- Add the deployment of the [website](https://www.libelektra.org) to the release pipeline, therefore removing the need to wait until the main pipeline succeeds after a release. _(Robert Sowula)_
+- Restructure the release job stages to make it more failsafe and enable a re-run without any version conflict until the last stage. _(Robert Sowula)_
 - <<TODO>>
 
 ### Travis
