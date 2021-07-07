@@ -30,5 +30,10 @@ ksNew (16,
 		KEY_META, "type", "string",
 		KEY_META, "order", "4",
 	KEY_END),
+	keyNew (PREFIX "/multiline_with_terminators",
+			KEY_VALUE, " ' '' ",
+		KEY_META, "type", "string",
+		KEY_META, "order", "5",
+	KEY_END),
 
 KS_END)

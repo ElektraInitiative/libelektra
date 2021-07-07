@@ -47,6 +47,10 @@ docker run -it elektra/elektra
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
+### [email](/src/plugins/email/README.md)
+
+- Introduce email address validation plugin based on regex. _(a-kraschitzer)_
+
 ### <<Plugin1>>
 
 - <<TODO>>
@@ -65,6 +69,9 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - Fixed a bug ([#3896](https://issues.libelektra.org/3896)) that caused the `toml` plugin to swallow the first letter of
   all keys (after the namespace), if the parent key was a root key (e.g. `user:/`). _(Klemens Böswirth)_
+- The `type` metakey is now set for numbers on reading. _(Jakob Fischer)_
+- Rewrote some error messages, to make them less technical. _(Jakob Fischer)_
+- Fixed parsing of floats/empty keynames/multiline strings. _(Jakob Fischer)_
 
 ### Python
 
@@ -84,7 +91,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
-- <<TODO>>
+- A few rare bugs (mostly related to empty keyname parts `/%/`) in the keyname validation and canonicalization logic
+  have been fixed. _(Klemens Böswirth)_
 - <<TODO>>
 - <<TODO>>
 
@@ -113,7 +121,8 @@ you up to date with the multi-language support provided by Elektra.
 
 ### JNA
 
-Currently the binding's automated clean-up of native keys and key sets is deactivated until JNI segmentation fault issues are resolved in an upcoming release. After these issues have been resolved, manual clean-up of native resources will be discouraged. Therefore the `Key::get*AndRelease` convenience methods introduced with the last release have been removed. _(Michael Tucek)_
+- Currently the binding's automated clean-up of native keys and key sets is deactivated until JNI segmentation fault issues are resolved in an upcoming release. After these issues have been resolved, manual clean-up of native resources will be discouraged. Therefore the `Key::get*AndRelease` convenience methods introduced with the last release have been removed. _(Michael Tucek)_
+- Upgrade Gradle to 7.1.1. _(Mihael Pranjić)_
 
 ### <<Binding2>>
 
@@ -136,6 +145,7 @@ Currently the binding's automated clean-up of native keys and key sets is deacti
 - JNI docu updates and small fixes. _(Markus Raab)_
 - Small updates in notification tutorial. _(Markus Raab)_
 - Add [/doc/tutorial/specification.md]. _(Aaron Abebe <aaron.abebe@gmail.com>)_
+- Change GPG keyserver for receiving the apt key from keys.gnupg.net to keyserver.ubuntu.com _(Robert Sowula)_
 - <<TODO>>
 - The manpages now use the date of the last change recorded in git. _(Klemens Böswirth)_
 - <<TODO>>

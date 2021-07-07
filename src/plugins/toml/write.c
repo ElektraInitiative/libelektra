@@ -19,6 +19,7 @@
 #include <string.h>
 
 #include "error.h"
+#include "integer.h"
 #include "node.h"
 #include "prepare.h"
 #include "type.h"
@@ -74,7 +75,7 @@ static bool isListElement (Node * node);
 static bool isLastChild (Node * node);
 static bool hasInlineComment (Node * node);
 static bool isMultilineString (const char * str);
-static bool isTrue (const char * boolStr);
+static bool needNewlineBeforeComment (Node * node);
 
 int tomlWrite (KeySet * keys, Key * parent)
 {
@@ -195,14 +196,27 @@ static void writerError (Writer * writer, int err, const char * format, ...)
 	}
 }
 
+
 static int writeTree (Node * node, Writer * writer)
 {
 	int result = 0;
 	CommentList * comments = NULL;
+
 	if (keyCmp (node->key, writer->rootKey) != 0)
 	{
 		comments = collectComments (node->key, writer);
-		result |= writePrecedingComments (comments, writer);
+		bool hasComments = comments != NULL;
+
+		// Comments will be dropped if parent is an inline table
+		if (hasComments && node->parent->type != NT_INLINE_TABLE)
+		{
+			bool needNewline = needNewlineBeforeComment (node);
+			if (hasComments && needNewline)
+			{
+				result |= fputc ('\n', writer->f) == EOF;
+			}
+			result |= writePrecedingComments (comments, writer);
+		}
 	}
 
 	if (node->type == NT_SIMPLE_TABLE)
@@ -253,7 +267,12 @@ static int writeTree (Node * node, Writer * writer)
 					node->type == NT_LIST_ELEMENT,
 				"Invalid type of list element, only NT_LEAF, NT_ARRAY or NT_INLINE_TABLE expected, but found other: %d",
 				node->type);
-		result |= writeInlineComment (comments, true, writer);
+
+		// Inline comments in inline tables are illegal
+		if (node->parent->type != NT_INLINE_TABLE)
+		{
+			result |= writeInlineComment (comments, true, writer);
+		}
 	}
 	else
 	{
@@ -422,13 +441,25 @@ static int writeScalar (Key * key, Writer * writer)
 
 	if (type != NULL && elektraStrCmp (keyString (type), "boolean") == 0)
 	{
-		result |= fputs (isTrue (valueStr) ? "true" : "false", writer->f) == EOF;
+		if (elektraStrCmp (valueStr, "0") == 0)
+		{
+			result |= fputs ("false", writer->f) == EOF;
+		}
+		else if (elektraStrCmp (valueStr, "1") == 0)
+		{
+			result |= fputs ("true", writer->f) == EOF;
+		}
+		else
+		{
+			writerError (writer, ERROR_SYNTACTIC, "Expected a boolean value of either 0 or 1, but got %s", valueStr);
+			result = 1;
+		}
 	}
 	else if (type != NULL && elektraStrCmp (keyString (type), "string") == 0)
 	{
 		result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
 	}
-	else if (isNumber (writer->checker, valueStr) || isDateTime (writer->checker, valueStr))
+	else if (isFloat (writer->checker, valueStr) || isValidIntegerAnyBase (valueStr) || isDateTime (writer->checker, valueStr))
 	{
 		result |= fputs (valueStr, writer->f) == EOF;
 	}
@@ -454,18 +485,6 @@ static int writeQuoted (const char * value, char quoteChar, int quouteCount, Wri
 	return result;
 }
 
-static bool isTrue (const char * boolStr)
-{
-	if (elektraStrCmp (boolStr, "true") == 0 || elektraStrCmp (boolStr, "1") == 0)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
 static bool isMultilineString (const char * str)
 {
 	while (*str != 0)
@@ -477,7 +496,6 @@ static bool isMultilineString (const char * str)
 	}
 	return false;
 }
-
 
 static int writePrecedingComments (const CommentList * commentList, Writer * writer)
 {
@@ -547,6 +565,7 @@ static int writeFileTrailingComments (Key * parent, Writer * writer)
 		result |= writePrecedingComments (comments, writer);
 		freeComments (comments);
 	}
+
 	return result;
 }
 
@@ -639,4 +658,27 @@ static void freeComments (CommentList * comments)
 		elektraFree (comments);
 		comments = next;
 	}
+}
+
+// We may need an additional newline before starting with comments in a list, otherwise
+// a comment preceding a value may be written as an inline comment of the previous value.
+static bool needNewlineBeforeComment (Node * node)
+{
+	if (isListElement (node))
+	{
+		if (!isFirstChildren (node))
+		{
+			for (size_t prevIndex = 0; prevIndex + 1 < node->parent->childCount; prevIndex++)
+			{
+				if (node->parent->children[prevIndex + 1] == node)
+				{
+					if (!hasInlineComment (node->parent->children[prevIndex]))
+					{
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
 }

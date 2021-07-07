@@ -1,0 +1,323 @@
+# Samples taken from https://toml.io/en/v1.0.0-rc.2
+
+#################### COMMENTS ####################
+
+[comments]
+# This is a full-line comment
+key = "value"  # This is a comment at the end of a line
+another = "# This is not a comment"
+
+#################### KEYS ####################
+
+[key_names]
+bare_key = "value"
+bare-key = "value"
+1234 = "value"
+
+"127.0.0.1" = "value"
+"character encoding" = "value"
+"ʎǝʞ" = "value"
+'key2' = "value"
+'quoted "value"' = "value"
+
+[key_names.dotted]
+name = "Orange"
+physical.color = "orange"
+physical.shape = "round"
+site."google.com" = true
+
+[key_names.empty]
+a."" = "blank"     # VALID but discouraged
+b.'' = 'blank'     # VALID but discouraged
+
+[key_names.sub]
+fruit.apple.smooth = true
+fruit.orange = 2
+
+[key_names.sub.discouraged]
+
+# VALID BUT DISCOURAGED
+apple.type = "fruit"
+orange.type = "fruit"
+
+apple.skin = "thin"
+orange.skin = "thick"
+
+apple.color = "red"
+orange.color = "orange"
+
+[key_names.sub.recommended]
+# RECOMMENDED
+apple.type = "fruit"
+apple.skin = "thin"
+apple.color = "red"
+
+orange.type = "fruit"
+orange.skin = "thick"
+orange.color = "orange"
+
+[key_names.sub.nasty_bare]
+3.14159 = "pi"
+
+#################### STRINGS ####################
+
+[strings]
+
+str = "I'm a string. \"You can quote me\". Name\tJos\u00E9\nLocation\tSF."
+str1 = """
+Roses are red
+Violets are blue"""
+
+# On a Unix system, the above multi-line string will most likely be the same as:
+str2 = "Roses are red\nViolets are blue"
+
+# On a Windows system, it will most likely be equivalent to:
+str3 = "Roses are red\r\nViolets are blue"
+
+# The following strings are byte-for-byte equivalent:
+str4 = "The quick brown fox jumps over the lazy dog."
+
+str5 = """
+The quick brown \
+
+
+  fox jumps over \
+    the lazy dog."""
+
+str6 = """\
+       The quick brown \
+       fox jumps over \
+       the lazy dog.\
+       """
+
+# TODO: Should work, but isn't
+[strings.multiline]
+# str1 = """Here are two quotation marks: ". Simple enough."""
+# str2 = """Here are three quotation marks: ""\"."""
+# str3 = """Here are fifteen quotation marks: ""\"""\"""\"""\"""\"."""
+# str4 = """"This," she said, "is just a pointless statement.""""
+
+[strings.literal]
+# What you see is what you get.
+winpath  = 'C:\Users\nodejs\templates'
+winpath2 = '\\ServerX\admin$\system32\'
+quoted   = 'Tom "Dubs" Preston-Werner'
+regex    = '<\i\c*\s*>'
+
+[strings.literal_multiline]
+# TODO: Should work, but isn't
+# regex2 = '''I [dw]on't need \d{2} apples'''
+lines  = '''
+The first newline is
+trimmed in raw strings.
+   All other whitespace
+   is preserved.
+'''
+
+[strings.multiline_mixed]
+quot15 = '''Here are fifteen quotation marks: """""""""""""""'''
+apos15 = "Here are fifteen apostrophes: '''''''''''''''"
+
+# TODO: Should work, but isn't
+# 'That,' she said, 'is still pointless.'
+# str = ''''That,' she said, 'is still pointless.''''
+
+#################### INTEGER ####################
+[integer]
+
+int1 = +99
+int2 = 42
+int3 = 0
+int4 = -17
+int5 = 1_000
+int6 = 5_349_221
+int7 = 53_49_221  # Indian number system grouping
+int8 = 1_2_3_4_5  # VALID but discouraged
+
+# hexadecimal with prefix `0x`
+hex1 = 0xDEADBEEF
+hex2 = 0xdeadbeef
+hex3 = 0xdead_beef
+
+# octal with prefix `0o`
+oct1 = 0o01234567
+oct2 = 0o755 # useful for Unix file permissions
+
+# binary with prefix `0b`
+bin1 = 0b11010110
+
+#################### FLOAT ####################
+[float]
+
+# fractional
+flt1 = +1.0
+flt2 = 3.1415
+flt3 = -0.01
+
+# exponent
+flt4 = 5e+22
+flt5 = 1e06
+flt6 = -2E-2
+
+# both
+flt7 = 6.626e-34
+
+flt8 = 224_617.445_991_228
+
+# infinity
+sf1 = inf  # positive infinity
+sf2 = +inf # positive infinity
+sf3 = -inf # negative infinity
+
+# not a number
+sf4 = nan  # actual sNaN/qNaN encoding is implementation-specific
+sf5 = +nan # same as `nan`
+sf6 = -nan # valid, actual encoding is implementation-specifi
+
+#################### BOOLEAN ####################
+[boolean]
+bool1 = true
+bool2 = false
+
+#################### DATETIME ####################
+[datetime]
+
+# offset datetime
+odt1 = 1979-05-27T07:32:00Z
+odt2 = 1979-05-27T00:32:00-07:00
+odt3 = 1979-05-27T00:32:00.999999-07:00
+odt4 = 1979-05-27 07:32:00Z
+
+# local datetime
+ldt1 = 1979-05-27T07:32:00
+ldt2 = 1979-05-27T00:32:00.999999
+
+# local date
+ld1 = 1979-05-27
+
+# local time
+lt1 = 07:32:00
+lt2 = 00:32:00.999999
+
+#################### ARRAYS ####################
+
+[array]
+integers = [ 1, 2, 3 ]
+colors = [ "red", "yellow", "green" ]
+nested_array_of_int = [ [ 1, 2 ], [3, 4, 5] ]
+nested_mixed_array = [ [ 1, 2 ], ["a", "b", "c"] ]
+string_array = [ "all", 'strings', """are the same""", '''type''' ]
+
+# Mixed-type arrays are allowed
+numbers = [ 0.1, 0.2, 0.5, 1, 2, 5 ]
+
+# TODO: case with closing braces in next line not working yet (regarding lossless file restoration)
+# Should however be possible atm by adding empty inline
+contributors = [
+  "Foo Bar <foo@example.com>",
+  { name = "Baz Qux", email = "bazqux@example.com", url = "https://example.com/bazqux" } ]
+# ] # <- use this closing brace instead if working
+
+integers2 = [
+  1, 2, 3 ]
+
+# TODO: Trailing commata currently discarded
+# integers3 = [
+#   1,
+#   2, # this is ok
+#  ]
+
+#################### SIMPLE TABLES ####################
+
+[table-1]
+key1 = "some string"
+key2 = 123
+
+[table-2]
+key1 = "another string"
+key2 = 456
+
+[dog."tater.man"]
+type.name = "pug"
+
+[a.b.c]            # this is best practice
+[ d.e.f ]          # same as [d.e.f]
+[ g .  h  . i ]    # same as [g.h.i]
+[ j . "ʞ" . 'l' ]  # same as [j."ʞ".'l']
+
+# TODO/NOTE:
+# Although this TOML implementation allows defining a super-table after
+# some sub-tables, it will reorder the super-table
+# in front of the subtables on a subsequent read
+
+# [x] you
+# [x.y] don't
+# [x.y.z] need these
+[x.y.z.w] # for this to work
+
+# Can uncomment this, if fixed
+# [x] # defining a super-table afterward is ok
+
+[tables.out_of_order]
+# VALID BUT DISCOURAGED
+[tables.out_of_order.fruit.apple]
+[tables.out_of_order.animal]
+[tables.out_of_order.fruit.orange]
+
+[tables.ordered]
+# RECOMMENDED
+[tables.ordered.fruit.apple]
+[tables.ordered.fruit.orange]
+[tables.ordered.animal]
+
+[tables.fruit]
+apple.color = "red"
+apple.taste.sweet = true
+
+[tables.fruit.apple.texture]  # you can add sub-tables
+smooth = true
+
+#################### INLINE TABLES ####################
+[inlinetables]
+
+name = { first = "Tom", last = "Preston-Werner" }
+point = { x = 1, y = 2 }
+animal = { type.name = "pug" }
+
+#################### TABLE ARRAYS ####################
+[[products]]
+name = "Hammer"
+sku = 738594937
+
+[[products]]
+
+[[products]]
+name = "Nail"
+sku = 284758393
+
+color = "gray"
+
+
+[[fruit]]
+  name = "apple"
+
+  [fruit.physical]  # subtable
+    color = "red"
+    shape = "round"
+
+  [[fruit.variety]]  # nested array of tables
+    name = "red delicious"
+
+  [[fruit.variety]]
+    name = "granny smith"
+
+[[fruit]]
+  name = "banana"
+
+  [[fruit.variety]]
+    name = "plantain"
+
+
+points = [ { x = 1, y = 2, z = 3 },
+           { x = 7, y = 8, z = 9 },
+           { x = 2, y = 4, z = 8 } ]
