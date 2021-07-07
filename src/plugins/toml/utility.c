@@ -9,6 +9,7 @@
 #include "utility.h"
 
 #include <kdbassert.h>
+#include <kdbease.h>
 #include <kdbhelper.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -105,19 +106,7 @@ size_t arrayStringToIndex (const char * indexStr)
 
 bool isArrayIndex (const char * basename)
 {
-	if (*basename++ != '#')
-	{
-		return false;
-	}
-	while (*basename == '_')
-	{
-		basename++;
-	}
-	while (*basename >= '0' && *basename <= '9')
-	{
-		basename++;
-	}
-	return *basename == 0;
+	return elektraArrayValidateBaseNameString (basename) == 1;
 }
 
 bool isArrayElement (const Key * key)
@@ -259,7 +248,8 @@ char * getRelativeName (Key * parent, Key * key)
 		{
 			placeDot = true;
 		}
-		bool bare = isBareString (keyPart);
+		// Consider empty strings (only consisting of a zero terminator) non-bare, so that empty quotes get emitted
+		bool bare = *keyPart != 0 && isBareString (keyPart);
 		if (!bare)
 		{
 			if (pos == nameSize)

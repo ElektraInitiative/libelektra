@@ -791,20 +791,6 @@ bool elektraKeyNameValidate (const char * name, bool isComplete)
 			ELEKTRA_LOG_DEBUG ("Illegal name start; expected (namespace +) slash: %s", name);
 			return 0;
 		}
-
-		if (*(name + 1) == '%' && *(name + 2) == '\0')
-		{
-			ELEKTRA_LOG_DEBUG ("Illegal escaped part; first part cannot be empty (collides with root key): %s", name);
-			return 0;
-		}
-	}
-	else
-	{
-		if (*name == '%' && *(name + 1) == '\0')
-		{
-			ELEKTRA_LOG_DEBUG ("Illegal escaped part; first part cannot be empty (collides with root key): %s", name);
-			return 0;
-		}
 	}
 
 	const char * cur = name;
@@ -1008,7 +994,7 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 					outPtr = newOutPtr + 1;
 
 					// 5. if previous part is empty ('%') ...
-					if (ulen == 2 && *newOutPtr + 1 == '%')
+					if (ulen == 2 && *(newOutPtr + 1) == '%')
 					{
 						// 5a. ... then adjust len
 						ulen = 1;

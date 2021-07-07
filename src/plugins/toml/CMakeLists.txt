@@ -134,6 +134,8 @@ if (DEPENDENCY_PHASE)
 		node.c
 		prepare.c
 		prepare.h
+		integer.h
+		integer.c
 		type.h
 		type.c
 		error.h
