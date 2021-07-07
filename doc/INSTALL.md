@@ -25,7 +25,7 @@ We provide repositories for latest releases and latest builds from master (suite
 
 To use our stable repositories with our latest releases, following steps need to be made:
 
-1. Run `sudo apt-key adv --keyserver keys.gnupg.net --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839` to obtain the key.
+1. Run `sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839` to obtain the key.
 
 2. Add `deb https://debs.libelektra.org/<DISTRIBUTION> <SUITE> main` into `/etc/apt/sources.list`
    where `<DISTRIBUTION>` and `<SUITE>` is the codename of your distributions e.g.`focal`,`bionic`,`buster`, etc.

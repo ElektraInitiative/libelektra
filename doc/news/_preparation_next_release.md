@@ -143,7 +143,7 @@ Currently the binding's automated clean-up of native keys and key sets is deacti
 
 - JNI docu updates and small fixes. _(Markus Raab)_
 - Small updates in notification tutorial. _(Markus Raab)_
-- <<TODO>>
+- Change GPG keyserver for receiving the apt key from keys.gnupg.net to keyserver.ubuntu.com _(Robert Sowula)_
 - <<TODO>>
 - The manpages now use the date of the last change recorded in git. _(Klemens Böswirth)_
 - <<TODO>>
