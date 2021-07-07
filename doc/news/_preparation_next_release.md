@@ -111,7 +111,9 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up to date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
+### JNA
+
+Currently the binding's automated clean-up of native keys and key sets is deactivated until JNI segmentation fault issues are resolved in an upcoming release. After these issues have been resolved, manual clean-up of native resources will be discouraged. Therefore the `Key::get*AndRelease` convenience methods introduced with the last release have been removed. _(Michael Tucek)_
 
 ### <<Binding2>>
 
@@ -125,16 +127,17 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Scripts
 
-- <<TODO>>
+- Add a script that automates the process of inserting source archive hashsums and git statistics into the release notes during a release. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 
 ## Documentation
 
-- JNI docu updates. _(Markus Raab)_
+- JNI docu updates and small fixes. _(Markus Raab)_
+- Small updates in notification tutorial. _(Markus Raab)_
 - Add [/doc/tutorial/specification.md]. _(Aaron Abebe <aaron.abebe@gmail.com>)_
 - <<TODO>>
-- <<TODO>>
+- The manpages now use the date of the last change recorded in git. _(Klemens Böswirth)_
 - <<TODO>>
 
 ## Tests
@@ -147,7 +150,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Packaging
 
-- <<TODO>>
+- Add packages for following bindings: `glib`, `io_ev`, `io_glib` and `io_uv`. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 
@@ -181,9 +184,9 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add the deployment of the [website](https://www.libelektra.org) to the release pipeline, therefore removing the need to wait until the main pipeline succeeds after a release. _(Robert Sowula)_
+- Restructure the release job stages to make it more failsafe and enable a re-run without any version conflict until the last stage. _(Robert Sowula)_
+- Fix invalid package artifact path in release pipeline. _(Robert Sowula)_
 
 ### Travis
 

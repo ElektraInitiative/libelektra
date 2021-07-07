@@ -1,22 +1,22 @@
-set (OLD_MAN_PAGE_COPY "${MANPAGE}.old")
+execute_process (COMMAND ${GIT_COMMAND} status --porcelain -- "${SOURCE_FILE}" OUTPUT_VARIABLE GITSTATUS)
 
-if (EXISTS "${MANPAGE}" AND DIFF_COMMAND)
-	execute_process (COMMAND ${CMAKE_COMMAND} -E copy ${MANPAGE} ${OLD_MAN_PAGE_COPY})
-endif (EXISTS "${MANPAGE}" AND DIFF_COMMAND)
+if (NOT GITSTATUS)
+	# no output means unmodified -> use date from git log
+	execute_process (COMMAND ${GIT_COMMAND} log -1 --format=%ad --date=short -- "${SOURCE_FILE}" OUTPUT_VARIABLE DATE)
+	string (STRIP ${DATE} DATE)
+endif (NOT GITSTATUS)
 
-execute_process (COMMAND ${CMAKE_COMMAND} -E env RUBYOPT=-Eutf-8:utf-8 LC_ALL=C.utf-8 ${RONN_COMMAND} -r --pipe ${MDFILE}
-		 OUTPUT_FILE ${MANPAGE})
+# there is no date in the git log, or the file was modified -> use current date
+if (NOT DATE)
+	string (TIMESTAMP DATE "%Y-%m-%d")
+endif (NOT DATE)
 
-if (NOT EXISTS "${OLD_MAN_PAGE_COPY}")
-	return ()
-endif (NOT EXISTS "${OLD_MAN_PAGE_COPY}")
+execute_process (
+	COMMAND ${CMAKE_COMMAND} -E env RUBYOPT=-Eutf-8:utf-8 LC_ALL=C.utf-8 ${RONN_COMMAND} -r --pipe ${MDFILE} --date=${DATE}
+	OUTPUT_FILE ${MANPAGE}
+	ERROR_VARIABLE ERROR_OUTPUT
+	RESULT_VARIABLE RESULT)
 
-# We revert newly generated man pages, where only the date has changed.
-execute_process (COMMAND ${DIFF_COMMAND} -e ${MANPAGE} ${OLD_MAN_PAGE_COPY} OUTPUT_VARIABLE DIFF_OUTPUT)
-string (REGEX MATCH "^4c\n\\.TH [^\n]+\n\\.\n$" ONLY_DATE_CHANGED "${DIFF_OUTPUT}")
-
-if (NOT "${ONLY_DATE_CHANGED}" STREQUAL "")
-	execute_process (COMMAND ${CMAKE_COMMAND} -E copy ${OLD_MAN_PAGE_COPY} ${MANPAGE})
-endif (NOT "${ONLY_DATE_CHANGED}" STREQUAL "")
-
-file (REMOVE "${OLD_MAN_PAGE_COPY}")
+if (NOT RESULT EQUAL 0)
+	message (FATAL_ERROR "${ERROR_OUTPUT}")
+endif ()

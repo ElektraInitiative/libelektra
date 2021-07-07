@@ -84,7 +84,7 @@ the initialization of an I/O binding.
 
 #include <uv.h>
 
-void main (void)
+int main (void)
 {
 	// Create libuv event loop
 	uv_loop_t * loop = uv_default_loop ();
@@ -112,6 +112,8 @@ void main (void)
 	uv_loop_close (loop);
 }
 ```
+
+Make sure to compile/link with `pkg-config --libs --cflags elektra-io-uv`.
 
 ## How to receive notifications
 
@@ -154,7 +156,7 @@ static void printVariable (ElektraIoTimerOperation * timerOp)
 	printf ("\nMy integer value is %d\n", value);
 }
 
-void main (void)
+int main (void)
 {
 	// Create libuv event loop
 	uv_loop_t * loop = uv_default_loop ();

@@ -35,6 +35,23 @@ properties([
       description: 'Alpine Docker image revision.',
       name: 'alpine_revision',
       trim: true
+    ),
+    string(
+      defaultValue: '1',
+      description: 'Maven package revision.',
+      name: 'maven_revision',
+      trim: true
+    ),
+    booleanParam(
+      defaultValue: true,
+      description: 'True if the statistics and hashsums should be automatically inserted into release notes and moved to final name.',
+      name: 'populate_release_notes'
+    ),
+    string(
+      defaultValue: '',
+      description: '[OPTIONAL] Override previous release version. Use if latest git version tag does not correspond to previous released Elektra version.',
+      name: 'previous_release',
+      trim: true
     )
   ])
 ])
@@ -49,12 +66,20 @@ pipelineConfig {
 DOCKER_IMAGES = [:]  // Containers docker image descriptions, populated during
                      // dockerInit()
 
-RELEASE_VERSION = '' // release version, set during release build and used
+RELEASE_VERSION = '' // Release version, set during release build and used
                      // by the documentation stage
+PREVIOUS_RELEASE_VERSION = '' // Version of previous Elektra release
+
+RELEASE_ARTIFACT_STAGES = [] // Main release stage names, populated during buildRelease().
+                              // Used to reference the artifacts of these stages
 
 // Stages
 stage('Init docker images') {
   dockerInit()
+}
+
+stage ('Init release environment') {
+  initVariables()
 }
 
 stage('Pull docker images') {
@@ -72,7 +97,7 @@ stage('Release') {
   parallel generateReleaseStages()
 }
 
-stage('Build docker images for package testing') {
+stage('Build website and docker images for package testing') {
   parallel generateDockerBuildStagesWithPackagesInstalled()
 }
 
@@ -91,9 +116,36 @@ stage('Upload release Docker images') {
   parallel generateImageUploadStages()
 }
 
+stage('Main repository and website publish') {
+  parallel generateFinalPublishStages()
+}
+
 /**************/
 /* Generators */
 /**************/
+
+/**
+ * Determine previous released Elektra version
+ *
+ * Defaults to latest git version tag.
+ * Can be overriden by passing a specific version for parameter 'previous_release'
+ */
+def initVariables() {
+  node('master') {
+    checkout scm
+    if (params.previous_release?.trim()) {
+      PREVIOUS_RELEASE_VERSION = params.previous_release
+    } else {
+      script {
+        PREVIOUS_RELEASE_VERSION = sh(
+          script: "git tag -l '[0-9].[0-9].[0-9]' | tail -n1",
+          returnStdout: true
+        ).trim()
+      }
+    }
+    echo "PREVIOUS_RELEASE_VERSION: ${PREVIOUS_RELEASE_VERSION}"
+  }
+}
 
 /**
  *  Populate DOCKER_IMAGES with data
@@ -146,42 +198,42 @@ def dockerInit() {
     /* Install and test the built packages with theses images. */
     DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
       'debian-buster-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/buster/',
+      './release-artifact/*/package/buster/',
       './scripts/docker/debian/buster/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bullseye_installed = dockerUtils.createDockerImageDesc(
       'debian-bullseye-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/bullseye/',
+      './release-artifact/*/package/bullseye/',
       './scripts/docker/debian/bullseye/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
       'ubuntu-focal-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/focal/',
+      './release-artifact/*/package/focal/',
       './scripts/docker/ubuntu/focal/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
       'ubuntu-bionic-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/bionic/',
+      './release-artifact/*/package/bionic/',
       './scripts/docker/ubuntu/bionic/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
       'fedora-33-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/fedora33/',
+      './release-artifact/*/package/fedora33/',
       './scripts/docker/fedora/33/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_34_installed = dockerUtils.createDockerImageDesc(
       'fedora-34-installed', dockerUtils.&idArtifact,
-      './release-artifact/*/fedora34/',
+      './release-artifact/*/package/fedora34/',
       './scripts/docker/fedora/34/package.Dockerfile',
       false
     )
@@ -189,42 +241,42 @@ def dockerInit() {
     /* Install packages for Docker image release */
     DOCKER_IMAGES.buster_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/buster/',
+      './release-artifact/*/package/buster/',
       './scripts/docker/debian/buster/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bullseye_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/bullseye/',
+      './release-artifact/*/package/bullseye/',
       './scripts/docker/debian/bullseye/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.focal_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/focal/',
+      './release-artifact/*/package/focal/',
       './scripts/docker/ubuntu/focal/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bionic_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/bionic/',
+      './release-artifact/*/package/bionic/',
       './scripts/docker/ubuntu/bionic/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_33_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/fedora33/',
+      './release-artifact/*/package/fedora33/',
       './scripts/docker/fedora/33/release.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_34_release = createDockerImageDescForRelease(
       'elektra/elektra',
-      './release-artifact/*/fedora34/',
+      './release-artifact/*/package/fedora34/',
       './scripts/docker/fedora/34/release.Dockerfile',
       false
     )
@@ -245,6 +297,14 @@ def dockerInit() {
       'elektra/elektra',
       './scripts/docker/alpine/*',
       './scripts/docker/alpine/*/release.Dockerfile',
+      false
+    )
+
+    /* Image building the libelektra.org website */
+    DOCKER_IMAGES.website = dockerUtils.createDockerImageDesc(
+      "website-release", dockerUtils.&idArtifact,
+      ".",
+      "./scripts/docker/website/Dockerfile",
       false
     )
   }
@@ -329,6 +389,9 @@ def generateDockerBuildStagesWithPackagesInstalled() {
     DOCKER_IMAGES.bullseye_installed,
     'debian-bullseye'
   )
+
+  // build website
+  tasks << buildWebsite('debian-buster')
 
   return tasks
 }
@@ -457,11 +520,20 @@ def generatePublishStages() {
 
   // publish source package built in debian-buster stage
   tasks << publishSource('debian-buster')
+
+  tasks << buildAndPublishMaven()
+
+  return tasks
+}
+
+def generateFinalPublishStages() {
+  def tasks = [:]
+
   // publish main repo which got modified during the
   // debian-buster release stage
   tasks << publishMainRepo('debian-buster')
-
-  tasks << buildAndPublishMaven()
+  // publish website
+  tasks << release.deployWebsite(DOCKER_IMAGES.website)
 
   return tasks
 }
@@ -555,22 +627,37 @@ def buildRelease(stageName, image, packageRevision='1',
               deleteDir()
               checkout scm
             }
-            sh "sh libelektra/scripts/release/release.sh ${packageRevision}"
+            dir('ftp') {
+              deleteDir()
+              git branch: 'master',
+                  url: 'https://github.com/ElektraInitiative/ftp.git'
+            }
+            dir('prev-release-logs') {
+              sh "cp -R ../ftp/release-logs/${PREVIOUS_RELEASE_VERSION}/${stageName}/* ./"
+            }
+            sh "sh libelektra/scripts/release/release.sh ${packageRevision} ${PREVIOUS_RELEASE_VERSION}"
             sh "mv release.tar.gz ${stageName}-release.tar.gz"
             utils.archive(["${stageName}-release.tar.gz"])
 
-            if (bundleRepo) {
-              dir('libelektra') {
-                sh 'git bundle create libelektra.bundle --all'
-                utils.archive(['libelektra.bundle'])
-              }
-            }
+            RELEASE_ARTIFACT_STAGES << stageName
 
             script {
               RELEASE_VERSION = sh(
                 script: 'sh libelektra/scripts/release/get-installed-version.sh',
                 returnStdout: true
               ).trim()
+            }
+
+            dir('libelektra') {
+              if (params.populate_release_notes) {
+                sh "scripts/release/populate-release-notes.sh ${RELEASE_VERSION} ../${RELEASE_VERSION}/"
+                sh "git add doc/news"
+                sh "git commit -m 'release: add hashsums and statistics to release notes'"
+              }
+              if (bundleRepo) {
+                sh 'git bundle create libelektra.bundle --all'
+                utils.archive(['libelektra.bundle'])
+              }
             }
           }
           deleteDir()
@@ -621,7 +708,7 @@ def publish(correspondingReleaseStageName, context, repoName,
         copyReleaseArtifact(correspondingReleaseStageName)
         dir('copy') {
           deleteDir()
-          sh "mv ../${context}* ./"
+          sh "mv ../package/${context}* ./"
 
           publishPackagesFun(
             'doc.libelektra.org',
@@ -653,8 +740,25 @@ def publishSource(artifactStageName) {
           deleteDir()
           git branch: 'master',
               url: 'https://github.com/ElektraInitiative/ftp.git'
+          // move release tarball to git
           sh 'cp ../release-artifact/*/*.tar.gz* ./releases/'
           sh 'git add ./releases'
+
+          // move release logs to git
+          RELEASE_ARTIFACT_STAGES.each {
+            dir ('../') {
+              sh 'rm -rf ./release-artifact'
+              copyReleaseArtifact(it)
+              // remove package directory so it doesn't get copied
+              sh 'rm -rf ./release-artifact/*/package'
+              sh 'rm -rf ./release-artifact/*/*.tar.gz*'
+            }
+            sh "mkdir -p ./release-logs/${RELEASE_VERSION}/${it}/"
+            sh "mv ../release-artifact/*/* ./release-logs/${RELEASE_VERSION}/${it}/"
+          }
+
+          sh 'git add ./release-logs'
+
           sh "git commit -a -m 'release: add ${RELEASE_VERSION}'"
           pushGitRepo('ftp')
           withCredentials([sshUserPrivateKey(credentialsId: "community-ssh-git", keyFileVariable: "privateSshKey", usernameVariable: 'GIT_USERNAME')]) {
@@ -769,6 +873,34 @@ ${WORKSPACE}/build/doc/man ./"""
   }]
 }
 
+def buildWebsite(mainRepoArtifactStageName) {
+  def stageName = 'buildWebsite'
+  return [(stageName): {
+    stage(stageName) {
+      node(PipelineConfig.instance.dockerNodeLabel) {
+        echo "Starting ${env.STAGE_NAME} on ${env.NODE_NAME}"
+        configureGitUser()
+        copyArtifacts(
+          filter: "artifacts/${mainRepoArtifactStageName}/libelektra.bundle",
+          fingerprintArtifacts: true,
+          projectName: '${JOB_NAME}',
+          selector: specific('${BUILD_NUMBER}')
+        )
+
+        dir('libelektra') {
+          deleteDir()
+          git branch: 'master',
+              url: 'https://github.com/ElektraInitiative/libelektra.git'
+          sh "git bundle verify ${WORKSPACE}/artifacts/${mainRepoArtifactStageName}/libelektra.bundle"
+          sh "git pull --ff-only ${WORKSPACE}/artifacts/${mainRepoArtifactStageName}/libelektra.bundle"
+
+          dockerUtils.buildImage(DOCKER_IMAGES.website)
+        }
+      }
+    }
+  }]
+}
+
 /**
  * Build and publish jna bindings to maven repository
  *
@@ -783,9 +915,13 @@ def buildAndPublishMaven() {
                          string(credentialsId: 'maven-signing-passphrase', variable: 'PASS'),
                          usernamePassword(credentialsId: 'sonatype-credentials', passwordVariable: 'SONATYPE_PASSWORD', usernameVariable: 'SONATYPE_USERNAME')]) {
           checkout scm
+          def mavenReleaseVersion = RELEASE_VERSION
+          if (params.maven_revision != '1') {
+              mavenReleaseVersion += "-${params.maven_revision}"
+          }
           dir('src/bindings/jna') {
             sh """\
-gradle -PreleaseVersion=${RELEASE_VERSION} \
+gradle -PreleaseVersion=${mavenReleaseVersion} \
 -PsonatypeUsername=${SONATYPE_USERNAME} -PsonatypePassword=${SONATYPE_PASSWORD} \
 -Psigning.secretKeyRingFile=${KEY} -Psigning.keyId=07235980 -Psigning.password=\"${PASS}\" \
 publishToSonatype closeAndReleaseSonatypeStagingRepository"""

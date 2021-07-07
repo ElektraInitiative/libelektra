@@ -24,7 +24,9 @@ else () # Build library
 		LINK_LIBRARIES
 		${LIBEV_LIBRARIES}
 		INCLUDE_SYSTEM_DIRECTORIES
-		${LIBEV_INCLUDE_DIRS})
+		${LIBEV_INCLUDE_DIRS}
+		COMPONENT
+		io-ev-elektra)
 
 	configure_file ("${CMAKE_CURRENT_SOURCE_DIR}/${IO_VARIANT_LIBRARY}.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
 			@ONLY)
@@ -32,7 +34,7 @@ else () # Build library
 	install (
 		FILES "${CMAKE_CURRENT_BINARY_DIR}/${IO_VARIANT_LIBRARY}.pc"
 		DESTINATION lib${LIB_SUFFIX}/${TARGET_PKGCONFIG_FOLDER}
-		COMPONENT libelektra-dev)
+		COMPONENT io-ev-elektra)
 
 	if (BUILD_TESTING)
 		# Build test
