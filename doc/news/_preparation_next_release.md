@@ -184,7 +184,7 @@ Currently the binding's automated clean-up of native keys and key sets is deacti
 
 - Add the deployment of the [website](https://www.libelektra.org) to the release pipeline, therefore removing the need to wait until the main pipeline succeeds after a release. _(Robert Sowula)_
 - Restructure the release job stages to make it more failsafe and enable a re-run without any version conflict until the last stage. _(Robert Sowula)_
-- <<TODO>>
+- Fix invalid package artifact path in release pipeline. _(Robert Sowula)_
 
 ### Travis
 
