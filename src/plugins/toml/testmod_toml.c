@@ -118,17 +118,18 @@ static const char * prefix = NULL;
 	{                                                                                                                                  \
 		if (lastKey != NULL) setOrderForKey (lastKey, order);                                                                      \
 	}
-#define SET_COMMENT(index, text, spaces)                                                                                                   \
+#define SET_COMMENT(index, text, start)                                                                                                    \
 	{                                                                                                                                  \
-		if (lastKey != NULL) setComment (lastKey, text, "#", spaces, index);                                                       \
+		if (lastKey != NULL) setComment (lastKey, text, start, index);                                                             \
 	}
-#define SET_INLINE_COMMENT(text, spaces)                                                                                                   \
+#define SET_INLINE_COMMENT(text, start)                                                                                                    \
 	{                                                                                                                                  \
-		if (lastKey != NULL) setComment (lastKey, text, "#", spaces, 0);                                                           \
+		if (lastKey != NULL) setComment (lastKey, text, start, 0);                                                                 \
+		if (lastKey != NULL) keySetMeta (lastKey, "comment/#0/inline", "1");                                                       \
 	}
 #define SET_EMPTY_LINE(index)                                                                                                              \
 	{                                                                                                                                  \
-		if (lastKey != NULL) setComment (lastKey, NULL, "", 0, index);                                                             \
+		if (lastKey != NULL) setComment (lastKey, NULL, "", index);                                                                \
 	}
 
 #define SET_BINARY                                                                                                                         \
@@ -172,10 +173,9 @@ static void testWriteReadCommentsArray (void);
 static void testWriteReadOrderTableNonTable (void);
 static void testWriteReadNull (void);
 // static void testWriteReadBase64(void);
-static void printError (Key * parent);
 static Key * addKey (KeySet * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
 		     const char * array, const char * tomltype, int order);
-static void setComment (Key * key, const char * comment, const char * start, size_t spaces, size_t index);
+static void setComment (Key * key, const char * comment, const char * start, size_t index);
 
 static bool roundtripFile (const char * filenameIn, const char * filenameOut);
 static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * filenameB);
@@ -1042,9 +1042,9 @@ static void testWriteReadTableArrayWithComments (void)
 	SET_ARRAY ("#0");
 
 	WRITE_KEY ("ta/#0");
-	SET_COMMENT (0, " inline comment", 4);
-	SET_COMMENT (1, " top-most preceding comment", 0);
-	SET_COMMENT (2, " preceding comment", 0);
+	SET_INLINE_COMMENT ("inline comment", " # ");
+	SET_COMMENT (1, "top-most preceding comment", "# ");
+	SET_COMMENT (2, "preceding comment", "# ");
 	CLEAR_BINARY;
 	DUP_EXPECTED;
 
@@ -1299,20 +1299,20 @@ static void testWriteReadComments (void)
 	SET_ORDER (0);
 	SET_EMPTY_LINE (1);
 	SET_EMPTY_LINE (2);
-	SET_COMMENT (3, "test comment 1", 4);
-	SET_COMMENT (4, "test comment 2", 0);
-	SET_INLINE_COMMENT ("inline test", 4);
+	SET_COMMENT (3, "test comment 1", "    #");
+	SET_COMMENT (4, "test comment 2", "#");
+	SET_INLINE_COMMENT ("inline test", "    #");
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
 	WRITE_KV ("b", "1");
 	SET_ORDER (1);
 	SET_EMPTY_LINE (1);
-	SET_COMMENT (2, "test comment 3", 4);
+	SET_COMMENT (2, "test comment 3", "    #");
 	SET_EMPTY_LINE (3);
-	SET_COMMENT (4, "test comment 4", 0);
+	SET_COMMENT (4, "test comment 4", "#");
 	SET_EMPTY_LINE (5);
-	SET_INLINE_COMMENT ("inline test 1", 4);
+	SET_INLINE_COMMENT ("inline test 1", "    #");
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
@@ -1320,10 +1320,10 @@ static void testWriteReadComments (void)
 	SET_TOML_TYPE ("simpletable");
 	SET_ORDER (2);
 	SET_EMPTY_LINE (1);
-	SET_COMMENT (2, "test comment 5", 4);
+	SET_COMMENT (2, "test comment 5", "    #");
 	SET_EMPTY_LINE (3);
-	SET_COMMENT (4, "test comment 6", 0);
-	SET_INLINE_COMMENT ("inline test 3", 4);
+	SET_COMMENT (4, "test comment 6", "#");
+	SET_INLINE_COMMENT ("inline test 3", "\t#");
 	DUP_EXPECTED;
 
 	TEST_WR_FOOT;
@@ -1336,30 +1336,30 @@ static void testWriteReadCommentsArray (void)
 	WRITE_KEY ("array");
 	SET_ORDER (0);
 	SET_ARRAY ("#3");
-	SET_INLINE_COMMENT ("array inline comment", 1);
+	SET_INLINE_COMMENT ("array inline comment", " #");
 	DUP_EXPECTED;
 
 	WRITE_KV ("array/#0", "0");
-	SET_COMMENT (1, "element 1 comment", 4);
-	SET_INLINE_COMMENT ("element 1 inline", 4);
+	SET_COMMENT (1, "element 1 comment", "\t#");
+	SET_INLINE_COMMENT ("element 1 inline", "    #");
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
 	WRITE_KV ("array/#1", "1");
-	SET_COMMENT (1, "element 2 comment", 4);
-	SET_INLINE_COMMENT ("element 2 inline", 4);
+	SET_COMMENT (1, "element 2 comment", "  #");
+	SET_INLINE_COMMENT ("element 2 inline", "  #");
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
 	WRITE_KV ("array/#2", "2");
-	SET_COMMENT (1, "element 3 comment", 4);
+	SET_COMMENT (1, "element 3 comment", "  # ");
 	DUP_EXPECTED;
 	SET_EMPTY_LINE (0); // This newline is because the next array element has a comment in front of it
 	SET_TYPE ("long_long");
 
 
 	WRITE_KV ("array/#3", "3");
-	SET_COMMENT (1, "element 4 comment", 4);
+	SET_COMMENT (1, "element 4 comment", "  #");
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
@@ -1393,7 +1393,7 @@ static KeySet * readFile (const char * filename)
 
 	if (getStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
-		printError (parentKey);
+		output_error (parentKey);
 		ksDel (ks);
 		ks = NULL;
 	}
@@ -1415,7 +1415,7 @@ static bool writeFile (const char * filename, KeySet * ksWrite)
 	succeed_if (setStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not write keys");
 	if (setStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
-		printError (parentKey);
+		output_error (parentKey);
 		success = false;
 	}
 	PLUGIN_CLOSE ();
@@ -1455,7 +1455,7 @@ static bool roundtripFile (const char * filenameIn, const char * filenameOut)
 
 static void testReadCompare (const char * filename, KeySet * expected)
 {
-	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
+	printf ("Reading '%s'\n", filename);
 	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
@@ -1495,15 +1495,6 @@ static void testReadMustError (const char * filename)
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 	keyDel (parentKey);
-}
-
-static void printError (Key * parent)
-{
-	const Key * meta = keyGetMeta (parent, "error/reason");
-	if (meta != NULL)
-	{
-		fprintf (stderr, "ERROR: %s\n", keyString (meta));
-	}
 }
 
 static Key * addKey (KeySet * ks, const char * name, const char * value, size_t size, const char * orig, const char * type,
@@ -1553,7 +1544,7 @@ static Key * addKey (KeySet * ks, const char * name, const char * value, size_t 
 	return key;
 }
 
-static void setComment (Key * key, const char * comment, const char * start, size_t spaces, size_t index)
+static void setComment (Key * key, const char * comment, const char * start, size_t index)
 {
 	char commentBase[64];
 	char commentKey[128];
@@ -1566,9 +1557,6 @@ static void setComment (Key * key, const char * comment, const char * start, siz
 	}
 	snprintf (commentKey, 128, "%s/start", commentBase);
 	keySetMeta (key, commentKey, start);
-
-	snprintf (commentKey, 128, "%s/space", commentBase);
-	setPlainIntMeta (key, commentKey, spaces);
 }
 
 static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * filenameB)

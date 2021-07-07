@@ -46,8 +46,8 @@ typedef struct CommentList_
 {
 	size_t index;
 	const char * content;
-	char start;
-	size_t spaces;
+	const char * start;
+	bool isInline;
 	struct CommentList_ * next;
 } CommentList;
 
@@ -334,7 +334,7 @@ static bool isListElement (Node * node)
 
 static bool hasInlineComment (Node * node)
 {
-	return keyGetMeta (node->key, "comment/#0/space") != NULL;
+	return keyGetMeta (node->key, "comment/#0/inline") != NULL;
 }
 
 static bool isLastChild (Node * node)
@@ -502,7 +502,7 @@ static int writePrecedingComments (const CommentList * commentList, Writer * wri
 	int result = 0;
 	while (commentList != NULL)
 	{
-		if (commentList->index > 0)
+		if (commentList->index > 0 || !commentList->isInline)
 		{
 			result |= writeComment (commentList, writer);
 			result |= writeNewline (writer);
@@ -517,7 +517,7 @@ static int writeInlineComment (const CommentList * commentList, bool emitNewline
 	int result = 0;
 	while (commentList != NULL)
 	{
-		if (commentList->index == 0)
+		if (commentList->index == 0 && commentList->isInline)
 		{
 			result |= writeComment (commentList, writer);
 			if (emitNewline)
@@ -534,14 +534,15 @@ static int writeInlineComment (const CommentList * commentList, bool emitNewline
 static int writeComment (const CommentList * comment, Writer * writer)
 {
 	int result = 0;
-	for (size_t i = 0; i < comment->spaces; i++)
+	if (comment->start == NULL)
 	{
-		result |= fputc (' ', writer->f) == EOF;
+		result |= fputs ("# ", writer->f) == EOF;
 	}
-	if (comment->start != '\0')
+	else if (*comment->start != '\0')
 	{
-		result |= fputc (comment->start, writer->f) == EOF;
+		result |= fputs (comment->start, writer->f) == EOF;
 	}
+
 	if (comment->content != NULL)
 	{
 		result |= fputs (comment->content, writer->f) == EOF;
@@ -598,6 +599,9 @@ static CommentList * collectComments (Key * key, Writer * writer)
 							writerError (writer, ERROR_MEMORY, NULL);
 							return NULL;
 						}
+						nextComment->isInline = false;
+						nextComment->start = NULL;
+
 						if (commentBack != NULL)
 						{
 							commentBack->next = nextComment;
@@ -622,23 +626,11 @@ static CommentList * collectComments (Key * key, Writer * writer)
 					const char * fieldName = pos;
 					if (elektraStrCmp (fieldName, "start") == 0)
 					{
-						if (elektraStrLen (keyString (meta)) > 1)
-						{
-							commentBack->start = keyString (meta)[0];
-						}
-						else
-						{
-							commentBack->start = '\0';
-						}
+						commentBack->start = keyString (meta);
 					}
-					else if (elektraStrCmp (fieldName, "space") == 0)
+					else if (elektraStrCmp (fieldName, "inline") == 0)
 					{
-						if (sscanf (keyString (meta), "%lu", &commentBack->spaces) == EOF)
-						{
-							// printf ("[ERROR] Cant read space value: %s\n", keyString (meta));
-							freeComments (commentRoot);
-							return NULL;
-						}
+						commentBack->isInline = true;
 					}
 				}
 

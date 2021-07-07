@@ -11,6 +11,8 @@
 #define ELEKTRA_PLUGIN_TOML_CODEPOINT_H
 
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 /**
  * @brief Converts the given unicode codepoint string into an utf8 encoded string.
@@ -21,7 +23,7 @@
  *
  * @retval Length of the written utf8 sequence or 0 on error.
  */
-int utf8FromUnicode (const char * codepoint, int len, unsigned char * utf8);
+int utf8FromUnicode (const char * codepointStr, int codepointLen, char * utf8);
 
 /**
  * @brief Checks if the given unicode coinpoint would convert to a valid utf8 string.
@@ -42,5 +44,15 @@ bool validUtf8FromUnicode (const char * codepointStr, int codepointLen);
  * @retval Length of the utf8 character
  */
 int utf8LenFromHeadChar (unsigned char head);
+
+/**
+ * @brief Checks whether the given byte string is valid UTF-8
+ *
+ * @param string a sequence of bytes
+ * @param len    the length of the byte sequence
+ *
+ * @retval `true` if the byte sequence is valid UTF-8
+ */
+bool isValidUtf8 (uint8_t * string, size_t len);
 
 #endif // ELEKTRA_PLUGIN_TOML_CODEPOINT_H

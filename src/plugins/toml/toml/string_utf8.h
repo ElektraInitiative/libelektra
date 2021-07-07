@@ -13,9 +13,8 @@ ksNew (16,
 			"ᚷᛁᚠ᛫ᚻᛖ᛫ᚹᛁᛚᛖ᛫ᚠᚩᚱ᛫ᛞᚱᛁᚻᛏᚾᛖ᛫ᛞᚩᛗᛖᛋ᛫ᚻᛚᛇᛏᚪᚾ᛬",
 		KEY_META, "type", "string",
 		KEY_META, "order", "1",
-		KEY_META, "comment/#1", " following samples are taken from http://kermitproject.org/utf8.html",
-		KEY_META, "comment/#1/start", "#",
-		KEY_META, "comment/#1/space", "0",
+		KEY_META, "comment/#1", "following samples are taken from http://kermitproject.org/utf8.html",
+		KEY_META, "comment/#1/start", "# ",
 	KEY_END),
 
 	keyNew (PREFIX "/utf8_literal_multiline",
@@ -72,11 +71,10 @@ ksNew (16,
 		KEY_META, "type", "string",
 		KEY_META, "order", "5",
 		KEY_META, "comment/#1",
-			  " Greek Polytonic: Τὴ γλῶσσα μοῦ ἔδωσαν ἑλληνικὴ τὸ σπίτι φτωχικὸ στὶς "
+			  "Greek Polytonic: Τὴ γλῶσσα μοῦ ἔδωσαν ἑλληνικὴ τὸ σπίτι φτωχικὸ στὶς "
 			  "ἀμμουδιὲς τοῦ Ὁμήρου.  Μονάχη ἔγνοια ἡ γλῶσσα μου στὶς ἀμμουδιὲς τοῦ "
 			  "Ὁμήρου.  ἀπὸ τὸ Ἄξιον ἐστί τοῦ Ὀδυσσέα Ἐλύτη",
-		KEY_META, "comment/#1/start", "#",
-		KEY_META, "comment/#1/space", "0",
+		KEY_META, "comment/#1/start", "# ",
 	KEY_END),
 
 	keyNew (PREFIX "/tamil",

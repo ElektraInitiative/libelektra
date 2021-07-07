@@ -124,6 +124,7 @@ if (DEPENDENCY_PHASE)
 		table_array.c
 		comment_list.h
 		comment_list.c
+		utf8_dfa.h
 		codepoint.h
 		codepoint.c
 		utility.h
