@@ -113,7 +113,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### JNA
 
-Currently the binding's automated clean-up of native keys and key sets is deactivated until JNI seg-fault issues are resolved in an upcoming release. After this issues has been resolved, manual clean-up of native resources will be discouraged. Therefore the `Key::get*AndRelease` convenience methods introduced with the last release have been removed. _(Michael Tucek)_
+Currently the binding's automated clean-up of native keys and key sets is deactivated until JNI segmentation fault issues are resolved in an upcoming release. After these issues have been resolved, manual clean-up of native resources will be discouraged. Therefore the `Key::get*AndRelease` convenience methods introduced with the last release have been removed. _(Michael Tucek)_
 
 ### <<Binding2>>
 
