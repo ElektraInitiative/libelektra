@@ -56,23 +56,8 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### Length
 
 - Implement a plugin that validates that a string length is less or equal to given number. _(Philipp Oppel)_
-  _(Michael Tucek)_
 
-Special thanks to _(Klemens Böswirth)_, _(Mihael Pranjić)_ and _(Robert Sowula)_ for helping with the problem analysis!
-
-### Dbus
-
-- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
-
-### Dbusrecv
-
-- Internal changes to ensure compatibility with the new `elektraNotificationContract`. _(Klemens Böswirth)_
-
-### Xerces
-
-- Store length of an array in metakey array according to [array decision](../decisions/array.md). _(Robert Sowula)_
-
-### YAML Smith
+### Blacklist
 
 - Implement a blacklist plugin that rejects values specified in a metadata array. _(Robert Sowula)_
 
