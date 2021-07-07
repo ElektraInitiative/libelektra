@@ -2781,7 +2781,6 @@ static void test_simpleLookup (void)
 	succeed_if_same_string (keyString (returnedKey), keyString (dup));
 	succeed_if (ksGetSize (ks) == 1, "key deleted from keyset");
 
-	keyDel (searchKey);
 	ksDel (ks);
 }
 
