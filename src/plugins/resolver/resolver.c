@@ -567,12 +567,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 
 	/* Check if cache update needed */
 	KeySet * global;
-	char * name = 0;
+	char * name = elektraCacheKeyName (pk->filename);
 
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
-		name = elektraCacheKeyName (pk->filename);
-
 		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
 		Key * time = ksLookupByName (global, name, KDB_O_NONE);
 		if (time && keyGetValueSize (time) == sizeof (struct timespec))
@@ -603,7 +601,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	/* Persist modification times for cache */
 	if (global != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
-		ELEKTRA_LOG_DEBUG ("global-cache: adding file modufication times");
+		ELEKTRA_LOG_DEBUG ("global-cache: adding file modification times");
 		Key * time = keyNew (name, KEY_BINARY, KEY_SIZE, sizeof (struct timespec), KEY_VALUE, &(pk->mtime), KEY_END);
 		ksAppendKey (global, time);
 	}

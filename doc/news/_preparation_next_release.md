@@ -53,9 +53,9 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - Introduce email address validation plugin based on regex. _(a-kraschitzer)_
 
-### <<Plugin1>>
+### Resolver
 
-- <<TODO>>
+- Fix invalid cache key name. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
@@ -99,7 +99,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - A few rare bugs (mostly related to empty keyname parts `/%/`) in the keyname validation and canonicalization logic
   have been fixed. _(Klemens Böswirth)_
-- <<TODO>>
+- Fix default backend key name for cache compatibility. _(Mihael Pranjić)_
 - <<TODO>>
 
 ### <<Library1>>
