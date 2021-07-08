@@ -183,7 +183,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
+- Upgrade Alpine Linux images to 3.14.0. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
