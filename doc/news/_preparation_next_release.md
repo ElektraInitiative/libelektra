@@ -134,6 +134,11 @@ you up to date with the multi-language support provided by Elektra.
 
 ### <<Binding3>>
 
+### Gsettings
+
+- Fix user and default (system) namespaces and key names. _(Mihael Pranjić)_
+- Rewrite `dbus` change notification mechanism. _(Mihael Pranjić)_
+
 ## Tools
 
 - <<TODO>>
