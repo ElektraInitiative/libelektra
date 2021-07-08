@@ -148,6 +148,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - JNI docu updates and small fixes. _(Markus Raab)_
 - Small updates in notification tutorial. _(Markus Raab)_
+- Add [/doc/tutorial/specification.md]. _(Aaron Abebe <aaron.abebe@gmail.com>)_
 - Change GPG keyserver for receiving the apt key from keys.gnupg.net to keyserver.ubuntu.com _(Robert Sowula)_
 - <<TODO>>
 - The manpages now use the date of the last change recorded in git. _(Klemens Böswirth)_
