@@ -33,6 +33,8 @@ docker run -it elektra/elektra
 
 ## Highlights
 
+- Add **experimental** preview of Filesystem in User Space [FUSE](../../src/tools/fuse/README.md) tool. This tool enables the inspection and modification of the KDB, in the form of a classical filesystem. _(Alexander Firbas)_
+
 - <<HIGHLIGHT1>>
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>

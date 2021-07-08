@@ -1,0 +1,8 @@
+build/
+dist/
+src/*.egg-info/*
+*.py[cod]
+__pycache__/
+*.so
+*~
+src/elektra_fuse.egg-info/*
