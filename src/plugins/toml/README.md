@@ -175,6 +175,8 @@ sudo kdb umount user:/tests/storage/numbers
 
 # Strings
 
+<!-- TODO (kodebach): documentation -->
+
 The plugin can read any kind of TOML string: bare, basic, literal, basic multiline and literal multiline.
 However, it will write back all non-bare strings as basic strings or it's multiline version.
 Therefore, any string set with `kdb set` must be treated as a basic string and possible escape sequences and special meanings of quotation characters must be taken care of.
@@ -367,7 +369,7 @@ sudo kdb umount user:/tests/storage
 
 # Comments and Empty Lines
 
-<!-- TODO: new comment spaces -->
+<!-- TODO (kodebach): new comment spaces -->
 
 The plugin preserves all comments with only one limitation for arrays. The amount of whitespace in front of a comment is also saved.
 For this purpose, each tab will get translated to 4 spaces.
@@ -383,7 +385,7 @@ File ending comments must be assigned to the file root key.
 
 Empty lines in front of a key can be created by adding an empty `comment/#n/start` entry to it. In this case, no `comment/#n` key is needed.
 
-<!-- TODO: not atomic -> order matters -->
+<!-- TODO (kodebach): not atomic -> order matters -->
 
 ```sh
 # Mount TOML file

@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "codepoint.h"
 #include "error.h"
 #include "integer.h"
 #include "node.h"
@@ -25,6 +26,11 @@
 #include "type.h"
 #include "utility.h"
 #include "write.h"
+
+#define ASCII_CONTROL                                                                                                                      \
+	"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F"                                                                 \
+	"\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F"                                                                 \
+	"\x7F"
 
 typedef enum
 {
@@ -51,17 +57,23 @@ typedef struct CommentList_
 	struct CommentList_ * next;
 } CommentList;
 
+typedef enum
+{
+	STRING_BASIC = 0x0,
+	STRING_LITERAL = 0x1,
+	STRING_MULTILINE = 0x2,
+} StringType;
+
 static Writer * createWriter (Key * parent);
 
 static void destroyWriter (Writer * writer);
-static void writerError (Writer * writer, int err, const char * format, ...);
 static int writeTree (Node * node, Writer * writer);
 static int writeSimpleTableHeader (const char * name, Writer * writer);
 static int writeOpeningSequence (Node * node, Writer * writer);
 static int writeClosingSequence (Node * node, Writer * writer);
 static int writeTableArrayHeader (const char * name, Writer * writer);
 static int writeScalar (Key * key, Writer * writer);
-static int writeQuoted (const char * value, char quoteChar, int quouteCount, Writer * writer);
+static int writeString (Key * key, StringType stringType, const char * value, Writer * writer);
 static int writePrecedingComments (const CommentList * commentList, Writer * writer);
 static int writeInlineComment (const CommentList * commentList, bool emitNewline, Writer * writer);
 static int writeComment (const CommentList * comment, Writer * writer);
@@ -74,7 +86,6 @@ static bool needsKeyAssignment (Node * node);
 static bool isListElement (Node * node);
 static bool isLastChild (Node * node);
 static bool hasInlineComment (Node * node);
-static bool isMultilineString (const char * str);
 static bool needNewlineBeforeComment (Node * node);
 
 int tomlWrite (KeySet * keys, Key * parent)
@@ -165,37 +176,6 @@ static void destroyWriter (Writer * writer)
 		elektraFree (writer);
 	}
 }
-
-static void writerError (Writer * writer, int err, const char * format, ...)
-{
-	if (format != NULL)
-	{
-		va_list args;
-		char msg[512];
-		va_start (args, format);
-		vsnprintf (msg, 512, format, args);
-		va_end (args);
-		if (!writer->errorSet)
-		{
-			writer->errorSet = true;
-			emitElektraError (writer->rootKey, err, msg);
-			ELEKTRA_LOG_DEBUG ("Error: %s", msg);
-		}
-		else
-		{
-			ELEKTRA_LOG_DEBUG ("Additional Error: %s", msg);
-		}
-	}
-	else
-	{
-		if (!writer->errorSet)
-		{
-			writer->errorSet = true;
-			emitElektraError (writer->rootKey, err, NULL);
-		}
-	}
-}
-
 
 static int writeTree (Node * node, Writer * writer)
 {
@@ -416,85 +396,297 @@ static int writeTableArrayHeader (const char * name, Writer * writer)
 
 static int writeScalar (Key * key, Writer * writer)
 {
+	ELEKTRA_ASSERT (key != NULL, "key was NULL");
+	ELEKTRA_ASSERT (writer != NULL, "writer was NULL");
+
+	if (keyIsBinary (key))
+	{
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (writer->rootKey,
+							"Detected binary key '%s' in toml plugin. Please ensure the 'base64' plugin is "
+							"mounted when using binary keys with TOML.",
+							keyName (key));
+		return -1;
+	}
+
 	int result = 0;
 
 	const Key * origValue = keyGetMeta (key, "origvalue");
 	const Key * type = keyGetMeta (key, "type");
+	const Key * tomlTypeKey = keyGetMeta (key, "tomltype");
+	const char * tomlType = tomlTypeKey == NULL ? "" : keyString (tomlTypeKey);
 	const char * valueStr = keyString (key);
-
-	if (isBase64String (valueStr))
-	{
-		if (elektraStrCmp (valueStr, "@BASE64") == 0) // could also only match for length
-		{
-			return writeQuoted ("@NULL", '\'', 1, writer);
-		}
-		else
-		{
-			return writeQuoted (valueStr, '\'', 1, writer);
-		}
-	}
 
 	if (origValue != NULL)
 	{
 		valueStr = keyString (origValue);
 	}
 
-	if (type != NULL && elektraStrCmp (keyString (type), "boolean") == 0)
+	if (type != NULL && strcmp (keyString (type), "boolean") == 0)
 	{
-		if (elektraStrCmp (valueStr, "0") == 0)
+		if (strcmp (valueStr, "0") == 0)
 		{
 			result |= fputs ("false", writer->f) == EOF;
 		}
-		else if (elektraStrCmp (valueStr, "1") == 0)
+		else if (strcmp (valueStr, "1") == 0)
 		{
 			result |= fputs ("true", writer->f) == EOF;
 		}
 		else
 		{
-			writerError (writer, ERROR_SYNTACTIC, "Expected a boolean value of either 0 or 1, but got %s", valueStr);
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (writer->rootKey, "Expected a boolean value of either 0 or 1, but got %s",
+								 valueStr);
 			result = 1;
 		}
 	}
-	else if (type != NULL && elektraStrCmp (keyString (type), "string") == 0)
-	{
-		result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
-	}
-	else if (isFloat (writer->checker, valueStr) || isValidIntegerAnyBase (valueStr) || isDateTime (writer->checker, valueStr))
+	else if ((type == NULL || strcmp (keyString (type), "string") != 0) &&
+		 (isFloat (writer->checker, valueStr) || isValidIntegerAnyBase (valueStr) || isDateTime (writer->checker, valueStr)))
 	{
 		result |= fputs (valueStr, writer->f) == EOF;
 	}
 	else
 	{
-		result |= writeQuoted (valueStr, '"', isMultilineString (valueStr) ? 3 : 1, writer);
-	}
-	return result;
-}
-
-static int writeQuoted (const char * value, char quoteChar, int quouteCount, Writer * writer)
-{
-	int result = 0;
-	for (int i = 0; i < quouteCount; i++)
-	{
-		result |= fputc (quoteChar, writer->f) == EOF;
-	}
-	result |= fputs (value, writer->f) == EOF;
-	for (int i = 0; i < quouteCount; i++)
-	{
-		result |= fputc (quoteChar, writer->f) == EOF;
-	}
-	return result;
-}
-
-static bool isMultilineString (const char * str)
-{
-	while (*str != 0)
-	{
-		if (*str++ == '\n')
+		// handles values explicitly typed as string
+		// as well as all untyped values
+		StringType stringType;
+		if (strcmp (tomlType, "string_basic") == 0)
 		{
-			return true;
+			stringType = STRING_BASIC;
+		}
+		else if (strcmp (tomlType, "string_ml_basic") == 0)
+		{
+			stringType = STRING_BASIC | STRING_MULTILINE;
+		}
+		else if (strcmp (tomlType, "string_literal") == 0)
+		{
+			stringType = STRING_LITERAL;
+		}
+		else if (strcmp (tomlType, "string_ml_literal") == 0)
+		{
+			stringType = STRING_LITERAL | STRING_MULTILINE;
+		}
+		else
+		{
+			stringType = STRING_BASIC;
+			const char * firstNewline = strchr (valueStr, '\n');
+			if (firstNewline != NULL && strchr (firstNewline + 1, '\n') != NULL)
+			{
+				// contains 2 newlines -> write as multiline string
+				stringType |= STRING_MULTILINE;
+			}
+		}
+
+		result |= writeString (key, stringType, valueStr, writer);
+	}
+	return result;
+}
+
+static const char * stringQuotes (StringType type)
+{
+	bool isLiteral = (type & STRING_LITERAL) != 0;
+	bool isMultiline = (type & STRING_MULTILINE) != 0;
+
+	if (isMultiline)
+	{
+		if (isLiteral)
+		{
+			return "'''";
+		}
+		else
+		{
+			return "\"\"\"";
 		}
 	}
+	else
+	{
+		if (isLiteral)
+		{
+			return "'";
+		}
+		else
+		{
+			return "\"";
+		}
+	}
+}
+
+static const char * writeAscii (int * result, const char * value, Writer * writer)
+{
+	const char * asciiEnd = value;
+	while (*asciiEnd >= 0x20 && *asciiEnd <= 0x7E)
+	{
+		++asciiEnd;
+	}
+	if (asciiEnd > value)
+	{
+		size_t n = asciiEnd - value;
+		*result |= fwrite (value, 1, n, writer->f) < n;
+	}
+	return asciiEnd;
+}
+
+static const char * writeEscapeSequence (int * result, StringType type, const char * value, Writer * writer)
+{
+	switch (*value)
+	{
+	case '\b':
+		*result |= fputs ("\\b", writer->f) == EOF;
+		break;
+	case '\t':
+		// 2a. special case: if multiline, write tabs literally
+		if (type & STRING_MULTILINE)
+		{
+			*result |= fputc ('\t', writer->f) == EOF;
+		}
+		else
+		{
+			*result |= fputs ("\\t", writer->f) == EOF;
+		}
+		break;
+	case '\n':
+		// 2b. special case: if multiline, write newlines literally
+		if (type & STRING_MULTILINE)
+		{
+			*result |= fputc ('\n', writer->f) == EOF;
+		}
+		else
+		{
+			*result |= fputs ("\\n", writer->f) == EOF;
+		}
+		break;
+	case '\f':
+		*result |= fputs ("\\f", writer->f) == EOF;
+		break;
+	case '\r':
+		*result |= fputs ("\\r", writer->f) == EOF;
+		break;
+	case '\"':
+		*result |= fputs ("\\\"", writer->f) == EOF;
+		break;
+	case '\\':
+		*result |= fputs ("\\\\", writer->f) == EOF;
+		break;
+	default:
+		return value;
+	}
+
+	return value + 1;
+}
+
+static const char * writeUtf8Codepoint (int * result, bool * warnedUtf8, Key * key, const char * value, Writer * writer)
+{
+	size_t utf8Len = utf8LenFromHeadChar ((uint8_t) *value);
+	if (utf8Len == 0 || !isValidUtf8 ((uint8_t *) value, utf8Len))
+	{
+		if (!*warnedUtf8)
+		{
+			ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (writer->rootKey,
+								  "Key '%s' contained non-UTF-8 value. Invalid byte "
+								  "sequences will be replaced with replacement "
+								  "character U+FFFD. Mark the key as binary and use base64 "
+								  "plugin to preserve non-UTF-8 values.",
+								  keyName (key));
+			*warnedUtf8 = true;
+		}
+
+		// write U+FFFD (replacment character), skip one byte and try again
+		*result |= fputs ("\xEF\xBF\xBD", writer->f) == EOF;
+	}
+	else
+	{
+		// write valid UTF-8
+		*result |= fwrite (value, 1, utf8Len, writer->f) < utf8Len;
+	}
+
+	return value + 1;
+}
+
+static bool checkLiteralAsciiControl (const char * value, bool allowNewline)
+{
+	const char * control;
+	while ((control = strpbrk (value, ASCII_CONTROL)) != NULL)
+	{
+		if (*control == 0x09)
+		{
+			// tab is allowed
+			continue;
+		}
+
+		if (allowNewline && *control == 0x0A)
+		{
+			// newline (LF) in multiline
+			continue;
+		}
+
+		if (allowNewline && *control == 0x0D && *control == 0x0A)
+		{
+			// newline (CRLF) in multiline
+			continue;
+		}
+
+		// found illegal control character
+		return true;
+	}
+
 	return false;
+}
+
+static int writeString (Key * key, StringType type, const char * value, Writer * writer)
+{
+	int result = 0;
+	result |= fputs (stringQuotes (type), writer->f) == EOF;
+
+	if (type & STRING_LITERAL)
+	{
+		if ((type & STRING_MULTILINE) == 0 && strchr (value, '\n') != NULL)
+		{
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+				writer->rootKey, "Key with literal non-multiline cannot contain newline: %s", keyName (key));
+			result |= -1;
+		}
+		else if (!isValidUtf8 ((uint8_t *) value, keyGetValueSize (key) - 1))
+		{
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (writer->rootKey, "Key with literal string must contain valid UTF-8: %s",
+								 keyName (key));
+			result |= -1;
+		}
+		else if (checkLiteralAsciiControl (value, type & STRING_MULTILINE))
+		{
+			ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+				writer->rootKey,
+				"Key with literal string must not contain ASCII control characters except for tab (U+0009): %s",
+				keyName (key));
+			result |= -1;
+		}
+		else
+		{
+			result |= fputs (value, writer->f) == EOF;
+		}
+	}
+	else
+	{
+		bool warnedUtf8 = false;
+		while (*value != '\0')
+		{
+			// 1. write a block of ASCII print characters
+			value = writeAscii (&result, value, writer);
+
+			// 2. if byte has TOML escape sequence, write that
+			value = writeEscapeSequence (&result, type, value, writer);
+
+			if (*value == '\0')
+			{
+				// end of string reached
+				break;
+			}
+
+			// 3. if valid UTF-8 follows, write that
+			//    otherwise write replacement character
+			value = writeUtf8Codepoint (&result, &warnedUtf8, key, value, writer);
+		}
+	}
+
+	result |= fputs (stringQuotes (type), writer->f) == EOF;
+	return result;
 }
 
 static int writePrecedingComments (const CommentList * commentList, Writer * writer)
@@ -596,7 +788,7 @@ static CommentList * collectComments (Key * key, Writer * writer)
 						if (nextComment == NULL)
 						{
 							freeComments (commentRoot);
-							writerError (writer, ERROR_MEMORY, NULL);
+							ELEKTRA_SET_OUT_OF_MEMORY_ERROR (writer->rootKey);
 							return NULL;
 						}
 						nextComment->isInline = false;

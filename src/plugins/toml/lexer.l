@@ -275,9 +275,9 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 		bufferAddString (origBuffer, yytext, yyleng, driver);
 	}
 	{double_quote}{3}			{
-		yylval.scalar = createScalar (SCALAR_STRING_ML_LITERAL, bufferConsume(stringBuffer, driver), bufferConsume(origBuffer, driver), yylineno);
+		yylval.scalar = createScalar (SCALAR_STRING_ML_BASIC, bufferConsume(stringBuffer, driver), bufferConsume(origBuffer, driver), yylineno);
 		YY_POP();
-		return MULTI_LITERAL_STRING;
+		return MULTI_BASIC_STRING;
 	}
 	<<EOF>>					{
 		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Found unterminated string at end of file.");

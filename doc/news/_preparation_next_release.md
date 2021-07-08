@@ -60,6 +60,16 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 
 ### <<Plugin3>>
+### TOML
+
+- Fixed a bug ([#3896](https://issues.libelektra.org/3896)) that caused the `toml` plugin to swallow the first letter of
+  all keys (after the namespace), if the parent key was a root key (e.g. `user:/`). _(Klemens Böswirth)_
+- The `type` metakey is now set for numbers on reading. _(Jakob Fischer)_
+- Rewrote some error messages, to make them less technical. _(Jakob Fischer)_
+- Fixed parsing of floats/empty keynames/multiline strings. _(Jakob Fischer)_
+- Improvements to the parser, comment handling and especially quoting of strings. _(Klemens Böswirth)_
+
+### Python
 
 - <<TODO>>
 - <<TODO>>

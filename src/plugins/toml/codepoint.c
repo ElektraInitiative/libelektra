@@ -70,12 +70,7 @@ int utf8FromUnicode (const char * codepointStr, int codepointLen, char * utf8)
 	}
 }
 
-bool validUtf8FromUnicode (const char * codepointStr, int codepointLen)
-{
-	return utf8LenFromUnicode (convertCodepoint (codepointStr, codepointLen)) != 0;
-}
-
-int utf8LenFromHeadChar (unsigned char head)
+int utf8LenFromHeadChar (uint8_t head)
 {
 	if (head <= 0x7F)
 	{

@@ -140,7 +140,6 @@ if (DEPENDENCY_PHASE)
 		type.h
 		type.c
 		error.h
-		error.c
 		${FLEX_OUTPUT_HEADER}
 		${FLEX_OUTPUT_SOURCE}
 		${BISON_OUTPUT_HEADER}

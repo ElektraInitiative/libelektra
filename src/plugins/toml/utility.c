@@ -15,39 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-void dumpKS (KeySet * keys)
-{
-	printf ("DUMPING KS, size = %lu\n", ksGetSize (keys));
-	FILE * f = stdout; // fopen ("keys.txt", "w");
-	ksRewind (keys);
-	for (Key * key = ksNext (keys); key != NULL; key = ksNext (keys))
-	{
-		fprintf (f, "KEY = %s, VALUE = %s\n", keyName (key), keyString (key));
-		keyRewindMeta (key);
-		for (const Key * meta = keyNextMeta (key); meta != NULL; meta = keyNextMeta (key))
-		{
-			fprintf (f, "\tMETA KEY = %s, VALUE = %s\n", keyName (meta), keyString (meta));
-		}
-	}
-	ksRewind (keys);
-}
-
-void dumpMemKS (Key ** keys, size_t size)
-{
-	printf ("DUMPING KS, size = %lu\n", size);
-	FILE * f = stdout; // fopen ("keys_mem.txt", "w");
-	for (size_t i = 0; i < size; i++)
-	{
-		Key * key = keys[i];
-		fprintf (f, "KEY = %s, VALUE = %s\n", keyName (key), keyString (key));
-		keyRewindMeta (key);
-		for (const Key * meta = keyNextMeta (key); meta != NULL; meta = keyNextMeta (key))
-		{
-			fprintf (f, "\tMETA KEY = %s, VALUE = %s\n", keyName (meta), keyString (meta));
-		}
-	}
-}
-
 Key * keyAppendIndex (size_t index, const Key * parent)
 {
 	// Key * indexKey = keyDup (parent);

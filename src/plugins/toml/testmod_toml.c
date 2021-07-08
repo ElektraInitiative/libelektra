@@ -78,6 +78,11 @@ static const char * prefix = NULL;
 	{                                                                                                                                  \
 		if (lastKey != NULL) keySetMeta (lastKey, "type", type);                                                                   \
 	}
+#define SET_STRING_TYPE(tomlType)                                                                                                          \
+	{                                                                                                                                  \
+		if (lastKey != NULL) keySetMeta (lastKey, "type", "string");                                                               \
+		if (lastKey != NULL) keySetMeta (lastKey, "tomltype", tomlType);                                                           \
+	}
 #define SET_ORIG_VALUE(orig)                                                                                                               \
 	{                                                                                                                                  \
 		if (lastKey != NULL) keySetMeta (lastKey, "origvalue", orig);                                                              \
@@ -429,12 +434,12 @@ static void testWriteReadEmptyKeyName (void)
 	WRITE_KV ("%", "discouraged, but valid");
 	SET_ORDER (0);
 	DUP_EXPECTED;
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 	WRITE_KV ("%/%", "also discouraged, but valid");
 	SET_ORDER (1);
 	DUP_EXPECTED;
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 
 	TEST_WR_FOOT;
@@ -444,11 +449,12 @@ static void testWriteReadNull (void)
 {
 	TEST_WR_HEAD;
 
-	WRITE_KV ("null_valued_key", NULL);
-	CLEAR_BINARY;
+	WRITE_KV ("null_valued_key", "@NULL");
 	SET_ORDER (0);
 
-	DUP_EXPECTED;
+	EXPECTED_KV ("null_valued_key", NULL);
+	SET_ORDER (0);
+	SET_META ("tomltype", "string_basic");
 
 	TEST_WR_FOOT;
 }
@@ -673,7 +679,7 @@ static void testWriteReadAssignments (void)
 	WRITE_KV ("b", "hello");
 	SET_ORDER (1);
 	DUP_EXPECTED;
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 	WRITE_KV ("c", "3.1415");
 	SET_ORDER (2);
@@ -683,7 +689,7 @@ static void testWriteReadAssignments (void)
 	WRITE_KV ("3/14", "PI");
 	SET_ORDER (3);
 	DUP_EXPECTED
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 	TEST_WR_FOOT;
 }
@@ -695,32 +701,38 @@ static void testWriteReadString (void)
 	WRITE_KV ("multiline1", "first line\nsecond line");
 	SET_ORDER (0);
 	DUP_EXPECTED;
-	SET_TYPE ("string");
+	SET_ORIG_VALUE ("first line\\nsecond line");
+	SET_STRING_TYPE ("string_basic");
 
-	WRITE_KV ("withescapechars", "first line\\nsecond line\\r");
+	WRITE_KV ("multiline2", "first line\nsecond line\nthird line");
 	SET_ORDER (1);
 	DUP_EXPECTED;
+	SET_STRING_TYPE ("string_ml_basic");
+
+	WRITE_KV ("withescapechars", "first line\\nsecond line\\r");
+	SET_ORDER (2);
+	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("first line\nsecond line\r");
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 	WRITE_KV ("numberstring01", "1337");
-	SET_ORDER (2);
-	SET_TYPE ("string");
+	SET_ORDER (3);
+	SET_STRING_TYPE ("string_basic");
 	DUP_EXPECTED;
 
 	WRITE_KV ("numberstring02", "13_37");
-	SET_ORDER (3);
-	SET_TYPE ("string");
+	SET_ORDER (4);
+	SET_STRING_TYPE ("string_literal");
 	DUP_EXPECTED;
 
 	WRITE_KV ("numberstring03", "+3e-7");
-	SET_ORDER (4);
-	SET_TYPE ("string");
+	SET_ORDER (5);
+	SET_STRING_TYPE ("string_ml_basic");
 	DUP_EXPECTED;
 
 	WRITE_KV ("datestring", "2000-01-01");
-	SET_ORDER (5);
-	SET_TYPE ("string");
+	SET_ORDER (6);
+	SET_STRING_TYPE ("string_ml_literal");
 	DUP_EXPECTED;
 
 	TEST_WR_FOOT;
@@ -1080,7 +1092,7 @@ static void testWriteReadInteger (void)
 	WRITE_KV ("binary_overflow", "0b1_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
 	SET_ORDER (2);
 	DUP_EXPECTED;
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 
 	WRITE_KV ("octal_min", "0o0000000000000000000000");
@@ -1098,7 +1110,7 @@ static void testWriteReadInteger (void)
 	WRITE_KV ("octal_overflow", "0o2000000000000000000000");
 	SET_ORDER (5);
 	DUP_EXPECTED;
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 
 	WRITE_KV ("decimal_min", "-9_223_372_036_854_775_808");
@@ -1116,12 +1128,12 @@ static void testWriteReadInteger (void)
 	WRITE_KV ("decimal_underflow", "-9_223_372_036_854_775_809");
 	SET_ORDER (8);
 	DUP_EXPECTED;
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 	WRITE_KV ("decimal_overflow", "9_223_372_036_854_775_808");
 	SET_ORDER (9);
 	DUP_EXPECTED;
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 
 	WRITE_KV ("hexadecimal_min", "0x0000_0000_0000_0000");
@@ -1139,7 +1151,7 @@ static void testWriteReadInteger (void)
 	WRITE_KV ("hexadecimal_overflow", "0x1_0000_0000_0000_0000");
 	SET_ORDER (12);
 	DUP_EXPECTED;
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 	TEST_WR_FOOT;
 }
@@ -1254,12 +1266,12 @@ static void testWriteReadBoolean (void)
 	WRITE_KV ("bool3", "true");
 	SET_ORDER (2);
 	DUP_EXPECTED;
-	SET_TYPE ("string");
+	SET_STRING_TYPE ("string_basic");
 
 	WRITE_KV ("bool4", "false");
 	SET_ORDER (3);
+	SET_STRING_TYPE ("string_literal");
 	DUP_EXPECTED;
-	SET_TYPE ("string");
 
 	WRITE_KV ("bool5", "0");
 	SET_ORDER (4);
@@ -1472,9 +1484,9 @@ static void testReadCompare (const char * filename, KeySet * expected)
 	{
 		compare_keyset (expected, ks);
 		/*printf("EXPECTED:\n");
-		dumpKS(expected);
+		output_keyset(expected);
 		printf("FOUND:\n");
-		dumpKS(ks);*/
+		output_keyset(ks);*/
 	}
 
 	ksDel (ks);
@@ -1485,7 +1497,7 @@ static void testReadCompare (const char * filename, KeySet * expected)
 
 static void testReadMustError (const char * filename)
 {
-	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
+	printf ("Reading '%s'\n", filename);
 	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
 	KeySet * conf = ksNew (0, KS_END);
 	PLUGIN_OPEN ("toml");
