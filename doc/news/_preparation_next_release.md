@@ -160,6 +160,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - <<TODO>>
 - Upgrade GoogleTest frameworks to version 1.11.0. _(Mihael Pranjić)_
+- Add additional test cases for module `key`. _(@lawli3t)_
 - Add additional test cases for module `keyname`. _(@lawli3t)_
 - Add additional test cases for module `keyvalue`. _(@lawli3t)_
 - Add tests for module `keyset`. _(@lawli3t)_

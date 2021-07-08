@@ -78,19 +78,10 @@
  *
  * To just get a key object, simple do:
  *
- * @snippet keyNew.c Simple
+ * @snippet keyNew.c With Name
  *
  * keyNew() allocates memory for a key object and keyDel() cleans
  * everything up.
- *
- * We can also give an empty key name and a KEY_END tag with the same
- * effect as before:
- *
- * @snippet keyNew.c Alternative
- *
- * But we can also give the key a proper name right from the start:
- *
- * @snippet keyNew.c With Name
  *
  * If you want the key object to contain a name, value, comment and other
  * meta info read on.
@@ -137,15 +128,15 @@
  *   @snippet keyNew.c With Everything
  *
  *
- * @param name a valid name to the key, or NULL to get a simple
- * 	initialized, but really empty, object
+ * @param name a valid name to the key (see keySetName())
  *
  * @return a pointer to a new allocated and initialized Key object.
  * @retval NULL on allocation error or if an invalid @p name was passed (see keySetName()).
  *
  * @since 1.0.0
  * @ingroup key
- * @see keyDel()
+ * @see keyDel() for deallocating a created Key object
+ * @see keySetName() for rules about which names are considered valid
  */
 Key * keyNew (const char * name, ...)
 {

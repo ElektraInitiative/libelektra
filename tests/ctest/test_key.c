@@ -490,6 +490,14 @@ static void test_keyLock (void)
 {
 	printf ("Test locking\n");
 
+	succeed_if (keyLock (0, KEY_LOCK_NAME) == -1, "no error on locking NULL key");
+	succeed_if (keyLock (0, KEY_LOCK_VALUE) == -1, "no error on locking NULL key");
+	succeed_if (keyLock (0, KEY_LOCK_META) == -1, "no error on locking NULL key");
+
+	succeed_if (keyIsLocked (0, KEY_LOCK_NAME) == -1, "no error on NULL Key");
+	succeed_if (keyIsLocked (0, KEY_LOCK_VALUE) == -1, "no error on NULL Key");
+	succeed_if (keyIsLocked (0, KEY_LOCK_META) == -1, "no error on NULL Key");
+
 	Key * key = keyNew ("/", KEY_LOCK_NAME, KEY_END);
 	Key * key2 = keyNew ("/", KEY_LOCK_NAME, KEY_END);
 
