@@ -47,7 +47,6 @@ int elektraTomlGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * par
 int elektraTomlSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key * parentKey)
 {
 	int result = tomlWrite (returned, parentKey);
-
 	return result == 0 ? ELEKTRA_PLUGIN_STATUS_SUCCESS : ELEKTRA_PLUGIN_STATUS_ERROR;
 }
 

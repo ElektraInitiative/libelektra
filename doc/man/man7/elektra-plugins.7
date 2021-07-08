@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "ELEKTRA\-PLUGINS" "7" "May 2021" ""
+.TH "ELEKTRA\-PLUGINS" "7" "July 2021" ""
 .SH "NAME"
 \fBelektra\-plugins\fR \- plugins overview
 .P
@@ -227,6 +227,8 @@ type \fItype/\fR type checking (CORBA types) with enum functionality
 .IP "\(bu" 4
 ipaddr \fIipaddr/\fR checks IP addresses using regular expressions
 .IP "\(bu" 4
+email \fIemail/\fR checks email addresses using regular expressions
+.IP "\(bu" 4
 network \fInetwork/\fR by using network APIs
 .IP "\(bu" 4
 path \fIpath/\fR by checking files on file system
@@ -234,6 +236,8 @@ path \fIpath/\fR by checking files on file system
 unit \fIunit/\fR validates and normalizes units of memory (e\.g\. 20KB to 20000 Bytes)
 .IP "\(bu" 4
 blacklist \fIblacklist/\fR blacklist and reject values
+.IP "\(bu" 4
+length \fIlength/\fR validates that string length is less or equal to given value
 .IP "" 0
 .P
 The same but experimental:

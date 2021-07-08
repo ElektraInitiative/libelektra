@@ -37,6 +37,7 @@ Note that the `origvalue` metakey gets removed if the value of the key changes.
 sudo kdb mount test.toml user:/tests/storage/types toml type
 
 # Create a TOML file with 4 keys
+mkdir -p $(dirname $(kdb file user:/tests/storage/types))
 echo 'plain_decimal = 1000' >> `kdb file user:/tests/storage/types`
 echo 'file_permissions = 0o777' >> `kdb file user:/tests/storage/types`
 echo 'pi = 3.1415' >> `kdb file user:/tests/storage/types`
@@ -533,7 +534,7 @@ However, their order never gets compared, since `common` is a simple table and `
 While the plugin has good capabilities in handling the TOML file format, it currently lacks some features possible with Elektra:
 
 - Sparse arrays are not preserved on writing, they get a continuous array without index holes.
-- Values on non-leaf keys are currently not supported, they get discarded.
+- Values on non-leaf keys are currently not supported, they get discarded. This applies especially to the parent key of the mountpoint.
 - Custom metakeys cannot be written by the plugin, so they get discarded.
 
 Additionally, there are some minor limitations related to the TOML file format, mostly related to the preservation of the original file structure:

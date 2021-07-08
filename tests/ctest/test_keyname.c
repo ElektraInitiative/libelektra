@@ -13,15 +13,17 @@
 #define TEST_VALIDATE_OK(name, prefix)                                                                                                     \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		succeed_if_fmt (elektraKeyNameValidate (name, prefix == NULL), "'%s' + '%s' SHOULD BE a valid key name",                   \
-				prefix == NULL ? "" : prefix, name);                                                                       \
+		const char * p = prefix;                                                                                                   \
+		succeed_if_fmt (elektraKeyNameValidate (name, p == NULL), "'%s' + '%s' SHOULD BE a valid key name", p == NULL ? "" : p,    \
+				name);                                                                                                     \
 	} while (0)
 
 #define TEST_VALIDATE_ERROR(name, prefix)                                                                                                  \
 	do                                                                                                                                 \
 	{                                                                                                                                  \
-		succeed_if_fmt (!elektraKeyNameValidate (name, prefix == NULL), "'%s' + '%s' SHOULD NOT BE a valid key name",              \
-				prefix == NULL ? "" : prefix, name);                                                                       \
+		const char * p = prefix;                                                                                                   \
+		succeed_if_fmt (!elektraKeyNameValidate (name, p == NULL), "'%s' + '%s' SHOULD NOT BE a valid key name",                   \
+				p == NULL ? "" : p, name);                                                                                 \
 	} while (0)
 
 static void test_validate (void)
@@ -225,7 +227,7 @@ static void test_validate (void)
 
 	TEST_VALIDATE_OK ("/\\\\", NULL);
 
-	TEST_VALIDATE_OK ("/", "///////.");
+	TEST_VALIDATE_OK ("///////.", "/");
 	TEST_VALIDATE_OK ("/.", "/");
 	TEST_VALIDATE_OK ("///.////.", "/");
 	TEST_VALIDATE_OK ("////.///", "/");
@@ -345,6 +347,8 @@ static void test_validate (void)
 	TEST_VALIDATE_OK ("user:/%a", NULL);
 	TEST_VALIDATE_OK ("%a", "/");
 	TEST_VALIDATE_OK ("%a", "user:/");
+	TEST_VALIDATE_OK ("%", "user:/abc");
+	TEST_VALIDATE_OK ("..", "user:/");
 	TEST_VALIDATE_OK ("..", "system:/elektra/mountpoints/system:\\/info\\/elektra\\/constants");
 	TEST_VALIDATE_OK ("..", "system:/elektra/mountpoints");
 	TEST_VALIDATE_OK ("..", "system:/elektra");
@@ -405,10 +409,15 @@ static void test_validate (void)
 	TEST_VALIDATE_ERROR ("/\\#0/\\#1", NULL);
 	TEST_VALIDATE_ERROR ("/\\#0/..", "/");
 
-	TEST_VALIDATE_ERROR ("/%", NULL);
+	// TODO (kodebach): new root names
+	/*TEST_VALIDATE_ERROR ("/%", NULL);
+	TEST_VALIDATE_ERROR ("//%", NULL);
+	TEST_VALIDATE_ERROR ("///%", NULL);
 	TEST_VALIDATE_ERROR ("user:/%", NULL);
+	TEST_VALIDATE_ERROR ("user://%", NULL);
+	TEST_VALIDATE_ERROR ("user:///%", NULL);
 	TEST_VALIDATE_ERROR ("%", "/");
-	TEST_VALIDATE_ERROR ("%", "user:/");
+	TEST_VALIDATE_ERROR ("%", "user:/");*/
 }
 
 #undef TEST_VALIDATE_OK
@@ -680,6 +689,8 @@ static void test_canonicalize (void)
 	TEST_CANONICALIZE_OK ("..", "/", "/", 3, 3);
 	TEST_CANONICALIZE_OK ("../..", "/a\\/b", "/", 6, 3);
 	TEST_CANONICALIZE_OK ("..", "user:/", "user:/", 3, 3);
+	TEST_CANONICALIZE_OK ("..", "user:/abc", "user:/", 6, 3);
+	TEST_CANONICALIZE_OK ("..", "/abc", "/", 6, 3);
 
 	TEST_CANONICALIZE_OK ("../user", "user:/", "user:/user", 3, 7);
 	TEST_CANONICALIZE_OK ("../../../../../../..//user", "/much/more/level/1/2/3", "/user", 24, 7);

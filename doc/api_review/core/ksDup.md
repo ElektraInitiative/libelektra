@@ -86,9 +86,9 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] return value is never checked
+       - [x] return value is never checked
 - [ ] All possible error states are covered by tests  
-       - [ ] add test case for `source == NULL`
+       - [x] add test case for `source == NULL`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

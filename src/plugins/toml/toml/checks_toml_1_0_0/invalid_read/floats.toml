@@ -1,0 +1,4 @@
+# INVALID FLOATS
+invalid_float_1 = .7
+invalid_float_2 = 7.
+invalid_float_3 = 3.e+20

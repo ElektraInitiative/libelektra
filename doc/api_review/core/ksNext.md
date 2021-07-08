@@ -87,8 +87,8 @@
 - [ ] Function code is fully covered by tests  
        - [ ] Line 1499
 - [ ] All possible error states are covered by tests  
-       - [ ] test case for iterating over empty keyset  
-       - [ ] test case for `ks == NULL`
+       - [x] test case for iterating over empty keyset  
+       - [x] test case for `ks == NULL`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

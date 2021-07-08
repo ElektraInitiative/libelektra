@@ -88,7 +88,7 @@
 - [x] Function code is fully covered by tests
 - [x] All possible error states are covered by tests
 - [ ] All possible enum values are covered by tests  
-       - [ ] `KDB_O_DEL`
+       - [x] `KDB_O_DEL`
 - [x] No inconsistencies between tests and documentation
 
 ## Summary

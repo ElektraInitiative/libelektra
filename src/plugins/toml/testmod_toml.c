@@ -9,6 +9,7 @@
 
 #include <kdb.h>
 #include <kdbassert.h>
+#include <kdblogger.h>
 #include <kdbprivate.h>
 #include <tests.h>
 #include <tests_plugin.h>
@@ -97,6 +98,22 @@ static const char * prefix = NULL;
 			keySetMeta (lastKey, "binary", NULL);                                                                              \
 		}                                                                                                                          \
 	}
+
+#define SET_META(name, value)                                                                                                              \
+	{                                                                                                                                  \
+		if (lastKey != NULL)                                                                                                       \
+		{                                                                                                                          \
+			keySetMeta (lastKey, name, value);                                                                                 \
+		}                                                                                                                          \
+	}
+
+#define CLEAR_META(name)                                                                                                                   \
+	{                                                                                                                                  \
+		if (lastKey != NULL)                                                                                                       \
+		{                                                                                                                          \
+			keySetMeta (lastKey, name, NULL);                                                                                  \
+		}                                                                                                                          \
+	}
 #define SET_ORDER(order)                                                                                                                   \
 	{                                                                                                                                  \
 		if (lastKey != NULL) setOrderForKey (lastKey, order);                                                                      \
@@ -123,14 +140,15 @@ static const char * prefix = NULL;
 		if (lastKey != NULL) keySetMeta (lastKey, "binary", NULL);                                                                 \
 	}
 
+static void testRoundtrip (const char * filePath);
 static void testRead (void);
-static void testWriteRead (void);
 static void testReadRoot (void);
-static void testWriteReadRoot (void);
+static void testWriteRead (const char * _prefix);
 static void testReadCompare (const char * filename, KeySet * expected);
 static void testReadMustError (const char * filename);
 static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected);
 static void testWriteReadAssignments (void);
+static void testWriteReadEmptyKeyName (void);
 static void testWriteReadArray (void);
 static void testWriteReadArrayNested (void);
 static void testWriteReadInlineTable (void);
@@ -145,7 +163,6 @@ static void testWriteReadSimpleTableInTableArray (void);
 static void testWriteReadSimpleTableBeforeTableArray (void);
 static void testWriteReadString (void);
 static void testWriteReadInteger (void);
-static void testWriteReadIntegerOtherBase (void);
 static void testWriteReadFloat (void);
 static void testWriteReadDate (void);
 static void testWriteReadBoolean (void);
@@ -160,20 +177,52 @@ static Key * addKey (KeySet * ks, const char * name, const char * value, size_t 
 		     const char * array, const char * tomltype, int order);
 static void setComment (Key * key, const char * comment, const char * start, size_t spaces, size_t index);
 
+static bool roundtripFile (const char * filenameIn, const char * filenameOut);
+static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * filenameB);
+static void test_toml_1_0_0 (const char * _prefix);
+
 int main (int argc, char ** argv)
 {
 	init (argc, argv);
 
 	printf ("### Testing with user:/tests/toml ###\n");
 	testRead ();
-	testWriteRead ();
+	testWriteRead ("user:/tests/toml");
+	test_toml_1_0_0 ("user:/tests/toml");
 
 	printf ("### Testing with user:/ ###\n");
 	testReadRoot ();
-	testWriteReadRoot ();
+	testWriteRead ("user:/");
+	test_toml_1_0_0 ("user:/");
 
 	print_result ("testmod_toml");
 	return nbError;
+}
+
+static void test_toml_1_0_0 (const char * _prefix)
+{
+	prefix = _prefix;
+#define PATH_PREFIX "toml/checks_toml_1_0_0/"
+	testRoundtrip (PATH_PREFIX "roundtrip.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/array_redefined_table_array.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/empty_assignment.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/floats.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/key_redefinition.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/key_redefinition_quotes.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/no_keyname.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/table_redefine_value.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/table_redefinition.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/two_assignments_one_line.toml");
+	// TODO: These reads should fail, but they do not fail yet
+	// testReadMustError (PATH_PREFIX "invalid_read/apostroph_too_much.toml");
+	// testReadMustError (PATH_PREFIX "invalid_read/inline_appending.toml");
+	// testReadMustError (PATH_PREFIX "invalid_read/inline_appending2.toml");
+	// testReadMustError (PATH_PREFIX "invalid_read/integer_redefined_table.toml");
+	// testReadMustError (PATH_PREFIX "invalid_read/simple_redefined_table_array.toml");
+	// testReadMustError (PATH_PREFIX "invalid_read/table_array_simple_table_same_name.toml");
+#undef PATH_PREFIX
+
+	prefix = NULL;
 }
 
 static void testRead (void)
@@ -183,6 +232,12 @@ static void testRead (void)
 
 	testReadCompare ("toml/basic.toml",
 #include "toml/basic.h"
+	);
+	testReadCompare ("toml/integer.toml",
+#include "toml/integer.h"
+	);
+	testReadCompare ("toml/key_names_empty.toml",
+#include "toml/key_names_empty.h"
 	);
 	testReadCompare ("toml/string_utf8.toml",
 #include "toml/string_utf8.h"
@@ -229,6 +284,7 @@ static void testRead (void)
 	testReadCompare ("toml/comment.toml",
 #include "toml/comment.h"
 	);
+#undef PREFIX
 
 	testReadMustError ("toml/bad_duplicate_key_01.toml");
 	testReadMustError ("toml/bad_duplicate_key_02.toml");
@@ -241,14 +297,23 @@ static void testRead (void)
 	testReadMustError ("toml/bad_date_invalid_feb.toml");
 	testReadMustError ("toml/bad_string_single_with_nl_literal.toml");
 	testReadMustError ("toml/bad_string_single_with_nl_basic.toml");
+	testReadMustError ("toml/integer_overflow/binary.toml");
+	testReadMustError ("toml/integer_overflow/octal.toml");
+	testReadMustError ("toml/integer_overflow/decimal.toml");
+	testReadMustError ("toml/integer_overflow/decimal_under.toml");
+	testReadMustError ("toml/integer_overflow/hexadecimal.toml");
 
 	prefix = NULL;
-#undef PREFIX
 }
 
-static void testWriteRead (void)
+static void testWriteRead (const char * _prefix)
 {
-	prefix = "user:/tests/toml";
+	prefix = _prefix;
+	// TODO (kodebach): new root name
+	if (strcmp (prefix, "user:/") != 0)
+	{
+		testWriteReadEmptyKeyName ();
+	}
 	testWriteReadAssignments ();
 	testWriteReadArray ();
 	testWriteReadArrayNested ();
@@ -262,7 +327,6 @@ static void testWriteRead (void)
 	testWriteReadNull ();
 	// testWriteReadBase64();
 	testWriteReadInteger ();
-	testWriteReadIntegerOtherBase ();
 	testWriteReadFloat ();
 	testWriteReadDate ();
 	testWriteReadBoolean ();
@@ -285,6 +349,12 @@ static void testReadRoot (void)
 	testReadCompare ("toml/basic.toml",
 #include "toml/basic.h"
 	);
+	testReadCompare ("toml/integer.toml",
+#include "toml/integer.h"
+	);
+	//	testReadCompare ("toml/key_names_empty.toml",
+	//#include "toml/key_names_empty.h"
+	//	);
 	testReadCompare ("toml/string_utf8.toml",
 #include "toml/string_utf8.h"
 	);
@@ -330,6 +400,7 @@ static void testReadRoot (void)
 	testReadCompare ("toml/comment.toml",
 #include "toml/comment.h"
 	);
+#undef PREFIX
 
 	testReadMustError ("toml/bad_duplicate_key_01.toml");
 	testReadMustError ("toml/bad_duplicate_key_02.toml");
@@ -342,40 +413,31 @@ static void testReadRoot (void)
 	testReadMustError ("toml/bad_date_invalid_feb.toml");
 	testReadMustError ("toml/bad_string_single_with_nl_literal.toml");
 	testReadMustError ("toml/bad_string_single_with_nl_basic.toml");
+	testReadMustError ("toml/integer_overflow/binary.toml");
+	testReadMustError ("toml/integer_overflow/octal.toml");
+	testReadMustError ("toml/integer_overflow/decimal.toml");
+	testReadMustError ("toml/integer_overflow/decimal_under.toml");
+	testReadMustError ("toml/integer_overflow/hexadecimal.toml");
 
 	prefix = NULL;
-#undef PREFIX
 }
 
-static void testWriteReadRoot (void)
+static void testWriteReadEmptyKeyName (void)
 {
-	prefix = "user:/";
-	testWriteReadAssignments ();
-	testWriteReadArray ();
-	testWriteReadArrayNested ();
-	testWriteReadTableArray ();
-	testWriteReadTableArrayWithComments ();
-	testWriteReadTable ();
-	testWriteReadTableNested ();
-	testWriteReadInlineTable ();
-	testWriteReadInlineTableNested ();
-	testWriteReadString ();
-	testWriteReadNull ();
-	// testWriteReadBase64();
-	testWriteReadInteger ();
-	testWriteReadIntegerOtherBase ();
-	testWriteReadFloat ();
-	testWriteReadDate ();
-	testWriteReadBoolean ();
-	testWriteReadCheckSparseHierarchy ();
-	testWriteReadComments ();
-	testWriteReadCommentsArray ();
-	testWriteReadSimpleTableInTableArray ();
-	testWriteReadSimpleTableBeforeTableArray ();
-	testWriteReadInlineTableInArray ();
-	testWriteReadArrayInlineTableAlternating ();
-	testWriteReadOrderTableNonTable ();
-	prefix = NULL;
+	TEST_WR_HEAD;
+
+	WRITE_KV ("%", "discouraged, but valid");
+	SET_ORDER (0);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
+
+	WRITE_KV ("%/%", "also discouraged, but valid");
+	SET_ORDER (1);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
+
+
+	TEST_WR_FOOT;
 }
 
 static void testWriteReadNull (void)
@@ -1003,92 +1065,81 @@ static void testWriteReadInteger (void)
 {
 	TEST_WR_HEAD;
 
-	WRITE_KV ("int1", "+1337");
-	DUP_EXPECTED;
+	WRITE_KV ("binary_min", "0b00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
 	SET_ORDER (0);
-	SET_TYPE ("long_long");
-
-	WRITE_KV ("int2", "-666");
-	DUP_EXPECTED;
-	SET_ORDER (1);
-	SET_TYPE ("long_long");
-
-	WRITE_KV ("int3", "0");
-	DUP_EXPECTED;
-	SET_ORDER (2);
-	SET_TYPE ("long_long");
-
-	WRITE_KV ("int4", "3000");
-	DUP_EXPECTED;
-	SET_ORDER (3);
-	SET_TYPE ("long_long");
-
-	WRITE_KV ("int5", "+1_999_000");
-	DUP_EXPECTED;
-	SET_ORDER (4);
-	VALUE_TO_ORIG_NEW_VALUE ("+1999000");
-	SET_TYPE ("long_long");
-
-	TEST_WR_FOOT;
-}
-
-static void testWriteReadIntegerOtherBase (void)
-{
-	TEST_WR_HEAD;
-
-	WRITE_KV ("hex1", "0xA_Baf00");
-	SET_ORDER (0);
-	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("11251456");
-	SET_TYPE ("unsigned_long_long");
-
-	WRITE_KV ("hex2", "0x00_1");
-	SET_ORDER (1);
-	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("1");
-	SET_TYPE ("unsigned_long_long");
-
-	WRITE_KV ("hex3", "0x0_0");
-	SET_ORDER (2);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("0");
 	SET_TYPE ("unsigned_long_long");
 
-	WRITE_KV ("oct1", "0o13_37");
-	SET_ORDER (3);
+	WRITE_KV ("binary_max", "0b11111111_11111111_11111111_11111111_11111111_11111111_11111111_11111111");
+	SET_ORDER (1);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("735");
+	VALUE_TO_ORIG_NEW_VALUE ("18446744073709551615");
 	SET_TYPE ("unsigned_long_long");
 
-	WRITE_KV ("oct2", "0o0_000");
-	SET_ORDER (4);
+	WRITE_KV ("binary_overflow", "0b1_00000000_00000000_00000000_00000000_00000000_00000000_00000000_00000000");
+	SET_ORDER (2);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
+
+
+	WRITE_KV ("octal_min", "0o0000000000000000000000");
+	SET_ORDER (3);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("0");
 	SET_TYPE ("unsigned_long_long");
 
-	WRITE_KV ("oct3", "0o1_3_3_7");
+	WRITE_KV ("octal_max", "0o1777777777777777777777");
+	SET_ORDER (4);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("18446744073709551615");
+	SET_TYPE ("unsigned_long_long");
+
+	WRITE_KV ("octal_overflow", "0o2000000000000000000000");
 	SET_ORDER (5);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("735");
-	SET_TYPE ("unsigned_long_long");
+	SET_TYPE ("string");
 
-	WRITE_KV ("bin1", "0b0_0_0_0");
+
+	WRITE_KV ("decimal_min", "-9_223_372_036_854_775_808");
 	SET_ORDER (6);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("0");
-	SET_TYPE ("unsigned_long_long");
+	VALUE_TO_ORIG_NEW_VALUE ("-9223372036854775808");
+	SET_TYPE ("long_long");
 
-	WRITE_KV ("bin2", "0b100_0");
+	WRITE_KV ("decimal_max", "+9_223_372_036_854_775_807");
 	SET_ORDER (7);
 	DUP_EXPECTED;
-	VALUE_TO_ORIG_NEW_VALUE ("8");
-	SET_TYPE ("unsigned_long_long");
+	VALUE_TO_ORIG_NEW_VALUE ("+9223372036854775807");
+	SET_TYPE ("long_long");
 
-	WRITE_KV ("bin3", "0b000");
+	WRITE_KV ("decimal_underflow", "-9_223_372_036_854_775_809");
 	SET_ORDER (8);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
+
+	WRITE_KV ("decimal_overflow", "9_223_372_036_854_775_808");
+	SET_ORDER (9);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
+
+
+	WRITE_KV ("hexadecimal_min", "0x0000_0000_0000_0000");
+	SET_ORDER (10);
 	DUP_EXPECTED;
 	VALUE_TO_ORIG_NEW_VALUE ("0");
 	SET_TYPE ("unsigned_long_long");
+
+	WRITE_KV ("hexadecimal_max", "0xFFFF_FFFF_FFFF_FFFF");
+	SET_ORDER (11);
+	DUP_EXPECTED;
+	VALUE_TO_ORIG_NEW_VALUE ("18446744073709551615");
+	SET_TYPE ("unsigned_long_long");
+
+	WRITE_KV ("hexadecimal_overflow", "0x1_0000_0000_0000_0000");
+	SET_ORDER (12);
+	DUP_EXPECTED;
+	SET_TYPE ("string");
 
 	TEST_WR_FOOT;
 }
@@ -1144,6 +1195,17 @@ static void testWriteReadFloat (void)
 	DUP_EXPECTED;
 	SET_ORDER (8);
 	SET_TYPE ("double");
+
+	WRITE_KV ("float91", "-2e-003");
+	DUP_EXPECTED;
+	SET_ORDER (9);
+	SET_TYPE ("double");
+
+	WRITE_KV ("float92", "+2E+030");
+	DUP_EXPECTED;
+	SET_ORDER (10);
+	SET_TYPE ("double");
+
 
 	TEST_WR_FOOT;
 }
@@ -1273,7 +1335,7 @@ static void testWriteReadCommentsArray (void)
 
 	WRITE_KEY ("array");
 	SET_ORDER (0);
-	SET_ARRAY ("#2");
+	SET_ARRAY ("#3");
 	SET_INLINE_COMMENT ("array inline comment", 1);
 	DUP_EXPECTED;
 
@@ -1291,16 +1353,59 @@ static void testWriteReadCommentsArray (void)
 
 	WRITE_KV ("array/#2", "2");
 	SET_COMMENT (1, "element 3 comment", 4);
-	SET_INLINE_COMMENT ("element 3 inline", 4);
+	DUP_EXPECTED;
+	SET_EMPTY_LINE (0); // This newline is because the next array element has a comment in front of it
+	SET_TYPE ("long_long");
+
+
+	WRITE_KV ("array/#3", "3");
+	SET_COMMENT (1, "element 4 comment", 4);
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
 	TEST_WR_FOOT;
 }
 
-static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
+static void testRoundtrip (const char * filePath)
 {
-	const char * filename = "test_write_read.toml";
+	char fileOut[512];
+	snprintf (fileOut, 512, "%s.out", filePath);
+	bool roundtripSuccess = roundtripFile (filePath, fileOut);
+	succeed_if (roundtripSuccess, "Could not roundtrip file!");
+	if (roundtripSuccess)
+	{
+		succeed_if (compareFilesIgnoreWhitespace (srcdir_file (filePath), srcdir_file (fileOut)),
+			    "Roundtripped files do not match!");
+	}
+	remove (fileOut);
+}
+
+static KeySet * readFile (const char * filename)
+{
+	ELEKTRA_LOG_DEBUG ("Reading '%s'\n", filename);
+	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
+	KeySet * conf = ksNew (0, KS_END);
+	PLUGIN_OPEN ("toml");
+	KeySet * ks = ksNew (0, KS_END);
+
+	int getStatus = plugin->kdbGet (plugin, ks, parentKey);
+	succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read keys");
+
+	if (getStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
+	{
+		printError (parentKey);
+		ksDel (ks);
+		ks = NULL;
+	}
+	PLUGIN_CLOSE ();
+	keyDel (parentKey);
+	return ks;
+}
+
+static bool writeFile (const char * filename, KeySet * ksWrite)
+{
+	bool success = true;
+	ELEKTRA_LOG_DEBUG ("Writing '%s'\n", filename);
 	Key * parentKey = keyNew (prefix, KEY_VALUE, srcdir_file (filename), KEY_END);
 
 	KeySet * conf = ksNew (0, KS_END);
@@ -1311,30 +1416,41 @@ static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
 	if (setStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
 		printError (parentKey);
+		success = false;
 	}
-	else
-	{
-		KeySet * ksRead = ksNew (0, KS_END);
-		int getStatus = plugin->kdbGet (plugin, ksRead, parentKey);
-		succeed_if (getStatus == ELEKTRA_PLUGIN_STATUS_SUCCESS, "Could not read written keys");
-		if (getStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
-		{
-			printError (parentKey);
-		}
-		else
-		{
-			compare_keyset (expected, ksRead);
-			/*printf ("EXPECTED:\n");
-			dumpKS (expected);
-			printf ("READ:\n");
-			dumpKS (ksRead);*/
-		}
-		ksDel (ksRead);
-	}
-
 	PLUGIN_CLOSE ();
 	keyDel (parentKey);
+	return success;
+}
+
+static void testWriteReadCompare (KeySet * ksWrite, KeySet * expected)
+{
+	const char * filename = "test_write_read.toml";
+
+	if (writeFile (filename, ksWrite))
+	{
+		{
+			KeySet * ksRead = readFile (filename);
+			if (ksRead != NULL)
+			{
+				compare_keyset (expected, ksRead);
+				ksDel (ksRead);
+			}
+		}
+	}
 	remove (filename);
+}
+
+static bool roundtripFile (const char * filenameIn, const char * filenameOut)
+{
+	KeySet * ksRead = readFile (filenameIn);
+	if (ksRead == NULL)
+	{
+		return false;
+	}
+	bool success = writeFile (filenameOut, ksRead);
+	ksDel (ksRead);
+	return success;
 }
 
 static void testReadCompare (const char * filename, KeySet * expected)
@@ -1350,7 +1466,7 @@ static void testReadCompare (const char * filename, KeySet * expected)
 
 	if (getStatus != ELEKTRA_PLUGIN_STATUS_SUCCESS)
 	{
-		printError (parentKey);
+		output_error (parentKey);
 	}
 	else
 	{
@@ -1386,7 +1502,7 @@ static void printError (Key * parent)
 	const Key * meta = keyGetMeta (parent, "error/reason");
 	if (meta != NULL)
 	{
-		ELEKTRA_LOG_DEBUG ("ERROR: %s\n", keyString (meta));
+		fprintf (stderr, "ERROR: %s\n", keyString (meta));
 	}
 }
 
@@ -1453,4 +1569,74 @@ static void setComment (Key * key, const char * comment, const char * start, siz
 
 	snprintf (commentKey, 128, "%s/space", commentBase);
 	setPlainIntMeta (key, commentKey, spaces);
+}
+
+static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * filenameB)
+{
+#define LINE_SIZE 512
+	const char * WHITELIST_CHARS = " \t\"'";
+	FILE * fA = fopen (filenameA, "r");
+	FILE * fB = fopen (filenameB, "r");
+	char lineA[LINE_SIZE];
+	char lineB[LINE_SIZE];
+
+	size_t line = 0;
+
+	if (fA == NULL)
+	{
+		printf ("Could not open file '%s'\n", filenameA);
+		return false;
+	}
+	if (fB == NULL)
+	{
+		printf ("Could not open file '%s'\n", filenameB);
+		return false;
+	}
+
+	while (1)
+	{
+		char * ptrA = fgets (lineA, LINE_SIZE, fA);
+		char * ptrB = fgets (lineB, LINE_SIZE, fB);
+		line++;
+		while (1)
+		{
+			while (ptrA != NULL && *ptrA != 0 && strchr (WHITELIST_CHARS, (int) *ptrA) != NULL)
+			{
+				ptrA++;
+			}
+			while (ptrB != NULL && *ptrB != 0 && strchr (WHITELIST_CHARS, (int) *ptrB) != NULL)
+			{
+				ptrB++;
+			}
+			if (ptrA == NULL || ptrB == NULL)
+			{
+				if (ptrA == NULL && ptrB == NULL)
+				{
+					return true;
+				}
+				else if (ptrA != NULL)
+				{
+					printf ("Second file at EOF, but first file not:\n%s", ptrA);
+					return false;
+				}
+				else if (ptrB != NULL)
+				{
+					printf ("First file at EOF, but second file not:\n%s", ptrB);
+					return false;
+				}
+			}
+			if (*ptrA != *ptrB)
+			{
+				printf ("Lines do not match at line %lu:\nfirst file:\n%ssecond file:\n%s", line, lineA, lineB);
+				return false;
+			}
+			if (*ptrA == 0)
+			{
+				break;
+			}
+			ptrA++;
+			ptrB++;
+		}
+	}
+#undef LINE_SIZE
 }
