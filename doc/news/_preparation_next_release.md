@@ -57,6 +57,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### Length
+
+- Implement a plugin that validates that a string length is less or equal to given number. _(Philipp Oppel)_
+
 ### Blacklist
 
 - Implement a blacklist plugin that rejects values specified in a metadata array. _(Robert Sowula)_
