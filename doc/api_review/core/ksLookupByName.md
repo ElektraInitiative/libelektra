@@ -88,11 +88,13 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-       - [ ] `name == NULL`
+       - [x] `name == NULL`
 - [ ] All possible enum values are covered by tests  
-       - [ ] `KDB_O_DEL`
+       - [ ] `KDB_O_DEL`  
+       // todo
 - [ ] No inconsistencies between tests and documentation  
-       - [ ] several flags used in test, that cant be found in the documentation for `ksLookup()` or `elektraLookupFlags`
+       - [ ] several flags used in test, that cant be found in the documentation for `ksLookup()` or `elektraLookupFlags`  
+       // todo
 
 ## Summary
 

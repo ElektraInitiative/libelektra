@@ -88,9 +88,9 @@
 - [ ] Function code is fully covered by tests  
        - [ ] Line 1576
 - [ ] All possible error states are covered by tests  
-       - [ ] add test case for `ks == NULL`  
-       - [ ] add test case for `ks->size == 0`  
-       - [ ] check if `ksCurrent == ksTail` if `ksNext == NULL`
+       - [x] add test case for `ks == NULL`  
+       - [x] add test case for `ks->size == 0`  
+       - [x] check if `ksCurrent == ksTail` if `ksNext == NULL`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

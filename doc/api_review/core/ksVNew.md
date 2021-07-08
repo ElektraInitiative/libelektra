@@ -95,10 +95,10 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] Line 254  
-       - [ ] Line 270
+       - [x] Line 254  
+       - [x] Line 270
 - [ ] All possible error states are covered by tests  
-       - [ ] above error cases seem hard to test
+       - [x] above error cases seem hard to test
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

@@ -90,11 +90,11 @@
        - [ ] fully covered yes, but no return value is ever checked  
        - [ ] add test case for the example at least
 - [ ] All possible error states are covered by tests  
-       - [ ] `ks == NULL`  
-       - [ ] `cutpoint == NULL`  
-       - [ ] `!ks->array`  
-       - [ ] `cutpoint->key == NULL`  
-       - [ ] `cutpoint->key == ''`
+       - [x] `ks == NULL`  
+       - [x] `cutpoint == NULL`  
+       - [x] `!ks->array`  
+       - [x] `cutpoint->key == NULL`  
+       - [x] `cutpoint->key == ''`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

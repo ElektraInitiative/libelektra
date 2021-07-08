@@ -84,10 +84,10 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] Line 923
+       - [x] Line 923
 - [ ] All possible error states are covered by tests  
-       - [ ] add test case for `ks == NULL`  
-       - [ ] add test case for `toAppend == NULL`
+       - [x] add test case for `ks == NULL`  
+       - [x] add test case for `toAppend == NULL`
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
