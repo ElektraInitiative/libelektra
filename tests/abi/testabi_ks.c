@@ -85,6 +85,8 @@ static void test_ksNew (void)
 
 	succeed_if (ksCurrent (ks_c) == 0, "should be rewinded");
 	ksDel (ks_c);
+
+	succeed_if (ksDel (0) == -1, "No error on NULL pointer");
 }
 
 static void test_ksEmpty (void)
@@ -171,6 +173,13 @@ static void test_ksReference (void)
 
 	ks = ksNew (0, KS_END);
 	k1 = keyNew ("user:/aname", KEY_END);
+
+	succeed_if (ksHead (0) == 0, "Not NULL on NULL KeySet");
+	succeed_if (ksTail (0) == 0, "Not NULL on NULL KeySet");
+
+	succeed_if (ksHead (ks) == 0, "Not NULL on empty KeySet");
+	succeed_if (ksTail (ks) == 0, "Not NULL on empty KeySet");
+
 	succeed_if (keyGetRef (k1) == 0, "reference counter of new key");
 	succeed_if (ksAppendKey (ks, k1) == 1, "size should be one");
 	succeed_if (keyGetRef (k1) == 1, "reference counter of inserted key");
@@ -272,6 +281,8 @@ static void test_ksDup (void)
 
 	printf ("Test ks duplication\n");
 
+	succeed_if (ksDup (0) == 0, "No error on NULL pointer");
+
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
 	other = ksDup (ks);
 	succeed_if (other, "other creation failed");
@@ -331,6 +342,15 @@ static void test_ksCopy (void)
 	KeySet * other = 0;
 
 	printf ("Test ks copy\n");
+
+	exit_if_fail ((ks = ksNew (1, keyNew ("user:/testro", KEY_END), KS_END)) != 0, "could not create new keyset");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test1", KEY_END)) == 2, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test2", KEY_END)) == 3, "could not append a key");
+	succeed_if (ksAppendKey (ks, keyNew ("user:/test3", KEY_END)) == 4, "could not append a key");
+	succeed_if (ksCopy (0, ks) == -1, "No error on NULL pointer");
+	succeed_if (ksCopy (ks, 0) == 0, "Could not delete ks with ksCopy");
+	succeed_if (ksGetSize (ks) == 0, "ks has keys after deleting with ksCopy");
+	ksDel (ks);
 
 	other = ksNew (0, KS_END);
 	exit_if_fail ((ks = ksNew (0, KS_END)) != 0, "could not create new keyset");
@@ -430,6 +450,14 @@ static void test_ksIterate (void)
 	char name[] = "user:/n";
 
 	printf ("Test keyset iterate\n");
+	succeed_if (ksNext (0) == 0, "No NULL pointer on NULL pointer keyset");
+	succeed_if (ksCurrent (0) == 0, "No NULL pointer on NULL pointer keyset");
+	succeed_if (ksRewind (0) == -1, "No error on NULL pointer");
+
+	succeed_if (ksCurrent (ks) == 0, "No NULL pointer on empty keyset");
+	succeed_if (ksNext (ks) == 0, "No NULL pointer on empty keyset");
+	succeed_if (ksRewind (ks) == 0, "Cannot rewind empty keyset");
+
 	ksAppendKey (ks, keyNew ("user:/1", KEY_END));
 	ksAppendKey (ks, keyNew ("user:/2", KEY_END));
 	ksAppendKey (ks, keyNew ("user:/3", KEY_END));
@@ -439,6 +467,8 @@ static void test_ksIterate (void)
 
 	succeed_if (ksRewind (ks) == 0, "Could not rewind keyset");
 	succeed_if (ksRewind (ks) == 0, "Could not rewind keyset twice");
+
+	succeed_if (ksGetCursor (ks) == -1, "Internal cursor after rewinding is set");
 
 	succeed_if (ksNext (ks) != 0, "Could not get first key");
 	succeed_if_same_string (keyName (ksCurrent (ks)), "user:/1");
@@ -630,6 +660,8 @@ static void test_ksAtCursor (void)
 		Key * other = ksAtCursor (ks, cursor);
 		succeed_if_same_string (keyName (current), keyName (other));
 	}
+
+	succeed_if (ksAtCursor (ks, 5) == 0, "Not NULL on invalid cursor position");
 
 	/* test whether the correct key is returned even if
 	 * the internal cursor is positioned somewhere else */
@@ -1424,6 +1456,13 @@ static void test_ksAppend (void)
 
 	printf ("Test appending keys\n");
 
+	Key * key = keyNew ("user:/test", KEY_END);
+	KeySet * ks = ksNew (0, KS_END);
+	succeed_if (ksAppendKey (0, key) == -1, "No error on NULL pointer");
+	succeed_if (ksAppendKey (ks, 0) == -1, "No error on NULL pointer");
+	ksDel (ks);
+	keyDel (key);
+
 	KeySet * returned =
 #include "data_keyset.c"
 		KeySet * testDirectBelow =
@@ -1490,13 +1529,16 @@ static void test_ksAppend (void)
 	ksDel (testDirectBelow);
 	ksDel (returned);
 
-	KeySet * ks = ksNew (0, KS_END);
+	ks = ksNew (0, KS_END);
 	ksAppendKey (ks, keyNew ("user:/abc", KEY_META, "xyz", "egh", KEY_END));
 
 	KeySet * other = ksNew (0, KS_END);
 	ksAppend (other, ks);
 	compare_keyset (ks, other);
 	compare_keyset (ks, ks);
+
+	succeed_if (ksAppend (ks, 0) == -1, "No error on NULL pointer");
+	succeed_if (ksAppend (0, ks) == -1, "No error on NULL pointer");
 
 	ksDel (other);
 	ksDel (ks);
@@ -1847,6 +1889,8 @@ static void test_ksSync (void)
 	KeySet * ks;
 	Key * key;
 
+	succeed_if (ksNeedSync (0) == -1, "no error on NULL pointer");
+
 	ks = ksNew (0, KS_END);
 	succeed_if (ksNeedSync (ks) == 0, "need sync after creation");
 
@@ -2186,6 +2230,10 @@ static void test_cut (void)
 
 	orig = ksNew (0, KS_END);
 	cutpoint = keyNew ("user:/b", KEY_END);
+
+	succeed_if (ksCut (0, cutpoint) == 0, "No Error on NULL pointer");
+	succeed_if (ksCut (orig, 0) == 0, "No Error on NULL pointer");
+
 	result = ksCut (orig, cutpoint);
 	succeed_if (result, "result is null");
 	succeed_if (ksGetSize (result) == 0, "result not empty");
@@ -2568,6 +2616,8 @@ static void test_cursor (void)
 
 	KeySet * config = set_simple ();
 
+	succeed_if (ksGetCursor (0) == -1, "No error on NULL pointer");
+
 	ksRewind (config);
 	succeed_if (ksGetCursor (config) == -1, "should be invalid cursor");
 	succeed_if (ksNext (config) != 0, "should be root key");
@@ -2616,6 +2666,9 @@ static void test_cursor (void)
 
 	succeed_if (ksGetSize (config) == 2, "should be only three keys remaining: root, mountpoint");
 
+	succeed_if (ksSetCursor (0, 1) == -1, "No error on NULL keyset");
+	succeed_if (ksSetCursor (config, -1) == 0, "No error on invalid position");
+	succeed_if (ksSetCursor (config, 2) == 1, "Can not set cursor to KeySet");
 
 	ksDel (setplugins);
 	ksDel (getplugins);
@@ -2722,7 +2775,12 @@ static void test_simpleLookup (void)
 	succeed_if_same_string (keyName (k1), "user:/something");
 	succeed_if_same_string (keyString (k1), "a value");
 
-	keyDel (searchKey);
+	Key * returnedKey;
+	returnedKey = ksLookup (ks, searchKey, KDB_O_DEL);
+	succeed_if_same_string (keyName (returnedKey), keyName (dup));
+	succeed_if_same_string (keyString (returnedKey), keyString (dup));
+	succeed_if (ksGetSize (ks) == 1, "key deleted from keyset");
+
 	ksDel (ks);
 }
 

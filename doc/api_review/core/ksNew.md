@@ -91,7 +91,7 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-       - [ ] see review for `ksVNew()` as this is a wrapper for this
+       - [x] see review for `ksVNew()` as this is a wrapper for this
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

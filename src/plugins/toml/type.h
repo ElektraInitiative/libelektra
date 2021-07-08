@@ -230,4 +230,7 @@ bool validLocalDateValues (const char * str);
 
 bool validLocalTimeValues (const char * str);
 
+
+bool isValidNumberBase (const char * str, unsigned long long base);
+
 #endif // ELEKTRA_PLUGIN_TOML_TYPE_H

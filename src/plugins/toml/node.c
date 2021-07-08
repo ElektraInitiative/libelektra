@@ -289,3 +289,8 @@ static NodeType getNodeType (Key * key)
 		return NT_LEAF;
 	}
 }
+
+bool isFirstChildren (const Node * node)
+{
+	return node->parent != NULL && node->parent->children[0] == node;
+}

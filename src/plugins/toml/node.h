@@ -12,6 +12,7 @@
 #define ELEKTRA_PLUGIN_TOML_NODE_H
 
 #include <kdb.h>
+#include <stdbool.h>
 
 typedef enum
 {
@@ -56,5 +57,7 @@ Node * buildTree (Node * parent, Key * root, KeySet * keys);
  * @params node Tree to be freed
  * */
 void destroyTree (Node * node);
+
+bool isFirstChildren (const Node * node);
 
 #endif // ELEKTRA_PLUGIN_TOML_NODE_H

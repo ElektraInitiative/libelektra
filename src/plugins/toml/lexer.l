@@ -7,20 +7,23 @@
  */
 
 %{
+#include <kdbassert.h>
+#include <kdbhelper.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdarg.h>
-#include <kdbassert.h>
-#include <stdbool.h>
-#include <kdbhelper.h>
+#include <limits.h>
 
+#include "codepoint.h"
+#include "driver.h"
+#include "error.h"
 #include "parser.h"
 #include "scalar.h"
-#include "driver.h"
-#include "codepoint.h"
-#include "error.h"
 #include "utility.h"
+#include "type.h"
+#include "integer.h"
 
 #define BASIC_TERMINATOR '\"'
 #define LITERAL_TERMINATOR '\''
@@ -71,6 +74,7 @@ bin_char [01]
 decimal {dec_nzero}("_"?{dec_char})*
 decimal_leading_zeros {dec_char}("_"?{dec_char})*
 decimal_pm [+-]?{decimal}
+decimal_pm_leading_zeros [+-]?{decimal_leading_zeros}
 
 bare_char [-_]|{alnum}
 
@@ -148,7 +152,17 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 }
 
 {decimal_pm} {
-	yylval.scalar = createScalarDup (SCALAR_INTEGER_DEC, yytext, yylineno);
+	if (isValidInteger (yytext, 10))
+	{
+		yylval.scalar = createScalarDup (SCALAR_INTEGER_DEC, yytext, yylineno);
+	}
+	else
+	{
+		yylval.scalar = NULL;
+		driverError (driver, ERROR_SEMANTIC, yylineno,
+			     "Found decimal number that is too big or small, must be in range [%lld, %lld], but found %s", LLONG_MIN,
+			     LLONG_MAX, yytext);
+	}
 	return DECIMAL;
 }
 
@@ -158,26 +172,50 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 }
 
 "0x"{hex_char}("_"?{hex_char})* {
-	yylval.scalar = createScalarDup (SCALAR_INTEGER_HEX, yytext, yylineno);
+	if (isValidInteger (yytext, 16))
+	{
+		yylval.scalar = createScalarDup (SCALAR_INTEGER_HEX, yytext, yylineno);
+	}
+	else
+	{
+		yylval.scalar = NULL;
+		driverError (driver, ERROR_SEMANTIC, yylineno, "Found hexadecimal number that is too big, maximum is 0x%llX, but found %s", ULLONG_MAX, yytext);
+	}
 	return HEXADECIMAL;
 }
 
 "0o"{oct_char}("_"?{oct_char})* {
-	yylval.scalar = createScalarDup (SCALAR_INTEGER_OCT, yytext, yylineno);
+	if (isValidInteger (yytext, 8))
+	{
+		yylval.scalar = createScalarDup (SCALAR_INTEGER_OCT, yytext, yylineno);
+	}
+	else
+	{
+		yylval.scalar = NULL;
+		driverError (driver, ERROR_SEMANTIC, yylineno, "Found octal number that is too big, maximum is 0o%llo, but found %s", ULLONG_MAX, yytext);
+	}
 	return OCTAL;
 }
 
 "0b"{bin_char}("_"?{bin_char})* {
-	yylval.scalar = createScalarDup (SCALAR_INTEGER_BIN, yytext, yylineno);
+	if (isValidInteger (yytext, 2))
+	{
+		yylval.scalar = createScalarDup (SCALAR_INTEGER_BIN, yytext, yylineno);
+	}
+	else
+	{
+		yylval.scalar = NULL;
+		driverError (driver, ERROR_SEMANTIC, yylineno, "Found binary number that is too big, maximum is 64 bits, but found %s", yytext);
+	}
 	return BINARY;
 }
 
-{decimal_pm}("."{decimal_leading_zeros})?([eE]{decimal_pm})?  {
+{decimal_pm}("."{decimal_leading_zeros})?([eE]{decimal_pm_leading_zeros})?  {
 	yylval.scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yylineno);
 	return FLOAT;
 }
 
-("+"|"-")?"0"("."{decimal_leading_zeros})?([eE]{decimal_pm})?  {
+("+"|"-")?"0"("."{decimal_leading_zeros})?([eE]{decimal_pm_leading_zeros})?  {
 	yylval.scalar = createScalarDup (SCALAR_FLOAT_NUM, yytext, yylineno);
 	return FLOAT;
 }
@@ -233,17 +271,19 @@ time_num_offset [+-]{digit}{2}":"{digit}{2}
 
 %%
 
-void initializeLexer(FILE * file) {
+void initializeLexer (FILE * file)
+{
 	yylineno = 1;
-	BEGIN(0);
-    yyrestart(file);
+	BEGIN (0);
+	yyrestart (file);
 	// yy_flush_buffer(YY_CURRENT_BUFFER);
 	// yyin = file;
 }
 
-void clearLexer(void) {
+void clearLexer (void)
+{
 	// yy_delete_buffer(YY_CURRENT_BUFFER);
-	yylex_destroy();
+	yylex_destroy ();
 }
 
 static inline bool validAscii (char c)
@@ -286,10 +326,18 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 			}
 			terminatorCount++;
 		}
-		else if (!isMultiline && c == '\n') {
+		else if (!isMultiline && c == '\n')
+		{
 			driverError (driver, ERROR_SYNTACTIC, yylineno,
-				     "Malformed Input: Found newline in non-multiline string, but is only allowed in multiline strings");
-			return bufferConsume(buffer);
+				     "Malformed Input: Found newline while reading a non-multiline string, but newline is only allowed in "
+				     "multiline strings.");
+			return bufferConsume (buffer);
+		}
+		else if (c == 0x00)
+		{
+			driverError (driver, ERROR_SYNTACTIC, yylineno,
+				     "Malformed Input: Found end of file while reading string, expected to find closing string quotes.");
+			return bufferConsume (buffer);
 		}
 		else if (validAscii (c))
 		{
@@ -310,6 +358,10 @@ static char * readString (char terminatorChar, bool isMultiline, Driver * driver
 		{
 			unput (c);
 			readNonAsciiChar (buffer, driver);
+		}
+		if (terminatorCount > 0 && c != terminatorChar)
+		{
+			terminatorCount = 0;
 		}
 	}
 	return bufferConsume (buffer);
@@ -406,7 +458,7 @@ static void handleEscapedSequence (Buffer * buffer, bool isMultiline, Driver * d
 		readHex (buffer, 4, driver);
 		if (!validUtf8FromUnicode (&buffer->data[buffer->index - 4], 4))
 		{
-			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape");
+			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape sequence");
 		}
 
 		break;
@@ -415,7 +467,7 @@ static void handleEscapedSequence (Buffer * buffer, bool isMultiline, Driver * d
 		readHex (buffer, 8, driver);
 		if (!validUtf8FromUnicode (&buffer->data[buffer->index - 8], 8))
 		{
-			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape");
+			driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid unicode escape sequence");
 		}
 		break;
 	default:
@@ -437,8 +489,9 @@ static void handlePossibleLineEndingBackslash (Buffer * buffer, Driver * driver)
 		c = input ();
 		if (c != '\n')
 		{
-			driverError (driver, ERROR_SYNTACTIC, yylineno,
-				     "Malformed Input: Invalid Line Ending sequence, expected NL after CR, but got 0x%02X", c);
+			driverError (
+				driver, ERROR_SYNTACTIC, yylineno,
+				"Malformed Input: Invalid line ending sequence, expected newline after carriage return, but got 0x%02X", c);
 		}
 		else
 		{
@@ -464,7 +517,7 @@ static void readHex (Buffer * buffer, size_t count, Driver * driver)
 		if (!validHex (c))
 		{
 			driverError (driver, ERROR_SYNTACTIC, yylineno,
-				     "Malformed Input: Invalid unicode escape char, expected hex char, got : '%c'", c);
+				     "Malformed Input: Invalid unicode escape char, expected hexadecimal char, got : '%c'", c);
 		}
 		bufferAddChar (buffer, c, driver);
 	}
@@ -484,7 +537,10 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver)
 			c = (unsigned char) input ();
 			if (c < 0x80 || c >= 0xC0)
 			{
-				driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed Input: Invalid utf8 sequence");
+				driverError (
+					driver, ERROR_SYNTACTIC, yylineno,
+					"Malformed Input: Invalid utf8 sequence, expected char to be in range 0x80-0xBF, but was 0x%02X",
+					c);
 			}
 			else
 			{
@@ -494,7 +550,9 @@ static void readNonAsciiChar (Buffer * buffer, Driver * driver)
 	}
 	else if (utfLen == 1)
 	{
-		driverError (driver, ERROR_SYNTACTIC, yylineno, "Malformed input: No Ascii char allowed at this point, but foun: 0x%02X",
+		driverError (driver, ERROR_SYNTACTIC, yylineno,
+			     "Malformed input: Character '0x%02X' is not valid ascii, but utf-8 sequence is of len 1, expected length "
+			     "greater than 1.",
 			     c);
 	}
 	else

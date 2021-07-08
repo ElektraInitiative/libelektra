@@ -167,11 +167,11 @@ void driverExitKey (Driver * driver)
 		return;
 	}
 	Key * existing = ksLookup (driver->keys, driver->currKey, 0);
-	if (existing != NULL && !isTableArray (existing))
+	if (existing != NULL && !isTableArray (existing) && keyCmp (existing, driver->root) != 0)
 	{
 		// Only allow table array keys to be read multiple times
-		driverError (driver, ERROR_SEMANTIC, driver->currLine, "Malformed input: Multiple occurences of keyname: '%s'",
-			     keyName (existing));
+		driverError (driver, ERROR_SEMANTIC, driver->currLine,
+			     "Malformed input: Multiple occurences of keyname '%s', but keynames must be unique.", keyName (existing));
 	}
 
 	pushCurrKey (driver);
@@ -316,11 +316,12 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 			}
 			else
 			{
-				driverError (driver, ERROR_SEMANTIC, name->line,
-					     "Malformed input: Invalid simple key: '%s' contains invalid characters, only alphanumeric, "
-					     "underline, "
-					     "hyphen allowed",
-					     name->str);
+				driverError (
+					driver, ERROR_SEMANTIC, name->line,
+					"Malformed input: Invalid bare simple key: '%s' contains invalid characters, only alphanumeric, "
+					"underline, "
+					"hyphen allowed. Consider adding quotations around the string.",
+					name->str);
 			}
 			elektraFree (first);
 			elektraFree (second);
@@ -330,9 +331,10 @@ void driverExitSimpleKey (Driver * driver, Scalar * name)
 	default: // check validity
 		if (!isValidBareString (name->str))
 		{
-			driverError (driver, ERROR_SEMANTIC, name->line,
-				     "Malformed input: Invalid simple key: '%s' contains invalid characters, only alphanumeric, underline, "
-				     "hyphen allowed");
+			driverError (
+				driver, ERROR_SEMANTIC, name->line,
+				"Malformed input: Invalid bare simple key: '%s' contains invalid characters, only alphanumeric, underline, "
+				"hyphen allowed. Consider adding quotations around the string.");
 		}
 		break;
 	}
@@ -360,7 +362,9 @@ void driverExitValue (Driver * driver, Scalar * scalar)
 	switch (scalar->type)
 	{
 	case SCALAR_STRING_BARE: // No bare on rhs allowed
-		driverError (driver, ERROR_SEMANTIC, scalar->line, "Malformed input: Found bare string on rhs, but is not allowed");
+		driverError (
+			driver, ERROR_SEMANTIC, scalar->line,
+			"Malformed input: Found a bare string value, which is not allowed. Consider adding quotations around the string.");
 		break;
 	case SCALAR_DATE_OFFSET_DATETIME:
 	case SCALAR_DATE_LOCAL_DATETIME:
@@ -786,14 +790,11 @@ static void resetCurrKey (Driver * driver)
 
 static void extendCurrKey (Driver * driver, const char * name)
 {
+	ELEKTRA_ASSERT (name != NULL, "Name extension must not be NULL, but was");
 	if (driver->currKey == NULL)
 	{
 		driverError (driver, ERROR_INTERNAL, 0, "Wanted to extend current key, but current key is NULL.");
 		return;
-	}
-	if (elektraStrLen (name) == 1)
-	{
-		driverError (driver, ERROR_SYNTACTIC, 0, "Wanted to extend current key with empty name, but mustn't be empty.");
 	}
 	keyAddBaseName (driver->currKey, name);
 }
@@ -936,7 +937,10 @@ static bool handleSpecialStrings (const char * string, Key * key)
 static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, char terminator, int terminatorCount,
 				  Driver * driver)
 {
-	if (elektraStrLen (translatedStr) > 1) // only assign it on non-empty strings, otherwise the type plugin complains
+	const Key * metaType = keyGetMeta (key, "type");
+	// Don't overwrite "binary" typed metakeys -> See base64 plugin meta mode
+	// Don't assign it empty strings, otherwise the type plugin complains
+	if ((metaType == NULL || elektraStrCmp (keyString (metaType), "binary") != 0) && elektraStrLen (translatedStr) > 1)
 	{
 		keySetMeta (key, "type", "string");
 	}
