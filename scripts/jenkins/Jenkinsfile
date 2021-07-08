@@ -726,6 +726,7 @@ def buildTodo() {
         utils.archive(["sloccount.sc"])
         deleteDir()
       }
+      cleanWs()
     }
   }]
 }
@@ -739,6 +740,7 @@ def buildCheckReleaseNotes() {
         sh "scripts/build/run_check_release_notes"
         deleteDir()
       }
+      cleanWs()
     }
   }]
 }
@@ -752,6 +754,7 @@ def buildIcheck() {
         sh "scripts/build/run_icheck"
         deleteDir()
       }
+      cleanWs()
     }
   }]
 }
@@ -767,6 +770,7 @@ def buildFormatChecks() {
           ctest("Test -R testscr_check_formatting")
         }
       }
+      cleanWs()
     }
   }]
 }
@@ -832,6 +836,7 @@ def buildDoc() {
         )
         deleteDir()
       }
+      cleanWs()
     }
   }]
 }
@@ -857,6 +862,7 @@ def buildAndTestAsan(testName, image, extraCmakeFlags = [:]) {
           }
         }
       }
+      cleanWs()
     }
   }]
 }
@@ -879,6 +885,7 @@ def buildAndTestMingwW64() {
           utils.archive(['elektra.zip'])
         }
       }
+      cleanWs()
     }
   }]
 }
@@ -1002,6 +1009,7 @@ constants/constants\\.c|\
           deleteDir()
         }
       }
+      cleanWs()
     }
   }]
 }
@@ -1159,6 +1167,7 @@ def buildPackage(stageName, image, repoName, repoPrefix, installImage,
           }
         }
       }
+      cleanWs()
     }
   }]
 }
