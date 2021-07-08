@@ -84,13 +84,13 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] L417  
-       - [ ] L422  
-       - [ ] L427
+       - [x] L417  
+       - [x] L422  
+       - [x] L427
 - [ ] All possible error states are covered by tests  
-       - [ ] add test for key with string value  
-       - [ ] L422 seems to be in the tests - check  
-       - [ ] L427 seems to be in the tests - check
+       - [x] add test for key with string value  
+       - [x] L422 seems to be in the tests - check  
+       - [x] L427 seems to be in the tests - check
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

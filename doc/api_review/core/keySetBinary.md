@@ -82,7 +82,8 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-       - [ ] text maxSize > SSIZE_MAX
+       - [x] text maxSize > SSIZE_MAX  
+       (impossible to check - overflow)
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

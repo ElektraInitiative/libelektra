@@ -97,8 +97,8 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] Line 198  
-       - [ ] Line 203
+       - [x] Line 198  
+       - [x] Line 203
 - All possible error states are covered by tests
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
