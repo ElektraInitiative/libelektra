@@ -828,8 +828,8 @@ static char * elektraStrConcat (const char * a, const char * b)
 void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * parentKey, Key * initialParent)
 {
 	Key * mountPoint = mountGetMountpoint (handle, keyName (parentKey));
-	const char * mountPointName = mountPoint == NULL ? "" : keyName (mountPoint);
-	const char * mountPointValue = mountPoint == NULL ? "default" : keyString (mountPoint);
+	const char * mountPointName = mountPoint == NULL ? "/" : keyName (mountPoint);
+	const char * mountPointValue = mountPoint == NULL ? "" : keyString (mountPoint);
 	Key * lastParentName = keyNew (KDB_CACHE_PREFIX "/lastParentName", KEY_VALUE, mountPointName, KEY_END);
 	Key * lastParentValue = keyNew (KDB_CACHE_PREFIX "/lastParentValue", KEY_VALUE, mountPointValue, KEY_END);
 	Key * lastInitalParentName = keyNew (KDB_CACHE_PREFIX "/lastInitialParentName", KEY_VALUE, keyName (initialParent), KEY_END);
