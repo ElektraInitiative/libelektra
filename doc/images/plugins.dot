@@ -4,6 +4,8 @@ strict digraph G {
 	augeas -> storage;
 	binary [shape=Mdiamond];
 	base64 -> binary;
+	check [shape=Mdiamond];
+	blacklist -> check;
 	resolver [shape=Mdiamond];
 	blockresolver -> resolver;
 	storage [shape=Mdiamond];
@@ -50,6 +52,8 @@ strict digraph G {
 	dump -> storage;
 	dump [shape=Mdiamond];
 	dump -> dump;
+	check [shape=Mdiamond];
+	email -> check;
 	error [shape=Mdiamond];
 	error -> error;
 	sync [shape=Mdiamond];
@@ -99,6 +103,8 @@ strict digraph G {
 	kconfig -> kconfig;
 	conv [shape=Mdiamond];
 	keytometa -> conv;
+	check [shape=Mdiamond];
+	length -> check;
 	storage [shape=Mdiamond];
 	line -> storage;
 	line [shape=Mdiamond];

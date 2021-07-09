@@ -4,6 +4,8 @@ strict digraph G {
 	augeas -> storage;
 	binary	 [shape=Mdiamond];
 	base64 -> binary;
+	check	 [shape=Mdiamond];
+	blacklist -> check;
 	resolver	 [shape=Mdiamond];
 	resolver -> resolver;
 	blockresolver -> resolver;
@@ -41,6 +43,7 @@ strict digraph G {
 	dump	 [shape=Mdiamond];
 	dump -> storage;
 	dump -> dump;
+	email -> check;
 	error	 [shape=Mdiamond];
 	error -> error;
 	sync	 [shape=Mdiamond];
@@ -63,9 +66,8 @@ strict digraph G {
 	gpgme -> crypto;
 	hexcode -> code;
 	conv	 [shape=Mdiamond];
-	hexnumber -> conv;
-	check	 [shape=Mdiamond];
 	hexnumber -> check;
+	hexnumber -> conv;
 	hosts	 [shape=Mdiamond];
 	hosts -> storage;
 	hosts -> hosts;
@@ -80,6 +82,7 @@ strict digraph G {
 	kconfig -> storage;
 	kconfig -> kconfig;
 	keytometa -> conv;
+	length -> check;
 	line	 [shape=Mdiamond];
 	line -> storage;
 	line -> line;
@@ -122,8 +125,8 @@ strict digraph G {
 	shell	 [shape=Mdiamond];
 	simpleini -> storage;
 	simpleini -> properties;
-	spec -> apply;
 	spec -> check;
+	spec -> apply;
 	specload	 [shape=Mdiamond];
 	specload -> storage;
 	specload -> specload;
