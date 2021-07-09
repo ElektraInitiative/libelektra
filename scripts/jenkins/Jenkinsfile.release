@@ -616,6 +616,10 @@ def buildRelease(stageName, image, packageRevision='1',
           sh "gpg --import $KEY"
           sh "gpg --import $SKEY"
 
+          sh "mkdir -p ${WORKSPACE}/config/kdb/system || /bin/true"
+          sh "mkdir -p ${WORKSPACE}/config/kdb/spec || /bin/true"
+          sh "mkdir -p ${WORKSPACE}/config/kdb/home || /bin/true"
+
           configureGitUser()
           def dirStructure = './'
           if (placeholderDir) {
