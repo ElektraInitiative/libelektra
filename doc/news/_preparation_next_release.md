@@ -35,7 +35,7 @@ The **experimental** [ElektraSettings](../../src/bindings/gsettings/README.md) G
 
 ### TOML Improvements
 
-Multiple critical bugs have been fixed in the **experimental** `TOML` plugin _[see below](#hl-1)_. We are currently working towards using the `TOML` plugin as the default [stroage plugin](../../src/plugins/README.md#storage) for Elektra. _(Klemens Böswirth and Jakob Fischer)_
+Multiple critical bugs have been fixed in the **experimental** `TOML` plugin _[see below](#hl-1)_. We are currently working towards using the `TOML` plugin as the default [stroage plugin](https://github.com/ElektraInitiative/libelektra/blob/master/src/plugins/README.md#storage) for Elektra. _(Klemens Böswirth and Jakob Fischer)_
 
 ## Plugins
 
