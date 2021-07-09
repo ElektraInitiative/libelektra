@@ -1,17 +1,9 @@
 # 0.9.<<VERSION>> Release
 
-This release did not happen yet.
-
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial (checked by
-shell recorder) or asciinema for highlighted items.
-
-Please add your name at the end of every contribution.
-**Syntax:** _(your name)_
-
-<<`scripts/generate-news-entry`>>
+- guid: 39F907DA-8B5B-4984-9D19-33BAB7B71B3D
+- author: Mihael Pranjić
+- pubDate: Fri, 09 Jul 2021 10:19:29 +0200
+- shortDesc: FUSE Tool, TOML Improvements, ElektraSettings GSettings Bindings
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -33,17 +25,17 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- Add **experimental** preview of Filesystem in User Space [FUSE](../../src/tools/fuse/README.md) tool. This tool enables the inspection and modification of the KDB, in the form of a classical filesystem. _(Alexander Firbas)_
+### FUSE Tool
 
-- <<HIGHLIGHT1>>
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+We added an **experimental** preview of the Filesystem in User Space [FUSE](../../src/tools/fuse/README.md) tool. This tool enables the inspection and modification of the KDB, in the form of a classical filesystem. _(Alexander Firbas)_
 
-### <<HIGHLIGHT1>>
+### ElektraSettings GSettings Backend
 
-### <<HIGHLIGHT2>>
+The **experimental** [ElektraSettings](../../src/bindings/gsettings/README.md) GSettings backend has been updated and is working well with GNOME 40. We do not recommend to use it on production systems yet, but we have been testing ElektraSettings as a replacement for `dconf` successfully and want to share the progess with you. If you want to try ElektraSettings back up all your data first. _(Mihael Pranjić)_
 
-### <<HIGHLIGHT2>>
+### TOML Improvements
+
+Multiple critical bugs have been fixed in the **experimental** `TOML` plugin _[see below](#hl-1)_. We are currently working towards using the `TOML` plugin as the default [stroage plugin](../../src/plugins/README.md#storage) for Elektra. _(Klemens Böswirth and Jakob Fischer)_
 
 ## Plugins
 
@@ -56,8 +48,6 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### Resolver
 
 - Fix invalid cache key name. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ### Length
 
@@ -67,9 +57,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - Implement a blacklist plugin that rejects values specified in a metadata array. _(Robert Sowula)_
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+<a id="hl-1"></a>
 
 ### TOML
 
@@ -82,43 +70,16 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### Python
 
 - Fix format string overflow and add error checking when appending to `sys.path`. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
-
-### Compatibility
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Core
 
 - A few rare bugs (mostly related to empty keyname parts `/%/`) in the keyname validation and canonicalization logic
   have been fixed. _(Klemens Böswirth)_
 - Fix default backend key name for cache compatibility. _(Mihael Pranjić)_
-- <<TODO>>
-
-### <<Library1>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library2>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -130,26 +91,14 @@ you up to date with the multi-language support provided by Elektra.
 - Currently the binding's automated clean-up of native keys and key sets is deactivated until JNI segmentation fault issues are resolved in an upcoming release. After these issues have been resolved, manual clean-up of native resources will be discouraged. Therefore the `Key::get*AndRelease` convenience methods introduced with the last release have been removed. _(Michael Tucek)_
 - Upgrade Gradle to 7.1.1. _(Mihael Pranjić)_
 
-### <<Binding2>>
-
-### <<Binding3>>
-
 ### Gsettings
 
 - Fix user and default (system) namespaces and key names. _(Mihael Pranjić)_
 - Rewrite `dbus` change notification mechanism. _(Mihael Pranjić)_
 
-## Tools
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ## Scripts
 
 - Add a script that automates the process of inserting source archive hashsums and git statistics into the release notes during a release. _(Robert Sowula)_
-- <<TODO>>
-- <<TODO>>
 
 ## Documentation
 
@@ -157,54 +106,27 @@ you up to date with the multi-language support provided by Elektra.
 - Small updates in notification tutorial. _(Markus Raab)_
 - Add [/doc/tutorial/specification.md]. _(Aaron Abebe <aaron.abebe@gmail.com>)_
 - Change GPG keyserver for receiving the apt key from keys.gnupg.net to keyserver.ubuntu.com _(Robert Sowula)_
-- <<TODO>>
 - The manpages now use the date of the last change recorded in git. _(Klemens Böswirth)_
-- <<TODO>>
 
 ## Tests
 
-- <<TODO>>
 - Upgrade GoogleTest frameworks to version 1.11.0. _(Mihael Pranjić)_
 - Add additional test cases for module `key`. _(@lawli3t)_
 - Add additional test cases for module `keyname`. _(@lawli3t)_
 - Add additional test cases for module `keyvalue`. _(@lawli3t)_
 - Add tests for module `keyset`. _(@lawli3t)_
-- <<TODO>>
-- <<TODO>>
 
 ## Packaging
 
 - Add packages for following bindings: `glib`, `io_ev`, `io_glib` and `io_uv`. _(Robert Sowula)_
-- <<TODO>>
-- <<TODO>>
 
 ## Build
-
-### CMake
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Docker
 
 - Upgrade Alpine Linux images to 3.14.0. _(Mihael Pranjić)_
-- <<TODO>>
-- <<TODO>>
 
 ## Infrastructure
-
-### Cirrus
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### GitHub Actions
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ### Jenkins
 
@@ -213,28 +135,21 @@ you up to date with the multi-language support provided by Elektra.
 - Fix invalid package artifact path in release pipeline. _(Robert Sowula)_
 - Clean Jenkins workspaces after builds. _(Mihael Pranjić)_
 
-### Travis
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-## Website
-
-The website is generated from the repository, so all information about
-plugins, bindings and tools are always up to date. Furthermore, we changed:
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Elektrify KDE _(Dardan Haxhimustafa)_, _(Felix Resch)_ and _(Mihael Pranjić)_
+- 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth)_
+- Improve Java Development Experience _(Michael Tucek)_
+- Elektrify GNOME _(Mihael Pranjić)_
+- Continious Releases _(Robert Sowula)_
+- KDB access using FUSE _(Alexander Firbas)_
+- Default TOML plugin _(Jakob Fischer)_ and _(Klemens Böswirth)_
+- Improve Plugin Framework _(Klemens Böswirth)_
+- Improve 3-way merge _(Dominic Jäger)_
+- Shell completion _(Ulrike Schäfer)_
+- Ansible module _(Thomas Waser)_
 
 ## Statistics
 
