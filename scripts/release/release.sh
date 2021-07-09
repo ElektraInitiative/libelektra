@@ -64,6 +64,7 @@ install_elektra() {
 
 run_updates() {
 	echo "Running updates..."
+	rm -rf $BASE_DIR/$VERSION
 	mkdir $BASE_DIR/$VERSION
 
 	# regenerate dot of plugins
