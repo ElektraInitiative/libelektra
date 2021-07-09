@@ -610,12 +610,11 @@ def buildRelease(stageName, image, packageRevision='1',
                  bundleRepo=false, placeholderDir=false) {
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
+      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR, DockerOpts.NO_CHECKOUT]) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"
           sh "gpg --import $SKEY"
-          sh 'rm -rf ./*'
 
           configureGitUser()
           def dirStructure = './'
