@@ -442,7 +442,7 @@ def generateDebPackagePublishStages() {
 
   tasks << publish(
     'debian-buster',
-    DOCKER_IMAGES.buster_installed.context,
+    'buster',
     'buster',
     'buster',
     release.&publishDebPackages,
@@ -451,7 +451,7 @@ def generateDebPackagePublishStages() {
 
   tasks << publish(
     'debian-bullseye',
-    DOCKER_IMAGES.bullseye_installed.context,
+    'bullseye',
     'bullseye',
     'bullseye',
     release.&publishDebPackages,
@@ -460,7 +460,7 @@ def generateDebPackagePublishStages() {
 
   tasks << publish(
     'ubuntu-focal',
-    DOCKER_IMAGES.focal_installed.context,
+    'focal',
     'focal',
     'focal',
     release.&publishDebPackages,
@@ -469,7 +469,7 @@ def generateDebPackagePublishStages() {
 
   tasks << publish(
     'ubuntu-bionic',
-    DOCKER_IMAGES.bionic_installed.context,
+    'bionic',
     'bionic',
     'bionic',
     release.&publishDebPackages,
@@ -505,7 +505,7 @@ def generatePublishStages() {
   // no shared DB is used.
   tasks << publish(
     'fedora-33',
-    DOCKER_IMAGES.fedora_33_installed.context,
+    'fedora33',
     'fedora-33',
     'fedora-33',
     release.&publishRpmPackages,
@@ -514,7 +514,7 @@ def generatePublishStages() {
 
   tasks << publish(
     'fedora-34',
-    DOCKER_IMAGES.fedora_34_installed.context,
+    'fedora34',
     'fedora-34',
     'fedora-34',
     release.&publishRpmPackages,
@@ -718,7 +718,7 @@ def publish(correspondingReleaseStageName, context, repoName,
         copyReleaseArtifact(correspondingReleaseStageName)
         dir('copy') {
           deleteDir()
-          sh "mv ../package/${context}* ./"
+          sh "mv ../${RELEASE_VERSION}/package/${context}/* ./"
 
           publishPackagesFun(
             'doc.libelektra.org',
