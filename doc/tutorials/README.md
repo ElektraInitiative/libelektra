@@ -21,6 +21,7 @@ provides.
 
 - [Hello, Elektra in C](hello-elektra.md)
 - [Integration of your C Application](application-integration.md)
+- [Writing a specification for your configuration](specification.md)
 - [Plugins Introduction](plugins.md)
 - [Storage Plugins](storage-plugins.md)
 - [Compilation Variants of plugins](compilation-variants.md) (advanced topic)
