@@ -1128,12 +1128,11 @@ def buildPackage(stageName, image, repoName, repoPrefix, installImage,
           }
         }
       }
-      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR], postCl) {
+      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR, DockerOpts.NO_CHECKOUT], postCl) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"
           sh "gpg --import $SKEY"
-          sh "rm -R ./*"
           checkout scm: [
             $class: 'GitSCM',
             branches: scm.branches,
