@@ -74,7 +74,19 @@ if (TOOLS MATCHES "NODEP")
 endif ()
 
 if (TOOLS MATCHES "ALL")
-	set (TOOLS_LIST elektrad fuse gen-gpg-testkey hub-zeromq kdb pythongen qt-gui race webd website webui)
+	set (
+		TOOLS_LIST
+		elektrad
+		fuse
+		gen-gpg-testkey
+		hub-zeromq
+		kdb
+		pythongen
+		qt-gui
+		race
+		webd
+		website
+		webui)
 	set (TOOLS_FORCE FORCE)
 	list (REMOVE_ITEM TOOLS ALL)
 endif ()
