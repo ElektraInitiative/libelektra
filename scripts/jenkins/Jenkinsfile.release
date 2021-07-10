@@ -617,7 +617,7 @@ def buildRelease(stageName, image, packageRevision='1',
                  bundleRepo=false, placeholderDir=false) {
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR, DockerOpts.NO_CHECKOUT, DockerOpts.NO_CLEANUP]) {
+      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR, DockerOpts.NO_CHECKOUT]) {
         withCredentials([file(credentialsId: 'jenkins-key', variable: 'KEY'),
                          file(credentialsId: 'jenkins-secret-key', variable: 'SKEY')]) {
           sh "gpg --import $KEY"
@@ -686,7 +686,7 @@ def buildRelease(stageName, image, packageRevision='1',
 def testInstalledPackage(stageName, image) {
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR, DockerOpts.NO_CLEANUP]) {
+      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
         checkout scm
 
         sh "./scripts/release/release-tests.sh ./ ${RELEASE_VERSION} package OFF"
@@ -714,7 +714,7 @@ def publish(correspondingReleaseStageName, context, repoName,
             repoPrefix, publishPackagesFun, packageRevision) {
   return [(correspondingReleaseStageName): {
     stage(correspondingReleaseStageName) {
-      withDockerEnv(DOCKER_IMAGES.buster, [DockerOpts.NO_CLEANUP]) {
+      withDockerEnv(DOCKER_IMAGES.buster) {
         copyReleaseArtifact(correspondingReleaseStageName)
         dir('copy') {
           deleteDir()
@@ -743,7 +743,7 @@ def publishSource(artifactStageName) {
   def stageName = 'publishSourcePackage'
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.buster, [DockerOpts.NO_CLEANUP]) {
+      withDockerEnv(DOCKER_IMAGES.buster) {
         configureGitUser()
         copyReleaseArtifact(artifactStageName)
         dir('ftp') {
@@ -797,7 +797,7 @@ def publishMainRepo(artifactStageName) {
   def stageName = 'publishMainRepo'
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.buster, [DockerOpts.NO_CLEANUP]) {
+      withDockerEnv(DOCKER_IMAGES.buster) {
         configureGitUser()
         copyArtifacts(
           filter: "artifacts/${artifactStageName}/libelektra.bundle",
@@ -833,7 +833,7 @@ def buildDoc() {
   ]
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.sid_doc, [DockerOpts.NO_CLEANUP]) {
+      withDockerEnv(DOCKER_IMAGES.sid_doc) {
         configureGitUser()
 
         dir('build') {
@@ -920,7 +920,7 @@ def buildAndPublishMaven() {
   def stageName = 'publishMavenArtifacts'
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.focal, [DockerOpts.NO_CLEANUP]) {
+      withDockerEnv(DOCKER_IMAGES.focal) {
         withCredentials([file(credentialsId: 'maven-signing-key', variable: 'KEY'),
                          string(credentialsId: 'maven-signing-passphrase', variable: 'PASS'),
                          usernamePassword(credentialsId: 'sonatype-credentials', passwordVariable: 'SONATYPE_PASSWORD', usernameVariable: 'SONATYPE_USERNAME')]) {
