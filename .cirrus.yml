@@ -89,7 +89,7 @@ mac_task:
         image: big-sur-xcode
       env:
         ENABLE_LOGGER: ON
-        TOOLS: ALL;web
+        TOOLS: NODEP
         PLUGINS: ALL;-curlget;-augeas
         # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
         # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
@@ -214,7 +214,7 @@ mac_task:
       -DKDB_DB_SYSTEM="$CIRRUS_WORKING_DIR/system"
       -DKDB_DEFAULT_STORAGE="${KDB_DEFAULT_STORAGE:-dump}"
       -DPLUGINS="${PLUGINS:-ALL}"
-      -DTOOLS="${TOOLS:-ALL}"
+      -DTOOLS="${TOOLS:-NODEP}"
     - *print_cmake_options
     - *generate
     - *build
@@ -318,7 +318,7 @@ docu_task:
       set --
       -DBUILD_PDF=ON
       -DPLUGINS='dump;list;resolver_fm_hpu_b;spec;sync;yajl'
-      -DTOOLS='ALL;web;website'
+      -DTOOLS='ALL'
     - *generate
     - *build
 
