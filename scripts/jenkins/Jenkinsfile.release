@@ -718,7 +718,7 @@ def publish(correspondingReleaseStageName, context, repoName,
         copyReleaseArtifact(correspondingReleaseStageName)
         dir('copy') {
           deleteDir()
-          sh "mv ../${RELEASE_VERSION}/package/${context}/* ./"
+          sh "mv ../release-artifact/${RELEASE_VERSION}/package/${context}/* ./"
 
           publishPackagesFun(
             'doc.libelektra.org',
