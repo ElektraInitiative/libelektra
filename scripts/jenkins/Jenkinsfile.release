@@ -203,42 +203,42 @@ def dockerInit() {
     /* Install and test the built packages with theses images. */
     DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
       'debian-buster-installed', dockerUtils.&idArtifact,
-      'buster',
+      './release-artifact/*/package/buster/',
       './scripts/docker/debian/buster/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bullseye_installed = dockerUtils.createDockerImageDesc(
       'debian-bullseye-installed', dockerUtils.&idArtifact,
-      'bullseye',
+      './release-artifact/*/package/bullseye/',
       './scripts/docker/debian/bullseye/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.focal_installed = dockerUtils.createDockerImageDesc(
       'ubuntu-focal-installed', dockerUtils.&idArtifact,
-      'focal',
+      './release-artifact/*/package/focal/',
       './scripts/docker/ubuntu/focal/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.bionic_installed = dockerUtils.createDockerImageDesc(
       'ubuntu-bionic-installed', dockerUtils.&idArtifact,
-      'bionic',
+      './release-artifact/*/package/bionic/',
       './scripts/docker/ubuntu/bionic/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_33_installed = dockerUtils.createDockerImageDesc(
       'fedora-33-installed', dockerUtils.&idArtifact,
-      'fedora33',
+      './release-artifact/*/package/fedora33/',
       './scripts/docker/fedora/33/package.Dockerfile',
       false
     )
 
     DOCKER_IMAGES.fedora_34_installed = dockerUtils.createDockerImageDesc(
       'fedora-34-installed', dockerUtils.&idArtifact,
-      'fedora34',
+      './release-artifact/*/package/fedora34/',
       './scripts/docker/fedora/34/package.Dockerfile',
       false
     )
@@ -718,7 +718,7 @@ def publish(correspondingReleaseStageName, context, repoName,
         copyReleaseArtifact(correspondingReleaseStageName)
         dir('copy') {
           deleteDir()
-          sh "mv ../${RELEASE_VERSION}/package/${context}/* ./"
+          sh "mv ../package/${context}* ./"
 
           publishPackagesFun(
             'doc.libelektra.org',
