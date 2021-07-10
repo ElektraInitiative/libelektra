@@ -658,7 +658,8 @@ function (generate_manpage NAME)
 				COMMAND
 					${CMAKE_COMMAND} ARGS -D RONN_COMMAND=${RONN_LOC} -D GIT_COMMAND=${GIT_EXECUTABLE} -D
 					MDFILE=${MDFILE} -D SOURCE_FILE=${SOURCE_FILE} -D MANPAGE=${OUTFILE} -P
-					${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake)
+					${CMAKE_SOURCE_DIR}/scripts/cmake/ElektraManPage.cmake
+					WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 			add_custom_target (man-${NAME} ALL DEPENDS ${OUTFILE})
 			add_dependencies (man man-${NAME})
 		endif (RONN_LOC AND GIT_EXECUTABLE)
