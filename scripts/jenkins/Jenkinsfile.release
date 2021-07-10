@@ -47,6 +47,11 @@ properties([
       description: 'True if the statistics and hashsums should be automatically inserted into release notes and moved to final name.',
       name: 'populate_release_notes'
     ),
+    booleanParam(
+      defaultValue: true,
+      description: 'True if the source package should be published. Disable when rebuilding to avoid overwriting existing source packages.',
+      name: 'publish_source_package'
+    ),
     string(
       defaultValue: '',
       description: '[OPTIONAL] Override previous release version. Use if latest git version tag does not correspond to previous released Elektra version.',
@@ -519,7 +524,9 @@ def generatePublishStages() {
   tasks << buildDoc()
 
   // publish source package built in debian-buster stage
-  tasks << publishSource('debian-buster')
+  if (params.publish_source_package) {
+    tasks << publishSource('debian-buster')
+  }
 
   tasks << buildAndPublishMaven()
 
