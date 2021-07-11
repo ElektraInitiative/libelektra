@@ -66,11 +66,13 @@ set (TOOLS_LIST_DEFAULT kdb)
 
 if (TOOLS MATCHES "DEFAULT")
 	set (TOOLS_FORCE FORCE)
+	list (REMOVE_ITEM TOOLS DEFAULT)
 endif ()
 
 if (TOOLS MATCHES "NODEP")
 	set (TOOLS_LIST race)
 	set (TOOLS_FORCE FORCE)
+	list (REMOVE_ITEM TOOLS NODEP)
 endif ()
 
 if (TOOLS MATCHES "ALL")
@@ -92,7 +94,7 @@ if (TOOLS MATCHES "ALL")
 endif ()
 
 set (TOOLS_DOC
-     "Which TOOLS should be added? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set.")
+     "Which TOOLS should be added? Either list individual tools or ALL for all available (including website!), NODEP for TOOLS without additional dependencies, DEFAULT is only kdb.")
 
 set (
 	TOOLS
