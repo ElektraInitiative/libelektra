@@ -199,7 +199,11 @@ We are currently working on following topics:
 
 ## Statistics
 
+We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
+
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
+
+Thanks to all authors for making this release possible!
 
 ## Join the Initiative!
 
