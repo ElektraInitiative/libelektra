@@ -38,7 +38,7 @@
 static int curr_line = 1;
 static int curr_col  = 1;
 
-static void update_loc(){
+static void update_loc (void){
 	yylloc.first_line   = curr_line;
 	yylloc.first_column = curr_col;
 
