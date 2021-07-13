@@ -43,7 +43,6 @@ Remove/Refactor/Rename obsolete/not needed methods:
 - keyGetBinary
 - keySetBinary
 - ksClear
-- ksNeedSync
 - ksCut
 - ksPop
 - ksHead

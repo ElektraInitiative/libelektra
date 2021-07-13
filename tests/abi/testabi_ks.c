@@ -1882,50 +1882,6 @@ static void test_ksLookupPop (void)
 	ksDel (ks);
 }
 
-static void test_ksSync (void)
-{
-	printf ("Test sync flag of KeySet\n");
-
-	KeySet * ks;
-	Key * key;
-
-	succeed_if (ksNeedSync (0) == -1, "no error on NULL pointer");
-
-	ks = ksNew (0, KS_END);
-	succeed_if (ksNeedSync (ks) == 0, "need sync after creation");
-
-	keyDel (ksPop (ks));
-	succeed_if (ksNeedSync (ks) == 1, "need sync after pop");
-	ksDel (ks);
-
-
-	ks = ksNew (0, KS_END);
-	succeed_if (ksNeedSync (ks) == 0, "need sync after creation");
-
-	ksAppendKey (ks, keyNew ("user:/key", KEY_END));
-	succeed_if (ksNeedSync (ks) == 0, "need sync after new key");
-
-	keyDel (ksPop (ks));
-	succeed_if (ksNeedSync (ks) == 1, "need sync after new key");
-	ksDel (ks);
-
-
-	ks = ksNew (0, KS_END);
-	succeed_if (ksNeedSync (ks) == 0, "need sync after creation");
-
-	ksAppendKey (ks, keyNew ("user:/key", KEY_END));
-	succeed_if (ksNeedSync (ks) == 0, "need sync after new key");
-
-	ksLookupByName (ks, "user:/key", 0);
-	succeed_if (ksNeedSync (ks) == 0, "need sync after new key");
-
-	key = ksLookupByName (ks, "user:/key", KDB_O_POP);
-	succeed_if (ksNeedSync (ks) == 1, "need sync after new key");
-	keyDel (key);
-
-	ksDel (ks);
-}
-
 static void test_ksDoubleFree (void)
 {
 	/* Valgrind only test */
@@ -2956,7 +2912,6 @@ int main (int argc, char ** argv)
 #ifndef __SANITIZE_ADDRESS__
 	test_ksLookupPop ();
 #endif
-	test_ksSync ();
 	test_ksDoubleFree ();
 	test_ksDoubleAppend ();
 	test_ksDoubleAppendKey ();

@@ -80,6 +80,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Remove obsolete `ksNeedSync` function. _(Mihael Pranjić)_
 
 ### <<Library1>>
 

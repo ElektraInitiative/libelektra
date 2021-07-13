@@ -602,38 +602,6 @@ int keyCmp (const Key * k1, const Key * k2)
 }
 
 /**
- * Checks if KeySet needs sync.
- *
- * When Keys are changed, this is reflected into keyNeedSync().
- *
- * But when Keys are popped from a KeySet this can't be seen
- * by looking at individual Keys.
- *
- * ksNeedSync() allows the backends to know if a Key was
- * popped from the KeySet, to know that this KeySet needs
- * to be written out.
- *
- * @deprecated Backends now work differently and do not rely on this
- * information.
- *
- * @param ks the KeySet to work with
- *
- * @retval -1 on NULL KeySet
- * @retval 0 if @p ks does not need sync
- * @retval 1 if @p ks needs sync
- *
- * @since 1.0.0
- * @see keyNeedSync() for checking whether a single Key needs to be synced
- */
-int ksNeedSync (const KeySet * ks)
-{
-	if (!ks) return -1;
-
-	return (ks->flags & KS_FLAG_SYNC) == KS_FLAG_SYNC;
-}
-
-
-/**
  * Return the number of Keys that @p ks contains.
  *
  * @param ks the KeySet object to get the size from
