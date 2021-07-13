@@ -125,7 +125,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - <<TODO>>
-- <<TODO>>
+- Updated the news template. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Tests
