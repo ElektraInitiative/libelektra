@@ -334,8 +334,6 @@ public interface Elektra extends Library {
 
 	int ksDel (Pointer ks);
 
-	int ksNeedSync (Pointer ks);
-
 	int ksGetSize (Pointer ks);
 
 	int ksAppendKey (Pointer ks, Pointer toAppend);
