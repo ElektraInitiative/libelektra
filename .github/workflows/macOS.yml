@@ -99,7 +99,6 @@ jobs:
           moreutils \
           ninja \
           npm \
-          oclint/formulae/oclint \
           openssl \
           pkg-config \
           qt \
@@ -110,6 +109,9 @@ jobs:
           yajl \
           yaml-cpp \
           zeromq
+        if [ "$CC" = 'clang' ]; then
+          brew install oclint/formulae/oclint
+        fi
         brew install --cask adoptopenjdk
         # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
         brew install checkbashisms || >&2 printf 'Warning: Unable to install `checkbashims`\n'
