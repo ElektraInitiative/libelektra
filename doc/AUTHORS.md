@@ -11,7 +11,7 @@ maintainer, main development, documentation, quality
 
 ## Mihael Pranjić
 
-development of the cache and mmapstorage plugins
+maintainer, development of the cache and mmapstorage plugins
 
 - email: mpranj@limun.org
 - github user: [mpranj](https://github.com/mpranj)
@@ -27,7 +27,7 @@ development of the highlevel API and code-generation; various other things
 
 ## Robert Sowula
 
-debian packaging, release automation
+packaging, release automation
 
 - email: robert@sowula.at
 - github user: [robaerd](https://github.com/robaerd)
@@ -35,7 +35,7 @@ debian packaging, release automation
 
 ## Michael Tucek
 
-work on Java bindings
+Java bindings
 
 - email: libelektra@hellwach.at
 - github user: [tucek](https://github.com/tucek)
@@ -43,14 +43,14 @@ work on Java bindings
 
 ## Manuel Mausz
 
-bindings, swig, gobject, main development
+SWIG bindings
 
 - email: manuel-elektra@mausz.at
 - devel/test on: Fedora
 
 ## Dardan Haxhimustafa
 
-development of KConfig plugin and changes on qt-gui
+development of KConfig plugin
 
 - email: mail@dardan.im
 - github user: [darddan](https://github.com/darddan)
@@ -58,7 +58,7 @@ development of KConfig plugin and changes on qt-gui
 
 ## Felix Berlakovich
 
-journald plugin, augeas plugin, keytometa, main development
+journald plugin, augeas plugin, keytometa
 
 - email: elektra@berlakovich.net
 - devel/test on: Debian
