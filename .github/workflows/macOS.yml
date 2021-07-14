@@ -26,7 +26,7 @@ jobs:
          - name: GCC 11
            CC: gcc-11
            CXX: g++-11
-           PLUGINS: ALL;-yamlcpp
+           PLUGINS: ALL;-xerces;-yamlcpp
            BINDINGS: ALL;-rust
          - name: Clang
            CC: clang
