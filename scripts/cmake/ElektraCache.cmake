@@ -93,8 +93,10 @@ if (TOOLS MATCHES "ALL")
 	list (REMOVE_ITEM TOOLS ALL)
 endif ()
 
-set (TOOLS_DOC
-     "Which TOOLS should be added? Either list individual tools or ALL for all available (including website!), NODEP for TOOLS without additional dependencies, DEFAULT is only kdb.")
+set (
+	TOOLS_DOC
+	"Which TOOLS should be added? Either list individual tools or ALL for all available (including website!), NODEP for TOOLS without additional dependencies, DEFAULT is only kdb."
+)
 
 set (
 	TOOLS
