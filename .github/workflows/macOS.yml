@@ -25,18 +25,18 @@ jobs:
          # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
          # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
          # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
-         - name: 🍎 GCC 11
+         - name: GCC 11
            CC: gcc-11
            CXX: g++-11
            PLUGINS: 'ALL;-xerces;-curlget'
            BINDINGS: 'ALL;-rust'
-         - name: 🍎 Clang
+         - name: Clang
            CC: clang
            CXX: clang++
            ENABLE_LOGGER: ON
            TOOLS: ALL;web
            PLUGINS: ALL;-curlget;-augeas
-         - name: 🍎 Clang ASAN
+         - name: Clang ASAN
            CC: clang
            CXX: clang++
            ASAN_OPTIONS: 'detect_leaks=1'
@@ -44,7 +44,7 @@ jobs:
            TOOLS: kdb
            PLUGINS: ALL;-curlget;-augeas
            BINDINGS: cpp
-         - name: 🍎 MMap
+         - name: MMap
            KDB_DEFAULT_STORAGE: mmapstorage
            KDB_DB_FILE: default.mmap
            KDB_DB_INIT: elektra.mmap
@@ -102,7 +102,6 @@ jobs:
           libgcrypt \
           libgit2 \
           libuv \
-          llvm \
           lua \
           moreutils \
           ninja \
@@ -153,10 +152,10 @@ jobs:
       run: |
         if [ "$CC" = 'clang' ]; then
           # Use latest version of LLVM to translate Elektra
-          export CC="/usr/local/opt/llvm/bin/clang" CXX="/usr/local/opt/llvm/bin/clang++"
-          export LDFLAGS="-L/usr/local/opt/llvm/lib"
-          export CPPFLAGS="-I/usr/local/opt/llvm/include"
-          export PATH="/usr/local/opt/llvm/bin:$PATH"
+          export CC="$(brew --prefix llvm)/bin/clang" CXX="$(brew --prefix llvm)/bin/clang++"
+          export LDFLAGS="-L$(brew --prefix llvm)/lib"
+          export CPPFLAGS="-I$(brew --prefix llvm)/include"
+          export PATH="$(brew --prefix llvm)/bin:$PATH"
         fi
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(
@@ -197,5 +196,9 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        cmake --build . --target run_all
-        kdb run_all
+        if [ "$ENABLE_ASAN" = 'ON' ]; then
+          cmake --build . --target run_nocheckshell
+        else
+          cmake --build . --target run_all
+          kdb run_all
+        fi
