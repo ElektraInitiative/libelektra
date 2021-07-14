@@ -83,6 +83,7 @@ jobs:
       run: |
         brew update
         brew config
+        # Unlink parallel package, because of conflict with moreutils
         brew unlink parallel || >&2 printf 'Unlinking parallel failed.`\n'
         brew install augeas \
           antlr \
@@ -94,7 +95,6 @@ jobs:
           doxygen \
           flex \
           glib \
-          go \
           gpgme \
           gradle \
           graphviz \
