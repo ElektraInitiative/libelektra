@@ -19,27 +19,34 @@ jobs:
     strategy:
       matrix:
        include:
+         # The following plugins have been disabled due to problems:
+         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
+         # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+         # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
          - name: 🍎 GCC 11
            CC: gcc-11
            CXX: g++-11
-           # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
-           # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
            PLUGINS: 'ALL;-xerces;-curlget'
            BINDINGS: 'ALL;-rust'
          - name: 🍎 Clang
+           CC: clang
+           CXX: clang++
            ENABLE_LOGGER: ON
            TOOLS: ALL;web
-           # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-           # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
            PLUGINS: ALL;-curlget;-augeas
          - name: 🍎 Clang ASAN
+           CC: clang
+           CXX: clang++
            ASAN_OPTIONS: 'detect_leaks=1'
            ENABLE_ASAN: ON
            TOOLS: kdb
-           # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-           # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
            PLUGINS: ALL;-curlget;-augeas
            BINDINGS: cpp
+         - name: 🍎 MMap
+           KDB_DEFAULT_STORAGE: mmapstorage
+           KDB_DB_FILE: default.mmap
+           KDB_DB_INIT: elektra.mmap
+           PLUGINS: ALL;-curlget;-augeas
     env:
       CC: ${{ matrix.CC }}
       CXX: ${{ matrix.CXX }}
@@ -49,6 +56,9 @@ jobs:
       ENABLE_LOGGER: ${{ matrix.ENABLE_LOGGER }}
       ENABLE_ASAN: ${{ matrix.ENABLE_ASAN }}
       ASAN_OPTIONS: ${{ matrix.ASAN_OPTIONS }}
+      KDB_DEFAULT_STORAGE: ${{ matrix.KDB_DEFAULT_STORAGE }}
+      KDB_DB_FILE: ${{ matrix.KDB_DB_FILE }}
+      KDB_DB_INIT: ${{ matrix.KDB_DB_INIT }}
 
     steps:
     - uses: actions/checkout@v2
@@ -71,6 +81,7 @@ jobs:
       run: |
         brew update
         brew config
+        brew unlink parallel || >&2 printf 'Unlinking parallel failed.`\n'
         brew install augeas \
           antlr \
           antlr4-cpp-runtime \
@@ -138,6 +149,13 @@ jobs:
       # and build directories, but this is only available with CMake 3.13 and higher.
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
       run: |
+        if [ "$CC" = 'clang' ]; then
+          # Use latest version of LLVM to translate Elektra
+          export CC="/usr/local/opt/llvm/bin/clang" CXX="/usr/local/opt/llvm/bin/clang++"
+          export LDFLAGS="-L/usr/local/opt/llvm/lib"
+          export CPPFLAGS="-I/usr/local/opt/llvm/include"
+          export PATH="/usr/local/opt/llvm/bin:$PATH"
+        fi
         SYSTEM_DIR="$PWD/kdbsystem"
         CMAKE_OPT+=(
           -GNinja
