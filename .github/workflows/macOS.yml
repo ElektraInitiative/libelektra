@@ -22,28 +22,27 @@ jobs:
       matrix:
        include:
          # The following plugins have been disabled due to problems:
-         # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
-         # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-         # Yamlcpp and curlget fails to compile on macOS with GCC due to problems with the macOS SDK
+         # Yamlcpp fails to compile on macOS with GCC due to problems with the macOS SDK
          - name: GCC 11
            CC: gcc-11
            CXX: g++-11
-           PLUGINS: ALL;-xerces;-curlget;-yamlcpp
+           PLUGINS: ALL;;-yamlcpp
            BINDINGS: ALL;-rust
          - name: Clang
            CC: clang
            CXX: clang++
            ENABLE_LOGGER: ON
            TOOLS: ALL;web
-           PLUGINS: ALL;-curlget
+           PLUGINS: ALL
+           BINDINGS: ALL;-rust
          - name: Clang ASAN
            CC: clang
            CXX: clang++
            ASAN_OPTIONS: detect_leaks=1
            ENABLE_ASAN: ON
            TOOLS: kdb
-           PLUGINS: ALL;-curlget
-           BINDINGS: cpp
+           PLUGINS: ALL
+           BINDINGS: ALL;-rust
          - name: MMap
            KDB_DEFAULT_STORAGE: mmapstorage
            KDB_DB_FILE: default.mmap
