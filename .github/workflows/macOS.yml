@@ -74,13 +74,6 @@ jobs:
       with:
         ruby-version: 2.7 # Not needed with a .ruby-version file
 
-    - name: DEBUG
-      run: |
-        echo $CC
-        echo $CXX
-        echo $PLUGINS
-        echo $BINDINGS
-
     - name: Install Dependencies
       run: |
         brew update
