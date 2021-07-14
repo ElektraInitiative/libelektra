@@ -84,28 +84,6 @@ mac_task:
 
   matrix:
 
-    - name: 🍎 Clang
-      osx_instance:
-        image: big-sur-xcode
-      env:
-        ENABLE_LOGGER: ON
-        TOOLS: NODEP
-        PLUGINS: ALL;-curlget;-augeas
-        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-        # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
-
-    - name: 🍎 Clang ASAN
-      osx_instance:
-        image: big-sur-xcode
-      env:
-        ASAN_OPTIONS: 'detect_leaks=1'
-        BINDINGS: cpp
-        ENABLE_ASAN: ON
-        TOOLS: kdb
-        PLUGINS: ALL;-curlget;-augeas
-        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-        # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
-
     - name: 🍎 FULL
       osx_instance:
         image: big-sur-xcode
@@ -113,17 +91,6 @@ mac_task:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
         PLUGINS: ALL;-curlget # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-
-    - name: 🍎 MMap
-      osx_instance:
-        image: big-sur-xcode
-      env:
-        KDB_DEFAULT_STORAGE: mmapstorage
-        KDB_DB_FILE: default.mmap
-        KDB_DB_INIT: elektra.mmap
-        PLUGINS: ALL;-curlget;-augeas
-        # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-        # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
 
   install_script:
     - | # Install Homebrew formulas

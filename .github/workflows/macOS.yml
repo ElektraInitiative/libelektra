@@ -32,7 +32,7 @@ jobs:
            CC: clang
            CXX: clang++
            ENABLE_LOGGER: ON
-           TOOLS: ALL;web
+           TOOLS: NODEP
            PLUGINS: ALL
            BINDINGS: ALL;-rust
          - name: Clang ASAN
@@ -155,7 +155,7 @@ jobs:
           -GNinja
           -DPLUGINS="${PLUGINS:-ALL}"
           -DBINDINGS="${BINDINGS:-ALL}"
-          -DTOOLS="${TOOLS:-DEFAULT}"
+          -DTOOLS="${TOOLS:-NODEP}"
           -DBUILD_FULL="${BUILD_FULL:-OFF}"
           -DBUILD_SHARED="${BUILD_SHARED:-ON}"
           -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
