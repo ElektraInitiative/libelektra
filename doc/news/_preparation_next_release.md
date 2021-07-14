@@ -168,19 +168,20 @@ you up to date with the multi-language support provided by Elektra.
 - Migrate most macOS build jobs to GitHub actions to speed up builds. _(Mihael Pranjić)_
 
 ### GitHub Actions
+### Jenkins
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 - Upgrade macOS GCC build job to GCC 11. _(Mihael Pranjić)_
 
-### Jenkins
+### Cirrus
 
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
 
-### Travis
+### GitHub Actions
 
 - <<TODO>>
 - <<TODO>>
