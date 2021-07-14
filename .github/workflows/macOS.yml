@@ -17,6 +17,8 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: macos-10.15
     strategy:
+      # Do not abort all jobs upon first failure
+      fail-fast: false
       matrix:
        include:
          # The following plugins have been disabled due to problems:
