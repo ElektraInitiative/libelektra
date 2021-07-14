@@ -20,29 +20,35 @@ jobs:
       matrix:
        include:
          - name: 🍎 GCC 11
-           env:
-             CC: gcc-11
-             CXX: g++-11
-             # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
-             # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-             PLUGINS: 'ALL;-xerces;-curlget'
-             BINDINGS: 'ALL;-rust'
+           CC: gcc-11
+           CXX: g++-11
+           # Unfortunately the tests for the Xerces plugin fail: https://travis-ci.org/ElektraInitiative/libelektra/jobs/483331657#L3740
+           # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+           PLUGINS: 'ALL;-xerces;-curlget'
+           BINDINGS: 'ALL;-rust'
          - name: 🍎 Clang
-           env:
-             ENABLE_LOGGER: ON
-             TOOLS: ALL;web
-             # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-             # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
-             PLUGINS: ALL;-curlget;-augeas
+           ENABLE_LOGGER: ON
+           TOOLS: ALL;web
+           # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+           # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
+           PLUGINS: ALL;-curlget;-augeas
          - name: 🍎 Clang ASAN
-           env:
-             ASAN_OPTIONS: 'detect_leaks=1'
-             ENABLE_ASAN: ON
-             TOOLS: kdb
-             # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
-             # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
-             PLUGINS: ALL;-curlget;-augeas
-             BINDINGS: cpp
+           ASAN_OPTIONS: 'detect_leaks=1'
+           ENABLE_ASAN: ON
+           TOOLS: kdb
+           # The curlget tests fail: https://github.com/ElektraInitiative/libelektra/issues/3382
+           # The augeas tests fail: https://github.com/ElektraInitiative/libelektra/issues/3743
+           PLUGINS: ALL;-curlget;-augeas
+           BINDINGS: cpp
+    env:
+      CC: ${{ matrix.CC }}
+      CXX: ${{ matrix.CXX }}
+      PLUGINS: ${{ matrix.PLUGINS }}
+      BINDINGS: ${{ matrix.BINDINGS }}
+      TOOLS: ${{ matrix.TOOLS }}
+      ENABLE_LOGGER: ${{ matrix.ENABLE_LOGGER }}
+      ENABLE_ASAN: ${{ matrix.ENABLE_ASAN }}
+      ASAN_OPTIONS: ${{ matrix.ASAN_OPTIONS }}
 
     steps:
     - uses: actions/checkout@v2
@@ -54,10 +60,15 @@ jobs:
       with:
         ruby-version: 2.7 # Not needed with a .ruby-version file
 
-    - name: Install Dependencies
+    - name: DEBUG
       run: |
         echo $CC
         echo $CXX
+        echo $PLUGINS
+        echo $BINDINGS
+
+    - name: Install Dependencies
+      run: |
         brew update
         brew config
         brew install augeas \
