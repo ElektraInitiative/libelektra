@@ -606,6 +606,7 @@ static void bufferAddEscaped (Buffer * buffer, char escapeCode, Driver * driver)
 				break;
 			default:
 				ELEKTRA_ASSERT (0, "should be unreachable");
+				return;
 		}
 		buffer->data[buffer->index++] = c;
 	}
