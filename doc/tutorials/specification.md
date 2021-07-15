@@ -209,7 +209,7 @@ Did it work? I hope not. The validation plugin you specified will now correctly 
 
 ### Step 3: Adding boolean keys
 
-Next up you will configure the `secure` property of our server. This boolean key will toggle if your server encrypts the communication via SSL or not.
+Next up you will configure the `secure` property of our server. This boolean key will toggle if your server encrypts the communication via SSL.
 
 So we will add the key and some metadata for it:
 
@@ -217,7 +217,7 @@ So we will add the key and some metadata for it:
 kdb meta-set spec:/sw/org/app/\#0/current/server/secure type boolean
 kdb meta-set spec:/sw/org/app/\#0/current/server/secure default 1
 kdb meta-set spec:/sw/org/app/\#0/current/server/secure example 0
-kdb meta-set spec:/sw/org/app/\#0/current/server/secure description "describes if the REST server uses SSL for communication or not"
+kdb meta-set spec:/sw/org/app/\#0/current/server/secure description "true if the REST server uses SSL for communication"
 ```
 
 By default the `type` plugin will normalize boolean values when setting them, before storing them.
@@ -272,7 +272,7 @@ server/secure =
 [server/secure]
  meta:/type = boolean
  meta:/example = 0
- meta:/description = describes if the REST server uses SSL for communication or not
+ meta:/description = true if the REST server uses SSL for communication
  meta:/default = 1
 ```
 
@@ -307,9 +307,9 @@ kdb meta-set spec:/sw/org/app/\#0/current/database/dialect check/enum/\#4 sqlite
 Afterwards you define all the other parameters, just as before.
 
 ```sh
-kdb meta-set spec:/sw/org/app/\#0/current/database/dialect default mssql
+kdb meta-set spec:/sw/org/app/\#0/current/database/dialect default sqlite
 kdb meta-set spec:/sw/org/app/\#0/current/database/dialect example mysql
-kdb meta-set spec:/sw/org/app/\#0/current/database/dialect description "SQL dialect of the database server, that the application will connect to (postgresql|mysql|mssql|mariadb|sqlite)"
+kdb meta-set spec:/sw/org/app/\#0/current/database/dialect description "SQL dialect of the database server, that the application will connect to"
 ```
 
 After this meta-setting bonanza your specification file should look something like this:
@@ -346,7 +346,7 @@ database/dialect =
 [server/secure]
  meta:/type = boolean
  meta:/example = 0
- meta:/description = describes if the REST server uses SSL for communication or not
+ meta:/description = true if the REST server uses SSL for communication
  meta:/default = 1
 
 [database/dialect]
@@ -355,10 +355,10 @@ database/dialect =
  meta:/type = enum
  meta:/check/enum/#1 = mysql
  meta:/example = mysql
- meta:/description = SQL dialect of the database server, that the application will connect to (postgresql|mysql|mssql|mariadb|sqlite)
+ meta:/description = SQL dialect of the database server, that the application will connect to
  meta:/check/enum/#4 = sqlite
  meta:/check/enum/#3 = mariadb
- meta:/default = mssql
+ meta:/default = sqlite
  meta:/check/enum = #4
 ```
 
@@ -426,7 +426,7 @@ database/dialect =
 [server/secure]
  meta:/type = boolean
  meta:/example = 0
- meta:/description = describes if the REST server uses SSL for communication or not
+ meta:/description = true if the REST server uses SSL for communication
  meta:/default = 1
 
 [database/dialect]
@@ -435,10 +435,10 @@ database/dialect =
  meta:/type = enum
  meta:/check/enum/#1 = mysql
  meta:/example = mysql
- meta:/description = SQL dialect of the database server, that the application will connect to (postgresql|mysql|mssql|mariadb|sqlite)
+ meta:/description = SQL dialect of the database server, that the application will connect to
  meta:/check/enum/#4 = sqlite
  meta:/check/enum/#3 = mariadb
- meta:/default = mssql
+ meta:/default = sqlite
  meta:/check/enum = #4
 ```
 
@@ -487,7 +487,7 @@ database/dialect =
 [server/secure]
  meta:/type = boolean
  meta:/example = false
- meta:/description = describes if the REST server uses SSL for communication or not
+ meta:/description = true if the REST server uses SSL for communication
  meta:/default = false
 
 [database/dialect]
@@ -496,10 +496,10 @@ database/dialect =
  meta:/type = enum
  meta:/check/enum/#1 = mysql
  meta:/example = mysql
- meta:/description = SQL dialect of the database server, that the application will connect to (postgresql|mysql|mssql|mariadb|sqlite)
+ meta:/description = SQL dialect of the database server, that the application will connect to
  meta:/check/enum/#4 = sqlite
  meta:/check/enum/#3 = mariadb
- meta:/default = mssql
+ meta:/default = sqlite
  meta:/check/enum = #4
 ```
 
@@ -513,7 +513,5 @@ database/dialect =
 - You also added validation checks using different plugins, like `check/port` or `check/ipaddr`
 
 ## Learn more
-
-Tutorials on the Elektra homepage:
 
 - [Tutorial Overview](https://www.libelektra.org/tutorials/readme)
