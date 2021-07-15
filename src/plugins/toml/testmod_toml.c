@@ -1585,11 +1585,15 @@ static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * f
 	if (fA == NULL)
 	{
 		printf ("Could not open file '%s'\n", filenameA);
+
+		fclose (fB);
 		return false;
 	}
 	if (fB == NULL)
 	{
 		printf ("Could not open file '%s'\n", filenameB);
+
+		fclose (fA);
 		return false;
 	}
 
@@ -1612,22 +1616,34 @@ static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * f
 			{
 				if (ptrA == NULL && ptrB == NULL)
 				{
+
+					fclose (fA);
+					fclose (fB);
 					return true;
 				}
 				else if (ptrA != NULL)
 				{
 					printf ("Second file at EOF, but first file not:\n%s", ptrA);
+
+					fclose (fA);
+					fclose (fB);
 					return false;
 				}
 				else if (ptrB != NULL)
 				{
 					printf ("First file at EOF, but second file not:\n%s", ptrB);
+
+					fclose (fA);
+					fclose (fB);
 					return false;
 				}
 			}
 			if (*ptrA != *ptrB)
 			{
 				printf ("Lines do not match at line %lu:\nfirst file:\n%ssecond file:\n%s", line, lineA, lineB);
+
+				fclose (fA);
+				fclose (fB);
 				return false;
 			}
 			if (*ptrA == 0)
@@ -1638,5 +1654,8 @@ static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * f
 			ptrB++;
 		}
 	}
+
+	fclose (fA);
+	fclose (fB);
 #undef LINE_SIZE
 }

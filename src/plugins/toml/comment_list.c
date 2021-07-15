@@ -48,6 +48,10 @@ void commentListFree (CommentList * root)
 		{
 			elektraFree (root->str);
 		}
+		if (root->orig != NULL)
+		{
+			elektraFree (root->orig);
+		}
 		elektraFree (root);
 		root = nextComment;
 	}
