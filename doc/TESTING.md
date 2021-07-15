@@ -82,7 +82,7 @@ You have some options to avoid running them as root:
    First load the required information and verify the paths:
 
    ```sh
-   kdb mount-info
+   sudo kdb mount-info
    echo `kdb sget system:/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .`
    echo `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
@@ -90,8 +90,8 @@ You have some options to avoid running them as root:
    Then change the permissions:
 
    ```sh
-   chown -R `whoami` `kdb sget system:/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .`
-   chown -R `whoami` `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
+   sudo chown -R `whoami` `kdb sget system:/info/elektra/constants/cmake/CMAKE_INSTALL_PREFIX .`/`kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .`
+   sudo chown -R `whoami` `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .`
    ```
 
    After that all test cases should run successfully as described above.

@@ -66,21 +66,37 @@ set (TOOLS_LIST_DEFAULT kdb)
 
 if (TOOLS MATCHES "DEFAULT")
 	set (TOOLS_FORCE FORCE)
+	list (REMOVE_ITEM TOOLS DEFAULT)
 endif ()
 
 if (TOOLS MATCHES "NODEP")
-	set (TOOLS_LIST)
+	set (TOOLS_LIST race)
 	set (TOOLS_FORCE FORCE)
+	list (REMOVE_ITEM TOOLS NODEP)
 endif ()
 
 if (TOOLS MATCHES "ALL")
-	set (TOOLS_LIST pythongen race qt-gui gen-gpg-testkey fuse)
+	set (
+		TOOLS_LIST
+		elektrad
+		fuse
+		gen-gpg-testkey
+		hub-zeromq
+		kdb
+		pythongen
+		qt-gui
+		race
+		webd
+		website
+		webui)
 	set (TOOLS_FORCE FORCE)
 	list (REMOVE_ITEM TOOLS ALL)
 endif ()
 
-set (TOOLS_DOC
-     "Which TOOLS should be added? ALL for all available, NODEP for TOOLS without additional dependencies, DEFAULT for minimal set.")
+set (
+	TOOLS_DOC
+	"Which TOOLS should be added? Either list individual tools or ALL for all available (including website!), NODEP for TOOLS without additional dependencies, DEFAULT is only kdb."
+)
 
 set (
 	TOOLS

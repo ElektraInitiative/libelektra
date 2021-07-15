@@ -82,7 +82,7 @@ jobs:
           -GNinja
           -DPLUGINS="${PLUGINS:-ALL}"
           -DBINDINGS="${BINDINGS:-ALL}"
-          -DTOOLS="${TOOLS:-ALL}"
+          -DTOOLS="${TOOLS:-DEFAULT}"
           -DBUILD_FULL="${BUILD_FULL:-OFF}"
           -DBUILD_SHARED="${BUILD_SHARED:-ON}"
           -DENABLE_ASAN="${ENABLE_ASAN:-OFF}"
