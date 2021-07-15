@@ -127,7 +127,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Documentation
 
-- Add link to [tutorial about writing specifications](/doc/tutorials/specification.md). _(Markus Raab)_
+- Add link and small improvements to [tutorial about writing specifications](/doc/tutorials/specification.md). _(Markus Raab)_
 - <<TODO>>
 - Updated the news template. _(Mihael Pranjić)_
 - <<TODO>>
