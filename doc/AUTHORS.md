@@ -1,33 +1,66 @@
 # Authors
 
-This is a list of people that contributed to the Elektra project.
+This is a list of people that contributed to the Elektra Initiative.
 
 ## Markus Raab
 
 maintainer, main development, documentation, quality
 
-- email: elektra@libelektra.org
-- devel/test on: Debian
+- email: markus@libelektra.org
+- devel/test on: Debian stable
+
+## Mihael Pranjić
+
+maintainer, development of the cache and mmapstorage plugins
+
+- email: mpranj@limun.org
+- github user: [mpranj](https://github.com/mpranj)
+- devel/test on: Fedora, Debian, macOS
+
+## Klemens Böswirth
+
+development of the highlevel API and code-generation; various other things
+
+- email: k.boeswirth+git@gmail.com
+- github user: [kodebach](https://github.com/kodebach)
+- devel/test on: Fedora
+
+## Robert Sowula
+
+packaging, release automation
+
+- email: robert@sowula.at
+- github user: [robaerd](https://github.com/robaerd)
+- devel/test on: Debian, Ubuntu
+
+## Michael Tucek
+
+Java bindings
+
+- email: libelektra@hellwach.at
+- github user: [tucek](https://github.com/tucek)
+- devel/test on: Debian (WSL2), Ubuntu (WSL2)
 
 ## Manuel Mausz
 
-bindings, swig, gobject, main development
+SWIG bindings
 
 - email: manuel-elektra@mausz.at
 - devel/test on: Fedora
 
+## Dardan Haxhimustafa
+
+development of KConfig plugin
+
+- email: mail@dardan.im
+- github user: [darddan](https://github.com/darddan)
+- devel/test on: Arch Linux
+
 ## Felix Berlakovich
 
-journald plugin, augeas plugin, keytometa, main development
+journald plugin, augeas plugin, keytometa
 
 - email: elektra@berlakovich.net
-- devel/test on: Debian
-
-## Pino Toscano
-
-Debian packaging, documentation
-
-- email: pino@kde.org
 - devel/test on: Debian
 
 ## Kai-Uwe Behrmann
@@ -36,83 +69,21 @@ test & packaging on CentOS, Fedora, OpenSUSE, RHEL and SLE
 
 - email: kai-uwe@behrmann.name
 
-## Christopher Meng
-
-Fedora packaging
-
-- email: cickumqt@gmail.com
-- devel/test on: Fedora
-
-## Ian S. Donnelly
-
-Google Summer of Code 2014
-
-- email: ian.s.donnelly@gmail.com
-- devel/test on: Debian stable
-
 ## Charles Lindsay
 
 ni library
 
-## Gabriel Rauter
-
-desktop environment integration & usability
-
-- email: rauter.gabriel@gmail.com
-
 ## Avi Alkalay
 
-initial concept & implementation, previous website
+initial concept & implementation
 
 - email: avi@unix.sh
-
-## Yannick Lecaillez
-
-previous Mandriva packaging
-
-- email: yl@itioweb.com
-
-## Jens Andersen
-
-bug fixing
-
-- email: jens.andersen@gmail.com
 
 ## Patrick Sabin
 
 trie development, previous python bindings
 
 - email: patricksabin@gmx.at
-
-## Studio-HB
-
-design of Elektra logo & previous website
-
-- email: contact@studio-hb.com
-
-## Pier Luigi Fiorini
-
-pkg-config file
-
-- email: pierluigi.fiorini@mockup.org
-
-## Rèmi
-
-xml schema
-
-- email: remipouak@yahoo.fr
-
-## Andreas Rottmann
-
-previous Debian packaging and 0.7 scheme bindings
-
-- email: rotty@debian.org
-
-## Simon Law
-
-previous Debian packaging
-
-- email: sfllaw@debian.org
 
 ## Daniel Bugl
 
@@ -159,7 +130,7 @@ development of the REST service & frontend for sharing of conf. snippets, cachef
 
 ## Thomas Waser
 
-main development, many plugins
+main development, many plugins, ansible
 
 - email: thomas.waser@libelektra.org
 - github user: [tom-wa](https://github.com/tom-wa)
@@ -187,43 +158,3 @@ notification system, I/O bindings
 - email: waht@libelektra.org
 - github user: [waht](https://github.com/waht)
 - devel/test on: Debian
-
-## Mihael Pranjić
-
-development of the cache and mmapstorage plugins
-
-- email: mpranj@limun.org
-- github user: [mpranj](https://github.com/mpranj)
-- devel/test on: Fedora, Debian, macOS
-
-## Klemens Böswirth
-
-development of the highlevel API and code-generation; various other things
-
-- email: k.boeswirth+git@gmail.com
-- github user: [kodebach](https://github.com/kodebach)
-- devel/test on: Fedora
-
-## Dardan Haxhimustafa
-
-development of KConfig plugin and changes on qt-gui
-
-- email: mail@dardan.im
-- github user: [darddan](https://github.com/darddan)
-- devel/test on: Arch Linux
-
-## Robert Sowula
-
-debian packaging, release automation
-
-- email: robert@sowula.at
-- github user: [robaerd](https://github.com/robaerd)
-- devel/test on: Debian, Ubuntu
-
-## Michael Tucek
-
-work on Java bindings
-
-- email: libelektra@hellwach.at
-- github user: [tucek](https://github.com/tucek)
-- devel/test on: Debian (WSL2), Ubuntu (WSL2)

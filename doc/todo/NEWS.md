@@ -156,6 +156,12 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Infrastructure
 
+### Jenkins
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+
 ### Cirrus
 
 - <<TODO>>
@@ -163,18 +169,6 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 
 ### GitHub Actions
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Jenkins
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Travis
 
 - <<TODO>>
 - <<TODO>>

@@ -129,6 +129,7 @@ you up to date with the multi-language support provided by Elektra.
 
 - Add link and small improvements to [tutorial about writing specifications](/doc/tutorials/specification.md). _(Markus Raab)_
 - <<TODO>>
+- Remove previous authors. _(Markus Raab)_
 - Updated the news template. _(Mihael Pranjić)_
 - <<TODO>>
 
@@ -160,6 +161,13 @@ you up to date with the multi-language support provided by Elektra.
 
 ## Infrastructure
 
+### Jenkins
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
+- Use `tmpfs` in Docker to speed up the test suite. _(Mihael Pranjić)_
+
 ### Cirrus
 
 - <<TODO>>
@@ -173,18 +181,6 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - Upgrade macOS GCC build job to GCC 11. _(Mihael Pranjić)_
-
-### Jenkins
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### Travis
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Website
 
