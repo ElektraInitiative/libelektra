@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1.2
 FROM debian:buster
 
 ENV LANG C.UTF-8
@@ -26,7 +27,10 @@ ARG PARALLEL=8
 ENV C_FLAGS="-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -fstack-protector-strong -Wstack-protector -fPIE -pie"
 WORKDIR /app/kdb
 ADD . /app/kdb/
-RUN mkdir -p build \
+RUN --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/root/.cache/elektra \
+    --mount=type=tmpfs,target=/root/.config \
+    mkdir -p build \
     && cd build \
     && cmake -DBUILD_FULL=OFF -DBUILD_SHARED=ON \
              -DBUILD_STATIC=OFF -DBUILD_DOCUMENTATION=OFF \
