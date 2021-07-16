@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1.2
 FROM debian:buster
 
 ENV LANG C.UTF-8
@@ -28,7 +29,10 @@ RUN kdb mount-info \
     && chown -R ${USERID} `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .` \
     && chown -R ${USERID} `kdb sget system:/info/elektra/constants/cmake/BUILTIN_DATA_FOLDER .`
 
-RUN kdb run_all
+RUN --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/root/.cache/elektra \
+    --mount=type=tmpfs,target=/root/.config \
+    kdb run_all
 
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 

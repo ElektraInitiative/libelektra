@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1.2
 FROM alpine:3.14.0
 
 RUN apk update \
@@ -42,7 +43,10 @@ RUN adduser -u ${USERID} -G wheel -D elektra
 
 ARG PARALLEL=8
 WORKDIR ${ELEKTRA_ROOT}
-RUN mkdir build \
+RUN --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/root/.cache/elektra \
+    --mount=type=tmpfs,target=/root/.config \
+    mkdir build \
     && cd build \
     && cmake -DPLUGINS="ALL;-date" \
              -DTOOLS="ALL" \
@@ -55,8 +59,6 @@ RUN mkdir build \
              .. \
     && make -j ${PARALLEL} \
     && ctest -T Test --output-on-failure -j ${PARALLEL} \
-    && ./bin/kdb cache clear \
-    && rm -Rf '/home/elektra/.config' '/home/elektra/.cache' \
     && cmake -DBUILD_TESTING=OFF -UKDB_DB_SYSTEM -UKDB_DB_SPEC -UKDB_DB_HOME . \
     && make -j ${PARALLEL} \
     && rm -Rf ${GTEST_ROOT}
