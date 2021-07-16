@@ -156,7 +156,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Docker
 
 - <<TODO>>
-- <<TODO>>
+- Enable BuildKit features to leverage tmpfs to speed up `docker build` commands. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Infrastructure
