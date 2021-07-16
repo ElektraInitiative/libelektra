@@ -285,6 +285,8 @@ struct _KeySet
 	struct _Key * cursor; /**< Internal cursor */
 	size_t current;		  /**< Current position of cursor */
 
+	uint16_t refs; /**< Reference counter */
+
 	/**
 	 * Some control and internal flags.
 	 */

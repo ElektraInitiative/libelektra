@@ -1113,6 +1113,8 @@ static void mmapFastReplace (KeySet * dest, KeySet * src)
 	// to be able to free() the returned KeySet, just set the array flag here
 	dest->flags = KS_FLAG_MMAP_ARRAY;
 	// we intentionally do not change the KeySet->opmphm here!
+	// also do not change the reference counter on purpose,
+	// we only want to change the contents
 }
 
 /**

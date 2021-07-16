@@ -433,16 +433,21 @@ int ksCopy (KeySet * dest, const KeySet * source)
 
 
 /**
- * A destructor for KeySet objects.
+ * @brief Destructor for KeySet objects.
  *
- * Cleans all internal dynamic attributes, decrements all reference pointers
- * to all Keys and then calls keyDel() on all contained Keys.
- * Afterwards elektraFree() is used to release the KeySet's object memory
- * (that was previously allocated by ksNew()).
+ * This function will delete exactly one reference to `ks`.
+ * It will always decrement the reference counter and if this
+ * was the last reference to `ks` it will also delete `ks` itself.
+ *
+ * Deleting `ks` means:
+ * - decrementing the reference count of all keys within `ks`
+ * - deleting all keys within `ks` that were only referenced by `ks`
+ * - freeing the memory occupied by `ks` itself
  *
  * @param ks the KeySet that should be deleted
  *
- * @retval 0 when the KeySet was successfully freed
+ * @retval 1 if there are more active references to `ks`
+ * @retval 0 when the `ks` was actually deleted
  * @retval -1 on NULL pointer
  *
  * @since 1.0.0
@@ -450,11 +455,18 @@ int ksCopy (KeySet * dest, const KeySet * source)
  */
 int ksDel (KeySet * ks)
 {
-	int rc;
+	if (ks == NULL)
+	{
+		return -1;
+	}
 
-	if (!ks) return -1;
+	--ks->refs;
+	if (ks->refs > 0)
+	{
+		return 1;
+	}
 
-	rc = ksClose (ks);
+	ksClose (ks);
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (ks->opmphm)
@@ -473,21 +485,21 @@ int ksDel (KeySet * ks)
 		elektraFree (ks);
 	}
 
-	return rc;
+	return 0;
 }
 
 /**
- * @internal
+ * @brief Empties a KeySet.
  *
- * KeySet object cleaner.
+ * This function
+ * - **does not** check or modify the reference count of `ks`
+ * - decrements the reference count of all keys contained in `ks`
+ * - deletes all keys that where only referenced by `ks`
+ * - resets size of `ks` to 0
  *
- * Will keyDel() all contained keys, reset internal pointers and counters.
+ * @param ks the KeySet to clear
  *
- * After this call you can use the empty keyset again.
- *
- * @param ks the keyset object to work with
- * @see ksAppendKey() for details on how keys are inserted in KeySets
- * @retval 0 on success
+ * @retval  0 on success
  * @retval -1 on failure (memory) or ks == NULL
  */
 int ksClear (KeySet * ks)
@@ -505,6 +517,42 @@ int ksClear (KeySet * ks)
 
 	elektraOpmphmInvalidate (ks);
 	return 0;
+}
+
+/**
+ * @brief Provides access to the current reference count of a `KeySet`.
+ *
+ * Normally you don't need to check this value. You should just call ksDel(),
+ * when you are done with a `KeySet`. The reference counting will ensure that
+ * the `KeySet` is only deleted, if there are no more references.
+ *
+ * @param ks the `KeySet` whose reference count will be returned
+ * @return the number of active references to `ks`
+ */
+uint16_t ksGetRefCount (KeySet * ks)
+{
+	return ks->refs;
+}
+
+/**
+ * @brief Borrows a new reference to `ks`.
+ *
+ * This will increment the reference count of `ks` and then return `ks`.
+ * Calling `ksBorrow (ks)` N times ensures that N+1 `ksDel (ks)` are needed
+ * to actually delete `ks`. N calls to undo the ksBorrow() and one to 'undo'
+ * ksNew() and delete `ks`.
+ *
+ * Note: `ksBorrow (ks)` only prevents the deletion of `ks`. It does not
+ * protect against any form of modification. In particular, using ksBorrow()
+ * does not protect against ksClear().
+ *
+ * @param ks the `KeySet` to borrow
+ * @return the same pointer as `ks`
+ */
+KeySet * ksBorrow (KeySet * ks)
+{
+	++ks->refs;
+	return ks;
 }
 
 
@@ -2635,6 +2683,7 @@ int ksInit (KeySet * ks)
 	ks->size = 0;
 	ks->alloc = 0;
 	ks->flags = 0;
+	ks->refs = 1; // there is always at least one active reference
 
 	ksRewind (ks);
 
@@ -2654,6 +2703,13 @@ int ksInit (KeySet * ks)
  *
  * KeySet object destructor.
  *
+ * This function:
+ * - calls keyDecRef() followed by keyDel() on all keys in `ks`
+ * - frees the memory occupied by the key array
+ * - set size and alloc to 0
+ * - invalidates the OPMPHM
+ * - **does not** modify the reference counter
+ *
  * @see ksDel(), ksNew(), keyInit()
  * @retval 0 on success
  * @retval -1 on ks == NULL
@@ -2662,13 +2718,13 @@ int ksClose (KeySet * ks)
 {
 	if (ks == NULL) return -1;
 
-	Key * k;
-
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
+	if (ks->array)
 	{
-		keyDecRef (k);
-		keyDel (k);
+		for (size_t i = 0; i < ks->size; i++)
+		{
+			keyDecRef (ks->array[i]);
+			keyDel (ks->array[i]);
+		}
 	}
 
 	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
@@ -2677,7 +2733,7 @@ int ksClose (KeySet * ks)
 	}
 	clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 
-	ks->array = 0;
+	ks->array = NULL;
 	ks->alloc = 0;
 
 	ks->size = 0;
