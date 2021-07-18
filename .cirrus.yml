@@ -27,17 +27,17 @@ commands:
 bsd_task:
   matrix:
 
-    - name: 😈 FreeBSD 11
-      freebsd_instance:
-        image_family: freebsd-11-4
-
     - name: 😈 FreeBSD 12
       freebsd_instance:
         image_family: freebsd-12-2
 
+    - name: 😈 FreeBSD 13
+      freebsd_instance:
+        image_family: freebsd-13-0
+
     - name: 😈 ASAN
       freebsd_instance:
-        image_family: freebsd-12-2
+        image_family: freebsd-13-0
       env:
         ENABLE_ASAN: ON
 
@@ -49,7 +49,7 @@ bsd_task:
       flex
       git
       libgit2
-      llvm11
+      llvm12
       ninja
       yajl
       yaml-cpp
@@ -57,8 +57,8 @@ bsd_task:
   script:
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       set --
-      -DCMAKE_C_COMPILER=clang11
-      -DCMAKE_CXX_COMPILER=clang++11
+      -DCMAKE_C_COMPILER=clang12
+      -DCMAKE_CXX_COMPILER=clang++12
       -DBINDINGS='ALL;-io_glib'
       -DINSTALL_SYSTEM_FILES=ON
       -DCMAKE_SKIP_INSTALL_RPATH=ON
