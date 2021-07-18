@@ -17,14 +17,18 @@ On one hand always returning a string allows things like `strlen(keyString(k)) =
 An alternative would be to always store a zero byte after all key values, even if they are binary (might be done already). Then we can safely return `k->data.c == NULL ? "" : k->data.c`. It may contain incomplete data and the `MAX_LEN` problem from above still applies, but there are no segfaults and you don't get return values that have nothing to do with the actual data.
 
 ## Decision
-
-- Obviously just return the string value, if the key is a non-empty string key.
-- Return NULL, if the key is binary (no matter what the value is)
-- Return an empty string, otherwise, i.e. when key contains an empty string or k->data.c == NULL, but the key is not marked as binary.
+- `key == NULL` return 0, error code via second channel
+- `key->value == NULL` return 0, error code via second channel
+- `key == <binary>` return 0, error code via second channel
+- everything else as is
 
 ## Rationale
 
-This way you'll probably get a segfault for unexpected binary keys (unless you check for them), but the common cases are still easy to handle without much checking. I prefer the segfault over returning some fixed string value, because then bugs don't cause silent problems.
+0 seems like the most intuitive value to return in case of an error, although
+this introduces the possibility of segfaults for users of the library. With
+the introduction of a second channel for reporting errors, users can check the
+error messages in case of segfaults - which alleviates this issue. The first 
+thing in case of an error should be checking the error message.
 
 ## Implications
 

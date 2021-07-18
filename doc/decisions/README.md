@@ -55,6 +55,12 @@ section here.
 
 - [Array for Warnings](warning_array.md)
 - [Array](array.md)
+- [Error Handling](error_handling.md)
+- [Iterators](iterators.md)
+- [keyString() return value](key_string_return_value.md)
+- [Reference Counting](reference_counting.md)
+- [Remove elektraMalloc et al.](remove_elektra_malloc.md)
+- [Functions copying into buffer](functions_with_buffers.md)
 
 ## In Discussion
 
@@ -62,11 +68,6 @@ section here.
 - [Store the escaped and/or unescaped key name](store_name.md)
 - [Spec Expressiveness](spec_expressiveness.md)
 - [Metadata in Spec Namespace](spec_metadata.md)
-- [Error Handling](error_handling.md)
-- [Iterators](iterators.md)
-- [keyString() return value](key_string_return_value.md)
-- [Reference Counting](reference_counting.md)
-- [Remove elektraMalloc et al.](remove_elektra_malloc.md)
 
 ## Delayed
 
