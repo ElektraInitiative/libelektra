@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1.2
 FROM ubuntu:bionic
 
 ARG DEBIAN_FRONTEND=noninteractive
@@ -26,7 +27,11 @@ RUN kdb mount-info \
     && chown -R ${USERID} `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .` \
     && chown -R ${USERID} `kdb sget system:/info/elektra/constants/cmake/BUILTIN_DATA_FOLDER .`
 
-RUN kdb run_all
+RUN --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/etc/kdb \
+    --mount=type=tmpfs,target=/root/.cache/elektra \
+    --mount=type=tmpfs,target=/root/.config \
+    kdb run_all
 
 RUN echo "%sudo ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
