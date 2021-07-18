@@ -44,6 +44,7 @@ RUN adduser -u ${USERID} -G wheel -D elektra
 ARG PARALLEL=8
 WORKDIR ${ELEKTRA_ROOT}
 RUN --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/etc/kdb \
     --mount=type=tmpfs,target=/root/.cache/elektra \
     --mount=type=tmpfs,target=/root/.config \
     mkdir build \
