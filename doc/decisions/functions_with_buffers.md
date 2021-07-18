@@ -1,9 +1,10 @@
 # Functions copying into buffers
 
 ## Problem
-Currently the way functions like keyGetName() work is by passing a buffer with 
-a maxSize and if the buffer is large enough, the value gets copied into the 
-buffer. This leads to the user having to write a lot of surrounding boilerplate 
+
+Currently the way functions like keyGetName() work is by passing a buffer with
+a maxSize and if the buffer is large enough, the value gets copied into the
+buffer. This leads to the user having to write a lot of surrounding boilerplate
 code, checking for the size of every value / name they want to copy into a buffer.
 
 ## Constraints
@@ -21,6 +22,7 @@ code, checking for the size of every value / name they want to copy into a buffe
   - keyGetString()
   - keyGetBinary()
 - add documentation that you should use strncpy() / memcpy() instead:
+
 ```c
 // str values
 strncpy(..., keyName (k), ...)
@@ -29,8 +31,9 @@ memcpy(..., keyValue (k), ...)
 ```
 
 ## Rationale
-The functions clutter the API and try to replace existing builtin functionality 
-for little to no gain. This makes the API leaner while also retaining its 
+
+The functions clutter the API and try to replace existing builtin functionality
+for little to no gain. This makes the API leaner while also retaining its
 functionality.
 
 ## Implications
