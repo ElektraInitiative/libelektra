@@ -131,6 +131,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - Remove previous authors. _(Markus Raab)_
 - Updated the news template. _(Mihael Pranjić)_
+- Added documentation for decision meeting from 15.07.2021 _(@lawli3t)_
 - <<TODO>>
 
 ## Tests
