@@ -20,7 +20,7 @@ We also have to consider that many parts of the API very constrained in what val
 
 - Add documentation for errorKey to Doxygen
 - Add second channel for getting information about errors
-- Return additional information about errors from functions where errors can be expected
+- Return error codes directly from functions where failures are expected, e.g. `kdbGet`, `keySetName`
 - Harmonize return values from all functions and move error reporting to second channel
 
 ## Rationale

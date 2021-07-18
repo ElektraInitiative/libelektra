@@ -18,10 +18,10 @@
 
 ## Decision
 
-- add second reference counter to Key (size 1 byte)
-- one is for KeySet, the other is for the rest (for external keyset references)
+- add second reference counter to Key
+- One counter is for locking references, the other one for general references. A locking reference automatically locks/unlocks the keyname.
 - introduce reference counter for KeySets (for external keyset references)
-- keyIncRef Fehlercode returnen on MAX_SIZE
+- `keyIncRef` (or equivalent) return error in case of reference counter overflow
 - use fixed sized types for reference counters
 - increment/decrement references before/after passing instances to plugins
 
