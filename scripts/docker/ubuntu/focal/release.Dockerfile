@@ -28,6 +28,7 @@ RUN kdb mount-info \
     && chown -R ${USERID} `kdb sget system:/info/elektra/constants/cmake/BUILTIN_DATA_FOLDER .`
 
 RUN --mount=type=tmpfs,target=/tmp \
+    --mount=type=tmpfs,target=/etc/kdb \
     --mount=type=tmpfs,target=/root/.cache/elektra \
     --mount=type=tmpfs,target=/root/.config \
     kdb run_all
