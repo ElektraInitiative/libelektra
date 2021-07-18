@@ -41,7 +41,9 @@ functions, but it seems unlikely this will be accepted.
 - make it optional for plugin developers to use c builtins or the custom Elektra
   functions
 - Fix places where non-Elektra functions get used
-- Remove `elektraMalloc` / `elektraCalloc` / `eletraRealloc` from public API
+- Remove everything except `elektraFree` from public API
+- Remove all functions that don't actually involve any memory allocations (e.g. `elektraStrLen`, `elektraStrCmp`)
+- Add `elektraStrNDup` and other `stdlib` equivalents that do memory allocation.
 
 ## Rationale
 
