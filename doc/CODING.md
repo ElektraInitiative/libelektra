@@ -138,12 +138,12 @@ To guarantee consistent formatting we use [`clang-format`](https://clang.llvm.or
 To find out which version of `clang-format` a certain build server uses please check:
 
 - the [Debian sid Docker image](../scripts/docker/debian/sid/Dockerfile),
-- the [Travis configuration file ](../.travis.yml), and
+- the [GitHub Actions configuration files](../.github/workflows), and
 - the [Cirrus configuration file](../.cirrus.yml)
 
 and search for the relevant packages (`clang-format`, `llvm`). Currently we use clang-format `12`
 
-- in the [Travis configuration file ](../.travis.yml),
+- in the [GitHub Actions configuration files](../.github/workflows),
 - in the [Debian sid Docker container](../scripts/docker/debian/sid/Dockerfile) on the Jenkins build server, and
 - in the [Cirrus macOS](../.cirrus.yml) build jobs.
 
