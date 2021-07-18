@@ -2,10 +2,10 @@
 
 ## Problem
 
-- locking is not reset when ref counting again gets 0 (adding to keyset and 
-pop again) #2202
-- C++ API for KeySet and Key has unexpected differences: also use ref counting 
-for KeySets (also suggested in #1332)
+- locking is not reset when ref counting again gets 0 (adding to keyset and
+  pop again) #2202
+- C++ API for KeySet and Key has unexpected differences: also use ref counting
+  for KeySets (also suggested in #1332)
 
 ## Constraints
 
@@ -14,7 +14,7 @@ for KeySets (also suggested in #1332)
 ## Considered Alternatives
 
 - make ref counting thread safe (probably useful for JNI)
-- start with 1 for reference counting and let keyDecRef do keyDel 
+- start with 1 for reference counting and let keyDecRef do keyDel
 
 ## Decision
 
@@ -28,9 +28,9 @@ for KeySets (also suggested in #1332)
 ## Rationale
 
 - Adding a second reference counter to Key and reducing the size of both significantly
-actually saves memory compared to the previous solution.
-- The added complexity of maintaining two reference counters is worth the 
-tradeoff for the gained functionality.
+  actually saves memory compared to the previous solution.
+- The added complexity of maintaining two reference counters is worth the
+  tradeoff for the gained functionality.
 
 ## Implications
 
