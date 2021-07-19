@@ -31,7 +31,7 @@ RUN rm -rf ${ELEKTRA_ROOT}/elektra-tests* ${ELEKTRA_ROOT}/elektra-dbg*
 RUN yum localinstall -y ${ELEKTRA_ROOT}/*
 
 RUN yum -y install --downloadonly --downloaddir=./ elektra-tests \
-    && yum localinstall -y ./elektra-tests* \
+    && rpm -i --nodeps ./elektra-tests* ./elektra-tests* \
     && dnf clean all -y
 
 RUN kdb mount-info \
