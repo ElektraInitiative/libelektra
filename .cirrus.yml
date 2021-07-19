@@ -24,7 +24,8 @@ commands:
       cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
     fi
 
-bsd_task:
+# BSD Builds
+task:
   matrix:
 
     - name: 😈 FreeBSD 12
@@ -83,7 +84,8 @@ bsd_task:
     - sudo mount -t fdescfs fdesc /dev/fd
     - *run_tests
 
-mac_task:
+# macOS Builds
+task:
   env:
     INSTALL_DIR: install
     HOMEBREW_NO_INSTALL_CLEANUP: 1
@@ -208,7 +210,8 @@ mac_task:
         false
       fi
 
-linux_task:
+# Linux Builds
+task:
   matrix:
 
     - name: 🐧 Fedora
@@ -238,7 +241,8 @@ linux_task:
     - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
     - *run_tests
 
-link_task:
+# Link Checker
+task:
   matrix:
 
     - name: 🔗 Check
@@ -279,7 +283,8 @@ link_task:
         false
       fi
 
-docu_task:
+# Documentation Build
+task:
   matrix:
 
     - name: 📚 Check
