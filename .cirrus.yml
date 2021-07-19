@@ -3,7 +3,7 @@ env:
 
 container:
   memory: 12
-  cpu: 4
+  cpu: 5
 
 # We store common commands here, so we can reference them in the build jobs below.
 commands:
@@ -29,14 +29,20 @@ bsd_task:
 
     - name: 😈 FreeBSD 12
       freebsd_instance:
+        cpu: 4
+        memory: 8
         image_family: freebsd-12-2
 
     - name: 😈 FreeBSD 13
       freebsd_instance:
+        cpu: 4
+        memory: 8
         image_family: freebsd-13-0
 
     - name: 😈 ASAN
       freebsd_instance:
+        cpu: 4
+        memory: 8
         image_family: freebsd-13-0
       env:
         ENABLE_ASAN: ON
