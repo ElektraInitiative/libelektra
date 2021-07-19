@@ -1,0 +1,43 @@
+FROM fedora:34
+
+RUN dnf upgrade --refresh -y \
+    && dnf install -y wget \
+    && wget https://rpms.libelektra.org/fedora-34/libelektra.repo -O libelektra.repo \
+    && mv libelektra.repo /etc/yum.repos.d/ \
+    && yum update
+
+# Create User:Group
+# The id is important as jenkins docker agents use the same id that is running
+# on the slaves to execute containers
+ARG JENKINS_GROUPID
+RUN groupadd \
+    -g ${JENKINS_GROUPID} \
+    -f \
+    jenkins
+
+ARG JENKINS_USERID
+RUN useradd \
+    --create-home \
+    --uid ${JENKINS_USERID} \
+    --gid ${JENKINS_GROUPID} \
+    --shell "/bin/bash" \
+    jenkins
+
+ENV ELEKTRA_ROOT=/opt/elektra/
+RUN mkdir -p ${ELEKTRA_ROOT}
+COPY ./*.rpm ${ELEKTRA_ROOT}
+RUN rm -rf ${ELEKTRA_ROOT}/elektra-tests* ${ELEKTRA_ROOT}/elektra-dbg*
+
+RUN yum localinstall -y ${ELEKTRA_ROOT}/*
+
+RUN yum -y install --downloadonly --downloaddir=./ elektra-tests \
+    && yum localinstall -y ./elektra-tests* \
+    && dnf clean all -y
+
+RUN kdb mount-info \
+    && mkdir -p `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .` || true \
+    && chown -R ${JENKINS_USERID} `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .` \
+    && chown -R ${JENKINS_USERID} `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SYSTEM .` \
+    && chown -R ${JENKINS_USERID} `kdb sget system:/info/elektra/constants/cmake/BUILTIN_DATA_FOLDER .`
+
+USER ${JENKINS_USERID}
