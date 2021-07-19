@@ -52,6 +52,11 @@ properties([
       description: 'True if the source package should be published. Disable when rebuilding to avoid overwriting existing source packages.',
       name: 'publish_source_package'
     ),
+    booleanParam(
+      defaultValue: false,
+      description: 'True if ABI tests with the previous test package should be run.',
+      name: 'abi_test'
+    ),
     string(
       defaultValue: '',
       description: '[OPTIONAL] Override previous release version. Use if latest git version tag does not correspond to previous released Elektra version.',
@@ -108,6 +113,10 @@ stage('Build website and docker images for package testing') {
 
 stage('Test packages') {
   parallel generateInstalledPackagesTestStages()
+}
+
+maybeStag('ABI tests', params.abi_test) {
+  parallel generateAbiTestStages()
 }
 
 // Pause pipeline and wait for approval to run publishing steps
@@ -312,6 +321,23 @@ def dockerInit() {
       "./scripts/docker/website/Dockerfile",
       false
     )
+
+    /*
+     * ABI test images
+     */
+    DOCKER_IMAGES.fedora_34_abi = dockerUtils.createDockerImageDesc(
+        'fedora-34-abi', dockerUtils.&idArtifact,
+        './release-artifact/*/package/fedora34/',
+        './scripts/docker/fedora/34/abi.Dockerfile',
+        false
+    )
+
+    DOCKER_IMAGES.bullseye_abi = dockerUtils.createDockerImageDesc(
+      'debian-bullseye-abi', dockerUtils.&idArtifact,
+      './release-artifact/*/package/bullseye/',
+      './scripts/docker/debian/bullseye/abi.Dockerfile',
+      false
+    )
   }
 }
 
@@ -398,6 +424,16 @@ def generateDockerBuildStagesWithPackagesInstalled() {
   // build website
   tasks << buildWebsite('debian-buster')
 
+  // build abi images
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.fedora_34_abi,
+    'fedora-34'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.bullseye_abi,
+    'debian-bullseye'
+  )
+
   return tasks
 }
 
@@ -429,6 +465,21 @@ def generateInstalledPackagesTestStages() {
   tasks << testInstalledPackage(
     'debian-bullseye-installed',
     DOCKER_IMAGES.bullseye_installed
+  )
+
+  return tasks
+}
+
+def generateAbiTestStages() {
+  def tasks = [:]
+
+  tasks << testAbiPackage(
+    'fedora-34-abi',
+    DOCKER_IMAGES.fedora_34_abi
+  )
+  tasks << testAbiPackage(
+    'debian-bullseye-abi',
+    DOCKER_IMAGES.bullseye_abi
   )
 
   return tasks
@@ -693,6 +744,18 @@ def testInstalledPackage(stageName, image) {
         sh "tar -czvf ${stageName}-release.tar.gz ./${RELEASE_VERSION}"
 
         utils.archive(["${stageName}-release.tar.gz"])
+        deleteDir()
+      }
+    }
+  }]
+}
+
+def testAbiPackage(stageName, image) {
+  return [(stageName): {
+    stage(stageName) {
+      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
+        checkout scm
+        sh "CHECK_VERSION=NO kdb run_all"
         deleteDir()
       }
     }
