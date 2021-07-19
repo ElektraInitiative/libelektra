@@ -142,7 +142,6 @@ For a list of compilers we test with have a look at:
 - our [Docker containers](/scripts/docker) orchestrated
   by our [Jenkinsfile](/scripts/jenkins/Jenkinsfile) being built
   on [our build server](https://build.libelektra.org/)
-- [Travis](/.travis.yml)
 - [Cirrus](/.cirrus.yml)
 - [GitHub Actions](/.github/workflows)
 

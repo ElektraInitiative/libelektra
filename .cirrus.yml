@@ -3,7 +3,7 @@ env:
 
 container:
   memory: 12
-  cpu: 4
+  cpu: 5
 
 # We store common commands here, so we can reference them in the build jobs below.
 commands:
@@ -24,20 +24,27 @@ commands:
       cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
     fi
 
-bsd_task:
+# BSD Builds
+task:
   matrix:
-
-    - name: 😈 FreeBSD 11
-      freebsd_instance:
-        image_family: freebsd-11-4
 
     - name: 😈 FreeBSD 12
       freebsd_instance:
+        cpu: 4
+        memory: 8
         image_family: freebsd-12-2
+
+    - name: 😈 FreeBSD 13
+      freebsd_instance:
+        cpu: 4
+        memory: 8
+        image_family: freebsd-13-0
 
     - name: 😈 ASAN
       freebsd_instance:
-        image_family: freebsd-12-2
+        cpu: 4
+        memory: 8
+        image_family: freebsd-13-0
       env:
         ENABLE_ASAN: ON
 
@@ -49,7 +56,7 @@ bsd_task:
       flex
       git
       libgit2
-      llvm11
+      llvm12
       ninja
       yajl
       yaml-cpp
@@ -57,8 +64,8 @@ bsd_task:
   script:
     - > # We use `-std=c11`, since the header `math.h` on FreeBSD requires C11 features
       set --
-      -DCMAKE_C_COMPILER=clang11
-      -DCMAKE_CXX_COMPILER=clang++11
+      -DCMAKE_C_COMPILER=clang12
+      -DCMAKE_CXX_COMPILER=clang++12
       -DBINDINGS='ALL;-io_glib'
       -DINSTALL_SYSTEM_FILES=ON
       -DCMAKE_SKIP_INSTALL_RPATH=ON
@@ -77,7 +84,8 @@ bsd_task:
     - sudo mount -t fdescfs fdesc /dev/fd
     - *run_tests
 
-mac_task:
+# macOS Builds
+task:
   env:
     INSTALL_DIR: install
     HOMEBREW_NO_INSTALL_CLEANUP: 1
@@ -202,7 +210,8 @@ mac_task:
         false
       fi
 
-linux_task:
+# Linux Builds
+task:
   matrix:
 
     - name: 🐧 Fedora
@@ -232,7 +241,8 @@ linux_task:
     - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
     - *run_tests
 
-link_task:
+# Link Checker
+task:
   matrix:
 
     - name: 🔗 Check
@@ -273,7 +283,8 @@ link_task:
         false
       fi
 
-docu_task:
+# Documentation Build
+task:
   matrix:
 
     - name: 📚 Check

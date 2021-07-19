@@ -174,6 +174,7 @@ you up to date with the multi-language support provided by Elektra.
 - <<TODO>>
 - <<TODO>>
 - Migrate most macOS build jobs to GitHub actions to speed up builds. _(Mihael Pranjić)_
+- Bump FreeBSD images to 12.2 and 13.0 using the LLVM 12 toolchain, drop FreeBSD 11. _(Mihael Pranjić)_
 
 ### GitHub Actions
 
