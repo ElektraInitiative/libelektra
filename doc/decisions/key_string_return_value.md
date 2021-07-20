@@ -26,11 +26,11 @@ An alternative would be to always store a zero byte after all key values, even i
 ## Rationale
 
 - 0 seems like the most intuitive value to return in case of an error, although
-this introduces the possibility of segfaults for users of the library. printf 
-doesn't cause segfaults anymore, which improves this problem a lot.
+  this introduces the possibility of segfaults for users of the library. printf
+  doesn't cause segfaults anymore, which improves this problem a lot.
 - With the introduction of a second channel for reporting errors, users can check the
-error messages in case of segfaults - which alleviates this issue. The first
-thing in case of an error should be checking the error message.
+  error messages in case of segfaults - which alleviates this issue. The first
+  thing in case of an error should be checking the error message.
 
 ## Implications
 
