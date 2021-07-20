@@ -1,10 +1,7 @@
 FROM fedora:34
 
 RUN dnf upgrade --refresh -y \
-    && dnf install -y wget \
-    && wget https://rpms.libelektra.org/fedora-34/libelektra.repo -O libelektra.repo \
-    && mv libelektra.repo /etc/yum.repos.d/ \
-    && yum update
+    && dnf install -y wget
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
@@ -23,16 +20,22 @@ RUN useradd \
     --shell "/bin/bash" \
     jenkins
 
-ENV ELEKTRA_ROOT=/opt/elektra/
+ENV ELEKTRA_ROOT=/opt/elektra
 RUN mkdir -p ${ELEKTRA_ROOT}
 COPY ./*.rpm ${ELEKTRA_ROOT}
 RUN rm -rf ${ELEKTRA_ROOT}/elektra-tests* ${ELEKTRA_ROOT}/elektra-dbg*
 
 RUN yum localinstall -y ${ELEKTRA_ROOT}/*
 
+RUN wget https://rpms.libelektra.org/fedora-34/libelektra.repo -O libelektra.repo \
+    && mv libelektra.repo /etc/yum.repos.d/ \
+    && yum update
+
 RUN yum -y install --downloadonly --downloaddir=./ elektra-tests \
     && rpm -i --nodeps ./elektra-tests* ./elektra-tests* \
     && dnf clean all -y
+
+RUN rm -rf ${ELEKTRA_ROOT} ./elektra-tests*
 
 RUN kdb mount-info \
     && mkdir -p `kdb sget system:/info/elektra/constants/cmake/KDB_DB_SPEC .` || true \
