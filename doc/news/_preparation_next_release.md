@@ -155,7 +155,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
+- Add docker images for ABI tests. _(Robert Sowula)_
 - Enable BuildKit features to leverage tmpfs to speed up `docker build` commands. _(Mihael Pranjić)_
 - <<TODO>>
 
@@ -163,7 +163,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Jenkins
 
-- <<TODO>>
+- Add ABI test stage for release pipeline. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 - Use `tmpfs` in Docker to speed up the test suite. _(Mihael Pranjić)_
