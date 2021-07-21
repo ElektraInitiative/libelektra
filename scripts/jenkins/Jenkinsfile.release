@@ -115,7 +115,7 @@ stage('Test packages') {
   parallel generateInstalledPackagesTestStages()
 }
 
-maybeStag('ABI tests', params.abi_test) {
+maybeStage('ABI tests', params.abi_test) {
   parallel generateAbiTestStages()
 }
 
