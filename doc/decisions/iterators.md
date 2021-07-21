@@ -6,8 +6,8 @@ The internal iterator inside KeySets seems to cause more problems than it solves
 
 ## Constraints
 
-To ensure backwards compatibility, we could embed one such iterator into
-KeySets, but recommend that people use an external instance (int) in new code.
+We could embed one such iterator into KeySets, but recommend that people use an 
+external instance (int) in new code.
 
 ## Assumptions
 
