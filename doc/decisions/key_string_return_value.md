@@ -6,7 +6,7 @@ When using keyString() on empty / binary values the return values are the litera
 
 ## Constraints
 
-Because the return value of the function is const char\*, there are not so many possibilities for a change to this behavior, as every possible return value - except for a NULL pointer - could just be the value of the string of the Key. Possible changes to this behaviour would be:
+Because the return value of the function is const char\*, there are not so many possibilities for a change to this behavior, as every possible return value - except for a NULL pointer - could just be the value of the string of the Key. Possible changes to this behavior would be:
 
 ## Assumptions
 
