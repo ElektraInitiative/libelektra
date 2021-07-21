@@ -29,7 +29,7 @@ RUN yum localinstall -y ${ELEKTRA_ROOT}/*
 
 RUN wget https://rpms.libelektra.org/fedora-34/libelektra.repo -O libelektra.repo \
     && mv libelektra.repo /etc/yum.repos.d/ \
-    && yum update
+    && yum update -y
 
 RUN yum -y install --downloadonly --downloaddir=./ elektra-tests \
     && rpm -i --nodeps ./elektra-tests* ./elektra-tests* \
