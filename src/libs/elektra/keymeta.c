@@ -618,9 +618,9 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
  * @note You must not delete the returned KeySet.
  * @note Adding a key with metadata to the KeySet is an error.
  *
- * @post for the returned KeySet ks: keyGetMeta(key, metaName) == 
+ * @post for the returned KeySet ks: keyGetMeta(key, metaName) ==
  * ksLookupByName(ks, metaName)
- * @post if @p key did not contain metadata, a new KeySet for the metadata will 
+ * @post if @p key did not contain metadata, a new KeySet for the metadata will
  * be created
  *
  * @param key the Key from which to get the metadata KeySet
