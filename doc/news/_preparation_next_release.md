@@ -128,6 +128,7 @@ you up to date with the multi-language support provided by Elektra.
 ## Documentation
 
 - Add link and small improvements to [tutorial about writing specifications](/doc/tutorials/specification.md). _(Markus Raab)_
+- doc: add pre/postconditions and invariants to module key_(@lawli3t)_
 - <<TODO>>
 - Remove previous authors. _(Markus Raab)_
 - Updated the news template. _(Mihael Pranjić)_
