@@ -20,12 +20,12 @@
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] key is a valid key  
-       - [ ] what contains valid elektraLockFlags
+       - [x] key is a valid key  
+       - [x] what contains valid elektraLockFlags
 - [ ] `@post`  
-       - [ ] parts of the keys, as stated in the what-parameter, are locked
+       - [x] parts of the keys, as stated in the what-parameter, are locked
 - [ ] `@invariant`  
-       - [ ] key stays a valid key
+       - [x] key stays a valid key
 - [ ] `@param` for every parameter  
        - [ ] key  
        - [ ] what

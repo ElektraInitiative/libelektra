@@ -22,11 +22,11 @@
 - [ ] Description of functions reads nicely  
        - [ ] description seems a bit unclear when reading
 - [ ] `@pre`  
-       - [ ] @pre key is a valid key
+       - [x] @pre key is a valid key
 - [ ] `@post`  
-       - [ ] @post reference counter of the key is decremented by one
+       - [x] @post reference counter of the key is decremented by one
 - [ ] `@invariant`  
-       - [ ] @invariant key stays a valid key
+       - [x] @invariant key stays a valid key
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
 - [ ] `@since`  
