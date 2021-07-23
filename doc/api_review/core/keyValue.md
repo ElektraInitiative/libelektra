@@ -21,11 +21,11 @@
 - [ ] Description of functions reads nicely  
        - 'and you should use it if' -> 'and you should use it, if'
 - [ ] `@pre`  
-       - [ ] add
+       - [x] add
 - [ ] `@post`  
-       - [ ] add
+       - [x] add
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
 - [ ] `@since`  

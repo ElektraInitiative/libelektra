@@ -24,12 +24,12 @@
        - [ ] 'as new string value' seems strange  
        - [ ] 'private copy' is unclear
 - [ ] `@pre`  
-       - [ ] add
+       - [x] add
 - [ ] `@post`  
-       - [ ] add  
-       - [ ] string saved as UTF-8 in backend
+       - [x] add  
+       - [x] string saved as UTF-8 in backend
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [ ] `@param` for every parameter  
        - [ ] 'text string' maybe redundant?
 - [x] `@return` / `@retval`
