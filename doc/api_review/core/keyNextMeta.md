@@ -21,11 +21,11 @@
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] add 'key is a valid key'
+       - [x] add 'key is a valid key'
 - [ ] `@post`  
-       - [ ] add 'internal iterator set to next meta-information entry'
+       - [x] add 'internal iterator set to next meta-information entry'
 - [ ] `@invariant`  
-       - [ ] add 'key stays valid'
+       - [x] add 'key stays valid'
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
 - [ ] `@since`  

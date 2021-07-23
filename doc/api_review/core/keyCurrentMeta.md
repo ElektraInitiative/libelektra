@@ -22,11 +22,11 @@
 - [ ] Description of functions reads nicely  
        - [ ] The pointer -> The returned pointer
 - [ ] `@pre`  
-       - [ ] add
+       - [x] add
 - [ ] `@post`  
-       - [ ] add
+       - [x] add
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [ ] `@param` for every parameter  
        - [ ] Key to get the current meta-information from
 - [ ] `@return` / `@retval`  

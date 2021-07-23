@@ -26,11 +26,11 @@
 - [ ] Description of functions reads nicely  
        - [ ] Remove 'You are not allowed....'
 - [ ] `@pre`  
-       - [ ] add
+       - [x] add
 - [ ] `@post`  
-       - [ ] add
+       - [x] add
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [ ] `@param` for every parameter  
        - [ ] split to two lines  
        - [ ] add dot after first sentence
