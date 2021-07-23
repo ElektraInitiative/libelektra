@@ -282,6 +282,7 @@ void o(KeySet *ks)
 }
  * @endcode
  *
+ * @pre @p dest's metadata is not read-only
  * @post keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
  *
  * @param dest the destination where the metadata should be copied to
@@ -379,6 +380,7 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
  *
  * @snippet keyMeta.c Shared Meta All
  *
+ * @pre @p dest's metadata is not read-only
  * @post for every metaName present in source: keyGetMeta(source, metaName) == keyGetMeta(dest, metaName)
  *
  * @param dest the destination where the metadata should be copied too
@@ -432,6 +434,9 @@ char keyType[] = keyValue(metaData)
  *
  * @note You must not delete or change the returned key,
  *    use keySetMeta() if you want to delete or change it.
+ *
+ * @pre @p key contains metadata
+ * @pre @p metaName is prefixed with "meta:/"
  *
  * @param key the Key from which to get metadata
  * @param metaName the name of the meta information you want the Key from.
@@ -487,6 +492,10 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  *
  * If @p metaName does not start with 'meta:/',
  * it will be prefixed with 'meta:/'.
+ *
+ * @pre @p metaName is prefixed with "meta:/"
+ * @pre @p key's metadata is not read-only
+ * @post keyGetMeta(key, metaName) == newMetaString
  *
  * @param key Key whose metadata should be set
  * @param metaName name of the metadata Key that should be set
@@ -608,6 +617,11 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
  * @note You are not allowed to modify the name of KeySet's Keys or delete them.
  * @note You must not delete the returned KeySet.
  * @note Adding a key with metadata to the KeySet is an error.
+ *
+ * @post for the returned KeySet ks: keyGetMeta(key, metaName) == 
+ * ksLookupByName(ks, metaName)
+ * @post if @p key did not contain metadata, a new KeySet for the metadata will 
+ * be created
  *
  * @param key the Key from which to get the metadata KeySet
  *
