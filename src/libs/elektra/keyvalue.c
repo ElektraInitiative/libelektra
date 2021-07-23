@@ -148,6 +148,9 @@ ksDel (ks);
 kdbClose (handle);
  * @endcode
  *
+ * @post returned pointer points to the stored internal value
+ * @post if the value is a string, the value is NULL terminated
+ *
  * @param key the Key from which to get the value
  *
  * @return a pointer to the Key's internal value
@@ -189,6 +192,9 @@ const void * keyValue (const Key * key)
  *
  * It is not checked if it is actually a string,
  * only if it terminates for security reasons.
+ *
+ * @post returned pointer points to the real internal value
+ * @post value is NULL terminated
  *
  * @param key the Key object to get the string value from
  *
@@ -244,6 +250,9 @@ buffer = elektraMalloc (keyGetValueSize (key));
 // use this buffer to store the value (binary or string)
 // pass keyGetValueSize (key) for maxSize
  * @endcode
+ *
+ * @post returns the exact amount of bytes needed to store @p key's value 
+ * (including NULL terminators)
  *
  * @param key the Key object to get the size of the value from
  *
@@ -352,6 +361,10 @@ ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
  * String values will be saved in backend storage in UTF-8 universal encoding,
  * regardless of the program's current encoding (if the iconv plugin is
  * available).
+ *
+ * @pre @p newStringValue is a NULL terminated string
+ * @post Value of the Key is set to the UTF-8 encoded value of @p newStringValue
+ * @post Metadata keys "binary" / "origvalue" are cleared
  *
  * @param key the Key for which to set the string value
  * @param newStringValue NULL-terminated string to be set as @p key's
@@ -479,6 +492,11 @@ ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
  * binary from now on. When the Key is already binary the metadata
  * won't be changed. This will only happen in the successful case,
  * but not when -1 is returned.
+ *
+ * @pre @p newBinary is not NULL and @p dataSize > 0
+ * @pre @p key is not read-only
+ * @post @p key's value set exactly to the data in @p newBinary
+ * @post "binary" key set in @p key's metadata
  *
  * @param key the Key object where the value should be set
  * @param newBinary a pointer to any binary data or NULL (to clear the stored value)

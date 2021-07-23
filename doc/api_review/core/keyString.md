@@ -26,11 +26,11 @@
        - [ ] `(null)` -> `"(null)"`  
        - [ ] `(binary)` -> `"(binary)"`
 - [ ] `@pre`  
-       - [ ] add?
+       - [x] add?
 - [ ] `@post`  
-       - [ ] add?
+       - [x] add?
 - [ ] `@invariant`  
-       - [ ] add?
+       - [x] add?
 - [ ] `@param` for every parameter  
        - [ ] move before return  
        - [ ] key: key -> Key

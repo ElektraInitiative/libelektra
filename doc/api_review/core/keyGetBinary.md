@@ -23,11 +23,11 @@
        - [ ] how exactly is empty defined for binary?
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] add
+       - [x] add
 - [ ] `@post`  
-       - [ ] add
+       - [x] add
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
        - [ ] merge lines for maxSize errors

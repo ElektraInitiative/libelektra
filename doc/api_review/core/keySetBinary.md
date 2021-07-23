@@ -21,11 +21,11 @@
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] add
+       - [x] add
 - [ ] `@post`  
-       - [ ] add
+       - [x] add
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
        - [ ] add notice about read-only keys
