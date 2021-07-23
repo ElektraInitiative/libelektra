@@ -21,12 +21,12 @@
        - [ ] add better description or reference to `keyLocked()`
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] `key` is a valid key  
-       - [ ] `what` contains valid elektraLockFlags
+       - [x] `key` is a valid key  
+       - [x] `what` contains valid elektraLockFlags
 - [ ] `@post`  
-       - [ ] `key` stays unchanged
+       - [x] `key` stays unchanged
 - [ ] `@invariant`  
-       - [ ] `key` stays a valid key
+       - [x] `key` stays a valid key
 - [ ] `@param` for every parameter  
        - [ ] add
 - [ ] `@return` / `@retval`  
