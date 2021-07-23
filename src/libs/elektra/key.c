@@ -127,6 +127,9 @@
  *   Next parameter is a comment. See keySetComment().
  *   @snippet keyNew.c With Everything
  *
+ * @pre @p name is a valid Key name
+ * @pre Variable arguments are a valid combination
+ * @post returns a new, fully initialized Key object
  *
  * @param name a valid name to the key (see keySetName())
  *
@@ -299,11 +302,10 @@ Key * keyVNew (const char * name, va_list va)
  *
  * @snippet keyCopy.c Clear
  *
- * @pre dest must be a valid Key (created with keyNew)
- * @pre source must be a valid Key or NULL
- *
+ * @pre @p dest must be a valid Key (created with keyNew)
+ * @pre @p dest must not have read-only flags set
+ * @pre @p source must be a valid Key or NULL
  * @invariant Key name stays valid until delete
- *
  * @post Value from Key source is written to Key dest
  *
  * @param dest the key which will be written to
@@ -485,6 +487,8 @@ static void keyClearNameValue (Key * key)
  * then and the reference counter will
  * be returned.
  *
+ * @post all memory related to @p key will be freed
+ *
  * @param key the Key object to delete
  *
  * @return the value of the reference counter
@@ -541,6 +545,9 @@ int f (Key *k)
 }
  * @endcode
  *
+ * @post @p key's name is empty ("/")
+ * @post @p key's metadata is empty
+ *
  * @param key the Key that should be cleared
  *
  * @retval 0 on success
@@ -595,6 +602,9 @@ int keyClear (Key * key)
  *
  * @note keyDup() will reset the references for duplicated Keys.
  *
+ * @post @p key's reference counter is > 0
+ * @post @p key's reference counter is <= SSIZE_MAX
+ *
  * @param key the Key object whose reference counter should get increased
  *
  * @return the updated value of the reference counter
@@ -632,6 +642,9 @@ ssize_t keyIncRef (Key * key)
  * nothing will happen and 0 will be returned.
  *
  * @note keyDup() will reset the references for duplicated Key.
+ *
+ * @post @p key's reference counter is >= 0
+ * @post @p key's reference counter is < SSIZE_MAX
  *
  * @param key the Key object whose reference counter should get decreased
  *
@@ -721,6 +734,8 @@ ssize_t keyGetRef (const Key * key)
  *
  * Some data structures need to lock the Key (most likely
  * its name), so that the ordering does not get confused.
+ *
+ * @post keyIsLocked(key, what) == what
  *
  * @param key the Key that should be locked
  * @param what the parts of the Key that should be locked (see above)

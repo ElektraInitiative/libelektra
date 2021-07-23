@@ -23,11 +23,11 @@
 - [ ] Description of functions reads nicely  
        - [ ] very short sentences
 - [ ] `@pre`  
-       - [ ] @pre key is a valid key
+       - [x] @pre key is a valid key
 - [ ] `@post`  
-       - [ ] @post key contains not internal data
+       - [x] @post key contains not internal data
 - [ ] `@invariant`  
-       - [ ] @invariant key stays a valid key
+       - [x] @invariant key stays a valid key
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
        - [ ] mark default case with `@return`

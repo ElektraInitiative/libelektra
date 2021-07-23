@@ -21,11 +21,11 @@
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] @pre key is a valid key
+       - [x] @pre key is a valid key
 - [ ] `@post`  
-       - [ ] @post reference counter of the key is incremented by one
+       - [x] @post reference counter of the key is incremented by one
 - [ ] `@invariant`  
-       - [ ] @invariant key stays a valid key
+       - [x] @invariant key stays a valid key
 - [x] `@param` for every parameter
 - [x] `@return` / `@retval`
 - [ ] `@since`  
