@@ -687,6 +687,11 @@ def buildRelease(stageName, image, packageRevision='1',
 }
 
 
+/**
+ * Build OpenWrt packages with the current current git master state.
+ *
+ * @param image which docker image should be used
+ */
 def buildOpenwrtPackage(image) {
   def stageName = 'build-openwrt-package'
   return [(stageName): {

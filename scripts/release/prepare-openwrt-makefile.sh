@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# @brief Removes variables of the OpenWrt makefile that are intended for
+# 		 release builds and add configuration so the current state of
+# 		 the master branch is used for building an OpenWrt package.
 
 set -e
 
