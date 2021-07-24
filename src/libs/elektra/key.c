@@ -129,7 +129,7 @@
  *
  * @pre @p name is a valid Key name
  * @pre Variable arguments are a valid combination
- * @post returns a new, fully initialized Key object
+ * @post returns a new, fully initialized Key object with the valid Key name and all data given by variable arguments
  *
  * @param name a valid name to the key (see keySetName())
  *
@@ -545,7 +545,7 @@ int f (Key *k)
 }
  * @endcode
  *
- * @post @p key's name is empty ("/")
+ * @post @p key's name is "/"
  * @post @p key's metadata is empty
  *
  * @param key the Key that should be cleared
