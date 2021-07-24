@@ -251,7 +251,7 @@ buffer = elektraMalloc (keyGetValueSize (key));
 // pass keyGetValueSize (key) for maxSize
  * @endcode
  *
- * @post returns the exact amount of bytes needed to store @p key's value 
+ * @post returns the exact amount of bytes needed to store @p key's value
  * (including NULL terminators)
  *
  * @param key the Key object to get the size of the value from
