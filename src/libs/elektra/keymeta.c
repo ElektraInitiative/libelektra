@@ -495,7 +495,7 @@ const Key * keyGetMeta (const Key * key, const char * metaName)
  *
  * @pre @p metaName is prefixed with "meta:/"
  * @pre @p key's metadata is not read-only
- * @post keyGetMeta(key, metaName) == newMetaString
+ * @post The value in @p key's metadata Keyset for @p metaName is @p newMetaString
  *
  * @param key Key whose metadata should be set
  * @param metaName name of the metadata Key that should be set
@@ -620,8 +620,7 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
  *
  * @post for the returned KeySet ks: keyGetMeta(key, metaName) ==
  * ksLookupByName(ks, metaName)
- * @post if @p key did not contain metadata, a new KeySet for the metadata will
- * be created
+ * @post @p key contains a KeySet for the metadata
  *
  * @param key the Key from which to get the metadata KeySet
  *
