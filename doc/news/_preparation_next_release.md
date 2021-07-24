@@ -232,6 +232,7 @@ _(Michael Tucek)_
 - Bump Gradle to version 7.2. _(Mihael Pranjić)_
 - Bump Debian Buster images to Bullseye and Stretch images to Buster. We still leave one Debian Stretch job due to upstream Debian LTS support until June 2022. _(Mihael Pranjić)_
 - <<TODO>>
+- Add docker image for OpenWrt package building. _(Robert Sowula)_
 
 ### Restyled
 
@@ -245,6 +246,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - <<TODO>>
 - Use `tmpfs` in Docker to speed up the test suite. _(Mihael Pranjić)_
+- Add OpenWrt package building stage to release pipeline. _(Robert Sowula)_
 
 ### Cirrus
 
