@@ -206,6 +206,7 @@ _(Michael Tucek)_
 - Improve documentation of opts library _(Tobias Schubert @qwepoizt)_
 - Update tutorial "High-level API (with code-generation)" to reflect change of `loadConfiguration()`'s signature in release 0.9.5 _(Tobias Schubert @qwepoizt)_
 - doc: add pre/postconditions and invariants to module keyvalue _(@lawli3t)_
+- add pre/postconditions and invariants to module keyvalue _(@lawli3t)_
 - <<TODO>>
 
 ## Tests
