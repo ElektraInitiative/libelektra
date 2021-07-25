@@ -699,7 +699,7 @@ def buildOpenwrtPackage(image) {
       withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
         checkout scm
         sh "./scripts/release/prepare-openwrt-makefile.sh /home/build/openwrt/package/feeds/packages/elektra/Makefile"
-        sh "cd /home/build/openwrt && make package/feeds/packages/elektra/compile V=sc"
+        sh "cd /home/build/openwrt && make package/feeds/packages/elektra/compile || make -j1 package/feeds/packages/elektra/compile V=sc"
         deleteDir()
       }
     }
