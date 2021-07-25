@@ -204,6 +204,8 @@ _(Michael Tucek)_
 - Updated the news template. _(Mihael Pranjić)_
 - Update tutorial and in-code comments for high-level API _(Tobias Schubert @qwepoizt)_
 - Improve documentation of opts library _(Tobias Schubert @qwepoizt)_
+- Update tutorial "High-level API (with code-generation)" to reflect change of `loadConfiguration()`'s signature in release 0.9.5 _(Tobias Schubert @qwepoizt)_
+- doc: add pre/postconditions and invariants to module keyvalue _(@lawli3t)_
 - <<TODO>>
 
 ## Tests
