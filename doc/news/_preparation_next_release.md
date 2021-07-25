@@ -144,6 +144,7 @@ _(Michael Tucek)_
 - Add link and small improvements to [tutorial about writing specifications](/doc/tutorials/specification.md). _(Markus Raab)_
 - Fix broken links _(@lawli3t)_
 - Remove previous authors. _(Markus Raab)_
+- add pre/postconditions and invariants to module keytest _(@lawli3t)_
 - Updated the news template. _(Mihael Pranjić)_
 - Update tutorial "High-level API (with code-generation)" to reflect change of `loadConfiguration()`'s signature in release 0.9.5 _(Tobias Schubert @qwepoizt)_
 - <<TODO>>
