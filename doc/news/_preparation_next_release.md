@@ -126,6 +126,16 @@ you up to date with the multi-language support provided by Elektra.
 
 - <<TODO>>
 - <<TODO>>
+- Start making Elektra [reuse](https://reuse.software) compliant. _(Markus Raab)_
+- Remove previous authors. _(Markus Raab)_
+- add pre/postconditions and invariants to module keytest _(@lawli3t)_
+- Updated the news template. _(Mihael Pranjić)_
+- Update and improve tutorial and in-code comments for high-level API _(Tobias Schubert @qwepoizt)_
+- Improve documentation of opts library _(Tobias Schubert @qwepoizt)_
+- Update tutorial "High-level API (with code-generation)" to reflect change of `loadConfiguration()`'s signature in release 0.9.5 _(Tobias Schubert @qwepoizt)_
+- add pre/postconditions and invariants to module keyvalue _(@lawli3t)_
+- Update and improve inline documentation of `kdb gen`. _(Tobias Schubert @qwepoizt)_
+- Fix broken links. _(Robert Sowula)_
 - <<TODO>>
 
 ## Tests
