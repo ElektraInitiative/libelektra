@@ -460,13 +460,15 @@ int ksDel (KeySet * ks)
 		return -1;
 	}
 
-	--ks->refs;
-	if (ks->refs > 0)
+	if (ks->refs > 1)
 	{
+		--ks->refs;
 		return 1;
 	}
 
+	// exclusive reference, can delete
 	ksClose (ks);
+	ks->refs = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (ks->opmphm)
@@ -531,12 +533,21 @@ int ksClear (KeySet * ks)
  * protect against any form of modification. In particular, using ksBorrow()
  * does not protect against ksClear().
  *
+ * If the reference counter is already at its maximum value, it will not be
+ * incremented and `NULL` will be returned.
+ *
  * @param ks the `KeySet` to borrow
- * @return the same pointer as `ks`
+ * @return the same pointer as `ks`, if the `ks` was borrowed successfully,
+ *         or `NULL` otherwise
  */
 KeySet * ksBorrow (KeySet * ks)
 {
 	if (ks == NULL)
+	{
+		return NULL;
+	}
+
+	if (ks->refs == UINT16_MAX)
 	{
 		return NULL;
 	}
