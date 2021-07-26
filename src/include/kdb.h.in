@@ -224,7 +224,6 @@ KeySet *ksVNew (size_t alloc, va_list ap);
 KeySet *ksDup (const KeySet * source);
 int ksCopy (KeySet *dest, const KeySet *source);
 
-uint16_t ksGetRefCount (KeySet * ks);
 KeySet * ksBorrow (KeySet * ks);
 
 int ksClear (KeySet *ks);

@@ -520,21 +520,6 @@ int ksClear (KeySet * ks)
 }
 
 /**
- * @brief Provides access to the current reference count of a `KeySet`.
- *
- * Normally you don't need to check this value. You should just call ksDel(),
- * when you are done with a `KeySet`. The reference counting will ensure that
- * the `KeySet` is only deleted, if there are no more references.
- *
- * @param ks the `KeySet` whose reference count will be returned
- * @return the number of active references to `ks`
- */
-uint16_t ksGetRefCount (KeySet * ks)
-{
-	return ks->refs;
-}
-
-/**
  * @brief Borrows a new reference to `ks`.
  *
  * This will increment the reference count of `ks` and then return `ks`.
@@ -551,6 +536,11 @@ uint16_t ksGetRefCount (KeySet * ks)
  */
 KeySet * ksBorrow (KeySet * ks)
 {
+	if (ks == NULL)
+	{
+		return NULL;
+	}
+
 	++ks->refs;
 	return ks;
 }
