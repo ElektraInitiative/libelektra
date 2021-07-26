@@ -69,7 +69,6 @@ public:
 	ckdb::KeySet * release ();
 
 	ckdb::KeySet * getKeySet () const;
-	void setKeySet (ckdb::KeySet * k);
 
 	KeySet & operator= (KeySet const & other);
 
@@ -494,7 +493,7 @@ inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END))
 /**
  * Take ownership of a `ckdb::KeySet *`.
  *
- * This means `ksDel(keyset)` will be automatically, when the
+ * This means `ksDel(keyset)` will be called automatically, when the
  * returned object is destructed. If you want to keep using
  * `keyset` beyond the lifetime of the this object, or need to
  * call ksDel() manually for some other reason, use ckdb::ksBorrow().
@@ -516,7 +515,6 @@ inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END))
  *
  * @param keyset the `KeySet *` to take the ownership of
  * @see release()
- * @see setKeySet()
  */
 inline KeySet::KeySet (ckdb::KeySet * keyset) : ks (keyset)
 {
@@ -600,36 +598,21 @@ inline ckdb::KeySet * KeySet::release ()
 }
 
 /**
- * @brief Passes out the borrowed keyset pointer
+ * @brief Passes out the raw keyset pointer
  *
  * This function exists so that pure C functions that do not
  * have a C++ binding can be called.
  *
- * DO NOT call ksDel() on the returned pointer, it will lead
- * to double frees.
- *
- * If you want to keep using the returned pointer beyond the
- * lifetime of this kdb::KeySet object, use ksBorrow().
+ * @warning DO NOT call ksDel() on the returned pointer, it will
+ *          lead to double frees.
+ *          If you want to keep using the returned pointer beyond
+ *          the lifetime of this kdb::KeySet object, use ksBorrow().
  *
  * @return pointer to internal ckdb KeySet
  */
 inline ckdb::KeySet * KeySet::getKeySet () const
 {
 	return ks;
-}
-
-/**
- * @brief Take ownership of passed keyset
- *
- * @param k the keyset to take ownership from
- * @see release()
- * @see getKeySet()
- */
-// TODO (kodebach): remove?
-inline void KeySet::setKeySet (ckdb::KeySet * k)
-{
-	ckdb::ksDel (ks);
-	ks = k;
 }
 
 /**
@@ -679,10 +662,11 @@ inline ckdb::KeySet * KeySet::dup () const
 /**
  * @brief Copy a keyset
  *
- * @param other other keyset to copy
+ * Replaces all keys in `this` with the ones from `other`.
+ * This is only a shallow copy. For a deep copy you need to manually
+ * Key::dup every key.
  *
- * This is only a shallow copy. For a deep copy you need to dup every
- * key.
+ * @param other other keyset to copy
  *
  * @copydoc ksCopy()
  */
@@ -694,11 +678,11 @@ inline void KeySet::copy (const KeySet & other)
 /**
  * @brief Clear the keyset
  *
- * Keyset will have no keys afterwards.
+ * Keyset will be empty afterwards.
  */
 inline void KeySet::clear ()
 {
-	ckdb::ksCopy (ks, nullptr);
+	ckdb::ksClear (ks);
 }
 
 /**
