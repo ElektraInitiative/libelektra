@@ -80,6 +80,10 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Remove obsolete `ksNeedSync` function. _(Mihael Pranjić)_
+- `KeySet` now also has a reference counter similar to `Key`. The new function `ksBorrow` increments the reference counter.
+  `ksDel` will now decrement the reference counter and only delete the `KeySet`, if it was the last reference. This is very
+  useful for bindings (especially with automatic garbage collection). _(Klemens Böswirth)_
 
 ### <<Library1>>
 
