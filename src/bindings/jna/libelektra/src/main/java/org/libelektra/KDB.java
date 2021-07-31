@@ -179,6 +179,8 @@ public class KDB implements AutoCloseable
 	 * Fetches at least all keys that are sub-keys or children of sub-keys of the
 	 * supplied parent key
 	 *
+	 * Note: Resulting key set may contain more keys than requested
+	 *
 	 * @param parentKey Root key which name is used to fetch keys below it
 	 * @return New {@link KeySet} containing the fetched keys
 	 * @throws KDBException             if loading keys fails - see specialization
@@ -199,6 +201,8 @@ public class KDB implements AutoCloseable
 	/**
 	 * Fetches at least all keys that are sub-keys or children of sub-keys of the
 	 * supplied parent key
+	 *
+	 * Note: Resulting key set may contain more keys than requested
 	 *
 	 * @param keySet    {@link KeySet} used to store the fetched keys
 	 * @param parentKey Root key which name is used to fetch keys below it
@@ -225,7 +229,7 @@ public class KDB implements AutoCloseable
 	 * {@link #get(Key)} or {@link #get(KeySet, Key)} has to be called before this
 	 * function may be executed.
 	 *
-	 * @param keySet KeySet which contains keys to be updated in the backend
+	 * @param keySet KeySet which contains updates to keys in the backend
 	 * @return This {@link KDB} session, enabling a fluent interface
 	 * @throws KDBException             if storing keys fails - see specialization
 	 *                                  of {@link KDBException}
@@ -246,9 +250,9 @@ public class KDB implements AutoCloseable
 	}
 
 	/**
-	 * Will update changed keys below the specified {@code parentKey} of the given
-	 * {@code keySet} in the backend. {@link #get(Key)} or {@link #get(KeySet, Key)}
-	 * has to be called before this function may be executed.
+	 * Will update changed keys of the given {@code keySet} in the backend.
+	 * {@link #get(Key)} or {@link #get(KeySet, Key)} has to be called before this
+	 * function may be executed.
 	 *
 	 * @param keySet    KeySet which contains keys to be updated in the backend
 	 * @param parentKey Specify which part of the given {@code keySet} is of
@@ -256,7 +260,10 @@ public class KDB implements AutoCloseable
 	 *                  keys below this key. All others would be passed back as they
 	 *                  were retrieved by kdbGet(). Cascading keys (starting with /)
 	 *                  will set the path in all namespaces. `/` will commit all
-	 *                  keys.
+	 *                  keys. This parameter is an optimization to only save keys of
+	 *                  mountpoints affected by the specified {@code parentKey}.
+	 *                  This does not necessarily mean that only changes to keys
+	 *                  below that {@code parentKey} are saved.
 	 * @return This {@link KDB} session, enabling a fluent interface
 	 * @throws KDBException             if storing keys fails - see specialization
 	 *                                  of {@link KDBException}
