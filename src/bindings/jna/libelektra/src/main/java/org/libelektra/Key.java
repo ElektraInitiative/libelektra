@@ -131,18 +131,13 @@ public class Key implements Iterable<String>
 	 * Constructs a temporary nameless {@link Key} which cannot be saved to the key
 	 * data base but used for transferring warnings and error information.
 	 *
+	 * TODO #3871 the returned key should be read only to the java binding consumer
+	 *
 	 * @return New nameless key
 	 * @see #release()
 	 */
-	@Nonnull public static Key createNameless ()
+	@Nonnull protected static Key create ()
 	{
-		// TODO passing NULL to keyNew should do the trick, but keyNew documentation is
-		// obviously wrong about that at the moment - therefore we ar currently passing
-		// "/"
-		// TODO it may be even better to completely remove errorKey parameters from the
-		// Java API and implicitly create a temporary key for transferring warnings and
-		// error information, since it should always get mapped to the appropriate
-		// exception anyways
 		return create (Elektra.INSTANCE.keyNew (Elektra.KEY_NAME_SIMPLE_INITALIZED_BUT_EMPTY_OBJECT))
 			.orElseThrow (IllegalStateException::new);
 	}

@@ -62,7 +62,7 @@ public class KeyTest
 
 	@Test public void test_createNameless_shouldPass ()
 	{
-		Key.createNameless ().getPointer ();
+		Key.create ().getPointer ();
 	}
 
 	@Test public void test_createKey_shouldPass ()

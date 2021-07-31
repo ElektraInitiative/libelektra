@@ -92,7 +92,7 @@ public class GOptsTest
 	@After public void removeSpec () throws KDBException
 	{
 		var specParentKey = Key.create (SPEC_BASE_KEY);
-		try (final KDB kdb = KDB.open (specParentKey))
+		try (final KDB kdb = KDB.open ())
 		{
 			var keySet = kdb.get (specParentKey);
 			keySet.cut (specParentKey);
