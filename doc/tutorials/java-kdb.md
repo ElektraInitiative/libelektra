@@ -11,23 +11,6 @@ In order to use `kdb` you need to include the dependency in your project. [Here]
 After that you can start loading a `KDB` object as follows:
 
 ```java
-var key = Key.createNameless();
-try (KDB kdb = KDB.open(key)) {
-    // code to manipulate keys
-} catch (KDB.KDBException e) {
-    e.printStackTrace();
-} finally {
-    key.release(); // optional clean-up
-}
-```
-
-Note that `KDB` implements `AutoClosable` which allows [`try-with-resouces`](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
-
-The key being passend to `KDB::open` is used to store warnings and error information. If an error occurs, it will be mapped to the appropriate specialization of `KDBException`.
-
-The following code is equivalent and preferred, if you do not want to reuse an existing key for transferring warnings and error information:
-
-```java
 try (KDB kdb = KDB.open()) {
     // code to manipulate keys
 } catch (KDB.KDBException e) {
@@ -35,6 +18,10 @@ try (KDB kdb = KDB.open()) {
     e.releaseErrorKey(); // optional clean-up
 }
 ```
+
+Note that `KDB` implements `AutoClosable` which allows [`try-with-resouces`](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
+
+If an error occurs, detailed information can be obtained from the thrown `KDBException`.
 
 ## A word about releasing native ressources
 
@@ -87,7 +74,7 @@ var keyNamespace = Key.create("user:/");                 // create key represent
 var keySet = kdb.get(keyNamespace);                      // fetch all keys for the namespace into a new key set
 var keyToStore = Key.create("user:/somekey", "myValue"); // create key with value to store
 keySet.append(keyToStore);
-kdb.set(keySet, keyToStore);
+kdb.set(keySet);
 
 // optional clean-up
 keySet.release();
@@ -111,7 +98,7 @@ try (KDB kdb = KDB.open()) {
         var currentKey = keySet.at(i);
         System.out.println(String.format("%s: %s",
                 currentKey.getName(),               // fetch the key's name
-                currentKey.getStringAndRelease())); // fetch the key's value and release the key returned by KeySet::at
+                currentKey.getString())); // fetch the key's value and release the key returned by KeySet::at
     }
     keySet.release(); // optional clean-up
 } catch (KDB.KDBException e) {

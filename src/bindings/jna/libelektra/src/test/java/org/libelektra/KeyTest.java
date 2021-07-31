@@ -60,7 +60,7 @@ public class KeyTest
 	static final String KEY_12_NAME = "/key_test/10/key_name/sub/1";
 	static final String KEY_12_VALUE = "blub3";
 
-	@Test public void test_createNameless_shouldPass ()
+	@Test public void test_create_shouldPass ()
 	{
 		Key.create ().getPointer ();
 	}
