@@ -42,6 +42,7 @@ public class KDB implements AutoCloseable
 	 * @throws KeySetReleasedException  if {@code contract} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code contract} is {@code null}
+	 * @see #open()
 	 */
 	@Nonnull public static KDB open (KeySet contract) throws KDBException
 	{
@@ -215,6 +216,7 @@ public class KDB implements AutoCloseable
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code keySet} or {@code parentKey} is
 	 *                                  {@code null}
+	 * @see #get(Key)
 	 */
 	public KDB get (KeySet keySet, Key parentKey) throws KDBException
 	{
@@ -273,6 +275,7 @@ public class KDB implements AutoCloseable
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code keySet} or {@code parentKey} is
 	 *                                  {@code null}
+	 * @see #set(KeySet)
 	 */
 	public KDB set (KeySet keySet, Key parentKey) throws KDBException
 	{
