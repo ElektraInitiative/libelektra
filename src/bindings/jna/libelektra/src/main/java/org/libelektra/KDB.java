@@ -258,7 +258,6 @@ public class KDB implements AutoCloseable
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code keySet} or {@code parentKey} is
 	 *                                  {@code null}
-	 * @see #set(KeySet)
 	 */
 	public KDB set (KeySet keySet, Key parentKey) throws KDBException
 	{
