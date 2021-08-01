@@ -136,7 +136,7 @@ public class Key implements Iterable<String>
 	 * @return New nameless key
 	 * @see #release()
 	 */
-	@Nonnull protected static Key create ()
+	@Nonnull public static Key create ()
 	{
 		return create (Elektra.INSTANCE.keyNew (Elektra.KEY_NAME_SIMPLE_INITALIZED_BUT_EMPTY_OBJECT))
 			.orElseThrow (IllegalStateException::new);

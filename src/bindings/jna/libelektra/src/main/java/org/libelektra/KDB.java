@@ -182,7 +182,7 @@ public class KDB implements AutoCloseable
 	 *
 	 * Note: Resulting key set may contain more keys than requested
 	 *
-	 * @param parentKey Root key which name is used to fetch keys below it
+	 * @param parentKey Root key which name is used to fetch keys below.
 	 * @return New {@link KeySet} containing the fetched keys
 	 * @throws KDBException             if loading keys fails - see specialization
 	 *                                  of {@link KDBException}
@@ -206,7 +206,10 @@ public class KDB implements AutoCloseable
 	 * Note: Resulting key set may contain more keys than requested
 	 *
 	 * @param keySet    {@link KeySet} used to store the fetched keys
-	 * @param parentKey Root key which name is used to fetch keys below it
+	 * @param parentKey Root key which name is used to fetch keys below it. It is
+	 *                  recommended to use the most specific {@code parentKey}
+	 *                  possible. (e.g. using {@code system:/} is rarely the most
+	 *                  specific)
 	 * @return This {@link KDB} session, enabling a fluent interface
 	 * @throws KDBException             if loading keys fails - see specialization
 	 *                                  of {@link KDBException}
@@ -227,45 +230,25 @@ public class KDB implements AutoCloseable
 	}
 
 	/**
-	 * Will update all changed keys of the given {@code keySet} in the backend.
-	 * {@link #get(Key)} or {@link #get(KeySet, Key)} has to be called before this
-	 * function may be executed.
-	 *
-	 * @param keySet KeySet which contains updates to keys in the backend
-	 * @return This {@link KDB} session, enabling a fluent interface
-	 * @throws KDBException             if storing keys fails - see specialization
-	 *                                  of {@link KDBException}
-	 * @throws KDBClosedException       if this session has already been closed
-	 * @throws KeySetReleasedException  if {@code keySet} has already been released
-	 * @throws IllegalArgumentException if {@code keySet} is {@code null}
-	 */
-	public KDB set (KeySet keySet) throws KDBException
-	{
-		argNotNull (keySet, "KeySet 'keySet'");
-		var parentKey = Key.create ();
-		var session = set (keySet, parentKey);
-
-		// parentKey is being released if no KDBException occurred
-		parentKey.release ();
-
-		return session;
-	}
-
-	/**
 	 * Will update changed keys of the given {@code keySet} in the backend.
 	 * {@link #get(Key)} or {@link #get(KeySet, Key)} has to be called before this
 	 * function may be executed.
 	 *
 	 * @param keySet    KeySet which contains keys to be updated in the backend
 	 * @param parentKey Specify which part of the given {@code keySet} is of
-	 *                  interest for you. Then you promise to only modify or remove
-	 *                  keys below this key. All others would be passed back as they
-	 *                  were retrieved by kdbGet(). Cascading keys (starting with /)
-	 *                  will set the path in all namespaces. `/` will commit all
-	 *                  keys. This parameter is an optimization to only save keys of
-	 *                  mountpoints affected by the specified {@code parentKey}.
-	 *                  This does not necessarily mean that only changes to keys
-	 *                  below that {@code parentKey} are saved.
+	 *                  interest for you. In general it is highly recommended, that
+	 *                  you use the same {@code parentKey} used to fetch the
+	 *                  {@code keySet} with {@link #get(Key)} or
+	 *                  {@link #get(KeySet, Key)}. You promise to only modify or
+	 *                  remove keys below this key. All others would be passed back
+	 *                  as they were retrieved by {@code keySet} with
+	 *                  {@link #get(Key)}. Cascading keys (starting with {@code /})
+	 *                  will set the path in all namespaces. A nameless key as
+	 *                  created by {@link Key#create()} will commit all changes in
+	 *                  the {@code keySet}. This parameter is an optimization to
+	 *                  only save keys of mountpoints affected by the specified
+	 *                  {@code parentKey}. This does not necessarily mean that only
+	 *                  changes to keys below that {@code parentKey} are saved.
 	 * @return This {@link KDB} session, enabling a fluent interface
 	 * @throws KDBException             if storing keys fails - see specialization
 	 *                                  of {@link KDBException}

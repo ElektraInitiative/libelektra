@@ -74,7 +74,7 @@ var keyNamespace = Key.create("user:/");                 // create key represent
 var keySet = kdb.get(keyNamespace);                      // fetch all keys for the namespace into a new key set
 var keyToStore = Key.create("user:/somekey", "myValue"); // create key with value to store
 keySet.append(keyToStore);
-kdb.set(keySet);
+kdb.set(keySet, keyToStore);
 
 // optional clean-up
 keySet.release();
