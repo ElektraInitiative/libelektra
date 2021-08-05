@@ -107,12 +107,12 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Java binding
 
-- Renamed zero argument static factory method `Key::createNameless` to `Key::create`.
+- Renamed zero argument static factory method `Key::createNameless` to `Key::create`. To migrate to this change, just update calling code to use the new method name.
 - Removed signatures publishing the error key based error handling approach to the Java binding consumer. Such arguments are now created implicitly by the binding. In case of an exceptional state, appropriate exceptions are thrown. Such exceptions provide access to the underlying key containing warning and error information as meta data. Affected signatures:
-  - removed `KDB::open(Key)`
-  - removed `KDB::open(KeySet, Key)`
-  - removed `KDB::close(Key)`
-  - updated javadoc for `KDB::set(KeySet, Key)`
+  - Removed `KDB::open(Key)`, please update usages by calling `KDB::open()` instead.
+  - removed `KDB::open(KeySet, Key)`, please update usages by calling `KDB::open(KeySet)` instead.
+  - removed `KDB::close(Key)`, please update usages by calling `KDB::close()` instead.
+  - Updated javadoc for `KDB::set(KeySet, Key)`, better explaining the relevance of the second argument. Please review API usage to consider the more elaborated explanation of how Elektra uses this argument's value.
 
 _(Michael Tucek)_
 
