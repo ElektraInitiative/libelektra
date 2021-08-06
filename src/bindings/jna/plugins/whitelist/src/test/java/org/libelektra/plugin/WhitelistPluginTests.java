@@ -21,12 +21,12 @@ public class WhitelistPluginTests
 	@Before public void setup ()
 	{
 		plugin = new WhitelistPlugin ();
-		plugin.open (plugin.getConfig (), Key.createNameless ());
+		plugin.open (plugin.getConfig (), Key.create ());
 	}
 
 	@After public void tearDown ()
 	{
-		plugin.close (Key.createNameless ());
+		plugin.close (Key.create ());
 	}
 
 	@Test public void test_getJniModuleContractRoot_shouldPass () throws KDBException
@@ -46,14 +46,14 @@ public class WhitelistPluginTests
 
 	@Test public void test_get_shouldPass () throws KDBException
 	{
-		int result = plugin.get (KeySet.create (), Key.createNameless ());
+		int result = plugin.get (KeySet.create (), Key.create ());
 
 		assertEquals (Plugin.STATUS_NO_UPDATE, result);
 	}
 
 	@Test public void test_setInvalid_shouldPass () throws KDBException
 	{
-		var parentKey = Key.createNameless ();
+		var parentKey = Key.create ();
 		var key = addSpecMetaData (Key.create ("user:/test")).setString ("not-allowed");
 		int result = plugin.set (KeySet.create (key), parentKey);
 		var errorNumber = parentKey.getMeta ("error/number").map (Key::getString).orElseThrow ();
@@ -64,7 +64,7 @@ public class WhitelistPluginTests
 
 	@Test public void test_setValid_shouldPass () throws KDBException
 	{
-		var parentKey = Key.createNameless ();
+		var parentKey = Key.create ();
 		Key key;
 		int result;
 		key = addSpecMetaData (Key.create ("user:/test")).setString ("allowed0");
