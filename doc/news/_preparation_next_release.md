@@ -113,8 +113,8 @@ you up to date with the multi-language support provided by Elektra.
   - Removed `KDB::open(KeySet, Key)`, please update usages by calling `KDB::open(KeySet)` instead.
   - Removed `KDB::close(Key)`, please update usages by calling `KDB::close()` instead.
   - Updated javadoc for `KDB::set(KeySet, Key)`, better explaining the relevance of the second argument. Please review API usage to consider the more elaborated explanation of how Elektra uses this argument's value.
-- Introduced `KeySet::remove(Key)`
-- Removed `KeySet::lookup(Key, int)` and `KeySet::lookup(String, int)` as well as accompanying flag definitions `KeySet::KDB_O_NONE`, `KeySet::KDB_O_DEL` and `KeySet::KDB_O_POP`. Please use `KeySet::lookup(Key)` and `KeySet::lookup(String)` instead. Instead of `KeySet::KDB_O_DEL`, please consider using `Key::release`. The proper replacement for `KeySet::KDB_O_POP` is `KeySet::remove(Key)`.
+- Introduced `KeySet::remove(Key)` and `KeySet::remove(String)`
+- Removed `KeySet::lookup(Key, int)` and `KeySet::lookup(String, int)` as well as accompanying flag definitions `KeySet::KDB_O_NONE`, `KeySet::KDB_O_DEL` and `KeySet::KDB_O_POP`. Please use `KeySet::lookup(Key)` and `KeySet::lookup(String)` instead. Instead of `KeySet::KDB_O_DEL`, please consider using `Key::release`. The proper replacement for `KeySet::KDB_O_POP` is `KeySet::remove(Key)` or `KeySet::remove(String)`.
 
 _(Michael Tucek)_
 

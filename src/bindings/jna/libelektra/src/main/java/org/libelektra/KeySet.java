@@ -246,8 +246,8 @@ public class KeySet implements Iterable<Key>
 	 * Creates new key set with help of a cut point
 	 *
 	 * @param cutpoint Key that is used as cutting point
-	 * @return New KeySet containing all keys until the cutting point, this if null
-	 *         was provided
+	 * @return New {@link KeySet} containing all keys until the cutting point, this
+	 *         if null was provided
 	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code cutpoint} is {@code null}
@@ -260,19 +260,44 @@ public class KeySet implements Iterable<Key>
 	}
 
 	/**
-	 * Removes the the specified key from key set
+	 * Removes the specified key from key set
 	 *
 	 * @param key Key to remove
-	 * @return True, if the key was found and removed, false otherwise
+	 * @return Removed {@link Key} from the key set, matching the specified
+	 *         {@code key}'s name. May or may not reference the same native key
+	 *         resource.
 	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
 	 *                                  released
 	 * @throws KeyReleasedException     if {@code key} has already been released
 	 * @throws IllegalArgumentException if {@code key} is {@code null}
+	 * @throws NoSuchElementException   if the specified {@code key} was not found
+	 *                                  in this {@code KeySet}
 	 */
-	@Nonnull public boolean remove (Key key)
+	@Nonnull public Key remove (Key key)
 	{
 		argNotNull (key, "Key 'key'");
-		return Elektra.INSTANCE.ksLookup (getPointer (), key.getPointer (), Elektra.KDB_O_POP) != null;
+		return checkKeyPointer (Elektra.INSTANCE.ksLookup (getPointer (), key.getPointer (), Elektra.KDB_O_POP),
+					NoSuchElementException::new);
+	}
+
+	/**
+	 * Removes the key with the specified name from key set
+	 *
+	 * @param find Name of the key to remove
+	 * @return Removed {@link Key} from the key set, matching the specified
+	 *         {@code key}'s name
+	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code find} is {@link String#isBlank()
+	 *                                  blank}
+	 * @throws NoSuchElementException   if the specified {@code key} was not found
+	 *                                  in this {@code KeySet}
+	 */
+	@Nonnull public Key remove (String find)
+	{
+		argNotNullOrBlank (find, "String 'find'");
+		return checkKeyPointer (Elektra.INSTANCE.ksLookupByName (getPointer (), find, Elektra.KDB_O_POP),
+					NoSuchElementException::new);
 	}
 
 	/**

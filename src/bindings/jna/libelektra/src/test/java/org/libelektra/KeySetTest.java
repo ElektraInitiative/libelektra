@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -204,17 +205,38 @@ public class KeySetTest
 		assertEquals (0, ks.size ());
 	}
 
-	@Test public void test_keySetRemoveKey_shouldPass ()
+	@Test public void test_keySetRemoveByKey_shouldPass ()
 	{
 		var ks = KeySet.create (2, key, key5);
 
 		assertEquals (2, ks.size ());
 		assertTrue (ks.lookup (key).isPresent ());
-		assertTrue (ks.remove (key));
+		assertEquals (key.getName (), ks.remove (key).getName ());
 		assertEquals (1, ks.size ());
 		assertTrue (ks.lookup (key).isEmpty ());
+	}
 
-		assertFalse (ks.remove (key6));
+	@Test (expected = NoSuchElementException.class) public void test_keySetRemoveByKey_shouldThrow ()
+	{
+		var ks = KeySet.create (2, key, key5);
+		ks.remove (key6);
+	}
+
+	@Test public void test_keySetRemoveByKeyName_shouldPass ()
+	{
+		var ks = KeySet.create (2, key, key5);
+
+		assertEquals (2, ks.size ());
+		assertTrue (ks.lookup (key).isPresent ());
+		assertEquals (key.getName (), ks.remove (key.getName ()).getName ());
+		assertEquals (1, ks.size ());
+		assertTrue (ks.lookup (key).isEmpty ());
+	}
+
+	@Test (expected = NoSuchElementException.class) public void test_keySetRemoveByKeyName_shouldThrow ()
+	{
+		var ks = KeySet.create (2, key, key5);
+		ks.remove (key6.getName ());
 	}
 
 	@Test public void test_keySetHeadTail_shouldPass ()
