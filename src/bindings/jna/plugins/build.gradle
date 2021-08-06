@@ -1,9 +1,8 @@
 subprojects { subProject ->
-	if (subProject.name != 'converter' && subProject.name != 'module') {
-		// include java project configuration
-		apply from: "../../java-library.gradle"
+	// include java project configuration
+	apply from: "../../java-library.gradle"
+	subProject.tasks.fatJar.dependsOn(project(':libelektra').tasks.jar)
 
-		// include project dependencies
-		apply from: '../dependencies.gradle'
-	}
+	// include project dependencies
+	apply from: '../dependencies.gradle'
 }

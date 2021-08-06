@@ -53,9 +53,10 @@ public class WhitelistPluginTests
 
 	@Test public void test_setInvalid_shouldPass () throws KDBException
 	{
-		var key = addSpecMetaData (Key.createNameless ()).setString ("not-allowed");
-		int result = plugin.set (KeySet.create (), key);
-		var errorNumber = key.getMeta ("error/number").map (Key::getString).orElseThrow ();
+		var parentKey = Key.createNameless ();
+		var key = addSpecMetaData (Key.create ("user:/test")).setString ("not-allowed");
+		int result = plugin.set (KeySet.create (key), parentKey);
+		var errorNumber = parentKey.getMeta ("error/number").map (Key::getString).orElseThrow ();
 
 		assertEquals (Plugin.STATUS_ERROR, result);
 		assertEquals (SemanticValidationException.ERROR_NUMBER, errorNumber);
@@ -63,32 +64,38 @@ public class WhitelistPluginTests
 
 	@Test public void test_setValid_shouldPass () throws KDBException
 	{
+		var parentKey = Key.createNameless ();
 		Key key;
 		int result;
-		key = addSpecMetaData (Key.createNameless ()).setString ("allowed0");
-		result = plugin.set (KeySet.create (), key);
+		key = addSpecMetaData (Key.create ("user:/test")).setString ("allowed0");
+		result = plugin.set (KeySet.create (key), parentKey);
 
 		assertEquals (Plugin.STATUS_SUCCESS, result);
-		assertTrue (key.getMeta ("error/number").isEmpty ());
+		assertTrue (parentKey.getMeta ("error/number").isEmpty ());
 
-		key = addSpecMetaData (Key.createNameless ()).setString ("allowed1");
-		result = plugin.set (KeySet.create (), key);
-
-		assertEquals (Plugin.STATUS_SUCCESS, result);
-		assertTrue (key.getMeta ("error/number").isEmpty ());
-
-		key = addSpecMetaData (Key.createNameless ()).setString ("allowed3");
-		result = plugin.set (KeySet.create (), key);
+		key = addSpecMetaData (Key.create ("user:/test")).setString ("allowed1");
+		result = plugin.set (KeySet.create (key), parentKey);
 
 		assertEquals (Plugin.STATUS_SUCCESS, result);
-		assertTrue (key.getMeta ("error/number").isEmpty ());
+		assertTrue (parentKey.getMeta ("error/number").isEmpty ());
+
+		key = addSpecMetaData (Key.create ("user:/test")).setString ("allowed3");
+		result = plugin.set (KeySet.create (key), parentKey);
+
+		assertEquals (Plugin.STATUS_SUCCESS, result);
+		assertTrue (parentKey.getMeta ("error/number").isEmpty ());
+		assertTrue (parentKey.getMeta ("warnings/#0/number").isPresent ());
+		assertEquals (SemanticValidationException.ERROR_NUMBER, parentKey.getMeta ("warnings/#0/number").get ().getString ());
+		assertEquals (SemanticValidationException.ERROR_NUMBER, parentKey.getMeta ("warnings/#1/number").get ().getString ());
 	}
 
 	private Key addSpecMetaData (Key key)
 	{
-		key.setMeta ("check/whitelist/#0", "allowed0");
-		key.setMeta ("check/whitelist/#1", "allowed1");
+		key.setMeta ("check/whitelist/#__0", "allowed0");
+		key.setMeta ("check/whitelist/#__1", "allowed1");
 		key.setMeta ("check/whitelist/#100", "allowed3");
+		key.setMeta ("check/whitelist/garbage", "something");
+		key.setMeta ("check/whitelist/#__2/garbage", "someotherthing");
 		return key;
 	}
 }
