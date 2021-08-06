@@ -313,7 +313,6 @@ static void testRead (void)
 static void testWriteRead (const char * _prefix)
 {
 	prefix = _prefix;
-	// TODO (kodebach): new root name
 	if (strcmp (prefix, "user:/") != 0)
 	{
 		testWriteReadEmptyKeyName ();

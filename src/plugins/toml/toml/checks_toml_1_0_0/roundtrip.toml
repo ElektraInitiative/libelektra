@@ -90,12 +90,11 @@ str6 = """\
        the lazy dog.\
        """
 
-# TODO: Should work, but isn't
 [strings.multiline]
-# str1 = """Here are two quotation marks: ". Simple enough."""
-# str2 = """Here are three quotation marks: ""\"."""
-# str3 = """Here are fifteen quotation marks: ""\"""\"""\"""\"""\"."""
-# str4 = """"This," she said, "is just a pointless statement.""""
+str1 = """Here are two quotation marks: ". Simple enough."""
+str2 = """Here are three quotation marks: ""\"."""
+str3 = """Here are fifteen quotation marks: ""\"""\"""\"""\"""\"."""
+# TODO: str4 = """"This," she said, "is just a pointless statement.""""
 
 [strings.literal]
 # What you see is what you get.
@@ -105,8 +104,7 @@ quoted   = 'Tom "Dubs" Preston-Werner'
 regex    = '<\i\c*\s*>'
 
 [strings.literal_multiline]
-# TODO: Should work, but isn't
-# regex2 = '''I [dw]on't need \d{2} apples'''
+regex2 = '''I [dw]on't need \d{2} apples'''
 lines  = '''
 The first newline is
 trimmed in raw strings.
@@ -118,9 +116,8 @@ trimmed in raw strings.
 quot15 = '''Here are fifteen quotation marks: """""""""""""""'''
 apos15 = "Here are fifteen apostrophes: '''''''''''''''"
 
-# TODO: Should work, but isn't
 # 'That,' she said, 'is still pointless.'
-# str = ''''That,' she said, 'is still pointless.''''
+# TODO: str = ''''That,' she said, 'is still pointless.''''
 
 #################### INTEGER ####################
 [integer]
