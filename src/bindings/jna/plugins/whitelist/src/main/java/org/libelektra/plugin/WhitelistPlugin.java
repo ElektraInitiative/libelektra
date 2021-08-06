@@ -1,7 +1,10 @@
 package org.libelektra.plugin;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -17,7 +20,8 @@ public class WhitelistPlugin implements Plugin
 {
 
 	private static final String PLUGIN_NAME = "Whitelist";
-	private static final Pattern META_WHITELISTENTRY_PATTERN = Pattern.compile ("meta:/check/whitelist/#_*\\d+");
+	private static final Pattern META_WHITELISTENTRY_PATTERN = Pattern.compile ("meta:/check/whitelist/.*");
+	private static final Pattern META_WHITELISTENTRY_VALID_PATTERN = Pattern.compile ("meta:/check/whitelist/#_*\\d+");
 
 	@Override public KeySet getConfig ()
 	{
@@ -46,45 +50,71 @@ public class WhitelistPlugin implements Plugin
 			return STATUS_SUCCESS;
 		}
 
-		// TODO here could go some normalization code (e.g. one could introduce an option to make whitelist values
-		// case-insensitive
-		// and normalize all read values to lower case) - see type.c for an example on how to do that
+		// here could go some normalization code (e.g. one could introduce an option to
+		// make whitelist values case-insensitive and normalize all read values to lower
+		// case) - see type.c for an example on how to do that
 
 		return STATUS_NO_UPDATE;
 	}
 
 	@Override public int set (KeySet keySet, Key parentKey)
 	{
-		// look whether a whitelist has been defined
-		Set<String> whitelist = new HashSet<> ();
-		parentKey.rewindMeta ();
-		try
+		// iterate key set and validate each key
+		var iter = keySet.iterator ();
+		while (iter.hasNext ())
 		{
-			do
+			var key = iter.next ();
+
+			// look whether a whitelist has been defined
+			Set<String> whitelist = new HashSet<> ();
+			List<Key> invalidWhitelistSpecification = new ArrayList<> ();
+			key.rewindMeta ();
+			Optional<Key> oCurrentMetaKey;
+			while ((oCurrentMetaKey = key.nextMeta ()).isPresent ())
 			{
-				var metaKey = parentKey.nextMeta ();
+				var metaKey = oCurrentMetaKey.get ();
 				if (META_WHITELISTENTRY_PATTERN.matcher (metaKey.getName ()).matches ())
 				{
-					whitelist.add (metaKey.getString ());
+					if (META_WHITELISTENTRY_VALID_PATTERN.matcher (metaKey.getName ()).matches ())
+					{
+						whitelist.add (metaKey.getString ());
+					}
+					else
+					{
+						invalidWhitelistSpecification.add (metaKey);
+					}
 				}
-			} while (true);
-		}
-		catch (NoSuchElementException e)
-		{
-			// no more meta keys - Key::currentMeta and Key::nextMeta should return Optional<Key> since no
-			// Key::hasNextMeta method is available
-		}
+			}
 
-		if (!whitelist.isEmpty () && !whitelist.contains (parentKey.getString ()))
-		{
-			// add semantic validation error
-			parentKey.setMeta ("error/number", SemanticValidationException.ERROR_NUMBER);
-			parentKey.setMeta (
-				"error/reason",
-				String.format ("Value of key '%s' with value '%s' does not adhere to whitelist of possible values: %s",
-					       parentKey.getName (), parentKey.getString (),
-					       whitelist.stream ().collect (Collectors.joining (", "))));
-			return STATUS_ERROR;
+			if (!invalidWhitelistSpecification.isEmpty ())
+			{
+				// add semantic validation warnings
+				for (int i = 0; i < invalidWhitelistSpecification.size (); i++)
+				{
+					final String warningIndex = Integer.toString (i);
+					char[] underscores = new char[warningIndex.length () - 1];
+					Arrays.fill (underscores, '_');
+					final String warningKeyName = "warnings/#" + new String (underscores) + warningIndex;
+					parentKey.setMeta (warningKeyName + "/number", SemanticValidationException.ERROR_NUMBER);
+					parentKey.setMeta (
+						warningKeyName + "/reason",
+						String.format (
+							"Key '%s' is no valid whitelist check specification and is therefore ignored.",
+							invalidWhitelistSpecification.get (i).getName ()));
+				}
+			}
+
+			if (!whitelist.isEmpty () && !whitelist.contains (key.getString ()))
+			{
+				// add semantic validation error
+				parentKey.setMeta ("error/number", SemanticValidationException.ERROR_NUMBER);
+				parentKey.setMeta (
+					"error/reason",
+					String.format (
+						"Value of key '%s' with value '%s' does not adhere to whitelist of possible values: %s",
+						key.getName (), key.getString (), whitelist.stream ().collect (Collectors.joining (", "))));
+				return STATUS_ERROR;
+			}
 		}
 
 		return STATUS_SUCCESS;

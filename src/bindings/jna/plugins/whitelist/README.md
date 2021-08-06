@@ -5,14 +5,16 @@ This `checker` plugin enforces set key values to adhere to a whitelist specified
 ```
 check/whitelist/#0 = some-allowed-value
 check/whitelist/#1 = another-allowed-value
-check/whitelist/#19 = yet-nother-allowed-value
+check/whitelist/#9 = yet-nother-allowed-value
 ```
 
 `#` indices do not have to be consecutive. Whitelist entries are case sensitive and are not checked or normalized when read.
 
+Keys below `check/whitelist` not adhering to the schema above will be ignored and correspondig warnings will be issued.
+
 ## Build
 
-The plugin is a sub-project of the JNA bindings Gradle multi-project.
+The plugin is a sub-project of the Java binding Gradle multi-project.
 
 To assemble the plugin's JAR:
 

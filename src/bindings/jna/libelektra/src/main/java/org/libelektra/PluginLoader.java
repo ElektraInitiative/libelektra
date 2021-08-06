@@ -5,8 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.libelektra.exception.InstallationException;
 
 /**
- * This class can be used to load Plugins from Elektra. It also loads self
- * implemented Java plugins.
+ * This class can be used to load plugins from Elektra.
  */
 public class PluginLoader
 {
