@@ -314,7 +314,7 @@ static bool isListElement (Node * node)
 
 static bool hasInlineComment (Node * node)
 {
-	return keyGetMeta (node->key, "comment/#0/inline") != NULL;
+	return keyGetMeta (node->key, "comment/#0/space") != NULL;
 }
 
 static bool isLastChild (Node * node)

@@ -99,12 +99,7 @@ int keyAddInlineComment (Key * key, CommentList * root)
 	{
 		return ERROR_INTERNAL;
 	}
-	int ret = keyAddComment (key, root->str, root->orig, 0);
-	if (ret == 0 && root->str != NULL)
-	{
-		keySetMeta (key, "comment/#0/inline", "1");
-	}
-	return ret;
+	return keyAddComment (key, root->str, root->orig, 0);
 }
 
 static int keyAddComment (Key * key, const char * commentStr, const char * origStr, size_t index)

@@ -130,7 +130,6 @@ static const char * prefix = NULL;
 #define SET_INLINE_COMMENT(text, start)                                                                                                    \
 	{                                                                                                                                  \
 		if (lastKey != NULL) setComment (lastKey, text, start, 0);                                                                 \
-		if (lastKey != NULL) keySetMeta (lastKey, "comment/#0/inline", "1");                                                       \
 	}
 #define SET_EMPTY_LINE(index)                                                                                                              \
 	{                                                                                                                                  \
