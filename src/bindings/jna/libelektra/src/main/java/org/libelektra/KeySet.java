@@ -265,19 +265,17 @@ public class KeySet implements Iterable<Key>
 	 * @param key Key to remove
 	 * @return Removed {@link Key} from the key set, matching the specified
 	 *         {@code key}'s name. May or may not reference the same native key
-	 *         resource.
+	 *         resource. {@link Optional#empty()} if the specified {@code key} was
+	 *         not found.
 	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
 	 *                                  released
 	 * @throws KeyReleasedException     if {@code key} has already been released
 	 * @throws IllegalArgumentException if {@code key} is {@code null}
-	 * @throws NoSuchElementException   if the specified {@code key} was not found
-	 *                                  in this {@code KeySet}
 	 */
-	@Nonnull public Key remove (Key key)
+	@Nonnull public Optional<Key> remove (Key key)
 	{
 		argNotNull (key, "Key 'key'");
-		return checkKeyPointer (Elektra.INSTANCE.ksLookup (getPointer (), key.getPointer (), Elektra.KDB_O_POP),
-					NoSuchElementException::new);
+		return Key.create (Elektra.INSTANCE.ksLookup (getPointer (), key.getPointer (), Elektra.KDB_O_POP));
 	}
 
 	/**
@@ -285,19 +283,17 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @param find Name of the key to remove
 	 * @return Removed {@link Key} from the key set, matching the specified
-	 *         {@code key}'s name
+	 *         {@code key}'s name. {@link Optional#empty()} if the no key matching
+	 *         the specified name was not found.
 	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code find} is {@link String#isBlank()
 	 *                                  blank}
-	 * @throws NoSuchElementException   if the specified {@code key} was not found
-	 *                                  in this {@code KeySet}
 	 */
-	@Nonnull public Key remove (String find)
+	@Nonnull public Optional<Key> remove (String find)
 	{
 		argNotNullOrBlank (find, "String 'find'");
-		return checkKeyPointer (Elektra.INSTANCE.ksLookupByName (getPointer (), find, Elektra.KDB_O_POP),
-					NoSuchElementException::new);
+		return Key.create (Elektra.INSTANCE.ksLookupByName (getPointer (), find, Elektra.KDB_O_POP));
 	}
 
 	/**
