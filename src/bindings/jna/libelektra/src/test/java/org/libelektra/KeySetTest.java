@@ -204,6 +204,19 @@ public class KeySetTest
 		assertEquals (0, ks.size ());
 	}
 
+	@Test public void test_keySetRemoveKey_shouldPass ()
+	{
+		var ks = KeySet.create (2, key, key5);
+
+		assertEquals (2, ks.size ());
+		assertTrue (ks.lookup (key).isPresent ());
+		assertTrue (ks.remove (key));
+		assertEquals (1, ks.size ());
+		assertTrue (ks.lookup (key).isEmpty ());
+
+		assertFalse (ks.remove (key6));
+	}
+
 	@Test public void test_keySetHeadTail_shouldPass ()
 	{
 		var ks = KeySet.create (6, key, key2, key3, key4, key5, key6);

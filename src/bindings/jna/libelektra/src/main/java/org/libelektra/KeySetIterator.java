@@ -50,14 +50,17 @@ public class KeySetIterator implements Iterator<Key>
 	}
 
 	/**
-	 * Removes the element of the {@link KeySet} backing the iterator
+	 * Removes the {@code Key} element of the {@link KeySet} backing the iterator
+	 * afterwards releasing it. Therefore any reference held to the removed
+	 * {@code Key} element will get unusable.
 	 *
 	 * @throws KeySetReleasedException if this backing {@link KeySet} has already
 	 *                                 been released
 	 */
 	@Override public void remove ()
 	{
-		keySet.lookup (current, KeySet.KDB_O_POP).ifPresent (Key::release);
+		keySet.remove (current);
+		current.release ();
 		--position;
 	}
 }
