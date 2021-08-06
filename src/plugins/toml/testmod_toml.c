@@ -217,8 +217,8 @@ static void test_toml_1_0_0 (const char * _prefix)
 	testReadMustError (PATH_PREFIX "invalid_read/table_redefine_value.toml");
 	testReadMustError (PATH_PREFIX "invalid_read/table_redefinition.toml");
 	testReadMustError (PATH_PREFIX "invalid_read/two_assignments_one_line.toml");
+	testReadMustError (PATH_PREFIX "invalid_read/apostroph_too_much.toml");
 	// TODO: These reads should fail, but they do not fail yet
-	// testReadMustError (PATH_PREFIX "invalid_read/apostroph_too_much.toml");
 	// testReadMustError (PATH_PREFIX "invalid_read/inline_appending.toml");
 	// testReadMustError (PATH_PREFIX "invalid_read/inline_appending2.toml");
 	// testReadMustError (PATH_PREFIX "invalid_read/integer_redefined_table.toml");
