@@ -214,15 +214,17 @@ public class KeyTest
 				  .rewindMeta ();
 
 		// check meta
-		Key meta_1 = key.nextMeta ();
+		var oMeta = key.nextMeta ();
 
-		assertEquals ("meta:" + KEY_1_META_1_NAME, meta_1.getName ());
-		assertEquals (KEY_1_META_1_VALUE, meta_1.getString ());
+		assertTrue (oMeta.isPresent ());
+		assertEquals ("meta:" + KEY_1_META_1_NAME, oMeta.get ().getName ());
+		assertEquals (KEY_1_META_1_VALUE, oMeta.get ().getString ());
 
-		Key meta_2 = key.nextMeta ();
+		oMeta = key.nextMeta ();
 
-		assertEquals ("meta:" + KEY_1_META_2_NAME, meta_2.getName ());
-		assertEquals (KEY_1_META_2_VALUE, meta_2.getString ());
+		assertTrue (oMeta.isPresent ());
+		assertEquals ("meta:" + KEY_1_META_2_NAME, oMeta.get ().getName ());
+		assertEquals (KEY_1_META_2_VALUE, oMeta.get ().getString ());
 
 		// setup another key
 		var key2 = Key.create (KEY_2_NAME, KEY_2_VALUE);
@@ -230,15 +232,15 @@ public class KeyTest
 		key2.rewindMeta ();
 
 		// check meta for second key
-		Key meta_1_2 = key2.nextMeta ();
+		oMeta = key2.nextMeta ();
 
-		assertEquals ("meta:" + KEY_1_META_1_NAME, meta_1_2.getName ());
-		assertEquals (KEY_1_META_1_VALUE, meta_1_2.getString ());
+		assertEquals ("meta:" + KEY_1_META_1_NAME, oMeta.get ().getName ());
+		assertEquals (KEY_1_META_1_VALUE, oMeta.get ().getString ());
 
-		Key meta_2_2 = key2.nextMeta ();
+		oMeta = key2.nextMeta ();
 
-		assertEquals ("meta:" + KEY_1_META_2_NAME, meta_2_2.getName ());
-		assertEquals (KEY_1_META_2_VALUE, meta_2_2.getString ());
+		assertEquals ("meta:" + KEY_1_META_2_NAME, oMeta.get ().getName ());
+		assertEquals (KEY_1_META_2_VALUE, oMeta.get ().getString ());
 	}
 
 	@Test public void test_keyCompare_shouldPass ()

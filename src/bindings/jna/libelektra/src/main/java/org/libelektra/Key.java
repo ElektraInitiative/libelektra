@@ -727,16 +727,17 @@ public class Key implements Iterable<String>
 	/**
 	 * Gets the next element of this key's internal meta information iterator
 	 *
-	 * @return new Key object containing the next meta information
-	 * @throws KeyReleasedException   if this {@link Key} has already been released
-	 * @throws NoSuchElementException if no next meta key is available
+	 * @return New {@link Key} object containing the requested meta information or
+	 *         {@link Optional#empty()}, if no next meta key is available
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 * @see #rewindMeta()
 	 * @see #currentMeta()
 	 * @see #release()
 	 */
-	@Nonnull public Key nextMeta ()
+	@Nonnull public Optional<Key> nextMeta ()
 	{
-		return checkKeyPointer (Elektra.INSTANCE.keyNextMeta (getPointer ()), NoSuchElementException::new);
+		// TODO #3871 should return read-only key
+		return create (Elektra.INSTANCE.keyNextMeta (getPointer ()));
 	}
 
 	/**
@@ -744,14 +745,15 @@ public class Key implements Iterable<String>
 	 *
 	 * @return new {@link Key} object containing the current meta information
 	 * @throws KeyReleasedException   if this {@link Key} has already been released
-	 * @throws NoSuchElementException if no next meta key is available or internal
-	 *                                iterator has been reset
+	 * @throws NoSuchElementException if no current meta key is available or
+	 *                                internal iterator has been reset
 	 * @see #rewindMeta()
 	 * @see #nextMeta()
 	 * @see #release()
 	 */
 	@Nonnull public Key currentMeta ()
 	{
+		// TODO #3871 should return read-only key
 		return checkKeyPointer (Elektra.INSTANCE.keyCurrentMeta (getPointer ()), NoSuchElementException::new);
 	}
 
@@ -820,9 +822,13 @@ public class Key implements Iterable<String>
 	 */
 	@Nonnull public Optional<Key> getMeta (String metaName)
 	{
+		// TODO #3871 should return read-only key
 		argNotNullOrBlank (metaName, "String 'metaName'");
 		return create (Elektra.INSTANCE.keyGetMeta (getPointer (), metaName));
 	}
+
+	// TODO #3871 introduce KeySet getMeta() returning the meta keyset. (keyset
+	// should not be able to add values)
 
 	/**
 	 * Sets meta information
