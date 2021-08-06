@@ -107,15 +107,6 @@ int keyAddInlineComment (Key * key, CommentList * root)
 	return ret;
 }
 
-static const char * skipWhitespace (const char * string)
-{
-	while (*string == ' ' || *string == '\t')
-	{
-		string++;
-	}
-	return string;
-}
-
 static int keyAddComment (Key * key, const char * commentStr, const char * origStr, size_t index)
 {
 	// add comment str
@@ -135,10 +126,10 @@ static int keyAddComment (Key * key, const char * commentStr, const char * origS
 	elektraFree (indexStr);
 	if (commentStr != NULL)
 	{
-		keySetMeta (key, metaName, skipWhitespace (commentStr));
+		keySetMeta (key, metaName, commentStr);
 	}
 
-	// add start sequence
+	// add start symbol
 	size_t metaInfoLen = metaLen + 6;
 	char * metaInfoName = (char *) elektraCalloc (sizeof (char) * metaInfoLen);
 	if (metaInfoName == NULL)
@@ -149,12 +140,20 @@ static int keyAddComment (Key * key, const char * commentStr, const char * origS
 	snprintf (metaInfoName, metaInfoLen, "%s/start", metaName);
 	if (commentStr != NULL)
 	{
-		const char * commentStart = skipWhitespace (origStr);
-		commentStart += 1; // skip #
-		commentStart = skipWhitespace (commentStart);
+		keySetMeta (key, metaInfoName, "#");
+	}
+	else
+	{
+		keySetMeta (key, metaInfoName, "");
+	}
 
-		char * startSeq = elektraMemDup (origStr, commentStart - origStr + 1);
-		startSeq[commentStart - origStr] = '\0';
+	// add preceding whitespace
+	snprintf (metaInfoName, metaInfoLen, "%s/space", metaName);
+	if (commentStr != NULL)
+	{
+		size_t len = strspn (origStr, " \t");
+		char * startSeq = elektraMemDup (origStr, len + 1);
+		startSeq[len] = '\0';
 		if (startSeq == NULL)
 		{
 			return ERROR_MEMORY;

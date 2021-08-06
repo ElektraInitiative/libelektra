@@ -1054,9 +1054,9 @@ static void testWriteReadTableArrayWithComments (void)
 	SET_ARRAY ("#0");
 
 	WRITE_KEY ("ta/#0");
-	SET_INLINE_COMMENT ("inline comment", " # ");
-	SET_COMMENT (1, "top-most preceding comment", "# ");
-	SET_COMMENT (2, "preceding comment", "# ");
+	SET_INLINE_COMMENT (" inline comment", " ");
+	SET_COMMENT (1, " top-most preceding comment", "");
+	SET_COMMENT (2, " preceding comment", "");
 	CLEAR_BINARY;
 	DUP_EXPECTED;
 
@@ -1311,31 +1311,42 @@ static void testWriteReadComments (void)
 	SET_ORDER (0);
 	SET_EMPTY_LINE (1);
 	SET_EMPTY_LINE (2);
-	SET_COMMENT (3, "test comment 1", "    #");
-	SET_COMMENT (4, "test comment 2", "#");
-	SET_INLINE_COMMENT ("inline test", "    #");
+	SET_COMMENT (3, "test comment 1", "    ");
+	SET_COMMENT (4, "test comment 2", "");
+	SET_INLINE_COMMENT ("inline test", "    ");
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
 	WRITE_KV ("b", "1");
 	SET_ORDER (1);
 	SET_EMPTY_LINE (1);
-	SET_COMMENT (2, "test comment 3", "    #");
+	SET_COMMENT (2, "test comment 3", "    ");
 	SET_EMPTY_LINE (3);
-	SET_COMMENT (4, "test comment 4", "#");
+	SET_COMMENT (4, "test comment 4", "");
 	SET_EMPTY_LINE (5);
-	SET_INLINE_COMMENT ("inline test 1", "    #");
+	SET_INLINE_COMMENT ("inline test 1", "    ");
+	DUP_EXPECTED;
+	SET_TYPE ("long_long");
+
+	WRITE_KV ("c", "2");
+	SET_ORDER (2);
+	SET_EMPTY_LINE (1);
+	SET_COMMENT (2, "", "    ");
+	SET_EMPTY_LINE (3);
+	SET_COMMENT (4, "", "");
+	SET_EMPTY_LINE (5);
+	SET_INLINE_COMMENT ("", " ");
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
 	WRITE_KEY ("table");
 	SET_TOML_TYPE ("simpletable");
-	SET_ORDER (2);
+	SET_ORDER (3);
 	SET_EMPTY_LINE (1);
-	SET_COMMENT (2, "test comment 5", "    #");
+	SET_COMMENT (2, "test comment 5", "    ");
 	SET_EMPTY_LINE (3);
-	SET_COMMENT (4, "test comment 6", "#");
-	SET_INLINE_COMMENT ("inline test 3", "\t#");
+	SET_COMMENT (4, "test comment 6", "");
+	SET_INLINE_COMMENT ("inline test 3", "\t");
 	DUP_EXPECTED;
 
 	TEST_WR_FOOT;
@@ -1348,30 +1359,30 @@ static void testWriteReadCommentsArray (void)
 	WRITE_KEY ("array");
 	SET_ORDER (0);
 	SET_ARRAY ("#3");
-	SET_INLINE_COMMENT ("array inline comment", " #");
+	SET_INLINE_COMMENT ("array inline comment", " ");
 	DUP_EXPECTED;
 
 	WRITE_KV ("array/#0", "0");
-	SET_COMMENT (1, "element 1 comment", "\t#");
-	SET_INLINE_COMMENT ("element 1 inline", "    #");
+	SET_COMMENT (1, "element 1 comment", "\t");
+	SET_INLINE_COMMENT ("element 1 inline", "    ");
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
 	WRITE_KV ("array/#1", "1");
-	SET_COMMENT (1, "element 2 comment", "  #");
-	SET_INLINE_COMMENT ("element 2 inline", "  #");
+	SET_COMMENT (1, "element 2 comment", "  ");
+	SET_INLINE_COMMENT ("element 2 inline", "  ");
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
 	WRITE_KV ("array/#2", "2");
-	SET_COMMENT (1, "element 3 comment", "  # ");
+	SET_COMMENT (1, " element 3 comment", "  ");
 	DUP_EXPECTED;
 	SET_EMPTY_LINE (0); // This newline is because the next array element has a comment in front of it
 	SET_TYPE ("long_long");
 
 
 	WRITE_KV ("array/#3", "3");
-	SET_COMMENT (1, "element 4 comment", "  #");
+	SET_COMMENT (1, "element 4 comment", "  ");
 	DUP_EXPECTED;
 	SET_TYPE ("long_long");
 
@@ -1556,7 +1567,7 @@ static Key * addKey (KeySet * ks, const char * name, const char * value, size_t 
 	return key;
 }
 
-static void setComment (Key * key, const char * comment, const char * start, size_t index)
+static void setComment (Key * key, const char * comment, const char * space, size_t index)
 {
 	char commentBase[64];
 	char commentKey[128];
@@ -1566,9 +1577,16 @@ static void setComment (Key * key, const char * comment, const char * start, siz
 	if (comment != NULL)
 	{
 		keySetMeta (key, commentBase, comment);
+		snprintf (commentKey, 128, "%s/start", commentBase);
+		keySetMeta (key, commentKey, "#");
 	}
-	snprintf (commentKey, 128, "%s/start", commentBase);
-	keySetMeta (key, commentKey, start);
+	else
+	{
+		snprintf (commentKey, 128, "%s/start", commentBase);
+		keySetMeta (key, commentKey, "");
+	}
+	snprintf (commentKey, 128, "%s/space", commentBase);
+	keySetMeta (key, commentKey, space);
 }
 
 static bool compareFilesIgnoreWhitespace (const char * filenameA, const char * filenameB)

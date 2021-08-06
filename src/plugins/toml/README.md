@@ -385,8 +385,6 @@ File ending comments must be assigned to the file root key.
 
 Empty lines in front of a key can be created by adding an empty `comment/#n/start` entry to it. In this case, no `comment/#n` key is needed.
 
-<!-- TODO (kodebach): not atomic -> order matters -->
-
 ```sh
 # Mount TOML file
 sudo kdb mount test_comments.toml user:/tests/storage toml type
@@ -396,19 +394,18 @@ sudo kdb mount test_comments.toml user:/tests/storage toml type
 kdb set 'user:/tests/storage/key' '1'
 
 # add an inline comment with 4 leading spaces
-kdb meta-set 'user:/tests/storage/key' 'comment/#0/inline' '1'
-kdb meta-set 'user:/tests/storage/key' 'comment/#0/start' '    # '
-kdb meta-set 'user:/tests/storage/key' 'comment/#0' 'This value is very interesting'
+kdb meta-set 'user:/tests/storage/key' 'comment/#0' ' This value is very interesting'
+kdb meta-set 'user:/tests/storage/key' 'comment/#0/space' '    '
 
 # add some comments preceding the key
-kdb meta-set 'user:/tests/storage/key' 'comment/#1' 'I am the top-most comment relative to my key.'
-kdb meta-set 'user:/tests/storage/key' 'comment/#2' 'I am in the middle. Just boring.'
-kdb meta-set 'user:/tests/storage/key' 'comment/#3' 'I am in the line right above my key.'
+kdb meta-set 'user:/tests/storage/key' 'comment/#1' ' I am the top-most comment relative to my key.'
+kdb meta-set 'user:/tests/storage/key' 'comment/#2' ' I am in the middle. Just boring.'
+kdb meta-set 'user:/tests/storage/key' 'comment/#3' ' I am in the line right above my key.'
 
 # add file ending comments and empty lines
-kdb meta-set 'user:/tests/storage' 'comment/#1' 'First file-ending comment'
+kdb meta-set 'user:/tests/storage' 'comment/#1' ' First file-ending comment'
 kdb meta-set 'user:/tests/storage' 'comment/#2/start' ''
-kdb meta-set 'user:/tests/storage' 'comment/#3' 'Second file-ending comment. I am the last line of the file.'
+kdb meta-set 'user:/tests/storage' 'comment/#3' ' Second file-ending comment. I am the last line of the file.'
 
 # Print the content of the resulting TOML file
 cat `kdb file user:/tests/storage`
@@ -432,8 +429,6 @@ Any amount of comments can be placed between array elements or between the first
 However, only one comment - an inline comment - can be placed after the last element and the closing brackets.
 On reading, the plugin discards any non-inline comments between the last element and the closing brackets.
 
-<!-- TODO: not atomic -> order matters -->
-
 ```sh
 # Mount TOML file
 sudo kdb mount test_array_comments.toml user:/tests/storage toml type
@@ -444,31 +439,29 @@ kdb set 'user:/tests/storage/array/#1' '2'
 kdb set 'user:/tests/storage/array/#2' '3'
 
 # Add inline comment after the array
-kdb meta-set 'user:/tests/storage/array' 'comment/#0/inline' '1'
-kdb meta-set 'user:/tests/storage/array' 'comment/#0/start' '     # '
-kdb meta-set 'user:/tests/storage/array' 'comment/#0' 'Inline comment after the array'
+kdb meta-set 'user:/tests/storage/array' 'comment/#0' ' Inline comment after the array'
+kdb meta-set 'user:/tests/storage/array' 'comment/#0/start' '#'
+kdb meta-set 'user:/tests/storage/array' 'comment/#0/space' '     '
 
 # Add comments for array elements
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/inline' '1'
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/start' '    # '
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0' 'Inline comment of first element'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0' ' Inline comment of first element'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/start' '#'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/space' '    '
 
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1/start' '    # '
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1' 'Comment preceding the first element'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1' ' Comment preceding the first element'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1/space' '    '
 
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2/start' '      # '
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2' 'Another comment preceding the first element'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2' ' Another comment preceding the first element'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2/space' '      '
 
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0/inline' '1'
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0/start' '    # '
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0' 'Inline comment of second element'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0' ' Inline comment of second element'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0/space' '    '
 
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1/start' '      # '
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1' 'Comment preceding the second element'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1' ' Comment preceding the second element'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1/space' '      '
 
-kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0/inline' '1'
-kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0/start' '     # '
-kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0' 'Inline comment of the last element'
+kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0' ' Inline comment of the last element'
+kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0/space' '     '
 
 # Print the content of the resulting TOML file
 cat `kdb file user:/tests/storage`

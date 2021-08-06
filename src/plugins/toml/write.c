@@ -51,9 +51,9 @@ typedef struct
 typedef struct CommentList_
 {
 	size_t index;
+	char start;
+	const char * space;
 	const char * content;
-	const char * start;
-	bool isInline;
 	struct CommentList_ * next;
 } CommentList;
 
@@ -79,7 +79,7 @@ static int writeInlineComment (const CommentList * commentList, bool emitNewline
 static int writeComment (const CommentList * comment, Writer * writer);
 static int writeNewline (Writer * writer);
 static int writeFileTrailingComments (Key * parent, Writer * writer);
-static CommentList * collectComments (Key * key, Writer * writer);
+static int collectComments (CommentList ** comments, Key * key, Writer * writer);
 static void freeComments (CommentList * comments);
 static bool shouldWriteValue (Node * node);
 static bool needsKeyAssignment (Node * node);
@@ -184,7 +184,7 @@ static int writeTree (Node * node, Writer * writer)
 
 	if (keyCmp (node->key, writer->rootKey) != 0)
 	{
-		comments = collectComments (node->key, writer);
+		result |= collectComments (&comments, node->key, writer);
 		bool hasComments = comments != NULL;
 
 		// Comments will be dropped if parent is an inline table
@@ -694,7 +694,7 @@ static int writePrecedingComments (const CommentList * commentList, Writer * wri
 	int result = 0;
 	while (commentList != NULL)
 	{
-		if (commentList->index > 0 || !commentList->isInline)
+		if (commentList->index > 0)
 		{
 			result |= writeComment (commentList, writer);
 			result |= writeNewline (writer);
@@ -709,7 +709,7 @@ static int writeInlineComment (const CommentList * commentList, bool emitNewline
 	int result = 0;
 	while (commentList != NULL)
 	{
-		if (commentList->index == 0 && commentList->isInline)
+		if (commentList->index == 0)
 		{
 			result |= writeComment (commentList, writer);
 			if (emitNewline)
@@ -726,13 +726,19 @@ static int writeInlineComment (const CommentList * commentList, bool emitNewline
 static int writeComment (const CommentList * comment, Writer * writer)
 {
 	int result = 0;
-	if (comment->start == NULL)
+
+	if (comment->space != NULL)
 	{
-		result |= fputs ("# ", writer->f) == EOF;
+		result |= fputs (comment->space, writer->f) == EOF;
 	}
-	else if (*comment->start != '\0')
+
+	if (comment->start != '\0')
 	{
-		result |= fputs (comment->start, writer->f) == EOF;
+		result |= fputc (comment->start, writer->f) == EOF;
+	}
+	else if (comment->content != NULL)
+	{
+		result |= fputc ('#', writer->f) == EOF;
 	}
 
 	if (comment->content != NULL)
@@ -752,7 +758,8 @@ static int writeFileTrailingComments (Key * parent, Writer * writer)
 {
 	int result = 0;
 
-	CommentList * comments = collectComments (parent, writer);
+	CommentList * comments = NULL;
+	result |= collectComments (&comments, parent, writer);
 	if (comments != NULL)
 	{
 		result |= writePrecedingComments (comments, writer);
@@ -762,11 +769,13 @@ static int writeFileTrailingComments (Key * parent, Writer * writer)
 	return result;
 }
 
-static CommentList * collectComments (Key * key, Writer * writer)
+static int collectComments (CommentList ** comments, Key * key, Writer * writer)
 {
+	int result = 0;
+
 	keyRewindMeta (key);
 	const Key * meta;
-	CommentList * commentRoot = NULL;
+	CommentList * commentRoot = *comments;
 	CommentList * commentBack = NULL;
 	size_t currIndex = 0;
 	while ((meta = keyNextMeta (key)) != NULL)
@@ -789,10 +798,11 @@ static CommentList * collectComments (Key * key, Writer * writer)
 						{
 							freeComments (commentRoot);
 							ELEKTRA_SET_OUT_OF_MEMORY_ERROR (writer->rootKey);
-							return NULL;
+							*comments = NULL;
+							return -1;
 						}
-						nextComment->isInline = false;
-						nextComment->start = NULL;
+						nextComment->space = NULL;
+						nextComment->start = '\0';
 
 						if (commentBack != NULL)
 						{
@@ -818,11 +828,29 @@ static CommentList * collectComments (Key * key, Writer * writer)
 					const char * fieldName = pos;
 					if (elektraStrCmp (fieldName, "start") == 0)
 					{
-						commentBack->start = keyString (meta);
+						if (keyString (meta)[0] == '#')
+						{
+							commentBack->start = '#';
+						}
+						else
+						{
+							commentBack->start = '\0';
+						}
 					}
-					else if (elektraStrCmp (fieldName, "inline") == 0)
+					else if (elektraStrCmp (fieldName, "space") == 0)
 					{
-						commentBack->isInline = true;
+						const char * whitespace = keyString (meta);
+						if (whitespace[strspn (whitespace, " \t")] != '\0')
+						{
+							ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (
+								writer->rootKey,
+								"The '%s' metakey of '%s' contains an invalid whitespace character. Only "
+								"space and tab are allowed as whitespace characters in TOML files.",
+								keyName (meta), keyName (key));
+							result |= -1;
+						}
+
+						commentBack->space = whitespace;
 					}
 				}
 
@@ -831,7 +859,8 @@ static CommentList * collectComments (Key * key, Writer * writer)
 			}
 		}
 	}
-	return commentRoot;
+	*comments = commentRoot;
+	return result;
 }
 
 static void freeComments (CommentList * comments)
