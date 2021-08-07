@@ -134,15 +134,12 @@ public class Key implements Iterable<String>
 	 * Constructs a temporary nameless {@link Key} which cannot be saved to the key
 	 * data base but used for transferring warnings and error information.
 	 *
-	 * TODO #3871 the returned key should be read only to the java binding consumer
-	 *
 	 * @return New nameless key
 	 * @see #release()
 	 */
 	@Nonnull public static Key create ()
 	{
-		return create (Elektra.INSTANCE.keyNew (Elektra.KEY_NAME_SIMPLE_INITALIZED_BUT_EMPTY_OBJECT))
-			.orElseThrow (IllegalStateException::new);
+		return create (Elektra.INSTANCE.keyNew (Elektra.CASCADING_ROOT_KEY_NAME)).orElseThrow (IllegalStateException::new);
 	}
 
 	/**

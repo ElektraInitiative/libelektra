@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
