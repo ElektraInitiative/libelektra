@@ -1134,6 +1134,8 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  * Cascading Keys (starting with /) will retrieve the same path in all namespaces.
  * `/` will retrieve all Keys in @p handle.
  *
+ * It is recommended to use the most specific @p parentKey possible. (e.g. using `system:/` is rarely the most specific)
+ *
  * @note kdbGet() might retrieve more Keys than requested which are not
  *     below parentKey or even in a different namespace.
  *     These keys, except of `proc:/` keys, must be passed to calls of kdbSet(),
@@ -1171,7 +1173,7 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  * second handle to the Key database using kdbOpen().
  *
  * @param handle contains internal information of @link kdbOpen() opened @endlink key database
- * @param parentKey Keys below @p parentKey will be retrieved from @p handle
+ * @param parentKey Keys below @p parentKey will be retrieved from @p handle.
  * It is also used to add warnings and set error information.
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
@@ -1687,8 +1689,9 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  * as they were retrieved by kdbGet().
  * Cascading keys (starting with /) will set the path in all namespaces.
  * `/` will commit all keys.
- * Meta-names in @p parentKey will be rejected (error C01320).
- * Empty/Invalid Keys will also be rejected (error C01320).
+ * This parameter is an optimization toonly save keys of mountpoints affected by the specified @p parentKey. This does not necessarily mean
+ * that only changes to keys below that @p parentKey are saved. Meta-names in @p parentKey will be rejected (error C01320). Empty/Invalid
+ * Keys will also be rejected (error C01320).
  *
  * @par Errors
  * If `parentKey == NULL` or @p parentKey has read-only metadata, kdbSet() will

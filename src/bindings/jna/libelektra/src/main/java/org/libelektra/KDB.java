@@ -28,53 +28,42 @@ public class KDB implements AutoCloseable
 	 */
 	@Nonnull public static KDB open () throws KDBException
 	{
-		var errorKey = Key.createNameless ();
-		var session = checkKDBPointer (Elektra.INSTANCE.kdbOpen (null, errorKey.getPointer ()), errorKey);
-
-		// errorKey is being released if no KDBException occurred
-		errorKey.release ();
-
-		return session;
+		return openInternal (null);
 	}
 
 	/**
-	 * Opens a new KDB session using the specified {@code errorKey} to store
-	 * possible warnings and error information
+	 * Opens KDB session using the specified {@code contract}
 	 *
-	 * @param errorKey Used to store warnings and error information
-	 * @return New KDB session
-	 * @throws KDBException             if opening the session fails - see
-	 *                                  specialization of {@link KDBException}
-	 * @throws KeyReleasedException     if {@code errorKey} has already been
-	 *                                  released
-	 * @throws IllegalArgumentException if {@code errorKey} is {@code null}
-	 * @see Key#createNameless()
-	 */
-	@Nonnull public static KDB open (Key errorKey) throws KDBException
-	{
-		argNotNull (errorKey, "Key 'errorKey'");
-		return checkKDBPointer (Elektra.INSTANCE.kdbOpen (null, errorKey.getPointer ()), errorKey);
-	}
-
-	/**
-	 * Opens KDB session using the specified {@code errorKey} to store possible
-	 * warnings and error information
-	 *
-	 * @param contract Contract that will be ensured by
-	 *                 {@link Elektra#kdbOpen(Pointer, Pointer)}
+	 * @param contract Contract configuring the {@code gopts} plugin
 	 * @return New KDB session
 	 * @throws KDBException             if opening the session fails - see
 	 *                                  specialization of {@link KDBException}
 	 * @throws KeySetReleasedException  if {@code contract} has already been
 	 *                                  released
-	 * @throws IllegalArgumentException if {@code contract} or {@code errorKey} is
-	 *                                  {@code null}
+	 * @throws IllegalArgumentException if {@code contract} is {@code null}
+	 * @see #goptsContract(String[], String[], Key, KeySet)
+	 * @see #goptsContract(KeySet, String[], String[], Key, KeySet)
 	 */
 	@Nonnull public static KDB open (KeySet contract) throws KDBException
 	{
 		argNotNull (contract, "KeySet 'contract'");
-		var errorKey = Key.createNameless ();
-		var session = open (contract, errorKey);
+		return openInternal (contract);
+	}
+
+	/**
+	 * Opens KDB session
+	 *
+	 * @param contract Contract configuring the {@code gopts} plugin
+	 * @return New KDB session
+	 * @throws KDBException            if opening the session fails - see
+	 *                                 specializations of {@link KDBException}
+	 * @throws KeySetReleasedException if {@code contract} has already been released
+	 */
+	@Nonnull private static KDB openInternal (@Nullable KeySet contract) throws KDBException
+	{
+		var errorKey = Key.create ();
+		var session = checkKDBPointer (
+			Elektra.INSTANCE.kdbOpen (contract == null ? null : contract.getPointer (), errorKey.getPointer ()), errorKey);
 
 		// errorKey is being released if no KDBException occurred
 		errorKey.release ();
@@ -83,28 +72,48 @@ public class KDB implements AutoCloseable
 	}
 
 	/**
-	 * Opens KDB session using the specified {@code errorKey} to store possible
-	 * warnings and error information
+	 * Opens a new KDB session
 	 *
-	 * @param contract Contract that will be ensured by
-	 *                 {@link Elektra#kdbOpen(Pointer, Pointer)}
-	 * @param errorKey Used to store warnings and error information
+	 * @param warningsKey Used to store warnings, which may occur during opening the
+	 *                    session, in this key's meta data
+	 * @return New KDB session
+	 * @throws KDBException             if opening the session fails - see
+	 *                                  specialization of {@link KDBException}
+	 * @throws KeyReleasedException     if {@code warningsKey} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code warningsKey} is {@code null}
+	 * @see Key#create()
+	 */
+	@Nonnull public static KDB open (Key warningsKey) throws KDBException
+	{
+		argNotNull (warningsKey, "Key 'warningsKey'");
+		return checkKDBPointer (Elektra.INSTANCE.kdbOpen (null, warningsKey.getPointer ()), warningsKey);
+	}
+
+	/**
+	 * Opens KDB session using the specified {@code contract}
+	 *
+	 * @param contract    Contract configuring the {@code gopts} plugin
+	 * @param warningsKey Used to store warnings, which may occur during opening the
+	 *                    session, in this key's meta data
 	 * @return New KDB session
 	 * @throws KDBException             if opening the session fails - see
 	 *                                  specialization of {@link KDBException}
 	 * @throws KeySetReleasedException  if {@code contract} has already been
 	 *                                  released
-	 * @throws KeyReleasedException     if {@code errorKey} has already been
+	 * @throws KeyReleasedException     if {@code warningsKey} has already been
 	 *                                  released
-	 * @throws IllegalArgumentException if {@code contract} or {@code errorKey} is
-	 *                                  {@code null}
-	 * @see Key#createNameless()
+	 * @throws IllegalArgumentException if {@code contract} or {@code warningsKey}
+	 *                                  is {@code null}
+	 * @see Key#create()
+	 * @see #goptsContract(String[], String[], Key, KeySet)
+	 * @see #goptsContract(KeySet, String[], String[], Key, KeySet)
 	 */
-	@Nonnull public static KDB open (KeySet contract, Key errorKey) throws KDBException
+	@Nonnull public static KDB open (KeySet contract, Key warningsKey) throws KDBException
 	{
 		argNotNull (contract, "KeySet 'contract'");
-		argNotNull (errorKey, "Key 'errorKey'");
-		return checkKDBPointer (Elektra.INSTANCE.kdbOpen (contract.getPointer (), errorKey.getPointer ()), errorKey);
+		argNotNull (warningsKey, "Key 'warningsKey'");
+		return checkKDBPointer (Elektra.INSTANCE.kdbOpen (contract.getPointer (), warningsKey.getPointer ()), warningsKey);
 	}
 
 	@Nonnull private static KDB checkKDBPointer (@Nullable Pointer pointer, Key errorKey) throws KDBException
@@ -125,7 +134,7 @@ public class KDB implements AutoCloseable
 	 */
 	@Override public void close () throws KDBException
 	{
-		var errorKey = Key.createNameless ();
+		var errorKey = Key.create ();
 		close (errorKey);
 
 		// errorKey is being released if no KDBException occurred
@@ -135,35 +144,38 @@ public class KDB implements AutoCloseable
 	/**
 	 * Closes the KDB session and frees native resources associated with it
 	 *
-	 * @param errorKey Key holding error and warning information
+	 * @param warningsKey Used to store warnings, which may occur during closing the
+	 *                    session, in this key's meta data
 	 * @throws KDBException             if opening the session fails - see
 	 *                                  specialization of {@link KDBException}
 	 * @throws KDBClosedException       if this session has already been closed
 	 * @throws KeyReleasedException     if {@code parentKey} has already been
 	 *                                  released
-	 * @throws IllegalArgumentException if {@code errorKey} is {@code null}
-	 * @see Key#createNameless()
+	 * @throws IllegalArgumentException if {@code warningsKey} is {@code null}
+	 * @see Key#create()
 	 */
-	public void close (Key errorKey) throws KDBException
+	public void close (Key warningsKey) throws KDBException
 	{
-		argNotNull (errorKey, "Key 'errorKey'");
-		if (Elektra.INSTANCE.kdbClose (getPointer (), errorKey.getPointer ()) != 0)
+		argNotNull (warningsKey, "Key 'warningsKey'");
+		if (Elektra.INSTANCE.kdbClose (getPointer (), warningsKey.getPointer ()) != 0)
 		{
-			throw KDBException.getMappedException (errorKey);
+			throw KDBException.getMappedException (warningsKey);
 		}
 		pointer = null;
 	}
 
 	/**
-	 * Creates a {@link KeySet contract} for use with {@link KDB#open(KeySet, Key)}
-	 * that mounts and configures the {@code gopts} plugin
+	 * Creates a contract {@link KeySet} for use with {@link KDB#open(KeySet)} that
+	 * mounts and configures the {@code gopts} plugin
 	 *
-	 * @param args        the arguments that will be converted into argc and argv
-	 *                    for gopts
-	 * @param env         the environment variables that gopts will use
-	 * @param parentKey   the parent key that gopts will use
-	 * @param goptsConfig the config KeySet used for mounting gopts
-	 * @return new {@link KeySet} containing the contract
+	 * @param args        Arguments that will be converted into {@code argc} and
+	 *                    {@code argv} for {@code gopts}
+	 * @param env         Environment variables that {@code gopts} will use
+	 * @param parentKey   Parent key that should be used by {@code gopts}. Only the
+	 *                    key name is copied. The key can be deleted immediately
+	 *                    after calling this function.
+	 * @param goptsConfig Config used for mounting the {@code gopts} plugin
+	 * @return New {@link KeySet} containing the contract
 	 * @throws IllegalArgumentException if any of the arguments are {@code null}
 	 * @throws KeySetReleasedException  if {@code goptsConfig} has already been
 	 *                                  released
@@ -181,15 +193,17 @@ public class KDB implements AutoCloseable
 	}
 
 	/**
-	 * Creates a {@link KeySet contract} for use with {@link KDB#open(KeySet, Key)}
-	 * that mounts and configures the {@code gopts} plugin
+	 * Writes a contract into a specified {@link KeySet} for use with
+	 * {@link KDB#open(KeySet)} that mounts and configures the {@code gopts} plugin
 	 *
-	 * @param contract    the KeySet into which the contract is written
-	 * @param args        the arguments that will be converted into argc and argv
-	 *                    for gopts
-	 * @param env         the environment variables that gopts will use
-	 * @param parentKey   the parent key that gopts will use
-	 * @param goptsConfig the config KeySet used for mounting gopts
+	 * @param contract    Key set to write the contract to
+	 * @param args        Arguments that will be converted into {@code argc} and
+	 *                    {@code argv} for {@code gopts}
+	 * @param env         Environment variables that {@code gopts} will use
+	 * @param parentKey   Parent key that should be used by {@code gopts}. Only the
+	 *                    key name is copied. The key can be deleted immediately
+	 *                    after calling this function.
+	 * @param goptsConfig Config used for mounting the {@code gopts} plugin
 	 * @throws IllegalArgumentException if any of the arguments are {@code null}
 	 * @throws KeySetReleasedException  if {@code contract} or {@code goptsConfig}
 	 *                                  has already been released
@@ -239,7 +253,11 @@ public class KDB implements AutoCloseable
 	 * Fetches at least all keys that are sub-keys or children of sub-keys of the
 	 * supplied parent key
 	 *
-	 * @param parentKey Root key which name is used to fetch keys below it
+	 * Note: Resulting key set may contain more keys than requested
+	 *
+	 * @param parentKey Root key which name is used to fetch keys below. This key is
+	 *                  also used to store warnings, which may occur during the
+	 *                  operation, in this key's meta data.
 	 * @return New {@link KeySet} containing the fetched keys
 	 * @throws KDBException             if loading keys fails - see specialization
 	 *                                  of {@link KDBException}
@@ -260,8 +278,14 @@ public class KDB implements AutoCloseable
 	 * Fetches at least all keys that are sub-keys or children of sub-keys of the
 	 * supplied parent key
 	 *
+	 * Note: Resulting key set may contain more keys than requested
+	 *
 	 * @param keySet    {@link KeySet} used to store the fetched keys
-	 * @param parentKey Root key which name is used to fetch keys below it
+	 * @param parentKey Root key which name is used to fetch keys below it. This key
+	 *                  is also used to store warnings, which may occur during the
+	 *                  operation, in this key's meta data. It is recommended to use
+	 *                  the most specific {@code parentKey} possible. (e.g. using
+	 *                  {@code system:/} is rarely the most specific)
 	 * @return This {@link KDB} session, enabling a fluent interface
 	 * @throws KDBException             if loading keys fails - see specialization
 	 *                                  of {@link KDBException}
@@ -271,6 +295,7 @@ public class KDB implements AutoCloseable
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code keySet} or {@code parentKey} is
 	 *                                  {@code null}
+	 * @see #get(Key)
 	 */
 	public KDB get (KeySet keySet, Key parentKey) throws KDBException
 	{
@@ -281,22 +306,42 @@ public class KDB implements AutoCloseable
 	}
 
 	/**
-	 * Will update changed keys of the given key set in the backend. get() has to be
-	 * called before this function may be executed.
+	 * Will update changed keys of the given {@code keySet} in the backend.
+	 * {@link #get(Key)} or {@link #get(KeySet, Key)} has to be called before this
+	 * function may be executed.
 	 *
-	 * @param keySet   KeySet which contains keys to be updated in the backend
-	 * @param errorKey Used to store warnings and error information
+	 * @param keySet    KeySet which contains keys to be updated in the backend
+	 * @param parentKey Specify which part of the given {@code keySet} is of
+	 *                  interest for you. This key is also used to store warnings,
+	 *                  which may occur during the operation, in this key's meta
+	 *                  data. In general it is highly recommended, that you use the
+	 *                  same {@code parentKey} used to fetch the {@code keySet} with
+	 *                  {@link #get(Key)} or {@link #get(KeySet, Key)}. You promise
+	 *                  to only modify or remove keys below this key. All others
+	 *                  would be passed back as they were retrieved by
+	 *                  {@code keySet} with {@link #get(Key)}. Cascading keys
+	 *                  (starting with {@code /}) will set the path in all
+	 *                  namespaces. A nameless key as created by
+	 *                  {@link Key#create()} will commit all changes in the
+	 *                  {@code keySet}. This parameter is an optimization to only
+	 *                  save keys of mountpoints affected by the specified
+	 *                  {@code parentKey}. This does not necessarily mean that only
+	 *                  changes to keys below that {@code parentKey} are saved.
 	 * @return This {@link KDB} session, enabling a fluent interface
-	 * @throws KDBException            if storing keys fails - see specialization of
-	 *                                 {@link KDBException}
-	 * @throws KDBClosedException      if this session has already been closed
-	 * @throws KeySetReleasedException if {@code keySet} has already been released
-	 * @throws KeyReleasedException    if {@code errorKey} has already been released
-	 * @see Key#createNameless()
+	 * @throws KDBException             if storing keys fails - see specialization
+	 *                                  of {@link KDBException}
+	 * @throws KDBClosedException       if this session has already been closed
+	 * @throws KeySetReleasedException  if {@code keySet} has already been released
+	 * @throws KeyReleasedException     if {@code parentKey} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code keySet} or {@code parentKey} is
+	 *                                  {@code null}
 	 */
-	public KDB set (KeySet keySet, Key errorKey) throws KDBException
+	public KDB set (KeySet keySet, Key parentKey) throws KDBException
 	{
-		checkKDBReturnValue (Elektra.INSTANCE.kdbSet (getPointer (), keySet.getPointer (), errorKey.getPointer ()), errorKey);
+		argNotNull (keySet, "KeySet 'keySet'");
+		argNotNull (parentKey, "Key 'parentKey'");
+		checkKDBReturnValue (Elektra.INSTANCE.kdbSet (getPointer (), keySet.getPointer (), parentKey.getPointer ()), parentKey);
 		return this;
 	}
 

@@ -1,5 +1,7 @@
 package org.libelektra;
 
+import static org.libelektra.Elektra.KDB_O_NONE;
+import static org.libelektra.Elektra.KS_END;
 import static org.libelektra.ValidationUtil.argNotNull;
 import static org.libelektra.ValidationUtil.argNotNullOrBlank;
 import static org.libelektra.ValidationUtil.checkKeyPointer;
@@ -13,6 +15,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeySetAppendException;
 import org.libelektra.exception.KeySetReleasedException;
 
@@ -21,13 +24,6 @@ import org.libelektra.exception.KeySetReleasedException;
  */
 public class KeySet implements Iterable<Key>
 {
-
-	// constants - TODO document meaning and usage
-	public static final int KDB_O_NONE = 0;
-	public static final int KDB_O_DEL = 1;
-	public static final int KDB_O_POP = 1 << 1;
-
-	private static final Pointer KS_END = null;
 
 	@Nullable private Pointer pointer;
 
@@ -212,9 +208,9 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @param key {@link Key} to append
 	 * @return This {@link KeySet}, enabling a fluent interface
-	 * @throws IllegalArgumentException if {@code key} is {@code null}
 	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
 	 *                                  released
+	 * @throws IllegalArgumentException if {@code key} is {@code null}
 	 */
 	@Nonnull public KeySet append (Key key)
 	{
@@ -250,8 +246,8 @@ public class KeySet implements Iterable<Key>
 	 * Creates new key set with help of a cut point
 	 *
 	 * @param cutpoint Key that is used as cutting point
-	 * @return New KeySet containing all keys until the cutting point, this if null
-	 *         was provided
+	 * @return New {@link KeySet} containing all keys until the cutting point, this
+	 *         if null was provided
 	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code cutpoint} is {@code null}
@@ -261,6 +257,43 @@ public class KeySet implements Iterable<Key>
 	{
 		argNotNull (cutpoint, "Key 'cutpoint'");
 		return new KeySet (Elektra.INSTANCE.ksCut (getPointer (), cutpoint.getPointer ()));
+	}
+
+	/**
+	 * Removes the specified key from key set
+	 *
+	 * @param key Key to remove
+	 * @return Removed {@link Key} from the key set, matching the specified
+	 *         {@code key}'s name. May or may not reference the same native key
+	 *         resource. {@link Optional#empty()} if the specified {@code key} was
+	 *         not found.
+	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 *                                  released
+	 * @throws KeyReleasedException     if {@code key} has already been released
+	 * @throws IllegalArgumentException if {@code key} is {@code null}
+	 */
+	@Nonnull public Optional<Key> remove (Key key)
+	{
+		argNotNull (key, "Key 'key'");
+		return Key.create (Elektra.INSTANCE.ksLookup (getPointer (), key.getPointer (), Elektra.KDB_O_POP));
+	}
+
+	/**
+	 * Removes the key with the specified name from key set
+	 *
+	 * @param find Name of the key to remove
+	 * @return Removed {@link Key} from the key set, matching the specified
+	 *         {@code key}'s name. {@link Optional#empty()} if the no key matching
+	 *         the specified name was not found.
+	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code find} is {@link String#isBlank()
+	 *                                  blank}
+	 */
+	@Nonnull public Optional<Key> remove (String find)
+	{
+		argNotNullOrBlank (find, "String 'find'");
+		return Key.create (Elektra.INSTANCE.ksLookupByName (getPointer (), find, Elektra.KDB_O_POP));
 	}
 
 	/**
@@ -333,24 +366,8 @@ public class KeySet implements Iterable<Key>
 	 */
 	@Nonnull public Optional<Key> lookup (Key find)
 	{
-		return lookup (find, 0);
-	}
-
-	/**
-	 * Search for a key in the key set
-	 *
-	 * @param find    Key used in search
-	 * @param options Custom search options; concatenation of flags
-	 * @return Key if search successful, {@link Optional#empty()} otherwise
-	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
-	 *                                  released
-	 * @throws IllegalArgumentException if {@code find} is {@code null}
-	 * @see Key#release()
-	 */
-	@Nonnull public Optional<Key> lookup (Key find, int options)
-	{
 		argNotNull (find, "Key 'find'");
-		return Key.create (Elektra.INSTANCE.ksLookup (getPointer (), find.getPointer (), options));
+		return Key.create (Elektra.INSTANCE.ksLookup (getPointer (), find.getPointer (), KDB_O_NONE));
 	}
 
 	/**
@@ -366,25 +383,8 @@ public class KeySet implements Iterable<Key>
 	 */
 	@Nonnull public Optional<Key> lookup (String find)
 	{
-		return lookup (find, 0);
-	}
-
-	/**
-	 * Search for a key in the key set
-	 *
-	 * @param find    Key name used in search
-	 * @param options Custom search options; concatenation of flags
-	 * @return Key if search successful, {@link Optional#empty()} otherwise
-	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
-	 *                                  released
-	 * @throws IllegalArgumentException if {@code find} is {@link String#isBlank()
-	 *                                  blank}
-	 * @see Key#release()
-	 */
-	@Nonnull public Optional<Key> lookup (String find, int options)
-	{
 		argNotNullOrBlank (find, "String 'find'");
-		return Key.create (Elektra.INSTANCE.ksLookupByName (getPointer (), find, options));
+		return Key.create (Elektra.INSTANCE.ksLookupByName (getPointer (), find, KDB_O_NONE));
 	}
 
 	/**

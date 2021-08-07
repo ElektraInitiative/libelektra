@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
  * be used directly by libelektra API consumers. Please see {@link KDB} and its
  * accompanying classes.
  */
-public interface Elektra extends Library {
+interface Elektra extends Library {
 
 	/**
 	 * Singleton instance of the native library proxy.
@@ -227,7 +227,7 @@ public interface Elektra extends Library {
 
 	// Key methods --------------------------------------------------------------
 
-	static final String KEY_NAME_SIMPLE_INITALIZED_BUT_EMPTY_OBJECT = "/";
+	static final String CASCADING_ROOT_KEY_NAME = "/";
 
 	/**
 	 * A practical way to fully create a Key object in one step.<br >
@@ -237,7 +237,7 @@ public interface Elektra extends Library {
 	 *
 	 * @see #keyDel(Pointer) keyDel()
 	 *
-	 * @param name A valid name to the key, or {@link #KEY_NAME_SIMPLE_INITALIZED_BUT_EMPTY_OBJECT} to get a
+	 * @param name A valid key name. Use {@link #CASCADING_ROOT_KEY_NAME} to get a
 	 *             simple initialized, but really empty, object.
 	 * @param args Argument flags, each followed by a corresponding value, if
 	 *             appropriate.
@@ -326,6 +326,11 @@ public interface Elektra extends Library {
 
 	// KeySet methods -----------------------------------------------------------
 
+	/**
+	 * Use to terminate var args array {@link #ksNew(int, Object...)}.
+	 */
+	static final Pointer KS_END = null;
+
 	@Nullable Pointer ksNew (int alloc, Object... args);
 
 	@Nullable Pointer ksDup (Pointer source);
@@ -353,6 +358,25 @@ public interface Elektra extends Library {
 	@Nullable Pointer ksTail (Pointer ks);
 
 	@Nullable Pointer ksAtCursor (Pointer ks, int cursor);
+
+	/**
+	 * Flag for use with {@link #ksLookup(Pointer, Pointer, int)} and
+	 * {@link #ksLookupByName(Pointer, String, int)}. Represents no option set.
+	 */
+	static final int KDB_O_NONE = 0;
+
+	/**
+	 * Flag for use with {@link #ksLookup(Pointer, Pointer, int)}. Will cause the
+	 * release of parameter {@code key} using {@link #keyDel(Pointer)}.
+	 */
+	static final int KDB_O_DEL = 1;
+
+	/**
+	 * Flag for use with {@link #ksLookup(Pointer, Pointer, int)} and
+	 * {@link #ksLookupByName(Pointer, String, int)}. Will cause the found key to be
+	 * removed from the key set.
+	 */
+	static final int KDB_O_POP = 1 << 1;
 
 	@Nullable Pointer ksLookup (Pointer ks, Pointer key, int options);
 

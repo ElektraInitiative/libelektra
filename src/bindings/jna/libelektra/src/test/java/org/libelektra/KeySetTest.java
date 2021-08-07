@@ -204,6 +204,44 @@ public class KeySetTest
 		assertEquals (0, ks.size ());
 	}
 
+	@Test public void test_keySetRemoveByKey_shouldPass ()
+	{
+		var ks = KeySet.create (2, key, key5);
+
+		assertEquals (2, ks.size ());
+		assertTrue (ks.lookup (key).isPresent ());
+		var oRemovedKey = ks.remove (key);
+		assertTrue (oRemovedKey.isPresent ());
+		assertEquals (key.getName (), oRemovedKey.get ().getName ());
+		assertEquals (1, ks.size ());
+		assertTrue (ks.lookup (key).isEmpty ());
+	}
+
+	@Test public void test_keySetRemoveByKey_shouldThrow ()
+	{
+		var ks = KeySet.create (2, key, key5);
+		assertTrue (ks.remove (key6).isEmpty ());
+	}
+
+	@Test public void test_keySetRemoveByKeyName_shouldPass ()
+	{
+		var ks = KeySet.create (2, key, key5);
+
+		assertEquals (2, ks.size ());
+		assertTrue (ks.lookup (key).isPresent ());
+		var oRemovedKey = ks.remove (key.getName ());
+		assertTrue (oRemovedKey.isPresent ());
+		assertEquals (key.getName (), oRemovedKey.get ().getName ());
+		assertEquals (1, ks.size ());
+		assertTrue (ks.lookup (key).isEmpty ());
+	}
+
+	@Test public void test_keySetRemoveByKeyName_shouldThrow ()
+	{
+		var ks = KeySet.create (2, key, key5);
+		assertTrue (ks.remove (key6.getName ()).isEmpty ());
+	}
+
 	@Test public void test_keySetHeadTail_shouldPass ()
 	{
 		var ks = KeySet.create (6, key, key2, key3, key4, key5, key6);

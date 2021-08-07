@@ -11,36 +11,23 @@ In order to use `kdb` you need to include the dependency in your project. [Here]
 After that you can start loading a `KDB` object as follows:
 
 ```java
-var key = Key.createNameless();
-try (KDB kdb = KDB.open(key)) {
+try (KDB kdb = KDB.open()) {
     // code to manipulate keys
 } catch (KDB.KDBException e) {
     e.printStackTrace();
-} finally {
-    key.release(); // optional clean-up
 }
 ```
 
 Note that `KDB` implements `AutoClosable` which allows [`try-with-resouces`](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
 
-The key being passend to `KDB::open` is used to store warnings and error information. If an error occurs, it will be mapped to the appropriate specialization of `KDBException`.
-
-The following code is equivalent and preferred, if you do not want to reuse an existing key for transferring warnings and error information:
-
-```java
-try (KDB kdb = KDB.open()) {
-    // code to manipulate keys
-} catch (KDB.KDBException e) {
-    e.printStackTrace();
-    e.releaseErrorKey(); // optional clean-up
-}
-```
+If an error occurs, detailed information can be obtained from the thrown `KDBException`.
 
 ## A word about releasing native ressources
 
 There are 3 kinds of native resources having to be cleaned up properly to prevent memory leaks: `KeySet`, `Key` and `KDB` or rather their backing native key set, key or KDB session.
 
-Fortunately the only resource you are strictly required to release is `KDB` via either `KDB::close` or `try-with-resouces`. For `KeySet` and `Key` the garbage collector cleans them up automatically using a [`Cleaner`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ref/Cleaner.html). Nonetheless, it might be a good idea to clean up these native resources as soon as they are no longer needed, since we do not have any control of when or if the garbage collector cleans up after us.
+Fortunately the only resource you are strictly required to release is `KDB` via either `KDB::close` or `try-with-resouces`. For `KeySet` and `Key` the garbage collector cleans them up automatically using a [`Cleaner`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/ref/Cleaner.html)
+In situations where memory is very constrained, it might be a good idea to clean up these native resources as soon as they are no longer needed, since we do not have any control of when or if the garbage collector cleans up after us. For this use-case, the following functions are provided: `KeySet::release`, `Key::release` and `KDBException::releaseErrorKey``.
 
 ## Fetching keys
 
@@ -71,7 +58,7 @@ kdb set user:/my/presaved/key it_works!
 
 `value` would equals `it_works!`.
 
-Afterward, we may clean-up no longer needed native resources:
+Afterwards, we may clean-up no longer needed native resources:
 
 ```
 parentKey.release();
@@ -88,11 +75,6 @@ var keySet = kdb.get(keyNamespace);                      // fetch all keys for t
 var keyToStore = Key.create("user:/somekey", "myValue"); // create key with value to store
 keySet.append(keyToStore);
 kdb.set(keySet, keyToStore);
-
-// optional clean-up
-keySet.release();
-keyNamespace.release();
-keyToStore.release();
 ```
 
 If you try to save a key without fetching it beforehand, a `KDBException` will be thrown, telling you to call get before set.
@@ -111,14 +93,10 @@ try (KDB kdb = KDB.open()) {
         var currentKey = keySet.at(i);
         System.out.println(String.format("%s: %s",
                 currentKey.getName(),               // fetch the key's name
-                currentKey.getStringAndRelease())); // fetch the key's value and release the key returned by KeySet::at
+                currentKey.getString()));           // fetch the key's value
     }
-    keySet.release(); // optional clean-up
 } catch (KDB.KDBException e) {
     e.printStackTrace();
-    e.releaseErrorKey(); // optional clean-up
-} finally {
-    keyNamespace.release(); // optional clean-up
 }
 ```
 
@@ -134,14 +112,10 @@ try (KDB kdb = KDB.open()) {
     for (var currentKey : keySet) {                 // traverse the set
         System.out.println(String.format("%s: %s",
                 currentKey.getName(),               // fetch the key's name
-                currentKey.getStringAndRelease())); // fetch the key's value and release the key returned by KeySet::at
+                currentKey.getString()));           // fetch the key's value
     }
-    keySet.release(); // optional clean-up
 } catch (KDB.KDBException e) {
     e.printStackTrace();
-    e.releaseErrorKey(); // optional clean-up
-} finally {
-    keyNamespace.release(); // optional clean-up
 }
 ```
 

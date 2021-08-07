@@ -105,7 +105,21 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up to date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
+### Java binding
+
+- Renamed zero argument static factory method `Key::createNameless` to `Key::create`. To migrate to this change, just update calling code to use the new method name.
+- Updated method documentation previously publishing the error key based error handling approach to the Java binding consumer. Such arguments are now explicitly only used for returning warning information in case no error occurred. In case of an exceptional state, appropriate exceptions are thrown. Such exceptions provide access to the underlying key containing warning and error information as meta data. Please review API usage to consider the more elaborated explanation of how Elektra uses this argument's value. Affected signatures:
+  - Updated javadoc for `KDB::open(Key)`
+  - Updated javadoc for `KDB::open(KeySet, Key)`
+  - Updated javadoc for `KDB::close(Key)`
+  - Updated javadoc for `KDB::get(Key)`
+  - Updated javadoc for `KDB::get(KeySet, Key)`
+  - Updated javadoc for `KDB::set(KeySet, Key)`, better explaining the relevance of the second argument `parentKey`.
+- Introduced `KeySet::remove(Key)` and `KeySet::remove(String)`
+- Removed `KeySet::lookup(Key, int)` and `KeySet::lookup(String, int)` as well as accompanying flag definitions `KeySet::KDB_O_NONE`, `KeySet::KDB_O_DEL` and `KeySet::KDB_O_POP`. Please use `KeySet::lookup(Key)` and `KeySet::lookup(String)` instead. Instead of `KeySet::KDB_O_DEL`, please consider using `Key::release`. The proper replacement for `KeySet::KDB_O_POP` is `KeySet::remove(Key)` or `KeySet::remove(String)`.
+- Native library proxy interface `Elektra` is now package private (previously was public).
+
+_(Michael Tucek)_
 
 ### <<Binding2>>
 

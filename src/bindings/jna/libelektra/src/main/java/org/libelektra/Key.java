@@ -80,33 +80,36 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * Flag for use with {@link #copy(Key, int)} for copying the key name
+	 * Flag for use with {@link #copy(Key, int)} and {@link #dup(int)} for copying
+	 * the key name
 	 */
 	public static final int KEY_CP_NAME = 1 << 0;
 
 	/**
-	 * Flag for use with {@link #copy(Key, int)} for copying the key value, if it is
-	 * a string
+	 * Flag for use with {@link #copy(Key, int)} and {@link #dup(int)} for copying
+	 * the key value, if it is a string
 	 *
 	 * @apiNote Do not use together with {@link #KEY_CP_VALUE}
 	 */
 	public static final int KEY_CP_STRING = 1 << 1;
 
 	/**
-	 * Flag for use with {@link #copy(Key, int)} for copying the key value
+	 * Flag for use with {@link #copy(Key, int)} and {@link #dup(int)} for copying
+	 * the key value
 	 *
 	 * @apiNote Do not use together with {@link #KEY_CP_STRING}
 	 */
 	public static final int KEY_CP_VALUE = 1 << 2;
 
 	/**
-	 * Flag for use with {@link #copy(Key, int)} for copying the key metadata
+	 * Flag for use with {@link #copy(Key, int)} and {@link #dup(int)} for copying
+	 * the key metadata
 	 */
 	public static final int KEY_CP_META = 1 << 3;
 
 	/**
-	 * Flag for use with {@link #copy(Key, int)} for copying the key name, value and
-	 * metadata
+	 * Flag for use with {@link #copy(Key, int)} and {@link #dup(int)} for copying
+	 * the key name, value and metadata
 	 */
 	public static final int KEY_CP_ALL = KEY_CP_NAME | KEY_CP_VALUE | KEY_CP_META;
 
@@ -134,17 +137,9 @@ public class Key implements Iterable<String>
 	 * @return New nameless key
 	 * @see #release()
 	 */
-	@Nonnull public static Key createNameless ()
+	@Nonnull public static Key create ()
 	{
-		// TODO passing NULL to keyNew should do the trick, but keyNew documentation is
-		// obviously wrong about that at the moment - therefore we ar currently passing
-		// "/"
-		// TODO it may be even better to completely remove errorKey parameters from the
-		// Java API and implicitly create a temporary key for transferring warnings and
-		// error information, since it should always get mapped to the appropriate
-		// exception anyways
-		return create (Elektra.INSTANCE.keyNew (Elektra.KEY_NAME_SIMPLE_INITALIZED_BUT_EMPTY_OBJECT))
-			.orElseThrow (IllegalStateException::new);
+		return create (Elektra.INSTANCE.keyNew (Elektra.CASCADING_ROOT_KEY_NAME)).orElseThrow (IllegalStateException::new);
 	}
 
 	/**
@@ -337,7 +332,6 @@ public class Key implements Iterable<String>
 		return Byte.parseByte (getString ());
 	}
 
-
 	/**
 	 * @return {@link #getString()} parsed as {@code short}
 	 * @throws NumberFormatException              if the {@link #getString()} does
@@ -352,7 +346,6 @@ public class Key implements Iterable<String>
 	{
 		return Short.parseShort (getString ());
 	}
-
 
 	/**
 	 * @return {@link #getString()} parsed as integer
@@ -638,6 +631,11 @@ public class Key implements Iterable<String>
 	 * @see #dup()
 	 * @see #copy(Key, int)
 	 * @see #release()
+	 * @see #KEY_CP_ALL
+	 * @see #KEY_CP_META
+	 * @see #KEY_CP_NAME
+	 * @see #KEY_CP_STRING
+	 * @see #KEY_CP_VALUE
 	 */
 	@Nonnull public Key dup (int flags)
 	{
@@ -663,6 +661,11 @@ public class Key implements Iterable<String>
 	 * @throws IllegalArgumentException if {@code source} is {@code null}
 	 * @see #dup()
 	 * @see #dup(int)
+	 * @see #KEY_CP_ALL
+	 * @see #KEY_CP_META
+	 * @see #KEY_CP_NAME
+	 * @see #KEY_CP_STRING
+	 * @see #KEY_CP_VALUE
 	 */
 	public Key copy (Key source, int flags)
 	{
