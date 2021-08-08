@@ -123,11 +123,6 @@ you up to date with the multi-language support provided by Elektra.
 
 _(Michael Tucek)_
 
-### JNA
-
-- Added example Java JNI plugin `whitelist` _(Michael Tucek)_
-- Changed `Key nextMeta()` to `Optional<Key> nextMeta ()` no longer throwing NoSuchElementException for non-exceptional behavior
-
 ### <<Binding2>>
 
 ### <<Binding3>>
