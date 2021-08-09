@@ -125,6 +125,7 @@ you up to date with the multi-language support provided by Elektra.
   - Introduced `KeyBinaryValueException`
   - Improved `Key` test coverage
   - Introduced `Key::getBinary()` and `Key::setBinary(byte[])`
+- Fixed example project in `examples/external/java/read-keys-example`
 
 _(Michael Tucek)_
 

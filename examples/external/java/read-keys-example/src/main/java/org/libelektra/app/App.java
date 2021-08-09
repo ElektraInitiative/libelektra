@@ -1,23 +1,24 @@
 package org.libelektra.app;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.libelektra.KDB;
+import org.libelektra.KDBException;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
-import org.libelektra.exception.KDBException;
 
 public class App
 {
 
-	private final static String MOUNT_SPACE = "user:/";
-	private final static String KEY_PREFIX = MOUNT_SPACE + "/sw/clock/central/";
+	private static final String MOUNT_SPACE = "system:/";
+	private static final String KEY_PREFIX = MOUNT_SPACE + "elektra/version/infos/";
 
 	public static void main (String[] args)
 	{
 		System.out.println ("Example started");
-		Map<String, String> stringStringMap = loadConfigurationSettings ();
+		var stringStringMap = loadConfigurationSettings ();
 		System.out.println ("Result:");
 		System.out.println (stringStringMap);
 		System.out.println ("Example terminated");
@@ -27,20 +28,8 @@ public class App
 	private static Map<String, String> loadConfigurationSettings ()
 	{
 		// all keys we want to retrieve
-		String[] keys = new String[] {
-			"server/port",
-			"spring/profiles/active",
-			"spring/datasource/type",
-			"spring/datasource/url",
-			"spring/datasource/username",
-			"spring/datasource/password",
-			"spring/jpa/database-platform",
-			"spring/jpa/database",
-			"spring/mail/host",
-			"spring/mail/port",
-			"jhipster/mail/from",
-			"jhipster/mail/base-url",
-		};
+		String[] keys = new String[] { "author", "description", "licence", "versions" };
+
 		// read the keys
 		return readKeys (keys);
 	}
@@ -48,36 +37,29 @@ public class App
 	private static Map<String, String> readKeys (String[] keys)
 	{
 		System.out.println ("Reading following keys:");
-		for (String key : keys)
-		{
-			System.out.println (key);
-		}
-		// create a key without specifying a name, which is allowed
-		Key key = Key.create ("");
+		Arrays.stream (keys).map (k -> KEY_PREFIX + k).forEach (System.out::println);
+
 		// open KDB with autoclose functionality
 		// keep in mind this is an expensive operation, avoid calling it too frequently
-		try (KDB kdb = KDB.open (key))
+		try (KDB kdb = KDB.open ())
 		{
-			// create keyset
-			KeySet keySet = KeySet.create ();
-			// set mount space
-			kdb.get (keySet, Key.create (MOUNT_SPACE));
+			// fetch key set
+			KeySet keySet = kdb.get (Key.create (MOUNT_SPACE));
+
 			// fetch values
 			return Arrays.stream (keys)
-				.map (k -> {
-					Key lookedUpValue = keySet.lookup (KEY_PREFIX + k);
-					// if null (not found), set it to null value
-					// if specification with default value is applied, this actually should never happen
-					return new String[] { k, (lookedUpValue != null) ? lookedUpValue.getString () : null };
-				})
-				// collect to map
-				.collect (Collectors.toMap (keyValue -> keyValue[0], keyValue -> keyValue[1]));
+				.map (k -> KEY_PREFIX + k)
+				.collect (Collectors.toMap (k
+							    -> k,
+							    // if not found, set it to "(no-spec-default)"
+							    // if specification with default value is applied, this actually should never
+							    // happen
+							    k -> keySet.lookup (k).map (Key::getString).orElse ("(no-spec-default)")));
 		}
 		catch (KDBException e)
 		{
-			// a problem occured with kdb.get(keySet, Key.create(MOUNT_SPACE));
 			e.printStackTrace ();
 		}
-		return null;
+		return Collections.emptyMap ();
 	}
 }
