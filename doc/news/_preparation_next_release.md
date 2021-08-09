@@ -120,6 +120,11 @@ you up to date with the multi-language support provided by Elektra.
 - Native library proxy interface `Elektra` is now package private (previously was public).
 - Added example Java JNI plugin `whitelist`
 - Changed `Key nextMeta()` to `Optional<Key> nextMeta ()` no longer throwing NoSuchElementException for non-exceptional behavior
+- Added support of binary valued keys:
+  - Renamed `KeyBinaryTypeNotSupportedException` to `KeyStringValueException`
+  - Introduced `KeyBinaryValueException`
+  - Improved `Key` test coverage
+  - Introduced `Key::getBinary()` and `Key::setBinary(byte[])`
 
 _(Michael Tucek)_
 

@@ -176,7 +176,6 @@ You can run unit tests by invoking:
 
 ## Limitations
 
-- no binary keys
 - no Java iterator for metadata
 
 ## Release publishing to Maven Central
