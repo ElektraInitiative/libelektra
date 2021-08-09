@@ -14,7 +14,7 @@ Keys below `check/whitelist` not adhering to the schema above will be ignored an
 
 ## Build
 
-The plugin is a sub-project of the Java binding Gradle multi-project.
+The plugin is a subproject of the Java binding Gradle multi-project.
 
 To assemble the plugin's JAR:
 
