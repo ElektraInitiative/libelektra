@@ -117,11 +117,11 @@ sudo kdb mount sub.ini /tests/conditionals/sub ni
 sudo kdb global-mount conditionals || $(exit 0)
 
 # create testfiles
-echo 'key1=val1'                                               >  `kdb file /tests/conditionals`
-echo '[key1]'                                                    >> `kdb file /tests/conditionals`
-echo "check/condition=(./ == 'val1') ? (../sub/key == 'true')" >> `kdb file /tests/conditionals`
+echo 'key1=val1'                                               >  `kdb file system:/tests/conditionals`
+echo '[key1]'                                                    >> `kdb file system:/tests/conditionals`
+echo "check/condition=(./ == 'val1') ? (../sub/key == 'true')" >> `kdb file system:/tests/conditionals`
 
-echo "key=false" > `kdb file /tests/conditionals/sub`
+echo "key=false" > `kdb file system:/tests/conditionals/sub`
 
 # should fail and yield an error
 kdb export /tests/conditionals ni
