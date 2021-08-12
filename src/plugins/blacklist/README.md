@@ -37,7 +37,7 @@ The package is called `libelektra5-extra`.
 ## Examples
 
 ```sh
-sudo kdb mount blacklist.ecf user:/tests/blacklist blacklist
+sudo kdb mount blacklist.ecf /tests/blacklist blacklist
 
 # valid initial value + setup valid blacklist list
 kdb set user:/tests/blacklist ""

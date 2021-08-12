@@ -140,7 +140,8 @@ As we used a cascading key for our override link (`/tests/overrides/test`) we ca
 
 ```sh
 kdb set /tests/overrides/test "hello user"
-# STDOUT-REGEX: .+(Create a new key.+|Set string to) "hello user"
+#> Set string to "hello user"
+#> Using name system:/tests/overrides/test
 kdb get /tests/tutorial/cascading/#0/current/test
 #> hello user
 ```

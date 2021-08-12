@@ -83,7 +83,7 @@ kdb ls user:/tests/line
 # STDOUT-REGEX: line.+line/#0.+line/#1.+line/#2
 
 kdb set user:/tests/line/#1 huhu
-# STDOUT-REGEX: .+Set string to "huhu"
+# STDOUT-REGEX: Set string to "huhu"
 
 kdb export user:/tests/line line
 #> something
@@ -124,6 +124,6 @@ awk '{print NR-1 "-" $0}' < `kdb file user:/tests/line`
 #> 8-setting4 -1
 
 # cleanup
-kdb rm -r /tests/line
+kdb rm -r user:/tests/line
 sudo kdb umount /tests/line
 ```
