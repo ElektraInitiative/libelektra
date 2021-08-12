@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 import org.libelektra.exception.KeyReleasedException;
 
 /**
- * An {@link Iterator} for a {@link Key}'s name parts (separated by /)
+ * An {@link Iterator} for a {@link ReadOnlyKey}'s name parts (separated by /)
  */
 public class KeyNameIterator implements Iterator<String>
 {
@@ -19,7 +19,7 @@ public class KeyNameIterator implements Iterator<String>
 	 * @param key Key which name is used in iterator
 	 * @throws KeyReleasedException if {@code key} has already been released
 	 */
-	KeyNameIterator (final Key key)
+	KeyNameIterator (ReadOnlyKey key)
 	{
 		keyPointer = Elektra.INSTANCE.keyUnescapedName (key.getPointer ());
 		size = Elektra.INSTANCE.keyGetUnescapedNameSize (key.getPointer ());

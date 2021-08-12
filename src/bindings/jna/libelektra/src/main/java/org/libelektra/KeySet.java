@@ -139,7 +139,7 @@ public class KeySet implements Iterable<Key>
 	 */
 	@Override public Iterator<Key> iterator ()
 	{
-		return new KeySetIterator (this);
+		return new KeySetIterator<> (this, Key::new);
 	}
 
 	/**
@@ -272,7 +272,7 @@ public class KeySet implements Iterable<Key>
 	 * @throws KeyReleasedException     if {@code key} has already been released
 	 * @throws IllegalArgumentException if {@code key} is {@code null}
 	 */
-	@Nonnull public Optional<Key> remove (Key key)
+	@Nonnull public Optional<Key> remove (ReadOnlyKey key)
 	{
 		argNotNull (key, "Key 'key'");
 		return Key.create (Elektra.INSTANCE.ksLookup (getPointer (), key.getPointer (), Elektra.KDB_O_POP));
@@ -308,7 +308,8 @@ public class KeySet implements Iterable<Key>
 	 */
 	@Nonnull public Key remove (int cursor)
 	{
-		return checkKeyPointer (Elektra.INSTANCE.elektraKsPopAtCursor (getPointer (), cursor), IndexOutOfBoundsException::new);
+		return checkKeyPointer (Elektra.INSTANCE.elektraKsPopAtCursor (getPointer (), cursor), Key::new,
+					IndexOutOfBoundsException::new);
 	}
 
 	/**
@@ -322,7 +323,7 @@ public class KeySet implements Iterable<Key>
 	 */
 	@Nonnull public Key first ()
 	{
-		return checkKeyPointer (Elektra.INSTANCE.ksHead (getPointer ()), NoSuchElementException::new);
+		return checkKeyPointer (Elektra.INSTANCE.ksHead (getPointer ()), Key::new, NoSuchElementException::new);
 	}
 
 	/**
@@ -336,7 +337,7 @@ public class KeySet implements Iterable<Key>
 	 */
 	@Nonnull public Key last ()
 	{
-		return checkKeyPointer (Elektra.INSTANCE.ksTail (getPointer ()), NoSuchElementException::new);
+		return checkKeyPointer (Elektra.INSTANCE.ksTail (getPointer ()), Key::new, NoSuchElementException::new);
 	}
 
 	/**
@@ -351,7 +352,7 @@ public class KeySet implements Iterable<Key>
 	 */
 	@Nonnull public Key at (int cursor)
 	{
-		return checkKeyPointer (Elektra.INSTANCE.ksAtCursor (getPointer (), cursor), IndexOutOfBoundsException::new);
+		return checkKeyPointer (Elektra.INSTANCE.ksAtCursor (getPointer (), cursor), Key::new, IndexOutOfBoundsException::new);
 	}
 
 	/**

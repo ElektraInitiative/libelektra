@@ -12,6 +12,7 @@ import org.libelektra.KDBException;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
 import org.libelektra.Plugin;
+import org.libelektra.ReadOnlyKey;
 import org.libelektra.exception.SemanticValidationException;
 
 public class WhitelistPluginTests
@@ -57,7 +58,7 @@ public class WhitelistPluginTests
 		var parentKey = Key.create ();
 		var key = addSpecMetaData (Key.create ("user:/test")).setString ("not-allowed");
 		int result = plugin.set (KeySet.create (key), parentKey);
-		var errorNumber = parentKey.getMeta ("error/number").map (Key::getString).orElseThrow ();
+		var errorNumber = parentKey.getMeta ("error/number").map (ReadOnlyKey::getString).orElseThrow ();
 
 		assertEquals (Plugin.STATUS_ERROR, result);
 		assertEquals (SemanticValidationException.ERROR_NUMBER, errorNumber);
@@ -70,7 +71,7 @@ public class WhitelistPluginTests
 		var parentKey = Key.create ();
 		var key = addSpecMetaData (Key.create ("user:/test")).setString ("allowed0").setBinary (binaryValue);
 		int result = plugin.set (KeySet.create (key), parentKey);
-		var errorNumber = parentKey.getMeta ("error/number").map (Key::getString).orElseThrow ();
+		var errorNumber = parentKey.getMeta ("error/number").map (ReadOnlyKey::getString).orElseThrow ();
 
 		assertEquals (Plugin.STATUS_ERROR, result);
 		assertEquals (SemanticValidationException.ERROR_NUMBER, errorNumber);

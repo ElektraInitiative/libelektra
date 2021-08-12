@@ -125,12 +125,14 @@ you up to date with the multi-language support provided by Elektra.
   - Updated javadoc for `KDB::close(Key)`
   - Updated javadoc for `KDB::get(Key)`
   - Updated javadoc for `KDB::get(KeySet, Key)`
-  - Updated javadoc for `KDB::set(KeySet, Key)`, better explaining the relevance of the second argument `parentKey`.
+  - Updated javadoc for `KDB::set(KeySet, Key)`, better explaining the relevance of the second argument `parentKey`
 - Introduced `KeySet::remove(Key)` and `KeySet::remove(String)`
 - Removed `KeySet::lookup(Key, int)` and `KeySet::lookup(String, int)` as well as accompanying flag definitions `KeySet::KDB_O_NONE`, `KeySet::KDB_O_DEL` and `KeySet::KDB_O_POP`. Please use `KeySet::lookup(Key)` and `KeySet::lookup(String)` instead. Instead of `KeySet::KDB_O_DEL`, please consider using `Key::release`. The proper replacement for `KeySet::KDB_O_POP` is `KeySet::remove(Key)` or `KeySet::remove(String)`.
 - Native library proxy interface `Elektra` is now package private (previously was public).
 - Added example Java plugin `whitelist` (see [here](../../src/bindings/jna/plugins/whitelist/README.md))
 - Changed `Key nextMeta()` to `Optional<Key> nextMeta ()` no longer throwing NoSuchElementException for non-exceptional behavior
+- Native library proxy interface `Elektra` is now package private (previously was public)
+- Added example Java plugin `whitelist`
 - Added support of binary valued keys:
   - Renamed `KeyBinaryTypeNotSupportedException` to `KeyStringValueException`
   - Introduced `KeyBinaryValueException`
@@ -139,6 +141,19 @@ you up to date with the multi-language support provided by Elektra.
 - Fixed example project in `examples/external/java/read-keys-example`
   - now works with a standard installation of Elektra
   - updated code to work with current Java binding
+- Introduced abstraction `ReadOnlyKey` for better reflecting the limitations meta data keys via a type hierarchy, leading to meta data keys are now returned as `ReadOnlyKey`s:
+  - `Key` extends `ReadOnlyKey`
+  - Changed `Key Key::nextMeta()` to `Optional<ReadOnlyKey> Key::nextMeta()`, no longer throwing NoSuchElementException for non-exceptional behavior
+  - Changed `Key Key::currentMeta()` to `ReadOnlyKey Key::currentMeta()`
+  - Changed `Optional<Key> Key::getMeta(String)` to `Optional<ReadOnlyKey> Key::getMeta(String)`
+  - Meta data keys can no longer be manually released
+- `Key` class is now final
+- Removed `Key::incRef`, `Key::decRef` and `Key::getRef`
+- `ReadOnlyKey`/`Key` now implements `Comparable<ReadOnlyKey>`
+  - `int Key::cmp(Key)` has been renamed to `int Key::compareTo(Key)`
+  - `ReadOnlyKey` now implements `equalsTo` and `hashCode` in line with the contract for `int Key::compareTo(Key)`
+- `ReadOnlyKey`/`Key` no longer implements `Iterable<String>` for iterating over the parts of a key's name - use `Iterator<String> ReadOnlyKey::keyNameIterator ()` instead
+- `Key` now implements `Iterable<Key>` to iterate over a key's meta data `ReadOnlyKey`s
 
 _(Michael Tucek)_
 

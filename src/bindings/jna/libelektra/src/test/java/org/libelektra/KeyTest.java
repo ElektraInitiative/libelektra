@@ -3,9 +3,11 @@ package org.libelektra;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import org.junit.Test;
 import org.libelektra.exception.KeyBinaryValueException;
@@ -286,14 +288,6 @@ public class KeyTest
 		key.getString ();
 	}
 
-
-	@Test (expected = KeyReleasedException.class) public void test_keyAccessAfterGetStringAndRelease_shouldFail ()
-	{
-		var key = Key.create (KEY_3_NAME, KEY_3_VALUE);
-		key.getStringAndRelease ();
-		key.getPointer ();
-	}
-
 	@Test public void test_keyMetaInformation_shouldPass ()
 	{
 		// setup key with meta
@@ -332,14 +326,50 @@ public class KeyTest
 		assertEquals (KEY_1_META_2_VALUE, oMeta.get ().getString ());
 	}
 
+	@Test public void test_keyMetaIterator_shouldPass ()
+	{
+		// setup key with meta
+		var key = Key.create (KEY_1_NAME, KEY_1_VALUE)
+				  .setMeta (KEY_1_META_1_NAME, KEY_1_META_1_VALUE)
+				  .setMeta (KEY_1_META_2_NAME, KEY_1_META_2_VALUE);
+		var iter = key.iterator ();
+
+		assertTrue (iter.hasNext ());
+
+		ReadOnlyKey metaKey = iter.next ();
+
+		assertEquals ("meta:" + KEY_1_META_1_NAME, metaKey.getName ());
+		assertEquals (KEY_1_META_1_VALUE, metaKey.getString ());
+		assertTrue (iter.hasNext ());
+
+		metaKey = iter.next ();
+
+		assertEquals ("meta:" + KEY_1_META_2_NAME, metaKey.getName ());
+		assertEquals (KEY_1_META_2_VALUE, metaKey.getString ());
+		assertFalse (iter.hasNext ());
+
+		iter.remove ();
+
+		assertThrows (NoSuchElementException.class, () -> iter.next ());
+
+		var oMetaKey = key.getMeta (KEY_1_META_1_NAME);
+
+		assertTrue (oMetaKey.isPresent ());
+		assertEquals (KEY_1_META_1_VALUE, oMetaKey.get ().getString ());
+
+		oMetaKey = key.getMeta (KEY_1_META_2_NAME);
+
+		assertFalse (oMetaKey.isPresent ());
+	}
+
 	@Test public void test_keyCompare_shouldPass ()
 	{
 		var key = Key.create (KEY_1_NAME, KEY_1_VALUE);
 		var key2 = Key.create (KEY_2_NAME, KEY_2_VALUE);
 
-		assertEquals (0, key.cmp (key));
-		assertEquals (-1, key.cmp (key2));
-		assertEquals (1, key2.cmp (key));
+		assertEquals (0, key.compareTo (key));
+		assertEquals (-1, key.compareTo (key2));
+		assertEquals (1, key2.compareTo (key));
 	}
 
 	@Test public void test_keyIsBelow_shouldPass ()
@@ -452,10 +482,9 @@ public class KeyTest
 		assertEquals (KEY_3_VALUE.length () + 1, key3.getValueSize ());
 	}
 
-
 	@Test public void test_keyNameIteratorHasNext_shouldPass ()
 	{
-		Iterator<String> iterator = Key.create (KEY_1_NAME, KEY_1_VALUE).iterator ();
+		Iterator<String> iterator = Key.create (KEY_1_NAME, KEY_1_VALUE).keyNameIterator ();
 
 		assertTrue (iterator.hasNext ());
 		assertEquals (KEY_1_NAME_PART_1, iterator.next ());
@@ -470,7 +499,7 @@ public class KeyTest
 
 	@Test (expected = UnsupportedOperationException.class) public void test_keyNameIteratorDelete_shouldFail ()
 	{
-		Iterator<String> iterator = Key.create (KEY_1_NAME, KEY_1_VALUE).iterator ();
+		Iterator<String> iterator = Key.create (KEY_1_NAME, KEY_1_VALUE).keyNameIterator ();
 
 		iterator.remove ();
 	}

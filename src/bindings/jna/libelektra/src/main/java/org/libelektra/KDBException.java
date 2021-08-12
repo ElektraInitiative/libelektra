@@ -54,7 +54,7 @@ public abstract class KDBException extends Exception
 	@Nonnull public static KDBException getMappedException (Key errorKey)
 	{
 		argNotNull (errorKey, "Key 'errorKey'");
-		String errorNumber = errorKey.getMeta ("error/number").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+		String errorNumber = errorKey.getMeta ("error/number").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 
 		if (errorNumber.equals (ResourceException.ERROR_NUMBER))
 		{
@@ -106,7 +106,7 @@ public abstract class KDBException extends Exception
 		this.errorKey = errorKey;
 		warnings = new ArrayList<> ();
 
-		Optional<String> oWarningsKeyValue = errorKey.getMeta ("warnings").map (Key::getStringAndRelease);
+		Optional<String> oWarningsKeyValue = errorKey.getMeta ("warnings").map (ReadOnlyKey::getString);
 		if (oWarningsKeyValue.isPresent ())
 		{
 			String lastArrayIndex = oWarningsKeyValue.get ();
@@ -147,7 +147,7 @@ public abstract class KDBException extends Exception
 	 */
 	@Nonnull public String getErrorNumber ()
 	{
-		return errorKey.getMeta ("error/number").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+		return errorKey.getMeta ("error/number").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
@@ -159,7 +159,7 @@ public abstract class KDBException extends Exception
 	@Nonnull public String getConfigFile ()
 	{
 		return errorKey.getMeta ("error/configfile")
-			.map (Key::getStringAndRelease)
+			.map (ReadOnlyKey::getString)
 			.filter (s -> !s.isEmpty ())
 			.orElseGet (errorKey::getName);
 	}
@@ -171,7 +171,7 @@ public abstract class KDBException extends Exception
 	 */
 	@Nonnull public String getMountpoint ()
 	{
-		return errorKey.getMeta ("error/mountpoint").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+		return errorKey.getMeta ("error/mountpoint").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
@@ -182,8 +182,8 @@ public abstract class KDBException extends Exception
 	@Nonnull public String getDebugInformation ()
 	{
 		return String.format (MSG_DEBUGINFO,
-				      errorKey.getMeta ("error/file").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND),
-				      errorKey.getMeta ("error/line").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND));
+				      errorKey.getMeta ("error/file").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND),
+				      errorKey.getMeta ("error/line").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND));
 	}
 
 	/**
@@ -193,7 +193,7 @@ public abstract class KDBException extends Exception
 	 */
 	@Nonnull public String getModule ()
 	{
-		return errorKey.getMeta ("error/module").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+		return errorKey.getMeta ("error/module").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
@@ -203,7 +203,7 @@ public abstract class KDBException extends Exception
 	 */
 	@Nonnull public String getReason ()
 	{
-		return errorKey.getMeta ("error/reason").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+		return errorKey.getMeta ("error/reason").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
@@ -270,19 +270,17 @@ public abstract class KDBException extends Exception
 			Arrays.fill (underscores, '_');
 			final String warningKeyName = "warnings/#" + new String (underscores) + warningIndex;
 			warningNumber =
-				key.getMeta (warningKeyName + "/number").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
-			reason = key.getMeta (warningKeyName + "/reason").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
-			module = key.getMeta (warningKeyName + "/module").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+				key.getMeta (warningKeyName + "/number").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
+			reason = key.getMeta (warningKeyName + "/reason").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
+			module = key.getMeta (warningKeyName + "/module").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 			debugInformation = String.format (
 				MSG_DEBUGINFO,
-				key.getMeta (warningKeyName + "/file").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND),
-				key.getMeta (warningKeyName + "/line").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND));
-			mountpoint = key.getMeta (warningKeyName + "/mountpoint")
-					     .map (Key::getStringAndRelease)
-					     .orElse (VALUE_META_KEY_NOT_FOUND);
-			configFile = key.getMeta (warningKeyName + "/configfile")
-					     .map (Key::getStringAndRelease)
-					     .orElse (VALUE_META_KEY_NOT_FOUND);
+				key.getMeta (warningKeyName + "/file").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND),
+				key.getMeta (warningKeyName + "/line").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND));
+			mountpoint =
+				key.getMeta (warningKeyName + "/mountpoint").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
+			configFile =
+				key.getMeta (warningKeyName + "/configfile").map (ReadOnlyKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 		}
 
 		/**

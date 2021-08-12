@@ -1,25 +1,33 @@
 package org.libelektra;
 
+import static org.libelektra.ValidationUtil.checkKeyPointer;
+
+import com.sun.jna.Pointer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.function.Function;
 import org.libelektra.exception.KeySetReleasedException;
 
 /**
  * An {@link Iterator} for a {@link KeySet} returning {@link Key}s
  */
-public class KeySetIterator implements Iterator<Key>
+public class KeySetIterator<T extends ReadOnlyKey> implements Iterator<T>
 {
 
 	private final KeySet keySet;
 	private int position = 0;
-	private Key current;
+	private T current;
+	private Function<Pointer, T> factory;
 
 	/**
-	 * @param keySet {@link KeySet} backing this iterator
+	 * @param keySet  {@link KeySet} backing this iterator
+	 * @param factory Factory for creating elements of type {@code T} from
+	 *                {@link Pointer}
 	 */
-	KeySetIterator (final KeySet keySet)
+	KeySetIterator (KeySet keySet, Function<Pointer, T> factory)
 	{
 		this.keySet = keySet;
+		this.factory = factory;
 	}
 
 	/**
@@ -42,9 +50,10 @@ public class KeySetIterator implements Iterator<Key>
 	 * @apiNote {@link Key Keys} returned by this method normally should not be
 	 *          {@link Key#release() released} manually!
 	 */
-	@Override public Key next ()
+	@Override public T next ()
 	{
-		current = keySet.at (position);
+		current = checkKeyPointer (Elektra.INSTANCE.ksAtCursor (keySet.getPointer (), position), factory,
+					   NoSuchElementException::new);
 		++position;
 		return current;
 	}
