@@ -59,7 +59,7 @@ sudo kdb mount range.ecf /tests/range range dump
 
 # should succeed
 kdb set user:/tests/range/value 5
-kdb meta-set user:/tests/range/value check/range "1-10"
+kdb meta-set spec:/tests/range/value check/range "1-10"
 # RET: 0
 
 # should fail
@@ -71,7 +71,7 @@ kdb set user:/tests/range/value "\-1"
 # RET:5
 
 # we can also allow only individual values:
-kdb meta-set user:/tests/range/value check/range "1,2,4,8"
+kdb meta-set spec:/tests/range/value check/range "1,2,4,8"
 
 kdb set user:/tests/range/value 7
 # RET:5
