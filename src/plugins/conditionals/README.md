@@ -80,10 +80,10 @@ kdb set user:/tests/conditionals/fkey 3.0
 kdb set user:/tests/conditionals/hkey hello
 
 # will succeed
-kdb meta-set spec:/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
+kdb meta-set user:/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '3.0')"
 
 # will fail
-kdb meta-set spec:/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
+kdb meta-set user:/tests/conditionals/key check/condition "(../hkey == 'hello') ? (../fkey == '5.0')"
 # RET:5
 # ERROR:C03200
 ```
@@ -92,7 +92,7 @@ Assignment example:
 
 ```sh
 kdb set user:/tests/conditionals/hkey Hello
-kdb meta-set spec:/tests/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
+kdb meta-set user:/tests/conditionals/hkey assign/condition "(./ == 'Hello') ? ('World')"
 # alternative syntax: "(../hkey == 'Hello') ? ('World')
 
 kdb get user:/tests/conditionals/hkey
@@ -124,15 +124,15 @@ echo "check/condition=(./ == 'val1') ? (../sub/key == 'true')" >> `kdb file syst
 echo "key=false" > `kdb file system:/tests/conditionals/sub`
 
 # should fail and yield an error
-kdb export /tests/conditionals ni
+kdb export system:/tests/conditionals ni
 # ERROR:C03200
 # Sorry, module conditionals issued the error C03200:
 # Validation failed: Validation of Key key1: (./ == 'val1') ? (../sub/key == 'true') failed. ((../sub/key == 'true') failed)
 
-kdb set /tests/conditionals/sub/key true
+kdb set system:/tests/conditionals/sub/key true
 
 # should succeed
-kdb export /tests/conditionals ni
+kdb export system:/tests/conditionals ni
 
 # cleanup
 kdb rm -r /tests/conditionals
