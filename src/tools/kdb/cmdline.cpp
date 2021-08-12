@@ -544,10 +544,6 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 	{
 		root = prependNamespace (root, ns);
 	}
-	else if (!root.isCascading () && !ns.empty ())
-	{
-		throw invalid_argument ("Cannot use the -N option with a key that already has a namespace.");
-	}
 
 	if (!root.isValid ())
 	{
