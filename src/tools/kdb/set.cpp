@@ -34,11 +34,12 @@ int SetCommand::execute (Cmdline const & cl)
 	KeySet conf;
 	Key k = cl.createKey (0);
 	std::string name = k.getName ();
+	Key parentKey = cl.getParentKey (k);
 
 	// do not resume on any get errors
 	// otherwise the user might break
 	// the config
-	kdb.get (conf, k);
+	kdb.get (conf, parentKey);
 
 	bool cascadingWrite = name[0] == '/';
 
@@ -70,9 +71,9 @@ int SetCommand::execute (Cmdline const & cl)
 		toprint << "Set string to \"" << value << '"' << endl;
 		key.setString (value);
 	}
-	kdb.set (conf, k);
-	printWarnings (cerr, k, cl.verbose, cl.debug);
-	printError (cerr, k, cl.verbose, cl.debug);
+	kdb.set (conf, parentKey);
+	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
+	printError (cerr, parentKey, cl.verbose, cl.debug);
 
 	if (cascadingWrite) toprint << "Using name " << key.getName () << std::endl;
 	if (!cl.quiet) cout << toprint.str ();
