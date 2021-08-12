@@ -143,6 +143,18 @@ Key prependNamespace (Key const & root, std::string const & ns)
 	return ret;
 }
 
+Key removeNamespace (Key const & root)
+{
+	Key ret = root.dup ();
+	if (!ret.isCascading ())
+	{
+		string keyName = ret.getName ();
+		string cascadingName = keyName.substr (keyName.find(":") + 1);
+		ret.setName (cascadingName);
+	}
+	return ret;
+}
+
 void applyMeta (KeySet & imported, KeySet const & base)
 {
 	for (auto k : imported)
