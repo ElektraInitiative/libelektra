@@ -27,14 +27,15 @@ int MetaGetCommand::execute (Cmdline const & cl)
 	{
 		throw invalid_argument ("Need 2 arguments");
 	}
-	Key parentKey = cl.createKey (0);
+	Key k = cl.createKey (0);
+	Key parentKey = cl.getParentKey (cl.createKey (0));
 	string metaname = cl.arguments[1];
 
 	KeySet conf;
 	kdb.get (conf, parentKey);
 	printWarnings (cerr, parentKey, cl.verbose, cl.debug);
 
-	Key k = conf.lookup (parentKey);
+	k = conf.lookup (k);
 
 	if (!k)
 	{

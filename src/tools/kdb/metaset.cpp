@@ -29,14 +29,16 @@ int MetaSetCommand::execute (Cmdline const & cl)
 	}
 	string metaname = cl.arguments[1];
 
-	Key parentKey = cl.createKey (0);
-	string keyname = parentKey.getName ();
+	Key k = cl.createKey (0);
+	string keyname = k.getName ();
 
 	bool cascadingWrite = keyname[0] == '/';
 
+	Key parentKey = cl.getParentKey (k);
+
 	KeySet conf;
 	kdb.get (conf, parentKey);
-	Key k = conf.lookup (parentKey);
+	k = conf.lookup (k);
 
 	if (!k)
 	{
