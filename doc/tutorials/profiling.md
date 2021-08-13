@@ -124,7 +124,7 @@ export CC=clang-8
 export CXX=clang++-8
 ```
 
-. We enable the static build (`BUILD_STATIC=ON`) and disable the dynamic build (`BUILD_SHARED=OFF`), since [XRay currently does not support dynamic libraries](http://clang-developers.42468.n3.nabble.com/Xray-with-shared-libraries-td4061859.html). To enable Xray we use the compiler switch `-fxray-instrument`. To instrument every function we set the instruction threshold to `1` with `-fxray-instruction-threshold=1`.
+. We enable the static build (`BUILD_STATIC=ON`) and disable the dynamic build (`BUILD_SHARED=OFF`), since [XRay currently does not support dynamic libraries](https://lists.llvm.org/pipermail/cfe-dev/2018-August/059147.html). To enable Xray we use the compiler switch `-fxray-instrument`. To instrument every function we set the instruction threshold to `1` with `-fxray-instruction-threshold=1`.
 
 ```sh
 export REPOSITORY_DIRECTORY="$PWD"
