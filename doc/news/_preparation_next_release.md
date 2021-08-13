@@ -142,7 +142,7 @@ _(Michael Tucek)_
 ## Documentation
 
 - Add link and small improvements to [tutorial about writing specifications](/doc/tutorials/specification.md). _(Markus Raab)_
-- Fix broken links _(@lawli3t)
+- Fix broken links _(@lawli3t)_
 - Remove previous authors. _(Markus Raab)_
 - Updated the news template. _(Mihael Pranjić)_
 - <<TODO>>
