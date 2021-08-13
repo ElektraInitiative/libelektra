@@ -147,6 +147,7 @@ _(Michael Tucek)_
 - doc: add pre/postconditions and invariants to module key _(@lawli3t)_
 - <<TODO>>
 - Fix broken links _(@lawli3t)
+- Fix broken links _(@lawli3t)_
 - Remove previous authors. _(Markus Raab)_
 - Updated the news template. _(Mihael Pranjić)_
 - Update tutorial "High-level API (with code-generation)" to reflect change of `loadConfiguration()`'s signature in release 0.9.5 _(Tobias Schubert @qwepoizt)_
