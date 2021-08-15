@@ -60,16 +60,13 @@ public class WhitelistPlugin implements Plugin
 	@Override public int set (KeySet keySet, Key parentKey)
 	{
 		// iterate key set and validate each key
-		var iter = keySet.iterator ();
-		while (iter.hasNext ())
+		for (var key : keySet)
 		{
-			var key = iter.next ();
-
 			// look whether a whitelist has been defined
 			Set<String> whitelist = new HashSet<> ();
-			List<Key> invalidWhitelistSpecification = new ArrayList<> ();
 			key.rewindMeta ();
 			Optional<Key> oCurrentMetaKey;
+			int warningIndex = 0;
 			while ((oCurrentMetaKey = key.nextMeta ()).isPresent ())
 			{
 				var metaKey = oCurrentMetaKey.get ();
@@ -81,43 +78,54 @@ public class WhitelistPlugin implements Plugin
 					}
 					else
 					{
-						invalidWhitelistSpecification.add (metaKey);
+						addWarning (
+							parentKey, warningIndex++,
+							String.format (
+								"Key '%s' specification contains an invalid whitelist check '%s' which is therefore ignored.",
+								key.getName (), metaKey.getName ()));
 					}
 				}
 			}
 
-			if (!invalidWhitelistSpecification.isEmpty ())
+			if (!whitelist.isEmpty ())
 			{
-				// add semantic validation warnings
-				for (int i = 0; i < invalidWhitelistSpecification.size (); i++)
+				if (key.isBinary ())
 				{
-					final String warningIndex = Integer.toString (i);
-					char[] underscores = new char[warningIndex.length () - 1];
-					Arrays.fill (underscores, '_');
-					final String warningKeyName = "warnings/#" + new String (underscores) + warningIndex;
-					parentKey.setMeta (warningKeyName + "/number", SemanticValidationException.ERROR_NUMBER);
-					parentKey.setMeta (
-						warningKeyName + "/reason",
-						String.format (
-							"Key '%s' is no valid whitelist check specification and is therefore ignored.",
-							invalidWhitelistSpecification.get (i).getName ()));
+					setError (parentKey,
+						  String.format ("Key '%s' has a binary value but has a whitelist check specification.",
+								 key.getName ()));
+					return STATUS_ERROR;
 				}
-			}
-
-			if (!whitelist.isEmpty () && !whitelist.contains (key.getString ()))
-			{
-				// add semantic validation error
-				parentKey.setMeta ("error/number", SemanticValidationException.ERROR_NUMBER);
-				parentKey.setMeta (
-					"error/reason",
-					String.format (
-						"Value of key '%s' with value '%s' does not adhere to whitelist of possible values: %s",
-						key.getName (), key.getString (), whitelist.stream ().collect (Collectors.joining (", "))));
-				return STATUS_ERROR;
+				if (!whitelist.contains (key.getString ()))
+				{
+					setError (
+						parentKey,
+						String.format (
+							"Value of key '%s' with value '%s' does not adhere to whitelist of possible values: %s",
+							key.getName (), key.getString (),
+							whitelist.stream ().collect (Collectors.joining (", "))));
+					return STATUS_ERROR;
+				}
 			}
 		}
 
 		return STATUS_SUCCESS;
+	}
+
+	private void addWarning (Key errorKey, int warningIndex, String reason)
+	{
+		String warningIndexString = Integer.toString (warningIndex);
+		char[] underscores = new char[warningIndexString.length () - 1];
+		Arrays.fill (underscores, '_');
+		String warningKeyName = "warnings/#" + new String (underscores) + warningIndexString;
+		errorKey.setMeta (warningKeyName + "/number", SemanticValidationException.ERROR_NUMBER);
+		errorKey.setMeta (warningKeyName + "/reason", reason);
+	}
+
+	private void setError (Key errorKey, String reason)
+	{
+		errorKey.setMeta ("error/number", SemanticValidationException.ERROR_NUMBER);
+		errorKey.setMeta ("error/reason", reason);
 	}
 
 	@Override public int error (KeySet keySet, Key parentKey)

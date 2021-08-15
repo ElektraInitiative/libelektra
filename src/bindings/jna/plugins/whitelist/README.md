@@ -12,6 +12,10 @@ check/whitelist/#9 = yet-nother-allowed-value
 
 Keys below `check/whitelist` not adhering to the schema above will be ignored and correspondig warnings will be issued.
 
+The pattern matches `check/whitelist/#_*\\d+` and therefore is not equivalent to Elektra array indices.
+
+Binary keys are not supported.
+
 ## Build
 
 The plugin is a subproject of the Java binding Gradle multi-project.

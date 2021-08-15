@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.libelektra.Plugin.JNI_MODULE_CONTRACT_ROOT;
 
+import java.util.Random;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +56,19 @@ public class WhitelistPluginTests
 	{
 		var parentKey = Key.create ();
 		var key = addSpecMetaData (Key.create ("user:/test")).setString ("not-allowed");
+		int result = plugin.set (KeySet.create (key), parentKey);
+		var errorNumber = parentKey.getMeta ("error/number").map (Key::getString).orElseThrow ();
+
+		assertEquals (Plugin.STATUS_ERROR, result);
+		assertEquals (SemanticValidationException.ERROR_NUMBER, errorNumber);
+	}
+
+	@Test public void test_setBinary_shouldPass () throws KDBException
+	{
+		byte[] binaryValue = new byte[20];
+		new Random ().nextBytes (binaryValue);
+		var parentKey = Key.create ();
+		var key = addSpecMetaData (Key.create ("user:/test")).setString ("allowed0").setBinary (binaryValue);
 		int result = plugin.set (KeySet.create (key), parentKey);
 		var errorNumber = parentKey.getMeta ("error/number").map (Key::getString).orElseThrow ();
 
