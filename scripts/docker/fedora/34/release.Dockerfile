@@ -5,6 +5,7 @@ RUN dnf upgrade --refresh -y \
     && dnf install -y \
         sudo \
         vim \
+        diffutils \
     && dnf clean all -y
 
 ARG USERID=1000
