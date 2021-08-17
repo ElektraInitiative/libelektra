@@ -64,9 +64,7 @@ The other strategies are implemented by the merge framework and are documented i
   Change default format (if none is given at commandline) and built-in default is not your preferred format.
 
 - `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name.
-  By default the namespace is user, except `kdb` is used as root, then `system`
-  is the default (`validate` strategy only).
+  Specifies which default namespace should be used when setting a cascading name (`validate` strategy only).
 
 ## EXAMPLES
 

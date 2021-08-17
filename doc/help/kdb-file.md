@@ -36,7 +36,6 @@ This command makes use of Elektra’s `resolver` plugin which the uer can learn 
 
 - `/sw/elektra/kdb/#0/current/namespace`:
   Specifies which default namespace should be used when setting a cascading name.
-  By default it is `user`, except if you are root, then it is `system`.
 
 ## EXAMPLES
 

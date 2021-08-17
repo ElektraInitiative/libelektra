@@ -74,9 +74,7 @@ The other strategies are implemented by the merge framework and are documented i
   Defaults to `/usr/bin/sensible-editor`, `/usr/bin/editor` or `/usr/bin/vi` if the key does not exist.
 
 - `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name.
-  By default the namespace is user, except `kdb` is used as root, then `system`
-  is the default (`validate` strategy only).
+  Specifies which default namespace should be used when setting a cascading name (`validate` strategy only).
 
 ## EXAMPLES
 

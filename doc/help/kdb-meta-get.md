@@ -42,6 +42,8 @@ This command will return the following values as an exit status:<br>
   Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
+- `-N`, `--namespace=NS`:
+  Use the specified namespace in case the provided key does not already have a namespace.
 
 ## EXAMPLES
 
