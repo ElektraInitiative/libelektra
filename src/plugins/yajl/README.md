@@ -100,42 +100,42 @@ The following example shows you how you can read and write data using this plugi
 sudo kdb mount config.json /tests/yajl yajl
 
 # Manually add a key-value pair to the database
-printf '{ "number": 1337 }' > `kdb file /tests/yajl`
+printf '{ "number": 1337 }' > `kdb file user:/tests/yajl`
 
 # Retrieve the new value
-kdb get /tests/yajl/number
+kdb get user:/tests/yajl/number
 #> 1337
 
 # Determine the data type of the value
-kdb meta-get /tests/yajl/number type
+kdb meta-get user:/tests/yajl/number type
 #> double
 
 # Add another key-value pair
-kdb set /tests/yajl/key value
-# STDOUT-REGEX: .*Create a new key (user|system):/tests/yajl/key with string "value"
+kdb set user:/tests/yajl/key value
+# STDOUT-REGEX: .*Create a new key user:/tests/yajl/key with string "value"
 
 # Retrieve the new value
-kdb get /tests/yajl/key
+kdb get user:/tests/yajl/key
 #> value
 
 # Check the format of the configuration file
-kdb file /tests/yajl/ | xargs cat
+kdb file user:/tests/yajl/ | xargs cat
 #> {
 #>     "key": "value",
 #>     "number": 1337
 #> }
 
 # Add an array
-kdb set /tests/yajl/piggy/#0 straw
-kdb set /tests/yajl/piggy/#1 sticks
-kdb set /tests/yajl/piggy/#2 bricks
+kdb set user:/tests/yajl/piggy/#0 straw
+kdb set user:/tests/yajl/piggy/#1 sticks
+kdb set user:/tests/yajl/piggy/#2 bricks
 
 # Retrieve an array key
-kdb get /tests/yajl/piggy/#2
+kdb get user:/tests/yajl/piggy/#2
 #> bricks
 
 # Check the format of the configuration file
-kdb file /tests/yajl | xargs cat
+kdb file user:/tests/yajl | xargs cat
 #> {
 #>     "key": "value",
 #>     "number": 1337,
@@ -147,7 +147,7 @@ kdb file /tests/yajl | xargs cat
 #> }
 
 # Undo modifications to the database
-kdb rm -r /tests/yajl
+kdb rm -r user:/tests/yajl
 sudo kdb umount /tests/yajl
 ```
 
