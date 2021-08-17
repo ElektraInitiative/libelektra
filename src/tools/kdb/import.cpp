@@ -75,12 +75,6 @@ int ImportCommand::execute (Cmdline const & cl)
 
 	if (cl.strategy == "validate")
 	{
-		if (cl.ns.empty ())
-		{
-			cerr << "Namespace (-N) needs to be specified for strategy 'validate'." << endl;
-			return -1;
-		}
-
 		KeySet toset = prependNamespace (importedKeys, cl.ns);
 		originalKeys.cut (prependNamespace (root, cl.ns));
 		originalKeys.append (toset);
