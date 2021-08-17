@@ -50,7 +50,7 @@ int SetCommand::execute (Cmdline const & cl)
 	if (!key && cascadingWrite)
 	{
 		cerr << "Aborting: A cascading write to a non-existent key is ambiguous." << endl;
-		return 1;
+		return 2;
 	}
 	if (!key)
 	{
