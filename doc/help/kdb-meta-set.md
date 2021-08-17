@@ -12,11 +12,10 @@ If no `metavalue` is given, the metakey will be removed.
 ## DESCRIPTION
 
 This command allows the user to set the value of an individual metakey.
-If a key does not already exist and the user tries setting a metakey associated with it, the key will be created with a null value.
-There is some special handling for the metadata atime, mtime and ctime. They will be converted to time_t.
+If a (non-cascading) key does not already exist and the user tries setting a metakey associated with it, the key will be created with a null value.
+If a cascading key is given that does not resolve to an actual key, the operation is aborted.
 
-For cascading keys, the namespace will default to `spec`, because
-that is the place where you usually want to set metadata.
+There is some special handling for the metadata atime, mtime and ctime. They will be converted to time_t.
 
 ## OPTIONS
 
@@ -34,6 +33,10 @@ that is the place where you usually want to set metadata.
   Give debug information. Prints additional debug information in case of errors/warnings.
 - `-q`, `--quiet`:
   Suppress non-error messages.
+- `-N`, `--namespace=NS`:
+  Use the specified namespace in case the provided key does not already have a namespace.
+- `-f`, `--force`:
+  Do not perform a cascasing lookup if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
 
 ## KDB
 
@@ -45,8 +48,6 @@ that is the place where you usually want to set metadata.
 
 - `/sw/elektra/kdb/#0/current/namespace`:
   Specifies which default namespace should be used when setting a cascading name.
-  By default the namespace is `user`, except `kdb` is used as root, then `system`
-  is the default.
 
 ## EXAMPLES
 
