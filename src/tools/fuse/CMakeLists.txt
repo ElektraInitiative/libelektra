@@ -24,13 +24,15 @@ install (CODE "execute_process(COMMAND
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )")
 
 # Install the package (the .whl file) and its dependencies (which are fetched from PyPI) to the local subdirectory 'fuse'
-install (CODE "execute_process(COMMAND
+install (
+	CODE "execute_process(COMMAND
 		${Python3_EXECUTABLE} -m pip install --target \"${CMAKE_CURRENT_SOURCE_DIR}/fuse\" --upgrade --no-cache-dir ./dist/elektra_fuse-1.0.0-py3-none-any.whl
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )")
 
-# Copy the just created 'fuse' directory to the global installation directory.
-# (This indirection is performed so that CPack knows about the directory.)
-install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/fuse
+# Copy the just created 'fuse' directory to the global installation directory. (This indirection is performed so that CPack knows about the
+# directory.)
+install (
+	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/fuse
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_DATA_FOLDER}"
 	COMPONENT libelektra${SO_VERSION}-fuse)
 
@@ -38,7 +40,8 @@ install (DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/fuse
 configure_file (fuse.in fuse)
 
 # Copy the configured entrypoint script "fuse" to the proper place where kdb can find it.
-install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/fuse
+install (
+	PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/fuse
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}"
 	COMPONENT libelektra${SO_VERSION}-fuse)
 

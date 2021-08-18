@@ -178,7 +178,6 @@ if (UNIX)
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-FUSE_DEPENDS "libelektra${SO_VERSION}" "python3-elektra")
 	check_component_dependencies (fuse libelektra${SO_VERSION}-fuse TOOL)
 
-
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XMLTOOL_DISPLAY_NAME "libelektra${SO_VERSION}-xmltool")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XMLTOOL_DESCRIPTION "This package contains the 'xmltool' plugin.")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XMLTOOL_DEPENDS "libelektra${SO_VERSION}")
