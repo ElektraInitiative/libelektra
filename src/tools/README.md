@@ -41,6 +41,8 @@ The building and installation is performed using a standard CMake-workflow. To i
 - Register the tool in `/scripts/cmake/ElektraCache.cmake` (see `TOOLS_LIST`).
 - Add `CMakeLists.txt` to `/src/tools/<newtool>`.
 - Any binaries, scripts and other data needed by `<newtool>` are to be installed below `${CMAKE_INSTALL_PREFIX}`.
+  (Make sure all files are installed via the install directive (excluding the CODE option) so that CPack will find all files)
+  (Use a suitable value for COMPONENT; update [ElektraPackaging.cmake](/scripts/cmake/ElektraPackaging.cmake), [PackagingDebian.cmake](/scripts/cmake/Modules/PackagingDebian.cmake) and [PackagingFedora.cmake](/scripts/cmake/Modules/PackagingFedora.cmake) to configure packaging.)
 - The entrypoint binary/script of the tool, i.e. an executable called `<newtool>`, needs to be installed below `${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}`. Add metadata to this file as described in [kdb-find-tools(1)](/doc/help/kdb-find-tools.md). This will enable the tool to be called via `kdb <newtool>` and the proper functioning of `kdb-find-tools(1)`.
 - In case dependencies for the tool are not satisfied, call `remove_tool (<newtool> "Reason")` and return.
 
