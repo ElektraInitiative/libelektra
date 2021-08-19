@@ -149,7 +149,7 @@ Key removeNamespace (Key const & root)
 	if (!ret.isCascading ())
 	{
 		string keyName = ret.getName ();
-		string cascadingName = keyName.substr (keyName.find(":") + 1);
+		string cascadingName = keyName.substr (keyName.find (":") + 1);
 		ret.setName (cascadingName);
 	}
 	return ret;
