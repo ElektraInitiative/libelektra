@@ -569,7 +569,8 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
  *
  * @param key the key of interest
  *
- * @return a newly created key to use with kdbGet/kdbSet. If -f was specified, a simple copy will be returned, otherwise a copy without a namespace will be returned.
+ * @return a newly created key to use with kdbGet/kdbSet. If -f was specified, a simple copy will be returned, otherwise a copy without a
+ * namespace will be returned.
  */
 kdb::Key Cmdline::getParentKey (kdb::Key const & key) const
 {
