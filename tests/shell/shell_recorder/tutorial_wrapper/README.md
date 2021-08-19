@@ -14,7 +14,7 @@ kdb set user:/tests/markdown/napalm death
 
 kdb rm user:/tests/markdown/napalm
 
-kdb rm /tests/markdown/babymetal
+kdb rm user:/tests/markdown/babymetal
 # RET: 11
 # STDERR: Did not find the key
 ```
@@ -33,10 +33,10 @@ to print the text
 Create a new key user:/tests/markdown/napalm with string "death"
 ```
 
-to the standard output. The second command in our test (`kdb rm /tests/markdown/napalm`) deletes the key we just created. Although there
+to the standard output. The second command in our test (`kdb rm user:/tests/markdown/napalm`) deletes the key we just created. Although there
 are no special comments below the command, the Markdown Shell Recorder still checks the exit code of the command and reports a failure if
 it is not `0`. If we expect another exit code we can use the special comment `# RET:` to specify the return code. This is what we did after
-the third command, which will fail with exit code `1`, since it tries to delete a non-existing key. The Shell Recorder also checks the
+the third command, which will fail with exit code `11`, since it tries to delete a non-existing key. The Shell Recorder also checks the
 value the last command prints to the standard error output, since we specified the expected text `Did not find the key` via the special
 comment `# STDERR:`.
 
