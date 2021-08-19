@@ -152,7 +152,7 @@ line.
 /* local macros ... */
 #undef elektra_len
 
-int loadConfiguration (Elektra ** elektra, ElektraError ** error);
+int loadConfiguration (Elektra ** elektra, int argc, const char * const * argv, const char * const * envp, ElektraError ** error);
 void printHelpMessage (Elektra * elektra, const char * usage, const char * prefix);
 void exitForSpecload (int argc, const char ** argv);
 ```
@@ -181,7 +181,7 @@ You only need to know, that `exitForSpecload` should be called immediately at th
 your application is not in specload mode.
 
 ```c
-int main (int argc, const char ** argv) {
+int main (int argc, const char * const * argv, const char * const * envp) {
     exitForSpecload (argc, argv);
     // ...
 }
@@ -193,7 +193,7 @@ a snippet that is more or less the same for all applications:
 ```c
 ElektraError * error = NULL;
 Elektra * elektra = NULL;
-int rc = loadConfiguration (&elektra, &error);
+int rc = loadConfiguration (&elektra, argc, argv, envp, &error);
 
 if (rc == -1)
 {
