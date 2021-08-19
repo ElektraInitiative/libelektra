@@ -70,7 +70,7 @@ kdb get user:/tests/yamlcpp/fleetwood
 #> mac
 
 # Undo modifications
-kdb rm -r /tests/yamlcpp
+kdb rm -r user:/tests/yamlcpp
 sudo kdb umount /tests/yamlcpp
 ```
 

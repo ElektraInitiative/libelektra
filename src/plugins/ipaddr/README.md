@@ -54,7 +54,7 @@ kdb set system:/tests/ipaddr/address 1.2.-3.4
 # RET: 5
 
 # Undo modifications to the database
-kdb rm -r /tests/ipaddr
+kdb rm -rf /tests/ipaddr
 kdb umount /tests/ipaddr
 ```
 

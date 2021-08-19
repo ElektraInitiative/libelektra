@@ -11,6 +11,10 @@ Note that when using the `-r` flag, not only the key directly at `path` will be 
 
 This command removes key(s) from the Key database.
 
+## LIMITATIONS
+
+Cascading keys (i.e. keys that start with `/`) are only allowed using the `-f` flag.
+
 ## RETURN VALUES
 
 This command will return the following values as an exit status:
@@ -37,7 +41,7 @@ This command will return the following values as an exit status:
 - `-E`, `--without-elektra`:
   Omit the `system:/elektra` directory.
 - `-f`, `--force`:
-  Do not fail on missing key, nor print if there was a key (-v to still print).
+  Do not fail on missing key, nor print if there was a key (-v to still print); tolerate cascading keys.
 - `-v`, `--verbose`:
   Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
