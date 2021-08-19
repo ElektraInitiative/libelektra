@@ -24,6 +24,8 @@ This command will either print the value of the key it retrieves or a default va
   Use a different kdb profile.
 - `-C`, `--color <when>`:
   Print never/auto(default)/always colored output.
+- `-N`, `--namespace=NS`:
+  Use the specified namespace in case the provided key does not already have a namespace.
 
 ## EXAMPLES
 
