@@ -12,7 +12,6 @@ import java.util.Random;
 import org.junit.Test;
 import org.libelektra.exception.KeyBinaryValueException;
 import org.libelektra.exception.KeyNameException;
-import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeyStringValueException;
 
 public class KeyTest
@@ -95,7 +94,7 @@ public class KeyTest
 		assertEquals ("", key.getString ());
 	}
 
-	@Test (expected = KeyReleasedException.class) public void test_accessingKeyAfterRelease_shouldThrow ()
+	@Test (expected = IllegalStateException.class) public void test_accessingKeyAfterRelease_shouldThrow ()
 	{
 		var key = Key.create (KEY_1_NAME, KEY_1_VALUE);
 		key.release ();

@@ -3,7 +3,6 @@ package org.libelektra;
 import com.sun.jna.Pointer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import org.libelektra.exception.KeyReleasedException;
 
 /**
  * An {@link Iterator} for a {@link ReadOnlyKey}'s name parts (separated by /)
@@ -17,7 +16,7 @@ public class KeyNameIterator implements Iterator<String>
 
 	/**
 	 * @param key Key which name is used in iterator
-	 * @throws KeyReleasedException if {@code key} has already been released
+	 * @throws IllegalStateException if {@code key} has already been released
 	 */
 	KeyNameIterator (ReadOnlyKey key)
 	{

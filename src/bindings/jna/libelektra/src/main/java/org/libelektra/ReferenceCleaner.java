@@ -6,8 +6,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.libelektra.exception.KeyReleasedException;
-import org.libelektra.exception.KeySetReleasedException;
 
 /**
  * Reference clean-up helper for Java representations with references to native
@@ -23,9 +21,12 @@ class ReferenceCleaner
 	 *
 	 * If set to {@code false}:
 	 * <ul>
-	 * <li>automated release for Key and KeySet via Cleaner triggered by garbage collection is disabled</li>
-	 * <li>increasing a key's reference counter when a Java Key representation is created is disabled</li>
-	 * <li>decreasing a key's reference counter and calling keyDel when a Java Key representation is released is disabled</li>
+	 * <li>automated release for Key and KeySet via Cleaner triggered by garbage
+	 * collection is disabled</li>
+	 * <li>increasing a key's reference counter when a Java Key representation is
+	 * created is disabled</li>
+	 * <li>decreasing a key's reference counter and calling keyDel when a Java Key
+	 * representation is released is disabled</li>
 	 * </ul>
 	 */
 	@Deprecated (forRemoval = true) private static final boolean ENABLE_AUTO_NATIVE_REF_CLEANUP = false;
@@ -45,7 +46,8 @@ class ReferenceCleaner
 	 * Depending on whether {@link #ENABLE_AUTO_NATIVE_REF_CLEANUP} is {@code true},
 	 * {@link Elektra#keyIncRef(Pointer)} is called for {@code newKey}.
 	 *
-	 * @param newKey Newly created {@link ReadOnlyKey} object wrapping native key resource.
+	 * @param newKey Newly created {@link ReadOnlyKey} object wrapping native key
+	 *               resource.
 	 */
 	static void keyWrapperCreated (ReadOnlyKey newKey)
 	{
@@ -63,7 +65,7 @@ class ReferenceCleaner
 	 * @param key {@link Key} to be cleaned up
 	 * @return {@link Cleaner.Cleanable} for releasing the resource manually before
 	 *         garbage collection
-	 * @throws KeyReleasedException if {@code key} has already been released
+	 * @throws IllegalStateException if {@code key} has already been released
 	 */
 	@Nonnull static Cleaner.Cleanable registerKeyCleanUp (ReadOnlyKey key)
 	{
@@ -79,7 +81,7 @@ class ReferenceCleaner
 	 * @param keySet {@link KeySet} to be cleaned up
 	 * @return {@link Cleaner.Cleanable} for releasing the resource manually before
 	 *         garbage collection
-	 * @throws KeySetReleasedException if {@code keySet} has already been released
+	 * @throws IllegalStateException if {@code keySet} has already been released
 	 */
 	@Nonnull static Cleaner.Cleanable registerKeySetCleanUp (KeySet keySet)
 	{

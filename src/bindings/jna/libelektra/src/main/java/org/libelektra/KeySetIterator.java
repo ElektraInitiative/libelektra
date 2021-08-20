@@ -6,7 +6,6 @@ import com.sun.jna.Pointer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
-import org.libelektra.exception.KeySetReleasedException;
 
 /**
  * An {@link Iterator} for a {@link KeySet} returning {@link Key}s
@@ -32,8 +31,8 @@ public class KeySetIterator<T extends ReadOnlyKey> implements Iterator<T>
 
 	/**
 	 * @return True, if another value is available, false otherwise
-	 * @throws KeySetReleasedException if this backing {@link KeySet} has already
-	 *                                 been released
+	 * @throws IllegalStateException if this backing {@link KeySet} has already been
+	 *                               released
 	 */
 	@Override public boolean hasNext ()
 	{
@@ -44,9 +43,9 @@ public class KeySetIterator<T extends ReadOnlyKey> implements Iterator<T>
 	 * Gets the next value
 	 *
 	 * @return Next key in iteration
-	 * @throws KeySetReleasedException if this backing {@link KeySet} has already
-	 *                                 been released
-	 * @throws NoSuchElementException  if end of key set is reached
+	 * @throws IllegalStateException  if this backing {@link KeySet} has already
+	 *                                been released
+	 * @throws NoSuchElementException if end of key set is reached
 	 * @apiNote {@link Key Keys} returned by this method normally should not be
 	 *          {@link Key#release() released} manually!
 	 */
@@ -63,8 +62,8 @@ public class KeySetIterator<T extends ReadOnlyKey> implements Iterator<T>
 	 * afterwards releasing it. Therefore any reference held to the removed
 	 * {@code Key} element will get unusable.
 	 *
-	 * @throws KeySetReleasedException if this backing {@link KeySet} has already
-	 *                                 been released
+	 * @throws IllegalStateException if this backing {@link KeySet} has already been
+	 *                               released
 	 */
 	@Override public void remove ()
 	{

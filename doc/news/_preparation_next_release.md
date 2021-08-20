@@ -141,19 +141,20 @@ you up to date with the multi-language support provided by Elektra.
 - Fixed example project in `examples/external/java/read-keys-example`
   - now works with a standard installation of Elektra
   - updated code to work with current Java binding
+- `KeySetReleasedException` and `KeyReleasedException` have been replaced by the native `IllegalStateException`
 - Introduced abstraction `ReadOnlyKey` for better reflecting the limitations meta data keys via a type hierarchy, leading to meta data keys are now returned as `ReadOnlyKey`s:
   - `Key` extends `ReadOnlyKey`
   - Changed `Key Key::nextMeta()` to `Optional<ReadOnlyKey> Key::nextMeta()`, no longer throwing NoSuchElementException for non-exceptional behavior
   - Changed `Key Key::currentMeta()` to `ReadOnlyKey Key::currentMeta()`
   - Changed `Optional<Key> Key::getMeta(String)` to `Optional<ReadOnlyKey> Key::getMeta(String)`
   - Meta data keys can no longer be manually released
-- `Key` class is now final
-- Removed `Key::incRef`, `Key::decRef` and `Key::getRef`
-- `ReadOnlyKey`/`Key` now implements `Comparable<ReadOnlyKey>`
-  - `int Key::cmp(Key)` has been renamed to `int Key::compareTo(Key)`
-  - `ReadOnlyKey` now implements `equalsTo` and `hashCode` in line with the contract for `int Key::compareTo(Key)`
-- `ReadOnlyKey`/`Key` no longer implements `Iterable<String>` for iterating over the parts of a key's name - use `Iterator<String> ReadOnlyKey::keyNameIterator ()` instead
-- `Key` now implements `Iterable<Key>` to iterate over a key's meta data `ReadOnlyKey`s
+  - `Key` class is now final
+  - Removed `Key::incRef`, `Key::decRef` and `Key::getRef`
+  - `ReadOnlyKey`/`Key` now implements `Comparable<ReadOnlyKey>`
+    - `int Key::cmp(Key)` has been renamed to `int Key::compareTo(Key)`
+    - `ReadOnlyKey` now implements `equals` and `hashCode` in line with the contract for `int Key::compareTo(Key)`
+  - `ReadOnlyKey`/`Key` no longer implements `Iterable<String>` for iterating over the parts of a key's name - use `Iterator<String> ReadOnlyKey::keyNameIterator ()` instead
+  - `Key` now implements `Iterable<Key>` to iterate over a key's meta data `ReadOnlyKey`s
 
 _(Michael Tucek)_
 

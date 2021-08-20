@@ -15,9 +15,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.KeySetAppendException;
-import org.libelektra.exception.KeySetReleasedException;
 
 /**
  * Java representation of a native Elektra key set, a container for keys
@@ -166,8 +164,8 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @return New {@link KeySet} containing the same key references as this
 	 *         {@link KeySet} does
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been
-	 *                                 released
+	 * @throws IllegalStateException if this {@link KeySet} has already been
+	 *                               released
 	 * @see #release()
 	 */
 	@Nonnull public KeySet dup ()
@@ -180,7 +178,7 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @param source Key set that is used as source
 	 * @return This {@link KeySet}, enabling a fluent interface
-	 * @throws KeySetReleasedException  if this {@link KeySet} or the specified
+	 * @throws IllegalStateException    if this {@link KeySet} or the specified
 	 *                                  {@code source} has already been released
 	 * @throws IllegalArgumentException if {@code source} is {@code null}
 	 */
@@ -195,8 +193,8 @@ public class KeySet implements Iterable<Key>
 	 * Indicates the key set size
 	 *
 	 * @return Number of keys contained by this key set
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been
-	 *                                 released
+	 * @throws IllegalStateException if this {@link KeySet} has already been
+	 *                               released
 	 */
 	public int size ()
 	{
@@ -208,7 +206,7 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @param key {@link Key} to append
 	 * @return This {@link KeySet}, enabling a fluent interface
-	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 * @throws IllegalStateException    if this {@link KeySet} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code key} is {@code null}
 	 */
@@ -227,7 +225,7 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @param source Source {@link KeySet} to append all of its {@link Key keys}
 	 * @return This {@link KeySet}, enabling a fluent interface
-	 * @throws KeySetReleasedException  if this {@link KeySet} or the specified
+	 * @throws IllegalStateException    if this {@link KeySet} or the specified
 	 *                                  {@code source} has already been released
 	 * @throws IllegalArgumentException if {@code source} is {@code null}
 	 * @throws KeySetAppendException    if appending the {@code source} failed
@@ -248,7 +246,7 @@ public class KeySet implements Iterable<Key>
 	 * @param cutpoint Key that is used as cutting point
 	 * @return New {@link KeySet} containing all keys until the cutting point, this
 	 *         if null was provided
-	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 * @throws IllegalStateException    if this {@link KeySet} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code cutpoint} is {@code null}
 	 * @see #release()
@@ -267,9 +265,8 @@ public class KeySet implements Iterable<Key>
 	 *         {@code key}'s name. May or may not reference the same native key
 	 *         resource. {@link Optional#empty()} if the specified {@code key} was
 	 *         not found.
-	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
-	 *                                  released
-	 * @throws KeyReleasedException     if {@code key} has already been released
+	 * @throws IllegalStateException    if {@link KeySet} or {@code key} has already
+	 *                                  been released
 	 * @throws IllegalArgumentException if {@code key} is {@code null}
 	 */
 	@Nonnull public Optional<Key> remove (ReadOnlyKey key)
@@ -285,7 +282,7 @@ public class KeySet implements Iterable<Key>
 	 * @return Removed {@link Key} from the key set, matching the specified
 	 *         {@code key}'s name. {@link Optional#empty()} if the no key matching
 	 *         the specified name was not found.
-	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 * @throws IllegalStateException    if this {@link KeySet} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code find} is {@link String#isBlank()
 	 *                                  blank}
@@ -301,7 +298,7 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @param cursor Cursor position of the key to remove; starting from 0
 	 * @return Key found at given cursor position
-	 * @throws KeySetReleasedException   if this {@link KeySet} has already been
+	 * @throws IllegalStateException     if this {@link KeySet} has already been
 	 *                                   released
 	 * @throws IndexOutOfBoundsException if position is out of bounds
 	 * @see Key#release()
@@ -316,9 +313,9 @@ public class KeySet implements Iterable<Key>
 	 * Gets the key set head key
 	 *
 	 * @return First element of the key set
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been
-	 *                                 released
-	 * @throws NoSuchElementException  if key set is empty
+	 * @throws IllegalStateException  if this {@link KeySet} has already been
+	 *                                released
+	 * @throws NoSuchElementException if key set is empty
 	 * @see Key#release()
 	 */
 	@Nonnull public Key first ()
@@ -330,9 +327,9 @@ public class KeySet implements Iterable<Key>
 	 * Gets the key set tail key
 	 *
 	 * @return Last element of the key set
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been
-	 *                                 released
-	 * @throws NoSuchElementException  if key set is empty
+	 * @throws IllegalStateException  if this {@link KeySet} has already been
+	 *                                released
+	 * @throws NoSuchElementException if key set is empty
 	 * @see Key#release()
 	 */
 	@Nonnull public Key last ()
@@ -345,7 +342,7 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @param cursor Cursor position used to fetch key; starting from 0
 	 * @return Key found at specified cursor position
-	 * @throws KeySetReleasedException   if this {@link KeySet} has already been
+	 * @throws IllegalStateException     if this {@link KeySet} has already been
 	 *                                   released
 	 * @throws IndexOutOfBoundsException if position is out of bounds
 	 * @see Key#release()
@@ -360,7 +357,7 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @param find Key used in search
 	 * @return Key if search successful, {@link Optional#empty()} otherwise
-	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 * @throws IllegalStateException    if this {@link KeySet} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code key} is {@code null}
 	 * @see Key#release()
@@ -376,7 +373,7 @@ public class KeySet implements Iterable<Key>
 	 *
 	 * @param find Key name used in search
 	 * @return Key if search successful, {@link Optional#empty()} otherwise
-	 * @throws KeySetReleasedException  if this {@link KeySet} has already been
+	 * @throws IllegalStateException    if this {@link KeySet} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code find} is {@link String#isBlank()
 	 *                                  blank}
@@ -390,14 +387,14 @@ public class KeySet implements Iterable<Key>
 
 	/**
 	 * @return JNA pointer to the native pointer for this key set
-	 * @throws KeySetReleasedException if this {@link KeySet} has already been
-	 *                                 released
+	 * @throws IllegalStateException if this {@link KeySet} has already been
+	 *                               released
 	 */
 	@Nonnull protected Pointer getPointer ()
 	{
 		if (pointer == null)
 		{
-			throw new KeySetReleasedException ();
+			throw new IllegalStateException ();
 		}
 		return pointer;
 	}

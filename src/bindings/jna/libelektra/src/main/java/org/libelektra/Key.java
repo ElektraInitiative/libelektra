@@ -19,7 +19,6 @@ import org.libelektra.exception.KeyBinaryValueException;
 import org.libelektra.exception.KeyException;
 import org.libelektra.exception.KeyMetaException;
 import org.libelektra.exception.KeyNameException;
-import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.PluginMisbehaviorException;
 
 /**
@@ -233,7 +232,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @return This key's value as string
 	 * @throws KeyBinaryValueException if the underlying native key is not of type
 	 *                                 binary
-	 * @throws KeyReleasedException    if this {@link Key} has already been released
+	 * @throws IllegalStateException   if this {@link Key} has already been released
 	 */
 	@Nonnull public byte[] getBinary ()
 	{
@@ -256,7 +255,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *
 	 * @param value Value to set
 	 * @return This {@link Key}, enabling a fluent interface
-	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @throws IllegalStateException if this {@link Key} has already been released
 	 */
 	@Nonnull public Key setBoolean (boolean value)
 	{
@@ -268,7 +267,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *
 	 * @param value Value to set
 	 * @return This {@link Key}, enabling a fluent interface
-	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @throws IllegalStateException if this {@link Key} has already been released
 	 */
 	@Nonnull public Key setByte (byte value)
 	{
@@ -280,7 +279,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *
 	 * @param value Value to set
 	 * @return This {@link Key}, enabling a fluent interface
-	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @throws IllegalStateException if this {@link Key} has already been released
 	 */
 	@Nonnull public Key setShort (short value)
 	{
@@ -292,7 +291,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *
 	 * @param value Value to set
 	 * @return This {@link Key}, enabling a fluent interface
-	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @throws IllegalStateException if this {@link Key} has already been released
 	 */
 	@Nonnull public Key setInt (int value)
 	{
@@ -304,7 +303,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *
 	 * @param value Value to set
 	 * @return This {@link Key}, enabling a fluent interface
-	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @throws IllegalStateException if this {@link Key} has already been released
 	 */
 	@Nonnull public Key setLong (long value)
 	{
@@ -316,7 +315,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *
 	 * @param value Value to set
 	 * @return This {@link Key}, enabling a fluent interface
-	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @throws IllegalStateException if this {@link Key} has already been released
 	 */
 	@Nonnull public Key setFloat (float value)
 	{
@@ -328,7 +327,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *
 	 * @param value Value to set
 	 * @return This {@link Key}, enabling a fluent interface
-	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @throws IllegalStateException if this {@link Key} has already been released
 	 */
 	@Nonnull public Key setDouble (double value)
 	{
@@ -340,7 +339,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *
 	 * @param value Value to set
 	 * @return This {@link Key}, enabling a fluent interface
-	 * @throws KeyReleasedException     if this {@link Key} has already been
+	 * @throws IllegalStateException    if this {@link Key} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code value} is {@code null}
 	 * @throws KeyException             if the key's value is read-only or there
@@ -358,7 +357,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *
 	 * @param value Value to set
 	 * @return This {@link Key}, enabling a fluent interface
-	 * @throws KeyReleasedException     if this {@link Key} has already been
+	 * @throws IllegalStateException    if this {@link Key} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code value} is {@code null}
 	 * @throws KeyException             if the key's value is read-only or there
@@ -454,7 +453,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *               {@link #KEY_CP_NAME} | {@link #KEY_CP_VALUE}
 	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyException             if copying failed
-	 * @throws KeyReleasedException     if this or the {@code source} {@link Key}
+	 * @throws IllegalStateException    if this or the {@code source} {@link Key}
 	 *                                  has already been released
 	 * @throws IllegalArgumentException if {@code source} is {@code null}
 	 * @see #dup()
@@ -478,7 +477,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	/**
 	 * Rewinds the internal iterator for meta information of this key
 	 *
-	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @throws IllegalStateException if this {@link Key} has already been released
 	 * @return This {@link Key}, enabling a fluent interface
 	 * @see #nextMeta()
 	 * @see #currentMeta()
@@ -494,7 +493,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *
 	 * @return New {@link Key} object containing the requested meta information or
 	 *         {@link Optional#empty()}, if no next meta key is available
-	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @throws IllegalStateException if this {@link Key} has already been released
 	 * @see #rewindMeta()
 	 * @see #currentMeta()
 	 */
@@ -507,7 +506,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * Gets the current element of this key's internal meta information iterator
 	 *
 	 * @return new {@link Key} object containing the current meta information
-	 * @throws KeyReleasedException   if this {@link Key} has already been released
+	 * @throws IllegalStateException  if this {@link Key} has already been released
 	 * @throws NoSuchElementException if no current meta key is available or
 	 *                                internal iterator has been reset
 	 * @see #rewindMeta()
@@ -527,7 +526,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 *         contain the specified meta information and nothing had to be done
 	 * @throws KeyMetaException         if this key's meta information is read-only
 	 *                                  of copying failed
-	 * @throws KeyReleasedException     if this or the {@code source} {@link Key}
+	 * @throws IllegalStateException    if this or the {@code source} {@link Key}
 	 *                                  has already been released
 	 * @throws IllegalArgumentException if {@code source} is {@code null} or
 	 *                                  {@code metaName} is {@link String#isBlank()
@@ -553,7 +552,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @return True, if meta was successfully copied, false if {@code source} does
 	 *         not contain any meta and nothing had to be done
 	 * @throws KeyMetaException         if copying failed
-	 * @throws KeyReleasedException     if this or the {@code source} {@link Key}
+	 * @throws IllegalStateException    if this or the {@code source} {@link Key}
 	 *                                  has already been released
 	 * @throws IllegalArgumentException if {@code source} is {@code null}
 	 * @see #copyMeta(Key, String)
@@ -576,7 +575,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @return New {@link ReadOnlyKey} object containing the requested meta
 	 *         information or {@link Optional#empty()}, if {@code metaName} was not
 	 *         found
-	 * @throws KeyReleasedException     if this {@link Key} has already been
+	 * @throws IllegalStateException    if this {@link Key} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code metaName} is
 	 *                                  {@link String#isBlank() blank}
@@ -594,7 +593,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @param newMetaString Meta value to be set
 	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyMetaException         if {@code metaName} is invalid
-	 * @throws KeyReleasedException     if this {@link Key} has already been
+	 * @throws IllegalStateException    if this {@link Key} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code metaName} is
 	 *                                  {@link String#isBlank() blank} or
@@ -617,7 +616,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @param metaName Key name of meta information to be removed
 	 * @return This {@link Key}, enabling a fluent interface
 	 * @throws KeyMetaException         if {@code metaName} is invalid
-	 * @throws KeyReleasedException     if this {@link Key} has already been
+	 * @throws IllegalStateException    if this {@link Key} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code metaName} is
 	 *                                  {@link String#isBlank() blank}
@@ -640,7 +639,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @throws KeyNameException         if {@code name} is invalid, the key was
 	 *                                  inserted in a key set before or the key name
 	 *                                  is read-only
-	 * @throws KeyReleasedException     if this {@link Key} has already been
+	 * @throws IllegalStateException    if this {@link Key} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code baseName} is
 	 *                                  {@link String#isBlank() blank}
@@ -663,7 +662,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @throws KeyNameException         if {@code baseName} is invalid, the key was
 	 *                                  inserted in a key set before or the key name
 	 *                                  is read-only
-	 * @throws KeyReleasedException     if this {@link Key} has already been
+	 * @throws IllegalStateException    if this {@link Key} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code baseName} is {@code null}
 	 */
@@ -686,7 +685,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @throws KeyNameException         if {@code baseName} is invalid, the key was
 	 *                                  inserted in a key set before or the key name
 	 *                                  is read-only
-	 * @throws KeyReleasedException     if this {@link Key} has already been
+	 * @throws IllegalStateException    if this {@link Key} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code baseName} is
 	 *                                  {@link String#isBlank() blank}
@@ -701,9 +700,9 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 		return this;
 	}
 
-
 	/**
-	 * @return {@link KeySetIterator} for the {@link ReadOnlyKey meta data} of this {@link Key}
+	 * @return {@link KeySetIterator} for the {@link ReadOnlyKey meta data} of this
+	 *         {@link Key}
 	 */
 	@Override public Iterator<ReadOnlyKey> iterator ()
 	{

@@ -11,7 +11,6 @@ import org.libelektra.exception.ConflictingStateException;
 import org.libelektra.exception.InstallationException;
 import org.libelektra.exception.InterfaceException;
 import org.libelektra.exception.InternalException;
-import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.OutOfMemoryException;
 import org.libelektra.exception.PluginMisbehaviorException;
 import org.libelektra.exception.ResourceException;
@@ -47,7 +46,7 @@ public abstract class KDBException extends Exception
 	 * @param errorKey Key containing {@code error/*} and {@code warnings/*} meta
 	 *                 keys
 	 * @return {@link KDBException} corresponding to the error information
-	 * @throws KeyReleasedException     if this {@code errorKey} has already been
+	 * @throws IllegalStateException    if this {@code errorKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code errorKey} is {@code null}
 	 */
@@ -121,8 +120,8 @@ public abstract class KDBException extends Exception
 	/**
 	 * Release the key backing this {@link KDBException}
 	 *
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 * @apiNote If this exception does not terminate your process, consider
 	 *          releasing the backing error key after processing it
 	 */
@@ -142,8 +141,8 @@ public abstract class KDBException extends Exception
 
 	/**
 	 * @return Elektra error number read from the error key backing this exception
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getErrorNumber ()
 	{
@@ -153,8 +152,8 @@ public abstract class KDBException extends Exception
 	/**
 	 * @return The affected configuration file of the error or if not available
 	 *         returns the error key name
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getConfigFile ()
 	{
@@ -166,8 +165,8 @@ public abstract class KDBException extends Exception
 
 	/**
 	 * @return Mountpoint of the configuration
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getMountpoint ()
 	{
@@ -176,8 +175,8 @@ public abstract class KDBException extends Exception
 
 	/**
 	 * @return Elektra specific debug information in the form of "At: file:line"
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getDebugInformation ()
 	{
@@ -188,8 +187,8 @@ public abstract class KDBException extends Exception
 
 	/**
 	 * @return Module which issued the error
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getModule ()
 	{
@@ -198,8 +197,8 @@ public abstract class KDBException extends Exception
 
 	/**
 	 * @return Error reason read from the error key backing this exception
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getReason ()
 	{
@@ -209,8 +208,8 @@ public abstract class KDBException extends Exception
 	/**
 	 * @return The complete error information in a String with config file, mount
 	 *         point and debug information as it would be printed in the terminal
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Override public String getMessage ()
 	{

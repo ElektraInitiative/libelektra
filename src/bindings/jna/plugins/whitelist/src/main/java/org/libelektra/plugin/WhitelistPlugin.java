@@ -1,17 +1,13 @@
 package org.libelektra.plugin;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.libelektra.Key;
 import org.libelektra.KeySet;
 import org.libelektra.Plugin;
-import org.libelektra.ReadOnlyKey;
 import org.libelektra.exception.SemanticValidationException;
 
 /**
