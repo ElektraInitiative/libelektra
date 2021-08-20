@@ -145,7 +145,7 @@ _(Michael Tucek)_
 - Fix broken links _(@lawli3t)_
 - Remove previous authors. _(Markus Raab)_
 - Updated the news template. _(Mihael Pranjić)_
-- Update tutorial "High-level API (with code-generation)" to reflect change of `loadConfiguration()`'s signature in release 0.9.5 _(Tobias Schubert @qwepoizt)_
+- Update tutorial and in-code comments for high-level API _(Tobias Schubert @qwepoizt)_
 - <<TODO>>
 
 ## Tests
