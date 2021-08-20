@@ -7,6 +7,17 @@ if (NOT Python3_Interpreter_FOUND)
 	return ()
 endif ()
 
+# Sometimes CMake returns an invalid version of python: check for that
+execute_process (
+	COMMAND ${Python3_EXECUTABLE} -c "import sys; exit(sys.version_info < (3, 8))"
+	RESULT_VARIABLE EXIT_CODE
+	OUTPUT_QUIET)
+
+if (NOT EXIT_CODE EQUAL 0)
+	remove_tool (fuse "python3 delivered by cmake not of version >= 3.8")
+	return ()
+endif ()
+
 # Check if both pip and wheel are available
 execute_process (
 	COMMAND ${Python3_EXECUTABLE} -c "import pip,wheel"
