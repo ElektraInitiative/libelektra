@@ -204,7 +204,7 @@ if (rc == -1)
 
 if (rc == 1)
 {
-    // help mode - application was called with '-h' or '--help'
+    // help mode - application was called with '--help'
     // for more information see "Command line options" below
     printHelpMessage (elektra, NULL, NULL);
     elektraClose (elektra);
