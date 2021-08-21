@@ -55,7 +55,11 @@ RUN apt-get update && apt-get -y install \
         rustc \
         unzip \
         valgrind \
+        python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 RUN wget https://downloads.sourceforge.net/swig/swig-4.0.2.tar.gz && \
     tar -xvzf swig-4.0.2.tar.gz && \

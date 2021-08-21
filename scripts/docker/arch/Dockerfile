@@ -10,7 +10,11 @@ RUN pacman -Sy --noconfirm \
     ninja \
     rubygems \
     swig \
-    tar
+    tar \
+    python-pip
+
+# Dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

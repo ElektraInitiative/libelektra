@@ -12,7 +12,11 @@ RUN apk update \
         git \
         gtest-dev \
         ninja \
-        yaml-cpp-dev
+        yaml-cpp-dev \
+	py3-pip
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # Google Test
 ENV GTEST_ROOT=/usr/include/gtest

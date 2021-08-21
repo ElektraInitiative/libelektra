@@ -6,8 +6,11 @@ ENV LC_ALL C.UTF-8
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get -y install strace \
+    && apt-get -y install strace python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running

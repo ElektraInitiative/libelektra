@@ -59,6 +59,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         yaml-cpp-devel \
         zeromq-devel \
         zlib-devel \
+        python3-pip \
     && dnf debuginfo-install -y \
         bison \
         flex \
@@ -68,6 +69,9 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         libgcrypt \
         ruby-libs \
     && dnf clean all -y
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

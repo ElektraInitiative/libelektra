@@ -81,6 +81,9 @@ RUN apt-get update && apt-get -y install \
         wine \
     && rm -rf /var/lib/apt/lists/*
 
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
+
 # use lua5.3 since dh-lua installs liblua5.3-dev which sets the
 # dependency on the generated package to lua5.3
 RUN update-alternatives --set lua-interpreter /usr/bin/lua5.3

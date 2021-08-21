@@ -37,8 +37,12 @@ RUN apt-get -y install \
   unzip \
   valgrind \
   wget \
+  python3-pip \
 && apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # TODO use Elektra for the configuration steps below
 
