@@ -60,6 +60,7 @@ set (
 	elektra-bin-extra
 	java-elektra
 	ruby-elektra
+	libelektra${SO_VERSION}-fuse
 	${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 
 set (ALL_PLUGINS "")
