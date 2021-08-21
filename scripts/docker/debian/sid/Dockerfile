@@ -71,7 +71,7 @@ ENV PATH="/usr/lib/llvm-12/bin:$PATH"
 RUN ldconfig
 
 # Build dependency for libelektra-fuse
-RUN pip3 install wheel
+RUN pip3 install wheel 
 
 RUN pip3 install cmake-format[yaml]==0.6.13
 
