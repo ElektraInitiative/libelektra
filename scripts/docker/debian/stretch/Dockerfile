@@ -72,6 +72,9 @@ RUN apt-get update && apt-get -y install \
         wine \
     && rm -rf /var/lib/apt/lists/*
 
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
+
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=release-1.11.0

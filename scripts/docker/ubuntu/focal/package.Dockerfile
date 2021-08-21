@@ -3,8 +3,11 @@ FROM ubuntu:focal
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get -y install strace \
+    && apt-get -y install strace python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 ARG JENKINS_GROUPID
 RUN groupadd \
