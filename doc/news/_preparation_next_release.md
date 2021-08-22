@@ -153,6 +153,10 @@ you up to date with the multi-language support provided by Elektra.
     - `ReadableKey` now implements `equals` and `hashCode` in line with the contract for `int Key::compareTo(Key)`
   - `ReadableKey`/`Key` no longer implements `Iterable<String>` for iterating over the parts of a key's name - use `Iterator<String> ReadableKey::keyNameIterator ()` instead
   - `Key` now implements `Iterable<Key>` to iterate over a key's meta data `ReadableKey`s
+  - Fixed API method typo: Renamed `ReadableKey::isDirectBelow`/`Key::isDirectBelow` to `isDirectlyBelow`
+- `KeyNameIterator` and `KeySetIterator` are now package private
+- `KeySetAppendException` has been renamed to `KeySetException` and now conveys general `KeySet` related exceptional states
+- `KeySet` now implements `SortedSet`
 
 _(Michael Tucek)_
 
