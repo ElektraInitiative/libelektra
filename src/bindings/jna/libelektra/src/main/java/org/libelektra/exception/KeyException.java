@@ -3,7 +3,7 @@ package org.libelektra.exception;
 import org.libelektra.Key;
 
 /**
- * Indicates a generic exception in {@link Key} occurred
+ * Indicates a generic exception while calling one of {@link Key}'s methods
  */
 public class KeyException extends RuntimeException
 {
