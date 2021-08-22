@@ -13,13 +13,13 @@ import org.libelektra.exception.KeyException;
 import org.libelektra.exception.KeyStringValueException;
 
 /**
- * Read only key representing a native Elektra key providing access to its name
+ * Read only key representing a native Elektra key providing read access to its name
  * and value
  *
- * @apiNote This abstraction is primarily used to represent meta keys being read
+ * @apiNote This abstraction is used to represent meta keys being read
  *          only by definition and cannot contain binary data
  */
-public class ReadOnlyKey implements Comparable<ReadOnlyKey>
+public class ReadableKey implements Comparable<ReadableKey>
 {
 
 	/**
@@ -61,31 +61,31 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	@Nullable private Cleaner.Cleanable cleanable;
 
 	/**
-	 * Constructs a new {@link ReadOnlyKey} instance associated with a JNA pointer
+	 * Constructs a new {@link ReadableKey} instance associated with a JNA pointer
 	 *
 	 * @param pointer Optional JNA {@link Pointer} to key
-	 * @return New {@link ReadOnlyKey} instance if {@code pointer} is non-null,
+	 * @return New {@link ReadableKey} instance if {@code pointer} is non-null,
 	 *         {@link Optional#empty()} otherwise
 	 * @see #release()
 	 */
-	@Nonnull protected static Optional<ReadOnlyKey> createReadOnly (@Nullable Pointer pointer)
+	@Nonnull protected static Optional<ReadableKey> createReadOnly (@Nullable Pointer pointer)
 	{
-		return Optional.ofNullable (pointer).map (ReadOnlyKey::new);
+		return Optional.ofNullable (pointer).map (ReadableKey::new);
 	}
 
 	/**
-	 * Constructor associating a new {@link ReadOnlyKey} instance with a JNA pointer
+	 * Constructor associating a new {@link ReadableKey} instance with a JNA pointer
 	 *
 	 * @param pointer JNA {@link Pointer} to key
 	 * @see #release()
 	 */
-	protected ReadOnlyKey (Pointer pointer)
+	protected ReadableKey (Pointer pointer)
 	{
 		this(pointer, false);
 	}
 
 	/**
-	 * Constructor associating a new {@link ReadOnlyKey} instance with a JNA
+	 * Constructor associating a new {@link ReadableKey} instance with a JNA
 	 * pointer<br>
 	 * <br>
 	 * Suppressing clean-up has been introduced for usage of this binding as JNI
@@ -97,7 +97,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 *                        false otherwise
 	 * @see #release()
 	 */
-	protected ReadOnlyKey (Pointer pointer, boolean suppressCleanUp)
+	protected ReadableKey (Pointer pointer, boolean suppressCleanUp)
 	{
 		argNotNull (pointer, "Pointer 'pointer'");
 		this.pointer = pointer;
@@ -109,14 +109,14 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 * Clean-up method to release key reference by first decrementing its reference
 	 * counter and then trying to free the native reference<br>
 	 * <br>
-	 * Call this method if you do not longer need a {@link ReadOnlyKey} and obtained
+	 * Call this method if you do not longer need a {@link ReadableKey} and obtained
 	 * it via any of its public methods or the public methods of {@link KeySet}. If
-	 * you do not manually release such {@link ReadOnlyKey keys}, they will get
+	 * you do not manually release such {@link ReadableKey keys}, they will get
 	 * cleaned up by garbage collection as soon as they get phantom reachable.
-	 * Therefore its encouraged to release {@link ReadOnlyKey key instances} as soon
+	 * Therefore its encouraged to release {@link ReadableKey key instances} as soon
 	 * as you do not use them anymore.
 	 *
-	 * {@link ReadOnlyKey}s should not be manually released.
+	 * {@link ReadableKey}s should not be manually released.
 	 */
 	protected void release ()
 	{
@@ -137,8 +137,8 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	}
 
 	/**
-	 * @return New {@link KeyNameIterator} backed by this {@link ReadOnlyKey}
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @return New {@link KeyNameIterator} backed by this {@link ReadableKey}
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 */
 	public Iterator<String> keyNameIterator ()
@@ -150,7 +150,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 * @return {@link #getString()} interpreted as boolean value
 	 * @throws KeyStringValueException if the underlying native key is not of type
 	 *                                 string
-	 * @throws IllegalStateException   if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException   if this {@link ReadableKey} has already been
 	 *                                 released
 	 */
 	public boolean getBoolean ()
@@ -164,7 +164,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 *                                 parsable {@code byte}
 	 * @throws KeyStringValueException if the underlying native key is not of type
 	 *                                 string
-	 * @throws IllegalStateException   if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException   if this {@link ReadableKey} has already been
 	 *                                 released
 	 */
 	public byte getByte ()
@@ -178,7 +178,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 *                                 parsable {@code short}
 	 * @throws KeyStringValueException if the underlying native key is not of type
 	 *                                 string
-	 * @throws IllegalStateException   if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException   if this {@link ReadableKey} has already been
 	 *                                 released
 	 */
 	public short getShort ()
@@ -192,7 +192,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 *                                 parsable integer
 	 * @throws KeyStringValueException if the underlying native key is not of type
 	 *                                 string
-	 * @throws IllegalStateException   if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException   if this {@link ReadableKey} has already been
 	 *                                 released
 	 */
 	public int getInt ()
@@ -206,7 +206,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 *                                 parsable {@code long}
 	 * @throws KeyStringValueException if the underlying native key is not of type
 	 *                                 string
-	 * @throws IllegalStateException   if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException   if this {@link ReadableKey} has already been
 	 *                                 released
 	 */
 	public long getLong ()
@@ -220,7 +220,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 *                                 parsable {@code float}
 	 * @throws KeyStringValueException if the underlying native key is not of type
 	 *                                 string
-	 * @throws IllegalStateException   if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException   if this {@link ReadableKey} has already been
 	 *                                 released
 	 */
 	public float getFloat ()
@@ -234,7 +234,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 *                                 parsable {@code double}
 	 * @throws KeyStringValueException if the underlying native key is not of type
 	 *                                 string
-	 * @throws IllegalStateException   if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException   if this {@link ReadableKey} has already been
 	 *                                 released
 	 */
 	public double getDouble ()
@@ -246,7 +246,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 * @return This key's value as string
 	 * @throws KeyStringValueException if the underlying native key is not of type
 	 *                                 string
-	 * @throws IllegalStateException   if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException   if this {@link ReadableKey} has already been
 	 *                                 released
 	 */
 	@Nonnull public String getString ()
@@ -259,11 +259,11 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	}
 
 	/**
-	 * Duplicates this {@link ReadOnlyKey} as {@link Key}
+	 * Duplicates this {@link ReadableKey} as {@link Key}
 	 *
 	 * @return New {@link Key} object containing the same information as this key
 	 * @throws KeyException          if copying failed
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 * @see #dup(int)
 	 * @see #release()
@@ -274,14 +274,14 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	}
 
 	/**
-	 * Duplicates this {@link ReadOnlyKey} as {@link Key}
+	 * Duplicates this {@link ReadableKey} as {@link Key}
 	 *
 	 * @param flags Flags indicating which parts of the key to copy<br>
 	 *              Example:<br>
 	 *              {@link #KEY_CP_NAME} | {@link #KEY_CP_VALUE}
 	 * @return New {@link Key} object containing the same information as this key
 	 * @throws KeyException          if copying failed
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 * @see #dup()
 	 * @see #release()
@@ -314,11 +314,11 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 *         <li>1 if this key has higher alphabetical order</li>
 	 *         </ul>
 	 * @throws IllegalStateException    if this or the {@code other}
-	 *                                  {@link ReadOnlyKey} has already been
+	 *                                  {@link ReadableKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code other} is {@code null}
 	 */
-	@Override public int compareTo (ReadOnlyKey other)
+	@Override public int compareTo (ReadableKey other)
 	{
 		argNotNull (other, "Key 'other'");
 		return Integer.signum (Elektra.INSTANCE.keyCmp (getPointer (), other.getPointer ()));
@@ -339,7 +339,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 		{
 			return false;
 		}
-		ReadOnlyKey other = (ReadOnlyKey) obj;
+		ReadableKey other = (ReadableKey) obj;
 		return this.compareTo (other) == 0;
 	}
 
@@ -349,11 +349,11 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is (non-direct) sub-key of other-key
 	 * @throws IllegalStateException    if this or the {@code other}
-	 *                                  {@link ReadOnlyKey} has already been
+	 *                                  {@link ReadableKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code other} is {@code null}
 	 */
-	public boolean isBelow (ReadOnlyKey other)
+	public boolean isBelow (ReadableKey other)
 	{
 		argNotNull (other, "Key 'other'");
 		return Elektra.INSTANCE.keyIsBelow (other.getPointer (), getPointer ()) == 1;
@@ -366,11 +366,11 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is other key or (non-direct) sub-key of other-key
 	 * @throws IllegalStateException    if this or the {@code other}
-	 *                                  {@link ReadOnlyKey} has already been
+	 *                                  {@link ReadableKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code other} is {@code null}
 	 */
-	public boolean isBelowOrSame (ReadOnlyKey other)
+	public boolean isBelowOrSame (ReadableKey other)
 	{
 		argNotNull (other, "Key 'other'");
 		return Elektra.INSTANCE.keyIsBelowOrSame (other.getPointer (), getPointer ()) == 1;
@@ -382,11 +382,11 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	 * @param other Key that is used in check as parent key
 	 * @return Boolean if this key is direct sub-key of other key ("child")
 	 * @throws IllegalStateException    if this or the {@code other}
-	 *                                  {@link ReadOnlyKey} has already been
+	 *                                  {@link ReadableKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code other} is {@code null}
 	 */
-	public boolean isDirectBelow (ReadOnlyKey other)
+	public boolean isDirectBelow (ReadableKey other)
 	{
 		argNotNull (other, "Key 'other'");
 		return Elektra.INSTANCE.keyIsDirectlyBelow (other.getPointer (), getPointer ()) == 1;
@@ -395,7 +395,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	/**
 	 * @return True if the underlying native key's value is of type binary, false
 	 *         otherwise
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 */
 	public boolean isBinary ()
@@ -406,7 +406,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 	/**
 	 * @return True if the underlying native key's value is a valid string, false
 	 *         otherwise
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 */
 	public boolean isString ()
@@ -416,7 +416,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 
 	/**
 	 * @return Key name (key part of "key-value" pair)
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 */
 	@Nonnull public String getName ()
@@ -426,7 +426,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 
 	/**
 	 * @return Length of key name
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 */
 	public int getNameSize ()
@@ -436,7 +436,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 
 	/**
 	 * @return Key's base name as String
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 */
 	@Nonnull public String getBaseName ()
@@ -446,7 +446,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 
 	/**
 	 * @return Length of key's base name
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 */
 	public int getBaseNameSize ()
@@ -456,7 +456,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 
 	/**
 	 * @return Length / size of key value in bytes
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 */
 	public int getValueSize ()
@@ -466,7 +466,7 @@ public class ReadOnlyKey implements Comparable<ReadOnlyKey>
 
 	/**
 	 * @return JNA pointer to the native pointer for this key
-	 * @throws IllegalStateException if this {@link ReadOnlyKey} has already been
+	 * @throws IllegalStateException if this {@link ReadableKey} has already been
 	 *                               released
 	 */
 	@Nonnull protected Pointer getPointer ()

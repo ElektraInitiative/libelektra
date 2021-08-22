@@ -25,7 +25,7 @@ import org.libelektra.exception.PluginMisbehaviorException;
  * Key represents a native Elektra key providing access to its name, value and
  * meta information
  */
-public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
+public final class Key extends ReadableKey implements Iterable<ReadableKey>
 {
 
 	private static final String WARNINGS = "warnings";
@@ -410,7 +410,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	@Nonnull public Key addWarning (String text, Object... args)
 	{
 		StackTraceElement[] e = Thread.currentThread ().getStackTrace ();
-		Optional<String> oMetaKeyValue = getMeta (WARNINGS).map (ReadOnlyKey::getString);
+		Optional<String> oMetaKeyValue = getMeta (WARNINGS).map (ReadableKey::getString);
 		StringBuilder builder = new StringBuilder (WARNINGS + "/#");
 		if (oMetaKeyValue.isEmpty ())
 		{
@@ -497,7 +497,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @see #rewindMeta()
 	 * @see #currentMeta()
 	 */
-	@Nonnull public Optional<ReadOnlyKey> nextMeta ()
+	@Nonnull public Optional<ReadableKey> nextMeta ()
 	{
 		return createReadOnly (Elektra.INSTANCE.keyNextMeta (getPointer ()));
 	}
@@ -512,9 +512,9 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @see #rewindMeta()
 	 * @see #nextMeta()
 	 */
-	@Nonnull public ReadOnlyKey currentMeta ()
+	@Nonnull public ReadableKey currentMeta ()
 	{
-		return checkKeyPointer (Elektra.INSTANCE.keyCurrentMeta (getPointer ()), ReadOnlyKey::new, NoSuchElementException::new);
+		return checkKeyPointer (Elektra.INSTANCE.keyCurrentMeta (getPointer ()), ReadableKey::new, NoSuchElementException::new);
 	}
 
 	/**
@@ -572,7 +572,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * Getter for meta information
 	 *
 	 * @param metaName Key name of meta information to be fetched
-	 * @return New {@link ReadOnlyKey} object containing the requested meta
+	 * @return New {@link ReadableKey} object containing the requested meta
 	 *         information or {@link Optional#empty()}, if {@code metaName} was not
 	 *         found
 	 * @throws IllegalStateException    if this {@link Key} has already been
@@ -580,7 +580,7 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	 * @throws IllegalArgumentException if {@code metaName} is
 	 *                                  {@link String#isBlank() blank}
 	 */
-	@Nonnull public Optional<ReadOnlyKey> getMeta (String metaName)
+	@Nonnull public Optional<ReadableKey> getMeta (String metaName)
 	{
 		argNotNullOrBlank (metaName, "String 'metaName'");
 		return createReadOnly (Elektra.INSTANCE.keyGetMeta (getPointer (), metaName));
@@ -701,14 +701,14 @@ public final class Key extends ReadOnlyKey implements Iterable<ReadOnlyKey>
 	}
 
 	/**
-	 * @return {@link KeySetIterator} for the {@link ReadOnlyKey meta data} of this
+	 * @return {@link KeySetIterator} for the {@link ReadableKey meta data} of this
 	 *         {@link Key}
 	 */
-	@Override public Iterator<ReadOnlyKey> iterator ()
+	@Override public Iterator<ReadableKey> iterator ()
 	{
 		return Optional.ofNullable (Elektra.INSTANCE.keyMeta (getPointer ()))
 			.map (KeySet::new)
-			.map (ks -> (Iterator<ReadOnlyKey>) new KeySetIterator<> (ks, ReadOnlyKey::new))
-			.orElse (Collections.<ReadOnlyKey>emptyIterator ());
+			.map (ks -> (Iterator<ReadableKey>) new KeySetIterator<> (ks, ReadableKey::new))
+			.orElse (Collections.<ReadableKey>emptyIterator ());
 	}
 }

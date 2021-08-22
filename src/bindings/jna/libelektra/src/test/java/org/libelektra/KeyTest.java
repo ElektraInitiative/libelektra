@@ -335,7 +335,7 @@ public class KeyTest
 
 		assertTrue (iter.hasNext ());
 
-		ReadOnlyKey metaKey = iter.next ();
+		ReadableKey metaKey = iter.next ();
 
 		assertEquals ("meta:" + KEY_1_META_1_NAME, metaKey.getName ());
 		assertEquals (KEY_1_META_1_VALUE, metaKey.getString ());

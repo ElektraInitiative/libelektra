@@ -269,7 +269,7 @@ public class KeySet implements Iterable<Key>
 	 *                                  been released
 	 * @throws IllegalArgumentException if {@code key} is {@code null}
 	 */
-	@Nonnull public Optional<Key> remove (ReadOnlyKey key)
+	@Nonnull public Optional<Key> remove (ReadableKey key)
 	{
 		argNotNull (key, "Key 'key'");
 		return Key.create (Elektra.INSTANCE.ksLookup (getPointer (), key.getPointer (), Elektra.KDB_O_POP));

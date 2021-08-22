@@ -10,7 +10,7 @@ import java.util.function.Function;
 /**
  * An {@link Iterator} for a {@link KeySet} returning {@link Key}s
  */
-public class KeySetIterator<T extends ReadOnlyKey> implements Iterator<T>
+public class KeySetIterator<T extends ReadableKey> implements Iterator<T>
 {
 
 	private final KeySet keySet;

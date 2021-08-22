@@ -86,7 +86,7 @@ if (Java_JAVAC_EXECUTABLE)
 					${JNA_BINDING_SOURCE_DIRECTORY}/package-info.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/Plugin.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/PluginLoader.java
-					${JNA_BINDING_SOURCE_DIRECTORY}/ReadOnlyKey.java
+					${JNA_BINDING_SOURCE_DIRECTORY}/ReadableKey.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/ReferenceCleaner.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/ValidationUtil.java
 					${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Echo.java

@@ -142,19 +142,19 @@ you up to date with the multi-language support provided by Elektra.
   - now works with a standard installation of Elektra
   - updated code to work with current Java binding
 - `KeySetReleasedException` and `KeyReleasedException` have been replaced by the native `IllegalStateException`
-- Introduced abstraction `ReadOnlyKey` for better reflecting the limitations meta data keys via a type hierarchy, leading to meta data keys are now returned as `ReadOnlyKey`s:
-  - `Key` extends `ReadOnlyKey`
-  - Changed `Key Key::nextMeta()` to `Optional<ReadOnlyKey> Key::nextMeta()`, no longer throwing NoSuchElementException for non-exceptional behavior
-  - Changed `Key Key::currentMeta()` to `ReadOnlyKey Key::currentMeta()`
-  - Changed `Optional<Key> Key::getMeta(String)` to `Optional<ReadOnlyKey> Key::getMeta(String)`
-  - Meta data keys can no longer be manually released
+- Introduced abstraction `ReadableKey` for better reflecting the limitations of meta data keys via a type hierarchy, leading to meta data keys are now returned as `ReadableKey`s:
+  - `Key` extends `ReadableKey`
   - `Key` class is now final
+  - Changed `Key Key::nextMeta()` to `Optional<ReadableKey> Key::nextMeta()`, no longer throwing NoSuchElementException for non-exceptional behavior
+  - Changed `Key Key::currentMeta()` to `ReadableKey Key::currentMeta()`
+  - Changed `Optional<Key> Key::getMeta(String)` to `Optional<ReadableKey> Key::getMeta(String)`
+  - Meta data keys can no longer be manually released
   - Removed `Key::incRef`, `Key::decRef` and `Key::getRef`
-  - `ReadOnlyKey`/`Key` now implements `Comparable<ReadOnlyKey>`
+  - `ReadableKey`/`Key` now implements `Comparable<ReadableKey>`
     - `int Key::cmp(Key)` has been renamed to `int Key::compareTo(Key)`
-    - `ReadOnlyKey` now implements `equals` and `hashCode` in line with the contract for `int Key::compareTo(Key)`
-  - `ReadOnlyKey`/`Key` no longer implements `Iterable<String>` for iterating over the parts of a key's name - use `Iterator<String> ReadOnlyKey::keyNameIterator ()` instead
-  - `Key` now implements `Iterable<Key>` to iterate over a key's meta data `ReadOnlyKey`s
+    - `ReadableKey` now implements `equals` and `hashCode` in line with the contract for `int Key::compareTo(Key)`
+  - `ReadableKey`/`Key` no longer implements `Iterable<String>` for iterating over the parts of a key's name - use `Iterator<String> ReadableKey::keyNameIterator ()` instead
+  - `Key` now implements `Iterable<Key>` to iterate over a key's meta data `ReadableKey`s
 
 _(Michael Tucek)_
 

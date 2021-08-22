@@ -46,10 +46,10 @@ class ReferenceCleaner
 	 * Depending on whether {@link #ENABLE_AUTO_NATIVE_REF_CLEANUP} is {@code true},
 	 * {@link Elektra#keyIncRef(Pointer)} is called for {@code newKey}.
 	 *
-	 * @param newKey Newly created {@link ReadOnlyKey} object wrapping native key
+	 * @param newKey Newly created {@link ReadableKey} object wrapping native key
 	 *               resource.
 	 */
-	static void keyWrapperCreated (ReadOnlyKey newKey)
+	static void keyWrapperCreated (ReadableKey newKey)
 	{
 		if (ENABLE_AUTO_NATIVE_REF_CLEANUP)
 		{
@@ -67,7 +67,7 @@ class ReferenceCleaner
 	 *         garbage collection
 	 * @throws IllegalStateException if {@code key} has already been released
 	 */
-	@Nonnull static Cleaner.Cleanable registerKeyCleanUp (ReadOnlyKey key)
+	@Nonnull static Cleaner.Cleanable registerKeyCleanUp (ReadableKey key)
 	{
 		KeyCleanupTask task = new KeyCleanupTask (key.getPointer ());
 		return ENABLE_AUTO_NATIVE_REF_CLEANUP ? CLEANER_INSTANCE.register(key, task) : task::run;
