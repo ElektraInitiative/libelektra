@@ -16,13 +16,13 @@ Then change to the example app folder:
 cd ../../../examples/external/java/read-keys-example
 ```
 
-Then use the gradle wrapper in the exaple folder to run the example app:
+Either use a local Gradle installation to run the example app:
 
 ```sh
-./gradle run
+gradle run
 ```
 
-Alternatively use a local maven installation to run the example app:
+Alternatively use a local Maven installation to run the example app:
 
 ```sh
 mvn compile exec:java
