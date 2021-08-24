@@ -92,7 +92,7 @@ task:
 
     - name: 🍎 FULL
       osx_instance:
-        image: big-sur-xcode
+        image: big-sur-xcode-12.5
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
