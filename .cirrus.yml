@@ -126,7 +126,6 @@ task:
         moreutils \
         ninja \
         npm \
-        oclint/formulae/oclint \
         openssl \
         pkg-config \
         qt \
@@ -137,6 +136,7 @@ task:
         yajl \
         yaml-cpp \
         zeromq
+      brew install --cask oclint
 
       brew upgrade dbus
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
