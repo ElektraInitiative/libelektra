@@ -118,7 +118,7 @@ you up to date with the multi-language support provided by Elektra.
 - Introduced `KeySet::remove(Key)` and `KeySet::remove(String)`
 - Removed `KeySet::lookup(Key, int)` and `KeySet::lookup(String, int)` as well as accompanying flag definitions `KeySet::KDB_O_NONE`, `KeySet::KDB_O_DEL` and `KeySet::KDB_O_POP`. Please use `KeySet::lookup(Key)` and `KeySet::lookup(String)` instead. Instead of `KeySet::KDB_O_DEL`, please consider using `Key::release`. The proper replacement for `KeySet::KDB_O_POP` is `KeySet::remove(Key)` or `KeySet::remove(String)`.
 - Native library proxy interface `Elektra` is now package private (previously was public).
-- Added example Java JNI plugin `whitelist`
+- Added example Java plugin `whitelist` (see [here](../../src/bindings/jna/plugins/whitelist/README.md))
 - Changed `Key nextMeta()` to `Optional<Key> nextMeta ()` no longer throwing NoSuchElementException for non-exceptional behavior
 - Added support of binary valued keys:
   - Renamed `KeyBinaryTypeNotSupportedException` to `KeyStringValueException`
@@ -126,6 +126,8 @@ you up to date with the multi-language support provided by Elektra.
   - Improved `Key` test coverage
   - Introduced `Key::getBinary()` and `Key::setBinary(byte[])`
 - Fixed example project in `examples/external/java/read-keys-example`
+  - now works with a standard installation of Elektra
+  - updated code to work with current Java binding
 
 _(Michael Tucek)_
 
