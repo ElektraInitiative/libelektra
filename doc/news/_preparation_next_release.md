@@ -190,6 +190,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - Migrate most macOS build jobs to GitHub actions to speed up builds. _(Mihael Pranjić)_
 - Bump FreeBSD images to 12.2 and 13.0 using the LLVM 12 toolchain, drop FreeBSD 11. _(Mihael Pranjić)_
+- Fix cirrus-file parsing errors. _(Mihael Pranjić)_
 
 ### GitHub Actions
 
