@@ -135,7 +135,7 @@ kdb set system:/tests/conditionals/sub/key true
 kdb export system:/tests/conditionals ni
 
 # cleanup
-kdb rm -rf /tests/conditionals
+kdb rm -r /tests/conditionals
 sudo kdb umount /tests/conditionals/sub
 sudo kdb umount /tests/conditionals
 

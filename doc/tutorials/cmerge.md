@@ -209,12 +209,6 @@ kdb get user:/tests/arrays/result/#0
 #> previous
 ```
 
-## Cleanup
-
-```sh
-kdb rm -rf user:/tests
-```
-
 ## Scripts
 
 There are two tools of which cmerge is the central tool:
