@@ -6,11 +6,7 @@ RUN dnf upgrade --refresh -y \
         sudo \
         vim \
         diffutils \
-        python3-pip \
     && dnf clean all -y
-
-# Build dependency for libelektra-fuse
-RUN pip3 install wheel
 
 ARG USERID=1000
 RUN adduser elektra --uid ${USERID}

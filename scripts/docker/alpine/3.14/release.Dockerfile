@@ -18,11 +18,7 @@ RUN apk update \
         yajl \
         yajl-dev \
         yaml-cpp \
-        yaml-cpp-dev \
-	py3-pip
-
-# Build dependency for libelektra-fuse
-RUN pip3 install wheel
+        yaml-cpp-dev
 
 ENV GTEST_ROOT=/opt/gtest
 ARG GTEST_VER=release-1.11.0

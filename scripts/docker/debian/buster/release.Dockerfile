@@ -18,12 +18,8 @@ RUN apt-get update \
     && apt-get -y install \
         sudo \
         vim \
-        python3-pip \
     && apt-get -y install ${ELEKTRA_ROOT}/* \
     && rm -rf /var/lib/apt/lists/*
-
-# Build dependency for libelektra-fuse
-RUN pip3 install wheel
 
 RUN rm -rf ${ELEKTRA_ROOT}
 
