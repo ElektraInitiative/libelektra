@@ -27,36 +27,36 @@ The package is called `libelektra5-experimental`.
 kdb mount config.dump /tests/email dump email
 
 # Incorrect address is valid with incomplete configuration
-kdb meta-set spec:/tests/email/noaddr check/email
-kdb set user:/tests/email/noaddr invalid..address@com
+kdb meta-set /tests/email/noaddr check/email
+kdb set /tests/email/noaddr invalid..address@com
 # RET: 0
 
 # Check the validity of the email stored in `/tests/email/adr`
-kdb meta-set spec:/tests/email/adr check/email ""
+kdb meta-set /tests/email/adr check/email ""
 
 # Set a correct email address
-kdb set user:/tests/email/adr test+email@dev.libelektra.com
-kdb get user:/tests/email/adr
+kdb set /tests/email/adr test+email@dev.libelektra.com
+kdb get /tests/email/adr
 #> test+email@dev.libelektra.com
 
 # Try to set incorrect addresses
-kdb set user:/tests/email/adr invalid..address@com
+kdb set /tests/email/adr invalid..address@com
 # STDERR: .*Validation Semantic.*
 # ERROR:  C03200
 # RET: 5
 
-kdb set user:/tests/email/adr not.@email.com
+kdb set /tests/email/adr not.@email.com
 # STDERR: .*Validation Semantic.*
 # ERROR:  C03200
 # RET: 5
 
-kdb set user:/tests/email/adr @
+kdb set /tests/email/adr @
 # STDERR: .*Validation Semantic.*
 # ERROR:  C03200
 # RET: 5
 
 # Undo modifications to the database
-kdb rm -rf /tests/email
+kdb rm -r /tests/email
 kdb umount /tests/email
 ```
 

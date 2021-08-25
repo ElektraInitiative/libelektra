@@ -79,7 +79,7 @@ kdb set user:/tests/range/value 7
 kdb set user:/tests/range/value 2
 # RET:0
 
-kdb rm -rf /tests/range
+kdb rm -r user:/tests/range
 sudo kdb umount /tests/range
 ```
 

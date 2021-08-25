@@ -27,20 +27,20 @@ The package is called `libelektra5-experimental`.
 kdb mount config.dump /tests/length length
 
 # Check the validity of the string stored in `/tests/length/text`
-kdb meta-set spec:/tests/length/text check/length/max 3
+kdb meta-set /tests/length/text check/length/max 3
 
 # Try to set a longer string
-kdb set user:/tests/length/text abcd
+kdb set /tests/length/text abcd
 # STDERR: .*Validation Semantic.*
 # ERROR:  C03200
 # RET:    5
 
 # Set a correct string
-kdb set user:/tests/length/text abc
-kdb get user:/tests/length/text
+kdb set /tests/length/text abc
+kdb get /tests/length/text
 
 # Undo modifications to the database
-kdb rm -rf /tests/length
+kdb rm -r /tests/length
 kdb umount /tests/length
 ```
 

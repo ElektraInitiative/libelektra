@@ -65,10 +65,10 @@ check_distribution() {
 	grep $VALUE2 $FILE2 > /dev/null
 	succeed_if "did not find $VALUE2 within $FILE2"
 
-	"$KDB" rm -f $KEY1
+	"$KDB" rm $KEY1
 	succeed_if "Could not remove $KEY1"
 
-	"$KDB" rm -f $KEY2
+	"$KDB" rm $KEY2
 	succeed_if "Could not remove $KEY2"
 
 	"$KDB" umount $MOUNTPOINT1 > /dev/null
