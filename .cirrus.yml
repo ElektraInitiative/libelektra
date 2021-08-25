@@ -24,7 +24,6 @@ commands:
       cmake --build "$BUILD_DIR" --target run_all && "$KDB" run_all || false
     fi
 
-# BSD Builds
 task:
   matrix:
 
@@ -84,7 +83,6 @@ task:
     - sudo mount -t fdescfs fdesc /dev/fd
     - *run_tests
 
-# macOS Builds
 task:
   env:
     INSTALL_DIR: install
@@ -94,7 +92,7 @@ task:
 
     - name: 🍎 FULL
       osx_instance:
-        image: big-sur-xcode
+        image: big-sur-xcode-12.5
       env:
         BUILD_FULL: ON
         BUILD_SHARED: OFF
@@ -128,7 +126,6 @@ task:
         moreutils \
         ninja \
         npm \
-        oclint/formulae/oclint \
         openssl \
         pkg-config \
         qt \
@@ -139,6 +136,7 @@ task:
         yajl \
         yaml-cpp \
         zeromq
+      brew install --cask oclint
 
       brew upgrade dbus
     - > # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
@@ -210,7 +208,6 @@ task:
         false
       fi
 
-# Linux Builds
 task:
   matrix:
 
@@ -241,7 +238,6 @@ task:
     - export LUA_CPATH="${CIRRUS_WORKING_DIR}/install/lib/lua/5.2/?.so;"
     - *run_tests
 
-# Link Checker
 task:
   matrix:
 
@@ -283,7 +279,6 @@ task:
         false
       fi
 
-# Documentation Build
 task:
   matrix:
 
