@@ -849,7 +849,6 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			if (baseArray == NULL)
 			{
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `base` KeySet into char[] for LibGit.");
-				keyDel (checkedKey);
 				ksDel (toAppend);
 				return -1;
 			}
@@ -858,7 +857,6 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			{
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `our` KeySet into char[] for LibGit.");
 				elektraFree (baseArray);
-				keyDel (checkedKey);
 				ksDel (toAppend);
 				return -1;
 			}
@@ -868,7 +866,6 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `their` KeySet into char[] for LibGit.");
 				elektraFree (ourArray);
 				elektraFree (baseArray);
-				keyDel (checkedKey);
 				ksDel (toAppend);
 				return -1;
 			}
@@ -922,7 +919,6 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 			elektraFree (baseArray);
 			keyDel (keyInOur);
 			keyDel (keyInTheir);
-			keyDel (checkedKey);
 		}
 	}
 	if (toAppend != NULL)

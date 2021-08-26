@@ -778,8 +778,10 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		}
 
 		/* Pop the key in the result */
-		keyDecRef (ks->array[result]);
-		keyDel (ks->array[result]);
+		if (keyDecRef (ks->array[result]) == 0)
+		{
+			keyDel (ks->array[result]);
+		}
 
 		/* And use the other one instead */
 		keyIncRef (toAppend);
@@ -2632,10 +2634,11 @@ int ksClose (KeySet * ks)
 	ksRewind (ks);
 	while ((k = ksNext (ks)) != 0)
 	{
-		keyDecRef (k);
-		keyDel (k);
+		if (keyDecRef (k) == 0)
+		{
+			keyDel (k);
+		}
 	}
-
 	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
 	{
 		elektraFree (ks->array);

@@ -57,7 +57,6 @@ static void test_cacheNonBackendKeys (void)
 	succeed_if (freshResult == 0, "key was persisted/cached, even though it was not committed");
 	ksDel (freshConf);
 
-	keyDel (doNotCache);
 	keyDel (key);
 	ksDel (conf);
 	kdbClose (handle, 0);

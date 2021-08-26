@@ -48,8 +48,10 @@ static void gelektra_key_finalize (GObject * object)
 {
 	GElektraKey * self = GELEKTRA_KEY (object);
 
-	keyDecRef (self->key);
-	keyDel (self->key);
+	if (keyDecRef (self->key) == 0)
+	{
+		keyDel (self->key);
+	}
 
 	/* Always chain up to the parent class; as with dispose(), finalize()
 	 * is guaranteed to exist on the parent's class virtual function table

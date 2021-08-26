@@ -291,7 +291,10 @@ int elektraSpecloadSet (Plugin * handle, KeySet * returned, Key * parentKey)
 		}
 
 		int changeAllowed = isChangeAllowed (old, new);
-		keyDel (old);
+		if (keyGetRef (old) == 0)
+		{
+			keyDel (old);
+		}
 
 		if (changeAllowed < 0)
 		{
