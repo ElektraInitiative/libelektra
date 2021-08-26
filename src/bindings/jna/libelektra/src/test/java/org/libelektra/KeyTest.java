@@ -1,13 +1,17 @@
 package org.libelektra;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Iterator;
+import java.util.Random;
 import org.junit.Test;
+import org.libelektra.exception.KeyBinaryValueException;
 import org.libelektra.exception.KeyNameException;
 import org.libelektra.exception.KeyReleasedException;
+import org.libelektra.exception.KeyStringValueException;
 
 public class KeyTest
 {
@@ -22,6 +26,7 @@ public class KeyTest
 	static final String KEY_1_META_1_VALUE = "meta_1_value";
 	static final String KEY_1_META_2_NAME = "/key_test/meta/2";
 	static final String KEY_1_META_2_VALUE = "meta_2_value";
+	static final int KEY_1_BINARY_VALUE_SIZE = 20;
 
 	static final String KEY_2_NAME = "/key_test/2/key_name";
 	static final String KEY_2_NAME_PART_1 = "\u0001";
@@ -59,6 +64,13 @@ public class KeyTest
 
 	static final String KEY_12_NAME = "/key_test/10/key_name/sub/1";
 	static final String KEY_12_VALUE = "blub3";
+
+	static byte[] key1BinaryValue = new byte[KEY_1_BINARY_VALUE_SIZE];
+
+	static
+	{
+		new Random ().nextBytes (key1BinaryValue);
+	}
 
 	@Test public void test_create_shouldPass ()
 	{
@@ -121,87 +133,164 @@ public class KeyTest
 
 		assertFalse (key.getBoolean ());
 		assertEquals (key.getString (), "false");
+
+		key = Key.create (KEY_2_NAME).setBoolean (true);
+
+		assertTrue (key.getBoolean ());
+
+		key.setBoolean (false);
+
+		assertFalse (key.getBoolean ());
 	}
 
 	@Test public void test_keyWithByteValue_shouldPass ()
 	{
+		byte expected = Byte.parseByte (KEY_3_VALUE);
 		var key = Key.create (KEY_3_NAME, KEY_3_VALUE);
 
-		assertEquals (Byte.parseByte (KEY_3_VALUE), key.getByte ());
+		assertEquals (expected, key.getByte ());
+
+		key = Key.create (KEY_3_NAME).setByte (expected);
+
+		assertEquals (expected, key.getByte ());
 	}
 
 	@Test (expected = NumberFormatException.class) public void test_keyWithWrongByteValue_shouldFail ()
 	{
 		var key = Key.create (KEY_4_NAME, KEY_4_VALUE);
-
-		// assert only to trigger key.getByte() function which throws exception
-		assertEquals (Byte.parseByte (KEY_4_VALUE), key.getByte ());
+		key.getByte ();
 	}
 
 	@Test public void test_keyWithShortValue_shouldPass ()
 	{
+		short expected = Short.parseShort (KEY_4_VALUE);
 		var key = Key.create (KEY_4_NAME, KEY_4_VALUE);
 
-		assertEquals (Short.parseShort (KEY_4_VALUE), key.getShort ());
+		assertEquals (expected, key.getShort ());
+
+		key = Key.create (KEY_4_NAME).setShort (expected);
+
+		assertEquals (expected, key.getShort ());
 	}
 
 	@Test (expected = NumberFormatException.class) public void test_keyWithTooBigShortValue_shouldFail ()
 	{
 		var key = Key.create (KEY_5_NAME, KEY_5_VALUE);
-
-		// assert only to trigger key.getShort() function which throws exception
-		assertEquals (Short.parseShort (KEY_5_VALUE), key.getShort ());
+		key.getShort ();
 	}
 
 	@Test public void test_keyWithIntValue_shouldPass ()
 	{
+		int expected = Integer.parseInt (KEY_5_VALUE);
 		var key = Key.create (KEY_5_NAME, KEY_5_VALUE);
 
-		assertEquals (Integer.parseInt (KEY_5_VALUE), key.getInt ());
+		assertEquals (expected, key.getInt ());
+
+		key = Key.create (KEY_5_NAME).setInt (expected);
+
+		assertEquals (expected, key.getInt ());
 	}
 
 	@Test (expected = NumberFormatException.class) public void test_keyWithTooBigIntegerValue_shouldFail ()
 	{
 		var key = Key.create (KEY_6_NAME, KEY_6_VALUE);
-
-		// assert only to trigger key.getInteger() function which throws exception
-		assertEquals (Long.parseLong (KEY_6_VALUE), key.getInt ());
+		key.getInt ();
 	}
 
 	@Test public void test_keyWithLongValue_shouldPass ()
 	{
+		long expected = Long.parseLong (KEY_6_VALUE);
 		var key = Key.create (KEY_6_NAME, KEY_6_VALUE);
 
-		assertEquals (Long.parseLong (KEY_6_VALUE), key.getLong ());
+		assertEquals (expected, key.getLong ());
+
+		key = Key.create (KEY_6_NAME).setLong (expected);
+
+		assertEquals (expected, key.getLong ());
 	}
 
 	@Test (expected = NumberFormatException.class) public void test_keyWithTooBigLongValue_shouldFail ()
 	{
 		var key = Key.create (KEY_7_NAME, KEY_7_VALUE);
-
-		// assert only to trigger key.getLong() function which throws exception
-		assertEquals (1L, key.getLong ());
+		key.getLong ();
 	}
 
 	@Test public void test_keyWithFloatValue_shouldPass ()
 	{
+		float expected = Float.parseFloat (KEY_8_VALUE);
 		var key = Key.create (KEY_8_NAME, KEY_8_VALUE);
 
-		assertEquals (Float.parseFloat (KEY_8_VALUE), key.getFloat (), 0.0f);
+		assertEquals (expected, key.getFloat (), 0.0f);
+
+		key = Key.create (KEY_8_NAME).setFloat (expected);
+
+		assertEquals (expected, key.getFloat (), 0.0f);
 	}
 
 	@Test public void test_keyWithDoubleValue_shouldPass ()
 	{
+		double expected = Double.parseDouble (KEY_9_VALUE);
 		var key = Key.create (KEY_9_NAME, KEY_9_VALUE);
 
-		assertEquals (Double.parseDouble (KEY_9_VALUE), key.getDouble (), 0.0d);
+		assertEquals (expected, key.getDouble (), 0.0d);
+
+		key = Key.create (KEY_9_NAME).setDouble (expected);
+
+		assertEquals (expected, key.getDouble (), 0.0d);
 	}
+
+	@Test public void test_keyWithStringValue_shouldPass ()
+	{
+		var key = Key.create (KEY_1_NAME, KEY_1_VALUE);
+
+		assertEquals (KEY_1_VALUE, key.getString ());
+
+		key = Key.create (KEY_1_NAME).setString (KEY_1_VALUE);
+
+		assertEquals (KEY_1_VALUE, key.getString ());
+	}
+
+	@Test public void test_keyWithBinaryValue_shouldPass ()
+	{
+		var key = Key.create (KEY_1_NAME);
+
+		assertFalse (key.isBinary ());
+		assertTrue (key.isString ());
+
+		key.setBinary (key1BinaryValue);
+
+		assertEquals (KEY_1_BINARY_VALUE_SIZE, key.getValueSize ());
+		assertTrue (key.isBinary ());
+		assertFalse (key.isString ());
+
+		byte[] read = key.getBinary ();
+
+		assertArrayEquals (key1BinaryValue, read);
+
+		key.setString (KEY_1_VALUE);
+
+		assertEquals (KEY_1_VALUE, key.getString ());
+		assertFalse (key.isBinary ());
+		assertTrue (key.isString ());
+	}
+
+	@Test (expected = KeyBinaryValueException.class) public void test_keyGetBinaryIsString_shouldThrow ()
+	{
+		var key = Key.create (KEY_1_NAME, KEY_1_VALUE);
+		key.getBinary ();
+	}
+
+	@Test (expected = KeyStringValueException.class) public void test_keyGetStringIsBinary_shouldThrow ()
+	{
+		var key = Key.create (KEY_1_NAME).setBinary (key1BinaryValue);
+		key.getString ();
+	}
+
 
 	@Test (expected = KeyReleasedException.class) public void test_keyAccessAfterGetStringAndRelease_shouldFail ()
 	{
 		var key = Key.create (KEY_3_NAME, KEY_3_VALUE);
 		key.getStringAndRelease ();
-
 		key.getPointer ();
 	}
 
@@ -214,15 +303,17 @@ public class KeyTest
 				  .rewindMeta ();
 
 		// check meta
-		Key meta_1 = key.nextMeta ();
+		var oMeta = key.nextMeta ();
 
-		assertEquals ("meta:" + KEY_1_META_1_NAME, meta_1.getName ());
-		assertEquals (KEY_1_META_1_VALUE, meta_1.getString ());
+		assertTrue (oMeta.isPresent ());
+		assertEquals ("meta:" + KEY_1_META_1_NAME, oMeta.get ().getName ());
+		assertEquals (KEY_1_META_1_VALUE, oMeta.get ().getString ());
 
-		Key meta_2 = key.nextMeta ();
+		oMeta = key.nextMeta ();
 
-		assertEquals ("meta:" + KEY_1_META_2_NAME, meta_2.getName ());
-		assertEquals (KEY_1_META_2_VALUE, meta_2.getString ());
+		assertTrue (oMeta.isPresent ());
+		assertEquals ("meta:" + KEY_1_META_2_NAME, oMeta.get ().getName ());
+		assertEquals (KEY_1_META_2_VALUE, oMeta.get ().getString ());
 
 		// setup another key
 		var key2 = Key.create (KEY_2_NAME, KEY_2_VALUE);
@@ -230,15 +321,15 @@ public class KeyTest
 		key2.rewindMeta ();
 
 		// check meta for second key
-		Key meta_1_2 = key2.nextMeta ();
+		oMeta = key2.nextMeta ();
 
-		assertEquals ("meta:" + KEY_1_META_1_NAME, meta_1_2.getName ());
-		assertEquals (KEY_1_META_1_VALUE, meta_1_2.getString ());
+		assertEquals ("meta:" + KEY_1_META_1_NAME, oMeta.get ().getName ());
+		assertEquals (KEY_1_META_1_VALUE, oMeta.get ().getString ());
 
-		Key meta_2_2 = key2.nextMeta ();
+		oMeta = key2.nextMeta ();
 
-		assertEquals ("meta:" + KEY_1_META_2_NAME, meta_2_2.getName ());
-		assertEquals (KEY_1_META_2_VALUE, meta_2_2.getString ());
+		assertEquals ("meta:" + KEY_1_META_2_NAME, oMeta.get ().getName ());
+		assertEquals (KEY_1_META_2_VALUE, oMeta.get ().getString ());
 	}
 
 	@Test public void test_keyCompare_shouldPass ()
@@ -361,17 +452,6 @@ public class KeyTest
 		assertEquals (KEY_3_VALUE.length () + 1, key3.getValueSize ());
 	}
 
-	@Test public void test_keyGetSetString_shouldPass ()
-	{
-		var newString = "some_random new key value.blub";
-		var key = Key.create (KEY_1_NAME, KEY_1_VALUE);
-
-		assertEquals (KEY_1_VALUE, key.getString ());
-
-		key.setString (newString);
-
-		assertEquals (newString, key.getString ());
-	}
 
 	@Test public void test_keyNameIteratorHasNext_shouldPass ()
 	{

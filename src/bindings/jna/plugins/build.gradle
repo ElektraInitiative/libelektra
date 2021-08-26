@@ -1,0 +1,8 @@
+subprojects { subProject ->
+	// include java project configuration
+	apply from: "../../java-library.gradle"
+	subProject.tasks.fatJar.dependsOn(project(':libelektra').tasks.jar)
+
+	// include project dependencies
+	apply from: '../dependencies.gradle'
+}

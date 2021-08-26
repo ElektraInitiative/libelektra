@@ -321,8 +321,9 @@ interface Elektra extends Library {
 
 	int keySetString (Pointer key, String newString);
 
-	// int keyGetBinary(Pointer key, byte[] returnedBinary, int maxSize);
-	// int keySetBinary(Pointer key, byte[] newBinary, int dataSize);
+	int keyGetBinary (Pointer key, byte[] returnedBinary, int maxSize);
+
+	int keySetBinary (Pointer key, @Nullable byte[] newBinary, int dataSize);
 
 	// KeySet methods -----------------------------------------------------------
 

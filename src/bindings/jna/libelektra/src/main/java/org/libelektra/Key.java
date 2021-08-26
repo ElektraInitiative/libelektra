@@ -15,11 +15,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.libelektra.exception.KeyBinaryTypeNotSupportedException;
+import org.libelektra.exception.KeyBinaryValueException;
 import org.libelektra.exception.KeyException;
 import org.libelektra.exception.KeyMetaException;
 import org.libelektra.exception.KeyNameException;
 import org.libelektra.exception.KeyReleasedException;
+import org.libelektra.exception.KeyStringValueException;
 import org.libelektra.exception.PluginMisbehaviorException;
 
 /**
@@ -167,9 +168,10 @@ public class Key implements Iterable<String>
 	/**
 	 * Constructs a new {@link Key} with the specified content and arguments<br>
 	 *
-	 * @param name  Key name; first part of key-value pair
-	 * @param value Key value; will be determine from the object by calling
-	 *              {@link Object#toString()}, null is supported too
+	 * @param name  Name of the key (first part of key-value pair)
+	 * @param value Optional Value of key. will be determine from the object by
+	 *              calling {@link Object#toString()}. To set a binary value, please
+	 *              see {@link #setBinary(byte[])}.
 	 * @param meta  Metadata that should be added to this key, null keys will be
 	 *              filtered away
 	 * @return New key
@@ -308,10 +310,9 @@ public class Key implements Iterable<String>
 
 	/**
 	 * @return {@link #getString()} interpreted as boolean value
-	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
-	 *                                            type binary
-	 * @throws KeyReleasedException               if this {@link Key} has already
-	 *                                            been released
+	 * @throws KeyStringValueException if the underlying native key is not of type
+	 *                                 string
+	 * @throws KeyReleasedException    if this {@link Key} has already been released
 	 */
 	public boolean getBoolean ()
 	{
@@ -320,12 +321,11 @@ public class Key implements Iterable<String>
 
 	/**
 	 * @return {@link #getString()} parsed as {@code byte}
-	 * @throws NumberFormatException              if the {@link #getString()} does
-	 *                                            not return a parsable {@code byte}
-	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
-	 *                                            type binary
-	 * @throws KeyReleasedException               if this {@link Key} has already
-	 *                                            been released
+	 * @throws NumberFormatException   if the {@link #getString()} does not return a
+	 *                                 parsable {@code byte}
+	 * @throws KeyStringValueException if the underlying native key is not of type
+	 *                                 string
+	 * @throws KeyReleasedException    if this {@link Key} has already been released
 	 */
 	public byte getByte ()
 	{
@@ -334,13 +334,11 @@ public class Key implements Iterable<String>
 
 	/**
 	 * @return {@link #getString()} parsed as {@code short}
-	 * @throws NumberFormatException              if the {@link #getString()} does
-	 *                                            not return a parsable
-	 *                                            {@code short}
-	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
-	 *                                            type binary
-	 * @throws KeyReleasedException               if this {@link Key} has already
-	 *                                            been released
+	 * @throws NumberFormatException   if the {@link #getString()} does not return a
+	 *                                 parsable {@code short}
+	 * @throws KeyStringValueException if the underlying native key is not of type
+	 *                                 string
+	 * @throws KeyReleasedException    if this {@link Key} has already been released
 	 */
 	public short getShort ()
 	{
@@ -349,12 +347,11 @@ public class Key implements Iterable<String>
 
 	/**
 	 * @return {@link #getString()} parsed as integer
-	 * @throws NumberFormatException              if the {@link #getString()} does
-	 *                                            not return a parsable integer
-	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
-	 *                                            type binary
-	 * @throws KeyReleasedException               if this {@link Key} has already
-	 *                                            been released
+	 * @throws NumberFormatException   if the {@link #getString()} does not return a
+	 *                                 parsable integer
+	 * @throws KeyStringValueException if the underlying native key is not of type
+	 *                                 string
+	 * @throws KeyReleasedException    if this {@link Key} has already been released
 	 */
 	public int getInt ()
 	{
@@ -363,12 +360,11 @@ public class Key implements Iterable<String>
 
 	/**
 	 * @return {@link #getString()} parsed as {@code long}
-	 * @throws NumberFormatException              if the {@link #getString()} does
-	 *                                            not return a parsable {@code long}
-	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
-	 *                                            type binary
-	 * @throws KeyReleasedException               if this {@link Key} has already
-	 *                                            been released
+	 * @throws NumberFormatException   if the {@link #getString()} does not return a
+	 *                                 parsable {@code long}
+	 * @throws KeyStringValueException if the underlying native key is not of type
+	 *                                 string
+	 * @throws KeyReleasedException    if this {@link Key} has already been released
 	 */
 	public long getLong ()
 	{
@@ -377,13 +373,11 @@ public class Key implements Iterable<String>
 
 	/**
 	 * @return {@link #getString()} parsed as {@code float}
-	 * @throws NumberFormatException              if the {@link #getString()} does
-	 *                                            not return a parsable
-	 *                                            {@code float}
-	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
-	 *                                            type binary
-	 * @throws KeyReleasedException               if this {@link Key} has already
-	 *                                            been released
+	 * @throws NumberFormatException   if the {@link #getString()} does not return a
+	 *                                 parsable {@code float}
+	 * @throws KeyStringValueException if the underlying native key is not of type
+	 *                                 string
+	 * @throws KeyReleasedException    if this {@link Key} has already been released
 	 */
 	public float getFloat ()
 	{
@@ -392,13 +386,11 @@ public class Key implements Iterable<String>
 
 	/**
 	 * @return {@link #getString()} parsed as {@code double}
-	 * @throws NumberFormatException              if the {@link #getString()} does
-	 *                                            not return a parsable
-	 *                                            {@code double}
-	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
-	 *                                            type binary
-	 * @throws KeyReleasedException               if this {@link Key} has already
-	 *                                            been released
+	 * @throws NumberFormatException   if the {@link #getString()} does not return a
+	 *                                 parsable {@code double}
+	 * @throws KeyStringValueException if the underlying native key is not of type
+	 *                                 string
+	 * @throws KeyReleasedException    if this {@link Key} has already been released
 	 */
 	public double getDouble ()
 	{
@@ -407,16 +399,15 @@ public class Key implements Iterable<String>
 
 	/**
 	 * @return This key's value as string
-	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
-	 *                                            type binary
-	 * @throws KeyReleasedException               if this {@link Key} has already
-	 *                                            been released
+	 * @throws KeyStringValueException if the underlying native key is not of type
+	 *                                 string
+	 * @throws KeyReleasedException    if this {@link Key} has already been released
 	 */
-	@Nonnull public String getString () throws KeyBinaryTypeNotSupportedException
+	@Nonnull public String getString ()
 	{
-		if (isBinary ())
+		if (!isString ())
 		{
-			throw new KeyBinaryTypeNotSupportedException ();
+			throw new KeyStringValueException ();
 		}
 		return Elektra.INSTANCE.keyString (getPointer ());
 	}
@@ -425,20 +416,41 @@ public class Key implements Iterable<String>
 	 * Return the key's value and releases this key
 	 *
 	 * @return This key's value as string
-	 * @throws KeyBinaryTypeNotSupportedException if the underlying native key is of
-	 *                                            type binary
-	 * @throws KeyReleasedException               if this {@link Key} has already
-	 *                                            been released
-	 * @apiNote This convenience method is primarily intended for facilityting early
+	 * @throws KeyStringValueException if the underlying native key is not of type
+	 *                                 string
+	 * @throws KeyReleasedException    if this {@link Key} has already been released
+	 * @apiNote This convenience method is primarily intended for facilitating early
 	 *          clean up in the case when a `Key` obtained via any of its public
 	 *          methods or the public methods of {@link KeySet} is just being read
 	 *          once and is not needed afterwards.
 	 */
-	@Nonnull String getStringAndRelease () throws KeyBinaryTypeNotSupportedException
+	@Nonnull String getStringAndRelease ()
 	{
 		var value = getString ();
 		release ();
 		return value;
+	}
+
+	/**
+	 * @return This key's value as string
+	 * @throws KeyBinaryValueException if the underlying native key is not of type
+	 *                                 binary
+	 * @throws KeyReleasedException    if this {@link Key} has already been released
+	 */
+	@Nonnull public byte[] getBinary ()
+	{
+		if (!isBinary ())
+		{
+			throw new KeyBinaryValueException ();
+		}
+
+		int binaryValueSize = getValueSize ();
+		byte[] returnValue = new byte[binaryValueSize];
+		if (Elektra.INSTANCE.keyGetBinary (getPointer (), returnValue, binaryValueSize) != binaryValueSize)
+		{
+			throw new AssertionError ("'keyGetBinary' return value is not equal to expected binary value size");
+		}
+		return returnValue;
 	}
 
 	/**
@@ -530,12 +542,43 @@ public class Key implements Iterable<String>
 	 *
 	 * @param value Value to set
 	 * @return This {@link Key}, enabling a fluent interface
-	 * @throws KeyReleasedException if this {@link Key} has already been released
+	 * @throws KeyReleasedException     if this {@link Key} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code value} is {@code null}
+	 * @throws KeyException             if the key's value is read-only or there
+	 *                                  have been allocation problems
 	 */
 	public Key setString (String value)
 	{
-		Elektra.INSTANCE.keySetString (getPointer (), value);
+		argNotNull (value, "String 'value'");
+		checkReturnValue (Elektra.INSTANCE.keySetString (getPointer (), value));
 		return this;
+	}
+
+	/**
+	 * Sets the key's binary value
+	 *
+	 * @param value Value to set
+	 * @return This {@link Key}, enabling a fluent interface
+	 * @throws KeyReleasedException     if this {@link Key} has already been
+	 *                                  released
+	 * @throws IllegalArgumentException if {@code value} is {@code null}
+	 * @throws KeyException             if the key's value is read-only or there
+	 *                                  have been allocation problems
+	 */
+	public Key setBinary (byte[] value)
+	{
+		argNotNull (value, "byte[] 'value'");
+		checkReturnValue (Elektra.INSTANCE.keySetBinary (getPointer (), value, value.length));
+		return this;
+	}
+
+	private void checkReturnValue (int returnValue)
+	{
+		if (returnValue < 0)
+		{
+			throw new KeyException ();
+		}
 	}
 
 	/**
@@ -727,16 +770,17 @@ public class Key implements Iterable<String>
 	/**
 	 * Gets the next element of this key's internal meta information iterator
 	 *
-	 * @return new Key object containing the next meta information
-	 * @throws KeyReleasedException   if this {@link Key} has already been released
-	 * @throws NoSuchElementException if no next meta key is available
+	 * @return New {@link Key} object containing the requested meta information or
+	 *         {@link Optional#empty()}, if no next meta key is available
+	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 * @see #rewindMeta()
 	 * @see #currentMeta()
 	 * @see #release()
 	 */
-	@Nonnull public Key nextMeta ()
+	@Nonnull public Optional<Key> nextMeta ()
 	{
-		return checkKeyPointer (Elektra.INSTANCE.keyNextMeta (getPointer ()), NoSuchElementException::new);
+		// TODO #3871 should return read-only key
+		return create (Elektra.INSTANCE.keyNextMeta (getPointer ()));
 	}
 
 	/**
@@ -744,14 +788,15 @@ public class Key implements Iterable<String>
 	 *
 	 * @return new {@link Key} object containing the current meta information
 	 * @throws KeyReleasedException   if this {@link Key} has already been released
-	 * @throws NoSuchElementException if no next meta key is available or internal
-	 *                                iterator has been reset
+	 * @throws NoSuchElementException if no current meta key is available or
+	 *                                internal iterator has been reset
 	 * @see #rewindMeta()
 	 * @see #nextMeta()
 	 * @see #release()
 	 */
 	@Nonnull public Key currentMeta ()
 	{
+		// TODO #3871 should return read-only key
 		return checkKeyPointer (Elektra.INSTANCE.keyCurrentMeta (getPointer ()), NoSuchElementException::new);
 	}
 
@@ -820,9 +865,13 @@ public class Key implements Iterable<String>
 	 */
 	@Nonnull public Optional<Key> getMeta (String metaName)
 	{
+		// TODO #3871 should return read-only key
 		argNotNullOrBlank (metaName, "String 'metaName'");
 		return create (Elektra.INSTANCE.keyGetMeta (getPointer (), metaName));
 	}
+
+	// TODO #3871 introduce KeySet getMeta() returning the meta keyset. (keyset
+	// should not be able to add values)
 
 	/**
 	 * Sets meta information
@@ -1063,7 +1112,7 @@ public class Key implements Iterable<String>
 	}
 
 	/**
-	 * @return Length/Size of key value
+	 * @return Length / size of key value in bytes
 	 * @throws KeyReleasedException if this {@link Key} has already been released
 	 */
 	public int getValueSize ()
