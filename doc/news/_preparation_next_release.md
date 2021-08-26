@@ -64,6 +64,11 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### TOML
 
 - Improvements to the parser, comment handling and especially quoting of strings. _(Klemens Böswirth)_
+- The `toml` plugin now supports all four kinds of strings via the `tomltype` metadata.
+  The plugin also remembers which kind was used and handles escape sequences properly, instead of always
+  converting to basic strings. _(Klemens Böswirth)_
+- The `comment/#/space` metakey is now used correctly to store the actual whitespace characters from the file,
+  instead of a number. _(Klemens Böswirth)_
 
 ### Python
 
