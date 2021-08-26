@@ -132,6 +132,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- `webd`: update npm dependencies. _(Mihael Pranjić)_
 
 ## Scripts
 
@@ -207,6 +208,7 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Update npm dependencies. _(Mihael Pranjić)_
 
 ## Outlook
 
@@ -215,7 +217,6 @@ We are currently working on following topics:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- Update npm dependencies. _(Mihael Pranjić)_
 
 ## Statistics
 
