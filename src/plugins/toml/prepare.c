@@ -89,12 +89,7 @@ static void completeKeyComments (Key * key)
 			snprintf (nameExt, 64, "%s/start", name);
 			if (keyGetMeta (key, nameExt) == NULL)
 			{
-				keySetMeta (key, nameExt, "#");
-			}
-			snprintf (nameExt, 64, "%s/space", name);
-			if (keyGetMeta (key, nameExt) == NULL)
-			{
-				keySetMeta (key, nameExt, "0");
+				keySetMeta (key, nameExt, "# ");
 			}
 		}
 	}

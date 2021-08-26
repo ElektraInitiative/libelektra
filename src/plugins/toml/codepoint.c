@@ -10,7 +10,10 @@
 #include "codepoint.h"
 
 #include <kdbassert.h>
+#include <stdint.h>
 #include <stdio.h>
+
+#include "utf8_dfa.h"
 
 #define TRAIL 0x80
 #define MASK(b) (b == 6 ? 0x3F : b == 5 ? 0x1F : b == 4 ? 0x0F : 0x07)
@@ -19,44 +22,55 @@
 #define ZERO(n) (n == 1 ? 0x7F : n == 2 ? 0xDF : n == 3 ? 0xEF : 0xF7)
 #define ZERO_TRAIL 0xBF
 
-static int utf8LenFromUnicode (unsigned long codepoint);
-static unsigned convertCodepoint (const char * codepointStr, int codepointLen);
+static int utf8LenFromUnicode (uint32_t codepoint);
+static uint32_t convertCodepoint (const char * codepointStr, int codepointLen);
 
-int utf8FromUnicode (const char * codepointStr, int codepointLen, unsigned char * utf8)
+bool isValidUtf8 (uint8_t * string, size_t len)
 {
-	unsigned long codepoint = convertCodepoint (codepointStr, codepointLen);
+	uint32_t codepoint;
+	uint32_t state = 0;
+
+	for (size_t i = 0; i < len; ++i)
+	{
+		if (decode (&state, &codepoint, string[i]) == UTF8_REJECT)
+		{
+			return false;
+		}
+	}
+
+	return state == UTF8_ACCEPT;
+}
+
+int utf8FromUnicode (const char * codepointStr, int codepointLen, char * utf8)
+{
+	uint32_t codepoint = convertCodepoint (codepointStr, codepointLen);
 	int utfLen = utf8LenFromUnicode (codepoint);
 	switch (utfLen)
 	{
 	case 1:
-		utf8[0] = (char) codepoint;
+		utf8[0] = (char) (codepoint & 0x7F);
 		return 1;
 	case 2:
-		utf8[0] = (unsigned char) ZERO (2) & (LEAD (2) | GET_BITS (codepoint, 6, 5));
-		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 0, 6));
+		utf8[0] = (char) (ZERO (2) & (LEAD (2) | GET_BITS (codepoint, 6, 5)));
+		utf8[1] = (char) (ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 0, 6)));
 		return 2;
 	case 3:
-		utf8[0] = (unsigned char) ZERO (3) & (LEAD (3) | GET_BITS (codepoint, 6 + 6, 4));
-		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 6, 6));
-		utf8[2] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 0, 6));
+		utf8[0] = (char) (ZERO (3) & (LEAD (3) | GET_BITS (codepoint, 6 + 6, 4)));
+		utf8[1] = (char) (ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 6, 6)));
+		utf8[2] = (char) (ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 0, 6)));
 		return 3;
 	case 4:
-		utf8[0] = (unsigned char) ZERO (4) & (LEAD (4) | GET_BITS (codepoint, 6 + 6 + 6, 3));
-		utf8[1] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 6 + 6, 6));
-		utf8[2] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 6, 6));
-		utf8[3] = (unsigned char) ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 0, 6));
+		utf8[0] = (char) (ZERO (4) & (LEAD (4) | GET_BITS (codepoint, 6 + 6 + 6, 3)));
+		utf8[1] = (char) (ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 6 + 6, 6)));
+		utf8[2] = (char) (ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 6, 6)));
+		utf8[3] = (char) (ZERO_TRAIL & (TRAIL | GET_BITS (codepoint, 0, 6)));
 		return 4;
 	default:
 		return 0;
 	}
 }
 
-bool validUtf8FromUnicode (const char * codepointStr, int codepointLen)
-{
-	return utf8LenFromUnicode (convertCodepoint (codepointStr, codepointLen)) != 0;
-}
-
-int utf8LenFromHeadChar (unsigned char head)
+int utf8LenFromHeadChar (uint8_t head)
 {
 	if (head <= 0x7F)
 	{
@@ -80,26 +94,38 @@ int utf8LenFromHeadChar (unsigned char head)
 	}
 }
 
-static unsigned convertCodepoint (const char * codepointStr, int codepointLen)
+static uint32_t convertCodepoint (const char * codepointStr, int codepointLen)
 {
-	unsigned long codepoint;
-	if (codepointLen == 4)
+	ELEKTRA_ASSERT (codepointLen == 4 || codepointLen == 8, "Code point len must be 4 or 8, but was %d.", codepointLen);
+
+	uint32_t codepoint = 0;
+	for (int i = 0; i < codepointLen; i++)
 	{
-		sscanf (codepointStr, "%4lX", &codepoint);
+		codepoint <<= 4;
+
+		char c = codepointStr[i];
+		if ('0' <= c && c <= '9')
+		{
+			codepoint |= c - '0';
+		}
+		else if ('a' <= c && c <= 'f')
+		{
+			codepoint |= c - 'a' + 0xa;
+		}
+		else if ('A' <= c && c <= 'F')
+		{
+			codepoint |= c - 'A' + 0xA;
+		}
+		else
+		{
+			ELEKTRA_ASSERT (0, "invalid hex char %c", c);
+		}
 	}
-	else if (codepointLen == 8)
-	{
-		sscanf (codepointStr, "%8lX", &codepoint);
-	}
-	else
-	{
-		ELEKTRA_ASSERT (0, "Code point len must be 4 or 8, but was %d.", codepointLen);
-		return 0;
-	}
+
 	return codepoint;
 }
 
-static int utf8LenFromUnicode (unsigned long codepoint)
+static int utf8LenFromUnicode (uint32_t codepoint)
 {
 	if (codepoint <= 0x7F)
 	{

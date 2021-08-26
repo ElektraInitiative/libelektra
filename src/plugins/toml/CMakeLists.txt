@@ -124,6 +124,7 @@ if (DEPENDENCY_PHASE)
 		table_array.c
 		comment_list.h
 		comment_list.c
+		utf8_dfa.h
 		codepoint.h
 		codepoint.c
 		utility.h
@@ -139,7 +140,6 @@ if (DEPENDENCY_PHASE)
 		type.h
 		type.c
 		error.h
-		error.c
 		${FLEX_OUTPUT_HEADER}
 		${FLEX_OUTPUT_SOURCE}
 		${BISON_OUTPUT_HEADER}

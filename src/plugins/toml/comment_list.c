@@ -19,9 +19,9 @@
 #include "error.h"
 #include "utility.h"
 
-static int keyAddComment (Key * key, const char * commentStr, size_t index, size_t spaceCount);
+static int keyAddComment (Key * key, const char * commentStr, const char * origStr, size_t index);
 
-CommentList * commentListNew (const char * comment, size_t spaceCount)
+CommentList * commentListNew (const char * comment, const char * orig)
 {
 	CommentList * newComment = elektraCalloc (sizeof (CommentList));
 	if (newComment == NULL)
@@ -32,7 +32,10 @@ CommentList * commentListNew (const char * comment, size_t spaceCount)
 	{
 		newComment->str = strdup (comment);
 	}
-	newComment->spaceCount = spaceCount;
+	if (orig != NULL)
+	{
+		newComment->orig = strdup (orig);
+	}
 	return newComment;
 }
 
@@ -45,16 +48,20 @@ void commentListFree (CommentList * root)
 		{
 			elektraFree (root->str);
 		}
+		if (root->orig != NULL)
+		{
+			elektraFree (root->orig);
+		}
 		elektraFree (root);
 		root = nextComment;
 	}
 }
 
-CommentList * commentListAdd (CommentList * back, const char * comment, size_t spaceCount)
+CommentList * commentListAdd (CommentList * back, const char * comment, const char * orig)
 {
 	ELEKTRA_ASSERT (back != NULL, "Back expected to be non-NULL, but was NULL");
 	ELEKTRA_ASSERT (back->next == NULL, "Back->next expected to be NULL, but was not NULL");
-	back->next = commentListNew (comment, spaceCount);
+	back->next = commentListNew (comment, orig);
 	return back->next;
 }
 
@@ -80,7 +87,7 @@ int keyAddCommentList (Key * key, CommentList * root)
 	int err = 0;
 	while (root != NULL && err == 0)
 	{
-		err = keyAddComment (key, root->str, index++, root->spaceCount);
+		err = keyAddComment (key, root->str, root->orig, index++);
 		root = root->next;
 	}
 	return err;
@@ -92,10 +99,10 @@ int keyAddInlineComment (Key * key, CommentList * root)
 	{
 		return ERROR_INTERNAL;
 	}
-	return keyAddComment (key, root->str, 0, root->spaceCount);
+	return keyAddComment (key, root->str, root->orig, 0);
 }
 
-static int keyAddComment (Key * key, const char * commentStr, size_t index, size_t spaceCount)
+static int keyAddComment (Key * key, const char * commentStr, const char * origStr, size_t index)
 {
 	// add comment str
 	char * indexStr = indexToArrayString (index);
@@ -135,9 +142,25 @@ static int keyAddComment (Key * key, const char * commentStr, size_t index, size
 		keySetMeta (key, metaInfoName, "");
 	}
 
-	// add space count
+	// add preceding whitespace
 	snprintf (metaInfoName, metaInfoLen, "%s/space", metaName);
-	setPlainIntMeta (key, metaInfoName, spaceCount);
+	if (commentStr != NULL)
+	{
+		size_t len = strspn (origStr, " \t");
+		char * startSeq = elektraMemDup (origStr, len + 1);
+		startSeq[len] = '\0';
+		if (startSeq == NULL)
+		{
+			return ERROR_MEMORY;
+		}
+
+		keySetMeta (key, metaInfoName, startSeq);
+		elektraFree (startSeq);
+	}
+	else
+	{
+		keySetMeta (key, metaInfoName, "");
+	}
 
 	elektraFree (metaInfoName);
 	elektraFree (metaName);

@@ -18,6 +18,7 @@ ksNew (16,
 		      	"carriage return\\r\n"
 		      	"quote\\\"\n"
 		      	"backslash\\\\\n",
+		KEY_META, "tomltype", "string_ml_basic",
 		KEY_META, "type", "string",
 		KEY_META, "order", "0",
 	KEY_END),
@@ -59,6 +60,7 @@ ksNew (16,
 			"15A4A: \\U00015A4A\n"
 			"1da8b: \\U0001da8b\n"
 			"1fffd: \\U0001fffd\n",
+		KEY_META, "tomltype", "string_ml_basic",
 		KEY_META, "type", "string",
 		KEY_META, "order", "1",
 	KEY_END),

@@ -175,9 +175,17 @@ sudo kdb umount user:/tests/storage/numbers
 
 # Strings
 
-The plugin can read any kind of TOML string: bare, basic, literal, basic multiline and literal multiline.
-However, it will write back all non-bare strings as basic strings or it's multiline version.
-Therefore, any string set with `kdb set` must be treated as a basic string and possible escape sequences and special meanings of quotation characters must be taken care of.
+The plugin can read any kind of TOML string: basic, literal, basic multiline and literal multiline.
+
+Similar to the TOML-specific values (table, array) discussed below, we use the `tomltype` metakey to store the kind of string.
+The values used are: `string_basic`, `string_literal`, `string_ml_basic` and `string_ml_literal`.
+
+When writing a file, the value of `tomltype` will be respected. The plugin will therefore preserve the kind of string throughout a kdbGet/kdbSet cycle.
+You can also set `tomltype` manually to transform the string into a different type. If `tomltype` is set to a kind of string that is
+incompatible with the current value of the key, the plugin will report an error.
+
+If `tomltype` is not set, the plugin defaults to a basic string, or if there are at least two `\n` to a basic multiline string. This way a `kdb set` will
+always work correctly, as long as the given string is valid UTF-8.
 
 ```sh
 # Mount TOML file
@@ -202,7 +210,16 @@ sudo kdb umount user:/tests/storage
 ```
 
 The plugin supports all kinds of escape sequences used by TOML in basic and basic multiline strings, like `\n`, `\r`, `\t` and
-even `\u`/`\U` for Unicode escape sequences. `\t` is interpreted to be 4 spaces.
+even `\u`/`\U` for Unicode escape sequences. When reading a file, all these escape sequences will be translated into valid UTF-8
+byte sequences that will be used as the key values.
+
+When writing a file, the plugin uses the escape sequences, whenever a part of the key value cannot be placed literally into the file.
+If a key contains a non-UTF-8 string value, the plugin replaces any invalid sections with the Replacement Character U+FFFD and reports
+a warning.
+
+Finally, the plugin also uses `origvalue` to remember the original formatting of the string. This is particularly useful for escape sequences.
+Without this mechanism, a `\u` escape sequence would always be written literally (not as an escape sequence), because when reading the file
+it is translated into UTF-8 bytes. For multiline strings `origvalue` also includes any leading or escaped newlines.
 
 # Binary/NULL values
 
@@ -367,15 +384,16 @@ sudo kdb umount user:/tests/storage
 
 # Comments and Empty Lines
 
-The plugin preserves all comments with only one limitation for arrays. The amount of whitespace in front of a comment is also saved.
-For this purpose, each tab will get translated to 4 spaces.
+The plugin preserves all comments with only one limitation for arrays. The whitespace in front of a comment is also saved.
 
 Comments can also be created by assigning meta keys to a key.
 The meta keys must be of the form `comment/#n`, where `n` is a positive number, indicating the position of the comment relative to the key.
 An index of 0 is always the inline comment of the key.
 Indices greater than zero are for comments preceding the given key, where 1 is the top-most comment and the highest index comment is right above the key.
 
-Spaces can be added to a comment by creating a `comment/#n/space` metakey with the amount of spaces to the key.
+Preceding whitespace can be added to a comment by creating a `comment/#n/space` metakey.
+This metakey can contain any number of space or tab characters, which will be placed before the `#` starting the comment.
+Any whitespace _after_ the `#` is considered part of the comment and will therefore be part of `comment/#n`.
 
 File ending comments must be assigned to the file root key.
 
@@ -391,7 +409,7 @@ kdb set 'user:/tests/storage/key' '1'
 
 # add an inline comment with 4 leading spaces
 kdb meta-set 'user:/tests/storage/key' 'comment/#0' ' This value is very interesting'
-kdb meta-set 'user:/tests/storage/key' 'comment/#0/space' '4'
+kdb meta-set 'user:/tests/storage/key' 'comment/#0/space' '    '
 
 # add some comments preceding the key
 kdb meta-set 'user:/tests/storage/key' 'comment/#1' ' I am the top-most comment relative to my key.'
@@ -437,32 +455,27 @@ kdb set 'user:/tests/storage/array/#2' '3'
 # Add inline comment after the array
 kdb meta-set 'user:/tests/storage/array' 'comment/#0' ' Inline comment after the array'
 kdb meta-set 'user:/tests/storage/array' 'comment/#0/start' '#'
-kdb meta-set 'user:/tests/storage/array' 'comment/#0/space' '5'
+kdb meta-set 'user:/tests/storage/array' 'comment/#0/space' '     '
 
 # Add comments for array elements
 kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0' ' Inline comment of first element'
 kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/start' '#'
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/space' '4'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#0/space' '    '
 
 kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1' ' Comment preceding the first element'
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1/start' '#'
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1/space' '4'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#1/space' '    '
 
 kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2' ' Another comment preceding the first element'
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2/start' '#'
-kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2/space' '6'
+kdb meta-set 'user:/tests/storage/array/#0' 'comment/#2/space' '      '
 
 kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0' ' Inline comment of second element'
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0/start' '#'
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0/space' '4'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#0/space' '    '
 
 kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1' ' Comment preceding the second element'
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1/start' '#'
-kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1/space' '6'
+kdb meta-set 'user:/tests/storage/array/#1' 'comment/#1/space' '      '
 
 kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0' ' Inline comment of the last element'
-kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0/start' '#'
-kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0/space' '5'
+kdb meta-set 'user:/tests/storage/array/#2' 'comment/#0/space' '     '
 
 # Print the content of the resulting TOML file
 cat `kdb file user:/tests/storage`

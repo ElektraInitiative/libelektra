@@ -76,7 +76,7 @@ kdb get user:/tests/base64/binary
 
 # The value inside the configuration file is encoded by the Base64 plugin
 kdb file user:/tests/base64 | xargs cat
-# STDOUT-REGEX: binary.*=.*'@BASE64[a-zA-Z0-9+/]+={0,2}'
+# STDOUT-REGEX: binary.*=.*"@BASE64[a-zA-Z0-9+/]+={0,2}"
 
 # Undo modifications
 kdb rm -r user:/tests/base64
@@ -110,8 +110,8 @@ The diagram below shows how the Base64 conversion process works in conjunction w
 The following example shows you how you can use the TOML plugin together with Base64’s meta mode.
 
 ```sh
-# Mount TOML and Base64 plugin (provides `binary`) with the configuration key `binary/meta`
-kdb mount test_config.toml user:/tests/base64 ni base64 binary/meta=
+# Mount ni and Base64 plugin (provides `binary`) with the configuration key `binary/meta`
+kdb mount test_config.ni user:/tests/base64 ni base64 binary/meta=
 
 # Save base64 encoded data `"value"` (`0x76616c7565`)
 kdb set user:/tests/base64/encoded dmFsdWUA

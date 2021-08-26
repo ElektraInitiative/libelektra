@@ -34,7 +34,7 @@ extern void clearLexer (void);
 static Driver * createDriver (Key * parent, KeySet * keys);
 static void destroyDriver (Driver * driver);
 static int driverParse (Driver * driver);
-static void driverNewCommentList (Driver * driver, const char * comment, size_t spaceCount);
+static void driverNewCommentList (Driver * driver, const char * comment, const char * orig);
 static void driverClearCommentList (Driver * driver);
 static bool driverDrainCommentsToKey (Key * key, Driver * driver);
 static void firstCommentAsInlineToPrevKey (Driver * driver);
@@ -50,10 +50,9 @@ static ParentList * pushParent (ParentList * top, Key * key);
 static ParentList * popParent (ParentList * top);
 static IndexList * pushIndex (IndexList * top, int value);
 static IndexList * popIndex (IndexList * top);
-static bool sameString (const char * raw, const char * transformed, char terminator, int terminatorCount);
-static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, char terminator, int terminatorCount,
-				  Driver * driver);
+static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, Driver * driver);
 static bool handleSpecialStrings (const char * string, Key * key);
+static void assignStringTomlType (Key * key, ScalarType stringType);
 static void assignOrigValueIfDifferent (Key * key, const char * origValue);
 
 int tomlRead (KeySet * keys, Key * parent)
@@ -631,7 +630,7 @@ void driverExitComment (Driver * driver, Scalar * comment)
 
 		if (driver->commentRoot == NULL)
 		{
-			driverNewCommentList (driver, NULL, 0);
+			driverNewCommentList (driver, NULL, NULL);
 			driver->newlineCount--;
 		}
 		driver->commentBack = commentListAddNewlines (driver->commentBack, driver->newlineCount);
@@ -644,11 +643,11 @@ void driverExitComment (Driver * driver, Scalar * comment)
 
 	if (driver->commentRoot == NULL)
 	{
-		driverNewCommentList (driver, comment->str, comment->leadingSpaces);
+		driverNewCommentList (driver, comment->str, comment->orig);
 	}
 	else
 	{
-		driver->commentBack = commentListAdd (driver->commentBack, comment->str, comment->leadingSpaces);
+		driver->commentBack = commentListAdd (driver->commentBack, comment->str, comment->orig);
 		if (driver->commentBack == NULL)
 		{
 			driverErrorGeneric (driver, ERROR_MEMORY, "driverExitComment", "commentListAdd");
@@ -672,13 +671,13 @@ void driverExitNewline (Driver * driver)
 	driver->newlineCount++;
 }
 
-static void driverNewCommentList (Driver * driver, const char * comment, size_t spaceCount)
+static void driverNewCommentList (Driver * driver, const char * comment, const char * orig)
 {
 	if (driver->commentRoot != NULL || driver->commentBack != NULL)
 	{
 		driverError (driver, ERROR_INTERNAL, 0, "Wanted to create new comment list, but comment list already existing.");
 	}
-	driver->commentRoot = commentListNew (comment, spaceCount);
+	driver->commentRoot = commentListNew (comment, orig);
 	driver->commentBack = driver->commentRoot;
 }
 
@@ -721,7 +720,7 @@ static bool driverDrainCommentsToKey (Key * key, Driver * driver)
 	{
 		if (driver->commentRoot == NULL)
 		{
-			driverNewCommentList (driver, NULL, 0);
+			driverNewCommentList (driver, NULL, NULL);
 			driver->newlineCount--;
 		}
 		driver->commentBack = commentListAddNewlines (driver->commentBack, driver->newlineCount);
@@ -855,23 +854,15 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 
 	switch (driver->lastScalar->type)
 	{
-	case SCALAR_STRING_LITERAL:
-		if (!handleSpecialStrings (elektraStr, driver->parentStack->key))
-		{
-			assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '\'', 1, driver);
-		}
-		break;
-	case SCALAR_STRING_ML_LITERAL:
-		assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '\'', 3, driver);
-		break;
 	case SCALAR_STRING_BASIC:
+	case SCALAR_STRING_LITERAL:
+	case SCALAR_STRING_ML_BASIC:
+	case SCALAR_STRING_ML_LITERAL:
 		if (!handleSpecialStrings (elektraStr, driver->parentStack->key))
 		{
-			assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '"', 1, driver);
+			assignStringMetakeys (driver->parentStack->key, driver->lastScalar->orig, elektraStr, driver);
 		}
-		break;
-	case SCALAR_STRING_ML_BASIC:
-		assignStringMetakeys (driver->parentStack->key, driver->lastScalar->str, elektraStr, '"', 3, driver);
+		assignStringTomlType (driver->parentStack->key, driver->lastScalar->type);
 		break;
 	case SCALAR_BOOLEAN:
 		keySetMeta (driver->parentStack->key, "type", "boolean");
@@ -884,20 +875,20 @@ static void driverCommitLastScalarToParentKey (Driver * driver)
 	case SCALAR_FLOAT_POS_NAN:
 	case SCALAR_FLOAT_NEG_NAN:
 		keySetMeta (driver->parentStack->key, "type", "double");
-		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->str);
+		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->orig);
 		break;
 	case SCALAR_INTEGER_DEC:
 		keySetMeta (driver->parentStack->key, "type", "long_long");
-		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->str);
+		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->orig);
 		break;
 	case SCALAR_INTEGER_BIN:
 	case SCALAR_INTEGER_OCT:
 	case SCALAR_INTEGER_HEX:
 		keySetMeta (driver->parentStack->key, "type", "unsigned_long_long");
-		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->str);
+		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->orig);
 		break;
 	default:
-		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->str);
+		assignOrigValueIfDifferent (driver->parentStack->key, driver->lastScalar->orig);
 		break;
 	}
 
@@ -934,19 +925,19 @@ static bool handleSpecialStrings (const char * string, Key * key)
 	}
 }
 
-static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, char terminator, int terminatorCount,
-				  Driver * driver)
+static void assignStringMetakeys (Key * key, const char * origStr, const char * translatedStr, Driver * driver)
 {
 	const Key * metaType = keyGetMeta (key, "type");
 	// Don't overwrite "binary" typed metakeys -> See base64 plugin meta mode
 	// Don't assign it empty strings, otherwise the type plugin complains
+	// TODO (kodebach): string length 0, once type allows zero length on type=string
 	if ((metaType == NULL || elektraStrCmp (keyString (metaType), "binary") != 0) && elektraStrLen (translatedStr) > 1)
 	{
 		keySetMeta (key, "type", "string");
 	}
-	if (!sameString (origStr, translatedStr, terminator, terminatorCount))
+	if (strcmp (origStr, translatedStr) != 0)
 	{
-		char * orig = stripTerminators (origStr, terminatorCount);
+		char * orig = elektraStrDup (origStr);
 		if (orig == NULL)
 		{
 			driverError (driver, ERROR_MEMORY, 0, "Could not allocate memory");
@@ -957,29 +948,26 @@ static void assignStringMetakeys (Key * key, const char * origStr, const char * 
 	}
 }
 
-static bool sameString (const char * raw, const char * transformed, char terminator, int terminatorCount)
+static void assignStringTomlType (Key * key, ScalarType stringType)
 {
-	raw += terminatorCount;
-	while (*raw != 0 && *transformed != 0)
+	switch (stringType)
 	{
-		if (*raw != *transformed)
-		{
-			return false;
-		}
-		raw++;
-		transformed++;
+	case SCALAR_STRING_BASIC:
+		keySetMeta (key, "tomltype", "string_basic");
+		break;
+	case SCALAR_STRING_ML_BASIC:
+		keySetMeta (key, "tomltype", "string_ml_basic");
+		break;
+	case SCALAR_STRING_LITERAL:
+		keySetMeta (key, "tomltype", "string_literal");
+		break;
+	case SCALAR_STRING_ML_LITERAL:
+		keySetMeta (key, "tomltype", "string_ml_literal");
+		break;
+	default:
+		ELEKTRA_ASSERT (0, "Not a valid string type %d", stringType);
 	}
-	for (int i = 0; i < terminatorCount; i++)
-	{
-		if (*raw != terminator)
-		{
-			return false;
-		}
-		raw++;
-	}
-	return *raw == 0 && *transformed == 0;
 }
-
 
 static void driverClearLastScalar (Driver * driver)
 {
@@ -989,46 +977,69 @@ static void driverClearLastScalar (Driver * driver)
 
 int yyerror (Driver * driver, const char * msg)
 {
-	driverError (driver, ERROR_SYNTACTIC, yylineno, msg);
+	driverError (driver, ERROR_SYNTACTIC, yylineno, "%s", msg);
 	return 0;
 }
 
 void driverError (Driver * driver, int err, int lineno, const char * format, ...)
 {
+	driver->errorSet = true;
+
+	if (err == ERROR_MEMORY)
+	{
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (driver->root);
+		return;
+	}
+
+	char * msg;
 	va_list args;
-	char msg[256];
 	va_start (args, format);
-	if (lineno > 0)
-	{
-		snprintf (msg, 256, "Line ~%d: ", lineno);
-		size_t len = elektraStrLen (msg) - 1;
-		vsnprintf (msg + len, 256 - len, format, args);
-	}
-	else
-	{
-		vsnprintf (msg, 256, format, args);
-	}
+	msg = elektraVFormat (format, args);
 	va_end (args);
-	if (!driver->errorSet)
+
+	switch (err)
 	{
-		driver->errorSet = true;
-		emitElektraError (driver->root, err, msg);
-		ELEKTRA_LOG_DEBUG ("Error: %s", msg);
+	case ERROR_INTERNAL:
+		ELEKTRA_SET_INTERNAL_ERRORF (driver->root, "Line %d~(%d:%d-%d:%d): %s", lineno, yylloc.first_line, yylloc.first_column,
+					     yylloc.last_line, yylloc.last_column - 1, msg);
+		break;
+	case ERROR_SYNTACTIC:
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (driver->root, "Line %d~(%d:%d-%d:%d): %s", lineno, yylloc.first_line,
+							 yylloc.first_column, yylloc.last_line, yylloc.last_column - 1, msg);
+		break;
+	case ERROR_SEMANTIC:
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (driver->root, "Line %d~(%d:%d-%d:%d): %s", lineno, yylloc.first_line,
+							yylloc.first_column, yylloc.last_line, yylloc.last_column - 1, msg);
+		break;
+	default:
+		ELEKTRA_SET_INTERNAL_ERRORF (driver->root, "Line %d~(%d:%d-%d:%d): %s", lineno, yylloc.first_line, yylloc.first_column,
+					     yylloc.last_line, yylloc.last_column - 1, msg);
+		break;
 	}
-	else
-	{
-		ELEKTRA_LOG_DEBUG ("Additional Error: %s", msg);
-	}
+
+	elektraFree (msg);
 }
 
 void driverErrorGeneric (Driver * driver, int err, const char * caller, const char * callee)
 {
-	if (!driver->errorSet)
+	driver->errorSet = true;
+
+	switch (err)
 	{
-		char msg[256];
-		driver->errorSet = true;
-		snprintf (msg, 256, "%s: Error during call of %s", caller, callee);
-		emitElektraError (driver->root, err, msg);
-		ELEKTRA_LOG_DEBUG ("Error: %s\n", msg);
+	case ERROR_INTERNAL:
+		ELEKTRA_SET_INTERNAL_ERRORF (driver->root, "%s: Error during call of %s", caller, callee);
+		break;
+	case ERROR_MEMORY:
+		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (driver->root);
+		break;
+	case ERROR_SYNTACTIC:
+		ELEKTRA_SET_VALIDATION_SYNTACTIC_ERRORF (driver->root, "%s: Error during call of %s", caller, callee);
+		break;
+	case ERROR_SEMANTIC:
+		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (driver->root, "%s: Error during call of %s", caller, callee);
+		break;
+	default:
+		ELEKTRA_SET_INTERNAL_ERRORF (driver->root, "%s: Error during call of %s", caller, callee);
+		break;
 	}
 }
