@@ -1,6 +1,6 @@
 This is a fully working example for how to use Elektra with Maven or Gradle for reading keys.
 
-First Make sure to either install the Elektra Java binding to your local maven repository:
+First Make sure to install the Elektra Java binding to your local maven repository:
 
 ```sh
 cd ./src/bindings/jna
@@ -16,7 +16,7 @@ Then change to the example app folder:
 cd ../../../examples/external/java/read-keys-example
 ```
 
-Either use a local Gradle installation to run the example app:
+Use a local Gradle installation to run the example app:
 
 ```sh
 gradle run

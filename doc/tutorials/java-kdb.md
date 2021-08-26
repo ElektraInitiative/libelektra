@@ -85,7 +85,7 @@ The _user_ namespace is accessible without special rights, but if you try to wri
 
 ### Traversing Keys in a `KeySet`
 
-First we create a new `KDB` session and fetch all keys for the desired namespace, in this example the whole `user` namespace. Since all all keys are put in the passed `keySet` variable we can then iterate through it.
+First we create a new `KDB` handle and fetch all keys for the desired namespace, in this example the whole `user` namespace. Since all all keys are put in the passed `keySet` variable we can then iterate through it.
 The `at(int)` method returns a new `Key` object for the native key with the corresponding position within the `keySet`.
 
 ```java
