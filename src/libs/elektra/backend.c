@@ -465,9 +465,11 @@ int backendClose (Backend * backend, Key * errorKey)
 
 	if (backend->mountpoint)
 	{
-		keyDecRef (backend->mountpoint);
 		keySetName (errorKey, keyName (backend->mountpoint));
-		keyDel (backend->mountpoint);
+		if (keyDecRef (backend->mountpoint) == 0)
+		{
+			keyDel (backend->mountpoint);
+		}
 	}
 
 	for (int i = 0; i < NR_OF_PLUGINS; ++i)

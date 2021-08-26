@@ -598,7 +598,7 @@ int elektraSortTopology (KeySet * ks, Key ** array)
 	{
 		cur = localArray[j];
 		KeySet * deps = elektraMetaArrayToKS (cur, "dep");
-		keyDel (ksLookupByName (deps, "meta:/dep", KDB_O_POP));
+		ksLookupByName (deps, "meta:/dep", KDB_O_POP);
 		Key * tmpDep;
 		switch (ksGetSize (deps))
 		{

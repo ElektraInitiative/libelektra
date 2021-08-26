@@ -54,7 +54,6 @@ static void test_readFormat (const char * format, const char * fileContent, int 
 		keyDel (lookup);
 	}
 
-	keyDel (key);
 	ksDel (ks);
 	keyDel (parentKey);
 	PLUGIN_CLOSE ();

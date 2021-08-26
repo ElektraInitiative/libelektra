@@ -549,7 +549,10 @@ ssize_t keySetMeta (Key * key, const char * metaName, const char * newMetaString
 		if (ret)
 		{
 			/*It was already there, so lets drop that one*/
-			keyDel (ret);
+			if (keyGetRef (ret) == 0)
+			{
+				keyDel (ret);
+			}
 			key->flags |= KEY_FLAG_SYNC;
 		}
 	}

@@ -121,7 +121,10 @@ void removeKeyFromResult (Key * convertKey, Key * target, KeySet * orig)
 	 */
 	keySetMeta (convertKey, CONVERT_TARGET, keyName (target));
 	Key * key = ksLookup (orig, convertKey, KDB_O_POP);
-	keyDel (key);
+	if (keyGetRef (key) == 0)
+	{
+		keyDel (key);
+	}
 }
 
 static void flushConvertedKeys (Key * target, KeySet * converted, KeySet * orig)

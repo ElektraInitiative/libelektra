@@ -1640,7 +1640,12 @@ inline int Key::del ()
 	if (key)
 	{
 		operator-- ();
-		return ckdb::keyDel (key);
+		ssize_t rc = getReferenceCounter ();
+		if (rc == 0)
+		{
+			return ckdb::keyDel (key);
+		}
+		return static_cast<int> (rc);
 	}
 	return -1;
 }

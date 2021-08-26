@@ -883,7 +883,6 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
-		keyDel (key);
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "splitParentValue");
@@ -891,7 +890,6 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
-		keyDel (key);
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "specsize");
@@ -899,7 +897,6 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
-		keyDel (key);
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "dirsize");
@@ -907,7 +904,6 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
-		keyDel (key);
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "usersize");
@@ -915,7 +911,6 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
-		keyDel (key);
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "systemsize");
@@ -923,7 +918,6 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
-		keyDel (key);
 
 		key = keyNew (name, KEY_END);
 		keyAddBaseName (key, "syncbits");
@@ -931,7 +925,6 @@ void splitCacheStoreState (KDB * handle, Split * split, KeySet * global, Key * p
 		ksAppendKey (global, key);
 		ELEKTRA_LOG_DEBUG (">>>> STORING key: %s, string: %s, strlen: %ld, valSize: %ld", keyName (key), keyString (key),
 				   strlen (keyString (key)), keyGetValueSize (key));
-		keyDel (key);
 
 		elektraFree (name);
 	}

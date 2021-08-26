@@ -37,6 +37,7 @@ static void test_basics (void)
 
 	succeed_if (plugin->kdbGet (plugin, contractSet, contractKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS,
 		    "call to kdbGet for the contract was not successful");
+	// FIXME: bug? doesn't actually return contract
 
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 	succeed_if (plugin->kdbSet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbSet was not successful");

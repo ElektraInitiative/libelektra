@@ -50,7 +50,7 @@ static int validPluginName (Key * pluginNameKey, Key * errorKey)
 static void cleanup (Process * process, Key * errorKey)
 {
 	if (process->plugin) elektraInvokeClose (process->plugin, errorKey);
-	if (process->pluginName) keyDel (process->pluginName);
+	if (process->pluginName && keyGetRef (process->pluginName) == 0) keyDel (process->pluginName);
 	ksDel (process->pluginConfig);
 	elektraFree (process);
 }

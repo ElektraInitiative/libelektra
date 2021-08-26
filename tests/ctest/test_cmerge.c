@@ -100,7 +100,6 @@ static void simple_test (char * our_value, char * their_value, char * base_value
 			succeed_if (strcmp (resultValue, expected_result) == 0, msg);
 			elektraFree (resultValue);
 		}
-		keyDel (resultKey); // Necessary?
 	}
 
 	ksDel (our);
