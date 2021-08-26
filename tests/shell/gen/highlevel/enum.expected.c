@@ -82,7 +82,7 @@ static int isHelpMode (int argc, const char * const * argv)
  * @retval 0  on success, @p elektra will contain a new Elektra instance coming from elektraOpen(),
  *            @p error will be unchanged
  * @retval -1 on error, @p elektra will be unchanged, @p error will be set
- * @retval 1  help mode, '-h' or '--help' was specified call printHelpMessage to display
+ * @retval 1  help mode, '--help' was specified call printHelpMessage to display
  *            the help message. @p elektra will contain a new Elektra instance. It has to be passed
  *            to printHelpMessage. You also need to elektraClose() it.
  *            @p error will be unchanged
