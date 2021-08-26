@@ -30,7 +30,6 @@
 #include "kdbprivate.h"
 #include <kdbassert.h>
 
-// #include <signal.h>
 
 /**
  * @defgroup key Key
@@ -504,7 +503,6 @@ int keyDel (Key * key)
 
 	if (key->ksReference > 0)
 	{
-		// raise(SIGTRAP);
 		return key->ksReference;
 	}
 

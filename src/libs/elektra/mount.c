@@ -317,6 +317,7 @@ int elektraMountGlobalsLoadPlugin (Plugin ** plugin, KeySet * referencePlugins, 
 		refKey = keyNew ("/", KEY_BINARY, KEY_SIZE, sizeof (Plugin *), KEY_VALUE, &(*plugin), KEY_END);
 		keyAddBaseName (refKey, keyString (cur));
 		ksAppendKey (referencePlugins, refKey);
+		keyDel (refKey);
 	}
 
 	keyCopyAllMeta (errorKey, openKey);

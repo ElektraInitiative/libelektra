@@ -64,6 +64,7 @@ static void testAddressesSetGet (const char * keyValue, unsigned long long longV
 	convertLong (intChar, longValue);
 	succeed_if (!strcmp (getKeyString (testKs, "user:/tests/mac/addr"), intChar), "error");
 	succeed_if (!strcmp (keyString (keyGetMeta (key, "origvalue")), keyValue), "error");
+	keyDel (key);
 	ksDel (testKs);
 }
 
@@ -144,6 +145,7 @@ static void testRestoreValue (void)
 	getKeyString (testKs, "user:/tests/mac/addr");
 	setKey (testKs);
 	succeed_if (!strcmp (keyString (key), val), "error");
+	keyDel (key);
 	ksDel (testKs);
 }
 

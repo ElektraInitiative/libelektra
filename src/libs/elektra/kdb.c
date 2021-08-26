@@ -164,11 +164,7 @@ KeySet * ksRenameKeys (KeySet * config, const char * name)
 	root = ksNext (config);
 	rootSize = keyGetNameSize (root);
 
-	Key * r = ksLookup (config, root, KDB_O_POP);
-	if (keyGetRef (r) == 0)
-	{
-		keyDel (r);
-	}
+	keyDel (ksLookup (config, root, KDB_O_POP));
 
 	KeySet * newConfig = ksNew (ksGetSize (config), KS_END);
 	if (rootSize == -1) return newConfig;
@@ -179,10 +175,7 @@ KeySet * ksRenameKeys (KeySet * config, const char * name)
 		keySetName (dupKey, name);
 		keyAddName (dupKey, keyName (cur) + rootSize - 1);
 		ksAppendKey (newConfig, dupKey);
-		if (keyGetRef (cur) == 0)
-		{
-			keyDel (cur);
-		}
+		keyDel (cur);
 	}
 
 	return newConfig;
@@ -336,10 +329,8 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
 
 			// we ned to delete cur separately, because it was ksCut() from contract
 			// we also need to decrement the ref count, because it was incremented above
-			if (keyDecRef (cur) == 0)
-			{
-				keyDel (cur);
-			}
+			keyDecRef (cur);
+			keyDel (cur);
 
 			if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
 			{

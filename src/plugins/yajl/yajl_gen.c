@@ -265,6 +265,7 @@ static void elektraCheckForEmptyArray (KeySet * ks)
 			ELEKTRA_LOG_DEBUG ("Add empty array: %s", keyName (k));
 
 			ksAppendKey (ks, k);
+			keyDel (k);
 
 			ksSetCursor (ks, cursor);
 		}

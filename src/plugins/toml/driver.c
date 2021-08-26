@@ -193,10 +193,8 @@ void driverExitKeyValue (Driver * driver)
 
 	if (driver->prevKey != NULL)
 	{
-		if (keyDecRef (driver->prevKey) == 0)
-		{
-			keyDel (driver->prevKey);
-		}
+		keyDecRef (driver->prevKey);
+		keyDel (driver->prevKey);
 		driver->prevKey = NULL;
 	}
 	if (driver->prevKey != NULL)
@@ -580,10 +578,8 @@ void driverExitArrayElement (Driver * driver)
 	}
 	if (driver->prevKey != NULL)
 	{
-		if (keyDecRef (driver->prevKey) == 0)
-		{
-			keyDel (driver->prevKey);
-		}
+		keyDecRef (driver->prevKey);
+		keyDel (driver->prevKey);
 	}
 	driver->prevKey = driver->parentStack->key;
 	keyIncRef (driver->prevKey);
@@ -759,10 +755,8 @@ static void setCurrKey (Driver * driver, const Key * key)
 {
 	if (driver->currKey != NULL)
 	{
-		if (keyDecRef (driver->currKey) == 0)
-		{
-			keyDel (driver->currKey);
-		}
+		keyDecRef (driver->currKey);
+		keyDel (driver->currKey);
 	}
 	if (key != NULL)
 	{
@@ -779,10 +773,8 @@ static void setPrevKey (Driver * driver, Key * key)
 {
 	if (driver->prevKey != NULL)
 	{
-		if (keyDecRef (driver->prevKey) == 0)
-		{
-			keyDel (driver->prevKey);
-		}
+		keyDecRef (driver->prevKey);
+		keyDel (driver->prevKey);
 	}
 	driver->prevKey = key;
 	if (key != NULL)
@@ -819,10 +811,8 @@ static ParentList * pushParent (ParentList * top, Key * key)
 static ParentList * popParent (ParentList * top)
 {
 	ParentList * newTop = top->next;
-	if (keyDecRef (top->key) == 0)
-	{
-		keyDel (top->key);
-	}
+	keyDecRef (top->key);
+	keyDel (top->key);
 	elektraFree (top);
 	return newTop;
 }

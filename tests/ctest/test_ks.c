@@ -111,6 +111,7 @@ static void test_creatingLookup (void)
 	succeed_if_same_string (keyName (dupKey), keyName (searchKey));
 	succeed_if_same_string (keyString (dupKey), keyString (searchKey));
 	ksAppendKey (ks, dupKey);
+	keyDel (dupKey);
 
 	k0 = ksLookup (ks, searchKey, KDB_O_CREATE);
 	exit_if_fail (k0, "no key was created");

@@ -223,7 +223,7 @@ static void test_reservedParentKeyName (void)
 	output_warnings (parentKey);
 	output_error (parentKey);
 
-	// TODO: always in ks? keyDel (parentKey);
+	keyDel (parentKey);
 	ksDel (ks);
 	ksDel (conf);
 	elektraFree (plugin);
@@ -328,7 +328,7 @@ static void test_childAddingParentKey (void)
 	output_warnings (parentKey);
 	output_error (parentKey);
 
-	// TODO: always in ks? keyDel (parentKey);
+	keyDel (parentKey);
 	ksDel (ks);
 	ksDel (conf);
 	elektraFree (plugin);

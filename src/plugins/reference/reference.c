@@ -164,6 +164,8 @@ static int checkSingleReference (const Key * key, KeySet * allKeys, Key * parent
 			}
 		}
 
+		keyDel (refKey);
+
 		if (error)
 		{
 			ksDel (restrictions);
@@ -266,10 +268,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					ksAppendKey (refnameRoots, keyNew (keyName (curAlternative), KEY_END));
 					ksAppendKey (allRefnames, keyNew (keyName (curAlternative), KEY_END));
 				}
-				if (keyGetRef (curAlternative) == 0)
-				{
-					keyDel (curAlternative);
-				}
+				keyDel (curAlternative);
 			}
 			ksDel (alternatives);
 
@@ -282,6 +281,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 			if (reference == NULL || strlen (reference) == 0)
 			{
 				keyDel (cur);
+				keyDel (baseKey);
 				continue;
 			}
 
@@ -315,6 +315,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 				keyAddBaseName (element, "#0");
 				refArray = ksNew (1, element, KS_END);
 			}
+			keyDel (baseKey);
 
 			if (!rgContains (referenceGraph, curName))
 			{
@@ -379,6 +380,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					ksDel (refArray);
 					ksDel (restrictions);
 					keyDel (curRoot);
+					keyDel (refKey);
 					keyDel (cur);
 					return ELEKTRA_PLUGIN_STATUS_ERROR;
 				}
@@ -389,6 +391,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					rgAddNode (referenceGraph, refKeyName);
 				}
 				rgAddEdge (referenceGraph, curName, refKeyName);
+				keyDel (refKey);
 			}
 			ksDel (refArray);
 			ksDel (restrictions);

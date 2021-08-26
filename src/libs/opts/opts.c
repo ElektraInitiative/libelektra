@@ -382,6 +382,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 					keyName (parent));
 				return false;
 			}
+			keyDel (parent);
 		}
 	}
 
@@ -846,6 +847,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 							"The option '-%c' has already been specified for the key '%s'. Additional key: %s",
 							shortOpt, keyGetMetaString (existing, "key"), keyName (key));
 		keyDel (shortOptSpec);
+		keyDel (existing);
 		return false;
 	}
 
@@ -1003,6 +1005,7 @@ bool processEnvVars (KeySet * usedEnvVars, Key * specKey, Key ** keyWithOpt, Key
 				errorKey, "The environment variable '%s' has already been specified for the key '%s'. Additional key: %s",
 				envVar, keyGetMetaString (existing, "key"), keyName (specKey));
 			elektraFree (envsLinePart);
+			keyDel (existing);
 			keyDel (envVarKey);
 			ksDel (envVars);
 			return false;
@@ -1602,6 +1605,7 @@ bool parseShortOptions (Key * command, KeySet * optionsSpec, KeySet * options, i
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Unknown short option: -%c", keyBaseName (shortOpt)[0]);
 			keyDel (shortOpt);
+			keyDel (optSpec);
 			return false;
 		}
 
@@ -1621,8 +1625,10 @@ bool parseShortOptions (Key * command, KeySet * optionsSpec, KeySet * options, i
 		{
 			ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "This option cannot be repeated: -%c", keyBaseName (shortOpt)[0]);
 			keyDel (shortOpt);
+			keyDel (optSpec);
 			return false;
 		}
+		keyDel (optSpec);
 
 		bool last = false;
 		if (elektraStrCmp (hasArg, "required") == 0)
@@ -1634,6 +1640,7 @@ bool parseShortOptions (Key * command, KeySet * optionsSpec, KeySet * options, i
 					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Missing argument for short option: -%c",
 										keyBaseName (shortOpt)[0]);
 					keyDel (shortOpt);
+					keyDel (option);
 					return false;
 				}
 				// use next as arg and skip
@@ -1711,14 +1718,17 @@ bool parseLongOption (Key * command, KeySet * optionsSpec, KeySet * options, int
 	{
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "This option cannot be repeated: --%s", keyBaseName (longOpt));
 		keyDel (longOpt);
+		keyDel (optSpec);
 		return false;
 	}
 	else if (keyGetMetaString (option, "short") != NULL)
 	{
 		keyDel (longOpt);
+		keyDel (optSpec);
 		// short option found already ignore long version
 		return true;
 	}
+	keyDel (optSpec);
 
 	if (elektraStrCmp (hasArg, "required") == 0)
 	{

@@ -121,6 +121,7 @@ static void test_metaCutOnGet (void)
 
 	checkSimpleTestKeys (ks);
 
+	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -182,6 +183,8 @@ static void test_withoutConfig (void)
 	ksAppendKey (expected, parentKeyCopy);
 
 	compareKeySets (ks, expected);
+	keyDel (parentKey);
+	keyDel (parentKeyCopy);
 	ksDel (expected);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
@@ -214,6 +217,7 @@ static void test_metaConfigTakesPrecedence (void)
 	key = ksLookupByName (ks, "user:/tests/rename/will/not/be/stripped/key4", KDB_O_NONE);
 	succeed_if (key, "key4 was renamed although its prefix did not match");
 
+	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -326,6 +330,7 @@ static void test_replaceString (void)
 	key = ksLookupByName (ks, "user:/tests/rename/will/not/be/stripped/key4", KDB_O_NONE);
 	succeed_if (key, "key4 was not correctly rename");
 
+	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -345,6 +350,7 @@ static void test_toUpper (void)
 	key = ksLookupByName (ks, "user:/tests/rename/WILL/NOT/BE/STRIPPED/KEY4", KDB_O_NONE);
 	succeed_if (key, "key4 was not correctly rename");
 
+	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -363,6 +369,7 @@ static void test_toLower (void)
 	key = ksLookupByName (ks, "user:/tests/rename/i/hope/im/lowercase/too", KDB_O_NONE);
 	succeed_if (key, "key2 was not correctly rename");
 
+	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
@@ -383,6 +390,7 @@ static void test_mixCase (void)
 	key = ksLookupByName (ks, "user:/tests/rename/hopefullystilllower/UPPER/UPPER/UPPER/lowercase", KDB_O_NONE);
 	succeed_if (key, "key2 was not correctly rename");
 
+	keyDel (parentKey);
 	ksDel (ks);
 	PLUGIN_CLOSE ();
 }
