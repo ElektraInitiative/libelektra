@@ -46,11 +46,7 @@ RUN dnf upgrade --refresh -y && dnf install -y \
         yajl-devel \
         yaml-cpp-devel \
         zlib-devel \
-        python3-pip \
     && dnf clean all -y
-
-# Build dependency for libelektra-fuse
-RUN pip3 install wheel
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest
