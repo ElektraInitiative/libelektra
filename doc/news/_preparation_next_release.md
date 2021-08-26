@@ -215,6 +215,7 @@ We are currently working on following topics:
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Update npm dependencies. _(Mihael Pranjić)_
 
 ## Statistics
 
