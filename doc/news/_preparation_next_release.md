@@ -194,6 +194,7 @@ _(Michael Tucek)_
 
 - <<TODO>>
 - Enable BuildKit features to leverage tmpfs to speed up `docker build` commands. _(Mihael Pranjić)_
+- Bump Gradle to version 7.2. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Infrastructure
