@@ -195,6 +195,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - Enable BuildKit features to leverage tmpfs to speed up `docker build` commands. _(Mihael Pranjić)_
 - Bump Gradle to version 7.2. _(Mihael Pranjić)_
+- Bump Debian Buster images to Bullseye and Stretch images to Buster. We still leave one Debian Stretch job due to upstream Debian LTS support until June 2022. _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Infrastructure

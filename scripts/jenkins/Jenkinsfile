@@ -242,6 +242,24 @@ def dockerInit() {
       "./scripts/docker/debian/bullseye/Dockerfile"
     )
 
+    /* A minimal Debian Bullseye image used to test Elektra without any
+     * additional requirements introduced by optional plugins, bindings,
+     * ...
+     */
+    DOCKER_IMAGES.bullseye_minimal = dockerUtils.createDockerImageDesc(
+      "debian-bullseye-minimal", dockerUtils.&idTesting,
+      "./scripts/docker/debian/bullseye",
+      "./scripts/docker/debian/bullseye/minimal.Dockerfile"
+    )
+
+    /* A Docker image for crossbuilding i386
+     */
+    DOCKER_IMAGES.bullseye_i386 = dockerUtils.createDockerImageDesc(
+      "debian-bullseye-i386", dockerUtils.&idTesting,
+      "./scripts/docker/debian/bullseye",
+      "./scripts/docker/debian/bullseye/i386.Dockerfile"
+    )
+
     /* Our main target for compatibility is Debian stable
      * (currently buster).
      * Hence we try to build all parts of Elektra via this image.
@@ -448,8 +466,8 @@ def generateMainBuildStages() {
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
   tasks << buildAndTest(
-    "debian-buster-full",
-    DOCKER_IMAGES.buster,
+    "debian-bullseye-full",
+    DOCKER_IMAGES.bullseye,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_BUILD_FULL +
@@ -503,6 +521,18 @@ def generateFullBuildStages() {
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
   tasks << buildAndTest(
+    "debian-buster-full",
+    DOCKER_IMAGES.buster,
+    CMAKE_FLAGS_BUILD_ALL +
+      CMAKE_FLAGS_DEBUG +
+      CMAKE_FLAGS_BUILD_FULL +
+      CMAKE_FLAGS_BUILD_STATIC +
+      CMAKE_FLAGS_COVERAGE
+    ,
+    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
+  )
+
+  tasks << buildAndTest(
     "debian-stretch-full",
     DOCKER_IMAGES.stretch,
     CMAKE_FLAGS_BUILD_ALL +
@@ -514,11 +544,12 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
+
   // Build Elektra with ASAN enabled
   // Detects memory leaks via ASAN
   tasks << buildAndTestAsan(
-    "debian-stretch-asan",
-    DOCKER_IMAGES.stretch,
+    "debian-buster-asan",
+    DOCKER_IMAGES.buster,
     CMAKE_FLAGS_BUILD_ALL
   )
 
@@ -550,8 +581,8 @@ def generateFullBuildStages() {
   )
 
   tasks << buildAndTest(
-    "debian-buster-full-i386",
-    DOCKER_IMAGES.buster_i386,
+    "debian-bullseye-full-i386",
+    DOCKER_IMAGES.bullseye_i386,
     CMAKE_FLAGS_I386 + [
       'PLUGINS': 'NODEP'
     ] + CMAKE_FLAGS_BUILD_ALL,
@@ -559,8 +590,8 @@ def generateFullBuildStages() {
   )
 
   tasks << buildAndTest(
-    "debian-stretch-full-i386",
-    DOCKER_IMAGES.stretch_i386,
+    "debian-buster-full-i386",
+    DOCKER_IMAGES.buster_i386,
     CMAKE_FLAGS_I386 + [
       'PLUGINS': 'NODEP'
     ] + CMAKE_FLAGS_BUILD_ALL,
@@ -602,33 +633,33 @@ def generateFullBuildStages() {
 
   // Build Elektra on a minimal Debian stretch Docker image
   tasks << buildAndTest(
-    "debian-stretch-minimal",
-    DOCKER_IMAGES.stretch_minimal,
-    [:],
-    [TEST.ALL]
-  )
-
-  // Build Elektra on a minimal Debian buster Docker image
-  tasks << buildAndTest(
     "debian-buster-minimal",
     DOCKER_IMAGES.buster_minimal,
     [:],
     [TEST.ALL]
   )
 
-  // Build Elektra on a minimal Debian buster Docker image
+  // Build Elektra on a minimal Debian Bullseye Docker image
+  tasks << buildAndTest(
+    "debian-bullseye-minimal",
+    DOCKER_IMAGES.bullseye_minimal,
+    [:],
+    [TEST.ALL]
+  )
+
+  // Build Elektra on a minimal Debian Bullseye Docker image
   // specify NODEP and see if plugins are properly included/excluded
   tasks << buildAndTest(
-    "debian-buster-minimal-nodep",
-    DOCKER_IMAGES.buster_minimal,
+    "debian-bullseye-minimal-nodep",
+    DOCKER_IMAGES.bullseye_minimal,
     ['PLUGINS': 'NODEP'],
     [TEST.ALL]
   )
 
   // Build Elektra without the cache plugin
   tasks << buildAndTest(
-    "debian-buster-full-nocache",
-    DOCKER_IMAGES.buster,
+    "debian-bullseye-full-nocache",
+    DOCKER_IMAGES.bullseye,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_COVERAGE + [
@@ -638,8 +669,8 @@ def generateFullBuildStages() {
   )
 
   tasks << buildAndTestAsan(
-    "debian-buster-full-mmap-asan",
-    DOCKER_IMAGES.buster,
+    "debian-bullseye-full-mmap-asan",
+    DOCKER_IMAGES.bullseye,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_DEBUG +
       CMAKE_FLAGS_MMAP
@@ -648,8 +679,8 @@ def generateFullBuildStages() {
   // Build Elektra with xdg resolver to see if we are compliant
   def xdgResolver = 'resolver_mf_xp_x'
   tasks << buildAndTest(
-    "debian-buster-full-xdg",
-    DOCKER_IMAGES.buster,
+    "debian-bullseye-full-xdg",
+    DOCKER_IMAGES.bullseye,
     [
       'PLUGINS': "${xdgResolver};dump;sync;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
       'KDB_DEFAULT_RESOLVER': xdgResolver
@@ -659,8 +690,8 @@ def generateFullBuildStages() {
 
   // Build Elektra without tests
   tasks << buildAndTest(
-    "debian-buster-full-build-testing-off",
-    DOCKER_IMAGES.buster,
+    "debian-bullseye-full-build-testing-off",
+    DOCKER_IMAGES.bullseye,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_BUILD_TESTING_OFF
     ,
@@ -669,8 +700,8 @@ def generateFullBuildStages() {
 
   // Build Elektra without optimizations
   tasks << buildAndTest(
-    "debian-stretch-full-optimizations-off",
-    DOCKER_IMAGES.stretch,
+    "debian-bullseye-full-optimizations-off",
+    DOCKER_IMAGES.bullseye,
     CMAKE_FLAGS_BUILD_ALL +
       CMAKE_FLAGS_OPTIMIZATIONS_OFF +
       CMAKE_FLAGS_DEBUG +
@@ -693,8 +724,8 @@ def generateFullBuildStages() {
   )
 
   tasks << buildAndTest(
-    "debian-stretch-cryptoplugins",
-    DOCKER_IMAGES.stretch,
+    "debian-bullseye-cryptoplugins",
+    DOCKER_IMAGES.bullseye,
     CMAKE_FLAGS_BUILD_ALL+
       CMAKE_FLAGS_DEBUG + [
       'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
@@ -863,10 +894,10 @@ def buildAndTestAsan(testName, image, extraCmakeFlags = [:]) {
 
 /* Helper to generate mingw test */
 def buildAndTestMingwW64() {
-  def testName = "debian-buster-mingw-w64"
+  def testName = "debian-bullseye-mingw-w64"
   return [(testName): {
     stage(testName) {
-      withDockerEnv(DOCKER_IMAGES.buster) {
+      withDockerEnv(DOCKER_IMAGES.bullseye) {
         dir('build') {
           deleteDir()
           sh '../scripts/dev/configure-mingw-w64 ..'
@@ -899,7 +930,7 @@ def buildAndTest(testName, image, extraCmakeFlags = [:],
 
   def testCoverage = cmakeFlags.intersect(CMAKE_FLAGS_COVERAGE)
                                 .equals(CMAKE_FLAGS_COVERAGE)
-  def updateCoveralls = testName == 'debian-buster-full'
+  def updateCoveralls = testName == 'debian-bullseye-full'
   def testMem = tests.contains(TEST.MEM)
   def testNokdb = tests.contains(TEST.NOKDB)
   def testAll = tests.contains(TEST.ALL)
