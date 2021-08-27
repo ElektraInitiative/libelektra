@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.2
-FROM debian:buster
+FROM debian:bullseye
 
 ENV LANG C.UTF-8
 ENV LANGUAGE C.UTF-8

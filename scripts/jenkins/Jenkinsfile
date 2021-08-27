@@ -766,7 +766,7 @@ def buildCheckReleaseNotes() {
   def stageName = "check-release-notes"
   return [(stageName): {
     maybeStage(stageName, !isMaster()) {
-      withDockerEnv(DOCKER_IMAGES.stretch, [DockerOpts.MOUNT_MIRROR]) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "scripts/build/run_check_release_notes"
         deleteDir()
       }
@@ -779,7 +779,7 @@ def buildIcheck() {
   def stageName = "icheck"
   return [(stageName): {
     stage(stageName) {
-      withDockerEnv(DOCKER_IMAGES.stretch, [DockerOpts.MOUNT_MIRROR]) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "scripts/build/run_icheck"
         deleteDir()
       }
