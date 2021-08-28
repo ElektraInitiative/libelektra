@@ -10,7 +10,7 @@ RUN apt-get update && apt-get -y install \
         autotools-dev \
         bison \
         build-essential \
-        clang-6.0 \
+        clang-7 \
         cmake \
         curl \
         debsigs \
