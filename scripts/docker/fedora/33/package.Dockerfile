@@ -1,11 +1,8 @@
 FROM fedora:33
 
 RUN dnf upgrade --refresh -y \
-    && dnf install -y strace python3-pip \
+    && dnf install -y strace \
     && dnf clean all -y
-
-# Build dependency for libelektra-fuse
-RUN pip3 install wheel
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
