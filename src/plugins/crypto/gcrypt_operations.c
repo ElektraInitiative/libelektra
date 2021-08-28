@@ -370,7 +370,7 @@ int elektraCryptoGcryDecrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	}
 
 	// prepare buffer for plain text output and crypto operations
-	kdb_octet_t * output = elektraMalloc (payloadLen);
+	kdb_octet_t * output = elektraCalloc (payloadLen);
 	if (!output)
 	{
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);
