@@ -57,6 +57,7 @@ RUN apt-get update && apt-get -y install \
         libzmq3-dev \
         lintian \
         llvm \
+        mingw-w64 \
         ninja-build \
         patch \
         patchutils \
@@ -77,6 +78,7 @@ RUN apt-get update && apt-get -y install \
         unzip \
         valgrind \
         virtualenv \
+        wine \
     && rm -rf /var/lib/apt/lists/*
 
 # use lua5.4 since dh-lua installs liblua5.4-dev which sets the
