@@ -312,13 +312,6 @@ def dockerInit() {
       "./scripts/docker/website/Dockerfile",
       false
     )
-
-    /* Image to build openwrt package */
-    DOCKER_IMAGES.openwrt_sdk = dockerUtils.createDockerImageDesc(
-      'openwrt-sdk', dockerUtils.&idTesting,
-      './scripts/docker/openwrt/sdk',
-      './scripts/docker/openwrt/sdk/Dockerfile'
-    )
   }
 }
 
@@ -368,8 +361,6 @@ def generateReleaseStages() {
     false, // do not bundle git repo
     true // use placeholder dirs
   )
-
-  tasks << buildOpenwrtPackage(DOCKER_IMAGES.openwrt_sdk)
 
   return tasks
 }
@@ -681,26 +672,6 @@ def buildRelease(stageName, image, packageRevision='1',
           }
           deleteDir()
         }
-      }
-    }
-  }]
-}
-
-
-/**
- * Build OpenWrt packages with the current current git master state.
- *
- * @param image which docker image should be used
- */
-def buildOpenwrtPackage(image) {
-  def stageName = 'build-openwrt-package'
-  return [(stageName): {
-    stage(stageName) {
-      withDockerEnv(image, [DockerOpts.MOUNT_MIRROR]) {
-        checkout scm
-        sh "./scripts/release/prepare-openwrt-makefile.sh /home/build/openwrt/package/feeds/packages/elektra/Makefile"
-        sh "cd /home/build/openwrt && make package/feeds/packages/elektra/compile || make -j1 package/feeds/packages/elektra/compile V=sc"
-        deleteDir()
       }
     }
   }]
