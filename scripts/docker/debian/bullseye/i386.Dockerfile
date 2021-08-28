@@ -15,6 +15,8 @@ RUN dpkg --add-architecture i386 \
         pkg-config \
         gcc-multilib \
         g++-multilib \
+        gcc-mingw-w64-x86-64 \
+        g++-mingw-w64-x86-64 \
         file \
     && rm -rf /var/lib/apt/lists/*
 
