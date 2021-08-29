@@ -16,6 +16,8 @@ RUN dpkg --add-architecture i386 \
         gcc-multilib \
         g++-multilib \
         file \
+	python3-pip \
+	python3-wheel \
     && rm -rf /var/lib/apt/lists/*
 
 # Google Test
