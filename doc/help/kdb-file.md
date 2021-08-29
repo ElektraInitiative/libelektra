@@ -26,7 +26,8 @@ This command makes use of Elektra’s `resolver` plugin which the uer can learn 
 - `-n`, `--no-newline`:
   Suppress the newline at the end of the output.
 - `-N`, `--namespace <namespace>`:
-  Specify the namespace to use when writing cascading keys.
+  Use the specified namespace in case the provided key does not already have a namespace.
+  If the key does already have a namespace, this option does nothing.
 - `-v`, `--verbose`:
   Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
@@ -35,7 +36,8 @@ This command makes use of Elektra’s `resolver` plugin which the uer can learn 
 ## KDB
 
 - `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name.
+  Use the specified namespace in case the provided key does not already have a namespace.
+  If the key does already have a namespace, this option does nothing.
 
 ## EXAMPLES
 

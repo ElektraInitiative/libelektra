@@ -26,6 +26,7 @@ This command will either print the value of the key it retrieves or a default va
   Print never/auto(default)/always colored output.
 - `-N`, `--namespace=NS`:
   Use the specified namespace in case the provided key does not already have a namespace.
+  If the key does already have a namespace, this option does nothing.
 
 ## EXAMPLES
 
