@@ -169,6 +169,7 @@ _(Michael Tucek)_
 - ambiguous write operations now disabled in kdb _(Alexander Firbas)_
 
 ### KDB
+
 - `kdb set`, `kdb meta-set`: Only allow writes to the cascading namespace if the lookup succeeds (Otherwise, the operation is ambiguous and therefore aborted).
   No more guessing of namespaces in case a cascading key is given (`user:, system`: for `kdb set`, `spec:` for `kdb meta-set`), _(Alexander Firbas)_
 - `kdb set`, `kdb meta-set`: Validation of keys can no longer be bypassed by using non-cascading keys (except with the new --force (-f) option). _(Alexander Firbas)_
