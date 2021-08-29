@@ -94,12 +94,6 @@ int EditorCommand::execute (Cmdline const & cl)
 	KeySet oursToEdit = ours.cut (root);
 	KeySet original = oursToEdit.dup ();
 
-	if (cl.strategy == "validate")
-	{
-		prependNamespace (oursToEdit, cl.ns);
-		oursToEdit.cut (prependNamespace (root, cl.ns));
-	}
-
 	// export it to file
 	string format = cl.format;
 	if (argc > 1) format = cl.arguments[1];
@@ -167,15 +161,6 @@ int EditorCommand::execute (Cmdline const & cl)
 
 	printWarnings (cerr, errorKey, cl.verbose, cl.debug);
 	printError (cerr, errorKey, cl.verbose, cl.debug);
-
-	if (cl.strategy == "validate")
-	{
-		applyMeta (importedKeys, original);
-		kdb.set (importedKeys, root);
-		printWarnings (cerr, root, cl.verbose, cl.debug);
-		printError (cerr, root, cl.verbose, cl.debug);
-		return 0;
-	}
 
 	ThreeWayMerge merger;
 	MergeHelper helper;
