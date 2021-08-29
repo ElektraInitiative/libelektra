@@ -181,6 +181,8 @@ _(Michael Tucek)_
 
 - Add link and small improvements to [tutorial about writing specifications](/doc/tutorials/specification.md). _(Markus Raab)_
 - Fix broken links _(@lawli3t)_
+- doc: add pre/postconditions and invariants to module keymeta _(@lawli3t)_
+- <<TODO>>
 - Remove previous authors. _(Markus Raab)_
 - Updated the news template. _(Mihael Pranjić)_
 - Update tutorial and in-code comments for high-level API _(Tobias Schubert @qwepoizt)_

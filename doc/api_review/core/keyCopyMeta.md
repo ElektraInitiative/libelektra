@@ -25,12 +25,12 @@
 - [ ] Description of functions reads nicely  
        - [ ] it will take -> will take
 - [ ] `@pre`  
-       - [ ] 'dest is a valid Key'  
-       - [ ] 'source is a valid Key'
+       - [x] 'dest is a valid Key'  
+       - [x] 'source is a valid Key'
 - [x] `@post`
 - [ ] `@invariant`  
-       - [ ] 'dest stays a valid Key'  
-       - [ ] 'source stays a valid Key'
+       - [x] 'dest stays a valid Key'  
+       - [x] 'source stays a valid Key'
 - [ ] `@param` for every parameter  
        - [ ] too -> to  
        - [ ] name of the metadata -> name of the key in the metadata

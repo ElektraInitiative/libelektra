@@ -23,13 +23,13 @@
 - [ ] Description of functions reads nicely  
        - [ ] improve description
 - [ ] `@pre`  
-       - [ ] key should not have read-only metadata  
-       - [ ] metaName must be a valid key name
+       - [x] key should not have read-only metadata  
+       - [x] metaName must be a valid key name
 - [ ] `@post`  
-       - [ ] value set  
-       - [ ] Key has a meta-information Keyset (?)
+       - [x] value set  
+       - [x] Key has a meta-information Keyset (?)
 - [ ] `@invariant`  
-       - [ ] key stays valid
+       - [x] key stays valid
 - [ ] `@param` for every parameter  
        - [ ] metaName - add dot, split into two lines
 - [ ] `@return` / `@retval`  
