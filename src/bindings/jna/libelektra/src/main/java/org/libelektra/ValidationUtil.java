@@ -1,6 +1,7 @@
 package org.libelektra;
 
 import com.sun.jna.Pointer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -51,18 +52,21 @@ class ValidationUtil
 	 * Creates a key associated with the specified JNA {@link Pointer pointer} or
 	 * throws an exception provided by the specified {@code exceptionSupplier}
 	 *
+	 * @param <T>               Actual type of the return value
 	 * @param pointer           JNA pointer
+	 * @param factory           Factory for return value consuming {@code pointer}
 	 * @param exceptionSupplier Exception factory
 	 * @return New key object associated with the specified JNA {@link Pointer
 	 *         pointer}
 	 */
-	@Nonnull static Key checkKeyPointer (@Nullable Pointer pointer, Supplier<RuntimeException> exceptionSupplier)
+	@Nonnull
+	static <T> T checkKeyPointer (@Nullable Pointer pointer, Function<Pointer, T> factory, Supplier<RuntimeException> exceptionSupplier)
 	{
 		if (pointer == null)
 		{
 			throw exceptionSupplier.get ();
 		}
-		return new Key (pointer);
+		return factory.apply (pointer);
 	}
 
 	private ValidationUtil ()

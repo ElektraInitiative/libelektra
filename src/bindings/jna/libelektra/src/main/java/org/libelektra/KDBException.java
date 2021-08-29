@@ -11,7 +11,6 @@ import org.libelektra.exception.ConflictingStateException;
 import org.libelektra.exception.InstallationException;
 import org.libelektra.exception.InterfaceException;
 import org.libelektra.exception.InternalException;
-import org.libelektra.exception.KeyReleasedException;
 import org.libelektra.exception.OutOfMemoryException;
 import org.libelektra.exception.PluginMisbehaviorException;
 import org.libelektra.exception.ResourceException;
@@ -47,14 +46,14 @@ public abstract class KDBException extends Exception
 	 * @param errorKey Key containing {@code error/*} and {@code warnings/*} meta
 	 *                 keys
 	 * @return {@link KDBException} corresponding to the error information
-	 * @throws KeyReleasedException     if this {@code errorKey} has already been
+	 * @throws IllegalStateException    if this {@code errorKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code errorKey} is {@code null}
 	 */
 	@Nonnull public static KDBException getMappedException (Key errorKey)
 	{
 		argNotNull (errorKey, "Key 'errorKey'");
-		String errorNumber = errorKey.getMeta ("error/number").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+		String errorNumber = errorKey.getMeta ("error/number").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 
 		if (errorNumber.equals (ResourceException.ERROR_NUMBER))
 		{
@@ -106,7 +105,7 @@ public abstract class KDBException extends Exception
 		this.errorKey = errorKey;
 		warnings = new ArrayList<> ();
 
-		Optional<String> oWarningsKeyValue = errorKey.getMeta ("warnings").map (Key::getStringAndRelease);
+		Optional<String> oWarningsKeyValue = errorKey.getMeta ("warnings").map (ReadableKey::getString);
 		if (oWarningsKeyValue.isPresent ())
 		{
 			String lastArrayIndex = oWarningsKeyValue.get ();
@@ -121,8 +120,8 @@ public abstract class KDBException extends Exception
 	/**
 	 * Release the key backing this {@link KDBException}
 	 *
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 * @apiNote If this exception does not terminate your process, consider
 	 *          releasing the backing error key after processing it
 	 */
@@ -142,75 +141,75 @@ public abstract class KDBException extends Exception
 
 	/**
 	 * @return Elektra error number read from the error key backing this exception
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getErrorNumber ()
 	{
-		return errorKey.getMeta ("error/number").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+		return errorKey.getMeta ("error/number").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
 	 * @return The affected configuration file of the error or if not available
 	 *         returns the error key name
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getConfigFile ()
 	{
 		return errorKey.getMeta ("error/configfile")
-			.map (Key::getStringAndRelease)
+			.map (ReadableKey::getString)
 			.filter (s -> !s.isEmpty ())
 			.orElseGet (errorKey::getName);
 	}
 
 	/**
 	 * @return Mountpoint of the configuration
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getMountpoint ()
 	{
-		return errorKey.getMeta ("error/mountpoint").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+		return errorKey.getMeta ("error/mountpoint").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
 	 * @return Elektra specific debug information in the form of "At: file:line"
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getDebugInformation ()
 	{
 		return String.format (MSG_DEBUGINFO,
-				      errorKey.getMeta ("error/file").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND),
-				      errorKey.getMeta ("error/line").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND));
+				      errorKey.getMeta ("error/file").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND),
+				      errorKey.getMeta ("error/line").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND));
 	}
 
 	/**
 	 * @return Module which issued the error
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getModule ()
 	{
-		return errorKey.getMeta ("error/module").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+		return errorKey.getMeta ("error/module").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
 	 * @return Error reason read from the error key backing this exception
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Nonnull public String getReason ()
 	{
-		return errorKey.getMeta ("error/reason").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+		return errorKey.getMeta ("error/reason").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 	}
 
 	/**
 	 * @return The complete error information in a String with config file, mount
 	 *         point and debug information as it would be printed in the terminal
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Override public String getMessage ()
 	{
@@ -270,19 +269,17 @@ public abstract class KDBException extends Exception
 			Arrays.fill (underscores, '_');
 			final String warningKeyName = "warnings/#" + new String (underscores) + warningIndex;
 			warningNumber =
-				key.getMeta (warningKeyName + "/number").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
-			reason = key.getMeta (warningKeyName + "/reason").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
-			module = key.getMeta (warningKeyName + "/module").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND);
+				key.getMeta (warningKeyName + "/number").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
+			reason = key.getMeta (warningKeyName + "/reason").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
+			module = key.getMeta (warningKeyName + "/module").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 			debugInformation = String.format (
 				MSG_DEBUGINFO,
-				key.getMeta (warningKeyName + "/file").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND),
-				key.getMeta (warningKeyName + "/line").map (Key::getStringAndRelease).orElse (VALUE_META_KEY_NOT_FOUND));
-			mountpoint = key.getMeta (warningKeyName + "/mountpoint")
-					     .map (Key::getStringAndRelease)
-					     .orElse (VALUE_META_KEY_NOT_FOUND);
-			configFile = key.getMeta (warningKeyName + "/configfile")
-					     .map (Key::getStringAndRelease)
-					     .orElse (VALUE_META_KEY_NOT_FOUND);
+				key.getMeta (warningKeyName + "/file").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND),
+				key.getMeta (warningKeyName + "/line").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND));
+			mountpoint =
+				key.getMeta (warningKeyName + "/mountpoint").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
+			configFile =
+				key.getMeta (warningKeyName + "/configfile").map (ReadableKey::getString).orElse (VALUE_META_KEY_NOT_FOUND);
 		}
 
 		/**

@@ -85,34 +85,51 @@ The _user_ namespace is accessible without special rights, but if you try to wri
 
 ### Traversing Keys in a `KeySet`
 
+First we create a new `KDB` handle and fetch all keys for the desired namespace, in this example the whole `user` namespace. Since all all keys are put in the passed `keySet` variable we can then iterate through it.
+The `at(int)` method returns a new `Key` object for the native key with the corresponding position within the `keySet`.
+
 ```java
-var keyNamespace = Key.create("user:/");            // select a namespace from which all keys should be fetched
+var keyNamespace = Key.create("user:/");           // select a namespace from which all keys should be fetched
 try (KDB kdb = KDB.open()) {
-    var keySet = kdb.get(keyNamespace);             // fetch all keys int new key set
-    for (int i = 0; i < keySet.length(); i++) {     // traverse the set
+    var keySet = kdb.get(keyNamespace);            // fetch all keys into a new key set
+    for (int i = 0; i < keySet.length(); i++) {    // traverse the set
         var currentKey = keySet.at(i);
         System.out.println(String.format("%s: %s",
-                currentKey.getName(),               // fetch the key's name
-                currentKey.getString()));           // fetch the key's value
+                currentKey.getName(),              // fetch the key's name
+                currentKey.getString()));          // fetch the key's value
     }
 } catch (KDB.KDBException e) {
     e.printStackTrace();
 }
 ```
 
-First we create a new `KDB` session and fetch all keys for the desired namespace, in this example the whole `user` namespace. Since all all keys are put in the passed `keySet` variable we can then iterate through it.
-The `at(int)` method return a new `Key` object for the native key with the corresponding position within the `keySet`.
+`KeySet` also provides an iterator implementation:
+
+```java
+var keyNamespace = Key.create("user:/");           // select a namespace from which all keys should be fetched
+try (KDB kdb = KDB.open()) {
+    var iter = kdb.get(keyNamespace).iterator();   // fetch all keys into a new key set
+    while(iter.hasNext()) {                        // traverse the set
+        var currentKey = iter.next();
+        System.out.println(String.format("%s: %s",
+                currentKey.getName(),              // fetch the key's name
+                currentKey.getString()));          // fetch the key's value
+    }
+} catch (KDB.KDBException e) {
+    e.printStackTrace();
+}
+```
 
 Of course, alternatively a for each loop can be used:
 
 ```java
-var keyNamespace = Key.create("user:/");            // select a namespace from which all keys should be fetched
+var keyNamespace = Key.create("user:/");           // select a namespace from which all keys should be fetched
 try (KDB kdb = KDB.open()) {
-    var keySet = kdb.get(keyNamespace);             // fetch all keys int new key set
-    for (var currentKey : keySet) {                 // traverse the set
+    var keySet = kdb.get(keyNamespace);            // fetch all keys into a new key set
+    for (var currentKey : keySet) {                // traverse the set
         System.out.println(String.format("%s: %s",
-                currentKey.getName(),               // fetch the key's name
-                currentKey.getString()));           // fetch the key's value
+                currentKey.getName(),              // fetch the key's name
+                currentKey.getString()));          // fetch the key's value
     }
 } catch (KDB.KDBException e) {
     e.printStackTrace();

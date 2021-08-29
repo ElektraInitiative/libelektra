@@ -25,12 +25,12 @@
        - [ ] So you want -> Afterwards, when you want to iterate the meta-information, you have  
        - [ ] to **use** `keyNextMeta()`
 - [ ] `@pre`  
-       - [ ] add 'key must be a valid key'
+       - [x] add 'key must be a valid key'
 - [ ] `@post`  
-       - [ ] add 'key stays valid'  
-       - [ ] add 'internal iterator set to first entry in metadata'
+       - [x] add 'key stays valid'  
+       - [x] add 'internal iterator set to first entry in metadata'
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [ ] `@param` for every parameter  
        - [ ] key: Key whose internal iterator should be rewinded
 - [ ] `@return` / `@retval`  

@@ -21,12 +21,12 @@
        - [ ] add info that if `dest` is read-only nothing will happen
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] add 'dest is a valid Key'  
-       - [ ] add 'source is a valid Key'
+       - [x] add 'dest is a valid Key'  
+       - [x] add 'source is a valid Key'
 - [x] `@post`
 - [ ] `@invariant`  
-       - [ ] add 'dest stays a valid Key'  
-       - [ ] add 'source stays a valid Key'
+       - [x] add 'dest stays a valid Key'  
+       - [x] add 'source stays a valid Key'
 - [ ] `@param` for every parameter  
        - [ ] move in front of return values
 - [ ] `@return` / `@retval`  

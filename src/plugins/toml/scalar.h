@@ -43,6 +43,7 @@ typedef struct
 {
 	ScalarType type;
 	char * str;
+	char * orig;
 	size_t leadingSpaces;
 	size_t line;
 } Scalar;
@@ -59,26 +60,13 @@ typedef struct
  *
  * @param type The type of the scalar.
  * @param scalarString The raw string representation of the scalar.
+ * @param origString The original bytes as part of the file.
  * @param line The line number, where the scalar was read from.
  *
  * @retval Pointer On success.
  * @retval NULL When out-of-memory.
  */
-Scalar * createScalar (ScalarType type, char * scalarString, size_t line);
-
-/*
- * @brief Creates a new comment scalar.
- *
- * Uses the createScalar function, so beware of the limitations of it.
- *
- * @param scalarString The raw string representation of the comment, excluding it's starting character.
- * @param leadingSpaces Amount of spaces in front of the comment.
- * @param line The line number, where the comment was read from.
- *
- * @retval Pointer On success.
- * @retval NULL When out-of-memory.
- */
-Scalar * createScalarComment (char * scalarString, size_t spaces, size_t line);
+Scalar * createScalar (ScalarType type, char * scalarString, char * origString, size_t line);
 
 /*
  * @brief Creates a new scalar
@@ -88,13 +76,14 @@ Scalar * createScalarComment (char * scalarString, size_t spaces, size_t line);
  * This function is used in the lexer during the reading of non-string values.
  *
  * @param type The type of the scalar.
- * @param scalarString The raw string representation of the scalar.
+ * @param scalarString The string representation of the scalar.
+ * @param origString The original bytes as part of the file.
  * @param line The line number, where the scalar was read from.
  *
  * @retval Pointer On success.
  * @retval NULL When out-of-memory.
  */
-Scalar * createScalarDup (ScalarType type, const char * scalarString, size_t line);
+Scalar * createScalarDup (ScalarType type, const char * scalarString, const char * origString, size_t line);
 
 /*
  * @brief Frees up a scalar and any memory pointed within it.
@@ -140,15 +129,5 @@ bool isValidBareString (const char * str);
  */
 bool isValidDateTime (const Scalar * scalar);
 
-/*
- * @brief Strips a string of leading/trailing characters.
- *
- * @param str String for which to return a stripped copy.
- * @param count Number of leading and trailing characters to omit on copying.
- *
- * @retval Pointer Copy of the supplied string, stripped.
- * @retval NULL When out-of-memory.
- */
-char * stripTerminators (const char * str, size_t count);
 
 #endif // ELEKTRA_PLUGIN_TOML_SCALAR_H

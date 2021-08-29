@@ -15,7 +15,7 @@ import org.libelektra.Plugin;
 public class PropertiesStorage implements Plugin
 {
 
-	public static final String PLUGIN_NAME = "PropertiesStorage";
+	private static final String PLUGIN_NAME = "PropertiesStorage";
 
 	@Override public KeySet getConfig ()
 	{
@@ -37,7 +37,7 @@ public class PropertiesStorage implements Plugin
 			Optional<Key> oDescriptionKey = keySet.lookup (root + "/infos/description");
 			if (oDescriptionKey.isEmpty ())
 			{
-				return 0;
+				return STATUS_NO_UPDATE;
 			}
 
 			// append to description
@@ -53,13 +53,13 @@ public class PropertiesStorage implements Plugin
 		catch (IOException e)
 		{
 			parentKey.setError ("Could not read file");
-			return -1;
+			return STATUS_ERROR;
 		}
 		for (Map.Entry<Object, Object> e : properties.entrySet ())
 		{
 			keySet.append (Key.create (parentKey.getName () + "/" + e.getKey (), e.getValue ()));
 		}
-		return 0;
+		return STATUS_NO_UPDATE;
 	}
 
 	@Override public int set (KeySet keySet, Key parentKey)
@@ -76,19 +76,19 @@ public class PropertiesStorage implements Plugin
 		catch (IOException e)
 		{
 			parentKey.setError ("Could not write file");
-			return -1;
+			return STATUS_ERROR;
 		}
-		return 0;
+		return STATUS_SUCCESS;
 	}
 
 	@Override public int error (KeySet keySet, Key parentKey)
 	{
-		return 0;
+		return STATUS_NO_UPDATE;
 	}
 
 	@Override public int close (Key parentKey)
 	{
-		return 0;
+		return STATUS_NO_UPDATE;
 	}
 
 	@Override public String getName ()

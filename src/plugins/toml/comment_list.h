@@ -16,7 +16,7 @@
 typedef struct _CommentList
 {
 	char * str;
-	size_t spaceCount;
+	char * orig;
 	struct _CommentList * next;
 } CommentList;
 
@@ -25,12 +25,14 @@ typedef struct _CommentList
  * @brief Creates a new comment list linked list.
  *
  * @param comment Comment string for the first element in the list.
- * @param spaceCount Number of spaces in front of the comment.
+ * @param orig    The original bytes that appeared in the file,
+ *                including preceding whitespace the starting `#`
+ *                and leading whitespace after the `#`.
  * @retval Pointer to the new CommentList entry on success.
  * @retval NULL on memory allocation errors.
  *
  */
-CommentList * commentListNew (const char * comment, size_t spaceCount);
+CommentList * commentListNew (const char * comment, const char * orig);
 
 /**
  * @brief Completeley frees the given linked list.
@@ -48,7 +50,7 @@ void commentListFree (CommentList * root);
  * @retval Pointer to the new back of the list.
  * @retval NULL when the new entry could not be allocated.
  */
-CommentList * commentListAdd (CommentList * back, const char * comment, size_t spaceCount);
+CommentList * commentListAdd (CommentList * back, const char * comment, const char * orig);
 
 
 /**

@@ -6,8 +6,6 @@ import com.sun.jna.Pointer;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.libelektra.exception.KDBClosedException;
-import org.libelektra.exception.KeyReleasedException;
-import org.libelektra.exception.KeySetReleasedException;
 
 /**
  * Represents a session with the Elektra key database
@@ -38,7 +36,7 @@ public class KDB implements AutoCloseable
 	 * @return New KDB session
 	 * @throws KDBException             if opening the session fails - see
 	 *                                  specialization of {@link KDBException}
-	 * @throws KeySetReleasedException  if {@code contract} has already been
+	 * @throws IllegalStateException    if {@code contract} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code contract} is {@code null}
 	 * @see #goptsContract(String[], String[], Key, KeySet)
@@ -55,9 +53,9 @@ public class KDB implements AutoCloseable
 	 *
 	 * @param contract Contract configuring the {@code gopts} plugin
 	 * @return New KDB session
-	 * @throws KDBException            if opening the session fails - see
-	 *                                 specializations of {@link KDBException}
-	 * @throws KeySetReleasedException if {@code contract} has already been released
+	 * @throws KDBException          if opening the session fails - see
+	 *                               specializations of {@link KDBException}
+	 * @throws IllegalStateException if {@code contract} has already been released
 	 */
 	@Nonnull private static KDB openInternal (@Nullable KeySet contract) throws KDBException
 	{
@@ -79,7 +77,7 @@ public class KDB implements AutoCloseable
 	 * @return New KDB session
 	 * @throws KDBException             if opening the session fails - see
 	 *                                  specialization of {@link KDBException}
-	 * @throws KeyReleasedException     if {@code warningsKey} has already been
+	 * @throws IllegalStateException    if {@code warningsKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code warningsKey} is {@code null}
 	 * @see Key#create()
@@ -99,10 +97,8 @@ public class KDB implements AutoCloseable
 	 * @return New KDB session
 	 * @throws KDBException             if opening the session fails - see
 	 *                                  specialization of {@link KDBException}
-	 * @throws KeySetReleasedException  if {@code contract} has already been
-	 *                                  released
-	 * @throws KeyReleasedException     if {@code warningsKey} has already been
-	 *                                  released
+	 * @throws IllegalStateException    if {@code contract} or {@code warningsKey}
+	 *                                  has already been released
 	 * @throws IllegalArgumentException if {@code contract} or {@code warningsKey}
 	 *                                  is {@code null}
 	 * @see Key#create()
@@ -149,7 +145,7 @@ public class KDB implements AutoCloseable
 	 * @throws KDBException             if opening the session fails - see
 	 *                                  specialization of {@link KDBException}
 	 * @throws KDBClosedException       if this session has already been closed
-	 * @throws KeyReleasedException     if {@code parentKey} has already been
+	 * @throws IllegalStateException    if {@code parentKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code warningsKey} is {@code null}
 	 * @see Key#create()
@@ -177,10 +173,8 @@ public class KDB implements AutoCloseable
 	 * @param goptsConfig Config used for mounting the {@code gopts} plugin
 	 * @return New {@link KeySet} containing the contract
 	 * @throws IllegalArgumentException if any of the arguments are {@code null}
-	 * @throws KeySetReleasedException  if {@code goptsConfig} has already been
-	 *                                  released
-	 * @throws KeyReleasedException     if {@code parentKey} has already been
-	 *                                  released
+	 * @throws IllegalStateException    if {@code goptsConfig} or {@code parentKey}
+	 *                                  has already been released
 	 * @throws IllegalArgumentException if any of the specified parameters is
 	 *                                  {@code null}
 	 * @see KeySet#release()
@@ -205,10 +199,8 @@ public class KDB implements AutoCloseable
 	 *                    after calling this function.
 	 * @param goptsConfig Config used for mounting the {@code gopts} plugin
 	 * @throws IllegalArgumentException if any of the arguments are {@code null}
-	 * @throws KeySetReleasedException  if {@code contract} or {@code goptsConfig}
-	 *                                  has already been released
-	 * @throws KeyReleasedException     if {@code parentKey} has already been
-	 *                                  released
+	 * @throws IllegalStateException    if {@code contract}, {@code goptsConfig} or
+	 *                                  {@code parentKey} has already been released
 	 * @throws IllegalArgumentException if any of the specified parameters is
 	 *                                  {@code null}
 	 */
@@ -262,7 +254,7 @@ public class KDB implements AutoCloseable
 	 * @throws KDBException             if loading keys fails - see specialization
 	 *                                  of {@link KDBException}
 	 * @throws KDBClosedException       if this session has already been closed
-	 * @throws KeyReleasedException     if {@code parentKey} has already been
+	 * @throws IllegalStateException    if {@code parentKey} has already been
 	 *                                  released
 	 * @throws IllegalArgumentException {@code parentKey} is {@code null}
 	 * @see KeySet#release()
@@ -290,9 +282,8 @@ public class KDB implements AutoCloseable
 	 * @throws KDBException             if loading keys fails - see specialization
 	 *                                  of {@link KDBException}
 	 * @throws KDBClosedException       if this session has already been closed
-	 * @throws KeySetReleasedException  if {@code keySet} has already been released
-	 * @throws KeyReleasedException     if {@code parentKey} has already been
-	 *                                  released
+	 * @throws IllegalStateException    if {@code keySet} or {@code parentKey} has
+	 *                                  already been released
 	 * @throws IllegalArgumentException if {@code keySet} or {@code parentKey} is
 	 *                                  {@code null}
 	 * @see #get(Key)
@@ -331,9 +322,8 @@ public class KDB implements AutoCloseable
 	 * @throws KDBException             if storing keys fails - see specialization
 	 *                                  of {@link KDBException}
 	 * @throws KDBClosedException       if this session has already been closed
-	 * @throws KeySetReleasedException  if {@code keySet} has already been released
-	 * @throws KeyReleasedException     if {@code parentKey} has already been
-	 *                                  released
+	 * @throws IllegalStateException    if {@code keySet} or {@code parentKey} has
+	 *                                  already been released
 	 * @throws IllegalArgumentException if {@code keySet} or {@code parentKey} is
 	 *                                  {@code null}
 	 */

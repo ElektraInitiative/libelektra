@@ -262,9 +262,10 @@ interface Elektra extends Library {
 
 	int keyDecRef (Pointer key);
 
-	int keyGetRef (Pointer key);
+	// int keyGetRef (Pointer key);
 
 	/* Meta Info */
+
 	int keyRewindMeta (Pointer key);
 
 	@Nullable Pointer keyNextMeta (Pointer key);
@@ -279,7 +280,10 @@ interface Elektra extends Library {
 
 	int keySetMeta (Pointer key, String metaName, String newMetaString);
 
+	@Nullable Pointer keyMeta (Pointer key);
+
 	/* Methods for Making Tests */
+
 	int keyCmp (Pointer k1, Pointer k2);
 
 	int keyNeedSync (Pointer key);
@@ -295,6 +299,7 @@ interface Elektra extends Library {
 	int keyIsString (Pointer key);
 
 	/* Name Manipulation Methods */
+
 	String keyName (Pointer key);
 
 	int keyGetNameSize (Pointer key);
@@ -314,15 +319,18 @@ interface Elektra extends Library {
 	int keyAddBaseName (Pointer key, String baseName);
 
 	/* Value Manipulation Methods */
+
 	// byte[] keyValue(Pointer key);
+
 	int keyGetValueSize (Pointer key);
 
 	String keyString (Pointer key);
 
 	int keySetString (Pointer key, String newString);
 
-	// int keyGetBinary(Pointer key, byte[] returnedBinary, int maxSize);
-	// int keySetBinary(Pointer key, byte[] newBinary, int dataSize);
+	int keyGetBinary (Pointer key, byte[] returnedBinary, int maxSize);
+
+	int keySetBinary (Pointer key, @Nullable byte[] newBinary, int dataSize);
 
 	// KeySet methods -----------------------------------------------------------
 

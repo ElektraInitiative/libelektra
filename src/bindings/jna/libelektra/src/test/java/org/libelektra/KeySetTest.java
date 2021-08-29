@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
-import org.libelektra.exception.KeySetReleasedException;
 
 public class KeySetTest
 {
@@ -266,7 +265,7 @@ public class KeySetTest
 		assertEquals (oFoundKey.get ().getPointer (), key.getPointer ());
 	}
 
-	@Test (expected = KeySetReleasedException.class) public void test_accessingKeySetAfterRelease_shouldThrow ()
+	@Test (expected = IllegalStateException.class) public void test_accessingKeySetAfterRelease_shouldThrow ()
 	{
 		var keySet = KeySet.create ();
 		keySet.release ();

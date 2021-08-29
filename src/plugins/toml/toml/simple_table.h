@@ -36,6 +36,7 @@ ksNew (16,
 
 	keyNew (PREFIX "/table_2/sub_1/sub_2/a/b/c/d/fg",
 		KEY_VALUE, "test",
+		KEY_META, "tomltype", "string_basic",
 		KEY_META, "type", "string",
 		KEY_META, "order", "6",
 	KEY_END),

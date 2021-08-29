@@ -9,7 +9,7 @@ public class Echo implements Plugin
 
 	private KeySet conf;
 
-	public static final String PLUGIN_NAME = "Echo";
+	private static final String PLUGIN_NAME = "Echo";
 
 	public Echo ()
 	{
@@ -29,7 +29,7 @@ public class Echo implements Plugin
 		System.out.println (errorKey.getString ());
 		System.out.println (conf);
 		this.conf = conf;
-		return 0;
+		return STATUS_NO_UPDATE;
 	}
 
 	@Override public int get (KeySet keySet, Key parentKey)
@@ -41,7 +41,7 @@ public class Echo implements Plugin
 		var name = parentKey + "/infos/provides";
 		System.out.println ("name: " + name);
 		keySet.append (Key.create (name, "java"));
-		return 0;
+		return STATUS_NO_UPDATE;
 	}
 
 	@Override public int set (KeySet keySet, Key parentKey)
@@ -50,7 +50,7 @@ public class Echo implements Plugin
 		System.out.println (parentKey);
 		System.out.println (parentKey.getString ());
 		System.out.println (keySet);
-		return 0;
+		return STATUS_NO_UPDATE;
 	}
 
 	@Override public int error (KeySet keySet, Key parentKey)
@@ -59,7 +59,7 @@ public class Echo implements Plugin
 		System.out.println (parentKey);
 		System.out.println (parentKey.getString ());
 		System.out.println (keySet);
-		return 0;
+		return STATUS_NO_UPDATE;
 	}
 
 	@Override public int close (Key parentKey)
@@ -67,7 +67,7 @@ public class Echo implements Plugin
 		System.out.println ("close plugin");
 		System.out.println (parentKey);
 		System.out.println (parentKey.getString ());
-		return 0;
+		return STATUS_NO_UPDATE;
 	}
 
 	@Override public String getName ()

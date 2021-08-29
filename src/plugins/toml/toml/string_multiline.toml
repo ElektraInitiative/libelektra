@@ -13,7 +13,7 @@ line"""
 multiline_literal_leading_newline = '''
 Single line string'''
 multiline_literal_linending_newlines = '''
-Single \
+Multi \
 line \
 string'''
 another_single_ling_string = """
