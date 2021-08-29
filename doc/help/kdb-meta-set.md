@@ -35,6 +35,7 @@ There is some special handling for the metadata atime, mtime and ctime. They wil
   Suppress non-error messages.
 - `-N`, `--namespace=NS`:
   Use the specified namespace in case the provided key does not already have a namespace.
+  If the key does already have a namespace, this option does nothing.
 - `-f`, `--force`:
   Do not perform a cascasing lookup if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
 
@@ -47,7 +48,8 @@ There is some special handling for the metadata atime, mtime and ctime. They wil
   Same as `-q`: Suppress default messages.
 
 - `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name.
+  Use the specified namespace in case the provided key does not already have a namespace.
+  If the key does already have a namespace, this option does nothing.
 
 ## EXAMPLES
 

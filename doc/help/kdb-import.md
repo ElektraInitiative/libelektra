@@ -45,7 +45,8 @@ The strategies implemented by the merge framework are documented in
 - `-c`, `--plugins-config`:
   Add a configuration to the format plugin.
 - `-N`, `--namespace <namespace>`:
-  Specify the namespace to use when writing cascading keys.
+  Use the specified namespace in case the provided key does not already have a namespace.
+  If the key does already have a namespace, this option does nothing.
   See [below in KDB](#KDB).
 
 ## KDB
@@ -57,7 +58,8 @@ The strategies implemented by the merge framework are documented in
   Change default format (if none is given at commandline) and built-in default is not your preferred format.
 
 - `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name.
+  Use the specified namespace in case the provided key does not already have a namespace.
+  If the key does already have a namespace, this option does nothing.
 
 ## EXAMPLES
 
