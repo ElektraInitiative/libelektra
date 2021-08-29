@@ -73,31 +73,6 @@ int ImportCommand::execute (Cmdline const & cl)
 	printWarnings (cerr, errorKey, cl.verbose, cl.debug);
 	printError (cerr, errorKey, cl.verbose, cl.debug);
 
-	if (cl.strategy == "validate")
-	{
-		KeySet toset = prependNamespace (importedKeys, cl.ns);
-		originalKeys.cut (prependNamespace (root, cl.ns));
-		originalKeys.append (toset);
-
-		PluginPtr specPlugin = modules.load ("spec", cl.getPluginsConfig ());
-		if (specPlugin->get (originalKeys, root) == -1)
-		{
-			printWarnings (cerr, root, cl.verbose, cl.debug);
-			printError (cerr, errorKey, cl.verbose, cl.debug);
-			return -1;
-		}
-
-		if (cl.verbose)
-		{
-			cout.setf (std::ios_base::showbase);
-			std::cout << originalKeys << std::endl;
-		}
-
-		kdb.set (originalKeys, root);
-		printWarnings (cerr, root, cl.verbose, cl.debug);
-		return 0;
-	}
-
 	KeySet base = originalKeys.cut (root);
 	importedKeys = importedKeys.cut (root);
 	if (cl.withoutElektra)
