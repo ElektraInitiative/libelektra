@@ -51,17 +51,12 @@ The user should specify the format that the current configuration or keys are in
 - `-e`, `--editor <editor>`:
   Which editor to use.
 - `-N`, `--namespace`=<ns>:
-  Specify the namespace to use when writing cascading keys (`validation` strategy only).
+  Specify the namespace to use when writing cascading keys.
   See [below in KDB](#KDB).
 
 ## Strategies
 
-- `validate`:
-  apply metadata as received from base, and then cut+append all keys as imported.
-  If the appended keys do not have a namespace, the namespace given by `-N`
-  is added.
-
-The other strategies are implemented by the merge framework and are documented in
+The strategies implemented by the merge framework and are documented in
 [elektra-merge-strategy(7)](elektra-merge-strategy.md).
 
 ## KDB
@@ -74,7 +69,7 @@ The other strategies are implemented by the merge framework and are documented i
   Defaults to `/usr/bin/sensible-editor`, `/usr/bin/editor` or `/usr/bin/vi` if the key does not exist.
 
 - `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name (`validate` strategy only).
+  Specifies which default namespace should be used when setting a cascading name.
 
 ## EXAMPLES
 
