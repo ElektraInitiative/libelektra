@@ -20,11 +20,11 @@
        - [ ] is 0 a valid name? returns NULL if 0 is param
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] @pre name must be a valid key name
+       - [x] @pre name must be a valid key name
 - [ ] `@post`  
-       - [ ] @post returns a valid key object
+       - [x] @post returns a valid key object
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [ ] `@param` for every parameter  
        - [ ] add `@param` for `...`
 - [x] `@return` / `@retval`

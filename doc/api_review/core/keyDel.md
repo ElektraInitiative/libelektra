@@ -20,11 +20,11 @@
 - [x] Longer description of function containing common use cases
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
-       - [ ] @pre Key must not be null
+       - [x] @pre Key must not be null
 - [ ] `@post`  
-       - [ ] @post Key memory has been freed
+       - [x] @post Key memory has been freed
 - [ ] `@invariant  
-       - [ ] add (tbd)
+       - [x] add (tbd)
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
        - [ ] `0` when the key was freed and no references are held in keysets
