@@ -364,7 +364,7 @@ ssize_t keyGetString (const Key * key, char * returnedString, size_t maxSize)
  *
  * @pre @p newStringValue is a NULL terminated string
  * @post Value of the Key is set to the UTF-8 encoded value of @p newStringValue
- * @post Metadata keys "binary" / "origvalue" are cleared
+ * @post Metakey `meta:/binary` is cleared
  *
  * @param key the Key for which to set the string value
  * @param newStringValue NULL-terminated string to be set as @p key's
