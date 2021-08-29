@@ -493,6 +493,7 @@ ssize_t keyGetBinary (const Key * key, void * returnedBinary, size_t maxSize)
  * won't be changed. This will only happen in the successful case,
  * but not when -1 is returned.
  *
+ * @pre @p dataSize matches the length of @p newBinary
  * @pre @p newBinary is not NULL and @p dataSize > 0
  * @pre @p key is not read-only
  * @post @p key's value set exactly to the data in @p newBinary
