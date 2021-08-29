@@ -185,6 +185,7 @@ _(Michael Tucek)_
 - Fix broken links _(@lawli3t)_
 - <<TODO>>
 - Remove previous authors. _(Markus Raab)_
+- add pre/postconditions and invariants to module keytest _(@lawli3t)_
 - Updated the news template. _(Mihael Pranjić)_
 - Update tutorial and in-code comments for high-level API _(Tobias Schubert @qwepoizt)_
 - <<TODO>>

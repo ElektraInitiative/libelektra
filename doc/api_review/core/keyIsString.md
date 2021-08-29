@@ -22,11 +22,11 @@
 - [ ] Description of functions reads nicely  
        - [ ] rework last sentence, especially last part (split into two sentences?)
 - [ ] `@pre`  
-       - [ ] add
+       - [x] add
 - [ ] `@post`  
-       - [ ] add
+       - [x] add
 - [ ] `@invariant`  
-       - [ ] add
+       - [x] add
 - [x] `@param` for every parameter
 - [ ] `@return` / `@retval`  
        - [ ] replace 'it' with 'value of key' / 'key's value'
