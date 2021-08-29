@@ -290,7 +290,7 @@ int elektraCryptoGcryEncrypt (elektraCryptoHandle * handle, Key * k, Key * error
 	outputLen *= ELEKTRA_CRYPTO_GCRY_BLOCKSIZE;
 	outputLen += ELEKTRA_CRYPTO_MAGIC_NUMBER_LEN;
 	outputLen += sizeof (kdb_unsigned_long_t) + saltLen;
-	kdb_octet_t * output = elektraMalloc (outputLen);
+	kdb_octet_t * output = elektraCalloc (outputLen);
 	if (!output)
 	{
 		ELEKTRA_SET_OUT_OF_MEMORY_ERROR (errorKey);

@@ -10,7 +10,7 @@ RUN apt-get update && apt-get -y install \
         autotools-dev \
         bison \
         build-essential \
-        clang-6.0 \
+        clang-7 \
         cmake \
         curl \
         debsigs \
@@ -116,7 +116,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.1.1-bin.zip && unzip gradle-7.1.1-bin.zip && rm gradle-7.1.1-bin.zip && mv gradle-7.1.1 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.2-bin.zip && unzip gradle-7.2-bin.zip && rm gradle-7.2-bin.zip && mv gradle-7.2 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
