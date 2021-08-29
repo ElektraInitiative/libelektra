@@ -33,6 +33,7 @@ docker run -it elektra/elektra
 
 ## Highlights
 
+- `kdb` no longer permits write operations on cascading keys that do not correspond to an existsing key. See the details in the `Tools` section below and the new subsection on cascading writes in the [tutorial](/doc/tutorials/cascading.md) on cascading keys for further information. _(Alexander Firbas)_
 - <<HIGHLIGHT1>>
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
@@ -166,7 +167,17 @@ _(Michael Tucek)_
 
 - Really add all tools when using `-DTOOLS=ALL`. _(Markus Raab)_
 - ZeroMQ Hub: fix compilation and man page. _(Markus Raab)_
-- ambiguous write operations now disabled in kdb _(Alexander Firbas)_
+
+### KDB
+- `kdb set`, `kdb meta-set`: Only allow writes to the cascading namespace if the lookup succeeds (Otherwise, the operation is ambiguous and therefore aborted).
+  No more guessing of namespaces in case a cascading key is given (`user:, system`: for `kdb set`, `spec:` for `kdb meta-set`), _(Alexander Firbas)_
+- `kdb set`, `kdb meta-set`: Validation of keys can no longer be bypassed by using non-cascading keys (except with the new --force (-f) option). _(Alexander Firbas)_
+- `kdb get`, `kdb sget`, `kdb meta-get`, `kdb meta-set`: Enable `-N` flag for consistency with `kdb set`. _(Alexander Firbas)_
+- `kdb file`: Remove namespace guessing (in case a cascading key is given, it needs to resolve to an existing key). _(Alexander Firbas)_
+- `kdb editor/import`: Disable the use of cascading names (and the 'validate' strategy operating on cascading keys) entirely. _(Alexander Firbas)_
+- Update numerous tests to comply with changes above. _(Alexander Firbas)_
+- Add a new subsection on cascading writes to the [tutorial](/doc/tutorials/cascading.md) on cascading keys. _(Alexander Firbas)_
+
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
