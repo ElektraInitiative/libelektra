@@ -93,7 +93,7 @@ The **spec** namespace is used to store metadata about keys and therefore Elektr
 
 ## Write Operations and the cascading Namespace
 
-When a value is to be written to a cascading key, i.e. a key starting with '/', only cascading keys that resolve to some existing key may be used.
+If a value is to be written to a cascading key, i.e., a key starting with '/', only cascading keys that resolve to an existing key will be used.
 
 For example,
 
