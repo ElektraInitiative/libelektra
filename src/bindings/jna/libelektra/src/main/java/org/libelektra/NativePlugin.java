@@ -6,8 +6,6 @@ import com.sun.jna.Structure;
 import java.util.ArrayList;
 import java.util.List;
 import org.libelektra.exception.InstallationException;
-import org.libelektra.exception.KeyReleasedException;
-import org.libelektra.exception.KeySetReleasedException;
 
 /**
  * This class can be used to load native Elektra plugins to be used by Java
@@ -31,9 +29,9 @@ public class NativePlugin implements Plugin
 	 * @param pluginName The plugin name
 	 * @param errorKey   The errorKey
 	 * @param modules    TODO #3754 add parameter description
-	 * @throws InstallationException   if the plugin does not exist
-	 * @throws KeySetReleasedException if {@code modules} has already been released
-	 * @throws KeyReleasedException    if {@code errorKey} has already been released
+	 * @throws InstallationException if the plugin does not exist
+	 * @throws IllegalStateException if {@code modules} or {@code errorKey} has
+	 *                               already been released
 	 */
 	public NativePlugin (String pluginName, Key errorKey, KeySet modules) throws InstallationException
 	{
@@ -56,9 +54,8 @@ public class NativePlugin implements Plugin
 	 * @param errorKey   The errorKey
 	 * @param config     TODO #3754 add parameter description and update other
 	 * @param modules    TODO #3754 add parameter description and update other
-	 * @throws KeySetReleasedException if {@code modules} or {@code config} has
-	 *                                 already been released
-	 * @throws KeyReleasedException    if {@code errorKey} has already been released
+	 * @throws IllegalStateException if {@code modules}, {@code config} or
+	 *                               {@code errorKey} has already been released
 	 */
 	public NativePlugin (String pluginName, KeySet modules, KeySet config, Key errorKey)
 	{
@@ -86,7 +83,7 @@ public class NativePlugin implements Plugin
 	 *
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
 	 * @return 0 if success or -1 otherwise
-	 * @throws KeyReleasedException if {@code errorKey} has already been released
+	 * @throws IllegalStateException if {@code errorKey} has already been released
 	 */
 	public int kdbOpen (Key errorKey)
 	{
@@ -110,9 +107,9 @@ public class NativePlugin implements Plugin
 	 * @param keySet   The KeySet to transform
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
 	 * @return 0 if success or -1 otherwise
-	 * @throws KDBException            if return value was -1
-	 * @throws KeySetReleasedException if {@code keySet} has already been released
-	 * @throws KeyReleasedException    if {@code errorKey} has already been released
+	 * @throws KDBException          if return value was -1
+	 * @throws IllegalStateException if {@code keySet} or {@code errorKey} has
+	 *                               already been released
 	 */
 	@Override public int set (KeySet keySet, Key errorKey) throws KDBException
 	{
@@ -133,9 +130,9 @@ public class NativePlugin implements Plugin
 	 * @param keySet   The KeySet you want returned
 	 * @param errorKey must be a valid key, e.g. created with Key.create()
 	 * @return 0 if success or -1 otherwise
-	 * @throws KDBException            if return value was -1
-	 * @throws KeySetReleasedException if {@code keySet} has already been released
-	 * @throws KeyReleasedException    if {@code errorKey} has already been released
+	 * @throws KDBException          if return value was -1
+	 * @throws IllegalStateException if {@code keySet} or {@code errorKey} has
+	 *                               already been released
 	 */
 	@Override public int get (KeySet keySet, Key errorKey) throws KDBException
 	{
@@ -157,8 +154,8 @@ public class NativePlugin implements Plugin
 	 * @param errorKey must be a valid key, e.g. created with Key.create() and
 	 *                 contains error information
 	 * @return 0 if success or -1 otherwise
-	 * @throws KeySetReleasedException if {@code keySet} has already been released
-	 * @throws KeyReleasedException    if {@code errorKey} has already been released
+	 * @throws IllegalStateException if {@code keySet} or {@code errorKey} has
+	 *                               already been released
 	 */
 	@Override public int error (KeySet keySet, Key errorKey)
 	{

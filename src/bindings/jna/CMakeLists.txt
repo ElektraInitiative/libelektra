@@ -86,6 +86,7 @@ if (Java_JAVAC_EXECUTABLE)
 					${JNA_BINDING_SOURCE_DIRECTORY}/package-info.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/Plugin.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/PluginLoader.java
+					${JNA_BINDING_SOURCE_DIRECTORY}/ReadableKey.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/ReferenceCleaner.java
 					${JNA_BINDING_SOURCE_DIRECTORY}/ValidationUtil.java
 					${JNA_BINDING_SOURCE_DIRECTORY_PLUGIN}/Echo.java
@@ -100,9 +101,7 @@ if (Java_JAVAC_EXECUTABLE)
 					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeyException.java
 					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeyMetaException.java
 					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeyNameException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeyReleasedException.java
 					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeySetAppendException.java
-					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeySetReleasedException.java
 					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/KeyStringValueException.java
 					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/LogicalException.java
 					${JNA_BINDING_SOURCE_DIRECTORY_EXCEPTION}/OutOfMemoryException.java
@@ -161,6 +160,7 @@ if (Java_JAVAC_EXECUTABLE)
 				install (
 					FILES
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}.jar"
+						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-all.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-javadoc.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/libs/libelektra-${KDB_VERSION}-sources.jar"
 						"${CMAKE_CURRENT_BINARY_DIR}/libelektra/build/publications/libelektra/libelektra-${KDB_VERSION}.pom.xml"

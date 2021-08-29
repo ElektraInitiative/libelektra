@@ -1,10 +1,7 @@
 package org.libelektra.plugin;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -64,12 +61,9 @@ public class WhitelistPlugin implements Plugin
 		{
 			// look whether a whitelist has been defined
 			Set<String> whitelist = new HashSet<> ();
-			key.rewindMeta ();
-			Optional<Key> oCurrentMetaKey;
 			int warningIndex = 0;
-			while ((oCurrentMetaKey = key.nextMeta ()).isPresent ())
+			for (var metaKey : key)
 			{
-				var metaKey = oCurrentMetaKey.get ();
 				if (META_WHITELISTENTRY_PATTERN.matcher (metaKey.getName ()).matches ())
 				{
 					if (META_WHITELISTENTRY_VALID_PATTERN.matcher (metaKey.getName ()).matches ())

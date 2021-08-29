@@ -21,7 +21,15 @@ if (BUILD_SHARED)
 	add_executable (kdb $<TARGET_OBJECTS:kdb-objects>)
 	add_dependencies (kdb kdb_gen_templates_generated)
 
-	target_link_libraries (kdb elektra-core elektra-kdb elektratools elektra-opts elektra-merge)
+	find_package (Threads)
+	target_link_libraries (
+		kdb
+		${CMAKE_THREAD_LIBS_INIT}
+		elektra-core
+		elektra-kdb
+		elektratools
+		elektra-opts
+		elektra-merge)
 
 	install (
 		TARGETS kdb

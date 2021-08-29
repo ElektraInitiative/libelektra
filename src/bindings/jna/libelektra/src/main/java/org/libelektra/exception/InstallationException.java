@@ -17,8 +17,8 @@ public class InstallationException extends PermanentException
 	/**
 	 * @return The complete error information in a String with config file, mount
 	 *         point and debug information as it would be printed in the terminal
-	 * @throws KeyReleasedException if this error key backing this
-	 *                              {@link KDBException} has already been released
+	 * @throws IllegalStateException if this error key backing this
+	 *                               {@link KDBException} has already been released
 	 */
 	@Override public String getMessage ()
 	{

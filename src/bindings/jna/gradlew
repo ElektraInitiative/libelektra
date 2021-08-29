@@ -72,7 +72,7 @@ CYGWIN*)
 Darwin*)
 	darwin=true
 	;;
-MINGW*)
+MSYS* | MINGW*)
 	msys=true
 	;;
 NONSTOP*)
