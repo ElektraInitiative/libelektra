@@ -23,14 +23,7 @@ The `storage` plugin can be configured at compile-time or changed by the link `l
 Conflicts can occur when importing a configuration to a part of the database where keys already exist.
 Conflicts when importing can be resolved using a strategy with the `-s` argument.
 
-Specific to `kdb import` the following strategy exists:
-
-- `validate`:
-  apply metadata as received from base, and then cut+append all keys as imported.
-  If the appended keys do not have a namespace, the namespace given by `-N`
-  is added.
-
-The other strategies are implemented by the merge framework and are documented in
+The strategies implemented by the merge framework are documented in
 [elektra-merge-strategy(7)](elektra-merge-strategy.md).
 
 ## OPTIONS
@@ -52,7 +45,7 @@ The other strategies are implemented by the merge framework and are documented i
 - `-c`, `--plugins-config`:
   Add a configuration to the format plugin.
 - `-N`, `--namespace <namespace>`:
-  Specify the namespace to use when writing cascading keys (`validate` strategy only).
+  Specify the namespace to use when writing cascading keys.
   See [below in KDB](#KDB).
 
 ## KDB
@@ -64,7 +57,7 @@ The other strategies are implemented by the merge framework and are documented i
   Change default format (if none is given at commandline) and built-in default is not your preferred format.
 
 - `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name (`validate` strategy only).
+  Specifies which default namespace should be used when setting a cascading name.
 
 ## EXAMPLES
 
