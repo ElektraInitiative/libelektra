@@ -25,19 +25,10 @@ This command makes use of Elektra’s `resolver` plugin which the uer can learn 
   Print never/auto(default)/always colored output.
 - `-n`, `--no-newline`:
   Suppress the newline at the end of the output.
-- `-N`, `--namespace <namespace>`:
-  Use the specified namespace in case the provided key does not already have a namespace.
-  If the key does already have a namespace, this option does nothing.
 - `-v`, `--verbose`:
   Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
-
-## KDB
-
-- `/sw/elektra/kdb/#0/current/namespace`:
-  Use the specified namespace in case the provided key does not already have a namespace.
-  If the key does already have a namespace, this option does nothing.
 
 ## EXAMPLES
 

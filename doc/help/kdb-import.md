@@ -44,10 +44,6 @@ The strategies implemented by the merge framework are documented in
   Give debug information. Prints additional debug information in case of errors/warnings.
 - `-c`, `--plugins-config`:
   Add a configuration to the format plugin.
-- `-N`, `--namespace <namespace>`:
-  Use the specified namespace in case the provided key does not already have a namespace.
-  If the key does already have a namespace, this option does nothing.
-  See [below in KDB](#KDB).
 
 ## KDB
 
@@ -56,10 +52,6 @@ The strategies implemented by the merge framework are documented in
 
 - `/sw/elektra/kdb/#0/current/format`
   Change default format (if none is given at commandline) and built-in default is not your preferred format.
-
-- `/sw/elektra/kdb/#0/current/namespace`:
-  Use the specified namespace in case the provided key does not already have a namespace.
-  If the key does already have a namespace, this option does nothing.
 
 ## EXAMPLES
 
