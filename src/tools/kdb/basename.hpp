@@ -35,12 +35,12 @@ public:
 	{
 		return "Get the basename of a key.";
 	}
-	
+
 	virtual std::string getLongHelpText () override
 	{
 		return "For example, \"kdb basename user:/key/subkey\" will yield \"subkey\".\n";
 	}
-	
+
 	virtual int execute (Cmdline const & cmdline) override;
 };
 

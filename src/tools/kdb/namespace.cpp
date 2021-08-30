@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#include <namespace.hpp>
-#include <nameparthelper.hpp>
 #include <cmdline.hpp>
+#include <nameparthelper.hpp>
+#include <namespace.hpp>
 
 
 using namespace std;

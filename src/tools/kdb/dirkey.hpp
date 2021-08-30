@@ -35,12 +35,12 @@ public:
 	{
 		return "Get the directory key of a key.";
 	}
-	
+
 	virtual std::string getLongHelpText () override
 	{
 		return "For example, \"kdb dirkey user:/key/subkey\" will yield \"user:/key\".\n";
 	}
-	
+
 	virtual int execute (Cmdline const & cmdline) override;
 };
 

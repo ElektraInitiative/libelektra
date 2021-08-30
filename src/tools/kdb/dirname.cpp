@@ -6,9 +6,9 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
+#include <cmdline.hpp>
 #include <dirname.hpp>
 #include <nameparthelper.hpp>
-#include <cmdline.hpp>
 
 
 using namespace std;
