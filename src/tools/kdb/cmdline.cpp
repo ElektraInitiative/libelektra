@@ -41,7 +41,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
   debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
   noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
   inputFile (""), null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins (""),
-  globalPlugins ("spec"), pluginsConfig (""), color ("auto"), ns (""), editor (), bookmarks (), profile ("current"),
+  globalPlugins ("spec"), pluginsConfig (""), color ("auto"), editor (), bookmarks (), profile ("current"),
 
   executable (), commandName ()
 {
@@ -236,14 +236,6 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		long_options.push_back (o);
 		helpText += "-3 --third               Suppress the third column.\n";
 	}
-	optionPos = acceptedOptions.find ('N');
-	if (acceptedOptions.find ('N') != string::npos)
-	{
-		acceptedOptions.insert (optionPos + 1, ":");
-		option o = { "namespace", required_argument, nullptr, 'N' };
-		long_options.push_back (o);
-		helpText += "-N --namespace <ns>      Specify the namespace to use for cascading keys.\n";
-	}
 	optionPos = acceptedOptions.find ('c');
 	if (optionPos != string::npos)
 	{
@@ -322,9 +314,6 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 
 				k = conf.lookup (dirname + "plugins/global");
 				if (k) globalPlugins = k.get<string> ();
-
-				k = conf.lookup (dirname + "namespace");
-				if (k) ns = k.get<string> ();
 
 				k = conf.lookup (dirname + "verbose");
 				if (k) verbose = k.get<bool> ();
@@ -475,9 +464,6 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		case '3':
 			third = false;
 			break;
-		case 'N':
-			ns = optarg;
-			break;
 		case 'c':
 			pluginsConfig = optarg;
 			break;
@@ -538,11 +524,6 @@ kdb::Key Cmdline::createKey (int pos, bool allowCascading) const
 			throw invalid_argument ("cannot find bookmark " + bookmark.getName ());
 		}
 		root = bookmark;
-	}
-
-	if (root.isCascading () && !ns.empty ())
-	{
-		root = prependNamespace (root, ns);
 	}
 
 	if (!root.isValid ())
