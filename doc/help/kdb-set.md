@@ -31,10 +31,6 @@ To set a key to a negative value, `--` has to be used to stop option processing.
   Print never/auto(default)/always colored output.
 - `-q`, `--quiet`:
   Suppress non-error messages.
-- `-N`, `--namespace=NS`:
-  Use the specified namespace in case the provided key does not already have a namespace.
-  If the key does already have a namespace, this option does nothing.
-  See [below in KDB](#KDB).
 - `--`:
   Do not process any following arguments starting with `-` as options.
 - `-v`, `--verbose`:
@@ -51,10 +47,6 @@ To set a key to a negative value, `--` has to be used to stop option processing.
 
 - `/sw/elektra/kdb/#0/current/quiet`:
   Same as `-q`: Suppress default messages.
-
-- `/sw/elektra/kdb/#0/current/namespace`:
-  Use the specified namespace in case the provided key does not already have a namespace.
-  If the key does already have a namespace, this option does nothing.
 
 ## EXAMPLES
 

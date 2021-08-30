@@ -50,10 +50,6 @@ The user should specify the format that the current configuration or keys are in
   Give debug information. Prints additional debug information in case of errors/warnings.
 - `-e`, `--editor <editor>`:
   Which editor to use.
-- `-N`, `--namespace`=<ns>:
-  Use the specified namespace in case the provided key does not already have a namespace.
-  If the key does already have a namespace, this option does nothing.
-  See [below in KDB](#KDB).
 
 ## Strategies
 
@@ -68,10 +64,6 @@ The strategies implemented by the merge framework and are documented in
 - `/sw/elektra/kdb/#0/current/editor`:
   The default editor, if no `-e` option is given.
   Defaults to `/usr/bin/sensible-editor`, `/usr/bin/editor` or `/usr/bin/vi` if the key does not exist.
-
-- `/sw/elektra/kdb/#0/current/namespace`:
-  Use the specified namespace in case the provided key does not already have a namespace.
-  If the key does already have a namespace, this option does nothing.
 
 ## EXAMPLES
 
