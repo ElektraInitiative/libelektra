@@ -238,13 +238,11 @@ kdb file dir:/tests/tutorial
 # STDOUT-REGEX: /.*/tutorial\.dump
 ```
 
-If you want to set a key for another namespace and do not want to go without validation,
-consider that the spec plugin works only when you use cascading keys.
-You can work around that by setting the keys with the `-N` option:
+If you want to go without validation, you can work around that by setting the keys with the `-f` (`--force`) option:
 
 ```sh
-kdb set -N system /tests/tutorial/links/elektra https://www.libelektra.org
-#> Create a new key system:/tests/tutorial/links/elektra with string "https://www.libelektra.org"
+kdb set -f system:/tests/tutorial/links/elektra "invalid url"
+#> Create a new key system:/tests/tutorial/links/elektra with string "invalid url"
 ```
 
 ## Rejecting Configuration Keys
