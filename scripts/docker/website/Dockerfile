@@ -49,7 +49,7 @@ RUN --mount=type=tmpfs,target=/tmp \
 ARG URL=https://www.libelektra.org/
 RUN kdb global-mount \
     && kdb mount-website-config \
-    && kdb set -N system /sw/elektra/websitefrontend/#0/current/website/url "${URL}" \
+    && kdb set system:/sw/elektra/websitefrontend/#0/current/website/url "${URL}" \
     && kdb build-website
 
 # FROM nginx:alpine
