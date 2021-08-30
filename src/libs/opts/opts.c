@@ -1814,11 +1814,13 @@ void setOption (Key * option, const char * value, bool repeated)
 int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool writeArgs, bool * argsWritten, KeySet * options,
 		  struct Specification * spec, KeySet * ks, const char * progname, const char ** envp, Key * parentKey)
 {
+	// Check if help message should be generated
 	Key * helpKey = keyNew (keyName (command), KEY_END);
 	keyAddName (helpKey, "/long/help");
+
+	// Generate help message
 	if (ksLookup (options, helpKey, KDB_O_DEL) != NULL)
 	{
-		// show help
 		char * lastSlash = strrchr (progname, '/');
 		if (lastSlash != NULL)
 		{
@@ -1844,57 +1846,44 @@ int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool write
 		elektraFree (envsText);
 		return 1;
 	}
-
-	KeySet * envValues = parseEnvp (envp);
-
-	Key * argsParent = keyNew (keyName (command), KEY_END);
-	keyAddBaseName (argsParent, "args");
-	KeySet * args = elektraArrayGet (argsParent, options);
-	keyDel (argsParent);
-
-	Key * keyWithOpt;
-	ksRewind (spec->keys);
-	while ((keyWithOpt = ksNext (spec->keys)) != NULL)
+	else // Don't generate help message
 	{
-		if (spec->useSubcommands)
+		KeySet * envValues = parseEnvp (envp);
+
+		Key * argsParent = keyNew (keyName (command), KEY_END);
+		keyAddBaseName (argsParent, "args");
+		KeySet * args = elektraArrayGet (argsParent, options);
+		keyDel (argsParent);
+
+		Key * keyWithOpt;
+		ksRewind (spec->keys);
+		while ((keyWithOpt = ksNext (spec->keys)) != NULL)
 		{
-			Key * checkKey = keyDup (keyWithOpt, KEY_CP_ALL);
-			if (strcmp (keyBaseName (keyWithOpt), "#") == 0)
+			if (spec->useSubcommands)
 			{
-				keySetBaseName (checkKey, NULL); // remove #
+				Key * checkKey = keyDup (keyWithOpt, KEY_CP_ALL);
+				if (strcmp (keyBaseName (keyWithOpt), "#") == 0)
+				{
+					keySetBaseName (checkKey, NULL); // remove #
+				}
+
+				int result = keyIsDirectlyBelow (commandKey, checkKey);
+				keyDel (checkKey);
+
+				if (result != 1)
+				{
+					continue;
+				}
 			}
 
-			int result = keyIsDirectlyBelow (commandKey, checkKey);
-			keyDel (checkKey);
-
-			if (result != 1)
+			if (keyGetMeta (keyWithOpt, "command") != NULL)
 			{
-				continue;
+				Key * procKey = keyNew ("proc:/", KEY_VALUE, "", KEY_END);
+				keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
+				ksAppendKey (ks, procKey);
 			}
-		}
 
-		if (keyGetMeta (keyWithOpt, "command") != NULL)
-		{
-			Key * procKey = keyNew ("proc:/", KEY_VALUE, "", KEY_END);
-			keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
-			ksAppendKey (ks, procKey);
-		}
-
-		int result = writeOptionValues (ks, keyWithOpt, options, parentKey);
-		if (result < 0)
-		{
-			ksDel (envValues);
-			ksDel (args);
-			return -1;
-		}
-		else if (result > 0)
-		{
-			continue;
-		}
-
-		if (writeArgs)
-		{
-			result = writeArgsValues (ks, keyWithOpt, command, spec->argIndices, args, parentKey);
+			int result = writeOptionValues (ks, keyWithOpt, options, parentKey);
 			if (result < 0)
 			{
 				ksDel (envValues);
@@ -1903,27 +1892,42 @@ int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool write
 			}
 			else if (result > 0)
 			{
-				if (argsWritten != NULL)
-				{
-					*argsWritten = true;
-				}
 				continue;
+			}
+
+			if (writeArgs)
+			{
+				result = writeArgsValues (ks, keyWithOpt, command, spec->argIndices, args, parentKey);
+				if (result < 0)
+				{
+					ksDel (envValues);
+					ksDel (args);
+					return -1;
+				}
+				else if (result > 0)
+				{
+					if (argsWritten != NULL)
+					{
+						*argsWritten = true;
+					}
+					continue;
+				}
+			}
+
+			result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
+			if (result < 0)
+			{
+				ksDel (envValues);
+				ksDel (args);
+				return -1;
 			}
 		}
 
-		result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
-		if (result < 0)
-		{
-			ksDel (envValues);
-			ksDel (args);
-			return -1;
-		}
+		ksDel (envValues);
+		ksDel (args);
+
+		return 0;
 	}
-
-	ksDel (envValues);
-	ksDel (args);
-
-	return 0;
 }
 
 KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
