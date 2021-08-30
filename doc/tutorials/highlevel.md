@@ -374,10 +374,10 @@ To configure your application you can use `kdb`:
 kdb set "/sw/example/myapp/#0/current/mydouble" 15.4
 ```
 
-If you want to set a value system-wide (not just for your user) you can use `-N system`:
+If you want to set a value system-wide (not just for your user) you can use the system namespace:
 
 ```sh
-kdb set -N system "/sw/example/myapp/#0/current/mydouble" 15.4
+kdb set "system:/sw/example/myapp/#0/current/mydouble" 15.4
 ```
 
 Always use the cascading version of `kdb set` (i.e. the keyname begins with a slash `/`), otherwise type checking and other plugins might not
