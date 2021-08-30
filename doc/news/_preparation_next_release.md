@@ -47,11 +47,9 @@ docker run -it elektra/elektra
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### opts
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The `opts` plugin now includes deeply nested options and arguments in the help message. _(Tobias Schubert @qwepoizt)_
 
 ### <<Plugin2>>
 
