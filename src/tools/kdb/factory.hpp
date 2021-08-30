@@ -23,11 +23,14 @@
 #include <external.hpp>
 
 // TODO: to add a new command, 1.) include your header here
+#include <basename.hpp>
 #include <cache.hpp>
 #include <cmerge.hpp>
 #include <complete.hpp>
 #include <convert.hpp>
 #include <cp.hpp>
+#include <dirkey.hpp>
+#include <dirname.hpp>
 #include <editor.hpp>
 #include <export.hpp>
 #include <file.hpp>
@@ -47,6 +50,7 @@
 #include <metaset.hpp>
 #include <mount.hpp>
 #include <mv.hpp>
+#include <namespace.hpp>
 #include <plugincheck.hpp>
 #include <plugininfo.hpp>
 #include <pluginlist.hpp>
@@ -59,10 +63,6 @@
 #include <specmount.hpp>
 #include <test.hpp>
 #include <umount.hpp>
-#include <namespace.hpp>
-#include <basename.hpp>
-#include <dirname.hpp>
-#include <dirkey.hpp>
 
 class Instancer
 {

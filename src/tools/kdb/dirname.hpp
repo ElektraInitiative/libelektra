@@ -35,12 +35,12 @@ public:
 	{
 		return "Get the cascading directory name of a key.";
 	}
-	
+
 	virtual std::string getLongHelpText () override
 	{
 		return "For example, \"kdb dirname user:/key/subkey\" will yield \"/key\".\n";
 	}
-	
+
 	virtual int execute (Cmdline const & cmdline) override;
 };
 

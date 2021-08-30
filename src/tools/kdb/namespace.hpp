@@ -35,13 +35,13 @@ public:
 	{
 		return "Get the namespace of a key (trailing \':\' included).";
 	}
-	
+
 	virtual std::string getLongHelpText () override
 	{
 		return "For example, \"kdb namespace user:/key\" will yield \"user:\",\n"
 		       "and, \"kdb namespace /key\" will yield the empty string.\n";
 	}
-	
+
 	virtual int execute (Cmdline const & cmdline) override;
 };
 

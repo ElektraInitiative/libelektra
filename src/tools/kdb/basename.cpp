@@ -7,8 +7,8 @@
  */
 
 #include <basename.hpp>
-#include <nameparthelper.hpp>
 #include <cmdline.hpp>
+#include <nameparthelper.hpp>
 
 
 using namespace std;
