@@ -1,0 +1,43 @@
+# kdb-dirkey(1) -- Get the directory name of a key name including namespace
+
+## SYNOPSIS
+
+`kdb dirkey <key name>`
+
+Where `key name` is the name of the key.
+
+## DESCRIPTION
+
+This command is used to retrieve the directory name of a key, including namespace.
+
+## RETURN VALUES
+
+This command will return the following values as an exit status:
+
+- 0:
+  No errors.
+- 7:
+  invalid key name passed, see [kdb(1)](kdb.md) for a list of return codes used by kdb.
+
+## OPTIONS
+
+- `-n`, `--no-newline`:
+  Suppress the newline at the end of the output.
+
+## EXAMPLES
+
+```sh
+kdb dirkey user:/key/subkey
+#> user:/key
+
+kdb dirkey /
+#> /
+```
+
+## SEE ALSO
+
+- Use [kdb-dirname(1)](kdb-dirname.md) to obtain the directory of a key *without namespace included*.
+- See [kdb-namespace(1)](kdb-namespace.md), [kdb-basename(1)](kdb-basename.md) for other namepart extraction operations.
+- The UNIX analogue [DIRNAME(1)].
+- To get keys in shell scripts, you can use [kdb-sget(1)](kdb-sget.md).
+- [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.
