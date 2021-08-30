@@ -1044,6 +1044,40 @@ static void test_help (void)
 
 	ksDel (ks);
 
+
+	// ---
+	// with option keys nested deeply
+	// --
+
+	const char * expectedHelpMainDeep =
+		"Usage: prog [OPTION...] [<dynamic>...]\n"
+		"\n"
+		"OPTIONS\n"
+		"  --help                      Print this help message\n"
+		"  -x, --notdirectlybelow      \n"
+	 	"  -v, --version               \n"
+		"\n"
+		"PARAMETERS\n"
+		"  dynamic...                  \n";
+
+	ks = ksNew (10, keyNew (SPEC_BASE_KEY, KEY_END),
+		    keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META, "opt/arg",
+			    "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/oneleveldown/", KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
+		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown", KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
+		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown/notdirectlybelow", KEY_META, "opt", "x", KEY_META, "opt/long", "notdirectlybelow", KEY_META, "opt/arg",
+			    "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "args", "remaining", KEY_END), KS_END);
+	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
+
+	succeed_if (elektraGetOpts (ks, ARGS ("--help"), NO_ENVP, errorKey) == 1, "help not generated");
+	checkHelpMessage (errorKey, expectedHelpMainDeep);
+	keyDel (errorKey);
+
+	ksDel (ks);
+
+
+
 	// ---
 	// with commands
 	// --
