@@ -49,7 +49,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 ### opts
 
-- The `opts` plugin now includes deeply nested options and arguments in the help message. _(Tobias Schubert @qwepoizt)_
+- The `opts` plugin now includes deeply nested options and arguments in the generated help message. _(Tobias Schubert @qwepoizt)_
 
 ### <<Plugin2>>
 
