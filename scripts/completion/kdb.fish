@@ -428,11 +428,6 @@ set -l description 'Specify the minimum depth (0 by default), inclusive and rela
 set -l argument_function '__fish_kdb_print_option_depth_arguments least 0'
 __fish_kdb_add_option '__fish_kdb_subcommand_includes complete ls' 'min-depth' 'm' "$description" "($argument_function)"
 
-# --namespace -N
-set -l description 'Specify the namespace to use for cascading keys'
-set -l argument_function '__fish_kdb_print_option_namespace_arguments'
-__fish_kdb_add_option '__fish_kdb_subcommand_includes editor file import set' 'namespace' 'N' "$description" "($argument_function)"
-
 # --no-newline -n
 __fish_kdb_add_option '__fish_kdb_subcommand_includes file get meta-get' 'no-newline' 'n' 'Suppress the newline at the end of the output'
 
