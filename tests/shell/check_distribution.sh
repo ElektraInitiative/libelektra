@@ -19,8 +19,6 @@ prepend_namespace_if_not_present() {
 	fi
 }
 
-prepend_namespace_if_not_present $1 $2
-
 # high level test to check whether keys are distributed to correct
 # backend
 
