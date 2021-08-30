@@ -865,7 +865,7 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 	if (*keyWithOpt == NULL)
 	{
 		// Mark this option as belonging to command "command".
-		*keyWithOpt = keyNew (keyName (key), KEY_META, META_COMMAND_KEY, keyName(command), KEY_END);
+		*keyWithOpt = keyNew (keyName (key), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
 	}
 	elektraMetaArrayAdd (*keyWithOpt, "opt", keyName (shortOptSpec));
 
@@ -946,7 +946,7 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
 	if (*keyWithOpt == NULL)
 	{
 		// Mark this option as belonging to command "command".
-		*keyWithOpt = keyNew (keyName (key), KEY_META, META_COMMAND_KEY, keyName(command), KEY_END);
+		*keyWithOpt = keyNew (keyName (key), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
 	}
 	elektraMetaArrayAdd (*keyWithOpt, "opt", keyName (longOptSpec));
 
@@ -1084,7 +1084,7 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 		if (*keyWithOpt == NULL)
 		{
 			// Mark this arg as belonging to command "command".
-			*keyWithOpt = keyNew (keyName (specKey), KEY_META, META_COMMAND_KEY, keyName(command), KEY_END);
+			*keyWithOpt = keyNew (keyName (specKey), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
 		}
 		keySetMeta (*keyWithOpt, "args", "remaining");
 
@@ -1140,7 +1140,7 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 		if (*keyWithOpt == NULL)
 		{
 			// Mark this arg as belonging to command "command".
-			*keyWithOpt = keyNew (keyName (specKey), KEY_META, META_COMMAND_KEY, keyName(command), KEY_END);
+			*keyWithOpt = keyNew (keyName (specKey), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
 		}
 		keySetMeta (*keyWithOpt, "args", "indexed");
 		keySetMeta (*keyWithOpt, "args/index", keyString (argsIndex));
@@ -2183,7 +2183,7 @@ char * generateArgsList (KeySet * keysWithOpts, Key * command)
 	ksRewind (keysWithOpts);
 	while ((cur = ksNext (keysWithOpts)) != NULL)
 	{
-		if(!optionOrArgBelongsToCommand (command, cur))
+		if (!optionOrArgBelongsToCommand (command, cur))
 		{
 			continue;
 		}
@@ -2255,13 +2255,14 @@ char * generateEnvsList (KeySet * keysWithOpts)
  */
 bool optionOrArgBelongsToCommand (const Key * command, const Key * optionOrArg)
 {
-	const Key * commandKey = keyGetMeta(optionOrArg, META_COMMAND_KEY);
-	if(commandKey != NULL) {
-		const char * commandKeyString = keyString(commandKey);
-		if(commandKeyString != NULL) {
-			return strcmp( keyName (command), commandKeyString) == 0;
+	const Key * commandKey = keyGetMeta (optionOrArg, META_COMMAND_KEY);
+	if (commandKey != NULL)
+	{
+		const char * commandKeyString = keyString (commandKey);
+		if (commandKeyString != NULL)
+		{
+			return strcmp (keyName (command), commandKeyString) == 0;
 		}
 	}
 	return false;
 }
-

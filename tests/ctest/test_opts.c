@@ -1055,7 +1055,7 @@ static void test_help (void)
 		"OPTIONS\n"
 		"  --help                      Print this help message\n"
 		"  -x, --notdirectlybelow      \n"
-	 	"  -v, --version               \n"
+		"  -v, --version               \n"
 		"\n"
 		"PARAMETERS\n"
 		"  dynamic...                  \n";
@@ -1064,9 +1064,10 @@ static void test_help (void)
 		    keyNew (SPEC_BASE_KEY "/printversion", KEY_META, "opt", "v", KEY_META, "opt/long", "version", KEY_META, "opt/arg",
 			    "none", KEY_END),
 		    keyNew (SPEC_BASE_KEY "/oneleveldown/", KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
-		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown", KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
-		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown/notdirectlybelow", KEY_META, "opt", "x", KEY_META, "opt/long", "notdirectlybelow", KEY_META, "opt/arg",
-			    "none", KEY_END),
+		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown",
+			    KEY_END), // A dummy key that simply creates a hierarchy for notdirectlybelow
+		    keyNew (SPEC_BASE_KEY "/oneleveldown/twolevelsdown/notdirectlybelow", KEY_META, "opt", "x", KEY_META, "opt/long",
+			    "notdirectlybelow", KEY_META, "opt/arg", "none", KEY_END),
 		    keyNew (SPEC_BASE_KEY "/dynamic/#", KEY_META, "args", "remaining", KEY_END), KS_END);
 	errorKey = keyNew (SPEC_BASE_KEY, KEY_END);
 
@@ -1075,7 +1076,6 @@ static void test_help (void)
 	keyDel (errorKey);
 
 	ksDel (ks);
-
 
 
 	// ---
