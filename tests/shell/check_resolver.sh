@@ -9,14 +9,13 @@ echo
 # The result is printed to stdout.
 # $1 ... namespace
 # $2 ... key name
-prepend_namespace_if_not_present () {
+prepend_namespace_if_not_present() {
 	local present_namespace=$("$KDB" namespace $2)
- 
-	if [ -z "$present_namespace" ]
-	then
-	      echo $1:$2
+
+	if [ -z "$present_namespace" ]; then
+		echo $1:$2
 	else
-	      echo $2
+		echo $2
 	fi
 }
 

@@ -9,14 +9,13 @@ echo
 # The result is printed to stdout.
 # $1 ... namespace
 # $2 ... key name
-prepend_namespace_if_not_present () {
+prepend_namespace_if_not_present() {
 	local present_namespace=$("$KDB" namespace $2)
- 
-	if [ -z "$present_namespace" ]
-	then
-	      echo $1:$2
+
+	if [ -z "$present_namespace" ]; then
+		echo $1:$2
 	else
-	      echo $2
+		echo $2
 	fi
 }
 
@@ -47,19 +46,19 @@ check_distribution() {
 	"$KDB" mount $FILE2 $MOUNTPOINT2 $KDB_DEFAULT_STORAGE 1> /dev/null
 	succeed_if "could not mount 2: $FILE2 at $MOUNTPOINT2"
 
-	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT1) )
+	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT1))
 	[ "x$FILE" = "x$FILE1" ]
 	succeed_if "resolving of $MOUNTPOINT1 did not yield $FILE1 but $FILE"
 
-	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT1/xxx) )
+	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT1/xxx))
 	[ "x$FILE" = "x$FILE1" ]
 	succeed_if "resolving of $MOUNTPOINT1/xxx did not yield $FILE1 but $FILE"
 
-	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT2) )
+	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT2))
 	[ "x$FILE" = "x$FILE2" ]
 	succeed_if "resolving of $MOUNTPOINT2 did not yield $FILE2 but $FILE"
 
-	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT2/xxx) )
+	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT2/xxx))
 	[ "x$FILE" = "x$FILE2" ]
 	succeed_if "resolving of $MOUNTPOINT2/xxx did not yield $FILE2 but $FILE"
 
