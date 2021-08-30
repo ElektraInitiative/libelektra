@@ -34,7 +34,7 @@ kdb basename user:/key/subkey/
 #> subkey
 
 kdb basename /
-#> 
+#>
 ```
 
 ## SEE ALSO
