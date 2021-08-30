@@ -85,7 +85,6 @@ public:
 	std::string globalPlugins;
 	std::string pluginsConfig;
 	std::string color; /*!< colormode "never", "always" and "auto" to print color if output channel is a tty */
-	std::string ns;
 	std::string editor;
 
 	typedef std::map<std::string, std::string> map;
