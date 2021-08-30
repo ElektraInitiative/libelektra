@@ -36,7 +36,7 @@ kdb dirkey /
 
 ## SEE ALSO
 
-- Use [kdb-dirname(1)](kdb-dirname.md) to obtain the directory of a key *without namespace included*.
+- Use [kdb-dirname(1)](kdb-dirname.md) to obtain the directory of a key _without namespace included_.
 - See [kdb-namespace(1)](kdb-namespace.md), [kdb-basename(1)](kdb-basename.md) for other namepart extraction operations.
 - The UNIX analogue [DIRNAME(1)].
 - To get keys in shell scripts, you can use [kdb-sget(1)](kdb-sget.md).
