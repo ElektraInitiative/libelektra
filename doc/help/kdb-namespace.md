@@ -32,7 +32,7 @@ kdb namespace user:/key/subkey
 #> user:
 
 kdb namespace /key/subkey
-#> 
+#>
 ```
 
 ## SEE ALSO
