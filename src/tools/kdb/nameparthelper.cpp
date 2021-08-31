@@ -13,8 +13,8 @@
 #include <libgen.h>
 #include <mergehelper.hpp>
 #include <nameparthelper.hpp>
-#include <string>
 #include <regex>
+#include <string>
 
 using namespace kdb;
 using namespace std;
