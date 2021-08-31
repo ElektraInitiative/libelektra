@@ -99,6 +99,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - <<TODO>>
 - Remove obsolete `ksNeedSync` function. _(Mihael Pranjić)_
+- Replace various occurences of `sprintf` by `snprintf` and fix out of bounds array access in markdownlinkconverter. _(Mihael Pranjić)_
 
 ### <<Library1>>
 
