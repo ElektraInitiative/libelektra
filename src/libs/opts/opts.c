@@ -24,6 +24,9 @@ static const char SEP_ENV_VALUE = ';';
 static const char SEP_ENV_VALUE = ':';
 #endif
 
+// Meta key storing which command an option/argument belongs to.
+static char * const META_COMMAND_KEY = "command/key";
+
 struct OptionData
 {
 	Key * specKey;
@@ -70,10 +73,11 @@ static Key * splitEnvValue (const Key * envKey);
 static KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName);
 
 char * generateUsageLine (const char * progname, Key * command, const Key * commandArgs);
-static char * generateOptionsList (KeySet * keysWithOpts, Key * commandKey);
+static char * generateOptionsList (KeySet * keysWithOpts, Key * command);
 static char * generateCommandsList (KeySet * keysWithOpts, Key * commandKey);
-static char * generateArgsList (KeySet * keysWithOpts, Key * commandKey);
+static char * generateArgsList (KeySet * keysWithOpts, Key * command);
 static char * generateEnvsList (KeySet * keysWithOpts);
+static bool optionOrArgBelongsToCommand (const Key * command, const Key * optionOrArg);
 
 static bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Key * errorKey);
 static bool processOptions (struct Specification * spec, Key * command, Key * specKey, Key ** keyWithOpt, Key * errorKey);
@@ -364,6 +368,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 {
 	size_t specParentLen = strlen (keyName (specParent));
 
+	// Determine whether the spec uses sub-commands.
 	bool useSubcommands = false;
 	{
 		Key * parent = ksLookupByName (ks, keyName (specParent), 0);
@@ -394,6 +399,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 	spec->argIndices = ksNew (0, KS_END);
 	spec->commands = ksNew (0, KS_END);
 
+	// Loop through all keys in the key set
 	for (elektraCursor i = 0; i < ksGetSize (ks); ++i)
 	{
 		Key * cur = ksAtCursor (ks, i);
@@ -407,6 +413,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 
 		Key * keyWithOpt = NULL;
 
+		// If meta key "command" is set, the current key is a sub-command.
 		const Key * commandMeta = keyGetMeta (cur, "command");
 		if (commandMeta != NULL)
 		{
@@ -464,6 +471,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 		Key * command = keyNew ("/", KEY_VALUE, keyName (specParent), KEY_END);
 		if (useSubcommands && !isParentKey)
 		{
+			// Determine name of the parent of cur
 			Key * curParent = keyNew (keyName (cur), KEY_END);
 			if (strcmp (keyBaseName (curParent), "#") == 0)
 			{
@@ -471,6 +479,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 			}
 			keySetBaseName (curParent, NULL);
 
+			// Check if parent of current key exists in the KeySet
 			Key * maybeCommand = ksLookup (ks, curParent, KDB_O_DEL);
 			if (maybeCommand == NULL)
 			{
@@ -488,6 +497,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 				return false;
 			}
 
+			// Check if parent of current key has metakey "command" set
 			const char * commandMetaString = keyGetMetaString (maybeCommand, "command");
 			if (commandMetaString == NULL && strcmp (keyName (maybeCommand), keyName (specParent)) != 0)
 			{
@@ -510,7 +520,6 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 				Key * parentCommand = ksLookup (spec->keys, maybeCommand, 0);
 				Key * subCommand = keyNew ("meta:/command", KEY_VALUE, keyBaseName (cur), KEY_END);
 				keyAddBaseName (subCommand, keyString (commandMeta));
-
 				if (ksLookup (keyMeta (parentCommand), subCommand, 0) != NULL)
 				{
 					ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "Duplicate sub-command '%s'. Offending key: %s",
@@ -855,7 +864,8 @@ bool processShortOptSpec (struct Specification * spec, struct OptionData * optio
 
 	if (*keyWithOpt == NULL)
 	{
-		*keyWithOpt = keyNew (keyName (key), KEY_END);
+		// Mark this option as belonging to command "command".
+		*keyWithOpt = keyNew (keyName (key), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
 	}
 	elektraMetaArrayAdd (*keyWithOpt, "opt", keyName (shortOptSpec));
 
@@ -935,7 +945,8 @@ bool processLongOptSpec (struct Specification * spec, struct OptionData * option
 
 	if (*keyWithOpt == NULL)
 	{
-		*keyWithOpt = keyNew (keyName (key), KEY_END);
+		// Mark this option as belonging to command "command".
+		*keyWithOpt = keyNew (keyName (key), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
 	}
 	elektraMetaArrayAdd (*keyWithOpt, "opt", keyName (longOptSpec));
 
@@ -1072,7 +1083,8 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 
 		if (*keyWithOpt == NULL)
 		{
-			*keyWithOpt = keyNew (keyName (specKey), KEY_END);
+			// Mark this arg as belonging to command "command".
+			*keyWithOpt = keyNew (keyName (specKey), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
 		}
 		keySetMeta (*keyWithOpt, "args", "remaining");
 
@@ -1127,7 +1139,8 @@ bool processArgs (Key * command, Key * specKey, KeySet * argIndices, Key ** keyW
 
 		if (*keyWithOpt == NULL)
 		{
-			*keyWithOpt = keyNew (keyName (specKey), KEY_END);
+			// Mark this arg as belonging to command "command".
+			*keyWithOpt = keyNew (keyName (specKey), KEY_META, META_COMMAND_KEY, keyName (command), KEY_END);
 		}
 		keySetMeta (*keyWithOpt, "args", "indexed");
 		keySetMeta (*keyWithOpt, "args/index", keyString (argsIndex));
@@ -1801,11 +1814,13 @@ void setOption (Key * option, const char * value, bool repeated)
 int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool writeArgs, bool * argsWritten, KeySet * options,
 		  struct Specification * spec, KeySet * ks, const char * progname, const char ** envp, Key * parentKey)
 {
+	// Check if help message should be generated
 	Key * helpKey = keyNew (keyName (command), KEY_END);
 	keyAddName (helpKey, "/long/help");
+
+	// Generate help message
 	if (ksLookup (options, helpKey, KDB_O_DEL) != NULL)
 	{
-		// show help
 		char * lastSlash = strrchr (progname, '/');
 		if (lastSlash != NULL)
 		{
@@ -1813,9 +1828,9 @@ int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool write
 		}
 
 		char * usage = generateUsageLine (progname, ksLookup (spec->commands, command, 0), commandArgs);
-		char * optionsText = generateOptionsList (spec->keys, commandKey);
+		char * optionsText = generateOptionsList (spec->keys, command);
 		char * commandsText = generateCommandsList (spec->keys, commandKey);
-		char * argsText = generateArgsList (spec->keys, commandKey);
+		char * argsText = generateArgsList (spec->keys, command);
 		char * envsText = generateEnvsList (spec->keys);
 
 		keySetMeta (parentKey, "internal/libopts/help/usage", usage);
@@ -1831,57 +1846,44 @@ int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool write
 		elektraFree (envsText);
 		return 1;
 	}
-
-	KeySet * envValues = parseEnvp (envp);
-
-	Key * argsParent = keyNew (keyName (command), KEY_END);
-	keyAddBaseName (argsParent, "args");
-	KeySet * args = elektraArrayGet (argsParent, options);
-	keyDel (argsParent);
-
-	Key * keyWithOpt;
-	ksRewind (spec->keys);
-	while ((keyWithOpt = ksNext (spec->keys)) != NULL)
+	else // Don't generate help message
 	{
-		if (spec->useSubcommands)
+		KeySet * envValues = parseEnvp (envp);
+
+		Key * argsParent = keyNew (keyName (command), KEY_END);
+		keyAddBaseName (argsParent, "args");
+		KeySet * args = elektraArrayGet (argsParent, options);
+		keyDel (argsParent);
+
+		Key * keyWithOpt;
+		ksRewind (spec->keys);
+		while ((keyWithOpt = ksNext (spec->keys)) != NULL)
 		{
-			Key * checkKey = keyDup (keyWithOpt, KEY_CP_ALL);
-			if (strcmp (keyBaseName (keyWithOpt), "#") == 0)
+			if (spec->useSubcommands)
 			{
-				keySetBaseName (checkKey, NULL); // remove #
+				Key * checkKey = keyDup (keyWithOpt, KEY_CP_ALL);
+				if (strcmp (keyBaseName (keyWithOpt), "#") == 0)
+				{
+					keySetBaseName (checkKey, NULL); // remove #
+				}
+
+				int result = keyIsDirectlyBelow (commandKey, checkKey);
+				keyDel (checkKey);
+
+				if (result != 1)
+				{
+					continue;
+				}
 			}
 
-			int result = keyIsDirectlyBelow (commandKey, checkKey);
-			keyDel (checkKey);
-
-			if (result != 1)
+			if (keyGetMeta (keyWithOpt, "command") != NULL)
 			{
-				continue;
+				Key * procKey = keyNew ("proc:/", KEY_VALUE, "", KEY_END);
+				keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
+				ksAppendKey (ks, procKey);
 			}
-		}
 
-		if (keyGetMeta (keyWithOpt, "command") != NULL)
-		{
-			Key * procKey = keyNew ("proc:/", KEY_VALUE, "", KEY_END);
-			keyAddName (procKey, strchr (keyName (keyWithOpt), '/'));
-			ksAppendKey (ks, procKey);
-		}
-
-		int result = writeOptionValues (ks, keyWithOpt, options, parentKey);
-		if (result < 0)
-		{
-			ksDel (envValues);
-			ksDel (args);
-			return -1;
-		}
-		else if (result > 0)
-		{
-			continue;
-		}
-
-		if (writeArgs)
-		{
-			result = writeArgsValues (ks, keyWithOpt, command, spec->argIndices, args, parentKey);
+			int result = writeOptionValues (ks, keyWithOpt, options, parentKey);
 			if (result < 0)
 			{
 				ksDel (envValues);
@@ -1890,27 +1892,42 @@ int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool write
 			}
 			else if (result > 0)
 			{
-				if (argsWritten != NULL)
-				{
-					*argsWritten = true;
-				}
 				continue;
+			}
+
+			if (writeArgs)
+			{
+				result = writeArgsValues (ks, keyWithOpt, command, spec->argIndices, args, parentKey);
+				if (result < 0)
+				{
+					ksDel (envValues);
+					ksDel (args);
+					return -1;
+				}
+				else if (result > 0)
+				{
+					if (argsWritten != NULL)
+					{
+						*argsWritten = true;
+					}
+					continue;
+				}
+			}
+
+			result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
+			if (result < 0)
+			{
+				ksDel (envValues);
+				ksDel (args);
+				return -1;
 			}
 		}
 
-		result = writeEnvVarValues (ks, keyWithOpt, envValues, parentKey);
-		if (result < 0)
-		{
-			ksDel (envValues);
-			ksDel (args);
-			return -1;
-		}
+		ksDel (envValues);
+		ksDel (args);
+
+		return 0;
 	}
-
-	ksDel (envValues);
-	ksDel (args);
-
-	return 0;
 }
 
 KeySet * ksMetaGetSingleOrArray (Key * key, const char * metaName)
@@ -2064,7 +2081,7 @@ char * generateUsageLine (const char * progname, Key * command, const Key * comm
  *
  * @return a newly allocated string, must be freed with elektraFree()
  */
-char * generateOptionsList (KeySet * keysWithOpts, Key * commandKey)
+char * generateOptionsList (KeySet * keysWithOpts, Key * command)
 {
 	elektraCursor cursor = ksGetCursor (keysWithOpts);
 
@@ -2074,16 +2091,7 @@ char * generateOptionsList (KeySet * keysWithOpts, Key * commandKey)
 	ksRewind (keysWithOpts);
 	while ((cur = ksNext (keysWithOpts)) != NULL)
 	{
-		Key * checkKey = keyDup (cur, KEY_CP_NAME);
-		if (strcmp (keyBaseName (cur), "#") == 0)
-		{
-			keySetBaseName (checkKey, NULL); // remove #
-		}
-
-		int result = keyIsDirectlyBelow (commandKey, checkKey);
-		keyDel (checkKey);
-
-		if (result != 1)
+		if (!optionOrArgBelongsToCommand (command, cur))
 		{
 			continue;
 		}
@@ -2165,7 +2173,7 @@ char * generateCommandsList (KeySet * keysWithOpts, Key * commandKey)
  *
  * @return a newly allocated string, must be freed with elektraFree()
  */
-char * generateArgsList (KeySet * keysWithOpts, Key * commandKey)
+char * generateArgsList (KeySet * keysWithOpts, Key * command)
 {
 	elektraCursor cursor = ksGetCursor (keysWithOpts);
 
@@ -2175,16 +2183,7 @@ char * generateArgsList (KeySet * keysWithOpts, Key * commandKey)
 	ksRewind (keysWithOpts);
 	while ((cur = ksNext (keysWithOpts)) != NULL)
 	{
-		Key * checkKey = keyDup (cur, KEY_CP_NAME);
-		if (strcmp (keyBaseName (cur), "#") == 0)
-		{
-			keySetBaseName (checkKey, NULL); // remove #
-		}
-
-		int result = keyIsDirectlyBelow (commandKey, checkKey);
-		keyDel (checkKey);
-
-		if (result != 1)
+		if (!optionOrArgBelongsToCommand (command, cur))
 		{
 			continue;
 		}
@@ -2246,4 +2245,17 @@ char * generateEnvsList (KeySet * keysWithOpts)
 
 	ksSetCursor (keysWithOpts, cursor);
 	return envsList;
+}
+
+/**
+ * Determines whether the option or argument belongs to the given command.
+ * @param command The Key of the command.
+ * @param optionOrArg The key of the option/arg.
+ * @return True, if it belongs, false otherwise.
+ */
+bool optionOrArgBelongsToCommand (const Key * command, const Key * optionOrArg)
+{
+	const Key * commandKey = keyGetMeta (optionOrArg, META_COMMAND_KEY);
+	const char * commandKeyString = commandKey != NULL ? keyString (commandKey) : NULL;
+	return commandKeyString != NULL && strcmp (keyName (command), commandKeyString) == 0;
 }
