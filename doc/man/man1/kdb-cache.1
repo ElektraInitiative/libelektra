@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.10.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "KDB\-CACHE" "1" "November 2020" ""
 .SH "NAME"
 \fBkdb\-cache\fR \- Enable, disable or clear the cache
@@ -8,7 +8,7 @@
 .SH "DESCRIPTION"
 This command is used to enable or disable the cache and to revert to the default settings\. The default settings will let the system decide whether to use the cache or not\. The clear command will remove the generated cache files in a safe way\.
 .SH "LIMITATIONS"
-Caches are stored on a per\-user basis, therefore the \fBclear\fR subcommand can only remove a user's cache files (i\.e\. not system wide)\.
+Caches are stored on a per\-user basis, therefore the \fBclear\fR subcommand can only remove a user\'s cache files (i\.e\. not system wide)\.
 .SH "OPTIONS"
 .TP
 \fB\-H\fR, \fB\-\-help\fR
@@ -29,19 +29,4 @@ Explain what is happening\. Prints additional information in case of errors/warn
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
 .SH "EXAMPLES"
-.nf
-# Backup\-and\-Restore: system:/elektra/cache
-
-# Enable the cache
-kdb cache enable
-
-# Disable the cache
-kdb cache disable
-
-# Revert to defaults
-kdb cache default
-
-# Clear all generated cache files
-kdb cache clear
-.fi
-
+```sh # Backup\-and\-Restore: system:/elektra/cachekdb cache enablekdb cache disablekdb cache defaultkdb cache clear ```

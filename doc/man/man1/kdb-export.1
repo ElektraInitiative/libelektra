@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.10.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "KDB\-EXPORT" "1" "November 2020" ""
 .SH "NAME"
 \fBkdb\-export\fR \- Export keys from the key database
@@ -45,7 +45,7 @@ Explain what is happening\. Prints additional information in case of errors/warn
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
 .SH "KDB"
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fB/sw/elektra/kdb/#0/current/format\fR Change default format (if none is given at commandline) and built\-in default \fBstorage\fR is not your preferred format\.
 .IP "" 0
 .SH "EXAMPLES"
@@ -69,49 +69,22 @@ Change default format to \fBsimpleini\fR:
 \fBkdb set /sw/elektra/kdb/#0/current/format simpleini\fR
 .P
 Create two key values and export them as \fBxml\fR:
-.IP "" 4
-.nf
-kdb set user:/tests/kdb\-export/one one
-kdb set user:/tests/kdb\-export/two two
-
-kdb export user:/tests/kdb\-export/ xml
-#> <?xml version="1\.0" encoding="UTF\-8" standalone="no" ?>
-#> <kdb\-export>
-#>
-#>   <one>one</one>
-#>
-#>   <two>two</two>
-#>
-#> </kdb\-export>
-
-
-kdb rm \-r user:/tests
-# cleanup
-.fi
-.IP "" 0
+.P
+```sh kdb set user:/tests/kdb\-export/one one kdb set user:/tests/kdb\-export/two two
+.P
+kdb export user:/tests/kdb\-export/ xml #> <?xml version="1\.0" encoding="UTF\-8" standalone="no" ?> #>
+.P
+kdb rm \-r user:/tests # cleanup ```
 .P
 Create two key values and export them with the \fBxerces\fR plugin:
-.IP "" 4
-.nf
-kdb set user:/tests/kdb\-export/one one
-kdb set user:/tests/kdb\-export/two two
-
-kdb export user:/tests/kdb\-export/ xerces
-#> <?xml version="1\.0" encoding="UTF\-8" standalone="no" ?>
-#> <kdb\-export>
-#>
-#>   <one>one</one>
-#>
-#>   <two>two</two>
-#>
-#> </kdb\-export>
-
-kdb rm \-r user:/tests
-# cleanup
-.fi
-.IP "" 0
+.P
+```sh kdb set user:/tests/kdb\-export/one one kdb set user:/tests/kdb\-export/two two
+.P
+kdb export user:/tests/kdb\-export/ xerces #> <?xml version="1\.0" encoding="UTF\-8" standalone="no" ?> #>
+.P
+kdb rm \-r user:/tests # cleanup ```
 .SH "Note"
-.IP "\(bu" 4
+.IP "\[ci]" 4
 Only storage plugins can be used for formatting\.
 .IP "" 0
 

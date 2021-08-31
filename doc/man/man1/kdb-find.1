@@ -1,6 +1,6 @@
-.\" generated with Ronn-NG/v0.10.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "KDB\-FIND" "1" "November 2020" ""
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.TH "KDB\-FIND" "1" "August 2021" ""
 .SH "NAME"
 \fBkdb\-find\fR \- Find keys in the key database
 .SH "SYNOPSIS"
@@ -32,40 +32,13 @@ Give debug information\. Prints additional debug information in case of errors/w
 \fB\-0\fR, \fB\-\-null\fR
 Use binary 0 termination\.
 .SH "EXAMPLES"
-.nf
-# Backup\-and\-Restore: user:/tests/find
-
-# We use the `dump` plugin, since some storage plugins, e\.g\. INI,
-# create intermediate keys, such as `user:/tests/find/tests/foo`
-# for the following test\.
-sudo kdb mount find\.ecf user:/tests/find dump
-
-# Create the keys we use for the examples
-kdb set user:/tests/find/tests val1
-kdb set user:/tests/find/tests/foo/bar val2
-kdb set user:/tests/find/tests/fizz/buzz fizzbuzz
-kdb set user:/tests/find/tostfizz val3
-kdb set user:/tests/find/tust/level lvl
-
-# list all keys containing /tests/find/t[eo]
-kdb find '/tests/find/t[eo]'
-#> user:/tests/find/tests
-#> user:/tests/find/tests/fizz/buzz
-#> user:/tests/find/tests/foo/bar
-#> user:/tests/find/tostfizz
-
-# list all keys containing fizz
-kdb find 'fizz'
-#> user:/tests/find/tests/fizz/buzz
-#> user:/tests/find/tostfizz
-
-kdb rm \-r /tests/find
-sudo kdb umount user:/tests/find
-.fi
+```sh # Backup\-and\-Restore: user:/tests/find# create intermediate keys, such as \fBuser:/tests/find/tests/foo\fR # for the following test\. sudo kdb mount find\.ecf user:/tests/find dumpkdb set user:/tests/find/tests val1 kdb set user:/tests/find/tests/foo/bar val2 kdb set user:/tests/find/tests/fizz/buzz fizzbuzz kdb set user:/tests/find/tostfizz val3 kdb set user:/tests/find/tust/level lvlkdb find \'/tests/find/t[eo]\' #> user:/tests/find/tests #> user:/tests/find/tests/fizz/buzz #> user:/tests/find/tests/foo/bar #> user:/tests/find/tostfizzkdb find \'fizz\' #> user:/tests/find/tests/fizz/buzz #> user:/tests/find/tostfizz
+.P
+kdb rm \-r /tests/find sudo kdb umount user:/tests/find ```
 .SH "SEE ALSO"
-.IP "\(bu" 4
+.IP "\[ci]" 4
 If the user would also like to see the values of the keys below \fBpath\fR then you should consider the kdb\-export(1) \fIkdb\-export\.md\fR command\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
 .IP "" 0
 

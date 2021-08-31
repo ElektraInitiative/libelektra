@@ -1,27 +1,27 @@
-.\" generated with Ronn-NG/v0.10.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "README" "" "April 2021" ""
 .SH "Introduction"
 The tool \fBqt\-gui\fR offers a graphical interface for users of Elektra\. It allows users to create, manage, edit, and delete keys stored in the global key database (KDB)\.
 .SH "Compiling and Installation"
 .SS "Dependencies"
 In order to compile and use the new \fBqt\-gui\fR there are a few dependencies which must be installed\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 qt5\.3 or greater
-.IP "\(bu" 4
+.IP "\[ci]" 4
 libdrm\-dev
-.IP "\(bu" 4
+.IP "\[ci]" 4
 libdiscount (libmarkdown2\-dev)
-.IP "\(bu" 4
+.IP "\[ci]" 4
 the following qt5 modules: \fBquickcontrols\fR \fBdeclarative\fR (\fBqtdeclarative5\-dev\fR)
-.IP "\(bu" 4
+.IP "\[ci]" 4
 Alternatively, you may need \fBsudo apt\-get install qml\-module\-qt\-labs\-folderlistmodel\fR and \fBsudo apt\-get install qml\-module\-qt\-labs\-settings\fR
 .IP "" 0
 .P
 Optional dependencies are (are automatically deactivated if dependencies are not found):
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBQt5Svg\fR for SVG icon themes (\fBsudo apt\-get install libqt5svg5\-dev\fR)
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fBQt5DBus\fR so that \fBqt\-gui\fR will be notified on changes\.
 .IP "" 0
 .P
@@ -42,18 +42,14 @@ Compile Elektra as normal as per the COMPILE document \fI/doc/COMPILE\.md\fR mak
 For instance: \fB\-DTOOLS=ALL\fR or \fB\-DTOOLS=qt\-gui\fR
 .P
 Note: If you install qt5 manually, you must either:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 make sure the qt5 libraries are included in \fBLD_LIBRARY_PATH\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 OR make sure to specify \fB\-DCMAKE_PREFIX_PATH=/opt/Qt5\.3\.0/5\.3/gcc_64/lib/cmake\fR
 .IP "" 0
 .SS "Installing"
 You can now install Elektra as you normally would or as described in the install documentation \fI/doc/INSTALL\.md\fR\. The package is called \fBelektra\-qt\-gui\fR\.
 .SH "To Run"
 The following command will launch the Qt\-GUI:
-.IP "" 4
-.nf
-kdb qt\-gui
-.fi
-.IP "" 0
-
+.P
+\fBsh kdb qt\-gui\fR

@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.10.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "KDB\-CMERGE" "1" "November 2020" ""
 .SH "NAME"
 \fBkdb\-cmerge\fR \- Three\-way merge of KeySets
@@ -37,14 +37,14 @@ On unresolved conflicts nothing will be changed\.
 This tool currently exists alongside \fBkdb merge\fR until it is completely ready to supersede it\. At this moment, cmerge will be renamed to merge\.
 .SH "OPTIONS"
 The options of \fBkdb cmerge\fR are:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fB\-f\fR, \fB\-\-force\fR: overwrite existing keys in \fBresult\fR
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fB\-v\fR, \fB\-\-verbose\fR: give additional information
 .IP "" 0
 .P
 Strategies offer fine grained control over conflict handling\. The option is:
-.IP "\(bu" 4
+.IP "\[ci]" 4
 \fB\-s <name>\fR, \fB\-\-strategy <name>\fR: which is used to specify a strategy to use in case of a conflict
 .IP "" 0
 .P
@@ -71,14 +71,14 @@ The \fBbase\fR KeySet is the original version of the key set\.
 
 .TP
 \fBour\fR
-The \fBour\fR KeySet represents the user's current version of the KeySet\.
+The \fBour\fR KeySet represents the user\'s current version of the KeySet\.
 .br
 This KeySet differs from \fBbase\fR for every key you changed\.
 .br
 
 .TP
 \fBtheir\fR
-The \fBtheir\fR KeySet usually represents the default version of a KeySet (usually the package maintainer's version)\.
+The \fBtheir\fR KeySet usually represents the default version of a KeySet (usually the package maintainer\'s version)\.
 .br
 This KeySet differs from \fBbase\fR for every key someone has changed\.
 .br
@@ -92,24 +92,15 @@ Conflicts occur when a key has a different value in all three key sets or when o
 .SH "EXAMPLES"
 To complete a simple merge of three KeySets:
 .br
-.IP "" 4
-.nf
-kdb set user:/base "A"
-#> Create a new key user:/base with string "A"
-kdb set user:/their "A"
-#> Create a new key user:/their with string "A"
-kdb set user:/our "B"
-#> Create a new key user:/our with string "B"
-kdb cmerge user:/our user:/their user:/base user:/result
-kdb get user:/result
-#>B
-
-```<br>
-
-## SEE ALSO
-
-\- [elektra\-cmerge\-strategy(7)](elektra\-cmerge\-strategy\.md)
-\- [elektra\-key\-names(7)](elektra\-key\-names\.md) for an explanation of key names\.
-.fi
+.P
+````sh kdb set user:/base "A" #> Create a new key user:/base with string "A" kdb set user:/their "A" #> Create a new key user:/their with string "A" kdb set user:/our "B" #> Create a new key user:/our with string "B" kdb cmerge user:/our user:/their user:/base user:/result kdb get user:/result #>B
+.P
+```
+.br
+.SH "SEE ALSO"
+.IP "\[ci]" 4
+elektra\-cmerge\-strategy(7) \fIelektra\-cmerge\-strategy\.md\fR
+.IP "\[ci]" 4
+elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\. ````
 .IP "" 0
 

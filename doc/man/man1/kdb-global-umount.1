@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.10.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.\" generated with Ronn-NG/v0.9.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
 .TH "KDB\-GLOBAL\-UMOUNT" "1" "November 2020" ""
 .SH "NAME"
 \fBkdb\-global\-umount\fR \- Unmount a global plugin from the key database
@@ -21,33 +21,25 @@ Use a different kdb profile\.
 \fB\-C\fR, \fB\-\-color <when>\fR
 Print never/auto(default)/always colored output\.
 .SH "EXAMPLES"
-.nf
-if [ \-f "$(kdb file system:/elektra/globalplugins)" ]; then mv "$(kdb file system:/elektra/globalplugins)" "globalplugins\.bak"; else touch "globalplugins\.rm"; fi
-
+```sh if [ \-f "$(kdb file system:/elektra/globalplugins)" ]; then mv "$(kdb file system:/elektra/globalplugins)" "globalplugins\.bak"; else touch "globalplugins\.rm"; fi
+.P
 sudo kdb global\-mount tracer
-
-sudo kdb global\-mount
-# STDOUT\-REGEX: \.*spec⏎tracer\.*
-
-sudo kdb global\-umount tracer
-
-# spec is always mounted by default
-sudo kdb global\-mount
-#> spec
-
+.P
+sudo kdb global\-mount # STDOUT\-REGEX: \.\fIspec⏎tracer\.\fR
+.P
+sudo kdb global\-umount tracersudo kdb global\-mount #> spec
+.P
 sudo kdb global\-umount spec
-
-sudo kdb global\-mount
-#>
-
-if [ \-f "globalplugins\.rm" ]; then rm "$(kdb file system:/elektra/globalplugins)" "globalplugins\.rm"; else mv "globalplugins\.bak" "$(kdb file system:/elektra/globalplugins)"; fi
-.fi
+.P
+sudo kdb global\-mount #>
+.P
+if [ \-f "globalplugins\.rm" ]; then rm "$(kdb file system:/elektra/globalplugins)" "globalplugins\.rm"; else mv "globalplugins\.bak" "$(kdb file system:/elektra/globalplugins)"; fi ```
 .SH "SEE ALSO"
-.IP "\(bu" 4
+.IP "\[ci]" 4
 kdb\-global\-mount(1) \fIkdb\-global\-mount\.md\fR\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.
-.IP "\(bu" 4
+.IP "\[ci]" 4
 elektra\-plugins\-framework(7) \fI/doc/dev/plugins\-framework\.md\fR\.
 .IP "" 0
 
