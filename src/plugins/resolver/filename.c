@@ -73,13 +73,13 @@ static void elektraGenTempFilename (ElektraResolved * handle, ElektraResolveTemp
 	{
 		tmpFilenameSize = strlen (handle->fullPath) + POSTFIX_SIZE;
 		tmpFile = elektraCalloc (tmpFilenameSize);
-		len = sprintf (tmpFile, "%s", handle->fullPath);
+		len = snprintf (tmpFile, tmpFilenameSize - POSTFIX_SIZE, "%s", handle->fullPath);
 	}
 	else if (tmpDir == ELEKTRA_RESOLVER_TEMPFILE_TMPDIR)
 	{
 		tmpFilenameSize = sizeof ("/tmp/") + strlen (handle->fullPath) + POSTFIX_SIZE;
 		tmpFile = elektraCalloc (tmpFilenameSize);
-		len = sprintf (tmpFile, "/tmp/%s", handle->fullPath);
+		len = snprintf (tmpFile, tmpFilenameSize - POSTFIX_SIZE, "/tmp/%s", handle->fullPath);
 	}
 
 	struct timeval tv;
