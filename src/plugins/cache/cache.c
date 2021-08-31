@@ -172,18 +172,17 @@ static int elektraMkdirParents (const char * pathname)
 static char * elektraGenTempFilename (char * cacheFileName)
 {
 	char * tmpFile = NULL;
-	size_t len = 0;
 	size_t tmpFilenameSize = 0;
 
 	size_t cacheFileNameSize = strlen (cacheFileName);
 	tmpFilenameSize = cacheFileNameSize + POSTFIX_SIZE;
 	tmpFile = elektraCalloc (tmpFilenameSize);
-	len = snprintf (tmpFile, cacheFileNameSize, "%s", cacheFileName);
+	strncpy (tmpFile, cacheFileName, cacheFileNameSize + 1);
 
 	struct timeval tv;
 	memset (&tv, 0, sizeof (struct timeval));
 	gettimeofday (&tv, 0);
-	snprintf (tmpFile + len, POSTFIX_SIZE - 1, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
+	snprintf (tmpFile + cacheFileNameSize, POSTFIX_SIZE, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
 	return tmpFile;
 }
 
