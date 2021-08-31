@@ -24,7 +24,7 @@
 #include <fcntl.h>     // access()
 #include <ftw.h>       // nftw()
 #include <stdint.h>    // nftw()
-#include <stdio.h>     // rename(), sprintf()
+#include <stdio.h>     // rename(), snprintf()
 #include <stdlib.h>    // nftw(), getenv()
 #include <string.h>    // nftw()
 #include <sys/stat.h>  // elektraMkdirParents
@@ -178,7 +178,7 @@ static char * elektraGenTempFilename (char * cacheFileName)
 	size_t cacheFileNameSize = strlen (cacheFileName);
 	tmpFilenameSize = cacheFileNameSize + POSTFIX_SIZE;
 	tmpFile = elektraCalloc (tmpFilenameSize);
-	len = snprintf (tmpFile, cacheFileNameSize + 1, "%s", cacheFileName);
+	len = snprintf (tmpFile, cacheFileNameSize, "%s", cacheFileName);
 
 	struct timeval tv;
 	memset (&tv, 0, sizeof (struct timeval));
