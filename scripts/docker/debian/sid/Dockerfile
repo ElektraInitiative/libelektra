@@ -124,7 +124,7 @@ RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
-ENV SHFMT_VERSION=v3.2.4
+ENV SHFMT_VERSION=v3.3.1
 ENV PATH="${SHFMT_PATH}:${PATH}"
 RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \
