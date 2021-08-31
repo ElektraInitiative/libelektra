@@ -216,6 +216,10 @@ _(Michael Tucek)_
 - Bump Debian Buster images to Bullseye and Stretch images to Buster. We still leave one Debian Stretch job due to upstream Debian LTS support until June 2022. _(Mihael Pranjić)_
 - <<TODO>>
 
+### Restyled
+
+- Upgrade to latest stable restylers. _(Mihael Pranjić)_
+
 ## Infrastructure
 
 ### Jenkins
