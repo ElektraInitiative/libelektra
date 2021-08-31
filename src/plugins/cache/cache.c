@@ -182,7 +182,7 @@ static char * elektraGenTempFilename (char * cacheFileName)
 	struct timeval tv;
 	memset (&tv, 0, sizeof (struct timeval));
 	gettimeofday (&tv, 0);
-	snprintf (tmpFile + cacheFileNameSize, POSTFIX_SIZE, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
+	snprintf (tmpFile + cacheFileNameSize, tmpFilenameSize - cacheFileNameSize, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
 	return tmpFile;
 }
 
