@@ -73,19 +73,19 @@ static void elektraGenTempFilename (ElektraResolved * handle, ElektraResolveTemp
 	{
 		tmpFilenameSize = strlen (handle->fullPath) + POSTFIX_SIZE;
 		tmpFile = elektraCalloc (tmpFilenameSize);
-		len = snprintf (tmpFile, strlen (handle->fullPath) + 1, "%s", handle->fullPath);
+		len = snprintf (tmpFile, tmpFilenameSize, "%s", handle->fullPath);
 	}
 	else if (tmpDir == ELEKTRA_RESOLVER_TEMPFILE_TMPDIR)
 	{
 		tmpFilenameSize = sizeof ("/tmp/") + strlen (handle->fullPath) + POSTFIX_SIZE;
 		tmpFile = elektraCalloc (tmpFilenameSize);
-		len = snprintf (tmpFile, strlen (handle->fullPath) + 1, "/tmp/%s", handle->fullPath);
+		len = snprintf (tmpFile, tmpFilenameSize, "/tmp/%s", handle->fullPath);
 	}
 
 	struct timeval tv;
 	memset (&tv, 0, sizeof (struct timeval));
 	gettimeofday (&tv, 0);
-	snprintf (tmpFile + len, POSTFIX_SIZE - 1, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
+	snprintf (tmpFile + len, tmpFilenameSize - len, ".%d:%ld." ELEKTRA_TIME_USEC_F ".tmp", getpid (), tv.tv_sec, tv.tv_usec);
 	handle->tmpFile = tmpFile;
 }
 
