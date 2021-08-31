@@ -2256,13 +2256,6 @@ char * generateEnvsList (KeySet * keysWithOpts)
 bool optionOrArgBelongsToCommand (const Key * command, const Key * optionOrArg)
 {
 	const Key * commandKey = keyGetMeta (optionOrArg, META_COMMAND_KEY);
-	if (commandKey != NULL)
-	{
-		const char * commandKeyString = keyString (commandKey);
-		if (commandKeyString != NULL)
-		{
-			return strcmp (keyName (command), commandKeyString) == 0;
-		}
-	}
-	return false;
+	const char * commandKeyString = commandKey != NULL ? keyString (commandKey) : NULL;
+	return commandKeyString != NULL && strcmp (keyName (command), commandKeyString) == 0;
 }
