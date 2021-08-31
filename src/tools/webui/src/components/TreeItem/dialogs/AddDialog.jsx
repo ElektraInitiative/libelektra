@@ -57,13 +57,8 @@ export default class AddDialog extends Component {
   };
 
   handleCreate = (arrayKey = false) => {
-    const {
-      item,
-      onAdd,
-      keyExists,
-      setMetaByPath,
-      arrayKeyLength,
-    } = this.props;
+    const { item, onAdd, keyExists, setMetaByPath, arrayKeyLength } =
+      this.props;
     const { path } = item;
     const { name, value, type } = this.state;
     const v = this.state.visibility;

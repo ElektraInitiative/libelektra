@@ -146,8 +146,7 @@ module.exports = function (grunt) {
               "oyranos-kolor-manager.png",
               "oyranos-km-logo.svg",
             ],
-            dest:
-              "<%= grunt.config('copy-website-content.build.target_dir') %>/img",
+            dest: "<%= grunt.config('copy-website-content.build.target_dir') %>/img",
             expand: true,
           },
         ],
