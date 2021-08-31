@@ -14,14 +14,20 @@
 #include <mergehelper.hpp>
 #include <nameparthelper.hpp>
 #include <string>
+#include <regex>
 
 using namespace kdb;
 using namespace std;
 
-string keyNamespace (Key const & key)
+string keyNamespaceWithSeparator (Key const & key)
 {
 	string keyname = key.getName ();
 	return key.isCascading () ? "" : keyname.substr (0, keyname.find ("/"));
+}
+
+string keyNamespaceWithoutSeparator (Key const & key)
+{
+	return regex_replace (keyNamespaceWithSeparator (key), regex (":$"), "");
 }
 
 string keyBasename (Key const & key)
@@ -48,7 +54,7 @@ string keyDirname (Key const & key)
 
 string keyDirkey (Key const & key)
 {
-	return keyNamespace (key) + keyDirname (key);
+	return keyNamespaceWithSeparator (key) + keyDirname (key);
 }
 
 int executeNamepartcommand (Cmdline const & cl, string (*namepart_getter) (Key const &))

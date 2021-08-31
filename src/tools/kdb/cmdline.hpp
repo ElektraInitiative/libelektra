@@ -65,6 +65,7 @@ public:
 	int minDepth;	    /*!< minimum depth for completion suggestions */
 	int maxDepth;	    /*!< maximum depth for completion suggestions */
 	bool noNewline;	    /*!< Do not output a newline at the end. */
+	bool noSeparators;  /*!< Do not print seperators. */
 	bool test;	    /*!< Run some self tests instead of the normal action. */
 	bool recursive;	    /*!< Recursive mode. */
 	std::string resolver;

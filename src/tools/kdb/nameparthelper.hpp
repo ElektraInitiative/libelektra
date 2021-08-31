@@ -16,7 +16,8 @@
 using namespace kdb;
 using namespace std;
 
-string keyNamespace (Key const & key);
+string keyNamespaceWithSeparator (Key const & key);
+string keyNamespaceWithoutSeparator (Key const & key);
 string keyBasename (Key const & key);
 string keyDirname (Key const & key);
 string keyDirkey (Key const & key);

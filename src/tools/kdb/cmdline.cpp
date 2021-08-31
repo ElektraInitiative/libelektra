@@ -39,7 +39,7 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 
   /*XXX: Step 2: initialise your option here.*/
   debug (), force (), load (), humanReadable (), help (), interactive (), minDepth (0), maxDepth (numeric_limits<int>::max ()),
-  noNewline (), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
+  noNewline (), noSeparators(), test (), recursive (), resolver (KDB_RESOLVER), strategy ("preserve"), verbose (), quiet (), version (), withoutElektra (),
   inputFile (""), null (), first (true), second (true), third (true), withRecommends (false), all (), format (KDB_STORAGE), plugins (""),
   globalPlugins ("spec"), pluginsConfig (""), color ("auto"), editor (), bookmarks (), profile ("current"),
 
@@ -251,6 +251,12 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		option o = { "color", required_argument, nullptr, 'C' };
 		long_options.push_back (o);
 		helpText += "-C --color <when>       Print never/auto(default)/always colored output.\n";
+	}
+	if (acceptedOptions.find ('S') != string::npos)
+	{
+		option o = { "no-separators", no_argument, nullptr, 'S' };
+		long_options.push_back (o);
+		helpText += "-S --no-separators       Do not print separators.\n";
 	}
 
 	int index = 0;
@@ -466,6 +472,9 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 			break;
 		case 'c':
 			pluginsConfig = optarg;
+			break;
+		case 'S':
+			noSeparators = true;
 			break;
 
 		default:

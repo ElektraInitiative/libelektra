@@ -24,6 +24,8 @@ This command will return the following values as an exit status:
 
 - `-n`, `--no-newline`:
   Suppress the newline at the end of the output.
+- `-S`, `--no-separators`:
+  Do not print the trailing colon after the namespace.
 
 ## EXAMPLES
 
