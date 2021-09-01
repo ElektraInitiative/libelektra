@@ -174,7 +174,7 @@ _(Michael Tucek)_
   No more guessing of namespaces in case a cascading key is given (`user:, system`: for `kdb set`, `spec:` for `kdb meta-set`), _(Alexander Firbas)_
 - `kdb set`, `kdb meta-set`: Validation of keys can no longer be bypassed by using non-cascading keys (except with the new --force (-f) option). _(Alexander Firbas)_
 - Disable `-N/--namespace` option in all kdb subcommands _(Alexander Firbas)_
-- Implement new name part getter commands `kdb namespace`, `kdb basename`, `kdb dirname` and `kdb dirkey`. _(Alexander Firbas)_
+- Implement new name part getter commands `kdb namespace`, `kdb basename` and `kdb dirname`. _(Alexander Firbas)_
 - `kdb file`: Remove namespace guessing (in case a cascading key is given, it needs to resolve to an existing key). _(Alexander Firbas)_
 - `kdb editor/import`: Disable the use of cascading names (and the 'validate' strategy operating on cascading keys) entirely. _(Alexander Firbas)_
 - Update numerous tests to comply with changes above. _(Alexander Firbas)_

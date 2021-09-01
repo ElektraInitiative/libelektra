@@ -84,6 +84,9 @@
 - [Key base name](/doc/KEYNAMES.md):
   The last part of a key name.
 
+- [Key dir name](/doc/KEYNAMES.md):
+  The key name obtained by omitting both namespace and base name from a key name.
+
 - [Namespaces](elektra-namespaces.md):
   Allow us to have multiple keys for the same purpose and otherwise the same key name.
 
