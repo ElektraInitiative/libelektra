@@ -1,6 +1,6 @@
-.\" generated with Ronn-NG/v0.9.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
-.TH "KDB\-BASENAME" "1" "August 2021" ""
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-BASENAME" "1" "September 2021" ""
 .SH "NAME"
 \fBkdb\-basename\fR \- Get the basename of a key name
 .SH "SYNOPSIS"
@@ -22,19 +22,24 @@ invalid key name passed, see kdb(1) \fIkdb\.md\fR for a list of return codes use
 \fB\-n\fR, \fB\-\-no\-newline\fR
 Suppress the newline at the end of the output\.
 .SH "EXAMPLES"
-```sh kdb basename user:/key/subkey #> subkey
-.P
-kdb basename user:/key/subkey/ #> subkey
-.P
-kdb basename / #> ```
+.nf
+kdb basename user:/key/subkey
+#> subkey
+
+kdb basename user:/key/subkey/
+#> subkey
+
+kdb basename /
+#>
+.fi
 .SH "SEE ALSO"
-.IP "\[ci]" 4
-See kdb\-namespace(1) \fIkdb\-namespace\.md\fR, kdb\-dirname(1) \fIkdb\-dirname\.md\fR, kdb\-dirkey(1) \fIkdb\-dirkey\.md\fR for other namepart extraction operations\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
+See kdb\-namespace(1) \fIkdb\-namespace\.md\fR and kdb\-dirname(1) \fIkdb\-dirname\.md\fR for other namepart extraction operations\.
+.IP "\(bu" 4
 The Unix analogue [BASENAME(1)]\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 To get keys in shell scripts, you can use kdb\-sget(1) \fIkdb\-sget\.md\fR\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
 .IP "" 0
 
