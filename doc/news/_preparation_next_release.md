@@ -33,7 +33,7 @@ docker run -it elektra/elektra
 
 ## Highlights
 
-- `kdb` no longer permits write operations on cascading keys that do not correspond to an existsing key. See the details in the `Tools` section below and the new subsection on cascading writes in the [tutorial](/doc/tutorials/cascading.md) on cascading keys for further information. _(Alexander Firbas)_
+- `kdb` now prohibits write operations on cascading keys that miss a corresponding existing key. See the details in the `Tools` section below and the new subsection on cascading writes in the [tutorial](/doc/tutorials/cascading.md) on cascading keys for further information. _(Alexander Firbas)_
 - <<HIGHLIGHT1>>
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
@@ -170,7 +170,7 @@ _(Michael Tucek)_
 
 ### KDB
 
-- `kdb set`, `kdb meta-set`: Only allow writes to the cascading namespace if the lookup succeeds (Otherwise, the operation is ambiguous and therefore aborted).
+- `kdb set`, `kdb meta-set`: Only allow writes to the cascading namespace if the lookup succeeds. Otherwise, the operation is ambiguous and therefore aborted.
   No more guessing of namespaces in case a cascading key is given (`user:, system`: for `kdb set`, `spec:` for `kdb meta-set`), _(Alexander Firbas)_
 - `kdb set`, `kdb meta-set`: Validation of keys can no longer be bypassed by using non-cascading keys (except with the new --force (-f) option). _(Alexander Firbas)_
 - Disable `-N/--namespace` option in all kdb subcommands _(Alexander Firbas)_

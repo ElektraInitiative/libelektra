@@ -34,7 +34,7 @@ There is some special handling for the metadata atime, mtime and ctime. They wil
 - `-q`, `--quiet`:
   Suppress non-error messages.
 - `-f`, `--force`:
-  Do not perform a cascasing lookup if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
+  Do not perform a cascading KDB operations if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
 
 ## KDB
 
