@@ -19,7 +19,7 @@ NamespaceCommand::NamespaceCommand ()
 
 int NamespaceCommand::execute (Cmdline const & cl)
 {
-	return executeNamepartcommand (cl, cl.noSeparators ? keyNamespaceWithoutSeparator : keyNamespaceWithSeparator);
+	return executeNamepartcommand (cl, keyNamespace);
 }
 
 NamespaceCommand::~NamespaceCommand ()
