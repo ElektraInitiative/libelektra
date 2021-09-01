@@ -453,15 +453,6 @@ def generateMainBuildStages() {
   // We want fo fail fast (i.e. abort parallel stages if one fails
   tasks.failFast = true
 
-  tasks << buildAndTest(
-    "fedora-34-full",
-    DOCKER_IMAGES.fedora_34,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
-  )
 
   // Add a task that should build the whole project to catch all test errors
   // in a standard environment
@@ -477,14 +468,6 @@ def generateMainBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
-  // Check the ABI and API compatibility of Elektra
-  tasks << buildIcheck()
-
-  // Check if release notes have been updated
-  tasks << buildCheckReleaseNotes()
-
-  // Check formatting of c and CMake files
-  tasks << buildFormatChecks()
 
   return tasks
 }
@@ -494,82 +477,6 @@ def generateMainBuildStages() {
 def generateFullBuildStages() {
   def tasks = [:]
 
-  // Run the open tasks plugin and sloccount
-  tasks << buildTodo()
-
-  // Build doc and upload
-  tasks << buildDoc()
-
-  tasks << buildAndTest(
-    "fedora-33-full",
-    DOCKER_IMAGES.fedora_33,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
-  )
-
-  // Build Elektra with clang and ASAN
-  // Detects memory leaks via ASAN
-  tasks << buildAndTestAsan(
-    "fedora-34-asan",
-    DOCKER_IMAGES.fedora_34,
-    CMAKE_FLAGS_BUILD_ALL
-  )
-
-  // Add a task that should build the whole project to catch all test errors
-  // in a standard environment
-  tasks << buildAndTest(
-    "debian-buster-full",
-    DOCKER_IMAGES.buster,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_COVERAGE
-    ,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
-  )
-
-  tasks << buildAndTest(
-    "debian-stretch-full",
-    DOCKER_IMAGES.stretch,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_BUILD_FULL +
-      CMAKE_FLAGS_BUILD_STATIC +
-      CMAKE_FLAGS_COVERAGE
-    ,
-    [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
-  )
-
-
-  // Build Elektra with ASAN enabled
-  // Detects memory leaks via ASAN
-  tasks << buildAndTestAsan(
-    "debian-buster-asan",
-    DOCKER_IMAGES.buster,
-    CMAKE_FLAGS_BUILD_ALL
-  )
-
-  // Build Elektra with clang and ASAN
-  // Detects memory leaks via ASAN
-  tasks << buildAndTestAsan(
-    "debian-unstable-clang-asan",
-    DOCKER_IMAGES.sid,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_CLANG
-  )
-
-  // Build Elektra on debian-unstable for compatibility tests
-  tasks << buildAndTest(
-    "debian-unstable-full",
-    DOCKER_IMAGES.sid,
-    CMAKE_FLAGS_BUILD_ALL+
-      CMAKE_FLAGS_DEBUG,
-    [TEST.ALL, TEST.MEM, TEST.INSTALL]
-  )
 
   // Build Elektra on debian bullseye
   tasks << buildAndTest(
@@ -578,65 +485,6 @@ def generateFullBuildStages() {
     CMAKE_FLAGS_BUILD_ALL+
     CMAKE_FLAGS_DEBUG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
-  )
-
-  tasks << buildAndTest(
-    "debian-bullseye-full-i386",
-    DOCKER_IMAGES.bullseye_i386,
-    CMAKE_FLAGS_I386 + [
-      'PLUGINS': 'NODEP'
-    ] + CMAKE_FLAGS_BUILD_ALL,
-    [TEST.ALL]
-  )
-
-  tasks << buildAndTest(
-    "debian-buster-full-i386",
-    DOCKER_IMAGES.buster_i386,
-    CMAKE_FLAGS_I386 + [
-      'PLUGINS': 'NODEP'
-    ] + CMAKE_FLAGS_BUILD_ALL,
-    [TEST.ALL]
-  )
-
-  // Build Elektra with clang. We use unstable for easy access to clang-9.0
-  // Detects problems when using an alternative compiler (clang)
-  tasks << buildAndTest(
-    "debian-unstable-full-clang",
-    DOCKER_IMAGES.sid,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_CLANG,
-    [TEST.ALL, TEST.MEM, TEST.INSTALL]
-  )
-
-  // Build Elektra via mingw for Windows
-  tasks << buildAndTestMingwW64()
-
-  // Build Elektra on alpine
-  tasks << buildAndTest(
-    "alpine",
-    DOCKER_IMAGES.alpine,
-    CMAKE_FLAGS_BUILD_ALL +
-    CMAKE_FLAGS_BUILD_STATIC + [
-      'PLUGINS': 'ALL;-date',
-    ],
-    [TEST.ALL]
-  )
-
-  // Build Elektra on ubuntu-xenial
-  tasks << buildAndTest(
-    "ubuntu-xenial",
-    DOCKER_IMAGES.xenial,
-    CMAKE_FLAGS_BUILD_ALL,
-    [TEST.ALL]
-  )
-
-  // Build Elektra on a minimal Debian stretch Docker image
-  tasks << buildAndTest(
-    "debian-buster-minimal",
-    DOCKER_IMAGES.buster_minimal,
-    [:],
-    [TEST.ALL]
   )
 
   // Build Elektra on a minimal Debian Bullseye Docker image
@@ -668,25 +516,6 @@ def generateFullBuildStages() {
     [TEST.ALL, TEST.MEM]
   )
 
-  tasks << buildAndTestAsan(
-    "debian-bullseye-full-mmap-asan",
-    DOCKER_IMAGES.bullseye,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_MMAP
-  )
-
-  // Build Elektra with xdg resolver to see if we are compliant
-  def xdgResolver = 'resolver_mf_xp_x'
-  tasks << buildAndTest(
-    "debian-bullseye-full-xdg",
-    DOCKER_IMAGES.bullseye,
-    [
-      'PLUGINS': "${xdgResolver};dump;sync;base64;spec;error;list;timeofday;profile;mathcheck;tracer;hosts;network;glob",
-      'KDB_DEFAULT_RESOLVER': xdgResolver
-    ],
-    [TEST.ALL, TEST.MEM]
-  )
 
   // Build Elektra without tests
   tasks << buildAndTest(
@@ -698,45 +527,6 @@ def generateFullBuildStages() {
     []
   )
 
-  // Build Elektra without optimizations
-  tasks << buildAndTest(
-    "debian-bullseye-full-optimizations-off",
-    DOCKER_IMAGES.bullseye,
-    CMAKE_FLAGS_BUILD_ALL +
-      CMAKE_FLAGS_OPTIMIZATIONS_OFF +
-      CMAKE_FLAGS_DEBUG +
-      CMAKE_FLAGS_LOGGER
-    ,
-    [TEST.ALL, TEST.MEM]
-  )
-
-  // Run memory analysis of the crypto plugins in separate environment as theses tests are quite unstable
-  tasks << buildAndTest(
-    "debian-buster-cryptoplugins",
-    DOCKER_IMAGES.buster,
-    CMAKE_FLAGS_BUILD_ALL+
-      CMAKE_FLAGS_DEBUG + [
-      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
-      'TOOLS': 'kdb;gen-gpg-testkey',
-      'BINDINGS': '',
-      ],
-    [TEST.CRYPTOS]
-  )
-
-  tasks << buildAndTest(
-    "debian-bullseye-cryptoplugins",
-    DOCKER_IMAGES.bullseye,
-    CMAKE_FLAGS_BUILD_ALL+
-      CMAKE_FLAGS_DEBUG + [
-      'PLUGINS': 'dump;resolver_fm_hpu_b;list;spec;sync;crypto;fcrypt;gpgme;base64',
-      'TOOLS': 'kdb;gen-gpg-testkey',
-      'BINDINGS': '',
-      ],
-    [TEST.CRYPTOS]
-  )
-
-  // We need the webui_base image to build webui images later
-  tasks << dockerUtils.buildImageStage(DOCKER_IMAGES.webui_base)
 
   return tasks
 }
@@ -1044,15 +834,6 @@ def generateArtifactStages() {
   def tasks = [:]
 
   tasks << buildPackage(
-    "buildPackage/debian/buster",
-    DOCKER_IMAGES.buster,
-    "buster-unstable",
-    "buster",
-    DOCKER_IMAGES.buster_installed,
-    release.&publishDebPackages,
-    this.&updateDebianChangelog
-  )
-  tasks << buildPackage(
     "buildPackage/debian/bullseye",
     DOCKER_IMAGES.bullseye,
     "bullseye-unstable",
@@ -1061,47 +842,6 @@ def generateArtifactStages() {
     release.&publishDebPackages,
     this.&updateDebianChangelog
   )
-  tasks << buildPackage(
-    "buildPackage/ubuntu/bionic",
-    DOCKER_IMAGES.bionic,
-    "bionic-unstable",
-    "bionic",
-    DOCKER_IMAGES.bionic_installed,
-    release.&publishDebPackages,
-    this.&updateDebianChangelog
-  )
-  tasks << buildPackage(
-    "buildPackage/ubuntu/focal",
-    DOCKER_IMAGES.focal,
-    "focal-unstable",
-    "focal",
-    DOCKER_IMAGES.focal_installed,
-    release.&publishDebPackages,
-    this.&updateDebianChangelog
-  )
-  tasks << buildPackage(
-    "buildPackage/fedora/33",
-    DOCKER_IMAGES.fedora_33,
-    "fedora-33-unstable",
-    "fedora-33-unstable",
-    DOCKER_IMAGES.fedora_33_installed,
-    release.&publishRpmPackages,
-    this.&updateFedoraChangelog,
-    true
-  )
-  tasks << buildPackage(
-    "buildPackage/fedora/34",
-    DOCKER_IMAGES.fedora_34,
-    "fedora-34-unstable",
-    "fedora-34-unstable",
-    DOCKER_IMAGES.fedora_34_installed,
-    release.&publishRpmPackages,
-    this.&updateFedoraChangelog,
-    true
-  )
-
-  tasks << buildWebsite()
-  // tasks << buildWebUI()
 
   return tasks
 }
