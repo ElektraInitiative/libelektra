@@ -79,7 +79,6 @@ if (TOOLS MATCHES "ALL")
 	set (
 		TOOLS_LIST
 		elektrad
-		fuse
 		gen-gpg-testkey
 		hub-zeromq
 		kdb
