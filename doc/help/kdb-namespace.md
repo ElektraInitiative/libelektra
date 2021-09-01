@@ -37,6 +37,6 @@ kdb namespace /key/subkey
 
 ## SEE ALSO
 
-- See [kdb-basename(1)](kdb-basename.md), [kdb-dirname(1)](kdb-dirname.md), [kdb-dirkey(1)](kdb-dirkey.md) for other namepart extraction operations.
+- See [kdb-basename(1)](kdb-basename.md) and [kdb-dirname(1)](kdb-dirname.md) for other namepart extraction operations.
 - To get keys in shell scripts, you can use [kdb-sget(1)](kdb-sget.md).
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.

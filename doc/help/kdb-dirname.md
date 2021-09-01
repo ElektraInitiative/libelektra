@@ -36,7 +36,7 @@ kdb dirname /
 
 ## SEE ALSO
 
-- See [kdb-namespace(1)](kdb-namespace.md), [kdb-basename(1)](kdb-basename.md) for other namepart extraction operations.
+- See [kdb-namespace(1)](kdb-namespace.md) and [kdb-basename(1)](kdb-basename.md) for other namepart extraction operations.
 - The Unix analogue [DIRNAME(1)].
 - To get keys in shell scripts, you can use [kdb-sget(1)](kdb-sget.md).
 - [elektra-key-names(7)](elektra-key-names.md) for an explanation of key names.
