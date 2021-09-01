@@ -29,7 +29,6 @@
 #include <complete.hpp>
 #include <convert.hpp>
 #include <cp.hpp>
-#include <dirkey.hpp>
 #include <dirname.hpp>
 #include <editor.hpp>
 #include <export.hpp>
@@ -131,7 +130,6 @@ public:
 		m_factory.insert (std::make_pair ("namespace", std::make_shared<Cnstancer<NamespaceCommand>> ()));
 		m_factory.insert (std::make_pair ("basename", std::make_shared<Cnstancer<BasenameCommand>> ()));
 		m_factory.insert (std::make_pair ("dirname", std::make_shared<Cnstancer<DirnameCommand>> ()));
-		m_factory.insert (std::make_pair ("dirkey", std::make_shared<Cnstancer<DirkeyCommand>> ()));
 	}
 
 	std::vector<std::string> getPrettyCommands () const

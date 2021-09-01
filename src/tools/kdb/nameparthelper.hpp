@@ -19,7 +19,6 @@ using namespace std;
 string keyNamespace (Key const & key);
 string keyBasename (Key const & key);
 string keyDirname (Key const & key);
-string keyDirkey (Key const & key);
 int executeNamepartcommand (Cmdline const & cl, string (*namepart_getter) (Key const &));
 
 #endif /* NAMEPARTHELPER_HPP_ */

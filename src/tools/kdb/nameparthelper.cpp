@@ -46,11 +46,6 @@ string keyDirname (Key const & key)
 	return dirname_;
 }
 
-string keyDirkey (Key const & key)
-{
-	return keyNamespace (key) + keyDirname (key);
-}
-
 int executeNamepartcommand (Cmdline const & cl, string (*namepart_getter) (Key const &))
 {
 	int argc = cl.arguments.size ();
