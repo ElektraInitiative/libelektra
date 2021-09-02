@@ -40,10 +40,23 @@ install (CODE "execute_process(COMMAND
 		${Python3_EXECUTABLE} setup.py bdist_wheel
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )")
 
+# Check if running on bionic where https://github.com/pypa/pip/issues/3826 occurs.
+# In that case, use additional flag.
+execute_process (
+	COMMAND sh -c "lsb_release -c | grep -E 'bionic'"
+	RESULT_VARIABLE EXIT_CODE
+	OUTPUT_QUIET)
+
+if (EXIT_CODE EQUAL 0)
+	set (PIP_BUG_WORKAROUND_OPTION "--system")
+else
+	set (PIP_BUG_WORKAROUND_OPTION "")
+endif ()
+
 # Install the package (the .whl file) and its dependencies (which are fetched from PyPI) to the local subdirectory 'fuse'
 install (
 	CODE "execute_process(COMMAND
-		${Python3_EXECUTABLE} -m pip install --target \"${CMAKE_CURRENT_SOURCE_DIR}/fuse\" --upgrade --no-cache-dir ./dist/elektra_fuse-1.0.0-py3-none-any.whl
+		${Python3_EXECUTABLE} -m pip install ${PIP_BUG_WORKAROUND_OPTION} --target \"${CMAKE_CURRENT_SOURCE_DIR}/fuse\" --upgrade --no-cache-dir ./dist/elektra_fuse-1.0.0-py3-none-any.whl
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )")
 
 # Copy the just created 'fuse' directory to the global installation directory. (This indirection is performed so that CPack knows about the
