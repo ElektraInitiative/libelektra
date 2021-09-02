@@ -1,5 +1,11 @@
 # The tool requires libfuse during runtime, but this is not enfoced here.
 
+# Check if python binding is included
+if (NOT "python" IN_LIST ADDED_BINDINGS)
+	remove_tool (fuse "python binding not available")
+	return ()
+endif ()
+
 # Check if python3 with required version is available
 find_package (Python3 3.8 COMPONENTS Interpreter)
 if (NOT Python3_Interpreter_FOUND)
