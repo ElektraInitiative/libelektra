@@ -65,6 +65,7 @@ sudo kdb fuse <mount point>
 ```
 
 To view all available options, run
+
 ```sh
 kdb fuse --help
 ```
