@@ -7,20 +7,20 @@ if (NOT "python" IN_LIST ADDED_BINDINGS)
 endif ()
 
 # Check if python3 with required version is available
-find_package (Python3 3.8 COMPONENTS Interpreter)
+find_package (Python3 3.6 COMPONENTS Interpreter)
 if (NOT Python3_Interpreter_FOUND)
-	remove_tool (fuse "did not find python3 interpreter of version >= 3.8")
+	remove_tool (fuse "did not find python3 interpreter of version >= 3.6")
 	return ()
 endif ()
 
 # Sometimes CMake returns an invalid version of python: check for that
 execute_process (
-	COMMAND ${Python3_EXECUTABLE} -c "import sys; exit(sys.version_info < (3, 8))"
+	COMMAND ${Python3_EXECUTABLE} -c "import sys; exit(sys.version_info < (3, 6))"
 	RESULT_VARIABLE EXIT_CODE
 	OUTPUT_QUIET)
 
 if (NOT EXIT_CODE EQUAL 0)
-	remove_tool (fuse "python3 delivered by cmake not of version >= 3.8")
+	remove_tool (fuse "python3 delivered by cmake not of version >= 3.6")
 	return ()
 endif ()
 

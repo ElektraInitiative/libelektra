@@ -27,7 +27,7 @@ setup(
 
     packages=find_packages(where='src'),
 
-    python_requires='>=3.8',
+    python_requires='>=3.6',
 
     install_requires=['fusepy>=3.0.1', "psutil>=5.8.0"], 
 )
