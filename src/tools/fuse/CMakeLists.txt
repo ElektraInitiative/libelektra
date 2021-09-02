@@ -40,8 +40,7 @@ install (CODE "execute_process(COMMAND
 		${Python3_EXECUTABLE} setup.py bdist_wheel
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )")
 
-# Check if running on bionic where https://github.com/pypa/pip/issues/3826 occurs.
-# In that case, use additional flag.
+# Check if running on bionic where https://github.com/pypa/pip/issues/3826 occurs. In that case, use additional flag.
 execute_process (
 	COMMAND sh -c "lsb_release -c | grep -E 'bionic'"
 	RESULT_VARIABLE EXIT_CODE
