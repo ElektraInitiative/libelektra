@@ -49,7 +49,7 @@ execute_process (
 
 if (EXIT_CODE EQUAL 0)
 	set (PIP_BUG_WORKAROUND_OPTION "--system")
-else
+else ()
 	set (PIP_BUG_WORKAROUND_OPTION "")
 endif ()
 
