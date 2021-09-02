@@ -177,7 +177,7 @@ if (UNIX)
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-FUSE_DISPLAY_NAME "libelektra${SO_VERSION}-fuse")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-FUSE_DESCRIPTION "This package contains the 'fuse' tool.")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-FUSE_DEPENDS "libelektra${SO_VERSION}" "python3-elektra")
-	check_component_dependencies (fuse libelektra${SO_VERSION}-fuse TOOL)
+	check_component_dependencies (python libelektra${SO_VERSION}-fuse BINDING)
 
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XMLTOOL_DISPLAY_NAME "libelektra${SO_VERSION}-xmltool")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XMLTOOL_DESCRIPTION "This package contains the 'xmltool' plugin.")
