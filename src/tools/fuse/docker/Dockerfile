@@ -1,6 +1,6 @@
 # run this container with any of the run scripts (in order to mount the source code folder, ensure privileged mode to be able to mount fuse, setup logging to nohup.out/stdout)
 
-FROM ubuntu:bionic
+FROM ubuntu:focal 
 
 RUN apt-get -y update
 RUN apt-get -y update
@@ -18,7 +18,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/time
 
 #install elektra
 #add elektra sources and 'apt update'
-RUN echo "deb [trusted=yes] https://debs.libelektra.org/bionic bionic-unstable main" | tee /etc/apt/sources.list.d/elektra.list
+RUN echo "deb [trusted=yes] https://debs.libelektra.org/focal focal-unstable main" | tee /etc/apt/sources.list.d/elektra.list
 RUN apt-get update
 RUN apt-get -y install libelektra5-all
 
