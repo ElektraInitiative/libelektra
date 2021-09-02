@@ -47,6 +47,12 @@ struct Specification
 	bool useSubcommands;
 };
 
+/**
+ * Get value of meta key with name @p meta of Key @p key as string.
+ * @param key Key to retrieve meta value from.
+ * @param meta Name of meta key.
+ * @return NULL if the meta value is NULL or an empty string. Otherwise the meta value.
+ */
 static inline const char * keyGetMetaString (const Key * key, const char * meta)
 {
 	const Key * mk = keyGetMeta (key, meta);
@@ -54,6 +60,12 @@ static inline const char * keyGetMetaString (const Key * key, const char * meta)
 	return value != NULL && value[0] == '\0' ? NULL : value;
 }
 
+/**
+ * Get value of meta key identified by @p lookup of the Key @p key as string.
+ * @param key Key to retrieve meta value from.
+ * @param lookup A key pointer identifying the meta key to retrieve
+ * @return NULL if the meta value is NULL or an empty string. Otherwise the meta value.
+ */
 static inline const char * keyGetMetaStringByKey (Key * key, Key * lookup)
 {
 	const Key * mk = ksLookup (keyMeta (key), lookup, KDB_O_DEL);
