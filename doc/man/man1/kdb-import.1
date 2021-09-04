@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.9.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
 .TH "KDB\-IMPORT" "1" "August 2021" ""
 .SH "NAME"
 \fBkdb\-import\fR \- Import an existing configuration into the key database
@@ -41,9 +41,9 @@ Give debug information\. Prints additional debug information in case of errors/w
 \fB\-c\fR, \fB\-\-plugins\-config\fR
 Add a configuration to the format plugin\.
 .SH "KDB"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB/sw/elektra/kdb/#0/current/verbose\fR: Same as \fB\-v\fR: Explain what is happening (output merged keys)\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB/sw/elektra/kdb/#0/current/format\fR Change default format (if none is given at commandline) and built\-in default is not your preferred format\.
 .IP "" 0
 .SH "EXAMPLES"
@@ -55,25 +55,46 @@ To import a configuration stored in the \fBini\fR format in a file called \fBexa
 .br
 \fBcat example\.ini | kdb import \-s cut user:/keyset ini\fR
 .P
-To import a configuration stored in the \fBini\fR format in a file called \fBexample\.ini\fR below \fBuser:/keyset\fR keeping any previous keys stored there that aren\'t present in the newly imported configuration:
+To import a configuration stored in the \fBini\fR format in a file called \fBexample\.ini\fR below \fBuser:/keyset\fR keeping any previous keys stored there that aren't present in the newly imported configuration:
 .br
 \fBcat example\.ini | kdb import \-s import user:/keyset ini\fR
 .P
-To restore a backup (stored as \fBsw\.ecf\fR) of a user\'s configuration below \fBsystem:/sw\fR:
+To restore a backup (stored as \fBsw\.ecf\fR) of a user's configuration below \fBsystem:/sw\fR:
 .br
 \fBcat sw\.ecf | kdb import system:/sw\fR
 .P
 To import a sample \fBxml\fR content with the \fBxerces\fR plugin:
-.P
-```sh # import two keys from a xml string kdb import user:/tests/kdb\-import/ xerces «< "<?xml version="1\.0" encoding="UTF\-8" standalone="no" ?>"kdb get user:/tests/kdb\-import/one #> one kdb get user:/tests/kdb\-import/two #> two kdb rm \-r user:/tests/kdb\-import ```
+.IP "" 4
+.nf
+# import two keys from a xml string
+kdb import user:/tests/kdb\-import/ xerces <<< "<?xml version=\e"1\.0\e" encoding=\e"UTF\-8\e" standalone=\e"no\e" ?><kdb\-import><one>one</one><two>two</two></kdb\-import>"
+
+# get the values and verify they got imported correctly
+kdb get user:/tests/kdb\-import/one
+#> one
+kdb get user:/tests/kdb\-import/two
+#> two
+kdb rm \-r user:/tests/kdb\-import
+.fi
+.IP "" 0
 .P
 To import a sample \fBxml\fR content via specifying the file format directly:
-.P
-```sh # import two keys from a xml string kdb import user:/tests/kdb\-import/ xml «< "<?xml version="1\.0" encoding="UTF\-8" standalone="no" ?>"kdb get user:/tests/kdb\-import/one #> one kdb get user:/tests/kdb\-import/two #> two
-.P
-kdb rm \-r user:/tests/kdb\-import ```
+.IP "" 4
+.nf
+# import two keys from a xml string
+kdb import user:/tests/kdb\-import/ xml <<< "<?xml version=\e"1\.0\e" encoding=\e"UTF\-8\e" standalone=\e"no\e" ?><kdb\-import><one>one</one><two>two</two></kdb\-import>"
+
+# get the values and verify they got imported correctly
+kdb get user:/tests/kdb\-import/one
+#> one
+kdb get user:/tests/kdb\-import/two
+#> two
+
+kdb rm \-r user:/tests/kdb\-import
+.fi
+.IP "" 0
 .SH "SEE ALSO"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 elektra\-merge\-strategy(7) \fIelektra\-merge\-strategy\.md\fR
 .IP "" 0
 

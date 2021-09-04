@@ -1,20 +1,20 @@
-.\" generated with Ronn-NG/v0.9.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
 .TH "KDB\-MOUNT" "1" "November 2020" ""
 .SH "NAME"
 \fBkdb\-mount\fR \- Mount a file to the key database
 .SH "SYNOPSIS"
 \fBkdb mount [<path> <mount point>] [<plugin> [<config>] [\.\.]]\fR
 .br
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Where \fBpath\fR is the path to the file the user wants to mount\. See \fBkdb plugin\-info resolver\fR for details what an absolute and relative path means\. See also IMPORTANT below\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBmountpoint\fR is where in the key database the new backend should be mounted\. For a cascading mount point, \fBmountpoint\fR should start with \fB/\fR\. See also IMPORTANT below\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 A list of such plugins with a configuration for each of them can be given:
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBplugin\fR should be an Elektra plugin\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Plugins may be followed by a \fB,\fR separated list of \fBkeys=values\fR pairs which will be used as plugin configuration\.
 .IP "" 0
 
@@ -30,39 +30,39 @@ Absolute paths are still relative to their namespace (see \fBkdb plugin\-info re
 .P
 For cascading mount points (starting with \fB/\fR) a mount point for the namespace \fBdir\fR, \fBuser\fR and \fBsystem\fR is created\. Each of this mount point uses a different configuration file, either below current directory, below home directory or anywhere in the system\. Use \fBkdb file <path>\fR to determine where the file(s) are\.
 .SH "OPTIONS"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-H\fR, \fB\-\-help\fR: Show the man page\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-V\fR, \fB\-\-version\fR: Print version info\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-p\fR, \fB\-\-profile <profile>\fR: Use a different kdb profile\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-C\fR, \fB\-\-color <when>\fR: Print never/auto(default)/always colored output\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-v\fR, \fB\-\-verbose\fR: Explain what is happening\. Prints additional information in case of errors/warnings\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-d\fR, \fB\-\-debug\fR: Give debug information or ask debug questions (in interactive mode)\. Prints additional information in case of errors/warnings\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-q\fR, \fB\-\-quiet\fR: Suppress non\-error messages\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-i\fR, \fB\-\-interactive\fR: Instead of passing all mounting information by parameters ask the user interactively\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-s\fR, \fB\-\-strategy\fR: (experimental, use with care) By default mounting is rejected if the mountpoint already exists\. With the strategy \fIunchanged\fR you can change the behavior to be successful if \fIexactly\fR the same config would be written (see #1306 why this does not always work correctly)\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-R\fR, \fB\-\-resolver <resolver>\fR Specify the resolver plugin to use if no resolver is given, the default resolver is used\. See also \fIbelow in KDB\fR\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-0\fR, \fB\-\-null\fR: Use binary 0 termination\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-1\fR, \fB\-\-first\fR: Suppress the first column\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-2\fR, \fB\-\-second\fR: Suppress the second column\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-3\fR, \fB\-\-third\fR: Suppress the third column\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-c\fR, \fB\-\-plugins\-config <plugins\-config>\fR: Add a plugin configuration for all plugins\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-W\fR, \fB\-\-with\-recommends\fR: Also add recommended plugins and warn if they are not available\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-f\fR, \fB\-\-force\fR: Unmount before mounting: Does not fail on already existing mount points\.
 .IP "" 0
 .SH "KDB"
@@ -100,13 +100,13 @@ To recode and rename a configuration file using Elektra:
 .br
 \fBkdb mount recode\.txt dir:/recode ni rename cut=path iconv to=utf8,from=latin1\fR
 .SH "SEE ALSO"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 elektra\-glossary(7) \fIelektra\-glossary\.md\fR\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 kdb\-spec\-mount(1) \fIkdb\-spec\-mount\.md\fR\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 kdb\-umount(1) \fIkdb\-umount\.md\fR\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 elektra\-mounting(7) \fIelektra\-mounting\.md\fR\.
 .IP "" 0
 

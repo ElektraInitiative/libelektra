@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.9.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
 .TH "KDB\-GEN\-HIGHLEVEL" "1" "September 2019" ""
 .SH "NAME"
 \fBkdb\-gen\-highlevel\fR \- High\-level API code\-generator template
@@ -44,33 +44,33 @@ The \fB\.mount\.sh\fR file is a shell script that can be used to mount the speci
 .P
 For detailed information about the contents of the header file see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR\.
 .SH "PARAMETERS"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBinitFn\fR: Changes the name of the initialization function (default: \fBloadConfiguration\fR)
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBhelpFn\fR: Changes the name of the function that prints the generated help message (default: \fBprintHelpMessage\fR)
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBspecloadFn\fR: Changes the name of the function that checks for "specload mode" (default: \fBexitForSpecload\fR)
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBtagPrefix\fR: Changes the prefix of the generated tags (default: \fBELEKTRA_TAG_\fR)
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBembedHelpFallback\fR: Switches whether a fallback help message should be embedded; allowed values: \fB1\fR (default), \fB0\fR If enabled (\fB1\fR), a help message will be generated from the specification passed to the code\-generator and embedded into the application\. This message will be used, if the normal help message could not be generated at runtime\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBenumConv\fR: Switches how enum conversion should be done; allowed values: \fBdefault\fR (default), \fBswitch\fR, \fBstrcmp\fR
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBstrcmp\fR: uses a simple series of \fBif (strcmp(*, *) == 0)\fR to convert strings into enums
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBswitch\fR: constructs a series of \fBswitch\fR statements to convert strings into enums
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBauto\fR: uses a \fBswitch\fR up to a depth of 2, then switches to \fBstrcmp\fR
 .IP "" 0
 
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBheaders\fR: Comma\-separated (\fB,\fR) list of additional header files to include\. For each of the listed headers we will generate an \fB#include "*"\fR statement
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBgenSetters\fR: Switches whether setters should be generated at all; allowed values: \fB1\fR (default), \fB0\fR
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBembeddedSpec\fR: Changes how much of the specification is embedded into the application; allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fBspecValidation\fR: Changes how the specification will be validated on application start\-up; allowed values: \fBnone\fR (default), \fBminimal\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR
 .IP "" 0
 .SH "EXAMPLES"
@@ -82,7 +82,7 @@ However, it is not recommended to have the code\-generator read from the KDB, so
 .P
 \fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config\fR
 .P
-If you don\'t want to embed the full specification in your binary, we recommend:
+If you don't want to embed the full specification in your binary, we recommend:
 .P
 \fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config embeddedSpec=defaults specValidation=minimal\fR
 .P
@@ -90,9 +90,9 @@ For the minimal binary size you may use (this comes with its own drawbacks, see 
 .P
 \fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config embeddedSpec=none specValidation=minimal\fR
 .SH "SEE ALSO"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 kdb(1) \fIkdb\.md\fR for general information about the \fBkdb\fR tool\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 elektra\-spec(7) \fIelektra\-spec\.md\fR for an explanation of the \fBspec\fR namespace\.
 .IP "" 0
 

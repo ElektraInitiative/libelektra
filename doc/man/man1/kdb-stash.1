@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.9.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
 .TH "KDB\-STASH" "" "November 2020" ""
 .SH "NAME"
 \fBkdb\-stash\fR \- Stash away KDB to be restored later
@@ -10,25 +10,45 @@ This command will stash away the \fBsystem\fR, \fBuser\fR and \fBspec\fR configu
 .P
 The backup will be done in the \fB/var/tmp\fR directory, so make sure the backup is not deleted\.
 .SH "EXAMPLES"
-``` kdb set user:/x foo #> #> Create a new key user:/x with string "foo"
-.P
-kdb mount a\.ini /a kdb mount #> a\.ini on /a with name /a #> none on system:/info/elektra/constants with name system:/info/elektra/constants #> /usr/local/share/doc/elektra/CONTRACT\.ini on system:/info/elektra/contract/#0 with name system:/info/elektra/contract/#0 #> none on system:/info/elektra/desktop with name system:/info/elektra/desktop #> /usr/local/share/doc/elektra/METADATA\.ini on system:/info/elektra/metadata/#0 with name system:/info/elektra/metadata/#0 #> none on system:/info/elektra/uname with name system:/info/elektra/uname
-.P
-kdb backup #> kdb restore 1500000000
-.P
-kdb get user:/x #> Did not find key
-.P
+.nf
+kdb set user:/x foo
+#>
+#> Create a new key user:/x with string "foo"
+
+kdb mount a\.ini /a
 kdb mount
-.P
+#> a\.ini on /a with name /a
+#> none on system:/info/elektra/constants with name system:/info/elektra/constants
+#> /usr/local/share/doc/elektra/CONTRACT\.ini on system:/info/elektra/contract/#0 with name system:/info/elektra/contract/#0
+#> none on system:/info/elektra/desktop with name system:/info/elektra/desktop
+#> /usr/local/share/doc/elektra/METADATA\.ini on system:/info/elektra/metadata/#0 with name system:/info/elektra/metadata/#0
+#> none on system:/info/elektra/uname with name system:/info/elektra/uname
+
+kdb backup
+#> kdb restore 1500000000
+
+kdb get user:/x
+#> Did not find key
+
+kdb mount
+
 kdb restore 1500000000
-.P
-kdb get user:/x #> foo
-.P
-kdb mount #> a\.ini on /a with name /a #> none on system:/info/elektra/constants with name system:/info/elektra/constants #> /usr/local/share/doc/elektra/CONTRACT\.ini on system:/info/elektra/contract/#0 with name system:/info/elektra/contract/#0 #> none on system:/info/elektra/desktop with name system:/info/elektra/desktop #> /usr/local/share/doc/elektra/METADATA\.ini on system:/info/elektra/metadata/#0 with name system:/info/elektra/metadata/#0 #> none on system:/info/elektra/uname with name system:/info/elektra/uname ```
+
+kdb get user:/x
+#> foo
+
+kdb mount
+#> a\.ini on /a with name /a
+#> none on system:/info/elektra/constants with name system:/info/elektra/constants
+#> /usr/local/share/doc/elektra/CONTRACT\.ini on system:/info/elektra/contract/#0 with name system:/info/elektra/contract/#0
+#> none on system:/info/elektra/desktop with name system:/info/elektra/desktop
+#> /usr/local/share/doc/elektra/METADATA\.ini on system:/info/elektra/metadata/#0 with name system:/info/elektra/metadata/#0
+#> none on system:/info/elektra/uname with name system:/info/elektra/uname
+.fi
 .SH "SEE ALSO"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 kdb\-restore(1) \fIkdb\-restore\.md\fR
-.IP "\[ci]" 4
+.IP "\(bu" 4
 kdb\-backup(1) \fIkdb\-backup\.md\fR
 .IP "" 0
 

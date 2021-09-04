@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.9.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
 .TH "KDB" "1" "January 2021" ""
 .SH "NAME"
 \fBkdb\fR \- key database access tools
@@ -139,12 +139,20 @@ For every key found there, a new bookmark will be introduced\.
 Bookmarks can be used to start key names by using \fB+\fR (plus) as first character\. The string until the first \fB/\fR will be considered as bookmark\.
 .P
 For example, if you set the bookmark kdb:
-.P
-\fBsh kdb set user:/sw/elektra/kdb/#0/current/bookmarks kdb set user:/sw/elektra/kdb/#0/current/bookmarks/kdb user:/sw/elektra/kdb/#0/current\fR
+.IP "" 4
+.nf
+kdb set user:/sw/elektra/kdb/#0/current/bookmarks
+kdb set user:/sw/elektra/kdb/#0/current/bookmarks/kdb user:/sw/elektra/kdb/#0/current
+.fi
+.IP "" 0
 .P
 You are able to use:
-.P
-\fBsh kdb ls +kdb/bookmarks kdb get +kdb/format\fR
+.IP "" 4
+.nf
+kdb ls +kdb/bookmarks
+kdb get +kdb/format
+.fi
+.IP "" 0
 .SH "RETURN VALUES"
 .TP
 0
@@ -177,11 +185,11 @@ Reserved error codes\.
 11\-20
 Command\-specific error codes\. See man page of specific command\.
 .SH "SEE ALSO"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 elektra\-introduction(7) \fIelektra\-introduction\.md\fR
-.IP "\[ci]" 4
+.IP "\(bu" 4
 kdb(1) \fIkdb\.md\fR
-.IP "\[ci]" 4
+.IP "\(bu" 4
 Get a big picture about Elektra \fI/doc/BIGPICTURE\.md\fR
 .IP "" 0
 

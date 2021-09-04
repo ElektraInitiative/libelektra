@@ -1,5 +1,5 @@
-.\" generated with Ronn-NG/v0.9.1
-.\" http://github.com/apjanke/ronn-ng/tree/0.9.1
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
 .TH "KDB\-MERGE" "1" "November 2020" ""
 .SH "NAME"
 \fBkdb\-merge\fR \- Three\-way merge of KeySets
@@ -47,14 +47,14 @@ The \fBbase\fR KeySet is the original version of the KeySet\.
 
 .TP
 \fBours\fR
-The \fBours\fR KeySet represents the user\'s current version of the KeySet\.
+The \fBours\fR KeySet represents the user's current version of the KeySet\.
 .br
 This KeySet differs from \fBbase\fR for every key you changed\.
 .br
 
 .TP
 \fBtheirs\fR
-The \fBtheirs\fR KeySet usually represents the default version of a KeySet (usually the package maintainer\'s version)\.
+The \fBtheirs\fR KeySet usually represents the default version of a KeySet (usually the package maintainer's version)\.
 .br
 This KeySet differs from \fBbase\fR for every key someone has changed\.
 .br
@@ -67,23 +67,23 @@ Conflicts occur when a Key has a different value in all three KeySets\.
 .br
 Conflicts in a merge can be resolved using a \fIstrategy\fR with the \fB\-s\fR option\. To interactively resolve conflicts, use the \fB\-i\fR option\.
 .SH "OPTIONS"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-H\fR, \fB\-\-help\fR: Show the man page\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-V\fR, \fB\-\-version\fR: Print version info\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-p\fR, \fB\-\-profile <profile>\fR: Use a different kdb profile\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-C\fR, \fB\-\-color <when>\fR: Print never/auto(default)/always colored output\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-f\fR, \fB\-\-force\fR: Will remove existing keys from \fBresultpath\fR instead of failing\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-s\fR, \fB\-\-strategy <name>\fR: Specify which strategy should be used to resolve conflicts\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-v\fR, \fB\-\-verbose\fR: Explain what is happening\. Prints additional information in case of errors/warnings\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-d\fR, \fB\-\-debug\fR: Give debug information\. Prints additional debug information in case of errors/warnings\.
-.IP "\[ci]" 4
+.IP "\(bu" 4
 \fB\-i\fR, \fB\-\-interactive\fR Interactively resolve the conflicts\.
 .IP "" 0
 .SH "EXAMPLES"
@@ -102,9 +102,9 @@ To complete a three\-way merge and overwrite all current keys in the \fBresultpa
 \fBkdb merge \-s cut user:/ours user:/theirs user:/base user:/result\fR
 .br
 .SH "SEE ALSO"
-.IP "\[ci]" 4
+.IP "\(bu" 4
 elektra\-merge\-strategy(7) \fIelektra\-merge\-strategy\.md\fR
-.IP "\[ci]" 4
+.IP "\(bu" 4
 elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
 .IP "" 0
 
