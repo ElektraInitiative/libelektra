@@ -46,7 +46,8 @@ const char * const linksToSrc[] = { ".h", ".c", ".cpp", ".hpp", ".cmake", ".ini"
 // both need to be terminated with an empty string
 
 // helpers
-static void printTarget (FILE * output, char * target, size_t targetSize, char * inputFilename, int indexofElektraRoot, bool isMarkdown, int lineCount);
+static void printTarget (FILE * output, char * target, size_t targetSize, char * inputFilename, int indexofElektraRoot, bool isMarkdown,
+			 int lineCount);
 static void printConvertedPath (FILE * output, char * path);
 static int getIndexofElektraRoot (char * cmakeCacheFilename);
 static void exitError (FILE * f1, FILE * f2, const char * mes);
@@ -465,7 +466,8 @@ int main (int argc, char * argv[])
 	return EXIT_SUCCESS;
 }
 
-static void printTarget (FILE * output, char * target, size_t targetSize, char * inputFilename, int indexofElektraRoot, bool isMarkdown, int lineCount)
+static void printTarget (FILE * output, char * target, size_t targetSize, char * inputFilename, int indexofElektraRoot, bool isMarkdown,
+			 int lineCount)
 {
 	char * backupTarget = target;
 	char pathToLink[strlen (inputFilename) + strlen (target) + 11 + 1];
