@@ -16,8 +16,6 @@ https://webdemo.libelektra.org
 https://debian-stretch-repo.libelektra.org
 https://crates.io/crates/elektra
 https://crates.io/crates/elektra-sys
-https://wiki.jenkins-ci.org/display/JENKINS/GitHub%2BPR+Comment+Build+Plugin
-https://wiki.jenkins.io/display/JENKINS/Pipeline%2BMultibranch+Plugin
 http://www.snmp.com/protocol
 http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.81.7888
 http://localhost:33333
@@ -33,13 +31,13 @@ master.libelektra.org
 puppet.libelektra.org
 issues.libelektra.org
 #currently broken links
+https://wiki.jenkins-ci.org/display/JENKINS/GitHub
+https://wiki.jenkins.io/display/JENKINS/Pipeline
 https://cgit.kde.org/kconfig.git
 https://doc.libelektra.org/coverage/master/debian-buster-full
 http://mingw.org
 http://api.zeromq.org/4-2:zmq-ipc
 http://api.zeromq.org/4-2:zmq-tcp
-https://wiki.jenkins.io/display/JENKINS/Pipeline%2BMultibranch+Plugin
-https://wiki.jenkins-ci.org/display/JENKINS/GitHub%2BPR+Comment+Build+Plugin
 https://www.jenkins.io/doc/pipeline/steps/pipeline-input-step
 https://joeyh.name/code/moreutils
 http://swagger.io
