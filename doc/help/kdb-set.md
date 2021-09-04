@@ -38,7 +38,7 @@ To set a key to a negative value, `--` has to be used to stop option processing.
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
 - `-f`, `--force`:
-  Do not perform a cascasing lookup if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
+  Do not perform a cascading lookup if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
 
 ## KDB
 
