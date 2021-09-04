@@ -42,30 +42,32 @@ For debugging purposes, a logfile is written to `~/nohup.out` inside the contain
 
 ### Native
 
-System requirements:
+Install either `libelektra5-fuse` or `libelektra5-all`.
+See also [installation](/doc/INSTALL.md).
 
-- Elektra of version at least 0.9.5 with the python binding installed (for example, `libelektra5-all` satisfies this)
-- `fuse` (for example via the debian package `fuse`)
-- `python3 >= 3.8`, `pip3`, `python3-wheel`
+### Compilation
 
-Required python3 packages (will be installed by `pip3` automatically if not present):
+Alternatively, if
 
-- `fusepy>=3.0.1`
-- `psutil>=5.8.0`
+- all requirements for Elektras [python binding](/src/bindings/swig/python/README.md) are satisfied,
+- `fuse` is available (for example via the debian package `fuse`) and
+- `python3 >= 3.6` with packages `pip` and `wheel` are installed,
 
-Build the `elektra_fuse` python3-wheel and install it using `pip3` with:
+the tool can be compiled and installed as described [here](/doc/COMPILE.md).
+For this, the `TOOLS` and `BINDINGS` variables need to be set accordingly. (This tool is named `fuse`, the binding is named `python`).
 
-```
-make build && sudo make install
-```
+### Quickstart
 
-This, if needed, will also install the python-requirements `fusepy` and `psutil`.
-`make install` is run as root in order to make the new shell command `elektra_fuse` globally available (if run as a normal user, `$PATH` needs to be adapted as specified in the command's output).
-
-Now, to mount the filesystem below the (already existing) directory `<mount point>` (as root-user), run:
+After installation, to mount the filesystem below the (already existing) directory `<mount point>` (as root-user), run:
 
 ```sh
-sudo elektra_fuse <mount point>
+sudo kdb fuse <mount point>
+```
+
+To view all available options, run
+
+```sh
+kdb fuse --help
 ```
 
 ## Filesystem Structure

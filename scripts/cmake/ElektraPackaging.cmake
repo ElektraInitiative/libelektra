@@ -34,6 +34,7 @@ set (
 	libelektra${SO_VERSION}-yajl
 	libelektra${SO_VERSION}-yamlcpp
 	libelektra${SO_VERSION}-zeromq
+	libelektra${SO_VERSION}-fuse
 	glib-elektra
 	io-ev-elektra
 	io-glib-elektra
@@ -59,6 +60,7 @@ set (
 	elektra-bin-extra
 	java-elektra
 	ruby-elektra
+	libelektra${SO_VERSION}-fuse
 	${CMAKE_INSTALL_DEFAULT_COMPONENT_NAME})
 
 set (ALL_PLUGINS "")
@@ -171,6 +173,11 @@ if (UNIX)
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ZEROMQ_DESCRIPTION "This package contains the 'zeromq' plugins.")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-ZEROMQ_DEPENDS "libelektra${SO_VERSION}")
 	check_component_dependencies (zeromqrecv libelektra${SO_VERSION}-zeromq PLUGIN ADDITIONAL_DEPENDENCIES zeromqsend)
+
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-FUSE_DISPLAY_NAME "libelektra${SO_VERSION}-fuse")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-FUSE_DESCRIPTION "This package contains the 'fuse' tool.")
+	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-FUSE_DEPENDS "libelektra${SO_VERSION}" "python3-elektra")
+	check_component_dependencies (python libelektra${SO_VERSION}-fuse BINDING)
 
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XMLTOOL_DISPLAY_NAME "libelektra${SO_VERSION}-xmltool")
 	set (CPACK_COMPONENT_LIBELEKTRA${SO_VERSION}-XMLTOOL_DESCRIPTION "This package contains the 'xmltool' plugin.")
@@ -299,6 +306,7 @@ if (UNIX)
 		"libelektra${SO_VERSION}-dbus"
 		"libelektra${SO_VERSION}-gitresolver"
 		"libelektra${SO_VERSION}-zeromq"
+		"libelektra${SO_VERSION}-fuse"
 		"libelektra${SO_VERSION}-java"
 		"libelektra${SO_VERSION}-lua"
 		"libelektra${SO_VERSION}-python"

@@ -46,7 +46,11 @@ RUN apt-get update && apt-get -y install \
         swig \
         unzip \
         valgrind \
+        python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # use lua5.3 because dh-lua installs liblua5.3-dev which sets the
 # dependency on the generated package to lua5.3

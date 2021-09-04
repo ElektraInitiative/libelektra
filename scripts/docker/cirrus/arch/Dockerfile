@@ -15,7 +15,11 @@ RUN pacman -Sy --noconfirm \
     rubygems \
     texlive-most \
     wget \
-    yajl
+    yajl \
+    python-pip
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # The root user is not allowed to use `makepkg`. We therefore install software from Arch’s User Software repository as user `makepkg`.
 ARG ELEKTRA_USER=makepkg
