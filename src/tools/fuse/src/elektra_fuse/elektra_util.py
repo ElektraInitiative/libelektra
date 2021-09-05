@@ -82,7 +82,7 @@ def update_key_value(os_path: str, new_value: bytes):
             new_value_as_string = new_value.decode(encoding="utf-8", errors="strict")
             key.value = new_value_as_string
         except UnicodeDecodeError:
-            raise OSError(errno.ENOTSUP) #general binary meta-keys are not supported
+            key.value = new_value
 
         db.set(ks, path) #using key instead of path here deleted the key
 
