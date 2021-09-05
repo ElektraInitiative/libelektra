@@ -6,40 +6,40 @@
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
-#ifndef IMPORT_HPP
-#define IMPORT_HPP
+#ifndef NAMESPACE_HPP
+#define NAMESPACE_HPP
 
 #include "coloredkdbio.hpp"
 #include <command.hpp>
 #include <kdb.hpp>
 
-class ImportCommand : public Command
+class NamespaceCommand : public Command
 {
 	kdb::KDB kdb;
 
 public:
-	ImportCommand ();
-	~ImportCommand ();
+	NamespaceCommand ();
+	~NamespaceCommand ();
 
 	virtual std::string getShortOptions () override
 	{
-		return "scE";
+		return "n";
 	}
 
 	virtual std::string getSynopsis () override
 	{
-		return "<destination> [<format>]";
+		return "<name>";
 	}
 
 	virtual std::string getShortHelpText () override
 	{
-		return "Import configuration to the key database.";
+		return "Get the namespace of a key (trailing \':\' included).";
 	}
 
 	virtual std::string getLongHelpText () override
 	{
-		return "The import utility allows you to import\n"
-		       "all or parts of the configuration from stdin.\n";
+		return "For example, \"kdb namespace user:/key\" will yield \"user:\",\n"
+		       "and, \"kdb namespace /key\" will yield the empty string.\n";
 	}
 
 	virtual int execute (Cmdline const & cmdline) override;

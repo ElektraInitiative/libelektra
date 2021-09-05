@@ -87,18 +87,12 @@ We write metadata to the namespace `spec` and the plugin `spec` applies it to ev
 
 ```sh
 kdb meta-set spec:/tests/spec/test hello world
-kdb set /tests/spec/test value
-# STDOUT-REGEX: Using name (user|system):/tests/spec/test⏎Create a new key (user|system):/tests/spec/test with string "value"
+kdb set user:/tests/spec/test value
 kdb meta-ls spec:/tests/spec/test | grep -v '^internal/ini'
 #> hello
 kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
 kdb meta-get /tests/spec/test hello
-#> world
-
-# The default namespace for a non-root user is `user`, while
-# for root users a cascading key usually refers to the `system` namespace.
-kdb meta-get user:/tests/spec/test hello || kdb meta-get system:/tests/spec/test hello
 #> world
 ```
 
@@ -106,8 +100,7 @@ But it also supports globbing (`_` for any key, `?` for any char, `[]` for chara
 
 ```sh
 kdb meta-set "spec:/tests/spec/_" new metaval
-kdb set /tests/spec/test value
-# STDOUT-REGEX: Using name (user|system):/tests/spec/test⏎Set string to "value"
+kdb set user:/tests/spec/test value
 kdb meta-ls /tests/spec/test | grep -v '^internal/ini'
 #> hello
 #> new
@@ -129,8 +122,7 @@ kdb meta-set spec:/tests/spec/test check/validation/message "Not a number"
 If we now set a new key with
 
 ```sh
-kdb set /tests/spec/test "not a number"
-# STDOUT-REGEX: Using name [a-z]+:/tests/spec/test⏎Create a new key [a-z]+:/tests/spec/test with string "not a number"
+kdb set user:/tests/spec/test "not a number"
 ```
 
 this key has adopted all metadata from the spec namespace:
@@ -229,8 +221,7 @@ Please be aware that if you require many plugins for the same mount point,
 you can run into [this](https://github.com/ElektraInitiative/libelektra/issues/2133) error.
 
 ```sh
-kdb set /tests/tutorial/links/url "invalid url"
-# STDOUT-REGEX: Using name (user|system):/tests/tutorial/links/url
+kdb set user:/tests/tutorial/links/url "invalid url"
 # STDERR: .*Validation Syntactic.*not a valid URL.*
 # ERROR:  C03100
 # RET:    5
@@ -247,14 +238,11 @@ kdb file dir:/tests/tutorial
 # STDOUT-REGEX: /.*/tutorial\.dump
 ```
 
-If you want to set a key for another namespace and do not want to go without validation,
-consider that the spec plugin works only when you use cascading keys.
-You can work around that by setting the keys with the `-N` option:
+If you want to go without validation, you can work around that by setting the keys with the `-f` (`--force`) option:
 
 ```sh
-kdb set -N system /tests/tutorial/links/elektra https://www.libelektra.org
-#> Using name system:/tests/tutorial/links/elektra
-#> Create a new key system:/tests/tutorial/links/elektra with string "https://www.libelektra.org"
+kdb set -f system:/tests/tutorial/links/elektra "invalid url"
+#> Create a new key system:/tests/tutorial/links/elektra with string "invalid url"
 ```
 
 ## Rejecting Configuration Keys
@@ -265,11 +253,9 @@ There are many ways to do so directly supported by [the spec plugin](/src/plugin
 Another way is to trigger errors with the [error plugin](/src/plugins/error):
 
 ```sh
-kdb meta-set /tests/tutorial/spec/should_not_be_here trigger/error C03200
-#> Using keyname spec:/tests/tutorial/spec/should_not_be_here
+kdb meta-set spec:/tests/tutorial/spec/should_not_be_here trigger/error C03200
 kdb spec-mount /tests/tutorial
-kdb set /tests/tutorial/spec/should_not_be_here abc
-# STDOUT-REGEX: Using name (user|system):/tests/tutorial/spec/should_not_be_here
+kdb set user:/tests/tutorial/spec/should_not_be_here abc
 # RET:    5
 # ERROR:C03200
 kdb get /tests/tutorial/spec/should_not_be_here

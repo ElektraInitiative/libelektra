@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "KDB\-GET" "1" "November 2020" ""
+.TH "KDB\-GET" "1" "August 2021" ""
 .SH "NAME"
 \fBkdb\-get\fR \- Get the value of a key stored in the key database
 .SH "SYNOPSIS"
@@ -60,7 +60,7 @@ sudo kdb mount get\.ecf spec:/tests/get/examples/kdb\-get dump
 
 # Create the keys we use for the examples
 kdb set user:/tests/get/examples/kdb\-get/key myKey
-kdb meta\-set /tests/get/examples/kdb\-get/anotherKey default defaultValue
+kdb meta\-set spec:/tests/get/examples/kdb\-get/anotherKey default defaultValue
 
 # To get the value of a key:
 kdb get user:/tests/get/examples/kdb\-get/key

@@ -4,6 +4,21 @@ echo
 echo ELEKTRA CHECK DISTRIBUTION
 echo
 
+# Adds the specified namespace to a key name if the key does not have one.
+# If the key already has a namespace, the namespace remains unchanged.
+# The result is printed to stdout.
+# $1 ... namespace
+# $2 ... key name
+prepend_namespace_if_not_present() {
+	local present_namespace=$("$KDB" namespace $2)
+
+	if [ -z "$present_namespace" ]; then
+		echo $1:$2
+	else
+		echo $2
+	fi
+}
+
 # high level test to check whether keys are distributed to correct
 # backend
 
@@ -29,28 +44,28 @@ check_distribution() {
 	"$KDB" mount $FILE2 $MOUNTPOINT2 $KDB_DEFAULT_STORAGE 1> /dev/null
 	succeed_if "could not mount 2: $FILE2 at $MOUNTPOINT2"
 
-	FILE=$("$KDB" file -N system -n $MOUNTPOINT1)
+	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT1))
 	[ "x$FILE" = "x$FILE1" ]
 	succeed_if "resolving of $MOUNTPOINT1 did not yield $FILE1 but $FILE"
 
-	FILE=$("$KDB" file -N system -n $MOUNTPOINT1/xxx)
+	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT1/xxx))
 	[ "x$FILE" = "x$FILE1" ]
 	succeed_if "resolving of $MOUNTPOINT1/xxx did not yield $FILE1 but $FILE"
 
-	FILE=$("$KDB" file -N system -n $MOUNTPOINT2)
+	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT2))
 	[ "x$FILE" = "x$FILE2" ]
 	succeed_if "resolving of $MOUNTPOINT2 did not yield $FILE2 but $FILE"
 
-	FILE=$("$KDB" file -N system -n $MOUNTPOINT2/xxx)
+	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present system $MOUNTPOINT2/xxx))
 	[ "x$FILE" = "x$FILE2" ]
 	succeed_if "resolving of $MOUNTPOINT2/xxx did not yield $FILE2 but $FILE"
 
 	KEY1=$MOUNTPOINT1/key
-	"$KDB" set -N system $KEY1 $VALUE1 > /dev/null
+	"$KDB" set $(prepend_namespace_if_not_present system $KEY1) $VALUE1 > /dev/null
 	succeed_if "could not set $KEY1"
 
 	KEY2=$MOUNTPOINT2/key
-	"$KDB" set -N system $KEY2 $VALUE2 > /dev/null
+	"$KDB" set $(prepend_namespace_if_not_present system $KEY2) $VALUE2 > /dev/null
 	succeed_if "could not set $KEY2"
 
 	[ "x$("$KDB" sget $KEY1 defvalue 2> /dev/null)" = "x$VALUE1" ]

@@ -41,32 +41,32 @@ sudo kdb umount /tests/yamlcpp
 sudo kdb mount config.yaml /tests/yamlcpp yamlcpp
 
 # Manually add a mapping to the database
-echo "🔑 : 🐳"               > `kdb file /tests/yamlcpp`
+echo "🔑 : 🐳"               > `kdb file user:/tests/yamlcpp`
 # Retrieve the value of the manually added key
-kdb get /tests/yamlcpp/🔑
+kdb get user:/tests/yamlcpp/🔑
 #> 🐳
 
 # Manually add syntactically incorrect data
-echo "some key: @some  value" >> `kdb file /tests/yamlcpp`
-kdb get "/tests/yamlcpp/some key"
+echo "some key: @some  value" >> `kdb file user:/tests/yamlcpp`
+kdb get "user:/tests/yamlcpp/some key"
 # STDERR: .*yaml-cpp: error at line 2, column 11: unknown token.*
 # ERROR: C03100
 # RET: 5
 
 # Overwrite incorrect data
-echo "🔑: value" >  `kdb file /tests/yamlcpp`
+echo "🔑: value" >  `kdb file user:/tests/yamlcpp`
 
 # Add some values via `kdb set`
-kdb set /tests/yamlcpp 🎵
-kdb set /tests/yamlcpp/fleetwood mac
-kdb set /tests/yamlcpp/the chain
+kdb set user:/tests/yamlcpp 🎵
+kdb set user:/tests/yamlcpp/fleetwood mac
+kdb set user:/tests/yamlcpp/the chain
 
 # Retrieve the new values
-kdb get /tests/yamlcpp
+kdb get user:/tests/yamlcpp
 #> 🎵
-kdb get /tests/yamlcpp/the
+kdb get user:/tests/yamlcpp/the
 #> chain
-kdb get /tests/yamlcpp/fleetwood
+kdb get user:/tests/yamlcpp/fleetwood
 #> mac
 
 # Undo modifications

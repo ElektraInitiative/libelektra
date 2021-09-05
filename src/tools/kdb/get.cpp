@@ -116,21 +116,13 @@ int GetCommand::execute (Cmdline const & cl)
 	KeySet conf;
 
 	kdb::Key root = cl.createKey (0);
+	string parentKeyName = cl.all ? "/" : cl.getParentKey (root).getName ();
 	kdb::KDB kdb (root);
 
-	std::string n;
-	if (cl.all)
-	{
-		n = root.getName ();
-		root.setName ("/");
-	}
-
+	std::string originalName = root.getName ();
+	root.setName (parentKeyName);
 	kdb.get (conf, root);
-
-	if (cl.all)
-	{
-		root.setName (n);
-	}
+	root.setName (originalName);
 
 	// do a lookup without tracer to warm up default cache
 	conf.lookup (root);

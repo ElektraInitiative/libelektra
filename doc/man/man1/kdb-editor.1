@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "KDB\-EDITOR" "1" "November 2020" ""
+.TH "KDB\-EDITOR" "1" "August 2021" ""
 .SH "NAME"
 \fBkdb\-editor\fR \- Use your editor for editing KDB
 .SH "SYNOPSIS"
@@ -53,15 +53,8 @@ Give debug information\. Prints additional debug information in case of errors/w
 .TP
 \fB\-e\fR, \fB\-\-editor <editor>\fR
 Which editor to use\.
-.TP
-\fB\-N\fR, \fB\-\-namespace\fR=\fIns\fR
-Specify the namespace to use when writing cascading keys (\fBvalidation\fR strategy only)\. See \fIbelow in KDB\fR\.
 .SH "Strategies"
-.TP
-\fBvalidate\fR
-apply metadata as received from base, and then cut+append all keys as imported\. If the appended keys do not have a namespace, the namespace given by \fB\-N\fR is added\.
-.P
-The other strategies are implemented by the merge framework and are documented in elektra\-merge\-strategy(7) \fIelektra\-merge\-strategy\.md\fR\.
+The strategies implemented by the merge framework and are documented in elektra\-merge\-strategy(7) \fIelektra\-merge\-strategy\.md\fR\.
 .SH "KDB"
 .TP
 \fB/sw/elektra/kdb/#0/current/format\fR
@@ -69,9 +62,6 @@ The default format if none given\. Defaults to \fBstorage\fR if the key does not
 .TP
 \fB/sw/elektra/kdb/#0/current/editor\fR
 The default editor, if no \fB\-e\fR option is given\. Defaults to \fB/usr/bin/sensible\-editor\fR, \fB/usr/bin/editor\fR or \fB/usr/bin/vi\fR if the key does not exist\.
-.TP
-\fB/sw/elektra/kdb/#0/current/namespace\fR
-Specifies which default namespace should be used when setting a cascading name\. By default the namespace is user, except \fBkdb\fR is used as root, then \fBsystem\fR is the default (\fBvalidate\fR strategy only)\.
 .SH "EXAMPLES"
 To change the configuration in KDB below \fBuser:/ini\fR with \fB/usr/bin/vim\fR, you would use:
 .br

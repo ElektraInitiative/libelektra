@@ -9,6 +9,7 @@ Where `key name` is the name of the key you wish to set the value of (or create)
 ## DESCRIPTION
 
 This command allows the user to set the value of an individual key.
+If a cascading key is used that does not resolve to an existing key, the operation is aborted as it is ambiguous.
 
 ## EMPTY VALUES
 
@@ -30,15 +31,14 @@ To set a key to a negative value, `--` has to be used to stop option processing.
   Print never/auto(default)/always colored output.
 - `-q`, `--quiet`:
   Suppress non-error messages.
-- `-N`, `--namespace=NS`:
-  Specify the namespace to use when writing cascading keys.
-  See [below in KDB](#KDB).
 - `--`:
   Do not process any following arguments starting with `-` as options.
 - `-v`, `--verbose`:
   Explain what is happening. Prints additional information in case of errors/warnings.
 - `-d`, `--debug`:
   Give debug information. Prints additional debug information in case of errors/warnings.
+- `-f`, `--force`:
+  Do not perform a cascading lookup if the key provided has a namespace. For example, this bypasses validation specified in the spec: namespace for the given key.
 
 ## KDB
 
@@ -47,11 +47,6 @@ To set a key to a negative value, `--` has to be used to stop option processing.
 
 - `/sw/elektra/kdb/#0/current/quiet`:
   Same as `-q`: Suppress default messages.
-
-- `/sw/elektra/kdb/#0/current/namespace`:
-  Specifies which default namespace should be used when setting a cascading name.
-  By default the namespace is user, except `kdb` is used as root, then `system`
-  is the default.
 
 ## EXAMPLES
 

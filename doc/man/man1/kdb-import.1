@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "KDB\-IMPORT" "1" "November 2020" ""
+.TH "KDB\-IMPORT" "1" "August 2021" ""
 .SH "NAME"
 \fBkdb\-import\fR \- Import an existing configuration into the key database
 .SH "SYNOPSIS"
@@ -14,12 +14,7 @@ This command allows a user to import an existing configuration into the key data
 .SH "CONFLICTS"
 Conflicts can occur when importing a configuration to a part of the database where keys already exist\. Conflicts when importing can be resolved using a strategy with the \fB\-s\fR argument\.
 .P
-Specific to \fBkdb import\fR the following strategy exists:
-.TP
-\fBvalidate\fR
-apply metadata as received from base, and then cut+append all keys as imported\. If the appended keys do not have a namespace, the namespace given by \fB\-N\fR is added\.
-.P
-The other strategies are implemented by the merge framework and are documented in elektra\-merge\-strategy(7) \fIelektra\-merge\-strategy\.md\fR\.
+The strategies implemented by the merge framework are documented in elektra\-merge\-strategy(7) \fIelektra\-merge\-strategy\.md\fR\.
 .SH "OPTIONS"
 .TP
 \fB\-H\fR, \fB\-\-help\fR
@@ -45,16 +40,11 @@ Give debug information\. Prints additional debug information in case of errors/w
 .TP
 \fB\-c\fR, \fB\-\-plugins\-config\fR
 Add a configuration to the format plugin\.
-.TP
-\fB\-N\fR, \fB\-\-namespace <namespace>\fR
-Specify the namespace to use when writing cascading keys (\fBvalidate\fR strategy only)\. See \fIbelow in KDB\fR\.
 .SH "KDB"
 .IP "\(bu" 4
 \fB/sw/elektra/kdb/#0/current/verbose\fR: Same as \fB\-v\fR: Explain what is happening (output merged keys)\.
 .IP "\(bu" 4
 \fB/sw/elektra/kdb/#0/current/format\fR Change default format (if none is given at commandline) and built\-in default is not your preferred format\.
-.IP "\(bu" 4
-\fB/sw/elektra/kdb/#0/current/namespace\fR: Specifies which default namespace should be used when setting a cascading name\. By default the namespace is user, except \fBkdb\fR is used as root, then \fBsystem\fR is the default (\fBvalidate\fR strategy only)\.
 .IP "" 0
 .SH "EXAMPLES"
 To import a configuration stored in the XML format in a file called \fBexample\.xml\fR below \fBuser:/keyset\fR:

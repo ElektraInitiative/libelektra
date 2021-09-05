@@ -138,7 +138,19 @@ Key prependNamespace (Key const & root, std::string const & ns)
 	Key ret = root.dup ();
 	if (ret.isCascading ())
 	{
-		ret.setName (ns + root.getName ());
+		ret.setName (ns + ":" + root.getName ());
+	}
+	return ret;
+}
+
+Key removeNamespace (Key const & root)
+{
+	Key ret = root.dup ();
+	if (!ret.isCascading ())
+	{
+		string keyName = ret.getName ();
+		string cascadingName = keyName.substr (keyName.find (":") + 1);
+		ret.setName (cascadingName);
 	}
 	return ret;
 }
