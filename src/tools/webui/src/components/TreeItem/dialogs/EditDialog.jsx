@@ -14,13 +14,8 @@ import { fromElektraBool } from "../../../utils";
 
 export default class EditDialog extends Component {
   handleAbort = () => {
-    const {
-      batchUndo,
-      sendNotification,
-      onUndo,
-      onClose,
-      refreshKey,
-    } = this.props;
+    const { batchUndo, sendNotification, onUndo, onClose, refreshKey } =
+      this.props;
     onClose();
     const steps = [];
     for (let i = 0; i < batchUndo; i++) {
