@@ -166,7 +166,9 @@ _(Michael Tucek)_
 - Really add all tools when using `-DTOOLS=ALL`. _(Markus Raab)_
 - ZeroMQ Hub: fix compilation and man page. _(Markus Raab)_
 - Configure packaging for FUSE tool. _(Alexander Firbas)_
+- FUSE: fix bug preventing binary writes. _(Alexander Firbas)_
 - ambiguous write operations now disabled in kdb _(Alexander Firbas)_
+- `webd`: update npm dependencies. _(Mihael Pranjić)_
 
 ### KDB
 
@@ -183,7 +185,6 @@ _(Michael Tucek)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
-- `webd`: update npm dependencies. _(Mihael Pranjić)_
 
 ## Scripts
 
@@ -231,6 +232,10 @@ _(Michael Tucek)_
 - Bump Gradle to version 7.2. _(Mihael Pranjić)_
 - Bump Debian Buster images to Bullseye and Stretch images to Buster. We still leave one Debian Stretch job due to upstream Debian LTS support until June 2022. _(Mihael Pranjić)_
 - <<TODO>>
+
+### Restyled
+
+- Upgrade to latest stable restylers. _(Mihael Pranjić)_
 
 ## Infrastructure
 
