@@ -29,6 +29,9 @@ static void defaultFatalErrorHandler (ElektraError * error)
 static void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults);
 static bool checkHighlevelContract (const char * application, KeySet * contract, ElektraError ** error);
 
+static kdb_boolean_t specProperlyMounted (KDB * const kdb, const char * application, ElektraError ** error);
+static kdb_boolean_t checkSpecificationProperlyMounted(KeySet * const mountPointsKs, const char * application, kdb_boolean_t checkForSpecFileMount, ElektraError ** error);
+
 /**
  * \defgroup highlevel High-level API
  * @{
@@ -149,6 +152,13 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		}
 	}
 
+	if(!specProperlyMounted(kdb, application, error)) {
+		ksDel(config);
+		kdbClose (kdb, parentKey);
+		keyDel (parentKey);
+		return NULL;
+	}
+
 	Elektra * const elektra = elektraCalloc (sizeof (struct _Elektra));
 	elektra->kdb = kdb;
 	elektra->parentKey = parentKey;
@@ -178,6 +188,106 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
 {
 	elektra->fatalErrorHandler (fatalError);
 }
+
+
+static kdb_boolean_t specProperlyMounted (KDB * const kdb, const char * application, ElektraError ** error) {
+	KeySet * const mountPoints = ksNew (0, KS_END);
+	Key * const parentKey = keyNew ("system:/elektra/mountpoints", KEY_END);
+	const int kdbGetResult = kdbGet (kdb, mountPoints, parentKey);
+
+	if(kdbGetResult == -1) {
+		ksDel(mountPoints);
+		*error = elektraErrorFromKey (parentKey);
+		keyDel (parentKey);
+		return false;
+	}
+	else {
+		if(!checkSpecificationProperlyMounted (mountPoints, application, true, error)) {
+			ksDel(mountPoints);
+			keyDel(parentKey);
+			return false;
+			// ... clean up, return false
+		}
+		//else if (!specMountExecuted(...)) {
+			//... clean up, return false
+		//}
+		else {
+			// clean up
+			return true;
+		}
+	}
+}
+
+/**
+ * Check whether the specification file for @p application was properly mounted using "kdb mount" and "kdb spec-mount".
+ *
+ * "kdb mount" was properly executed if:
+ * 1. Key system:/elektra/mountpoints/spec:ESCAPED_APPLICATION_NAME/mountpoint exists
+ * 2. its value matches spec:/APPLICATION_NAME
+ *
+ * "kdb spec-mount" was properly executed if:
+ * 1. Key system:/elektra/mountpoints/ESCAPED_APPLICATION_NAME/mountpoint exists
+ * 2. its value matches APPLICATION_NAME
+ *
+ * Note that this is a best-effort heuristic, not a check with full certainty. See https://github.com/ElektraInitiative/libelektra/issues/3998 for details.
+ *
+ * @param kdb		The KDB instance used for checking.
+ * @param application 	The application's base name.
+ * @param checkForSpecFileMount Pass true, if the check should verify that "kdb mount" was properly executed. Pass false, if the check should verify that "kdb spec-mount" was properly executed.
+ * @param error		Pointer used to report errors.
+ * @return True if the specification file was properly mounted, false otherwise.
+ */
+static kdb_boolean_t checkSpecificationProperlyMounted(KeySet * const mountPointsKs, const char * application, kdb_boolean_t checkForSpecFileMount, ElektraError ** error)
+{
+    Key * mountPointLookupKey = keyNew ("system:/elektra/mountpoints/", KEY_END);
+    char * mountPoint = checkForSpecFileMount ? elektraFormat("spec:%s", application) : elektraFormat("%s", application);
+    keyAddBaseName(mountPointLookupKey, mountPoint);
+    keyAddBaseName(mountPointLookupKey, "mountpoint");
+
+	Key * mountPointKey = ksLookup(mountPointsKs, mountPointLookupKey, 0);
+	// Check if the mountPointKey does not exist.
+	// This will be the case if the spec file was not properly mounted using "kdb mount".
+	if (mountPointKey == NULL) {
+		char * description = elektraFormat ("The specification file for application '%s' was not properly mounted. This is likely caused by an incomplete installation of the application. Please consult the application's documentation or contact its developers. Technical detail: The mountPointKey '%s' does not exist.", application, keyName(mountPointLookupKey));
+		keyDel (mountPointLookupKey);
+		elektraFree(mountPoint);
+		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
+		return false;
+	}
+	// Check if mountPointKey's value is not equal to "application".
+	// This will be the case, if the spec file was not properly mounted using "kdb mount".
+	else if (elektraStrCmp (keyString(mountPointKey), mountPoint) != 0) {
+		char * description = elektraFormat ("The specification file for application %s was not properly mounted. This is likely caused by an incomplete installation of the application. Please consult the application's documentation or contact its developers. Technical detail: The value of mountPointKey '%s' does not match the application name '%s'.", application, keyName(mountPointLookupKey), application);
+		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
+		keyDel(mountPointLookupKey);
+		keyDel(mountPointKey);
+        	elektraFree(mountPoint);
+		return false;
+	}
+	// Both checks succeeded, thus the specification file was properly mounted.
+	else {
+		keyDel(mountPointLookupKey);
+		keyDel(mountPointKey);
+		elektraFree(mountPoint);
+		return true;
+	}
+}
+
+/**
+ * Check whether the specification file for @p application was properly spec-mounted using "kdb spec-mount"
+ *
+ * Note: @kodebach pointed out: Technically this is not a 100% correct check, but it works most of the time (namely when kdb mount/kdb spec-mount was used). The layout of system:/elektra/mountpoints will change with #3693, so "works most of the time" is fine for now. When the backend implementation is done, we can create a better solution.
+ * @param kdb		The KDB instance used for checking.
+ * @param application 	The application's base name.
+ * @param error		Pointer used to report errors.
+ * @return 		True if the specification file was properly spec-mounted, false otherwise.
+ */
+/*kdb_boolean_t specMountExecuted (KDB * const kdb, const char * application, ElektraError ** error)
+{
+	char * description = elektraFormat ("'kdb spec-mount' was not properly executed for application %s. This is likely caused by an incomplete installation of the application. Please consult the application's documentation or contact its developers.", application);
+	*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
+	return 0;
+}*/
 
 /**
  * This function is only intended for use with code-generation.
