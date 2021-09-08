@@ -42,12 +42,12 @@ Namespaces in mountpoint configs:
 
 Other restrictions:
 
-- Creating mountpoints for root keys (`system:/`, `user:/`, etc.) is not allowed.
-  These parts of the KDB always use hardcoded backends that can only be configured at compile-time.
-- Creating a mountpoint for `system:/elektra` or any mountpoint below is not allowed.
-  This part of the KDB will always be stored in the bootstrap backend.
-  While the only part that is actually required for the bootstrap process is the one below `system:/elektra/mountpoints`, everything below `system:/elektra` is reserved and should only be used internally.
-  Additionally, `system:/elektra/version` and `system:/elektra/modules` will always point to hardcoded read-only backends containing information about this Elektra installation.
+- Creating a mountpoint for `/elektra` or below in _any namespace_ is forbidden.
+  This section of the KDB is reserved for Elektra's own config.
+- `system:/elektra/mountpoints`, `user:/elektra/mountpoints` and `dir:/elektra/mountpoints` are all required for the bootstrap process and use a hardcoded backend.
+  The backends are implemented by a standard file-based backend plugin that is defined at compile-time of `libelektra-kdb`.
+- `system:/elektra/version` and `system:/elektra/modules` will always use hardcoded read-only backends containing information about this Elektra installation.
+  The backends are implemented by special purpose backend plugins.
 
 ## `get` Operation
 
@@ -121,8 +121,12 @@ TODO: notifications? (just call at the end?)
 
 The basic flow of this operation is:
 
-1. Check if `ks` needs sync (via `KS_FLAG_SYNC` flag), if so go to 3.
-2. Check if any key in `ks` below `parentKey` needs sync (via `KEY_FLAG_SYNC`).
+<!-- TODO: check optimizations (OPT), remove unless clearly useful -->
+
+1. <!-- OPT -->
+   Check if `ks` needs sync (via `KS_FLAG_SYNC` flag), if so go to 3.
+2. <!-- OPT -->
+   Check if any key in `ks` below `parentKey` needs sync (via `KEY_FLAG_SYNC`).
    If neither `ks` nor any of the keys need sync, **return**.
 3. Determine the backends needed to write all keys below `parentKey`.
 4. Check that all backends are initialized (i.e. `kdbGet()` was called).
@@ -132,15 +136,15 @@ The basic flow of this operation is:
 6. Run the `spec` plugin on `ks` (to add metakeys for new keys).
 7. Deep-Copy `ks` (below `parentKey`) into a new KeySet `set_ks`
 8. Split `set_ks` into individual backends
-9. Run the `resolver` and `prestorage` on all backends (abort immediately on error and go to E).
+9. Run the `resolver` and `prestorage` on all backends (abort immediately on error and go to e).
 10. Merge the results into a new version of `set_ks`.
 11. Run the `spec` plugin on `set_ks` (to remove copied metakeys).
 12. Split `set_ks` into individual backends again.
-13. Run the `storage` and `poststorage` phases on all backends (abort immediately on error and go to E).
+13. Run the `storage` and `poststorage` phases on all backends (abort immediately on error and go to e).
 14. If everything was successful:
-    Run the `precommit` and `commit` phases on all backends (abort immediately on error and go to E), then run the `postcommit` phase on all backends and **return**.
+    Run the `precommit` and `commit` phases on all backends (abort immediately on error and go to e), then run the `postcommit` phase on all backends and **return**.
 
-<ol type="A" start="5">
+<ol type="a" start="5">
 <li>
  If there was an error:
     Run the <code>coderollback</code>, <code>rollback</code> and <code>postrollback</code> phases on all backends and <b>return</b>.

@@ -51,6 +51,8 @@ kind of plugin.
 
 ## Exporting Contracts
 
+<!-- TODO change how contract is exported, probably change plugin factory -->
+
 As already stated, some parts of the contracts are obligatory.
 `kdb mount` needs to know which symbols the plugin exports. Only the
 `elektraPluginGet()` symbol is mandatory - it is used to yield this
