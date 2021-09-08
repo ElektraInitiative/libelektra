@@ -69,23 +69,23 @@ kdb export -c "format=%s: %s" user:/line simpleini
 
 sudo kdb mount line /tests/line base64 line
 
-kdb set /tests/line/add something
-kdb set /tests/line/ignored huhu
-kdb set /tests/line ignored   # adding parent key does nothing
-kdb set /tests/line/add here
+kdb set user:/tests/line/add something
+kdb set user:/tests/line/ignored huhu
+kdb set user:/tests/line ignored   # adding parent key does nothing
+kdb set user:/tests/line/add here
 
-cat `kdb file /tests/line`
+cat `kdb file user:/tests/line`
 #> something
 #> huhu
 #> here
 
-kdb ls /tests/line
+kdb ls user:/tests/line
 # STDOUT-REGEX: line.+line/#0.+line/#1.+line/#2
 
-kdb set /tests/line/#1 huhu
-# STDOUT-REGEX: .+Set string to "huhu"
+kdb set user:/tests/line/#1 huhu
+# STDOUT-REGEX: Set string to "huhu"
 
-kdb export /tests/line line
+kdb export user:/tests/line line
 #> something
 #> huhu
 #> here
@@ -101,18 +101,18 @@ sudo kdb umount /tests/line
 sudo kdb mount line /tests/line base64 line
 
 # create and initialize testfile
-echo 'setting1 true'        >  `kdb file /tests/line`
-echo 'setting2 false'       >> `kdb file /tests/line`
-echo 'setting3 1000'        >> `kdb file /tests/line`
-echo '#comment'             >> `kdb file /tests/line`
-echo                        >> `kdb file /tests/line`
-echo                        >> `kdb file /tests/line`
-echo '//some other comment' >> `kdb file /tests/line`
-echo                        >> `kdb file /tests/line`
-echo 'setting4 -1'          >> `kdb file /tests/line`
+echo 'setting1 true'        >  `kdb file user:/tests/line`
+echo 'setting2 false'       >> `kdb file user:/tests/line`
+echo 'setting3 1000'        >> `kdb file user:/tests/line`
+echo '#comment'             >> `kdb file user:/tests/line`
+echo                        >> `kdb file user:/tests/line`
+echo                        >> `kdb file user:/tests/line`
+echo '//some other comment' >> `kdb file user:/tests/line`
+echo                        >> `kdb file user:/tests/line`
+echo 'setting4 -1'          >> `kdb file user:/tests/line`
 
 # output filecontent and display line numbers
-awk '{print NR-1 "-" $0}' < `kdb file /tests/line`
+awk '{print NR-1 "-" $0}' < `kdb file user:/tests/line`
 #> 0-setting1 true
 #> 1-setting2 false
 #> 2-setting3 1000
@@ -124,6 +124,6 @@ awk '{print NR-1 "-" $0}' < `kdb file /tests/line`
 #> 8-setting4 -1
 
 # cleanup
-kdb rm -r /tests/line
+kdb rm -r user:/tests/line
 sudo kdb umount /tests/line
 ```

@@ -887,9 +887,10 @@
         (window.ShadowDOMPolyfill
           ? ((window.wrap = window.ShadowDOMPolyfill.wrapIfNeeded),
             (window.unwrap = window.ShadowDOMPolyfill.unwrapIfNeeded))
-          : (window.wrap = window.unwrap = function (e) {
-              return e;
-            })),
+          : (window.wrap = window.unwrap =
+              function (e) {
+                return e;
+              })),
       window.HTMLImports &&
         (window.HTMLImports.__importsParsingHook = function (e) {
           e["import"] && a(wrap(e["import"]));
@@ -2509,9 +2510,8 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     )
                       RESERVED_SPEC_KEYS[name](Constructor, property);
                     else {
-                      var isReactClassMethod = ReactClassInterface.hasOwnProperty(
-                          name
-                        ),
+                      var isReactClassMethod =
+                          ReactClassInterface.hasOwnProperty(name),
                         isFunction = "function" == typeof property,
                         shouldAutoBind =
                           isFunction &&
@@ -5579,7 +5579,8 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                     if (this._compositeType !== y.StatelessFunctional) {
                       c.current = this;
                       try {
-                        e = this._renderValidatedComponentWithoutOwnerOrContext();
+                        e =
+                          this._renderValidatedComponentWithoutOwnerOrContext();
                       } finally {
                         c.current = null;
                       }
@@ -7082,7 +7083,8 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 o = e(30),
                 i = o;
               r.addons &&
-                (r.__SECRET_INJECTED_REACT_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = i),
+                (r.__SECRET_INJECTED_REACT_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED =
+                  i),
                 (t.exports = i);
             },
             { 120: 120, 30: 30 },
@@ -8384,9 +8386,8 @@ if (typeof Math.imul == "undefined" || Math.imul(0xffffffff, 5) == 0) {
                 this.reinitializeTransaction(),
                   (this.dirtyComponentsLength = null),
                   (this.callbackQueue = d.getPooled()),
-                  (this.reconcileTransaction = P.ReactReconcileTransaction.getPooled(
-                    !0
-                  ));
+                  (this.reconcileTransaction =
+                    P.ReactReconcileTransaction.getPooled(!0));
               }
               function i(e, t, n, o, i, a) {
                 return r(), b.batchedUpdates(e, t, n, o, i, a);
@@ -11705,9 +11706,10 @@ function registerAsciinemaPlayerElement() {
     for (d in b) a[c++] = d;
     return a;
   }
-  var ya = "constructor hasOwnProperty isPrototypeOf propertyIsEnumerable toLocaleString toString valueOf".split(
-    " "
-  );
+  var ya =
+    "constructor hasOwnProperty isPrototypeOf propertyIsEnumerable toLocaleString toString valueOf".split(
+      " "
+    );
   function za(b, a) {
     for (var c, d, e = 1; e < arguments.length; e++) {
       d = arguments[e];
@@ -29936,70 +29938,14 @@ function registerAsciinemaPlayerElement() {
     ),
     Jr = Je(
       [
-        121,
-        110,
-        101,
-        102,
-        106,
-        119,
-        104,
-        116,
-        99,
-        113,
-        117,
-        108,
-        109,
-        118,
-        100,
-        122,
-        111,
-        103,
-        125,
-        107,
-        97,
-        115,
-        112,
-        123,
-        120,
-        126,
-        98,
-        124,
-        96,
-        105,
-        114,
+        121, 110, 101, 102, 106, 119, 104, 116, 99, 113, 117, 108, 109, 118,
+        100, 122, 111, 103, 125, 107, 97, 115, 112, 123, 120, 126, 98, 124, 96,
+        105, 114,
       ],
       [
-        8804,
-        9532,
-        9226,
-        176,
-        9496,
-        9516,
-        9252,
-        9500,
-        9228,
-        9472,
-        9508,
-        9484,
-        9492,
-        9524,
-        9229,
-        8805,
-        9146,
-        177,
-        163,
-        9488,
-        9618,
-        9149,
-        9147,
-        960,
-        9474,
-        8901,
-        9225,
-        8800,
-        9830,
-        9227,
-        9148,
+        8804, 9532, 9226, 176, 9496, 9516, 9252, 9500, 9228, 9472, 9508, 9484,
+        9492, 9524, 9229, 8805, 9146, 177, 163, 9488, 9618, 9149, 9147, 960,
+        9474, 8901, 9225, 8800, 9830, 9227, 9148,
       ]
     ),
     Kr = new T(
@@ -32885,7 +32831,14 @@ function registerAsciinemaPlayerElement() {
   function Xv(b, a) {
     Wv.call(this, b ? b.type : "");
     this.relatedTarget = this.currentTarget = this.target = null;
-    this.button = this.screenY = this.screenX = this.clientY = this.clientX = this.offsetY = this.offsetX = 0;
+    this.button =
+      this.screenY =
+      this.screenX =
+      this.clientY =
+      this.clientX =
+      this.offsetY =
+      this.offsetX =
+        0;
     this.key = "";
     this.charCode = this.keyCode = 0;
     this.metaKey = this.shiftKey = this.altKey = this.ctrlKey = !1;
@@ -33395,7 +33348,8 @@ function registerAsciinemaPlayerElement() {
   g.clone = function () {
     return new Dw(this);
   };
-  var Fw = /^(?:([^:/?#.]+):)?(?:\/\/(?:([^/?#]*)@)?([^/#?]*?)(?::([0-9]+))?(?=[/#?]|$))?([^?#]+)?(?:\?([^#]*))?(?:#([\s\S]*))?$/;
+  var Fw =
+    /^(?:([^:/?#.]+):)?(?:\/\/(?:([^/?#]*)@)?([^/#?]*?)(?::([0-9]+))?(?=[/#?]|$))?([^?#]+)?(?:\?([^#]*))?(?:#([\s\S]*))?$/;
   function Gw(b) {
     sw.call(this);
     this.headers = new Dw();

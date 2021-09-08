@@ -70,6 +70,9 @@ ENV PATH="/usr/lib/llvm-12/bin:$PATH"
 # Update cache for shared libraries
 RUN ldconfig
 
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel 
+
 RUN pip3 install cmake-format[yaml]==0.6.13
 
 # Google Test
@@ -83,7 +86,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 # Prettier
-RUN npm install --global prettier@2.2.1
+RUN npm install --global prettier@2.3.2
 
 # hyperfine
 ARG HYPERFINE_VERSION=1.5.0
@@ -121,7 +124,7 @@ RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
-ENV SHFMT_VERSION=v3.2.4
+ENV SHFMT_VERSION=v3.3.1
 ENV PATH="${SHFMT_PATH}:${PATH}"
 RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \

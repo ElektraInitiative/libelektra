@@ -85,7 +85,6 @@ public:
 	std::string globalPlugins;
 	std::string pluginsConfig;
 	std::string color; /*!< colormode "never", "always" and "auto" to print color if output channel is a tty */
-	std::string ns;
 	std::string editor;
 
 	typedef std::map<std::string, std::string> map;
@@ -93,6 +92,7 @@ public:
 	std::string profile;
 
 	kdb::Key createKey (int pos, bool allowCascading = true) const;
+	kdb::Key getParentKey (kdb::Key const & key) const;
 	kdb::Key resolveBookmark (std::string name) const;
 
 	kdb::KeySet getPluginsConfig (std::string basepath = "user:/") const;

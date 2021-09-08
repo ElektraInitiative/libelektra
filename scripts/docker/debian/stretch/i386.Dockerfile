@@ -16,7 +16,11 @@ RUN dpkg --add-architecture i386 \
         gcc-multilib \
         g++-multilib \
         file \
+        python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

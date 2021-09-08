@@ -4,6 +4,21 @@ echo
 echo ELEKTRA CHECK RESOLVER
 echo
 
+# Adds the specified namespace to a key name if the key does not have one.
+# If the key already has a namespace, the namespace remains unchanged.
+# The result is printed to stdout.
+# $1 ... namespace
+# $2 ... key name
+prepend_namespace_if_not_present() {
+	local present_namespace=$("$KDB" namespace $2)
+
+	if [ -z "$present_namespace" ]; then
+		echo $1:$2
+	else
+		echo $2
+	fi
+}
+
 #set tmp path (mainly for macOS compatibility)
 TMPPATH=$(
 	cd /tmp
@@ -58,14 +73,14 @@ check_resolver() {
 	"$KDB" mount --resolver $PLUGIN "$3" $MOUNTPOINT dump 1> /dev/null
 	succeed_if "could not mount root using: "$KDB" mount --resolver $PLUGIN $3 $MOUNTPOINT dump"
 
-	FILE=$("$KDB" file -N $1 -n $ROOT_MOUNTPOINT 2> /dev/null)
+	FILE=$("$KDB" file -n $(prepend_namespace_if_not_present $1 $ROOT_MOUNTPOINT) 2> /dev/null)
 	echo "For $1 $2 $3 we got $FILE"
 	[ "x$FILE" = "x$4" ]
 	succeed_if "resolving of $MOUNTPOINT did not yield $4 but $FILE"
 
 	if [ "x$WRITE_TO_SYSTEM" = "xYES" ]; then
 		KEY=$ROOT_MOUNTPOINT/key
-		"$KDB" set -N $1 $KEY value
+		"$KDB" set $(prepend_namespace_if_not_present $1 $KEY) value
 		succeed_if "could not set $KEY"
 
 		echo "remove $FILE and its directories"

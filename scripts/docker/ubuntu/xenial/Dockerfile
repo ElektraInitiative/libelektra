@@ -26,7 +26,11 @@ RUN apt-get update && apt-get -y install \
         valgrind \
         checkinstall \
         swig \
+        python3-pip \
     && rm -rf /var/lib/apt/lists/*
+
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
 
 # Google Test
 ENV GTEST_ROOT=/opt/gtest

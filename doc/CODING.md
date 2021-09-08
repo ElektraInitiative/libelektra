@@ -442,7 +442,7 @@ brew install prettier
 To install [`prettier`][] using Node’s package manager [npm](https://www.npmjs.com) you can use the command below
 
 ```sh
-npm install --global prettier@2.2.1
+npm install --global prettier@2.3.2
 ```
 
 .
@@ -573,7 +573,7 @@ brew install shfmt
 
 ```sh
 mkdir -p "$HOME/bin" && cd "$HOME/bin" && \
-  curl -L "https://github.com/mvdan/sh/releases/download/v3.2.4/shfmt_v3.2.4_linux_amd64" -o shfmt && \
+  curl -L "https://github.com/mvdan/sh/releases/download/v3.3.1/shfmt_v3.3.1_linux_amd64" -o shfmt && \
   chmod u+x shfmt
 ```
 

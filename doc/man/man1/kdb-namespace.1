@@ -1,0 +1,40 @@
+.\" generated with Ronn-NG/v0.10.1
+.\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
+.TH "KDB\-NAMESPACE" "1" "September 2021" ""
+.SH "NAME"
+\fBkdb\-namespace\fR \- Get the namespace of a key name
+.SH "SYNOPSIS"
+\fBkdb namespace <key name>\fR
+.P
+Where \fBkey name\fR is the name of the key\.
+.SH "DESCRIPTION"
+This command is used to retrieve the namespace of a key, including the eventual trailing ':'\. For the cascading namespace, the empty string is returned\.
+.SH "RETURN VALUES"
+This command will return the following values as an exit status:
+.TP
+0
+No errors\.
+.TP
+7
+invalid key name passed, see kdb(1) \fIkdb\.md\fR for a list of return codes used by kdb\.
+.SH "OPTIONS"
+.TP
+\fB\-n\fR, \fB\-\-no\-newline\fR
+Suppress the newline at the end of the output\.
+.SH "EXAMPLES"
+.nf
+kdb namespace user:/key/subkey
+#> user:
+
+kdb namespace /key/subkey
+#>
+.fi
+.SH "SEE ALSO"
+.IP "\(bu" 4
+See kdb\-basename(1) \fIkdb\-basename\.md\fR and kdb\-dirname(1) \fIkdb\-dirname\.md\fR for other namepart extraction operations\.
+.IP "\(bu" 4
+To get keys in shell scripts, you can use kdb\-sget(1) \fIkdb\-sget\.md\fR\.
+.IP "\(bu" 4
+elektra\-key\-names(7) \fIelektra\-key\-names\.md\fR for an explanation of key names\.
+.IP "" 0
+

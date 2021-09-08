@@ -31,8 +31,9 @@ int ShellGetCommand::execute (Cmdline const & cl)
 		kdb::KDB kdb;
 		KeySet conf;
 		Key x = cl.createKey (0);
+		Key parentKey = cl.getParentKey (x);
 
-		kdb.get (conf, x);
+		kdb.get (conf, parentKey);
 		Key k = conf.lookup (x);
 
 		if (!k)

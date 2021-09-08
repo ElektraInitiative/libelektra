@@ -190,8 +190,8 @@ module.exports = function (grunt) {
               var file = path.normalize(path.join(root_dir, url));
               try {
                 if (fs.statSync(file).isDirectory()) {
-                  var target_files = grunt.config().app.website
-                    .target_file_dir_links;
+                  var target_files =
+                    grunt.config().app.website.target_file_dir_links;
                   for (var i = 0; i < target_files.length; i++) {
                     try {
                       if (

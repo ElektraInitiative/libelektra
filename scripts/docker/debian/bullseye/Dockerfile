@@ -81,6 +81,9 @@ RUN apt-get update && apt-get -y install \
         wine \
     && rm -rf /var/lib/apt/lists/*
 
+# Build dependency for libelektra-fuse
+RUN pip3 install wheel
+
 # use lua5.4 since dh-lua installs liblua5.4-dev which sets the
 # dependency on the generated package to lua5.4
 RUN update-alternatives --set lua-interpreter /usr/bin/lua5.4
@@ -130,7 +133,7 @@ RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin
-ENV SHFMT_VERSION=v3.2.4
+ENV SHFMT_VERSION=v3.3.1
 ENV PATH="${SHFMT_PATH}:${PATH}"
 RUN mkdir -p "${SHFMT_PATH}" \
     && cd "${SHFMT_PATH}" \

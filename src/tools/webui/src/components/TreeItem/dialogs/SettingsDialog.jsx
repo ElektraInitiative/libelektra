@@ -119,70 +119,72 @@ export default class SettingsDialog extends Component {
     this.setState({ defaultError: false, defaultStr: false });
   };
 
-  handleEdit = (key, debounced = false) => (value) => {
-    const { data, setMeta, deleteMeta } = this.props;
+  handleEdit =
+    (key, debounced = false) =>
+    (value) => {
+      const { data, setMeta, deleteMeta } = this.props;
 
-    if (!debounced || debounced === IMMEDIATE) {
-      // set value of field
-      this.setState({ [key]: { ...this.state[key], value } });
+      if (!debounced || debounced === IMMEDIATE) {
+        // set value of field
+        this.setState({ [key]: { ...this.state[key], value } });
 
-      if (key === "check/validation") {
-        this.ensureRegex(value, data);
-      }
+        if (key === "check/validation") {
+          this.ensureRegex(value, data);
+        }
 
-      if (key === "check/range") {
-        this.ensureRange(value, data);
-      }
+        if (key === "check/range") {
+          this.ensureRange(value, data);
+        }
 
-      if (key === "default") {
-        this.ensureDefaultValue(value);
-      }
-    }
-
-    if (!debounced || debounced === DEBOUNCED) {
-      if (key === "check/validation" && this.state.regexError) {
-        return; // do not save regex that does not match
-      }
-      if (key === "check/range" && this.state.rangeError) {
-        return; // do not save range that does not match
-      }
-      if (key === "default" && this.state.defaultError) {
-        return; // do not save range that does not match
-      }
-      // persist value to kdb and show notification
-      const { timeout } = this.state[key] || {};
-
-      let action = setMeta;
-
-      // remove metakeys when setting to 0 or empty
-      if (key.startsWith("restrict/")) {
-        if (value === "0" || value.trim() === "") {
-          action = deleteMeta;
+        if (key === "default") {
+          this.ensureDefaultValue(value);
         }
       }
 
-      // remove metakeys when setting to default value
-      if (key === "check/type" && value === "any") {
-        action = deleteMeta;
-      }
-      if (key === "visibility" && value === "user") {
-        action = deleteMeta;
-      }
+      if (!debounced || debounced === DEBOUNCED) {
+        if (key === "check/validation" && this.state.regexError) {
+          return; // do not save regex that does not match
+        }
+        if (key === "check/range" && this.state.rangeError) {
+          return; // do not save range that does not match
+        }
+        if (key === "default" && this.state.defaultError) {
+          return; // do not save range that does not match
+        }
+        // persist value to kdb and show notification
+        const { timeout } = this.state[key] || {};
 
-      action(key, value).then(() => {
-        if (timeout) clearTimeout(timeout);
-        this.setState({
-          [key]: {
-            ...this.state[key],
-            saved: true,
-            timeout: setTimeout(() => {
-              this.setState({ [key]: { ...this.state[key], saved: false } });
-            }, 1500),
-          },
+        let action = setMeta;
+
+        // remove metakeys when setting to 0 or empty
+        if (key.startsWith("restrict/")) {
+          if (value === "0" || value.trim() === "") {
+            action = deleteMeta;
+          }
+        }
+
+        // remove metakeys when setting to default value
+        if (key === "check/type" && value === "any") {
+          action = deleteMeta;
+        }
+        if (key === "visibility" && value === "user") {
+          action = deleteMeta;
+        }
+
+        action(key, value).then(() => {
+          if (timeout) clearTimeout(timeout);
+          this.setState({
+            [key]: {
+              ...this.state[key],
+              saved: true,
+              timeout: setTimeout(() => {
+                this.setState({ [key]: { ...this.state[key], saved: false } });
+              }, 1500),
+            },
+          });
         });
-      });
-    }
-  };
+      }
+    };
 
   handleBinary = (e, val) => {
     if (val) {
@@ -283,13 +285,8 @@ export default class SettingsDialog extends Component {
   };
 
   handleAbort = () => {
-    const {
-      batchUndo,
-      sendNotification,
-      onUndo,
-      onClose,
-      refreshKey,
-    } = this.props;
+    const { batchUndo, sendNotification, onUndo, onClose, refreshKey } =
+      this.props;
     onClose();
     const steps = [];
     for (let i = 0; i < batchUndo; i++) {

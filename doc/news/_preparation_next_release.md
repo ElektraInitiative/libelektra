@@ -33,6 +33,7 @@ docker run -it elektra/elektra
 
 ## Highlights
 
+- `kdb` now prohibits write operations on cascading keys that miss a corresponding existing key. See the details in the `Tools` section below and the new subsection on cascading writes in the [tutorial](/doc/tutorials/cascading.md) on cascading keys for further information. _(Alexander Firbas)_
 - <<HIGHLIGHT1>>
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
@@ -164,10 +165,26 @@ _(Michael Tucek)_
 
 - Really add all tools when using `-DTOOLS=ALL`. _(Markus Raab)_
 - ZeroMQ Hub: fix compilation and man page. _(Markus Raab)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Configure packaging for FUSE tool. _(Alexander Firbas)_
+- FUSE: fix bug preventing binary writes. _(Alexander Firbas)_
+- ambiguous write operations now disabled in kdb _(Alexander Firbas)_
 - `webd`: update npm dependencies. _(Mihael Pranjić)_
+
+### KDB
+
+- `kdb set`, `kdb meta-set`: Only allow writes to the cascading namespace if the lookup succeeds. Otherwise, the operation is ambiguous and therefore aborted.
+  No more guessing of namespaces in case a cascading key is given (`user:, system`: for `kdb set`, `spec:` for `kdb meta-set`), _(Alexander Firbas)_
+- `kdb set`, `kdb meta-set`: Validation of keys can no longer be bypassed by using non-cascading keys (except with the new --force (-f) option). _(Alexander Firbas)_
+- Disable `-N/--namespace` option in all kdb subcommands _(Alexander Firbas)_
+- Implement new name part getter commands `kdb namespace`, `kdb basename` and `kdb dirname`. _(Alexander Firbas)_
+- `kdb file`: Remove namespace guessing (in case a cascading key is given, it needs to resolve to an existing key). _(Alexander Firbas)_
+- `kdb editor/import`: Disable the use of cascading names (and the 'validate' strategy operating on cascading keys) entirely. _(Alexander Firbas)_
+- Update numerous tests to comply with changes above. _(Alexander Firbas)_
+- Add a new subsection on cascading writes to the [tutorial](/doc/tutorials/cascading.md) on cascading keys. _(Alexander Firbas)_
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Scripts
 
@@ -215,6 +232,10 @@ _(Michael Tucek)_
 - Bump Gradle to version 7.2. _(Mihael Pranjić)_
 - Bump Debian Buster images to Bullseye and Stretch images to Buster. We still leave one Debian Stretch job due to upstream Debian LTS support until June 2022. _(Mihael Pranjić)_
 - <<TODO>>
+
+### Restyled
+
+- Upgrade to latest stable restylers. _(Mihael Pranjić)_
 
 ## Infrastructure
 

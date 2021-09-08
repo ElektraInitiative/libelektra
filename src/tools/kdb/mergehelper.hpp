@@ -20,6 +20,7 @@ using namespace kdb::tools::merging;
 
 kdb::KeySet prependNamespace (kdb::KeySet const & resultKeys, std::string const & ns);
 kdb::Key prependNamespace (kdb::Key const & root, std::string const & ns);
+kdb::Key removeNamespace (kdb::Key const & root);
 void applyMeta (kdb::KeySet & imported, kdb::KeySet const & base);
 
 class MergeHelper

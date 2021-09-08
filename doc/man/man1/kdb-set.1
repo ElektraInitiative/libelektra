@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "KDB\-SET" "1" "April 2021" ""
+.TH "KDB\-SET" "1" "September 2021" ""
 .SH "NAME"
 \fBkdb\-set\fR \- Set the value of a key
 .SH "SYNOPSIS"
@@ -8,7 +8,7 @@
 .P
 Where \fBkey name\fR is the name of the key you wish to set the value of (or create) and \fBvalue\fR is the value you would like to set the key to\.
 .SH "DESCRIPTION"
-This command allows the user to set the value of an individual key\.
+This command allows the user to set the value of an individual key\. If a cascading key is used that does not resolve to an existing key, the operation is aborted as it is ambiguous\.
 .SH "EMPTY VALUES"
 To set a key to an empty value, \fB""\fR should be passed for the \fBvalue\fR argument\.
 .SH "NEGATIVE VALUES"
@@ -30,9 +30,6 @@ Print never/auto(default)/always colored output\.
 \fB\-q\fR, \fB\-\-quiet\fR
 Suppress non\-error messages\.
 .TP
-\fB\-N\fR, \fB\-\-namespace=NS\fR
-Specify the namespace to use when writing cascading keys\. See \fIbelow in KDB\fR\.
-.TP
 \fB\-\-\fR
 Do not process any following arguments starting with \fB\-\fR as options\.
 .TP
@@ -41,6 +38,9 @@ Explain what is happening\. Prints additional information in case of errors/warn
 .TP
 \fB\-d\fR, \fB\-\-debug\fR
 Give debug information\. Prints additional debug information in case of errors/warnings\.
+.TP
+\fB\-f\fR, \fB\-\-force\fR
+Do not perform a cascading lookup if the key provided has a namespace\. For example, this bypasses validation specified in the spec: namespace for the given key\.
 .SH "KDB"
 .TP
 \fB/sw/elektra/kdb/#0/current/verbose\fR
@@ -48,9 +48,6 @@ Same as \fB\-v\fR: Explain what is happening\.
 .TP
 \fB/sw/elektra/kdb/#0/current/quiet\fR
 Same as \fB\-q\fR: Suppress default messages\.
-.TP
-\fB/sw/elektra/kdb/#0/current/namespace\fR
-Specifies which default namespace should be used when setting a cascading name\. By default the namespace is user, except \fBkdb\fR is used as root, then \fBsystem\fR is the default\.
 .SH "EXAMPLES"
 To set a Key to the value \fBHello World!\fR:
 .br

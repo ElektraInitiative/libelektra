@@ -27,11 +27,7 @@ int FileCommand::execute (Cmdline const & cl)
 
 	KeySet conf;
 	Key x = cl.createKey (0);
-	if (x.getName ()[0] == '/')
-	{
-		x.setName (cl.ns + x.getName ());
-		std::cerr << "Using name " << x.getName () << std::endl;
-	}
+
 	if (!x.isValid ())
 	{
 		throw invalid_argument (cl.arguments[0] + " is not a valid keyname");
