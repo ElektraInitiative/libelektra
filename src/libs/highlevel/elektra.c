@@ -152,6 +152,8 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		}
 	}
 
+	// If the specification was not properly mounted, we don't return an Elektra instance.
+	// Reason: the application won't function properly without a properly mounted specification.
 	if(!checkSpecProperlyMounted (kdb, application, error)) {
 		ksDel(config);
 		kdbClose (kdb, parentKey);
