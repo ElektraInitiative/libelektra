@@ -133,7 +133,7 @@ static int writeOptions (Key * command, Key * commandKey, Key * commandArgs, boo
  * @param argv	    The arguments to be processed.
  * @param envp	    A list of environment variables. This needs to be a null-terminated list of
  * 		    strings of the format 'KEY=VALUE'.
- * @param parentKey The parent key below which the function while search for option specifications.
+ * @param parentKey The parent key below which the function will search for option specifications.
  *                  Also used for error reporting. The key will be translated into the spec namespace
  *                  automatically, i.e. 'user:/test/parent' will be translated into 'spec:/test/parent',
  *                  before checking against spec keys.
@@ -148,6 +148,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	elektraCursor initial = ksGetCursor (ks);
 
 	Key * specParent = keyDup (parentKey, KEY_CP_ALL);
+	// Translate key to spec namespace
 	keySetNamespace (specParent, KEY_NS_SPEC);
 
 	struct Specification spec;
@@ -603,6 +604,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 
 		if (keyWithOpt != NULL)
 		{
+			// Add the processed key to the KeySet
 			ksAppendKey (spec->keys, keyWithOpt);
 		}
 	}
@@ -1821,7 +1823,7 @@ void setOption (Key * option, const char * value, bool repeated)
 }
 
 /**
- * Writes the options from parseArgs into proc keys
+ * Writes the options from parseArgs into keys in the proc namespace
  */
 int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool writeArgs, bool * argsWritten, KeySet * options,
 		  struct Specification * spec, KeySet * ks, const char * progname, const char ** envp, Key * parentKey)
