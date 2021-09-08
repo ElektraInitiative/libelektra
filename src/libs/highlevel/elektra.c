@@ -40,7 +40,7 @@ static bool checkHighlevelContract (const char * application, KeySet * contract,
  * To free the memory allocated by this function call elektraClose(),
  * once you are done using this instance.
  *
- * @param application 	Your application's base name. The the simplest version for this string is
+ * @param application 	Your application's base name. The simplest version for this string is
  * 			"/sw/org/<appname>/#0/current", where '<appname>' is a unique name for
  * 			your application. For more information see the man-page elektra-key-names(7).
  * @param defaults	A KeySet containing default values. If you pass NULL, trying to read
@@ -117,6 +117,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 	}
 
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
+	// Note: if kdbGetResult is not -1, config now contains the defaults passed to this function and any keys that were found during kdbGet().
 
 	if (kdbGetResult == -1)
 	{
@@ -124,10 +125,10 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		const Key * missingKeys = keyGetMeta (parentKey, "logs/spec/missing");
 		if (ignoreRequireInHelpMode == 1 && helpKey != NULL && missingKeys != NULL)
 		{
-			// proc:/elektra/gopts/help was set -> we are in help mode
-			// logs/spec/missing exists on parentKey -> spec detected missing keys
-			// we ensured that spec uses conflict/get = ERROR -> the error in kdbGet must be from spec
-			// --> we are in the error case that should be ignored
+			// proc:/elektra/gopts/help was set -> we know we are in help mode
+			// logs/spec/missing exists on parentKey -> we know that spec detected missing keys
+			// we ensured that spec uses conflict/get = ERROR -> we know that the error in kdbGet must be from spec
+			// --> Therefore, we are in the error case that should be ignored
 
 			// BUT: anything other than helpKey may be incorrect
 			// and only helpKey should be used anyway
@@ -138,6 +139,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		}
 		else
 		{
+			// We are in the error case that should not be ignored.
 			*error = elektraErrorFromKey (parentKey);
 
 			ksDel (config);
