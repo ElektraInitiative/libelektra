@@ -189,7 +189,27 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
 	elektra->fatalErrorHandler (fatalError);
 }
 
-
+/**
+ *
+ * Check whether the specification for @p application was properly mounted using "kdb mount" and "kdb spec-mount".
+ *
+ * There is currently no way to check this with full certainty.
+ * Therefore, the following best-effort heuristic is used:
+ * (for details see https://github.com/ElektraInitiative/libelektra/issues/3998)
+ *
+ * "kdb mount" was properly executed if:
+ * 1. Key "system:/elektra/mountpoints/spec:ESCAPED_APPLICATION_NAME/mountpoint" exists
+ * 2. its value matches "spec:/APPLICATION_NAME"
+ *
+ * "kdb spec-mount" was properly executed if:
+ * 1. Key "system:/elektra/mountpoints/ESCAPED_APPLICATION_NAME/mountpoint" exists
+ * 2. its value matches "APPLICATION_NAME"
+ *
+ * @param kdb		The KDB instance used for checking.
+ * @param application 	The application's base name.
+ * @param error		Pointer used to report errors.
+ * @return True if the specification file was properly mounted, false otherwise.
+ */
 static kdb_boolean_t specProperlyMounted (KDB * const kdb, const char * application, ElektraError ** error) {
 	KeySet * const mountPoints = ksNew (0, KS_END);
 	Key * const parentKey = keyNew ("system:/elektra/mountpoints", KEY_END);
