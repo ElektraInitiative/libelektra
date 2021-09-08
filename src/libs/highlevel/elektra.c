@@ -344,6 +344,9 @@ void elektraFatalErrorHandler (Elektra * elektra, ElektraErrorHandler fatalError
  */
 void elektraClose (Elektra * elektra)
 {
+	if(elektra == NULL) {
+		return;
+	}
 	kdbClose (elektra->kdb, elektra->parentKey);
 	keyDel (elektra->parentKey);
 	ksDel (elektra->config);
