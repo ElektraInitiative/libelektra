@@ -29,7 +29,7 @@ static void defaultFatalErrorHandler (ElektraError * error)
 static void insertDefaults (KeySet * config, const Key * parentKey, KeySet * defaults);
 static bool checkHighlevelContract (const char * application, KeySet * contract, ElektraError ** error);
 
-static kdb_boolean_t specProperlyMounted (KDB * const kdb, const char * application, ElektraError ** error);
+static kdb_boolean_t checkSpecProperlyMounted (KDB * const kdb, const char * application, ElektraError ** error);
 static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs, const char * application, const char * mountPoint, ElektraError ** error);
 
 /**
@@ -152,7 +152,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		}
 	}
 
-	if(!specProperlyMounted(kdb, application, error)) {
+	if(!checkSpecProperlyMounted (kdb, application, error)) {
 		ksDel(config);
 		kdbClose (kdb, parentKey);
 		keyDel (parentKey);
@@ -210,7 +210,7 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
  * @param error		Pointer used to report errors.
  * @return True if the specification file was properly mounted, false otherwise.
  */
-static kdb_boolean_t specProperlyMounted (KDB * const kdb, const char * application, ElektraError ** error) {
+static kdb_boolean_t checkSpecProperlyMounted (KDB * const kdb, const char * application, ElektraError ** error) {
 	KeySet * const mountPoints = ksNew (0, KS_END);
 	Key * const parentKey = keyNew ("system:/elektra/mountpoints", KEY_END);
 	const int kdbGetResult = kdbGet (kdb, mountPoints, parentKey);
