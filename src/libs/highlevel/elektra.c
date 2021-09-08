@@ -264,6 +264,7 @@ static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs,
 		char * description = elektraFormat ("The specification for application '%s' was not properly mounted. This is likely caused by an incomplete installation of the application. Please consult the application's documentation or contact its developers. Technical detail: The mountPointKey '%s' should exist, but it does not.", application, keyName(mountPointLookupKey));
 		keyDel (mountPointLookupKey);
 		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
+		elektraFree(description);
 		return false;
 	}
 	// If the mountPointKey's value is not equal to "application", the specification was not properly mounted.
