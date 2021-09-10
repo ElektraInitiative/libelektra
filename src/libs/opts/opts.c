@@ -423,7 +423,8 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 	 * 1. Process all keys in the @p ks and
 	 * 	a. Validate sub-commands (e.g., whether meta values are set correctly and the hierarchy of (sub-)commands is legal)
 	 * 	b. Generate help text for each sub-command.
-	 * 	c. Validate all options (long and short), arguments and environment variables, generate help texts for each and add them into the @spec.
+	 * 	c. Validate all options (long and short), arguments and environment variables, generate help texts for each and add them
+	 * into the @spec.
 	 */
 	for (elektraCursor i = 0; i < ksGetSize (ks); ++i)
 	{
