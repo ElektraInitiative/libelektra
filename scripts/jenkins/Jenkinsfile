@@ -368,9 +368,16 @@ def dockerInit() {
 
     /* openSUSE Leap 15.3 image*/
     DOCKER_IMAGES.opensuse_15_3 = dockerUtils.createDockerImageDesc(
-      "opensuse_15.3", dockerUtils.&idTesting,
+      "opensuse-15-3", dockerUtils.&idTesting,
       "./scripts/docker/opensuse/15.3",
       "./scripts/docker/opensuse/15.3/Dockerfile"
+    )
+
+    /* CentOS Stream 8 image*/
+    DOCKER_IMAGES.centos_stream8 = dockerUtils.createDockerImageDesc(
+      "centos-stream-8", dockerUtils.&idTesting,
+      "./scripts/docker/centos/stream8",
+      "./scripts/docker/centos/stream8/Dockerfile"
     )
 
     /* Image building the libelektra.org website */
@@ -551,8 +558,16 @@ def generateFullBuildStages() {
   )
 
   tasks << buildAndTest(
-    "opensuse-15.3",
+    "opensuse-15-3",
     DOCKER_IMAGES.opensuse_15_3,
+    CMAKE_FLAGS_BUILD_ALL+
+    CMAKE_FLAGS_DEBUG,
+    [TEST.ALL, TEST.MEM, TEST.INSTALL]
+  )
+
+  tasks << buildAndTest(
+    "centos-stream-8",
+    DOCKER_IMAGES.centos_stream8,
     CMAKE_FLAGS_BUILD_ALL+
     CMAKE_FLAGS_DEBUG,
     [TEST.ALL, TEST.MEM, TEST.INSTALL]
