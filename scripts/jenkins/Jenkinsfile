@@ -366,6 +366,13 @@ def dockerInit() {
       "./scripts/docker/fedora/34/Dockerfile"
     )
 
+    /* openSUSE Leap 15.3 image*/
+    DOCKER_IMAGES.opensuse_15_3 = dockerUtils.createDockerImageDesc(
+      "opensuse_15.3", dockerUtils.&idTesting,
+      "./scripts/docker/opensuse/15.3",
+      "./scripts/docker/opensuse/15.3/Dockerfile"
+    )
+
     /* Image building the libelektra.org website */
     DOCKER_IMAGES.website = dockerUtils.createDockerImageDesc(
       "website", dockerUtils.&idArtifact,
@@ -541,6 +548,14 @@ def generateFullBuildStages() {
     "fedora-34-asan",
     DOCKER_IMAGES.fedora_34,
     CMAKE_FLAGS_BUILD_ALL
+  )
+
+  tasks << buildAndTest(
+    "opensuse-15.3",
+    DOCKER_IMAGES.opensuse_15_3,
+    CMAKE_FLAGS_BUILD_ALL+
+    CMAKE_FLAGS_DEBUG,
+    [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
   // Add a task that should build the whole project to catch all test errors
