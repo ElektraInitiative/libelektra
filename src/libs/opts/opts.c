@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief
+ * @brief Support library used by plugin gopts.
  *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
@@ -47,6 +47,12 @@ struct Specification
 	bool useSubcommands;
 };
 
+/**
+ * Get value of meta key with name @p meta of Key @p key as string.
+ * @param key Key to retrieve meta value from.
+ * @param meta Name of meta key.
+ * @return NULL if the meta value is NULL or an empty string. Otherwise the meta value.
+ */
 static inline const char * keyGetMetaString (const Key * key, const char * meta)
 {
 	const Key * mk = keyGetMeta (key, meta);
@@ -54,6 +60,12 @@ static inline const char * keyGetMetaString (const Key * key, const char * meta)
 	return value != NULL && value[0] == '\0' ? NULL : value;
 }
 
+/**
+ * Get value of meta key identified by @p lookup of the Key @p key as string.
+ * @param key Key to retrieve meta value from.
+ * @param lookup A key pointer identifying the meta key to retrieve
+ * @return NULL if the meta value is NULL or an empty string. Otherwise the meta value.
+ */
 static inline const char * keyGetMetaStringByKey (Key * key, Key * lookup)
 {
 	const Key * mk = ksLookup (keyMeta (key), lookup, KDB_O_DEL);
@@ -121,9 +133,9 @@ static int writeOptions (Key * command, Key * commandKey, Key * commandArgs, boo
  * @param argv	    The arguments to be processed.
  * @param envp	    A list of environment variables. This needs to be a null-terminated list of
  * 		    strings of the format 'KEY=VALUE'.
- * @param parentKey The parent key below which the function while search for option specifications.
+ * @param parentKey The parent key below which the function will search for option specifications.
  *                  Also used for error reporting. The key will be translated into the spec namespace
- *                  automatically, i.e. 'user:/test/parent' will be translated into 'spec:/test/parent',
+ *                  automatically, e.g. 'user:/test/parent' will be translated into 'spec:/test/parent',
  *                  before checking against spec keys.
  *
  * @retval 0	on success, this is the only case in which @p ks will be modified
@@ -136,6 +148,7 @@ int elektraGetOpts (KeySet * ks, int argc, const char ** argv, const char ** env
 	elektraCursor initial = ksGetCursor (ks);
 
 	Key * specParent = keyDup (parentKey, KEY_CP_ALL);
+	// Translate key to spec namespace
 	keySetNamespace (specParent, KEY_NS_SPEC);
 
 	struct Specification spec;
@@ -362,13 +375,20 @@ char * elektraGetOptsHelpMessage (Key * helpKey, const char * usage, const char 
 // -------------
 
 /**
- * Process the specification set in the keys of @p ks, into @p spec.
+ * Validate and process the specification set in the keys of @p ks, into @p spec.
+ *
+ * @param spec The target Specification struct.
+ * @param ks The KeySet containing the specification.
+ * @param specParent The parent key. All keys of the specification are below this keys.
+ * @param errorKey Used to report errors.
+ * @retval true on success.
+ * @retval false on failure.
  */
 bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Key * errorKey)
 {
 	size_t specParentLen = strlen (keyName (specParent));
 
-	// Determine whether the spec uses sub-commands.
+	// This block determines whether the spec uses sub-commands.
 	bool useSubcommands = false;
 	{
 		Key * parent = ksLookupByName (ks, keyName (specParent), 0);
@@ -399,11 +419,18 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 	spec->argIndices = ksNew (0, KS_END);
 	spec->commands = ksNew (0, KS_END);
 
-	// Loop through all keys in the key set
+	/**
+	 * 1. Process all keys in the @p ks and
+	 * 	a. Validate sub-commands (e.g., whether meta values are set correctly and the hierarchy of (sub-)commands is legal)
+	 * 	b. Generate help text for each sub-command.
+	 * 	c. Validate all options (long and short), arguments and environment variables, generate help texts for each and add them
+	 * into the @spec.
+	 */
 	for (elektraCursor i = 0; i < ksGetSize (ks); ++i)
 	{
 		Key * cur = ksAtCursor (ks, i);
 
+		// Keys that aren't in the spec namespace or below the parent key are ignored.
 		if (keyGetNamespace (cur) != KEY_NS_SPEC || !keyIsBelowOrSame (specParent, cur))
 		{
 			continue;
@@ -413,6 +440,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 
 		Key * keyWithOpt = NULL;
 
+		// step 1a.) Validate sub-commands
 		// If meta key "command" is set, the current key is a sub-command.
 		const Key * commandMeta = keyGetMeta (cur, "command");
 		if (commandMeta != NULL)
@@ -450,6 +478,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 				keyWithOpt = keyNew (keyName (cur), KEY_META, "command", "1", KEY_END);
 			}
 
+			// step 1b.)
 			const char * optHelp = keyGetMetaString (cur, "opt/help");
 			const char * description = keyGetMetaString (cur, "description");
 
@@ -549,6 +578,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 
 		keyCopyAllMeta (command, ksLookup (spec->commands, command, KDB_O_CREATE));
 
+		// step 1c.)
 		if (!processOptions (spec, command, cur, &keyWithOpt, errorKey))
 		{
 			keyDel (command);
@@ -591,6 +621,7 @@ bool processSpec (struct Specification * spec, KeySet * ks, Key * specParent, Ke
 
 		if (keyWithOpt != NULL)
 		{
+			// Add the processed key to the KeySet
 			ksAppendKey (spec->keys, keyWithOpt);
 		}
 	}
@@ -1809,7 +1840,7 @@ void setOption (Key * option, const char * value, bool repeated)
 }
 
 /**
- * Writes the options from parseArgs into proc keys
+ * Writes the options from parseArgs into keys in the proc namespace
  */
 int writeOptions (Key * command, Key * commandKey, Key * commandArgs, bool writeArgs, bool * argsWritten, KeySet * options,
 		  struct Specification * spec, KeySet * ks, const char * progname, const char ** envp, Key * parentKey)
