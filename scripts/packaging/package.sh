@@ -42,8 +42,8 @@ CMAKE_ARGS_BASE="-DTARGET_PLUGIN_FOLDER='elektra5' \
 	-DTARGET_TEST_DATA_FOLDER=share/libelektra-test/test-data \
 	-DCPACK_PACKAGE_RELEASE=$PACKAGE_REVISION"
 
-	# last disjunct matches all distribution names starting with openSUSE 
-if [ "$DIST_NAME" = "Fedora" ] || case $DIST_NAME in "openSUSE"*) true;; *) false;; esac; then
+	# last disjunct matches all distribution names starting with openSUSE or CentOS
+if [ "$DIST_NAME" = "Fedora" ] || case $DIST_NAME in "openSUSE"*) true;; "CentOS"*) true;; *) false;; esac; then
 
 	CMAKE_ARGS_SPECIFIC="-DTARGET_LUA_CMOD_FOLDER=lib$LUA_LIB_SUFFIX/lua/$LUA_VERSION \
 	-DTARGET_LUA_LMOD_FOLDER=share/lua/$LUA_VERSION \
