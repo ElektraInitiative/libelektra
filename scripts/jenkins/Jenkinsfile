@@ -136,6 +136,11 @@ def main() {
     }
   }
 
+  stage("Basic checks") {
+    milestone label: "Basic checks"
+    parallel generateBasicCheckStages()
+  }
+
   stage("Main builds") {
     milestone label: "Main builds"
     parallel generateMainBuildStages()
@@ -450,6 +455,34 @@ def dockerInit() {
   }
 }
 
+/* Generate basic check stages
+ * 
+ * Runs basic checks that do not to build the code
+ */
+def generateBasicCheckStages() {
+  def tasks = [:]
+
+  // Do not abort parallel stages if any fail, so we can see the output of all stages
+  tasks.failFast = false
+
+  // Check the ABI and API compatibility of Elektra
+  tasks << buildIcheck()
+
+  // Check if release notes have been updated
+  tasks << buildCheckReleaseNotes()
+
+  // Check formatting of c and CMake files
+  tasks << buildFormatChecks()
+
+    // Run the open tasks plugin and sloccount
+  tasks << buildTodo()
+
+  // Build doc and upload
+  tasks << buildDoc()
+
+  return tasks
+}
+
 /* Generate Main stages
  *
  * Should be used to give quick feedback to developer and check for obvious
@@ -484,15 +517,6 @@ def generateMainBuildStages() {
     [TEST.ALL, TEST.MEM, TEST.NOKDB, TEST.INSTALL]
   )
 
-  // Check the ABI and API compatibility of Elektra
-  tasks << buildIcheck()
-
-  // Check if release notes have been updated
-  tasks << buildCheckReleaseNotes()
-
-  // Check formatting of c and CMake files
-  tasks << buildFormatChecks()
-
   return tasks
 }
 
@@ -500,12 +524,6 @@ def generateMainBuildStages() {
  */
 def generateFullBuildStages() {
   def tasks = [:]
-
-  // Run the open tasks plugin and sloccount
-  tasks << buildTodo()
-
-  // Build doc and upload
-  tasks << buildDoc()
 
   tasks << buildAndTest(
     "fedora-33-full",

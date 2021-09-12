@@ -245,6 +245,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Move check stages that don't build the code to a dedicated stage, to avoid confusion when parallel builds are aborted. _(Robert Sowula)_
 - Use `tmpfs` in Docker to speed up the test suite. _(Mihael Pranjić)_
 - Add OpenWrt package building stage to release pipeline. _(Robert Sowula)_
 
