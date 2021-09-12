@@ -132,6 +132,7 @@ if (UNIX)
 		string (STRIP "${OS_PRETTY_NAME}" OS_PRETTY_NAME)
 	endif (NOT APPLE)
 	set (OS_DISTRIB "${OS_NAME}${OS_VERSION_ID}")
+	string (REPLACE " " "-" OS_DISTRIB ${OS_DISTRIB}) # replace spaces with dashes, since rpm-build can't handle paths with spaces
 	if (NOT OS_DISTRIB)
 		set (OS_DISTRIB "unix")
 	endif (NOT OS_DISTRIB)
@@ -357,7 +358,7 @@ if (UNIX)
 
 		include (PackagingDebian)
 
-	elseif ("${OS_NAME}" MATCHES "Fedora|CentOS")
+	elseif ("${OS_NAME}" MATCHES "Fedora|CentOS|openSUSE")
 		# no debuginfo for python3-elektra on fedora
 		list (APPEND COMPONENTS_WITHOUT_DBGSYM "python3-elektra")
 		set (FEDORA_DBG_PACKAGE_NAMES "")
