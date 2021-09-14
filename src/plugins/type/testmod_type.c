@@ -269,7 +269,7 @@ void test_string (void)
 {
 	Key * k = keyNew ("user:/anything", KEY_VALUE, "a", KEY_META, "check/type", "string", KEY_END);
 	keySetString (k, "");
-	succeed_if (!checkType (k), "empty string should not check successfully as string");
+	succeed_if (checkType (k), "empty string should check successfully as string");
 
 	keySetString (k, "ab");
 	succeed_if (checkType (k), "\"ab\" should check successfully as string");

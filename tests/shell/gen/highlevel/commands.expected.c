@@ -41,11 +41,12 @@
 
 static KeySet * embeddedSpec (void)
 {
-	return ksNew (13,
+	return ksNew (14,
 	keyNew ("/", KEY_META, "command", "", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdb", KEY_META, "mountpoint", "tests_gen_elektra_commands.ini", KEY_META, "type", "string", KEY_END),
 	keyNew ("/dynamic/#", KEY_META, "args", "remaining", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
 	keyNew ("/get", KEY_META, "command", "get", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdbGet", KEY_META, "type", "string", KEY_END),
 	keyNew ("/get/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
+	keyNew ("/get/maxlength", KEY_META, "default", "-1", KEY_META, "opt/arg", "required", KEY_META, "opt/long", "max-length", KEY_META, "type", "long", KEY_END),
 	keyNew ("/get/meta", KEY_META, "command", "meta", KEY_META, "default", "", KEY_META, "gen/command/function", "commandKdbGetMeta", KEY_META, "type", "string", KEY_END),
 	keyNew ("/get/meta/keyname", KEY_META, "args", "indexed", KEY_META, "args/index", "0", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
 	keyNew ("/get/meta/metaname", KEY_META, "args", "indexed", KEY_META, "args/index", "1", KEY_META, "default", "", KEY_META, "type", "string", KEY_END),
