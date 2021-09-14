@@ -1394,6 +1394,19 @@ cachemiss:
 		ksClear (ks);
 		splitMergeBackends (split, ks);
 
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+
 		clearError (parentKey);
 		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST) == -1)
 		{
@@ -1429,22 +1442,24 @@ cachemiss:
 
 		ksClear (ks);
 		splitMergeBackends (split, ks);
+
+		keySetName (parentKey, keyName (initialParent));
+
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
 	}
 
 	keySetName (parentKey, keyName (initialParent));
-
-	if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-	if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-	if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
 
 	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{
