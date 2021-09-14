@@ -794,13 +794,25 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 	{
 	case FIRST:
 		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, INIT);
-		elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, MAXONCE);
+		if (elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, INIT) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
 		break;
 	case LAST:
 		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT);
-		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE);
+		if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
 		elektraGlobalError (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
 		break;
 	default:
