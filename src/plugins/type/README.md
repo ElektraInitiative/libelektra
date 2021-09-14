@@ -20,7 +20,7 @@ The type checker plugin supports these types:
 `any`, `enum`, `string`, `wstring` and `octet`.
 
 - Checking `any` will always be successful, regardless of the content.
-- `string` matches any non-empty key value.
+- `string` matches any string key value.
 - `octet` and `char` are equivalent to each other.
 - `enum` will do enum checking as described below.
 - `boolean` only allows the values `1` and `0`. See also [Normalization](#normalization).
