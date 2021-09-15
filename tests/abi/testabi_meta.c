@@ -83,6 +83,8 @@ static void test_null_pointer (void)
 
 	succeed_if (keySetMeta (0, "test", "test"), "Could set metadata to NULL Key");
 	succeed_if (keySetMeta (key, 0, "test"), "Could set metadata with NULL metaName");
+
+	keyDel (key);
 }
 
 static void test_iterate (void)
