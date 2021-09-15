@@ -143,9 +143,9 @@ Key * keyCopy (Key *dest, const Key *source, elektraCopyFlags flags);
 int keyClear (Key *key);
 int keyDel (Key *key);
 
-ssize_t keyIncRef (Key *key);
-ssize_t keyDecRef (Key *key);
-ssize_t keyGetRef (const Key *key);
+uint16_t keyIncRef (Key *key);
+uint16_t keyDecRef (Key *key);
+uint16_t keyGetRef (const Key *key);
 
 /* Meta Info */
 int keyRewindMeta (Key *key);

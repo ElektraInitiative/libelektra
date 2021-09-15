@@ -984,7 +984,7 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
 {
 	for (size_t it = start; it < end; ++it)
 	{
-		if (ks->array[it]->ksReference == 1)
+		if (ks->array[it]->refs == 1)
 		{
 			// only referenced in this KeySet -> just override read-only flag
 			clear_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
@@ -994,7 +994,7 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
 			// key has other references -> dup in-place so we can safely rename it
 			Key * dup = keyDup (ks->array[it], KEY_CP_ALL);
 			keyDecRef (ks->array[it]);
-			dup->ksReference = 1;
+			dup->refs = 1;
 			ks->array[it] = dup;
 		}
 		keyReplacePrefix (ks->array[it], root, newRoot);

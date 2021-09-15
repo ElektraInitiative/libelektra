@@ -249,11 +249,9 @@ struct _Key
 	keyflag_t flags;
 
 	/**
-	 * In how many keysets the key resists.
-	 * keySetName() is only allowed if ksReference is 0.
-	 * @see ksPop(), ksAppendKey(), ksAppend()
+	 * Reference counter
 	 */
-	size_t ksReference;
+	uint16_t refs;
 
 	/**
 	 * All the key's meta information.

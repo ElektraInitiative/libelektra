@@ -16,12 +16,12 @@
 static void test_keyRefcounter (void)
 {
 	Key * key = keyNew ("/", KEY_END);
-	key->ksReference = 5;
-	succeed_if (key->ksReference == 5, "wrong ref");
+	key->refs = 5;
+	succeed_if (key->refs == 5, "wrong ref");
 	succeed_if (keyGetRef (key) == 5, "wrong ref");
 	while (keyGetRef (key) > 0)
 		keyDecRef (key);
-	succeed_if (key->ksReference == 0, "wrong ref after dec");
+	succeed_if (key->refs == 0, "wrong ref after dec");
 	succeed_if (keyGetRef (key) == 0, "reference counter");
 	succeed_if (keyDecRef (key) == 0, "should stay at minimum");
 	succeed_if (keyGetRef (key) == 0, "reference counter");

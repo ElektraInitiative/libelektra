@@ -30,8 +30,6 @@
 #include "kdbprivate.h"
 #include <kdbassert.h>
 
-// #include <signal.h>
-
 /**
  * @defgroup key Key
  *
@@ -506,10 +504,9 @@ int keyDel (Key * key)
 {
 	if (!key) return -1;
 
-	if (key->ksReference > 0)
+	if (key->refs > 0)
 	{
-		// raise(SIGTRAP);
-		return key->ksReference;
+		return key->refs;
 	}
 
 	int keyInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
@@ -568,7 +565,7 @@ int keyClear (Key * key)
 
 	size_t ref = 0;
 
-	ref = key->ksReference;
+	ref = key->refs;
 
 	int keyStructInMmap = test_bit (key->flags, KEY_FLAG_MMAP_STRUCT);
 
@@ -582,7 +579,7 @@ int keyClear (Key * key)
 	keySetName (key, "/");
 
 	/* Set reference properties */
-	key->ksReference = ref;
+	key->refs = ref;
 
 	return 0;
 }
@@ -591,59 +588,58 @@ int keyClear (Key * key)
 /**
  * Increment the reference counter of a Key object.
  *
- * This function is intended for applications
- * using their own reference counter for
- * Key objects. With it you can increment
- * the reference and thus avoid destruction
- * of the object in a subsequent keyDel().
+ * As long as the reference counter is non-zero, `keyDel()` operations on @p key
+ * will be a no-op and return an error code.
  *
- * The reference counter can't be incremented
- * once it reached SSIZE_MAX. In that situation
- * nothing will happen and SSIZE_MAX will be
- * returned.
+ * Elektra's system for reference counting is not based on a concept
+ * of shared ownership. It is more similar to a shared lock, where the counter
+ * is used to keep track of how many clients hold the lock.
  *
- * @note keyDup() will reset the references for duplicated Keys.
+ * Initially, the reference counter will be 0. This is can be interpreted as
+ * the lock being unlocked. When you increment the reference counter, the lock
+ * becomes locked and `keyDel()` is blocked and fails. Only when the reference
+ * counter is fully decremented back down to 0 again, will `keyDel()` work again.
+ *
+ * @note The reference counter can never exceed `UINT16_MAX - 1`. `UINT16_MAX` is
+ * reserved as an error code.
  *
  * @post @p key's reference counter is > 0
- * @post @p key's reference counter is <= SSIZE_MAX
+ * @post @p key's reference counter is <= UINT16_MAX - 1
  *
- * @param key the Key object whose reference counter should get increased
+ * @param key the Key object whose reference counter should be increased
  *
  * @return the updated value of the reference counter
- * @retval -1 on NULL pointer
- * @retval SSIZE_MAX when reference counter reached SSIZE_MAX
+ * @retval UINT16_MAX on NULL pointer
+ * @retval UINT16_MAX when the reference counter already was the maximum value `UINT16_MAX - 1`,
+ *         the reference counter will not be modified in this case
  *
  * @since 1.0.0
  * @ingroup key
- * @see keyGetRef() for addtional explanations about reference counting
+ * @see keyGetRef() to retrieve the current reference count
  * @see keyDecRef() for decreasing the reference counter
- * @see keyDel() for deleting a Key
+ * @see keyDel()    for deleting a Key
  */
-ssize_t keyIncRef (Key * key)
+uint16_t keyIncRef (Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+	{
+		return UINT16_MAX;
+	}
 
-	if (key->ksReference < SSIZE_MAX)
-		return ++key->ksReference;
-	else
-		return SSIZE_MAX;
+	if (key->refs == UINT16_MAX - 1)
+	{
+		return UINT16_MAX;
+	}
+
+	return ++key->refs;
 }
 
 
 /**
  * Decrement the reference counter of a Key object.
  *
- * The references will be decremented for ksPop() or successful calls
- * of ksLookup() with the option KDB_O_POP.
- * It will also be decremented with an following keyDel() in
- * the case that an old Key is replaced with another Key with
- * the same name.
- *
- * The reference counter can't be decremented
- * once it reaches 0. In that situation
- * nothing will happen and 0 will be returned.
- *
- * @note keyDup() will reset the references for duplicated Key.
+ * As long as the reference counter is non-zero, `keyDel()` operations on @p key
+ * will be a no-op and return an error code.
  *
  * @post @p key's reference counter is >= 0
  * @post @p key's reference counter is < SSIZE_MAX
@@ -651,58 +647,35 @@ ssize_t keyIncRef (Key * key)
  * @param key the Key object whose reference counter should get decreased
  *
  * @return the updated value of the reference counter
- * @retval -1 on NULL pointer
- * @retval 0 when the Key is ready to be freed
+ * @retval UINT16_MAX on NULL pointer
+ * @retval 0 when the reference counter already was the minimum value 0,
+ *         the reference counter will not be modified in this case
  *
  * @since 1.0.0
  * @ingroup key
- * @see keyGetRef() for addtional explanations about reference counting
- * @see keyIncRef() for increasing the reference counter
- * @see keyDel() for deleting a Key
+ * @see keyGetRef() to retrieve the current reference count
+ * @see keyIncRef() for increasing the reference counter and for a more complete
+ *                  explanation of the reference counting system
+ * @see keyDel()    for deleting a Key
  */
-ssize_t keyDecRef (Key * key)
+uint16_t keyDecRef (Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+	{
+		return UINT16_MAX;
+	}
 
-	if (key->ksReference > 0)
-		return --key->ksReference;
-	else
+	if (key->refs == 0)
+	{
 		return 0;
+	}
+
+	return --key->refs;
 }
 
 
 /**
- * Return how many references the Key has.
- *
- * The reference counting is the essential property of Keys to make sure
- * that they can be put safely into data structures. E.g. if you put
- * a Key into a KeySet:
- *
- * @snippet keyNew.c Ref in KeySet
- *
- * You can even add the Key to more KeySets:
- *
- * @snippet keyNew.c Ref in multiple KeySets
- *
- * If you increment only by one with keyIncRef() the same as said above
- * is valid:
- *
- * @snippet keyNew.c Ref
- *
- * or use keyIncRef() more than once:
- *
- * @snippet keyNew.c Multi Ref
- *
- * The Key won't be deleted by a keyDel() as long refcounter is not 0.
- *
- * The references will be incremented on successful calls to
- * ksAppendKey() or ksAppend().
- *
- * @note keyDup() will reset the references for duplicated Keys.
- *
- * For your own applications you can use
- * keyIncRef() and keyDecRef() for reference
- * counting, too.
+ * Return the current reference counter value of a Key object.
  *
  * @param key the Key whose reference counter to retrieve
  *
@@ -711,13 +684,18 @@ ssize_t keyDecRef (Key * key)
  *
  * @since 1.0.0
  * @ingroup key
- * @see keyIncRef(), keyDecRef() for increasing / decreasing the reference counter
+ * @see keyIncRef() for increasing the reference counter and for a more complete
+ *                  explanation of the reference counting system
+ * @see keyDecRef() for decreasing the reference counter
  **/
-ssize_t keyGetRef (const Key * key)
+uint16_t keyGetRef (const Key * key)
 {
-	if (!key) return -1;
+	if (!key)
+	{
+		return UINT16_MAX;
+	}
 
-	return key->ksReference;
+	return key->refs;
 }
 
 
