@@ -14,6 +14,8 @@
 build*/
 cmake-build*/
 !scripts/build/
+CMakeCache.txt
+**/CMakeFiles/**
 
 #ignore ctags + gdb history files
 .ctags
@@ -73,3 +75,7 @@ modules.xml
 
 # Vagrant directories
 .vagrant/
+
+# Files for testing with docker (c.f. https://www.libelektra.org/tutorials/run-all-tests-with-docker)
+elektra-build-docker/
+elektra-install/
