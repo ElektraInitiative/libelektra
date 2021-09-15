@@ -148,6 +148,7 @@ ksDel (ks);
 kdbClose (handle);
  * @endcode
  *
+ * @pre @p key is not NULL and has stored data
  * @post returned pointer points to the stored internal value
  * @post if the value is a string, the value is NULL terminated
  *
