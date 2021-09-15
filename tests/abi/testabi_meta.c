@@ -342,22 +342,6 @@ static void test_copy (void)
 	keyDel (key1);
 	keyDel (key2);
 
-
-	succeed_if (key1 = keyNew ("/", KEY_END), "could not create key");
-	succeed_if (key2 = keyNew ("/", KEY_END), "could not create key");
-
-	succeed_if (keySetMeta (key2, "mymeta", "a longer metavalue") == sizeof ("a longer metavalue"), "could not set metavalue");
-	succeed_if_same_string (keyValue (keyGetMeta (key2, "mymeta")), "a longer metavalue");
-
-	succeed_if (keyCopyMeta (key2, key1, "mymeta") == 0, "could not copy metavalue");
-
-	succeed_if (keyGetMeta (key1, "mymeta") == 0, "value of mymeta is not NULL");
-	succeed_if (keyGetMeta (key2, "mymeta") == 0, "value of mymeta has not been cleared");
-
-	keyDel (key1);
-	keyDel (key2);
-
-
 	Key * k;
 	Key * c;
 
