@@ -55,7 +55,7 @@ char * elektraUnsignedLongLongToString (kdb_unsigned_long_long_t value);
 char * elektraFloatToString (kdb_float_t value);
 char * elektraDoubleToString (kdb_double_t value);
 
-kdb_boolean_t computeSha256OfKeySetIgnoreValues (char hash_string[65], KeySet * inputKs, Key * parentKey);
+kdb_boolean_t calculateSpecificationToken  (char hash_string[65], KeySet * inputKs, KeySet * fullKs);
 
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 

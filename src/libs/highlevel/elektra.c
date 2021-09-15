@@ -154,6 +154,15 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		}
 	}
 
+	char hash_string[65];
+	KeySet * specKs = ksDup(config);
+	Key * parentKeySpecNamespace = keyDup(parentKey, KEY_CP_ALL);
+	keySetNamespace(parentKeySpecNamespace, KEY_NS_SPEC);
+	specKs = ksCut(specKs, parentKeySpecNamespace);
+	calculateSpecificationToken(hash_string, specKs, config);
+	keyDel (parentKeySpecNamespace);
+	ksDel (specKs);
+
 	// If the specification was not properly mounted, we don't return an Elektra instance.
 	// Reason: the application won't function properly without a properly mounted specification.
 	if (!checkSpecProperlyMounted (kdb, application, error))
