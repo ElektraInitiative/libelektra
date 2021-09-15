@@ -27,6 +27,9 @@ iterators for 1.0 and only the external instead.
   - ksSetCursor
   - ksHead
   - ksTail
+  - keyRewindMeta
+  - keyNextMeta
+  - keyCurrentMeta
 - change `ksAtCursor` to `ksAt`
 - add implementation / documentation / tests for the external iterator
 - start using external iterators in new code
