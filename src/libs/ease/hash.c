@@ -25,7 +25,7 @@ static void hash_to_string(char string[65], const uint8_t hash[32]);
  * @retval false If an error occurred.
  * @retval true If the computation was successful
  */
-kdb_boolean_t computeSha256OfKeySetWithoutValues (char hash_string[65], KeySet * inputKs, Key * parentKey) {
+kdb_boolean_t computeSha256OfKeySetIgnoreValues (char hash_string[65], KeySet * inputKs, Key * parentKey) {
 	ksRewind (inputKs);
 	KeySet * ksCopy = ksDup(inputKs);
 	if(ksCopy == NULL) {

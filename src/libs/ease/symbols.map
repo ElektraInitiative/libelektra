@@ -44,7 +44,7 @@ libelektra_0.9 {
 
 	elektraKsToMemArray;
 
-	computeSha256OfKeySetWithoutValues;
+	computeSha256OfKeySetIgnoreValues;
 };
 
 libelektraprivate_1.0 {
