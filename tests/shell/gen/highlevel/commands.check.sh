@@ -136,7 +136,7 @@ if [ "$res" = "0" ]; then
 		echo "valgrind dummy exited with: $res"
 	fi
 
-	res=$(("$res" != 0))
+	res=$((res != 0))
 fi
 
 if [ "$res" = 0 ]; then
@@ -149,7 +149,7 @@ if [ "$res" = 0 ]; then
 		echo "valgrind dummy -v get -v ab cd exited with: $?"
 	fi
 
-	res=$(("$res" != 0))
+	res=$((res != 0))
 fi
 
 if [ "$res" = "0" ]; then
@@ -162,7 +162,7 @@ if [ "$res" = "0" ]; then
 		echo "valgrind dummy -v get -v ab cd exited with: $?"
 	fi
 
-	res=$(("$res" != 0))
+	res=$((res != 0))
 fi
 
 if [ "$res" = "0" ]; then
@@ -175,7 +175,7 @@ if [ "$res" = "0" ]; then
 		echo "valgrind dummy -v get -v ab cd exited with: $?"
 	fi
 
-	res=$(("$res" == 0))
+	res=$((res == 0))
 fi
 
 if [ "$res" = "0" ]; then
@@ -188,7 +188,7 @@ if [ "$res" = "0" ]; then
 		echo "valgrind dummy get meta -v a b exited with: $?"
 	fi
 
-	res=$(("$res" != 0))
+	res=$((res != 0))
 fi
 
 if [ "$res" = "0" ]; then
@@ -201,7 +201,7 @@ if [ "$res" = "0" ]; then
 		echo "valgrind dummy set def -2 exited with: $?"
 	fi
 
-	res=$(("$res" != 0))
+	res=$((res != 0))
 fi
 
 if [ "$res" = "0" ]; then
@@ -214,7 +214,7 @@ if [ "$res" = "0" ]; then
 		echo "valgrind dummy abc -v def exited with: $?"
 	fi
 
-	res=$(("$res" != 0))
+	res=$((res != 0))
 fi
 
 cd ..
