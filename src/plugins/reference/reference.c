@@ -266,10 +266,7 @@ static int checkRecursiveReference (const Key * rootKey, KeySet * allKeys, Key *
 					ksAppendKey (refnameRoots, keyNew (keyName (curAlternative), KEY_END));
 					ksAppendKey (allRefnames, keyNew (keyName (curAlternative), KEY_END));
 				}
-				if (keyGetRef (curAlternative) == 0)
-				{
-					keyDel (curAlternative);
-				}
+				keyDel (curAlternative);
 			}
 			ksDel (alternatives);
 

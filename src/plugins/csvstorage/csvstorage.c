@@ -753,11 +753,7 @@ int elektraCsvstorageSet (Plugin * handle, KeySet * returned, Key * parentKey)
 	{
 		exportKS = ksCut (config, exportKey);
 		ksAppend (config, exportKS);
-		Key * k = ksLookup (exportKS, exportKey, KDB_O_POP);
-		if (keyGetRef (k) == 0)
-		{
-			keyDel (k);
-		}
+		keyDel (ksLookup (exportKS, exportKey, KDB_O_POP));
 		ksRewind (exportKS);
 	}
 	short useHeader = 0;

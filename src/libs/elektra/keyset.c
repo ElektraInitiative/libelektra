@@ -862,10 +862,8 @@ ssize_t ksAppendKey (KeySet * ks, Key * toAppend)
 		}
 
 		/* Pop the key in the result */
-		if (keyDecRef (ks->array[result]) == 0)
-		{
-			keyDel (ks->array[result]);
-		}
+		keyDecRef (ks->array[result]);
+		keyDel (ks->array[result]);
 
 		/* And use the other one instead */
 		keyIncRef (toAppend);
@@ -2725,10 +2723,8 @@ int ksClose (KeySet * ks)
 	{
 		for (size_t i = 0; i < ks->size; i++)
 		{
-			if (keyDecRef (ks->array[i]) == 0)
-			{
-				keyDel (ks->array[i]);
-			}
+			keyDecRef (ks->array[i]);
+			keyDel (ks->array[i]);
 		}
 	}
 	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))

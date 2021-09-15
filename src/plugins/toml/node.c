@@ -134,10 +134,7 @@ void destroyTree (Node * node)
 	{
 		if (node->type == NT_LIST_ELEMENT)
 		{
-			if (keyGetRef (node->key) == 0)
-			{
-				keyDel (node->key);
-			}
+			keyDel (node->key);
 		}
 		if (node->relativeName != NULL)
 		{

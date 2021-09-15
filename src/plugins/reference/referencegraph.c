@@ -152,10 +152,7 @@ void rgRemoveLeaves (RefGraph * graph)
 			ksAppendKey (newInner, cur);
 		}
 
-		if (keyGetRef (cur) == 0)
-		{
-			keyDel (cur);
-		}
+		keyDel (cur);
 	}
 
 	ksClear (graph->leaves);

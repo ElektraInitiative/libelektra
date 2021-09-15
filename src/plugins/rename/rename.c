@@ -288,7 +288,7 @@ int elektraRenameGet (Plugin * handle, KeySet * returned, Key * parentKey)
 		{
 			keySetMeta (renamedKey, ELEKTRA_ORIGINAL_NAME_META, keyName (key));
 			ksLookup (returned, key, KDB_O_POP);
-			// TODO: keyDel (key);
+			keyDel (key);
 
 			/*
 			 * if the parentKey is replaced by a rename operation
@@ -382,11 +382,7 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			 */
 			if (keyCmp (key, parentKey) != 0)
 			{
-				Key * k = ksLookup (returned, key, KDB_O_POP);
-				if (keyGetRef (k) == 0)
-				{
-					keyDel (k);
-				}
+				keyDel (ksLookup (returned, key, KDB_O_POP));
 			}
 			ksAppendKey (returned, renamedKey);
 		}
