@@ -21,14 +21,14 @@
 - add second reference counter to Key
 - One counter is for locking references, the other one for general references. A locking reference automatically locks/unlocks the keyname.
 - introduce reference counter for KeySets (for external keyset references)
-- `keyIncRef` (or equivalent) return error in case of reference counter overflow
+- `keyBorrow` returns an error in case of reference counter overflow
 - use fixed sized types for reference counters
 - increment/decrement references before/after passing instances to plugins
 
 ## Rationale
 
-- Adding a second reference counter to Key and reducing the size of both significantly
-  actually saves memory compared to the previous solution.
+- Adding a second reference counter to Key and reducing the size of both significantly (`size_t` to `uint16_t`)
+  actually saves memory (32 vs 64bit on 64-bit machines) compared to the previous solution.
 - The added complexity of maintaining two reference counters is worth the
   tradeoff for the gained functionality.
 
