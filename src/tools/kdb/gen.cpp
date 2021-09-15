@@ -28,7 +28,7 @@ int GenCommand::execute (Cmdline const & cl)
 	}
 
 	auto templateName = cl.arguments[0];
-	auto parentKey = cl.arguments[1];
+	auto parentKeyName = cl.arguments[1];
 	auto outputName = cl.arguments[2];
 
 	std::unordered_map<std::string, std::string> parameters;
@@ -56,7 +56,7 @@ int GenCommand::execute (Cmdline const & cl)
 		throw invalid_argument ("couldn't find template '" + templateName + "'");
 	}
 
-	if (parentKey == "-")
+	if (parentKeyName == "-")
 	{
 		for (const auto & part : tmpl->getParts ())
 		{
@@ -69,7 +69,7 @@ int GenCommand::execute (Cmdline const & cl)
 
 	if (cl.inputFile.empty ())
 	{
-		Key getKey (parentKey, KEY_END);
+		Key getKey (parentKeyName, KEY_END);
 
 		KDB kdb;
 		kdb.get (ks, getKey);
@@ -101,7 +101,7 @@ int GenCommand::execute (Cmdline const & cl)
 			throw invalid_argument ("plugin '" + pluginName + "' given to -F/--input-file could not be loaded");
 		}
 
-		Key getKey (parentKey, KEY_VALUE, file.c_str (), KEY_END);
+		Key getKey (parentKeyName, KEY_VALUE, file.c_str (), KEY_END);
 		if (plugin->get (ks, getKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			printWarnings (cerr, getKey, cl.verbose, cl.debug);
@@ -116,7 +116,7 @@ int GenCommand::execute (Cmdline const & cl)
 	for (const auto & part : tmpl->getParts ())
 	{
 		std::ofstream output (outputName + part);
-		tmpl->render (output, outputName, part, inputKs, parentKey);
+		tmpl->render (output, outputName, part, inputKs, parentKeyName);
 	}
 
 	return 0;
