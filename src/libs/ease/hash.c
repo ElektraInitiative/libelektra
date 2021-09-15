@@ -55,9 +55,9 @@ kdb_boolean_t computeSha256OfKeySetIgnoreValues (char hash_string[65], KeySet * 
 		}
 	}
 
-	hash_to_string(hash_string, hash);
-
 	sha_256_close(&sha_256);
+    	hash_to_string(hash_string, hash);
+
 	ksDel(ksCopy);
 	ksDel(onlyBelowParentKey);
 
