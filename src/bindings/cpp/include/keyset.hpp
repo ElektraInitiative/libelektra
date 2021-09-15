@@ -493,25 +493,7 @@ inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END))
 /**
  * Take ownership of a `ckdb::KeySet *`.
  *
- * This means `ksDel(keyset)` will be called automatically, when the
- * returned object is destructed. If you want to keep using
- * `keyset` beyond the lifetime of the this object, or need to
- * call ksDel() manually for some other reason, use ckdb::ksBorrow().
- *
- * @code {.cpp}
- * ckdb::KeySet * ks1;
- * ckdb::KeySet * ks2;
- *
- * {
- * 	kdb::KeySet ksOwned = ks1;
- * 	kdb::KeySet ksBorrowed = ckdb::ksBorrow (ks2);
- * 	// [...]
- *	// ksDel (ks1) and ksDel (ks2) called here
- * }
- *
- * // ks2 is still safe to use, but ks1 might be deleted
- * @endcode
- *
+ * // TODO: use ksIncRef/ksDecRef
  *
  * @param keyset the `KeySet *` to take the ownership of
  * @see release()
@@ -602,11 +584,6 @@ inline ckdb::KeySet * KeySet::release ()
  *
  * This function exists so that pure C functions that do not
  * have a C++ binding can be called.
- *
- * @warning DO NOT call ksDel() on the returned pointer, it will
- *          lead to double frees.
- *          If you want to keep using the returned pointer beyond
- *          the lifetime of this kdb::KeySet object, use ksBorrow().
  *
  * @return pointer to internal ckdb KeySet
  */

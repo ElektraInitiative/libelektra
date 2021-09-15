@@ -472,37 +472,33 @@ static void keyClearNameValue (Key * key)
 /**
  * A destructor for Key objects.
  *
- * Every Key created by keyNew() must be
- * deleted with keyDel().
+ * Every Key created by keyNew() must be deleted with keyDel().
  *
- * Keys contained in a KeySet will not be deleted
- * and the number of references will be returned instead.
+ * When the reference counter of @p key is non-zero, this function
+ * will do nothing and simply return the current value of the
+ * reference counter.
  *
- * It is safe to delete a NULL pointer,
- * -1 will be returned then.
- *
- * It is also safe to delete a multiple
- * referenced Key, nothing will happen
- * then and the reference counter will
- * be returned.
+ * It is therefore safe to call `keyDel (k)` on any `Key * k`.
  *
  * @post all memory related to @p key will be freed
  *
  * @param key the Key object to delete
  *
- * @return the value of the reference counter
- *         if the Key is within KeySets
  * @retval 0 when the Key was freed
  * @retval -1 on NULL pointers
+ * @return the value of the reference counter, if it was non-zero
  *
  * @since 1.0.0
  * @ingroup key
- * @see keyNew() for creating a new Key
- * @see keyIncRef(), keyGetRef() for changing the reference counter of the Key
+ * @see keyNew()    for creating a new Key
+ * @see keyIncRef() for more information about the reference counter
  */
 int keyDel (Key * key)
 {
-	if (!key) return -1;
+	if (key == NULL)
+	{
+		return -1;
+	}
 
 	if (key->refs > 0)
 	{
@@ -621,7 +617,7 @@ int keyClear (Key * key)
  */
 uint16_t keyIncRef (Key * key)
 {
-	if (!key)
+	if (key == NULL)
 	{
 		return UINT16_MAX;
 	}
@@ -660,7 +656,7 @@ uint16_t keyIncRef (Key * key)
  */
 uint16_t keyDecRef (Key * key)
 {
-	if (!key)
+	if (key == NULL)
 	{
 		return UINT16_MAX;
 	}
@@ -690,7 +686,7 @@ uint16_t keyDecRef (Key * key)
  **/
 uint16_t keyGetRef (const Key * key)
 {
-	if (!key)
+	if (key == NULL)
 	{
 		return UINT16_MAX;
 	}

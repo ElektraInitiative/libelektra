@@ -431,27 +431,26 @@ int ksCopy (KeySet * dest, const KeySet * source)
 	return 1;
 }
 
-
 /**
- * @brief Destructor for KeySet objects.
+ * A destructor for KeySet objects.
  *
- * This function will delete exactly one reference to `ks`.
- * It will always decrement the reference counter and if this
- * was the last reference to `ks` it will also delete `ks` itself.
+ * Every KeySet created by ksNew() must be deleted with ksDel().
  *
- * Deleting `ks` means:
- * - decrementing the reference count of all keys within `ks`
- * - deleting all keys within `ks` that were only referenced by `ks`
- * - freeing the memory occupied by `ks` itself
+ * When the reference counter of @p ks is non-zero, this function
+ * will do nothing and simply return the current value of the
+ * reference counter.
  *
- * @param ks the KeySet that should be deleted
+ * It is therefore safe to call `ksDel (ks)` on any `KeySet * ks`.
  *
- * @retval 1 if there are more active references to `ks`
- * @retval 0 when the `ks` was actually deleted
- * @retval -1 on NULL pointer
+ * @param ks the KeySet object to delete
+ *
+ * @retval 0 when the KeySet was freed
+ * @retval -1 on NULL pointers
+ * @return the value of the reference counter, if it was non-zero
  *
  * @since 1.0.0
- * @see ksNew() for creating a new KeySet
+ * @see ksNew()    for creating a new KeySet
+ * @see ksIncRef() for more information about the reference counter
  */
 int ksDel (KeySet * ks)
 {
@@ -460,15 +459,12 @@ int ksDel (KeySet * ks)
 		return -1;
 	}
 
-	if (ks->refs > 1)
+	if (ks->refs > 0)
 	{
-		--ks->refs;
-		return 1;
+		return ks->refs;
 	}
 
-	// exclusive reference, can delete
 	ksClose (ks);
-	ks->refs = 0;
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (ks->opmphm)
@@ -522,38 +518,110 @@ int ksClear (KeySet * ks)
 }
 
 /**
- * @brief Borrows a new reference to `ks`.
+ * Increment the reference counter of a KeySet object.
  *
- * This will increment the reference count of `ks` and then return `ks`.
- * Calling `ksBorrow (ks)` N times ensures that N+1 `ksDel (ks)` are needed
- * to actually delete `ks`. N calls to undo the ksBorrow() and one to 'undo'
- * ksNew() and delete `ks`.
+ * As long as the reference counter is non-zero, `ksDel()` operations on @p key
+ * will be a no-op and return an error code.
  *
- * Note: `ksBorrow (ks)` only prevents the deletion of `ks`. It does not
- * protect against any form of modification. In particular, using ksBorrow()
- * does not protect against ksClear().
+ * Elektra's system for reference counting is not based on a concept
+ * of shared ownership. It is more similar to a shared lock, where the counter
+ * is used to keep track of how many clients hold the lock.
  *
- * If the reference counter is already at its maximum value, it will not be
- * incremented and `NULL` will be returned.
+ * Initially, the reference counter will be 0. This is can be interpreted as
+ * the lock being unlocked. When you increment the reference counter, the lock
+ * becomes locked and `ksDel()` is blocked and fails. Only when the reference
+ * counter is fully decremented back down to 0 again, will `ksDel()` work again.
  *
- * @param ks the `KeySet` to borrow
- * @return the same pointer as `ks`, if the `ks` was borrowed successfully,
- *         or `NULL` otherwise
+ * @note The reference counter can never exceed `UINT16_MAX - 1`. `UINT16_MAX` is
+ * reserved as an error code.
+ *
+ * @post @p ks's reference counter is > 0
+ * @post @p ks's reference counter is <= UINT16_MAX - 1
+ *
+ * @param ks the KeySet object whose reference counter should be increased
+ *
+ * @return the updated value of the reference counter
+ * @retval UINT16_MAX on NULL pointer
+ * @retval UINT16_MAX when the reference counter already was the maximum value `UINT16_MAX - 1`,
+ *         the reference counter will not be modified in this case
+ *
+ * @since 1.0.0
+ * @see ksGetRef() to retrieve the current reference count
+ * @see ksDecRef() for decreasing the reference counter
+ * @see ksDel()    for deleting a Key
  */
-KeySet * ksBorrow (KeySet * ks)
+uint16_t ksIncRef (KeySet * ks)
 {
 	if (ks == NULL)
 	{
-		return NULL;
+		return UINT16_MAX;
 	}
 
-	if (ks->refs == UINT16_MAX)
+	if (ks->refs == UINT16_MAX - 1)
 	{
-		return NULL;
+		return UINT16_MAX;
 	}
 
-	++ks->refs;
-	return ks;
+	return ++ks->refs;
+}
+
+
+/**
+ * Decrement the reference counter of a KeySet object.
+ *
+ * As long as the reference counter is non-zero, `ksDel()` operations on @p key
+ * will be a no-op and return an error code.
+ *
+ * @param key the KeySet object whose reference counter should get decreased
+ *
+ * @return the updated value of the reference counter
+ * @retval UINT16_MAX on NULL pointer
+ * @retval 0 when the reference counter already was the minimum value 0,
+ *         the reference counter will not be modified in this case
+ *
+ * @since 1.0.0
+ * @see ksGetRef() to retrieve the current reference count
+ * @see ksIncRef() for increasing the reference counter and for a more complete
+ *                  explanation of the reference counting system
+ * @see ksDel()    for deleting a Key
+ */
+uint16_t ksDecRef (KeySet * ks)
+{
+	if (ks == NULL)
+	{
+		return UINT16_MAX;
+	}
+
+	if (ks->refs == 0)
+	{
+		return 0;
+	}
+
+	return --ks->refs;
+}
+
+
+/**
+ * Return the current reference counter value of a KeySet object.
+ *
+ * @param ks the KeySet whose reference counter to retrieve
+ *
+ * @return the value of the @p key's reference counter
+ * @retval -1 on NULL pointer
+ *
+ * @since 1.0.0
+ * @see ksIncRef() for increasing the reference counter and for a more complete
+ *                  explanation of the reference counting system
+ * @see ksDecRef() for decreasing the reference counter
+ **/
+uint16_t ksGetRef (const KeySet * ks)
+{
+	if (ks == NULL)
+	{
+		return UINT16_MAX;
+	}
+
+	return ks->refs;
 }
 
 
@@ -2684,7 +2752,7 @@ int ksInit (KeySet * ks)
 	ks->size = 0;
 	ks->alloc = 0;
 	ks->flags = 0;
-	ks->refs = 1; // there is always at least one active reference
+	ks->refs = 0;
 
 	ksRewind (ks);
 
