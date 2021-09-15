@@ -1,4 +1,5 @@
-/** Copied from https://github.com/amosnier/sha-2. See https://github.com/ElektraInitiative/libelektra/issues/3998#issuecomment-918111622 */
+/** Copied from https://github.com/amosnier/sha-2 @ f0d7baf076207b943649e68946049059f018c10b.
+ * See https://github.com/ElektraInitiative/libelektra/issues/3998#issuecomment-918111622 */
 
 
 #include "sha-256.h"
