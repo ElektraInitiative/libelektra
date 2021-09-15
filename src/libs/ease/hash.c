@@ -42,11 +42,17 @@ kdb_boolean_t computeSha256OfKeySetWithoutValues (char hash_string[65], KeySet *
 	struct Sha_256 sha_256;
 	sha_256_init(&sha_256, hash);
 
-	// Loop through all keys, feed full key name into sha_256_write().
+	// Loop through all keys, feed full key name and meta keys + values into sha_256_write().
 	Key * currentKey;
 	ksRewind(onlyBelowParentKey);
 	while ((currentKey = ksNext (onlyBelowParentKey)) != NULL) {
 		sha_256_write (&sha_256, keyName(currentKey), strlen(keyName(currentKey)));
+		KeySet * currentMetaKeys = keyMeta(currentKey);
+		Key * currentMetaKey;
+		while ((currentMetaKey = ksNext (currentMetaKeys))) {
+			sha_256_write (&sha_256, keyName(currentMetaKey), strlen(keyName(currentMetaKey)));
+			sha_256_write (&sha_256, keyString(currentMetaKey), strlen(keyString(currentMetaKey)));
+		}
 	}
 
 	hash_to_string(hash_string, hash);
