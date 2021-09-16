@@ -41,11 +41,8 @@ execute_process (
 	OUTPUT_VARIABLE TMP_BUILD_DIR
 	OUTPUT_QUIET)
 
-
 # Copy the source to the temporary directory
-execute_process (
-	COMMAND "cp -r ${CMAKE_CURRENT_SOURCE_DIR} ${TMP_BUILD_DIR}"
-	OUTPUT_QUIET)
+execute_process (COMMAND "cp -r ${CMAKE_CURRENT_SOURCE_DIR} ${TMP_BUILD_DIR}" OUTPUT_QUIET)
 
 # Build the python wheel-package
 install (CODE "execute_process(COMMAND
@@ -87,8 +84,6 @@ install (
 	COMPONENT libelektra${SO_VERSION}-fuse)
 
 # Delete the temporary directory.
-execute_process (
-	COMMAND "rm -rf ${TMP_BUILD_DIR}"
-	OUTPUT_QUIET)
+execute_process (COMMAND "rm -rf ${TMP_BUILD_DIR}" OUTPUT_QUIET)
 
 # The tool can now be invoked by "kdb fuse".
