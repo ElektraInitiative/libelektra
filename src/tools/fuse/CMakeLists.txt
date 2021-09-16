@@ -38,8 +38,7 @@ endif ()
 # Create a temporary directory to build the python package
 execute_process (
 	COMMAND "mktemp -d"
-	OUTPUT_VARIABLE TMP_BUILD_DIR
-	OUTPUT_QUIET)
+	OUTPUT_VARIABLE TMP_BUILD_DIR)
 
 # Copy the source to the temporary directory
 execute_process (COMMAND "cp -r ${CMAKE_CURRENT_SOURCE_DIR} ${TMP_BUILD_DIR}" OUTPUT_QUIET)
