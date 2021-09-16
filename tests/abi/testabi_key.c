@@ -906,6 +906,8 @@ static void test_keyValue (void)
 
 	printf ("Test string of key\n");
 
+	succeed_if (keyIsString (0) == -1, "no error on NULL key");
+
 	succeed_if (keyValue (0) == 0, "null pointer");
 	succeed_if (keyGetValueSize (0) == -1, "null pointer");
 	succeed_if (keySetString (0, "") == -1, "null pointer");
@@ -1016,6 +1018,8 @@ static void test_keyBinary (void)
 	binaryData[sizeof (binaryData) - 1] = 'T';
 
 	printf ("Test binary special cases\n");
+
+	succeed_if (keyIsBinary (0) == -1, "no error on checking NULL Key");
 
 	key = keyNew ("user:/binary", KEY_BINARY, KEY_END);
 

@@ -87,10 +87,10 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] L517  
-       - [ ] L558
+       - [x] L517  
+       - [x] L558
 - [ ] All possible error states are covered by tests  
-       - [ ] test key with same name, but different owners
+       - [x] test key with same name, but different owners
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

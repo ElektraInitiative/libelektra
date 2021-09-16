@@ -83,13 +83,13 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] Line 214  
+       - [x] Line 214  
        - [ ] Line 227  
-       - [ ] Line 256
+       - [x] Line 256
 - [ ] All possible error states are covered by tests  
-       - [ ] 214 seems to be tested  
-       - [ ] 256 seems to be tested  
-       - [ ] add test for cascading key vs root key
+       - [x] 214 seems to be tested  
+       - [x] 256 seems to be tested  
+       - [x] add test for cascading key vs root key
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 

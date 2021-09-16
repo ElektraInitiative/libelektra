@@ -30,31 +30,31 @@ static void test_keyCmp (void)
 	keySetName (k2, "");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "user:/");
-	keySetName (k2, "user:/");
+	succeed_if (keySetName (k1, "user:/") == 7, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/") == 7, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "system:/");
-	keySetName (k2, "system:/");
+	succeed_if (keySetName (k1, "system:/") == 9, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/") == 9, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 
-	keySetName (k1, "user:/");
-	keySetName (k2, "system:/");
+	succeed_if (keySetName (k1, "user:/") == 7, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/") == 9, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) < 0, "system is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "system is smaller");
 
-	keySetName (k1, "user:/a");
-	keySetName (k2, "user:/a");
+	succeed_if (keySetName (k1, "user:/a") == 8, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/a") == 8, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) == 0, "should be same");
 	succeed_if (keyCmp (k2, k1) == 0, "should be same");
 
-	keySetName (k1, "user:/a");
-	keySetName (k2, "user:/b");
+	succeed_if (keySetName (k1, "user:/a") == 8, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/b") == 8, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) < 0, "a is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "a is smaller");
 
-	keySetName (k1, "user:/a/a");
-	keySetName (k2, "user:/a-a");
+	succeed_if (keySetName (k1, "user:/a/a") == 10, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/a-a") == 10, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
 
@@ -64,34 +64,34 @@ static void test_keyCmp (void)
 		if (i == '/') continue;
 		cmp[7] = i;
 		// printf ("%i %s\n", i, cmp);
-		keySetName (k1, "user:/a/a");
+		succeed_if (keySetName (k1, "user:/a/a") == 10, "should be a valid name");
 		keySetName (k2, cmp);
 		succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
 		succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
 	}
 
-	keySetName (k1, "user:/a");
-	keySetName (k2, "user:/a/a");
+	succeed_if (keySetName (k1, "user:/a") == 8, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/a/a") == 10, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
 
-	keySetName (k1, "user:/a");
-	keySetName (k2, "user:/a-a");
+	succeed_if (keySetName (k1, "user:/a") == 8, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/a-a") == 10, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
 
-	keySetName (k1, "user:/a");
-	keySetName (k2, "user:/aa");
+	succeed_if (keySetName (k1, "user:/a") == 8, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/aa") == 9, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
 
-	keySetName (k1, "user:/a");
-	keySetName (k2, "user:/a-");
+	succeed_if (keySetName (k1, "user:/a") == 8, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/a-") == 9, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) < 0, "/ is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "/ is smaller");
 
-	keySetName (k1, "user:/find_me");
-	keySetName (k2, "user:/find_me/a");
+	succeed_if (keySetName (k1, "user:/find_me") == 14, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/find_me/a") == 16, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) < 0, "find_me is smaller");
 	succeed_if (keyCmp (k2, k1) > 0, "find_me is smaller");
 
@@ -105,40 +105,40 @@ static void test_directbelow (void)
 	Key * k1 = keyNew ("/", KEY_END);
 	Key * k2 = keyNew ("/", KEY_END);
 
-	keySetName (k1, "user:/");
-	keySetName (k2, "user:/a");
+	succeed_if (keySetName (k1, "user:/") == 7, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/a") == 8, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "system:/");
-	keySetName (k2, "system:/a");
+	succeed_if (keySetName (k1, "system:/") == 9, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/a") == 10, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "user:/");
-	keySetName (k2, "user:/longer_name");
+	succeed_if (keySetName (k1, "user:/") == 7, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/longer_name") == 18, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "system:/");
-	keySetName (k2, "system:/longer_name");
+	succeed_if (keySetName (k1, "system:/") == 9, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/longer_name") == 20, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "user:/a");
-	keySetName (k2, "user:/a/a");
+	succeed_if (keySetName (k1, "user:/a") == 8, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/a/a") == 10, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "system:/a");
-	keySetName (k2, "system:/a/a");
+	succeed_if (keySetName (k1, "system:/a") == 10, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/a/a") == 12, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "system:/a\\/a");
-	keySetName (k2, "system:/a\\/a/a");
+	succeed_if (keySetName (k1, "system:/a\\/a") == 13, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/a\\/a/a") == 15, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "system:/a\\/a\\/a");
-	keySetName (k2, "system:/a\\/a\\/a/b");
+	succeed_if (keySetName (k1, "system:/a\\/a\\/a") == 16, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/a\\/a\\/a/b") == 18, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
-	keySetName (k1, "system:/a\\/a\\/a");
-	keySetName (k2, "system:/a\\/a\\/a/b");
+	succeed_if (keySetName (k1, "system:/a\\/a\\/a") == 16, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/a\\/a\\/a/b") == 18, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be direct below");
 
 
@@ -152,35 +152,38 @@ static void test_below (void)
 	Key * k1 = keyNew ("/", KEY_END);
 	Key * k2 = keyNew ("/", KEY_END);
 
-	keySetName (k1, "user:/tests/simple");
-	keySetName (k2, "user:/tests/simple/below");
+	succeed_if (keySetName (k1, "user:/tests/simple") == 19, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/tests/simple/below") == 25, "should be a valid name");
 	succeed_if (keyCmp (k1, k2) == 0 || keyIsBelow (k1, k2) == 1, "should be below");
 	succeed_if (keyIsDirectlyBelow (k1, k2) == 1, "should be below");
 
-	keySetName (k1, "user:/");
-	keySetName (k2, "user:/a/a");
+	succeed_if (keySetName (k1, "user:/") == 7, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/a/a") == 10, "should be a valid name");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
-	keySetName (k1, "system:/");
-	keySetName (k2, "system:/a/a");
+	succeed_if (keySetName (k1, "system:/") == 9, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/a/a") == 12, "should be a valid name");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
-	keySetName (k1, "user:/");
-	keySetName (k2, "user:/longer_name/also_longer_name");
+	succeed_if (keySetName (k1, "user:/") == 7, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/longer_name/also_longer_name") == 35, "should be a valid name");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
-	keySetName (k1, "system:/");
-	keySetName (k2, "system:/longer_name/also_longer_name");
+	succeed_if (keySetName (k1, "system:/") == 9, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/longer_name/also_longer_name") == 37, "should be a valid name");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
-	keySetName (k1, "user:/a");
-	keySetName (k2, "user:/a/a/a/a/a/a");
+	succeed_if (keySetName (k1, "user:/a") == 8, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/a/a/a/a/a/a") == 18, "should be a valid name");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
-	keySetName (k1, "system:/a");
-	keySetName (k2, "system:/a/a/a/a/a/a");
+	succeed_if (keySetName (k1, "system:/a") == 10, "should be a valid name");
+	succeed_if (keySetName (k2, "system:/a/a/a/a/a/a") == 20, "should be a valid name");
 	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
+	succeed_if (keySetName (k1, "/") == 2, "should be a valid name");
+	succeed_if (keySetName (k2, "user:/something") == 16, "should be a valid name");
+	succeed_if (keyIsBelow (k1, k2) == 1, "should be below");
 
 	keyDel (k1);
 	keyDel (k2);
@@ -192,26 +195,26 @@ static void test_examples (void)
 	Key * key = keyNew ("/", KEY_END);
 	Key * check = keyNew ("/", KEY_END);
 
-	keySetName (key, "user:/key/folder");
-	keySetName (check, "user:/key/folder");
+	succeed_if (keySetName (key, "user:/key/folder") == 17, "should be a valid name");
+	succeed_if (keySetName (check, "user:/key/folder") == 17, "should be a valid name");
 	succeed_if (keyCmp (key, check) == 0, "should be same");
 
-	keySetName (key, "user:/key/folder");
-	keySetName (check, "user:/key/folder/child");
+	succeed_if (keySetName (key, "user:/key/folder") == 17, "should be a valid name");
+	succeed_if (keySetName (check, "user:/key/folder/child") == 23, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (key, check) == 1, "should be direct below");
 
-	keySetName (key, "user:/key/folder");
-	keySetName (check, "user:/key/folder/any/depth/deeper/grand-child");
+	succeed_if (keySetName (key, "user:/key/folder") == 17, "should be a valid name");
+	succeed_if (keySetName (check, "user:/key/folder/any/depth/deeper/grand-child") == 46, "should be a valid name");
 	succeed_if (keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 1, "should be below (but not direct)");
 	succeed_if (keyIsBelow (key, check) == 1, "should be below");
 	succeed_if (keyCmp (key, check) == 0 || keyIsBelow (key, check) == 1, "should be the same or below");
 
-	keySetName (key, "user:/key/folder");
-	keySetName (check, "user:/notsame/folder");
+	succeed_if (keySetName (key, "user:/key/folder") == 17, "should be a valid name");
+	succeed_if (keySetName (check, "user:/notsame/folder") == 21, "should be a valid name");
 	succeed_if (keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0, "key is not below");
 
-	keySetName (key, "user:/key/folder");
-	keySetName (check, "system:/notsame/folder");
+	succeed_if (keySetName (key, "user:/key/folder") == 17, "should be a valid name");
+	succeed_if (keySetName (check, "system:/notsame/folder") == 23, "should be a valid name");
 	int has_no_rel = keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0;
 	succeed_if (has_no_rel == 1, "not in the same namespace");
 
@@ -225,22 +228,22 @@ static void test_hierarchy (void)
 	Key * key = keyNew ("/", KEY_END);
 	Key * check = keyNew ("/", KEY_END);
 
-	keySetName (key, "user:/key/folder/key");
-	keySetName (check, "user:/other/folder/key");
+	succeed_if (keySetName (key, "user:/key/folder/key") == 21, "should be a valid name");
+	succeed_if (keySetName (check, "user:/other/folder/key") == 23, "should be a valid name");
 	succeed_if (keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0, "should be same");
 
-	keySetName (key, "system:/key/folder/key");
-	keySetName (check, "system:/other/folder/key");
+	succeed_if (keySetName (key, "system:/key/folder/key") == 23, "should be a valid name");
+	succeed_if (keySetName (check, "system:/other/folder/key") == 25, "should be a valid name");
 	succeed_if (keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0, "should be same");
 
-	keySetName (key, "user:/key/folder/key");
-	keySetName (check, "system:/other/folder/key");
+	succeed_if (keySetName (key, "user:/key/folder/key") == 21, "should be a valid name");
+	succeed_if (keySetName (check, "system:/other/folder/key") == 25, "should be a valid name");
 
 	int has_no_rel = keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0;
 	succeed_if (has_no_rel == 1, "should be different (1)");
 
-	keySetName (key, "system:/key/folder/key");
-	keySetName (check, "user:/other/folder/key");
+	succeed_if (keySetName (key, "system:/key/folder/key") == 23, "should be a valid name");
+	succeed_if (keySetName (check, "user:/other/folder/key") == 23, "should be a valid name");
 
 	has_no_rel = keyCmp (key, check) != 0 && keyIsDirectlyBelow (key, check) == 0 && keyIsBelow (key, check) == 0;
 	succeed_if (has_no_rel == 1, "should be different (2)");
