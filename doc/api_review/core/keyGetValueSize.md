@@ -24,11 +24,11 @@
        - [ ][..] for binary data, so 0 will be returned.  
        - [ ] String types have it, so to there length will be added 1 to have enough space to store it. -> Strings are null-terminated, and the null terminator will be considered for the length.
 - [ ] `@pre`  
-       - [ ] add?
+       - [x] add?
 - [ ] `@post`  
-       - [ ] add?
+       - [x] add?
 - [ ] `@invariant`  
-       - [ ] add?
+       - [x] add?
 - [ ] `@param` for every parameter  
        - [ ] key: key -> Key
 - [ ] `@return` / `@retval`  
