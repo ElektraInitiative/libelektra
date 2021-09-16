@@ -113,7 +113,7 @@ int GenCommand::execute (Cmdline const & cl)
 		}
 	}
 
-	auto inputKs = ks.cut (Key (parentKey, KEY_END));
+	auto inputKs = ks.cut (Key (parentKeyName, KEY_END));
 
 	for (const auto & part : tmpl->getParts ())
 	{
