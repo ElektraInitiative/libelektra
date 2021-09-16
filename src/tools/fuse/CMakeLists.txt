@@ -36,10 +36,10 @@ if (NOT EXIT_CODE EQUAL 0)
 endif ()
 
 # Create a temporary directory to build the python package
-execute_process (COMMAND mktemp -d OUTPUT_VARIABLE TMP_BUILD_DIR)
+execute_process (COMMAND mktemp -d OUTPUT_VARIABLE TMP_BUILD_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 # Copy the source to the temporary directory
-install (CODE "execute_process (COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR} ${TMP_BUILD_DIR} OUTPUT_QUIET)")
+install (CODE "execute_process (COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/. ${TMP_BUILD_DIR} OUTPUT_QUIET)")
 
 # Build the python wheel-package
 install (CODE "execute_process(COMMAND
