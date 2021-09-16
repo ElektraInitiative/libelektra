@@ -167,6 +167,7 @@ _(Michael Tucek)_
 - ZeroMQ Hub: fix compilation and man page. _(Markus Raab)_
 - Configure packaging for FUSE tool. _(Alexander Firbas)_
 - FUSE: fix bug preventing binary writes. _(Alexander Firbas)_
+- FUSE: use temporary directory for building instead of source directory. _(Alexander Firbas)_
 - ambiguous write operations now disabled in kdb _(Alexander Firbas)_
 - `webd`: update npm dependencies. _(Mihael Pranjić)_
 

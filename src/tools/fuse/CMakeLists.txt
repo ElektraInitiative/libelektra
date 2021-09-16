@@ -35,10 +35,22 @@ if (NOT EXIT_CODE EQUAL 0)
 	return ()
 endif ()
 
+# Create a temporary directory to build the python package
+execute_process (
+	COMMAND "mktemp -d"
+	OUTPUT_VARIABLE TMP_BUILD_DIR
+	OUTPUT_QUIET)
+
+
+# Copy the source to the temporary directory
+execute_process (
+	COMMAND "cp -r ${CMAKE_CURRENT_SOURCE_DIR} ${TMP_BUILD_DIR}"
+	OUTPUT_QUIET)
+
 # Build the python wheel-package
 install (CODE "execute_process(COMMAND
 		${Python3_EXECUTABLE} setup.py bdist_wheel
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )")
+		WORKING_DIRECTORY ${TMP_BUILD_DIR} )")
 
 # Check if running on bionic where https://github.com/pypa/pip/issues/3826 occurs. In that case, use additional flag.
 execute_process (
@@ -55,13 +67,13 @@ endif ()
 # Install the package (the .whl file) and its dependencies (which are fetched from PyPI) to the local subdirectory 'fuse'
 install (
 	CODE "execute_process(COMMAND
-		${Python3_EXECUTABLE} -m pip install ${PIP_BUG_WORKAROUND_OPTION} --target \"${CMAKE_CURRENT_SOURCE_DIR}/fuse\" --upgrade --no-cache-dir ./dist/elektra_fuse-1.0.0-py3-none-any.whl
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )")
+		${Python3_EXECUTABLE} -m pip install ${PIP_BUG_WORKAROUND_OPTION} --target \"${TMP_BUILD_DIR}/fuse\" --upgrade --no-cache-dir ./dist/elektra_fuse-1.0.0-py3-none-any.whl
+		WORKING_DIRECTORY ${TMP_BUILD_DIR} )")
 
 # Copy the just created 'fuse' directory to the global installation directory. (This indirection is performed so that CPack knows about the
 # directory.)
 install (
-	DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/fuse
+	DIRECTORY ${TMP_BUILD_DIR}/fuse
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_DATA_FOLDER}"
 	COMPONENT libelektra${SO_VERSION}-fuse)
 
@@ -73,5 +85,10 @@ install (
 	PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/fuse
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}"
 	COMPONENT libelektra${SO_VERSION}-fuse)
+
+# Delete the temporary directory.
+execute_process (
+	COMMAND "rm -rf ${TMP_BUILD_DIR}"
+	OUTPUT_QUIET)
 
 # The tool can now be invoked by "kdb fuse".
