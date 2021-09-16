@@ -21,62 +21,61 @@ static void hash_to_string(char string[65], const uint8_t hash[32]);
  * Calculate a specification token for the KeySet of an application.
  *
  * The KeySet of an application is identified as all keys below the applications root key.
- * Note that the keys' values are ignored.
  *
- * @param hash A pointer to a uint8_t. This will contain the hash.
- * @param inputKs The KeySet for the application.
- * @param parentKey The Key below which all the relevant keys are. Keys that are not below @p parentKey are ignored.
+ * @pre The parentKey must have the correct namespace. E.g. If only keys from the spec:/ should be considered for the token calculation,
+ * pass a key with KEY_NS_SPEC.
+ *
+ * @param hash_string A string. After successful execution this will contain the hash as hex-string.
+ * @param ks The KeySet for the application.
+ * @param parentKey The Key below which all the relevant keys are. Keys that are not below @p parentKey are ignored. The key's namespace is important (see preconditions)
  * @retval false If an error occurred.
  * @retval true If the computation was successful.
  */
-kdb_boolean_t calculateSpecificationToken (char * hash_string, KeySet * specKs, KeySet * fullKs) {
+kdb_boolean_t calculateSpecificationToken (char * hash_string, KeySet * ks, Key * parentKey) {
 	// Initialize sha_256 for streaming
 	uint8_t hash[SIZE_OF_SHA_256_HASH];
 	struct Sha_256 sha_256;
 	sha_256_init(&sha_256, hash);
 
+	//TODO: use parentKey for error reporting!
+
+	// Cut out parentKey and all keys below. These are the ones we take into account for token calculation.
+	KeySet * cutKs = ksCut (ks, parentKey);
+
 	/**
-	 * Loop through all keys from the specificationKs:
-	 * 1. Remove namespace from key name, if any.
-	 * 2. For each key, perform a cascading lookup within the fullKs.
-	 * 3. With the result from 2. : Feed full key name and meta keys + values into sha_256_write().
+	 * Loop through all keys relevant for token calculation.
  	*/
 	Key * currentKey;
-	ksRewind(specKs);
-	while ((currentKey = ksNext (specKs)) != NULL) {
-		if (keyGetNamespace (currentKey) != KEY_NS_SPEC
-		    && keyGetNamespace (currentKey) != KEY_NS_CASCADING) {
-			// TODO: add error message
-			return false;
-		}
+	ksRewind(cutKs);
+	while ((currentKey = ksNext (cutKs)) != NULL) {
+		Key * cascadingKey = keyDup (currentKey, KEY_CP_NAME);
+		/**
+		 * Key namespace is ignored for token calculation (via setting it to cascading).
+		 * Reason: Different callers of this function pass the keys for token calculation using different namespaces,
+		 * but the specification they pass is actually the same.
+		 * (e.g. tools/kdb/gen.cpp passes keys in cascading namespace while src/libs/highlevel/elektra.c passes keys in spec namespace).
+		 */
+		keySetNamespace (cascadingKey, KEY_NS_CASCADING);
+		// Feed key name into sha_256_write()
+		sha_256_write (&sha_256, keyName(cascadingKey), keyGetNameSize(cascadingKey));
+		// Note: The value of the key itself is not relevant / part of specification. Only the key's name + its metadata!
 
-		Key * currentKeyCascading = keyDup (currentKey, KEY_CP_ALL);
-		keySetNamespace (currentKeyCascading, KEY_NS_CASCADING);
-		ksRewind(fullKs);
-		Key * keyFromCascadingLookup = ksLookup (fullKs, currentKeyCascading, 0);
-
-		fprintf(stdout, "sha_256_write %s \n", keyName(currentKeyCascading));
-		sha_256_write (&sha_256, keyName(currentKeyCascading), keyGetNameSize(currentKeyCascading));
-		KeySet * currentMetaKeys = keyMeta(keyFromCascadingLookup);
-		ksRewind(currentMetaKeys);
+		KeySet * currentMetaKeys = keyMeta(currentKey);
 		Key * currentMetaKey;
+		ksRewind(currentMetaKeys);
+		// Feed name + values from meta keys into sha_256_write().
 		while ((currentMetaKey = ksNext (currentMetaKeys)) != NULL) {
-			Key * currentMetaKeyCascading = keyDup(currentMetaKey, KEY_CP_ALL);
-			keySetNamespace (currentMetaKeyCascading, KEY_NS_CASCADING);
-			fprintf(stdout, "sha_256_write %s \n", keyName(currentMetaKeyCascading));
-			sha_256_write (&sha_256, keyName(currentMetaKeyCascading), keyGetNameSize (currentMetaKey));
-			fprintf(stdout, "sha_256_write %s \n", keyString(currentMetaKey));
+			sha_256_write (&sha_256, keyName(currentMetaKey), keyGetNameSize (currentMetaKey));
 			sha_256_write (&sha_256, keyString(currentMetaKey), keyGetValueSize(currentMetaKey));
-			keyDel(currentMetaKeyCascading);
 		}
 
-		keyDel(currentKeyCascading);
+		keyDel(cascadingKey);
 	}
 
 	sha_256_close(&sha_256);
     	hash_to_string(hash_string, hash);
 
-	fprintf(stdout, "sha256 hash is %s \n", hash_string);
+	ksDel(cutKs);
 
 	return true;
 }
