@@ -67,6 +67,7 @@ int GenCommand::execute (Cmdline const & cl)
 
 	KeySet ks;
 
+	// When no inputFile was specified, load specification keys from the KDB.
 	if (cl.inputFile.empty ())
 	{
 		Key getKey (parentKeyName, KEY_END);
@@ -82,6 +83,7 @@ int GenCommand::execute (Cmdline const & cl)
 			throw CommandAbortException ("Error loading from KDB");
 		}
 	}
+	// Otherwise, don't use any keys from KDB. Instead load the specification from the specified file via the specified plugin.
 	else
 	{
 		auto pos = cl.inputFile.find ('=');
