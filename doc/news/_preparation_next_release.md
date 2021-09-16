@@ -233,7 +233,7 @@ _(Michael Tucek)_
 
 ### Docker
 
-- <<TODO>>
+- Add docker images for ABI tests. _(Robert Sowula)_
 - Enable BuildKit features to leverage tmpfs to speed up `docker build` commands. _(Mihael Pranjić)_
 - Bump Gradle to version 7.2. _(Mihael Pranjić)_
 - Bump Debian Buster images to Bullseye and Stretch images to Buster. We still leave one Debian Stretch job due to upstream Debian LTS support until June 2022. _(Mihael Pranjić)_
@@ -249,7 +249,7 @@ _(Michael Tucek)_
 
 ### Jenkins
 
-- <<TODO>>
+- Add ABI test stage for release pipeline. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 - Move check stages that don't build the code to a dedicated stage, to avoid confusion when parallel builds are aborted. _(Robert Sowula)_
