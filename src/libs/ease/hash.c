@@ -39,8 +39,10 @@ kdb_boolean_t calculateSpecificationToken (char * hash_string, KeySet * ks, Key 
 
 	//TODO: use parentKey for error reporting!
 
-	// Cut out parentKey and all keys below. These are the ones we take into account for token calculation.
-	KeySet * cutKs = ksCut (ks, parentKey);
+
+	// Duplicate ks, then cut out parentKey and all keys below. These are the ones we take into account for token calculation.
+	KeySet * dupKs = ksDup (ks);
+	KeySet * cutKs = ksCut (dupKs, parentKey);
 
 	/**
 	 * Loop through all keys relevant for token calculation.
@@ -75,6 +77,7 @@ kdb_boolean_t calculateSpecificationToken (char * hash_string, KeySet * ks, Key 
 	sha_256_close(&sha_256);
     	hash_to_string(hash_string, hash);
 
+	ksDel(dupKs);
 	ksDel(cutKs);
 
 	return true;
