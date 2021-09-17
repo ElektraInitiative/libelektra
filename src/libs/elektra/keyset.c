@@ -2753,6 +2753,7 @@ int ksInit (KeySet * ks)
 	ks->alloc = 0;
 	ks->flags = 0;
 	ks->refs = 0;
+	ks->cursor = 0;
 
 	ksRewind (ks);
 
@@ -2803,8 +2804,8 @@ int ksClose (KeySet * ks)
 
 	ks->array = NULL;
 	ks->alloc = 0;
-
 	ks->size = 0;
+	ksRewind (ks);
 
 	elektraOpmphmInvalidate (ks);
 

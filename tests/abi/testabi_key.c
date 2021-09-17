@@ -321,6 +321,8 @@ static void test_keyReference (void)
 	succeed_if (keyIncRef (key) == UINT16_MAX, "should report error");
 	succeed_if (keyGetRef (key) == UINT16_MAX - 1, "reference counter");
 	succeed_if (keyIncRef (key) == UINT16_MAX, "should report error");
+	while (keyGetRef (key) > 0)
+		keyDecRef (key);
 	keyDel (key);
 }
 
