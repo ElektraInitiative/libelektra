@@ -98,13 +98,13 @@ pub trait WriteableKey: ReadableKey {
     /// #     Ok(())
     /// # }
     /// ```
-    unsafe fn inc_ref(&mut self) -> isize {
+    unsafe fn inc_ref(&mut self) -> u16 {
         elektra_sys::keyIncRef(self.as_ptr())
     }
 
     /// Decrement the viability of a key object.
     /// Returns the value of the new reference counter.
-    unsafe fn dec_ref(&mut self) -> isize {
+    unsafe fn dec_ref(&mut self) -> u16 {
         elektra_sys::keyDecRef(self.as_ptr())
     }
 

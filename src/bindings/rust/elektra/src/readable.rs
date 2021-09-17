@@ -44,7 +44,7 @@ pub trait ReadableKey: AsRef<elektra_sys::Key> + PartialEq + Eq + PartialOrd + O
     }
 
     /// Return how many references the key has.
-    fn get_ref(&self) -> isize {
+    fn get_ref(&self) -> u16 {
         unsafe { elektra_sys::keyGetRef(self.as_ref()) }
     }
 
