@@ -58,8 +58,9 @@ kdb_boolean_t calculateSpecificationToken (char * hash_string, KeySet * ks, Key 
 		 * (e.g. tools/kdb/gen.cpp passes keys in cascading namespace while src/libs/highlevel/elektra.c passes keys in spec namespace).
 		 */
 		keySetNamespace (cascadingKey, KEY_NS_CASCADING);
-		// Feed key name into sha_256_write()
-		sha_256_write (&sha_256, keyName(cascadingKey), keyGetNameSize(cascadingKey));
+		// Feed key name into sha_256_write() without NULL terminator (hence -1).
+		// This makes it easier to compare expected results with other sha256 tools.
+		sha_256_write (&sha_256, keyName(cascadingKey), keyGetNameSize(cascadingKey) - 1);
 		// Note: The value of the key itself is not relevant / part of specification. Only the key's name + its metadata!
 
 		KeySet * currentMetaKeys = keyMeta(currentKey);
@@ -67,8 +68,8 @@ kdb_boolean_t calculateSpecificationToken (char * hash_string, KeySet * ks, Key 
 		ksRewind(currentMetaKeys);
 		// Feed name + values from meta keys into sha_256_write().
 		while ((currentMetaKey = ksNext (currentMetaKeys)) != NULL) {
-			sha_256_write (&sha_256, keyName(currentMetaKey), keyGetNameSize (currentMetaKey));
-			sha_256_write (&sha_256, keyString(currentMetaKey), keyGetValueSize(currentMetaKey));
+			sha_256_write (&sha_256, keyName(currentMetaKey), keyGetNameSize (currentMetaKey) - 1 );
+			sha_256_write (&sha_256, keyString(currentMetaKey), keyGetValueSize(currentMetaKey) - 1);
 		}
 
 		keyDel(cascadingKey);
