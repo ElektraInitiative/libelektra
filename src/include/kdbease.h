@@ -55,8 +55,6 @@ char * elektraUnsignedLongLongToString (kdb_unsigned_long_long_t value);
 char * elektraFloatToString (kdb_float_t value);
 char * elektraDoubleToString (kdb_double_t value);
 
-kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Key * parentKey);
-
 #ifdef ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
 int elektraKeyToLongDouble (const Key * key, kdb_long_double_t * variable);
@@ -64,6 +62,8 @@ int elektraKeyToLongDouble (const Key * key, kdb_long_double_t * variable);
 char * elektraLongDoubleToString (kdb_long_double_t value);
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
+
+kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Key * parentKey);
 
 #ifdef __cplusplus
 }
