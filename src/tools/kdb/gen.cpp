@@ -135,15 +135,12 @@ int GenCommand::execute (Cmdline const & cl)
 		}
 	}
 
-	char hash_string[65];
-	ckdb::calculateSpecificationToken (hash_string, ks.getKeySet(), parentKeyForTokenCalculation.getKey());
-
-	auto inputKs = ks.cut (Key (parentKeyName, KEY_END));
+	auto inputKs = ks.cut (Key (parentKeyForTokenCalculation.getName(), KEY_END));
 
 	for (const auto & part : tmpl->getParts ())
 	{
 		std::ofstream output (outputName + part);
-		tmpl->render (output, outputName, part, inputKs, parentKeyName);
+		tmpl->render (output, outputName, part, inputKs, parentKeyForTokenCalculation.getName());
 	}
 
 	return 0;

@@ -21,8 +21,10 @@
 #include <kdbopts.h>
 #include <kdbplugin.h>
 #include <kdbtypes.h>
+#include <coloredkdbio.hpp>
 
 #include <fstream>
+#include <key.hpp>
 #include <memory>
 #include <regex>
 #include <set>
@@ -623,6 +625,18 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 
 	// enable check for properly mounted specification
 	contract.append(kdb::Key("system:/elektra/contract/highlevel/check/specproperlymounted", KEY_VALUE, "1", KEY_END));
+
+	// calculate specification token
+	char token[65];
+	kdb::Key parentKeyMaybeWithErrors = kdb::Key(parentKey, KEY_END);
+	kdb_boolean_t success = ckdb::calculateSpecificationToken (token, ks.getKeySet(), parentKeyMaybeWithErrors.getKey());
+	if(!success) {
+		kdb::printWarnings(std::cerr, parentKeyMaybeWithErrors, false, false);
+		kdb::printError(std::cerr, parentKeyMaybeWithErrors, false, false);
+		throw CommandAbortException("Error during calculation of specification token.");
+	}
+	contract.append(kdb::Key("system:/elektra/contract/highlevel/check/spectoken/token", KEY_VALUE, token, KEY_END));
+
 
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
