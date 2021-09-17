@@ -105,7 +105,7 @@ public:
 	inline void operator-- (int) const;
 	inline void operator-- () const;
 
-	inline ssize_t getReferenceCounter () const;
+	inline uint16_t getReferenceCounter () const;
 
 
 	// basic methods
@@ -692,7 +692,7 @@ void Key::operator-- () const
 /**
  * @copydoc keyGetRef
  */
-inline ssize_t Key::getReferenceCounter () const
+inline uint16_t Key::getReferenceCounter () const
 {
 	return ckdb::keyGetRef (key);
 }
