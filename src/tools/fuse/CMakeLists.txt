@@ -42,12 +42,12 @@ execute_process (
 	OUTPUT_STRIP_TRAILING_WHITESPACE)
 
 # Copy the source to the temporary directory
-install (CODE "execute_process (COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/. ${TMP_BUILD_DIR} OUTPUT_QUIET)")
+execute_process (COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/. ${TMP_BUILD_DIR} OUTPUT_QUIET)
 
 # Build the python wheel-package
-install (CODE "execute_process(COMMAND
+execute_process (COMMAND
 		${Python3_EXECUTABLE} setup.py bdist_wheel
-		WORKING_DIRECTORY ${TMP_BUILD_DIR} )")
+		WORKING_DIRECTORY ${TMP_BUILD_DIR} )
 
 # Check if running on bionic where https://github.com/pypa/pip/issues/3826 occurs. In that case, use additional flag.
 execute_process (
@@ -62,10 +62,9 @@ else ()
 endif ()
 
 # Install the package (the .whl file) and its dependencies (which are fetched from PyPI) to the local subdirectory 'fuse'
-install (
-	CODE "execute_process(COMMAND
+execute_process(COMMAND
 		${Python3_EXECUTABLE} -m pip install ${PIP_BUG_WORKAROUND_OPTION} --target \"${TMP_BUILD_DIR}/fuse\" --upgrade --no-cache-dir ./dist/elektra_fuse-1.0.0-py3-none-any.whl
-		WORKING_DIRECTORY ${TMP_BUILD_DIR} )")
+		WORKING_DIRECTORY ${TMP_BUILD_DIR} )
 
 # Copy the just created 'fuse' directory to the global installation directory. (This indirection is performed so that CPack knows about the
 # directory.)
@@ -82,8 +81,5 @@ install (
 	PROGRAMS ${TMP_BUILD_DIR}/fuse_entrypoint
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}/fuse"
 	COMPONENT libelektra${SO_VERSION}-fuse)
-
-# Delete the temporary directory.
-install (CODE "execute_process (COMMAND rm -rf ${TMP_BUILD_DIR} OUTPUT_QUIET)")
 
 # The tool can now be invoked by "kdb fuse".
