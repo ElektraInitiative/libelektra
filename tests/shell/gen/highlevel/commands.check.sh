@@ -41,9 +41,10 @@ int commandKdb (Elektra * elektra, kdb_boolean_t terminal, void * userData)
 int commandKdbGet (Elektra * elektra, kdb_boolean_t terminal, void * userData)
 {
 	kdb_boolean_t verbose = elektraGet (elektra, ELEKTRA_TAG_GET_VERBOSE);
+	kdb_long_t maxLength = elektraGet (elektra, ELEKTRA_TAG_GET_MAXLENGTH);
 	const char * keyname = elektraGet (elektra, ELEKTRA_TAG_GET_KEYNAME);
 	
-	printf ("commandKdbGet called %s, verbose: %d, keyname: %s\n", terminal ? "last" : "in the middle", verbose ? 1 : 0, keyname);
+	printf ("commandKdbGet called %s, verbose: %d, maxLength: " ELEKTRA_LONG_F ", keyname: %s\n", terminal ? "last" : "in the middle", verbose ? 1 : 0, maxLength, keyname);
 	return 0;
 }
 
@@ -130,21 +131,51 @@ if [ "$res" = "0" ]; then
 	res=$?
 	echo "dummy exited with: $res"
 
-	if command -v valgrind; then
-		valgrind --error-exitcode=2 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
+	if [ "$res" = "0" ] && command -v valgrind; then
+		valgrind --error-exitcode=2 --show-leak-kinds=all --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes -- ./dummy
 		echo "valgrind dummy exited with: $res"
 	fi
+
+	res=$((res != 0))
 fi
 
-if [ "$res" = "0" ]; then
+if [ "$res" = 0 ]; then
 	./dummy -v get -v ab cd
 	res=$?
 	echo "dummy -v get -v ab cd exited with: $res"
 
-	if command -v valgrind; then
-		valgrind --error-exitcode=2 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
-		echo "valgrind dummy -v get -v ab cd exited with: $res"
+	if [ "$res" = "0" ] && command -v valgrind; then
+		valgrind --error-exitcode=2 --show-leak-kinds=all --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes -- ./dummy -v get -v ab cd
+		echo "valgrind dummy -v get -v ab cd exited with: $?"
 	fi
+
+	res=$((res != 0))
+fi
+
+if [ "$res" = "0" ]; then
+	./dummy -v get --max-length=10 ab cd
+	res=$?
+	echo "dummy -v get --max-length=10 ab cd exited with: $res"
+
+	if [ "$res" = "0" ] && command -v valgrind; then
+		valgrind --error-exitcode=2 --show-leak-kinds=all --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes -- ./dummy -v get --max-length=10 ab cd
+		echo "valgrind dummy -v get -v ab cd exited with: $?"
+	fi
+
+	res=$((res != 0))
+fi
+
+if [ "$res" = "0" ]; then
+	./dummy -v get --max-length=notanint ab cd
+	res=$?
+	echo "dummy -v get --max-length=notanint ab cd exited with: $res"
+
+	if [ "$res" = "0" ] && command -v valgrind; then
+		valgrind --error-exitcode=2 --show-leak-kinds=all --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes -- ./dummy -v get --max-length=notanint ab cd
+		echo "valgrind dummy -v get -v ab cd exited with: $?"
+	fi
+
+	res=$((res == 0))
 fi
 
 if [ "$res" = "0" ]; then
@@ -152,21 +183,25 @@ if [ "$res" = "0" ]; then
 	res=$?
 	echo "dummy get meta -v a b exited with: $res"
 
-	if command -v valgrind; then
-		valgrind --error-exitcode=2 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
-		echo "valgrind dummy get meta -v a b exited with: $res"
+	if [ "$res" = "0" ] && command -v valgrind; then
+		valgrind --error-exitcode=2 --show-leak-kinds=all --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes -- ./dummy get meta -v a b
+		echo "valgrind dummy get meta -v a b exited with: $?"
 	fi
+
+	res=$((res != 0))
 fi
 
 if [ "$res" = "0" ]; then
-	./dummy set def -2
+	./dummy set -- def -2
 	res=$?
 	echo "dummy set def -2 exited with: $res"
 
-	if command -v valgrind; then
-		valgrind --error-exitcode=2 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
-		echo "valgrind dummy set def -2 exited with: $res"
+	if [ "$res" = "0" ] && command -v valgrind; then
+		valgrind --error-exitcode=2 --show-leak-kinds=all --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes -- ./dummy set def -2
+		echo "valgrind dummy set def -2 exited with: $?"
 	fi
+
+	res=$((res != 0))
 fi
 
 if [ "$res" = "0" ]; then
@@ -174,10 +209,12 @@ if [ "$res" = "0" ]; then
 	res=$?
 	echo "dummy abc -v def exited with: $res"
 
-	if command -v valgrind; then
-		valgrind --error-exitcode=2 --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes ./dummy
-		echo "valgrind dummy abc -v def exited with: $res"
+	if [ "$res" = "0" ] && command -v valgrind; then
+		valgrind --error-exitcode=2 --show-leak-kinds=all --leak-check=full --leak-resolution=high --track-origins=yes --vgdb=no --trace-children=yes -- ./dummy abc -v def
+		echo "valgrind dummy abc -v def exited with: $?"
 	fi
+
+	res=$((res != 0))
 fi
 
 cd ..

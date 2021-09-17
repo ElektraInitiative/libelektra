@@ -794,13 +794,25 @@ static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySe
 	{
 	case FIRST:
 		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, INIT);
-		elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, MAXONCE);
+		if (elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, INIT) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
 		break;
 	case LAST:
 		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT);
-		elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE);
+		if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_ERROR)
+		{
+			return -1;
+		}
 		elektraGlobalError (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
 		break;
 	default:
@@ -1262,11 +1274,16 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		elektraCacheLoad (handle, cache, parentKey, initialParent, cacheParent); // parentkey different from initialParent
 	}
 
+	int hasProcGetStorage = handle->globalPlugins[PROCGETSTORAGE][INIT] || handle->globalPlugins[PROCGETSTORAGE][MAXONCE] ||
+				handle->globalPlugins[PROCGETSTORAGE][DEINIT];
+
 	// Check if a update is needed at all
 	switch (elektraGetCheckUpdateNeeded (split, parentKey))
 	{
 	case -2: // We have a cache hit
-		if (elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent, debugGlobalPositions) != 0)
+		// TODO: cache breaks procgetstorage
+		if (hasProcGetStorage ||
+		    elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent, debugGlobalPositions) != 0)
 		{
 			goto cachemiss;
 		}
@@ -1371,8 +1388,7 @@ cachemiss:
 	}
 
 	if (handle->globalPlugins[POSTGETSTORAGE][FOREACH] || handle->globalPlugins[POSTGETCLEANUP][FOREACH] ||
-	    handle->globalPlugins[PROCGETSTORAGE][FOREACH] || handle->globalPlugins[PROCGETSTORAGE][INIT] ||
-	    handle->globalPlugins[PROCGETSTORAGE][MAXONCE] || handle->globalPlugins[PROCGETSTORAGE][DEINIT])
+	    handle->globalPlugins[PROCGETSTORAGE][FOREACH] || hasProcGetStorage)
 	{
 		clearError (parentKey);
 		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, FIRST) == -1)
@@ -1393,6 +1409,19 @@ cachemiss:
 		}
 		ksClear (ks);
 		splitMergeBackends (split, ks);
+
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
 
 		clearError (parentKey);
 		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST) == -1)
@@ -1429,22 +1458,24 @@ cachemiss:
 
 		ksClear (ks);
 		splitMergeBackends (split, ks);
+
+		keySetName (parentKey, keyName (initialParent));
+
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
+		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			goto error;
+		}
 	}
 
 	keySetName (parentKey, keyName (initialParent));
-
-	if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-	if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-	if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
 
 	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
 	{

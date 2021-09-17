@@ -117,6 +117,12 @@ extern "C" {
 #define ELEKTRA_TAG_GET_KEYNAME GetKeyname
 
 /**
+* Tag name for 'get/maxlength'
+* 
+*/// 
+#define ELEKTRA_TAG_GET_MAXLENGTH GetMaxlength
+
+/**
 * Tag name for 'get/meta'
 * 
 */// 
@@ -326,6 +332,41 @@ static inline void ELEKTRA_SET (ELEKTRA_TAG_GET_KEYNAME) (Elektra * elektra,
 {
 	
 	ELEKTRA_SET (String) (elektra, "get/keyname", value, error);
+}
+
+
+
+
+/**
+ * Get the value of key 'get/maxlength' (tag #ELEKTRA_TAG_GET_MAXLENGTH).
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+
+ *
+ * @return the value of 'get/maxlength'.
+
+ */// 
+static inline kdb_long_t ELEKTRA_GET (ELEKTRA_TAG_GET_MAXLENGTH) (Elektra * elektra )
+{
+	
+	return ELEKTRA_GET (Long) (elektra, "get/maxlength");
+}
+
+
+/**
+ * Set the value of key 'get/maxlength' (tag #ELEKTRA_TAG_GET_MAXLENGTH).
+ *
+ * @param elektra Instance of Elektra. Create with loadConfiguration().
+ * @param value   The value of 'get/maxlength'.
+
+ * @param error   Pass a reference to an ElektraError pointer.
+ *                Will only be set in case of an error.
+ */// 
+static inline void ELEKTRA_SET (ELEKTRA_TAG_GET_MAXLENGTH) (Elektra * elektra,
+						      kdb_long_t value,  ElektraError ** error)
+{
+	
+	ELEKTRA_SET (Long) (elektra, "get/maxlength", value, error);
 }
 
 

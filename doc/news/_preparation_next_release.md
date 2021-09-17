@@ -51,12 +51,12 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 ### gopts
 
 - The `gopts` plugin now includes deeply nested options and arguments in the generated help message. _(Tobias Schubert @qwepoizt)_
+- Errors from `gopts` are now correctly reported. _(Klemens Böswirth)_
 
-### <<Plugin2>>
+### spec
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- The `spec` plugin now runs before other `postgetstorage` plugins, so that validation can happen during `kdbGet` as well.
+  This is especially relevant in combination with `gopts`. _(Klemens Böswirth)_
 
 ### <<Plugin3>>
 

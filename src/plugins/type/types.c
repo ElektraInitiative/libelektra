@@ -58,7 +58,7 @@ bool elektraTypeCheckWChar (const Key * key)
 
 bool elektraTypeCheckString (const Key * key)
 {
-	return strlen (keyString (key)) != 0;
+	return keyIsString (key) == 1;
 }
 
 bool elektraTypeCheckWString (const Key * key)
