@@ -75,12 +75,12 @@ install (
 	COMPONENT libelektra${SO_VERSION}-fuse)
 
 # Configure the entrypoint script with the installation path of the just installed python modules.
-configure_file (fuse.in fuse)
+configure_file (fuse.in ${TMP_BUILD_DIR}/fuse_entrypoint)
 
-# Copy the configured entrypoint script "fuse" to the proper place where kdb can find it.
+# Copy the configured entrypoint script "fuse_entrypoint" to the proper place where kdb can find it.
 install (
-	PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/fuse
-	DESTINATION "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}"
+	PROGRAMS ${TMP_BUILD_DIR}/fuse_entrypoint
+	DESTINATION "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}/fuse"
 	COMPONENT libelektra${SO_VERSION}-fuse)
 
 # Delete the temporary directory.
