@@ -91,7 +91,9 @@ int loadConfiguration (Elektra ** elektra,
 	KeySet * defaults = embeddedSpec ();
 	
 
-	KeySet * contract = ksNew (2,
+	KeySet * contract = ksNew (4,
+	keyNew ("system:/elektra/contract/highlevel/check/specproperlymounted", KEY_VALUE, "1", KEY_END),
+	keyNew ("system:/elektra/contract/highlevel/check/spectoken/token", KEY_VALUE, "370cbf87abaedfb25c1545da8279c3003e0e95f5a819362c5078c17486f6f527", KEY_END),
 	keyNew ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END),
 	keyNew ("system:/elektra/contract/mountglobal/gopts", KEY_END),
 	KS_END);
