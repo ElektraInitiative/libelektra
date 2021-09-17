@@ -58,9 +58,8 @@ kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Ke
 	/**
 	 * Loop through all keys relevant for token calculation.
  	*/
-	Key * currentKey;
-	ksRewind(cutKs);
-	while ((currentKey = ksNext (cutKs)) != NULL) {
+	for (elektraCursor it = 0; it < ksGetSize (cutKs); ++it) {
+		Key * currentKey = ksAtCursor (cutKs, it);
 		Key * cascadingKey = keyDup (currentKey, KEY_CP_NAME);
 		if(cascadingKey == NULL) {
 			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "keyDup() failed!");
@@ -83,10 +82,9 @@ kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Ke
 		// Note: The value of the key itself is not relevant / part of specification. Only the key's name + its metadata!
 
 		KeySet * currentMetaKeys = keyMeta(currentKey);
-		Key * currentMetaKey;
-		ksRewind(currentMetaKeys);
 		// Feed name + values from meta keys into sha_256_write().
-		while ((currentMetaKey = ksNext (currentMetaKeys)) != NULL) {
+		for(elektraCursor metaIt = 0; metaIt < ksGetSize (currentMetaKeys); metaIt++) {
+			Key * currentMetaKey = ksAtCursor (currentMetaKeys, metaIt);
 			sha_256_write (&sha_256, keyName(currentMetaKey), keyGetNameSize (currentMetaKey) - 1 );
 			sha_256_write (&sha_256, keyString(currentMetaKey), keyGetValueSize(currentMetaKey) - 1);
 		}
