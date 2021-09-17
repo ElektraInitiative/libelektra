@@ -32,7 +32,7 @@ static void hash_to_string(char string[65], const uint8_t hash[32]);
  * @retval false If an error occurred.
  * @retval true If the computation was successful.
  */
-kdb_boolean_t calculateSpecificationToken (char * hash_string, KeySet * ks, Key * parentKey) {
+kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Key * parentKey) {
 	if(parentKey == NULL) {
 		// Can't set error to parentKey when it is null.
 		return false;
