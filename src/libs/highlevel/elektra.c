@@ -146,7 +146,8 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 	// Verify that the specification is properly mounted, if contract requires it.
 	Key * checkSpecFromContract = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/specproperlymounted", 0);
 	kdb_boolean_t shouldCheckSpecProperlyMounted = false;
-	if(elektraKeyToBoolean (checkSpecFromContract, &shouldCheckSpecProperlyMounted)
+	if(checkSpecFromContract != NULL
+	    && elektraKeyToBoolean (checkSpecFromContract, &shouldCheckSpecProperlyMounted)
 	    && shouldCheckSpecProperlyMounted)  {
 		// If the specification was not properly mounted, we don't return an Elektra instance.
 		// Reason: the application won't function properly without a properly mounted specification.
@@ -162,7 +163,8 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		// If the contract contains a specification token, verify that is is equal to the current specification token.
 		Key * tokenFromContractKey = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/spectoken/token", 0);
 		const char * tokenFromContract = NULL;
-		if(elektraKeyToString(tokenFromContractKey, &tokenFromContract)
+		if(tokenFromContractKey != NULL
+		    && elektraKeyToString(tokenFromContractKey, &tokenFromContract)
 		    && tokenFromContract != NULL
 		    && strlen(tokenFromContract) > 0) {
 			if(!checkSpecToken (config, parentKey, tokenFromContract, error)) {
