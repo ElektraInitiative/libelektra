@@ -9,6 +9,7 @@
 #include <kdb.h>
 #include <kdbease.h>
 #include <kdbtypes.h>
+#include <kdberrors.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -32,13 +33,23 @@ static void hash_to_string(char string[65], const uint8_t hash[32]);
  * @retval true If the computation was successful.
  */
 kdb_boolean_t calculateSpecificationToken (char * hash_string, KeySet * ks, Key * parentKey) {
+	if(parentKey == NULL) {
+		// Can't set error to parentKey when it is null.
+		return false;
+	}
+	if(hash_string == NULL) {
+		ELEKTRA_SET_INTERNAL_ERROR(parentKey, "Param hash_string was NULL");
+		return false;
+	}
+	if(ks == NULL) {
+		ELEKTRA_SET_INTERNAL_ERROR(parentKey, "Param ks was NULL");
+		return false;
+	}
+
 	// Initialize sha_256 for streaming
 	uint8_t hash[SIZE_OF_SHA_256_HASH];
 	struct Sha_256 sha_256;
 	sha_256_init(&sha_256, hash);
-
-	//TODO: use parentKey for error reporting!
-
 
 	// Duplicate ks, then cut out parentKey and all keys below. These are the ones we take into account for token calculation.
 	KeySet * dupKs = ksDup (ks);
@@ -51,13 +62,21 @@ kdb_boolean_t calculateSpecificationToken (char * hash_string, KeySet * ks, Key 
 	ksRewind(cutKs);
 	while ((currentKey = ksNext (cutKs)) != NULL) {
 		Key * cascadingKey = keyDup (currentKey, KEY_CP_NAME);
+		if(cascadingKey == NULL) {
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "keyDup() failed!");
+			return false;
+		}
 		/**
 		 * Key namespace is ignored for token calculation (via setting it to cascading).
 		 * Reason: Different callers of this function pass the keys for token calculation using different namespaces,
 		 * but the specification they pass is actually the same.
 		 * (e.g. tools/kdb/gen.cpp passes keys in cascading namespace while src/libs/highlevel/elektra.c passes keys in spec namespace).
 		 */
-		keySetNamespace (cascadingKey, KEY_NS_CASCADING);
+		int result = keySetNamespace (cascadingKey, KEY_NS_CASCADING);
+		if(result == -1) {
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "keySetNamespace() failed!");
+			return false;
+		}
 		// Feed key name into sha_256_write() without NULL terminator (hence -1).
 		// This makes it easier to compare expected results with other sha256 tools.
 		sha_256_write (&sha_256, keyName(cascadingKey), keyGetNameSize(cascadingKey) - 1);
