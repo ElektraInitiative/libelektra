@@ -79,7 +79,8 @@ configure_file (fuse.in ${TMP_BUILD_DIR}/fuse_entrypoint)
 # Copy the configured entrypoint script "fuse_entrypoint" to the proper place where kdb can find it.
 install (
 	PROGRAMS ${TMP_BUILD_DIR}/fuse_entrypoint
-	DESTINATION "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}/fuse"
+	DESTINATION "${CMAKE_INSTALL_PREFIX}/${TARGET_TOOL_EXEC_FOLDER}"
+	RENAME fuse
 	COMPONENT libelektra${SO_VERSION}-fuse)
 
 # The tool can now be invoked by "kdb fuse".
