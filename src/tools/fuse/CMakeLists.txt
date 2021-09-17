@@ -63,8 +63,8 @@ else ()
 endif ()
 
 # Install the package (the .whl file) and its dependencies (which are fetched from PyPI) to the local subdirectory 'fuse'
-execute_process (COMMAND ${Python3_EXECUTABLE} -m pip install ${PIP_BUG_WORKAROUND_OPTION} --target fuse --upgrade
-			 --no-cache-dir ./dist/elektra_fuse-1.0.0-py3-none-any.whl WORKING_DIRECTORY ${TMP_BUILD_DIR})
+execute_process (COMMAND ${Python3_EXECUTABLE} -m pip install ${PIP_BUG_WORKAROUND_OPTION} --target fuse --upgrade --no-cache-dir
+			 ./dist/elektra_fuse-1.0.0-py3-none-any.whl WORKING_DIRECTORY ${TMP_BUILD_DIR})
 
 # Copy the just created 'fuse' directory to the global installation directory. (This indirection is performed so that CPack knows about the
 # directory.)
