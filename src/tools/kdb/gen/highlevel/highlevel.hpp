@@ -24,7 +24,6 @@ class HighlevelGenTemplate : public GenTemplate
 		static const char * AdditionalHeaders;
 		static const char * GenerateSetters;
 		static const char * EmbeddedSpec;
-		static const char * SpecValidation;
 		static const char * InstallPrefix;
 		static const char * EmbedHelpFallback;
 		static const char * UseCommands;
@@ -45,7 +44,6 @@ public:
 			 { Params::AdditionalHeaders, false },
 			 { Params::GenerateSetters, false },
 			 { Params::EmbeddedSpec, false },
-			 { Params::SpecValidation, false },
 			 { Params::InstallPrefix, false },
 			 { Params::EmbedHelpFallback, false },
 			 { Params::UseCommands, false },
