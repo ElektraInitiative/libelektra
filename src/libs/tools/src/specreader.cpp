@@ -196,7 +196,7 @@ void SpecReader::readSpecification (KeySet const & cks)
 		{
 			ks.append (k);
 		}
-		checkKey(k);
+		checkKey (k);
 	}
 
 	ks.rewind (); // we need old fashioned loop, because it can handle ks.cut during iteration
@@ -212,19 +212,24 @@ void SpecReader::readSpecification (KeySet const & cks)
 	}
 }
 
-void SpecReader::checkKey(const Key key) {
+void SpecReader::checkKey (const Key key)
+{
 	std::ostringstream stringStream;
 	// Ensure that "check/enum" can only be used with type "enum"
-	if (key.getMeta<std::string>("type") != "enum"
-	    && key.hasMeta ("check/enum")) {
-		stringStream << "Key " << key.getName() << " has \"type\"=\"" << key.getMeta<std::string>("type")														     << "\" and \"check/enum\". \"check/enum\" can only be used with \"type=enum\"!";
+	if (key.getMeta<std::string> ("type") != "enum" && key.hasMeta ("check/enum"))
+	{
+		stringStream << "Key " << key.getName () << " has \"type\"=\"" << key.getMeta<std::string> ("type")
+			     << "\" and \"check/enum\". \"check/enum\" can only be used with \"type=enum\"!";
 	}
 	// Checks for "type" and "check/type" are equal
-	else if (key.hasMeta ("type")) {
+	else if (key.hasMeta ("type"))
+	{
 		std::string keyType = key.getMeta<std::string> ("type");
 		// Check if "type" is supported
-		if(std::find(supportedTypes.begin(), supportedTypes.end(), key.getMeta<std::string> ("type")) == supportedTypes.end()) {
-			stringStream << "Type \"" << key.getMeta<std::string>("type") << "\" of key \"" << key.getName() << "\" is not supported in Elektra!";
+		if (std::find (supportedTypes.begin (), supportedTypes.end (), key.getMeta<std::string> ("type")) == supportedTypes.end ())
+		{
+			stringStream << "Type \"" << key.getMeta<std::string> ("type") << "\" of key \"" << key.getName ()
+				     << "\" is not supported in Elektra!";
 		}
 		// Check if "type" and "check/type" are equal.
 		else if (key.hasMeta ("check/type") && key.getMeta<std::string> ("check/type") != keyType)
@@ -239,8 +244,9 @@ void SpecReader::checkKey(const Key key) {
 			}
 		}
 	}
-	if (stringStream.str().length() > 0) {
-		throw CommandAbortException(stringStream.str());
+	if (stringStream.str ().length () > 0)
+	{
+		throw CommandAbortException (stringStream.str ());
 	}
 }
 
