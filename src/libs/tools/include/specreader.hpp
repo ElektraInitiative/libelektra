@@ -84,7 +84,7 @@ public:
 
 	/**
 	 * Perform some sanity-checks for keys.
-	 * 
+	 *
 	 * @param key The key to check.
 	 * @throws CommandAbortException If a sanity-check fails.
 	 */

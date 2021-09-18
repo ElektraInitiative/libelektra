@@ -14,15 +14,24 @@ namespace kdb
 namespace tools
 {
 
-const std::set<std::string> supportedTypes{ 
-		"enum", "short", "unsigned_short", "long", "unsigned_long", "long_long", "unsigned_long_long", "float", "double",
-		"long_double"
-		"char",
-		"boolean",
-		"octet",
-		"any", "string"
-};
-	
+const std::set<std::string> supportedTypes{ "enum",
+					    "short",
+					    "unsigned_short",
+					    "long",
+					    "unsigned_long",
+					    "long_long",
+					    "unsigned_long_long",
+					    "float",
+					    "double",
+					    "long_double"
+					    "char",
+					    "boolean",
+					    "octet",
+					    "any",
+					    "string",
+					    "struct_ref",
+					    "struct" };
+
 SpecBackendBuilder::SpecBackendBuilder (BackendBuilderInit const & bbi) : MountBackendBuilder (bbi), nodes (0)
 {
 }
@@ -217,12 +226,17 @@ void SpecReader::checkKey(const Key key) {
 		if(std::find(supportedTypes.begin(), supportedTypes.end(), key.getMeta<std::string> ("type")) == supportedTypes.end()) {
 			stringStream << "Type \"" << key.getMeta<std::string>("type") << "\" of key \"" << key.getName() << "\" is not supported in Elektra!";
 		}
-		// Check if "type" and "check/type" are equal
-		else if (key.hasMeta ("check/type")
-			 && key.getMeta<std::string> ("check/type") != keyType)
+		// Check if "type" and "check/type" are equal.
+		else if (key.hasMeta ("check/type") && key.getMeta<std::string> ("check/type") != keyType)
 		{
-			stringStream << "Key " << key.getName ()
-				     << " has different values for \"type\" and \"check/type\". If both are specified, they must be equal!";
+			// If type is "struct" or "struct_ref", it may also have "check/type"="any". See file
+			// doc/help/elektra-highlevel-gen.md.
+			if (!((keyType == "struct" || keyType == "struct_ref") && key.getMeta<std::string> ("check/type") == "any"))
+			{
+				stringStream << "Key " << key.getName ()
+					     << " has different values for \"type\" and \"check/type\". If both are specified, they must "
+						"be equal!";
+			}
 		}
 	}
 	if (stringStream.str().length() > 0) {
