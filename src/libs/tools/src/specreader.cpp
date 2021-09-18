@@ -221,7 +221,7 @@ void SpecReader::checkKey (const Key key)
 		stringStream << "Key " << key.getName () << " has \"type\"=\"" << key.getMeta<std::string> ("type")
 			     << "\" and \"check/enum\". \"check/enum\" can only be used with \"type=enum\"!";
 	}
-	// Checks for "type" and "check/type" are equal
+	// Checks for "type" and "check/type". 
 	else if (key.hasMeta ("type"))
 	{
 		std::string keyType = key.getMeta<std::string> ("type");
