@@ -14,6 +14,15 @@ namespace kdb
 namespace tools
 {
 
+const std::set<std::string> supportedTypes{ 
+		"enum", "short", "unsigned_short", "long", "unsigned_long", "long_long", "unsigned_long_long", "float", "double",
+		"long_double"
+		"char",
+		"boolean",
+		"octet",
+		"any", "string"
+};
+	
 SpecBackendBuilder::SpecBackendBuilder (BackendBuilderInit const & bbi) : MountBackendBuilder (bbi), nodes (0)
 {
 }
@@ -201,10 +210,20 @@ void SpecReader::checkKey(const Key key) {
 	    && key.hasMeta ("check/enum")) {
 		stringStream << "Key " << key.getName() << " has \"type\"=\"" << key.getMeta<std::string>("type")														     << "\" and \"check/enum\". \"check/enum\" can only be used with \"type=enum\"!";
 	}
-	// Ensure that type and check/type are equal
-	else if (key.hasMeta ("type") && key.hasMeta ("check/type")
-		 && key.getMeta<std::string>("type") != key.getMeta<std::string> ("check/type")) {
-			stringStream << "Key " << key.getName() << " has different values for \"type\" and \"check/type\". If both are specified, they must be equal!";
+	// Checks for "type" and "check/type" are equal
+	else if (key.hasMeta ("type")) {
+		std::string keyType = key.getMeta<std::string> ("type");
+		// Check if "type" is supported
+		if(std::find(supportedTypes.begin(), supportedTypes.end(), key.getMeta<std::string> ("type")) == supportedTypes.end()) {
+			stringStream << "Type \"" << key.getMeta<std::string>("type") << "\" of key \"" << key.getName() << "\" is not supported in Elektra!";
+		}
+		// Check if "type" and "check/type" are equal
+		else if (key.hasMeta ("check/type")
+			 && key.getMeta<std::string> ("check/type") != keyType)
+		{
+			stringStream << "Key " << key.getName ()
+				     << " has different values for \"type\" and \"check/type\". If both are specified, they must be equal!";
+		}
 	}
 	if (stringStream.str().length() > 0) {
 		throw CommandAbortException(stringStream.str());
