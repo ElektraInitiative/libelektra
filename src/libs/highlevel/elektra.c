@@ -38,6 +38,7 @@ static kdb_boolean_t checkSpecToken (KDB * const kdb, Key * parentKey, const cha
  * @{
  */
 
+kdb_boolean_t checkSpec (Key * const parentKey, KeySet * contract, ElektraError ** error);
 /**
  * Initializes a new Elektra instance.
  *
@@ -66,6 +67,12 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 {
 	Key * const parentKey = keyNew (application, KEY_END);
 
+	// Before anything else: Verify that the specification is okay.
+	if(!checkSpec(parentKey, contract, error)) {
+		keyDel(parentKey);
+		return NULL;
+	}
+
 	KDB * const kdb = kdbOpen (contract, parentKey);
 
 	if (kdb == NULL)
@@ -79,41 +86,6 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	if (contract != NULL)
 	{
-		// Verify that the specification is properly mounted, if contract requires it.
-		Key * checkSpecFromContract = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/specproperlymounted", 0);
-		kdb_boolean_t shouldCheckSpecProperlyMounted = false;
-		if(checkSpecFromContract != NULL
-		   && elektraKeyToBoolean (checkSpecFromContract, &shouldCheckSpecProperlyMounted)
-		   && shouldCheckSpecProperlyMounted)  {
-		    // If the specification was not properly mounted, we don't return an Elektra instance.
-		    // Reason: the application won't function properly without a properly mounted specification.
-		    if (!checkSpecProperlyMounted (kdb, application, error))
-		    {
-                kdbClose(kdb, parentKey);
-                keyDel(parentKey);
-                keyDel(checkSpecFromContract);
-                return NULL;
-		    }
-
-		    // If the contract contains a specification token, verify that is is equal to the current specification token.
-		    Key * tokenFromContractKey = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/spectoken/token", 0);
-		    const char * tokenFromContract = NULL;
-		    if(tokenFromContractKey != NULL
-		       && elektraKeyToString(tokenFromContractKey, &tokenFromContract)
-		       && tokenFromContract != NULL
-		       && strlen(tokenFromContract) > 0) {
-			if(!checkSpecToken (kdb, parentKey, tokenFromContract, error)) {
-			    kdbClose(kdb, parentKey);
-			    keyDel(parentKey);
-			    keyDel(checkSpecFromContract);
-			    keyDel(tokenFromContractKey);
-			    return false;
-			}
-		    }
-		    keyDel(tokenFromContractKey);
-		}
-		keyDel(checkSpecFromContract);
-	    
 		// TODO: set default spec config to use ERROR
 		ksAppendKey (contract, keyNew ("system:/elektra/contract/mountglobal/spec", KEY_END));
 		ksAppendKey (contract,
@@ -188,6 +160,69 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 	elektra->defaults = ksDup (defaults);
 
 	return elektra;
+}
+
+/**
+ * Verify that specification is properly mounted and is equal to specification at compile time.
+ * Note: These checks are only executed, if the contract requires them.
+ * 
+ * @param parentKey The parentKey of the application
+ * @param contract The contract passed to HL API by the application.
+ * @param error Pointer used to report errors
+ * @retval True if the checks were successful (or not required).
+ * @retval False if the checks were required but unsuccessful.
+ */
+kdb_boolean_t checkSpec (Key * const parentKey, KeySet * contract, ElektraError ** error)
+{
+	if(contract != NULL)
+	{
+		// Execute kdbOpen(), but do not pass the contract!
+		// Reason: The contract may contain requirements that interfere with the checks below.
+		// E.g., If the contract contains keys from elektraGOptsContract(), kdbGet() might fail, because the specification is not mounted or incorrect.
+		// Therefore, we first have to check, that the spec is properly mounted and hasn't been modified since compilation.
+		KDB * kdb = kdbOpen(NULL, parentKey);
+		
+		if (kdb == NULL) {
+			*error = elektraErrorFromKey (parentKey);
+			return false;
+		}
+		
+		// Verify that the specification is properly mounted, if contract requires it.
+		Key * checkSpecFromContract = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/specproperlymounted", 0);
+		kdb_boolean_t shouldCheckSpecProperlyMounted = false;
+		if (checkSpecFromContract != NULL && elektraKeyToBoolean (checkSpecFromContract, &shouldCheckSpecProperlyMounted) &&
+		    shouldCheckSpecProperlyMounted)
+		{
+			// If the specification was not properly mounted, we don't return an Elektra instance.
+			// Reason: the application won't function properly without a properly mounted specification.
+			if (!checkSpecProperlyMounted (kdb, keyName(parentKey), error))
+			{
+				kdbClose (kdb, parentKey);
+				keyDel (checkSpecFromContract);
+				return false;
+			}
+
+			// If the contract contains a specification token, verify that is is equal to the current specification token.
+			Key * tokenFromContractKey =
+				ksLookupByName (contract, "system:/elektra/contract/highlevel/check/spectoken/token", 0);
+			const char * tokenFromContract = NULL;
+			if (tokenFromContractKey != NULL && elektraKeyToString (tokenFromContractKey, &tokenFromContract) &&
+			    tokenFromContract != NULL && strlen (tokenFromContract) > 0)
+			{
+				if (!checkSpecToken (kdb, parentKey, tokenFromContract, error))
+				{
+					kdbClose (kdb, parentKey);
+					keyDel (checkSpecFromContract);
+					keyDel (tokenFromContractKey);
+					return false;
+				}
+			}
+			keyDel (tokenFromContractKey);
+		}
+		keyDel (checkSpecFromContract);
+		kdbClose(kdb, parentKey);
+	}
+	return true;
 }
 
 /**
