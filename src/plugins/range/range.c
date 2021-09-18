@@ -405,7 +405,7 @@ static RangeType getType (const Key * key)
 {
 	const Key * typeMeta = keyGetMeta (key, "check/type");
 
-	// If "check/type" is not specified, fall back to "type.
+	// If "check/type" is not specified, fall back to "type".
 	// As decided in https://github.com/ElektraInitiative/libelektra/issues/3984#issuecomment-909144492
 	if (typeMeta == NULL)
 	{
