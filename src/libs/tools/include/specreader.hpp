@@ -81,6 +81,14 @@ public:
 	 * @param ks
 	 */
 	void readSpecification (KeySet const & ks);
+
+	/**
+	 * Perform some sanity-checks for keys.
+	 * 
+	 * @param key The key to check.
+	 * @throws CommandAbortException If a sanity-check fails.
+	 */
+	void checkKey (const Key key);
 };
 } // namespace tools
 } // namespace kdb

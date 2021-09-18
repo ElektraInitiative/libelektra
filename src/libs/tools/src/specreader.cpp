@@ -4,6 +4,7 @@
 
 #include <helper/keyhelper.hpp>
 
+#include "../../../tools/kdb/command.hpp"
 #include <unordered_set>
 
 
@@ -169,13 +170,15 @@ void SpecReader::readSpecification (KeySet const & cks)
 	KeySet ks;
 	Key mp;
 
-	// only accept keys in 'spec' namespace
+	// Filter keys and perform sanity checks.
 	for (Key k : cks)
 	{
+		// Only include keys in spec namespace
 		if (k.isSpec ())
 		{
 			ks.append (k);
 		}
+		checkKey(k);
 	}
 
 	ks.rewind (); // we need old fashioned loop, because it can handle ks.cut during iteration
@@ -190,5 +193,23 @@ void SpecReader::readSpecification (KeySet const & cks)
 		}
 	}
 }
+
+void SpecReader::checkKey(const Key key) {
+	std::ostringstream stringStream;
+	// Ensure that "check/enum" can only be used with type "enum"
+	if (key.getMeta<std::string>("type") != "enum"
+	    && key.hasMeta ("check/enum")) {
+		stringStream << "Key " << key.getName() << " has \"type\"=\"" << key.getMeta<std::string>("type")														     << "\" and \"check/enum\". check/enum can only be used with type=enum!";
+	}
+	// Ensure that type and check/type are equal
+	else if (key.hasMeta ("type") && key.hasMeta ("check/type")
+		 && key.getMeta<std::string>("type") != key.getMeta<std::string> ("check/type")) {
+			stringStream << "Key " << key.getName() << " has different values for type and check/type. If both are specified, they must be equal!";
+	}
+	if (stringStream.str().length() > 0) {
+		throw CommandAbortException(stringStream.str());
+	}
+}
+
 } // namespace tools
 } // namespace kdb
