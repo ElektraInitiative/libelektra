@@ -373,25 +373,6 @@ static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs,
 }
 
 /**
- * Check whether the specification file for @p application was properly spec-mounted using "kdb spec-mount"
- *
- * Note: @kodebach pointed out: Technically this is not a 100% correct check, but it works most of the time (namely when kdb mount/kdb
- * spec-mount was used). The layout of system:/elektra/mountpoints will change with #3693, so "works most of the time" is fine for now. When
- * the backend implementation is done, we can create a better solution.
- * @param kdb		The KDB instance used for checking.
- * @param application 	The application's base name.
- * @param error		Pointer used to report errors.
- * @return 		True if the specification file was properly spec-mounted, false otherwise.
- */
-/*kdb_boolean_t specMountExecuted (KDB * const kdb, const char * application, ElektraError ** error)
-{
-	char * description = elektraFormat ("'kdb spec-mount' was not properly executed for application %s. This is likely caused by an
-incomplete installation of the application. Please consult the application's documentation or contact its developers.", application);
-	*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
-	return 0;
-}*/
-
-/**
  * This function is only intended for use with code-generation.
  *
  * It looks for the key proc:/elektra/gopts/help (absolute name) created by gopts,
