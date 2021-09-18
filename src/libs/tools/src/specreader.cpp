@@ -199,12 +199,12 @@ void SpecReader::checkKey(const Key key) {
 	// Ensure that "check/enum" can only be used with type "enum"
 	if (key.getMeta<std::string>("type") != "enum"
 	    && key.hasMeta ("check/enum")) {
-		stringStream << "Key " << key.getName() << " has \"type\"=\"" << key.getMeta<std::string>("type")														     << "\" and \"check/enum\". check/enum can only be used with type=enum!";
+		stringStream << "Key " << key.getName() << " has \"type\"=\"" << key.getMeta<std::string>("type")														     << "\" and \"check/enum\". \"check/enum\" can only be used with \"type=enum\"!";
 	}
 	// Ensure that type and check/type are equal
 	else if (key.hasMeta ("type") && key.hasMeta ("check/type")
 		 && key.getMeta<std::string>("type") != key.getMeta<std::string> ("check/type")) {
-			stringStream << "Key " << key.getName() << " has different values for type and check/type. If both are specified, they must be equal!";
+			stringStream << "Key " << key.getName() << " has different values for \"type\" and \"check/type\". If both are specified, they must be equal!";
 	}
 	if (stringStream.str().length() > 0) {
 		throw CommandAbortException(stringStream.str());
