@@ -23,12 +23,12 @@ struct _Type
 	void (*setError) (Plugin * handle, Key * errorKey, const Key * key);
 };
 
-static void elektraTypeSetDefaultError (Plugin * handle, Key * errorKey, const Key * key);
+void elektraTypeSetDefaultError (Plugin * handle, Key * errorKey, const Key * key);
 
 static const Type elektraTypesList[] = {
 	{ "any", NULL, &elektraTypeCheckAny, NULL, &elektraTypeSetDefaultError },
-	{ "string", NULL, &elektraTypeCheckString, NULL, &elektraTypeSetDefaultError },
-	{ "wstring", NULL, &elektraTypeCheckWString, NULL, &elektraTypeSetDefaultError },
+	{ "string", NULL, &elektraTypeCheckString, NULL, &elektraTypeSetErrorStringType },
+	{ "wstring", NULL, &elektraTypeCheckWString, NULL, &elektraTypeSetErrorStringType },
 	{ "char", NULL, &elektraTypeCheckChar, NULL, &elektraTypeSetDefaultError },
 	{ "wchar", NULL, &elektraTypeCheckWChar, NULL, &elektraTypeSetDefaultError },
 	{ "octet", NULL, &elektraTypeCheckChar, NULL, &elektraTypeSetDefaultError },
@@ -91,7 +91,7 @@ bool elektraTypeCheckType (const Key * key)
 	return type != NULL && type->check (key);
 }
 
-static void elektraTypeSetDefaultError (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, const Key * key)
+void elektraTypeSetDefaultError (Plugin * handle ELEKTRA_UNUSED, Key * errorKey, const Key * key)
 {
 	ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (errorKey, "The type '%s' failed to match for '%s' with string '%s'", getTypeName (key),
 						keyName (key), keyString (key));

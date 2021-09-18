@@ -43,6 +43,7 @@ int elektraTypeSet (Plugin * handle, KeySet * ks, Key * parentKey);
 int elektraTypeClose (Plugin * handle, Key * errorKey);
 int elektraTypeCheckConf (Key * errorKey, KeySet * conf);
 
+void elektraTypeSetDefaultError (Plugin * handle, Key * errorKey, const Key * key);
 bool elektraTypeCheckType (const Key * key);
 bool elektraTypeValidateKey (Plugin * handle, Key * key, Key * errorKey);
 

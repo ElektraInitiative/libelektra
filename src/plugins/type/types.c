@@ -20,6 +20,8 @@
 #include <kdbease.h>
 #include <kdberrors.h>
 
+static bool stringMetadataAllowed(const Key * stringTypeKey, Key * errorKey);
+
 #define CHECK_TYPE(key, var, toValue)                                                                                                      \
 	{                                                                                                                                  \
 		if (strlen (keyString (key)) == 0 || toValue (key, &var) != 1)                                                             \
@@ -58,7 +60,8 @@ bool elektraTypeCheckWChar (const Key * key)
 
 bool elektraTypeCheckString (const Key * key)
 {
-	return keyIsString (key) == 1;
+	return keyIsString (key) == 1 
+		&& stringMetadataAllowed(key, NULL);
 }
 
 bool elektraTypeCheckWString (const Key * key)
@@ -332,6 +335,48 @@ static char * calculateStringValue (KeySet * validValues, char delimiter, kdb_un
 	}
 
 	return stringValue;
+}
+
+/**
+ * Check if all metadata of key with type string or wtype is allowed.
+ * 
+ * @pre If stringTypeKey is not NULL, it must have metakey "type" set to "string" or "wstring".
+ * 
+ * @param stringTypeKey The key whose metadata to check.
+ * @param errorKey The errorKey where the error should be set. Can be NULL, if caller is only interested in success/failure.
+ * @retval True if all metadata is allowed.
+ * @retval False if unallowed metadata was found.
+ */
+static bool stringMetadataAllowed(const Key * stringTypeKey, Key * errorKey) {
+	const Key * checkEnumMeta = keyGetMeta (stringTypeKey, "check/enum");
+	const Key * typeMeta = keyGetMeta (stringTypeKey, "type");
+	if(stringTypeKey == NULL
+	    || typeMeta == NULL
+	    || checkEnumMeta == NULL) {
+		return true;
+	}
+	else {
+		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (errorKey, "Key '%s' with type '%s' has a meta key 'check/enum'. "
+							  "'check/enum' can only be used together with type 'enum'!", keyName(stringTypeKey),
+							  keyString(typeMeta));
+		return false;
+	}
+}
+
+/**
+ * Create a human-readable error for keys with type=string or type=wstring.
+ * @param handle The plugin handle
+ * @param errorKey The key containing errors.
+ * @param key The key to create an error for.
+ */
+void elektraTypeSetErrorStringType (Plugin * handle, Key * errorKey, const Key * key)
+{
+	if(!stringMetadataAllowed (key, errorKey)) {
+		return;
+	}
+	else {
+		elektraTypeSetDefaultError(handle, errorKey, key);
+	}
 }
 
 bool elektraTypeNormalizeEnum (Plugin * handle ELEKTRA_UNUSED, Key * key)
