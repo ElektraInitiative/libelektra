@@ -239,27 +239,28 @@ kdb_boolean_t checkSpecToken (KDB * const kdb, Key * parentKey, const char * tok
 {
 	KeySet * const specificationKs = ksNew (0, KS_END);
 
-	const int kdbGetResult = kdbGet (kdb, specificationKs, parentKey);
+	Key * parentKeySpecNamespace = keyDup (parentKey, KEY_CP_ALL);
+	// For token calculation of an application using the HL API, only keys within the spec namespace are relevant.
+	keySetNamespace(parentKeySpecNamespace, KEY_NS_SPEC);
+
+	const int kdbGetResult = kdbGet (kdb, specificationKs, parentKeySpecNamespace);
 	if (kdbGetResult == -1)
 	{
 		ksDel (specificationKs);
-		*error = elektraErrorFromKey (parentKey);
+		*error = elektraErrorFromKey (parentKeySpecNamespace);
 		return false;
 	}
 	else
 	{
 		char calculatedToken[65];
-		Key * parentKeySpecNamespace = keyDup (parentKey, KEY_CP_ALL);
-		// For token calculation of an application using the HL API, only keys within the spec namespace are relevant.
-		keySetNamespace(parentKeySpecNamespace, KEY_NS_SPEC);
 		kdb_boolean_t success = calculateSpecificationToken(calculatedToken, specificationKs, parentKeySpecNamespace);
-		keyDel(parentKeySpecNamespace);
 
 		// If the token calculation failed, don't return an Elektra instance.
 		if(!success)
 		{
 			ksDel(specificationKs);
-			*error = elektraErrorFromKey (parentKey);
+			*error = elektraErrorFromKey (parentKeySpecNamespace);
+			keyDel(parentKeySpecNamespace);
 			return false;
 		}
 
@@ -272,6 +273,7 @@ kdb_boolean_t checkSpecToken (KDB * const kdb, Key * parentKey, const char * tok
 			*error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
 			elektraFree (description);
 			ksDel(specificationKs);
+			keyDel(parentKeySpecNamespace);
 			return false;
 		}
 	}
