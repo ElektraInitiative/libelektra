@@ -94,14 +94,12 @@ kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Ke
 		// Feed key name into sha_256_write() without NULL terminator (hence -1).
 		// This makes it easier to compare expected results with other sha256 tools.
 		sha_256_write (&sha_256, keyName(cascadingKey), keyGetNameSize(cascadingKey) - 1);
-		fprintf(stderr, "\tsha256write %s\n", keyName(cascadingKey));
 		// Note: The value of the key itself is not relevant / part of specification. Only the key's name + its metadata!
 
 		KeySet * currentMetaKeys = keyMeta(currentKey);
 		// Feed name + values from meta keys into sha_256_write().
 		for(elektraCursor metaIt = 0; metaIt < ksGetSize (currentMetaKeys); metaIt++) {
 			Key * currentMetaKey = ksAtCursor (currentMetaKeys, metaIt);
-			fprintf(stderr, "\t\tsha256write %s=%s\n", keyName(currentMetaKey), keyString (currentMetaKey));
 			sha_256_write (&sha_256, keyName(currentMetaKey), keyGetNameSize (currentMetaKey) - 1 );
 			sha_256_write (&sha_256, keyString(currentMetaKey), keyGetValueSize(currentMetaKey) - 1);
 		}
