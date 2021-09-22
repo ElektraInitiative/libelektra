@@ -8,7 +8,6 @@ with the basic features explained in [`kdb-gen-highlevel(1)`](kdb-gen-highlevel.
 The parameters that are relevant to the concepts described here are (for the rest see [`kdb-gen-highlevel(1)](kdb-gen-highlevel.md)):
 
 - `embeddedSpec`: allowed values: `full` (default), `defaults`, `none`
-- `specValidation`: allowed values: `none` (default), `minimal`
 - `enumConv`: allowed values: `strcmp`, `switch`, `auto` (default)
 
 Using `embeddedSpec` you can configure how much of the specification is embedded into your application. By default we use `full`. This means
@@ -25,9 +24,8 @@ Setting `embeddedSpec=none` is only recommended, if you must have the minimal bi
 defaults are passed to `elektraOpen` and defaults are only handled via the `spec` plugin. If the specification/configuration isn't mounted,
 the getter functions may fail.
 
-To avoid this case of a misconfigured mountpoint, you can use `specValidation=minimal`. It is by far not a perfect solution, but it will
-cause the initialization function (by default named `loadConfiguration`) to fail, if the specification is not mounted at the expected
-mountpoint or if the specification was not `spec-mount`ed.
+The case of a misconfigured mountpoint will be detected automatically and reported as an error. It will
+cause the initialization function (by default named `loadConfiguration`) to fail, if the specification is not mounted at the expected mountpoint or if the specification was not `spec-mount`ed.
 
 ## Enums
 
