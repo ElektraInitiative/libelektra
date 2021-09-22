@@ -126,7 +126,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		// All warnings are available as array items of array "warnings" in parentKey.
 		const Key * currentMetaKey = ksAtCursor(parentKeyMeta, metaIt);
 		// If the meta key name starts with "warnings", it is a warning.
-		bool isWarning = strncmp(keyName(currentMetaKey), "warnings", strlen("warnings"));
+		bool isWarning = strncmp(keyName(currentMetaKey), "meta:/warnings", strlen("meta:/warnings")) == 0;
 
 		size_t baseNameSize = keyGetBaseNameSize (currentMetaKey);
 		char * kBaseName = elektraMalloc (baseNameSize * sizeof (char));
