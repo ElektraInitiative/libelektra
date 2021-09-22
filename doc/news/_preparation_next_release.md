@@ -181,6 +181,7 @@ _(Michael Tucek)_
 - `kdb editor/import`: Disable the use of cascading names (and the 'validate' strategy operating on cascading keys) entirely. _(Alexander Firbas)_
 - Update numerous tests to comply with changes above. _(Alexander Firbas)_
 - Add a new subsection on cascading writes to the [tutorial](/doc/tutorials/cascading.md) on cascading keys. _(Alexander Firbas)_
+- `kdb spec-mount`: Improve usability by failing with helpful error messages, if the specification contains errors. _(Tobias Schubert @qwepoizt)_
 
 - <<TODO>>
 - <<TODO>>
