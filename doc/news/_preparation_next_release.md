@@ -97,6 +97,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Remove obsolete `ksNeedSync` function. _(Mihael Pranjić)_
 
 ### High-level API
+
 - Implement a check to detect whether an application's specification was properly `mount`ed and `spec-mount`ed. _(Tobias Schubert @qwepoizt)_
 - Implement a check to detect whether an application's specification was changed after installation. _(Tobias Schubert @qwepoizt)_
 - Add sanity-checks to resource management. _(Tobias Schubert @qwepoizt)_
@@ -105,6 +106,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Remove "minimal validation" in favor of the new checks (see above). _(Tobias Schubert @qwepoizt)_
 
 ### Ease
+
 - Implement calculation of a specification token (=sha-256 hash). _(Tobias Schubert @qwepoizt)_
 - Add [asmonier's sha-2](https://github.com/amosnier/sha-2) for sha-256 hash calculation. _(Tobias Schubert @qwepoizt)_
 

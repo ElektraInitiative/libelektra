@@ -271,10 +271,10 @@ kdb_boolean_t checkSpecToken (KDB * const kdb, Key * parentKey, const char * tok
 		// If tokens aren't equal, report an error and fail
 		if (strcmp (tokenFromContract, calculatedToken) != 0)
 		{
-			char * errorMessage = generateSpecProblemErrorMessage (keyName(parentKey));
+			char * errorMessage = generateSpecProblemErrorMessage (keyName (parentKey));
 			char * description = elektraFormat (
 				"%s\n"
-				"Technical details: The configuration specification on your system was modified after installation.\n" 
+				"Technical details: The configuration specification on your system was modified after installation.\n"
 				"The token was \"%s\" during compilation\nbut now it's \"%s\"\n",
 				errorMessage, tokenFromContract, calculatedToken);
 			elektraFree (errorMessage);
@@ -308,14 +308,15 @@ void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
 
 /**
  * Generate a error message about a problem with the specification.
- * 
+ *
  * @note:  The returned char array needs to be freed with elektraFree() after usage.
- * 
+ *
  * @param application The application's name.
  * @return Pointer to a char. Needs to be freed using elektraFree() after usage.
  */
-static char * generateSpecProblemErrorMessage( const char * application) {
-	return elektraFormat(
+static char * generateSpecProblemErrorMessage (const char * application)
+{
+	return elektraFormat (
 		"There was a problem with the application's specification. \n\nTo fix this, execute:\n"
 		"\t\"$ sudo kdb rm -r %s\"\n"
 		"\t\"$ sudo kdb rm -r spec:%s\"\n"
