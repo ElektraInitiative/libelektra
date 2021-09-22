@@ -13,6 +13,7 @@
 #include "kdbhelper.h"
 #include "kdblogger.h"
 #include "kdbprivate.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 #ifdef __cplusplus
@@ -118,6 +119,37 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
 
+	// Look for warnings in the parentKey after kdbGet().
+	// If there are warnings, create an error, set the param "error" and return NULL.
+	const Key * parentKeyMeta = keyMeta(parentKey);
+	for (elektraCursor metaIt = 0; metaIt < ksGetSize (parentKeyMeta); metaIt++) {
+		// All warnings are available as array items of array "warnings" in parentKey.
+		const Key * currentMetaKey = ksAtCursor(parentKeyMeta, metaIt);
+		// If the meta key name starts with "warnings", it is a warning.
+		bool isWarning = strncmp(keyName(currentMetaKey), "warnings", strlen("warnings"));
+
+		size_t baseNameSize = keyGetBaseNameSize (currentMetaKey);
+		char * kBaseName = elektraMalloc (baseNameSize * sizeof (char));
+		keyGetBaseName (currentMetaKey, kBaseName, baseNameSize);
+		// If the baseName is "reason", this is the reason we are interested in 
+		// (e.g. "Value '50' of key 'proc:/sw/jonls/redshift/#0/current/temp/day' not within range 1000-2500")
+		bool isWarningReason = isWarning && strcmp(kBaseName, "reason") == 0;
+		if (isWarningReason) {
+			// We found a warning reason.
+			const char * warningReason = keyString(currentMetaKey);
+			// Create an error that we can return to the calling application via the "error" param.
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey, warningReason);
+			*error = elektraErrorFromKey (parentKey);
+			elektraFree (kBaseName);
+			
+			ksDel(config);
+			kdbClose(kdb, parentKey);
+			keyDel(parentKey);
+			return NULL;
+		}
+		elektraFree (kBaseName);
+	}
+	
 	if (kdbGetResult == -1)
 	{
 		Key * helpKey = ksLookupByName (config, "proc:/elektra/gopts/help", 0);
