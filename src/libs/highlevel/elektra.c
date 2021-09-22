@@ -32,6 +32,7 @@ static kdb_boolean_t checkSpecProperlyMounted (KDB * const kdb, const char * app
 static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs, const char * application, const char * mountPoint,
 						   ElektraError ** error);
 static kdb_boolean_t checkSpecToken (KDB * const kdb, Key * parentKey, const char * tokenFromContract, ElektraError ** error);
+static char * generateSpecProblemErrorMessage (const char * application);
 
 /**
  * \defgroup highlevel High-level API
@@ -270,11 +271,13 @@ kdb_boolean_t checkSpecToken (KDB * const kdb, Key * parentKey, const char * tok
 		// If tokens aren't equal, report an error and fail
 		if (strcmp (tokenFromContract, calculatedToken) != 0)
 		{
+			char * errorMessage = generateSpecProblemErrorMessage (keyName(parentKey));
 			char * description = elektraFormat (
-				"The configuration specification on your system was modified after installation. To fix the problem, "
-				"revert your specification changes or reinstall. Technical detail: The token was \"%s\" during compilation "
-				"but now is \"%s\"",
-				tokenFromContract, calculatedToken);
+				"%s\n"
+				"Technical details: The configuration specification on your system was modified after installation.\n" 
+				"The token was \"%s\" during compilation\nbut now it's \"%s\"\n",
+				errorMessage, tokenFromContract, calculatedToken);
+			elektraFree (errorMessage);
 			*error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
 			elektraFree (description);
 			ksDel (specificationKs);
@@ -301,6 +304,26 @@ ELEKTRA_SYMVER_DECLARE ("libelektra_0.8", elektraOpen, v1)
 void elektraFatalError (Elektra * elektra, ElektraError * fatalError)
 {
 	elektra->fatalErrorHandler (fatalError);
+}
+
+/**
+ * Generate a error message about a problem with the specification.
+ * 
+ * @note:  The returned char array needs to be freed with elektraFree() after usage.
+ * 
+ * @param application The application's name.
+ * @return Pointer to a char. Needs to be freed using elektraFree() after usage.
+ */
+static char * generateSpecProblemErrorMessage( const char * application) {
+	return elektraFormat(
+		"There was a problem with the application's specification. \n\nTo fix this, execute:\n"
+		"\t\"$ sudo kdb rm -r %s\"\n"
+		"\t\"$ sudo kdb rm -r spec:%s\"\n"
+		"\t\"$ sudo kdb umount %s\"\n"
+		"\t\"$ sudo kdb umount spec:%s\"\n"
+		"and then reinstall the application.\n\n"
+		"If that does not help, please consult the application's documentation or contact its developers.\n",
+		application, application, application, application);
 }
 
 /**
@@ -381,18 +404,14 @@ static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs,
 	// If the mountPointKey does not exist, the specification was not properly mounted.
 	if (mountPointKey == NULL)
 	{
+		char * errorMessage = generateSpecProblemErrorMessage (application);
 		char * description = elektraFormat (
-			"The specification for application \"%s\" was not properly mounted. \nTo fix this, execute:\n"
-			"\"$ sudo kdb umount %s\"\n"
-			"\"$ sudo kdb umount spec:%s\"\n"
-			"\"$ sudo kdb rm -r %s\"\n"
-			"\"$ sudo kdb rm -r spec:%s\"\n"
-			"and then reinstall the application.\n"
-			"If that does not help, please consult the application's documentation or contact its developers.\n"
-			"Details: \n"
+			"%s\n"
+			"Technical details: \n"
 			"The mountPointKey \"%s\" should exist, but it does not.\n"
 			"This was likely caused by an incomplete installation of the application.\n",
-			application, application, application, application, application, keyName (mountPointLookupKey));
+			errorMessage, keyName (mountPointLookupKey));
+		elektraFree (errorMessage);
 		keyDel (mountPointLookupKey);
 		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
 		elektraFree (description);
@@ -401,18 +420,14 @@ static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs,
 	// If the mountPointKey's value is not equal to "application", the specification was not properly mounted.
 	else if (elektraStrCmp (keyString (mountPointKey), mountPoint) != 0)
 	{
+		char * errorMessage = generateSpecProblemErrorMessage (application);
 		char * description = elektraFormat (
-			"The specification for application \"%s\" was not properly mounted. \nTo fix this, execute:\n"
-			"\"$ sudo kdb umount %s\"\n"
-			"\"$ sudo kdb umount spec:%s\"\n"
-			"\"$ sudo kdb rm -r %s\"\n"
-			"\"$ sudo kdb rm -r spec:%s\"\n"
-			"and then reinstall the application.\n"
-			"If that does not help, please consult the application's documentation or contact its developers.\n"
-			"Details: \n"
-			"The value of key %s should be \"%s\" but it is \"%s\".\n"
+			"%s\n"
+			"Technical details: \n"
+			"The value of key \"%s\" should be \"%s\" but it is \"%s\".\n"
 			"This was likely caused by an incomplete installation of the application.\n",
-			application, application, application, application, application, keyName (mountPointKey), mountPoint, keyString (mountPointKey));
+			errorMessage, keyName (mountPointKey), mountPoint, keyString (mountPointKey));
+		elektraFree (errorMessage);
 		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
 		keyDel (mountPointLookupKey);
 		keyDel (mountPointKey);
