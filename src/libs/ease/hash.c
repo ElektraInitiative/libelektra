@@ -25,6 +25,8 @@ static void hash_to_string (char string[65], const uint8_t hash[32]);
  *
  * @pre The parentKey must have the correct namespace. E.g. If only keys from the spec:/ should be considered for the token calculation,
  * pass a key with KEY_NS_SPEC.
+ * 
+ * @note Array parent key's (e.g., `/format/#`) are ignored for the token. See inline documentation below for rationale.
  *
  * @param hash_string A string. After successful execution this will contain the hash as hex-string.
  * @param ks The KeySet for the application.
