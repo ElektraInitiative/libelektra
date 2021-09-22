@@ -68,8 +68,9 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 	Key * const parentKey = keyNew (application, KEY_END);
 
 	// Before anything else: Verify that the specification is okay.
-	if(!checkSpec(parentKey, contract, error)) {
-		keyDel(parentKey);
+	if (!checkSpec (parentKey, contract, error))
+	{
+		keyDel (parentKey);
 		return NULL;
 	}
 
@@ -165,7 +166,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 /**
  * Verify that specification is properly mounted and is equal to specification at compile time.
  * Note: These checks are only executed, if the contract requires them.
- * 
+ *
  * @param parentKey The parentKey of the application
  * @param contract The contract passed to HL API by the application.
  * @param error Pointer used to report errors
@@ -174,19 +175,21 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
  */
 kdb_boolean_t checkSpec (Key * const parentKey, KeySet * contract, ElektraError ** error)
 {
-	if(contract != NULL)
+	if (contract != NULL)
 	{
 		// Execute kdbOpen(), but do not pass the contract!
 		// Reason: The contract may contain requirements that interfere with the checks below.
-		// E.g., If the contract contains keys from elektraGOptsContract(), kdbGet() might fail, because the specification is not mounted or incorrect.
-		// Therefore, we first have to check, that the spec is properly mounted and hasn't been modified since compilation.
-		KDB * kdb = kdbOpen(NULL, parentKey);
-		
-		if (kdb == NULL) {
+		// E.g., If the contract contains keys from elektraGOptsContract(), kdbGet() might fail, because the specification is not
+		// mounted or incorrect. Therefore, we first have to check, that the spec is properly mounted and hasn't been modified since
+		// compilation.
+		KDB * kdb = kdbOpen (NULL, parentKey);
+
+		if (kdb == NULL)
+		{
 			*error = elektraErrorFromKey (parentKey);
 			return false;
 		}
-		
+
 		// Verify that the specification is properly mounted, if contract requires it.
 		Key * checkSpecFromContract = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/specproperlymounted", 0);
 		kdb_boolean_t shouldCheckSpecProperlyMounted = false;
@@ -195,7 +198,7 @@ kdb_boolean_t checkSpec (Key * const parentKey, KeySet * contract, ElektraError 
 		{
 			// If the specification was not properly mounted, we don't return an Elektra instance.
 			// Reason: the application won't function properly without a properly mounted specification.
-			if (!checkSpecProperlyMounted (kdb, keyName(parentKey), error))
+			if (!checkSpecProperlyMounted (kdb, keyName (parentKey), error))
 			{
 				kdbClose (kdb, parentKey);
 				keyDel (checkSpecFromContract);
@@ -220,7 +223,7 @@ kdb_boolean_t checkSpec (Key * const parentKey, KeySet * contract, ElektraError 
 			keyDel (tokenFromContractKey);
 		}
 		keyDel (checkSpecFromContract);
-		kdbClose(kdb, parentKey);
+		kdbClose (kdb, parentKey);
 	}
 	return true;
 }
@@ -241,7 +244,7 @@ kdb_boolean_t checkSpecToken (KDB * const kdb, Key * parentKey, const char * tok
 
 	Key * parentKeySpecNamespace = keyDup (parentKey, KEY_CP_ALL);
 	// For token calculation of an application using the HL API, only keys within the spec namespace are relevant.
-	keySetNamespace(parentKeySpecNamespace, KEY_NS_SPEC);
+	keySetNamespace (parentKeySpecNamespace, KEY_NS_SPEC);
 
 	const int kdbGetResult = kdbGet (kdb, specificationKs, parentKeySpecNamespace);
 	if (kdbGetResult == -1)
@@ -253,27 +256,29 @@ kdb_boolean_t checkSpecToken (KDB * const kdb, Key * parentKey, const char * tok
 	else
 	{
 		char calculatedToken[65];
-		kdb_boolean_t success = calculateSpecificationToken(calculatedToken, specificationKs, parentKeySpecNamespace);
+		kdb_boolean_t success = calculateSpecificationToken (calculatedToken, specificationKs, parentKeySpecNamespace);
 
 		// If the token calculation failed, don't return an Elektra instance.
-		if(!success)
+		if (!success)
 		{
-			ksDel(specificationKs);
+			ksDel (specificationKs);
 			*error = elektraErrorFromKey (parentKeySpecNamespace);
-			keyDel(parentKeySpecNamespace);
+			keyDel (parentKeySpecNamespace);
 			return false;
 		}
 
 		// If tokens aren't equal, report an error and fail
-		if(strcmp(tokenFromContract, calculatedToken) != 0)
+		if (strcmp (tokenFromContract, calculatedToken) != 0)
 		{
 			char * description = elektraFormat (
-				"The configuration specification on your system was modified after installation. To fix the problem, revert your specification changes or reinstall. Technical detail: The token was \"%s\" during compilation but now is \"%s\"",
+				"The configuration specification on your system was modified after installation. To fix the problem, "
+				"revert your specification changes or reinstall. Technical detail: The token was \"%s\" during compilation "
+				"but now is \"%s\"",
 				tokenFromContract, calculatedToken);
 			*error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
 			elektraFree (description);
-			ksDel(specificationKs);
-			keyDel(parentKeySpecNamespace);
+			ksDel (specificationKs);
+			keyDel (parentKeySpecNamespace);
 			return false;
 		}
 	}
@@ -403,7 +408,7 @@ static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs,
 			"Details: \n"
 			"The value of key %s should be \"%s\" but it is \"%s\".\n"
 			"This was likely caused by an incomplete installation of the application.\n",
-			application, application, application, keyName (mountPointKey), mountPoint, keyString(mountPointKey));
+			application, application, application, keyName (mountPointKey), mountPoint, keyString (mountPointKey));
 		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
 		keyDel (mountPointLookupKey);
 		keyDel (mountPointKey);

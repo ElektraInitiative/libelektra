@@ -31,10 +31,11 @@ extern "C" {
  * @note Although the details are exposed here, in order to make instantiation easy, you should refrain from directly
  * accessing the fields, as they may change in the future.
  */
-struct Sha_256 {
-	uint8_t *hash;
+struct Sha_256
+{
+	uint8_t * hash;
 	uint8_t chunk[SIZE_OF_SHA_256_CHUNK];
-	uint8_t *chunk_pos;
+	uint8_t * chunk_pos;
 	size_t space_left;
 	size_t total_len;
 	uint32_t h[8];
@@ -51,7 +52,7 @@ struct Sha_256 {
  *
  * @note If either of the passed pointers is NULL, the results are unpredictable.
  */
-void calc_sha_256(uint8_t hash[SIZE_OF_SHA_256_HASH], const void *input, size_t len);
+void calc_sha_256 (uint8_t hash[SIZE_OF_SHA_256_HASH], const void * input, size_t len);
 
 /*
  * @brief Initialize a SHA-256 streaming calculation.
@@ -65,7 +66,7 @@ void calc_sha_256(uint8_t hash[SIZE_OF_SHA_256_HASH], const void *input, size_t 
  *
  * @note If either of the passed pointers is NULL, the results are unpredictable.
  */
-void sha_256_init(struct Sha_256 *sha_256, uint8_t hash[SIZE_OF_SHA_256_HASH]);
+void sha_256_init (struct Sha_256 * sha_256, uint8_t hash[SIZE_OF_SHA_256_HASH]);
 
 /*
  * @brief Stream more input data for an on-going SHA-256 calculation.
@@ -82,7 +83,7 @@ void sha_256_init(struct Sha_256 *sha_256, uint8_t hash[SIZE_OF_SHA_256_HASH]);
  *
  * @note If either of the passed pointers is NULL, the results are unpredictable.
  */
-void sha_256_write(struct Sha_256 *sha_256, const void *data, size_t len);
+void sha_256_write (struct Sha_256 * sha_256, const void * data, size_t len);
 
 /*
  * @brief Conclude a SHA-256 streaming calculation, making the hash value available.
@@ -98,7 +99,7 @@ void sha_256_write(struct Sha_256 *sha_256, const void *data, size_t len);
  * @note Invoking this function for a calculation with no data (the writing function has never been invoked, or it only
  * has been invoked with empty data) is legal. It will calculate the SHA-256 value of the empty string.
  */
-uint8_t *sha_256_close(struct Sha_256 *sha_256);
+uint8_t * sha_256_close (struct Sha_256 * sha_256);
 
 #ifdef __cplusplus
 }

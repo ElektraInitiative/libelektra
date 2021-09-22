@@ -135,12 +135,12 @@ int GenCommand::execute (Cmdline const & cl)
 		}
 	}
 
-	auto inputKs = ks.cut (Key (parentKeyForTokenCalculation.getName(), KEY_END));
+	auto inputKs = ks.cut (Key (parentKeyForTokenCalculation.getName (), KEY_END));
 
 	for (const auto & part : tmpl->getParts ())
 	{
 		std::ofstream output (outputName + part);
-		tmpl->render (output, outputName, part, inputKs, parentKeyForTokenCalculation.getName());
+		tmpl->render (output, outputName, part, inputKs, parentKeyForTokenCalculation.getName ());
 	}
 
 	return 0;
