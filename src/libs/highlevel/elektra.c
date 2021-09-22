@@ -323,7 +323,7 @@ static char * generateSpecProblemErrorMessage (const char * application)
 		"\t\"$ sudo kdb umount spec:%s\"\n"
 		"and then reinstall the application.\n\n"
 		"If that does not help, please consult the application's documentation or contact its developers.\n",
-		application, application, application, application);
+		application, application, application);
 }
 
 /**
