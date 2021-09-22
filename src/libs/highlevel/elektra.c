@@ -318,7 +318,6 @@ static char * generateSpecProblemErrorMessage (const char * application)
 {
 	return elektraFormat (
 		"There was a problem with the application's specification. \n\nTo fix this, execute:\n"
-		"\t\"$ sudo kdb rm -r %s\"\n"
 		"\t\"$ sudo kdb rm -r spec:%s\"\n"
 		"\t\"$ sudo kdb umount %s\"\n"
 		"\t\"$ sudo kdb umount spec:%s\"\n"
