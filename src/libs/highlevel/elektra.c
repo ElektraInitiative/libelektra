@@ -121,7 +121,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	// Look for warnings in the parentKey after kdbGet().
 	// If there are warnings, create an error, set the param "error" and return NULL.
-	const Key * parentKeyMeta = keyMeta(parentKey);
+	KeySet * parentKeyMeta = keyMeta(parentKey);
 	for (elektraCursor metaIt = 0; metaIt < ksGetSize (parentKeyMeta); metaIt++) {
 		// All warnings are available as array items of array "warnings" in parentKey.
 		const Key * currentMetaKey = ksAtCursor(parentKeyMeta, metaIt);
