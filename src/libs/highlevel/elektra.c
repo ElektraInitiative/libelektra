@@ -192,7 +192,7 @@ kdb_boolean_t checkSpec (Key * const parentKey, KeySet * contract, ElektraError 
 		}
 
 		// Verify that the specification is properly mounted, if contract requires it.
-		Key * checkSpecFromContract = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/specproperlymounted", 0);
+		Key * checkSpecFromContract = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/spec/mounted", 0);
 		kdb_boolean_t shouldCheckSpecProperlyMounted = false;
 		if (checkSpecFromContract != NULL && elektraKeyToBoolean (checkSpecFromContract, &shouldCheckSpecProperlyMounted) &&
 		    shouldCheckSpecProperlyMounted)
