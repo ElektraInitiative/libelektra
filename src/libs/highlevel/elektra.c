@@ -385,12 +385,14 @@ static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs,
 			"The specification for application \"%s\" was not properly mounted. \nTo fix this, execute:\n"
 			"\"$ sudo kdb umount %s\"\n"
 			"\"$ sudo kdb umount spec:%s\"\n"
+			"\"$ sudo kdb rm -r %s\"\n"
+			"\"$ sudo kdb rm -r spec:%s\"\n"
 			"and then reinstall the application.\n"
 			"If that does not help, please consult the application's documentation or contact its developers.\n"
 			"Details: \n"
 			"The mountPointKey \"%s\" should exist, but it does not.\n"
 			"This was likely caused by an incomplete installation of the application.\n",
-			application, application, application, keyName (mountPointLookupKey));
+			application, application, application, application, application, keyName (mountPointLookupKey));
 		keyDel (mountPointLookupKey);
 		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
 		elektraFree (description);
@@ -403,12 +405,14 @@ static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs,
 			"The specification for application \"%s\" was not properly mounted. \nTo fix this, execute:\n"
 			"\"$ sudo kdb umount %s\"\n"
 			"\"$ sudo kdb umount spec:%s\"\n"
+			"\"$ sudo kdb rm -r %s\"\n"
+			"\"$ sudo kdb rm -r spec:%s\"\n"
 			"and then reinstall the application.\n"
 			"If that does not help, please consult the application's documentation or contact its developers.\n"
 			"Details: \n"
 			"The value of key %s should be \"%s\" but it is \"%s\".\n"
 			"This was likely caused by an incomplete installation of the application.\n",
-			application, application, application, keyName (mountPointKey), mountPoint, keyString (mountPointKey));
+			application, application, application, application, application, keyName (mountPointKey), mountPoint, keyString (mountPointKey));
 		*error = elektraErrorCreate (ELEKTRA_ERROR_INSTALLATION, description, "elektra", "unknown", 0);
 		keyDel (mountPointLookupKey);
 		keyDel (mountPointKey);
