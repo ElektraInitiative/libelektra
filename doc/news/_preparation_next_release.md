@@ -53,6 +53,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - The `gopts` plugin now includes deeply nested options and arguments in the generated help message. _(Tobias Schubert @qwepoizt)_
 - Errors from `gopts` are now correctly reported. _(Klemens Böswirth)_
 
+### range
+
+- The `range` plugin now uses metaky `type` as fallback, if `check/type` is not specified. _(Tobias Schubert @qwepoizt)_
+
 ### spec
 
 - The `spec` plugin now runs before other `postgetstorage` plugins, so that validation can happen during `kdbGet` as well.
