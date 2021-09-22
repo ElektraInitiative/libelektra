@@ -53,6 +53,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - The `gopts` plugin now includes deeply nested options and arguments in the generated help message. _(Tobias Schubert @qwepoizt)_
 - Errors from `gopts` are now correctly reported. _(Klemens Böswirth)_
 
+### range
+
+- The `range` plugin now uses metaky `type` as fallback, if `check/type` is not specified. _(Tobias Schubert @qwepoizt)_
+
 ### spec
 
 - The `spec` plugin now runs before other `postgetstorage` plugins, so that validation can happen during `kdbGet` as well.
@@ -195,6 +199,7 @@ _(Michael Tucek)_
 - Add a new subsection on cascading writes to the [tutorial](/doc/tutorials/cascading.md) on cascading keys. _(Alexander Firbas)_
 - `kdb gen`: Generate specification token during code-generation and add it to generated contract. _(Tobias Schubert @qwepoizt)_
 - `kdb gen`: Improve naming of variables to make code easier to understand. _(Tobias Schubert @qwepoizt)_
+- `kdb spec-mount`: Improve usability by failing with helpful error messages, if the specification contains errors. _(Tobias Schubert @qwepoizt)_
 
 - <<TODO>>
 - <<TODO>>

@@ -6,7 +6,7 @@
 - infos/recommends =
 - infos/placements = presetstorage postgetstorage
 - infos/status = maintained conformant compatible coverage specific unittest tested libc preview unfinished
-- infos/metadata = check/range check/type
+- infos/metadata = check/range check/type type
 - infos/description = tests if a value is within a given range
 
 ## Introduction
@@ -20,9 +20,12 @@ The package is called `libelektra5-experimental`.
 
 ## Usage
 
-The plugin checks every `Key` in the `KeySet` for the metakey `check/range` which contains either a single range with the syntax `[-]min-[-]max`, or a list of ranges or values separated by `,` and tests if the `Key`'s value is within the range(s).
-
-`check/type` can be used to specify the data type. If not specified otherwise the default value is `long long`
+- The plugin checks every `Key` in the `KeySet` having a metakey `check/range`.
+- For these keys, it checks whether the key value is within the specified range.
+- `check/range` can contain either:
+  1. a single range with the syntax `[-]min-[-]max`
+  2. or a list of ranges or values separated by `,`
+- Metakey `check/type` can be used to specify the data type. If not specified, metakey `type` will be used as fallback. If both are unspecified or unsupported, the type is assumed to be `long long`.
 
 Possible values:
 
