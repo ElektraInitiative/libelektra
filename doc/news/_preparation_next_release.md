@@ -92,6 +92,18 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - Remove obsolete `ksNeedSync` function. _(Mihael Pranjić)_
 
+### High-level API
+- Implement a check to detect whether an application's specification was properly `mount`ed and `spec-mount`ed. _(Tobias Schubert @qwepoizt)_
+- Implement a check to detect whether an application's specification was changed after installation. _(Tobias Schubert @qwepoizt)_
+- Add sanity-checks to resource management. _(Tobias Schubert @qwepoizt)_
+- Refactor and modularize code. _(Tobias Schubert @qwepoizt)_
+- Update and improve inline documentation. _(Tobias Schubert @qwepoizt)_
+- Remove "minimal validation" in favor of the new checks (see above). _(Tobias Schubert @qwepoizt)_
+
+### Ease
+- Implement calculation of a specification token (=sha-256 hash). _(Tobias Schubert @qwepoizt)_
+- Add [asmonier's sha-2](https://github.com/amosnier/sha-2) for sha-256 hash calculation. _(Tobias Schubert @qwepoizt)_
+
 ### <<Library1>>
 
 - <<TODO>>
@@ -181,6 +193,8 @@ _(Michael Tucek)_
 - `kdb editor/import`: Disable the use of cascading names (and the 'validate' strategy operating on cascading keys) entirely. _(Alexander Firbas)_
 - Update numerous tests to comply with changes above. _(Alexander Firbas)_
 - Add a new subsection on cascading writes to the [tutorial](/doc/tutorials/cascading.md) on cascading keys. _(Alexander Firbas)_
+- `kdb gen`: Generate specification token during code-generation and add it to generated contract. _(Tobias Schubert @qwepoizt)_
+- `kdb gen`: Improve naming of variables to make code easier to understand. _(Tobias Schubert @qwepoizt)_
 
 - <<TODO>>
 - <<TODO>>
@@ -202,10 +216,11 @@ _(Michael Tucek)_
 - Remove previous authors. _(Markus Raab)_
 - add pre/postconditions and invariants to module keytest _(@lawli3t)_
 - Updated the news template. _(Mihael Pranjić)_
-- Update tutorial and in-code comments for high-level API _(Tobias Schubert @qwepoizt)_
+- Update and improve tutorial and in-code comments for high-level API _(Tobias Schubert @qwepoizt)_
 - Improve documentation of opts library _(Tobias Schubert @qwepoizt)_
 - Update tutorial "High-level API (with code-generation)" to reflect change of `loadConfiguration()`'s signature in release 0.9.5 _(Tobias Schubert @qwepoizt)_
 - add pre/postconditions and invariants to module keyvalue _(@lawli3t)_
+- Update and improve inline documentation of `kdb gen`. _(Tobias Schubert @qwepoizt)_
 - <<TODO>>
 
 ## Tests
@@ -215,7 +230,9 @@ _(Michael Tucek)_
 - Use clang-format 12 for Restyled and update Restyled version. _(Mihael Pranjić)_
 - Update all Restyled formatters to current versions. _(Mihael Pranjić)_
 - Add additional test cases for module `keytest` _(@lawli3t)_
-- <<TODO>>
+- Update tests for high-level API to work with new specification token mechanism. _(Tobias Schubert @qwepoizt)_
+- Add tests for libease's sha-256. _(Tobias Schubert @qwepoizt)_
+- Add tests for sha-256 hash calculation of a KeySet. _(Tobias Schubert @qwepoizt)_
 - <<TODO>>
 
 ## Packaging
