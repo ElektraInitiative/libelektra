@@ -228,6 +228,7 @@ _(Michael Tucek)_
 - Update tutorial "High-level API (with code-generation)" to reflect change of `loadConfiguration()`'s signature in release 0.9.5 _(Tobias Schubert @qwepoizt)_
 - add pre/postconditions and invariants to module keyvalue _(@lawli3t)_
 - Update and improve inline documentation of `kdb gen`. _(Tobias Schubert @qwepoizt)_
+- Fix broken links. _(Robert Sowula)_
 - <<TODO>>
 
 ## Tests
