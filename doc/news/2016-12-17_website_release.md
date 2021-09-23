@@ -45,7 +45,7 @@ you to use them across multiple system by mounting them with the
 ## The Website
 
 The website was written by Marvin Mall in the course of his
-[bachelor thesis](https://www.libelektra.org/ftp/elektra/mall2016rest.pdf)
+[bachelor thesis](https://www.libelektra.org/ftp/elektra/publications/mall2016rest.pdf)
 as part of the front-end he developed for his snippet sharing service.
 His main goals were to create a proper appearance for Elektra, but
 also to create a platform that promotes his service. We think that
