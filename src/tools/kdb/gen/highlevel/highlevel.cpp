@@ -624,7 +624,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	contract.append (kdb::Key ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
 
 	// enable check for properly mounted specification
-	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/specproperlymounted", KEY_VALUE, "1", KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END));
 
 	// calculate specification token
 	char token[65];
@@ -636,7 +636,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 		kdb::printError (std::cerr, parentKeyMaybeWithErrors, false, false);
 		throw CommandAbortException ("Error during calculation of specification token.");
 	}
-	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spectoken/token", KEY_VALUE, token, KEY_END));
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, token, KEY_END));
 
 
 	data["keys_count"] = std::to_string (keys.size ());
