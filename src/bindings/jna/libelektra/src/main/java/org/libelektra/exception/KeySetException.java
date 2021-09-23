@@ -3,7 +3,13 @@ package org.libelektra.exception;
 import org.libelektra.KeySet;
 
 /**
- * Indicates a generic exception while calling one of {@link KeySet}'s methods
+ * Indicates a generic exception while calling one of {@link KeySet}'s
+ * methods<br>
+ * <br>
+ * This exception is related to unrecoverable C API specific errors (primarily
+ * allocation problems). All other exceptional states are represented by more
+ * specific exceptions. For more detailed information see exceptions in this
+ * package as well as a method's individual documentation.
  */
 public class KeySetException extends RuntimeException
 {
