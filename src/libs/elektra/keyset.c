@@ -652,7 +652,7 @@ if (result >= 0)
  * @return -insertpos -1 (< 0) if the key was not found
  *    so to get the insertpos simple do: -insertpos -1
  */
-ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
+static ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 {
 	ssize_t left = 0;
 	ssize_t right = ks->size;

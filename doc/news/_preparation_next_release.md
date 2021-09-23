@@ -86,7 +86,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 ### Compatibility
 
 - Introduced public C API function `ksSearch`
-- Previously public function `ksSearchInternal` is now private. Use `ksSearch` instead.
+- Previously public function `ksSearchInternal` is now static. Use `ksSearch` instead.
 
 _(Michael Tucek)_
 
