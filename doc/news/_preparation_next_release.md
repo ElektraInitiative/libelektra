@@ -121,7 +121,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Java binding
 
-- Upgraded Java binding gradle wrapper to 7.2
+- Upgraded Java binding gradle wrapper to 7.2 PLEASE DELETE ON RELEASE: _(Michael Tucek)_
 - Renamed zero argument static factory method `Key::createNameless` to `Key::create`. To migrate to this change, just update calling code to use the new method name.
 - Updated method documentation previously publishing the error key based error handling approach to the Java binding consumer. Such arguments are now explicitly only used for returning warning information in case no error occurred. In case of an exceptional state, appropriate exceptions are thrown. Such exceptions provide access to the underlying key containing warning and error information as meta data. Please review API usage to consider the more elaborated explanation of how Elektra uses this argument's value. Affected signatures:
   - Updated javadoc for `KDB::open(Key)`
@@ -161,7 +161,6 @@ you up to date with the multi-language support provided by Elektra.
   - `Key` now implements `Iterable<Key>` to iterate over a key's meta data `ReadableKey`s
 
 _(Michael Tucek)_
-_(Michael Tucek)_ PLEASE DELETE DUPLICATE LINE ON RELEASE
 
 ### <<Binding2>>
 
