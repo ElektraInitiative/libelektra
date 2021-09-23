@@ -1,0 +1,6 @@
+// apply application and java plugin
+apply plugin: 'application'
+apply plugin: 'java'
+
+// apply common java project cofiguration
+apply from: "$rootProject.projectDir/java-shared.gradle"
