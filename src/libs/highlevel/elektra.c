@@ -207,8 +207,7 @@ kdb_boolean_t checkSpec (Key * const parentKey, KeySet * contract, ElektraError 
 			}
 
 			// If the contract contains a specification token, verify that is is equal to the current specification token.
-			Key * tokenFromContractKey =
-				ksLookupByName (contract, "system:/elektra/contract/highlevel/check/spec/token", 0);
+			Key * tokenFromContractKey = ksLookupByName (contract, "system:/elektra/contract/highlevel/check/spec/token", 0);
 			const char * tokenFromContract = NULL;
 			if (tokenFromContractKey != NULL && elektraKeyToString (tokenFromContractKey, &tokenFromContract) &&
 			    tokenFromContract != NULL && strlen (tokenFromContract) > 0)
