@@ -101,6 +101,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - Modified High-level API to treat all warnings as errors. _(Tobias Schubert @qwepoizt)_
 - Implemented support for warnings in High-level API error handling. _(Tobias Schubert @qwepoizt)_
+- Fix resource management in High-level API error handling. _(Tobias Schubert @qwepoizt)_
 
 ### <<Library1>>
 
