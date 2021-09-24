@@ -25,7 +25,7 @@ static int loadArgs (char *** argvp)
 		return 0;
 	}
 
-	char ** argv = elektraMalloc ((count + 1) * sizeof (char *));
+	char ** argv = elektraMalloc ((argc + 1) * sizeof (char *));
 
 	for (int i = 0; i < argc; ++i)
 	{
@@ -41,7 +41,7 @@ static int loadArgs (char *** argvp)
 
 	*argvp = argv;
 
-	return nArgs;
+	return argc;
 }
 
 static char ** loadEnvp (void)
