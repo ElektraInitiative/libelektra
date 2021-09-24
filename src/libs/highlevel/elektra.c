@@ -118,26 +118,29 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
 
-	// Applications using the HL API should treat warnings as errors. Therefore, if a warning occurred, set the error param and return
-	// NULL.
-	ElektraError * errorFromKdbGet = elektraErrorFromKey (parentKey);
-
-	if (errorFromKdbGet->warningCount > 0)
+	// If a warning occurs in kdbGet, it will not return -1. We need to check the parentKey for warnings.
+	if (kdbGetResult >= 0)
 	{
-		// If there are warnings, pick the first warning, create a copy, set it to param "error" and return NULL.
-		// We can only report 1 error at a time. Once the user has fixed that error, they will be informed about the next one on the
-		// next execution of the application.
-		*error = elektraErrorCreate (errorFromKdbGet->warnings[0]->code, errorFromKdbGet->description, errorFromKdbGet->module,
-					     errorFromKdbGet->file, errorFromKdbGet->line);
+		// Applications using the HL API should treat warnings as errors. Therefore, if a warning occurred, set the error param and return
+		// NULL.
+		ElektraError * errorFromKdbGet = elektraErrorFromKey (parentKey);
+		if(errorFromKdbGet->warningCount > 0)
+		{
+			// If there are warnings, pick the first warning, create a copy, set it to param "error" and return NULL.
+			// We can only report 1 error at a time. Once the user has fixed that error, they will be informed about the next one on the next execution of the application.
+			*error = elektraErrorCreate (errorFromKdbGet->warnings[0]->code, errorFromKdbGet->description,
+						     errorFromKdbGet->module, errorFromKdbGet->file, errorFromKdbGet->line);
 
-		elektraErrorReset (&errorFromKdbGet);
-		ksDel (config);
-		kdbClose (kdb, parentKey);
-		keyDel (parentKey);
-		return NULL;
+			elektraErrorReset (&errorFromKdbGet);
+			ksDel (config);
+			kdbClose (kdb, parentKey);
+			keyDel (parentKey);
+			return NULL;
+		}
+		elektraErrorReset (errorFromKdbGet);
 	}
-
-	if (kdbGetResult == -1)
+	// If kdbGet() returns -1, there was an error.
+	else if (kdbGetResult == -1)
 	{
 		Key * helpKey = ksLookupByName (config, "proc:/elektra/gopts/help", 0);
 		const Key * missingKeys = keyGetMeta (parentKey, "logs/spec/missing");
@@ -157,7 +160,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		}
 		else
 		{
-			*error = errorFromKdbGet;
+			*error = elektraErrorFromKey (parentKey);
 
 			ksDel (config);
 			kdbClose (kdb, parentKey);
