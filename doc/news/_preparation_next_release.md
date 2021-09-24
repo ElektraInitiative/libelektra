@@ -85,7 +85,11 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
+- Introduced public C API function `ksSearch`
+- Previously public function `ksSearchInternal` is now static. Use `ksSearch` instead.
+
+_(Michael Tucek)_
+
 - <<TODO>>
 - <<TODO>>
 
@@ -138,10 +142,10 @@ you up to date with the multi-language support provided by Elektra.
 - Native library proxy interface `Elektra` is now package private (previously was public)
 - Added example Java plugin `whitelist`
 - Added support of binary valued keys:
+  - Introduced `Key::getBinary()` and `Key::setBinary(byte[])`
   - Renamed `KeyBinaryTypeNotSupportedException` to `KeyStringValueException`
   - Introduced `KeyBinaryValueException`
   - Improved `Key` test coverage
-  - Introduced `Key::getBinary()` and `Key::setBinary(byte[])`
 - Fixed example project in `examples/external/java/read-keys-example`
   - now works with a standard installation of Elektra
   - updated code to work with current Java binding
@@ -159,6 +163,14 @@ you up to date with the multi-language support provided by Elektra.
     - `ReadableKey` now implements `equals` and `hashCode` in line with the contract for `int Key::compareTo(Key)`
   - `ReadableKey`/`Key` no longer implements `Iterable<String>` for iterating over the parts of a key's name - use `Iterator<String> ReadableKey::keyNameIterator ()` instead
   - `Key` now implements `Iterable<Key>` to iterate over a key's meta data `ReadableKey`s
+  - Fixed API method typo: Renamed `ReadableKey::isDirectBelow`/`Key::isDirectBelow` to `isDirectlyBelow`
+- `KeyNameIterator` and `KeySetIterator` are now package private
+- `KeySetAppendException` has been renamed to `KeySetException` and now conveys general `KeySet` related exceptional states
+- `KeySet` now implements `SortedSet<Key>` (see [Java API](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/SortedSet.html)). Previously `KeySet` was only implementing `Iterator<Key>`. Now a native key set can be used via its `KeySet` representation wherever one of the following Java Collection Framework interfaces is supported:
+  - `Iterable`
+  - `Collection`
+  - `Set`
+  - `SortedSet`
 
 _(Michael Tucek)_
 

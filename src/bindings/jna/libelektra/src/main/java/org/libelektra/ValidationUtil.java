@@ -60,7 +60,7 @@ class ValidationUtil
 	 *         pointer}
 	 */
 	@Nonnull
-	static <T> T checkKeyPointer (@Nullable Pointer pointer, Function<Pointer, T> factory, Supplier<RuntimeException> exceptionSupplier)
+	static <T> T checkPointer (@Nullable Pointer pointer, Function<Pointer, T> factory, Supplier<RuntimeException> exceptionSupplier)
 	{
 		if (pointer == null)
 		{

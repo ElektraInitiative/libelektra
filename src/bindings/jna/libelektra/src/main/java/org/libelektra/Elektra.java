@@ -347,6 +347,8 @@ interface Elektra extends Library {
 
 	int ksDel (Pointer ks);
 
+	int ksClear (Pointer ks);
+
 	int ksGetSize (Pointer ks);
 
 	int ksAppendKey (Pointer ks, Pointer toAppend);
@@ -389,6 +391,10 @@ interface Elektra extends Library {
 	@Nullable Pointer ksLookup (Pointer ks, Pointer key, int options);
 
 	@Nullable Pointer ksLookupByName (Pointer ks, String name, int options);
+
+	int ksSearch (Pointer keySet, Pointer key);
+
+	// Plugin methods -----------------------------------------------------------
 
 	NativePlugin.ElektraPlugin elektraPluginOpen (String pluginName, Pointer modules, Pointer config, Pointer errorKey);
 
