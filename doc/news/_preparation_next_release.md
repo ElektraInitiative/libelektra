@@ -55,7 +55,8 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 ### range
 
-- The `range` plugin now uses metaky `type` as fallback, if `check/type` is not specified. _(Tobias Schubert @qwepoizt)_
+- The `range` plugin now uses metakey `type` as fallback, if `check/type` is not specified. _(Tobias Schubert @qwepoizt)_
+- The `range` now treats all validation problems as warnings during kdbGet(). _(Tobias Schubert @qwepoizt)_
 
 ### spec
 
@@ -95,6 +96,11 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - Remove obsolete `ksNeedSync` function. _(Mihael Pranjić)_
+
+### High-level API
+
+- Modified High-level API to treat all warnings as errors. _(Tobias Schubert @qwepoizt)_
+- Implemented support for warnings in High-level API error handling. _(Tobias Schubert @qwepoizt)_
 
 ### <<Library1>>
 
