@@ -120,16 +120,17 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	// Applications using the HL API should treat warnings as errors. Therefore, if a warning occurred, set the error param and return
 	// NULL.
-	ElektraError * myError = elektraErrorFromKey (parentKey);
+	ElektraError * errorFromKdbGet = elektraErrorFromKey (parentKey);
 
-	if (myError->warningCount > 0)
+	if (errorFromKdbGet->warningCount > 0)
 	{
-		// If there are warnings, pick the first warning, set it to param "error" and return NULL.
+		// If there are warnings, pick the first warning, create a copy, set it to param "error" and return NULL.
 		// We can only report 1 error at a time. Once the user has fixed that error, they will be informed about the next one on the
 		// next execution of the application.
+		*error = elektraErrorCreate (errorFromKdbGet->warnings[0]->code, errorFromKdbGet->description, errorFromKdbGet->module,
+					     errorFromKdbGet->file, errorFromKdbGet->line);
 
-		*error = myError->warnings[0];
-
+		elektraErrorReset (&errorFromKdbGet);
 		ksDel (config);
 		kdbClose (kdb, parentKey);
 		keyDel (parentKey);
@@ -156,7 +157,7 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 		}
 		else
 		{
-			*error = myError;
+			*error = errorFromKdbGet;
 
 			ksDel (config);
 			kdbClose (kdb, parentKey);

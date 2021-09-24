@@ -23,10 +23,10 @@ extern "C" {
  * Creates a new ElektraError using the provided values.
  * The returned value will be allocated with elektraCalloc().
  *
- * @param code        The error code of the error. Must be compile-time constant.
+ * @param code        The error code of the error. Will be copied and stored in the struct.
  * @param description The description of the error. Will be copied and stored in the struct.
- * @param module      The module that raised the error. Must be compile-time constant.
- * @param file        The file that raised the error. Must be compile-time constant.
+ * @param module      The module that raised the error. Will be copied and stored in the struct.
+ * @param file        The file that raised the error. Will be copied and stored in the struct.
  * @param line        The line in which the error was raised.
  *
  * @return A newly allocated ElektraError (free with elektraErrorReset()).
@@ -34,11 +34,11 @@ extern "C" {
 ElektraError * elektraErrorCreate (const char * code, const char * description, const char * module, const char * file, kdb_long_t line)
 {
 	ElektraError * const error = elektraCalloc (sizeof (struct _ElektraError));
-	error->code = code;
+	error->code = code == NULL ? NULL : elektraStrDup (code);
 	error->codeFromKey = NULL;
-	error->description = elektraStrDup (description);
-	error->module = module;
-	error->file = file;
+	error->description = description == NULL ? NULL : elektraStrDup (description);
+	error->module = module == NULL ? NULL : elektraStrDup (module);
+	error->file = file == NULL ? NULL : elektraStrDup (file);
 	error->line = line;
 	error->warningCount = 0;
 	error->warningAlloc = 0;
@@ -105,10 +105,10 @@ ElektraError * elektraErrorFromKey (Key * key)
 	{
 		const Key * reasonMeta = keyGetMeta (key, "error/reason");
 
-		const char * codeFromKey = keyString (keyGetMeta (key, "error/number"));
-		const char * description = keyString (keyGetMeta (key, "error/description"));
-		const char * module = keyString (keyGetMeta (key, "error/module"));
-		const char * file = keyString (keyGetMeta (key, "error/file"));
+		const char * codeFromKey = elektraStrDup (keyString (keyGetMeta (key, "error/number")));
+		const char * description = elektraStrDup (keyString (keyGetMeta (key, "error/description")));
+		const char * module = elektraStrDup( keyString (keyGetMeta (key, "error/module")));
+		const char * file = elektraStrDup( keyString (keyGetMeta (key, "error/file")));
 
 		char * fullDescription =
 			reasonMeta != NULL ? elektraFormat ("%s: %s", description, keyString (reasonMeta)) : elektraStrDup (description);
@@ -178,7 +178,7 @@ ElektraError * elektraErrorFromKey (Key * key)
 			// Code, module, file and lineNumber are compile-time constants, no need to strDup().
 			ElektraError * warning = elektraErrorCreate (code, fullDescription, module, file, lineNumber);
 			elektraFree (fullDescription);
-			warning->codeFromKey = (char *) code;
+			warning->codeFromKey = elektraStrDup(code);
 			warning->errorKey = key;
 
 			elektraErrorAddWarning (error, warning);
@@ -346,6 +346,18 @@ void elektraErrorReset (ElektraError ** error)
 	if (actualError->codeFromKey != NULL)
 	{
 		elektraFree (actualError->codeFromKey);
+	}
+	
+	if (actualError->code != NULL) {
+		elektraFree(actualError->code);
+	}
+
+	if (actualError->module != NULL) {
+		elektraFree(actualError->module);
+	}
+	
+	if (actualError->file != NULL) {
+		elektraFree(actualError->file);
 	}
 
 	if (actualError->warnings != NULL)

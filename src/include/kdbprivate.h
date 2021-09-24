@@ -644,11 +644,11 @@ struct _Elektra
 
 struct _ElektraError
 {
-	const char * code;
+	char * code;
 	char * codeFromKey;
 	char * description;
-	const char * module;
-	const char * file;
+	char * module;
+	char * file;
 	kdb_long_t line;
 	kdb_long_t warningCount;
 	kdb_long_t warningAlloc;
