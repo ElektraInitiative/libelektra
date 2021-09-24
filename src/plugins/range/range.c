@@ -523,7 +523,7 @@ int elektraRangeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 		}
 	}
 	
-	// Always return 1. We don't want kdbGet() to fail, because of validation problems.
+	// Always return 1. We don't want kdbGet() to fail because of validation problems.
 	return ELEKTRA_PLUGIN_STATUS_SUCCESS; // success
 }
 
