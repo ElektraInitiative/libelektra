@@ -18,17 +18,19 @@
 #include <kdbmeta.h>
 #include <kdbtypes.h>
 
+#ifndef __MINGW32__
 #include <fnmatch.h>
-#include <stdio.h>
+#endif
+
 #include <stdlib.h>
 #include <string.h>
 
 typedef enum
 {
-	IGNORE,
-	ERROR,
-	WARNING,
-	INFO
+	ON_CONFLICT_IGNORE,
+	ON_CONFLICT_ERROR,
+	ON_CONFLICT_WARNING,
+	ON_CONFLICT_INFO
 } OnConflict;
 
 
@@ -59,6 +61,26 @@ typedef struct
 
 static void copyMeta (Key * dest, Key * src);
 
+#ifdef __MINGW32__
+static bool specMatches (Key * specKey, Key * otherKey)
+{
+	/**
+	 * Known limitation: For MINGW builds fnmatch.h does not exist. Therefore, globbing can't be used.
+	 * This means that there is no support for # and _ in key names.
+	 * This function was copied from 68e9dff, doesn't use globbing and therefore doesn't require the globbing library which is not compatible with Windows:
+	 */
+	const char * spec = keyUnescapedName (specKey);
+	size_t specNsLen = strlen (spec) + 1;
+	spec += specNsLen; // skip namespace
+	const char * other = keyUnescapedName (otherKey);
+	size_t otherNsLen = strlen (other) + 1;
+	other += otherNsLen; // skip namespace
+	size_t const specSize = keyGetUnescapedNameSize (specKey) - specNsLen;
+	size_t const otherSize = keyGetUnescapedNameSize (otherKey) - otherNsLen;
+
+	return specSize == otherSize && memcmp (spec, other, specSize) == 0;
+}
+#else
 static bool specMatches (Key * specKey, Key * otherKey)
 {
 	// ignore namespaces for globbing
@@ -67,6 +89,7 @@ static bool specMatches (Key * specKey, Key * otherKey)
 	keyDel (globKey);
 	return matches;
 }
+#endif
 
 
 static inline void safeFree (void * ptr)
@@ -85,19 +108,19 @@ static OnConflict parseOnConflictKey (const Key * key)
 	const char * string = keyString (key);
 	if (strcmp (string, "ERROR") == 0)
 	{
-		return ERROR;
+		return ON_CONFLICT_ERROR;
 	}
 	else if (strcmp (string, "WARNING") == 0)
 	{
-		return WARNING;
+		return ON_CONFLICT_WARNING;
 	}
 	else if (strcmp (string, "INFO") == 0)
 	{
-		return INFO;
+		return ON_CONFLICT_INFO;
 	}
 	else
 	{
-		return IGNORE;
+		return ON_CONFLICT_IGNORE;
 	}
 }
 
@@ -193,17 +216,17 @@ static void handleConflict (Key * parentKey, const char * msg, OnConflict onConf
 
 	switch (onConflict)
 	{
-	case ERROR:
+	case ON_CONFLICT_ERROR:
 		keySetMeta (parentKey, "internal/spec/error", "1");
 		ELEKTRA_SET_VALIDATION_SEMANTIC_ERRORF (parentKey, "%s", msg);
 		break;
-	case WARNING:
+	case ON_CONFLICT_WARNING:
 		ELEKTRA_ADD_VALIDATION_SEMANTIC_WARNINGF (parentKey, "%s", msg);
 		break;
-	case INFO:
+	case ON_CONFLICT_INFO:
 		elektraMetaArrayAdd (parentKey, "logs/spec/info", msg);
 		break;
-	case IGNORE:
+	case ON_CONFLICT_IGNORE:
 	default:
 		break;
 	}
@@ -236,7 +259,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 	}
 
 	int ret = 0;
-	if (conflicts[CONFLICT_INVALID] == '1' && ch->invalid != IGNORE)
+	if (conflicts[CONFLICT_INVALID] == '1' && ch->invalid != ON_CONFLICT_IGNORE)
 	{
 		const Key * moreMsg = keyGetMeta (key, "conflict/invalid");
 		char * msg;
@@ -254,7 +277,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		ret = -1;
 	}
 
-	if (conflicts[CONFLICT_ARRAYMEMBER] == '1' && ch->member != IGNORE)
+	if (conflicts[CONFLICT_ARRAYMEMBER] == '1' && ch->member != ON_CONFLICT_IGNORE)
 	{
 		char * problemKeys = elektraMetaArrayToString (key, keyName (keyGetMeta (key, "conflict/arraymember")), ", ");
 		char * msg =
@@ -265,7 +288,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		ret = -1;
 	}
 
-	if (conflicts[CONFLICT_WILDCARDMEMBER] == '1' && ch->member != IGNORE)
+	if (conflicts[CONFLICT_WILDCARDMEMBER] == '1' && ch->member != ON_CONFLICT_IGNORE)
 	{
 		char * problemKeys = elektraMetaArrayToString (key, keyName (keyGetMeta (key, "conflict/wildcardmember")), ", ");
 		char * msg =
@@ -276,7 +299,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		ret = -1;
 	}
 
-	if (conflicts[CONFLICT_COLLISION] == '1' && ch->conflict != IGNORE)
+	if (conflicts[CONFLICT_COLLISION] == '1' && ch->conflict != ON_CONFLICT_IGNORE)
 	{
 		char * problemKeys = elektraMetaArrayToString (key, keyName (keyGetMeta (key, "conflict/collision")), ", ");
 		char * msg = elektraFormat ("%s has conflicting metakeys: %s", keyName (key), problemKeys);
@@ -286,7 +309,7 @@ static int handleConflicts (Key * key, Key * parentKey, Key * specKey, const Con
 		ret = -1;
 	}
 
-	if (conflicts[CONFLICT_OUTOFRANGE] == '1' && ch->range != IGNORE)
+	if (conflicts[CONFLICT_OUTOFRANGE] == '1' && ch->range != ON_CONFLICT_IGNORE)
 	{
 		const Key * min = keyGetMeta (specKey, "array/min");
 		const Key * max = keyGetMeta (specKey, "array/max");
@@ -833,7 +856,7 @@ static int processSpecKey (Key * specKey, Key * parentKey, KeySet * ks, const Co
 			char * msg = elektraFormat ("Required key %s is missing.", missing);
 			handleConflict (parentKey, msg, ch->missing);
 			elektraFree (msg);
-			if (ch->missing != IGNORE)
+			if (ch->missing != ON_CONFLICT_IGNORE)
 			{
 				ret = -1;
 			}
