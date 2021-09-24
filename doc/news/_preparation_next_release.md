@@ -172,8 +172,6 @@ you up to date with the multi-language support provided by Elektra.
   - `Set`
   - `SortedSet`
 
-_(Michael Tucek)_ TODO PLEASE REMOVE LINE
-
 _(Michael Tucek)_
 
 ### <<Binding2>>
