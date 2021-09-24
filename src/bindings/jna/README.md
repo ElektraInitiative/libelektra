@@ -174,13 +174,17 @@ You can run unit tests by invoking:
 ./gradlew test
 ```
 
-## Limitations
-
-- no Java iterator for metadata
-
 ## Release publishing to Maven Central
 
 Release publishing is done via `buildAndPublishMaven()` in [Jenkinsfile.release](../../../scripts/jenkins/Jenkinsfile.release).
+
+## Upgrading Gradle
+
+To upgrade the Gradle version used by the JNA bindings, the following steps should be considered:
+
+- [Update the gradle wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html#sec:upgrading_wrapper) for the Java binding
+- Search all [Dockerfiles](../../../scripts/docker) and replace the Gradle version there
+- [Run formatter](../../../doc/tutorials/run_reformatting_script_with_docker.md)
 
 ## Contributing
 
