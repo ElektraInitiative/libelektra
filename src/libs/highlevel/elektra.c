@@ -118,21 +118,24 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 
 	const int kdbGetResult = kdbGet (kdb, config, parentKey);
 
-	// Applications using the HL API should treat warnings as errors. Therefore, if a warning occurred, set the error param and return NULL.
+	// Applications using the HL API should treat warnings as errors. Therefore, if a warning occurred, set the error param and return
+	// NULL.
 	ElektraError * myError = elektraErrorFromKey (parentKey);
 
-	if (myError->warningCount > 0) {
+	if (myError->warningCount > 0)
+	{
 		// If there are warnings, pick the first warning, set it to param "error" and return NULL.
-		// We can only report 1 error at a time. Once the user has fixed that error, they will be informed about the next one on the next execution of the application.
-		
+		// We can only report 1 error at a time. Once the user has fixed that error, they will be informed about the next one on the
+		// next execution of the application.
+
 		*error = myError->warnings[0];
 
-		ksDel(config);
-		kdbClose(kdb, parentKey);
-		keyDel(parentKey);
+		ksDel (config);
+		kdbClose (kdb, parentKey);
+		keyDel (parentKey);
 		return NULL;
 	}
-	
+
 	if (kdbGetResult == -1)
 	{
 		Key * helpKey = ksLookupByName (config, "proc:/elektra/gopts/help", 0);
