@@ -1190,8 +1190,8 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  * @param ks the (pre-initialized) KeySet returned with all keys found
  * 	will not be changed on error or if no update is required
  *
- * @retval 1 if the Keys were retrieved successfully
- * @retval 0 if there was no update - no changes are made to the KeySet then
+ * @retval 1 if the Keys were retrieved successfully. There might be warnings attached to the parentKey! Depending on your use case, you might need to treat them as errors!
+ * @retval 0 if there was no update - no changes are made to the KeySet then. There might be warnings attached to the parentKey! Depending on your use case, you might need to treat them as erorrs!
  * @retval -1 on failure - no changes are made to the KeySet then
  *
  * @since 1.0.0
