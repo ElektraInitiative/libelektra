@@ -107,8 +107,8 @@ ElektraError * elektraErrorFromKey (Key * key)
 
 		const char * codeFromKey = elektraStrDup (keyString (keyGetMeta (key, "error/number")));
 		const char * description = elektraStrDup (keyString (keyGetMeta (key, "error/description")));
-		const char * module = elektraStrDup( keyString (keyGetMeta (key, "error/module")));
-		const char * file = elektraStrDup( keyString (keyGetMeta (key, "error/file")));
+		const char * module = elektraStrDup (keyString (keyGetMeta (key, "error/module")));
+		const char * file = elektraStrDup (keyString (keyGetMeta (key, "error/file")));
 
 		char * fullDescription =
 			reasonMeta != NULL ? elektraFormat ("%s: %s", description, keyString (reasonMeta)) : elektraStrDup (description);
@@ -178,7 +178,7 @@ ElektraError * elektraErrorFromKey (Key * key)
 			// Code, module, file and lineNumber are compile-time constants, no need to strDup().
 			ElektraError * warning = elektraErrorCreate (code, fullDescription, module, file, lineNumber);
 			elektraFree (fullDescription);
-			warning->codeFromKey = elektraStrDup(code);
+			warning->codeFromKey = elektraStrDup (code);
 			warning->errorKey = key;
 
 			elektraErrorAddWarning (error, warning);
@@ -347,17 +347,20 @@ void elektraErrorReset (ElektraError ** error)
 	{
 		elektraFree (actualError->codeFromKey);
 	}
-	
-	if (actualError->code != NULL) {
-		elektraFree(actualError->code);
+
+	if (actualError->code != NULL)
+	{
+		elektraFree (actualError->code);
 	}
 
-	if (actualError->module != NULL) {
-		elektraFree(actualError->module);
+	if (actualError->module != NULL)
+	{
+		elektraFree (actualError->module);
 	}
-	
-	if (actualError->file != NULL) {
-		elektraFree(actualError->file);
+
+	if (actualError->file != NULL)
+	{
+		elektraFree (actualError->file);
 	}
 
 	if (actualError->warnings != NULL)
