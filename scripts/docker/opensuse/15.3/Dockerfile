@@ -21,7 +21,6 @@ RUN zypper update -y && zypper install -y \
         gpgme-devel \
         graphviz \
         java-11-openjdk-devel \
-        jna \
         libcurl-devel \
         libdrm-devel \
         libev-devel \
