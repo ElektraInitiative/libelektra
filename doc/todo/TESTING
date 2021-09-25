@@ -6,6 +6,7 @@ src/plugins/python/CMakeLists.txt
 tests/shell/check_merge.sh   for INI
 tests/shell/shell_recorder/mathcheck.esr     for INI (hard-coded ni)
 doc/help/kdb-get.md   for INI
+src/bindings/io/glib/CMakeLists.txt with GLib >= 2.70.0 due to incompatible -Wpedantic flag (commit 74c3dad04bad1dd7a6be4d259ee6e93e4fed1726)
 
 ### Jenkins
 
