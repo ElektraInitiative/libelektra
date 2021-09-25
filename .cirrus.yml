@@ -214,6 +214,10 @@ task:
     - name: 🐧 Fedora
       container:
           dockerfile: scripts/docker/cirrus/fedora/Dockerfile
+    - name: 🐧 Fedora arm64
+      arm_container:
+          dockerfile: scripts/docker/cirrus/fedora/Dockerfile
+          cpu: 8
 
   script:
     - >
