@@ -12,7 +12,8 @@ add_lib (
 
 if (BUILD_SHARED)
 	set (LIBRARIES "-lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core")
-	set (CODEGEN_LIBRARIES "-lelektra-opts -lelektra-invoke -lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core -lelektra-meta")
+	set (CODEGEN_LIBRARIES
+	     "-lelektra-opts -lelektra-invoke -lelektra-highlevel -lelektra-kdb -lelektra-ease -lelektra-core -lelektra-meta")
 elseif (BUILD_FULL)
 	set (LIBRARIES "-lelektra-full")
 	set (CODEGEN_LIBRARIES "-lelektra-full")
