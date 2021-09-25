@@ -460,6 +460,14 @@ def dockerInit() {
       false
     )
 
+    /* openSuse Leap 15.3 image used to install previously built packages */
+    DOCKER_IMAGES.opensuse_15_3_installed = dockerUtils.createDockerImageDesc(
+      "opensuse-15-3-installed", dockerUtils.&idTesting,
+      "./build/package",
+      "./scripts/docker/opensuse/15.3/release.Dockerfile",
+      false
+    )
+
     /* Image to build openwrt package */
     DOCKER_IMAGES.openwrt_sdk = dockerUtils.createDockerImageDesc(
       'openwrt-sdk', dockerUtils.&idTesting,
@@ -1150,6 +1158,16 @@ def generateArtifactStages() {
     "fedora-34-unstable",
     "fedora-34-unstable",
     DOCKER_IMAGES.fedora_34_installed,
+    release.&publishRpmPackages,
+    this.&updateFedoraChangelog,
+    true
+  )
+  tasks << buildPackage(
+    "buildPackage/opensuse/leap/15.3",
+    DOCKER_IMAGES.opensuse_15_3,
+    "opensuse-leap-15.3",
+    "opensuse-leap-15.3",
+    DOCKER_IMAGES.opensuse_15_3_installed,
     release.&publishRpmPackages,
     this.&updateFedoraChangelog,
     true
