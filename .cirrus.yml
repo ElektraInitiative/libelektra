@@ -1,6 +1,9 @@
 env:
   BUILD_DIR: build
 
+container:
+  greedy: true
+
 # We store common commands here, so we can reference them in the build jobs below.
 commands:
   - &print_cmake_options |
@@ -209,12 +212,6 @@ task:
 
     - name: 🐧 Fedora amd64
       container:
-          cpu: 8
-          memory: 16G
-          dockerfile: scripts/docker/cirrus/fedora/Dockerfile
-
-    - name: 🐧 Fedora arm64
-      arm_container:
           cpu: 8
           memory: 16G
           dockerfile: scripts/docker/cirrus/fedora/Dockerfile
