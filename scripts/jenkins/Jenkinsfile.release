@@ -745,7 +745,7 @@ def buildRelease(stageName, image, packageRevision='1',
                   url: 'https://github.com/ElektraInitiative/ftp.git'
             }
             dir('prev-release-logs') {
-              sh "cp -R ../ftp/release-logs/${PREVIOUS_RELEASE_VERSION}/${stageName}/* ./"
+              sh "cp -R ../ftp/release-logs/${PREVIOUS_RELEASE_VERSION}/${stageName}/* ./ || /bin/true"
             }
             sh "sh libelektra/scripts/release/release.sh ${packageRevision} ${PREVIOUS_RELEASE_VERSION}"
             sh "mv release.tar.gz ${stageName}-release.tar.gz"
