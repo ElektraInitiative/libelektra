@@ -2,6 +2,7 @@ FROM opensuse/leap:15.3
 
 RUN zypper update -y && zypper install -y \
         augeas-devel \
+        augeas-lenses \
         bison \
         cmake \
         curl \
