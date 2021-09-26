@@ -16,6 +16,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -44,24 +45,38 @@ int elektraSyncGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	return 1; /* success */
 }
 
-int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, Key * parentKey)
 {
 	/* set all keys */
 	const char * configFile = keyString (parentKey);
 	if (!strcmp (configFile, "")) return 0; // no underlying config file
-	int fd = open (configFile, O_RDWR);
-	if (fd == -1)
+	FILE * fd = NULL;
+
+	// For POSIX systems, we need to use mode "w" and fsync().
+	const char * fileMode = "w";
+#ifdef __MINGW32__
+	// For Windows, we need to use mode "wc" and fflush(). See https://stackoverflow.com/a/57090195 .
+	fileMode = "wc";
+#endif
+
+	fd = fopen (configFile, fileMode);
+	if (fd == NULL)
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open config file %s. Reason: %s", configFile, strerror (errno));
 		return -1;
 	}
-	if (fsync (fd) == -1)
+
+#ifdef __MINGW32__
+	if(fflush (fd) == EOF)
+#else
+	if (fsync (fileno(fd)) == -1)
+#endif
 	{
-		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not fsync config file %s. Reason: %s", configFile, strerror (errno));
-		close (fd);
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not fsync/fflush config file %s. Reason: %s", configFile, strerror (errno));
+		fclose (fd);
 		return -1;
 	}
-	close (fd);
+	fclose (fd);
 
 	return 1; /* success */
 }
