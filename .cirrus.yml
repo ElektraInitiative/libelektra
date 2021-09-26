@@ -1,10 +1,6 @@
 env:
   BUILD_DIR: build
 
-container:
-  memory: 12
-  cpu: 5
-
 # We store common commands here, so we can reference them in the build jobs below.
 commands:
   - &print_cmake_options |
@@ -30,19 +26,19 @@ task:
     - name: 😈 FreeBSD 12
       freebsd_instance:
         cpu: 4
-        memory: 8
+        memory: 8G
         image_family: freebsd-12-2
 
     - name: 😈 FreeBSD 13
       freebsd_instance:
         cpu: 4
-        memory: 8
+        memory: 8G
         image_family: freebsd-13-0
 
     - name: 😈 ASAN
       freebsd_instance:
-        cpu: 4
-        memory: 8
+        cpu: 8
+        memory: 8G
         image_family: freebsd-13-0
       env:
         ENABLE_ASAN: ON
@@ -211,13 +207,17 @@ task:
 task:
   matrix:
 
-    - name: 🐧 Fedora
+    - name: 🐧 Fedora amd64
       container:
+          cpu: 8
+          memory: 16G
           dockerfile: scripts/docker/cirrus/fedora/Dockerfile
+
     - name: 🐧 Fedora arm64
       arm_container:
-          dockerfile: scripts/docker/cirrus/fedora/Dockerfile
           cpu: 8
+          memory: 16G
+          dockerfile: scripts/docker/cirrus/fedora/Dockerfile
 
   script:
     - >
@@ -247,6 +247,8 @@ task:
 
     - name: 🔗 Check
       container:
+          cpu: 2
+          memory: 4G
           dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   clone_script: |
@@ -288,6 +290,8 @@ task:
 
     - name: 📚 Check
       container:
+          cpu: 6
+          memory: 8G
           dockerfile: scripts/docker/cirrus/arch/Dockerfile
 
   script:
