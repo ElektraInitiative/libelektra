@@ -22,7 +22,7 @@ cmake -DENABLE_TESTING=OFF \
 	-DBUILD_STATIC=ON \
 	-DBUILD_FULL=ON \
 	-DBUILD_SHARED=OFF \
-	-DPLUGINS="wresolver;dump;list" \
+	-DPLUGINS="wresolver;type;dump;cache;list;spec;gopts;sync" \
 	-DKDB_DEFAULT_RESOLVER=wresolver \
 	-DKDB_DEFAULT_STORAGE=dump \
 	-DKDB_DB_SYSTEM=kdb -DKDB_DB_SPEC=spec \
