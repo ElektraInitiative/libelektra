@@ -243,7 +243,7 @@ _(Michael Tucek)_
 
 ## Packaging
 
-- <<TODO>>
+- Add packages for openSuse Leap 15.3. _(Robert Sowula)_
 - <<TODO>>
 - <<TODO>>
 
