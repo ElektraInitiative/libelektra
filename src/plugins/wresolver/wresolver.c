@@ -450,6 +450,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_GET,	&elektraWresolverGet,
 		ELEKTRA_PLUGIN_SET,	&elektraWresolverSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraWresolverError,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraWresolverSet,
 		ELEKTRA_PLUGIN_END);
 }
 
