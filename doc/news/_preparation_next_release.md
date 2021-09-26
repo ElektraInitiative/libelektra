@@ -237,6 +237,7 @@ _(Michael Tucek)_
 - Use clang-format 12 for Restyled and update Restyled version. _(Mihael Pranjić)_
 - Update all Restyled formatters to current versions. _(Mihael Pranjić)_
 - Add additional test cases for module `keytest` _(@lawli3t)_
+- Add additional test cases for module `keymeta` _(@lawli3t)_
 - <<TODO>>
 - <<TODO>>
 

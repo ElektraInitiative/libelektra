@@ -93,10 +93,10 @@
 ### Tests
 
 - [ ] Function code is fully covered by tests  
-       - [ ] see below
+       - [x] see below
 - [ ] All possible error states are covered by tests  
-       - [ ] key is 0  
-       - [ ] metaName is 0
+       - [x] key is 0  
+       - [x] metaName is 0
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
