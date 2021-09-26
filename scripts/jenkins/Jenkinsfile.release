@@ -209,6 +209,12 @@ def dockerInit() {
       './scripts/docker/fedora/34/Dockerfile'
     )
 
+    DOCKER_IMAGES.opensuse_15_3 = dockerUtils.createDockerImageDesc(
+      "opensuse-15-3", dockerUtils.&idTesting,
+      "./scripts/docker/opensuse/15.3",
+      "./scripts/docker/opensuse/15.3/Dockerfile"
+    )
+
     /* Install and test the built packages with theses images. */
     DOCKER_IMAGES.buster_installed = dockerUtils.createDockerImageDesc(
       'debian-buster-installed', dockerUtils.&idArtifact,
@@ -252,6 +258,13 @@ def dockerInit() {
       false
     )
 
+    DOCKER_IMAGES.opensuse_15_3_installed = dockerUtils.createDockerImageDesc(
+      'opensuse-15-3-installed', dockerUtils.&idArtifact,
+      './release-artifact/*/package/opensuse-leap15.3/',
+      './scripts/docker/opensuse/15.3/release.Dockerfile',
+      false
+    )
+
     /* Install packages for Docker image release */
     DOCKER_IMAGES.buster_release = createDockerImageDescForRelease(
       'elektra/elektra',
@@ -292,6 +305,13 @@ def dockerInit() {
       'elektra/elektra',
       './release-artifact/*/package/fedora34/',
       './scripts/docker/fedora/34/release.Dockerfile',
+      false
+    )
+
+    DOCKER_IMAGES.opensuse_15_3_release = createDockerImageDescForRelease(
+      'elektra/elektra',
+      './release-artifact/*/package/opensuse-leap15.3/',
+      './scripts/docker/opensuse/15.3/release.Dockerfile',
       false
     )
 
@@ -388,6 +408,14 @@ def generateReleaseStages() {
     true // use placeholder dirs
   )
 
+  tasks << buildRelease(
+    'opensuse-15-3',
+    DOCKER_IMAGES.opensuse_15_3,
+    params.fedora_revision,
+    false, // do not bundle git repo
+    true // use placeholder dirs
+  )
+
   return tasks
 }
 
@@ -419,6 +447,10 @@ def generateDockerBuildStagesWithPackagesInstalled() {
   tasks << buildImageWithPackagesStage(
     DOCKER_IMAGES.bullseye_installed,
     'debian-bullseye'
+  )
+  tasks << buildImageWithPackagesStage(
+    DOCKER_IMAGES.opensuse_15_3_installed,
+    'opensuse-15-3'
   )
 
   // build website
@@ -465,6 +497,10 @@ def generateInstalledPackagesTestStages() {
   tasks << testInstalledPackage(
     'debian-bullseye-installed',
     DOCKER_IMAGES.bullseye_installed
+  )
+  tasks << testInstalledPackage(
+    'opensuse-15-3-installed',
+    DOCKER_IMAGES.opensuse_15_3_installed
   )
 
   return tasks
@@ -572,6 +608,15 @@ def generatePublishStages() {
     params.fedora_revision
   )
 
+  tasks << publish(
+    'opensuse-15-3',
+    'opensuse-leap15.3',
+    'opensuse-leap-15.3',
+    'opensuse-leap-15.3',
+    release.&publishRpmPackages,
+    params.fedora_revision
+  )
+
   tasks << buildDoc()
 
   // publish source package built in debian-buster stage
@@ -645,6 +690,12 @@ def generateImageUploadStages() {
     'debian-bullseye',
     debian_revision,
     'bullseye'
+  )
+  tasks << publishImage(
+    DOCKER_IMAGES.opensuse_15_3_release,
+    'opensuse-15-3',
+    fedora_revision,
+    'opensuse-leap-15.3'
   )
 
   return tasks
