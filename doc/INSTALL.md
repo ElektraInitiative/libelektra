@@ -146,8 +146,9 @@ brew install elektra
 
 Installation for WSL is described [here](tutorials/contributing-windows.md).
 
-If you prefer native but in functionality limited version you can download MinGW builds from
-[here](https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-buster-mingw-w64/elektra.zip).
+If you prefer native but in functionality limited version you can download MinGW
+[32-bit](https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-i686/elektra.zip) 
+and [64-bit](https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-x86_64/elektra.zip) builds.
 
 Otherwise please refer to the section `OS Independent` below.
 
