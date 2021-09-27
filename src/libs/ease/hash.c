@@ -75,14 +75,10 @@ kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Ke
 		 * It leads to array parents vanishing from the spec namespace and thus a different token.
 		 * See https://github.com/ElektraInitiative/libelektra/issues/4061
 		 */
-		size_t baseNameSize = keyGetBaseNameSize (currentKey);
-		char * kBaseName = elektraMalloc (baseNameSize * sizeof (char));
-		keyGetBaseName (currentKey, kBaseName, baseNameSize);
-		if (strcmp (kBaseName, "#") == 0)
+		if (strcmp (keyBaseName (currentKey), "#") == 0)
 		{
 			continue;
 		}
-		elektraFree (kBaseName);
 
 		// Feed key name into sha_256_write() without NULL terminator (hence -1).
 		// This makes it easier to compare expected results with other sha256 tools.
