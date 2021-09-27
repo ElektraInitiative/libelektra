@@ -21,7 +21,9 @@ RUN zypper update -y && zypper install -y \
         gzip \
         gpgme-devel \
         graphviz \
+        graphviz-gd \
         java-11-openjdk-devel \
+        lato-fonts \
         libcurl-devel \
         libdrm-devel \
         libev-devel \
