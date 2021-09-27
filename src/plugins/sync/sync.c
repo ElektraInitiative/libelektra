@@ -49,6 +49,29 @@ int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 	/* set all keys */
 	const char * configFile = keyString (parentKey);
 	if (!strcmp (configFile, "")) return 0; // no underlying config file
+
+	// Syncing requires different functions for mingw vs. POSIX builds.
+	// For mingw, we need to fflush(), for POSIX we need to fsync().
+	// See https://stackoverflow.com/a/41615150
+	// Using fsync(fileno(fd)) does not work!
+#ifdef __MINGW32__
+	FILE * fd = NULL;
+	// For mingw, we need to use mode "wc" and fflush(). See https://stackoverflow.com/a/57090195 .
+	fileMode = "wc";
+	fd = fopen (configFile, fileMode);
+	if (fd == NULL)
+	{
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not open config file %s. Reason: %s", configFile, strerror (errno));
+		return -1;
+	}
+	if(fflush (fd) == EOF)
+	{
+		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not fsync/fflush config file %s. Reason: %s", configFile, strerror (errno));
+		fclose (fd);
+		return -1;
+	}
+	fclose (fd);
+#else
 	int fd = open (configFile, O_RDWR);
 	if (fd == -1)
 	{
@@ -62,6 +85,7 @@ int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 		return -1;
 	}
 	close (fd);
+#endif
 
 	return 1; /* success */
 }
