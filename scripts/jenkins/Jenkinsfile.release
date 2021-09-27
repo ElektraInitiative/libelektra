@@ -571,6 +571,10 @@ def generatePublishStages() {
     release.&publishRpmPackages,
     params.fedora_revision
   )
+  
+  tasks << buildAndTestMingwW64_x86_64()
+  
+  tasks << buildAndTestMingwW64_i686()
 
   tasks << buildDoc()
 
@@ -582,6 +586,51 @@ def generatePublishStages() {
   tasks << buildAndPublishMaven()
 
   return tasks
+}
+
+
+/* Helper to generate mingw x86_64 test */
+def buildAndTestMingwW64_x86_64() {
+  def testName = "debian-bullseye-mingw-w64-x86_64"
+  return [(testName): {
+    stage(testName) {
+      withDockerEnv(DOCKER_IMAGES.bullseye) {
+        dir('build') {
+          deleteDir()
+          sh '../scripts/dev/configure-mingw-w64-x86_64 ..'
+          sh 'make'
+          def destdir='elektra'
+          withEnv(["DESTDIR=${destdir}"]){
+              sh 'make install'
+          }
+          sh "zip -r elektra.zip ${destdir}"
+          utils.archive(['elektra.zip'])
+        }
+      }
+    }
+  }]
+}
+
+/* Helper to generate mingw i686 test */
+def buildAndTestMingwW64_i686() {
+  def testName = "debian-bullseye-mingw-w64-i686"
+  return [(testName): {
+    stage(testName) {
+      withDockerEnv(DOCKER_IMAGES.bullseye) {
+        dir('build') {
+          deleteDir()
+          sh '../scripts/dev/configure-mingw-w64-i686 ..'
+          sh 'make'
+          def destdir='elektra'
+          withEnv(["DESTDIR=${destdir}"]){
+              sh 'make install'
+          }
+          sh "zip -r elektra.zip ${destdir}"
+          utils.archive(['elektra.zip'])
+        }
+      }
+    }
+  }]
 }
 
 def generateFinalPublishStages() {
