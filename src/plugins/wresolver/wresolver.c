@@ -432,6 +432,10 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	return 1; /* success */
 }
 
+int elektraWresolverCommit (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey) {
+	return elektraWresolverSet (handle, returned, parentKey);
+}
+
 int elektraWresolverError (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UNUSED, Key * parentKey ELEKTRA_UNUSED)
 {
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
@@ -450,7 +454,7 @@ Plugin * ELEKTRA_PLUGIN_EXPORT
 		ELEKTRA_PLUGIN_GET,	&elektraWresolverGet,
 		ELEKTRA_PLUGIN_SET,	&elektraWresolverSet,
 		ELEKTRA_PLUGIN_ERROR,	&elektraWresolverError,
-		ELEKTRA_PLUGIN_COMMIT,	&elektraWresolverSet,
+		ELEKTRA_PLUGIN_COMMIT,	&elektraWresolverCommit,
 		ELEKTRA_PLUGIN_END);
 }
 
