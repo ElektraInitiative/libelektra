@@ -1,7 +1,8 @@
 /**
  * @file
  *
- * @brief Elektra error codes.
+ * @brief The error module of the High level API.
+ * Can be used to create errors from scratch or from errors that were attached to keys using src/libs/elektra/errors.
  *
  * @copyright BSD License (see doc/LICENSE.md or http://www.libelektra.org)
  */
@@ -83,7 +84,7 @@ void elektraErrorAddWarning (ElektraError * error, ElektraError * warning)
  * If no error exists, a pure warning error will be used.
  * @see elektraErrorPureWarning
  *
- * @note In most cases, errors and warnings were added to the key using src/libs/elektra/errors.c.
+ * @note Use the functions in src/libs/elektra/errors.c to add errors to a key.
  *
  * @param key The to extract error and warnings from.
  *
