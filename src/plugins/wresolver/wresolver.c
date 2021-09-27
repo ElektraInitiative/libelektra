@@ -432,7 +432,8 @@ int elektraWresolverSet (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key 
 	return 1; /* success */
 }
 
-int elektraWresolverCommit (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey) {
+int elektraWresolverCommit (Plugin * handle, KeySet * returned ELEKTRA_UNUSED, Key * parentKey)
+{
 	return elektraWresolverSet (handle, returned, parentKey);
 }
 
