@@ -635,7 +635,8 @@ def generateFullBuildStages() {
   )
 
   // Build Elektra via mingw for Windows
-  tasks << buildAndTestMingwW64()
+  tasks << buildAndTestMingwW64-x86_64()
+  tasks << buildAndTestMingwW64-i686()
 
   // Build Elektra on alpine
   tasks << buildAndTest(
@@ -917,15 +918,37 @@ def buildAndTestAsan(testName, image, extraCmakeFlags = [:]) {
   }]
 }
 
-/* Helper to generate mingw test */
-def buildAndTestMingwW64() {
-  def testName = "debian-bullseye-mingw-w64"
+/* Helper to generate mingw x86_64 test */
+def buildAndTestMingwW64-x86_64() {
+  def testName = "debian-bullseye-mingw-w64-x86_64"
   return [(testName): {
     stage(testName) {
       withDockerEnv(DOCKER_IMAGES.bullseye) {
         dir('build') {
           deleteDir()
-          sh '../scripts/dev/configure-mingw-w64 ..'
+          sh '../scripts/dev/configure-mingw-w64-x86_64 ..'
+          sh 'make'
+          def destdir='elektra'
+          withEnv(["DESTDIR=${destdir}"]){
+              sh 'make install'
+          }
+          sh "zip -r elektra.zip ${destdir}"
+          utils.archive(['elektra.zip'])
+        }
+      }
+    }
+  }]
+}
+
+/* Helper to generate mingw i686 test */
+def buildAndTestMingwW64-i686() {
+  def testName = "debian-bullseye-mingw-w64-i686"
+  return [(testName): {
+    stage(testName) {
+      withDockerEnv(DOCKER_IMAGES.bullseye) {
+        dir('build') {
+          deleteDir()
+          sh '../scripts/dev/configure-mingw-w64-i686 ..'
           sh 'make'
           def destdir='elektra'
           withEnv(["DESTDIR=${destdir}"]){

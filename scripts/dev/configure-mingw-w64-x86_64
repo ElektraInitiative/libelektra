@@ -8,7 +8,7 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
-TOOLCHAIN_FILE="$SOURCE/scripts/cmake/Toolchain/Toolchain-mingw-w64-$(uname -m).cmake"
+TOOLCHAIN_FILE="$SOURCE/scripts/cmake/Toolchain/Toolchain-mingw-w64-x86_64.cmake"
 if [ ! -f "${TOOLCHAIN_FILE}" ]; then
 	echo "Toolchain file ${TOOLCHAIN_FILE} needed for cross compiling doesn't exist"
 	exit 1

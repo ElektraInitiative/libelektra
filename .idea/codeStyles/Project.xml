@@ -1,65 +1,14 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
-    <option name="OTHER_INDENT_OPTIONS">
-      <value>
-        <option name="USE_TAB_CHARACTER" value="true" />
-      </value>
-    </option>
-    <option name="RIGHT_MARGIN" value="140" />
-    <Objective-C>
-      <option name="INDENT_NAMESPACE_MEMBERS" value="0" />
-      <option name="INDENT_C_STRUCT_MEMBERS" value="8" />
-      <option name="INDENT_CLASS_MEMBERS" value="8" />
-      <option name="INDENT_INSIDE_CODE_BLOCK" value="8" />
-      <option name="NAMESPACE_BRACE_PLACEMENT" value="2" />
-      <option name="FUNCTION_BRACE_PLACEMENT" value="2" />
-      <option name="BLOCK_BRACE_PLACEMENT" value="2" />
-      <option name="SPACE_AFTER_POINTER_IN_DECLARATION" value="true" />
-      <option name="SPACE_AFTER_REFERENCE_IN_DECLARATION" value="true" />
-    </Objective-C>
-    <Objective-C-extensions>
-      <extensions>
-        <pair source="cpp" header="hpp" fileNamingConvention="NONE" />
-        <pair source="c" header="h" fileNamingConvention="NONE" />
-      </extensions>
-    </Objective-C-extensions>
-    <Shell_Script>
-      <option name="REDIRECT_FOLLOWED_BY_SPACE" value="true" />
-    </Shell_Script>
+    <option name="AUTODETECT_INDENTS" value="false" />
+    <JSCodeStyleSettings version="0">
+      <option name="USE_DOUBLE_QUOTES" value="false" />
+      <option name="FORCE_QUOTE_STYlE" value="true" />
+    </JSCodeStyleSettings>
     <clangFormatSettings>
       <option name="ENABLED" value="true" />
     </clangFormatSettings>
-    <codeStyleSettings language="CMake">
-      <option name="SPACE_BEFORE_METHOD_CALL_PARENTHESES" value="true" />
-      <option name="SPACE_BEFORE_METHOD_PARENTHESES" value="true" />
-      <indentOptions>
-        <option name="INDENT_SIZE" value="8" />
-        <option name="TAB_SIZE" value="8" />
-        <option name="USE_TAB_CHARACTER" value="true" />
-      </indentOptions>
-    </codeStyleSettings>
     <codeStyleSettings language="ObjectiveC">
-      <option name="BRACE_STYLE" value="5" />
-      <option name="CLASS_BRACE_STYLE" value="2" />
-      <option name="ELSE_ON_NEW_LINE" value="true" />
-      <option name="SPACE_BEFORE_METHOD_CALL_PARENTHESES" value="true" />
-      <option name="SPACE_BEFORE_METHOD_PARENTHESES" value="true" />
-      <option name="TERNARY_OPERATION_SIGNS_ON_NEXT_LINE" value="false" />
-      <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="false" />
-      <option name="IF_BRACE_FORCE" value="3" />
-      <option name="FOR_BRACE_FORCE" value="3" />
-      <indentOptions>
-        <option name="INDENT_SIZE" value="8" />
-        <option name="TAB_SIZE" value="8" />
-        <option name="USE_TAB_CHARACTER" value="true" />
-      </indentOptions>
-    </codeStyleSettings>
-    <codeStyleSettings language="Python">
-      <indentOptions>
-        <option name="USE_TAB_CHARACTER" value="true" />
-      </indentOptions>
-    </codeStyleSettings>
-    <codeStyleSettings language="Shell Script">
       <indentOptions>
         <option name="USE_TAB_CHARACTER" value="true" />
       </indentOptions>

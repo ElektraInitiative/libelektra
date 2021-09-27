@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# @author Markus Raab <elektra@markus-raab.org>
+# @brief Configure a build which uses mingw
+# @date 02.09.2014
+# @tags configure, debian
+
+SCRIPTS_DIR=$(dirname "$0")
+. "${SCRIPTS_DIR}/configure-common"
+
+TOOLCHAIN_FILE="$SOURCE/scripts/cmake/Toolchain/Toolchain-mingw-w64-i686.cmake"
+if [ ! -f "${TOOLCHAIN_FILE}" ]; then
+	echo "Toolchain file ${TOOLCHAIN_FILE} needed for cross compiling doesn't exist"
+	exit 1
+fi
+
+# BUILD_SHARED and BUILD_TESTING is currently broken
+
+cd $BUILD
+cmake -DENABLE_TESTING=OFF \
+	-DBUILD_TESTING=OFF \
+	-DBUILD_STATIC=ON \
+	-DBUILD_FULL=ON \
+	-DBUILD_SHARED=OFF \
+	-DPLUGINS="wresolver;type;dump;cache;list;spec;gopts;sync" \
+	-DKDB_DEFAULT_RESOLVER=wresolver \
+	-DKDB_DEFAULT_STORAGE=dump \
+	-DKDB_DB_SYSTEM=kdb -DKDB_DB_SPEC=spec \
+	-DBUILD_DOCUMENTATION=OFF \
+	-DCMAKE_PIC_FLAGS="" \
+	-DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \
+	-DGTEST_ROOT="/usr/src/googletest/googletest" \
+	$*
