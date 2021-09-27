@@ -261,7 +261,7 @@ def dockerInit() {
     DOCKER_IMAGES.opensuse_15_3_installed = dockerUtils.createDockerImageDesc(
       'opensuse-15-3-installed', dockerUtils.&idArtifact,
       './release-artifact/*/package/opensuse-leap15.3/',
-      './scripts/docker/opensuse/15.3/release.Dockerfile',
+      './scripts/docker/opensuse/15.3/package.Dockerfile',
       false
     )
 
