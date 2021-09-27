@@ -1,6 +1,8 @@
 FROM opensuse/leap:15.3
 
-RUN zypper update -y
+RUN zypper update -y \
+    && zypper install -y strace \
+    && zypper clean --all
 
 # Create User:Group
 # The id is important as jenkins docker agents use the same id that is running
