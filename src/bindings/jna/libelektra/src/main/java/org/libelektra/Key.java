@@ -5,7 +5,7 @@ import static org.libelektra.Key.CreateArgumentTag.KEY_META;
 import static org.libelektra.Key.CreateArgumentTag.KEY_VALUE;
 import static org.libelektra.ValidationUtil.argNotNull;
 import static org.libelektra.ValidationUtil.argNotNullOrBlank;
-import static org.libelektra.ValidationUtil.checkKeyPointer;
+import static org.libelektra.ValidationUtil.checkPointer;
 
 import com.sun.jna.Pointer;
 import java.util.Arrays;
@@ -96,11 +96,12 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey>
 	 * data base but used for transferring warnings and error information.
 	 *
 	 * @return New nameless key
+	 * @throws KeyException on allocation problems
 	 * @see #release()
 	 */
 	@Nonnull public static Key create ()
 	{
-		return create (Elektra.INSTANCE.keyNew (Elektra.CASCADING_ROOT_KEY_NAME)).orElseThrow (IllegalStateException::new);
+		return checkPointer (Elektra.INSTANCE.keyNew (Elektra.CASCADING_ROOT_KEY_NAME), Key::new, KeyException::new);
 	}
 
 	/**
@@ -112,17 +113,18 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey>
 	 *             {@link CreateArgumentTag#KEY_VALUE}, "custom key value",
 	 *             {@link CreateArgumentTag#KEY_END}
 	 * @return New key
-	 * @throws KeyNameException if the key name is invalid
+	 * @throws KeyException if the key name is invalid or there have been allocation
+	 *                      problems
 	 * @see CreateArgumentTag
 	 * @see #release()
 	 */
 	@Nonnull protected static Key create (String name, Object... args)
 	{
-		return create (Elektra.INSTANCE.keyNew (
-				       name, Arrays.stream (args)
-						     .map (o -> (o instanceof CreateArgumentTag) ? ((CreateArgumentTag) o).value : o)
-						     .toArray ()))
-			.orElseThrow (KeyNameException::new);
+		return checkPointer (Elektra.INSTANCE.keyNew (
+					     name, Arrays.stream (args)
+							   .map (o -> (o instanceof CreateArgumentTag) ? ((CreateArgumentTag) o).value : o)
+							   .toArray ()),
+				     Key::new, KeyException::new);
 	}
 
 	/**
@@ -135,7 +137,8 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey>
 	 * @param meta  Metadata that should be added to this key, null keys will be
 	 *              filtered away
 	 * @return New key
-	 * @throws KeyNameException if the key name is invalid
+	 * @throws KeyException if the key name is invalid or there have been allocation
+	 *                      problems
 	 * @see #release()
 	 */
 	@Nonnull public static Key create (String name, @Nullable Object value, Key... meta)
@@ -173,7 +176,8 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey>
 	 * @param meta Metadata that should be added to this key. Will filter null
 	 *             values.
 	 * @return New key object
-	 * @throws KeyNameException if the key name is invalid
+	 * @throws KeyException if the key name is invalid or there have been allocation
+	 *                      problems
 	 * @see #release()
 	 */
 	@Nonnull public static Key create (String name, Key... meta)
@@ -514,7 +518,7 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey>
 	 */
 	@Nonnull public ReadableKey currentMeta ()
 	{
-		return checkKeyPointer (Elektra.INSTANCE.keyCurrentMeta (getPointer ()), ReadableKey::new, NoSuchElementException::new);
+		return checkPointer (Elektra.INSTANCE.keyCurrentMeta (getPointer ()), ReadableKey::new, NoSuchElementException::new);
 	}
 
 	/**

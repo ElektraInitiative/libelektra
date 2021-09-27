@@ -92,13 +92,13 @@
 ### Tests
 
 - [x] Function code is fully covered by tests  
-       - [ ] memory errors hard to cover
+       - [x] memory errors hard to cover
 - [ ] All possible error states are covered by tests  
-       - [ ] memory errors hard to cover
+       - [x] memory errors hard to cover
 - All possible enum values are covered by tests
 - [ ] No inconsistencies between tests and documentation  
-       - [ ] test case for key 0  
-       - [ ] test case for name 0  
+       - [x] test case for key 0  
+       - [x] test case for name 0  
        - [ ] test case for invalid name
 
 ## Summary

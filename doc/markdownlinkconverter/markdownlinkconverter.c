@@ -46,7 +46,8 @@ const char * const linksToSrc[] = { ".h", ".c", ".cpp", ".hpp", ".cmake", ".ini"
 // both need to be terminated with an empty string
 
 // helpers
-static void printTarget (FILE * output, char * target, char * inputFilename, int indexofElektraRoot, bool isMarkdown, int lineCount);
+static void printTarget (FILE * output, char * target, size_t targetSize, char * inputFilename, int indexofElektraRoot, bool isMarkdown,
+			 int lineCount);
 static void printConvertedPath (FILE * output, char * path);
 static int getIndexofElektraRoot (char * cmakeCacheFilename);
 static void exitError (FILE * f1, FILE * f2, const char * mes);
@@ -264,7 +265,8 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 				--index;
 			}
 			// extract target
-			char target[len * sizeof (char) + 1];
+			size_t targetSize = len * sizeof (char) + 1;
+			char target[targetSize];
 			if (fread (&target[0], sizeof (char), len, input) != len) exitError (input, NULL, "fread");
 
 			target[len] = '\0';
@@ -298,7 +300,7 @@ static void convertLinks (FILE * input, FILE * output, char * inputFilename, int
 			// print target
 			if (targetOK)
 			{
-				printTarget (output, target, inputFilename, indexofElektraRoot, isMarkdown, lineCount);
+				printTarget (output, target, targetSize, inputFilename, indexofElektraRoot, isMarkdown, lineCount);
 			}
 			else
 				fprintf (output, "%s", target);
@@ -464,7 +466,8 @@ int main (int argc, char * argv[])
 	return EXIT_SUCCESS;
 }
 
-static void printTarget (FILE * output, char * target, char * inputFilename, int indexofElektraRoot, bool isMarkdown, int lineCount)
+static void printTarget (FILE * output, char * target, size_t targetSize, char * inputFilename, int indexofElektraRoot, bool isMarkdown,
+			 int lineCount)
 {
 	char * backupTarget = target;
 	char pathToLink[strlen (inputFilename) + strlen (target) + 11 + 1];
@@ -513,7 +516,7 @@ static void printTarget (FILE * output, char * target, char * inputFilename, int
 	}
 	if (S_ISDIR (st.st_mode))
 	{
-		if (target[strlen (target) - 1] == FOLDER_DELIMITER)
+		if (backupTarget[targetSize - 1] == FOLDER_DELIMITER)
 		{
 			strcpy (&pathToLink[strlen (pathToLink)], "README.md");
 		}

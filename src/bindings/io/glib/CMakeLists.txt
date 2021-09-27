@@ -6,6 +6,8 @@ if (NOT GLib_FOUND)
 	exclude_binding (io_glib "glib-2.0 not found")
 elseif (ENABLE_ASAN)
 	exclude_binding (io_glib "io bindings are not compatible with ENABLE_ASAN")
+elseif (GLib_VERSION VERSION_GREATER_EQUAL "2.70.0")
+	exclude_binding (io_glib "GLib >= 2.70.0 not compatible with -Wpedantic")
 else ()
 
 	# Build library
