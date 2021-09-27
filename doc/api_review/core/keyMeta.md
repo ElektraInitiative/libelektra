@@ -86,9 +86,9 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-       - [ ] add check if key is NULL  
-       - [ ] add check if key has no metadata  
-       - [ ] add test if metadata is read-only
+       - [x] add check if key is NULL  
+       - [x] add check if key has no metadata  
+       - [x] add test if metadata is read-only
 - All possible enum values are covered by tests
 - [ ] No inconsistencies between tests and documentation
 

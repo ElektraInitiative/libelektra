@@ -403,12 +403,12 @@ public class KeyTest
 		var key2 = Key.create (KEY_11_NAME, KEY_11_VALUE);
 		var key3 = Key.create (KEY_12_NAME, KEY_12_VALUE);
 
-		assertFalse (key.isDirectBelow (key));
-		assertTrue (key2.isDirectBelow (key));
-		assertFalse (key2.isDirectBelow (key2));
-		assertFalse (key2.isDirectBelow (key3));
-		assertTrue (key3.isDirectBelow (key2));
-		assertFalse (key3.isDirectBelow (key));
+		assertFalse (key.isDirectlyBelow (key));
+		assertTrue (key2.isDirectlyBelow (key));
+		assertFalse (key2.isDirectlyBelow (key2));
+		assertFalse (key2.isDirectlyBelow (key3));
+		assertTrue (key3.isDirectlyBelow (key2));
+		assertFalse (key3.isDirectlyBelow (key));
 	}
 
 	@Test public void test_keyGetNameSize_shouldPass ()

@@ -241,7 +241,7 @@ const Key * keyCurrentMeta (const Key * key)
  * Do a shallow copy of metadata with name @p metaName from source to dest.
  *
  * Afterwards @p source and @p dest will have the same metadata referred with
- * @p metaName. If the Key with name @p metaName doesn't exist in @p src -
+ * @p metaName. If the Key with name @p metaName doesn't exist in @p source -
  * it gets deleted in @p dest.
  *
  * For example the metadata type is copied into the

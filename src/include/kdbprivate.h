@@ -576,8 +576,6 @@ KeySet * ksDeepDup (const KeySet * source);
 
 Key * elektraKsPopAtCursor (KeySet * ks, elektraCursor pos);
 
-ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend);
-
 /*Used for internal memcpy/memmove*/
 ssize_t elektraMemcpy (Key ** array1, Key ** array2, size_t size);
 ssize_t elektraMemmove (Key ** array1, Key ** array2, size_t size);
