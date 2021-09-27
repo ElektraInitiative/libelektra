@@ -58,12 +58,12 @@ To use our stable repositories with our latest releases, following steps need to
 
 ### Fedora
 
-We provide repositories for latest releases and latest builds from master (suite postfixed with `-unstable`) for Fedora 33.
+We provide repositories for latest releases and latest builds from master (suite postfixed with `-unstable`) for Fedora 33 and Fedora 34
 
 For our stable repository with our latest releases:
 
 ```sh
-wget https://rpms.libelektra.org/fedora-33/libelektra.repo -O libelektra.repo;
+wget https://rpms.libelektra.org/fedora-34/libelektra.repo -O libelektra.repo;
 sudo mv libelektra.repo /etc/yum.repos.d/;
 sudo yum update
 ```
@@ -71,13 +71,13 @@ sudo yum update
 Or alternatively you can use dnf to add this repo:
 
 ```sh
-sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33/libelektra.repo
+sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-34/libelektra.repo
 ```
 
 For our latest builds from master append `-unstable` to the suite name:
 
 ```sh
-wget https://rpms.libelektra.org/fedora-33-unstable/libelektra.repo -O libelektra.repo;
+wget https://rpms.libelektra.org/fedora-34-unstable/libelektra.repo -O libelektra.repo;
 sudo mv libelektra.repo /etc/yum.repos.d/;
 sudo yum update
 ```
@@ -85,7 +85,7 @@ sudo yum update
 Or alternatively you can use dnf to add this repo:
 
 ```sh
-sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-33-unstable/libelektra.repo
+sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-34-unstable/libelektra.repo
 ```
 
 ### Install
