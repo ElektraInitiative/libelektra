@@ -628,7 +628,7 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 
 	// calculate specification token
 	char token[65];
-	kdb::Key parentKeyMaybeWithErrors = kdb::Key (parentKey, KEY_END);
+	kdb::Key parentKeyMaybeWithErrors = kdb::Key (specParentName, KEY_END);
 	kdb_boolean_t success = ckdb::calculateSpecificationToken (token, ks.getKeySet (), parentKeyMaybeWithErrors.getKey ());
 	if (!success)
 	{
