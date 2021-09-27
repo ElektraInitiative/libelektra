@@ -341,6 +341,7 @@ int elektraWresolverGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keyNew ("system:/elektra/modules/wresolver/exports/close", KEY_FUNC, elektraWresolverClose, KEY_END),
 			keyNew ("system:/elektra/modules/wresolver/exports/get", KEY_FUNC, elektraWresolverGet, KEY_END),
 			keyNew ("system:/elektra/modules/wresolver/exports/set", KEY_FUNC, elektraWresolverSet, KEY_END),
+			keyNew ("system:/elektra/modules/wresolver/exports/commit", KEY_FUNC, elektraWresolverCommit, KEY_END),
 			keyNew ("system:/elektra/modules/wresolver/exports/error", KEY_FUNC, elektraWresolverError, KEY_END),
 			keyNew ("system:/elektra/modules/wresolver/exports/checkfile", KEY_FUNC, elektraWresolverCheckFile, KEY_END),
 #include ELEKTRA_README
