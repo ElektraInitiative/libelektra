@@ -88,6 +88,26 @@ Or alternatively you can use dnf to add this repo:
 sudo dnf config-manager --add-repo https://rpms.libelektra.org/fedora-34-unstable/libelektra.repo
 ```
 
+### openSUSE
+
+We provide repositories for latest releases and latest builds from master (suite postfixed with `-unstable`) for openSUSE Leap 15.3
+
+For our stable repository with our latest releases:
+
+> NOTE: stable packages will be available as of the `0.9.8` release.
+
+```sh
+sudo zypper ar -f https://rpms.libelektra.org/opensuse-leap-15.3 libelektra
+sudo zypper update
+```
+
+For our latest builds from master append `-unstable` to the suite name:
+
+```sh
+sudo zypper ar -f https://rpms.libelektra.org/opensuse-leap-15.3-unstable libelektra-unstable
+sudo zypper update
+```
+
 ### Install
 
 To get all packaged plugins, bindings and tools install:
@@ -97,6 +117,8 @@ To get all packaged plugins, bindings and tools install:
 apt-get install libelektra5-all
 # For Fedora based distributions
 dnf install libelektra5-all
+# For openSUSE
+zypper install libelektra5-all
 ```
 
 For a small installation with command-line tools available use:
@@ -106,6 +128,8 @@ For a small installation with command-line tools available use:
 apt-get install elektra-bin
 # For Fedora based distributions
 dnf install elektra-bin
+# For openSUSE
+zypper install elektra-bin
 ```
 
 To install all debugsym/debuginfo packages:
@@ -115,6 +139,8 @@ To install all debugsym/debuginfo packages:
 apt-get install elektra-dbg
 # For Fedora based distributions
 dnf install elektra-dbg
+# For openSUSE
+zypper install elektra-dbg
 ```
 
 If you want to install individual debugsym/debuginfo packages:
@@ -124,6 +150,8 @@ If you want to install individual debugsym/debuginfo packages:
 apt-get install <packagename>-dbgsym # e.g. apt-get install libelektra5-dbgsym
 # For Fedora based distributions
 dnf debuginfo-install <packagename> # e.g. dnf debuginfo-install libelektra5
+# For openSUSE
+zypper install <packagename>-debuginfo # e.g. zypper install libelektra5-debuginfo
 ```
 
 To build Debian/Ubuntu Packages from the source you might want to use:
