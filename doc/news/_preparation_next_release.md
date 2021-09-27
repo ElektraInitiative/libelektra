@@ -193,9 +193,7 @@ you up to date with the multi-language support provided by Elektra.
 
 _(Michael Tucek)_
 
-### GLib
-
-- Do not build `io_glib` binding with `GLib` >= 2.70.0, since compiler flags are incompatible. _(Mihael Pranjić)_
+### <<Binding2>>
 
 ### <<Binding3>>
 
