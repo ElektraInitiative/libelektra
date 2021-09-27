@@ -1,7 +1,10 @@
 FROM opensuse/leap:15.3
 
 RUN zypper update -y \
-    && zypper install -y strace \
+    && zypper install -y \
+        strace \
+        tar \
+        gzip \
     && zypper clean --all
 
 # Create User:Group
