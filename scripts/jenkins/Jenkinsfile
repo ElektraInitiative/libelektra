@@ -635,8 +635,8 @@ def generateFullBuildStages() {
   )
 
   // Build Elektra via mingw for Windows
-  tasks << buildAndTestMingwW64-x86_64()
-  tasks << buildAndTestMingwW64-i686()
+  tasks << buildAndTestMingwW64_x86_64()
+  tasks << buildAndTestMingwW64_i686()
 
   // Build Elektra on alpine
   tasks << buildAndTest(
@@ -919,7 +919,7 @@ def buildAndTestAsan(testName, image, extraCmakeFlags = [:]) {
 }
 
 /* Helper to generate mingw x86_64 test */
-def buildAndTestMingwW64-x86_64() {
+def buildAndTestMingwW64_x86_64() {
   def testName = "debian-bullseye-mingw-w64-x86_64"
   return [(testName): {
     stage(testName) {
@@ -941,7 +941,7 @@ def buildAndTestMingwW64-x86_64() {
 }
 
 /* Helper to generate mingw i686 test */
-def buildAndTestMingwW64-i686() {
+def buildAndTestMingwW64_i686() {
   def testName = "debian-bullseye-mingw-w64-i686"
   return [(testName): {
     stage(testName) {
