@@ -37,6 +37,7 @@ add_library (${GELEKTRA_LIBRARY} SHARED ${SOURCES})
 target_include_directories (${GELEKTRA_LIBRARY} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories (${GELEKTRA_LIBRARY} SYSTEM PUBLIC ${GOBJECT_INCLUDE_DIRS})
 
+set (GOBJECT_CFLAGS_OTHER "${GOBJECT_CFLAGS_OTHER} -Wno-pedantic")
 target_compile_options (${GELEKTRA_LIBRARY} PUBLIC ${GOBJECT_CFLAGS_OTHER})
 
 target_link_libraries (${GELEKTRA_LIBRARY} PUBLIC elektra-core elektra-kdb)
