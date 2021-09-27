@@ -18,6 +18,7 @@ RUN zypper update -y && zypper install -y \
         ghostscript \
         git \
         glib2 \
+        glib2-devel \
         gzip \
         gpgme-devel \
         graphviz \
@@ -34,6 +35,7 @@ RUN zypper update -y && zypper install -y \
         libqt5-qtdeclarative-devel \
         libqt5-qtsvg-devel \
         libuv-devel \
+        libxerces-c-devel \
         libxml2-devel \
         llvm \
         lua-devel \
