@@ -634,16 +634,15 @@ ssize_t ksGetSize (const KeySet * ks)
  * Binary search in a KeySet that informs where a key should be inserted.
  *
  * @code
-
 ssize_t result = ksSearchInternal(ks, toAppend);
 
 if (result >= 0)
 {
 	ssize_t position = result;
-	// Seems like the key already exist.
+	// The key already exist in key set.
 } else {
 	ssize_t insertpos = -result-1;
-	// Seems like the key does not exist.
+	// The key was not found in key set.
 }
  * @endcode
  *
@@ -653,7 +652,7 @@ if (result >= 0)
  * @return -insertpos -1 (< 0) if the key was not found
  *    so to get the insertpos simple do: -insertpos -1
  */
-ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
+static ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 {
 	ssize_t left = 0;
 	ssize_t right = ks->size;
@@ -710,6 +709,38 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
 }
 
 /**
+ * Search in a key set, either yielding the actual index of the
+ * key, if the ley has been found within the key set, or a negative
+ * value indicating the insertion index of the key, if the key
+ * would be inserted.
+ *
+ * @code
+ssize_t result = ksSearch(ks, key);
+
+if (result >= 0)
+{
+	ssize_t position = result;
+	// The key already exist in key set.
+} else {
+	ssize_t insertpos = -result-1;
+	// The key was not found in key set.
+}
+ * @endcode
+ *
+ * @param ks the keyset to work with
+ * @param key the key to check
+ * @return position where the key is (>=0) if the key was found
+ * @return -insertpos -1 (< 0) if the key was not found
+ *    so to get the insertpos simple do: -insertpos -1
+ * @see ksLookup() for retrieving the found key
+ */
+ssize_t ksSearch (const KeySet * ks, const Key * key)
+{
+	// TODO #4039 implement optimization
+	return ksSearchInternal (ks, key);
+}
+
+/**
  * Appends a Key to the end of @p ks.
  *
  * Hands the ownership of the Key @p toAppend to the KeySet @p ks.
@@ -721,7 +752,7 @@ ssize_t ksSearchInternal (const KeySet * ks, const Key * toAppend)
  *
  * @copydetails doxygenFlatCopy
  *
- * @see keyGetRef().
+ * @see keyGetRef()
  *
  * If the Key's name already exists in the KeySet, it will be replaced with
  * the new Key.

@@ -386,7 +386,7 @@ public class ReadableKey implements Comparable<ReadableKey>
 	 *                                  released
 	 * @throws IllegalArgumentException if {@code other} is {@code null}
 	 */
-	public boolean isDirectBelow (ReadableKey other)
+	public boolean isDirectlyBelow (ReadableKey other)
 	{
 		argNotNull (other, "Key 'other'");
 		return Elektra.INSTANCE.keyIsDirectlyBelow (other.getPointer (), getPointer ()) == 1;

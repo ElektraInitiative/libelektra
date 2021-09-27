@@ -555,7 +555,8 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 
 	/* 20 is enough for any of the combinations below. */
 	size_t nameSize = keyGetNameSize (backend->mountpoint);
-	char * mountpoint = elektraMalloc (nameSize + 20);
+	size_t allocSize = nameSize + 20;
+	char * mountpoint = elektraMalloc (allocSize);
 
 	if (!strcmp (keyName (backend->mountpoint), "/"))
 	{
@@ -566,25 +567,25 @@ int mountBackend (KDB * kdb, Backend * backend, Key * errorKey ELEKTRA_UNUSED)
 			switch (ns)
 			{
 			case KEY_NS_SPEC:
-				sprintf (mountpoint, "spec:%s", keyName (backend->mountpoint));
+				snprintf (mountpoint, allocSize, "spec:%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("spec:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_DIR:
-				sprintf (mountpoint, "dir:%s", keyName (backend->mountpoint));
+				snprintf (mountpoint, allocSize, "dir:%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("dir:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_USER:
-				sprintf (mountpoint, "user:%s", keyName (backend->mountpoint));
+				snprintf (mountpoint, allocSize, "user:%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("user:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;
 				break;
 			case KEY_NS_SYSTEM:
-				sprintf (mountpoint, "system:%s", keyName (backend->mountpoint));
+				snprintf (mountpoint, allocSize, "system:%s", keyName (backend->mountpoint));
 				kdb->trie = trieInsert (kdb->trie, mountpoint, backend);
 				splitAppend (kdb->split, backend, keyNew ("system:/", KEY_VALUE, "root", KEY_END), 2);
 				++backend->refcounter;

@@ -7,7 +7,7 @@ import java.util.NoSuchElementException;
 /**
  * An {@link Iterator} for a {@link ReadableKey}'s name parts (separated by /)
  */
-public class KeyNameIterator implements Iterator<String>
+class KeyNameIterator implements Iterator<String>
 {
 
 	private final Pointer keyPointer;

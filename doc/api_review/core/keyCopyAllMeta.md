@@ -85,8 +85,8 @@
 
 - [x] Function code is fully covered by tests
 - [ ] All possible error states are covered by tests  
-       - [ ] add test for dest NULL  
-       - [ ] add test for source NULL
+       - [x] add test for dest NULL  
+       - [x] add test for source NULL
 - All possible enum values are covered by tests
 - [x] No inconsistencies between tests and documentation
 
