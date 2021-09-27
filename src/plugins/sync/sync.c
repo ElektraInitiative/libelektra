@@ -16,6 +16,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -57,7 +58,7 @@ int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_UN
 #ifdef __MINGW32__
 	FILE * fd = NULL;
 	// For mingw, we need to use mode "wc" and fflush(). See https://stackoverflow.com/a/57090195 .
-	fileMode = "wc";
+	const char * fileMode = "wc";
 	fd = fopen (configFile, fileMode);
 	if (fd == NULL)
 	{
