@@ -67,7 +67,8 @@ static bool specMatches (Key * specKey, Key * otherKey)
 	/**
 	 * Known limitation: For MINGW builds fnmatch.h does not exist. Therefore, globbing can't be used.
 	 * This means that there is no support for # and _ in key names.
-	 * This function was copied from 68e9dff, doesn't use globbing and therefore doesn't require the globbing library which is not compatible with Windows:
+	 * This function was copied from 68e9dff, doesn't use globbing and therefore doesn't require the globbing library which is not
+	 * compatible with Windows:
 	 */
 	const char * spec = keyUnescapedName (specKey);
 	size_t specNsLen = strlen (spec) + 1;

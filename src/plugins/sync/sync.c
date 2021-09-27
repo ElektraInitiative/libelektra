@@ -67,9 +67,9 @@ int elektraSyncSet (Plugin * handle ELEKTRA_UNUSED, KeySet * ks ELEKTRA_UNUSED, 
 	}
 
 #ifdef __MINGW32__
-	if(fflush (fd) == EOF)
+	if (fflush (fd) == EOF)
 #else
-	if (fsync (fileno(fd)) == -1)
+	if (fsync (fileno (fd)) == -1)
 #endif
 	{
 		ELEKTRA_SET_RESOURCE_ERRORF (parentKey, "Could not fsync/fflush config file %s. Reason: %s", configFile, strerror (errno));

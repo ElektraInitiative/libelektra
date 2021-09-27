@@ -179,7 +179,7 @@ kdb set "/freedesktop/openicc/device/camera/#0/EXIF_serial" x   # fails, not a l
 
 ## Known Issues
 
-- In MINGW32 builds, there is no globbing and therefore no support for key names with # and _.
+- In MINGW32 builds, there is no globbing and therefore no support for key names with # and \_.
 - Added metadata is not correctly removed during `kdbSet`, if the corresponding spec key was modified.
 - Default values do not work if globbing is involved.
 - By default, keys tagged with `require` do not emit errors even if not present
