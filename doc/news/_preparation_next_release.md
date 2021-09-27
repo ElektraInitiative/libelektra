@@ -193,7 +193,9 @@ you up to date with the multi-language support provided by Elektra.
 
 _(Michael Tucek)_
 
-### <<Binding2>>
+### GLib
+
+- Compile `glib` binding with `-Wno-pedantic` for compatibility. _(Mihael Pranjić)_
 
 ### <<Binding3>>
 
