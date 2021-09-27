@@ -388,6 +388,10 @@ def generateReleaseStages() {
     true // use placeholder dirs
   )
 
+  tasks << buildAndTestMingwW64_x86_64()
+  
+  tasks << buildAndTestMingwW64_i686()
+
   return tasks
 }
 
@@ -571,10 +575,6 @@ def generatePublishStages() {
     release.&publishRpmPackages,
     params.fedora_revision
   )
-  
-  tasks << buildAndTestMingwW64_x86_64()
-  
-  tasks << buildAndTestMingwW64_i686()
 
   tasks << buildDoc()
 
