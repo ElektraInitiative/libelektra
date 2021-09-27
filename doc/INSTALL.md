@@ -12,13 +12,13 @@ For the following Linux distributions and package managers 0.9 packages are avai
 
 - [Arch Linux](https://aur.archlinux.org/packages/elektra/)
 - [Openwrt](https://github.com/openwrt/packages/tree/master/libs/elektra)
-- [OpenSuse](https://software.opensuse.org/package/elektra)
 - [LinuxBrew](https://github.com/Linuxbrew/homebrew-core/blob/master/Formula/elektra.rb)
 
 ### Debian/Ubuntu
 
 We provide repositories for latest releases and latest builds from master (suite postfixed with `-unstable`) for following Debian-based distributions:
 
+- Debian Bullseye
 - Debian Buster
 - Ubuntu Focal
 - Ubuntu Bionic
