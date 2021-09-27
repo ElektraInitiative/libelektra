@@ -52,7 +52,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - The `gopts` plugin now includes deeply nested options and arguments in the generated help message. _(Tobias Schubert @qwepoizt)_
 - Errors from `gopts` are now correctly reported. _(Klemens Böswirth)_
-- Fix wrong variable names in gopts_win32.h. _(Tobias Schubert @qwepoizt)_
+- Fix wrong variable names in gopts\_win32.h. _(Tobias Schubert @qwepoizt)_
 
 ### range
 
@@ -62,7 +62,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - The `spec` plugin now runs before other `postgetstorage` plugins, so that validation can happen during `kdbGet` as well.
   This is especially relevant in combination with `gopts`. _(Klemens Böswirth)_
-- Make spec plugin (with no support for # and _ in key names) work in mingw-w64 builds. _(Tobias Schubert @qwepoizt)_
+- Make spec plugin (with no support for # and \_ in key names) work in mingw-w64 builds. _(Tobias Schubert @qwepoizt)_
 
 ### sync
 
@@ -70,7 +70,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 ### wresolver
 
-- Add missing ELEKTRA_PLUGIN_COMMIT export. _(Tobias Schubert @qwepoizt)_
+- Add missing ELEKTRA\_PLUGIN\_COMMIT export. _(Tobias Schubert @qwepoizt)_
 
 ### TOML
 
