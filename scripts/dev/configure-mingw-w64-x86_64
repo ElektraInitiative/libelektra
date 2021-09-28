@@ -8,7 +8,7 @@
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/configure-common"
 
-TOOLCHAIN_FILE="$SOURCE/scripts/cmake/Toolchain/Toolchain-mingw-w64-$(uname -m).cmake"
+TOOLCHAIN_FILE="$SOURCE/scripts/cmake/Toolchain/Toolchain-mingw-w64-x86_64.cmake"
 if [ ! -f "${TOOLCHAIN_FILE}" ]; then
 	echo "Toolchain file ${TOOLCHAIN_FILE} needed for cross compiling doesn't exist"
 	exit 1
@@ -22,7 +22,7 @@ cmake -DENABLE_TESTING=OFF \
 	-DBUILD_STATIC=ON \
 	-DBUILD_FULL=ON \
 	-DBUILD_SHARED=OFF \
-	-DPLUGINS="wresolver;dump;list" \
+	-DPLUGINS="wresolver;type;dump;cache;list;spec;gopts;sync" \
 	-DKDB_DEFAULT_RESOLVER=wresolver \
 	-DKDB_DEFAULT_STORAGE=dump \
 	-DKDB_DB_SYSTEM=kdb -DKDB_DB_SPEC=spec \
