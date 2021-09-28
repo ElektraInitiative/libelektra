@@ -89,6 +89,7 @@ if (FOUND_NAME GREATER -1)
 
 		set (SRC_FILES notificationReload.c)
 		set (SOURCES ${SRC_FILES} ${HDR_FILES})
+		set_source_files_properties (${SRC_FILES} PROPERTIES COMPILE_FLAGS "-Wno-pedantic")
 
 		find_package (GLib QUIET)
 		include_directories (${GLib_INCLUDE_DIRS})

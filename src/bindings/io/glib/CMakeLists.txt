@@ -6,8 +6,6 @@ if (NOT GLib_FOUND)
 	exclude_binding (io_glib "glib-2.0 not found")
 elseif (ENABLE_ASAN)
 	exclude_binding (io_glib "io bindings are not compatible with ENABLE_ASAN")
-elseif (GLib_VERSION VERSION_GREATER_EQUAL "2.70.0")
-	exclude_binding (io_glib "GLib >= 2.70.0 not compatible with -Wpedantic")
 else ()
 
 	# Build library
@@ -19,6 +17,7 @@ else ()
 
 	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${IO_VARIANT_SRC_FILES} ${ELEKTRA_HEADERS})
+	add_compile_options ("-Wno-pedantic")
 
 	set (IO_VARIANT_LIBRARY elektra-io-${BINDING_VARIANT})
 

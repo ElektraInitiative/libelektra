@@ -203,7 +203,7 @@ _(Michael Tucek)_
 
 ### GLib
 
-- Do not build `io_glib` binding with `GLib` >= 2.70.0, since compiler flags are incompatible. _(Mihael Pranjić)_
+- Compile `glib` binding with `-Wno-pedantic` for compatibility. _(Mihael Pranjić)_
 
 ### <<Binding3>>
 
