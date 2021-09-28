@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "ELEKTRA\-HIGHLEVEL\-GEN" "7" "September 2019" ""
+.TH "ELEKTRA\-HIGHLEVEL\-GEN" "7" "September 2021" ""
 .SH "NAME"
 \fBelektra\-highlevel\-gen\fR \- High\-level API code\-generation advanced features
 .P
@@ -9,8 +9,6 @@ This document focuses on the advanced features of the high\-level API code\-gene
 The parameters that are relevant to the concepts described here are (for the rest see `kdb\-gen\-highlevel(1) \fIkdb\-gen\-highlevel\.md\fR):
 .IP "\(bu" 4
 \fBembeddedSpec\fR: allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR
-.IP "\(bu" 4
-\fBspecValidation\fR: allowed values: \fBnone\fR (default), \fBminimal\fR
 .IP "\(bu" 4
 \fBenumConv\fR: allowed values: \fBstrcmp\fR, \fBswitch\fR, \fBauto\fR (default)
 .IP "" 0
@@ -21,7 +19,7 @@ The advantage of using \fBfull\fR is that your application is contained in a sin
 .P
 Setting \fBembeddedSpec=none\fR is only recommended, if you must have the minimal binary size and you know what you are doing\. In this case no defaults are passed to \fBelektraOpen\fR and defaults are only handled via the \fBspec\fR plugin\. If the specification/configuration isn't mounted, the getter functions may fail\.
 .P
-To avoid this case of a misconfigured mountpoint, you can use \fBspecValidation=minimal\fR\. It is by far not a perfect solution, but it will cause the initialization function (by default named \fBloadConfiguration\fR) to fail, if the specification is not mounted at the expected mountpoint or if the specification was not \fBspec\-mount\fRed\.
+The case of a misconfigured mountpoint will be detected automatically and reported as an error\. It will cause the initialization function (by default named \fBloadConfiguration\fR) to fail, if the specification is not mounted at the expected mountpoint or if the specification was not \fBspec\-mount\fRed\.
 .SH "Enums"
 We support the mapping of a set of string values to a native C \fBenum\fR\. To use this feature, you need to write your specification the same way that the enum part of the \fBtype\fR plugin expects\.
 .IP "" 4

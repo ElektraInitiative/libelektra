@@ -89,11 +89,24 @@ Files: src/tools/kdb/gen/mustache.hpp
 Copyright: 2015-2018 Kevin Wojniak
 License: BSL-1.0
 
+Files: src/libs/ease/sha-256.c
+	   src/libs/ease/sha-256.h
+Copyright: 2021 Alain Mosnier
+License: BSD-0-clause
+
 Files: src/bindings/jna/gradlew
        src/bindings/jna/gradlew.bat
        src/bindings/jna/gradle/wrapper*
 Copyright: 2015 the original author or authors
 License: Apache-2.0
+
+License: BSD-0-clause
+Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 License: BSD-3-clause
  Redistribution and use in source and binary forms, with or without

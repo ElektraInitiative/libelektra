@@ -667,7 +667,6 @@ ElektraError * elektraErrorKeyNotFound (const char * keyname);
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
 ElektraError * elektraErrorNullError (const char * function);
 ElektraError * elektraErrorEnsureFailed (const char * reason);
-ElektraError * elektraErrorMinimalValidationFailed (const char * function);
 
 #ifdef __cplusplus
 }
