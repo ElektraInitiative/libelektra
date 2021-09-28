@@ -366,6 +366,20 @@ def dockerInit() {
       "./scripts/docker/fedora/34/Dockerfile"
     )
 
+    /* openSUSE Leap 15.3 image*/
+    DOCKER_IMAGES.opensuse_15_3 = dockerUtils.createDockerImageDesc(
+      "opensuse-15-3", dockerUtils.&idTesting,
+      "./scripts/docker/opensuse/15.3",
+      "./scripts/docker/opensuse/15.3/Dockerfile"
+    )
+
+    /* CentOS Stream 8 image*/
+    DOCKER_IMAGES.centos_stream8 = dockerUtils.createDockerImageDesc(
+      "centos-stream-8", dockerUtils.&idTesting,
+      "./scripts/docker/centos/stream8",
+      "./scripts/docker/centos/stream8/Dockerfile"
+    )
+
     /* Image building the libelektra.org website */
     DOCKER_IMAGES.website = dockerUtils.createDockerImageDesc(
       "website", dockerUtils.&idArtifact,
@@ -443,6 +457,14 @@ def dockerInit() {
       "fedora-34-installed", dockerUtils.&idArtifact,
       "./build/package",
       "./scripts/docker/fedora/34/release.Dockerfile",
+      false
+    )
+
+    /* openSuse Leap 15.3 image used to install previously built packages */
+    DOCKER_IMAGES.opensuse_15_3_installed = dockerUtils.createDockerImageDesc(
+      "opensuse-15-3-installed", dockerUtils.&idTesting,
+      "./build/package",
+      "./scripts/docker/opensuse/15.3/release.Dockerfile",
       false
     )
 
@@ -541,6 +563,22 @@ def generateFullBuildStages() {
     "fedora-34-asan",
     DOCKER_IMAGES.fedora_34,
     CMAKE_FLAGS_BUILD_ALL
+  )
+
+  tasks << buildAndTest(
+    "opensuse-15-3",
+    DOCKER_IMAGES.opensuse_15_3,
+    CMAKE_FLAGS_BUILD_ALL+
+    CMAKE_FLAGS_DEBUG,
+    [TEST.ALL, TEST.MEM, TEST.INSTALL]
+  )
+
+  tasks << buildAndTest(
+    "centos-stream-8",
+    DOCKER_IMAGES.centos_stream8,
+    CMAKE_FLAGS_BUILD_ALL+
+    CMAKE_FLAGS_DEBUG,
+    [TEST.ALL, TEST.MEM, TEST.INSTALL]
   )
 
   // Add a task that should build the whole project to catch all test errors
@@ -1143,6 +1181,16 @@ def generateArtifactStages() {
     "fedora-34-unstable",
     "fedora-34-unstable",
     DOCKER_IMAGES.fedora_34_installed,
+    release.&publishRpmPackages,
+    this.&updateFedoraChangelog,
+    true
+  )
+  tasks << buildPackage(
+    "buildPackage/opensuse/leap/15.3",
+    DOCKER_IMAGES.opensuse_15_3,
+    "opensuse-leap-15.3",
+    "opensuse-leap-15.3",
+    DOCKER_IMAGES.opensuse_15_3_installed,
     release.&publishRpmPackages,
     this.&updateFedoraChangelog,
     true

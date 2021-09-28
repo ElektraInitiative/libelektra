@@ -642,11 +642,11 @@ struct _Elektra
 
 struct _ElektraError
 {
-	const char * code;
+	char * code;
 	char * codeFromKey;
 	char * description;
-	const char * module;
-	const char * file;
+	char * module;
+	char * file;
 	kdb_long_t line;
 	kdb_long_t warningCount;
 	kdb_long_t warningAlloc;
@@ -667,7 +667,6 @@ ElektraError * elektraErrorKeyNotFound (const char * keyname);
 ElektraError * elektraErrorWrongType (const char * keyname, KDBType expectedType, KDBType actualType);
 ElektraError * elektraErrorNullError (const char * function);
 ElektraError * elektraErrorEnsureFailed (const char * reason);
-ElektraError * elektraErrorMinimalValidationFailed (const char * function);
 
 #ifdef __cplusplus
 }

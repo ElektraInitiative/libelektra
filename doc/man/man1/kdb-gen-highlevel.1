@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "KDB\-GEN\-HIGHLEVEL" "1" "September 2019" ""
+.TH "KDB\-GEN\-HIGHLEVEL" "1" "September 2021" ""
 .SH "NAME"
 \fBkdb\-gen\-highlevel\fR \- High\-level API code\-generator template
 .SH "SYNOPSIS"
@@ -70,8 +70,6 @@ For detailed information about the contents of the header file see elektra\-high
 \fBgenSetters\fR: Switches whether setters should be generated at all; allowed values: \fB1\fR (default), \fB0\fR
 .IP "\(bu" 4
 \fBembeddedSpec\fR: Changes how much of the specification is embedded into the application; allowed values: \fBfull\fR (default), \fBdefaults\fR, \fBnone\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR
-.IP "\(bu" 4
-\fBspecValidation\fR: Changes how the specification will be validated on application start\-up; allowed values: \fBnone\fR (default), \fBminimal\fR\. see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR
 .IP "" 0
 .SH "EXAMPLES"
 The simplest invocation is:
@@ -84,11 +82,11 @@ However, it is not recommended to have the code\-generator read from the KDB, so
 .P
 If you don't want to embed the full specification in your binary, we recommend:
 .P
-\fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config embeddedSpec=defaults specValidation=minimal\fR
+\fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config embeddedSpec=defaults\fR
 .P
 For the minimal binary size you may use (this comes with its own drawbacks, see elektra\-highlevel\-gen(7) \fIelektra\-highlevel\-gen\.md\fR):
 .P
-\fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config embeddedSpec=none specValidation=minimal\fR
+\fBkdb gen \-F ni=spec\.ini highlevel /sw/org/app/#0/current config embeddedSpec=none\fR
 .SH "SEE ALSO"
 .IP "\(bu" 4
 kdb(1) \fIkdb\.md\fR for general information about the \fBkdb\fR tool\.
