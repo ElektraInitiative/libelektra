@@ -17,6 +17,7 @@ else ()
 
 	add_headers (ELEKTRA_HEADERS)
 	set (SOURCES ${IO_VARIANT_SRC_FILES} ${ELEKTRA_HEADERS})
+	add_compile_options ("-Wno-pedantic")
 
 	set (IO_VARIANT_LIBRARY elektra-io-${BINDING_VARIANT})
 
