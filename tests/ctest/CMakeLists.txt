@@ -35,5 +35,7 @@ target_link_elektra (test_opts elektra-opts)
 
 target_link_elektra (test_cmerge elektra-merge)
 
+target_link_elektra (test_sha-256 elektra-ease)
+
 # LibGit leaks memory
 set_property (TEST test_cmerge PROPERTY LABELS memleak)

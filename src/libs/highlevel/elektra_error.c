@@ -274,24 +274,6 @@ ElektraError * elektraErrorConversionFromString (KDBType targetType, const char 
 	return error;
 }
 
-/**
- * Creates a "minimal validation failed" error
- *
- * @param application parent key as passed to elektraOpen()
- *
- * @return A newly allocated ElektraError (free with elektraErrorReset()).
- */
-ElektraError * elektraErrorMinimalValidationFailed (const char * application)
-{
-	char * description = elektraFormat (
-		"The validation of your KDB has failed. Please ensure that spec%s contains the "
-		"specification and that 'kdb spec-mount %s' was executed.",
-		application, application);
-	ElektraError * error = elektraErrorCreate (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, "highlevel", "unknown", 0);
-	elektraFree (description);
-	return error;
-}
-
 // elektra/error.h
 
 /**

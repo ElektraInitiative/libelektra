@@ -63,6 +63,8 @@ char * elektraLongDoubleToString (kdb_long_double_t value);
 
 #endif // ELEKTRA_HAVE_KDB_LONG_DOUBLE
 
+kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Key * parentKey);
+
 #ifdef __cplusplus
 }
 }

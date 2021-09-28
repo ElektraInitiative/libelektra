@@ -15,6 +15,7 @@
 #include <command.hpp>
 #include <modules.hpp>
 
+#include <coloredkdbio.hpp>
 #include <kdb.h>
 #include <kdbease.h>
 #include <kdbhelper.h>
@@ -23,6 +24,7 @@
 #include <kdbtypes.h>
 
 #include <fstream>
+#include <key.hpp>
 #include <memory>
 #include <regex>
 #include <set>
@@ -38,7 +40,6 @@ const char * HighlevelGenTemplate::Params::EnumConversion = "enumConv";
 const char * HighlevelGenTemplate::Params::AdditionalHeaders = "headers";
 const char * HighlevelGenTemplate::Params::GenerateSetters = "genSetters";
 const char * HighlevelGenTemplate::Params::EmbeddedSpec = "embeddedSpec";
-const char * HighlevelGenTemplate::Params::SpecValidation = "specValidation";
 const char * HighlevelGenTemplate::Params::InstallPrefix = "installPrefix";
 const char * HighlevelGenTemplate::Params::EmbedHelpFallback = "embedHelpFallback";
 const char * HighlevelGenTemplate::Params::UseCommands = "useCommands";
@@ -49,13 +50,6 @@ enum class EmbeddedSpec
 	Full,
 	Defaults,
 	None
-};
-
-enum class SpecValidation
-{
-	None,
-	Minimal,
-	Full // TODO: implement?
 };
 
 static std::string createIncludeGuard (const std::string & fileName)
@@ -252,10 +246,6 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 										{ "full", EmbeddedSpec::Full },
 										{ "defaults", EmbeddedSpec::Defaults },
 										{ "none", EmbeddedSpec::None } });
-	auto specValidation = getParameter<SpecValidation> (
-		Params::SpecValidation,
-		{ { "", SpecValidation::None }, { "none", SpecValidation::None }, { "minimal", SpecValidation::Minimal } });
-
 	auto enumConversion = getParameter<EnumConversion> (Params::EnumConversion, { { "", EnumConversion::Auto },
 										      { "auto", EnumConversion::Auto },
 										      { "switch", EnumConversion::Trie },
@@ -633,10 +623,21 @@ kainjow::mustache::data HighlevelGenTemplate::getTemplateData (const std::string
 	// make elektraOpen() succeed, if there are missing required keys, but we are in helpMode
 	contract.append (kdb::Key ("system:/elektra/contract/highlevel/helpmode/ignore/require", KEY_VALUE, "1", KEY_END));
 
-	if (specValidation == SpecValidation::Minimal)
+	// enable check for properly mounted specification
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/mounted", KEY_VALUE, "1", KEY_END));
+
+	// calculate specification token
+	char token[65];
+	kdb::Key parentKeyMaybeWithErrors = kdb::Key (specParentName, KEY_END);
+	kdb_boolean_t success = ckdb::calculateSpecificationToken (token, ks.getKeySet (), parentKeyMaybeWithErrors.getKey ());
+	if (!success)
 	{
-		contract.append (kdb::Key ("system:/elektra/contract/highlevel/validation", KEY_VALUE, "minimal", KEY_END));
+		kdb::printWarnings (std::cerr, parentKeyMaybeWithErrors, false, false);
+		kdb::printError (std::cerr, parentKeyMaybeWithErrors, false, false);
+		throw CommandAbortException ("Error during calculation of specification token.");
 	}
+	contract.append (kdb::Key ("system:/elektra/contract/highlevel/check/spec/token", KEY_VALUE, token, KEY_END));
+
 
 	data["keys_count"] = std::to_string (keys.size ());
 	data["keys"] = keys;
