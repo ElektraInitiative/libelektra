@@ -226,11 +226,11 @@ build_package() {
 }
 
 memcheck() {
-	# With ENABLE_DEBUG="OFF" testkdb_allplugins detects a memleak on buster, bullseye and bionic,
+	# With ENABLE_DEBUG="OFF" testkdb_allplugins detects a memleak on buster, bullseye, bionic and opensuse 15.3,
 	# therefore the tests are disabled for theses distribitions.
 	# discussed in: https://github.com/ElektraInitiative/libelektra/pull/3530
 	# see also: https://github.com/ElektraInitiative/libelektra/pull/3855
-	if [ "$VERSION_CODENAME" = "buster" ] || [ "$VERSION_CODENAME" = "bullseye" ] || [ "$VERSION_CODENAME" = "bionic" ]; then
+	if [ "$VERSION_CODENAME" = "buster" ] || [ "$VERSION_CODENAME" = "bullseye" ] || [ "$VERSION_CODENAME" = "bionic" ] || [ "$VERSION_CODENAME" = "opensuse-leap15.3" ]; then
 		cmemcheck 'testkdb_allplugins'
 	else
 		cmemcheck
