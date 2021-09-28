@@ -34,7 +34,7 @@ docker run -it elektra/elektra
 ## Highlights
 
 - `kdb` now prohibits write operations on cascading keys that miss a corresponding existing key. See the details in the `Tools` section below and the new subsection on cascading writes in the [tutorial](/doc/tutorials/cascading.md) on cascading keys for further information. _(Alexander Firbas)_
-- <<HIGHLIGHT1>>
+- TODO: Add qwepoizt's contributions. _(Tobias Schubert @qwepoizt)_
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
