@@ -55,7 +55,8 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 ### range
 
-- The `range` plugin now uses metaky `type` as fallback, if `check/type` is not specified. _(Tobias Schubert @qwepoizt)_
+- The `range` plugin now uses metakey `type` as fallback, if `check/type` is not specified. _(Tobias Schubert @qwepoizt)_
+- The `range` now treats all validation problems as warnings during kdbGet(). _(Tobias Schubert @qwepoizt)_
 
 ### spec
 
@@ -103,6 +104,9 @@ _(Michael Tucek)_
 
 ### High-level API
 
+- Modified High-level API to treat all warnings as errors. _(Tobias Schubert @qwepoizt)_
+- Implemented support for warnings in High-level API error handling. _(Tobias Schubert @qwepoizt)_
+- Fix resource management in High-level API error handling. _(Tobias Schubert @qwepoizt)_
 - Implement a check to detect whether an application's specification was properly `mount`ed and `spec-mount`ed. _(Tobias Schubert @qwepoizt)_
 - Implement a check to detect whether an application's specification was changed after installation. _(Tobias Schubert @qwepoizt)_
 - Add sanity-checks to resource management. _(Tobias Schubert @qwepoizt)_
