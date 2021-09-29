@@ -114,6 +114,7 @@ _(Michael Tucek)_
 
 - Modified High-level API to treat all warnings as errors. _(Tobias Schubert @qwepoizt)_
 - Implemented support for warnings in High-level API error handling. _(Tobias Schubert @qwepoizt)_
+- Fix a small bug for warnings in High-level API. _(Tobias Schubert @qwepoizt)_
 - Fix resource management in High-level API error handling. _(Tobias Schubert @qwepoizt)_
 - Implement a check to detect whether an application's specification was properly `mount`ed and `spec-mount`ed. _(Tobias Schubert @qwepoizt)_
 - Implement a check to detect whether an application's specification was changed after installation. _(Tobias Schubert @qwepoizt)_
