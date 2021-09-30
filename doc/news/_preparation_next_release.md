@@ -41,9 +41,18 @@ docker run -it elektra/elektra
 
 We have created a version of [Redshift](https://github.com/jonls/redshift/) that uses Elektra for configuration management!
 
-Redshift's code for loading configuration files, parsing CLI options and validating configuration was refactored to use Elektra.
+We removed and refactored Redshift's code for loading configuration files, parsing CLI options and validating configuration to use Elektra. Redshift with Elektra has nearly 700 fewer lines of code (-17%) and is a great example of what Elektra is all about: More applications with less code for configuration management!
 
 To test it, clone the [elektrify branch](https://github.com/qwepoizt/redshift/tree/improve-config/elektrify) and follow the instructions provided in [CONTRIBUTING.md](https://github.com/qwepoizt/redshift/blob/improve-config/elektrify/CONTRIBUTING.md).
+
+#### Benefits of Redshift using Elektra
+
+Refactoring Redshift to use Elektra brings the following benefits:
+
+- Fewer lines of code (~700 less LOC, 17%).
+- Adding new configuration settings is easier: Validation and parsing of setting values (from configuration file and CLI options) is handled by Elektra - no custom code required!
+- Clean separation of application code and the specification of supported configuration settings (including defaults and validation rules).
+- Automatic generation of CLI help text.
 
 ### HL API improvements
 
@@ -62,6 +71,8 @@ Thanks to _Klemens Böswirth_, _Markus Raab_ and _Tobias Schubert_!
 ### Windows releases
 
 We are now shipping experimental releases for Windows 32- and 64-bit! They can be downloaded [here](https://build.libelektra.org/job/libelektra-release/lastSuccessfulBuild/artifact/artifacts/).
+
+A big success is that Redshift already works with Elektra under Windows.
 
 ### <<HIGHLIGHT2>>
 
