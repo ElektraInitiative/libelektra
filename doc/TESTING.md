@@ -175,7 +175,7 @@ These tests use the [gtest](https://github.com/google/googletest) test framework
 
 If the tests should not always be executed, the CMake function
 `add_plugintest` can be used instead.
-See cmake/Modules/LibAddPlugin.cmake for more information.
+See `scripts/cmake/Modules/LibAddPlugin.cmake` for more information.
 
 By using `TEST_README` in `add_plugin` (also enabled by default),
 [Markdown Shell Recorder](https://master.libelektra.org/tests/shell/shell_recorder/tutorial_wrapper)
