@@ -34,11 +34,34 @@ docker run -it elektra/elektra
 ## Highlights
 
 - `kdb` now prohibits write operations on cascading keys that miss a corresponding existing key. See the details in the `Tools` section below and the new subsection on cascading writes in the [tutorial](/doc/tutorials/cascading.md) on cascading keys for further information. _(Alexander Firbas)_
-- TODO: Add qwepoizt's contributions. _(Tobias Schubert @qwepoizt)_
 - <<HIGHLIGHT2>>
 - <<HIGHLIGHT3>>
 
-### <<HIGHLIGHT1>>
+### Redshift and Elektra
+
+We have created a version of [Redshift](https://github.com/jonls/redshift/) that uses Elektra for configuration management!
+
+Redshift's code for loading configuration files, parsing CLI options and validating configuration was refactored to use Elektra.
+
+To test it, clone the [elektrify branch](https://github.com/qwepoizt/redshift/tree/improve-config/elektrify) and follow the instructions provided in [CONTRIBUTING.md](https://github.com/qwepoizt/redshift/blob/improve-config/elektrify/CONTRIBUTING.md).
+
+### HL API improvements
+
+We have made a large number of improvements to the high-level API. The highlights are:
+
+- improved detection of differences in specification between an application's compilation and runtime
+- improved validation of CLI options
+- early detection of errors in specification files
+- updated and improved documentation and tutorials
+- bugfixes
+
+More improvements and details are explained below.
+
+Thanks to _Klemens Böswirth_, _Markus Raab_ and _Tobias Schubert_!
+
+### Windows releases
+
+We are now shipping experimental releases for Windows 32- and 64-bit! They can be downloaded [here](https://build.libelektra.org/job/libelektra-release/lastSuccessfulBuild/artifact/artifacts/).
 
 ### <<HIGHLIGHT2>>
 
