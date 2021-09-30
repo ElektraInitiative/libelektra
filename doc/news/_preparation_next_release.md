@@ -245,7 +245,7 @@ _(Michael Tucek)_
 
 ## Documentation
 
-- Add link and small improvements to [tutorial about writing specifications](/doc/tutorials/specification.md). _(Markus Raab)_
+- Add link and small improvements to tutorial about [writing specifications](/doc/tutorials/specification.md) and [logger](/doc/tutorials/logger.md). _(Markus Raab)_
 - doc: add pre/postconditions and invariants to module key _(@lawli3t)_
 - doc: add pre/postconditions and invariants to module keymeta _(@lawli3t)_
 - Fix broken links _(@lawli3t)_
