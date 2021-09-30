@@ -6,6 +6,9 @@
  * If you often change the file, you might want to set CMAKE_LINK_DEPENDS_NO_SHARED
  * to avoid relinking everything.
  *
+ * Do not commit changes do this file, except if you want to change the default.
+ * In that case, make sure to update also doc/tutorials/logger.md
+ *
  * @copyright BSD License (see LICENSE.md or https://www.libelektra.org)
  */
 
