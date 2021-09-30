@@ -133,8 +133,9 @@ Elektra * elektraOpen (const char * application, KeySet * defaults, KeySet * con
 			// If there are warnings, pick the first warning, create a copy, set it to param "error" and return NULL.
 			// We can only report 1 error at a time. Once the user has fixed that error, they will be informed about the next
 			// one on the next execution of the application.
-			*error = elektraErrorCreate (errorFromKdbGet->warnings[0]->code, errorFromKdbGet->description,
-						     errorFromKdbGet->module, errorFromKdbGet->file, errorFromKdbGet->line);
+			*error = elektraErrorCreate (errorFromKdbGet->warnings[0]->code, errorFromKdbGet->warnings[0]->description,
+						     errorFromKdbGet->warnings[0]->module, errorFromKdbGet->warnings[0]->file,
+						     errorFromKdbGet->warnings[0]->line);
 
 			elektraErrorReset (&errorFromKdbGet);
 			ksDel (config);
