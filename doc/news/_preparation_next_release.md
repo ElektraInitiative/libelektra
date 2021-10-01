@@ -41,7 +41,7 @@ docker run -it elektra/elektra
 
 We have created a version of [Redshift](https://github.com/jonls/redshift/) that uses Elektra for configuration management!
 
-We removed and refactored Redshift's code for loading configuration files, parsing CLI options and validating configuration to use Elektra. Redshift with Elektra has nearly 700 fewer lines of code (-17%) and is a great example of what Elektra is all about: More applications with less code for configuration management!
+We removed and refactored Redshift's code for loading configuration files, parsing CLI options and validating configuration to use Elektra. Redshift with Elektra has about 700 fewer lines of code (-16%) and is a great example of what Elektra is all about: More applications with less code for configuration management!
 
 To test it, take a look at our PR [Refactor to use Elektra ](https://github.com/jonls/redshift/pull/837) and follow the instructions provided in [CONTRIBUTING.md](https://github.com/qwepoizt/redshift/blob/improve-config/elektrify/CONTRIBUTING.md).
 
