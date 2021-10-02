@@ -61,6 +61,7 @@ Elektra:
 - [Code Generator](code-generator.md)
 - [Benchmarking](benchmarking.md)
 - [Profiling](profiling.md)
+- [Logging](logger.md)
 
 ## Installation Manuals
 

@@ -70,7 +70,7 @@ Thus please use following techniques (in order of preference):
 
    `ELEKTRA_LOG ("formatted text to be printed according to log filters", ...)`
 
-   Read [HERE](/doc/dev/logging.md) for how to enable the logger.
+   Read [HERE](/doc/tutorials/logger.md) for how to enable the logger.
 
 4. Otherwise comment within source with `//` or with `/**/` for multi-line
    comments. Use `TODO` to indicate that something is not yet done.
