@@ -8,6 +8,8 @@ tests/shell/shell_recorder/mathcheck.esr     for INI (hard-coded ni)
 doc/help/kdb-get.md   for INI
 src/bindings/swig/ruby/tests/CMakeLists.txt disabled testruby_tools_plugindatabase.rb in commit 87d1a4f1ec19a0cf86b877e6d2eb9e1d124d96ee
 
+scripts/jenkins/Jenkinsfile disabled buildint openwrt packages in c0ffb72e10e6e145989b61bad8a36e4a77450acf
+
 ### Jenkins
 
 We disabled the tests
