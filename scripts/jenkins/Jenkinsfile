@@ -1196,7 +1196,7 @@ def generateArtifactStages() {
     true
   )
 
-  tasks << buildOpenwrtPackage(DOCKER_IMAGES.openwrt_sdk)
+  // tasks << buildOpenwrtPackage(DOCKER_IMAGES.openwrt_sdk)
 
   tasks << buildWebsite()
   // tasks << buildWebUI()
