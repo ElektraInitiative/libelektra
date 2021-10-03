@@ -1,32 +1,32 @@
 #!/bin/sh
 #
-# @author René Schwaiger <sanssecours@me.com>
+# @author Michael Tucek <michael@tucek.eu>
 # @brief Reformats Java source code
-# @date 10.11.2019
+# @date 30.09.2021
 # @tags reformat
+
+FORMATTER_JAR=/opt/google-java-format.jar
+FORMATTER_DOWNLOAD_URL=https://github.com/google/google-java-format/releases/download/v1.11.0/google-java-format-1.11.0-all-deps.jar
+if [ "$1" = "-d" ]; then
+	if [ -f $FORMATTER_JAR ]; then
+		echo "$FORMATTER_JAR already exists!"
+	else
+		echo "Downloading $FORMATTER_DOWNLOAD_URL to $FORMATTER_JAR"
+		curl -o $FORMATTER_JAR -L $FORMATTER_DOWNLOAD_URL
+	fi
+	exit 0
+fi
+
+if [ -f $FORMATTER_JAR ]; then
+	echo "Using existing $FORMATTER_JAR"
+else
+	echo "Formatter JAR not found in $FORMATTER_JAR"
+	echo "Use switch -d to download $FORMATTER_DOWNLOAD_URL to $FORMATTER_JAR"
+	exit 0
+fi
 
 SCRIPTS_DIR=$(dirname "$0")
 . "${SCRIPTS_DIR}/include-common"
-
-REQUIRED_VERSION=12
-CLANG_FORMAT=$(command -v clang-format-$REQUIRED_VERSION || command -v clang-format)
-
-if [ -n "$CLANG_FORMAT" ]; then
-	LOCATION="$CLANG_FORMAT"
-	VERSION=$("$CLANG_FORMAT" --version 2> /dev/null)
-	MAJOR_VERSION=$(printf '%s' "$VERSION" | sed -E 's/.* ([0-9]+)\.[0-9].[0-9][ -]?.*/\1/')
-	if [ "${MAJOR_VERSION:-0}" -ne $REQUIRED_VERSION ]; then
-		unset CLANG_FORMAT
-	fi
-fi
-
-if [ -z "${CLANG_FORMAT}" ]; then
-	printf >&2 'ClangFormat:   %s\n' "$LOCATION"
-	printf >&2 'Version Info:  %s\n' "$VERSION"
-	printf >&2 'Major Version: %s\n' "$MAJOR_VERSION"
-	printf >&2 'Please install clang-format %s or later' "$MIN_VERSION"
-	exit 1
-fi
 
 cd "$SOURCE" || {
 	printf >&2 'Unable to change into source directory'
@@ -41,4 +41,4 @@ if [ $# -gt 0 ]; then
 else
 	source_files=$(git ls-files '*.java')
 fi
-printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs "$CLANG_FORMAT" -style=file -i
+printf "%s\n" "$source_files" | sed -nE 's/(.*)/'"'"'\1'"'"'/p' | xargs java --illegal-access=permit -jar $FORMATTER_JAR --replace

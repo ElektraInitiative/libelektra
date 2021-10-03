@@ -39,10 +39,11 @@ error_message="$(
 The reformatting check detected code that **does not** fit the guidelines given in `doc/CODING.md`.
 If you see this message on one of the build servers, you can either install one or multiple of the following tools:
 
-- [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) to format C, C++ and Java source code,
+- [`clang-format`](https://clang.llvm.org/docs/ClangFormat.html) to format C and C++ source code,
 - [`cmake_format`](https://github.com/cheshirekow/cmake_format) to format CMake code,
 - [`prettier`](https://prettier.io) to format JavaScript & Markdown code, and
 - [`shfmt`](https://github.com/mvdan/sh) to format Shell code
+- [`google-java-format`](https://google.github.io/styleguide/javaguide.html) to format Java source code
 
 . Afterwards you can use the following scripts to fix the formatting problems
 

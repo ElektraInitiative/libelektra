@@ -8,7 +8,6 @@ restylers:
       include:
         - "!tests/shell/gen/**/*"
         - "!**/*.js"
-
   - prettier:
       image: restyled/restyler-prettier:v2.3.2
   - prettier-markdown:
@@ -19,3 +18,10 @@ restylers:
       arguments:
         - -s
         - -sr
+  - google-java-format:
+      image: 'restyled/restyler-google-java-format:v1.9'
+      command:
+        - google-java-format
+        - '--replace'
+      include:
+        - '**/*.java'
