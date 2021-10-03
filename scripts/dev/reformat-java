@@ -5,13 +5,24 @@
 # @date 30.09.2021
 # @tags reformat
 
-FORMATTER_JAR=/tmp/google-java-format.jar
+FORMATTER_JAR=/opt/google-java-format.jar
 FORMATTER_DOWNLOAD_URL=https://github.com/google/google-java-format/releases/download/v1.11.0/google-java-format-1.11.0-all-deps.jar
+if [ "$1" = "-d" ]; then
+	if [ -f $FORMATTER_JAR ]; then
+		echo "$FORMATTER_JAR already exists!"
+	else
+		echo "Downloading $FORMATTER_DOWNLOAD_URL to $FORMATTER_JAR"
+		curl -o $FORMATTER_JAR -L $FORMATTER_DOWNLOAD_URL
+	fi
+	exit 0
+fi
+
 if [ -f $FORMATTER_JAR ]; then
 	echo "Using existing $FORMATTER_JAR"
 else
-	echo "Downloading $FORMATTER_DOWNLOAD_URL to $FORMATTER_JAR"
-	curl -o $FORMATTER_JAR -L $FORMATTER_DOWNLOAD_URL
+	echo "Formatter JAR not found in $FORMATTER_JAR"
+	echo "Use switch -d to download $FORMATTER_DOWNLOAD_URL to $FORMATTER_JAR"
+	exit 0
 fi
 
 SCRIPTS_DIR=$(dirname "$0")
