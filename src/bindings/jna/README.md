@@ -69,7 +69,7 @@ Simply add libelektra as dependency using:
     <dependency>
       <groupId>org.libelektra</groupId>
       <artifactId>libelektra</artifactId>
-      <version>0.9.7</version>
+      <version>0.9.8</version>
     </dependency>
 ```
 

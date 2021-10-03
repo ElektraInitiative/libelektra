@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.2
-FROM alpine:3.14.0
+FROM alpine:3.14.2
 
 RUN apk update \
     && apk add --no-cache --upgrade\
@@ -30,7 +30,7 @@ RUN mkdir -p ${GTEST_ROOT} \
     && rm gtest.tar.gz
 
 ENV ELEKTRA_ROOT=/opt/elektra
-ENV ELEKTRA_RELEASE=0.9.7
+ENV ELEKTRA_RELEASE=0.9.8
 RUN mkdir -p ${ELEKTRA_ROOT} \
     && cd /tmp \
     && curl -o elektra.tar.gz \
@@ -65,7 +65,7 @@ RUN --mount=type=tmpfs,target=/tmp \
     && rm -Rf ${GTEST_ROOT}
 
 
-FROM alpine:3.14.0
+FROM alpine:3.14.2
 COPY --from=0 ${ELEKTRA_ROOT} \
               ${ELEKTRA_ROOT}
 ARG USERID=1000
