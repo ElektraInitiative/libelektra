@@ -1,17 +1,9 @@
 # 0.9.<<VERSION>> Release
 
-This release did not happen yet.
-
-Please update this file within PRs accordingly.
-For non-trivial changes, you can choose to be
-part of the highlighted changes. Please make
-sure to add some short tutorial (checked by
-shell recorder) or asciinema for highlighted items.
-
-Please add your name at the end of every contribution.
-**Syntax:** _(your name)_
-
-<<`scripts/generate-news-entry`>>
+- guid: 351E5EBD-402A-4643-A553-2F1A578C5C4F
+- author: Mihael Pranjić
+- pubDate: Sun, 03 Oct 2021 21:45:46 +0200
+- shortDesc: Redshift Elektrified, HL API & Java Binding Improvements
 
 We are proud to release Elektra 0.9.<<VERSION>>.
 
@@ -34,8 +26,7 @@ docker run -it elektra/elektra
 ## Highlights
 
 - `kdb` now prohibits write operations on cascading keys that miss a corresponding existing key. See the details in the `Tools` section below and the new subsection on cascading writes in the [tutorial](/doc/tutorials/cascading.md) on cascading keys for further information. _(Alexander Firbas)_
-- <<HIGHLIGHT2>>
-- <<HIGHLIGHT3>>
+- Redshift is now elektrified. _(Tobias Schubert @qwepoizt)_
 
 ### Redshift and Elektra
 
@@ -77,10 +68,6 @@ We are now shipping experimental releases for Windows 32- and 64-bit! They can b
 
 A big success is that Redshift already works with Elektra under Windows.
 
-### <<HIGHLIGHT2>>
-
-### <<HIGHLIGHT2>>
-
 ## Plugins
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
@@ -119,12 +106,6 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - The `comment/#/space` metakey is now used correctly to store the actual whitespace characters from the file,
   instead of a number. _(Klemens Böswirth)_
 
-### Python
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
@@ -136,14 +117,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 _(Michael Tucek)_
 
-- <<TODO>>
-- <<TODO>>
-
 ### Core
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Remove obsolete `ksNeedSync` function. _(Mihael Pranjić)_
 - Replace various occurences of `sprintf` by `snprintf` and fix out of bounds array access in markdownlinkconverter. _(Mihael Pranjić)_
 
@@ -164,24 +139,6 @@ _(Michael Tucek)_
 
 - Implement calculation of a specification token (=sha-256 hash). _(Tobias Schubert @qwepoizt)_
 - Add [asmonier's sha-2](https://github.com/amosnier/sha-2) for sha-256 hash calculation. _(Tobias Schubert @qwepoizt)_
-
-### <<Library1>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library2>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
-### <<Library3>>
-
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Bindings
 
@@ -216,7 +173,7 @@ you up to date with the multi-language support provided by Elektra.
   - now works with a standard installation of Elektra
   - updated code to work with current Java binding
 - `KeySetReleasedException` and `KeyReleasedException` have been replaced by the native `IllegalStateException`
-- Introduced abstraction `ReadableKey` for better reflecting the limitations of meta data keys via a type hierarchy, leading to meta data keys are now returned as `ReadableKey`s:
+- Introduced abstraction `ReadableKey` to better reflect the limitations of meta data keys via a type hierarchy. Meta data keys are now returned as `ReadableKey`s:
   - `Key` extends `ReadableKey`
   - `Key` class is now final
   - Changed `Key Key::nextMeta()` to `Optional<ReadableKey> Key::nextMeta()`, no longer throwing NoSuchElementException for non-exceptional behavior
@@ -244,15 +201,13 @@ _(Michael Tucek)_
 
 - Compile `glib` binding with `-Wno-pedantic` for compatibility. _(Mihael Pranjić)_
 
-### <<Binding3>>
-
 ## Tools
 
 - Really add all tools when using `-DTOOLS=ALL`. _(Markus Raab)_
 - ZeroMQ Hub: fix compilation and man page. _(Markus Raab)_
 - Configure packaging for FUSE tool. _(Alexander Firbas)_
 - FUSE: fix bug preventing binary writes. _(Alexander Firbas)_
-- ambiguous write operations now disabled in kdb _(Alexander Firbas)_
+- Ambiguous write operations are now disabled in kdb. _(Alexander Firbas)_
 - `webd`: update npm dependencies. _(Mihael Pranjić)_
 
 ### KDB
@@ -270,16 +225,9 @@ _(Michael Tucek)_
 - `kdb gen`: Improve naming of variables to make code easier to understand. _(Tobias Schubert @qwepoizt)_
 - `kdb spec-mount`: Improve usability by failing with helpful error messages, if the specification contains errors. _(Tobias Schubert @qwepoizt)_
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-
 ## Scripts
 
 - Add script for mingw-w64 i686 build. _(Tobias Schubert @qwepoizt)_
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 
 ## Documentation
 
@@ -287,7 +235,6 @@ _(Michael Tucek)_
 - doc: add pre/postconditions and invariants to module key _(@lawli3t)_
 - doc: add pre/postconditions and invariants to module keymeta _(@lawli3t)_
 - Fix broken links _(@lawli3t)_
-- <<TODO>>
 - Remove previous authors. _(Markus Raab)_
 - add pre/postconditions and invariants to module keytest _(@lawli3t)_
 - Updated the news template. _(Mihael Pranjić)_
@@ -297,11 +244,9 @@ _(Michael Tucek)_
 - add pre/postconditions and invariants to module keyvalue _(@lawli3t)_
 - Update and improve inline documentation of `kdb gen`. _(Tobias Schubert @qwepoizt)_
 - Fix broken links. _(Robert Sowula)_
-- <<TODO>>
 
 ## Tests
 
-- <<TODO>>
 - Fix failing `testshell_markdown_tutorial_crypto` on Mac OS and other OS with GnuPG version >= 2.3.1. _(Peter Nirschl @petermax2)_
 - Use clang-format 12 for Restyled and update Restyled version. _(Mihael Pranjić)_
 - Update all Restyled formatters to current versions. _(Mihael Pranjić)_
@@ -310,22 +255,15 @@ _(Michael Tucek)_
 - Add tests for libease's sha-256. _(Tobias Schubert @qwepoizt)_
 - Add tests for sha-256 hash calculation of a KeySet. _(Tobias Schubert @qwepoizt)_
 - Add additional test cases for module `keymeta` _(@lawli3t)_
-- <<TODO>>
-- <<TODO>>
 
 ## Packaging
 
 - Add packages for openSuse Leap 15.3. _(Robert Sowula)_
-- <<TODO>>
-- <<TODO>>
 
 ## Build
 
 ### CMake
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Add files generated by CMake to .gitignore. _(Tobias Schubert @qwepoizt)_
 - Add support for i686 to mingw-w64 toolchains. _(Tobias Schubert @qwepoizt)_
 - Add plugins type, cache, spec, gopts, sync to mingw-w64 builds. _(Tobias Schubert @qwepoizt)_
@@ -337,7 +275,6 @@ _(Michael Tucek)_
 - Bump Gradle to version 7.2. _(Mihael Pranjić)_
 - Bump Debian Buster images to Bullseye and Stretch images to Buster. We still leave one Debian Stretch job due to upstream Debian LTS support until June 2022. _(Mihael Pranjić)_
 - Add Dockerfiles for openSUSE Leap 15.3 and CentOS Stream 8. _(Robert Sowula)_
-- <<TODO>>
 - Add docker image for OpenWrt package building. _(Robert Sowula)_
 - Add files generated by docker when tutorial [run-all-tests-with-docker](https://www.libelektra.org/tutorials/run-all-tests-with-docker) is followed to .gitignore. _(Tobias Schubert @qwepoizt)_
 
@@ -351,8 +288,6 @@ _(Michael Tucek)_
 ### Jenkins
 
 - Add ABI test stage for release pipeline. _(Robert Sowula)_
-- <<TODO>>
-- <<TODO>>
 - Move check stages that don't build the code to a dedicated stage, to avoid confusion when parallel builds are aborted. _(Robert Sowula)_
 - Add test stages for openSUSE and CentOS. _(Robert Sowula)_
 - Use `tmpfs` in Docker to speed up the test suite. _(Mihael Pranjić)_
@@ -361,19 +296,13 @@ _(Michael Tucek)_
 
 ### Cirrus
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
-- Migrate most macOS build jobs to GitHub actions to speed up builds. _(Mihael Pranjić)_
 - Bump FreeBSD images to 12.2 and 13.0 using the LLVM 12 toolchain, drop FreeBSD 11. _(Mihael Pranjić)_
 - Fix cirrus-file parsing errors. _(Mihael Pranjić)_
 - Redistribute CPU and memory resources and enable greedy instances. _(Mihael Pranjić)_
 
 ### GitHub Actions
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Migrate most macOS build jobs to GitHub actions to speed up builds. _(Mihael Pranjić)_
 - Upgrade macOS GCC build job to GCC 11. _(Mihael Pranjić)_
 
 ## Website
@@ -381,22 +310,27 @@ _(Michael Tucek)_
 The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
 - Update npm dependencies. _(Mihael Pranjić)_
 
 ## Outlook
 
 We are currently working on following topics:
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- 1.0 API _(Stefan Hanreich)_ and _(Klemens Böswirth)_
+- KDB access using FUSE _(Alexander Firbas)_
+- Improve Java Development Experience _(Michael Tucek)_
+- Improve Plugin Framework _(Klemens Böswirth)_
+- Default TOML plugin _(Klemens Böswirth)_, _(Markus Raab)_ and _(Jakob Fischer)_
+- Elektrify KDE _(Dardan Haxhimustafa)_, _(Felix Resch)_ and _(Mihael Pranjić)_
+- Elektrify GNOME _(Mihael Pranjić)_
+- Continious Releases _(Robert Sowula)_
+- Improve 3-way merge _(Dominic Jäger)_
+- Shell completion _(Ulrike Schäfer)_
+- Ansible module _(Thomas Waser)_
 
 ## Statistics
 
-We closed [<<NUMISSUES>> issues](https://github.com/ElektraInitiative/libelektra/milestone/<<MILESTONE>>?closed=1) for this release.
+We closed [59 issues](https://github.com/ElektraInitiative/libelektra/milestone/29?closed=1) for this release.
 
 <<`scripts/git-release-stats 0.9.VER-1 0.9.<<VERSION>>`>>
 
