@@ -1,8 +1,8 @@
 # 0.9.<<VERSION>> Release
 
-- guid: 351E5EBD-402A-4643-A553-2F1A578C5C4F
+- guid: 0CB8C139-730C-4CCD-9FB4-0C7C4AA4DBF2
 - author: Mihael Pranjić
-- pubDate: Sun, 03 Oct 2021 21:45:46 +0200
+- pubDate: Mon, 04 Oct 2021 00:02:45 +0200
 - shortDesc: Redshift Elektrified, HL API & Java Binding Improvements
 
 We are proud to release Elektra 0.9.<<VERSION>>.
