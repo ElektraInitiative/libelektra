@@ -272,7 +272,7 @@ set (CPACK_DEBIAN_ELEKTRA-MISC_PACKAGE_ARCHITECTURE "all")
 set (CPACK_DEBIAN_ELEKTRA-MISC_PACKAGE_SECTION "misc")
 
 # install copyright file
-configure_file ("${CMAKE_SOURCE_DIR}/doc/THIRD-PARTY-LICENSES" "${CMAKE_BINARY_DIR}/doc/copyright" COPYONLY)
+configure_file ("${CMAKE_SOURCE_DIR}/.reuse/dep5" "${CMAKE_BINARY_DIR}/doc/copyright" COPYONLY)
 foreach (component ${PACKAGES})
 	install (
 		FILES "${CMAKE_BINARY_DIR}/doc/copyright"

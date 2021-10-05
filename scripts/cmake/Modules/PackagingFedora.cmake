@@ -19,15 +19,15 @@ set (CPACK_RPM_PACKAGE_AUTOREQPROV 1)
 
 set (CPACK_RPM_CHANGELOG_FILE "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/changelog")
 
-execute_process (COMMAND bash "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/map_licenses.sh" "${CMAKE_SOURCE_DIR}/doc/THIRD-PARTY-LICENSES"
+execute_process (COMMAND bash "${CMAKE_SOURCE_DIR}/scripts/packaging/fedora/map_licenses.sh" "${CMAKE_SOURCE_DIR}/.reuse/dep5"
 		 OUTPUT_VARIABLE THIR_PARTY_LICENSES_STR)
-set (CPACK_RPM_PACKAGE_LICENSE "${THIR_PARTY_LICENSES_STR} \n # For a breakdown of the licensing, see THIRD-PARTY-LICENSES")
+set (CPACK_RPM_PACKAGE_LICENSE "${THIR_PARTY_LICENSES_STR} \n # For a breakdown of the licensing, see copyright (.reuse/dep5)")
 # install license files
 configure_file ("${CMAKE_SOURCE_DIR}/LICENSE.md" "${CMAKE_BINARY_DIR}/doc/LICENSE" COPYONLY)
-configure_file ("${CMAKE_SOURCE_DIR}/doc/THIRD-PARTY-LICENSES" "${CMAKE_BINARY_DIR}/doc/THIRD-PARTY-LICENSES" COPYONLY)
+configure_file ("${CMAKE_SOURCE_DIR}/.reuse/dep5" "${CMAKE_BINARY_DIR}/doc/copyright" COPYONLY)
 foreach (component ${PACKAGES})
 	install (
-		FILES "${CMAKE_BINARY_DIR}/doc/LICENSE" "${CMAKE_BINARY_DIR}/doc/THIRD-PARTY-LICENSES"
+		FILES "${CMAKE_BINARY_DIR}/doc/LICENSE" "${CMAKE_BINARY_DIR}/doc/copyright"
 		COMPONENT ${component}
 		DESTINATION "share/licenses/${component}")
 endforeach ()
