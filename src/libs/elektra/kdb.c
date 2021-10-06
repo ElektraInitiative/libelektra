@@ -2096,15 +2096,17 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 
 	// Step 1: check if ks has changed
-	// FIXME: check that KS_FLAG_SYNC is properly set
-	if (!ksNeedSync (ks))
+	// FIXME: sync check
+	/*if (!ksNeedSync (ks))
 	{
-		// Step 2: check if any key in ks has changed
-		if (!ksKeyNeedSync (ks))
-		{
-			// everything up-to-date -> return
-			return 0;
-		}
+
+	}*/
+
+	// Step 2: check if any key in ks has changed
+	if (!ksKeyNeedSync (ks))
+	{
+		// everything up-to-date -> return
+		return 0;
 	}
 
 	int errnosave = errno;				      // TODO (Q): needed?
