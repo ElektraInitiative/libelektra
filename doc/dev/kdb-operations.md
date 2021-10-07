@@ -23,11 +23,13 @@ The basic flow of this operation is:
 1. Create empty `KDB` instance
 2. Configure `KDB` instance for bootstrap
 3. Run bootstrap `get` operation
-4. Mount global plugins
+4. Setup default global plugins <!-- TODO: maybe change name; global plugins are very different from normal plugins (although the C API is the same)-->
 5. Process contract
 6. Parse mountpoints
 7. Configure `KDB` instance with real mountpoints
 8. Add hardcoded mountpoints to `KDB` instance
+
+> **Note:** Despite sharing a name, the `open` operation **does not** call the `elektra<Plugin>Open` function of any plugin (except within the bootstrap `get` operation).
 
 Namespaces in mountpoint configs:
 
@@ -38,7 +40,7 @@ Namespaces in mountpoint configs:
   This is so that default values can be checked and validated by plugins.
 - `spec:/` mountpoints may exist, but they are treated differently during `get` and `set`
 - `proc:/` mountpoints may exist, but they are read-only (see below)
-- `dir:/`, `user:/` and `system:/` mountpoints can be created without restrictions
+- `dir:/`, `user:/` and `system:/` mountpoints can be created without restrictions, except for the one below
 
 Other restrictions:
 
@@ -59,40 +61,55 @@ Properties of `kdbGet()`:
 
 - After calling `kdbGet (kdb, ks, parentKey)`, the KeySet `ks` will contain _all keys_ (including their values) that are stored in _any backend_ with a mountpoint that is _below `parentKey`_.
 - After calling `kdbGet (kdb, ks, parentKey)`, below `parentKey` the KeySet `ks` will _only_ contain keys that are stored in a backend.
-- The KeySet `ks` may contain other keys not below `parentKey`.
-  These keys fall into one of two categories:
-  1. Keys that are stored in a backend that is not below `parentKey`.
+- The KeySet `ks` _may_ contain other keys not below `parentKey`.
+  These keys fall into one of three categories:
+  1. Keys that are not below `parentKey`, but are stored in a backend that contains other keys which are below `parentKey`.
+     These keys are returned, because backends are treated as one atomic unit.
+     Either all keys within a backend are read, or none of them are.
+  2. Keys that are stored in a backend that is not below `parentKey`.
      `kdbGet()` may decide that it is more efficient (e.g. because of a cache) to return more keys than requested.
-  2. Keys that were already present in `ks` when `kdbGet()` was called.
+  3. Keys that were already present in `ks` when `kdbGet()` was called and do not conflict with the goal of representing the current state of the KDB.
+     > **Note:** While it is possible that keys not below `parentKey` exist within `ks`, there are no guarantees. `kdbGet()` only makes guarantees about the keys _below `parentKey`_.
+- After calling `kdbGet (kdb, ks, parentKey)`, the Key `parentKey` will only have the `meta:/error/*` or `meta:/warnings/#/*` metakeys, if the errors/warnings originate from this `kdbGet()` call.
+  In other words, `kdbGet ()` first clears any existing errors/warnings and only then starts doing the actual work.
 
-In simpler terms, this means to the caller it looks as if `kdbGet()` had removed all keys below `parentKey` from `ks` and then loaded the data from the backends.
-Below `parentKey` the KeySet `ks` correctly represents the state of the KDB.
+To the caller it looks as if `kdbGet()` had removed all keys below `parentKey`, as well as some others, from `ks` and then loaded the data from the backends.
+Which backends are actually read is an implementation detail.
+Which keys are removed from `ks` depends on the backends that are read.
+
+`kdbGet()` will always try to be efficient in achieving its goal of reading the keys below `parentKey`.
+It is only guaranteed that below `parentKey` the KeySet `ks` correctly represents the state of the KDB.
 For the rest of `ks` there are no such guarantees.
 
 TODO: cache correct? notifications? (just call at the end?)
 
+> **Note:** In the list below "phase" always refers to a phase of the `get` operation as described in [the backend plugin contract](backend-plugins.md).
+
 The basic flow of this operation is:
 
 1. Determine the backends needed to read all keys below `parentKey`
-2. Run the `init` phase on all the backends that haven't been initialized
-3. Run the `resolver` phase on all backends
-4. From now on ignore all backends, which indicated that there is no update.
-5. If all backends are now ignored, **return**.
-6. If a global cache plugin is enabled:
-   Ask the global cache plugin for the cache times for all backends.
-7. If all backends have an existing cache entry:
+2. Run the `open` operation for all required backend that haven't been opened
+3. Run the `init` phase on all the backends that haven't been initialized
+4. Run the `resolver` phase on all backends
+5. From now on ignore all backends, which indicated that there is no update.
+6. If all backends are now ignored, **return**.
+7. If a global cache plugin is enabled:
+   Ask the global cache plugin for the cache handles (normally modification times) for all backends.
+8. If all backends have an existing cache entry:
    Run the `cachecheck` phase on all backends
-8. If all backends indicated the cache is still valid:
+9. If all backends indicated the cache is still valid:
    Ask the global cache plugin for the cached data and **return**.
-9. Run the `prestorage` and `storage` phase on all backends.
-10. Run the `poststorage` phase of all `spec:/` backends.
-11. Merge the data from all backends
-12. If enabled, run the `gopts` plugin.
-13. Run the `spec` plugin (to copy metakeys).
-14. Split data back into individual backends.
-15. Run the `poststorage` phase for all backends.
-16. Merge the data from all backends.
-17. If a global cache plugin is enabled, update cache.
+10. Run the `prestorage` and `storage` phase on all backends.
+11. Run the `poststorage` phase of all `spec:/` backends.
+<!-- TODO: can this merge+split be avoided somehow? -->
+12. Merge the data from all backends
+13. If enabled, run the `gopts` plugin.
+14. Run the `spec` plugin (to copy metakeys).
+15. Split data back into individual backends.
+16. Run the `poststorage` phase for all non-`spec:/` backends.
+17. Remove all keys which are below the parent key of any backend that has been read from `ks`.
+18. Merge the data from all backends into `ks`.
+19. If a global cache plugin is enabled, update cache.
     Then **return**.
 
 > **Note:** In case of error, we abort immediately, restore `ks` to its original state and return.
@@ -101,9 +118,12 @@ Influence of namespaces:
 
 - cascading and `meta:/` keys are always illegal in `ks` (should be enforced via different KeySet types)
 - `spec:/` backends only go through `init`, `resolver`, `cache`, `presetstorage` and `storage` phases as normal, but their `poststorage` phase is called earlier.
+  This is required, because any validation and post-processing of `spec:/` keys needs to happen, before they are used as the specification for other keys in the actual `poststorage` phase.
 - `dir:/`, `user:/` and `system:/` go through all phases as described above.
 - `proc:/` mountpoints go through all the phases as described above, but they are not stored in the cache.
 - `default:/` backends only go through the `poststorage` phase.
+  This is because `default:/` keys are generated from the specification (stored as `spec:/` keys).
+  Therefore, no `default:/` keys can exist before the specification is processed by the `spec` plugin.
 
 ## `set` Operation
 
@@ -115,6 +135,7 @@ Properties of `kdbSet()`:
 
 - When calling `kdbSet (kdb, ks, parentKey)` the contents (key names, values and metadata) of `ks` _will not be modified_.
 - _All keys_ in `ks` that are below `parentKey` will be persisted in the KDB, when a `kdbSet (kdb, ks, parentKey)` call returns successfully.
+  Additionally, any key in `ks` that shares a backend with another key which is below `parentKey` will also be persisted.
 - Calling `kdbSet` results in an error, if `kdbGet` wasn't called on this `KDB` instance at least once.
 
 TODO: notifications? (just call at the end?)
@@ -123,25 +144,26 @@ The basic flow of this operation is:
 
 <!-- TODO: check optimizations (OPT), remove unless clearly useful -->
 
-1. <!-- OPT -->
-   Check if `ks` needs sync (via `KS_FLAG_SYNC` flag), if so go to 3.
-2. <!-- OPT -->
-   Check if any key in `ks` below `parentKey` needs sync (via `KEY_FLAG_SYNC`).
-   If neither `ks` nor any of the keys need sync, **return**.
-3. Determine the backends needed to write all keys below `parentKey`.
-4. Check that all backends are initialized (i.e. `kdbGet()` was called).
+1. Determine the backends needed to write all keys below `parentKey`.
+2. Check that all backends are initialized (i.e. `kdbGet()` was called).
    From now on ignore all backends that were initialized as read-only.
-5. Determine which backends contain changed data.
+3. Determine which backends contain changed data.
+   Any backend that contains a key that needs sync (via `KEY_FLAG_SYNC`) could contain changed data.
    From now on ignore all backends that have not changed.
-6. Run the `spec` plugin on `ks` (to add metakeys for new keys).
-7. Deep-Copy `ks` (below `parentKey`) into a new KeySet `set_ks`
-8. Split `set_ks` into individual backends
-9. Run the `resolver` and `prestorage` on all backends (abort immediately on error and go to e).
-10. Merge the results into a new version of `set_ks`.
-11. Run the `spec` plugin on `set_ks` (to remove copied metakeys).
-12. Split `set_ks` into individual backends again.
-13. Run the `storage` and `poststorage` phases on all backends (abort immediately on error and go to e).
-14. If everything was successful:
+4. Run the `spec` plugin on `ks` (to add metakeys for new keys).
+<!-- TODO: Could we merge the deep-copy and split steps? -->
+5. Deep-Copy `ks` (below `parentKey`) into a new KeySet `set_ks`
+6. Split `set_ks` into individual backends
+7. Run the `resolver` and `prestorage` on all backends (abort immediately on error and go to e).
+<!-- TODO: can this merge+split be avoided?
+    do we really need to call spec for this?
+    Could we use metaspec:/ namespace and just remove all those keys?
+ -->
+8. Merge the results into a new version of `set_ks`.
+9. Run the `spec` plugin on `set_ks` (to remove copied metakeys).
+10. Split `set_ks` into individual backends again.
+11. Run the `storage` and `poststorage` phases on all backends (abort immediately on error and go to e).
+12. If everything was successful:
     Run the `precommit` and `commit` phases on all backends (abort immediately on error and go to e), then run the `postcommit` phase on all backends and **return**.
 
 <ol type="a" start="5">
@@ -160,4 +182,4 @@ Influence of namespaces:
 ## `close` Operation
 
 The `close` operation is very simple.
-It just frees up all resources used by a `KDB` instance.
+It simply frees up all resources used by a `KDB` instance.

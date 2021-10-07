@@ -410,7 +410,7 @@ struct _Plugin
 	KeySet * modules; /*!< A list of all currently loaded modules.*/
 };
 
-// FIXME: document
+// FIXME (kodebach): document
 typedef struct _BackendData
 {
 	struct _Plugin * backend;
@@ -612,7 +612,7 @@ void elektraKeyNameCanonicalize (const char * name, char ** canonicalName, size_
 void elektraKeyNameUnescape (const char * name, char * unescapedName);
 size_t elektraKeyNameEscapePart (const char * part, char ** escapedPart);
 
-// TODO (Q): make public?
+// TODO (kodebaach) [Q]: make public?
 int elektraIsArrayPart (const char * namePart);
 
 /* global plugin calls */

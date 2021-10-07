@@ -1179,7 +1179,7 @@ error:
 
 Key * backendsFindParent (KeySet * backends, const Key * key)
 {
-	// TODO: performance? Should be fine?
+	// TODO (kodebach): performance? Should be fine?
 	// With m = number of parts in key, n = size of backends
 	// this should be O(m) if backends uses the hashmap, but O(m*log(n)) otherwise
 	// The old trie solution would be O(k) where k is the length of the name of key

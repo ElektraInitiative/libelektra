@@ -1273,11 +1273,11 @@ elektraCursor ksFindHierarchy (const KeySet * ks, const Key * root, elektraCurso
 }
 
 /**
- * // FIXME: documentation
+ * // FIXME (kodebach): documentation
  */
 KeySet * ksBelow (const KeySet * ks, const Key * root)
 {
-	// FIXME: tests
+	// FIXME (kodebach): tests
 	if (keyGetNamespace (root) == KEY_NS_CASCADING)
 	{
 		KeySet * returned = ksNew (0, KS_END);

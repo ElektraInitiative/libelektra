@@ -54,7 +54,7 @@
  */
 Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config, Key * errorKey)
 {
-	// TODO (Q): take global KS as arg?
+	// TODO (kodebach) [Q]: take global KS as arg?
 	Plugin * handle = 0;
 	const char * n;
 
@@ -102,6 +102,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	config = 0;		   // for err_clup case
 
 	/* let the plugin initialize itself */
+	// TODO (kodebach): lazy open
 	if (handle->kdbOpen)
 	{
 		if ((handle->kdbOpen (handle, errorKey)) == -1)

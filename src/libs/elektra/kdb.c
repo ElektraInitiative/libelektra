@@ -351,7 +351,7 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
  */
 static bool ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
 {
-	// TODO: tests
+	// TODO (kodebach): tests
 	// deep dup, so modifications to the keys in contract after kdbOpen() cannot modify the contract
 	KeySet * dup = ksDeepDup (contract);
 
@@ -376,7 +376,7 @@ static KDB * kdbNew (Key * errorKey)
 	handle->modules = ksNew (0, KS_END);
 	if (elektraModulesInit (handle->modules, errorKey) == -1)
 	{
-		// TODO (Q): shouldn't we let elektraModulesInit set this error?
+		// TODO (kodebach) [Q]: shouldn't we let elektraModulesInit set this error?
 		ELEKTRA_SET_INSTALLATION_ERROR (
 			errorKey, "Method 'elektraModulesInit' returned with -1. See other warning or error messages for concrete details");
 
@@ -406,7 +406,7 @@ static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend
 
 static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * global, Key * errorKey)
 {
-	// FIXME: replace KDB_DEFAULT_STORAGE with separate KDB_BOOTSTRAP_STORAGE
+	// FIXME (kodebach): replace KDB_DEFAULT_STORAGE with separate KDB_BOOTSTRAP_STORAGE
 	Plugin * storage = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, ksNew (0, KS_END), errorKey);
 	if (storage == NULL)
 	{
@@ -416,7 +416,7 @@ static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * 
 	}
 	storage->global = global;
 
-	// TODO (Q): support direct read-write to absolute path in backend plugin to avoid resolver in bootstrap?
+	// TODO (kodebach) [Q]: support direct read-write to absolute path in backend plugin to avoid resolver in bootstrap?
 	Plugin * resolver = elektraPluginOpen (KDB_DEFAULT_RESOLVER, modules, ksNew (0, KS_END), errorKey);
 	if (resolver == NULL)
 	{
@@ -631,7 +631,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 	return true;
 }
 
-// FIXME: write tests
+// FIXME (kodebach): write tests
 KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet * global, Key * errorKey)
 {
 	KeySet * mountpoints = ksNew (0, KS_END);
@@ -857,7 +857,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 	ELEKTRA_LOG ("called with %s", keyName (errorKey));
 	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 
-	int errnosave = errno; // TODO (Q): really needed?
+	int errnosave = errno; // TODO (kodebach) [Q]: really needed?
 
 	// Step 1: create empty KDB instance
 	KDB * handle = kdbNew (errorKey);
@@ -866,6 +866,7 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		goto error;
 	}
 
+	// Step 2: configure for bootstrap
 	if (!addElektraMountpoint (handle->backends, handle->modules, handle->global, errorKey))
 	{
 		goto error;
@@ -878,8 +879,8 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 		goto error;
 	}
 
-	// Step 4: mount global plugins
-	// TODO: remove/replace step in global plugins rewrite
+	// Step 4: setup default global plugins
+	// TODO (kodebach): remove/replace step in global plugins rewrite
 	if (mountGlobals (handle, ksDup (elektraKs), handle->modules, errorKey) == -1)
 	{
 		// mountGlobals also sets a warning containing the name of the plugin that failed to load
@@ -1229,6 +1230,8 @@ static bool initBackends (KeySet * backends, Key * parentKey)
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
+		// TODO (kodebach): lazy open
+
 		Key * backendKey = ksAtCursor (backends, i);
 		keySetMeta (backendKey, "meta:/internal/kdbreadonly", NULL);
 
@@ -1529,7 +1532,7 @@ static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 {
 	// TODO (kodebach): different handling of namespaces
-	// FIXME: write tests
+	// FIXME (kodebach): write tests
 
 	// Step 0: check preconditions
 	if (parentKey == NULL)
@@ -1544,7 +1547,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	clearErrorAndWarnings (parentKey); // TODO (doc): NEW kdbGet now ALWAYS clears errors AND warnings
+	clearErrorAndWarnings (parentKey); // TODO (kodebach) [doc]: NEW kdbGet now ALWAYS clears errors AND warnings
 
 	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
 	{
@@ -1578,7 +1581,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	int errnosave = errno;				      // TODO (Q): needed?
+	int errnosave = errno;				      // TODO (kodebach) [Q]: needed?
 	Key * initialParent = keyDup (parentKey, KEY_CP_ALL); // TODO (kodebach): still needed with locks?
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
@@ -1589,7 +1592,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 1: find backends for parentKey
 	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
 
-	// Step 2: run init phase where needed
+	// Step 2: run open operation where needed (happens within step 3)
+	// Step 3: run init phase where needed
 	if (!initBackends (backends, parentKey))
 	{
 		// TODO (kodebach): name not needed, once lock is in place
@@ -1601,13 +1605,13 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 	clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
 
-	// Step 3: run resolver phase
+	// Step 4: run resolver phase
 	if (!resolveBackendsForGet (backends, parentKey))
 	{
 		goto error;
 	}
 
-	// Step 4: remove up-to-date backends
+	// Step 5: remove up-to-date backends
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
 		if (keyGetMeta (ksAtCursor (backends, i), "meta:/internal/kdbneedsupdate") == NULL)
@@ -1617,7 +1621,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 	}
 
-	// Step 5: return if no backends left
+	// Step 6: return if no backends left
 	if (ksGetSize (backends) == 0)
 	{
 		// TODO (kodebach): name not needed, once lock is in place
@@ -1631,67 +1635,68 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		return 0;
 	}
 
-	// check if cache is enabled, Steps 6-8 only run with cache
-	// FIXME: implement
+	// check if cache is enabled, Steps 7-9 only run with cache
+	// FIXME (kodebach): implement
 	bool cacheEnabled = false;
 	if (cacheEnabled)
 	{
-		// Step 6: get cache entry IDs
-		// FIXME: implement
+		// Step 7: get cache entry IDs
+		// FIXME (kodebach): implement
 
-		// Step 7: run cachecheck phase
-		// FIXME: implement
+		// Step 8: run cachecheck phase
+		// FIXME (kodebach): implement
 
-		// Step 8: retrieve cache data
-		// FIXME: implement
+		// Step 9: retrieve cache data
+		// FIXME (kodebach): implement
 	}
 
-	// Step 9a: run prestorage phase
+	// Step 10a: run prestorage phase
 	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_PRE_STORAGE))
 	{
 		goto error;
 	}
 
-	// Step 9b: discard data that plugins may have produced
+	// Step 10b: discard data that plugins may have produced
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
 		const BackendData * backendData = keyValue (ksAtCursor (backends, i));
 		ksClear (backendData->keys);
 	}
 
-	// Step 9c: run storage phase
+	// Step 10c: run storage phase
 	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_STORAGE))
 	{
 		goto error;
 	}
 
-	// Step 10: run poststorage phase for spec:/
+	// Step 11: run poststorage phase for spec:/
 	Key * specRoot = keyNew ("spec:/", KEY_END);
-	if (!runGetPhase (ksBelow (backends, specRoot), parentKey, KDB_GET_PHASE_STORAGE))
+	if (!runGetPhase (ksBelow (backends, specRoot), parentKey, KDB_GET_PHASE_POST_STORAGE))
 	{
 		keyDel (specRoot);
 		goto error;
 	}
 	keyDel (specRoot);
 
-	// Step 11: merge data from all backends
+	// TODO (kodebach) [Q]: can we avoid this merge and the split in step 15?
+	// Step 12: merge data from all backends
 	KeySet * dataKs = ksNew (ksGetSize (ks), KS_END);
 	backendsMerge (backends, dataKs);
 
-	// Step 12: run procgetstorage global plugins
+	// Step 13: run procgetstorage global plugins
 	if (elektraGlobalGet (handle, dataKs, parentKey, PROCGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		goto error;
 	}
 
-	// Step 13: run postgetstorage global plugins
+	// Step 14: run postgetstorage global plugins
 	if (elektraGlobalGet (handle, dataKs, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		goto error;
 	}
 
-	/* TODO: implement actual steps with new global plugins
-		// Step 12: run gopts (if enabled)
+	/* TODO (kodebach): implement actual steps with new global plugins
+		// Step 13: run gopts (if enabled)
 		keyCopy (parentKey, initialParent, KEY_CP_NAME);
 		keySetNamespace (cascadingParent, KEY_NS_CASCADING);
 		set_bit (parentKey, KEY_LOCK_NAME | KEY_LOCK_VALUE);
@@ -1702,7 +1707,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 			goto error;
 		}
 
-		// Step 13: run spec plugin
+		// Step 14: run spec plugin
 		if (!specGet (dataKs, cascadingParent))
 		{
 			clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
@@ -1711,7 +1716,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
 	*/
 
-	// Step 14: split dataKs for poststorage phase
+	// Step 15: split dataKs for poststorage phase
 	if (!backendsDivide (backends, dataKs))
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
@@ -1720,7 +1725,8 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	// Step 15: run poststorage phase
+	// Step 16: run poststorage phase for non-spec:/
+	// FIXME (kodebach): don't rerun poststorage on spec:/
 	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE))
 	{
 		goto error;
@@ -1728,7 +1734,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	keySetName (parentKey, keyName (initialParent));
 
-	// Step 16a: remove the parts of ks we read from backends
+	// Step 17: remove the parts of ks we read from backends
 	// Note: we need to do this, so that in a second kdbGet() keys
 	//       removed from the backend are removed from ks as well
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
@@ -1736,11 +1742,11 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 		ksDel (ksCut (ks, ksAtCursor (backends, i)));
 	}
 
-	// Step 16b: merge data into ks and return
+	// Step 18: merge data into ks and return
 	backendsMerge (backends, ks);
 
-	// Step 17: update cache
-	// FIXME: implement
+	// Step 19: update cache
+	// FIXME (kodebach): implement
 
 	// TODO (kodebach): name not needed, once lock is in place
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
@@ -2044,7 +2050,7 @@ static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase,
 int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 {
 	// TODO (kodebach): different handling of namespaces
-	// FIXME: write tests
+	// FIXME (kodebach): write tests
 
 	// Step 0: check preconditions
 	if (parentKey == NULL)
@@ -2059,7 +2065,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
-	clearErrorAndWarnings (parentKey); // TODO (doc): NEW kdbSet now ALWAYS clears errors AND warnings
+	clearErrorAndWarnings (parentKey); // TODO (kodebach) [doc]: NEW kdbSet now ALWAYS clears errors AND warnings
 
 	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
 	{
@@ -2095,27 +2101,13 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 
-	// Step 1: check if ks has changed
-	// FIXME: sync check
-	/*if (!ksNeedSync (ks))
-	{
-
-	}*/
-
-	// Step 2: check if any key in ks has changed
-	if (!ksKeyNeedSync (ks))
-	{
-		// everything up-to-date -> return
-		return 0;
-	}
-
-	int errnosave = errno;				      // TODO (Q): needed?
+	int errnosave = errno;				      // TODO (kodebach) [Q]: needed?
 	Key * initialParent = keyDup (parentKey, KEY_CP_ALL); // TODO (kodebach): still needed with locks?
 
-	// Step 3: find backends for parentKey
+	// Step 1: find backends for parentKey
 	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
 
-	// Step 4: check that backends are initialized and remove read-only ones
+	// Step 2: check that backends are initialized and remove read-only ones
 	bool backendsInit = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
@@ -2140,8 +2132,8 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		}
 	}
 
-	// Step 5: remove backends that haven't changed since kdbGet()
-	// FIXME: implement
+	// Step 3: remove backends that haven't changed since kdbGet()
+	// FIXME (kodebach): implement
 
 	if (!backendsInit)
 	{
@@ -2151,19 +2143,19 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	// Step 6: run spec to add metadata
-	// TODO: change once new global plugins are done
+	// Step 4: run spec to add metadata
+	// TODO (kodebach): change once new global plugins are done
 	if (elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		goto error;
 	}
 
-	// Step 7: create deep-copy of ks
+	// Step 5: create deep-copy of ks
 	// Note: This is needed so that ks retains its in-process state,
 	//       after we transform the data into its on-disk state.
 	KeySet * setKs = ksDeepDup (ks);
 
-	// Step 8: split setKs for resolver and prestorage phases
+	// Step 6: split setKs for resolver and prestorage phases
 	if (!backendsDivide (backends, setKs))
 	{
 		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
@@ -2172,58 +2164,59 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	// Step 9a: resolve backends
+	// Step 7a: resolve backends
 	if (!resolveBackendsForSet (backends, parentKey))
 	{
 		goto rollback;
 	}
 
-	// Step 9b: run prestorage phase
+	// Step 7b: run prestorage phase
 	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_PRE_STORAGE, false, KDB_SET_FN_SET))
 	{
 		goto rollback;
 	}
 
 	/* TODO (kodebach): enable steps when spec is ready
-		// Step 10: merge data from all backends (for spec removal)
+		// Step 8: merge data from all backends (for spec removal)
 		ksClear (setKs);
 		backendsMerge (backends, setKs);
 
-		// Step 11: run the spec plugin to remove copied metadata
-		// FIXME: implement
+		// Step 9: run the spec plugin to remove copied metadata
+		// FIXME (kodebach): implement
 
-		// Step 12: split setKs for remaining phases
+		// Step 10: split setKs for remaining phases
 		if (!backendsDivide (backends, setKs))
 		{
 			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Couldn't divide keys into mountpoints after spec removal. Please report this
 	   bug at https://issues.libelektra.org."); goto rollback;
 		}
 	*/
-	// Step 13a: run storage phase
+
+	// Step 11a: run storage phase
 	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_STORAGE, false, KDB_SET_FN_SET))
 	{
 		goto rollback;
 	}
 
-	// Step 13b: run poststorage phase
+	// Step 11b: run poststorage phase
 	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_STORAGE, false, KDB_SET_FN_SET))
 	{
 		goto rollback;
 	}
 
-	// Step 14a: run precommit phase
+	// Step 12a: run precommit phase
 	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_PRE_COMMIT, false, KDB_SET_FN_COMMIT))
 	{
 		goto rollback;
 	}
 
-	// Step 14b: run commit phase
+	// Step 12b: run commit phase
 	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_COMMIT, false, KDB_SET_FN_COMMIT))
 	{
 		goto rollback;
 	}
 
-	// Step 14c: run postcommit phase
+	// Step 12c: run postcommit phase
 	runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_COMMIT, true, KDB_SET_FN_COMMIT);
 
 	return 1;
