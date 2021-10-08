@@ -35,17 +35,13 @@ if (NOT EXIT_CODE EQUAL 0)
 	return ()
 endif ()
 
-# Create a temporary directory to build the python package
-execute_process (
-	COMMAND mktemp -d
-	OUTPUT_VARIABLE TMP_BUILD_DIR
-	OUTPUT_STRIP_TRAILING_WHITESPACE)
+set (TMP_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/build)
 
-# Copy the source to the temporary directory
-execute_process (COMMAND cp -a ${CMAKE_CURRENT_SOURCE_DIR}/. ${TMP_BUILD_DIR} OUTPUT_QUIET)
+# Copy the source to the build directory to enable clean in-source builds
+file (COPY . DESTINATION ${TMP_BUILD_DIR})
 
 # Copy LICENSE.md
-execute_process (COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/../../../LICENSE.md ${TMP_BUILD_DIR} OUTPUT_QUIET)
+file (COPY ./../../../LICENSE.md DESTINATION ${TMP_BUILD_DIR})
 
 # Build the python wheel-package
 execute_process (COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel WORKING_DIRECTORY ${TMP_BUILD_DIR})
