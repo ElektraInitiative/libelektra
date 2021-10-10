@@ -250,6 +250,11 @@ Key *ksAtCursor (KeySet *ks, elektraCursor cursor);
 Key *ksLookup (KeySet *ks, Key *k, elektraLookupFlags options);
 Key *ksLookupByName (KeySet *ks, const char *name, elektraLookupFlags options);
 
+static inline Key *ksRemoveKey (KeySet *ks, Key *key)
+{
+	return ksLookup(ks, key, KDB_O_POP);
+}
+
 ssize_t ksSearch (const KeySet * ks, const Key * toAppend);
 
 #ifdef __cplusplus

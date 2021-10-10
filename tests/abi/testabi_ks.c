@@ -2883,6 +2883,34 @@ static void test_ksAppend3 (void)
 	ksDel (ks);
 }
 
+static void test_ksRemoveKey (void)
+{
+	Key * key;
+	Key * removedKey;
+	KeySet * ks;
+
+	key = keyNew ("user:/key", KEY_VALUE, "test", KEY_END);
+	ks = ksNew (0, KS_END);
+
+	succeed_if (ksAppendKey (ks, key) == 1, "Incorrect KeySet size")
+
+	removedKey = ksRemoveKey (ks, key);
+	printf (keyName (removedKey));
+	succeed_if (removedKey != 0, "Got no result after removing key from KeySet");
+	succeed_if_same_string (keyName (removedKey), "user:/key");
+	succeed_if_same_string (keyString (removedKey), "test");
+	succeed_if (ksGetSize (ks) == 0, "Key has not been removed from KeySet")
+
+	removedKey = ksRemoveKey (ks, key);
+	succeed_if (removedKey == 0, "Got result after removing key from KeySet");
+
+	succeed_if (ksRemoveKey (ks, 0) == 0, "Got a result when passing NULL pointer as key")
+	succeed_if (ksRemoveKey (0, key) == 0, "Got a result when passing NULL pointer as ks")
+
+	ksDel (ks);
+	keyDel (key);
+}
+
 
 int main (int argc, char ** argv)
 {
@@ -2937,6 +2965,7 @@ int main (int argc, char ** argv)
 	test_ksAppend2 ();
 	test_ksAppend3 ();
 	test_ksOrderNs ();
+	test_ksRemoveKey ();
 
 	printf ("\ntestabi_ks RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
