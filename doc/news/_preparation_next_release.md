@@ -77,7 +77,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Core
 
-- <<TODO>>
+- Added `ksRemoveKey` as alias for `ksLookup(ks, key, KDB_O_POP)` _(@lawli3t)_
 - <<TODO>>
 - <<TODO>>
 
