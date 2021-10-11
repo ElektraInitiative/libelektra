@@ -2892,20 +2892,19 @@ static void test_ksRemoveKey (void)
 	key = keyNew ("user:/key", KEY_VALUE, "test", KEY_END);
 	ks = ksNew (0, KS_END);
 
-	succeed_if (ksAppendKey (ks, key) == 1, "Incorrect KeySet size")
+	succeed_if (ksAppendKey (ks, key) == 1, "Incorrect KeySet size");
 
 	removedKey = ksRemoveKey (ks, key);
-	printf (keyName (removedKey));
 	succeed_if (removedKey != 0, "Got no result after removing key from KeySet");
 	succeed_if_same_string (keyName (removedKey), "user:/key");
 	succeed_if_same_string (keyString (removedKey), "test");
-	succeed_if (ksGetSize (ks) == 0, "Key has not been removed from KeySet")
+	succeed_if (ksGetSize (ks) == 0, "Key has not been removed from KeySet");
 
 	removedKey = ksRemoveKey (ks, key);
 	succeed_if (removedKey == 0, "Got result after removing key from KeySet");
 
-	succeed_if (ksRemoveKey (ks, 0) == 0, "Got a result when passing NULL pointer as key")
-	succeed_if (ksRemoveKey (0, key) == 0, "Got a result when passing NULL pointer as ks")
+	succeed_if (ksRemoveKey (ks, 0) == 0, "Got a result when passing NULL pointer as key");
+	succeed_if (ksRemoveKey (0, key) == 0, "Got a result when passing NULL pointer as ks");
 
 	ksDel (ks);
 	keyDel (key);
