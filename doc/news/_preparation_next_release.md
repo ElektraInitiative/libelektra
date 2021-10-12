@@ -104,63 +104,13 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up to date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
-
-### <<Binding2>>
 ### Java binding
 
-- Upgraded Java binding gradle wrapper to 7.2
-- Renamed zero argument static factory method `Key::createNameless` to `Key::create`. To migrate to this change, just update calling code to use the new method name.
-- Updated method documentation previously publishing the error key based error handling approach to the Java binding consumer. Such arguments are now explicitly only used for returning warning information in case no error occurred. In case of an exceptional state, appropriate exceptions are thrown. Such exceptions provide access to the underlying key containing warning and error information as meta data. Please review API usage to consider the more elaborated explanation of how Elektra uses this argument's value. Affected signatures:
-  - Updated javadoc for `KDB::open(Key)`
-  - Updated javadoc for `KDB::open(KeySet, Key)`
-  - Updated javadoc for `KDB::close(Key)`
-  - Updated javadoc for `KDB::get(Key)`
-  - Updated javadoc for `KDB::get(KeySet, Key)`
-  - Updated javadoc for `KDB::set(KeySet, Key)`, better explaining the relevance of the second argument `parentKey`
-- Introduced `KeySet::remove(Key)` and `KeySet::remove(String)`
-- Removed `KeySet::lookup(Key, int)` and `KeySet::lookup(String, int)` as well as accompanying flag definitions `KeySet::KDB_O_NONE`, `KeySet::KDB_O_DEL` and `KeySet::KDB_O_POP`. Please use `KeySet::lookup(Key)` and `KeySet::lookup(String)` instead. Instead of `KeySet::KDB_O_DEL`, please consider using `Key::release`. The proper replacement for `KeySet::KDB_O_POP` is `KeySet::remove(Key)` or `KeySet::remove(String)`.
-- Native library proxy interface `Elektra` is now package private (previously was public).
-- Added example Java plugin `whitelist` (see [here](../../src/bindings/jna/plugins/whitelist/README.md))
-- Changed `Key nextMeta()` to `Optional<Key> nextMeta ()` no longer throwing NoSuchElementException for non-exceptional behavior
-- Native library proxy interface `Elektra` is now package private (previously was public)
-- Added example Java plugin `whitelist`
-- Added support of binary valued keys:
-  - Introduced `Key::getBinary()` and `Key::setBinary(byte[])`
-  - Renamed `KeyBinaryTypeNotSupportedException` to `KeyStringValueException`
-  - Introduced `KeyBinaryValueException`
-  - Improved `Key` test coverage
-- Fixed example project in `examples/external/java/read-keys-example`
-  - now works with a standard installation of Elektra
-  - updated code to work with current Java binding
-- `KeySetReleasedException` and `KeyReleasedException` have been replaced by the native `IllegalStateException`
-- Introduced abstraction `ReadableKey` for better reflecting the limitations of meta data keys via a type hierarchy, leading to meta data keys are now returned as `ReadableKey`s:
-  - `Key` extends `ReadableKey`
-  - `Key` class is now final
-  - Changed `Key Key::nextMeta()` to `Optional<ReadableKey> Key::nextMeta()`, no longer throwing NoSuchElementException for non-exceptional behavior
-  - Changed `Key Key::currentMeta()` to `ReadableKey Key::currentMeta()`
-  - Changed `Optional<Key> Key::getMeta(String)` to `Optional<ReadableKey> Key::getMeta(String)`
-  - Meta data keys can no longer be manually released
-  - Removed `Key::incRef`, `Key::decRef` and `Key::getRef`
-  - `ReadableKey`/`Key` now implements `Comparable<ReadableKey>`
-    - `int Key::cmp(Key)` has been renamed to `int Key::compareTo(Key)`
-    - `ReadableKey` now implements `equals` and `hashCode` in line with the contract for `int Key::compareTo(Key)`
-  - `ReadableKey`/`Key` no longer implements `Iterable<String>` for iterating over the parts of a key's name - use `Iterator<String> ReadableKey::keyNameIterator ()` instead
-  - `Key` now implements `Iterable<Key>` to iterate over a key's meta data `ReadableKey`s
-  - Fixed API method typo: Renamed `ReadableKey::isDirectBelow`/`Key::isDirectBelow` to `isDirectlyBelow`
-- `KeyNameIterator` and `KeySetIterator` are now package private
-- `KeySetAppendException` has been renamed to `KeySetException` and now conveys general `KeySet` related exceptional states
-- `KeySet` now implements `SortedSet<Key>` (see [Java API](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/SortedSet.html)). Previously `KeySet` was only implementing `Iterator<Key>`. Now a native key set can be used via its `KeySet` representation wherever one of the following Java Collection Framework interfaces is supported:
-  - `Iterable`
-  - `Collection`
-  - `Set`
-  - `SortedSet`
+- Integrated the `HelloElektra` example as gradel sub-project to allow it to directly depend on the current binding
 
 _(Michael Tucek)_
 
-### GLib
-
-- Do not build `io_glib` binding with `GLib` >= 2.70.0, since compiler flags are incompatible. _(Mihael Pranjić)_
+### <<Binding2>>
 
 ### <<Binding3>>
 
