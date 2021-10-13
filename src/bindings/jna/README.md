@@ -11,6 +11,12 @@ the system to work.
 
 In preparation for introducing a more high level dynamic proxy based API, the JNA binding is currently structured as Gradle mulit-project setup with just one `java-library` project.
 
+You can run the `HelloElekra` example by executing:
+
+```sh
+./gradlew hello:run
+```
+
 ## Usage
 
 To use the bindings in a Java project, we have to include the jar file

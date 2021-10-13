@@ -1,5 +1,7 @@
-import org.libelektra.*;
-import org.libelektra.exception.*;
+import org.libelektra.KDB;
+import org.libelektra.KDBException;
+import org.libelektra.Key;
+import org.libelektra.KeySet;
 import org.libelektra.plugin.Echo;
 
 /** Simple hello world to see how Elektra can be used in Java. */
@@ -19,13 +21,13 @@ public class HelloElektra {
 
     final KeySet ks2 = ks.dup();
     ks2.copy(ks);
-    System.out.println(ks2.length());
+    System.out.println(ks2.size());
     ks2.append(ks);
     ks2.append(key);
 
     try (final KDB kdb = KDB.open(key)) {
       kdb.get(ks, key);
-      final Key k = ks.lookup(key);
+      Key k = ks.lookup(key).orElseThrow(AssertionError::new);
       System.out.println(k.getString());
     } catch (KDBException e) {
       System.out.println(e);
@@ -41,9 +43,7 @@ public class HelloElektra {
     b.setBoolean(false);
     System.out.println(b.getBoolean());
 
-    final Key n = Key.create("user:/weird\\/name///\\\\/is/\\no/_\\\\problem", Key.KEY_END);
-    for (String s : n) {
-      System.out.println("itername: " + s);
-    }
+    Key n = Key.create("user:/weird\\/name///\\\\/is/\no/_\\\\problem");
+    n.keyNameIterator().forEachRemaining(s -> System.out.println("itername: " + s));
   }
 }

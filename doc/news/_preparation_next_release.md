@@ -104,7 +104,11 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 Bindings allow you to utilize Elektra using [various programming languages](https://www.libelektra.org/bindings/readme). This section keeps
 you up to date with the multi-language support provided by Elektra.
 
-### <<Binding1>>
+### Java binding
+
+- Integrated the `HelloElektra` example as gradel sub-project to allow it to directly depend on the current binding
+
+_(Michael Tucek)_
 
 ### <<Binding2>>
 
