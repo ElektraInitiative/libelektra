@@ -158,7 +158,7 @@ _(Michael Tucek)_
 
 ### CMake
 
-- <<TODO>>
+Marked certain variables as advanced and separated user modifiable and unaccessable variables _(Vaibhav Ganesh @flackojr)_
 - <<TODO>>
 - <<TODO>>
 
