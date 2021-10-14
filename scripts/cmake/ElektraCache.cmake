@@ -424,7 +424,7 @@ mark_as_advanced (
 	XercesC_DIR
 	OPENSSL_INCLUDE_DIR
 )
-mark_as_advanced_protected_from_user (
+mark_as_advanced(
 	LUA_EXECUTABLE # The following settings are internal (not to be changed by users):
 	FEDORA
 	CARGO_EXECUTABLE
