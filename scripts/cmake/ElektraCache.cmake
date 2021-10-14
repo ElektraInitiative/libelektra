@@ -398,6 +398,12 @@ set (
 
 mark_as_advanced (
 	FORCE # The following settings might be relevant to a few users:
+	DISCOUNT_DIR
+	DREDD_EXECUTABLE
+	GO_EXECUTABLE
+	Qt5QmlModels_DIR
+	TARGET_LUA_CMOD_FOLDER
+	TARGET_LUA_LMOD_FOLDER
 	GTEST_ROOT
 	BUILD_GMOCK
 	BUILD_GTEST
@@ -417,6 +423,8 @@ mark_as_advanced (
 	LIBGCRYPT_INCLUDE_DIR
 	XercesC_DIR
 	OPENSSL_INCLUDE_DIR
+)
+mark_as_advanced_protected_from_user (
 	LUA_EXECUTABLE # The following settings are internal (not to be changed by users):
 	FEDORA
 	CARGO_EXECUTABLE
@@ -473,4 +481,5 @@ mark_as_advanced (
 	GLib_LIBRARY
 	LibGit2_VERSION_HEADER
 	libuv_VERSION_HEADER
-	Qt5Svg_DIR)
+	Qt5Svg_DIR
+)
