@@ -234,7 +234,6 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 	int null_ret = 0;
 	int unprintable_ret = 0;
 	uint8_t firstLine = 1;
-	unsigned long counter = 0;
 	int retVal = 0;
 	if (checkConf->checkLineEnding) validateLineEnding (NULL, NULL, 1);
 	while (!feof (fp))
@@ -296,7 +295,6 @@ static long checkFile (Key * parentKey, const char * filename, checkStruct * che
 				break;
 			}
 		}
-		counter += bytesRead;
 	}
 	if (checkConf->checkEncoding)
 	{
