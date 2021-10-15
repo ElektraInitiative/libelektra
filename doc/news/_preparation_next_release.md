@@ -49,13 +49,13 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 ### <<Plugin1>>
 
-- Removed unused variable that threw an error from filecheck.c. _(Vaibhav Ganesh @flackojr)_
+- Removed unused variable that threw an error in filecheck.c. _(Vaibhav Ganesh @flackojr)_
 - <<TODO>>
 - <<TODO>>
 
 ### <<Plugin2>>
 
-- <<TODO>>
+- Removed unused variable that threw an error in mmapstorage.c. _(Vaibhav Ganesh @flackojr)_
 - <<TODO>>
 - <<TODO>>
 
