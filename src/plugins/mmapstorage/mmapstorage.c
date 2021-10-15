@@ -18,7 +18,7 @@
 #include <kdberrors.h>
 #include <kdbhelper.h>
 #include <kdblogger.h>
-#include <kdbprivate.h>
+#include <kdbprivate.h> 
 
 #ifdef HAVE_KDBCONFIG_H
 #include "kdbconfig.h"
@@ -193,7 +193,6 @@ static int copyFile (int sourceFd, int destFd)
 				return -1;
 		}
 
-		char * pos = buf;
 		ssize_t writtenBytes = 0;
 		while (readBytes > 0)
 		{
@@ -206,7 +205,6 @@ static int copyFile (int sourceFd, int destFd)
 					return -1;
 			}
 			readBytes -= writtenBytes;
-			pos += writtenBytes;
 		}
 	}
 
