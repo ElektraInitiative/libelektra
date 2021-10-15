@@ -49,7 +49,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 ### <<Plugin1>>
 
-- <<TODO>>
+- Removed unused variable that threw an error from filecheck.c. _(Vaibhav Ganesh @flackojr)_
 - <<TODO>>
 - <<TODO>>
 
