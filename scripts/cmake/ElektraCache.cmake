@@ -422,9 +422,8 @@ mark_as_advanced (
 	GIT_EXECUTABLE
 	LIBGCRYPT_INCLUDE_DIR
 	XercesC_DIR
-	OPENSSL_INCLUDE_DIR
-)
-mark_as_advanced(
+	OPENSSL_INCLUDE_DIR)
+mark_as_advanced (
 	LUA_EXECUTABLE # The following settings are internal (not to be changed by users):
 	FEDORA
 	CARGO_EXECUTABLE
@@ -481,5 +480,4 @@ mark_as_advanced(
 	GLib_LIBRARY
 	LibGit2_VERSION_HEADER
 	libuv_VERSION_HEADER
-	Qt5Svg_DIR
-)
+	Qt5Svg_DIR)
