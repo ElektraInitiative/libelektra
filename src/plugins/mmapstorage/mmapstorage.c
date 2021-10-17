@@ -193,7 +193,6 @@ static int copyFile (int sourceFd, int destFd)
 				return -1;
 		}
 
-		char * pos = buf;
 		ssize_t writtenBytes = 0;
 		while (readBytes > 0)
 		{
@@ -206,7 +205,6 @@ static int copyFile (int sourceFd, int destFd)
 					return -1;
 			}
 			readBytes -= writtenBytes;
-			pos += writtenBytes;
 		}
 	}
 

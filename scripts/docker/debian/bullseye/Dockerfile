@@ -148,8 +148,8 @@ ENV COVERALLS_VIRTUALENV_PATH=/home/jenkins/coveralls
 RUN virtualenv "${COVERALLS_VIRTUALENV_PATH}" \
     && cd "${COVERALLS_VIRTUALENV_PATH}" \
     && . bin/activate \
-    && pip install "urllib3==1.26" \
-    && pip install pyyaml \
-    && pip install cpp-coveralls \
+    && pip3 install "urllib3==1.26" \
+    && pip3 install "pyyaml==5.4.1" \
+    && pip3 install cpp-coveralls \
     && deactivate
 ENV PATH="${PATH}:${COVERALLS_VIRTUALENV_PATH}/bin"

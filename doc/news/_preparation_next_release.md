@@ -47,15 +47,15 @@ docker run -it elektra/elektra
 
 The following section lists news about the [plugins](https://www.libelektra.org/plugins/readme) we updated in this release.
 
-### <<Plugin1>>
+### filecheck
 
-- <<TODO>>
+- Removed unused variable that threw an error in filecheck.c. _(Vaibhav Ganesh @flackojr)_
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin2>>
+### mmapstorage
 
-- <<TODO>>
+- Removed unused variable that threw an error in mmapstorage.c. _(Vaibhav Ganesh @flackojr)_
 - <<TODO>>
 - <<TODO>>
 
@@ -158,7 +158,7 @@ _(Michael Tucek)_
 
 ### CMake
 
-- <<TODO>>
+- Marked certain variables as advanced and separated user modifiable and unaccessable variables. _(Vaibhav Ganesh @flackojr)_
 - <<TODO>>
 - <<TODO>>
 
