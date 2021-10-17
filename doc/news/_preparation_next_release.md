@@ -194,7 +194,7 @@ The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - <<TODO>>
-- <<TODO>>
+- Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić)_
 - <<TODO>>
 
 ## Outlook
