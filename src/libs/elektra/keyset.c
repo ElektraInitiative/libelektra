@@ -527,7 +527,7 @@ int ksClear (KeySet * ks)
  * of shared ownership. It is more similar to a shared lock, where the counter
  * is used to keep track of how many clients hold the lock.
  *
- * Initially, the reference counter will be 0. This is can be interpreted as
+ * Initially, the reference counter will be 0. This can be interpreted as
  * the lock being unlocked. When you increment the reference counter, the lock
  * becomes locked and `ksDel()` is blocked and fails. Only when the reference
  * counter is fully decremented back down to 0 again, will `ksDel()` work again.
