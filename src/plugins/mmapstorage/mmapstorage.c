@@ -405,6 +405,8 @@ static void initMagicKeySet (const uintptr_t magicNumber)
 	magicKeySet.cursor = (Key *) ~magicNumber;
 	magicKeySet.current = SIZE_MAX / 2;
 	magicKeySet.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC;
+	magicKeySet.refs = UINT16_MAX;
+	magicKeySet.reserved = 0;
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	magicKeySet.opmphm = (Opmphm *) ELEKTRA_MMAP_MAGIC_BOM;
 	magicKeySet.opmphmPredictor = 0;
@@ -421,12 +423,13 @@ static void initMagicKey (const uintptr_t magicNumber)
 	magicKey.data.v = (void *) ~magicNumber;
 	magicKey.dataSize = SIZE_MAX;
 	magicKey.key = (char *) magicNumber;
-	magicKey.ukey = 0;
 	magicKey.keySize = UINT16_MAX;
+	magicKey.ukey = 0;
 	magicKey.keyUSize = 0;
+	magicKey.meta = (KeySet *) ELEKTRA_MMAP_MAGIC_BOM;
 	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
 	magicKey.refs = UINT16_MAX / 2;
-	magicKey.meta = (KeySet *) ELEKTRA_MMAP_MAGIC_BOM;
+	magicKey.reserved = UINT16_MAX;
 }
 
 /**

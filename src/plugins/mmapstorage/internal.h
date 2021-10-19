@@ -57,7 +57,7 @@
 #define ELEKTRA_MAGIC_MMAP_NUMBER (0x0A3472746B656C45)
 
 /** Mmap format version (1 byte). Increment on breaking changes to invalidate old files. */
-#define ELEKTRA_MMAP_FORMAT_VERSION (2)
+#define ELEKTRA_MMAP_FORMAT_VERSION (3)
 
 /** Mmap temp file template */
 #define ELEKTRA_MMAP_TMP_NAME "/tmp/elektraMmapTmpXXXXXX"
