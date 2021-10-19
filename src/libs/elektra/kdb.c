@@ -193,18 +193,6 @@ static void clearErrorAndWarnings (Key * key)
 	keyDel (cutRoot);
 }
 
-static bool ksKeyNeedSync (KeySet * ks)
-{
-	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
-	{
-		if (keyNeedSync (ksAtCursor (ks, i)))
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
 /**
  * Checks whether the same instance of the list plugin is mounted in the global (maxonce) positions:
  *
