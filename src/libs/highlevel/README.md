@@ -64,8 +64,8 @@ namespaces](/doc/tutorials/namespaces.md) and [cascading keys](/doc/tutorials/ca
 of your applications configuration.
 
 This specification should be placed into the `spec` namespace. From there the high-level API and Elektra's plugins will access it. A
-specification for use with the high-level API has to define at least the `default` and the `type` metadata for each key the application
-is going to use. The `default` metakey simple defines which value will be returned, if the user didn't set a value. `type` defines the data
+specification for use with the high-level API has to **define at least the `default` and the `type` metadata for each key the application
+is going to use**. The `default` metakey simple defines which value will be returned, if the user didn't set a value. `type` defines the data
 type of key. For more information on data types [see below](#data-types).
 
 The API also supports passing a `KeySet` to `elektraOpen` that contains the specification. This is, however, not recommended for general use
