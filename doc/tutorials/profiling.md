@@ -4,7 +4,7 @@
 
 One of the primary resources in computing is execution time. To keep usage of this resource type low, it makes sense to profile code and check which code paths in a progamm take the longest time to execute. There exist various tools to handle this kind of profiling. For this tutorial we will use
 
-1. [Callgrind](http://valgrind.org/docs/manual/cl-manual.html) and the graphical frontend [KCacheGrind/QCacheGrind](https://kcachegrind.github.io/html/Home.html), and
+1. [Callgrind](https://valgrind.org/docs/manual/cl-manual.html) and the graphical frontend [KCacheGrind/QCacheGrind](https://kcachegrind.github.io/html/Home.html), and
 2. [XRay][] and [FlameGraph][] to visualize the data produced by [XRay][]
 
 .
