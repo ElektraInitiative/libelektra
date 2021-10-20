@@ -140,6 +140,7 @@ _(Michael Tucek)_
 - add pre/postconditions and invariants to module keyvalue _(@lawli3t)_
 - Update and improve inline documentation of `kdb gen`. _(Tobias Schubert @qwepoizt)_
 - Fix broken links. _(Robert Sowula)_
+- Emphasize that `type` is required when the HL API is used. _(Tobias Schubert @qwepoizt)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
 - <<TODO>>
 
