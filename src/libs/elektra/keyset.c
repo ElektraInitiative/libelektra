@@ -431,30 +431,40 @@ int ksCopy (KeySet * dest, const KeySet * source)
 	return 1;
 }
 
-
 /**
  * A destructor for KeySet objects.
  *
- * Cleans all internal dynamic attributes, decrements all reference pointers
- * to all Keys and then calls keyDel() on all contained Keys.
- * Afterwards elektraFree() is used to release the KeySet's object memory
- * (that was previously allocated by ksNew()).
+ * Every KeySet created by ksNew() must be deleted with ksDel().
  *
- * @param ks the KeySet that should be deleted
+ * When the reference counter of @p ks is non-zero, this function
+ * will do nothing and simply return the current value of the
+ * reference counter.
  *
- * @retval 0 when the KeySet was successfully freed
- * @retval -1 on NULL pointer
+ * It is therefore safe to call `ksDel (ks)` on any `KeySet * ks`.
+ *
+ * @param ks the KeySet object to delete
+ *
+ * @retval 0 when the KeySet was freed
+ * @retval -1 on NULL pointers
+ * @return the value of the reference counter, if it was non-zero
  *
  * @since 1.0.0
- * @see ksNew() for creating a new KeySet
+ * @see ksNew()    for creating a new KeySet
+ * @see ksIncRef() for more information about the reference counter
  */
 int ksDel (KeySet * ks)
 {
-	int rc;
+	if (ks == NULL)
+	{
+		return -1;
+	}
 
-	if (!ks) return -1;
+	if (ks->refs > 0)
+	{
+		return ks->refs;
+	}
 
-	rc = ksClose (ks);
+	ksClose (ks);
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	if (ks->opmphm)
@@ -473,21 +483,21 @@ int ksDel (KeySet * ks)
 		elektraFree (ks);
 	}
 
-	return rc;
+	return 0;
 }
 
 /**
- * @internal
+ * @brief Empties a KeySet.
  *
- * KeySet object cleaner.
+ * This function
+ * - **does not** check or modify the reference count of `ks`
+ * - decrements the reference count of all keys contained in `ks`
+ * - deletes all keys that where only referenced by `ks`
+ * - resets size of `ks` to 0
  *
- * Will keyDel() all contained keys, reset internal pointers and counters.
+ * @param ks the KeySet to clear
  *
- * After this call you can use the empty keyset again.
- *
- * @param ks the keyset object to work with
- * @see ksAppendKey() for details on how keys are inserted in KeySets
- * @retval 0 on success
+ * @retval  0 on success
  * @retval -1 on failure (memory) or ks == NULL
  */
 int ksClear (KeySet * ks)
@@ -505,6 +515,113 @@ int ksClear (KeySet * ks)
 
 	elektraOpmphmInvalidate (ks);
 	return 0;
+}
+
+/**
+ * Increment the reference counter of a KeySet object.
+ *
+ * As long as the reference counter is non-zero, `ksDel()` operations on @p key
+ * will be a no-op and return an error code.
+ *
+ * Elektra's system for reference counting is not based on a concept
+ * of shared ownership. It is more similar to a shared lock, where the counter
+ * is used to keep track of how many clients hold the lock.
+ *
+ * Initially, the reference counter will be 0. This can be interpreted as
+ * the lock being unlocked. When you increment the reference counter, the lock
+ * becomes locked and `ksDel()` is blocked and fails. Only when the reference
+ * counter is fully decremented back down to 0 again, will `ksDel()` work again.
+ *
+ * @note The reference counter can never exceed `UINT16_MAX - 1`. `UINT16_MAX` is
+ * reserved as an error code.
+ *
+ * @post @p ks's reference counter is > 0
+ * @post @p ks's reference counter is <= UINT16_MAX - 1
+ *
+ * @param ks the KeySet object whose reference counter should be increased
+ *
+ * @return the updated value of the reference counter
+ * @retval UINT16_MAX on NULL pointer
+ * @retval UINT16_MAX when the reference counter already was the maximum value `UINT16_MAX - 1`,
+ *         the reference counter will not be modified in this case
+ *
+ * @since 1.0.0
+ * @see ksGetRef() to retrieve the current reference count
+ * @see ksDecRef() for decreasing the reference counter
+ * @see ksDel()    for deleting a Key
+ */
+uint16_t ksIncRef (KeySet * ks)
+{
+	if (ks == NULL)
+	{
+		return UINT16_MAX;
+	}
+
+	if (ks->refs == UINT16_MAX - 1)
+	{
+		return UINT16_MAX;
+	}
+
+	return ++ks->refs;
+}
+
+
+/**
+ * Decrement the reference counter of a KeySet object.
+ *
+ * As long as the reference counter is non-zero, `ksDel()` operations on @p key
+ * will be a no-op and return an error code.
+ *
+ * @param key the KeySet object whose reference counter should get decreased
+ *
+ * @return the updated value of the reference counter
+ * @retval UINT16_MAX on NULL pointer
+ * @retval 0 when the reference counter already was the minimum value 0,
+ *         the reference counter will not be modified in this case
+ *
+ * @since 1.0.0
+ * @see ksGetRef() to retrieve the current reference count
+ * @see ksIncRef() for increasing the reference counter and for a more complete
+ *                  explanation of the reference counting system
+ * @see ksDel()    for deleting a Key
+ */
+uint16_t ksDecRef (KeySet * ks)
+{
+	if (ks == NULL)
+	{
+		return UINT16_MAX;
+	}
+
+	if (ks->refs == 0)
+	{
+		return 0;
+	}
+
+	return --ks->refs;
+}
+
+
+/**
+ * Return the current reference counter value of a KeySet object.
+ *
+ * @param ks the KeySet whose reference counter to retrieve
+ *
+ * @return the value of the @p key's reference counter
+ * @retval -1 on NULL pointer
+ *
+ * @since 1.0.0
+ * @see ksIncRef() for increasing the reference counter and for a more complete
+ *                  explanation of the reference counting system
+ * @see ksDecRef() for decreasing the reference counter
+ **/
+uint16_t ksGetRef (const KeySet * ks)
+{
+	if (ks == NULL)
+	{
+		return UINT16_MAX;
+	}
+
+	return ks->refs;
 }
 
 
@@ -933,7 +1050,7 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
 {
 	for (size_t it = start; it < end; ++it)
 	{
-		if (ks->array[it]->ksReference == 1)
+		if (ks->array[it]->refs == 1)
 		{
 			// only referenced in this KeySet -> just override read-only flag
 			clear_bit (ks->array[it]->flags, KEY_FLAG_RO_NAME);
@@ -943,7 +1060,7 @@ static size_t ksRenameInternal (KeySet * ks, size_t start, size_t end, const Key
 			// key has other references -> dup in-place so we can safely rename it
 			Key * dup = keyDup (ks->array[it], KEY_CP_ALL);
 			keyDecRef (ks->array[it]);
-			dup->ksReference = 1;
+			dup->refs = 1;
 			ks->array[it] = dup;
 		}
 		keyReplacePrefix (ks->array[it], root, newRoot);
@@ -2635,6 +2752,8 @@ int ksInit (KeySet * ks)
 	ks->size = 0;
 	ks->alloc = 0;
 	ks->flags = 0;
+	ks->refs = 0;
+	ks->cursor = 0;
 
 	ksRewind (ks);
 
@@ -2654,6 +2773,13 @@ int ksInit (KeySet * ks)
  *
  * KeySet object destructor.
  *
+ * This function:
+ * - calls keyDecRef() followed by keyDel() on all keys in `ks`
+ * - frees the memory occupied by the key array
+ * - set size and alloc to 0
+ * - invalidates the OPMPHM
+ * - **does not** modify the reference counter
+ *
  * @see ksDel(), ksNew(), keyInit()
  * @retval 0 on success
  * @retval -1 on ks == NULL
@@ -2662,25 +2788,24 @@ int ksClose (KeySet * ks)
 {
 	if (ks == NULL) return -1;
 
-	Key * k;
-
-	ksRewind (ks);
-	while ((k = ksNext (ks)) != 0)
+	if (ks->array)
 	{
-		keyDecRef (k);
-		keyDel (k);
+		for (size_t i = 0; i < ks->size; i++)
+		{
+			keyDecRef (ks->array[i]);
+			keyDel (ks->array[i]);
+		}
 	}
-
 	if (ks->array && !test_bit (ks->flags, KS_FLAG_MMAP_ARRAY))
 	{
 		elektraFree (ks->array);
 	}
 	clear_bit (ks->flags, (keyflag_t) KS_FLAG_MMAP_ARRAY);
 
-	ks->array = 0;
+	ks->array = NULL;
 	ks->alloc = 0;
-
 	ks->size = 0;
+	ksRewind (ks);
 
 	elektraOpmphmInvalidate (ks);
 

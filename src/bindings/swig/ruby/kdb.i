@@ -488,8 +488,6 @@ aliased to '<=>', implemented for sorting operations.
 
 /* ignore raw ckdb::KeySet methods */
 %ignore kdb::KeySet::getKeySet;
-%ignore kdb::KeySet::setKeySet;
-%ignore kdb::KeySet::release;
 
 /* ignore unused operators */
 %ignore kdb::KeySet::operator=;

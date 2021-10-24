@@ -39,6 +39,7 @@ extern "C" {
 #endif
 
 #include "kdbos.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 }
@@ -143,9 +144,9 @@ Key * keyCopy (Key *dest, const Key *source, elektraCopyFlags flags);
 int keyClear (Key *key);
 int keyDel (Key *key);
 
-ssize_t keyIncRef (Key *key);
-ssize_t keyDecRef (Key *key);
-ssize_t keyGetRef (const Key *key);
+uint16_t keyIncRef (Key *key);
+uint16_t keyDecRef (Key *key);
+uint16_t keyGetRef (const Key *key);
 
 /* Meta Info */
 int keyRewindMeta (Key *key);
@@ -223,6 +224,10 @@ KeySet *ksVNew (size_t alloc, va_list ap);
 
 KeySet *ksDup (const KeySet * source);
 int ksCopy (KeySet *dest, const KeySet *source);
+
+uint16_t ksIncRef (KeySet * ks);
+uint16_t ksDecRef (KeySet * ks);
+uint16_t ksGetRef (const KeySet * ks);
 
 int ksClear (KeySet *ks);
 int ksDel (KeySet *ks);

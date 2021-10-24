@@ -170,17 +170,17 @@ void gelektra_key_gi_init (GElektraKey * key, const gchar * name, int flags, con
 }
 
 /* reference handling */
-gssize gelektra_key_incref (GElektraKey * key)
+guint16 gelektra_key_incref (GElektraKey * key)
 {
 	return keyIncRef (key->key);
 }
 
-gssize gelektra_key_decref (GElektraKey * key)
+guint16 gelektra_key_decref (GElektraKey * key)
 {
 	return keyDecRef (key->key);
 }
 
-gssize gelektra_key_getref (const GElektraKey * key)
+guint16 gelektra_key_getref (const GElektraKey * key)
 {
 	return keyGetRef (key->key);
 }

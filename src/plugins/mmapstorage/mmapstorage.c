@@ -405,6 +405,8 @@ static void initMagicKeySet (const uintptr_t magicNumber)
 	magicKeySet.cursor = (Key *) ~magicNumber;
 	magicKeySet.current = SIZE_MAX / 2;
 	magicKeySet.flags = KS_FLAG_MMAP_ARRAY | KS_FLAG_SYNC;
+	magicKeySet.refs = UINT16_MAX;
+	magicKeySet.reserved = 0;
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	magicKeySet.opmphm = (Opmphm *) ELEKTRA_MMAP_MAGIC_BOM;
 	magicKeySet.opmphmPredictor = 0;
@@ -421,12 +423,13 @@ static void initMagicKey (const uintptr_t magicNumber)
 	magicKey.data.v = (void *) ~magicNumber;
 	magicKey.dataSize = SIZE_MAX;
 	magicKey.key = (char *) magicNumber;
-	magicKey.ukey = 0;
 	magicKey.keySize = UINT16_MAX;
+	magicKey.ukey = 0;
 	magicKey.keyUSize = 0;
-	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
-	magicKey.ksReference = SIZE_MAX / 2;
 	magicKey.meta = (KeySet *) ELEKTRA_MMAP_MAGIC_BOM;
+	magicKey.flags = KEY_FLAG_MMAP_STRUCT | KEY_FLAG_MMAP_DATA | KEY_FLAG_MMAP_KEY | KEY_FLAG_SYNC;
+	magicKey.refs = UINT16_MAX / 2;
+	magicKey.reserved = UINT16_MAX;
 }
 
 /**
@@ -775,7 +778,7 @@ static void writeMetaKeys (MmapAddr * mmapAddr, DynArray * dynArray)
 		// move Key itself
 		mmapMetaKey->flags |= KEY_FLAG_MMAP_STRUCT;
 		mmapMetaKey->meta = 0;
-		mmapMetaKey->ksReference = 0;
+		mmapMetaKey->refs = 0;
 
 		dynArray->mappedKeyArray[i] = mmapMetaKey;
 	}
@@ -811,9 +814,9 @@ static KeySet * writeMetaKeySet (Key * key, MmapAddr * mmapAddr, DynArray * dynA
 		// get address of mapped key and store it in the new array
 		mappedMetaKey = dynArray->mappedKeyArray[ELEKTRA_PLUGIN_FUNCTION (dynArrayFind) ((Key *) metaKey, dynArray)];
 		newMeta->array[metaKeyIndex] = (Key *) ((char *) mappedMetaKey - mmapAddr->mmapAddrInt);
-		if (mappedMetaKey->ksReference < SSIZE_MAX)
+		if (mappedMetaKey->refs < UINT16_MAX - 1)
 		{
-			++(mappedMetaKey->ksReference);
+			++(mappedMetaKey->refs);
 		}
 		++metaKeyIndex;
 	}
@@ -894,7 +897,7 @@ static void writeKeys (KeySet * keySet, MmapAddr * mmapAddr, DynArray * dynArray
 
 		// move Key itself
 		mmapKey->flags |= KEY_FLAG_MMAP_STRUCT;
-		mmapKey->ksReference = 1;
+		mmapKey->refs = 1;
 
 		// write the relative Key pointer into the KeySet array
 		ksArray[keyIndex] = (Key *) ((char *) mmapKey - mmapAddr->mmapAddrInt);
@@ -1113,6 +1116,8 @@ static void mmapFastReplace (KeySet * dest, KeySet * src)
 	// to be able to free() the returned KeySet, just set the array flag here
 	dest->flags = KS_FLAG_MMAP_ARRAY;
 	// we intentionally do not change the KeySet->opmphm here!
+	// also do not change the reference counter on purpose,
+	// we only want to change the contents
 }
 
 /**

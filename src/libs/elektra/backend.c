@@ -465,8 +465,8 @@ int backendClose (Backend * backend, Key * errorKey)
 
 	if (backend->mountpoint)
 	{
-		keyDecRef (backend->mountpoint);
 		keySetName (errorKey, keyName (backend->mountpoint));
+		keyDecRef (backend->mountpoint);
 		keyDel (backend->mountpoint);
 	}
 

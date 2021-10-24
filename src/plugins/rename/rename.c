@@ -385,7 +385,6 @@ int elektraRenameSet (Plugin * handle, KeySet * returned, Key * parentKey)
 				keyDel (ksLookup (returned, key, KDB_O_POP));
 			}
 			ksAppendKey (returned, renamedKey);
-			keyDel (renamedKey);
 		}
 		else
 		{

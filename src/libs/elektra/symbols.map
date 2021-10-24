@@ -145,6 +145,9 @@ libelektra_1.0 {
 
 	## KeySet functions
 	ksSearch;
+	ksIncRef;
+	ksDecRef;
+	ksGetRef;
 };
 
 libelektraprivate_1.0 {

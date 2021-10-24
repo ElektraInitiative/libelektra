@@ -244,21 +244,24 @@ struct _Key
 	size_t keyUSize;
 
 	/**
+	 * All the key's meta information.
+	 */
+	KeySet * meta;
+
+	/**
 	 * Some control and internal flags.
 	 */
 	keyflag_t flags;
 
 	/**
-	 * In how many keysets the key resists.
-	 * keySetName() is only allowed if ksReference is 0.
-	 * @see ksPop(), ksAppendKey(), ksAppend()
+	 * Reference counter
 	 */
-	size_t ksReference;
+	uint16_t refs;
 
 	/**
-	 * All the key's meta information.
+	 * Reserved for future use
 	 */
-	KeySet * meta;
+	uint16_t reserved;
 };
 
 
@@ -289,6 +292,10 @@ struct _KeySet
 	 * Some control and internal flags.
 	 */
 	ksflag_t flags;
+
+	uint16_t refs; /**< Reference counter */
+
+	uint16_t reserved; /**< Reserved for future use */
 
 #ifdef ELEKTRA_ENABLE_OPTIMIZATIONS
 	/**
@@ -335,11 +342,11 @@ struct _KDB
 
 	Backend * initBackend; /*!< The init backend for bootstrapping.*/
 
-	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
-
 	KeySet * global; /*!< This keyset can be used by plugins to pass data through
 			the KDB and communicate with other plugins. Plugins shall clean
 			up their parts of the global keyset, which they do not need any more.*/
+
+	Plugin * globalPlugins[NR_GLOBAL_POSITIONS][NR_GLOBAL_SUBPOSITIONS];
 };
 
 

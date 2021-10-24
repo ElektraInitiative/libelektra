@@ -68,9 +68,9 @@ GElektraKey * gelektra_key_gi_make (GElektraKey * key);
 void gelektra_key_gi_init (GElektraKey * key, const gchar * name, int flags, const gchar * value, const void * data, gsize data_size);
 
 /* reference handling */
-gssize gelektra_key_incref (GElektraKey * key);
-gssize gelektra_key_decref (GElektraKey * key);
-gssize gelektra_key_getref (const GElektraKey * key);
+guint16 gelektra_key_incref (GElektraKey * key);
+guint16 gelektra_key_decref (GElektraKey * key);
+guint16 gelektra_key_getref (const GElektraKey * key);
 
 /* basic methods */
 GElektraKey * gelektra_key_dup (const GElektraKey * key, elektraCopyFlags flags);

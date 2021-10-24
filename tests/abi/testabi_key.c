@@ -212,9 +212,9 @@ static void test_keyReference (void)
 	Key * d;
 	KeySet *ks1, *ks2;
 
-	succeed_if (keyGetRef (0) == -1, "No error on getting refcount of NULL Key");
-	succeed_if (keyDecRef (0) == -1, "No error on decrementing NULL Key");
-	succeed_if (keyIncRef (0) == -1, "No error on incrementing NULL Key");
+	succeed_if (keyGetRef (0) == UINT16_MAX, "No error on getting refcount of NULL Key");
+	succeed_if (keyDecRef (0) == UINT16_MAX, "No error on decrementing NULL Key");
+	succeed_if (keyIncRef (0) == UINT16_MAX, "No error on incrementing NULL Key");
 
 	succeed_if (keyGetRef (key) == 0, "New created key reference");
 
@@ -314,18 +314,15 @@ static void test_keyReference (void)
 	succeed_if (keyGetRef (k) == 1, "ref should be one");
 	succeed_if (ksDel (ks) == 0, "could not del"); // now the key will be deleted
 
-	return;
-
-	/* This code needs very long to execute, especially on 64bit
-	 * systems. */
-
 	key = keyNew ("/", KEY_END); // ref counter 0
-	while (keyGetRef (key) < SSIZE_MAX)
+	while (keyGetRef (key) < UINT16_MAX - 1)
 		keyIncRef (key);
-	succeed_if (keyGetRef (key) == SSIZE_MAX, "reference counter");
-	succeed_if (keyIncRef (key) == SSIZE_MAX, "should stay at maximum");
-	succeed_if (keyGetRef (key) == SSIZE_MAX, "reference counter");
-	succeed_if (keyIncRef (key) == SSIZE_MAX, "should stay at maximum");
+	succeed_if (keyGetRef (key) == UINT16_MAX - 1, "reference counter");
+	succeed_if (keyIncRef (key) == UINT16_MAX, "should report error");
+	succeed_if (keyGetRef (key) == UINT16_MAX - 1, "reference counter");
+	succeed_if (keyIncRef (key) == UINT16_MAX, "should report error");
+	while (keyGetRef (key) > 0)
+		keyDecRef (key);
 	keyDel (key);
 }
 

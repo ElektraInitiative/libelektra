@@ -287,7 +287,6 @@ static struct passwd * KStoPasswd (KeySet * ks, SortBy index)
 		pwd->pw_passwd = "";
 	else
 		pwd->pw_passwd = (char *) keyString (found);
-	keyDel (parent);
 	keyDel (lookup);
 	return pwd;
 }

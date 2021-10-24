@@ -868,6 +868,7 @@ static int handleArrays (KeySet * ourSet, KeySet * theirSet, KeySet * baseSet, K
 				ELEKTRA_SET_INTERNAL_ERROR (informationKey, "Could not convert `their` KeySet into char[] for LibGit.");
 				elektraFree (ourArray);
 				elektraFree (baseArray);
+				ELEKTRA_ASSERT (keyGetRef (checkedKey) > 0, "WTF 3");
 				keyDel (checkedKey);
 				ksDel (toAppend);
 				return -1;

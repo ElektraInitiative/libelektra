@@ -80,6 +80,12 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- `KeySet` now also has a reference counter like `Key`. The new functions `ksIncRef` and `ksDecRef` behave like their counterparts `keyIncRef` and `keyDecRef`.
+  `ksDel` also behaves like `keyDel` in regard to reference counting, i.e. it does nothing unless the reference count is 0.
+  The reference counting is very useful for bindings (especially with automatic garbage collection). _(Klemens Böswirth)_
+- Clarified that our reference counting mechanism is more related to a shared lock than to the concept of shared ownership. _(Klemens Böswirth)_
+- Both the reference count for `Key` and for `KeySet` now use `uint16_t` to reduce memory usage. `Key` previously used `size_t`. _(Klemens Böswirth)_
+- Reorder `Key` and `KeySet` struct members to aviod padding and make space for a new `uint16_t` member, reserved for future use. _(Mihael Pranjić)_
 
 ### <<Library1>>
 

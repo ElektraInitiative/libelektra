@@ -69,7 +69,6 @@ public:
 	ckdb::KeySet * release ();
 
 	ckdb::KeySet * getKeySet () const;
-	void setKeySet (ckdb::KeySet * k);
 
 	KeySet & operator= (KeySet const & other);
 
@@ -492,18 +491,14 @@ inline KeySet::KeySet () : ks (ckdb::ksNew (0, KS_END))
 }
 
 /**
- * Takes ownership of keyset!
+ * Take ownership of a `ckdb::KeySet *`.
  *
- * Keyset will be destroyed at destructor
- * you cant continue to use keyset afterwards!
+ * // TODO: use ksIncRef/ksDecRef
  *
- * Use KeySet::release() to avoid destruction.
- *
- * @param k the keyset to take the ownership from
+ * @param keyset the `KeySet *` to take the ownership of
  * @see release()
- * @see setKeySet()
  */
-inline KeySet::KeySet (ckdb::KeySet * k) : ks (k)
+inline KeySet::KeySet (ckdb::KeySet * keyset) : ks (keyset)
 {
 }
 
@@ -576,6 +571,7 @@ inline KeySet::~KeySet ()
  * If you don't want destruction of keyset at
  * the end you can release the pointer.
  * */
+// TODO (kodebach): remove?
 inline ckdb::KeySet * KeySet::release ()
 {
 	ckdb::KeySet * ret = ks;
@@ -586,27 +582,14 @@ inline ckdb::KeySet * KeySet::release ()
 /**
  * @brief Passes out the raw keyset pointer
  *
- * @return pointer to internal ckdb KeySet
+ * This function exists so that pure C functions that do not
+ * have a C++ binding can be called.
  *
- * @see release()
- * @see setKeySet()
+ * @return pointer to internal ckdb KeySet
  */
 inline ckdb::KeySet * KeySet::getKeySet () const
 {
 	return ks;
-}
-
-/**
- * @brief Take ownership of passed keyset
- *
- * @param k the keyset to take ownership from
- * @see release()
- * @see getKeySet()
- */
-inline void KeySet::setKeySet (ckdb::KeySet * k)
-{
-	ckdb::ksDel (ks);
-	ks = k;
 }
 
 /**
@@ -656,10 +639,11 @@ inline ckdb::KeySet * KeySet::dup () const
 /**
  * @brief Copy a keyset
  *
- * @param other other keyset to copy
+ * Replaces all keys in `this` with the ones from `other`.
+ * This is only a shallow copy. For a deep copy you need to manually
+ * Key::dup every key.
  *
- * This is only a shallow copy. For a deep copy you need to dup every
- * key.
+ * @param other other keyset to copy
  *
  * @copydoc ksCopy()
  */
@@ -671,11 +655,11 @@ inline void KeySet::copy (const KeySet & other)
 /**
  * @brief Clear the keyset
  *
- * Keyset will have no keys afterwards.
+ * Keyset will be empty afterwards.
  */
 inline void KeySet::clear ()
 {
-	ckdb::ksCopy (ks, nullptr);
+	ckdb::ksClear (ks);
 }
 
 /**
