@@ -417,7 +417,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ks, Key * parentKey
 	}
 	else if (strcmp (phase, KDB_GET_PHASE_CACHECHECK) == 0)
 	{
-		// FIXME: implement
+		// FIXME: implement cache
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 	else if (strcmp (phase, KDB_GET_PHASE_PRE_STORAGE) == 0)

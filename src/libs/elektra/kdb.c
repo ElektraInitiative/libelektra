@@ -1647,18 +1647,18 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// check if cache is enabled, Steps 7-9 only run with cache
-	// FIXME (kodebach): implement
+	// FIXME (kodebach): implement cache
 	bool cacheEnabled = false;
 	if (cacheEnabled)
 	{
 		// Step 7: get cache entry IDs
-		// FIXME (kodebach): implement
+		// FIXME (kodebach): implement cache
 
 		// Step 8: run cachecheck phase
-		// FIXME (kodebach): implement
+		// FIXME (kodebach): implement cache
 
 		// Step 9: retrieve cache data
-		// FIXME (kodebach): implement
+		// FIXME (kodebach): implement cache
 	}
 
 	// Step 10a: run prestorage phase
@@ -1756,7 +1756,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	backendsMerge (backends, ks);
 
 	// Step 19: update cache
-	// FIXME (kodebach): implement
+	// FIXME (kodebach): implement cache
 
 	// TODO (kodebach): name not needed, once lock is in place
 	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
@@ -1780,6 +1780,25 @@ error:
 	ksDel (backends);
 	errno = errnosave;
 	return -1;
+}
+
+static bool backendNeedsSync (const BackendData * backend, bool readOnly, Key * errorKey)
+{
+	for (elektraCursor i = 0; i < ksGetSize (backend->keys); i++)
+	{
+		Key * cur = ksAtCursor (backend->keys, i);
+		if (keyNeedSync (cur))
+		{
+			if (readOnly)
+			{
+				ELEKTRA_ADD_INTERFACE_WARNINGF (
+					errorKey, "The key '%s' was modified since kdbGet(), but it belongs to a read-only mountpoint.",
+					keyName (cur));
+			}
+			return true;
+		}
+	}
+	return false;
 }
 
 static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
@@ -2117,7 +2136,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 1: find backends for parentKey
 	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
 
-	// Step 2: check that backends are initialized and remove read-only ones
+	// Step 2: check that backends are initialized
 	bool backendsInit = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
@@ -2137,13 +2156,10 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		// remove if read-only
 		if (keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL)
 		{
-			elektraKsPopAtCursor (ks, i);
+			elektraKsPopAtCursor (backends, i);
 			--i;
 		}
 	}
-
-	// Step 3: remove backends that haven't changed since kdbGet()
-	// FIXME (kodebach): implement
 
 	if (!backendsInit)
 	{
@@ -2151,6 +2167,34 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 			parentKey,
 			"One or more mountpoints have not been initialized. Have you called kdbGet()? See warnings for details.");
 		goto error;
+	}
+
+	// Step 3: remove read-only backends and backends that haven't changed since kdbGet()
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		Key * backendKey = ksAtCursor (backends, i);
+		const BackendData * backendData = keyValue (backendKey);
+
+		bool readOnly = keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL;
+		bool changed = backendNeedsSync (backendData, readOnly, parentKey);
+
+		// issue warning, if readonly but changed
+		if (readOnly && changed)
+		{
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"The data under the mountpoint '%s' was changed since kdbGet(), but the mountpoint "
+							"was intialized as read-only. See warnings for details.",
+							keyName (backendKey));
+			backendsInit = false;
+			continue;
+		}
+
+		// remove if read-only or unchanged
+		if (readOnly || !changed)
+		{
+			elektraKsPopAtCursor (backends, i);
+			--i;
+		}
 	}
 
 	// Step 4: run spec to add metadata
@@ -2192,7 +2236,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		backendsMerge (backends, setKs);
 
 		// Step 9: run the spec plugin to remove copied metadata
-		// FIXME (kodebach): implement
+		// FIXME (kodebach): implement spec
 
 		// Step 10: split setKs for remaining phases
 		if (!backendsDivide (backends, setKs))

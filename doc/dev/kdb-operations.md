@@ -146,10 +146,11 @@ The basic flow of this operation is:
 
 1. Determine the backends needed to write all keys below `parentKey`.
 2. Check that all backends are initialized (i.e. `kdbGet()` was called).
-   From now on ignore all backends that were initialized as read-only.
 3. Determine which backends contain changed data.
    Any backend that contains a key that needs sync (via `KEY_FLAG_SYNC`) could contain changed data.
    From now on ignore all backends that have not changed.
+   From now on also ignore all backends that were initialized as read-only.
+   Issue a warning, if a change was detected (via `KEY_FLAG_SYNC`) in a read-only backend.
 4. Run the `spec` plugin on `ks` (to add metakeys for new keys).
 <!-- TODO: Could we merge the deep-copy and split steps? -->
 5. Deep-Copy `ks` (below `parentKey`) into a new KeySet `set_ks`
