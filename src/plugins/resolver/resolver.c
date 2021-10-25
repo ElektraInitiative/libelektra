@@ -579,7 +579,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
-		/* FIXME: implement cache
+		/* FIXME (kodebach): implement cache
 		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
 		Key * time = ksLookupByName (global, name, KDB_O_NONE);
 		if (time && keyGetValueSize (time) == sizeof (struct timespec))

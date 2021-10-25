@@ -545,6 +545,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 		return false;
 	}
 
+	// FIXME (kodebach): reserve /elektra/... in every namespace
 	Key * elektraRoot = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
 	if (keyIsBelowOrSame (elektraRoot, mountpoint) != 0)
 	{
@@ -555,6 +556,10 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 			keyBaseName (root), keyName (root));
 		return false;
 	}
+
+	// FIXME (kodebach): use /definition for definition
+	// FIXME (kodebach): read /config and add as system:/ keys to config KeySet of all plugins
+	// TODO (kodebach): read and process config/needs from contract
 
 	// make a copy first and then cut/pop away the parts that don't belong
 	KeySet * definition = ksBelow (elektraKs, root);
@@ -591,6 +596,7 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 		return false;
 	}
 
+	// FIXME (kodebach): allow non-array plugin references
 	const char * backendIndex = keyString (backendRef);
 	if (!elektraIsArrayPart (backendIndex))
 	{
@@ -753,6 +759,7 @@ static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
 		KS_END);
 	// clang-format on
 
+	// TODO (kodebach): add if not exists
 	addRootMountpoint (handle->backends, root, ksDup (rootPlugins), ksDup (rootDefinition), KEY_NS_SPEC);
 	addRootMountpoint (handle->backends, root, ksDup (rootPlugins), ksDup (rootDefinition), KEY_NS_SYSTEM);
 	addRootMountpoint (handle->backends, root, ksDup (rootPlugins), ksDup (rootDefinition), KEY_NS_USER);

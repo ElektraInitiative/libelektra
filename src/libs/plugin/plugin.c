@@ -180,6 +180,7 @@ const char * elektraPluginGetPhase (Plugin * plugin)
 
 Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)
 {
+	// TODO (kodebach): docs, precond checks
 	KeySet * plugins = *(KeySet **) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
 
 	Key * lookupHelper = keyNew ("/", KEY_END);
