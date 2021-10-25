@@ -27,7 +27,7 @@ The basic flow of this operation is:
 5. Process contract
 6. Parse mountpoints
 7. Configure `KDB` instance with real mountpoints
-8. Add hardcoded mountpoints to `KDB` instance
+8. Add hard-coded mountpoints to `KDB` instance
 
 > **Note:** Despite sharing a name, the `open` operation **does not** call the `elektra<Plugin>Open` function of any plugin (except within the bootstrap `get` operation).
 
@@ -46,9 +46,9 @@ Other restrictions:
 
 - Creating a mountpoint for `/elektra` or below in _any namespace_ is forbidden.
   This section of the KDB is reserved for Elektra's own config.
-- `system:/elektra/mountpoints`, `user:/elektra/mountpoints` and `dir:/elektra/mountpoints` are all required for the bootstrap process and use a hardcoded backend.
+- `system:/elektra/mountpoints`, `user:/elektra/mountpoints` and `dir:/elektra/mountpoints` are all required for the bootstrap process and use a hard coded backend.
   The backends are implemented by a standard file-based backend plugin that is defined at compile-time of `libelektra-kdb`.
-- `system:/elektra/version` and `system:/elektra/modules` will always use hardcoded read-only backends containing information about this Elektra installation.
+- `system:/elektra/version` and `system:/elektra/modules` will always use hard coded read-only backends containing information about this Elektra installation.
   The backends are implemented by special purpose backend plugins.
 
 ## `get` Operation

@@ -47,7 +47,7 @@ Compared to other plugins they have a much more strict contract for what they ma
 This is because they are the only plugins that are invoked by `libelektra-kdb`.
 Other plugins are normally called by a backend plugin, although any plugin may call another.
 
-To `libelektra-kdb` it doesn't matter what other plugins do, as long as the backend plugins hide unexpected behaviour.
+To `libelektra-kdb` it doesn't matter what other plugins do, as long as the backend plugins hide unexpected behavior.
 In other words backend plugins must ensure that to the outside everything behaves according to the contract.
 
 While any plugin could be used as backend plugin, only a select few will behave according to the contract for backend plugins.

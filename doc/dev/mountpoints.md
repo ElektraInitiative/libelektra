@@ -190,12 +190,12 @@ system:/elektra/mountpoints/\/hosts/plugins/#1/name (="yajl")
 
 system:/elektra/mountpoints/\/hosts/backend (="#0")
 
-system:/elektra/mountpoints/\/hosts/url (="https://api.ipify.org/?format=json")
+system:/elektra/mountpoints/\/hosts/url (="https://api.ipify.org/?format=JSON")
 
 system:/elektra/mountpoints/\/hosts/decoder (="yajl")
 ```
 
 The hypothetical `http_backend` plugin is a read-only backend plugin.
-In the example above, it is configured load the URL `https://api.ipify.org/?format=json` and use the `yajl` plugin to parse the result into a keyset.
+In the example above, it is configured load the URL `https://api.ipify.org/?format=JSON` and use the `yajl` plugin to parse the result into a keyset.
 Both the HTTP request and the decoding would happen in the `storage` phase of the `get` operation.
 The `resolver` phase could perform an HTTP cache check, for example.
