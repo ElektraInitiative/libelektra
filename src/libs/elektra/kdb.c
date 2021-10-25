@@ -48,6 +48,9 @@
 #include <kdbinternal.h>
 
 
+#define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")
+#define KDB_GET_PHASE_POST_STORAGE_NONSPEC (KDB_GET_PHASE_POST_STORAGE "/nonspec")
+
 /**
  * @defgroup kdb KDB
  * @brief General methods to access the Key database.
@@ -1372,11 +1375,31 @@ static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
 
 static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
 {
+	// TODO (kodebach): better solution?
+	bool speconly = false;
+	bool skipspec = false;
+	if (strncmp (phase, KDB_GET_PHASE_POST_STORAGE, sizeof (KDB_GET_PHASE_POST_STORAGE) - 1) == 0)
+	{
+		speconly = strcmp (phase, KDB_GET_PHASE_POST_STORAGE_SPEC);
+		skipspec = !speconly;
+		phase = KDB_GET_PHASE_POST_STORAGE;
+	}
+
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
 		Key * backendKey = ksAtCursor (backends, i);
 		BackendData * backendData = (BackendData *) keyValue (backendKey);
+
+		if (speconly && keyGetNamespace (backendKey) != KEY_NS_SPEC)
+		{
+			continue;
+		}
+
+		if (skipspec && keyGetNamespace (backendKey) == KEY_NS_SPEC)
+		{
+			continue;
+		}
 
 		// check if get function exists
 		// TODO (kodebach): move check into kdbOpen
@@ -1659,7 +1682,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	// Step 11: run poststorage phase for spec:/
 	Key * specRoot = keyNew ("spec:/", KEY_END);
-	if (!runGetPhase (ksBelow (backends, specRoot), parentKey, KDB_GET_PHASE_POST_STORAGE))
+	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE_SPEC))
 	{
 		keyDel (specRoot);
 		goto error;
@@ -1714,8 +1737,7 @@ int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 	}
 
 	// Step 16: run poststorage phase for non-spec:/
-	// FIXME (kodebach): don't rerun poststorage on spec:/
-	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE))
+	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE_NONSPEC))
 	{
 		goto error;
 	}
