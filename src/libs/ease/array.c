@@ -49,6 +49,11 @@ int elektraArrayValidateName (const Key * key)
  */
 int elektraArrayValidateBaseNameString (const char * baseName)
 {
+	if (baseName == NULL)
+	{
+		return -1;
+	}
+
 	if (strcmp (baseName, "#") == 0)
 	{
 		return 0;

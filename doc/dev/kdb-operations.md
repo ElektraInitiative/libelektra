@@ -146,15 +146,16 @@ The basic flow of this operation is:
 
 1. Determine the backends needed to write all keys below `parentKey`.
 2. Check that all backends are initialized (i.e. `kdbGet()` was called).
-3. Determine which backends contain changed data.
+3. Run the `spec` plugin on `ks` (to add metakeys for new keys).
+   <!-- TODO: Running spec at this point makes technical sense, but isn't very logical otherwise. -->
+   <!-- TODO: Could we merge the deep-copy, split and read-only/unchanged check steps? -->
+4. Deep-Copy `ks` (below `parentKey`) into a new KeySet `set_ks`
+5. Split `set_ks` into individual backends
+6. Determine which backends contain changed data.
    Any backend that contains a key that needs sync (via `KEY_FLAG_SYNC`) could contain changed data.
    From now on ignore all backends that have not changed.
    From now on also ignore all backends that were initialized as read-only.
    Issue a warning, if a change was detected (via `KEY_FLAG_SYNC`) in a read-only backend.
-4. Run the `spec` plugin on `ks` (to add metakeys for new keys).
-<!-- TODO: Could we merge the deep-copy and split steps? -->
-5. Deep-Copy `ks` (below `parentKey`) into a new KeySet `set_ks`
-6. Split `set_ks` into individual backends
 7. Run the `resolver` and `prestorage` on all backends (abort immediately on error and go to e).
 <!-- TODO: can this merge+split be avoided?
     do we really need to call spec for this?

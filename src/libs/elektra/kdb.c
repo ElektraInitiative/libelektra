@@ -389,7 +389,9 @@ static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend
 		.keys = ksNew (0, KS_END),
 		.plugins = plugins,
 		.definition = definition,
+		.getSize = 0,
 		.initialized = false,
+		.keyNeedsSync = false,
 	};
 	keySetBinary (mountpoint, &backendData, sizeof (backendData));
 	ksAppendKey (backends, mountpoint);
@@ -442,6 +444,8 @@ static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * 
 			keyNew ("/positions/get/storage", KEY_VALUE, "#1", KEY_END),
 			keyNew ("/positions/set/resolver", KEY_VALUE, "#0", KEY_END),
 			keyNew ("/positions/set/storage", KEY_VALUE, "#1", KEY_END),
+			keyNew ("/positions/set/commit", KEY_VALUE, "#0", KEY_END),
+			keyNew ("/positions/set/rollback", KEY_VALUE, "#0", KEY_END),
 		KS_END);
 	// clang-format on
 
@@ -1782,25 +1786,6 @@ error:
 	return -1;
 }
 
-static bool backendNeedsSync (const BackendData * backend, bool readOnly, Key * errorKey)
-{
-	for (elektraCursor i = 0; i < ksGetSize (backend->keys); i++)
-	{
-		Key * cur = ksAtCursor (backend->keys, i);
-		if (keyNeedSync (cur))
-		{
-			if (readOnly)
-			{
-				ELEKTRA_ADD_INTERFACE_WARNINGF (
-					errorKey, "The key '%s' was modified since kdbGet(), but it belongs to a read-only mountpoint.",
-					keyName (cur));
-			}
-			return true;
-		}
-	}
-	return false;
-}
-
 static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 {
 	bool success = true;
@@ -2152,13 +2137,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 			backendsInit = false;
 			continue;
 		}
-
-		// remove if read-only
-		if (keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL)
-		{
-			elektraKsPopAtCursor (backends, i);
-			--i;
-		}
 	}
 
 	if (!backendsInit)
@@ -2169,24 +2147,46 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		goto error;
 	}
 
-	// Step 3: remove read-only backends and backends that haven't changed since kdbGet()
+	// Step 3: run spec to add metadata
+	// TODO (kodebach): change once new global plugins are done
+	if (elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	{
+		goto error;
+	}
+
+	// TODO (kodebach) [opt]: merge steps 4-6
+	// By merging steps 4-6, we MAY be able to avoid copying keys from unchanged and read-only backends.
+
+	// Step 4: create deep-copy of ks
+	// Note: This is needed so that ks retains its in-process state,
+	//       after we transform the data into its on-disk state.
+	KeySet * setKs = ksDeepDup (ks);
+
+	// Step 5: split ks (for resolver and prestorage phases)
+	if (!backendsDivide (backends, setKs))
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "Couldn't divide keys into mountpoints at start of kdbSet. Please report this bug at "
+					    "https://issues.libelektra.org.");
+		goto error;
+	}
+
+	// Step 6: remove read-only backends and backends that haven't changed since kdbGet()
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
 		Key * backendKey = ksAtCursor (backends, i);
 		const BackendData * backendData = keyValue (backendKey);
 
 		bool readOnly = keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL;
-		bool changed = backendNeedsSync (backendData, readOnly, parentKey);
+		bool changed = backendData->keyNeedsSync || backendData->getSize != (size_t) ksGetSize (backendData->keys);
 
 		// issue warning, if readonly but changed
 		if (readOnly && changed)
 		{
 			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
 							"The data under the mountpoint '%s' was changed since kdbGet(), but the mountpoint "
-							"was intialized as read-only. See warnings for details.",
+							"was intialized as read-only. The changes will not be stored.",
 							keyName (backendKey));
-			backendsInit = false;
-			continue;
 		}
 
 		// remove if read-only or unchanged
@@ -2195,27 +2195,6 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 			elektraKsPopAtCursor (backends, i);
 			--i;
 		}
-	}
-
-	// Step 4: run spec to add metadata
-	// TODO (kodebach): change once new global plugins are done
-	if (elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-
-	// Step 5: create deep-copy of ks
-	// Note: This is needed so that ks retains its in-process state,
-	//       after we transform the data into its on-disk state.
-	KeySet * setKs = ksDeepDup (ks);
-
-	// Step 6: split setKs for resolver and prestorage phases
-	if (!backendsDivide (backends, setKs))
-	{
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
-					    "Couldn't divide keys into mountpoints at start of kdbSet. Please report this bug at "
-					    "https://issues.libelektra.org.");
-		goto error;
 	}
 
 	// Step 7a: resolve backends

@@ -124,6 +124,11 @@ int mountDefault (KDB * kdb, KeySet * modules, Key * errorKey)
 	BackendData defaultBackendData = {
 		.backend = defaultBackend,
 		.keys = ksNew (0, KS_END),
+		.plugins = NULL,
+		.definition = NULL,
+		.getSize = 0,
+		.initialized = false,
+		.keyNeedsSync = false,
 	};
 	ksAppendKey (kdb->backends,
 		     keyNew ("default:/", KEY_BINARY, KEY_SIZE, sizeof (BackendData), KEY_VALUE, &defaultBackendData, KEY_END));
@@ -138,6 +143,11 @@ int mountDefault (KDB * kdb, KeySet * modules, Key * errorKey)
 	BackendData initBackendData = {
 		.backend = initBackend,
 		.keys = ksNew (0, KS_END),
+		.plugins = NULL,
+		.definition = NULL,
+		.getSize = 0,
+		.initialized = false,
+		.keyNeedsSync = false,
 	};
 	ksAppendKey (kdb->backends,
 		     keyNew ("system:/elektra", KEY_BINARY, KEY_SIZE, sizeof (BackendData), KEY_VALUE, &initBackendData, KEY_END));
@@ -160,6 +170,11 @@ int mountDefault (KDB * kdb, KeySet * modules, Key * errorKey)
 				BackendData backendData = {
 					.backend = defaultBackend,
 					.keys = ksNew (0, KS_END),
+					.plugins = NULL,
+					.definition = NULL,
+					.getSize = 0,
+					.initialized = false,
+					.keyNeedsSync = false,
 				};
 				keySetBinary (backendKey, &backendData, sizeof (BackendData));
 				ksAppendKey (kdb->backends, backendKey);
@@ -497,6 +512,11 @@ int mountBackend (KDB * kdb, const Key * mountpoint, Plugin * backend)
 	BackendData backendData = {
 		.backend = backend,
 		.keys = ksNew (0, KS_END),
+		.plugins = NULL,
+		.definition = NULL,
+		.getSize = 0,
+		.initialized = false,
+		.keyNeedsSync = false,
 	};
 	keySetBinary (backendKey, &backendData, sizeof (BackendData));
 

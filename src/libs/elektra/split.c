@@ -1236,7 +1236,7 @@ KeySet * backendsForParentKey (KeySet * backends, Key * parentKey)
 	return selected;
 }
 
-static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * curBackend, KeySet * ks, elektraCursor cur)
+static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * curBackend, const KeySet * ks, elektraCursor cur)
 {
 	Key * defaultBackendKey = ksLookupByName (backends, "default:/", 0);
 	if (defaultBackendKey == NULL && *curBackend < 0)
@@ -1247,7 +1247,7 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 
 	const BackendData * defaultBackendData = keyValue (defaultBackendKey);
 	Key * backendKey = *curBackend < 0 ? defaultBackendKey : ksAtCursor (backends, *curBackend);
-	const BackendData * backendData = keyValue (backendKey);
+	BackendData * backendData = (BackendData *) keyValue (backendKey);
 
 	while (cur < ksGetSize (ks))
 	{
@@ -1267,6 +1267,7 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 		}
 		else if (*curBackend < 0 || keyIsBelowOrSame (backendKey, k) == 1)
 		{
+			backendData->keyNeedsSync = backendData->keyNeedsSync || keyNeedSync (k) == 1;
 			ksAppendKey (backendData->keys, keyDup (k, KEY_CP_ALL));
 		}
 		else
@@ -1280,11 +1281,12 @@ static elektraCursor backendsDivideInternal (KeySet * backends, elektraCursor * 
 	return cur;
 }
 
-bool backendsDivide (KeySet * backends, KeySet * ks)
+bool backendsDivide (KeySet * backends, const KeySet * ks)
 {
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		const BackendData * backendData = keyValue (ksAtCursor (backends, i));
+		BackendData * backendData = (BackendData *) keyValue (ksAtCursor (backends, i));
+		backendData->keyNeedsSync = false;
 		ksClear (backendData->keys);
 	}
 
@@ -1299,10 +1301,16 @@ void backendsMerge (KeySet * backends, KeySet * ks)
 	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
 		const Key * backendKey = ksAtCursor (backends, i);
-		const BackendData * backendData = keyValue (backendKey);
+		BackendData * backendData = (BackendData *) keyValue (backendKey);
 
 		if (keyGetNamespace (backendKey) != KEY_NS_DEFAULT)
 		{
+			ssize_t size = ksGetSize (backendData->keys);
+			backendData->getSize = size;
+			for (elektraCursor j = 0; j < size; j++)
+			{
+				keyClearSync (ksAtCursor (backendData->keys, j));
+			}
 			ksAppend (ks, backendData->keys);
 		}
 	}

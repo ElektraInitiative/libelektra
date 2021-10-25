@@ -576,8 +576,10 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	KeySet * global;
 	char * name = elektraCacheKeyName (pk->filename);
 
+
 	if ((global = elektraPluginGetGlobalKeySet (handle)) != NULL && ELEKTRA_STAT_NANO_SECONDS (buf) != 0)
 	{
+		/* FIXME: implement cache
 		ELEKTRA_LOG_DEBUG ("global-cache: check cache update needed?");
 		Key * time = ksLookupByName (global, name, KDB_O_NONE);
 		if (time && keyGetValueSize (time) == sizeof (struct timespec))
@@ -600,6 +602,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 				return ELEKTRA_PLUGIN_STATUS_CACHE_HIT;
 			}
 		}
+		*/
 	}
 
 	pk->mtime.tv_sec = ELEKTRA_STAT_SECONDS (buf);

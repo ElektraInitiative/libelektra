@@ -26,12 +26,14 @@ static void test_basics (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 
+	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, KDB_GET_PHASE_STORAGE, KEY_END), KS_END);
+
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
 	KeySet * expectedKs = elektraVersionKeySet ();
 	succeed_if (ksGetSize (ks) == ksGetSize (expectedKs), "wrong number of keys returned");
 
-	for (elektraCursor i = 0; i < ksGetSize (expectedKs); i++)
+	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
 	{
 		Key * cur = ksAtCursor (ks, i);
 		Key * expected = ksAtCursor (expectedKs, i);
@@ -46,6 +48,7 @@ static void test_basics (void)
 
 	keyDel (parentKey);
 	ksDel (ks);
+	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 
@@ -60,12 +63,14 @@ static void test_rename (void)
 
 	KeySet * ks = ksNew (0, KS_END);
 
+	plugin->global = ksNew (1, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, KDB_GET_PHASE_STORAGE, KEY_END), KS_END);
+
 	succeed_if (plugin->kdbGet (plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_SUCCESS, "call to kdbGet was not successful");
 
 	KeySet * expectedKs = elektraVersionKeySet ();
 	succeed_if (ksGetSize (ks) == ksGetSize (expectedKs), "wrong number of keys returned");
 
-	for (elektraCursor i = 0; i < ksGetSize (expectedKs); i++)
+	for (elektraCursor i = 0; i < ksGetSize (ks); i++)
 	{
 		Key * cur = ksAtCursor (ks, i);
 		Key * expected = ksAtCursor (expectedKs, i);
@@ -82,6 +87,7 @@ static void test_rename (void)
 
 	keyDel (parentKey);
 	ksDel (ks);
+	ksDel (plugin->global);
 	PLUGIN_CLOSE ();
 }
 

@@ -254,7 +254,7 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 	// TODO (Q): support for read-write to absolute path?
 	bool readOnly = handle->setPositions.resolver == NULL;
 
-	if (handle->getPositions.storage == NULL && ksLookupByName (definition, "/positions/get/storage/omit", 0) != NULL)
+	if (handle->getPositions.storage == NULL && ksLookupByName (definition, "/positions/get/storage/omit", 0) == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (
 			parentKey,
@@ -282,20 +282,41 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 	}
 	else
 	{
-		if (handle->setPositions.storage == NULL && ksLookupByName (definition, "/positions/set/storage/omit", 0) != NULL)
+		if (handle->setPositions.storage == NULL)
 		{
-			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+			ELEKTRA_SET_INSTALLATION_ERRORF (
 				parentKey,
-				"You defined a resolver, but no storage plugin defined for kdbSet(). You probably forgot to set "
-				"'%s/positions/set/storage'. If you wanted to create a read-only mountpoint remove "
-				"'%s/positions/set/resolver'. If the configuration is intentional, you can silence this "
-				"warning by setting '%s/positions/set/storage/omit' to any value. (Configuration of mountpoint: '%s')",
-				keyName (parentKey), keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
+				"You defined a set-resolver plugin, but no storage plugin for kdbSet(). You probably forgot to set "
+				"'%s/positions/set/storage'. (Configuration of mountpoint: '%s')",
+				keyName (parentKey), keyBaseName (parentKey));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+
+		if (handle->setPositions.commit == NULL)
+		{
+			ELEKTRA_SET_INSTALLATION_ERRORF (
+				parentKey,
+				"You defined a set-resolver plugin, but no commit plugin for kdbSet(). In most cases the same plugin is "
+				"used as resolver and commit. To enable this configuration, set '%s/positions/set/commit' to '%s', i.e. to "
+				"the same value as '%s/positions/set/resolver'. (Configuration of mountpoint: '%s')",
+				keyName (parentKey), handle->setPositions.resolver->name, keyName (parentKey), keyBaseName (parentKey));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+
+		if (handle->setPositions.rollback == NULL)
+		{
+			ELEKTRA_SET_INSTALLATION_ERRORF (
+				parentKey,
+				"You defined a set-resolver and commit plugin, but no rollback plugin for kdbSet(). In most cases the same "
+				"plugin is used as commit and rollback. To enable this configuration, set '%s/positions/set/rollback' to "
+				"'%s', i.e. to the same value as '%s/positions/set/commit'. (Configuration of mountpoint: '%s')",
+				keyName (parentKey), handle->setPositions.resolver->name, keyName (parentKey), keyBaseName (parentKey));
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
 
 	if (handle->getPositions.resolver != handle->setPositions.resolver &&
-	    ksLookupByName (definition, "/positions/set/resolver/differs", 0) != NULL)
+	    ksLookupByName (definition, "/positions/set/resolver/differs", 0) == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (
 			parentKey,
@@ -308,7 +329,7 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 	}
 
 	if (handle->setPositions.resolver != handle->setPositions.commit &&
-	    ksLookupByName (definition, "/positions/set/commit/differs", 0) != NULL)
+	    ksLookupByName (definition, "/positions/set/commit/differs", 0) == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (
 			parentKey,
@@ -321,7 +342,7 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 	}
 
 	if (handle->setPositions.resolver != handle->setPositions.rollback &&
-	    ksLookupByName (definition, "/positions/set/rollback/differs", 0) != NULL)
+	    ksLookupByName (definition, "/positions/set/rollback/differs", 0) == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (
 			parentKey,
