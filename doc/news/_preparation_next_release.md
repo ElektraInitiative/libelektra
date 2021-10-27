@@ -128,7 +128,7 @@ _(Michael Tucek)_
 
 ## Scripts
 
-- <<TODO>>
+- Updated `reformat-c` script to use clang-format version 13. _(Mihael Pranjić)_
 - <<TODO>>
 - <<TODO>>
 
