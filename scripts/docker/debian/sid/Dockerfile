@@ -11,8 +11,8 @@ RUN apt-get update && apt-get -y install \
         bison \
         build-essential \
         checkinstall \
-        clang-12 \
-        clang-format-12 \
+        clang-13 \
+        clang-format-13 \
         cmake \
         curl \
         dh-lua \
@@ -45,7 +45,7 @@ RUN apt-get update && apt-get -y install \
         libyajl-dev \
         libyaml-cpp-dev \
         libzmq3-dev \
-        llvm-12 \
+        llvm-13 \
         moreutils \
         ninja-build \
         npm \
@@ -64,8 +64,8 @@ RUN apt-get update && apt-get -y install \
         wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Add Clang 12 to path
-ENV PATH="/usr/lib/llvm-12/bin:$PATH"
+# Add Clang 13 to path
+ENV PATH="/usr/lib/llvm-13/bin:$PATH"
 
 # Update cache for shared libraries
 RUN ldconfig
