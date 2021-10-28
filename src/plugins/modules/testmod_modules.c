@@ -39,7 +39,8 @@ static void test_basics (void)
 	dummy->kdbGet = dummyGet;
 	dummy->refcounter = 1;
 
-	KeySet * definition = ksNew (1, keyNew ("/plugin", KEY_BINARY, KEY_SIZE, sizeof (dummy), KEY_VALUE, &dummy, KEY_END), KS_END);
+	KeySet * definition =
+		ksNew (1, keyNew ("system:/plugin", KEY_BINARY, KEY_SIZE, sizeof (dummy), KEY_VALUE, &dummy, KEY_END), KS_END);
 	succeed_if (plugin->kdbInit (plugin, definition, parentKey) == ELEKTRA_PLUGIN_STATUS_NO_UPDATE, "kdbInit failed");
 	ksDel (definition);
 

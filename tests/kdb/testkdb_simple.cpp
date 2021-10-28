@@ -84,8 +84,9 @@ TEST_F (Simple, TryChangeAfterSet)
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), 0) << "did not find config file";
 }
 
-TEST_F (Simple, MetaInSet)
+TEST_F (Simple, DISABLED_MetaInSet)
 {
+	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -104,8 +105,9 @@ TEST_F (Simple, MetaInSet)
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "did find config file";
 }
 
-TEST_F (Simple, InvalidKeysInSet)
+TEST_F (Simple, DISABLED_InvalidKeysInSet)
 {
+	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -146,7 +148,7 @@ void compareKeySet (kdb::KeySet ks1, kdb::KeySet ks2)
 
 TEST_F (Simple, DISABLED_EverythingInGetSet)
 {
-	// FIXME: uses non-storable namespaces
+	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks = getAll ();
@@ -168,7 +170,7 @@ TEST_F (Simple, DISABLED_EverythingInGetSet)
 
 TEST_F (Simple, DISABLED_EverythingInSet)
 {
-	// FIXME: uses non-storable namespaces
+	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -316,7 +318,7 @@ TEST_F (Simple, GetCascading)
 
 TEST_F (Simple, DISABLED_GetAppendCascading)
 {
-	// FIXME: uses non-storable namespaces
+	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -360,7 +362,7 @@ TEST_F (Simple, DISABLED_GetAppendCascading)
 
 TEST_F (Simple, DISABLED_GetAppendMeta)
 {
-	// FIXME: uses non-storable namespaces
+	// FIXME (kodebach): uses non-storable namespaces
 	using namespace kdb;
 	KDB kdb;
 	KeySet ks;
@@ -505,6 +507,7 @@ TEST_F (Simple, TriggerError)
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "found wrong file";
 	EXPECT_THROW (kdb.set (ks, testRoot), kdb::KDBException) << "could not trigger error";
 	ASSERT_EQ (ks.size (), 3) << "key suddenly missing";
-	EXPECT_EQ (ks.current ().getName (), "system:" + testRoot + "k") << "ks should point to error key";
+	// TODO (kodebach): keep this semantic?
+	// EXPECT_EQ (ks.current ().getName (), "system:" + testRoot + "k") << "ks should point to error key";
 	ASSERT_EQ (stat (mp->systemConfigFile.c_str (), &buf), -1) << "created file even though error triggered";
 }

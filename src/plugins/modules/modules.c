@@ -31,7 +31,7 @@ int ELEKTRA_PLUGIN_FUNCTION (open) (Plugin * handle, Key * errorKey ELEKTRA_UNUS
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * handle, KeySet * definition, Key * parentKey ELEKTRA_UNUSED)
 {
-	Key * pluginKey = ksLookupByName (definition, "/plugin", 0);
+	Key * pluginKey = ksLookupByName (definition, "system:/plugin", 0);
 	if (pluginKey != NULL)
 	{
 		elektraPluginSetData (handle, *(Plugin **) keyValue (pluginKey));

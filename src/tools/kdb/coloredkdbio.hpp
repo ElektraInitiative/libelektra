@@ -78,24 +78,40 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 		Key parent ("meta:/warnings", KEY_END);
 		auto warnings = meta.cut (parent);
 
-		int nr = warnings.size ();
-		if (nr == 0)
+		if (warnings.size () == 0)
 		{
 			return os;
 		}
 
-		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Sorry, " << nr + 1 << " warning"
-		   << (!nr ? " was" : "s were") << " issued ;(" << getErrorColor (ANSI_COLOR::RESET) << std::endl;
-
+		int total = 0;
 		for (auto it = warnings.begin () + 1; it != warnings.end (); ++it)
 		{
 			auto name = it->getName ();
 			if (it->isDirectBelow (parent))
 			{
-				os << "\tSorry, module " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::BLUE)
-				   << warnings.get<std::string> (name + "/module") << getErrorColor (ANSI_COLOR::RESET)
-				   << " issued the warning " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::RED)
-				   << warnings.get<std::string> (name + "/number") << getErrorColor (ANSI_COLOR::RESET) << ":" << std::endl;
+				total++;
+			}
+		}
+
+		if (total == 0)
+		{
+			return os;
+		}
+
+		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Sorry, " << total << " warning"
+		   << (total == 1 ? " was" : "s were") << " issued ;(" << getErrorColor (ANSI_COLOR::RESET) << std::endl;
+
+		int nr = 1;
+		for (auto it = warnings.begin () + 1; it != warnings.end (); ++it)
+		{
+			auto name = it->getName ();
+			if (it->isDirectBelow (parent))
+			{
+				os << "[" << nr << "] Sorry, module " << getErrorColor (ANSI_COLOR::BOLD)
+				   << getErrorColor (ANSI_COLOR::BLUE) << warnings.get<std::string> (name + "/module")
+				   << getErrorColor (ANSI_COLOR::RESET) << " issued the warning " << getErrorColor (ANSI_COLOR::BOLD)
+				   << getErrorColor (ANSI_COLOR::RED) << warnings.get<std::string> (name + "/number")
+				   << getErrorColor (ANSI_COLOR::RESET) << ":" << std::endl;
 				os << "\t" << warnings.get<std::string> (name + "/description") << ": "
 				   << warnings.get<std::string> (name + "/reason") << std::endl;
 				if (printVerbose)
@@ -111,6 +127,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 					   << warnings.get<std::string> (name + "/file") << ":"
 					   << warnings.get<std::string> (name + "/line") << std::endl;
 				}
+				nr++;
 			}
 		}
 	}

@@ -294,6 +294,10 @@ static char * elektraAddErrnoText (void)
 
 static int needsMapping (Key * testKey, Key * errorKey)
 {
+	// FIXME (kodebach): fix resolver
+	// we don't need to always init everything, but lazy init doesn't work right now
+	return 1;
+
 	elektraNamespace ns = keyGetNamespace (errorKey);
 
 	if (ns == KEY_NS_NONE) return 1;      // for unit tests
@@ -1079,6 +1083,7 @@ static int elektraSetCommit (resolverHandle * pk, Key * parentKey)
 
 int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * handle, KeySet * ks, Key * parentKey)
 {
+	// FIXME (kodebach): resolver creates tmp files but doesn't delete?
 	resolverHandle * pk = elektraGetResolverHandle (handle, parentKey);
 
 	int errnoSave = errno;

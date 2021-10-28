@@ -1207,6 +1207,7 @@ KeySet * backendsForParentKey (KeySet * backends, Key * parentKey)
 	KeySet * selected = ksBelow (backends, parentKey);
 	if (keyGetNamespace (parentKey) == KEY_NS_CASCADING)
 	{
+		// FIXME (kodebach): properly handle cascading backends
 		for (elektraNamespace ns = KEY_NS_FIRST; ns <= KEY_NS_LAST; ++ns)
 		{
 			switch (ns)

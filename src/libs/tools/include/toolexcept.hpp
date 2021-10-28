@@ -338,7 +338,8 @@ struct MissingNeeded : public PluginCheckException
 struct MissingSymbol : public PluginCheckException
 {
 	std::string msg;
-	explicit MissingSymbol (std::string symbol) : msg ("The necessary symbol \"" + symbol + "\" is missing in that plugin!")
+	explicit MissingSymbol (std::string symbol, std::string plugin)
+	: msg ("The necessary symbol \"" + symbol + "\" is missing in the plugin \"" + plugin + "\"!")
 	{
 	}
 	~MissingSymbol () throw ()

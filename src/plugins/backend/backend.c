@@ -64,11 +64,10 @@ static bool loadPlugin (Plugin ** pluginPtr, Plugin * thisPlugin, Key * pluginRe
 
 	if (type == PLUGIN_TYPE_COMMIT && (*pluginPtr)->kdbCommit == NULL)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (
-			parentKey,
-			"The plugin '%s' was referenced in a kdbCommit() position ('%s%s'), but does not implement "
-			"kdbCommit(). (Configuration of mountpoint: '%s')",
-			(*pluginPtr)->name, keyName (parentKey), keyName (pluginRefKey), keyBaseName (parentKey));
+		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
+						 "The plugin '%s' was referenced in a kdbCommit() position ('%s%s'), but does not "
+						 "implement kdbCommit(). (Configuration of mountpoint: '%s')",
+						 (*pluginPtr)->name, keyName (parentKey), keyName (pluginRefKey), keyBaseName (parentKey));
 		return false;
 	}
 
@@ -128,13 +127,13 @@ static bool loadPluginList (PluginList ** pluginListPtr, Plugin * thisPlugin, Ke
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * parentKey)
 {
-	Key * pathKey = ksLookupByName (definition, "/path", 0);
+	Key * pathKey = ksLookupByName (definition, "system:/path", 0);
 	const char * path = keyString (pathKey);
 	if (pathKey == NULL || strlen (path) == 0)
 	{
-		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
-						 "You must set '%s/path' to a non-empty value. (Configuration of mountpoint: %s)",
-						 keyName (parentKey), keyBaseName (parentKey));
+		ELEKTRA_SET_INSTALLATION_ERRORF (
+			parentKey, "You must set '%s/definition/path' to a non-empty value. (Configuration of mountpoint: %s)",
+			keyName (parentKey), keyBaseName (parentKey));
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
@@ -142,90 +141,92 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 	handle->path = elektraStrDup (path);
 
 	// load get plugins
-	if (!loadPlugin (&handle->getPositions.resolver, plugin, ksLookupByName (definition, "/positions/get/resolver", 0), PLUGIN_TYPE_GET,
-			 parentKey))
+	if (!loadPlugin (&handle->getPositions.resolver, plugin, ksLookupByName (definition, "system:/positions/get/resolver", 0),
+			 PLUGIN_TYPE_GET, parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	if (!loadPluginList (&handle->getPositions.prestorage, plugin, definition, "/positions/get/prestorage", PLUGIN_TYPE_GET, parentKey))
+	if (!loadPluginList (&handle->getPositions.prestorage, plugin, definition, "system:/positions/get/prestorage", PLUGIN_TYPE_GET,
+			     parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	if (!loadPlugin (&handle->getPositions.storage, plugin, ksLookupByName (definition, "/positions/get/storage", 0), PLUGIN_TYPE_GET,
-			 parentKey))
+	if (!loadPlugin (&handle->getPositions.storage, plugin, ksLookupByName (definition, "system:/positions/get/storage", 0),
+			 PLUGIN_TYPE_GET, parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	if (!loadPluginList (&handle->getPositions.poststorage, plugin, definition, "/positions/get/poststorage", PLUGIN_TYPE_GET,
+	if (!loadPluginList (&handle->getPositions.poststorage, plugin, definition, "system:/positions/get/poststorage", PLUGIN_TYPE_GET,
 			     parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	// load set plugins
-	if (!loadPlugin (&handle->setPositions.resolver, plugin, ksLookupByName (definition, "/positions/set/resolver", 0), PLUGIN_TYPE_SET,
-			 parentKey))
+	if (!loadPlugin (&handle->setPositions.resolver, plugin, ksLookupByName (definition, "system:/positions/set/resolver", 0),
+			 PLUGIN_TYPE_SET, parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	if (!loadPluginList (&handle->setPositions.prestorage, plugin, definition, "/positions/set/prestorage", PLUGIN_TYPE_SET, parentKey))
+	if (!loadPluginList (&handle->setPositions.prestorage, plugin, definition, "system:/positions/set/prestorage", PLUGIN_TYPE_SET,
+			     parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	if (!loadPlugin (&handle->setPositions.storage, plugin, ksLookupByName (definition, "/positions/set/storage", 0), PLUGIN_TYPE_SET,
-			 parentKey))
+	if (!loadPlugin (&handle->setPositions.storage, plugin, ksLookupByName (definition, "system:/positions/set/storage", 0),
+			 PLUGIN_TYPE_SET, parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	if (!loadPluginList (&handle->setPositions.poststorage, plugin, definition, "/positions/set/poststorage", PLUGIN_TYPE_SET,
+	if (!loadPluginList (&handle->setPositions.poststorage, plugin, definition, "system:/positions/set/poststorage", PLUGIN_TYPE_SET,
 			     parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	// load commit plugins
-	if (!loadPluginList (&handle->setPositions.precommit, plugin, definition, "/positions/set/precommit", PLUGIN_TYPE_COMMIT,
+	if (!loadPluginList (&handle->setPositions.precommit, plugin, definition, "system:/positions/set/precommit", PLUGIN_TYPE_COMMIT,
 			     parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	if (!loadPlugin (&handle->setPositions.commit, plugin, ksLookupByName (definition, "/positions/set/commit", 0), PLUGIN_TYPE_COMMIT,
-			 parentKey))
+	if (!loadPlugin (&handle->setPositions.commit, plugin, ksLookupByName (definition, "system:/positions/set/commit", 0),
+			 PLUGIN_TYPE_COMMIT, parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	if (!loadPluginList (&handle->setPositions.postcommit, plugin, definition, "/positions/set/postcommit", PLUGIN_TYPE_COMMIT,
+	if (!loadPluginList (&handle->setPositions.postcommit, plugin, definition, "system:/positions/set/postcommit", PLUGIN_TYPE_COMMIT,
 			     parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	// load error plugins
-	if (!loadPluginList (&handle->setPositions.prerollback, plugin, definition, "/positions/set/prerollback", PLUGIN_TYPE_ERROR,
+	if (!loadPluginList (&handle->setPositions.prerollback, plugin, definition, "system:/positions/set/prerollback", PLUGIN_TYPE_ERROR,
 			     parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	if (!loadPlugin (&handle->setPositions.rollback, plugin, ksLookupByName (definition, "/positions/set/rollback", 0),
+	if (!loadPlugin (&handle->setPositions.rollback, plugin, ksLookupByName (definition, "system:/positions/set/rollback", 0),
 			 PLUGIN_TYPE_ERROR, parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	if (!loadPluginList (&handle->setPositions.postrollback, plugin, definition, "/positions/set/postrollback", PLUGIN_TYPE_ERROR,
-			     parentKey))
+	if (!loadPluginList (&handle->setPositions.postrollback, plugin, definition, "system:/positions/set/postrollback",
+			     PLUGIN_TYPE_ERROR, parentKey))
 	{
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
 
 	if (handle->getPositions.resolver != NULL)
 	{
-		if (path[0] == '/' && ksLookupByName (definition, "/path/absolute", 0) == NULL)
+		if (path[0] == '/' && ksLookupByName (definition, "system:/path/absolute", 0) == NULL)
 		{
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (
 				parentKey,
-				"You configured a resolver. The absolute path in '%s/path' might not be used as-is. If the configuration "
-				"is intentional, set '%s/path/absolute' to any value to silence this warning. (Configuration of "
-				"mountpoint: '%s')",
+				"You configured a resolver. The absolute path in '%s/definition/path' might not be used as-is. If the "
+				"configuration is intentional, set '%s/definition/path/absolute' to any value to silence this warning. "
+				"(Configuration of mountpoint: '%s')",
 				keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
 		}
 	}
@@ -235,18 +236,19 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 		{
 			ELEKTRA_SET_INSTALLATION_ERRORF (
 				parentKey,
-				"To set '%s/positions/set/resolver', you must also set '%s/positions/get/resolver' to a non-empty value. "
-				"(Configuration of mountpoint: '%s')",
+				"To set '%s/definition/positions/set/resolver', you must also set '%s/definition/positions/get/resolver' "
+				"to a non-empty value. (Configuration of mountpoint: '%s')",
 				keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
 		if (path[0] != '/')
 		{
-			ELEKTRA_SET_INSTALLATION_ERRORF (parentKey,
-							 "If no resolver is configured, '%s/path' you must set to an absolute path. "
-							 "(Configuration of mountpoint: '%s')",
-							 keyName (parentKey), keyBaseName (parentKey));
+			ELEKTRA_SET_INSTALLATION_ERRORF (
+				parentKey,
+				"If no resolver is configured, '%s/definition/path' you must set to an absolute path. "
+				"(Configuration of mountpoint: '%s')",
+				keyName (parentKey), keyBaseName (parentKey));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
@@ -254,13 +256,13 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 	// TODO (Q): support for read-write to absolute path?
 	bool readOnly = handle->setPositions.resolver == NULL;
 
-	if (handle->getPositions.storage == NULL && ksLookupByName (definition, "/positions/get/storage/omit", 0) == NULL)
+	if (handle->getPositions.storage == NULL && ksLookupByName (definition, "system:/positions/get/storage/omit", 0) == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (
 			parentKey,
-			"No storage plugin defined for kdbGet(). You probably forgot to set '%s/positions/get/storage'. If the "
-			"configuration is intentional, you can silence this warning by setting '%s/positions/get/storage/omit' to any "
-			"value. (Configuration of mountpoint: '%s')",
+			"No storage plugin defined for kdbGet(). You probably forgot to set '%s/definition/positions/get/storage'. If the "
+			"configuration is intentional, you can silence this warning by setting '%s/definition/positions/get/storage/omit' "
+			"to any value. (Configuration of mountpoint: '%s')",
 			keyName (parentKey), keyName (parentKey), keyBaseName (parentKey));
 	}
 
@@ -275,8 +277,8 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 			ELEKTRA_ADD_INSTALLATION_WARNINGF (
 				parentKey,
 				"The mountpoint '%s' is configured as read-only (no set-resolver configured), but there are some plugins "
-				"configured for set-positions below '%s/positions/set'. These plugins will be ignored. Remove them from "
-				"the configuration to remove this warning. (Configuration of mountpoint: '%s')",
+				"configured for set-positions below '%s/definition/positions/set'. These plugins will be ignored. Remove "
+				"them from the configuration to remove this warning. (Configuration of mountpoint: '%s')",
 				keyBaseName (parentKey), keyName (parentKey), keyBaseName (parentKey));
 		}
 	}
@@ -287,7 +289,7 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 			ELEKTRA_SET_INSTALLATION_ERRORF (
 				parentKey,
 				"You defined a set-resolver plugin, but no storage plugin for kdbSet(). You probably forgot to set "
-				"'%s/positions/set/storage'. (Configuration of mountpoint: '%s')",
+				"'%s/definition/positions/set/storage'. (Configuration of mountpoint: '%s')",
 				keyName (parentKey), keyBaseName (parentKey));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -297,8 +299,9 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 			ELEKTRA_SET_INSTALLATION_ERRORF (
 				parentKey,
 				"You defined a set-resolver plugin, but no commit plugin for kdbSet(). In most cases the same plugin is "
-				"used as resolver and commit. To enable this configuration, set '%s/positions/set/commit' to '%s', i.e. to "
-				"the same value as '%s/positions/set/resolver'. (Configuration of mountpoint: '%s')",
+				"used as resolver and commit. To enable this configuration, set '%s/definition/positions/set/commit' to "
+				"'%s', i.e. to the same value as '%s/definition/positions/set/resolver'. (Configuration of mountpoint: "
+				"'%s')",
 				keyName (parentKey), handle->setPositions.resolver->name, keyName (parentKey), keyBaseName (parentKey));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -308,48 +311,50 @@ int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * 
 			ELEKTRA_SET_INSTALLATION_ERRORF (
 				parentKey,
 				"You defined a set-resolver and commit plugin, but no rollback plugin for kdbSet(). In most cases the same "
-				"plugin is used as commit and rollback. To enable this configuration, set '%s/positions/set/rollback' to "
-				"'%s', i.e. to the same value as '%s/positions/set/commit'. (Configuration of mountpoint: '%s')",
+				"plugin is used as commit and rollback. To enable this configuration, set "
+				"'%s/definition/positions/set/rollback' to '%s', i.e. to the same value as "
+				"'%s/definition/positions/set/commit'. (Configuration of mountpoint: '%s')",
 				keyName (parentKey), handle->setPositions.resolver->name, keyName (parentKey), keyBaseName (parentKey));
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 	}
 
 	if (handle->getPositions.resolver != handle->setPositions.resolver &&
-	    ksLookupByName (definition, "/positions/set/resolver/differs", 0) == NULL)
+	    ksLookupByName (definition, "system:/positions/set/resolver/differs", 0) == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (
 			parentKey,
 			"The resolver plugin for kdbSet() ('%s') differs from the resolver plugin for kdbGet() ('%s'). This is a "
-			"non-standard configuration. Normally, '%s/positions/get/resolver' and '%s/positions/set/resolver' should have the "
-			"same value. If the configuration is intentional, you can silence this warning by setting "
-			"'%s/positions/set/resolver/differs' to any value. (Configuration of mountpoint: '%s')",
+			"non-standard configuration. Normally, '%s/definition/positions/get/resolver' and "
+			"'%s/definition/positions/set/resolver' should have the same value. If the configuration is intentional, you can "
+			"silence this warning by setting '%s/definition/positions/set/resolver/differs' to any value. (Configuration of "
+			"mountpoint: '%s')",
 			handle->getPositions.resolver->name, handle->setPositions.resolver->name, keyName (parentKey), keyName (parentKey),
 			keyName (parentKey), keyBaseName (parentKey));
 	}
 
 	if (handle->setPositions.resolver != handle->setPositions.commit &&
-	    ksLookupByName (definition, "/positions/set/commit/differs", 0) == NULL)
+	    ksLookupByName (definition, "system:/positions/set/commit/differs", 0) == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (
 			parentKey,
 			"The resolver plugin ('%s') differs from the commit plugin ('%s'). This is a non-standard configuration. Normally, "
-			"'%s/positions/set/resolver' and '%s/positions/set/commit' should have the same value. If the configuration is "
-			"intentional, you can silence this warning by setting '%s/positions/set/commit/differs' to any value. "
-			"(Configuration of mountpoint: '%s')",
+			"'%s/definition/positions/set/resolver' and '%s/definition/positions/set/commit' should have the same value. If "
+			"the configuration is intentional, you can silence this warning by setting "
+			"'%s/definition/positions/set/commit/differs' to any value. (Configuration of mountpoint: '%s')",
 			handle->setPositions.resolver->name, handle->setPositions.commit->name, keyName (parentKey), keyName (parentKey),
 			keyName (parentKey), keyBaseName (parentKey));
 	}
 
 	if (handle->setPositions.resolver != handle->setPositions.rollback &&
-	    ksLookupByName (definition, "/positions/set/rollback/differs", 0) == NULL)
+	    ksLookupByName (definition, "system:/positions/set/rollback/differs", 0) == NULL)
 	{
 		ELEKTRA_ADD_INSTALLATION_WARNINGF (
 			parentKey,
 			"The resolver plugin ('%s') differs from the rollback plugin ('%s'). This is a non-standard configuration. "
-			"Normally, '%s/positions/set/resolver' and '%s/positions/set/rollback' should have the same value. If the "
-			"configuration is intentional, you can silence this warning by setting '%s/positions/set/rollback/differs' to any "
-			"value. (Configuration of mountpoint: '%s')",
+			"Normally, '%s/definition/positions/set/resolver' and '%s/definition/positions/set/rollback' should have the same "
+			"value. If the configuration is intentional, you can silence this warning by setting "
+			"'%s/definition/positions/set/rollback/differs' to any value. (Configuration of mountpoint: '%s')",
 			handle->setPositions.resolver->name, handle->setPositions.rollback->name, keyName (parentKey), keyName (parentKey),
 			keyName (parentKey), keyBaseName (parentKey));
 	}
@@ -368,6 +373,7 @@ static inline void addGenericError (Key * key, const char * function, const char
 static int runPluginGet (Plugin * plugin, KeySet * ks, Key * parentKey)
 {
 	// TODO: provide way to access kdbGet and name without kdbprivate.h
+	ksRewind (ks);
 	int ret = plugin->kdbGet (plugin, ks, parentKey);
 	if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
@@ -466,6 +472,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * plugin, KeySet * ks, Key * parentKey
 static int runPluginSet (Plugin * plugin, KeySet * ks, Key * parentKey)
 {
 	// TODO: provide way to access kdbSet and name without kdbprivate.h
+	ksRewind (ks);
 	int ret = plugin->kdbSet (plugin, ks, parentKey);
 	if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
@@ -481,7 +488,7 @@ static int runPluginListSet (PluginList * plugins, KeySet * ks, Key * parentKey)
 {
 	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
 	{
-		if (!runPluginSet (cur->plugin, ks, parentKey))
+		if (runPluginSet (cur->plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -541,6 +548,7 @@ int ELEKTRA_PLUGIN_FUNCTION (set) (Plugin * plugin, KeySet * ks, Key * parentKey
 static int runPluginCommit (Plugin * plugin, KeySet * ks, Key * parentKey)
 {
 	// TODO: provide way to access kdbCommit and name without kdbprivate.h
+	ksRewind (ks);
 	int ret = plugin->kdbCommit (plugin, ks, parentKey);
 	if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
@@ -556,7 +564,7 @@ static int runPluginListCommit (PluginList * plugins, KeySet * ks, Key * parentK
 {
 	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
 	{
-		if (!runPluginCommit (cur->plugin, ks, parentKey))
+		if (runPluginCommit (cur->plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
@@ -600,6 +608,7 @@ int ELEKTRA_PLUGIN_FUNCTION (commit) (Plugin * plugin, KeySet * ks, Key * parent
 static int runPluginError (Plugin * plugin, KeySet * ks, Key * parentKey)
 {
 	// TODO: provide way to access kdbError and name without kdbprivate.h
+	ksRewind (ks);
 	int ret = plugin->kdbError (plugin, ks, parentKey);
 	if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
@@ -615,7 +624,7 @@ static int runPluginListError (PluginList * plugins, KeySet * ks, Key * parentKe
 {
 	for (PluginList * cur = plugins; cur != NULL; cur = cur->next)
 	{
-		if (!runPluginError (cur->plugin, ks, parentKey))
+		if (runPluginError (cur->plugin, ks, parentKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
 		{
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}

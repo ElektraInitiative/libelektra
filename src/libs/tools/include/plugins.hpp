@@ -120,6 +120,21 @@ public:
 
 	void serialise (kdb::Key & baseKey, kdb::KeySet & ret);
 };
+
+/**
+ * @brief Plugins to handle errors during configuration access
+ */
+class CommitPlugins : private Plugins
+{
+public:
+	void status (std::ostream & os) const;
+
+	void tryPlugin (Plugin & plugin);
+	void addPlugin (Plugin & plugin);
+	bool validated () const;
+
+	void serialise (kdb::Key & baseKey, kdb::KeySet & ret);
+};
 } // namespace tools
 } // namespace kdb
 

@@ -107,7 +107,7 @@ void Plugin::loadInfo ()
 
 	if (!plugin->kdbGet)
 	{
-		throw MissingSymbol ("kdbGet");
+		throw MissingSymbol ("kdbGet", plugin->name);
 	}
 	plugin->kdbGet (plugin, info.getKeySet (), *infoKey);
 }
@@ -393,7 +393,7 @@ int Plugin::open (kdb::Key & errorKey)
 {
 	if (!plugin->kdbOpen)
 	{
-		throw MissingSymbol ("kdbOpen");
+		throw MissingSymbol ("kdbOpen", plugin->name);
 	}
 
 	return plugin->kdbOpen (plugin, errorKey.getKey ());
@@ -403,7 +403,7 @@ int Plugin::close (kdb::Key & errorKey)
 {
 	if (!plugin->kdbClose)
 	{
-		throw MissingSymbol ("kdbClose");
+		throw MissingSymbol ("kdbClose", plugin->name);
 	}
 
 	return plugin->kdbClose (plugin, errorKey.getKey ());
@@ -417,7 +417,7 @@ int Plugin::get (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbGet)
 	{
-		throw MissingSymbol ("kdbGet");
+		throw MissingSymbol ("kdbGet", plugin->name);
 	}
 
 	return plugin->kdbGet (plugin, ks.getKeySet (), parentKey.getKey ());
@@ -431,7 +431,7 @@ int Plugin::set (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbSet)
 	{
-		throw MissingSymbol ("kdbSet");
+		throw MissingSymbol ("kdbSet", plugin->name);
 	}
 
 	return plugin->kdbSet (plugin, ks.getKeySet (), parentKey.getKey ());
@@ -441,7 +441,7 @@ int Plugin::commit (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbCommit)
 	{
-		throw MissingSymbol ("kdbCommit");
+		throw MissingSymbol ("kdbCommit", plugin->name);
 	}
 
 	return plugin->kdbCommit (plugin, ks.getKeySet (), parentKey.getKey ());
@@ -451,7 +451,7 @@ int Plugin::error (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbError)
 	{
-		throw MissingSymbol ("kdbError");
+		throw MissingSymbol ("kdbError", plugin->name);
 	}
 
 	return plugin->kdbError (plugin, ks.getKeySet (), parentKey.getKey ());

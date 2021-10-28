@@ -24,6 +24,8 @@ ExportCommand::ExportCommand ()
 {
 }
 
+// FIXME (kodebach): doesn't work somehow
+
 int ExportCommand::execute (Cmdline const & cl)
 {
 	size_t argc = cl.arguments.size ();
