@@ -148,6 +148,7 @@ _(Michael Tucek)_
 - Fix broken links. _(Robert Sowula)_
 - Emphasize that `type` is required when the HL API is used. _(Tobias Schubert @qwepoizt)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
+- Fix small error in the "Get Started" guide: the build and test command used a wrong directory and would not work if they were copy and pasted. _(@muskater)_
 - <<TODO>>
 
 ## Tests
