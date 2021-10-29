@@ -58,13 +58,13 @@
   mkdir build  && cd build  #create and navigate to the build directory
   cmake ..  # watch output to see if everything needed is included
   #  optionally run "ccmake .." to get an overview of the available build settings (needs cmake-curses-gui)
-  cmake --build build -- -j5
+  cmake --build . -- -j5
   ```
 
   Optionally you can also run tests, see [here for more information](/doc/TESTING.md):
 
   ```sh
-  cmake --build build --target run_nokdbtests
+  cmake --build . --target run_nokdbtests
   ```
 
   With these commands you will be able to run the "Hello World!" example but usually you will need to use some of the [plugins](/src/plugins/README.md), tools and bindings of Elektra. Please take a look at the more detailed [compiling documentation](/doc/COMPILE.md). After you completed building Elektra on your own, you can execute these commands to install Elektra (please check the [installation documentation](/doc/INSTALL.md) for the many available packages):
