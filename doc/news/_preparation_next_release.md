@@ -116,7 +116,9 @@ you up to date with the multi-language support provided by Elektra.
 
 _(Michael Tucek)_
 
-### <<Binding2>>
+### Python binding
+
+- 3 new examples for using keysets in python. _(Aydan Ghazani @4ydan)_
 
 ### <<Binding3>>
 
