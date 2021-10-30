@@ -38,6 +38,7 @@ int ExportCommand::execute (Cmdline const & cl)
 
 	kdb.get (ks, root);
 	printWarnings (cerr, root, cl.verbose, cl.debug);
+	printError (cerr, root, cl.verbose, cl.debug);
 
 	KeySet part (ks.cut (root));
 
