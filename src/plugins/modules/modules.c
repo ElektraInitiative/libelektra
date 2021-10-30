@@ -62,6 +62,7 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 	Key * modulesRoot = keyNew ("system:/elektra/modules", KEY_END);
 	if (keyCmp (modulesRoot, parentKey) == 0)
 	{
+		keyDel (modulesRoot);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 
@@ -71,21 +72,32 @@ int ELEKTRA_PLUGIN_FUNCTION (get) (Plugin * handle, KeySet * returned, Key * par
 		keyDel (modulesRoot);
 		return ELEKTRA_PLUGIN_STATUS_ERROR;
 	}
-	keyDel (modulesRoot);
 
 	const char * phase = elektraPluginGetPhase (handle);
 	if (strcmp (phase, KDB_GET_PHASE_RESOLVER) == 0)
 	{
+		keyDel (modulesRoot);
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	else if (strcmp (phase, KDB_GET_PHASE_STORAGE) == 0)
 	{
 		Plugin * plugin = elektraPluginGetData (handle);
-		plugin->kdbGet (plugin, returned, parentKey);
+
+		// create separate parentKey so that symlinked/aliased plugins still work
+		// TODO (kodebach): use separate function for contract to avoid all of this
+		keyAddBaseName (modulesRoot, plugin->name);
+		int ret = plugin->kdbGet (plugin, returned, modulesRoot);
+		keyDel (modulesRoot);
+
+		if (ret == ELEKTRA_PLUGIN_STATUS_ERROR)
+		{
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 		return ELEKTRA_PLUGIN_STATUS_SUCCESS;
 	}
 	else
 	{
+		keyDel (modulesRoot);
 		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
 	}
 }
