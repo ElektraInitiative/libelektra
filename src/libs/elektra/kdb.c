@@ -506,6 +506,9 @@ static bool openPlugins (KeySet * plugins, const Key * pluginsRoot, KeySet * mod
 
 			keySetBaseName (lookupHelper, "config");
 			KeySet * config = ksBelow (plugins, lookupHelper);
+			Key * configRoot = keyNew ("user:/", KEY_END);
+			ksRename (config, lookupHelper, configRoot);
+			keyDel (configRoot);
 
 			keyDel (lookupHelper);
 
@@ -2163,7 +2166,13 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 4: create deep-copy of ks
 	// Note: This is needed so that ks retains its in-process state,
 	//       after we transform the data into its on-disk state.
-	KeySet * setKs = ksDeepDup (ksBelow (ks, parentKey));
+	KeySet * setKs = ksNew (0, KS_END);
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		Key * backendKey = ksAtCursor (backends, i);
+
+		ksAppend (setKs, ksDeepDup (ksBelow (ks, backendKey)));
+	}
 
 	// Step 5: split ks (for resolver and prestorage phases)
 	if (!backendsDivide (backends, setKs))
