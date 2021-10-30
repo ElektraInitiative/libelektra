@@ -2163,7 +2163,7 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 	// Step 4: create deep-copy of ks
 	// Note: This is needed so that ks retains its in-process state,
 	//       after we transform the data into its on-disk state.
-	KeySet * setKs = ksDeepDup (ks);
+	KeySet * setKs = ksDeepDup (ksBelow (ks, parentKey));
 
 	// Step 5: split ks (for resolver and prestorage phases)
 	if (!backendsDivide (backends, setKs))
