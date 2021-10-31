@@ -105,6 +105,7 @@ Plugin * elektraPluginOpen (const char * name, KeySet * modules, KeySet * config
 	// TODO (kodebach): lazy open
 	if (handle->kdbOpen)
 	{
+		// TODO (kodebach): errorKey or parentKey??
 		if ((handle->kdbOpen (handle, errorKey)) == -1)
 		{
 			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (

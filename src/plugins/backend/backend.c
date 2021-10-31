@@ -127,6 +127,20 @@ static bool loadPluginList (PluginList ** pluginListPtr, Plugin * thisPlugin, Ke
 
 int ELEKTRA_PLUGIN_FUNCTION (init) (Plugin * plugin, KeySet * definition, Key * parentKey)
 {
+	if (keyGetNamespace (parentKey) == KEY_NS_PROC)
+	{
+		BackendHandle * handle = elektraPluginGetData (plugin);
+		handle->path = elektraStrDup ("");
+
+		if (!loadPluginList (&handle->getPositions.poststorage, plugin, definition, "system:/positions/get/poststorage",
+				     PLUGIN_TYPE_GET, parentKey))
+		{
+			return ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
+
+		return ELEKTRA_PLUGIN_STATUS_NO_UPDATE;
+	}
+
 	Key * pathKey = ksLookupByName (definition, "system:/path", 0);
 	const char * path = keyString (pathKey);
 	if (pathKey == NULL || strlen (path) == 0)

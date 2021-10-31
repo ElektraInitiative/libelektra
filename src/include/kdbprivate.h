@@ -348,6 +348,7 @@ struct _KDB
 			to convert from one to the other.*/
 #endif
 
+	// TODO (kodebach) [Q]: use global KeySet for modules?
 	KeySet * modules; /*!< A list of all modules loaded at the moment.*/
 
 #if 1 == 0

@@ -71,19 +71,8 @@ public:
 	Mountpoint (std::string mountpoint_, std::string configFile_) : mountpoint (mountpoint_)
 	{
 		unlink ();
-		if (mountpoint.at (0) == '/')
-		{
-			mount ("system:" + mountpoint, configFile_);
-			mount ("user:" + mountpoint, configFile_);
-			mount ("dir:" + mountpoint, configFile_);
-			mount ("spec:" + mountpoint, configFile_);
-		}
-		else
-		{
-			mount (mountpoint, configFile_);
-			mount ("spec:" + mountpoint, configFile_);
-		}
-
+		mount (mountpoint, configFile_);
+		mount ("spec:" + mountpoint, configFile_);
 
 		userConfigFile = getConfigFileName ("user", mountpoint);
 		specConfigFile = getConfigFileName ("spec", mountpoint);
@@ -96,19 +85,8 @@ public:
 
 	~Mountpoint ()
 	{
-
-		if (mountpoint.at (0) == '/')
-		{
-			umount ("spec:" + mountpoint);
-			umount ("dir:" + mountpoint);
-			umount ("user:" + mountpoint);
-			umount ("system:" + mountpoint);
-		}
-		else
-		{
-			umount ("spec:" + mountpoint);
-			umount (mountpoint);
-		}
+		umount ("spec:" + mountpoint);
+		umount (mountpoint);
 
 		unlink ();
 	}

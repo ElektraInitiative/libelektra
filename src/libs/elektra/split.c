@@ -1217,11 +1217,11 @@ KeySet * backendsForParentKey (KeySet * backends, Key * parentKey)
 			case KEY_NS_USER:
 			case KEY_NS_SYSTEM:
 			case KEY_NS_SPEC:
-			case KEY_NS_META:
 			case KEY_NS_DEFAULT:
 				keySetNamespace (parentKey, ns);
 				ksAppendKey (selected, backendsFindParent (backends, parentKey));
 				break;
+			case KEY_NS_META:
 			case KEY_NS_NONE:
 			case KEY_NS_CASCADING:
 				break;
