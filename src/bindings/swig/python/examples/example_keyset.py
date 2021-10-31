@@ -13,7 +13,7 @@ print("We can add a key at runtime")
 new_key = kdb.Key("user:/key4", "key_value")
 ks1.append(new_key)
 print("or even a list of keys")
-list_of_keys = [kdb.Key("user:/key5", "key_value"), kdb.Key("user:/key6", "key_value")
+list_of_keys = [kdb.Key("user:/key5", "key_value"), kdb.Key("user:/key6", "key_value")]
 ks1.extend(list_of_keys)
 print("")
 
