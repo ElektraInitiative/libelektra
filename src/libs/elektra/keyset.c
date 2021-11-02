@@ -33,6 +33,7 @@
 #include "kdbinternal.h"
 #include <kdbassert.h>
 #include <kdbrand.h>
+#include "kdbhelper.h" // for elektraLookupOptions
 
 
 #define ELEKTRA_MAX_PREFIX_SIZE sizeof ("namespace/")
@@ -846,15 +847,21 @@ if (result >= 0)
  *
  * @param ks the keyset to work with
  * @param key the key to check
+ * @param options lookup options to use
  * @return position where the key is (>=0) if the key was found
  * @return -insertpos -1 (< 0) if the key was not found
  *    so to get the insertpos simple do: -insertpos -1
  * @see ksLookup() for retrieving the found key
  */
-ssize_t ksSearch (const KeySet * ks, const Key * key)
+ssize_t ksSearch (const KeySet * ks, const Key * key, elektraLookupOptions options)
 {
-	// TODO #4039 implement optimization
-	return ksSearchInternal (ks, key);
+	if (options & KDB_O_OPMPHM) {
+        // build the opmphm for the keyset
+		elektraLookupBuildOpmphm(ks);
+		return opmphmLookup(ks -> opmphm, ks -> size, key -> key);
+	}
+	else
+		return ksSearchInternal (ks, key);
 }
 
 /**
