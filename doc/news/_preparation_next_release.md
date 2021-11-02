@@ -83,7 +83,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- `ksSearch` now does a hashmap lookup sith `opmphmLookup` before running an internal search using `ksSearchInternal`
 - `KeySet` now also has a reference counter like `Key`. The new functions `ksIncRef` and `ksDecRef` behave like their counterparts `keyIncRef` and `keyDecRef`.
   `ksDel` also behaves like `keyDel` in regard to reference counting, i.e. it does nothing unless the reference count is 0.
   The reference counting is very useful for bindings (especially with automatic garbage collection). _(Klemens Böswirth)_
