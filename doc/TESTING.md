@@ -185,8 +185,8 @@ are expected to be in the README.md of the plugin.
 
 - All names of the test must start with test (needed by test driver for installed tests).
 - No tests should run if ENABLE_TESTING is OFF.
-- All tests that access system/spec namespaces (e.g. mount something):
-- should be tagged with `kdbtests`:
+- All tests that write to `system:` or `spec:` namespaces (e.g. with `kdbSet` or by mounting):
+  should be tagged with `kdbtests`:
 
   ```cmake
   set_property(TEST testname PROPERTY LABELS kdbtests)
