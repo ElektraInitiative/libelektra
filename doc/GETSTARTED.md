@@ -12,20 +12,20 @@
 
   - Basic knowledge about git
 
-    Dont panic! [GIT](https://git-scm.com/) is a distributed version constrol system to track changes of the source code in a project. We will use a single command of GIT to get
+    Don't panic! [GIT](https://git-scm.com/) is a distributed version control system to track changes of the source code in a project. We will use a single GIT command to get
     the source code of Elektra.
 
   - Basic knowledge about make/cmake
 
-    [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code. If you are not used to these tools its no problem, we will introduce them to you in later sections.
+    [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code. If you are not used to these tools, it's not a problem, we will introduce them to you in later sections.
 
-  - We need also your skill set to improve Elektra
+  - We also need your skill set to improve Elektra
 
     You can contribute to Elektra to improve the source code, website, documentation, translation etc.
 
 - Software requirements
 
-  We need to install some basic tools to run Elektra: cmake , git , and essential build tools (make, gcc, and some standard Unix tools; alternatively [ninja](https://ninja-build.org/) and [clang](https://clang.llvm.org/index.html) are also supported but not described here). Depending on your linux distribution use following commands to install these tools:
+  We need to install some basic tools to run Elektra: cmake , git , and essential build tools (make, gcc, and some standard Unix tools; alternatively [ninja](https://ninja-build.org/) and [clang](https://clang.llvm.org/index.html) are also supported but not described here). Depending on your Linux distribution use following commands to install these tools:
 
   ```sh
   sudo apt-get install cmake git build-essential
@@ -37,7 +37,7 @@
   sudo yum install -y cmake git gcc-c++
   ```
 
-  Or on macOS, most of the build tools can be obtained by installing [Xcode](https://developer.apple.com/xcode/). Other required tools may be installed using [brew ](https://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+  Or on macOS, most of the build tools can be obtained by installing [Xcode](https://developer.apple.com/xcode/). Other required tools may be installed using [brew](https://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
 
   ```sh
   brew install cmake git
