@@ -6,7 +6,7 @@
 - **Scope:** Authentication
 - **Level:** User Goal
 - **Actors:** Anonymous user
-- **Brief:** Any not logged in user can reset his password by knowing his username and email address.
+- **Brief:** Any not logged-in user can reset his password by knowing his username and email address.
 
 ## Scenarios
 

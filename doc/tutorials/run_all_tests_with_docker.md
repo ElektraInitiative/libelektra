@@ -88,7 +88,7 @@ buildelektra-sid
 
 After starting the container, you should be automatically inside it in the working directory `/home/jenkins/workspace`.
 
-Create folder folder where Elektra will be installed, create another folder for building the source and `cd` to it and like this:
+Create a folder where Elektra will be installed, create another folder for building the source and `cd` to it and like this:
 
 ```sh
 mkdir elektra-install && mkdir elektra-build-docker && cd elektra-build-docker

@@ -46,7 +46,7 @@ The behavior of Elektra is defined by (in that order):
 5. Tutorials (excluding Shell Recorder)
 6. Examples
 
-Any inconsistency within this artifacts within each other
+Any inconsistency within these artifacts within each other
 or with the implementation constitutes a bug.
 
 ## Compatibility

@@ -46,7 +46,7 @@ API Changes:
 - needs fix of OPMPHM
 - Later modifications in keyNew to also accept key base names might be useful:
 
-- keyNew(KEY_VALUE, "...", KEY_NAME, "", "...", KEY_END)
+- keyNew(KEY_VALUE, "...", KEY_NAME, "", "...", KEY_END);
 - keyNew (KEY_NAME, KEY_NS_USER, "abc", "def", KEY_NAME_END, KEY_END);
 
 ## Related Decisions

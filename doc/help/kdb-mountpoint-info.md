@@ -6,7 +6,7 @@
 
 ## DESCRIPTION
 
-This command will print information about the version, default resolver and default storage plugin. When a mount point is given as argument additional informations about the mount point (e.g. configuration) is printed.
+This command will print information about the version, default resolver and default storage plugin. When a mount point is given as argument additional information about the mount point (e.g. configuration) is printed.
 
 ## EXAMPLES
 

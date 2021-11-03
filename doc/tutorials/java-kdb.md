@@ -22,7 +22,7 @@ Note that `KDB` implements `AutoClosable` which allows [`try-with-resouces`](htt
 
 If an error occurs, detailed information can be obtained from the thrown `KDBException`.
 
-## A word about releasing native ressources
+## A word about releasing native resources
 
 There are 3 kinds of native resources having to be cleaned up properly to prevent memory leaks: `KeySet`, `Key` and `KDB` or rather their backing native key set, key or KDB session.
 
@@ -37,7 +37,7 @@ First let's retrieve a key which is already part of the key database. The first 
 var keySet = KeySet.create();
 ```
 
-Now we load all keys located below a sepcific parent key:
+Now we load all keys located below a specific parent key:
 
 ```java
 var parentKey = Key.create("user:/");
@@ -67,7 +67,7 @@ keySet.release();
 
 ## Saving Keys
 
-Next let's save a new key to the key database. Again, first we need need to create an empty `KeySet`. We also **need to fetch** all keys for the namespace before we will be able to save a new key.
+Next let's save a new key to the key database. Again, first we need to create an empty `KeySet`. We also **need to fetch** all keys for the namespace before we will be able to save a new key.
 
 ```java
 var keyNamespace = Key.create("user:/");                 // create key representing the namespace to fetch
@@ -85,7 +85,7 @@ The _user_ namespace is accessible without special rights, but if you try to wri
 
 ### Traversing Keys in a `KeySet`
 
-First we create a new `KDB` handle and fetch all keys for the desired namespace, in this example the whole `user` namespace. Since all all keys are put in the passed `keySet` variable we can then iterate through it.
+First we create a new `KDB` handle and fetch all keys for the desired namespace, in this example the whole `user` namespace. Since all keys are put in the passed `keySet` variable we can then iterate through it.
 The `at(int)` method returns a new `Key` object for the native key with the corresponding position within the `keySet`.
 
 ```java

@@ -7,7 +7,7 @@ A standard way of describing REST APIs offered by tools and plugins for Elektra 
 ## Constraints
 
 - The chosen standard should support Markdown syntax
-- API descriptions created within the standard should be human readable
+- API descriptions created within the standard should be human-readable
 - Only free software should be used
 - To enhance reusability, there should be a separation of data modeling and API description
 
@@ -19,7 +19,7 @@ A standard way of describing REST APIs offered by tools and plugins for Elektra 
 ## Assumptions
 
 - There is a well-suited standard with enough (free) tools available to satisfy all or most constraints.
-- Scenarios created by Elektra REST APIs are simple enough to be allegeable by the chosen standard, also in future.
+- Scenarios created by Elektra REST APIs are simple enough to be allegeable by the chosen standard, also in the future.
 
 ## Considered Alternatives
 

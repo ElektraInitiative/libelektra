@@ -35,7 +35,7 @@ kdb get user:/tests/result
 #> a
 ```
 
-We change the our key for another example.
+We change the key for another example.
 
 ```sh
 kdb set user:/tests/our b

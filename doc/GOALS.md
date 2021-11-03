@@ -15,7 +15,7 @@ This helps in achieving the following goals:
   - Uniformity of configuration access (logging, vcs commit, notifications).
   - Syntax of the configuration files (with limitations, see below).
 
-Elektra follows following goals, in order of preference.
+Elektra follows goals, in order of preference.
 If goals conflict, the higher goal takes precedence.
 
 ## 0. Stability
@@ -87,7 +87,7 @@ There are many variants of
 - Bindings.
 
 Nearly every aspect of Elektra must be extremely extensible.
-On the other side semantics must be very clear and well defined
+On the other side semantics must be very clear and well-defined
 so that this extensible system works reproducible and predictable.
 
 Only key-value pairs are the common factor and a way to get and set

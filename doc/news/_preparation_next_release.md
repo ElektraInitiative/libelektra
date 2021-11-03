@@ -157,6 +157,8 @@ _(Michael Tucek)_
 - Emphasize that `type` is required when the HL API is used. _(Tobias Schubert @qwepoizt)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
 - Improve wording and formatting of DESIGN.md _(@lawli3t)_
+- Correct various typing-, spelling- and grammar-errors in the .md-files in the directory doc and its subdirectories. _(Florian Lindner @flo91)_
+- <<TODO>>
 - <<TODO>>
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 

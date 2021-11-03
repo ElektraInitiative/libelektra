@@ -249,7 +249,7 @@ C Unit Tests are written in plain C with the help of `cframework`.
 It is used to test internal data structures of libelektra that are not
 ABI relevant.
 
-ABI tests can be done on theses tests, too. But by nature from time to
+ABI tests can be done on these tests, too. But by nature from time to
 time these tests will fail.
 
 They are located [here](/tests/ctest).
@@ -298,7 +298,7 @@ See [here](/tests/shell).
 
 ### Shell Recorder
 
-The more elegant way to specify script tests are via the so called Shell Recorder
+The more elegant way to specify script tests are via the so-called Shell Recorder
 using Markdown Syntax.
 
 See [here](/tests/shell/shell_recorder/tutorial_wrapper/README.md).
@@ -363,7 +363,7 @@ If you use macOS you might want to use the `clang` versions provided by Homebrew
 brew install llvm
 ```
 
-. After that change the `CC` and `CXX` environment variables to point to the the clang tools provided by LLVM:
+. After that change the `CC` and `CXX` environment variables to point to the clang tools provided by LLVM:
 
 ```sh
 export CC=/usr/local/opt/llvm/bin/clang

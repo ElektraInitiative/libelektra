@@ -14,14 +14,14 @@ configuration.
 
 If validation of a key fails, each plugin decides on its own
 how to handle the issue and proceed in ways that might be
-different than what is expected or desired.
+different from what is expected or desired.
 
 ## Constraints
 
 ## Assumptions
 
 While plugins should always fail and return an error if validation
-fails on kdbSet, there are be can be several different requirements
+fails on kdbSet, there can be several different requirements
 for what should happen on kdbGet and handle problems e.g.
 
 - only issue warnings

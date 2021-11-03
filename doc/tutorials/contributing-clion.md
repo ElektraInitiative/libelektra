@@ -21,9 +21,8 @@ Libelektra is hosted on GitHub. You can find its repository here:
 
 To be able to make pull requests, you need a copy of this repository inside
 your GitHub account. You can find a tutorial about how to do this
-[here](https://help.github.com/en/articles/fork-a-repo) (remember to sign
-into your account first). After this, you should see this copy in the list
-of your own repositories with a hint of it's origin.
+[here](https://help.github.com/en/articles/fork-a-repo) (remember to sign in to your account first). After this, you should see this copy in the list
+of your own repositories with a hint of its origin.
 
 ## Getting the Code
 
@@ -89,7 +88,7 @@ add the following CMake options to our "Debug" profile:
 where "[xyz]" can be replaced by any unique identifier so that different profiles
 won't clash with each other. This configuration also isolates your build of
 Elektra from any existing Elektra installation on your system. For
-debugging purposes we also recommend to add the following CMake options for debug
+debugging purposes we also recommend adding the following CMake options for debug
 builds to enable further logging and checks:
 
 ```sh
@@ -254,7 +253,7 @@ repository.
 
 This step is most easily done using a browser. Open the web page of the
 Git repository of libelektra (https://github.com/ElektraInitiative/libelektra)
-and log in to your account if have not already done so. Navigate to "Pull
+and log in to your account if you have not already done so. Navigate to "Pull
 requests", there you can find a green button called "New pull request". By
 clicking it
 ([shortcut](https://github.com/ElektraInitiative/libelektra/compare)), you
@@ -308,7 +307,7 @@ Please refer to [this](/doc/COMPILE.md) tutorial to fix the problem permanently.
 
 - Especially for not that well-versed programmers don't forget that when
   debugging e.g. `KeySet`, which can contain many `Key` objects, you can only
-  see that there may be more than one key stored in this set by it's
+  see that there may be more than one key stored in this set by its
   _size_ attribute since it's keys are referenced by a pointer. Just the first
   `Key` (referenced by the pointer) will be visible directly using the debugger.
   To analyse it's stored `Key` objects you can either add a

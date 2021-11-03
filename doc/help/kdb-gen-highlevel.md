@@ -84,7 +84,7 @@ The simplest invocation is:
 
 `kdb gen highlevel /sw/org/app/#0/current config`
 
-However, it is not recommended to have the code-generator read from the KDB, so one should instead use:
+However, it is not recommended having the code-generator read from the KDB, so one should instead use:
 
 `kdb gen -F ni=spec.ini highlevel /sw/org/app/#0/current config`
 

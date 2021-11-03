@@ -19,7 +19,7 @@
 - [ ] Simple example or snippet how to use the function  
        - [ ] add
 - [ ] Longer description of function containing common use cases  
-       - [ ] Doesnt seem to be accurate, change to cursor
+       - [ ] Doesn't seem to be accurate, change to cursor
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
        - [ ] add

@@ -8,14 +8,14 @@ needed for bootstrapping plugins.
 
 ## Constraints
 
-- full default resolver need to be different than other default resolver
+- full default resolver need to be different from other default resolver
   for testing
 - there is no standard resolver, they always should state their
   configuration
 
 ## Assumptions
 
-- keep it not too difficult too configure, even though most people will
+- keep it not too difficult to configure, even though most people will
   go for the defaults
 
 ## Considered Alternatives

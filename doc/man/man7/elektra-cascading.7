@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "ELEKTRA\-CASCADING" "7" "November 2020" ""
+.TH "ELEKTRA\-CASCADING" "7" "November 2021" ""
 .SH "NAME"
 \fBelektra\-cascading\fR \- of key names
 .P
@@ -8,7 +8,7 @@
 .P
 The idea is that the application installs a configuration storage with default settings that can only be changed by the administrator\. But every user has the possibility to override parts of this \fIsystem configuration\fR regarding the user's needs in the \fIuser configuration\fR\. To sum up, besides system configuration, users have their own key databases that can override the settings according to their preferences\.
 .P
-Thus when a key starts with \fB/\fR such cascading will automatically performed\.
+Thus when a key starts with \fB/\fR such cascading will automatically be performed\.
 .SH "SPEC"
 Keys in \fBspec\fR allow us to specify which keys are read by the application, which fallback it might have and which is the default value using metadata\. The implementation of these features happened in \fBksLookup\fR\. When cascading keys (those starting with \fB/\fR) are used following features are available (in the metadata of respective \fBspec\fR\-keys):
 .IP "\(bu" 4

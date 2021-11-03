@@ -18,7 +18,7 @@ a configuration file parser but, at least, you also need:
 
 - operating-system-specific code to locate configuration files
 - tools to change the configuration files
-- validation to make such changes user friendly
+- validation to make such changes user-friendly
 
 Every successful project has implemented many features Elektra has.
 But Elektra has the distinctive advantage that you can pick the features

@@ -13,7 +13,7 @@ Elektra [aims](GOALS.md) to fulfill the following design principles:
    configuration.
 
 The C-API is suitable to be reimplemented, also in non-C-languages, like Rust.
-Elektra provides a full blown architecture to support configuring systems, and
+Elektra provides a full-blown architecture to support configuring systems, and
 the C-API is the core of this endeavour.
 
 ## Data Structures
@@ -52,7 +52,7 @@ int ksDel(KeySet *ks);
 
 In the above pairs, the first function reserves the necessary amount
 of memory. The second function frees the allocated data segment. There
-are more allocations happening but they are invisible to the user of
+are more allocations happening, but they are invisible to the user of
 the API and happen implicitly within any of these 3 classes:
 `KDB`, `Key` and `KeySet`.
 

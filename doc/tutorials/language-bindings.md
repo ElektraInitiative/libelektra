@@ -89,7 +89,7 @@ To invoke our tests through CMake, we have to follow similar steps as in the bui
 add_test (NAME test_our_binding COMMAND ${BUILD_TOOL_EXECUTABLE} test WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}")
 ```
 
-We may have to specify an additonal environment variable to tell the test command, where `libelektra.so` resides, so that the dynamic linker can find it.
+We may have to specify an additional environment variable to tell the test command, where `libelektra.so` resides, so that the dynamic linker can find it.
 
 ```cmake
 set_property (TEST test_our_binding PROPERTY ENVIRONMENT "LD_LIBRARY_PATH=${CMAKE_BINARY_DIR}/lib")

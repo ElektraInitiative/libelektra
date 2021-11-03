@@ -33,7 +33,7 @@ that are used in PR's).
 It also contains the information on how to build the jobs in the form
 of a path that points to a Jenkinsfile containing more detailed instructions.
 The job also takes care of handling build artifacts that are archived and
-cleaning them out once the PR's are closed and a grace period has expired.
+cleaning them out once the PRs are closed and a grace period has expired.
 
 Summarized libelektra's job purpose is to combine the where
 (our GIT repository), with a when (tracking changes via polling or webhooks)
@@ -376,7 +376,7 @@ A `jenkins` user with 47110:47110 ids should be created as this is what is
 expected in Docker images.
 `useradd -u 47110 jenkins`
 Additionally a public key authentication should be set up so the jenkins
-master can establish an ssh connection with the node.
+master can establish a ssh connection with the node.
 If the node should be able to interact with Docker the jenkins user should be
 added to the `docker` group.
 
@@ -392,7 +392,7 @@ All files and folders in the Node under `/home/jenkins` should be owned by user 
 
 Our Jenkins build uses parallel steps inside a single build job to do most of
 the work.
-To reliable determine which stages failed it is best to look over the build
+To reliably determine which stages failed it is best to look over the build
 results in the Jenkins Blue Ocean view.
 It is the default View opened when accessing the build results from GitHub.
 For libelektra the URLs are
@@ -456,7 +456,7 @@ All Triggers are described in the configuration of the respective build jobs.
 The [libelektra](https://build.libelektra.org/job/libelektra/)
 build is triggered for all branches of the libelektra repository except for
 `debian`.
-Additionally all open branches in forks targeting libelektra's repository via
+Additionally, all open branches in forks targeting libelektra's repository via
 PRs are going to be build.
 Pushes to any of those branches will trigger a new build automatically.
 
