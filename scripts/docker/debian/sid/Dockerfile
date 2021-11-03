@@ -71,7 +71,7 @@ ENV PATH="/usr/lib/llvm-12/bin:$PATH"
 RUN ldconfig
 
 # Build dependency for libelektra-fuse
-RUN pip3 install wheel 
+RUN pip3 install wheel
 
 RUN pip3 install cmake-format[yaml]==0.6.13
 
@@ -124,8 +124,7 @@ ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
 
-# extend PATH for user jenkins to include gradle
-RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
+
 
 # shfmt
 ENV SHFMT_PATH=/home/jenkins/bin

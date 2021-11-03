@@ -130,7 +130,7 @@ _(Michael Tucek)_
 
 - <<TODO>>
 - <<TODO>>
-- <<TODO>>
+- Fix bug where the PATH environment variable would get overwritten in some of the Docker images. Reduce image size _(Ivaylo Ivanov)_
 
 ## Documentation
 

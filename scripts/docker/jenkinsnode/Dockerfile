@@ -90,7 +90,4 @@ ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER jenkins:jenkins
 
-# extend PATH for user jenkins to include gradle
-RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
-
 USER root:root
