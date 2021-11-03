@@ -96,6 +96,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Added error check to kdb.c checkUpdateNeeded _(Aydan Ghazani @4ydan)_
 
 - Added some error checks to kdb.c elektraCacheLoadSplit and checkUpdateNeeded _(Aydan Ghazani @4ydan)_
+
 ### <<Library1>>
 
 - <<TODO>>
