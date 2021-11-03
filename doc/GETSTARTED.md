@@ -82,7 +82,13 @@
   kdb run_nokdbtests
   ```
 
-- Hello World!
+- Further Reading
 
   Start with your very first Elektra application in C and follow these steps:
   [Hello World!](/doc/tutorials/hello-elektra.md)
+
+  Modify the [website](https://www.libelektra.org/home) with the following [tutorial](/src/tools/website/). The website is build with angular and hosted with grunt.
+
+  take a look at the [webui](/src/tools/webui/).
+
+
