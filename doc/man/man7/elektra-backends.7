@@ -8,7 +8,7 @@ Elektra has introduced \fBbackends\fR to support the storage of key databases in
 .P
 Since Elektra 0\.8 a backend is composed of many plugins\.
 .SH "MULTIPLE PLUGINS"
-It's clear that too many features in one backend is problematic\. It introduces unwanted external dependences and leads to less portable backends\. Many different aspects clutter the code making the backends unmaintainable\. Features of other backends cannot be taken with ease because they are interwoven with other code\.
+It's clear that too many features in one backend is problematic\. It introduces unwanted external dependencies and leads to less portable backends\. Many different aspects clutter the code making the backends unmaintainable\. Features of other backends cannot be taken with ease because they are interwoven with other code\.
 .P
 To support the reuse of functionality, they must be useful in different situations\. Separation of concerns is required for that\. Each backend needs to have a specific purpose rather than implementing the full semantics of Elektra\.
 .P
