@@ -181,6 +181,7 @@ _(Michael Tucek)_
 - Improve wording and formatting of DESIGN.md _(@lawli3t)_
 - Correct various typing-, spelling- and grammar-errors in the .md-files in the directory doc and its subdirectories. _(Florian Lindner @flo91)_
 - Continue 1.0 decisions. _(Markus Raab and @lawli3t)_
+- Make version description in key names man page consistent _(@JakobWonisch)_
 - <<TODO>>
 - explained in the docker test tutorial how to run the container with podman instead of docker. _(@muskater)_
 - Add a new example on how to use keyCopy. _(@muskater)_
