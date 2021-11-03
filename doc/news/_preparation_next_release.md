@@ -122,7 +122,7 @@ _(Michael Tucek)_
 
 ## Tools
 
-- <<TODO>>
+- Added path check to rootlevel_resolver.py _(Aydan Ghazani @4ydan)_
 - <<TODO>>
 - <<TODO>>
 
