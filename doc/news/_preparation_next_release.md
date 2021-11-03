@@ -92,6 +92,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Reorder `Key` and `KeySet` struct members to aviod padding and make space for a new `uint16_t` member, reserved for future use. _(Mihael Pranjić)_
 - Improve `keyReplacePrefix` by using new `keyCopy` function instead of manually copying the name of the `Key` _(@lawli3t)_
 
+- Added some error checks to kdb.c elektraCacheLoadSplit and checkUpdateNeeded _(Aydan Ghazani @4ydan)_
 ### <<Library1>>
 
 - <<TODO>>

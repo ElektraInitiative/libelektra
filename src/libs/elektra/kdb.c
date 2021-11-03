@@ -677,7 +677,10 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 
 			backendUpdateSize (backend, split->parents[i], 0);
 		}
-		// TODO: set error in else case!
+		else
+		{
+			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 
 		switch (ret)
 		{
@@ -1058,6 +1061,9 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 				  Key * initialParent, int debugGlobalPositions)
 {
 	ELEKTRA_LOG_DEBUG ("CACHE parentKey: %s, %s", keyName (*cacheParent), keyString (*cacheParent));
+	Key * oldError = keyNew (keyName (parentKey), KEY_END);
+	copyError (oldError, parentKey);
+	int errnosave = errno;
 
 	if (splitCacheCheckState (split, handle->global) == -1)
 	{
@@ -1078,7 +1084,20 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	}
 
 	keySetName (parentKey, keyName (initialParent));
-	// TODO: there are no error checks here, see kdbGet
+
+	if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	{
+		goto error;
+	}
+	if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	{
+		goto error;
+	}
+	if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+	{
+		goto error;
+	}
+
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
@@ -1123,6 +1142,23 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	}
 
 	return 0;
+
+error:
+	ELEKTRA_LOG_DEBUG ("now in error state");
+	if (cacheParent) keyDel (cacheParent);
+	if (cache) ksDel (cache);
+	keySetName (parentKey, keyName (initialParent));
+	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, INIT);
+	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
+	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
+
+	keySetName (parentKey, keyName (initialParent));
+	if (handle) splitUpdateFileName (split, handle, parentKey);
+	keyDel (initialParent);
+	keyDel (oldError);
+	splitDel (split);
+	errno = errnosave;
+	return -1;
 }
 
 
