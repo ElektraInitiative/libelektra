@@ -148,6 +148,7 @@ _(Michael Tucek)_
 - Fix broken links. _(Robert Sowula)_
 - Emphasize that `type` is required when the HL API is used. _(Tobias Schubert @qwepoizt)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
+- Added clarification to GETSTARTED.md doc _(Philipp Nirnberger @Nirnberger)_ 
 - <<TODO>>
 
 ## Tests
