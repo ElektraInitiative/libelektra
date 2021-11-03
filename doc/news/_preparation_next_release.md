@@ -148,6 +148,7 @@ _(Michael Tucek)_
 - Fix broken links. _(Robert Sowula)_
 - Emphasize that `type` is required when the HL API is used. _(Tobias Schubert @qwepoizt)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
+- Add TODO-comments to c++-functions to the Key-class, where exceptions should be thrown if the called c-functions return error values (see #3554) _(Florian Lindner @flo91)_
 - <<TODO>>
 
 ## Tests

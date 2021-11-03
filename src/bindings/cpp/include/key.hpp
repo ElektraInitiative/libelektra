@@ -668,6 +668,7 @@ void Key::operator++ (int) const
 /**
  * @copydoc keyIncRef
  */
+/* TODO: throw exception if the underlying c-function returns UINT16_MAX */
 void Key::operator++ () const
 {
 	ckdb::keyIncRef (key);
@@ -684,6 +685,7 @@ void Key::operator-- (int) const
 /**
  * @copydoc keyDecRef
  */
+/* TODO: throw exception if the underlying c-function returns UINT16_MAX */
 void Key::operator-- () const
 {
 	ckdb::keyDecRef (key);
@@ -732,6 +734,7 @@ inline Key & Key::operator= (const Key & k)
 /**
  * @copydoc keyCopy
  */
+/* TODO: throw exception if the underlying c-function returns NULL */
 inline void Key::copy (const Key & other, elektraCopyFlags flags)
 {
 	ckdb::keyCopy (key, other.key, flags);
@@ -751,6 +754,7 @@ inline void Key::copy (const Key & other, elektraCopyFlags flags)
  *
  * @copydoc keyClear
  */
+/* TODO: throw exception if the underlying c-function returns -1 */
 inline void Key::clear ()
 {
 	ckdb::keyClear (key);
@@ -1163,7 +1167,7 @@ inline Key::func_t Key::getFunc () const
 	return conversation.f;
 }
 
-
+/* TODO: throw exception if an underlying c-function returns -1 */
 inline void Key::setCallback (callback_t fct)
 {
 	union
@@ -1182,6 +1186,7 @@ inline void Key::setCallback (callback_t fct)
 /**
  * @copydoc keySetString
  */
+/* TODO: throw exception if the underlying c-function returns -1 */
 inline void Key::setString (const char * newString)
 {
 	ckdb::keySetString (getKey (), newString);
@@ -1376,6 +1381,7 @@ inline void Key::setMeta (const std::string & metaName, T x)
  *
  * @see setMeta(), getMeta(), copyMeta(), copyAllMeta()
  */
+/* TODO: throw exception if the underlying c-function returns -1 */
 inline void Key::delMeta (const std::string & metaName)
 {
 	ckdb::keySetMeta (key, metaName.c_str (), nullptr);
@@ -1386,6 +1392,7 @@ inline void Key::delMeta (const std::string & metaName)
  *
  * @see getMeta(), setMeta(), copyAllMeta()
  */
+/* TODO: throw exception if the underlying c-function returns -1 */
 inline void Key::copyMeta (const Key & other, const std::string & metaName)
 {
 	ckdb::keyCopyMeta (key, other.key, metaName.c_str ());
@@ -1396,6 +1403,7 @@ inline void Key::copyMeta (const Key & other, const std::string & metaName)
  *
  * @see getMeta(), setMeta(), copyMeta()
  */
+/* TODO: throw exception if the underlying c-function returns -1 */
 inline void Key::copyAllMeta (const Key & other)
 {
 	ckdb::keyCopyAllMeta (key, other.key);
@@ -1406,6 +1414,7 @@ inline void Key::copyAllMeta (const Key & other)
  *
  * @see nextMeta(), currentMeta()
  */
+/* TODO: throw exception if the underlying c-function returns -1 */
 inline void Key::rewindMeta ()
 {
 	ckdb::keyRewindMeta (key);
@@ -1666,3 +1675,4 @@ struct hash<kdb::Key>
 } // end of namespace std
 
 #endif
+
