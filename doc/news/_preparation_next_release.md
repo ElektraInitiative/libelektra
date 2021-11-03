@@ -184,6 +184,7 @@ you up to date with the multi-language support provided by Elektra.
 - Continue 1.0 decisions. _(Markus Raab and @lawli3t)_
 - Make version description in key names man page consistent _(@JakobWonisch)_
 - Fix typo in elektra-backends man page _(@JakobWonisch)_
+- Fix readability in bootstrapping man page _(JakobWonisch)_
 - <<TODO>>
 - explained in the docker test tutorial how to run the container with podman instead of docker. _(@muskater)_
 - Add a new example on how to use keyCopy. _(@muskater)_
