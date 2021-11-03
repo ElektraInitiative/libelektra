@@ -158,7 +158,11 @@ Note that when we set a value the namespace of the key should be specified expli
 If we don't give a proper namespace (like in the get example above) a so-called [cascading lookup](/doc/tutorials/cascading.md) is done.
 However, cascading lookups during `kdb set` only work, if there is already an existing value (i.e. there is no ambiguity which key we want to set).
 
-## Hello World!
+## Further Reading
 
 Start with your very first Elektra application in C and follow these steps:
 [Hello World!](/doc/tutorials/hello-elektra.md)
+
+Modify the [website](https://www.libelektra.org/home) with the following [tutorial](/src/tools/website/). The website is build with angular and hosted with grunt.
+
+Also take a look at the [webui](/src/tools/webui/).
