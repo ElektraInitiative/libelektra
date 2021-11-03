@@ -138,7 +138,11 @@ class RootlevelResolver(LoggingMixIn, Operations):
 
     @with_translated_exceptions
     def open(self, path, flags):
-        #TODO: for correctness sake the existance of the path (e.g. using stat) should be checked
+        try:
+            os.stat(path)
+        except FileNotFoundError:
+            raise OSError(errno.ENOENT)
+
         return self._new_fd() #not used but nessecary
 
     @with_translated_exceptions
