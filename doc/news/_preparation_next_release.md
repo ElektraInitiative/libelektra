@@ -137,7 +137,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - <<TODO>>
 - Start making Elektra [reuse](https://reuse.software) compliant. _(Markus Raab)_
-- Fix Links in [README.md](/README.md) and small clarifications.  _(Markus Raab)_
+- Fix Links in [README.md](/README.md) and small clarifications. _(Markus Raab)_
 - Remove previous authors. _(Markus Raab)_
 - add pre/postconditions and invariants to module keytest _(@lawli3t)_
 - Updated the news template. _(Mihael Pranjić)_
