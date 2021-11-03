@@ -148,6 +148,7 @@ _(Michael Tucek)_
 - Fix broken links. _(Robert Sowula)_
 - Emphasize that `type` is required when the HL API is used. _(Tobias Schubert @qwepoizt)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
+- Fixed broken link in Webui README.md. _(Philipp Nirnberger @Nirnberger)_
 - <<TODO>>
 
 ## Tests

@@ -6,7 +6,7 @@ accesses the API that [`webd`](../webd/) provides.
 
 ## Installation
 
-- first, install [libelektra](http://libelektra.org/) with the [`yajl` plugin](http://tree.libelektra.org/src/plugins/yajl/)
+- first, install [libelektra](http://libelektra.org/) with the [`yajl` plugin](http://master.libelektra.org/src/plugins/yajl/)
 - now run `npm install`
 
 ## Running
