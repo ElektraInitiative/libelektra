@@ -4,11 +4,11 @@ This document describes the design of Elektra's C-API and provides hints for
 binding writers. It is not aimed at plugin writers, since it does not
 talk about the implementation details of Elektra.
 
-Elektra [aims](GOALS.md) at following design principles:
+Elektra [aims](GOALS.md) to fulfill the following design principles:
 
 1. To make the API futureproof so that it can remain compatible and stable
    over a long period of time,
-2. to make it hard to use the API the wrong way by making it simple&robust, and
+2. to make it hard to use the API the wrong way by making it simple & robust, and
 3. to make the API easy to use for programmers reading and writing
    configuration.
 
