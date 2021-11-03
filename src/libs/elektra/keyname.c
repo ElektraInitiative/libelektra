@@ -689,18 +689,7 @@ int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 	if (key->keyUSize == oldPrefix->keyUSize)
 	{
 		// key is same as oldPrefix -> just copy name
-		// TODO: replace with keyCopy (key, newPrefix, KEY_CP_NAME) once #3606 is merged
-		if (!test_bit (key->flags, KEY_FLAG_MMAP_KEY))
-		{
-			elektraFree (key->key);
-			elektraFree (key->ukey);
-		}
-
-		key->key = elektraMemDup (newPrefix->key, newPrefix->keySize);
-		key->keySize = newPrefix->keySize;
-
-		key->ukey = elektraMemDup (newPrefix->ukey, newPrefix->keyUSize);
-		key->keyUSize = newPrefix->keyUSize;
+		keyCopy (key, newPrefix, KEY_CP_NAME);
 		return 1;
 	}
 
