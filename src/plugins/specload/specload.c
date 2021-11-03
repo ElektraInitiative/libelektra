@@ -577,6 +577,7 @@ int isChangeAllowed (Key * oldKey, Key * newKey)
 		return -1;
 	}
 
+	/* TODO: remove deprecated meta flag KEY_NAME (#3152) */
 	if ((changes & KEY_NAME) != 0)
 	{
 		// different key names

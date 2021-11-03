@@ -85,6 +85,7 @@
  */
 enum elektraKeyFlags
 {
+	/* TODO: remove deprecated meta flags KEY_NAME and KEY_COMMENT (#3152) */
 	KEY_NAME = 1,	      /*!< Flag for the key name */
 	KEY_VALUE = 1 << 1,   /*!< Flag for the key data */
 	KEY_FLAGS = 3,	      /*!< Allows to define multiple flags at once. */

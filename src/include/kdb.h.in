@@ -45,6 +45,7 @@ extern "C" {
 }
 #endif
 
+/* TODO: remove deprecated meta flags KEY_NAME and KEY_COMMENT (#3152) */
 enum {
 	KEY_NAME=1,
 	KEY_VALUE=1<<1,
@@ -263,3 +264,4 @@ ssize_t ksSearch (const KeySet * ks, const Key * toAppend);
 #endif
 
 #endif /* KDB_H */
+

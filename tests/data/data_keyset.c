@@ -7,7 +7,7 @@
  */
 
 // clang-format off
-
+/* TODO: remove references to deprecated meta flag KEY_COMMENT (#3152) */
 ksNew(102,
 	keyNew ("user:/", KEY_END),
 	keyNew ("user:/test", KEY_END),

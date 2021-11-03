@@ -71,7 +71,7 @@
  * It can be a very powerful feature, e.g. if you need your own-defined
  * ordering or different Models of your configuration.
  */
-
+/* TODO: after removal of the flags, remove reference to deprecated meta flag KEY_COMMENT from code comment (#3152) */
 /**
  * A practical way to fully create a Key object in one step.
  *
@@ -213,7 +213,7 @@ Key * keyVNew (const char * name, va_list va)
 			flags |= action;
 			break;
 
-		/* deprecated flags */
+		/* TODO: remove deprecated meta flags KEY_NAME and KEY_COMMENT (#3152) */
 		case KEY_NAME:
 			name = va_arg (va, char *);
 			break;

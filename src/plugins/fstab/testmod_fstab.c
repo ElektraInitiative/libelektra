@@ -59,6 +59,7 @@ void test_writefstab (const char * file)
 
 	printf ("Writing fstab using file: %s\n", file);
 
+	/* TODO: remove references to deprecated meta flag KEY_COMMENT (#3152) */
 	KeySet * ks = ksNew (
 		22, keyNew ("user:/tests/filesystems", KEY_VALUE, "filesystems", KEY_COMMENT, "", KEY_END),
 		keyNew ("user:/tests/filesystems/\\/", KEY_VALUE, "the root fs", KEY_COMMENT, "pseudo name", KEY_END),

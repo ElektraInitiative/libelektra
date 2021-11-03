@@ -33,6 +33,7 @@
 
 void test_lookupre (void)
 {
+	/* TODO: remove references to deprecated meta flag KEY_COMMENT (#3152) */
 	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "a", KEY_COMMENT, "does not match", KEY_END),
 			     keyNew ("user:/b", KEY_VALUE, "  a  ", KEY_COMMENT, "does not match", KEY_END),
 			     keyNew ("user:/c", KEY_VALUE, "\t\t", KEY_COMMENT, "match", KEY_END),
@@ -59,6 +60,7 @@ void test_lookupre (void)
 
 void test_extended (void)
 {
+	/* TODO: remove references to deprecated meta flag KEY_COMMENT (#3152) */
 	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "la", KEY_COMMENT, "match", KEY_END),
 			     keyNew ("user:/b", KEY_VALUE, "lalala", KEY_COMMENT, "match", KEY_END),
 			     keyNew ("user:/c", KEY_VALUE, "jump", KEY_COMMENT, "does not match", KEY_END),

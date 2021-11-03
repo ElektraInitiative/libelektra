@@ -148,6 +148,7 @@ _(Michael Tucek)_
 - Fix broken links. _(Robert Sowula)_
 - Emphasize that `type` is required when the HL API is used. _(Tobias Schubert @qwepoizt)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
+- Add TODO-Comments where the deprecated flags KEY NAME and KEY VALUE are still used or mentioned in code comments. (see #3152) _(Florian Lindner @flo91)_
 - <<TODO>>
 
 ## Tests

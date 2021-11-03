@@ -8,6 +8,7 @@
 
 // clang-format off
 
+/* TODO: remove references to deprecated meta flag KEY_COMMENT (#3152) */
 ksNew( 19 ,
 	keyNew ("user:/tests/iconv/PerfectBinaryKey",
 		KEY_VALUE, "BinaryValue",
@@ -31,3 +32,4 @@ ksNew( 19 ,
 		KEY_COMMENT, "\xC4""\xD6""\xDC""\xDF""\xE4""\xF6""\xFC",
 		KEY_END),
 	KS_END);
+

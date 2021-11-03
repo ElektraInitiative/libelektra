@@ -22,6 +22,7 @@ typedef struct _GElektraKeyClass GElektraKeyClass;
 // clang-format off
 typedef enum {
 	GELEKTRA_KEY_FLAGS          = KEY_FLAGS,
+	/* TODO: remove deprecated meta flags KEY_NAME and KEY_COMMENT (#3152) */
 	GELEKTRA_KEY_NAME           = KEY_NAME,
 	GELEKTRA_KEY_VALUE          = KEY_VALUE,
 	GELEKTRA_KEY_COMMENT        = KEY_COMMENT,

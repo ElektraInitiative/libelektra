@@ -404,6 +404,7 @@ int keyIsString (const Key * key)
 }
 
 
+/* TODO: after removal of the flags, remove references to deprecated meta flags KEY_NAME and KEY_COMMENT (#3152) in the code comment */
 /**
  * @internal
  *
@@ -493,6 +494,7 @@ elektraKeyFlags keyCompare (const Key * key1, const Key * key2)
 
 	if (keyCompareMeta (key1, key2)) ret |= KEY_META;
 
+	/* TODO: remove references to deprecated meta flag KEY_NAME (#3152) */
 	if (nsize1 != nsize2)
 		ret |= KEY_NAME;
 	else if (!name1 || !name2)

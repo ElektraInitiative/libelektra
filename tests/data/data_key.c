@@ -7,7 +7,7 @@
  */
 
 // clang-format off
-
+/* TODO: remove references to deprecated meta flag KEY_COMMENT (#3152) */
 ksNew( 19 ,
 	keyNew ("user:/tests/filesys/.HiddenBinaryKey"
 		, KEY_VALUE, "BinaryValue"
@@ -45,3 +45,4 @@ standard name"
 		, KEY_VALUE, "With a string value"
 		, KEY_COMMENT, "string key with ugly name"
 	, KEY_END),KS_END);
+
