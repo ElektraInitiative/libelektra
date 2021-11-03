@@ -9,6 +9,20 @@ ks1 = kdb.KeySet(100,
 print("KeySet1 has {0} keys".format(len(ks1)))
 print("")
 
+print("We can add a key at runtime")
+new_key = kdb.Key("user:/key4", "key_value")
+ks1.append(new_key)
+print("or even a list of keys")
+list_of_keys = [kdb.Key("user:/key5", "key_value"), kdb.Key("user:/key6", "key_value")]
+ks1.extend(list_of_keys)
+print("")
+
+print("If you want to remove some keys")
+ks1.remove("user:/key4")
+ks1.remove("user:/key5")
+ks1.remove("user:/key6")
+print("")
+
 print("We can easily iterate over the keyset to check out its content:")
 for k in ks1:
 	print("  {0}".format(k))
