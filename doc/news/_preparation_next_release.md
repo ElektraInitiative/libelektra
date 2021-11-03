@@ -214,6 +214,7 @@ you up to date with the multi-language support provided by Elektra.
 - Added some improvements to the core api documentation _(@muskater)_
 - Add screenshots with hints to CLion PR tutorial _(@JakobWonisch)_
 - Fix typo in elektra-backends man page _(@JakobWonisch)_
+- Expanded the webside guid for easier understanding and linked to cmake.org. _(Philipp Nirnberger @nirnberger)_
 - <<TODO>>
 
 ## Tests
