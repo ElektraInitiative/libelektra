@@ -89,6 +89,6 @@
 
   Modify the [website](https://www.libelektra.org/home) with the following [tutorial](/src/tools/website/). The website is build with angular and hosted with grunt.
 
-  take a look at the [webui](/src/tools/webui/).
+  You can also take a look at the [webui](/src/tools/webui/).
 
 
