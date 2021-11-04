@@ -776,8 +776,53 @@ static void test_keyCopy (void)
 	succeed_if_same_string (keyName (k), "/abc");
 	succeed_if_same_string (keyName (c), "/abc");
 
+	succeed_if (keySetName (c, "spec:/test") != -1, "could not set name");
+	succeed_if (keyCopy (k, c, KEY_CP_NAME) != NULL, "could not copy");
+	succeed_if_same_string (keyName (k), "spec:/test");
+	succeed_if_same_string (keyName (c), "spec:/test");
+
+	succeed_if (keySetName (c, "proc:/test") != -1, "could not set name");
+	succeed_if (keyCopy (k, c, KEY_CP_NAME) != NULL, "could not copy");
+	succeed_if_same_string (keyName (k), "proc:/test");
+	succeed_if_same_string (keyName (c), "proc:/test");
+
+	succeed_if (keyCopy (k, c, KEY_CP_VALUE | KEY_CP_STRING) == NULL, "could copy despite of illegal flags");
+
 	keyDel (k);
 	keyDel (c);
+
+	Key * keyLock = keyNew ("user:/foo", KEY_FLAGS, KEY_LOCK_NAME | KEY_LOCK_VALUE | KEY_LOCK_META, KEY_END);
+	Key * keyNorm = keyNew ("user:/test", KEY_END);
+
+	succeed_if (keyCopy (keyNorm, keyLock, KEY_CP_NAME) != NULL, "could not copy");
+	succeed_if_same_string (keyName (keyNorm), "user:/foo");
+	succeed_if_same_string (keyName (keyLock), "user:/foo");
+
+	succeed_if (keySetName (keyNorm, "user:/test") != -1, "could not set name");
+	succeed_if (keyCopy (keyLock, keyNorm, KEY_CP_NAME) == NULL, "could copy locked key");
+	succeed_if_same_string (keyName (keyNorm), "user:/test");
+	succeed_if_same_string (keyName (keyLock), "user:/foo");
+
+	succeed_if (keyCopy (NULL, keyNorm, KEY_CP_NAME) == NULL, "could copy to NULL");
+	succeed_if (keyCopy (NULL, keyLock, KEY_CP_NAME) == NULL, "could copy to NULL");
+
+	Key * keyBin = keyNew ("user:/binary/foo", KEY_FLAGS, KEY_BINARY, KEY_END);
+
+	succeed_if (keyIsBinary (keyBin), "error creating binary key");
+	succeed_if (keyCopy (keyNorm, keyBin, KEY_CP_STRING) == NULL, "could copy string to binary key");
+	succeed_if (keyCopy (keyNorm, keyBin, KEY_CP_NAME) != NULL, "could not copy name to binary key");
+
+	keyDel (keyNorm);
+	keyDel (keyLock);
+	keyDel (keyBin);
+
+	Key * keyValSource = keyNew ("user:/hello", KEY_VALUE, "hello", KEY_END);
+	Key * keyValDest = keyNew ("user:/hi", KEY_END);
+	keyValDest = keyCopy (keyValDest, keyValSource, KEY_CP_ALL);
+	compare_key (keyValDest, keyValSource);
+
+	keyDel (keyValSource);
+	keyDel (keyValDest);
 }
 
 static void test_keyFixedNew (void)
