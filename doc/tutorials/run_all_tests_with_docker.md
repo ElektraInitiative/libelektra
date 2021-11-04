@@ -214,7 +214,7 @@ export LUA_CPATH="/home/jenkins/workspace/elektra-install/lib/lua/5.2/?.so;"
 
 ### 4. Run Tests
 
-Finally run the tests. There are two sets of tests. Run the first one with this command:
+Finally, run the tests. There are two sets of tests. Run the first one with this command:
 
 ```sh
 make run_all
