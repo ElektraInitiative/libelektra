@@ -157,6 +157,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Added more test cases for the keyCopy function _(@muskater)_
 
 ## Packaging
 
