@@ -762,7 +762,6 @@ static void test_keyNeedSync (void)
 
 static void test_keyCopy (void)
 {
-	// FIXME: add more tests
 	printf ("test copy key\n");
 	Key * k = keyNew ("/", KEY_END);
 	Key * c = keyNew ("user:/name", KEY_END);
