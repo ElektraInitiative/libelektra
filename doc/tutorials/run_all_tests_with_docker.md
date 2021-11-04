@@ -10,7 +10,7 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 
 ## Prerequisites
 
-- Docker for Linux containers has to be preinstalled. Please refer to https://docs.docker.com/install/ if you haven't installed it yet. Your host OS can be either Linux, macOS or Windows of course. Alternatively, you can use podman which is a different container engine, which is developed by RedHat. See https://podman.io/ for more details and an installation guide. 
+- Docker for Linux containers has to be preinstalled. Please refer to https://docs.docker.com/install/ if you haven't installed it yet. Your host OS can be either Linux, macOS or Windows of course. Alternatively, you can use podman which is a different container engine, which is developed by RedHat. See https://podman.io/ for more details and an installation guide.
 - Basic knowledge of Docker (not mandatory)
 
 ## What to Begin With?
@@ -26,6 +26,7 @@ docker build -t buildelektra-sid \
 	-f scripts/docker/debian/sid/Dockerfile \
 	scripts/docker/debian/sid/
 ```
+
 Alternatively, you can use podman:
 
 ```sh
@@ -35,7 +36,6 @@ podman build -t buildelektra-sid \
 	-f scripts/docker/debian/sid/Dockerfile \
 	scripts/docker/debian/sid/
 ```
-
 
 The build process depends on your Internet connection speed and the overall performance of your hardware. Most likely, it will take at least
 5 minutes. Please be patient. Once you have built the image, you can reuse it multiple times.
@@ -57,7 +57,6 @@ Or with podman:
 ```sh
 podman run --rm anoxis/registry-cli -r https://hub-public.libelektra.org
 ```
-
 
 You will see something like this:
 
@@ -93,6 +92,7 @@ Example:
 ```sh
 docker pull hub-public.libelektra.org/build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
 ```
+
 With podman:
 
 ```sh
@@ -147,8 +147,9 @@ drwxr-xr-x. 1 root root   956  3. Nov 13:08 scripts
 drwxr-xr-x. 1 root root   110  3. Nov 13:08 src
 drwxr-xr-x. 1 root root   316  3. Nov 13:08 tests
 ```
+
 Inside the source directory you can change the permissions to any user id with `podman unshare chown 1000:1000 -R .`. Keep in mind that this
-changes the *host* filesystem. You can read more about this [here](https://docs.podman.io/en/latest/markdown/podman-run.1.html).
+changes the _host_ filesystem. You can read more about this [here](https://docs.podman.io/en/latest/markdown/podman-run.1.html).
 
 Finally, you can run the container with:
 
@@ -159,7 +160,6 @@ podman run --user 1000 -it --rm \
 ```
 
 Do not forget the `:Z` label. You can read more about the labels in the podman [documentation](https://docs.podman.io/en/latest/index.html).
-
 
 ### 3. Build
 
