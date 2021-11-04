@@ -52,6 +52,7 @@ RUN apt-get update && apt-get -y install \
         qtbase5-dev \
         qtdeclarative5-dev \
         ruby-dev \
+        rustc \
         unzip \
         valgrind \
         python3-pip \
