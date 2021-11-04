@@ -70,7 +70,6 @@ RUN apt-get update && apt-get -y install \
         reprepro \
         ruby \
         ruby-dev \
-        rustc \
         swig4.0 \
         systemd \
         tclcl-dev \
