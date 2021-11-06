@@ -1,4 +1,4 @@
-restylers_version: dev
+restylers_version: stable
 auto: true
 pull_requests: false
 restylers:
