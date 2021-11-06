@@ -6,6 +6,19 @@ restylers:
   - clang-format:
       image: restyled/restyler-clang-format:13.0.1
       include:
+        - "**/*.c"
+        - "**/*.cc"
+        - "**/*.cpp"
+        - "**/*.cxx"
+        - "**/*.c++"
+        - "**/*.C"
+        - "**/*.cs"
+        - "**/*.h"
+        - "**/*.hh"
+        - "**/*.hpp"
+        - "**/*.hxx"
+        - "**/*.h++"
+        - "**/*.H"
         - "!tests/shell/gen/**/*"
         - "!**/*.js"
       command:
