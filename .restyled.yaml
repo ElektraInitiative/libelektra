@@ -8,6 +8,10 @@ restylers:
       include:
         - "!tests/shell/gen/**/*"
         - "!**/*.js"
+      command:
+        - clang-format
+        - "-i"
+        - "--style=file"
   - prettier:
       image: restyled/restyler-prettier:v2.3.2
   - prettier-markdown:
