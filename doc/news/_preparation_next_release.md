@@ -153,7 +153,7 @@ _(Michael Tucek)_
 
 ## Tests
 
-- disable Rust _(Markus Raab)_
+- disable Rust from buster _(Markus Raab)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
