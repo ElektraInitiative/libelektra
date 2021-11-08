@@ -418,6 +418,7 @@ static kdb_boolean_t checkSpecProperlyMounted (KDB * const kdb, const char * app
 static kdb_boolean_t checkSpecificationMountPoint (KeySet * const mountPointsKs, const char * application, const char * mountPoint,
 						   ElektraError ** error)
 {
+	// TODO (kodebach): update check
 	// Construct the lookup key
 	Key * mountPointLookupKey = keyNew ("system:/elektra/mountpoints/", KEY_END);
 	keyAddBaseName (mountPointLookupKey, mountPoint);

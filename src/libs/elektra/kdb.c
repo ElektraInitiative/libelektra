@@ -481,7 +481,8 @@ static KeySet * elektraBoostrap (KDB * handle, Key * errorKey)
 	return elektraKs;
 }
 
-static bool openPlugins (KeySet * plugins, const Key * pluginsRoot, KeySet * modules, KeySet * global, Key * errorKey)
+static bool openPlugins (KeySet * plugins, const Key * pluginsRoot, KeySet * modules, KeySet * global, const KeySet * systemConfig,
+			 Key * errorKey)
 {
 	bool success = true;
 	for (elektraCursor i = 0; i < ksGetSize (plugins); i++)
@@ -511,6 +512,8 @@ static bool openPlugins (KeySet * plugins, const Key * pluginsRoot, KeySet * mod
 			ksRename (config, lookupHelper, configRoot);
 			keyDel (configRoot);
 
+			ksAppend (config, systemConfig);
+
 			keyDel (lookupHelper);
 
 			Plugin * plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
@@ -533,6 +536,15 @@ static bool openPlugins (KeySet * plugins, const Key * pluginsRoot, KeySet * mod
 
 			// ... and replace Plugin * key
 			ksAppendKey (plugins, pluginKey);
+		}
+		else
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				errorKey,
+				"The key '%s' doesn't belong to a plugin definition. Keys below '%s' must be part of a plugin definition.",
+				keyName (cur), keyName (pluginsRoot));
+			success = false;
+			continue;
 		}
 	}
 
@@ -620,23 +632,23 @@ static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySe
 	ksRename (systemConfig, lookupHelper, configRoot);
 	keyDel (configRoot);
 
-	// FIXME (kodebach): add config to all plugins
-	// TODO (kodebach): read and process config/needs from contract
-	ksDel (systemConfig);
-
 
 	// get the plugin list and remove the common prefix
 	keySetBaseName (lookupHelper, "plugins");
 	KeySet * plugins = ksBelow (elektraKs, lookupHelper);
 
 	// open all plugins (replaces key values with Plugin *)
-	if (!openPlugins (plugins, lookupHelper, modules, global, errorKey))
+	if (!openPlugins (plugins, lookupHelper, modules, global, systemConfig, errorKey))
 	{
 		keyDel (mountpoint);
 		keyDel (lookupHelper);
 		ksDel (plugins);
+		ksDel (systemConfig);
 		return false;
 	}
+
+	// TODO (kodebach): read and process config/needs from contract
+	ksDel (systemConfig);
 
 	Key * pluginsRoot = keyNew ("system:/", KEY_END);
 	ksRename (plugins, lookupHelper, pluginsRoot);
@@ -720,7 +732,9 @@ KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet *
 			}
 
 			// skip over the keys we just parsed
-			ksFindHierarchy (elektraKs, cur, &i);
+			Key * lookup = keyDup (cur, KEY_CP_NAME);
+			ksFindHierarchy (elektraKs, lookup, &i);
+			keyDel (lookup);
 		}
 		else
 		{
@@ -819,7 +833,8 @@ static bool addModulesMountpoint (KDB * handle, Key * mountpoint, Key * errorKey
 		return false;
 	}
 
-	Plugin * plugin = elektraPluginOpen (keyBaseName (mountpoint), handle->modules, ksNew (0, KS_END), errorKey);
+	Plugin * plugin = elektraPluginOpen (keyBaseName (mountpoint), handle->modules,
+					     ksNew (1, keyNew ("system:/module", KEY_END), KS_END), errorKey);
 	if (plugin == NULL)
 	{
 		ELEKTRA_SET_INSTALLATION_ERRORF (
@@ -1960,8 +1975,8 @@ static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
 			ELEKTRA_ADD_INTERFACE_WARNINGF (
 				parentKey,
-				"Calling the kdbSet function for the backend plugin ('%s') of the mountpoint '%s' "
-				"returned ELEKTRA_PLUGIN_STATUS_NO_UPDATE. This is interpreted the same way as "
+				"Calling the kdbSet function for the backend plugin ('%s') of the mountpoint '%s' returned "
+				"ELEKTRA_PLUGIN_STATUS_NO_UPDATE in the 'resolver' phase. This is interpreted the same way as "
 				"ELEKTRA_PLUGIN_STATUS_SUCCESS, i.e. the mountpoint will still go through the rest of kdbSet()'s phases.",
 				backendData->backend->name, keyName (backendKey));
 			// FALLTRHOUGH

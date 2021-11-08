@@ -71,19 +71,6 @@ TEST (RebaseKey, RebasesCorrectlyWithValidArguments)
 	EXPECT_EQ (expected.getString (), result.getString ());
 }
 
-TEST (RebaseKey, RebasesCorrectlyWithCascadingParent)
-{
-	Key target = Key ("user:/test/configold/subdir/k1", KEY_VALUE, "testvalue", KEY_END);
-	Key oldParent = Key ("/test/configold", KEY_END);
-	Key newParent = Key ("user:/test/confignew", KEY_END);
-	Key expected = Key ("user:/test/confignew/subdir/k1", KEY_VALUE, "testvalue", KEY_END);
-
-	Key result = rebaseKey (target, oldParent, newParent);
-
-	EXPECT_EQ (expected.getName (), result.getName ());
-	EXPECT_EQ (expected.getString (), result.getString ());
-}
-
 TEST (RebaseKey, ThrowsExceptionOnInvalidRebase)
 {
 	Key target = Key ("user:/test/k1", KEY_END);
