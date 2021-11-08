@@ -27,7 +27,7 @@ The basic flow of this operation is:
 5. Process contract
 6. Parse mountpoints
 7. Configure `KDB` instance with real mountpoints
-8. Add hard-coded mountpoints to `KDB` instance
+8. Add hard coded mountpoints to `KDB` instance
 
 > **Note:** Despite sharing a name, the `open` operation **does not** call the `elektra<Plugin>Open` function of any plugin (except within the bootstrap `get` operation).
 
