@@ -168,6 +168,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - Cleanup tests/linkchecker.whitelist and fix off-by-1 bug of the counter in the scripts/link-checker script (increase counter before printf) _(Florian Lindner @flo91)_
 - add tests the env binding _(Ivaylo Ivanov)_
+- add and improve checks in scripts/sed _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - Added more test cases for the keyCopy function _(@muskater)_
