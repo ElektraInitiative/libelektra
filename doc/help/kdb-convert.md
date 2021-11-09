@@ -43,6 +43,6 @@ To convert an Elektra dump file to xml:<br>
 Another way to convert an Elektra dump file to xml:<br>
 `kdb convert dump xmltool /home/user/dump_file.ecf /home/user/xml_file.xml`
 
-To print a xml file using the `line` format:<br>
+To print an xml file using the `line` format:<br>
 `cat ../tests/xml_file.xml | kdb convert xmltool line`<br>
 Note that this command won't save the output, it will just display it to `stdout`.
