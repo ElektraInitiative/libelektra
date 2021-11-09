@@ -81,7 +81,7 @@ Afterwards pull your desired image as you would do from any public registry:
 docker pull hub-public.libelektra.org/<image_name>:<tag_name>
 ```
 
-With podman:
+Or with podman:
 
 ```sh
 podman pull hub-public.libelektra.org/<image_name>:<tag_name>
