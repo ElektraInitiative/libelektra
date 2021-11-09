@@ -93,7 +93,7 @@ Example:
 docker pull hub-public.libelektra.org/build-elektra-debian-stretch:201905-9dfe329fec01a6e40972ec4cc71874210f69933ab5f9e750a1c586fa011768ab
 ```
 
-With podman:
+Or with podman:
 
 ```sh
 podman pull hub-public.libelektra.org/build-elektra-debian-stretch:202108-1c5cb52603c30b89b7c3b26234cb7094f03f180ea5378b8e349b2feee9a9d724
