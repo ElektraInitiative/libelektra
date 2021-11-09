@@ -15,7 +15,7 @@ This helps in achieving the following goals:
   - Uniformity of configuration access (logging, vcs commit, notifications).
   - Syntax of the configuration files (with limitations, see below).
 
-Elektra follows goals, in order of preference.
+Elektra follows the goals below, in order of preference.
 If goals conflict, the higher goal takes precedence.
 
 ## 0. Stability

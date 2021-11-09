@@ -21,7 +21,7 @@ different from what is expected or desired.
 ## Assumptions
 
 While plugins should always fail and return an error if validation
-fails on kdbSet, there can be several different requirements
+fails on kdbSet, there are several different requirements
 for what should happen on kdbGet and handle problems e.g.
 
 - only issue warnings

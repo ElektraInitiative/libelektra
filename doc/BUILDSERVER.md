@@ -376,7 +376,7 @@ A `jenkins` user with 47110:47110 ids should be created as this is what is
 expected in Docker images.
 `useradd -u 47110 jenkins`
 Additionally a public key authentication should be set up so the jenkins
-master can establish a ssh connection with the node.
+master can establish an SSH connection with the node.
 If the node should be able to interact with Docker the jenkins user should be
 added to the `docker` group.
 
