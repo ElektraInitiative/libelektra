@@ -97,7 +97,7 @@ the key names of software-applications should always start with:
   and having a choice which separator to choose will certainly lead
   to inconsistencies)
 - It is suggested to make your application look for default keys under
-  `/sw/org/myapp/#/%/` where `#` is a major version number, e.g. `#3` for
+  `/sw/org/myapp/#X/%/` where `X` is a major version number, e.g. `#3` for
   the 4th version and `%` is a profile (`%` for default profile). This way, from
   a sysadmin perspective, it will be possible to copy the
   `system:/sw/myapp/#3/%/` tree to something like
