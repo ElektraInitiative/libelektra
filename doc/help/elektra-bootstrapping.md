@@ -8,9 +8,7 @@ between out-of-the-box behavior and a well-configured, fine-tuned system.
 
 To support that experience, a so-called **default backend** is
 responsible in the case that nothing was configured so far. It must
-have a storage that is able to store full Elektra semantics. To avoid
-reimplementation of storage plugins, for default storage plugins
-(`storage` or in code `KDB_STORAGE`) is used. A resolver plugin (`resolver`
+have a storage that is able to store full Elektra semantics. To avoid reimplementation of storage plugins, a default storage plugin (`storage` or in code `KDB_STORAGE`) is used. A resolver plugin (`resolver`
 or in code `KDB_RESOLVER`) takes care of the inevitable portability issues.
 The **default backend** stores configuration in `KDB_DB_FILE`. One can easily avoid the
 usage of the default backend by simple mounting another backend to `/`.
