@@ -58,7 +58,7 @@
   mkdir build  && cd build  #create and navigate to the build directory
   cmake ..  # watch output to see if everything needed is included
   #  optionally run "ccmake .." to get an overview of the available build settings (needs cmake-curses-gui)
-  cmake --build build -- -j5
+  cmake --build . -- -j5
   ```
 
   Optionally you can also run tests on your build, see [here for more information](/doc/TESTING.md):
