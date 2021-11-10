@@ -14,7 +14,7 @@
 void printNameAndContent (Key * k, char * varName)
 {
 	char buffer[256];
-	keyGetString (k, buffer, sizeof (buffer));
+	strncpy (buffer, keyString (k), sizeof (buffer));
 	printf ("%s: %s\t\tvalue: %s\n", varName, keyName (k), buffer);
 }
 
