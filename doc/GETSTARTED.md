@@ -65,8 +65,7 @@
   Note that if you followed the guide you are still inside the libelektra/build directory.
 
   ```sh
-  cd .. #go one directory up
-  cmake --build build --target run_nokdbtests #run tests on your build
+  cmake --build . --target run_nokdbtests #run tests on your build
   ```
 
   With these commands you will be able to run the "Hello World!" example but usually you will need to use some of the [plugins](/src/plugins/README.md), tools and bindings of Elektra. Please take a look at the more detailed [compiling documentation](/doc/COMPILE.md). After you completed building Elektra on your own, you can execute these commands to install Elektra (please check the [installation documentation](/doc/INSTALL.md) for the many available packages):
