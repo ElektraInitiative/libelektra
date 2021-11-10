@@ -117,6 +117,7 @@ you up to date with the multi-language support provided by Elektra.
 _(Michael Tucek)_
 
 ### FUSE Binding
+
 - Added check for existence of accessed path before opening new file descriptor _(@lawli3t)_
 
 ### <<Binding3>>
