@@ -149,6 +149,7 @@ _(Michael Tucek)_
 - Fix broken links. _(Robert Sowula)_
 - Emphasize that `type` is required when the HL API is used. _(Tobias Schubert @qwepoizt)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
+- Improve wording and formatting of DESIGN.md _(@lawli3t)_
 - <<TODO>>
 
 ## Tests
