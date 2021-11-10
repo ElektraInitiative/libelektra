@@ -107,6 +107,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Fix check for valid namespace in keyname creation _(@JakobWonisch)_
 - Fix `keyCopyMeta` not deleting non existant keys in destination (see #3981) _(@JakobWonisch)_
 - Use `memcmp` instead of `strcmp` in `keyCompare` to properly handle binary `Key`s _(@lawli3t)
+- Use `memcmp` instead of `strcmp` in `keyCompare` to properly handle binary `Key`s _(@lawli3t)_
 
 ### <<Library1>>
 
