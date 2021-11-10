@@ -1675,4 +1675,3 @@ struct hash<kdb::Key>
 } // end of namespace std
 
 #endif
-
