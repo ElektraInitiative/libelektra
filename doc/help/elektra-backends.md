@@ -39,7 +39,7 @@ the desired separation of concerns inside a backend.
 
 Each plugin implements a single concrete requirement and it does that
 well. This architecture allows plugins to have external
-dependence. Not every plugin has the burden to be portable anymore.
+dependencies. Not every plugin has the burden to be portable anymore.
 That is no problem because the plugins are separate subprojects and
 maintainers can decide if they should be built for a specific platform
 or not. Afterward, users can choose which plugins they want to install
