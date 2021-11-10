@@ -65,7 +65,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### Uname Plugin
+### uname
 
 - Minor improvement of source code readability in uname.c _(@lawli3t)_
 
