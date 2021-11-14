@@ -10,8 +10,8 @@ This command copies key(s) in the Key database.
 You can copy keys to another directory within the database or even below another key.
 Note that you cannot copy a key below itself.
 
-Where `source` is the path of the key(s) you want to copy and `dest` is the path where you would like to copy the key(s) to.
-Note that when using the `-r` flag, `source` as well as all the keys below it will be copied.
+The argument `source` is the path of the key(s) you want to copy and `dest` is the path where you would like to copy the key(s) to.
+Note that when using the `-r` flag, `source` as well as all the keys below will be copied.
 
 ## LIMITATIONS
 
