@@ -5,7 +5,7 @@
 # =================
 
 s/\<oc(c)?ur(r)?ed\>/occurred/g
-s/\<([Bb])uil([dt])(-| )?([Ii])n\>/\1uilt-in/g
+s/\<([Bb])uil([dt])-([Ii])n\>/\1uilt-in/g
 s/([Rr])uning/\1unning/g
 s/\<([Rr])essource(s)?/\1esource\2/g
 s/\<([Aa])dditonal/\1dditional/g
