@@ -1,0 +1,24 @@
+Storage: csvstorage
+Mountpoint: user:/tests/csvstorage
+File: config.csv
+
+RET: 0
+< kdb mount $File $Mountpoint $Storage
+
+RET: 0
+< kdb set user:/tests/csvstorage/a1/a a1
+
+RET: 0
+< kdb set user:/tests/csvstorage/a2/a a2
+
+RET: 0
+< kdb set user:/tests/csvstorage/a3/a a3
+
+RET: 0
+< kdb export user:/tests/csvstorage csvstorage -c export=,export/a=
+
+RET: 0
+< kdb rm -r $Mountpoint
+
+RET: 0
+< kdb umount $Mountpoint
