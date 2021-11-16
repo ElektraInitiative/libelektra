@@ -165,6 +165,27 @@ TEST (GetEnv, ArgvParamUninvolved)
 	elektraClose ();
 }
 
+TEST (GetEnv, ArgvParamVersion)
+{
+	const char * cargv[] = { "curl", "--elektra-version", nullptr };
+	char ** argv = const_cast<char **> (cargv);
+	int argc = 2;
+	using namespace ckdb;
+	elektraOpen (&argc, argv);
+	EXPECT_EQ (argc, 1) << "elektra proc not consumed";
+	EXPECT_EQ (argv[0], std::string ("curl"));
+	EXPECT_EQ (argv[1], std::string ("--elektra-version"));
+	EXPECT_EQ (argv[2], static_cast<char *> (nullptr));
+
+	ckdb::Key * kdb_version = ksLookupByName (elektraConfig, "system:/elektra/version/constants/KDB_VERSION", 0);
+
+	EXPECT_EQ (getenv ("version"), "Elektra getenv is active\n" +
+		std::string ("KDB_VERSION: ") + std::string (keyString (kdb_version)) +
+		std::string ("\nKDB_GETENV_VERSION: ") + KDB_GETENV_VERSION);
+
+	elektraClose ();
+}
+
 TEST (GetEnv, NameArgv0)
 {
 	using namespace ckdb;
