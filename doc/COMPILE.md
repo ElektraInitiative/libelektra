@@ -56,7 +56,7 @@ installation of self-compiled Elektra (such as how to uninstall it).
 
 ### Documentation dependencies
 
-To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn-ng](https://github.com/apjanke/ronn-ng/blob/master/INSTALLING.md). These can be installed as follows:
+To build the documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn-ng](https://github.com/apjanke/ronn-ng/blob/master/INSTALLING.md). These can be installed as follows:
 
 - on APT-based systems (Ubuntu, Debian):
 
