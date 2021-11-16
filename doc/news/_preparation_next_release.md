@@ -60,6 +60,7 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 
 ### csvstorage
+
 - added a test case to reproduce #2304 _(@muskater)_ _(@4ydan)_ _(@lawli3t)_
 
 ### <<Plugin3>>
