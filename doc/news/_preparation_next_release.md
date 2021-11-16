@@ -257,7 +257,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Docker
 
-- <<TODO>>
+- Add Fedora 35 images. _(Vaibhav Ganesh @flackojr)_
 - <<TODO>>
 - <<TODO>>
 
