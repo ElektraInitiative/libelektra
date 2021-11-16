@@ -110,6 +110,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 - Fix check for valid namespace in keyname creation _(@JakobWonisch)_
 - Fix `keyCopyMeta` not deleting non existant keys in destination (see #3981) _(@JakobWonisch)_
+- Reorder `Key` and `KeySet` struct members to aviod padding and make space for a new `uint16_t` member, reserved for future use. _(Mihael Pranjić @mpranj)_
 
 ### <<Library1>>
 
@@ -156,7 +157,7 @@ _(Michael Tucek)_
 
 ## Scripts
 
-- Updated `reformat-c` script to use clang-format version 13. _(Mihael Pranjić)_
+- Updated `reformat-c` script to use clang-format version 13. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - Fix bug where the PATH environment variable would get overwritten in some of the Docker images. Reduce image size _(Ivaylo Ivanov)_
 - Allow JSON to be also written as json. _(@muskater)_
@@ -169,7 +170,7 @@ _(Michael Tucek)_
 - Fix Links in [README.md](/README.md) and small clarifications. _(Markus Raab)_
 - Remove previous authors. _(Markus Raab)_
 - add pre/postconditions and invariants to module keytest _(@lawli3t)_
-- Updated the news template. _(Mihael Pranjić)_
+- Updated the news template. _(Mihael Pranjić @mpranj)_
 - Update and improve tutorial and in-code comments for high-level API _(Tobias Schubert @qwepoizt)_
 - Improve documentation of opts library _(Tobias Schubert @qwepoizt)_
 - Update tutorial "High-level API (with code-generation)" to reflect change of `loadConfiguration()`'s signature in release 0.9.5 _(Tobias Schubert @qwepoizt)_
@@ -243,7 +244,7 @@ _(Michael Tucek)_
 
 ### Docker
 
-- Add Fedora 35 images. _(Vaibhav Ganesh @flackojr)_
+- Add Fedora 35 images._(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 
@@ -251,7 +252,7 @@ _(Michael Tucek)_
 
 ### Jenkins
 
-- <<TODO>>
+- Replace Fedora 33 builds with Fedora 34, and Fedora 34 builds with Fedora 35. _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 - <<TODO>>
 
@@ -273,7 +274,7 @@ The website is generated from the repository, so all information about
 plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 - <<TODO>>
-- Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić)_
+- Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić @mpranj)_
 - <<TODO>>
 
 ## Other
