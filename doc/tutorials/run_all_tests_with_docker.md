@@ -148,7 +148,7 @@ drwxr-xr-x. 1 root root   110  3. Nov 13:08 src
 drwxr-xr-x. 1 root root   316  3. Nov 13:08 tests
 ```
 
-Inside the source directory you can change the permissions to any user id with `podman unshare chown 1000:1000 -R .`. Keep in mind that this
+Inside the source directory, you can change the permissions to any user id with `podman unshare chown 1000:1000 -R .`. Keep in mind that this
 changes the _host_ filesystem. You can read more about this [here](https://docs.podman.io/en/latest/markdown/podman-run.1.html).
 
 Finally, you can run the container with:
