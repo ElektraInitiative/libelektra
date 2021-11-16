@@ -10,7 +10,7 @@ This is a step-by-step guide. Just follow the steps and you are good to go!
 
 ## Prerequisites
 
-- Docker for Linux containers has to be preinstalled. Please refer to https://docs.docker.com/install/ if you haven't installed it yet. Your host OS can be either Linux, macOS or Windows of course. Alternatively, you can use podman which is a different container engine, which is developed by RedHat. See https://podman.io/ for more details and an installation guide.
+- Docker for Linux containers has to be pre-installed. Please refer to https://docs.docker.com/install/ if you haven't installed it yet. Your host OS can be either Linux, macOS or Windows. Alternatively, you can use podman, a different container engine, which is developed by RedHat. See https://podman.io/ for more details and an installation guide.
 - Basic knowledge of Docker (not mandatory)
 
 ## What to Begin With?
