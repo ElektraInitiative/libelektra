@@ -243,7 +243,7 @@ _(Michael Tucek)_
 
 ### Docker
 
-- <<TODO>>
+- Add Fedora 35 images. _(Vaibhav Ganesh @flackojr)_
 - <<TODO>>
 - <<TODO>>
 
