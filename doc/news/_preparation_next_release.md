@@ -59,6 +59,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### csvstorage
+
+- Add `array` meta key to the parentKey of imported Keys _(@muskater)_ _(@4ydan)_ _(@lawli3t)_
+
 ### <<Plugin3>>
 
 - <<TODO>>
