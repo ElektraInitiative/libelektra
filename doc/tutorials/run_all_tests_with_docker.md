@@ -114,7 +114,7 @@ buildelektra-sid
 
 #### 2.a Run the Docker Container with podman
 
-It is recommended that you run your container as a non-root user. As a result you have to set the correct permissions of the source directory.
+It is recommended that you run your container as a non-root user. As a result, you have to set the correct permissions of the source directory.
 
 With `podman unshare ls -al` you can see the currently set owner and permissions from the container's perspective.
 
