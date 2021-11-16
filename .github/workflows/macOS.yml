@@ -130,7 +130,9 @@ jobs:
         brew tap homebrew/services
         brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
         brew postinstall dbus
-        brew services restart dbus
+        brew services stop dbus; brew services start dbus
+        echo $DBUS_LAUNCHD_SESSION_BUS_SOCKET
+        launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
         cmake -E make_directory ${{runner.workspace}}/libelektra/build
         export JAVA_HOME=$(/usr/libexec/java_home -v 16)
         echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
