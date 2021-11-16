@@ -6,7 +6,7 @@ talk about the implementation details of Elektra.
 
 Elektra [aims](GOALS.md) to fulfill the following design principles:
 
-1. To make the API futureproof so that it can remain compatible and stable
+1. To make the API future-proof so that it can remain compatible and stable
    over a long period of time,
 2. to make it hard to use the API the wrong way by making it simple & robust, and
 3. to make the API easy to use for programmers reading and writing
@@ -40,7 +40,7 @@ int kdbClose(KDB *handle);
 ```
 
 to get rid of the resources again. The second function may also shut
-down connections. Therefore it must be called before the end of a program.
+down connections. Therefore, it must be called before the end of a program.
 
 ```c
 Key *keyNew(const char *keyName, ...);
