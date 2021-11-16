@@ -14,7 +14,7 @@ RET: 0
 RET: 0
 < kdb ls $Mountpoint
 
-RET: 2
+RET: 0
 < kdb meta-get user:/tests/csvstorage/#0 array
 
 RET: 0
