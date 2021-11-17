@@ -13,6 +13,52 @@
 #include <string>
 #include <vector>
 
+/* check if exceptions are thrown if the underlying c-functions return error codes (-1 or NULL) */
+TEST (key, cErrors)
+{
+	Key k ("user:/key", KEY_VALUE, "testkey", KEY_END);
+	Key x = nullptr;
+
+	EXPECT_THROW (x.addName (""), KeyInvalidName);
+	EXPECT_THROW (x.setName(""), KeyInvalidName);
+	EXPECT_THROW (x.addBaseName (""), KeyInvalidName);
+	EXPECT_THROW (x.delBaseName(), KeyInvalidName);
+	EXPECT_THROW (x.setBaseName(""), KeyInvalidName);
+
+	EXPECT_THROW (x.setMeta ("",""), KeyException);
+	EXPECT_THROW (x.delMeta(""), KeyException);
+	EXPECT_THROW (k.copyAllMeta(nullptr), KeyException);
+	EXPECT_THROW (k.copyMeta(nullptr, "test"), KeyException);
+	EXPECT_THROW (x.rewindMeta(), KeyException);
+
+	EXPECT_THROW (x.set(""), KeyException);
+	EXPECT_THROW (x.copy (nullptr), KeyException);
+	EXPECT_THROW (x.clear(), KeyException);
+	EXPECT_THROW (x.setCallback(nullptr), KeyException);
+	EXPECT_THROW (x.setString (nullptr), KeyException);
+	EXPECT_THROW (x.getString (), KeyException);
+	EXPECT_THROW (x.getReferenceCounter(), KeyException);
+
+	/* Currently not implemented, because otherwise a Key-object
+	 * would not be settable to a nullptr which breaks some existing tests */
+	/* EXPECT_THROW (x++, KeyException); */
+
+	EXPECT_THROW (x--, KeyException);
+}
+
+
+/* tests for binary keys and functions operating on them or returning them */
+TEST (key, binary)
+{
+	Key x = nullptr;
+	Key b ("user:/keyBinary", KEY_VALUE, "", KEY_END);
+	b.setBinary (nullptr, 0);
+
+	EXPECT_THROW (x.getBinary(), KeyException);
+	EXPECT_EQ (b.getString(), "");
+}
+
+
 TEST (key, null)
 {
 	Key key0 (static_cast<ckdb::Key *> (nullptr));
@@ -29,6 +75,8 @@ TEST (key, null)
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull (), "key should evaluate to false");
 	succeed_if (key0.needSync (), "key should need sync");
+
+	EXPECT_THROW (key0.set (static_cast<char * >(0)), KeyTypeConversion);
 }
 
 
