@@ -201,6 +201,9 @@ static void testKeyMetaKeyIsSet (const char * file)
 	Key * key;
 	key = ksLookupByName (ks, "user:/tests/csvstorage/#0", 0);
 	succeed_if (keyGetMeta (key, "array") != 0, "metakey not found");
+	ksDel (ks);
+	keyDel (parentKey);
+	PLUGIN_CLOSE ();
 }
 
 
