@@ -180,6 +180,28 @@ sudo kdb umount /tests/csv
 
 ```
 
+## Parent keys
+
+```sh
+kdb mount config.csv user:/tests/csvstorage csvstorage
+
+kdb set user:/tests/csvstorage/a1/a a1
+
+kdb set user:/tests/csvstorage/a2/a a2
+
+kdb set user:/tests/csvstorage/a3/a a3
+
+kdb export user:/tests/csvstorage csvstorage -c export=,export/a=
+#> a1
+#> a2
+#> a3
+
+kdb rm -r user:/tests/csvstorage
+
+kdb umount user:/tests/csvstorage
+
+```
+
 ## Limitations
 
 - Does not work on file streams (e.g. `kdb import` without file)
