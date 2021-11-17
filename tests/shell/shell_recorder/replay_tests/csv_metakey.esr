@@ -1,5 +1,6 @@
 Storage: csvstorage
 Mountpoint: user:/tests/csvstorage
+MountArgs: --with-recommends
 File: config.csv
 
 RET: 0
