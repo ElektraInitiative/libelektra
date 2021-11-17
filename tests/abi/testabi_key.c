@@ -99,6 +99,14 @@ static void test_keyNewSpecial (void)
 	keyDel (k);
 }
 
+static void test_keyNewWrongName (void)
+{
+	printf ("Test key creation with wrong names\n");
+	Key * k = keyNew ("systemx:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+}
+
+
 static void test_keyNewSystem (void)
 {
 	Key * key;
@@ -2643,6 +2651,7 @@ int main (int argc, char ** argv)
 	test_keyDirectBelow ();
 
 	test_keyNewSpecial ();
+	test_keyNewWrongName ();
 	test_keyNewSystem ();
 	test_keyNewUser ();
 	test_keyReference ();
