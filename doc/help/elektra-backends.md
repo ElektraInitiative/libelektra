@@ -42,7 +42,7 @@ well. This architecture allows plugins to have external
 dependence. Not every plugin has the burden to be portable anymore.
 That is no problem because the plugins are separate subprojects and
 maintainers can decide if they should be built for a specific platform
-or not. Afterwards users can choose which plugins they want to install
+or not. Afterward, users can choose which plugins they want to install
 and use. And finally, the administrator can choose which of the plugins
 should be loaded for each backend. If a specific feature is not needed,
 it is not included and does not cause additional overhead. Given the
