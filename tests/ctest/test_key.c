@@ -804,12 +804,22 @@ static void test_keyCopy (void)
 
 	succeed_if (keyCopy (NULL, keyNorm, KEY_CP_NAME) == NULL, "could copy to NULL");
 	succeed_if (keyCopy (NULL, keyLock, KEY_CP_NAME) == NULL, "could copy to NULL");
+	succeed_if_same_string (keyName (keyNorm), "user:/test");
+	succeed_if_same_string (keyName (keyLock), "user:/foo");
 
 	Key * keyBin = keyNew ("user:/binary/foo", KEY_FLAGS, KEY_BINARY, KEY_END);
-
 	succeed_if (keyIsBinary (keyBin), "error creating binary key");
+
+	keySetString (keyNorm, "This is a string");
+	succeed_if_same_string (keyString (keyNorm), "This is a string");
+
 	succeed_if (keyCopy (keyNorm, keyBin, KEY_CP_STRING) == NULL, "could copy string to binary key");
+	succeed_if_same_string (keyName (keyNorm), "user:/test");
+	succeed_if_same_string (keyString (keyNorm), "This is a string");
+	succeed_if_same_string (keyName (keyBin), "user:/binary/foo");
 	succeed_if (keyCopy (keyNorm, keyBin, KEY_CP_NAME) != NULL, "could not copy name to binary key");
+	succeed_if_same_string (keyName (keyNorm), "user:/binary/foo");
+	succeed_if_same_string (keyName (keyBin), "user:/binary/foo");
 
 	keyDel (keyNorm);
 	keyDel (keyLock);
@@ -818,6 +828,18 @@ static void test_keyCopy (void)
 	Key * keyValSource = keyNew ("user:/hello", KEY_VALUE, "hello", KEY_END);
 	Key * keyValDest = keyNew ("user:/hi", KEY_END);
 	keyValDest = keyCopy (keyValDest, keyValSource, KEY_CP_ALL);
+	compare_key (keyValDest, keyValSource);
+
+	keySetString (keyValSource, "This string has special chars \n \\ \t \a");
+	keySetName (keyValDest, "user:/hi");
+	keyValDest = keyCopy (keyValDest, keyValSource, KEY_CP_ALL);
+	succeed_if_same_string (keyString (keyValDest), keyString (keyValSource));
+	compare_key (keyValDest, keyValSource);
+
+	keySetString (keyValSource, "This string has special \0 here");
+	keySetName (keyValDest, "user:/hi");
+	keyValDest = keyCopy (keyValDest, keyValSource, KEY_CP_ALL);
+	succeed_if_same_string (keyString (keyValDest), keyString (keyValSource));
 	compare_key (keyValDest, keyValSource);
 
 	keyDel (keyValSource);
