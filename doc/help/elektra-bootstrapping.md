@@ -11,7 +11,7 @@ responsible in the case that nothing was configured so far. It must
 have a storage that is able to store full Elektra semantics. To avoid reimplementation of storage plugins, a default storage plugin (`storage` or in code `KDB_STORAGE`) is used. A resolver plugin (`resolver`
 or in code `KDB_RESOLVER`) takes care of the inevitable portability issues.
 The **default backend** stores configuration in `KDB_DB_FILE`. One can easily avoid the
-usage of the default backend by simple mounting another backend to `/`.
+usage of the default backend by simply mounting another backend to `/`.
 
 The mounting configuration (the configuration how to mount the
 mount points) also needs to be stored somewhere.
