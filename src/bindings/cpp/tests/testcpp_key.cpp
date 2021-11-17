@@ -351,6 +351,21 @@ TEST (key, exceptions)
 	{
 		succeed_if (test.getName () == "user:/name", "name not unchanged");
 	}
+
+	try
+	{
+		test.addName ("no");
+	}
+	catch (kdb::KeyInvalidName const &)
+	{
+		succeed_if (test.getName () == "user:/name", "name not unchanged");
+	}
+
+	Key test1;
+	EXPECT_THROW (test1.setBaseName ("no"), KeyInvalidName); // null keys should throw this when setBaseName is called
+
+	Key test2;
+	EXPECT_THROW (test2.delBaseName (), KeyInvalidName); // null keys should throw this when delBaseName is called
 }
 
 TEST (key, name)
