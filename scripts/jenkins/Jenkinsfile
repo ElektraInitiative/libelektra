@@ -478,7 +478,7 @@ def dockerInit() {
 }
 
 /* Generate basic check stages
- *
+ * 
  * Runs basic checks that do not to build the code
  */
 def generateBasicCheckStages() {
@@ -492,6 +492,9 @@ def generateBasicCheckStages() {
 
   // Check if release notes have been updated
   tasks << buildCheckReleaseNotes()
+
+  // Check if all file names comply with the file name convention
+  tasks << buildCheckFileNames()
 
   // Check for reuse compliancy
   tasks << buildCheckReuseCompliant()
@@ -835,6 +838,19 @@ def buildCheckReleaseNotes() {
     maybeStage(stageName, !isMaster()) {
       withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "scripts/build/run_check_release_notes"
+        deleteDir()
+      }
+    }
+  }]
+}
+
+/* Stage checking if release notes have been updated */
+def buildCheckFileNames() {
+  def stageName = "check-file-names"
+  return [(stageName): {
+    maybeStage(stageName, !isMaster()) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
+        sh "scripts/dev/filename-checker"
         deleteDir()
       }
     }

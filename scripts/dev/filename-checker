@@ -1,0 +1,50 @@
+#!/bin/sh
+#
+# @author muskater
+# @brief Checks that only files exist in the repository that conform to the naming convention: [/.a-zA-Z0-9_-]*
+#        Exceptions to this rule can be specified in tests/filename.whitelist.
+#        The current directory will be used as base directory.
+# @date 18.11.2021
+# @tags validation
+
+if [ $# -ne 0 ]; then
+	echo "Usage: filename-checker"
+	exit
+fi
+
+# Check if tests/allow-list exists.
+ALLOW_LIST_FILE=./tests/filename.whitelist
+if [ ! -f "$ALLOW_LIST_FILE" ]; then
+	echo >&2 "$ALLOW_LIST_FILE dose not exists."
+	exit 1
+fi
+
+# Store the content of the allow-list into ALLOW_LIST.
+# Ignore every line that starts with '#' or spaces.
+ALLOW_LIST=$(grep -Ev '^(#|[[:space:]]*$)' "./tests/filename.whitelist")
+
+# Find any file that is non-compliant.
+# Save them to the variable FORBIDDEN_NAMES.
+FORBIDDEN_NAMES=$(find . | grep -v '^[-_/.a-zA-Z0-9]*$')
+
+# All file names that offend the rule are saved into BANNED_NAMES.
+BANNED_NAMES=$(echo "$FORBIDDEN_NAMES" | while read -r test_line; do
+	# Set the delimiter to newline to compare every line.
+	# Import the variable test_line as l.
+	# Compare line by line the allow-list with test_line.
+	CHECK=$(echo "$ALLOW_LIST" | awk -F "\n" -v l="$test_line" '$1 == l { print $1 }')
+	# When CHECK is empty it means that that no entry in the white list was found.
+	if [ -z "$CHECK" ]; then
+		echo "$test_line"
+	fi
+done)
+
+if [ -n "$BANNED_NAMES" ]; then
+	echo >&2 "These file names do not comply with the naming convention: [/.a-zA-Z0-9_-]*"
+	echo >&2 "Please change them accordingly or add them to tests/filename.whitelist"
+	echo >&2 "$BANNED_NAMES"
+	exit 1
+else
+	echo "All file names comply!"
+	exit 0
+fi
