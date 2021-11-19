@@ -161,6 +161,7 @@ _(Michael Tucek)_
 - Cleanup tests/linkchecker.whitelist and fix off-by-1 bug of the counter in the scripts/link-checker script (increase counter before printf) _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
+- Added more test cases for the keyCopy function _(@muskater)_
 
 ## Packaging
 
