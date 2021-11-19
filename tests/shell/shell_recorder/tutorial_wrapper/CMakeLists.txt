@@ -13,7 +13,7 @@ add_msr_test (kdb_meta_show "${CMAKE_SOURCE_DIR}/doc/help/kdb-meta-show.md" REQU
 
 if (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 	message (STATUS "Excluding Markdown Shell Recorder test for `kdb find`, since GCC ${CMAKE_CXX_COMPILER_VERSION} "
-			"does not support regular expressions properly")
+		"does not support regular expressions properly")
 else (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
 	add_msr_test (kdb_find "${CMAKE_SOURCE_DIR}/doc/help/kdb-find.md" REQUIRED_PLUGINS sync)
 endif (CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
@@ -52,9 +52,16 @@ add_msr_test (readme_msr "${CMAKE_SOURCE_DIR}/tests/shell/shell_recorder/tutoria
 add_msr_test (issue_template "${CMAKE_SOURCE_DIR}/.github/ISSUE_TEMPLATE.md")
 add_msr_test (mmapstorage_shelltests "${CMAKE_SOURCE_DIR}/src/plugins/mmapstorage/shelltests.md" REQUIRED_PLUGINS mmapstorage)
 add_msr_test (cache_shelltests "${CMAKE_SOURCE_DIR}/src/plugins/cache/shelltests.md" REQUIRED_PLUGINS cache mmapstorage dump resolver
-												      multifile)
+	multifile)
 
 # ~~~
 # Only works with super user privileges, since it writes to `/etc/hosts`:
 # add_msr_test (tutorial_mount "${CMAKE_SOURCE_DIR}/doc/tutorials/mount.md")
 # ~~~
+
+# ==========
+# = Tutorials =
+# ==========
+
+# tutorials get added by TEST_README in add_plugin to test if all tutorials work (also the ones not yet included) uncomment: foreach (PLUGIN
+# ${ADDED_DIRECTORIES}) add_msr_test (${PLUGIN} "${CMAKE_SOURCE_DIR}/src/plugins/${PLUGIN}/README.md") endforeach (PLUGIN)

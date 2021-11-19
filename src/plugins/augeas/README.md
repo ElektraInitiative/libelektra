@@ -42,7 +42,13 @@ In order to mount the hosts file with the augeas plugin, issue the
 following command:
 
 ```sh
-kdb mount /etc/hosts system:/hosts augeas lens=Hosts.lns
+sudo kdb mount /etc/hosts system:/tests/hosts augeas lens=Hosts.lns
+```
+
+And to unmount the file run:
+
+```sh
+sudo kdb umount system:/tests/hosts
 ```
 
 The value of the plugin configuration option "lens" should be the
@@ -57,13 +63,20 @@ Note that, without configuring the plugin to use a lens, the plugin
 will print an error message on the first usage:
 
 ```sh
-kdb ls system:/hosts
-#> Sorry, module storage issued the error C03100:
-#> Validation Syntactic: Lens not found
+sudo kdb mount /etc/hosts system:/tests/hosts augeas #The lens is missing here!
+kdb ls system:/tests/hosts
+# RET: 5
+# ERROR: *C01200*
 ```
 
 This happens because the plugin does not know which lens it should use to read and write the configuration.
 For that reason, the lens configuration option was supplied together with the mount command.
+
+And again to unmount the `hosts` file simply run:
+
+```sh
+sudo kdb umount system:/tests/hosts
+```
 
 ## Restrictions
 
@@ -73,15 +86,19 @@ Currently no Augeas lens supports values for inner nodes.
 Unfortunately no validation plugin exists yet that would prevent such modifications early:
 
 ```sh
-kdb set system:/hosts/1 somevalue
-#> The command set terminated unsuccessfully with the info: Error (#85) occurred!
-#> Description: an Augeas error occurred
-#> Module: storage
-#> At: /path/augeas.c:166
-#> an Augeas error occurred: Malformed child node '1'
+sudo kdb mount /etc/hosts system:/tests/hosts augeas lens=Hosts.lns
+kdb set system:/tests/hosts/1 somevalue
+# RET: 5
+# ERROR: *C01100*
 ```
 
 The operation simply fails with an undescriptive error.
+
+Finally, to unmount the `hosts` file simply run:
+
+```sh
+sudo kdb umount system:/tests/hosts
+```
 
 ### Leaky Abstraction of Order
 

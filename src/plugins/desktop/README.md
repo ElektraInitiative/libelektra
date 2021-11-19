@@ -29,13 +29,13 @@ sudo kdb mount --resolver noresolver none system:/info/desktop desktop
 
 or it is already included if you already mounted the info plugins with:
 
-```sh
-sudo kdb mount-info
+```
+kdb mount-info
 ```
 
 Then you can get desktop information via:
 
-```sh
+```
 kdb get system:/info/desktop
 ```
 
@@ -56,3 +56,11 @@ Currently the detection relies on environment variables,
 which will not work in setuid or otherwise secured binaries.
 Please open a bug report if the detection does not work for you:
 https://issues.libelektra.org
+
+## Unmount the plugin
+
+To unmount the plugin you can run
+
+```sh
+sudo kdb umount system:/info/desktop
+```

@@ -17,7 +17,7 @@ The package is called `libelektra5-experimental`.
 Suppose you have a plugin bar that exports the function `foo(Key *k)`.
 Then you can mount:
 
-```sh
+```
 kdb mount file.dump /example/iterate dump iterate when=bar foo Key
 ```
 
