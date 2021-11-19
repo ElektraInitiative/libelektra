@@ -155,6 +155,7 @@ _(Michael Tucek)_
 
 - disable Rust from buster _(Markus Raab)_
 - <<TODO>>
+- Cleanup tests/linkchecker.whitelist and fix off-by-1 bug of the counter in the scripts/link-checker script (increase counter before printf) _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 
