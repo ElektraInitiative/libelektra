@@ -179,9 +179,9 @@ TEST (GetEnv, ArgvParamVersion)
 
 	ckdb::Key * kdb_version = ksLookupByName (elektraConfig, "system:/elektra/version/constants/KDB_VERSION", 0);
 
-	EXPECT_EQ (getenv ("version"), "Elektra getenv is active\n" +
-		std::string ("KDB_VERSION: ") + std::string (keyString (kdb_version)) +
-		std::string ("\nKDB_GETENV_VERSION: ") + KDB_GETENV_VERSION);
+	EXPECT_EQ (getenv ("version"), "Elektra getenv is active\n" + std::string ("KDB_VERSION: ") +
+					       std::string (keyString (kdb_version)) + std::string ("\nKDB_GETENV_VERSION: ") +
+					       KDB_GETENV_VERSION);
 
 	elektraClose ();
 }
