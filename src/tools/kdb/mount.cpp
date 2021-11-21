@@ -59,16 +59,6 @@ void MountCommand::outputMtab (Cmdline const & cl)
 		if (cl.second)
 		{
 			std::cout << it->mountpoint;
-			if (all)
-				std::cout << " with name ";
-			else
-				std::cout << delim << std::flush;
-		}
-
-		// TODO: remove next version
-		if (cl.third)
-		{
-			std::cout << it->name;
 			std::cout << delim << std::flush;
 		}
 	}
@@ -87,7 +77,6 @@ void MountCommand::processArguments (Cmdline const & cl)
 		cout << "Note that nothing will be made persistent" << endl;
 		cout << "until you say y at the very end of the mounting process" << endl;
 		cout << endl;
-		cout << "Please provide a unique name." << endl;
 	}
 }
 
