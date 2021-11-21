@@ -151,6 +151,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - <<TODO>>
 - <<TODO>>
+- Remove names from kdb mount _(@JakobWonisch)_
 
 ## Scripts
 
