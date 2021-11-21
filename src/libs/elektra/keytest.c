@@ -487,11 +487,6 @@ elektraKeyFlags keyCompare (const Key * key1, const Key * key2)
 	ssize_t size1 = keyGetValueSize (key1);
 	ssize_t size2 = keyGetValueSize (key2);
 
-	if (memcmp (keyValue (comment1), keyValue (comment2), keyGetValueSize (comment1)))
-	{
-		ret |= KEY_COMMENT;
-	}
-
 	if (keyCompareMeta (key1, key2)) ret |= KEY_META;
 
 	if (nsize1 != nsize2)
