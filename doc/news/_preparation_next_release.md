@@ -65,6 +65,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### uname
+
+- Minor improvement of source code readability in uname.c _(@lawli3t)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
