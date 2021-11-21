@@ -98,7 +98,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Added else error to core for elektraGetCheckUpdateNeeded _(Aydan Ghazani @4ydan)_
 
 - Fix check for valid namespace in keyname creation _(@JakobWonisch)_
-- 
+
 ### <<Library1>>
 
 - <<TODO>>
