@@ -480,8 +480,6 @@ elektraKeyFlags keyCompare (const Key * key1, const Key * key2)
 	ssize_t nsize2 = keyGetNameSize (key2);
 	const char * name1 = keyName (key1);
 	const char * name2 = keyName (key2);
-	const Key * comment1 = keyGetMeta (key1, "comment");
-	const Key * comment2 = keyGetMeta (key2, "comment");
 	const void * value1 = keyValue (key1);
 	const void * value2 = keyValue (key2);
 	ssize_t size1 = keyGetValueSize (key1);
