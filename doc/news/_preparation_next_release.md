@@ -160,6 +160,7 @@ _(Michael Tucek)_
 - disable Rust from buster _(Markus Raab)_
 - <<TODO>>
 - Cleanup tests/linkchecker.whitelist and fix off-by-1 bug of the counter in the scripts/link-checker script (increase counter before printf) _(Florian Lindner @flo91)_
+- add tests the env binding _(Ivaylo Ivanov)_
 - <<TODO>>
 - <<TODO>>
 - Added more test cases for the keyCopy function _(@muskater)_
