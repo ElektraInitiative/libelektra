@@ -5,28 +5,30 @@
 For the base system you only need [cmake3](https://cmake.org/cmake/help/v3.0/),
 [git](https://git-scm.com/), a C99 compiler and essential build tools
 (make and some standard Unix tools; alternatively ninja and
-clang are also supported but not described here):
+clang are also supported but not described here). Those can be installed as follows:
 
-```sh
-sudo apt-get install cmake git build-essential
-```
+- on APT-based systems (Ubuntu, Debian):
 
-Or on RPM based systems (CentOS):
+  ```sh
+  sudo apt-get install cmake git build-essential
+  ```
 
-```sh
-sudo dnf install -y cmake git gcc-c++ make
-```
+- on RPM-based systems (CentOS, Red Hat Enterprise Linux, Oracle Linux):
 
-Or on macOS, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake to complete the basic requirements:
+  ```sh
+  sudo yum install -y cmake git gcc-c++ make
+  ```
 
-```sh
-brew install cmake git
-```
+- on macOS, most of the build tools can be obtained by installing Xcode (from the App Store). Other required tools may be installed using [brew](http://brew.sh/). First install brew as described on their website. Then issue the following command to get cmake and git in order to complete the basic requirements:
+
+  ```sh
+  brew install cmake git
+  ```
 
 ## Quick Guide
 
 Run the following commands to compile Elektra with non-experimental
-parts where your system happens to fulfil the dependences (continue
+parts where your system happens to fulfill the dependencies (continue
 reading the rest of the document for details about these steps):
 
 ```sh
@@ -40,7 +42,7 @@ cmake --build build -- -j5
 cmake --build build --target run_nokdbtests # optional: run tests
 ```
 
-The last line only runs tests not writing into your system.
+The last line only runs tests without writing onto your system.
 See [TESTING](/doc/TESTING.md) for how to run more tests.
 Afterwards you can use `sudo make install && sudo ldconfig` to install Elektra.
 See [INSTALL](/doc/INSTALL.md) for more information about
@@ -52,56 +54,65 @@ installation of self-compiled Elektra (such as how to uninstall it).
 > If they are not available, some of the functionality gets disabled automatically.
 > The core of Elektra never depends on other libraries.
 
-To build documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn-ng](https://github.com/apjanke/ronn-ng/blob/master/INSTALLING.md):
+### Documentation dependencies
 
-```sh
-apt-get install doxygen graphviz
-gem install ronn-ng -v 0.10.1.pre1
-```
+To build the documentation you need doxygen (we recommend 1.8.8+), graphviz and [ronn-ng](https://github.com/apjanke/ronn-ng/blob/master/INSTALLING.md). These can be installed as follows:
 
-Or on RPM based systems:
+- on APT-based systems (Ubuntu, Debian):
 
-```sh
-sudo yum install -y doxygen docbook-style-xsl graphviz ruby
-gem install ronn-ng -v 0.10.1.pre1
-```
+  ```sh
+  apt-get install doxygen graphviz
+  gem install ronn-ng -v 0.10.1.pre1
+  ```
 
-Or on macOS using brew:
+- on RPM-based systems (CentOS, Red Hat Enterprise Linux, Oracle Linux):
 
-```sh
-brew install doxygen graphviz
-brew install ruby # in case ruby is not already installed
-gem install ronn-ng -v 0.10.1.pre1
-```
+  ```sh
+  sudo yum install -y doxygen docbook-style-xsl graphviz ruby
+  gem install ronn-ng -v 0.10.1.pre1
+  ```
 
-To build PDF documentation you need `pdflatex` with
+- on macOS using brew:
 
-```sh
-apt-get install pdflatex \
-        texlive-fonts-recommended texlive-fonts-extra \
-        texlive-latex-recommended texlive-latex-extra \
-        texlive-math-extra
-```
+  ```sh
+  brew install doxygen graphviz
+  brew install ruby # in case ruby is not already installed
+  gem install ronn-ng -v 0.10.1.pre1
+  ```
+
+To build PDF documentation you need `pdflatex`.
+You can install it as follows:
+
+- on APT-based systems (Ubuntu, Debian):
+
+  ```sh
+  apt-get install pdflatex \
+          texlive-fonts-recommended texlive-fonts-extra \
+          texlive-latex-recommended texlive-latex-extra \
+          texlive-math-extra
+  ```
+
+### Plugin dependencies
 
 For dependencies of plugins, please refer to the [README.md](https://www.libelektra.org/plugins/readme) of the respective plugin.
 
 A small subset of build dependencies to get you started:
 
-- for CentOS:
+- on RPM-based systems (CentOS, Red Hat Enterprise Linux, Oracle Linux):
 
-```sh
-sudo yum install -y libdb-devel GConf2-devel libxml2-devel yajl-devel   \
-libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
-java-1.8.0-openjdk-devel jna ruby-devel byacc
-```
+  ```sh
+  sudo yum install -y libdb-devel GConf2-devel libxml2-devel yajl-devel   \
+  libcurl-devel augeas-devel libgit2-devel lua-devel swig python34-devel python-devel \
+  java-1.8.0-openjdk-devel jna ruby-devel byacc
+  ```
 
-- for Ubuntu:
+- on APT-based systems (Ubuntu, Debian):
 
-```sh
-sudo apt install -y libxerces-c-dev libxml2-dev libyajl-dev \
-libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
-dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison
-```
+  ```sh
+  sudo apt install -y libxerces-c-dev libxml2-dev libyajl-dev \
+  libcurl4-gnutls-dev libaugeas-dev git git-buildpackage dh-lua liblua5.2-dev \
+  dh-python python3-all python3-dev default-jdk libjna-java ruby-dev flex bison
+  ```
 
 ## Preparation
 
@@ -190,7 +201,7 @@ same fashion for `BINDINGS` and `TOOLS`.
 
 Read about available plugins [here](/src/plugins/).
 
-Because the core of elektra is minimal, plugins are needed to
+Because the core of Elektra is minimal, plugins are needed to
 actually read and write to configuration files (_storage plugins_),
 commit the changes (_resolver plugins_, also takes care about how
 the configuration files are named) and also do many other
@@ -305,7 +316,7 @@ The resolver for example distinguish between 3 different kind of flags:
 -DPLUGINS="resolver_baseflags_userflags_systemflags"
 ```
 
-Following baseflags are available:
+The following base flags are available:
 
 - `c` for debugging conflicts
 - `f` for enabling file locking

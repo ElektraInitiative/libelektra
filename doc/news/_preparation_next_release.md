@@ -142,7 +142,7 @@ _(Michael Tucek)_
 ## Documentation
 
 - <<TODO>>
-- <<TODO>>
+- Improved compilation documentation _(Ivaylo Ivanov)_
 - Start making Elektra [reuse](https://reuse.software) compliant. _(Markus Raab)_
 - Fix Links in [README.md](/README.md) and small clarifications. _(Markus Raab)_
 - Remove previous authors. _(Markus Raab)_
