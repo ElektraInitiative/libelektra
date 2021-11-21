@@ -45,5 +45,15 @@ public class HelloElektra {
 
     Key n = Key.create("user:/weird\\/name///\\\\/is/\no/_\\\\problem");
     n.keyNameIterator().forEachRemaining(s -> System.out.println("itername: " + s));
+
+    Key cutpoint = Key.create("user:/cutpoint"),
+    	a = Key.create("user:/cutpoint/hello", "hiback"),
+     	b = Key.create("user:/cutpoint/hello2", "hellotoo"),
+     	c = Key.create("user:/different/hello", "hellothere");
+	KeySet whole = KeySet.create(a, b, c),
+		cut = whole.cut(cutpoint);
+
+	a.setString("hibackagain");
+	b.setBoolean(false);
   }
 }
