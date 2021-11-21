@@ -104,6 +104,16 @@ static void test_keyNewWrongName (void)
 	printf ("Test key creation with wrong names\n");
 	Key * k = keyNew ("systemx:/hello", KEY_END);
 	succeed_if (k == NULL, "key with wrong name could be created");
+	k = keyNew ("usx:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+	k = keyNew ("usxx:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+	k = keyNew ("abc:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+	k = keyNew ("use:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+	k = keyNew ("spexc:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
 }
 
 
