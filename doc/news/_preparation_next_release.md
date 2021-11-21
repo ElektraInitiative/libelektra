@@ -97,6 +97,8 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Improve `keyReplacePrefix` by using new `keyCopy` function instead of manually copying the name of the `Key` _(@lawli3t)_
 - Added else error to core for elektraGetCheckUpdateNeeded _(Aydan Ghazani @4ydan)_
 
+- Fix check for valid namespace in keyname creation _(@JakobWonisch)_
+- 
 ### <<Library1>>
 
 - <<TODO>>

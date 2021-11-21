@@ -474,12 +474,12 @@ char * elektraVFormat (const char * format, va_list arg_list)
 elektraNamespace elektraReadNamespace (const char * namespaceStr, size_t len)
 {
 	if (len == 0) return KEY_NS_NONE;
-	if (len == strlen("system") && strncmp (namespaceStr, "system", len) == 0) return KEY_NS_SYSTEM;
-	if (len == strlen("user") && strncmp (namespaceStr, "user", len) == 0) return KEY_NS_USER;
-	if (len == strlen("dir") && strncmp (namespaceStr, "dir", len) == 0) return KEY_NS_DIR;
-	if (len == strlen("proc") && strncmp (namespaceStr, "proc", len) == 0) return KEY_NS_PROC;
-	if (len == strlen("spec") && strncmp (namespaceStr, "spec", len) == 0) return KEY_NS_SPEC;
-	if (len == strlen("meta") && strncmp (namespaceStr, "meta", len) == 0) return KEY_NS_META;
-	if (len == strlen("default") && strncmp (namespaceStr, "default", len) == 0) return KEY_NS_DEFAULT;
+	if (len == strlen ("system") && strncmp (namespaceStr, "system", len) == 0) return KEY_NS_SYSTEM;
+	if (len == strlen ("user") && strncmp (namespaceStr, "user", len) == 0) return KEY_NS_USER;
+	if (len == strlen ("dir") && strncmp (namespaceStr, "dir", len) == 0) return KEY_NS_DIR;
+	if (len == strlen ("proc") && strncmp (namespaceStr, "proc", len) == 0) return KEY_NS_PROC;
+	if (len == strlen ("spec") && strncmp (namespaceStr, "spec", len) == 0) return KEY_NS_SPEC;
+	if (len == strlen ("meta") && strncmp (namespaceStr, "meta", len) == 0) return KEY_NS_META;
+	if (len == strlen ("default") && strncmp (namespaceStr, "default", len) == 0) return KEY_NS_DEFAULT;
 	return KEY_NS_NONE;
 }
