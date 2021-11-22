@@ -20,7 +20,7 @@
  * - to have a list of all loaded modules
  * - writing module loaders should be easy
  * - handle and report errors well
- * - avoid loading of modules multiple times (maybe OS can't handle that well)
+ * - avoid loading of modules multiple times (maybe the OS can't handle that well)
  * - hide the OS dependent handle inside a Key (handle is needed to
  *   close module afterwards)
  */
@@ -40,6 +40,7 @@
  * @return -1 on error
  * @return >=0 otherwise
  * @ingroup modules
+ * @post the key system:/elektra/modules is added in case of success
  */
 int elektraModulesInit (KeySet * modules, Key * error)
 {
@@ -69,7 +70,7 @@ int elektraModulesInit (KeySet * modules, Key * error)
  * report the error to the error key and return with 0.
  *
  * @pre the name is not null, empty and has at least one character
- *      different to /. It is suitable to be used as keyAddBaseName
+ *      different to '/'. It is suitable to be used as keyAddBaseName
  *      without any further error checking.
  *
  * @param modules where to get existing modules from
@@ -104,6 +105,7 @@ elektraPluginFactory elektraModulesLoad (KeySet * modules, const char * name, Ke
  * @return -1 on error
  * @return >=0 otherwise
  * @ingroup modules
+ * @post all error information is stored in the key 'error'
  */
 int elektraModulesClose (KeySet * modules, Key * error)
 {

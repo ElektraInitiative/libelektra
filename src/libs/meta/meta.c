@@ -280,11 +280,13 @@ int elektraKeyCmpOrder (const Key * ka, const Key * kb)
 /**
  * creates an metadata array or appends another element to an existing metadata array
  * e.g.
+ * @code
  * Key *key = keyNew("user:/test", KEY_END);
  * elektraMetaArrayAdd(key, "test", "val0");
- * key now has "test/#0" with value "val0" as metadata
+ * // key now has "test/#0" with value "val0" as metadata
  * elektraMetaArrayAdd(key, "test", "val1");
- * appends "test/#1" with value "val1" to key
+ * // appends "test/#1" with value "val1" to key
+ * @endcode
  *
  * @param key the key the metadata should be added to
  * @param metaName the name of the metakey array parent
@@ -331,10 +333,10 @@ elektraMetaArrayToKS(
  * returns a `KeySet` containing the keys `dep` with value `#1`, `"dep/#0"` with value `"/b"` and
  * `"dep/#1"` with value `"/c"`.
  *
- * If no meta key array is found, null is returned.
+ * If no metakey array is found, null is returned.
  * The returned `KeySet` must be freed with `ksDel`
  *
- * @returns a keyset containing all the metakeys of the metakey array
+ * @returns a keyset containing all the metakeys of the metakey array or null if no metakey array is found
  * @param key the key containing the metakey array
  * @param metaName the name of the metakey array parent
  */

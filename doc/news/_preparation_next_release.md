@@ -177,6 +177,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - explained in the docker test tutorial how to run the container with podman instead of docker. _(@muskater)_
 - Add a new example on how to use keyCopy. _(@muskater)_
+- Added some improvements to the core api documentation
 - <<TODO>>
 - Added verification to the "Arrays" tutorial _(Ivaylo Ivanov)_
 - Remove deprecated `type=int` from `.ini` files _(Ivaylo Ivanov)_
