@@ -180,7 +180,7 @@ sudo kdb umount /tests/csv
 
 ```
 
-## Array meta-key
+## Array metakey
 
 ```sh
 kdb mount config.csv user:/tests/csvstorage csvstorage
