@@ -179,6 +179,7 @@ _(Michael Tucek)_
 - Add a new example on how to use keyCopy. _(@muskater)_
 - <<TODO>>
 - Added verification to the "Arrays" tutorial _(Ivaylo Ivanov)_
+- Remove deprecated `type=int` from `.ini` files _(Ivaylo Ivanov)_
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 - Added debian buster tutorial to python bindings tutorial _(@4ydan)_
 - Fixed some typos in the "namespaces.md" documentation _(@muskater)_
@@ -190,7 +191,7 @@ _(Michael Tucek)_
 - disable Rust from buster _(Markus Raab)_
 - <<TODO>>
 - Cleanup tests/linkchecker.whitelist and fix off-by-1 bug of the counter in the scripts/link-checker script (increase counter before printf) _(Florian Lindner @flo91)_
-- add tests the env binding _(Ivaylo Ivanov)_
+- add tests for the intercept/env binding _(Ivaylo Ivanov)_
 - add and improve checks in scripts/sed _(Florian Lindner @flo91)_
 - change the cpp Key-class (key.hpp) to check the return values of the called c-functions
   and throw exceptions if values that indicate an error are returned + add tests that
