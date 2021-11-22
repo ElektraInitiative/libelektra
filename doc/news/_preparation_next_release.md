@@ -237,6 +237,10 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić)_
 - <<TODO>>
 
+## Other
+
+- Added missing licenses and license references _(Ivaylo Ivanov)_
+
 ## Outlook
 
 We are currently working on following topics:
