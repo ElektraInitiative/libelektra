@@ -177,6 +177,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - explained in the docker test tutorial how to run the container with podman instead of docker. _(@muskater)_
 - Add a new example on how to use keyCopy. _(@muskater)_
+- Added some improvements to the core api documentation
 - <<TODO>>
 - Added verification to the "Arrays" tutorial _(Ivaylo Ivanov)_
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
