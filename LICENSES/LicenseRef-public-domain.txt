@@ -1,0 +1,5 @@
+This is a trivially modified public domain hash library, lookup3.c, from:
+ http://burtleburtle.net/bob/hash/
+
+You can use this free for any purpose.  It's in the public domain.
+It has no warranty.

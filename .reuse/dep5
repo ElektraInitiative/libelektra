@@ -5,7 +5,7 @@ Source: https://www.libelektra.org/ftp/elektra/releases/
 
 Files: *
 Copyright: Elektra contributors (https://www.libelektra.org/developers/authors)
-License: BSD-3-clause
+License: LicenseRef-BSD-3-clause
 
 Files: scripts/cmake/Modules/DownloadProject*
 Copyright: 2015 Craig Scott
@@ -19,17 +19,17 @@ Copyright: 2006 Alexander Neundorf <neundorf@kde.org>
            2008 Kevin Kofler <kevin.kofler@chello.at>
            2010 Pino Toscano <pino@kde.org>
            2013 Martin Briza <mbriza@redhat.com>
-License: BSD-3-clause-cmake
+License: LicenseRef-BSD-3-clause-cmake
 
 Files: scripts/cmake/Modules/FindDiscount.cmake
 Copyright: 2013-2013 Lars Baehren <lbaehren@gmail.com>
-License: BSD-2-clause-discount
+License: LicenseRef-BSD-2-clause-discount
 
 Files: scripts/cmake/Modules/FindLua.cmake
        scripts/cmake/Modules/FindPython2Interp.cmake
        scripts/cmake/Modules/FindPython2Libs.cmake
 Copyright: 2000-2021 Kitware, Inc. and Contributors
-License: BSD-3-clause-cmake-new
+License: LicenseRef-BSD-3-clause-cmake-new
 
 Files: scripts/cmake/Modules/FindGLib.cmake
 Copyright: 2016 Evan Nemerson <evan@nemerson.com>
@@ -41,12 +41,7 @@ License: Zlib
 
 Files: src/plugins/ni/nickel-1.1.0/src/hash.c
 Copyright: 2006 Bob Jenkins
-License: public-domain
- This is a trivially modified public domain hash library, lookup3.c, from:
-   http://burtleburtle.net/bob/hash/
- .
- You can use this free for any purpose.  It's in the public domain.
- It has no warranty.
+License: LicenseRef-public-domain
 
 Files: src/tools/website/resources/assets/skin/base/util/space.less
 Copyright: 2015 Ömer Aslanbakan
@@ -74,7 +69,7 @@ License: MIT
 
 Files: src/tools/qt-gui/src/markdownconverter/*
 Copyright: 2013 Christian Loose
-License: BSD-3-clause-markdownconverter
+License: LicenseRef-BSD-3-clause-markdownconverter
 
 Files: scripts/dev/realpath
 Copyright: 2014 Michael Kropat
@@ -92,7 +87,7 @@ License: BSL-1.0
 Files: src/libs/ease/sha-256.c
 	   src/libs/ease/sha-256.h
 Copyright: 2021 Alain Mosnier
-License: BSD-0-clause
+License: LicenseRef-BSD-0-clause
 
 Files: src/bindings/jna/gradlew
        src/bindings/jna/gradlew.bat
@@ -100,7 +95,7 @@ Files: src/bindings/jna/gradlew
 Copyright: 2015 the original author or authors
 License: Apache-2.0
 
-License: BSD-0-clause
+License: LicenseRef-BSD-0-clause
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted.
 THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
 WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS.
@@ -108,7 +103,7 @@ IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CON
 OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
 NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-License: BSD-3-clause
+License: LicenseRef-BSD-3-clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
  .
@@ -293,7 +288,7 @@ License: Apache-2.0
  On Debian GNU/Linux system you can find the complete text of the
  Apache-2.0 license in `/usr/share/common-licenses/Apache-2.0'
 
-License: BSD-3-clause-cmake
+License: LicenseRef-BSD-3-clause-cmake
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -317,7 +312,7 @@ License: BSD-3-clause-cmake
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-License: BSD-2-clause-discount
+License: LicenseRef-BSD-2-clause-discount
  Redistribution and use in source and binary forms, with or without modification,
  are permitted provided that the following conditions are met:
  .
@@ -338,7 +333,7 @@ License: BSD-2-clause-discount
  OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-License: BSD-3-clause-cmake-new
+License: LicenseRef-BSD-3-clause-cmake-new
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
@@ -390,7 +385,7 @@ License: BSD-3-clause-inih
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-License: BSD-3-clause-markdownconverter
+License: LicenseRef-BSD-3-clause-markdownconverter
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are
  met:
@@ -418,3 +413,10 @@ License: BSD-3-clause-markdownconverter
  STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
+
+License: LicenseRef-public-domain
+ This is a trivially modified public domain hash library, lookup3.c, from:
+   http://burtleburtle.net/bob/hash/
+ .
+ You can use this free for any purpose.  It's in the public domain.
+ It has no warranty.
