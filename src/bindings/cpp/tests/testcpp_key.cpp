@@ -337,7 +337,7 @@ TEST (key, exceptions)
 	}
 	catch (kdb::KeyInvalidName const &)
 	{
-		succeed_if (test.getName () == "/", "name not unchanged");
+		succeed_if (test.getName () == "/", "name not unchanged after trying to set invalid name to key");
 	}
 
 	test.setName ("user:/name");
@@ -349,7 +349,7 @@ TEST (key, exceptions)
 	}
 	catch (kdb::KeyInvalidName const &)
 	{
-		succeed_if (test.getName () == "user:/name", "name not unchanged");
+		succeed_if (test.getName () == "user:/name", "name not unchanged after trying to set invalid name to key");
 	}
 
 	try
@@ -358,7 +358,7 @@ TEST (key, exceptions)
 	}
 	catch (kdb::KeyInvalidName const &)
 	{
-		succeed_if (test.getName () == "user:/name", "name not unchanged");
+		succeed_if (test.getName () == "user:/name", "name not unchanged after trying to add invalid name to key");
 	}
 
 	Key test1;
