@@ -847,7 +847,6 @@ if (result >= 0)
  *
  * @param ks the keyset to work with
  * @param key the key to check
- * @param options lookup options to use
  * @return position where the key is (>=0) if the key was found
  * @return -insertpos -1 (< 0) if the key was not found
  *    so to get the insertpos simple do: -insertpos -1
