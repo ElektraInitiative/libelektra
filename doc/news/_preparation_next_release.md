@@ -158,6 +158,7 @@ _(Michael Tucek)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
 - Improve wording and formatting of DESIGN.md _(@lawli3t)_
 - <<TODO>>
+- Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 
 ## Tests
 
