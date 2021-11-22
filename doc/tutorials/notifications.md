@@ -483,7 +483,7 @@ are polled for changes by the application.
 
 This guideline limits the use of the notification API to notifications about
 configuration changes.
-There are better suited techiques for different use cases.
+There are better suited techniques for different use cases.
 Applications should not keep track of changes and change their behavior on
 certain conditions.
 

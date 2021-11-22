@@ -5,7 +5,7 @@
 `kdb complete [path]`
 
 Where `path` is the path for which the user would like to receive completion suggestion.
-If `path` is not specified, it will show every possible completion. Its synonymous
+If `path` is not specified, it will show every possible completion. It's synonymous
 to calling `kdb complete ""`.
 
 ## DESCRIPTION

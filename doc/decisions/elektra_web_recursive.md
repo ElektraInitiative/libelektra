@@ -28,7 +28,7 @@ Managing the hierarchy in a single clusterd instance.
 ## Rationale
 
 Accessing clusterd instances from other clusterd instances would mean that there
-also needs to be some authentication between those, complicating the set up
+also needs to be some authentication between those, complicating the set-up
 process. Furthermore, it would not be as easy to deal with conflicts, as the
 client might connect to a clusterd instance that belongs to another clusterd, in
 which case it would not be aware of the constraints of the parent clusterd

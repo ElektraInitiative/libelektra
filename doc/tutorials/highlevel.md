@@ -61,7 +61,7 @@ resort, but still preserves the guarantee that `elektraGet*` calls won't fail. I
 
 ## Invoking the code-generator
 
-The code-generator is a very powerful and flexible tool and has many options to tweak its output. If you want to know more about how to setup
+The code-generator is a very powerful and flexible tool and has many options to tweak its output. If you want to know more about how to set up
 everything just the way you want to, take a look at the man-pages [`kdb-gen(1)`](../help/kdb-gen.md) and
 [`kdb-gen-highlevel(1)`](../help/kdb-gen-highlevel.md).
 
@@ -117,7 +117,7 @@ First there is some boilerplate, including the copyright header, include stateme
 #define ELEKTRA_TAG_MYFLOATARRAY Myfloatarray
 ```
 
-Next we see all of the 'tag macros' used to refer to config values. These are essentially just aliases, but they allow for some flexibility
+Next we see all the 'tag macros' used to refer to config values. These are essentially just aliases, but they allow for some flexibility
 in how we generate the names of the `static inline` functions further down. You should always refer to your config values via these macros,
 even if they are just aliases. This is because we might have to change the naming scheme for the functions, but we will try to keep the tag
 macros unchanged.
@@ -212,7 +212,7 @@ if (rc == 1)
 }
 ```
 
-Next it is recommended, you change the default handler for fatal errors. By default we just call `exit (EXIT_FAILURE)`, since we don't know
+Next it is recommended, you change the default handler for fatal errors. By default, we just call `exit (EXIT_FAILURE)`, since we don't know
 how you log your errors and what cleanup may be needed.
 
 ```c
@@ -291,7 +291,7 @@ elektraSetV (elektra, ELEKTRA_TAG_MYFLOATARRAY, 2.718282f, &error, 2);
 Note that `elektraSetV` takes the `ElektraError` argument before the variable arguments, while in `ELEKTA_SET` the error is always the last
 argument. This is because of limitations in the C macro system.
 
-There is not setter for array sizes. Since Elektra's low-level part supports discontinuous arrays, we simply change the array size whenever
+There is no setter for array sizes. Since Elektra's low-level part supports discontinuous arrays, we simply change the array size whenever
 necessary, if an array element setter is called. However, the high-level API has no support for discontinuous arrays, so take care not to
 create holes in your arrays, if you want to iterate over them. Remember, accessing non-existent keys (and this includes array elements) is a
 fatal error.
@@ -349,7 +349,7 @@ sudo kdb mount -R noresolver /etc/myapp_spec.eqd "spec:/sw/example/myapp/#0/curr
 The command above assumes that you also used the `kdb gen` command from [above](#invoking-the-code-generator) and that the `myapp` executable
 is located in `$PWD`.
 
-> **Note:** Because of a limitation in `specload`, we have to use the `noresolver` resolver. This also means that the the path to the config
+> **Note:** Because of a limitation in `specload`, we have to use the `noresolver` resolver. This also means that the path to the config
 > file (here `/etc/myapp_spec.eqd`) has to be absolute. Otherwise it will always be relative to the current working directory in which `kdb`
 > or your application was executed. The file _should not_ exist when calling `kdb mount`. `specload` works different to other plugins. The
 > given config file is only used, if the user makes changes to the specification via `kdb set`.

@@ -10,7 +10,7 @@ Let us add some keys to the database. To add a key we can use `kdb`, the _key da
 kdb set <key> <value>
 ```
 
-Now add the the key **/a** with the Value **Value 1** and the key **/b/c** with the Value **Value 2**:
+Now add the key **/a** with the Value **Value 1** and the key **/b/c** with the Value **Value 2**:
 
 ```sh
 kdb set /a 'Value 1'
@@ -56,7 +56,7 @@ Every key in Elektra belongs to one of these namespaces:
 All namespaces save their keys in a _separate hierarchical structure_ from the other namespaces.
 
 But when we set the keys **/a** and **/b/c** before we didn't provide a namespace.
-So I hear you asking, if every key has to belong to a namespace, where are the keys?
+So I hear you asking if every key has to belong to a namespace, where are the keys?
 They are in the _user_ namespace, as you can verify with:
 
 ```sh
@@ -73,7 +73,7 @@ At this point the key database should have this structure:
 
 ### Cascading Keys
 
-Another question you may ask yourself now is, what happens if we lookup a key without providing a namespace. So let us retrieve the key **/b/c** with the -v flag in order to make _kdb_ more talkative.
+Another question you may ask yourself now is, what happens if we look up a key without providing a namespace. So let us retrieve the key **/b/c** with the -v flag in order to make _kdb_ more talkative.
 
 ```sh
 kdb get -v /b/c

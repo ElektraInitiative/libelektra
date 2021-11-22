@@ -31,7 +31,7 @@ with `ksLookup` using a cascading lookup key.
 - very simple rule, easy to understand, easy to follow
 - provides consistent behavior (`spec` is always honored)
 - `ksLookup` is quite cheap as it has only a few simple loops,
-  only one allocation and less then 10% of CPU time
+  only one allocation and less than 10% of CPU time
   in profiling, even in very simple applications with
   many lookups.
 

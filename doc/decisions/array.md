@@ -46,7 +46,7 @@ e.g. even `#4` would be a malformed array.
 
 With the metadata `array` in `spec:/` the `spec` plugin will add the
 `array` marker with the correct length.
-This needs to be happen early, so that plugins can rely on having
+This needs to be happening early, so that plugins can rely on having
 correct arrays.
 
 For example:
@@ -61,7 +61,7 @@ user:/myarray/#1
 
 Here, the `spec` plugin would add `array=#1` to `user:/myarray` if it was not there before.
 
-To lookup an array, first do `ksLookupByName (ks, "/myarray", 0)` on the parent.
+To look up an array, first do `ksLookupByName (ks, "/myarray", 0)` on the parent.
 With the last index you get from its metadata `array`, iterate over the children.
 A cascading lookup on every individual child is also needed to make sure that overrides on individual
 elements are respected.
@@ -90,7 +90,7 @@ The `spec` plugin should check if it is a valid array, i.e.:
 ## Rationale
 
 - Is very similar to `binary` metadata.
-- The key alone suffices to know if its an array
+- The key alone suffices to know if it's an array
 - One can distinguish an array with keys that are called by chance e.g. `#0`
 
 ## Implications

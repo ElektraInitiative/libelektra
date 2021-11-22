@@ -109,7 +109,7 @@ case 'r': /* red */
 }
 ```
 
-Of course this version also has its own problems. Take for example the the enum with the values: `blue`, `blueish` and `brown`. With
+Of course this version also has its own problems. Take for example the enum with the values: `blue`, `blueish` and `brown`. With
 `enumConv=switch` this would generate the following code:
 
 ```c
@@ -188,7 +188,7 @@ Similar to enums, you can customise the generated struct via additional metadata
     Don't forget to include the needed header in the `headers` parameter.
   - `gen/struct/alloc` (values `0`, `1`) sets whether the struct is _allocating_. This changes how the getter works and also has some other
     implications. By default structs are non-allocating.
-  - `gen/struct/depth` sets the how many levels below the `type=struct` key, we will include in the generated struct. Note that keys ending
+  - `gen/struct/depth` sets at how many levels below the `type=struct` key, we will include in the generated struct. Note that keys ending
     in `/#` (i.e. array keys) count as one level above. So `mystruct/x/#` would be included with the default `gen/struct/depth=1`.
 - Metadata for keys corresponding to fields of the struct:
   - `gen/struct/field` sets the name of the field in the generated struct.

@@ -61,9 +61,9 @@ You can define the path inside the `spec:/` namespace as `/sw/org/app/#0/current
 
 You will also be using the profile `current`,
 you can find out more about profiles in
-[the documentation](https://www.libelektra.org/plugins/profile) aswell.
+[the documentation](https://www.libelektra.org/plugins/profile) as well.
 
-You also need the specify the plugin you will use for writing to the file in the correct format. In this case you can choose the `ni` plugin to write to the specification file.
+You also need to specify the plugin you will use for writing to the file in the correct format. In this case you can choose the `ni` plugin to write to the specification file.
 
 ```sh
 sudo kdb mount `pwd`/spec.ni spec:/sw/org/app/\#0/current ni
@@ -383,7 +383,7 @@ kdb meta-set spec:/sw/org/app/\#0/current/backup/date example 2021-01-12
 kdb meta-set spec:/sw/org/app/\#0/current/backup/date description "date of the annual server and database backup"
 ```
 
-Your specification looks to be complete now! Make sure it look something like the one below and you are good to go using it and configuring the heck out of it!
+Your specification looks to be complete now! Make sure it looks something like the one below and you are good to go using it and configuring the heck out of it!
 
 ```sh
 cat $(kdb file spec:/sw/org/app/\#0/current)
@@ -505,7 +505,7 @@ database/dialect =
 
 ## Summary
 
-- You setup and mounted a specification using `kdb mount` and `kdb spec-mount`
+- You set up and mounted a specification using `kdb mount` and `kdb spec-mount`
 - You added keys the specification using `kdb meta-set`
 - You added different types of keys with `type string`, `type boolean` or `type short`
 - You added keys with enum types, to get specific configuration values, with ``

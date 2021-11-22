@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "ELEKTRA\-METADATA" "7" "October 2019" ""
+.TH "ELEKTRA\-METADATA" "7" "November 2021" ""
 .SH "NAME"
 \fBelektra\-metadata\fR \- metadata
 .P
@@ -8,7 +8,7 @@
 .SH "Rationale"
 Metadata has different purposes:
 .IP "\(bu" 4
-Traditionally Elektra used metadata to carry file system semantics\. The backend \fBfilesys\fR stores file metadata (File metadata in POSIX is returned by \fBstat()\fR) in a \fIstruct\fR with the same name\. It contains a file type (directory, symbolic link,\.\.) as well as other metadata like uid, gid, owner, mode, atime, mtime and ctime\. into the \fBKey\fR objects\. This solution, however, only makes sense when each file shelters only one \fBKey\fR object\.
+Traditionally Elektra used metadata to carry file system semantics\. The backend \fBfilesys\fR stores file metadata (File metadata in POSIX is returned by \fBstat()\fR) in a \fIstruct\fR with the same name\. It contains a file type (directory, symbolic link, \|\.\|\.\|\.) as well as other metadata like uid, gid, owner, mode, atime, mtime and ctime\. into the \fBKey\fR objects\. This solution, however, only makes sense when each file shelters only one \fBKey\fR object\.
 .IP "\(bu" 4
 The metaname \fBbinary\fR shows if a \fBKey\fR object contains binary data\. Otherwise it has a null\-terminated C string\.
 .IP "\(bu" 4

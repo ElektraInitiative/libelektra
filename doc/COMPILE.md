@@ -476,7 +476,7 @@ Continue reading [testing](/doc/TESTING.md) for more information about testing.
 #### `CMAKE_INSTALL_PREFIX`
 
 `CMAKE_INSTALL_PREFIX` defaults to `/usr/local`.
-So by default most files will installed below `/usr/local`.
+So by default most files will be installed below `/usr/local`.
 Exceptions to this are files handled by [INSTALL_SYSTEM_FILES](#install_system_files).
 
 Edit that cache entry to change that behavior.
@@ -523,7 +523,7 @@ If both options are provided the value passed via CMake takes precedence.
 
 [google test]: https://github.com/google/googletest
 
-It is recommended that you browse through all of the options using `ccmake`.
+It is recommended that you browse through all the options using `ccmake`.
 Afterwards press `c` again (maybe multiple times until all variables are
 resolved) and then `g` to generate. Finally press `e` to exit.
 
@@ -556,7 +556,7 @@ Currently the installed system files are as following:
 
 #### `ENABLE_OPTIMIZATIONS`
 
-In order to keep the binaries as small as possible this flag allows to trade memory for speed.
+In order to keep the binaries as small as possible this flag allows trading memory for speed.
 
 ## Building
 
@@ -603,7 +603,7 @@ For Unix if you have nCurses install you can run `ccmake` to set important optio
 running cmake like to enable debug symbol.
 
 **Note 3:**
-for Gentoo is recommend to emerge sys-apps/lsb-release to name the package
+For Gentoo it's recommended to emerge sys-apps/lsb-release to name the package
 right even thou not required.
 
 ## Maintainer's Guide
@@ -637,7 +637,7 @@ using `TARGET_PLUGIN_FOLDER` and is `elektra` by default. You might
 want to encode Elektra’s `SOVERSION` into the folders name, if you want
 different major versions of Elektra be co-installable.
 
-Elektra’s use case for `RPATH` is considered acceptable, so we recommend to use it
+Elektra’s use case for `RPATH` is considered acceptable, so we recommend using it
 because:
 
 - plugins do not clutter the library folder nor the `ld.so.cache`

@@ -45,7 +45,7 @@
 
 - Installation
 
-  If you meet all of the software requirements you can get the source code of Elektra by using this command:
+  If you meet all the software requirements you can get the source code of Elektra by using this command:
 
   ```sh
   git clone https://github.com/ElektraInitiative/libelektra.git
@@ -67,7 +67,7 @@
   cmake --build build --target run_nokdbtests
   ```
 
-  With these commands you will be able to run the "Hello World!" example but usually you will need to use some of the [plugins](/src/plugins/README.md), tools and bindings of Elektra. Please take a look at the more detailed [compiling documentation](/doc/COMPILE.md). After you completed building Elektra on your own, you can execute these commands to install Elektra (please check the [installation documentation](/doc/INSTALL.md) for the many available packages):
+  With these commands you will be able to run the "Hello World!" example, but usually you will need to use some of the [plugins](/src/plugins/README.md), tools and bindings of Elektra. Please take a look at the more detailed [compiling documentation](/doc/COMPILE.md). After you completed building Elektra on your own, you can execute these commands to install Elektra (please check the [installation documentation](/doc/INSTALL.md) for the many available packages):
 
   ```sh
   sudo make install

@@ -50,7 +50,7 @@ any values-validation plugin can be used, e.g. [type](/src/plugins/type).
 For a full list refer to the section "Value Validation" in the
 [list of all plugins](/src/plugins/README.md).
 
-Note that it also easy [to write your own (value validation) plugin](/doc/tutorials/plugins.md).
+Note that it's also easy [to write your own (value validation) plugin](/doc/tutorials/plugins.md).
 
 The drawbacks of this approach are:
 

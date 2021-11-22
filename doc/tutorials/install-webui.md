@@ -128,7 +128,7 @@ In order to test API on localhost, you have to start elektrad instance. You can 
 - by installing elektrad tool together with Elektra and run it
   - please see the section `Building with elektra-web Tool`
 
-Now the server is runing on [http://localhost:33333](http://localhost:33333). After that you can test API with help of Postman or other tool, which allows to send REST API requests.
+Now the server is running on [http://localhost:33333](http://localhost:33333). After that you can test API with help of Postman or other tool, which allows sending REST API requests.
 
 Additional note. It is recommended to install the elektrad tool than starting the server manually.
 When Elektra is installed, the `kdb` command together with its tools is installed globally.

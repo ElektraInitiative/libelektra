@@ -84,7 +84,7 @@ the key names of software-applications should always start with:
 
 ## Further Recommendations
 
-- Avoid to have your applications root right under @p system or @p user.
+- Avoid having your applications root right under @p system or @p user.
   (rationale: it would make the hierarchy too flat.)
   See **Application Base Name** above.
 - Avoid the usage of characters other than `/`, a-z and 0-9.

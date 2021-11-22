@@ -7,7 +7,7 @@
 - Problems in spec plugin
 
 These problems can be traced back to the placement of the plugins.
-We need to cleanup and simplify the placement.
+We need to clean up and simplify the placement.
 
 ## Constraints
 
