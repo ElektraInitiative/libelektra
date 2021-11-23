@@ -212,7 +212,7 @@ TEST (meta, cErrorsMetaKeys)
 	Key m;
 
 	k.setMeta ("metaKey", "metaValue");
-	m = k.currentMeta();
+	m = k.currentMeta ();
 
 	EXPECT_THROW (m.addName ("test"), KeyInvalidName);
 	EXPECT_THROW (m.setName ("test"), KeyInvalidName);
@@ -224,7 +224,7 @@ TEST (meta, cErrorsMetaKeys)
 	EXPECT_THROW (m.delMeta ("metaKey2"), KeyException);
 
 	/* c-function 'int keyRewindMeta (Key * key)' in keymeta.c should return 0 (no error) */
-	EXPECT_NO_THROW (m.rewindMeta());
+	EXPECT_NO_THROW (m.rewindMeta ());
 
 	EXPECT_THROW (m.set ("Test"), KeyException);
 

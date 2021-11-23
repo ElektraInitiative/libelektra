@@ -174,7 +174,8 @@ _(Michael Tucek)_
 - add tests the env binding _(Ivaylo Ivanov)_
 - add and improve checks in scripts/sed _(Florian Lindner @flo91)_
 - change the cpp Key-class (key.hpp) to check the return values of the called c-functions
-  and throw exceptions if values that indicate an error are returned + add tests that check for this exceptions _(Florian Lindner @flo91)_
+  and throw exceptions if values that indicate an error are returned + add tests that
+  check for this exceptions _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - Added more test cases for the keyCopy function _(@muskater)_

@@ -737,7 +737,7 @@ TEST (ks, cErrosKeySet)
 	Key k ("user:/key", KEY_VALUE, "testkey", KEY_END);
 	KeySet ks;
 
-	ks.append(k);
+	ks.append (k);
 	EXPECT_THROW (k.addName ("test"), KeyInvalidName);
 	EXPECT_THROW (k.setName ("test"), KeyInvalidName);
 	EXPECT_THROW (k.addBaseName ("test"), KeyInvalidName);
@@ -766,7 +766,7 @@ TEST (ks, cErrosKeySet)
 
 	EXPECT_EQ (k.getReferenceCounter (), 2);
 
-	ks.clear();
+	ks.clear ();
 	EXPECT_EQ (k.getReferenceCounter (), 1);
 
 	/* should only fail on null key */
