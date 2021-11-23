@@ -271,10 +271,10 @@ kdb set system:/tests/hosts/ipv4/localhost.3 127.0.0.1
 
 # lines in hosts file have improper ordering
 cat `kdb file /tests/hosts`
-#> 127.0.0.1       localhost.3
-#> 127.0.0.1       localhost.4
-#> 127.0.0.1       localhost.1
-#> 127.0.0.1       localhost.2
+#> 127.0.0.1    localhost.3
+#> 127.0.0.1    localhost.4
+#> 127.0.0.1    localhost.1
+#> 127.0.0.1    localhost.2
 
 # setting the correct order
 kdb meta-set system:/tests/hosts/ipv4/localhost.4 order 4
@@ -282,10 +282,10 @@ kdb meta-set system:/tests/hosts/ipv4/localhost.3 order 3
 
 # lines in hosts file are also in correct order afterwards
 cat `kdb file /tests/hosts`
-#> 127.0.0.1       localhost.1
-#> 127.0.0.1       localhost.2
-#> 127.0.0.1       localhost.3
-#> 127.0.0.1       localhost.4
+#> 127.0.0.1    localhost.1
+#> 127.0.0.1    localhost.2
+#> 127.0.0.1    localhost.3
+#> 127.0.0.1    localhost.4
 ```
 
 As you can see by setting the order meta Key in the respective KDB entries, we can manipulate the order in which entries get written to the hosts file. Also when importing from the initial hosts file, the plugin stores the correct order in the meta KeySet.
