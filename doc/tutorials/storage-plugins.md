@@ -255,9 +255,6 @@ kdb ls /tests/hosts/ipv4
 
 # Checking the created Meta KeySet
 kdb meta-ls /tests/hosts/ipv4/localhost.1
-#> comment/#0
-#> comment/#0/space
-#> comment/#0/start
 #> order
 
 # Getting the content of the order
