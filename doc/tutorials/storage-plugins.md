@@ -230,9 +230,11 @@ kdb meta-ls /tests/hosts/ipv4/localhost
 
 kdb meta-get /tests/hosts/ipv4/localhost 'comment/#0'
 #>  test comment
-```
 
-As you can see the Key that corresponds to the respective line in the hosts file has additional meta-information. This way comments in the configuration file can easily be imported into the KDB. Be aware that the comment also contains the trailing space preceding the text in the comment, which might be confusing. You can also opt to strip preceding and trailing whitespaces entirely.
+# Undo modifications to the key database
+kdb rm -r /tests/hosts
+sudo kdb umount /tests/hosts
+```
 
 ## Ordering of Elements
 
@@ -255,6 +257,7 @@ kdb ls /tests/hosts/ipv4
 
 # Checking the created Meta KeySet
 kdb meta-ls /tests/hosts/ipv4/localhost.1
+#> comment/#0
 #> order
 
 # Getting the content of the order
@@ -285,6 +288,10 @@ cat `kdb file /tests/hosts`
 #> 127.0.0.1	localhost.2
 #> 127.0.0.1	localhost.3
 #> 127.0.0.1	localhost.4
+
+# Undo modifications to the key database
+kdb rm -r /tests/hosts
+sudo kdb umount /tests/hosts
 ```
 
 As you can see by setting the order meta Key in the respective KDB entries, we can manipulate the order in which entries get written to the hosts file. Also when importing from the initial hosts file, the plugin stores the correct order in the meta KeySet.
