@@ -207,10 +207,89 @@ kdb rm -r user:/tests/storage
 sudo kdb umount user:/tests/storage
 ```
 
-.
+## Storing Comments
+Most markup languages provide the possibility of adding comments. Elektra can store those comments in its meta-information as well. This can be achieved by setting the meta Key `comment` for the respective configuration Key. The `hosts` plugin currently stores the comments of the file in the respective Elektra configuration Key:
+
+```sh
+# Mount empty hosts file
+kdb mount --with-recommends hosts /tests/hosts hosts
+
+# Add a line to the hosts file containing a comment
+echo '127.0.0.1    localhost # test comment' >  `kdb file /tests/hosts`
+
+# Check if the line has been synced successfully
+kdb get /tests/hosts/ipv4/localhost
+#> 127.0.0.1
+
+kdb meta-ls /tests/hosts/ipv4/localhost
+#> comment/#0
+#> comment/#0/space
+#> comment/#0/start
+#> order
+
+kdb meta-get /tests/hosts/ipv4/localhost 'comment/#0'
+#>  test comment
+```
+
+As you can see the Key that corresponds to the respective line in the hosts file has additional meta-information. This way comments in the configuration file can easily be imported into the KDB. Be aware that the comment also contains the trailing space preceding the text in the comment, which might be confusing. You can also opt to strip preceding and trailing whitespaces entirely.
+
+## Ordering of Elements
+If your plugin also has the ability to store configuration options in a certain order, then this is also support by Elektra. Keys can have the meta Key `order`, which indicates in which order lines should be written back to the configuration file. Inversely, when reading from configuration files, plugins should add the `order` meta Key to the respective KDB entries.
+
+This behavior can be illustrated via the usage of the `hosts` plugin, which honors this convention:
+
+```sh
+# Mount empty hosts file
+kdb mount --with-recommends hosts /tests/hosts hosts
+
+# Add lines to the hosts file
+echo '127.0.0.1    localhost.1' >  `kdb file /tests/hosts`
+echo '127.0.0.1    localhost.2' >>  `kdb file /tests/hosts`
+
+# Check if the lines have been synced successfully
+kdb ls /tests/hosts/ipv4
+#> system:/tests/hosts/ipv4/localhost.1
+#> system:/tests/hosts/ipv4/localhost.2
+
+# Checking the created Meta KeySet
+kdb meta-ls /tests/hosts/ipv4/localhost.1
+#> comment/#0
+#> comment/#0/space
+#> comment/#0/start
+#> order
+
+# Getting the content of the order
+kdb meta-get /tests/hosts/ipv4/localhost.1 order
+#> 1
+
+kdb meta-get /tests/hosts/ipv4/localhost.2 order
+#> 2
+
+# adding some additional Keys out of order
+kdb set system:/tests/hosts/ipv4/localhost.4 127.0.0.1
+kdb set system:/tests/hosts/ipv4/localhost.3 127.0.0.1
+
+# lines in hosts file have improper ordering
+cat `kdb file /tests/hosts`
+#> 127.0.0.1       localhost.3
+#> 127.0.0.1       localhost.4
+#> 127.0.0.1       localhost.1
+#> 127.0.0.1       localhost.2
+
+# setting the correct order
+kdb meta-set system:/tests/hosts/ipv4/localhost.4 order 4
+kdb meta-set system:/tests/hosts/ipv4/localhost.3 order 3
+
+# lines in hosts file are also in correct order afterwards
+cat `kdb file /tests/hosts`
+#> 127.0.0.1       localhost.1
+#> 127.0.0.1       localhost.2
+#> 127.0.0.1       localhost.3
+#> 127.0.0.1       localhost.4
+```
+
+As you can see by setting the order meta Key in the respective KDB entries, we can manipulate the order in which entries get written to the hosts file. Also when importing from the initial hosts file, the plugin stores the correct order in the meta KeySet.
 
 <!--
-TODO: Add information on how plugins should store comment (meta)data
-TODO: Document that a plugin should keep the ordering of key-value pairs of a document intact, when writing data back to the configuration file
 TODO: Add section about relative keys (See also: https://issues.libelektra.org/51)
 -->
