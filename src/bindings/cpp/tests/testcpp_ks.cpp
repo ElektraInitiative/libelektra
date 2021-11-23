@@ -729,3 +729,50 @@ TEST (ks, vaargs)
 	succeed_if (ks.lookup ("user:/a"), "could not find key");
 	succeed_if (ks.lookup ("user:/b"), "could not find key");
 }
+
+/* check the wrappers for underlying c-functions with a key that was added to a KeySet
+ * exceptions are thrown if the underlying c-functions return error codes (-1 or NULL) */
+TEST (ks, cErrosKeySet)
+{
+	Key k ("user:/key", KEY_VALUE, "testkey", KEY_END);
+	KeySet ks;
+
+	ks.append(k);
+	EXPECT_THROW (k.addName ("test"), KeyInvalidName);
+	EXPECT_THROW (k.setName ("test"), KeyInvalidName);
+	EXPECT_THROW (k.addBaseName ("test"), KeyInvalidName);
+	EXPECT_THROW (k.setBaseName ("test"), KeyInvalidName);
+	EXPECT_THROW (k.delBaseName (), KeyInvalidName);
+
+	EXPECT_NO_THROW (k.set ("test"));
+
+	/* Key::copy tests */
+	Key k1 ("user:/key1", KEY_VALUE, "testkey1", KEY_END);
+	EXPECT_THROW (k.copy (k), KeyException);
+	EXPECT_NO_THROW (k1.copy (k1));
+	EXPECT_EQ (k1, k1);
+
+	/* copying k1 to k should not work */
+	EXPECT_THROW (k.copy (k1), KeyException);
+
+	/* copying k to k1 should work */
+	EXPECT_NE (k1, k);
+	EXPECT_NO_THROW (k1.copy (k));
+	EXPECT_EQ (k1, k);
+
+	EXPECT_NO_THROW (k.setCallback (nullptr));
+	EXPECT_NO_THROW (k.setString ("newValue"));
+	EXPECT_EQ (k.getString (), "newValue");
+
+	EXPECT_EQ (k.getReferenceCounter (), 2);
+
+	ks.clear();
+	EXPECT_EQ (k.getReferenceCounter (), 1);
+
+	/* should only fail on null key */
+	EXPECT_NO_THROW (k--);
+	EXPECT_EQ (k.getReferenceCounter (), 0);
+
+	/* should only fail on null key */
+	EXPECT_NO_THROW (k.clear ());
+}

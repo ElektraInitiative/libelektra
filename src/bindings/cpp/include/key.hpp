@@ -672,7 +672,7 @@ void Key::operator++ () const
 {
 	if (ckdb::keyIncRef (key) == UINT16_MAX)
 	{
-		/* if activated, nullptr can't be assigned to a Key-object
+		/* TODO: if activated, nullptr can't be assigned to a Key-object
 		 * which breaks some existing tests */
 		/* throw KeyException (); */
 	}

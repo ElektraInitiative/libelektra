@@ -13,51 +13,6 @@
 #include <string>
 #include <vector>
 
-/* check if exceptions are thrown if the underlying c-functions return error codes (-1 or NULL) */
-TEST (key, cErrors)
-{
-	Key k ("user:/key", KEY_VALUE, "testkey", KEY_END);
-	Key x = nullptr;
-
-	EXPECT_THROW (x.addName (""), KeyInvalidName);
-	EXPECT_THROW (x.setName (""), KeyInvalidName);
-	EXPECT_THROW (x.addBaseName (""), KeyInvalidName);
-	EXPECT_THROW (x.delBaseName (), KeyInvalidName);
-	EXPECT_THROW (x.setBaseName (""), KeyInvalidName);
-
-	EXPECT_THROW (x.setMeta ("", ""), KeyException);
-	EXPECT_THROW (x.delMeta (""), KeyException);
-	EXPECT_THROW (k.copyAllMeta (nullptr), KeyException);
-	EXPECT_THROW (k.copyMeta (nullptr, "test"), KeyException);
-	EXPECT_THROW (x.rewindMeta (), KeyException);
-
-	EXPECT_THROW (x.set (""), KeyException);
-	EXPECT_THROW (x.copy (nullptr), KeyException);
-	EXPECT_THROW (x.clear (), KeyException);
-	EXPECT_THROW (x.setCallback (nullptr), KeyException);
-	EXPECT_THROW (x.setString (nullptr), KeyException);
-	EXPECT_THROW (x.getString (), KeyException);
-	EXPECT_THROW (x.getReferenceCounter (), KeyException);
-
-	/* Currently not implemented, because otherwise a Key-object
-	 * would not be settable to a nullptr which breaks some existing tests */
-	/* EXPECT_THROW (x++, KeyException); */
-
-	EXPECT_THROW (x--, KeyException);
-}
-
-
-/* tests for binary keys and functions operating on them or returning them */
-TEST (key, binary)
-{
-	Key x = nullptr;
-	Key b ("user:/keyBinary", KEY_VALUE, "", KEY_END);
-	b.setBinary (nullptr, 0);
-
-	EXPECT_THROW (x.getBinary (), KeyException);
-	EXPECT_EQ (b.getString (), "");
-}
-
 
 TEST (key, null)
 {
@@ -75,8 +30,6 @@ TEST (key, null)
 	succeed_if (!key0, "key should evaluate to false");
 	succeed_if (key0.isNull (), "key should evaluate to false");
 	succeed_if (key0.needSync (), "key should need sync");
-
-	EXPECT_THROW (key0.set (static_cast<char *> (0)), KeyTypeConversion);
 }
 
 
@@ -752,4 +705,83 @@ TEST (key, move)
 	std::unique_ptr<C> c1 (new C);
 	std::unique_ptr<C> c2 (std::move (c1));
 	std::unique_ptr<C> c3 = std::move (c1);
+}
+
+/* check the wrappers for underlying c-functions with a nullptr as key
+ * exceptions are thrown if the underlying c-functions return error codes (-1 or NULL) */
+TEST (key, cErrorsNull)
+{
+	Key x = nullptr;
+	EXPECT_THROW (x.addName ("test"), KeyInvalidName);
+	EXPECT_THROW (x.setName ("test"), KeyInvalidName);
+	EXPECT_THROW (x.addBaseName ("test"), KeyInvalidName);
+	EXPECT_THROW (x.setBaseName ("test"), KeyInvalidName);
+	EXPECT_THROW (x.delBaseName (), KeyInvalidName);
+	EXPECT_THROW (x.setMeta ("metaKey", "metaValue"), KeyException);
+	EXPECT_THROW (x.delMeta ("metaKey"), KeyException);
+	EXPECT_THROW (x.rewindMeta (), KeyException);
+
+	EXPECT_THROW (x.set (""), KeyException);
+	EXPECT_THROW (x.copy (nullptr), KeyException);
+	EXPECT_THROW (x.setCallback (nullptr), KeyException);
+	EXPECT_THROW (x.setString (nullptr), KeyException);
+	EXPECT_THROW (x.getString (), KeyException);
+	EXPECT_THROW (x.getReferenceCounter (), KeyException);
+
+	EXPECT_THROW (x--, KeyException);
+
+	/* TODO: Currently not implemented, because otherwise a Key-object
+	 * would not be settable to a nullptr which breaks some existing tests */
+	/* EXPECT_THROW (x++, KeyException); */
+
+	EXPECT_THROW (x.clear (), KeyException);
+}
+
+/* check the wrappers for underlying c-functions with a normal key
+ * exceptions are thrown if the underlying c-functions return error codes (-1 or NULL) */
+TEST (key, cErrorsParameters)
+{
+	Key k ("user:/key", KEY_VALUE, "testkey", KEY_END);
+	KeySet ks;
+
+	/* invalid name */
+	EXPECT_THROW (k.addName ("\\"), KeyInvalidName);
+	EXPECT_THROW (k.setName ("\\"), KeyInvalidName);
+
+	EXPECT_NO_THROW (k.addBaseName ("\\"));
+	EXPECT_NO_THROW (k.setBaseName ("\\"));
+	EXPECT_NO_THROW (k.delBaseName ());
+	EXPECT_NO_THROW (k.setMeta ("metaKey", "metaValue"));
+	EXPECT_TRUE (k.hasMeta ("metaKey"));
+	EXPECT_NO_THROW (k.delMeta ("metaKey"));
+	EXPECT_FALSE (k.hasMeta ("metaKey"));
+	EXPECT_NO_THROW (k.rewindMeta ());
+
+	EXPECT_EQ (k.getString (), "testkey");
+	EXPECT_NO_THROW (k.set ("\\"));
+	EXPECT_NO_THROW (k.copy (k));
+
+	Key k1;
+	EXPECT_NE (k, k1);
+	EXPECT_NO_THROW (k.copy (k1));
+	EXPECT_EQ (k, k1);
+
+	EXPECT_NO_THROW (k.setCallback (nullptr));
+	EXPECT_NO_THROW (k.setString ("\\"));
+	EXPECT_EQ (k.getString (), "\\");
+	EXPECT_EQ (k.getReferenceCounter (), 1);
+	EXPECT_NO_THROW (k--);
+	EXPECT_EQ (k.getReferenceCounter (), 0);
+	EXPECT_NO_THROW (k.clear ());
+}
+
+/* tests for binary keys and functions operating on them or returning them */
+TEST (key, binary)
+{
+	Key x = nullptr;
+	Key b ("user:/keyBinary", KEY_VALUE, "", KEY_END);
+	b.setBinary (nullptr, 0);
+
+	EXPECT_THROW (x.getBinary (), KeyException);
+	EXPECT_EQ (b.getString (), "");
 }
