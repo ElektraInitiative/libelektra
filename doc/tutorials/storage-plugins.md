@@ -208,6 +208,7 @@ sudo kdb umount user:/tests/storage
 ```
 
 ## Storing Comments
+
 Most markup languages provide the possibility of adding comments. Elektra can store those comments in its meta-information as well. This can be achieved by setting the meta Key `comment` for the respective configuration Key. The `hosts` plugin currently stores the comments of the file in the respective Elektra configuration Key:
 
 ```sh
@@ -234,6 +235,7 @@ kdb meta-get /tests/hosts/ipv4/localhost 'comment/#0'
 As you can see the Key that corresponds to the respective line in the hosts file has additional meta-information. This way comments in the configuration file can easily be imported into the KDB. Be aware that the comment also contains the trailing space preceding the text in the comment, which might be confusing. You can also opt to strip preceding and trailing whitespaces entirely.
 
 ## Ordering of Elements
+
 If your plugin also has the ability to store configuration options in a certain order, then this is also support by Elektra. Keys can have the meta Key `order`, which indicates in which order lines should be written back to the configuration file. Inversely, when reading from configuration files, plugins should add the `order` meta Key to the respective KDB entries.
 
 This behavior can be illustrated via the usage of the `hosts` plugin, which honors this convention:
