@@ -91,7 +91,9 @@ jobs:
         done < ~/github_brew_cache_entries.txt
 
     - name: Install Dependencies
-      run: sudo ./scripts/mac_setup.sh
+      run: |
+        chmod +x ./scripts/mac_setup.sh
+        ./scripts/mac_setup.sh
 
     - name: Setup Build Environment
       run: |
