@@ -45,8 +45,8 @@
 #include <errno.h>
 #endif
 
-#include <kdbinternal.h>
 #include <doc.h>
+#include <kdbinternal.h>
 
 
 /**
