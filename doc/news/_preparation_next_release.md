@@ -172,6 +172,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - <<TODO>>
 - Added more test cases for the keyCopy function _(@muskater)_
+- Enabled testmod_zeromqsend _(@4ydan)_
 
 ## Packaging
 

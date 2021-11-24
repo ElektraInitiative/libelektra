@@ -23,7 +23,6 @@ We disabled the tests
 in the function `ctest` in the file `scripts/jenkins/Jenkinsfile`, since they are known to
 [cause problems in high load scenarios](https://issues.libelektra.org/2439).
 
-We also disabled `testmod_zeromqsend` from `kdb run_all` in `tests/shell/run_all.sh`. (See commit 526f916d3c983d5310448c002510f06c4d4b43ac)
 
 We disabled `testmod_crypto` on `debian-unstable-full-clang` due to memory leaks.
 
