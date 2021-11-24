@@ -62,9 +62,11 @@ To create an **array element** we start the basename of a key with the `#` chara
 
 ```sh
 kdb set user:/tests/sequence/#0 'First Element'
+#> Create a new key user:/tests/sequence/#0 with string "First Element"
 kdb set user:/tests/sequence/#1 'Second Element'
-# Arrays do not need to be contiguous
+#> Create a new key user:/tests/sequence/#0 with string "Second Element"
 kdb set user:/tests/sequence/#3 'Fourth Element'
+#> Create a new key user:/tests/sequence/#0 with string "Fourth Element"
 ```
 
 . As you can see above arrays can contain “empty fields”: The key `user:/tests/sequence/#2` is missing.
@@ -73,6 +75,7 @@ For array elements with an index larger than `9` we must add **underscores** (`_
 
 ```sh
 kdb set user:/tests/sequence/#_10 'Eleventh Element'
+#> Create a new key user:/tests/sequence/#_10 with string "Eleventh Element"
 ```
 
 . The order of the array sequence is still correct afterwards, as the following command shows:
@@ -113,8 +116,11 @@ Elektra’s arrays **require** that you always add the metakey `array` to the ar
 ```sh
 # Add array elements
 kdb set user:/tests/favorites/superheros/#0 'One-Punch Man'
+#> Create a new key user:/tests/favorites/superheros/#0 with string "One-Punch Man"
 kdb set user:/tests/favorites/superheros/#1 'Mermaid Man and Barnacle Boy'
+#> Create a new key user:/tests/favorites/superheros/#1 with string "Mermaid Man and Barnacle Boy"
 kdb set user:/tests/favorites/superheros/#____99999 'The guy with the bow and arrow'
+#> Create a new key user:/tests/favorites/superheros/#____99999 with string "The guy with the bow and arrow"
 
 # The metakey `array` should save the basename of the last element.
 kdb meta-set user:/tests/favorites/superheros array '#____99999'
