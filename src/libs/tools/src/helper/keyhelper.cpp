@@ -8,6 +8,7 @@
  */
 
 #include <helper/keyhelper.hpp>
+#include <kdbprivate.h>
 
 using namespace std;
 
@@ -67,9 +68,8 @@ string rebasePath (const Key & key, const Key & oldParent, const Key & newParent
 
 Key rebaseKey (const Key & key, const Key & oldParent, const Key & newParent)
 {
-	string newPath = rebasePath (key, oldParent, newParent);
 	Key result = key.dup ();
-	result.setName (newPath);
+	ckdb::keyReplacePrefix (*result, *oldParent, *newParent);
 	return result;
 }
 

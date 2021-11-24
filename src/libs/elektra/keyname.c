@@ -689,7 +689,7 @@ int keyReplacePrefix (Key * key, const Key * oldPrefix, const Key * newPrefix)
 	if (key->keyUSize == oldPrefix->keyUSize)
 	{
 		// key is same as oldPrefix -> just copy name
-		// TODO: replace with keyCopy (key, newPrefix, KEY_CP_NAME) once #3606 is merged
+		// TODO (kodebach): replace with keyCopy (key, newPrefix, KEY_CP_NAME) once #3606 is merged
 		if (!test_bit (key->flags, KEY_FLAG_MMAP_KEY))
 		{
 			elektraFree (key->key);
@@ -1827,6 +1827,57 @@ ssize_t keySetNamespace (Key * key, elektraNamespace ns)
 	return key->keySize;
 }
 
+/**
+ * Checks if the given key name part is an array part.
+ *
+ * The return value of this function can safely be treated as a boolean.
+ *
+ * @param namePart an arbitrary string that shall be checked
+ *
+ * @returns if @p namePart is an array part, the index of the first digit in @p namePart,
+ *          or 0 otherwise
+ */
+int elektraIsArrayPart (const char * namePart)
+{
+	const char * current = namePart;
+	if (current == NULL || *current != '#')
+	{
+		return 0;
+	}
+
+	current++;
+
+	int underscores = 0;
+	int digits = 0;
+
+	while (*current == '_')
+	{
+		current++;
+		underscores++;
+	}
+
+	while (isdigit ((unsigned char) *current))
+	{
+		current++;
+		digits++;
+	}
+
+	if (digits == 0)
+	{
+		return 0;
+	}
+
+	bool underscoresCorrect = underscores == digits - 1;
+	bool totalLengthCorrect = underscores + digits <= ELEKTRA_MAX_ARRAY_SIZE - 2;
+	bool reachedEnd = *current == '\0' || *current == '/';
+
+	if (underscoresCorrect && totalLengthCorrect && reachedEnd)
+	{
+		return underscores + 1;
+	}
+
+	return 0;
+}
 
 /**
  * @}

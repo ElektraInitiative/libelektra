@@ -48,6 +48,9 @@
 #include <kdbinternal.h>
 
 
+#define KDB_GET_PHASE_POST_STORAGE_SPEC (KDB_GET_PHASE_POST_STORAGE "/spec")
+#define KDB_GET_PHASE_POST_STORAGE_NONSPEC (KDB_GET_PHASE_POST_STORAGE "/nonspec")
+
 /**
  * @defgroup kdb KDB
  * @brief General methods to access the Key database.
@@ -123,27 +126,30 @@
  * @{
  */
 
-
-/**
- * @internal
- * Helper which iterates over MetaKeys from key
- * and removes all MetaKeys starting with
- * searchfor.
- */
-void elektraRemoveMetaData (Key * key, const char * searchfor)
+static bool closeBackends (KeySet * backends, Key * errorKey)
 {
-	const Key * iter_key;
-	keyRewindMeta (key);
-	while ((iter_key = keyNextMeta (key)) != 0)
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		/*startsWith*/
-		if (strncmp (searchfor, keyName (iter_key), strlen (searchfor)) == 0)
-		{
-			keySetMeta (key, keyName (iter_key), 0);
-		}
-	}
-}
+		Key * backendKey = ksAtCursor (backends, i);
+		const BackendData * backendData = keyValue (backendKey);
 
+		for (elektraCursor p = 0; p < ksGetSize (backendData->plugins); p++)
+		{
+			Plugin * plugin = *(Plugin **) keyValue (ksAtCursor (backendData->plugins, p));
+			if (elektraPluginClose (plugin, errorKey) == ELEKTRA_PLUGIN_STATUS_ERROR)
+			{
+				return false;
+			}
+		}
+
+		ksDel (backendData->plugins);
+		ksDel (backendData->keys);
+		ksDel (backendData->definition);
+	}
+
+	ksDel (backends);
+	return true;
+}
 
 /**
  * @brief Takes the first key and cuts off this common part
@@ -181,34 +187,13 @@ KeySet * ksRenameKeys (KeySet * config, const char * name)
 	return newConfig;
 }
 
-
-/**
- * @brief Bootstrap, first phase with fallback
- * @internal
- *
- * @param handle already allocated, but without defaultBackend
- * @param [out] keys for bootstrapping
- * @param errorKey key to add errors too
- *
- * @retval -1 failure: cannot initialize defaultBackend
- * @retval 0 warning: could not get initial config
- * @retval 1 success
- * @retval 2 success in fallback mode
- */
-int elektraOpenBootstrap (KDB * handle, KeySet * keys, Key * errorKey)
+static void clearErrorAndWarnings (Key * key)
 {
-	handle->defaultBackend = backendOpenDefault (handle->modules, handle->global, KDB_DB_INIT, errorKey);
-	if (!handle->defaultBackend) return -1;
-
-	handle->split = splitNew ();
-	splitAppend (handle->split, handle->defaultBackend, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), 2);
-
-	keySetName (errorKey, KDB_SYSTEM_ELEKTRA);
-	keySetString (errorKey, "kdbOpen(): get");
-
-	int funret = kdbGet (handle, keys, errorKey) != -1;
-	elektraRemoveMetaData (errorKey, "error"); // fix errors from kdbGet()
-	return funret;
+	Key * cutRoot = keyNew ("meta:/error", KEY_END);
+	ksDel (ksCut (keyMeta (key), cutRoot));
+	keySetName (cutRoot, "meta:/warnings");
+	ksDel (ksCut (keyMeta (key), cutRoot));
+	keyDel (cutRoot);
 }
 
 /**
@@ -355,9 +340,9 @@ static int ensureContractMountGlobal (KDB * handle, KeySet * contract, Key * par
  *
  * @see kdbOpen()
  */
-static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
+static bool ensureContract (KDB * handle, const KeySet * contract, Key * parentKey)
 {
-	// TODO: tests
+	// TODO (kodebach): tests
 	// deep dup, so modifications to the keys in contract after kdbOpen() cannot modify the contract
 	KeySet * dup = ksDeepDup (contract);
 
@@ -366,9 +351,566 @@ static int ensureContract (KDB * handle, const KeySet * contract, Key * parentKe
 
 	ksDel (dup);
 
-	return ret;
+	return ret == 0;
 }
 
+/**
+ * @internal
+ *
+ * Helper for kdbOpen(). Creates empty KDB instance.
+ *
+ * @see kdbOpen()
+ */
+static KDB * kdbNew (Key * errorKey)
+{
+	KDB * handle = elektraCalloc (sizeof (struct _KDB));
+	handle->modules = ksNew (0, KS_END);
+	if (elektraModulesInit (handle->modules, errorKey) == -1)
+	{
+		// TODO (kodebach) [Q]: shouldn't we let elektraModulesInit set this error?
+		ELEKTRA_SET_INSTALLATION_ERROR (
+			errorKey, "Method 'elektraModulesInit' returned with -1. See other warning or error messages for concrete details");
+
+		ksDel (handle->modules);
+		elektraFree (handle);
+		return NULL;
+	}
+	handle->global =
+		ksNew (1, keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END), KS_END);
+	handle->backends = ksNew (0, KS_END);
+
+	return handle;
+}
+
+static void addMountpoint (KeySet * backends, Key * mountpoint, Plugin * backend, KeySet * plugins, KeySet * definition)
+{
+	BackendData backendData = {
+		.backend = backend,
+		.keys = ksNew (0, KS_END),
+		.plugins = plugins,
+		.definition = definition,
+		.getSize = 0,
+		.initialized = false,
+		.keyNeedsSync = false,
+	};
+	keySetBinary (mountpoint, &backendData, sizeof (backendData));
+	ksAppendKey (backends, mountpoint);
+}
+
+static bool addElektraMountpoint (KeySet * backends, KeySet * modules, KeySet * global, Key * errorKey)
+{
+	// TODO (kodebach): implement user:/elektra and dir:/elektra
+	// FIXME (kodebach): replace KDB_DEFAULT_STORAGE with separate KDB_BOOTSTRAP_STORAGE
+	Plugin * storage = elektraPluginOpen (KDB_DEFAULT_STORAGE, modules, ksNew (0, KS_END), errorKey);
+	if (storage == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Could not open boostrap storage plugin ('%s'). See warnings for details.",
+						 KDB_DEFAULT_STORAGE);
+		return false;
+	}
+	storage->global = global;
+
+	// TODO (kodebach) [Q]: support direct read-write to absolute path in backend plugin to avoid resolver in bootstrap?
+	Plugin * resolver = elektraPluginOpen (KDB_DEFAULT_RESOLVER, modules, ksNew (0, KS_END), errorKey);
+	if (resolver == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERRORF (errorKey, "Could not open boostrap resolver plugin ('%s'). See warnings for details.",
+						 KDB_DEFAULT_RESOLVER);
+		elektraPluginClose (resolver, errorKey);
+		return false;
+	}
+	resolver->global = global;
+
+	Plugin * backend = elektraPluginOpen ("backend", modules, ksNew (0, KS_END), errorKey);
+	if (backend == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
+						"Could not open system:/elektra backend during bootstrap. See other warnings for details");
+		elektraPluginClose (resolver, errorKey);
+		elektraPluginClose (storage, errorKey);
+		return false;
+	}
+	backend->global = global;
+
+	// clang-format off
+	KeySet * plugins =
+		ksNew (1,
+			keyNew ("system:/#0", KEY_BINARY, KEY_SIZE, sizeof (resolver), KEY_VALUE, &resolver, KEY_END),
+			keyNew ("system:/#1", KEY_BINARY, KEY_SIZE, sizeof (storage), KEY_VALUE, &storage, KEY_END),
+		KS_END);
+	KeySet * definition =
+		ksNew (3,
+			keyNew ("system:/path", KEY_VALUE, KDB_DB_INIT, KEY_END),
+			keyNew ("system:/positions/get/resolver", KEY_VALUE, "#0", KEY_END),
+			keyNew ("system:/positions/get/storage", KEY_VALUE, "#1", KEY_END),
+			keyNew ("system:/positions/set/resolver", KEY_VALUE, "#0", KEY_END),
+			keyNew ("system:/positions/set/storage", KEY_VALUE, "#1", KEY_END),
+			keyNew ("system:/positions/set/commit", KEY_VALUE, "#0", KEY_END),
+			keyNew ("system:/positions/set/rollback", KEY_VALUE, "#0", KEY_END),
+		KS_END);
+	// clang-format on
+
+	addMountpoint (backends, keyNew (KDB_SYSTEM_ELEKTRA, KEY_END), backend, plugins, definition);
+
+	return true;
+}
+
+static KeySet * elektraBoostrap (KDB * handle, Key * errorKey)
+{
+	KeySet * elektraKs = ksNew (0, KS_END);
+	Key * bootstrapParent = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
+
+	if (kdbGet (handle, elektraKs, bootstrapParent) == -1)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
+						"Bootstrapping failed, please fix '" KDB_DB_SYSTEM "/" KDB_DB_INIT
+						"'. If the error persists, please report this bug at https://issues.libelektra.org.");
+
+		Key * warningsRoot = keyNew ("meta:/warnings", KEY_END);
+		ksAppend (keyMeta (errorKey), ksBelow (keyMeta (bootstrapParent), warningsRoot));
+		keyDel (warningsRoot);
+		elektraTriggerWarnings (keyString (keyGetMeta (bootstrapParent, "meta:/error/number")), errorKey,
+					keyString (keyGetMeta (bootstrapParent, "meta:/error/reason")));
+		ksDel (elektraKs);
+		keyDel (bootstrapParent);
+
+		return NULL;
+	}
+	keyDel (bootstrapParent);
+
+	return elektraKs;
+}
+
+static bool openPlugins (KeySet * plugins, const Key * pluginsRoot, KeySet * modules, KeySet * global, const KeySet * systemConfig,
+			 Key * errorKey)
+{
+	bool success = true;
+	for (elektraCursor i = 0; i < ksGetSize (plugins); i++)
+	{
+		Key * cur = ksAtCursor (plugins, i);
+		if (keyIsDirectlyBelow (pluginsRoot, cur) == 1)
+		{
+			Key * lookupHelper = keyDup (cur, KEY_CP_NAME);
+			keyAddBaseName (lookupHelper, "name");
+
+			Key * nameKey = ksLookup (plugins, lookupHelper, 0);
+			const char * pluginName = nameKey == NULL ? NULL : keyString (nameKey);
+			if (nameKey == NULL || strlen (pluginName) == 0)
+			{
+				ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey,
+								   "The plugin definition at '%s' doesn't contain a plugin name. Please "
+								   "set '%s/name' to a non-empty string value.",
+								   keyName (cur), keyName (cur));
+				success = false;
+				keyDel (lookupHelper);
+				continue;
+			}
+
+			keySetBaseName (lookupHelper, "config");
+			KeySet * config = ksBelow (plugins, lookupHelper);
+			Key * configRoot = keyNew ("user:/", KEY_END);
+			ksRename (config, lookupHelper, configRoot);
+			keyDel (configRoot);
+
+			ksAppend (config, systemConfig);
+
+			keyDel (lookupHelper);
+
+			Plugin * plugin = elektraPluginOpen (pluginName, modules, config, errorKey);
+			if (plugin == NULL)
+			{
+				ELEKTRA_ADD_INSTALLATION_WARNINGF (
+					errorKey, "Could not open the plugin '%s' defined at '%s'. See other warnings for details.",
+					pluginName, keyName (cur));
+				success = false;
+				continue;
+			}
+			plugin->global = global;
+
+			// create Plugin * key ...
+			Key * pluginKey = keyDup (cur, KEY_CP_NAME);
+			keySetBinary (pluginKey, &plugin, sizeof (plugin));
+
+			// ... remove definition (includes cur) ...
+			ksDel (ksCut (plugins, cur));
+
+			// ... and replace Plugin * key
+			ksAppendKey (plugins, pluginKey);
+		}
+		else
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				errorKey,
+				"The key '%s' doesn't belong to a plugin definition. Keys below '%s' must be part of a plugin definition.",
+				keyName (cur), keyName (pluginsRoot));
+			success = false;
+			continue;
+		}
+	}
+
+	return success;
+}
+
+static KeySet * dupPluginSet (KeySet * plugins, Key * errorKey)
+{
+	KeySet * dupPlugins = ksNew (ksGetSize (plugins), KS_END);
+	bool success = true;
+	for (elektraCursor i = 0; i < ksGetSize (plugins); i++)
+	{
+		Key * cur = ksAtCursor (plugins, i);
+		const Plugin * plugin = *(const Plugin **) keyValue (cur);
+		Plugin * dup = elektraPluginOpen (plugin->name, plugin->modules, ksDup (plugin->config), errorKey);
+		if (dup == NULL)
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				errorKey, "Could not open the plugin '%s' defined at '%s'. See other warnings for details.", plugin->name,
+				keyName (cur));
+			success = false;
+			continue;
+		}
+		dup->global = plugin->global;
+
+		Key * dupKey = keyDup (cur, KEY_CP_NAME);
+		keySetBinary (dupKey, &dup, sizeof (dup));
+		ksAppendKey (dupPlugins, dupKey);
+	}
+
+	if (!success)
+	{
+		ksDel (dupPlugins);
+		return NULL;
+	}
+	else
+	{
+		return dupPlugins;
+	}
+}
+
+static bool addDupMountpoint (KeySet * mountpoints, Key * mountpoint, Key * backendPluginKey, KeySet * plugins, KeySet * definition,
+			      Key * errorKey)
+{
+	KeySet * dupPlugins = dupPluginSet (plugins, errorKey);
+	if (dupPlugins == NULL)
+	{
+		keyDel (mountpoint);
+		return false;
+	}
+	Plugin * backendPlugin = *(Plugin **) keyValue (backendPluginKey);
+	addMountpoint (mountpoints, keyDup (mountpoint, KEY_CP_NAME), backendPlugin, dupPlugins, ksDup (definition));
+	return true;
+}
+
+static bool parseAndAddMountpoint (KeySet * mountpoints, KeySet * modules, KeySet * elektraKs, KeySet * global, Key * root, Key * errorKey)
+{
+	// check that the base name is a key name
+	Key * mountpoint = keyNew (keyBaseName (root), KEY_END);
+	if (mountpoint == NULL)
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "'%s' is not a valid key name, but is used for the mountpoint '%s'",
+						   keyBaseName (root), keyName (root));
+		return false;
+	}
+
+	// FIXME (kodebach): reserve /elektra/... in every namespace
+	Key * elektraRoot = keyNew (KDB_SYSTEM_ELEKTRA, KEY_END);
+	if (keyIsBelowOrSame (elektraRoot, mountpoint) != 0)
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (
+			errorKey,
+			"The mountpoint '%s' (defined at '%s') is not allowed. Everything below '" KDB_SYSTEM_ELEKTRA
+			"' is reserved for use by Elektra.",
+			keyBaseName (root), keyName (root));
+		return false;
+	}
+
+
+	// load mountpoint level config
+	Key * lookupHelper = keyDup (root, KEY_CP_NAME);
+	keyAddBaseName (lookupHelper, "config");
+	KeySet * systemConfig = ksBelow (elektraKs, lookupHelper);
+	Key * configRoot = keyNew ("system:/", KEY_END);
+	ksRename (systemConfig, lookupHelper, configRoot);
+	keyDel (configRoot);
+
+
+	// get the plugin list and remove the common prefix
+	keySetBaseName (lookupHelper, "plugins");
+	KeySet * plugins = ksBelow (elektraKs, lookupHelper);
+
+	// open all plugins (replaces key values with Plugin *)
+	if (!openPlugins (plugins, lookupHelper, modules, global, systemConfig, errorKey))
+	{
+		keyDel (mountpoint);
+		keyDel (lookupHelper);
+		ksDel (plugins);
+		ksDel (systemConfig);
+		return false;
+	}
+
+	// TODO (kodebach): read and process config/needs from contract
+	ksDel (systemConfig);
+
+	Key * pluginsRoot = keyNew ("system:/", KEY_END);
+	ksRename (plugins, lookupHelper, pluginsRoot);
+	keyDel (pluginsRoot);
+
+	// find backend plugin
+	Key * backendPluginKey = ksLookupByName (plugins, "system:/backend", 0);
+	if (backendPluginKey == NULL)
+	{
+		ELEKTRA_ADD_INSTALLATION_WARNINGF (errorKey, "The mountpoint '%s' defined in '%s' does not specify a backend plugin.",
+						   keyName (mountpoint), keyName (root));
+		keyDel (mountpoint);
+		keyDel (lookupHelper);
+		ksDel (plugins);
+		return false;
+	}
+
+	// get definition section
+	keySetBaseName (lookupHelper, "definition");
+	KeySet * definition = ksBelow (elektraKs, lookupHelper);
+	Key * definitionRoot = keyNew ("system:/", KEY_END);
+	ksRename (definition, lookupHelper, definitionRoot);
+	keyDel (definitionRoot);
+
+	keyDel (lookupHelper);
+
+	// create mountpoint
+	if (keyGetNamespace (mountpoint) == KEY_NS_CASCADING)
+	{
+		keySetNamespace (mountpoint, KEY_NS_SYSTEM);
+		if (!addDupMountpoint (mountpoints, mountpoint, backendPluginKey, plugins, definition, errorKey))
+		{
+			return false;
+		}
+
+		keySetNamespace (mountpoint, KEY_NS_USER);
+		if (!addDupMountpoint (mountpoints, mountpoint, backendPluginKey, plugins, definition, errorKey))
+		{
+			return false;
+		}
+
+		keySetNamespace (mountpoint, KEY_NS_DIR);
+		if (!addDupMountpoint (mountpoints, mountpoint, backendPluginKey, plugins, definition, errorKey))
+		{
+			return false;
+		}
+
+		keySetNamespace (mountpoint, KEY_NS_PROC);
+		if (!addDupMountpoint (mountpoints, mountpoint, backendPluginKey, plugins, definition, errorKey))
+		{
+			return false;
+		}
+
+		keyDel (mountpoint);
+	}
+	else
+	{
+		Plugin * backendPlugin = *(Plugin **) keyValue (backendPluginKey);
+		addMountpoint (mountpoints, mountpoint, backendPlugin, plugins, definition);
+	}
+
+	return true;
+}
+
+// FIXME (kodebach): write tests
+KeySet * elektraMountpointsParse (KeySet * elektraKs, KeySet * modules, KeySet * global, Key * errorKey)
+{
+	KeySet * mountpoints = ksNew (0, KS_END);
+
+	Key * mountpointsRoot = keyNew (KDB_SYSTEM_ELEKTRA "/mountpoints", KEY_END);
+
+	bool error = false;
+	for (elektraCursor end, i = ksFindHierarchy (elektraKs, mountpointsRoot, &end); i < end;)
+	{
+		Key * cur = ksAtCursor (elektraKs, i);
+		if (keyIsDirectlyBelow (mountpointsRoot, cur) == 1)
+		{
+			if (!parseAndAddMountpoint (mountpoints, modules, elektraKs, global, cur, errorKey))
+			{
+				error = true;
+			}
+
+			// skip over the keys we just parsed
+			Key * lookup = keyDup (cur, KEY_CP_NAME);
+			ksFindHierarchy (elektraKs, lookup, &i);
+			keyDel (lookup);
+		}
+		else
+		{
+			ELEKTRA_ADD_INSTALLATION_WARNINGF (
+				errorKey,
+				"The key '%s' is below 'system:/elektra/mountpoints', but doesn't belong to a mountpoint configuration. To "
+				"define a mountpoint for the parent e.g. 'user:/mymountpoint' the key "
+				"'system:/elektra/user:\\/mymountpoint' must exist and be set to an arbitrary (possibly empty) value.",
+				keyName (cur));
+			++i;
+		}
+	}
+
+	if (error)
+	{
+		closeBackends (mountpoints, errorKey);
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Some mountpoints couldn't be parsed. See warnings for details.");
+		return NULL;
+	}
+
+	return mountpoints;
+}
+
+static bool addRootMountpoint (KeySet * backends, elektraNamespace ns, KeySet * modules, KeySet * global, Key * errorKey)
+{
+	Key * rootKey = keyNew ("/", KEY_END);
+	keySetNamespace (rootKey, ns);
+	if (ksLookup (backends, rootKey, 0) != NULL)
+	{
+		// already present
+		keyDel (rootKey);
+		return true;
+	}
+
+	Plugin * defaultResolver = elektraPluginOpen (KDB_RESOLVER, modules, ksNew (0, KS_END), errorKey);
+	if (defaultResolver == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open default resolver plugin. See warnings for details.");
+		return false;
+	}
+	defaultResolver->global = global;
+
+	Plugin * defaultStorage = elektraPluginOpen (KDB_STORAGE, modules, ksNew (0, KS_END), errorKey);
+	if (defaultStorage == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open default storage plugin. See warnings for details.");
+		elektraPluginClose (defaultResolver, errorKey);
+		return false;
+	}
+	defaultStorage->global = global;
+
+	// clang-format off
+	KeySet * rootPlugins =
+		ksNew (2,
+			keyNew ("system:/resolver", KEY_BINARY, KEY_SIZE, sizeof (defaultResolver), KEY_VALUE, &defaultResolver, KEY_END),
+			keyNew ("system:/storage", KEY_BINARY, KEY_SIZE, sizeof (defaultStorage), KEY_VALUE, &defaultStorage, KEY_END),
+		KS_END);
+
+	KeySet * rootDefinition =
+		ksNew (7,
+			keyNew ("system:/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
+			keyNew ("system:/positions/get/resolver", KEY_VALUE, "resolver", KEY_END),
+			keyNew ("system:/positions/get/storage", KEY_VALUE, "storage", KEY_END),
+			keyNew ("system:/positions/set/resolver", KEY_VALUE, "resolver", KEY_END),
+			keyNew ("system:/positions/set/storage", KEY_VALUE, "storage", KEY_END),
+			keyNew ("system:/positions/set/commit", KEY_VALUE, "resolver", KEY_END),
+			keyNew ("system:/positions/set/rollback", KEY_VALUE, "resolver", KEY_END),
+		KS_END);
+	// clang-format on
+
+	Plugin * root = elektraPluginOpen ("backend", modules, ksNew (0, KS_END), errorKey);
+	if (root == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open default backend. See warnings for details.");
+
+		ksDel (rootPlugins);
+		ksDel (rootDefinition);
+		elektraPluginClose (defaultResolver, errorKey);
+		elektraPluginClose (defaultStorage, errorKey);
+		return false;
+	}
+	root->global = global;
+
+	addMountpoint (backends, rootKey, root, rootPlugins, rootDefinition);
+	return true;
+}
+
+static bool addModulesMountpoint (KDB * handle, Key * mountpoint, Key * errorKey)
+{
+	Plugin * modules = elektraPluginOpen ("modules", handle->modules, ksNew (0, KS_END), errorKey);
+	if (modules == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERRORF (
+			errorKey, "Could not open 'modules' plugin for mountpoint 'system:/elektra/modules/%s'. See warnings for details.",
+			keyBaseName (mountpoint));
+		return false;
+	}
+
+	Plugin * plugin = elektraPluginOpen (keyBaseName (mountpoint), handle->modules,
+					     ksNew (1, keyNew ("system:/module", KEY_END), KS_END), errorKey);
+	if (plugin == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERRORF (
+			errorKey, "Could not open '%s' plugin for mountpoint 'system:/elektra/modules/%s'. See warnings for details.",
+			keyBaseName (mountpoint), keyBaseName (mountpoint));
+		return false;
+	}
+	modules->global = handle->global;
+	addMountpoint (handle->backends, mountpoint, modules, ksNew (0, KS_END),
+		       ksNew (1, keyNew ("system:/plugin", KEY_BINARY, KEY_SIZE, sizeof (plugin), KEY_VALUE, &plugin, KEY_END), KS_END));
+	return true;
+}
+
+static bool addHardcodedMountpoints (KDB * handle, Key * errorKey)
+{
+	if (!addElektraMountpoint (handle->backends, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+
+	if (!addRootMountpoint (handle->backends, KEY_NS_SPEC, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+	if (!addRootMountpoint (handle->backends, KEY_NS_SYSTEM, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+	if (!addRootMountpoint (handle->backends, KEY_NS_USER, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+	if (!addRootMountpoint (handle->backends, KEY_NS_DIR, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+	if (!addRootMountpoint (handle->backends, KEY_NS_PROC, handle->modules, handle->global, errorKey))
+	{
+		return false;
+	}
+
+	Key * modulesRoot = keyNew (KDB_SYSTEM_ELEKTRA "/modules", KEY_END);
+	Plugin * modules = elektraPluginOpen ("modules", handle->modules, ksNew (0, KS_END), errorKey);
+	if (modules == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open system:/elektra/modules backend. See warnings for details.");
+		return false;
+	}
+	modules->global = handle->global;
+	addMountpoint (handle->backends, modulesRoot, modules, ksNew (0, KS_END), ksNew (0, KS_END));
+
+	for (elektraCursor i = 0; i < ksGetSize (handle->modules); i++)
+	{
+		Key * cur = ksAtCursor (handle->modules, i);
+		if (keyIsDirectlyBelow (modulesRoot, cur) != 1)
+		{
+			continue;
+		}
+
+		if (!addModulesMountpoint (handle, keyDup (cur, KEY_CP_NAME), errorKey))
+		{
+			return false;
+		}
+	}
+
+	Plugin * version = elektraPluginOpen ("version", handle->modules, ksNew (0, KS_END), errorKey);
+	if (version == NULL)
+	{
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not open system:/elektra/version backend. See warnings for details.");
+		return false;
+	}
+	version->global = handle->global;
+	addMountpoint (handle->backends, keyNew (KDB_SYSTEM_ELEKTRA "/version", KEY_END), version, ksNew (0, KS_END), ksNew (0, KS_END));
+
+	return true;
+}
 
 /**
  * Opens the session with the Key database.
@@ -418,146 +960,95 @@ KDB * kdbOpen (const KeySet * contract, Key * errorKey)
 {
 	if (!errorKey)
 	{
-		ELEKTRA_LOG ("no parent key passed");
+		ELEKTRA_LOG ("no error key passed");
 		return 0;
 	}
 
 	ELEKTRA_LOG ("called with %s", keyName (errorKey));
-
-	int errnosave = errno;
-	KDB * handle = elektraCalloc (sizeof (struct _KDB));
 	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 
-	handle->global = ksNew (0, KS_END);
-	ksAppendKey (handle->global, keyNew ("system:/elektra/kdb", KEY_BINARY, KEY_SIZE, sizeof (handle), KEY_VALUE, &handle, KEY_END));
-	handle->modules = ksNew (0, KS_END);
-	if (elektraModulesInit (handle->modules, errorKey) == -1)
-	{
-		ksDel (handle->global);
-		ksDel (handle->modules);
-		elektraFree (handle);
-		ELEKTRA_SET_INSTALLATION_ERROR (
-			errorKey, "Method 'elektraModulesInit' returned with -1. See other warning or error messages for concrete details");
+	int errnosave = errno; // TODO (kodebach) [Q]: really needed?
 
-		keySetName (errorKey, keyName (initialParent));
-		keySetString (errorKey, keyString (initialParent));
-		keyDel (initialParent);
-		errno = errnosave;
-		return 0;
+	// Step 1: create empty KDB instance
+	KDB * handle = kdbNew (errorKey);
+	if (handle == NULL)
+	{
+		goto error;
 	}
 
-	KeySet * keys = ksNew (0, KS_END);
-	int inFallback = 0;
-	switch (elektraOpenBootstrap (handle, keys, errorKey))
+	// Step 2: configure for bootstrap
+	if (!addElektraMountpoint (handle->backends, handle->modules, handle->global, errorKey))
 	{
-	case -1:
-		ksDel (handle->global);
-		ksDel (handle->modules);
-		elektraFree (handle);
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey,
-						"Could not open default backend. See other warning or error messages for concrete details");
-
-		keySetName (errorKey, keyName (initialParent));
-		keySetString (errorKey, keyString (initialParent));
-		keyDel (initialParent);
-		errno = errnosave;
-		ksDel (keys);
-		return 0;
-	case 0:
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial 'kdbGet()' failed, you should either fix " KDB_DB_INIT
-							    " or the fallback " KDB_DB_FILE);
-		break;
-	case 2:
-		ELEKTRA_LOG ("entered fallback code for bootstrapping");
-		inFallback = 1;
-		break;
+		goto error;
 	}
 
-	keySetString (errorKey, "kdbOpen(): mountGlobals");
+	// Step 3: execute bootstrap
+	KeySet * elektraKs = elektraBoostrap (handle, errorKey);
+	if (elektraKs == NULL)
+	{
+		goto error;
+	}
 
-	if (mountGlobals (handle, ksDup (keys), handle->modules, errorKey) == -1)
+	// Step 4: setup default global plugins
+	// TODO (kodebach): remove/replace step in global plugins rewrite
+	if (mountGlobals (handle, ksDup (elektraKs), handle->modules, errorKey) == -1)
 	{
 		// mountGlobals also sets a warning containing the name of the plugin that failed to load
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Mounting global plugins failed. Please see warning of concrete plugin");
+		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Mounting global plugins failed. Please see warning of concrete plugin");
+		ksDel (elektraKs);
+		goto error;
 	}
 
-	keySetName (errorKey, keyName (initialParent));
-	keySetString (errorKey, "kdbOpen(): backendClose");
-
-	backendClose (handle->defaultBackend, errorKey);
-	splitDel (handle->split);
-	handle->split = 0;
-	handle->defaultBackend = 0;
-	handle->trie = 0;
-
-#ifdef HAVE_LOGGER
-	if (inFallback) ELEKTRA_LOG_WARNING ("fallback for bootstrapping: you might want to run `kdb upgrade-bootstrap`");
-
-	Key * key;
-
-	ksRewind (keys);
-	for (key = ksNext (keys); key; key = ksNext (keys))
+	// Step 5: process contract
+	if (contract != NULL && !ensureContract (handle, contract, errorKey))
 	{
-		ELEKTRA_LOG_DEBUG ("config for createTrie name: %s value: %s", keyName (key), keyString (key));
+		ksDel (elektraKs);
+		goto error;
 	}
-#endif
 
-	if (contract != NULL)
+	// Step 6: parse mountpoints
+	KeySet * backends = elektraMountpointsParse (elektraKs, handle->modules, handle->global, errorKey);
+	if (backends == NULL)
 	{
-		keySetString (errorKey, "kdbOpen(): ensureContract");
-
-		if (ensureContract (handle, contract, errorKey) != 0)
-		{
-			// error is set by ensureContract
-			keySetString (errorKey, "kdbOpen(): close");
-			kdbClose (handle, errorKey);
-
-			keySetName (errorKey, keyName (initialParent));
-			keySetString (errorKey, keyString (initialParent));
-			keyDel (initialParent);
-			errno = errnosave;
-			return 0;
-		}
+		ksDel (elektraKs);
+		goto error;
 	}
 
-	handle->split = splitNew ();
+	// Step 7: switch from boostrap to real config
+	ksDel (elektraKs);
+	keyCopy (errorKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 
-	keySetString (errorKey, "kdbOpen(): mountOpen");
-	// Open the trie, keys will be deleted within mountOpen
-	if (mountOpen (handle, keys, handle->modules, errorKey) == -1)
+	if (!closeBackends (handle->backends, errorKey))
 	{
-		ELEKTRA_ADD_INSTALLATION_WARNING (errorKey, "Initial loading of trie did not work");
+		goto error;
 	}
 
-	keySetString (errorKey, "kdbOpen(): mountDefault");
-	if (mountDefault (handle, handle->modules, inFallback, errorKey) == -1)
+	handle->backends = backends;
+
+	// Step 8: add hardcoded mountpoints
+	if (!addHardcodedMountpoints (handle, errorKey))
 	{
-		ELEKTRA_SET_INSTALLATION_ERROR (errorKey, "Could not reopen and mount default backend");
-		keySetString (errorKey, "kdbOpen(): close");
-		kdbClose (handle, errorKey);
-
-		keySetName (errorKey, keyName (initialParent));
-		keySetString (errorKey, keyString (initialParent));
-		keyDel (initialParent);
-		errno = errnosave;
-		return 0;
+		goto error;
 	}
 
-	keySetString (errorKey, "kdbOpen(): mountVersion");
-	mountVersion (handle, errorKey);
-
-	keySetString (errorKey, "kdbOpen(): mountModules");
-	if (mountModules (handle, handle->modules, errorKey) == -1)
-	{
-		ELEKTRA_ADD_INTERNAL_WARNING (errorKey, "Mounting modules did not work");
-	}
-
-	keySetName (errorKey, keyName (initialParent));
-	keySetString (errorKey, keyString (initialParent));
+	keyCopy (errorKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 	errno = errnosave;
 
 	return handle;
+
+error:
+	if (handle != NULL)
+	{
+		Key * closeKey = keyNew ("/", KEY_END);
+		kdbClose (handle, closeKey);
+		keyDel (closeKey);
+	}
+
+	keyCopy (errorKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
+	keyDel (initialParent);
+	errno = errnosave;
+	return NULL;
 }
 
 
@@ -596,7 +1087,7 @@ int kdbClose (KDB * handle, Key * errorKey)
 
 	Key * initialParent = keyDup (errorKey, KEY_CP_ALL);
 	int errnosave = errno;
-
+#if 1 == 0
 	if (handle->split)
 	{
 		splitDel (handle->split);
@@ -604,14 +1095,21 @@ int kdbClose (KDB * handle, Key * errorKey)
 
 	trieClose (handle->trie, errorKey);
 
-	backendClose (handle->defaultBackend, errorKey);
+	elektraPluginClose (handle->defaultBackend, errorKey);
 	handle->defaultBackend = 0;
 
 	// not set in fallback mode, so lets check:
 	if (handle->initBackend)
 	{
-		backendClose (handle->initBackend, errorKey);
+		elektraPluginClose (handle->initBackend, errorKey);
 		handle->initBackend = 0;
+	}
+#endif
+	if (handle->backends)
+	{
+
+		closeBackends (handle->backends, errorKey);
+		handle->backends = NULL;
 	}
 
 	for (int i = 0; i < NR_GLOBAL_POSITIONS; ++i)
@@ -632,309 +1130,20 @@ int kdbClose (KDB * handle, Key * errorKey)
 		ELEKTRA_ADD_RESOURCE_WARNING (errorKey, "Could not close modules: modules were not open");
 	}
 
-	if (handle->global) ksDel (handle->global);
+	if (handle->global)
+	{
+		ksDel (handle->global);
+	}
 
 	elektraFree (handle);
 
-	keySetName (errorKey, keyName (initialParent));
-	keySetString (errorKey, keyString (initialParent));
+	keyCopy (errorKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
 	errno = errnosave;
 	return 0;
 }
 
-/**
- * @internal
- *
- * @brief Check if an update is needed at all
- *
- * @retval -2 cache hit
- * @retval -1 an error occurred
- * @retval 0 no update needed
- * @retval number of plugins which need update
- */
-static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
-{
-	int updateNeededOccurred = 0;
-	size_t cacheHits = 0;
-	for (size_t i = 0; i < split->size; i++)
-	{
-		int ret = -1;
-		Backend * backend = split->handles[i];
-		clear_bit (split->syncbits[i], (splitflag_t) SPLIT_FLAG_SYNC);
-
-		Plugin * resolver = backend->getplugins[RESOLVER_PLUGIN];
-		if (resolver && resolver->kdbGet)
-		{
-			ksRewind (split->keysets[i]);
-			keySetName (parentKey, keyName (split->parents[i]));
-			keySetString (parentKey, "");
-			ret = resolver->kdbGet (resolver, split->keysets[i], parentKey);
-			// store resolved filename
-			keySetString (split->parents[i], keyString (parentKey));
-			// no keys in that backend
-			ELEKTRA_LOG_DEBUG ("backend: %s,%s ;; ret: %d", keyName (split->parents[i]), keyString (split->parents[i]), ret);
-
-			backendUpdateSize (backend, split->parents[i], 0);
-		}
-		// TODO: set error in else case!
-
-		switch (ret)
-		{
-		case ELEKTRA_PLUGIN_STATUS_CACHE_HIT:
-			// Keys in cache are up-to-date
-			++cacheHits;
-			// Set sync flag, needed in case of cache miss
-			// FALLTHROUGH
-		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
-			// Seems like we need to sync that
-			set_bit (split->syncbits[i], SPLIT_FLAG_SYNC);
-			++updateNeededOccurred;
-			break;
-		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
-			// Nothing to do here
-			break;
-		default:
-			ELEKTRA_ASSERT (0, "resolver did not return 1 0 -1, but %d", ret);
-		case ELEKTRA_PLUGIN_STATUS_ERROR:
-			// Ohh, an error occurred, lets stop the
-			// process.
-			return -1;
-		}
-	}
-
-	if (cacheHits == split->size)
-	{
-		ELEKTRA_LOG_DEBUG ("all backends report cache is up-to-date");
-		return -2;
-	}
-
-	return updateNeededOccurred;
-}
-
-typedef enum
-{
-	FIRST,
-	LAST
-} UpdatePass;
-
-/**
- * @internal
- * @brief Do the real update.
- *
- * @retval -1 on error
- * @retval 0 on success
- */
-static int elektraGetDoUpdate (Split * split, Key * parentKey)
-{
-	const int bypassedSplits = 1;
-	for (size_t i = 0; i < split->size - bypassedSplits; i++)
-	{
-		if (!test_bit (split->syncbits[i], SPLIT_FLAG_SYNC))
-		{
-			// skip it, update is not needed
-			continue;
-		}
-		Backend * backend = split->handles[i];
-		ksRewind (split->keysets[i]);
-		keySetName (parentKey, keyName (split->parents[i]));
-		keySetString (parentKey, keyString (split->parents[i]));
-
-		for (size_t p = 1; p < NR_OF_PLUGINS; ++p)
-		{
-			int ret = 0;
-			if (backend->getplugins[p] && backend->getplugins[p]->kdbGet)
-			{
-				ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], split->keysets[i], parentKey);
-			}
-
-			if (ret == -1)
-			{
-				// Ohh, an error occurred,
-				// lets stop the process.
-				return -1;
-			}
-		}
-	}
-	return 0;
-}
-
-static KeySet * prepareGlobalKS (KeySet * ks, Key * parentKey)
-{
-	ksRewind (ks);
-	Key * cutKey = keyNew ("/", KEY_END);
-	keyAddName (cutKey, strchr (keyName (parentKey), '/'));
-	KeySet * cutKS = ksCut (ks, cutKey);
-	Key * specCutKey = keyNew ("spec:/", KEY_END);
-	KeySet * specCut = ksCut (cutKS, specCutKey);
-	ksRewind (specCut);
-	Key * cur;
-	while ((cur = ksNext (specCut)) != NULL)
-	{
-		if (keyGetNamespace (cur) == KEY_NS_CASCADING)
-		{
-			ksAppendKey (cutKS, cur);
-			keyDel (ksLookup (specCut, cur, KDB_O_POP));
-		}
-	}
-	ksAppend (ks, specCut);
-	ksDel (specCut);
-	keyDel (specCutKey);
-	keyDel (cutKey);
-	ksRewind (cutKS);
-	return cutKS;
-}
-
-static int elektraGetDoUpdateWithGlobalHooks (KDB * handle, Split * split, KeySet * ks, Key * parentKey, Key * initialParent,
-					      UpdatePass run)
-{
-	const int bypassedSplits = 1;
-
-	switch (run)
-	{
-	case FIRST:
-		keySetName (parentKey, keyName (initialParent));
-		if (elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, INIT) == ELEKTRA_PLUGIN_ERROR)
-		{
-			return -1;
-		}
-		if (elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_ERROR)
-		{
-			return -1;
-		}
-		break;
-	case LAST:
-		keySetName (parentKey, keyName (initialParent));
-		if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT) == ELEKTRA_PLUGIN_ERROR)
-		{
-			return -1;
-		}
-		if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_ERROR)
-		{
-			return -1;
-		}
-		elektraGlobalError (handle, ks, parentKey, PROCGETSTORAGE, DEINIT);
-		break;
-	default:
-		break;
-	}
-
-	// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT);
-
-	for (size_t i = 0; i < split->size - bypassedSplits; i++)
-	{
-		Backend * backend = split->handles[i];
-		ksRewind (split->keysets[i]);
-		keySetName (parentKey, keyName (split->parents[i]));
-		keySetString (parentKey, keyString (split->parents[i]));
-		int start, end;
-		if (run == FIRST)
-		{
-			start = 1;
-			end = STORAGE_PLUGIN + 1;
-		}
-		else
-		{
-			start = STORAGE_PLUGIN + 1;
-			end = NR_OF_PLUGINS;
-		}
-		for (int p = start; p < end; ++p)
-		{
-			int ret = 0;
-
-			if (p == (STORAGE_PLUGIN + 1) && handle->globalPlugins[PROCGETSTORAGE][FOREACH])
-			{
-				keySetName (parentKey, keyName (initialParent));
-				ksRewind (ks);
-				handle->globalPlugins[PROCGETSTORAGE][FOREACH]->kdbGet (handle->globalPlugins[PROCGETSTORAGE][FOREACH], ks,
-											parentKey);
-				keySetName (parentKey, keyName (split->parents[i]));
-			}
-			if (p == (STORAGE_PLUGIN + 2) && handle->globalPlugins[POSTGETSTORAGE][FOREACH])
-			{
-				keySetName (parentKey, keyName (initialParent));
-				ksRewind (ks);
-				handle->globalPlugins[POSTGETSTORAGE][FOREACH]->kdbGet (handle->globalPlugins[POSTGETSTORAGE][FOREACH], ks,
-											parentKey);
-				keySetName (parentKey, keyName (split->parents[i]));
-			}
-			else if (p == (NR_OF_PLUGINS - 1) && handle->globalPlugins[POSTGETCLEANUP][FOREACH])
-			{
-				keySetName (parentKey, keyName (initialParent));
-				ksRewind (ks);
-				handle->globalPlugins[POSTGETCLEANUP][FOREACH]->kdbGet (handle->globalPlugins[POSTGETCLEANUP][FOREACH], ks,
-											parentKey);
-				keySetName (parentKey, keyName (split->parents[i]));
-			}
-
-			if (backend->getplugins[p] && backend->getplugins[p]->kdbGet)
-			{
-				if (p <= STORAGE_PLUGIN)
-				{
-					if (!test_bit (split->syncbits[i], SPLIT_FLAG_SYNC))
-					{
-						// skip it, update is not needed
-						continue;
-					}
-
-					ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], split->keysets[i], parentKey);
-				}
-				else
-				{
-					KeySet * cutKS = prepareGlobalKS (ks, parentKey);
-					ret = backend->getplugins[p]->kdbGet (backend->getplugins[p], cutKS, parentKey);
-					ksAppend (ks, cutKS);
-					ksDel (cutKS);
-				}
-			}
-
-			if (ret == -1)
-			{
-				keySetName (parentKey, keyName (initialParent));
-				// Ohh, an error occurred,
-				// lets stop the process.
-				elektraGlobalError (handle, ks, parentKey, GETSTORAGE, DEINIT);
-				// elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
-				return -1;
-			}
-		}
-	}
-
-	if (run == FIRST)
-	{
-		keySetName (parentKey, keyName (initialParent));
-		elektraGlobalGet (handle, ks, parentKey, GETSTORAGE, DEINIT);
-		// elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
-	}
-	return 0;
-}
-
-static int copyError (Key * dest, Key * src)
-{
-	keyRewindMeta (src);
-	const Key * metaKey = keyGetMeta (src, "error");
-	if (!metaKey) return 0;
-	keySetMeta (dest, keyName (metaKey), keyString (metaKey));
-	while ((metaKey = keyNextMeta (src)) != NULL)
-	{
-		if (strncmp (keyName (metaKey), "error/", 6)) break;
-		keySetMeta (dest, keyName (metaKey), keyString (metaKey));
-	}
-	return 1;
-}
-static void clearError (Key * key)
-{
-	keySetMeta (key, "error", 0);
-	keySetMeta (key, "error/number", 0);
-	keySetMeta (key, "error/description", 0);
-	keySetMeta (key, "error/reason", 0);
-	keySetMeta (key, "error/module", 0);
-	keySetMeta (key, "error/file", 0);
-	keySetMeta (key, "error/line", 0);
-	keySetMeta (key, "error/configfile", 0);
-	keySetMeta (key, "error/mountpoint", 0);
-}
-
+#if 2 == 0
 static int elektraCacheCheckParent (KeySet * global, Key * cacheParent, Key * initialParent)
 {
 	const char * cacheName = keyGetNamespace (cacheParent) == KEY_NS_DEFAULT ? "" : keyName (cacheParent);
@@ -1124,6 +1333,267 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 
 	return 0;
 }
+#endif
+
+static bool initBackends (KeySet * backends, Key * parentKey)
+{
+	bool success = true;
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		// TODO (kodebach): lazy open
+
+		Key * backendKey = ksAtCursor (backends, i);
+		keySetMeta (backendKey, "meta:/internal/kdbreadonly", NULL);
+
+		BackendData * backendData = (BackendData *) keyValue (backendKey);
+
+		if (backendData->initialized)
+		{
+			// already initialized
+			continue;
+		}
+
+		kdbInitPtr initFn = backendData->backend->kdbInit;
+		if (initFn == NULL)
+		{
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey, "The mountpoint '%s' defined a plugin ('%s') without a kdbInit function as a backend.",
+				keyName (backendKey), backendData->backend->name);
+			success = false;
+			continue;
+		}
+
+		// set up parentKey and global keyset
+		keySetName (parentKey, KDB_SYSTEM_ELEKTRA "/mountpoints");
+		keyAddBaseName (parentKey, keyName (backendKey));
+		// TODO (kodebach): find a better way to pass plugins, global shouldn't be specific to the mountpoint
+		ksAppendKey (backendData->backend->global,
+			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
+				     &backendData->plugins, KEY_END));
+		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+
+		int ret = initFn (backendData->backend, backendData->definition, parentKey);
+
+		// restore parentKey
+		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+
+		// check return code
+		switch (ret)
+		{
+		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
+			// successfully initialized
+			backendData->initialized = true;
+			break;
+		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
+			// successfully initialized as read-only
+			backendData->initialized = true;
+			keySetMeta (backendKey, "meta:/internal/kdbreadonly", "1");
+			break;
+		case ELEKTRA_PLUGIN_STATUS_ERROR:
+			// handle error
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey, "Calling the kdbInit function for the backend plugin ('%s') of the mountpoint '%s' has failed.",
+				backendData->backend->name, keyName (backendKey));
+			success = false;
+			continue;
+		default:
+			// unknown result -> treat as error
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey,
+				"The kdbInit function for the backend plugin ('%s') of the mountpoint '%s' returned "
+				"an unknown result code '%d'. Treating the call as failed.",
+				backendData->backend->name, keyName (backendKey), ret);
+			success = false;
+			continue;
+		}
+	}
+
+	if (!success)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "The init phase of kdbGet() has failed. See warnings for details.");
+	}
+
+	return success;
+}
+
+static bool resolveBackendsForGet (KeySet * backends, Key * parentKey)
+{
+	bool success = true;
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		Key * backendKey = ksAtCursor (backends, i);
+		keySetMeta (backendKey, "meta:/internal/kdbmountpoint", NULL);
+		keySetMeta (backendKey, "meta:/internal/kdbneedsupdate", NULL);
+
+		if (keyGetNamespace (backendKey) == KEY_NS_PROC)
+		{
+			// proc:/ backends only run in poststorage
+			// FIXME (kodebach) [Q]: how to tell if a proc:/ backend needs an update?
+			keySetMeta (backendKey, "meta:/internal/kdbneedsupdate", "1");
+			continue;
+		}
+
+		BackendData * backendData = (BackendData *) keyValue (backendKey);
+
+		// check if get function exists
+		// TODO (kodebach): move check into kdbOpen
+		kdbGetPtr getFn = backendData->backend->kdbGet;
+		if (getFn == NULL)
+		{
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey, "The mountpoint '%s' defined a plugin ('%s') without a kdbGet function as a backend.",
+				keyName (backendKey), backendData->backend->name);
+			success = false;
+			continue;
+		}
+
+		// set up parentKey and global keyset for plugin
+		keyCopy (parentKey, backendKey, KEY_CP_NAME);
+		keySetString (parentKey, "");
+		ksAppendKey (backendData->backend->global, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, "resolver", KEY_END));
+		ksAppendKey (backendData->backend->global,
+			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
+				     &backendData->plugins, KEY_END));
+		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+
+		int ret = getFn (backendData->backend, backendData->keys, parentKey);
+
+		// restore parentKey
+		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME);
+
+		// check return code
+		switch (ret)
+		{
+		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
+			// Store returned mountpoint ID and mark for update
+			keySetMeta (backendKey, "meta:/internal/kdbmountpoint", keyString (parentKey));
+			keySetMeta (backendKey, "meta:/internal/kdbneedsupdate", "1");
+			break;
+		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
+			// no update needed
+			keySetMeta (backendKey, "meta:/internal/kdbmountpoint", keyString (parentKey));
+			break;
+		case ELEKTRA_PLUGIN_STATUS_ERROR:
+			// handle error
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"Calling the kdbGet function for the backend plugin ('%s') of the mountpoint '%s' "
+							"has failed during the resolver phase.",
+							backendData->backend->name, keyName (backendKey));
+			success = false;
+			continue;
+		default:
+			// unknown result -> treat as error
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey,
+				"The kdbGet function for the backend plugin ('%s') of the mountpoint '%s' returned "
+				"an unknown result code '%d' during the resolver phase. Treating the call as failed.",
+				backendData->backend->name, keyName (backendKey), ret);
+			success = false;
+			continue;
+		}
+	}
+
+	if (!success)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "The resolve phase of kdbGet() has failed. See warnings for details.");
+	}
+
+	return success;
+}
+
+static bool runGetPhase (KeySet * backends, Key * parentKey, const char * phase)
+{
+	// TODO (kodebach): better solution?
+	bool speconly = false;
+	bool skipspec = false;
+	if (strncmp (phase, KDB_GET_PHASE_POST_STORAGE, sizeof (KDB_GET_PHASE_POST_STORAGE) - 1) == 0)
+	{
+		speconly = strcmp (phase, KDB_GET_PHASE_POST_STORAGE_SPEC);
+		skipspec = !speconly;
+		phase = KDB_GET_PHASE_POST_STORAGE;
+	}
+
+	bool success = true;
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		Key * backendKey = ksAtCursor (backends, i);
+		BackendData * backendData = (BackendData *) keyValue (backendKey);
+
+		if (speconly && keyGetNamespace (backendKey) != KEY_NS_SPEC)
+		{
+			continue;
+		}
+
+		if (skipspec && keyGetNamespace (backendKey) == KEY_NS_SPEC)
+		{
+			continue;
+		}
+
+		if (keyGetNamespace (backendKey) == KEY_NS_PROC && strcmp (phase, KDB_GET_PHASE_POST_STORAGE) != 0)
+		{
+			// proc:/ backends only run in poststorage phase
+			continue;
+		}
+
+		// check if get function exists
+		// TODO (kodebach): move check into kdbOpen
+		kdbGetPtr getFn = backendData->backend->kdbGet;
+		if (getFn == NULL)
+		{
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey, "The mountpoint '%s' defined a plugin ('%s') without a kdbGet function as a backend.",
+				keyName (backendKey), backendData->backend->name);
+			success = false;
+			continue;
+		}
+
+		// set up parentKey and global keyset for plugin
+		keyCopy (parentKey, backendKey, KEY_CP_NAME);
+		keyCopy (parentKey, keyGetMeta (backendKey, "meta:/internal/kdbmountpoint"), KEY_CP_STRING);
+		ksAppendKey (backendData->backend->global, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, phase, KEY_END));
+		ksAppendKey (backendData->backend->global,
+			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
+				     &backendData->plugins, KEY_END));
+		set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+
+		int ret = getFn (backendData->backend, backendData->keys, parentKey);
+
+		// restore parentKey
+		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+
+		// check return code
+		switch (ret)
+		{
+		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
+		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
+			// success
+			break;
+		case ELEKTRA_PLUGIN_STATUS_ERROR:
+			// handle error
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"Calling the kdbGet function for the backend plugin ('%s') of the mountpoint '%s' "
+							"has failed during the %s phase.",
+							backendData->backend->name, keyName (backendKey), phase);
+			success = false;
+			continue;
+		default:
+			// unknown result -> treat as error
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"The kdbGet function for the backend plugin ('%s') of the mountpoint '%s' returned "
+							"an unknown result code '%d' during the %s phase. Treating the call as failed.",
+							backendData->backend->name, keyName (backendKey), ret, phase);
+			success = false;
+			continue;
+		}
+	}
+
+	if (!success)
+	{
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "The %s phase of kdbGet() has failed. See warnings for details.", phase);
+	}
+
+	return success;
+}
 
 
 /**
@@ -1206,502 +1676,470 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
  */
 int kdbGet (KDB * handle, KeySet * ks, Key * parentKey)
 {
-	elektraNamespace ns = keyGetNamespace (parentKey);
-	if (ns == KEY_NS_NONE)
+	// TODO (kodebach): different handling of namespaces
+	// FIXME (kodebach): write tests
+
+	// Step 0: check preconditions
+	if (parentKey == NULL)
 	{
+		ELEKTRA_LOG ("parentKey == NULL");
 		return -1;
 	}
 
-	Key * oldError = keyNew (keyName (parentKey), KEY_END);
-	copyError (oldError, parentKey);
-
-	if (ns == KEY_NS_META)
+	if (test_bit (parentKey->flags, KEY_FLAG_RO_META))
 	{
-		clearError (parentKey);
-		keyDel (oldError);
-		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Metakey with name '%s' passed to kdbGet as parentkey", keyName (parentKey));
+		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_META");
 		return -1;
 	}
 
-	int errnosave = errno;
-	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
+	clearErrorAndWarnings (parentKey); // TODO (kodebach) [doc]: NEW kdbGet now ALWAYS clears errors AND warnings
+
+	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only name passed");
+		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_NAME");
+		return -1;
+	}
+
+	if (test_bit (parentKey->flags, KEY_FLAG_RO_VALUE))
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only value passed");
+		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_VALUE");
+		return -1;
+	}
+
+	if (keyGetNamespace (parentKey) == KEY_NS_META)
+	{
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "parentKey with meta:/ name passed ('%s')", keyName (parentKey));
+		return -1;
+	}
+
+	if (handle == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "NULL pointer passed for handle");
+		return -1;
+	}
+
+	if (ks == NULL)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "NULL pointer passed for KeySet");
+		return -1;
+	}
+
+	int errnosave = errno;				      // TODO (kodebach) [Q]: needed?
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL); // TODO (kodebach): still needed with locks?
 
 	ELEKTRA_LOG ("now in new kdbGet (%s)", keyName (parentKey));
 
+#if 1 == 0
 	Split * split = splitNew ();
-
-	KeySet * cache = 0;
-	Key * cacheParent = 0;
-	int debugGlobalPositions = 0;
-
-#ifdef DEBUG
-	if (keyGetMeta (parentKey, "debugGlobalPositions") != 0)
-	{
-		debugGlobalPositions = 1;
-	}
 #endif
-
-	if (!handle)
+	// Step 1: find backends for parentKey
+	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
+	bool goptsActive = handle->globalPlugins[PROCGETSTORAGE][MAXONCE] != NULL;
+	if (goptsActive)
 	{
-		clearError (parentKey);
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "NULL pointer passed for handle");
-		goto error;
+		// HACK: for gopts; generates keys outside backend
+
+		// TODO (kodebach): handle other keys outside backend
+		ksAppendKey (backends, ksLookupByName (handle->backends, "proc:/", 0));
 	}
+	KeySet * allBackends = ksDup (backends);
 
-	if (!ks)
+	// Step 2: run open operation where needed (happens within step 3)
+	// Step 3: run init phase where needed
+	if (!initBackends (backends, parentKey))
 	{
-		clearError (parentKey);
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "NULL pointer passed for KeySet");
-		goto error;
-	}
-
-	if (splitBuildup (split, handle, parentKey) == -1)
-	{
-		clearError (parentKey);
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Error in splitBuildup");
-		goto error;
-	}
-
-	keySetName (parentKey, keyName (initialParent));
-	cache = ksNew (0, KS_END);
-	cacheParent = keyDup (mountGetMountpoint (handle, keyName (parentKey)), KEY_CP_ALL);
-	if (cacheParent == NULL)
-	{
-		cacheParent = keyNew ("default:/", KEY_VALUE, "default", KEY_END);
-	}
-	if (ns == KEY_NS_CASCADING) keySetMeta (cacheParent, "cascading", "");
-	keySetName (parentKey, keyName (initialParent));
-	if (handle->globalPlugins[PREGETCACHE][MAXONCE])
-	{
-		elektraCacheLoad (handle, cache, parentKey, initialParent, cacheParent); // parentkey different from initialParent
-	}
-
-	int hasProcGetStorage = handle->globalPlugins[PROCGETSTORAGE][INIT] || handle->globalPlugins[PROCGETSTORAGE][MAXONCE] ||
-				handle->globalPlugins[PROCGETSTORAGE][DEINIT];
-
-	// Check if a update is needed at all
-	switch (elektraGetCheckUpdateNeeded (split, parentKey))
-	{
-	case -2: // We have a cache hit
-		// TODO: cache breaks procgetstorage
-		if (hasProcGetStorage ||
-		    elektraCacheLoadSplit (handle, split, ks, &cache, &cacheParent, parentKey, initialParent, debugGlobalPositions) != 0)
-		{
-			goto cachemiss;
-		}
-
-		keySetName (parentKey, keyName (initialParent));
-		splitUpdateFileName (split, handle, parentKey);
+		// TODO (kodebach): name not needed, once lock is in place
+		keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 		keyDel (initialParent);
-		splitDel (split);
+
 		errno = errnosave;
-		keyDel (oldError);
-		return 1;
-	case 0: // We don't need an update so let's do nothing
+		return -1;
+	}
+	clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
 
-		if (debugGlobalPositions)
+	// Step 4: run resolver phase
+	if (!resolveBackendsForGet (backends, parentKey))
+	{
+		goto error;
+	}
+
+	// Step 5: remove up-to-date backends
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		if (keyGetMeta (ksAtCursor (backends, i), "meta:/internal/kdbneedsupdate") == NULL)
 		{
-			keySetName (parentKey, keyName (initialParent));
-			if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				goto error;
-			}
-			if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				goto error;
-			}
-			if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				goto error;
-			}
-
-			keySetName (parentKey, keyName (initialParent));
-			if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				goto error;
-			}
-			if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				goto error;
-			}
-			if (elektraGlobalGet (handle, ks, parentKey, PROCGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				goto error;
-			}
+			elektraKsPopAtCursor (backends, i);
+			--i;
 		}
+	}
 
-		ksDel (cache);
-		cache = 0;
-		keyDel (cacheParent);
-		cacheParent = 0;
-
-		if (debugGlobalPositions)
-		{
-			keySetName (parentKey, keyName (initialParent));
-			if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				goto error;
-			}
-			if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				goto error;
-			}
-			if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-			{
-				goto error;
-			}
-		}
-
-		keySetName (parentKey, keyName (initialParent));
-		splitUpdateFileName (split, handle, parentKey);
+	// Step 6: return if no backends left
+	// HACK: for gopts
+	if (ksGetSize (backends) == 0 || (goptsActive && keyGetNamespace (ksAtCursor (backends, 0)) == KEY_NS_PROC &&
+					  keyGetNamespace (ksAtCursor (backends, ksGetSize (backends) - 1)) == KEY_NS_PROC))
+	{
+		// TODO (kodebach): name not needed, once lock is in place
+		keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 		keyDel (initialParent);
-		splitDel (split);
+
+		keyCopy (parentKey, keyGetMeta (backendsFindParent (allBackends, parentKey), "meta:/internal/kdbmountpoint"),
+			 KEY_CP_STRING);
+
+		ksDel (backends);
+		ksDel (allBackends);
 		errno = errnosave;
-		keyDel (oldError);
 		return 0;
-	case -1:
-		goto error;
-		// otherwise fall trough
 	}
 
-cachemiss:
-	ksDel (cache);
-	cache = 0;
+	// check if cache is enabled, Steps 7-9 only run with cache
+	// FIXME (kodebach): implement cache
+	bool cacheEnabled = false;
+	if (cacheEnabled)
+	{
+		// Step 7: get cache entry IDs
+		// FIXME (kodebach): implement cache
 
-	if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+		// Step 8: run cachecheck phase
+		// FIXME (kodebach): implement cache
+
+		// Step 9: retrieve cache data
+		// FIXME (kodebach): implement cache
+	}
+
+	// Step 10a: run prestorage phase
+	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_PRE_STORAGE))
 	{
 		goto error;
 	}
-	if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
+
+	// Step 10b: discard data that plugins may have produced
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		const BackendData * backendData = keyValue (ksAtCursor (backends, i));
+		ksClear (backendData->keys);
+	}
+
+	// Step 10c: run storage phase
+	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_STORAGE))
 	{
 		goto error;
 	}
-	if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
+
+	// Step 11: run poststorage phase for spec:/
+	Key * specRoot = keyNew ("spec:/", KEY_END);
+	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE_SPEC))
+	{
+		keyDel (specRoot);
+		goto error;
+	}
+	keyDel (specRoot);
+
+	// TODO (kodebach) [Q]: can we avoid this merge and the split in step 15?
+	// Step 12: merge data from all backends
+	KeySet * dataKs = ksNew (ksGetSize (ks), KS_END);
+	backendsMerge (backends, dataKs);
+
+	// Step 13: run procgetstorage global plugins
+	if (elektraGlobalGet (handle, dataKs, parentKey, PROCGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
 		goto error;
 	}
 
-	// Appoint keys (some in the bypass)
-	if (splitAppoint (split, handle, ks) == -1)
+	// Step 14: run postgetstorage global plugins
+	if (elektraGlobalGet (handle, dataKs, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
-		clearError (parentKey);
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Error in splitAppoint");
 		goto error;
 	}
 
-	if (handle->globalPlugins[POSTGETSTORAGE][FOREACH] || handle->globalPlugins[POSTGETCLEANUP][FOREACH] ||
-	    handle->globalPlugins[PROCGETSTORAGE][FOREACH] || hasProcGetStorage)
+	/* TODO (kodebach): implement actual steps with new global plugins
+		// Step 13: run gopts (if enabled)
+		keyCopy (parentKey, initialParent, KEY_CP_NAME);
+		keySetNamespace (cascadingParent, KEY_NS_CASCADING);
+		set_bit (parentKey, KEY_LOCK_NAME | KEY_LOCK_VALUE);
+		bool goptsEnabled = false;
+		if (goptsEnabled && !goptsGet (dataKs, cascadingParent))
+		{
+			clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
+			goto error;
+		}
+
+		// Step 14: run spec plugin
+		if (!specGet (dataKs, cascadingParent))
+		{
+			clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
+			goto error;
+		}
+		clear_bit (parentKey->flags, KEY_LOCK_NAME | KEY_LOCK_VALUE);
+	*/
+
+	// Step 15: split dataKs for poststorage phase
+	// FIXME (kodebach): handle proc:/ keys
+	if (!backendsDivide (backends, dataKs))
 	{
-		clearError (parentKey);
-		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, FIRST) == -1)
-		{
-			goto error;
-		}
-		else
-		{
-			copyError (parentKey, oldError);
-		}
-
-		keySetName (parentKey, keyName (initialParent));
-
-		if (splitGet (split, parentKey, handle) == -1)
-		{
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
-			// continue, because sizes are already updated
-		}
-		ksClear (ks);
-		splitMergeBackends (split, ks);
-
-		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-		{
-			goto error;
-		}
-		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-		{
-			goto error;
-		}
-		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-		{
-			goto error;
-		}
-
-		clearError (parentKey);
-		if (elektraGetDoUpdateWithGlobalHooks (handle, split, ks, parentKey, initialParent, LAST) == -1)
-		{
-			goto error;
-		}
-		else
-		{
-			copyError (parentKey, oldError);
-		}
+		// FIXME (kodebach): report key that can't be divided
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "Couldn't divide keys into mountpoints before poststorage. Please report this bug at "
+					    "https://issues.libelektra.org.");
+		goto error;
 	}
-	else
+
+	// Step 16: run poststorage phase for non-spec:/
+	if (!runGetPhase (backends, parentKey, KDB_GET_PHASE_POST_STORAGE_NONSPEC))
 	{
-
-		/* Now do the real updating,
-		   but not for bypassed keys in split->size-1 */
-		clearError (parentKey);
-		// do everything up to position get_storage
-		if (elektraGetDoUpdate (split, parentKey) == -1)
-		{
-			goto error;
-		}
-		else
-		{
-			copyError (parentKey, oldError);
-		}
-
-		/* Now post-process the updated keysets */
-		if (splitGet (split, parentKey, handle) == -1)
-		{
-			ELEKTRA_ADD_PLUGIN_MISBEHAVIOR_WARNINGF (parentKey, "Wrong keys in postprocessing: %s", keyName (ksCurrent (ks)));
-			// continue, because sizes are already updated
-		}
-
-		ksClear (ks);
-		splitMergeBackends (split, ks);
-
-		keySetName (parentKey, keyName (initialParent));
-
-		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-		{
-			goto error;
-		}
-		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-		{
-			goto error;
-		}
-		if (elektraGlobalGet (handle, ks, parentKey, POSTGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-		{
-			goto error;
-		}
+		goto error;
 	}
 
 	keySetName (parentKey, keyName (initialParent));
 
-	if (handle->globalPlugins[POSTGETCACHE][MAXONCE])
+	// Step 17: remove the parts of ks we read from backends
+	// Note: we need to do this, so that in a second kdbGet() keys
+	//       removed from the backend are removed from ks as well
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		splitCacheStoreState (handle, split, handle->global, cacheParent, initialParent);
-		KeySet * proc = elektraCutProc (ks); // remove proc keys before caching
-		if (elektraGlobalSet (handle, ks, cacheParent, POSTGETCACHE, MAXONCE) != ELEKTRA_PLUGIN_STATUS_SUCCESS)
-		{
-			ELEKTRA_LOG_DEBUG ("CACHE ERROR: could not store cache");
-			// we must remove the stored split state from the global keyset
-			// if there was an error, otherwise we get erroneous cache hits
-			elektraCacheCutMeta (handle);
-		}
-		elektraRestoreProc (ks, proc);
+		ksDel (ksCut (ks, ksAtCursor (backends, i)));
 	}
-	else
-	{
-		elektraCacheCutMeta (handle);
-	}
-	keyDel (cacheParent);
-	cacheParent = 0;
 
-	// the default split is not handled by POSTGETSTORAGE
-	splitMergeDefault (split, ks);
+	// Step 18: merge data into ks and return
+	backendsMerge (backends, ks);
 
-	ksRewind (ks);
+	// Step 19: update cache
+	// FIXME (kodebach): implement cache
 
-	keySetName (parentKey, keyName (initialParent));
-
-	splitUpdateFileName (split, handle, parentKey);
+	// TODO (kodebach): name not needed, once lock is in place
+	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
-	keyDel (oldError);
-	splitDel (split);
+
+	keyCopy (parentKey, keyGetMeta (backendsFindParent (allBackends, parentKey), "meta:/internal/kdbmountpoint"), KEY_CP_STRING);
+
+	ksDel (backends);
+	ksDel (allBackends);
 	errno = errnosave;
 	return 1;
 
 error:
 	ELEKTRA_LOG_DEBUG ("now in error state");
-	if (cacheParent) keyDel (cacheParent);
-	if (cache) ksDel (cache);
-	keySetName (parentKey, keyName (initialParent));
-	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, INIT);
-	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, MAXONCE);
-	elektraGlobalError (handle, ks, parentKey, POSTGETSTORAGE, DEINIT);
 
-	keySetName (parentKey, keyName (initialParent));
-	if (handle) splitUpdateFileName (split, handle, parentKey);
+	// TODO (kodebach): name not needed, once lock is in place
+	keyCopy (parentKey, initialParent, KEY_CP_NAME);
 	keyDel (initialParent);
-	keyDel (oldError);
-	splitDel (split);
+
+	keyCopy (parentKey, keyGetMeta (backendsFindParent (allBackends, parentKey), "meta:/internal/kdbmountpoint"), KEY_CP_STRING);
+
+	ksDel (backends);
+	ksDel (allBackends);
 	errno = errnosave;
 	return -1;
 }
 
-/**
- * @internal
- * @brief Does all set steps but not commit
- *
- * @param split all information for iteration
- * @param parentKey to add warnings (also passed to plugins for the same reason)
- * @param [out] errorKey may point to which key caused the error or 0 otherwise
- *
- * @retval -1 on error
- * @retval 0 on success
- */
-static int elektraSetPrepare (Split * split, Key * parentKey, Key ** errorKey, Plugin * hooks[][NR_GLOBAL_SUBPOSITIONS])
+static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 {
-	int any_error = 0;
-	for (size_t i = 0; i < split->size; i++)
+	bool success = true;
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		for (size_t p = 0; p < COMMIT_PLUGIN; ++p)
+		Key * backendKey = ksAtCursor (backends, i);
+		keySetMeta (backendKey, "meta:/internal/kdbmountpoint", NULL);
+
+		BackendData * backendData = (BackendData *) keyValue (backendKey);
+
+		// check if set function exists
+		// TODO (kodebach): move check into kdbOpen
+		kdbSetPtr setFn = backendData->backend->kdbSet;
+		if (setFn == NULL)
 		{
-			int ret = 0; // last return value
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey, "The mountpoint '%s' defined a plugin ('%s') without a kdbSet function as a backend.",
+				keyName (backendKey), backendData->backend->name);
+			success = false;
+			continue;
+		}
 
-			Backend * backend = split->handles[i];
-			ksRewind (split->keysets[i]);
-			if (backend->setplugins[p] && backend->setplugins[p]->kdbSet)
-			{
-				if (p != 0)
-				{
-					keySetString (parentKey, keyString (split->parents[i]));
-				}
-				else
-				{
-					keySetString (parentKey, "");
-				}
-				keySetName (parentKey, keyName (split->parents[i]));
-				ret = backend->setplugins[p]->kdbSet (backend->setplugins[p], split->keysets[i], parentKey);
+		// set up parentKey and global keyset for plugin
+		keyCopy (parentKey, backendKey, KEY_CP_NAME);
+		keySetString (parentKey, "");
+		ksAppendKey (backendData->backend->global, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, "resolver", KEY_END));
+		ksAppendKey (backendData->backend->global,
+			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
+				     &backendData->plugins, KEY_END));
+		set_bit (parentKey->flags, KEY_FLAG_RO_NAME);
 
-#if VERBOSE && DEBUG
-				printf ("Prepare %s with keys %zd in plugin: %zu, split: %zu, ret: %d\n", keyName (parentKey),
-					ksGetSize (split->keysets[i]), p, i, ret);
-#endif
+		int ret = setFn (backendData->backend, backendData->keys, parentKey);
 
-				if (p == 0)
-				{
-					if (ret == 0)
-					{
-						// resolver says that sync is
-						// not needed, so we
-						// skip other pre-commit
-						// plugins
-						break;
-					}
-					keySetString (split->parents[i], keyString (parentKey));
-				}
-			}
+		// restore parentKey
+		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME);
 
-			if (p == 0)
-			{
-				if (hooks[PRESETSTORAGE][FOREACH])
-				{
-					ksRewind (split->keysets[i]);
-					hooks[PRESETSTORAGE][FOREACH]->kdbSet (hooks[PRESETSTORAGE][FOREACH], split->keysets[i], parentKey);
-				}
-			}
-			else if (p == (STORAGE_PLUGIN - 1))
-			{
-				if (hooks[PRESETCLEANUP][FOREACH])
-				{
-					ksRewind (split->keysets[i]);
-					hooks[PRESETCLEANUP][FOREACH]->kdbSet (hooks[PRESETCLEANUP][FOREACH], split->keysets[i], parentKey);
-				}
-			}
-
-			if (ret == -1)
-			{
-				// do not
-				// abort because it might
-				// corrupt the KeySet
-				// and leads to warnings
-				// because of .tmp files not
-				// found
-				*errorKey = ksCurrent (split->keysets[i]);
-
-				// so better keep going, but of
-				// course we will not commit
-				any_error = -1;
-			}
+		// check return code
+		switch (ret)
+		{
+		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey,
+				"Calling the kdbSet function for the backend plugin ('%s') of the mountpoint '%s' returned "
+				"ELEKTRA_PLUGIN_STATUS_NO_UPDATE in the 'resolver' phase. This is interpreted the same way as "
+				"ELEKTRA_PLUGIN_STATUS_SUCCESS, i.e. the mountpoint will still go through the rest of kdbSet()'s phases.",
+				backendData->backend->name, keyName (backendKey));
+			// FALLTRHOUGH
+		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
+			// Store returned mountpoint ID and mark for update
+			keySetMeta (backendKey, "meta:/internal/kdbmountpoint", keyString (parentKey));
+			break;
+		case ELEKTRA_PLUGIN_STATUS_ERROR:
+			// handle error
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"Calling the kdbSet function for the backend plugin ('%s') of the mountpoint '%s' "
+							"has failed during the resolver phase.",
+							backendData->backend->name, keyName (backendKey));
+			success = false;
+			continue;
+		default:
+			// unknown result -> treat as error
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey,
+				"The kdbSet function for the backend plugin ('%s') of the mountpoint '%s' returned "
+				"an unknown result code '%d' during the resolver phase. Treating the call as failed.",
+				backendData->backend->name, keyName (backendKey), ret);
+			success = false;
+			continue;
 		}
 	}
-	return any_error;
+
+	if (!success)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "The resolve phase of kdbSet() has failed. See warnings for details.");
+	}
+
+	return success;
 }
 
-/**
- * @internal
- * @brief Does the commit
- *
- * @param split all information for iteration
- * @param parentKey to add warnings (also passed to plugins for the same reason)
- */
-static void elektraSetCommit (Split * split, Key * parentKey)
+enum KdbSetFn
 {
-	for (size_t p = COMMIT_PLUGIN; p < NR_OF_PLUGINS; ++p)
+	KDB_SET_FN_SET,
+	KDB_SET_FN_COMMIT,
+	KDB_SET_FN_ERROR,
+};
+
+static bool runSetPhase (KeySet * backends, Key * parentKey, const char * phase, bool blockErrors, enum KdbSetFn function)
+{
+	bool existingError = keyGetMeta (parentKey, "error") != NULL;
+
+	if (blockErrors && !existingError)
 	{
-		for (size_t i = 0; i < split->size; i++)
+		// set a dummy value to block errors
+		// any errors that occur will be converted into warnings
+		keySetMeta (parentKey, "error", "blocked");
+	}
+
+	bool success = true;
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		Key * backendKey = ksAtCursor (backends, i);
+		BackendData * backendData = (BackendData *) keyValue (backendKey);
+
+		// check if function exists
+		// TODO (kodebach): move checks into kdbOpen
+		if (function == KDB_SET_FN_SET && backendData->backend->kdbSet == NULL)
 		{
-			int ret = 0;
-			Backend * backend = split->handles[i];
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"The mountpoint '%s' defined a plugin ('%s') without a kdbSet function as a "
+							"backend and the plugin didn't initialize the mountpoint as read-only.",
+							keyName (backendKey), backendData->backend->name);
+			success = false;
+			continue;
+		}
+		if (function == KDB_SET_FN_COMMIT && backendData->backend->kdbCommit == NULL)
+		{
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"The mountpoint '%s' defined a plugin ('%s') without a kdbCommit function as a "
+							"backend and the plugin didn't initialize the mountpoint as read-only.",
+							keyName (backendKey), backendData->backend->name);
+			success = false;
+			continue;
+		}
+		if (function == KDB_SET_FN_ERROR && backendData->backend->kdbError == NULL)
+		{
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"The mountpoint '%s' defined a plugin ('%s') without a kdbError function as a "
+							"backend and the plugin didn't initialize the mountpoint as read-only.",
+							keyName (backendKey), backendData->backend->name);
+			success = false;
+			continue;
+		}
 
-			if (backend->setplugins[p] && backend->setplugins[p]->kdbSet)
-			{
-				if (p != COMMIT_PLUGIN)
-				{
-					keySetString (parentKey, keyString (split->parents[i]));
-				}
-				keySetName (parentKey, keyName (split->parents[i]));
-#if DEBUG && VERBOSE
-				printf ("elektraSetCommit: %p # %zu with %s - %s\n", backend, p, keyName (parentKey),
-					keyString (parentKey));
-#endif
-				ksRewind (split->keysets[i]);
-				if (p == COMMIT_PLUGIN)
-				{
-					ret = backend->setplugins[p]->kdbCommit (backend->setplugins[p], split->keysets[i], parentKey);
-					// name of non-temp file
-					keySetString (split->parents[i], keyString (parentKey));
-				}
-				else
-				{
-					ret = backend->setplugins[p]->kdbSet (backend->setplugins[p], split->keysets[i], parentKey);
-				}
-			}
+		// set up parentKey and global keyset for plugin
+		keyCopy (parentKey, backendKey, KEY_CP_NAME);
+		keyCopy (parentKey, keyGetMeta (backendKey, "meta:/internal/kdbmountpoint"), KEY_CP_STRING);
+		ksAppendKey (backendData->backend->global, keyNew ("system:/elektra/kdb/backend/phase", KEY_VALUE, phase, KEY_END));
+		ksAppendKey (backendData->backend->global,
+			     keyNew ("system:/elektra/kdb/backend/plugins", KEY_BINARY, KEY_SIZE, sizeof (backendData->plugins), KEY_VALUE,
+				     &backendData->plugins, KEY_END));
+		set_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
 
-			if (ret == -1)
-			{
-				ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Error during commit. This means backend is broken: %s",
-							       keyName (backend->mountpoint));
-			}
+		int ret;
+		switch (function)
+		{
+		case KDB_SET_FN_SET:
+			ret = backendData->backend->kdbSet (backendData->backend, backendData->keys, parentKey);
+			break;
+		case KDB_SET_FN_COMMIT:
+			ret = backendData->backend->kdbCommit (backendData->backend, backendData->keys, parentKey);
+			break;
+		case KDB_SET_FN_ERROR:
+			ret = backendData->backend->kdbError (backendData->backend, backendData->keys, parentKey);
+			break;
+		}
+
+		// restore parentKey
+		clear_bit (parentKey->flags, KEY_FLAG_RO_NAME | KEY_FLAG_RO_VALUE);
+
+		// check return code
+		switch (ret)
+		{
+		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
+		case ELEKTRA_PLUGIN_STATUS_NO_UPDATE:
+			// success
+			break;
+		case ELEKTRA_PLUGIN_STATUS_ERROR:
+			// handle error
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"Calling the kdbSet function for the backend plugin ('%s') of the mountpoint '%s' "
+							"has failed during the %s phase.",
+							backendData->backend->name, keyName (backendKey), phase);
+			success = false;
+			continue;
+		default:
+			// unknown result -> treat as error
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"The kdbSet function for the backend plugin ('%s') of the mountpoint '%s' returned "
+							"an unknown result code '%d' during the %s phase. Treating the call as failed.",
+							backendData->backend->name, keyName (backendKey), ret, phase);
+			success = false;
+			continue;
 		}
 	}
-}
 
-/**
- * @internal
- * @brief Does the rollback
- *
- * @param split all information for iteration
- * @param parentKey to add warnings (also passed to plugins for the same reason)
- */
-static void elektraSetRollback (Split * split, Key * parentKey)
-{
-	for (size_t p = 0; p < NR_OF_PLUGINS; ++p)
+	if (!success)
 	{
-		for (size_t i = 0; i < split->size; i++)
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "The %s phase of kdbSet() has failed. See warnings for details.", phase);
+	}
+
+	if (blockErrors)
+	{
+		if (!existingError)
 		{
-			int ret = 0;
-			Backend * backend = split->handles[i];
+			// remove dummy error again
+			keySetMeta (parentKey, "error", NULL);
+		}
 
-			ksRewind (split->keysets[i]);
-			if (backend->errorplugins[p])
-			{
-				keySetName (parentKey, keyName (split->parents[i]));
-				ret = backend->errorplugins[p]->kdbError (backend->errorplugins[p], split->keysets[i], parentKey);
-			}
-
-			if (ret == -1)
-			{
-				ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Error during rollback. This means backend is broken: %s",
-							       keyName (backend->mountpoint));
-			}
+		if (!success)
+		{
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey, "Errors in %s are ignored. The error that occurred was converted into a warning.", phase);
 		}
 	}
-}
 
+	return success;
+}
 
 /**
  * Set Keys to a Key database in an atomic and universal way.
@@ -1778,6 +2216,10 @@ static void elektraSetRollback (Split * split, Key * parentKey)
  */
 int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 {
+	// TODO (kodebach): different handling of namespaces
+	// FIXME (kodebach): write tests
+
+	// Step 0: check preconditions
 	if (parentKey == NULL)
 	{
 		ELEKTRA_LOG ("parentKey == NULL");
@@ -1790,9 +2232,10 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 		return -1;
 	}
 
+	clearErrorAndWarnings (parentKey); // TODO (kodebach) [doc]: NEW kdbSet now ALWAYS clears errors AND warnings
+
 	if (test_bit (parentKey->flags, KEY_FLAG_RO_NAME))
 	{
-		clearError (parentKey);
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only name passed");
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_NAME");
 		return -1;
@@ -1800,183 +2243,207 @@ int kdbSet (KDB * handle, KeySet * ks, Key * parentKey)
 
 	if (test_bit (parentKey->flags, KEY_FLAG_RO_VALUE))
 	{
-		clearError (parentKey);
 		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "parentKey with read-only value passed");
 		ELEKTRA_LOG ("parentKey KEY_FLAG_RO_VALUE");
 		return -1;
 	}
 
+	if (keyGetNamespace (parentKey) == KEY_NS_META)
+	{
+		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "parentKey with meta:/ name passed ('%s')", keyName (parentKey));
+		return -1;
+	}
+
 	if (handle == NULL)
 	{
-		clearError (parentKey);
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "KDB handle null pointer passed");
-		ELEKTRA_LOG ("handle == NULL");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "NULL pointer passed for handle");
 		return -1;
 	}
 
 	if (ks == NULL)
 	{
-		clearError (parentKey);
-		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "KeySet null pointer passed");
-		ELEKTRA_LOG ("ks == NULL");
+		ELEKTRA_SET_INTERFACE_ERROR (parentKey, "NULL pointer passed for KeySet");
 		return -1;
 	}
-
-	elektraNamespace ns = keyGetNamespace (parentKey);
-	Key * oldError = keyNew (keyName (parentKey), KEY_END);
-	copyError (oldError, parentKey);
-
-	if (ns == KEY_NS_META)
-	{
-		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_INTERFACE_ERRORF (parentKey, "Metakey with name '%s' passed to kdbSet as parentkey", keyName (parentKey));
-		keyDel (oldError);
-		ELEKTRA_LOG ("ns == KEY_NS_META");
-		return -1;
-	}
-
-	int errnosave = errno;
-	Key * initialParent = keyDup (parentKey, KEY_CP_ALL);
 
 	ELEKTRA_LOG ("now in new kdbSet (%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
 
-	elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, INIT);
-	elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, MAXONCE);
-	elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, DEINIT);
+	int errnosave = errno;				      // TODO (kodebach) [Q]: needed?
+	Key * initialParent = keyDup (parentKey, KEY_CP_ALL); // TODO (kodebach): still needed with locks?
 
-	ELEKTRA_LOG ("after presetstorage maxonce(%s) %p %zd", keyName (parentKey), (void *) handle, ksGetSize (ks));
+	// Step 1: find backends for parentKey
+	KeySet * backends = backendsForParentKey (handle->backends, parentKey);
 
-	Split * split = splitNew ();
-	Key * errorKey = 0;
-
-	if (splitBuildup (split, handle, parentKey) == -1)
+	// Step 2: check that backends are initialized
+	bool backendsInit = true;
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Error in splitBuildup");
+		Key * backendKey = ksAtCursor (backends, i);
+		const BackendData * backendData = keyValue (backendKey);
+
+		// check that backend is initialized
+		if (!backendData->initialized)
+		{
+			ELEKTRA_ADD_INTERFACE_WARNINGF (
+				parentKey, "The mountpoint '%s' has not been initialized. You need to call kdbGet() before kdbSet().",
+				keyName (backendKey));
+			backendsInit = false;
+			continue;
+		}
+	}
+
+	if (!backendsInit)
+	{
+		ELEKTRA_SET_INTERFACE_ERROR (
+			parentKey,
+			"One or more mountpoints have not been initialized. Have you called kdbGet()? See warnings for details.");
 		goto error;
 	}
-	ELEKTRA_LOG ("after splitBuildup");
 
-	// 1.) Search for syncbits
-	int syncstate = splitDivide (split, handle, ks);
-	if (syncstate == -1)
+	// Step 3: run spec to add metadata
+	// TODO (kodebach): change once new global plugins are done
+	if (elektraGlobalSet (handle, ks, parentKey, PRESETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
 	{
-		clearError (parentKey); // clear previous error to set new one
-		ELEKTRA_SET_INSTALLATION_ERRORF (parentKey, "No default backend found, but should be. Keyname: %s",
-						 keyName (ksCurrent (ks)));
 		goto error;
 	}
-	ELEKTRA_ASSERT (syncstate == 0 || syncstate == 1, "syncstate not 0 or 1, but %d", syncstate);
-	ELEKTRA_LOG ("after 1.) Search for syncbits");
 
-	// 2.) Search for changed sizes
-	syncstate |= splitSync (split);
-	ELEKTRA_ASSERT (syncstate <= 1, "syncstate not equal or below 1, but %d", syncstate);
-	if (syncstate != 1)
+	// TODO (kodebach) [opt]: merge steps 4-6
+	// By merging steps 4-6, we MAY be able to avoid copying keys from unchanged and read-only backends.
+
+	// Step 4: create deep-copy of ks
+	// Note: This is needed so that ks retains its in-process state,
+	//       after we transform the data into its on-disk state.
+	KeySet * setKs = ksNew (0, KS_END);
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
 	{
-		/* No update is needed */
-		ELEKTRA_LOG ("No update is needed");
-		keySetName (parentKey, keyName (initialParent));
-		if (syncstate < 0) clearError (parentKey); // clear previous error to set new one
-		if (syncstate == -1)
+		Key * backendKey = ksAtCursor (backends, i);
+
+		ksAppend (setKs, ksDeepDup (ksBelow (ks, backendKey)));
+	}
+
+	// Step 5: split ks (for resolver and prestorage phases)
+	if (!backendsDivide (backends, setKs))
+	{
+		ELEKTRA_SET_INTERNAL_ERROR (parentKey,
+					    "Couldn't divide keys into mountpoints at start of kdbSet. Please report this bug at "
+					    "https://issues.libelektra.org.");
+		goto error;
+	}
+
+	// Step 6: remove read-only backends and backends that haven't changed since kdbGet()
+	for (elektraCursor i = 0; i < ksGetSize (backends); i++)
+	{
+		Key * backendKey = ksAtCursor (backends, i);
+		const BackendData * backendData = keyValue (backendKey);
+
+		bool readOnly = keyGetMeta (backendKey, "meta:/internal/kdbreadonly") != NULL;
+		bool changed = backendData->keyNeedsSync || backendData->getSize != (size_t) ksGetSize (backendData->keys);
+
+		// issue warning, if readonly but changed
+		if (readOnly && changed)
 		{
-			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Assert failed: invalid namespace");
-			ELEKTRA_LOG ("syncstate == -1");
+			ELEKTRA_ADD_INTERFACE_WARNINGF (parentKey,
+							"The data under the mountpoint '%s' was changed since kdbGet(), but the mountpoint "
+							"was intialized as read-only. The changes will not be stored.",
+							keyName (backendKey));
 		}
-		else if (syncstate < -1)
+
+		// remove if read-only or unchanged
+		if (readOnly || !changed)
 		{
-			ELEKTRA_SET_CONFLICTING_STATE_ERRORF (
-				parentKey, "Sync state is wrong, maybe 'kdbSet()' is executed without prior 'kdbGet()' on %s",
-				keyName (split->parents[-syncstate - 2]));
-			ELEKTRA_LOG ("syncstate < -1");
+			elektraKsPopAtCursor (backends, i);
+			--i;
 		}
+	}
+
+	if (ksGetSize (backends) == 0)
+	{
+		// TODO (kodebach): name not needed, once lock is in place
+		keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 		keyDel (initialParent);
-		splitDel (split);
 		errno = errnosave;
-		keyDel (oldError);
-		ELEKTRA_LOG ("return: %d", syncstate == 0 ? 0 : -1);
-		return syncstate == 0 ? 0 : -1;
+
+		return 0;
 	}
-	ELEKTRA_ASSERT (syncstate == 1, "syncstate not 1, but %d", syncstate);
-	ELEKTRA_LOG ("after 2.) Search for changed sizes");
 
-	splitPrepare (split);
-
-	clearError (parentKey); // clear previous error to set new one
-	if (elektraSetPrepare (split, parentKey, &errorKey, handle->globalPlugins) == -1)
+	// Step 7a: resolve backends
+	if (!resolveBackendsForSet (backends, parentKey))
 	{
-		goto error;
+		goto rollback;
 	}
-	else
+
+	// Step 7b: run prestorage phase
+	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_PRE_STORAGE, false, KDB_SET_FN_SET))
 	{
-		// no error, restore old error
-		copyError (parentKey, oldError);
+		goto rollback;
 	}
-	keySetName (parentKey, keyName (initialParent));
 
-	elektraGlobalSet (handle, ks, parentKey, PRECOMMIT, INIT);
-	elektraGlobalSet (handle, ks, parentKey, PRECOMMIT, MAXONCE);
-	elektraGlobalSet (handle, ks, parentKey, PRECOMMIT, DEINIT);
+	/* TODO (kodebach): enable steps when spec is ready
+		// Step 8: merge data from all backends (for spec removal)
+		ksClear (setKs);
+		backendsMerge (backends, setKs);
 
-	elektraSetCommit (split, parentKey);
+		// Step 9: run the spec plugin to remove copied metadata
+		// FIXME (kodebach): implement spec
 
-	elektraGlobalSet (handle, ks, parentKey, COMMIT, INIT);
-	elektraGlobalSet (handle, ks, parentKey, COMMIT, MAXONCE);
-	elektraGlobalSet (handle, ks, parentKey, COMMIT, DEINIT);
+		// Step 10: split setKs for remaining phases
+		if (!backendsDivide (backends, setKs))
+		{
+			ELEKTRA_SET_INTERNAL_ERROR (parentKey, "Couldn't divide keys into mountpoints after spec removal. Please report this
+	   bug at https://issues.libelektra.org."); goto rollback;
+		}
+	*/
 
-	splitUpdateSize (split);
-
-	keySetName (parentKey, keyName (initialParent));
-
-	elektraGlobalSet (handle, ks, parentKey, POSTCOMMIT, INIT);
-	elektraGlobalSet (handle, ks, parentKey, POSTCOMMIT, MAXONCE);
-	elektraGlobalSet (handle, ks, parentKey, POSTCOMMIT, DEINIT);
-
-	for (size_t i = 0; i < ks->size; ++i)
+	// Step 11a: run storage phase
+	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_STORAGE, false, KDB_SET_FN_SET))
 	{
-		// remove all flags from all keys
-		clear_bit (ks->array[i]->flags, (keyflag_t) KEY_FLAG_SYNC);
+		goto rollback;
 	}
 
-	keySetName (parentKey, keyName (initialParent));
+	// Step 11b: run poststorage phase
+	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_STORAGE, false, KDB_SET_FN_SET))
+	{
+		goto rollback;
+	}
+
+	// Step 12a: run precommit phase
+	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_PRE_COMMIT, false, KDB_SET_FN_COMMIT))
+	{
+		goto rollback;
+	}
+
+	// Step 12b: run commit phase
+	if (!runSetPhase (backends, parentKey, KDB_SET_PHASE_COMMIT, false, KDB_SET_FN_COMMIT))
+	{
+		goto rollback;
+	}
+
+	// Step 12c: run postcommit phase
+	runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_COMMIT, true, KDB_SET_FN_COMMIT);
+
+	// TODO (kodebach): name not needed, once lock is in place
+	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
-	splitDel (split);
-
-	keyDel (oldError);
 	errno = errnosave;
-	ELEKTRA_LOG ("before RETURN 1");
+
 	return 1;
 
+rollback:
+	// Step E1: run prerollback phase
+	runSetPhase (backends, parentKey, KDB_SET_PHASE_PRE_ROLLBACK, true, KDB_SET_FN_ERROR);
+
+	// Step E2: run rollback phase
+	runSetPhase (backends, parentKey, KDB_SET_PHASE_ROLLBACK, true, KDB_SET_FN_ERROR);
+
+	// Step E3: run postrollback phase
+	runSetPhase (backends, parentKey, KDB_SET_PHASE_POST_ROLLBACK, true, KDB_SET_FN_ERROR);
+
 error:
-	keySetName (parentKey, keyName (initialParent));
-
-	elektraGlobalError (handle, ks, parentKey, PREROLLBACK, INIT);
-	elektraGlobalError (handle, ks, parentKey, PREROLLBACK, MAXONCE);
-	elektraGlobalError (handle, ks, parentKey, PREROLLBACK, DEINIT);
-
-	elektraSetRollback (split, parentKey);
-
-	if (errorKey)
-	{
-		Key * found = ksLookup (ks, errorKey, 0);
-		if (!found)
-		{
-			ELEKTRA_ADD_INTERNAL_WARNINGF (parentKey, "Error key %s not found in keyset even though it was found before",
-						       keyName (errorKey));
-		}
-	}
-
-	keySetName (parentKey, keyName (initialParent));
-
-	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, INIT);
-	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, MAXONCE);
-	elektraGlobalError (handle, ks, parentKey, POSTROLLBACK, DEINIT);
-
-	keySetName (parentKey, keyName (initialParent));
+	// TODO (kodebach): name not needed, once lock is in place
+	keyCopy (parentKey, initialParent, KEY_CP_NAME | KEY_CP_VALUE);
 	keyDel (initialParent);
-	splitDel (split);
 	errno = errnosave;
-	keyDel (oldError);
+
 	return -1;
 }
 

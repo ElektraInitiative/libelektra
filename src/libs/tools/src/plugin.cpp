@@ -107,7 +107,7 @@ void Plugin::loadInfo ()
 
 	if (!plugin->kdbGet)
 	{
-		throw MissingSymbol ("kdbGet");
+		throw MissingSymbol ("kdbGet", plugin->name);
 	}
 	plugin->kdbGet (plugin, info.getKeySet (), *infoKey);
 }
@@ -202,32 +202,40 @@ void Plugin::check (vector<string> & warnings)
 			warnings.push_back ("placements are empty");
 		}
 
-		std::vector<std::string> pp;
-		pp.push_back ("prerollback");
-		pp.push_back ("rollback");
-		pp.push_back ("postrollback");
-		pp.push_back ("getresolver");
-		pp.push_back ("pregetcache");
-		pp.push_back ("pregetstorage");
-		pp.push_back ("getstorage");
-		pp.push_back ("procgetstorage");
-		pp.push_back ("postgetstorage");
-		pp.push_back ("postgetcache");
-		pp.push_back ("setresolver");
-		pp.push_back ("postgetcleanup");
-		pp.push_back ("presetstorage");
-		pp.push_back ("setstorage");
-		pp.push_back ("presetcleanup");
-		pp.push_back ("precommit");
-		pp.push_back ("commit");
-		pp.push_back ("postcommit");
-		istringstream is (placements);
-		std::string placement;
-		while (is >> placement)
+		if (placements == "backend")
 		{
-			if (std::find (pp.begin (), pp.end (), placement) == pp.end ())
+			// accepted
+			// TODO (kodebach): fix this code
+		}
+		else
+		{
+			std::vector<std::string> pp;
+			pp.push_back ("prerollback");
+			pp.push_back ("rollback");
+			pp.push_back ("postrollback");
+			pp.push_back ("getresolver");
+			pp.push_back ("pregetcache");
+			pp.push_back ("pregetstorage");
+			pp.push_back ("getstorage");
+			pp.push_back ("procgetstorage");
+			pp.push_back ("postgetstorage");
+			pp.push_back ("postgetcache");
+			pp.push_back ("setresolver");
+			pp.push_back ("postgetcleanup");
+			pp.push_back ("presetstorage");
+			pp.push_back ("setstorage");
+			pp.push_back ("presetcleanup");
+			pp.push_back ("precommit");
+			pp.push_back ("commit");
+			pp.push_back ("postcommit");
+			istringstream is (placements);
+			std::string placement;
+			while (is >> placement)
 			{
-				warnings.push_back ("not supported placement " + placement + " found");
+				if (std::find (pp.begin (), pp.end (), placement) == pp.end ())
+				{
+					warnings.push_back ("not supported placement " + placement + " found");
+				}
 			}
 		}
 	}
@@ -393,7 +401,7 @@ int Plugin::open (kdb::Key & errorKey)
 {
 	if (!plugin->kdbOpen)
 	{
-		throw MissingSymbol ("kdbOpen");
+		throw MissingSymbol ("kdbOpen", plugin->name);
 	}
 
 	return plugin->kdbOpen (plugin, errorKey.getKey ());
@@ -403,7 +411,7 @@ int Plugin::close (kdb::Key & errorKey)
 {
 	if (!plugin->kdbClose)
 	{
-		throw MissingSymbol ("kdbClose");
+		throw MissingSymbol ("kdbClose", plugin->name);
 	}
 
 	return plugin->kdbClose (plugin, errorKey.getKey ());
@@ -417,7 +425,7 @@ int Plugin::get (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbGet)
 	{
-		throw MissingSymbol ("kdbGet");
+		throw MissingSymbol ("kdbGet", plugin->name);
 	}
 
 	return plugin->kdbGet (plugin, ks.getKeySet (), parentKey.getKey ());
@@ -431,7 +439,7 @@ int Plugin::set (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbSet)
 	{
-		throw MissingSymbol ("kdbSet");
+		throw MissingSymbol ("kdbSet", plugin->name);
 	}
 
 	return plugin->kdbSet (plugin, ks.getKeySet (), parentKey.getKey ());
@@ -441,7 +449,7 @@ int Plugin::commit (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbCommit)
 	{
-		throw MissingSymbol ("kdbCommit");
+		throw MissingSymbol ("kdbCommit", plugin->name);
 	}
 
 	return plugin->kdbCommit (plugin, ks.getKeySet (), parentKey.getKey ());
@@ -451,14 +459,14 @@ int Plugin::error (kdb::KeySet & ks, kdb::Key & parentKey)
 {
 	if (!plugin->kdbError)
 	{
-		throw MissingSymbol ("kdbError");
+		throw MissingSymbol ("kdbError", plugin->name);
 	}
 
 	return plugin->kdbError (plugin, ks.getKeySet (), parentKey.getKey ());
 }
 
 
-std::string Plugin::name () // TODO: rename + use internally
+std::string Plugin::name ()
 {
 	return spec.getName ();
 }
@@ -473,12 +481,8 @@ std::string Plugin::refname ()
 	if (firstRef)
 	{
 		firstRef = false;
-		return std::string ("#") + spec.getName () + "#" + spec.getRefName () + "#";
 	}
-	else
-	{
-		return std::string ("#") + spec.getRefName ();
-	}
+	return spec.getRefName ();
 }
 } // namespace tools
 } // namespace kdb

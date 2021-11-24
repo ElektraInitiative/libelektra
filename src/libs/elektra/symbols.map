@@ -182,6 +182,10 @@ libelektraprivate_1.0 {
 	keyReplacePrefix;
 	ksFindHierarchy;
 
+	ksBelow;
+
+	elektraIsArrayPart;
+
 	# kdblogger.h
 	elektraLog;
 

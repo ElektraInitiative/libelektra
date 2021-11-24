@@ -35,7 +35,8 @@ void copySingleKey (Cmdline const & cl, Key const & rk, KeySet & tmpConf, KeySet
 		Key key = tmpConf.lookup (rk);
 		if (key != nullptr)
 		{
-			if (key.getString () != rk.getString ())
+			if ((key.isString () && key.getString () != rk.getString ()) ||
+			    (key.isBinary () && key.getBinary () != rk.getBinary ()))
 			{
 				throw CommandAbortException (std::string ("Copy will not be done, because " + rk.getName () +
 									  " already exists and has a different value"

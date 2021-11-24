@@ -76,6 +76,9 @@ Plugin * elektraPluginExport (const char * pluginName, ...)
 		case ELEKTRA_PLUGIN_CLOSE:
 			returned->kdbClose = va_arg (va, kdbClosePtr);
 			break;
+		case ELEKTRA_PLUGIN_INIT:
+			returned->kdbInit = va_arg (va, kdbInitPtr);
+			break;
 		case ELEKTRA_PLUGIN_GET:
 			returned->kdbGet = va_arg (va, kdbGetPtr);
 			break;
@@ -167,4 +170,24 @@ void * elektraPluginGetData (Plugin * plugin)
 KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin)
 {
 	return plugin->global;
+}
+
+const char * elektraPluginGetPhase (Plugin * plugin)
+{
+	// TODO (kodebach): switch to integer value? (uint32_t?)
+	return keyString (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/phase", 0));
+}
+
+Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref)
+{
+	// TODO (kodebach): docs, precond checks
+	KeySet * plugins = *(KeySet **) keyValue (ksLookupByName (plugin->global, "system:/elektra/kdb/backend/plugins", 0));
+
+	Key * lookupHelper = keyNew ("system:/", KEY_END);
+	keyAddBaseName (lookupHelper, ref);
+
+	Key * pluginKey = ksLookup (plugins, lookupHelper, 0);
+	keyDel (lookupHelper);
+
+	return pluginKey == NULL ? NULL : *(Plugin **) keyValue (pluginKey);
 }

@@ -843,7 +843,10 @@ inline Key::~Key ()
  */
 inline std::string Key::getName () const
 {
-	if (!key) throw KeyException ();
+	if (!key)
+	{
+		throw KeyException ();
+	}
 	return std::string (ckdb::keyName (key));
 }
 

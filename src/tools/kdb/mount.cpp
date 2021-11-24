@@ -59,16 +59,6 @@ void MountCommand::outputMtab (Cmdline const & cl)
 		if (cl.second)
 		{
 			std::cout << it->mountpoint;
-			if (all)
-				std::cout << " with name ";
-			else
-				std::cout << delim << std::flush;
-		}
-
-		// TODO: remove next version
-		if (cl.third)
-		{
-			std::cout << it->name;
 			std::cout << delim << std::flush;
 		}
 	}

@@ -30,6 +30,7 @@
 #include <regex.h>
 
 #include <kdbinternal.h>
+#include <kdbprivate.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -353,14 +354,7 @@ void output_plugin (Plugin * plugin)
 	output_keyset (plugin->config);
 }
 
-void output_backend (Backend * backend)
-{
-	if (!backend) return;
-
-	printf ("us: %zd, ss: %zd\n", backend->usersize, backend->systemsize);
-	output_key (backend->mountpoint);
-}
-
+#if 1 == 0
 void output_trie (Trie * trie)
 {
 	int i;
@@ -390,8 +384,8 @@ void output_split (Split * split)
 			printf ("split #%zu size: %zd, handle: %p, sync: %d, parent: %s (%s), spec: %zd, dir: %zd, user: %zd, system: "
 				"%zd\n",
 				i, ksGetSize (split->keysets[i]), (void *) split->handles[i], split->syncbits[i],
-				keyName (split->parents[i]), keyString (split->parents[i]), split->handles[i]->specsize,
-				split->handles[i]->dirsize, split->handles[i]->usersize, split->handles[i]->systemsize);
+				keyName (split->parents[i]), keyString (split->parents[i]), split->specsizes[i], split->dirsizes[i],
+				split->usersizes[i], split->systemsizes[i]);
 		}
 		else
 		{
@@ -409,6 +403,7 @@ void generate_split (Split * split)
 		printf ("succeed_if (ksGetSize(split->keysets[%zu]) == %zd, \"wrong size\");\n", i, ksGetSize (split->keysets[i]));
 	}
 }
+#endif
 
 /**
  * @brief Output warnings if present

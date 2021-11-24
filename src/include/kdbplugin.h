@@ -72,6 +72,7 @@ typedef enum
 	ELEKTRA_PLUGIN_SET=1<<3,	/*!< Next arg is backend for kdbSet() */
 	ELEKTRA_PLUGIN_ERROR=1<<4,	/*!< Next arg is backend for kdbError() */
 	ELEKTRA_PLUGIN_COMMIT=1<<5,	/*!< Next arg is backend for kdbCommit()*/
+	ELEKTRA_PLUGIN_INIT=1<<6,	/*!< Next arg is backend for kdbInit()*/
 	ELEKTRA_PLUGIN_END=0		/*!< End of arguments */
 	// clang-format on
 } plugin_t;
@@ -105,6 +106,8 @@ void elektraPluginSetData (Plugin * plugin, void * handle);
 void * elektraPluginGetData (Plugin * plugin);
 
 KeySet * elektraPluginGetGlobalKeySet (Plugin * plugin);
+const char * elektraPluginGetPhase (Plugin * plugin);
+Plugin * elektraPluginFromMountpoint (Plugin * plugin, const char * ref);
 
 #define PLUGINVERSION "1"
 

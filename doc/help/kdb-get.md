@@ -79,7 +79,7 @@ kdb get -n /tests/get/examples/kdb-get/key
 
 # To explain why a specific key was used (for cascading keys):
 kdb get -v /tests/get/examples/kdb-get/key
-#> got 3 keys
+#> got 2 keys
 #> searching spec:/tests/get/examples/kdb-get/key, found: <nothing>, options: KDB_O_CALLBACK
 #>     searching proc:/tests/get/examples/kdb-get/key, found: <nothing>
 #>     searching dir:/tests/get/examples/kdb-get/key, found: <nothing>

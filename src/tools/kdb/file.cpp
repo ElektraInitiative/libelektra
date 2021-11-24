@@ -23,6 +23,8 @@ FileCommand::FileCommand ()
 
 int FileCommand::execute (Cmdline const & cl)
 {
+	// TODO (kodebach): doesn't work with cascading keys
+	// TODOD (kodebach) [Q]: should this work with cascading keys?
 	if (cl.arguments.size () != 1) throw invalid_argument ("Need one argument");
 
 	KeySet conf;
