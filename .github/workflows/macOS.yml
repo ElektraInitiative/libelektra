@@ -71,12 +71,20 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7 # Not needed with a .ruby-version file
-  
+
+    - name: Determine pre-existing brew packages
+          if: steps.dependency-cache.outputs.cache-hit != 'true'
+          run: |
+            echo 'EXISTING_CELLAR<<EOF' >> $GITHUB_ENV
+            ls -1 /usr/local/Cellar >> $GITHUB_ENV
+            echo 'EOF' >> $GITHUB_ENV
+
     - name: Cache dependencies
       id: dependency-cache
       uses: actions/cache@v2
       with:
         path: |
+          /usr/local/Cellar
           ~/Library/Caches/Homebrew
           ~/github_brew_cache_entries.txt
         key: macos-cache-${{ hashFiles('scripts/mac_setup.sh') }}
@@ -176,3 +184,15 @@ jobs:
           cmake --build . --target run_all
           kdb run_all
         fi
+
+    - name: Remove pre-existing brew packages for caching
+      if: steps.dependency-cache.outputs.cache-hit != 'true'
+      run: |
+        cd /usr/local/Cellar
+        new_cellar=$(ls -1)
+        comm -12 <(echo "$EXISTING_CELLAR") <(echo "$new_cellar") | while read pkg; do
+          if [[ $pkg != "zstd" ]]; then # caching step needs zstd
+            rm -rf "$pkg"
+          fi
+        done
+        comm -13 <(echo "$EXISTING_CELLAR") <(echo "$new_cellar") | tee ~/github_brew_cache_entries.txt
