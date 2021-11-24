@@ -1082,28 +1082,7 @@ static int elektraCacheLoadSplit (KDB * handle, Split * split, KeySet * ks, KeyS
 	}
 
 	keySetName (parentKey, keyName (initialParent));
-<<<<<<< HEAD
-<<<<<<< HEAD
 	// TODO: there are no error checks here, see kdbGet
-=======
-
-	if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, INIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-	if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, MAXONCE) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
-	if (elektraGlobalGet (handle, ks, parentKey, PREGETSTORAGE, DEINIT) == ELEKTRA_PLUGIN_STATUS_ERROR)
-	{
-		goto error;
-	}
->>>>>>> f726eafad (Added some error check to kdbc elektraCacheLoadSplit and checkUpdateNeeded)
-=======
-	// TODO: there are no error checks here, see kdbGet
->>>>>>> a8a3340dd (reverted error checks in cacheLoadSplit)
-
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, INIT);
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, MAXONCE);
 	elektraGlobalGet (handle, *cache, parentKey, PROCGETSTORAGE, DEINIT);
