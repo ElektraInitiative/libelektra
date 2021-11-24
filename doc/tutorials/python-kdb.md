@@ -217,6 +217,20 @@ with kdb.KDB() as k:
     print("{}: {}".format(key2, key2.value))
 ```
 
+An example for working with meta-keys
+
+```py
+import kdb
+
+with kdb.KDB() as k:
+    key1 = kdb.Key("user:/key1", kdb.KEY_VALUE, "some_value")
+    key1.setMeta("foo",     "bar")
+    key1.setMeta("owner",   "manuel")
+    key1.setMeta("comment", "this is my example key")
+    for meta in key1.getMeta():
+        print("  key1.{0} = \"{1}\"".format(meta.name, meta.value))
+```
+
 Keys can be added to a keyset using `append`. If the key already exists, the value will be updated. Calling `keyset_name['/path/to/key'] = 'new_value` does not work for updating keys already in a keyset. Keys can be removed with `pop`, `remove` or `cut`
 
 ```py
