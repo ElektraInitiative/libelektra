@@ -209,7 +209,7 @@ _(Michael Tucek)_
 
 ### GitHub Actions
 
-- <<TODO>>
+- added caching to macOS workflow_(@4ydan)_
 - <<TODO>>
 - <<TODO>>
 
