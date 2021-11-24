@@ -64,9 +64,9 @@ To create an **array element** we start the basename of a key with the `#` chara
 kdb set user:/tests/sequence/#0 'First Element'
 #> Create a new key user:/tests/sequence/#0 with string "First Element"
 kdb set user:/tests/sequence/#1 'Second Element'
-#> Create a new key user:/tests/sequence/#0 with string "Second Element"
+#> Create a new key user:/tests/sequence/#1 with string "Second Element"
 kdb set user:/tests/sequence/#3 'Fourth Element'
-#> Create a new key user:/tests/sequence/#0 with string "Fourth Element"
+#> Create a new key user:/tests/sequence/#3 with string "Fourth Element"
 ```
 
 . As you can see above arrays can contain “empty fields”: The key `user:/tests/sequence/#2` is missing.
