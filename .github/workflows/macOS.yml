@@ -71,12 +71,14 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7 # Not needed with a .ruby-version file
-    - name: Determine pre-existing Homebrew packages
+  
+    - name: Check for pre-existing brew packages
       if: steps.dependency-cache.outputs.cache-hit != 'true'
       run: |
         echo 'EXISTING_CELLAR<<EOF' >> $GITHUB_ENV
         ls -1 /usr/local/Cellar >> $GITHUB_ENV
         echo 'EOF' >> $GITHUB_ENV
+  
     - name: Cache dependencies
       id: dependency-cache
       uses: actions/cache@v2
@@ -87,8 +89,9 @@ jobs:
           ~/Library/Caches/pipenv
           /usr/local/Cellar
           ~/github_brew_cache_entries.txt
-        key: macos-cache-${{ hashFiles('tools/mac_setup.sh') }}
-    - name: Brew link restored dependencies
+        key: macos-cache
+  
+    - name: Brew cache hit
       if: steps.dependency-cache.outputs.cache-hit == 'true'
       run: |
         while read pkg; do
@@ -223,7 +226,7 @@ jobs:
           kdb run_all
         fi
 
-    - name: Remove pre-existing Homebrew packages for caching
+    - name: Remove pre-existing brew packages
       if: steps.dependency-cache.outputs.cache-hit != 'true'
       run: |
         cd /usr/local/Cellar
