@@ -172,6 +172,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 - Added debian buster tutorial to python bindings tutorial _(@4ydan)_
+- Fixed some typos in the "namespaces.md" documentation _(@muskater)_
 
 ## Tests
 
