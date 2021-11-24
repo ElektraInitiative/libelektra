@@ -1,5 +1,15 @@
 # How-To: Python kdb
 
+## Table of Contents
+
+- [Introduction](#Introduction)
+- [Installation](#Installation)
+  - [Alpine Linux](#Alpine-Linux)
+  - [Debian buster](#Debian-buster)
+- [Import kdb](#Import-kdb)
+- [Keyset](#Keyset)
+- [Keys](#Keys)
+
 ## Introduction
 
 When programming in Python it is possible to access the kdb database, changing values of existing keys, adding and deleting keys and a few other things.
@@ -48,7 +58,7 @@ apt-get update
 apt-get install python3-elektra
 ```
 
-## First Steps
+## Import kdb
 
 In order to being able to use `kdb`, you at first need to `import kdb`. You need access to a Python object of `KDB`. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
 The easiest way to do this would be:
@@ -192,6 +202,8 @@ with kdb.KDB() as k:
         print("{0}{1}\n{0}{2}\n".format("key value: ", key.value,
                                         ks.lookup(key).string))
 ```
+
+## Keys
 
 It is possible to create new keys:
 
