@@ -152,6 +152,7 @@ The validation plugin now uses the metadata of the keys below **/tests/spec**
 to validate values before storing them in `tutorial.dump`.
 
 If we try setting the key again, we will get an error:
+
 ```sh
 $ kdb set user:/tests/spec/test "not a number"
 # STDERR: .*Validation Syntactic.*Not a number*
