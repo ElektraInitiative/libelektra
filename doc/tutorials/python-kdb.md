@@ -26,6 +26,28 @@ apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/main" python3
 apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" elektra elektra-python py3-elektra
 ```
 
+### Debian buster
+
+```sh
+docker run -it debian:buster
+apt-get update
+apt-get install ca-certificates
+apt-get install vim
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839
+vim /etc/apt/sources.list
+```
+
+Add 'deb https://debs.libelektra.org/buster buster main' to /etc/apt/sources.list
+
+```sh
+vim /etc/apt/sources.list
+```
+
+```sh
+apt-get update
+apt-get install python3-elektra
+```
+
 ## First Steps
 
 In order to being able to use `kdb`, you at first need to `import kdb`. You need access to a Python object of `KDB`. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
