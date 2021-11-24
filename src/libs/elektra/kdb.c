@@ -1979,7 +1979,7 @@ static bool resolveBackendsForSet (KeySet * backends, Key * parentKey)
 				"ELEKTRA_PLUGIN_STATUS_NO_UPDATE in the 'resolver' phase. This is interpreted the same way as "
 				"ELEKTRA_PLUGIN_STATUS_SUCCESS, i.e. the mountpoint will still go through the rest of kdbSet()'s phases.",
 				backendData->backend->name, keyName (backendKey));
-			// FALLTRHOUGH
+			// FALLTHROUGH
 		case ELEKTRA_PLUGIN_STATUS_SUCCESS:
 			// Store returned mountpoint ID and mark for update
 			keySetMeta (backendKey, "meta:/internal/kdbmountpoint", keyString (parentKey));
