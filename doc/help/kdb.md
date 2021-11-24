@@ -149,7 +149,7 @@ path for new major versions of configuration).
 
 Long paths are, however, cumbersome to enter in the CLI.
 Thus one can define bookmarks. Bookmarks are keys whose key name starts with `+`.
-They are only recognized by the `kdb` tool or tools that explicit have
+They are only recognized by the `kdb` tool or tools that explicitly have
 support for it. Your applications should not depend on the presence of a
 bookmark.
 

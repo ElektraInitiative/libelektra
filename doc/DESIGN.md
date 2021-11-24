@@ -4,16 +4,16 @@ This document describes the design of Elektra's C-API and provides hints for
 binding writers. It is not aimed at plugin writers, since it does not
 talk about the implementation details of Elektra.
 
-Elektra [aims](GOALS.md) at following design principles:
+Elektra [aims](GOALS.md) to fulfill the following design principles:
 
-1. To make the API futureproof so that it can remain compatible and stable
+1. To make the API future-proof so that it can remain compatible and stable
    over a long period of time,
-2. to make it hard to use the API the wrong way by making it simple&robust, and
+2. to make it hard to use the API the wrong way by making it simple & robust, and
 3. to make the API easy to use for programmers reading and writing
    configuration.
 
 The C-API is suitable to be reimplemented, also in non-C-languages, like Rust.
-Elektra provides a full blown architecture to support configuring systems, and
+Elektra provides a full-blown architecture to support configuring systems, and
 the C-API is the core of this endeavour.
 
 ## Data Structures
@@ -40,7 +40,7 @@ int kdbClose(KDB *handle);
 ```
 
 to get rid of the resources again. The second function may also shut
-down connections. Therefore it must be called before the end of a program.
+down connections. Therefore, it must be called before the end of a program.
 
 ```c
 Key *keyNew(const char *keyName, ...);
@@ -52,7 +52,7 @@ int ksDel(KeySet *ks);
 
 In the above pairs, the first function reserves the necessary amount
 of memory. The second function frees the allocated data segment. There
-are more allocations happening but they are invisible to the user of
+are more allocations happening, but they are invisible to the user of
 the API and happen implicitly within any of these 3 classes:
 `KDB`, `Key` and `KeySet`.
 

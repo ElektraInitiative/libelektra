@@ -153,7 +153,7 @@ Elektra is able to store [metadata](/doc/help/elektra-metadata.md) of keys.
 The [ni](/src/plugins/ni/README.md) plugin and the [dump](/src/plugins/dump/README.md) plugin, among others, support this feature.
 
 Meta data comes in handy if we use other plugins, than just the ones that store and retrieve data.
-I chose the `ni` plugin for this demonstration, because it supports metadata and is human readable.
+I chose the `ni` plugin for this demonstration, because it supports metadata and is human-readable.
 So let us have a look at the [type](/src/plugins/type/README.md) and [mathcheck](/src/plugins/mathcheck/README.md) plugins.
 
 ```sh
@@ -221,7 +221,7 @@ This is one of the reasons why Elektra promotes this [naming convention](/doc/he
 > - **type** can be `sw` (software), `hw` (hardware) or `elektra` (for internal configuration)
 > - **org** is an URL/organization name. E.g. `kde`
 > - **name** the name of the component that has this configuration
-> - **version** is the major version number. E.g. If you version is 6.3.8 than this would be `#6`
+> - **version** is the major version number. E.g. If your version is 6.3.8 than this would be `#6`
 > - **profile** is the name of the profile to be used. E.g.: `production`, `development`, `testing`, ...
 
 Furthermore, one cannot simply change the configuration file format, because it must be one the application understands. Thus one loses quite some flexibility (for instance if this file format doesn't support meta keys, as already mentioned).

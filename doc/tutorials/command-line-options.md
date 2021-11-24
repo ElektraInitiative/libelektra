@@ -124,7 +124,7 @@ On all other systems ':' is used as a separator.
 
 ### Parameter Arguments
 
-All unused elements of `argv` are be collected into an array.
+All unused elements of `argv` are collected into an array.
 You can access this array by specifying `args=remaining` on a key with basename `#`.
 The array will be copied into this key.
 As is the case with getopt(3) processing of options will stop, if `--` is encountered in `argv`.
@@ -339,7 +339,7 @@ The help message consists of a usage line and an options list.
 The program name for the usage line is taken from `argv[0]`.
 If the value contains a slash (`/`) it will be considered a path and only the part after the last slash will be used.
 
-The options list will contain exactly one entry for each key that has at least one option. Each entry has to parts. First
+The options list will contain exactly one entry for each key that has at least one option. Each entry has two parts. First
 all the options for the key are listed and then (possibly on the next line, if there are a lot of options), the description
 for the key is listed. The description is taken from the `opt/help` or alternatively the `description` metakey.
 

@@ -50,7 +50,7 @@ the assertion that failed).
 - Testsuite execution are already handled by cmake and kdb run-all.
 - The selection of tests within a test suite does not play well with ctest.
 - Rewriting all current tests to have unified behavior is a lot of work
-- Wont work for ABI compatibility tests
+- Won't work for ABI compatibility tests
 - Mock only by extra framework
 
 ## Related Decisions

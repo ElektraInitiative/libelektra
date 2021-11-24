@@ -93,7 +93,7 @@
        - [ ] `KDB_O_DEL`  
        // todo
 - [ ] No inconsistencies between tests and documentation  
-       - [ ] several flags used in test, that cant be found in the documentation for `ksLookup()` or `elektraLookupFlags`  
+       - [ ] several flags used in test, that can't be found in the documentation for `ksLookup()` or `elektraLookupFlags`  
        // todo
 
 ## Summary

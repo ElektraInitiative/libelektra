@@ -12,7 +12,7 @@ To sum up, besides system configuration, users have their own key
 databases that can override the settings according to their preferences.
 
 Thus when a key starts with `/` such cascading will automatically
-performed.
+be performed.
 
 ## SPEC
 

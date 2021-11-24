@@ -37,7 +37,7 @@ Integrate `kdbEnsure` in `kdbOpen(Key *errorKey, KeySet *contract)` but only all
 ## Rationale
 
 - can immediately build up correct plugin positioning
-- does not allow to start applications if the contract cannot be fulfilled
+- does not allow starting applications if the contract cannot be fulfilled
 - simplest and minimalistic solution
 
 ## Implications

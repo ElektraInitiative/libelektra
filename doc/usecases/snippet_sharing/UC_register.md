@@ -6,7 +6,7 @@
 - **Scope:** Authentication
 - **Level:** User Goal
 - **Actors:** Anonymous user
-- **Brief:** Any not logged in user can register a new user account.
+- **Brief:** Any not logged-in user can register a new user account.
 
 ## Scenarios
 

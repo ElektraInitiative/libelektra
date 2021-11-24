@@ -12,11 +12,11 @@ When Elektra looks up a _cascading key_ (i.e. key names without a namespace and 
 
 If a key, for example, exists in both **user** and **system** namespace, the key in the **user** namespace takes precedence over the one in the **system** namespace. If there is no such key in the **user** namespace the key in the **system** namespace acts as a fallback.
 
-But lets demonstrate this with an example:
+But let's demonstrate this with an example:
 
 ### Add a Key to the system Namespace
 
-Configuration in the **system** namespace is the same for all users. Therefore this namespace provides a default or fallback configuration.
+Configuration in the **system** namespace is the same for all users. Therefore, this namespace provides a default or fallback configuration.
 
 With the default Elektra installation only an administrator can update configuration settings within the **system** namespace.
 

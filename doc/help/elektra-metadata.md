@@ -12,7 +12,7 @@ Metadata has different purposes:
 - Traditionally Elektra used metadata to carry file system semantics.
   The backend `filesys` stores file metadata (File metadata in POSIX is
   returned by `stat()`) in a _struct_ with the same name. It contains a
-  file type (directory, symbolic link,..) as well as other metadata like
+  file type (directory, symbolic link, ...) as well as other metadata like
   uid, gid, owner, mode, atime, mtime and ctime. into the `Key` objects.
   This solution, however, only makes sense when each file shelters only one
   `Key` object.

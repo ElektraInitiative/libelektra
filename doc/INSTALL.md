@@ -185,7 +185,7 @@ Otherwise please refer to the section `OS Independent` below.
 First follow the steps in [COMPILE](COMPILE.md).
 
 After you completed building Elektra on your own, there are multiple options how to install it. For example, with make or CPack tools.
-We recommend to use the packages from our build server or that you generate your own packages with CPack.
+We recommend using the packages from our build server or that you generate your own packages with CPack.
 
 ### CPack
 
@@ -285,7 +285,7 @@ and run `ldconfig` as root.
 
 ## Installation Manuals
 
-For some of the plugins and tools that ship with Elektra,
+For some plugins and tools that ship with Elektra,
 additional installation manuals have been written.
 You can find them in the [tutorial overview](tutorials/README.md).
 

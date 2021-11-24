@@ -65,6 +65,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
+### uname
+
+- Minor improvement of source code readability in uname.c _(@lawli3t)_
+
 ## Libraries
 
 The text below summarizes updates to the [C (and C++)-based libraries](https://www.libelektra.org/libraries/readme) of Elektra.
@@ -86,6 +90,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Clarified that our reference counting mechanism is more related to a shared lock than to the concept of shared ownership. _(Klemens Böswirth)_
 - Both the reference count for `Key` and for `KeySet` now use `uint16_t` to reduce memory usage. `Key` previously used `size_t`. _(Klemens Böswirth)_
 - Reorder `Key` and `KeySet` struct members to aviod padding and make space for a new `uint16_t` member, reserved for future use. _(Mihael Pranjić)_
+- Improve `keyReplacePrefix` by using new `keyCopy` function instead of manually copying the name of the `Key` _(@lawli3t)_
 
 ### <<Library1>>
 
@@ -116,7 +121,9 @@ you up to date with the multi-language support provided by Elektra.
 
 _(Michael Tucek)_
 
-### <<Binding2>>
+### FUSE Binding
+
+- Added check for existence of accessed path before opening new file descriptor _(@lawli3t)_
 
 ### <<Binding3>>
 
@@ -130,12 +137,12 @@ _(Michael Tucek)_
 
 - Updated `reformat-c` script to use clang-format version 13. _(Mihael Pranjić)_
 - <<TODO>>
-- <<TODO>>
+- Fix bug where the PATH environment variable would get overwritten in some of the Docker images. Reduce image size _(Ivaylo Ivanov)_
 
 ## Documentation
 
 - <<TODO>>
-- <<TODO>>
+- Improved compilation documentation _(Ivaylo Ivanov)_
 - Start making Elektra [reuse](https://reuse.software) compliant. _(Markus Raab)_
 - Fix Links in [README.md](/README.md) and small clarifications. _(Markus Raab)_
 - Remove previous authors. _(Markus Raab)_
@@ -149,14 +156,23 @@ _(Michael Tucek)_
 - Fix broken links. _(Robert Sowula)_
 - Emphasize that `type` is required when the HL API is used. _(Tobias Schubert @qwepoizt)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
+- Improve wording and formatting of DESIGN.md _(@lawli3t)_
+- Correct various typing-, spelling- and grammar-errors in the .md-files in the directory doc and its subdirectories. _(Florian Lindner @flo91)_
 - <<TODO>>
+- explained in the docker test tutorial how to run the container with podman instead of docker. _(@muskater)_
+- <<TODO>>
+- Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 
 ## Tests
 
 - disable Rust from buster _(Markus Raab)_
 - <<TODO>>
+- Cleanup tests/linkchecker.whitelist and fix off-by-1 bug of the counter in the scripts/link-checker script (increase counter before printf) _(Florian Lindner @flo91)_
+- add tests the env binding _(Ivaylo Ivanov)_
+- add and improve checks in scripts/sed _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
+- Added more test cases for the keyCopy function _(@muskater)_
 
 ## Packaging
 

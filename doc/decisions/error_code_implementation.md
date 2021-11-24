@@ -26,7 +26,7 @@ The code generation itself, however, was not ideal for cross compilation.
 
 Write down the few macros manually, and also manually write down exceptions for the language bindings (and also the mappings from Elektra's internal errors to nice errors specific for the languages)
 
-Since error codes and crucial parts Elektra's core implementation will not change often this is the best approach with minimal effort.
+Since error codes and crucial parts Elektra's core implementation will not often change this is the best approach with minimal effort.
 
 The existing code will be refactored so that error macros directly call macros.
 

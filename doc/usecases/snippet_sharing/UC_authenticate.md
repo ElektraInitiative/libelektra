@@ -6,7 +6,7 @@
 - **Scope:** Authentication
 - **Level:** User Goal
 - **Actors:** Anonymous user
-- **Brief:** Any not logged in user can authenticate to the service.
+- **Brief:** Any not logged-in user can authenticate to the service.
 
 ## Scenarios
 

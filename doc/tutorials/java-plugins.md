@@ -18,7 +18,7 @@ If you would like to write a plugin in Java and look into the documentation, the
 
 ### JNI Plugin
 
-Java Native Interface is a framework, which allows Java code to execute or to be executed by programms, written in other languages like C, C++ and Assembly. Most of Elektra’s plugins are written in C and C++. Developer can use the JNI plugin, which was created specifically for Elektra to write plugins using Java code. For more information on JNI plugins, please take a look [here](/src/plugins/jni/README.md).
+Java Native Interface is a framework, which allows Java code to execute or to be executed by programs, written in other languages like C, C++ and Assembly. Most of Elektra’s plugins are written in C and C++. Developer can use the JNI plugin, which was created specifically for Elektra to write plugins using Java code. For more information on JNI plugins, please take a look [here](/src/plugins/jni/README.md).
 
 In order to use `jni` in Elektra, the library `jni.h` must be provided for it. This file is used by the JNI Plugin, which has to be enabled, while installing Elektra. More information on how to install the JNI plugin can be found [here](/src/plugins/jni/README.md). Please read carefully and follow instructions in “Installation”.
 

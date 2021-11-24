@@ -80,8 +80,8 @@ while read -r line; do
 	check "$line" &
 	PIDS="$PIDS $!"
 	THREADCOUNT=$((THREADCOUNT + 1))
-	printf "%i/%i\r" "$COUNTLINKS" "$NUMLINKS"
 	COUNTLINKS=$((COUNTLINKS + 1))
+	printf "%i/%i\r" "$COUNTLINKS" "$NUMLINKS"
 	if [ "$THREADCOUNT" -eq "$NUMTHREADS" ]; then
 		for pid in $PIDS; do
 			wait "$pid"
