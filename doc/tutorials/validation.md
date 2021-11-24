@@ -123,6 +123,7 @@ If we now set a new key with
 
 ```sh
 kdb set user:/tests/spec/test "not a number"
+#> Create a new key user:/tests/spec/test with string "not a number"
 ```
 
 this key has adopted all metadata from the spec namespace:
@@ -141,7 +142,7 @@ active for this key.
 On that behalf we have to make sure that the validation plugin is loaded for
 this key with:
 
-```
+```sh
 kdb mount tutorial.dump /tests/spec dump validation
 ```
 
@@ -149,6 +150,14 @@ This [mounts](/doc/tutorials/mount.md) the backend `tutorial.dump` to the mount 
 **/tests/spec** and activates the validation plugin for the keys below the mount point.
 The validation plugin now uses the metadata of the keys below **/tests/spec**
 to validate values before storing them in `tutorial.dump`.
+
+If we try setting the key again, we will get an error:
+```sh
+$ kdb set user:/tests/spec/test "not a number"
+# STDERR: .*Validation Syntactic.*Not a number*
+# ERROR:  C03100
+# RET 5
+```
 
 Although this is better than defining metadata in the same place as the data
 itself, we can still do better.
