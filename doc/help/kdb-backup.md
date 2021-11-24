@@ -1,6 +1,6 @@
 # kdb-backup -- Make a backup of current KDB
 
-## SYNOPSES
+## SYNOPSIS
 
 `kdb backup`
 
