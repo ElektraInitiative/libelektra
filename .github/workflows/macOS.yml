@@ -81,7 +81,7 @@ jobs:
           ~/Library/Caches/pip
           ~/Library/Caches/pipenv
           ~/github_brew_cache_entries.txt
-        key: macos-cache-${{ hashFiles('scripts /mac_setup.sh') }}
+        key: macos-cache-${{ hashFiles('scripts/mac_setup.sh') }}
   
     - name: Brew cache hit
       if: steps.dependency-cache.outputs.cache-hit == 'true'
