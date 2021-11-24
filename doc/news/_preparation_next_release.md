@@ -117,7 +117,7 @@ you up to date with the multi-language support provided by Elektra.
 
 ### Java binding
 
-- Integrated the `HelloElektra` example as gradel sub-project to allow it to directly depend on the current binding _(Michael Tucek)_
+- Integrated the `HelloElektra` example as Gradle sub-project to allow it to directly depend on the current binding _(Michael Tucek)_
 - Extend `HelloElektra` example with cutpoint and value setting example _(@JakobWonisch)_
 
 ### FUSE Binding
