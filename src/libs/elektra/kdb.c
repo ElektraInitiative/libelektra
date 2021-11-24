@@ -46,6 +46,7 @@
 #endif
 
 #include <kdbinternal.h>
+#include <doc.h>
 
 
 /**
