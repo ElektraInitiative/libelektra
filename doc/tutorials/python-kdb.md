@@ -205,6 +205,18 @@ with kdb.KDB() as k:
     print("{}: {}".format(new_key, new_key.value))
 ```
 
+You can also duplicate a key:
+
+```py
+import kdb
+
+with kdb.KDB() as k:
+    key1 = kdb.Key('/user/sw/pk/key_name', kdb.KEY_VALUE, 'key_value')
+    key2 = kdb.Key(key1.dup())
+    print("{}: {}".format(new_key, new_key.value))
+    print("{}: {}".format(key2, key2.value))
+```
+
 Keys can be added to a keyset using `append`. If the key already exists, the value will be updated. Calling `keyset_name['/path/to/key'] = 'new_value` does not work for updating keys already in a keyset. Keys can be removed with `pop`, `remove` or `cut`
 
 ```py
