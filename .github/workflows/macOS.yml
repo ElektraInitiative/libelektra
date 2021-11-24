@@ -73,11 +73,11 @@ jobs:
         ruby-version: 2.7 # Not needed with a .ruby-version file
 
     - name: Determine pre-existing brew packages
-          if: steps.dependency-cache.outputs.cache-hit != 'true'
-          run: |
-            echo 'EXISTING_CELLAR<<EOF' >> $GITHUB_ENV
-            ls -1 /usr/local/Cellar >> $GITHUB_ENV
-            echo 'EOF' >> $GITHUB_ENV
+        if: steps.dependency-cache.outputs.cache-hit != 'true'
+        run: |
+          echo 'EXISTING_CELLAR<<EOF' >> $GITHUB_ENV
+          ls -1 /usr/local/Cellar >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
 
     - name: Cache dependencies
       id: dependency-cache
