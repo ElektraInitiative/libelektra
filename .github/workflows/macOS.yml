@@ -77,9 +77,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: |
-          ~/.pyenv
-          ~/Library/Caches/pip
-          ~/Library/Caches/pipenv
+          ~/Library/Caches/Homebrew
           ~/github_brew_cache_entries.txt
         key: macos-cache-${{ hashFiles('scripts/mac_setup.sh') }}
   
