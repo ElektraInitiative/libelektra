@@ -191,6 +191,7 @@ _(Michael Tucek)_
 - Added more test cases for the keyCopy function _(@muskater)_
 - add exception tests for key C++ bindings _(Ivaylo Ivanov)_
 - Added a shell script and a task that checks whether the filenames of newly added files are compliant with the convention. It is executed by the cirrus CI as well as the Jenkins CI _(@muskater)_
+- Add a new shellrecoder test to doc/tutorials/merge.md _(Florian Lindner @flo91)_
 
 ## Packaging
 

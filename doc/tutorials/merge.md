@@ -10,6 +10,7 @@ The command to use this tool is:
 
 ```sh
 kdb merge [options] ourpath theirpath basepath resultpath
+# RET: 7
 ```
 
 The standard naming scheme for a three-way merge consists of `ours`, `theirs`, and `base`:
@@ -34,18 +35,14 @@ It's worth noting, `resultpath` should be empty before attempting a merge, other
 
 ## Options
 
-As for the options, there are a few basic options:
+As for the options, there are two basic options:
 
 - `-i`, `--interactive`: which attempts the merge in an interactive way
-
-- `-t`, `--test`: which tests the proposed merge and informs you about possible
-  conflicts
-
 - `-f`, `--force`: which overwrites any Keys in `resultpath`
 
 ### Strategies
 
-Additionally there is an option to specify a merge strategy, which is very important.
+Additionally, there is an option to specify a merge strategy, which is very important.
 
 The option for strategy is:
 
@@ -56,11 +53,14 @@ The current list of strategies are:
 - `preserve`: the merge will fail if a conflict is detected
 - `ours`: the merge will use our version during a conflict
 - `theirs`: the merge will use their version during a conflict
-- `base`: the merge will use the base version during a conflict
+- `cut`: Removes existing keys below the resultpath and replaces them with the merged keyset.
+- `import`: (DEPRECATED, avoid using it!)
+  Preserves existing keys in the resultpath if they do not exist in the merged keyset.
+  If the key does exist in the merged keyset, it will be overwritten.
 
 If no strategy is specified, the merge will default to the preserve strategy as to not risk making the wrong decision.
 If any of the other strategies are specified, when a conflict is detected, merge will use the Key specified by the
-strategy (`ours`, `theirs`, or `base`) for the resulting Key.
+strategy (`ours`, `theirs`, `cut` or `import`) for the resulting Key.
 
 ## Basic Example
 
@@ -104,12 +104,59 @@ key4=banana
 key5=5
 ```
 
+To add the keys to the key database, execute the following commands:
+
+```sh
+kdb set user:/tests/base/key1 1
+#> Create a new key user:/tests/base/key1 with string "1"
+
+kdb set user:/tests/base/key2 2
+#> Create a new key user:/tests/base/key2 with string "2"
+
+kdb set user:/tests/base/key3 3
+#> Create a new key user:/tests/base/key3 with string "3"
+
+kdb set user:/tests/base/key4 4
+#> Create a new key user:/tests/base/key4 with string "4"
+
+kdb set user:/tests/base/key5 5
+#> Create a new key user:/tests/base/key5 with string "5"
+
+
+kdb set user:/tests/ours/key1 apple
+#> Create a new key user:/tests/ours/key1 with string "apple"
+
+kdb set user:/tests/ours/key2 2
+#> Create a new key user:/tests/ours/key2 with string "2"
+
+kdb set user:/tests/ours/key3 3
+#> Create a new key user:/tests/ours/key3 with string "3"
+
+kdb set user:/tests/ours/key5 fish
+#> Create a new key user:/tests/ours/key5 with string "fish"
+
+
+kdb set user:/tests/theirs/key1 1
+#> Create a new key user:/tests/theirs/key1 with string "1"
+
+kdb set user:/tests/theirs/key2 pie
+#> Create a new key user:/tests/theirs/key2 with string "pie"
+
+kdb set user:/tests/theirs/key4 banana
+#> Create a new key user:/tests/theirs/key4 with string "banana"
+
+kdb set user:/tests/theirs/key5 5
+#> Create a new key user:/tests/theirs/key5 with string "5"
+```
+
 Now we will examine the result KeySet with the different strategies.
 
 ### Preserve
 
 ```sh
-kdb merge -s preserve system:/ours system:/theirs system:/base system:/result
+kdb merge -s preserve user:/tests/ours user:/tests/theirs user:/tests/base user:/tests/result
+# RET: 255
+# STDERR: 1 conflicts were detected that could not be resolved automatically:⏎user:/tests/result/key4⏎ours: CONFLICT_DELETE, theirs: CONFLICT_MODIFY⏎⏎Merge unsuccessful.
 ```
 
 The merge will fail because of a conflict for `key4` since `key4` was deleted in our KeySet and
@@ -118,50 +165,73 @@ edited in their KeySet. Since we used preserve, the merge fails and the result K
 ### Ours
 
 ```sh
-kdb merge -s ours system:/ours system:/theirs system:/base system:/result
+kdb merge -s ours user:/tests/ours user:/tests/theirs user:/tests/base user:/tests/result
 ```
 
-The result KeySet, system:/result will be:
+The result KeySet, `user:/tests/result` will be:
 
-```ini
-key1=apple
-key2=pie
-key5=fish
+```sh
+kdb export user:/tests/result mini
+#> key1=apple
+#> key2=pie
+#> key5=fish
 ```
 
-Because the conflict of `key4` (it was deleted in `ours` but changed in `theirs`) is solved by using our copy
-thus deleting the key.
+The conflict of `key4` (it was deleted in `ours` but changed in `theirs`) is solved by using our copy, thus deleting the key.
+
+Now we delete the result keys and try the next merging strategy.
+
+```sh
+kdb rm user:/tests/result/key1
+kdb rm user:/tests/result/key2
+kdb rm user:/tests/result/key5
+```
 
 ### Theirs
 
 ```sh
-kdb merge -s theirs system:/ours system:/theirs system:/base system:/result
+kdb merge -s theirs user:/tests/ours user:/tests/theirs user:/tests/base user:/tests/result
 ```
 
-The result KeySet, `system:/result` will be:
+The result KeySet, `user:/tests/result` will be:
 
-```ini
-key1=apple
-key2=pie
-key4=banana
-key5=fish
+```sh
+kdb export user:/tests/result mini
+#> key1=apple
+#> key2=pie
+#> key4=banana
+#> key5=fish
 ```
 
 Here, the conflict of `key4` is solved by using their copy, thus `key4=banana`.
 
-### Base
+We delete the result keys again and finally try the `cut` merging strategy.
 
 ```sh
-kdb merge -s base system:/ours system:/theirs system:/base system:/result
+kdb rm user:/tests/result/key1
+kdb rm user:/tests/result/key2
+kdb rm user:/tests/result/key5
 ```
 
-The result KeySet, `system:/result` will be:
+### Cut
 
-```ini
-key1=apple
-key2=pie
-key4=4
-key5=5
+```sh
+kdb merge -s cut user:/tests/ours user:/tests/theirs user:/tests/base user:/tests/result
 ```
 
-The same conflict is found in `key4`, but here we use the `base` version to solve it so `key4=4`.
+The result KeySet, `user:/tests/result` will be:
+
+```sh
+kdb export user:/tests/result mini
+#> key1=1
+#> key2=pie
+#> key4=banana
+#> key5=5
+```
+
+Here the state of theirs is simply copied to the `resultpath`.
+
+## SEE ALSO
+
+- [kdb-merge(1)](../help/kdb-merge.md)
+- [elektra-merge-strategy(7)](../help/elektra-merge-strategy.md)
