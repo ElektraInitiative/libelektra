@@ -179,6 +179,7 @@ _(Michael Tucek)_
 - Add a new example on how to use keyCopy. _(@muskater)_
 - <<TODO>>
 - Added verification to the "Arrays" tutorial _(Ivaylo Ivanov)_
+- Added verification to the "Validation" tutorial _(Ivaylo Ivanov)_
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 - Added debian buster tutorial to python bindings tutorial _(@4ydan)_
 - Fixed some typos in the "namespaces.md" documentation _(@muskater)_
