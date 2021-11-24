@@ -31,12 +31,6 @@ done
 shift "$((OPTIND - 1))"
 
 for t in test* check*; do
-	if [ $t = "testmod_zeromqsend" ]; then
-		echo
-		printf "Skipping $t, see 'doc/todo/TESTING'\n"
-		echo
-		continue
-	fi
 
 	echo "Running $t"
 
