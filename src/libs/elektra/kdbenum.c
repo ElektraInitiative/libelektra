@@ -1,7 +1,7 @@
 /**
  * @file
  *
- * @brief dummy file do document the enums which have no name in the header file.
+ * @brief dummy file to document the enums which have no name in the header file.
  *
  * They are duplicated here to document them.
  *
@@ -85,14 +85,12 @@
  */
 enum elektraKeyFlags
 {
-	KEY_NAME = 1,	      /*!< Flag for the key name */
-	KEY_VALUE = 1 << 1,   /*!< Flag for the key data */
-	KEY_FLAGS = 3,	      /*!< Allows to define multiple flags at once. */
-	KEY_COMMENT = 1 << 3, /*!< Flag for the key comment */
-	KEY_BINARY = 1 << 4,  /*!< Flag if the key is binary */
-	KEY_SIZE = 1 << 11,   /*!< Flag for maximum size to limit value */
-	KEY_META = 1 << 15,   /*!< Flag for metadata */
-	KEY_NULL = 1 << 16,   /*!< Is *not* a flag, only as return value @deprecated do not use */
+	KEY_VALUE = 1 << 1,  /*!< Flag for the key data */
+	KEY_FLAGS = 3,	     /*!< Allows to define multiple flags at once. */
+	KEY_BINARY = 1 << 4, /*!< Flag if the key is binary */
+	KEY_SIZE = 1 << 11,  /*!< Flag for maximum size to limit value */
+	KEY_META = 1 << 15,  /*!< Flag for metadata */
+	KEY_NULL = 1 << 16,  /*!< Is *not* a flag, only as return value @deprecated do not use */
 	// hole for elektraLockFlags
 	KEY_END = 0 /*!< Used as a parameter terminator to keyNew() */
 };

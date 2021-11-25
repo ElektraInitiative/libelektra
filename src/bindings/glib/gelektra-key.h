@@ -22,9 +22,7 @@ typedef struct _GElektraKeyClass GElektraKeyClass;
 // clang-format off
 typedef enum {
 	GELEKTRA_KEY_FLAGS          = KEY_FLAGS,
-	GELEKTRA_KEY_NAME           = KEY_NAME,
 	GELEKTRA_KEY_VALUE          = KEY_VALUE,
-	GELEKTRA_KEY_COMMENT        = KEY_COMMENT,
 	GELEKTRA_KEY_BINARY         = KEY_BINARY,
 	GELEKTRA_KEY_SIZE           = KEY_SIZE,
 	GELEKTRA_KEY_FUNC           = KEY_FUNC,

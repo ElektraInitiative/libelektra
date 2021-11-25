@@ -33,18 +33,18 @@ int main (void)
 {
 	Key * cur = 0;
 	Key * found = 0;
-	KeySet * ks =
-		ksNew (30, keyNew ("user:/dir1", KEY_END), keyNew ("user:/dir1/key1", KEY_VALUE, "value1", KEY_END),
-		       keyNew ("user:/dir1/key2", KEY_VALUE, "value2", KEY_END), keyNew ("user:/dir1/key3", KEY_VALUE, "value3", KEY_END),
-		       keyNew ("user:/dir1/key4", KEY_VALUE, "value4", KEY_END),
-		       keyNew ("user:/dir1/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		       keyNew ("user:/dir1/.inactive2", KEY_COMMENT, "additional information", KEY_END), keyNew ("user:/dir2", KEY_END),
-		       keyNew ("user:/dir2/key1", KEY_VALUE, "value1", KEY_END), keyNew ("user:/dir2/key2", KEY_VALUE, "value2", KEY_END),
-		       keyNew ("user:/dir2/key3", KEY_VALUE, "value3", KEY_END), keyNew ("user:/dir2/key4", KEY_VALUE, "value4", KEY_END),
-		       keyNew ("user:/dir3", KEY_END), keyNew ("user:/dir3/key1", KEY_VALUE, "value1", KEY_END),
-		       keyNew ("user:/dir3/.inactive1", KEY_COMMENT, "key is inactive", KEY_END),
-		       keyNew ("user:/dir3/.inactive2", KEY_COMMENT, "a users comment", KEY_END), keyNew ("user:/dir4", KEY_END),
-		       keyNew ("user:/dir5", KEY_END), KS_END);
+	KeySet * ks = ksNew (
+		30, keyNew ("user:/dir1", KEY_END), keyNew ("user:/dir1/key1", KEY_VALUE, "value1", KEY_END),
+		keyNew ("user:/dir1/key2", KEY_VALUE, "value2", KEY_END), keyNew ("user:/dir1/key3", KEY_VALUE, "value3", KEY_END),
+		keyNew ("user:/dir1/key4", KEY_VALUE, "value4", KEY_END),
+		keyNew ("user:/dir1/.inactive1", KEY_META, "comment", "key is inactive", KEY_END),
+		keyNew ("user:/dir1/.inactive2", KEY_META, "comment", "additional information", KEY_END), keyNew ("user:/dir2", KEY_END),
+		keyNew ("user:/dir2/key1", KEY_VALUE, "value1", KEY_END), keyNew ("user:/dir2/key2", KEY_VALUE, "value2", KEY_END),
+		keyNew ("user:/dir2/key3", KEY_VALUE, "value3", KEY_END), keyNew ("user:/dir2/key4", KEY_VALUE, "value4", KEY_END),
+		keyNew ("user:/dir3", KEY_END), keyNew ("user:/dir3/key1", KEY_VALUE, "value1", KEY_END),
+		keyNew ("user:/dir3/.inactive1", KEY_META, "comment", "key is inactive", KEY_END),
+		keyNew ("user:/dir3/.inactive2", KEY_META, "comment", "a users comment", KEY_END), keyNew ("user:/dir4", KEY_END),
+		keyNew ("user:/dir5", KEY_END), KS_END);
 
 	printf ("Iterate over all keys:\n");
 	ksRewind (ks);

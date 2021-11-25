@@ -20,37 +20,37 @@ ksNew( 28 ,
 	keyNew ("user:/test/keyset/dir9", KEY_END),
 	keyNew ("user:/test/keyset/key1"
 		, KEY_VALUE, "value1"
-		, KEY_COMMENT, "comment1"
+		, KEY_META, "comment", "comment1"
 	, KEY_END),
 	keyNew ("user:/test/keyset/key2"
 		, KEY_VALUE, "value2"
-		, KEY_COMMENT, "comment2"
+		, KEY_META, "comment", "comment2"
 	, KEY_END),
 	keyNew ("user:/test/keyset/key3"
 		, KEY_VALUE, "value3"
-		, KEY_COMMENT, "comment3"
+		, KEY_META, "comment", "comment3"
 	, KEY_END),
 	keyNew ("user:/test/keyset/key4"
 		, KEY_VALUE, "value4"
-		, KEY_COMMENT, "comment4"
+		, KEY_META, "comment", "comment4"
 	, KEY_END),
 	keyNew ("user:/test/keyset/key5"
 		, KEY_VALUE, "value5"
-		, KEY_COMMENT, "comment5"
+		, KEY_META, "comment", "comment5"
 	, KEY_END),
 	keyNew ("user:/test/keyset/key6"
 		, KEY_VALUE, "value6"
-		, KEY_COMMENT, "comment6"
+		, KEY_META, "comment", "comment6"
 	, KEY_END),
 	keyNew ("user:/test/keyset/key7"
 		, KEY_VALUE, "value7"
-		, KEY_COMMENT, "comment7"
+		, KEY_META, "comment", "comment7"
 	, KEY_END),
 	keyNew ("user:/test/keyset/key8"
 		, KEY_VALUE, "value8"
-		, KEY_COMMENT, "comment8"
+		, KEY_META, "comment", "comment8"
 	, KEY_END),
 	keyNew ("user:/test/keyset/key9"
 		, KEY_VALUE, "value9"
-		, KEY_COMMENT, "comment9"
+		, KEY_META, "comment", "comment9"
 	, KEY_END),KS_END);

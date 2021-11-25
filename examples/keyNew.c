@@ -103,7 +103,7 @@ Key *k=keyNew("user:/tmp/ex4",
 	KEY_BINARY,			// key type
 	KEY_SIZE, 7,			// assume binary length 7
 	KEY_VALUE, "some data",		// value that will be truncated in 7 bytes
-	KEY_COMMENT, "value is truncated",
+	KEY_META, "comment", "value is truncated",
 	KEY_END);			// end of args
 //! [With Everything]
 printf ("%.7s\n", (char*)keyValue(k));

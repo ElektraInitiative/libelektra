@@ -33,10 +33,10 @@
 
 void test_lookupre (void)
 {
-	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "a", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user:/b", KEY_VALUE, "  a  ", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user:/c", KEY_VALUE, "\t\t", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user:/d", KEY_VALUE, " \t \t ", KEY_COMMENT, "match", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "a", KEY_META, "comment", "does not match", KEY_END),
+			     keyNew ("user:/b", KEY_VALUE, "  a  ", KEY_META, "comment", "does not match", KEY_END),
+			     keyNew ("user:/c", KEY_VALUE, "\t\t", KEY_META, "comment", "match", KEY_END),
+			     keyNew ("user:/d", KEY_VALUE, " \t \t ", KEY_META, "comment", "match", KEY_END), KS_END);
 
 	Key * match = 0;
 	regex_t regex;
@@ -59,10 +59,10 @@ void test_lookupre (void)
 
 void test_extended (void)
 {
-	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "la", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user:/b", KEY_VALUE, "lalala", KEY_COMMENT, "match", KEY_END),
-			     keyNew ("user:/c", KEY_VALUE, "jump", KEY_COMMENT, "does not match", KEY_END),
-			     keyNew ("user:/d", KEY_VALUE, "lalalala", KEY_COMMENT, "match", KEY_END), KS_END);
+	KeySet * ks = ksNew (5, keyNew ("user:/a", KEY_VALUE, "la", KEY_META, "comment", "match", KEY_END),
+			     keyNew ("user:/b", KEY_VALUE, "lalala", KEY_META, "comment", "match", KEY_END),
+			     keyNew ("user:/c", KEY_VALUE, "jump", KEY_META, "comment", "does not match", KEY_END),
+			     keyNew ("user:/d", KEY_VALUE, "lalalala", KEY_META, "comment", "match", KEY_END), KS_END);
 
 	Key * match = 0;
 	regex_t regex;

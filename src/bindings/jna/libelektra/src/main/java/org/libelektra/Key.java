@@ -32,14 +32,8 @@ public final class Key extends ReadableKey implements Iterable<ReadableKey> {
     /** Used as a parameter terminator */
     KEY_END(0),
 
-    /** Flag for the key name */
-    KEY_NAME(1),
-
     /** Flag for the key data */
     KEY_VALUE(1 << 1),
-
-    /** Flag for the key comment */
-    KEY_COMMENT(1 << 3),
 
     /** Flag if the key is binary */
     KEY_BINARY(1 << 4),

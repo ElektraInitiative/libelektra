@@ -411,10 +411,8 @@ int keyIsString (const Key * key)
  *
  * The returned flags bit array has 1s (differ) or 0s (equal) for each key
  * meta info compared, that can be logically ORed using @c #elektraKeyFlags flags.
- * @link elektraKeyFlags::KEY_NAME KEY_NAME @endlink,
  * @link elektraKeyFlags::KEY_VALUE KEY_VALUE @endlink,
- * @link elektraKeyFlags::KEY_COMMENT KEY_COMMENT @endlink,
- * @link elektraKeyFlags::KEY_META KEY_META @endlink (will be set in addition to owner and comment),
+ * @link elektraKeyFlags::KEY_META KEY_META @endlink (also includes comments),
  *
  * @par A very simple example would be
  * @code
@@ -446,8 +444,8 @@ printf("key1 and key2 have different values\n");
 
  kdbGet(handle, ks, base);
 
-// we are interested only in name and/or value
-interests=(KEY_NAME | KEY_VALUE);
+// we are interested only in meta and/or value
+interests=(KEY_META | KEY_VALUE);
 
 ksRewind(ks);
 while ((current=ksNext(ks))) {
@@ -481,25 +479,21 @@ elektraKeyFlags keyCompare (const Key * key1, const Key * key2)
 	ssize_t nsize2 = keyGetNameSize (key2);
 	const char * name1 = keyName (key1);
 	const char * name2 = keyName (key2);
-	const Key * comment1 = keyGetMeta (key1, "comment");
-	const Key * comment2 = keyGetMeta (key2, "comment");
+
 	const void * value1 = keyValue (key1);
 	const void * value2 = keyValue (key2);
 	ssize_t size1 = keyGetValueSize (key1);
 	ssize_t size2 = keyGetValueSize (key2);
-
 	// TODO: might be (binary) by chance
-	if (strcmp (keyString (comment1), keyString (comment2))) ret |= KEY_COMMENT;
 
 	if (keyCompareMeta (key1, key2)) ret |= KEY_META;
 
 	if (nsize1 != nsize2)
-		ret |= KEY_NAME;
+		ret |= 1;
 	else if (!name1 || !name2)
-		ret |= KEY_NAME;
+		ret |= 1;
 	else if (strcmp (name1, name2))
-		ret |= KEY_NAME;
-
+		ret |= 1;
 
 	if (size1 != size2)
 		ret |= KEY_VALUE;

@@ -210,7 +210,7 @@ TEST (key, keynew)
 	succeed_if (memcmp (&getBack[0], array, sizeof (array)) == 0, "could not get correct value with keyGetBinary");
 	succeed_if (key8.getBaseName () == "there", "wrong base name");
 
-	Key key9 ("system:/valid/.inactive", KEY_COMMENT, "inactive key", KEY_END);
+	Key key9 ("system:/valid/.inactive", KEY_META, "comment", "inactive key", KEY_END);
 	succeed_if (key9.getMeta<std::string> ("comment") == "inactive key", "comment failed");
 	succeed_if (key9.getBaseName () == ".inactive", "wrong base name");
 

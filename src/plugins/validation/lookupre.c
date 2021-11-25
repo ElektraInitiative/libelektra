@@ -15,6 +15,7 @@
  * TODO: Does not work (no example, no test case)
  *
  * @deprecated Does not work
+ * @deprecated Remove references to deprecated and removed KEY_COMMENT flag, use KEY_META instead
  * @param ks the KeySet to lookup into
  * @param where any of @p KEY_SWITCH_NAME, @p KEY_SWITCH_VALUE,
  *        @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT ORed.

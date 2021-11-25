@@ -238,7 +238,7 @@ static void test_keyCompare (void)
 
 	keySetName (key1, "user:/myname");
 	succeed_if_same_string (keyName (key1), "user:/myname");
-	succeed_if (keyCompare (key1, key2) == KEY_NAME, "the keys should differ in name");
+	succeed_if (keyCompare (key1, key2) == 1, "the keys should differ in name");
 	keySetName (key2, "user:/myname");
 	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in name");
 
@@ -248,9 +248,9 @@ static void test_keyCompare (void)
 	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in value");
 
 	keySetComment (key1, "mycomment");
-	succeed_if (keyCompare (key1, key2) == (KEY_COMMENT | KEY_META), "the keys should differ in comment");
+	succeed_if (keyCompare (key1, key2) == (KEY_META), "the keys should differ in comment (metadata)");
 	keySetComment (key2, "mycomment");
-	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in comment");
+	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in comment (metadata)");
 
 	keyDel (key1);
 	keyDel (key2);

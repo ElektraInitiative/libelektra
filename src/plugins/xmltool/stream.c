@@ -466,7 +466,7 @@ int keyOutput (const Key * k, FILE * stream, KDBStream options)
 	}
 
 	c = keyGetCommentSize (k);
-	if (options & KEY_COMMENT && c > 1)
+	if (options & KEY_META && c > 1)
 	{
 		char * com = (char *) elektraMalloc (c);
 		if (com == NULL) return -1;

@@ -1421,7 +1421,7 @@ static void test_keyDup (void)
 	printf ("Test key duplication\n");
 
 	// Create test key
-	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_END);
+	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_META, "comment", "mycomment", KEY_END);
 
 
 	// Dup the key
@@ -1469,7 +1469,7 @@ static void test_keyCopy (void)
 	printf ("Test key copy\n");
 
 	// Create test key
-	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_END);
+	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_META, "comment", "mycomment", KEY_END);
 
 
 	// Copy the key

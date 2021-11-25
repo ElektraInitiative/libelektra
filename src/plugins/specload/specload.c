@@ -577,7 +577,7 @@ int isChangeAllowed (Key * oldKey, Key * newKey)
 		return -1;
 	}
 
-	if ((changes & KEY_NAME) != 0)
+	if ((changes & 1) != 0)
 	{
 		// different key names
 		return -2;
