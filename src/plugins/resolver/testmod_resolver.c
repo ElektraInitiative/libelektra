@@ -53,7 +53,7 @@ void test_resolve (void)
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
 	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
-	plugin->kdbGet(plugin, 0, parentKey);
+	plugin->kdbGet (plugin, 0, parentKey);
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	exit_if_fail (h != 0, "no plugin handle");
@@ -77,7 +77,7 @@ void test_resolve (void)
 	plugin->kdbOpen (plugin, parentKey);
 
 	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
-	plugin->kdbGet(plugin, 0, parentKey);
+	plugin->kdbGet (plugin, 0, parentKey);
 
 	h = elektraPluginGetData (plugin);
 	exit_if_fail (h != 0, "no plugin handle");
@@ -131,12 +131,11 @@ void test_name (void)
 	Key * parentKey = keyNew ("system:/", KEY_END);
 
 	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
-	plugin->kdbGet(plugin, 0, parentKey);
+	plugin->kdbGet (plugin, 0, parentKey);
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	plugin->kdbGet (plugin, 0, parentKey);
 	if (KDB_DB_SYSTEM[0] == '~')
 	{
 		// only check filename and issue warning
@@ -182,12 +181,11 @@ void test_lockname (void)
 
 	Key * parentKey = keyNew ("system:/", KEY_END);
 	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
-	plugin->kdbGet(plugin, 0, parentKey);
+	plugin->kdbGet (plugin, 0, parentKey);
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	plugin->kdbGet (plugin, 0, parentKey);
 	if (h && KDB_DB_SYSTEM[0] == '~')
 	{
 		// issue warning and then only check if dirname ends with the user-independent part of KDB_DB_SYSTEM
@@ -235,7 +233,7 @@ void test_tempname (void)
 
 	Key * parentKey = keyNew ("system:/", KEY_END);
 	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
-	plugin->kdbGet(plugin, 0, parentKey);
+	plugin->kdbGet (plugin, 0, parentKey);
 
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
