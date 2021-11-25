@@ -680,7 +680,7 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 		}
 		else
 		{
-			ELEKTRA_SET_ERROR (ELEKTRA_PLUGIN_STATUS_ERROR, parentKey, "kdbGet was missing in the resolver plugin");
+			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "kdbGet was missing in the resolver plugin. Keyname: %s");
 			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
