@@ -52,6 +52,9 @@ void test_resolve (void)
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
+	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
+	plugin->kdbGet(plugin, 0, parentKey);
+
 	resolverHandles * h = elektraPluginGetData (plugin);
 	exit_if_fail (h != 0, "no plugin handle");
 	succeed_if_same_string (h->system.path, "elektra.ecf");
@@ -72,6 +75,10 @@ void test_resolve (void)
 
 	// reinit with system path only
 	plugin->kdbOpen (plugin, parentKey);
+
+	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
+	plugin->kdbGet(plugin, 0, parentKey);
+
 	h = elektraPluginGetData (plugin);
 	exit_if_fail (h != 0, "no plugin handle");
 	succeed_if_same_string (h->system.path, "elektra.ecf");
@@ -121,10 +128,14 @@ void test_name (void)
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
+	Key * parentKey = keyNew ("system:/", KEY_END);
+
+	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
+	plugin->kdbGet(plugin, 0, parentKey);
+
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	Key * parentKey = keyNew ("system:/", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (KDB_DB_SYSTEM[0] == '~')
 	{
@@ -169,10 +180,13 @@ void test_lockname (void)
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
+	Key * parentKey = keyNew ("system:/", KEY_END);
+	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
+	plugin->kdbGet(plugin, 0, parentKey);
+
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	Key * parentKey = keyNew ("system:/", KEY_END);
 	plugin->kdbGet (plugin, 0, parentKey);
 	if (h && KDB_DB_SYSTEM[0] == '~')
 	{
@@ -219,11 +233,13 @@ void test_tempname (void)
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
+	Key * parentKey = keyNew ("system:/", KEY_END);
+	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
+	plugin->kdbGet(plugin, 0, parentKey);
+
 	resolverHandles * h = elektraPluginGetData (plugin);
 	succeed_if (h != 0, "no plugin handle");
 
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	plugin->kdbGet (plugin, 0, parentKey);
 	if (h && KDB_DB_SYSTEM[0] == '~')
 	{
 		// only check filename and issue warning
