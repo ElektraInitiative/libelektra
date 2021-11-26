@@ -38,7 +38,7 @@ See [array](array.md).
 ## Rationale
 
 - hard to use it wrong API: having only the functions `keyAddBaseName/keySetBaseName`, without any size argument
-- applications and storage plugins can pass any c-string to `keyAddBaseName/keySetBaseName` without any further consideration
+- applications and storage plugins can pass any C string to `keyAddBaseName/keySetBaseName` without any further consideration
 
 ## Implications
 

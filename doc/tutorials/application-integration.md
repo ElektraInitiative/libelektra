@@ -194,7 +194,7 @@ To do this manually has severe drawbacks:
 - hard coded names might have typos or might be inconsistent
 - tedious handling if key or value might be absent
 - always calling `ksLookup` which gets tiresome for arrays
-- converting to needed data type is error prone
+- converting to needed data type is error-prone
 
 So (larger) applications should not directly use `KeySet`, but
 instead use code generation to provide a type-safe frontend.
@@ -209,7 +209,7 @@ information (such as configuration files). We already gained something.
 But, we did not discuss how we can actually achieve application integration,
 the goal of Elektra.
 
-Elektra 0.8.11 introduces the so called specification for the
+Elektra 0.8.11 introduces the so-called specification for the
 application's configuration, located below its own [namespace](/doc/help/elektra-namespaces.md)
 `spec`. The specification itself also consists of (meta) key-value pairs.
 

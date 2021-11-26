@@ -100,7 +100,7 @@ Some general things you can do with each class are:
 - [Create](@ref keyNew) and [Delete](@ref keyDel)
 - Get and Set key the [name](@ref keySetName)
 - Get and Set [string](@ref keySetString) or [binary](@ref keySetBinary) values
-- Get and Set [Meta Data](@ref keymeta)
+- Get and Set [Metadata](@ref keymeta)
 - See [class documentation](@ref key) for more
 
 [KeySet](@ref keyset)

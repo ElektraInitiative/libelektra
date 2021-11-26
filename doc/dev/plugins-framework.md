@@ -3,7 +3,7 @@
 Many component systems pass information between the various components
 by calling methods of each other. This is not the way Elektra’s plugin
 system works. Instead, the core passes a `KeySet` object in one direction
-from plugin to plugin. So they form a so called pipes-and-filter. Each of
+from plugin to plugin. So they form a so-called pipes-and-filter. Each of
 the plugins can modify the configuration or add any other information
 using metakeys. While this approach is in general less flexible, this
 information flow still allows powerful chaining. Because plugins do

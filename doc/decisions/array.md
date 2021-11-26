@@ -14,7 +14,7 @@ an array or not.
 
 ## Considered Alternatives
 
-- Meta-data arrays simply work by convention as they are not serialized in special ways nor they get validated.
+- Metadata arrays simply work by convention as they are not serialized in special ways nor they get validated.
 - `###empty_array` as in `yajl`, problem: does not allow efficient access of first element
 - store length (and not last element), problem: needs prepending of `#_...`
 - store element after last element (C++-Style), would not fit nicely with key-value

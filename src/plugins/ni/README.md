@@ -26,7 +26,7 @@ kdb mount file.ini spec:/ni ni
 ```
 
 The strength of this plugin is that it supports arbitrary meta
-data and the file format is still human readable.
+data and the file format is still human-readable.
 For example the following lines:
 
 ```ini
