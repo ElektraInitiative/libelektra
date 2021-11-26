@@ -171,18 +171,23 @@ kdb merge -s ours user:/tests/ours user:/tests/theirs user:/tests/base user:/tes
 The result KeySet, `user:/tests/result` will be:
 
 ```sh
-kdb export user:/tests/result
-#> kdbOpen 2
-#> $key string 4 5
-#> key1
+kdb ls user:/tests/result
+#> user:/tests/result/key1
+#> user:/tests/result/key2
+#> user:/tests/result/key5
+```
+
+The values of the keys are:
+
+```sh
+kdb get user:/tests/result/key1
 #> apple
-#> $key string 4 3
-#> key2
+
+kdb get user:/tests/result/key2
 #> pie
-#> $key string 4 4
-#> key5
+
+kdb get user:/tests/result/key5
 #> fish
-#> $end
 ```
 
 The conflict of `key4` (it was deleted in `ours` but changed in `theirs`) is solved by using our copy, thus deleting the key.
@@ -204,21 +209,27 @@ kdb merge -s theirs user:/tests/ours user:/tests/theirs user:/tests/base user:/t
 The result KeySet, `user:/tests/result` will be:
 
 ```sh
-kdb export user:/tests/result
-#> kdbOpen 2
-#> $key string 4 5
-#> key1
+kdb ls user:/tests/result
+#> user:/tests/result/key1
+#> user:/tests/result/key2
+#> user:/tests/result/key4
+#> user:/tests/result/key5
+```
+
+The values of the keys are:
+
+```sh
+kdb get user:/tests/result/key1
 #> apple
-#> $key string 4 3
-#> key2
+
+kdb get user:/tests/result/key2
 #> pie
-#> $key string 4 6
-#> key4
+
+kdb get user:/tests/result/key4
 #> banana
-#> $key string 4 4
-#> key5
+
+kdb get user:/tests/result/key5
 #> fish
-#> $end
 ```
 
 Here, the conflict of `key4` is solved by using their copy, thus `key4=banana`.
@@ -241,21 +252,27 @@ kdb merge -s cut user:/tests/ours user:/tests/theirs user:/tests/base user:/test
 The result KeySet, `user:/tests/result` will be:
 
 ```sh
-kdb export user:/tests/result
-#> kdbOpen 2
-#> $key string 4 1
-#> key1
+kdb ls user:/tests/result
+#> user:/tests/result/key1
+#> user:/tests/result/key2
+#> user:/tests/result/key4
+#> user:/tests/result/key5
+```
+
+The values of the keys are:
+
+```sh
+kdb get user:/tests/result/key1
 #> 1
-#> $key string 4 3
-#> key2
+
+kdb get user:/tests/result/key2
 #> pie
-#> $key string 4 6
-#> key4
+
+kdb get user:/tests/result/key4
 #> banana
-#> $key string 4 1
-#> key5
+
+kdb get user:/tests/result/key5
 #> 5
-#> $end
 ```
 
 Here the state of theirs is simply copied to the `resultpath`.
