@@ -176,6 +176,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - <<TODO>>
 - Added more test cases for the keyCopy function _(@muskater)_
+- add exception tests for key C++ bindings _(Ivaylo Ivanov)_
 
 ## Packaging
 
