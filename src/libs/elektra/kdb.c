@@ -677,7 +677,11 @@ static int elektraGetCheckUpdateNeeded (Split * split, Key * parentKey)
 
 			backendUpdateSize (backend, split->parents[i], 0);
 		}
-		// TODO: set error in else case!
+		else
+		{
+			ELEKTRA_SET_INSTALLATION_ERROR (parentKey, "kdbGet was missing in the resolver plugin. Keyname: %s");
+			ret = ELEKTRA_PLUGIN_STATUS_ERROR;
+		}
 
 		switch (ret)
 		{
