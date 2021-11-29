@@ -43,7 +43,8 @@ docker run -it debian:buster
 apt-get update
 apt-get install ca-certificates
 apt-get install vim
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839
+apt-get install gnupg
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839
 vim /etc/apt/sources.list
 ```
 
