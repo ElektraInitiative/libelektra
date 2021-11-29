@@ -239,7 +239,7 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 
 ## Other
 
-- Added missing licenses and license references _(Ivaylo Ivanov)_
+- Make Elektra [reuse](https://reuse.software) reuse compliant _(Ivaylo Ivanov)_
 
 ## Outlook
 
