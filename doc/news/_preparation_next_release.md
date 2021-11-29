@@ -116,7 +116,7 @@ you up to date with the multi-language support provided by Elektra.
 
 _(Michael Tucek)_
 
-### Python binding
+### <<Binding2>>
 
 ### <<Binding3>>
 
