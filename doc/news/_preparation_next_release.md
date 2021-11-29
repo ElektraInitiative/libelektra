@@ -118,8 +118,6 @@ _(Michael Tucek)_
 
 ### Python binding
 
-- 3 new examples for using keysets in python. _(Aydan Ghazani @4ydan)_
-
 ### <<Binding3>>
 
 ## Tools
