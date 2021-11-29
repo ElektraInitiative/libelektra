@@ -51,10 +51,6 @@ vim /etc/apt/sources.list
 Add 'deb https://debs.libelektra.org/buster buster main' to /etc/apt/sources.list
 
 ```sh
-vim /etc/apt/sources.list
-```
-
-```sh
 apt-get update
 apt-get install python3-elektra
 ```
