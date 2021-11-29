@@ -126,7 +126,9 @@ _(Michael Tucek)_
 
 - Added check for existence of accessed path before opening new file descriptor _(@lawli3t)_
 
-### <<Binding3>>
+### Python Binding
+
+- 3 new examples for using keysets in python. _(Aydan Ghazani @4ydan)_
 
 ## Tools
 
