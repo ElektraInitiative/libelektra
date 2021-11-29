@@ -99,7 +99,7 @@ sudo kdb umount user:/tests/storage
 
 ## Support Values Inside Non-Leaf Keys
 
-Sometimes the most “natural” mapping of key-value pairs to a file format might cause a storage plugin to not be able to store values in so called directory (non-leaf) keys.
+Sometimes the most “natural” mapping of key-value pairs to a file format might cause a storage plugin to not be able to store values in so-called directory (non-leaf) keys.
 
 For example, in a key set that contains the keys:
 

@@ -59,7 +59,7 @@ These plugins also "hide" functions exported by encapsulated plugins.
   - `/ioBinding/#0/set`: address of `setIoBinding` of plugin "B"
 
   The upside of this approach is that it makes encapsulating plugins transparent
-  to the caller - it does not known whether the plugin encapsulates other
+  to the caller - it does not know whether the plugin encapsulates other
   plugins.
   This approach breaks lazy-loading since for combining all interfaces the
   plugins have to be loaded and their `getInterfaces` functions have to be
@@ -83,7 +83,7 @@ Encapsulated plugins that do not export a specified function name are omitted.
 
 ## Argument
 
-The solution allows to change encapsulating plugin implementations without
+The solution allows changing encapsulating plugin implementations without
 breaking callers.
 
 ## Implications

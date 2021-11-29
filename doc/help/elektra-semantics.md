@@ -4,7 +4,7 @@ The use of arbitrary metadata has extensive effects in Elektra’s
 semantics. They become simpler and more suited to carry key value pairs.
 The semantics now gives us independence of the underlying file system.
 So none of the file system's restrictions apply anymore. No constraints
-on the length of a key name disturbs the user any more. Additionally,
+on the length of a key name disturbs the user anymore. Additionally,
 key names can be arbitrarily deep nested. Depth is the number
 of unescaped `/` in the key name.
 
@@ -30,7 +30,7 @@ mimicked using metadata. Especially, links are available using the metadata
 `override` and `fallback`.
 
 Hidden keys are not useful for Elektra. Instead comments or other
-metadata contain information about keys that is not considered to belong
+metadata contain information about keys that is not considered belonging
 to the configuration. If hidden keys are desired, we can still write
 a plugin to filter specific keys out.
 
@@ -69,7 +69,7 @@ value often used as default.) of space, no matter how little content is
 in it. Thus the file system wastes 99.9% of the space if keys have a
 payload of four bytes. Additionally, every file allocates a file node,
 which might be limited, too. We can argue, however, that we can use a file
-system which does not have these problem.
+system which does not have this problem.
 
 Many additional restrictions occur for portable access. The file name
 length in POSIX is limited to fourteen characters. Additionally, issues

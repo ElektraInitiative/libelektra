@@ -77,10 +77,10 @@ If the plugin is missing, the test will not be added.
 - Lines not starting with a comment sign (`#`) are treated as (shell) commands. They are executed by the Shell Recorder.
 - Commands starting with `sudo` will be executed without `sudo`.
 
-#### Multiline Commands
+#### Multi-line Commands
 
-To extend a command over multiple lines add a backslash (`\`) at the end. Do not add a backlash at the last line of the multiline command.
-The test below shows some examples of multiline commands.
+To extend a command over multiple lines add a backslash (`\`) at the end. Do not add a backlash at the last line of the multi-line command.
+The test below shows some examples of multi-line commands.
 
 ```sh
 echo Babymetal Death | \
@@ -121,7 +121,7 @@ All check start with a comment sign (`#`).
 
 ## Examples
 
-For examples, please take a look at a the ReadMe of plugins such as [YAMLCPP](/src/plugins/yamlcpp/README). The file [SyntaxCheck.md](SyntaxCheck.md) also contains some examples for the Markdown Shell Recorder syntax.
+For examples, please take a look at the ReadMe of plugins such as [YAMLCPP](/src/plugins/yamlcpp/README). The file [SyntaxCheck.md](SyntaxCheck.md) also contains some examples for the Markdown Shell Recorder syntax.
 
 ## Debugging
 

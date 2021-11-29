@@ -18,7 +18,7 @@ and tells the user to grant it.
 Categories are hierarchically structured. In some categories you cannot put an
 error such as `Permanent errors` (see below) because they are too general and
 developers should choose a more specific category. Even though most categories
-which allow to put errors into are at the end of the hierarchy (leafs), it
+which allow putting errors into are at the end of the hierarchy (leafs), it
 may also be the case that a more general category also allows errors to be put in
 (e.g., `Resource Errors`). The categories below are marked as `concrete` or `abstract`,
 meaning that you either can or cannot create errors for the category. Please

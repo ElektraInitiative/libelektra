@@ -31,7 +31,7 @@ other side, elektrified applications receive and send a `KeySet` object.
 Both sides, as well as the core in between, have the possibility to
 iterate, update, modify, extend and reduce the key set. Appending of
 new or existing `Key` objects extends the key set. Otherwise it can be
-reduced if keys are popped out. The `Key` object becomes independent from
+reduced if keys are popped out. The `Key` object becomes independent of
 the `KeySet` afterwards. The user can still change such a key or append
 it into another key set. The affiliation to a key set is not exclusive.
 

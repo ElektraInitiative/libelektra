@@ -13,16 +13,16 @@ The goals of any high-level API (or binding to the C high-level API) for Elektra
   be mapped to native types of the target language. All API calls interacting with keys should reflect the type of the
   key. Type mismatches should produce errors.
 - **Easy to Use:** The API should be easy to use and abstract as much of the low-level API as possible. The main part of
-  the API should not consists of more than an initialization method, typed `get` and `set` calls and if required by the
+  the API should not consist of more than an initialization method, typed `get` and `set` calls and if required by the
   language a method freeing the acquired resources.
 - **No Errors in Getters:** It is a stated goal of our high-level API to make `get` calls not able to fail. This means
-  `get` calls _cannot_ return an error under normal conditions. This can be ensure via checks during initialization or
+  `get` calls _cannot_ return an error under normal conditions. This can be ensured via checks during initialization or
   via code-generation. Both are based on the specification. Without a specification it is not possible to prevent
   errors because of missing keys, since we have no way of knowing which keys should exist. <br/><br/>
   There is an exception to this rule. Some target languages have a standard error concept, which not only forces the
   user to handle arising errors, but also does so in a simple and concise way. An example of this is Rust. Its `Result`
   type forces the user to handle errors and the `?` operator allows to do this in a concise way. <br/>
-  However, we still recommend to avoid errors as far as possible.
+  However, we still recommend avoiding errors as far as possible.
 - **Idiomatic Code:** If the target language has a concept of "idiomatic code", the API should fall into that category.
 
 ## When to write Bindings
@@ -70,7 +70,7 @@ What you will also need is to set up the compiler + linker flags. For this we re
 
 For garbage collected (GC) languages freeing memory by hand is not something you usually do and since the GC has no knowledge of memory allocated in C we have two options:
 
-- Forcing the user to call the appropriate functions like `keyDel()` themselves, which is very developer unfriendly and error prone or
+- Forcing the user to call the appropriate functions like `keyDel()` themselves, which is very developer unfriendly and error-prone or
 - Using language features like Java / C++ Destructors or Go's `runtime.SetFinalizer()` function to automatically and reliably release the memory as soon as the native objects are garbage collected.
 
 If you decide on mapping the functionality of [kdb.h](../../src/include/kdb.h.in) 1:1 it is pretty straightforward - whereas if you want to adapt or enhance some API's to leverage language features like iterators or operator overloading feel free to do so. The less “alien” the binding feels to its users the better.

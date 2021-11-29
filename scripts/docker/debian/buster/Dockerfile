@@ -70,7 +70,6 @@ RUN apt-get update && apt-get -y install \
         reprepro \
         ruby \
         ruby-dev \
-        rustc \
         swig3.0 \
         systemd \
         tclcl-dev \
@@ -124,8 +123,7 @@ ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
 
-# extend PATH for user jenkins to include gradle
-RUN echo "export PATH=${PATH}:/opt/gradle/bin" >> /home/jenkins/.bashrc
+
 
 # Set git config
 RUN git config --global user.email 'Jenkins <autobuilder@libelektra.org>' \

@@ -1,7 +1,7 @@
 # elektra-merge-strategies(7) -- how to merge key sets
 
-In elektra-tools a three way merging was implemented.
-It can also use be used for two way merging, e.g.
+In elektra-tools a three-way merging was implemented.
+It can also use be used for two-way merging, e.g.
 for importing.
 
 Note: For a two-way merge, the `ours` version of the keys is used

@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "ELEKTRA\-HIGHLEVEL\-GEN" "7" "September 2021" ""
+.TH "ELEKTRA\-HIGHLEVEL\-GEN" "7" "November 2021" ""
 .SH "NAME"
 \fBelektra\-highlevel\-gen\fR \- High\-level API code\-generation advanced features
 .P
@@ -93,7 +93,7 @@ case 'r': /* red */
 .fi
 .IP "" 0
 .P
-Of course this version also has its own problems\. Take for example the the enum with the values: \fBblue\fR, \fBblueish\fR and \fBbrown\fR\. With \fBenumConv=switch\fR this would generate the following code:
+Of course this version also has its own problems\. Take for example the enum with the values: \fBblue\fR, \fBblueish\fR and \fBbrown\fR\. With \fBenumConv=switch\fR this would generate the following code:
 .IP "" 4
 .nf
 switch (string[0])
@@ -171,7 +171,7 @@ Metadata for the key with \fBtype=struct\fR:
 .IP "\(bu" 4
 \fBgen/struct/alloc\fR (values \fB0\fR, \fB1\fR) sets whether the struct is \fIallocating\fR\. This changes how the getter works and also has some other implications\. By default structs are non\-allocating\.
 .IP "\(bu" 4
-\fBgen/struct/depth\fR sets the how many levels below the \fBtype=struct\fR key, we will include in the generated struct\. Note that keys ending in \fB/#\fR (i\.e\. array keys) count as one level above\. So \fBmystruct/x/#\fR would be included with the default \fBgen/struct/depth=1\fR\.
+\fBgen/struct/depth\fR sets at how many levels below the \fBtype=struct\fR key, we will include in the generated struct\. Note that keys ending in \fB/#\fR (i\.e\. array keys) count as one level above\. So \fBmystruct/x/#\fR would be included with the default \fBgen/struct/depth=1\fR\.
 .IP "" 0
 
 .IP "\(bu" 4

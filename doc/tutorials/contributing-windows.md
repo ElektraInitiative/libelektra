@@ -89,4 +89,4 @@ options = "metadata"
 
 - Restart the WSL VM by issuing `wsl --shutdown` in your window console.
 
-Building from sources residing on a mounted windows file system may incur a signifcant performance penalty. Consider using your WSL home directory (e.g. `~/`) as your location for the Elektra sources.
+Building from sources residing on a mounted Windows file system may incur a significant performance penalty. Consider using your WSL home directory (e.g. `~/`) as your location for the Elektra sources.

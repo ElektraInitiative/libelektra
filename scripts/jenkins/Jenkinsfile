@@ -496,7 +496,7 @@ def generateBasicCheckStages() {
   // Check formatting of c and CMake files
   tasks << buildFormatChecks()
 
-    // Run the open tasks plugin and sloccount
+  // Run the open tasks plugin and sloccount
   tasks << buildTodo()
 
   // Build doc and upload

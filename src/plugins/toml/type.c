@@ -54,7 +54,7 @@ static bool isLeapYear (int year);
 
 TypeChecker * createTypeChecker (void)
 {
-	int result = 0;
+	int result ELEKTRA_UNUSED = 0;
 	TypeChecker * typeChecker = (TypeChecker *) elektraCalloc (sizeof (TypeChecker));
 	if (typeChecker == NULL)
 	{

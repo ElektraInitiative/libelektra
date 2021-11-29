@@ -42,7 +42,7 @@ with a single program.
 
 ## Uniconf
 
-A project that shares some of the goals with Elektra,
+A project that shares some goals with Elektra,
 but uses a different
 approach is _Uniconf_.
 Besides a stand-alone library it supports a daemon mode.

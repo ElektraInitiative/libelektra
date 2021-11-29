@@ -18,7 +18,7 @@
 - [x] Simple example or snippet how to use the function
 - [ ] Longer description of function containing common use cases  
        - [ ] add notice for read-only  
-       - [ ] add notice that root-name cant be removed
+       - [ ] add notice that root-name can't be removed
 - [x] Description of functions reads nicely
 - [ ] `@pre`  
        - [ ] add

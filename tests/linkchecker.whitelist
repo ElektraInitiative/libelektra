@@ -13,41 +13,29 @@ https://build.libelektra.org/job/libelektra/pipeline-syntax
 # see https://github.com/ElektraInitiative/libelektra/issues/2913
 http://webdemo.libelektra.org
 https://webdemo.libelektra.org
-https://debian-stretch-repo.libelektra.org
-https://crates.io/crates/elektra
-https://crates.io/crates/elektra-sys
-http://www.snmp.com/protocol
-http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.81.7888
+
+# Localhost links
 http://localhost:33333
 http://localhost:33334
-https://packages.qa.debian.org/e/elektra/news/20150726T155000Z.html
-https://packages.qa.debian.org/e/elektra/news/20151215T000031Z.html
-http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html
-https://jira.apache.org/jira/browse/MDEP-518
+
 # Currently broken GitHub links
 git.libelektra.org
 github.com
 master.libelektra.org
 puppet.libelektra.org
 issues.libelektra.org
-#currently broken links
-https://wiki.jenkins-ci.org/display/JENKINS/GitHub
-https://wiki.jenkins.io/display/JENKINS/Pipeline
+
+# Currently broken links
 https://cgit.kde.org/kconfig.git
 https://doc.libelektra.org/coverage/master/debian-buster-full
-http://mingw.org
-http://api.zeromq.org/4-2:zmq-ipc
-http://api.zeromq.org/4-2:zmq-tcp
-https://www.jenkins.io/doc/pipeline/steps/pipeline-input-step
-https://joeyh.name/code/moreutils
-http://swagger.io
+
+# Wrongly detected as broken, even though its online
+https://crates.io/crates/elektra
+https://crates.io/crates/elektra-sys
+https://www.sciencedaily.com/releases/2005/11/051103080801.htm
+
+# Certificate issues
 https://oyranos.org
 https://www.openicc.info/index.php%3Ftitle=OpenICC_Configuration_0.1.html
 https://cfp.linuxwochen.at/de/LWW18/public/events/798
-# These MINGW builds were not available before this PR
-https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-i686/elektra.zip
-https://build.libelektra.org/job/libelektra/job/master/lastSuccessfulBuild/artifact/artifacts/debian-bullseye-mingw-w64-x86_64/elektra.zip
-# wrongly detected as broken, even though its online
-https://www.sciencedaily.com/releases/2005/11/051103080801.htm
-https://www.samba.org/samba/docs/old/Samba3-HOWTO/SWAT.html
-https://www.samba.org/samba/docs/current/man-html/smb.conf.5.html
+https://debian-stretch-repo.libelektra.org

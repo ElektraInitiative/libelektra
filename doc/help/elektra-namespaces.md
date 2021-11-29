@@ -13,7 +13,7 @@ the same configuration item from different sources, e.g.:
 
 To allow such keys to exist in parallel, Elektra uses namespaces.
 
-A namespace has following properties:
+A namespace has the following properties:
 
 - in-memory Keys start with one of the namespaces
 - keys within a namespace are known to stem from a specific

@@ -1,6 +1,6 @@
 .\" generated with Ronn-NG/v0.10.1
 .\" http://github.com/apjanke/ronn-ng/tree/0.10.1.pre1
-.TH "KDB\-CP" "1" "November 2020" ""
+.TH "KDB\-CP" "1" "November 2021" ""
 .SH "NAME"
 \fBkdb\-cp\fR \- Copy keys within the key database
 .SH "SYNOPSIS"
@@ -8,7 +8,7 @@
 .SH "DESCRIPTION"
 This command copies key(s) in the Key database\. You can copy keys to another directory within the database or even below another key\. Note that you cannot copy a key below itself\.
 .P
-Where \fBsource\fR is the path of the key(s) you want to copy and \fBdest\fR is the path where you would like to copy the key(s) to\. Note that when using the \fB\-r\fR flag, \fBsource\fR as well as all of the keys below it will be copied\.
+The argument \fBsource\fR is the path of the key(s) you want to copy and \fBdest\fR is the path where you would like to copy the key(s) to\. Note that when using the \fB\-r\fR flag, \fBsource\fR as well as all the keys below will be copied\.
 .SH "LIMITATIONS"
 Neither \fBsource\fR nor \fBdest\fR can be a cascading key\. (Start with \fB/\fR)\. Make sure to select a namespace\.
 .SH "RETURN VALUES"

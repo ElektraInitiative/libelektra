@@ -1,5 +1,15 @@
 # How-To: Python kdb
 
+## Table of Contents
+
+- [Introduction](#Introduction)
+- [Installation](#Installation)
+  - [Alpine Linux](#Alpine-Linux)
+  - [Debian buster](#Debian-buster)
+- [Import kdb](#Import-kdb)
+- [Keyset](#Keyset)
+- [Keys](#Keys)
+
 ## Introduction
 
 When programming in Python it is possible to access the kdb database, changing values of existing keys, adding and deleting keys and a few other things.
@@ -26,7 +36,29 @@ apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/main" python3
 apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" elektra elektra-python py3-elektra
 ```
 
-## First Steps
+### Debian buster
+
+```sh
+docker run -it debian:buster
+apt-get update
+apt-get install ca-certificates
+apt-get install vim
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F791A9A25CC1CC83E839
+vim /etc/apt/sources.list
+```
+
+Add 'deb https://debs.libelektra.org/buster buster main' to /etc/apt/sources.list
+
+```sh
+vim /etc/apt/sources.list
+```
+
+```sh
+apt-get update
+apt-get install python3-elektra
+```
+
+## Import kdb
 
 In order to being able to use `kdb`, you at first need to `import kdb`. You need access to a Python object of `KDB`. This is accomplished by calling `kdb.KDB()` and saving this to a variable because later on this object will be needed for various operations.
 The easiest way to do this would be:
@@ -171,6 +203,8 @@ with kdb.KDB() as k:
                                         ks.lookup(key).string))
 ```
 
+## Keys
+
 It is possible to create new keys:
 
 ```py
@@ -181,6 +215,32 @@ with kdb.KDB() as k:
     # the third argument is the key's value
     new_key = kdb.Key('/user/sw/pk/key_name', kdb.KEY_VALUE, 'key_value')
     print("{}: {}".format(new_key, new_key.value))
+```
+
+You can also duplicate a key:
+
+```py
+import kdb
+
+with kdb.KDB() as k:
+    key1 = kdb.Key('/user/sw/pk/key_name', kdb.KEY_VALUE, 'key_value')
+    key2 = kdb.Key(key1.dup())
+    print("{}: {}".format(new_key, new_key.value))
+    print("{}: {}".format(key2, key2.value))
+```
+
+An example for working with meta-keys
+
+```py
+import kdb
+
+with kdb.KDB() as k:
+    key1 = kdb.Key("user:/key1", kdb.KEY_VALUE, "some_value")
+    key1.setMeta("foo",     "bar")
+    key1.setMeta("owner",   "manuel")
+    key1.setMeta("comment", "this is my example key")
+    for meta in key1.getMeta():
+        print("  key1.{0} = \"{1}\"".format(meta.name, meta.value))
 ```
 
 Keys can be added to a keyset using `append`. If the key already exists, the value will be updated. Calling `keyset_name['/path/to/key'] = 'new_value` does not work for updating keys already in a keyset. Keys can be removed with `pop`, `remove` or `cut`

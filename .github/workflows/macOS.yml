@@ -15,7 +15,7 @@ jobs:
     # well on Windows or Mac.  You can convert this to a matrix build if you need
     # cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: macos-10.15
+    runs-on: macos-11
     strategy:
       # Do not abort all jobs upon first failure
       fail-fast: false
@@ -110,7 +110,7 @@ jobs:
           yaml-cpp \
           zeromq
         if [ "$CC" = 'clang' ]; then
-          brew install oclint/formulae/oclint
+          brew install --cask oclint
         fi
         brew install --cask adoptopenjdk
         # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
@@ -130,7 +130,9 @@ jobs:
         brew tap homebrew/services
         brew update # Work around for [Homebrew Services issue 206](https://github.com/Homebrew/homebrew-services/issues/206)
         brew postinstall dbus
-        brew services restart dbus
+        brew services stop dbus; brew services start dbus
+        echo $DBUS_LAUNCHD_SESSION_BUS_SOCKET
+        launchctl getenv DBUS_LAUNCHD_SESSION_BUS_SOCKET
         cmake -E make_directory ${{runner.workspace}}/libelektra/build
         export JAVA_HOME=$(/usr/libexec/java_home -v 16)
         echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV

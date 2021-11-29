@@ -69,7 +69,7 @@ kdb set user:/tests/sequence/#3 'Fourth Element'
 
 . As you can see above arrays can contain “empty fields”: The key `user:/tests/sequence/#2` is missing.
 
-For array elements with an index larger than `9` we must add **underscores** (`_`) to the basename, so we do not destroy the alphabetic order of the array. For example, to add a eleventh element to our array we use the following command:
+For array elements with an index larger than `9` we must add **underscores** (`_`) to the basename, so we do not destroy the alphabetic order of the array. For example, to add an eleventh element to our array we use the following command:
 
 ```sh
 kdb set user:/tests/sequence/#_10 'Eleventh Element'
@@ -86,7 +86,7 @@ kdb ls user:/tests/sequence/
 #> user:/tests/sequence/#_10
 ```
 
-. For larger indices we add **one underscore less, than the number of digits** of the index. For example, to add a element with index `1337` (`4` digits) we use the basename `#___1337`. We can also generate the basename programmatically:
+. For larger indices we add **one underscore less, than the number of digits** of the index. For example, to add an element with index `1337` (`4` digits) we use the basename `#___1337`. We can also generate the basename programmatically:
 
 ```bash
 ruby -e 'print("#", "_" * (ARGV[0].length - 1), ARGV[0])' 12345

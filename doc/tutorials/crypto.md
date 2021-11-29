@@ -157,7 +157,7 @@ kdb umount user:/tests
 
 ### Combining Signatures and Encryption
 
-The options `sign/key` and `encrypt/key` can be combined together, resulting in configuration files, that are signed and encrypted.
+The options `sign/key` and `encrypt/key` can be combined, resulting in configuration files, that are signed and encrypted.
 
 Mounting `test.ini` with signatures and encryption enabled can be done like this:
 
