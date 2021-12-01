@@ -1,14 +1,5 @@
 #!/usr/bin/env bash
 
-###########################################################################
-##
-## This script sets up basic bash completion for the kdb command
-##
-##
-## Put it under /etc/bash_completion.d or load it just for the current
-## session with . <scriptname>
-##
-###########################################################################
 
 _kdb() {
 	COMPREPLY=()
