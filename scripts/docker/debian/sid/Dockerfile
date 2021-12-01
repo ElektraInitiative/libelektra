@@ -62,6 +62,8 @@ RUN apt-get update && apt-get -y install \
         unzip \
         valgrind \
         wget \
+        fish \
+        micro \
     && rm -rf /var/lib/apt/lists/*
 
 # Add Clang 13 to path
@@ -138,3 +140,11 @@ RUN mkdir -p "${SHFMT_PATH}" \
 # Ronn-NG
 ENV PATH="$PATH:/home/jenkins/.local/share/gem/ruby/2.7.0/bin"
 RUN gem install --user-install ronn-ng -v 0.10.1.pre1 && ronn --version
+
+#RUN curl https://getmic.ro | bash
+
+
+ENV PATH="/home/jenkins/workspace/elektra-install/bin:$PATH"
+ENV LD_LIBRARY_PATH="/home/jenkins/workspace/elektra-install/lib:$LD_LIBRARY_PATH"
+ENV LUA_CPATH="/home/jenkins/workspace/elektra-install/lib/lua/5.2/?.so;"
+ENV PYTHONPATH=/home/jenkins/workspace/elektra-install/lib/python3.9/site-packages
