@@ -139,6 +139,7 @@ _(Michael Tucek)_
 - Updated `reformat-c` script to use clang-format version 13. _(Mihael Pranjić)_
 - <<TODO>>
 - Fix bug where the PATH environment variable would get overwritten in some of the Docker images. Reduce image size _(Ivaylo Ivanov)_
+- Added a rudimentary wrapper for the autocompletion script of @ulrikeschaefer for zsh _(@lawli3t)_
 
 ## Documentation
 

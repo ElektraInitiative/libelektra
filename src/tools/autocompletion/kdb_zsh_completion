@@ -1,0 +1,25 @@
+#compdef kdb
+
+# This file needs to be renamed to _kdb to work and must be in the $fpath
+# It must start with #compdef kdb
+#
+# ZSH completion file for KDB
+#
+
+_kdb() {
+    local line state
+
+    _arguments -C \
+        "1: :->cmds" \
+
+    case "$state" in
+        cmds)
+            _values "kdb command" \
+                $(python3 /home/jenkins/workspace/src/tools/autocompletion/find_autocompletion_options.py -m system:/spec/autocomplete/kdb -s "${line[1]}" | tr '\n' ' ')
+            ;;
+    esac
+
+    return 0
+}
+
+_kdb
