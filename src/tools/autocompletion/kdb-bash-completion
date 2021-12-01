@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+###########################################################################
+##
+## This script sets up basic bash completion for the kdb command
+##
+##
+## Put it under /etc/bash_completion.d or load it just for the current
+## session with . <scriptname>
+##
+###########################################################################
+
+_kdb() {
+	COMPREPLY=()
+
+	# assign the currently active word
+	local cur="${COMP_WORDS[COMP_CWORD]}"
+	local prev="${COMP_WORDS[COMP_CWORD - 1]}"
+
+	# initialize
+	local kdbpath=$(which kdb)
+
+	# only kdb was entered yet, print a list of available commands
+	if [[ $COMP_CWORD -eq 1 ]]; then
+		local IFS=$'\n'
+		local commands='(python3 ~/src/tools/autocompletion/find_autocompletion_options.py -m system:/spec/autocomplete/kdb)'
+		COMPREPLY=($(compgen -W '${commands[@]}' -- "${cur}"))
+		return
+	fi
+}
+
+# complete the command with _kdb and fall back to filename completion
+complete -o default -F _kdb kdb
