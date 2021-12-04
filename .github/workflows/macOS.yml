@@ -84,7 +84,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: |
-          /.npm
+          ~/.npm
           /usr/local/Cellar
           ~/Library/Caches/Homebrew
           ~/github_brew_cache_entries.txt
