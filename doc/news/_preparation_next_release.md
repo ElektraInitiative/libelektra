@@ -128,7 +128,7 @@ _(Michael Tucek)_
 
 ### Python Binding
 
-- 3 new examples for using keysets in python. _(Aydan Ghazani @4ydan)_
+- 3 new examples for using keysets in python. _(@4ydan)_
 
 ## Tools
 
