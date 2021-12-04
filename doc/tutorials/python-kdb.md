@@ -48,7 +48,7 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F26BBE02F3C315A19BF1F79
 vim /etc/apt/sources.list
 ```
 
-Add 'deb https://debs.libelektra.org/buster buster main' to /etc/apt/sources.list
+Append 'deb https://debs.libelektra.org/buster buster main' to /etc/apt/sources.list
 
 ```sh
 apt-get update
