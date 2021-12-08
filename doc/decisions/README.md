@@ -50,17 +50,17 @@ section here.
 - [Ensure](ensure.md) (@kodebach)
 - [Capabilities](capabilities.md) (@markus2330)
 - [Error Semantics](error_semantics.md) (API)
+- [Error Handling](error_handling.md)
+- [Remove elektraMalloc et al.](remove_elektra_malloc.md)
+- [Functions copying into buffer](functions_with_buffers.md)
 
 ## Decided
 
 - [Array for Warnings](warning_array.md)
 - [Array](array.md)
-- [Error Handling](error_handling.md)
 - [Iterators](iterators.md)
 - [keyString() return value](key_string_return_value.md)
 - [Reference Counting](reference_counting.md)
-- [Remove elektraMalloc et al.](remove_elektra_malloc.md)
-- [Functions copying into buffer](functions_with_buffers.md)
 
 ## In Discussion
 
