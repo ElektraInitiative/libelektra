@@ -34,7 +34,6 @@ section here.
 - [Commit Function](commit_function.md)
 - [Error Message Format](error_message_format.md)
 - [Default Values](default_values.md)
-- [High Level API](high_level_api.md)
 - [Error codes](error_codes.md)
 - [Error code implementation](error_code_implementation.md)
 - [Semantics for Name](semantics_name.md)
@@ -42,28 +41,31 @@ section here.
 - [Lookup every key](lookup_every_key.md)
 - [Holes and Non-leaf values](holes.md)
 - [Multiple File Backends](multiple_file_backends.md)
-- [Boolean](boolean.md)
-
-## In Progress
-
-- [Global Plugins](global_plugins.md) (@mpranj)
 - [Ensure](ensure.md) (@kodebach)
-- [Capabilities](capabilities.md) (@markus2330)
-- [Error Semantics](error_semantics.md) (API)
-- [Error Handling](error_handling.md)
-- [Remove elektraMalloc et al.](remove_elektra_malloc.md)
-- [Functions copying into buffer](functions_with_buffers.md)
 
-## Decided
+## Mostly Implemented
 
 - [Array for Warnings](warning_array.md)
 - [Array](array.md)
+- [Boolean](boolean.md)
+
+## Implementation Started
+
 - [Iterators](iterators.md)
-- [keyString() return value](key_string_return_value.md)
 - [Reference Counting](reference_counting.md)
+
+## Decided
+
+- [Capabilities](capabilities.md) (@markus2330)
+- [Remove elektraMalloc et al.](remove_elektra_malloc.md)
 
 ## In Discussion
 
+- [keyString() return value](key_string_return_value.md)
+- [Global Plugins](global_plugins.md) (@mpranj)
+- [Error Semantics](error_semantics.md) (API)
+- [Error Handling](error_handling.md)
+- [Functions copying into buffer](functions_with_buffers.md)
 - [Escaped Name](escaped_name.md) merge with:
 - [Store the escaped and/or unescaped key name](store_name.md)
 - [Spec Expressiveness](spec_expressiveness.md)
