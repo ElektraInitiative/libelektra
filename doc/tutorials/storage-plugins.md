@@ -209,11 +209,15 @@ sudo kdb umount user:/tests/storage
 
 ## Storing Comments
 
-Most markup languages provide the possibility of adding comments. Elektra can store those comments in its meta-information as well. This can be achieved by setting the meta Key `comment` for the respective configuration Key. The `hosts` plugin currently stores the comments of the file in the respective Elektra configuration Key:
+Most markup languages provide the possibility of adding comments.
+Elektra can store those comments in its meta-data as well.
+This can be achieved by setting the meta Keys `comment/#` for
+the respective configuration Key. Also the `hosts` plugin stores
+the comments of the file in the respective Elektra configuration Key:
 
 ```sh
 # Mount empty hosts file
-kdb mount --with-recommends hosts /tests/hosts hosts
+sudo kdb mount --with-recommends hosts /tests/hosts hosts
 
 # Add a line to the hosts file containing a comment
 echo '127.0.0.1    localhost # test comment' >  `kdb file /tests/hosts`
@@ -244,7 +248,7 @@ This behavior can be illustrated via the usage of the `hosts` plugin, which hono
 
 ```sh
 # Mount empty hosts file
-kdb mount --with-recommends hosts /tests/hosts hosts
+sudo kdb mount --with-recommends hosts /tests/hosts hosts
 
 # Add lines to the hosts file
 echo '127.0.0.1    localhost.1' >  `kdb file /tests/hosts`
