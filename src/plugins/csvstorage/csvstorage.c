@@ -450,6 +450,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 			if (!(lineCounter <= 1 && useHeader))
 			{
 				keySetString (dirKey, lastIndex);
+				keySetMeta (dirKey, "array", lastIndex);
 				ksAppendKey (tmpKs, keyDup (dirKey, KEY_CP_ALL));
 				Key * lookupKey = keyNew (keyName (dirKey), KEY_END);
 				keyAddName (lookupKey, keyString (colAsParent));
@@ -471,6 +472,7 @@ static int csvRead (KeySet * returned, Key * parentKey, char delim, Key * colAsP
 		else
 		{
 			keySetString (dirKey, lastIndex);
+			keySetMeta (dirKey, "array", lastIndex);
 			ksAppend (returned, tmpKs);
 			ksAppendKey (returned, keyDup (dirKey, KEY_CP_ALL));
 		}
