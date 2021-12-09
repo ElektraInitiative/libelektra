@@ -14,13 +14,6 @@
 
 #include "resolver.h"
 
-KeySet * set_pluginconf (void)
-{
-	return ksNew (10, keyNew ("system:/path", KEY_VALUE, KDB_DB_FILE, KEY_END),
-		      keyNew ("user:/path", KEY_VALUE, "elektra.ecf", KEY_END), KS_END);
-}
-
-
 void test_resolve (void)
 {
 	int pathLen = tempHomeLen + 1 + strlen (KDB_DB_USER) + 12 + 1;
@@ -33,15 +26,9 @@ void test_resolve (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	Key * parentKey = keyNew ("system:/", KEY_END);
-	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
+	Key * parentKey = keyNew ("system:/", KEY_VALUE, "elektra.ecf", KEY_END);
+	Plugin * plugin = elektraPluginOpen ("resolver", modules, ksNew (0, KS_END), 0);
 	exit_if_fail (plugin, "could not load resolver plugin");
-
-	KeySet * test_config = set_pluginconf ();
-	KeySet * config = elektraPluginGetConfig (plugin);
-	succeed_if (config != 0, "there should be a config");
-	compare_keyset (config, test_config);
-	ksDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
 	succeed_if (plugin->kdbClose != 0, "no open pointer");
@@ -110,14 +97,9 @@ void test_name (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
+	Key * parentKey = keyNew ("system:/", KEY_VALUE, "elektra.ecf", KEY_END);
+	Plugin * plugin = elektraPluginOpen ("resolver", modules, ksNew (0, KS_END), 0);
 	exit_if_fail (plugin, "could not load resolver plugin");
-
-	KeySet * test_config = set_pluginconf ();
-	KeySet * config = elektraPluginGetConfig (plugin);
-	succeed_if (config != 0, "there should be a config");
-	compare_keyset (config, test_config);
-	ksDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
 	succeed_if (plugin->kdbClose != 0, "no open pointer");
@@ -128,7 +110,6 @@ void test_name (void)
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
-	Key * parentKey = keyNew ("system:/", KEY_END);
 
 	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
 	plugin->kdbGet (plugin, 0, parentKey);
@@ -161,14 +142,9 @@ void test_lockname (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
+	Key * parentKey = keyNew ("system:/", KEY_VALUE, "elektra.ecf", KEY_END);
+	Plugin * plugin = elektraPluginOpen ("resolver", modules, ksNew (0, KS_END), 0);
 	exit_if_fail (plugin, "could not load resolver plugin");
-
-	KeySet * test_config = set_pluginconf ();
-	KeySet * config = elektraPluginGetConfig (plugin);
-	succeed_if (config != 0, "there should be a config");
-	compare_keyset (config, test_config);
-	ksDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
 	succeed_if (plugin->kdbClose != 0, "no open pointer");
@@ -179,7 +155,6 @@ void test_lockname (void)
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
-	Key * parentKey = keyNew ("system:/", KEY_END);
 	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
 	plugin->kdbGet (plugin, 0, parentKey);
 
@@ -213,14 +188,9 @@ void test_tempname (void)
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
 
-	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
+	Key * parentKey = keyNew ("system:/", KEY_VALUE, "elektra.ecf", KEY_END);
+	Plugin * plugin = elektraPluginOpen ("resolver", modules, ksNew (0, KS_END), 0);
 	exit_if_fail (plugin, "could not load resolver plugin");
-
-	KeySet * test_config = set_pluginconf ();
-	KeySet * config = elektraPluginGetConfig (plugin);
-	succeed_if (config != 0, "there should be a config");
-	compare_keyset (config, test_config);
-	ksDel (test_config);
 
 	succeed_if (plugin->kdbOpen != 0, "no open pointer");
 	succeed_if (plugin->kdbClose != 0, "no open pointer");
@@ -231,7 +201,6 @@ void test_tempname (void)
 
 	succeed_if (!strncmp (plugin->name, "resolver", strlen ("resolver")), "got wrong name");
 
-	Key * parentKey = keyNew ("system:/", KEY_END);
 	// we need to invoke kdbGet at least once, otherwise the handle below will not yet be initialized
 	plugin->kdbGet (plugin, 0, parentKey);
 
@@ -265,7 +234,9 @@ void test_checkfile (void)
 
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
+
+	succeed_if (keyNew ("system:/", KEY_VALUE, "elektra.ecf", KEY_END), "Could not create parent Key!");
+	Plugin * plugin = elektraPluginOpen ("resolver", modules, ksNew (0, KS_END), 0);
 	exit_if_fail (plugin, "did not find a resolver");
 
 	Key * root = keyNew ("system:/elektra/modules", KEY_END);
@@ -316,7 +287,9 @@ static void check_xdg (void)
 {
 	KeySet * modules = ksNew (0, KS_END);
 	elektraModulesInit (modules, 0);
-	Plugin * plugin = elektraPluginOpen ("resolver", modules, set_pluginconf (), 0);
+
+	succeed_if (keyNew ("system:/", KEY_VALUE, "elektra.ecf", KEY_END), "Could not create parent Key!");
+	Plugin * plugin = elektraPluginOpen ("resolver", modules, ksNew (0, KS_END), 0);
 	exit_if_fail (plugin, "did not find a resolver");
 
 	int abort = 0;
