@@ -65,6 +65,7 @@ kdb set user:/tests/sequence/#0 'First Element'
 #> Create a new key user:/tests/sequence/#0 with string "First Element"
 kdb set user:/tests/sequence/#1 'Second Element'
 #> Create a new key user:/tests/sequence/#1 with string "Second Element"
+# Arrays do not need to be contiguous
 kdb set user:/tests/sequence/#3 'Fourth Element'
 #> Create a new key user:/tests/sequence/#3 with string "Fourth Element"
 ```
