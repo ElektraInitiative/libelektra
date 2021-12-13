@@ -195,7 +195,20 @@
                     "blacklist": ["CMakeLists.txt"]
                 },
                 "dev-comment": "We don't want the CMakeLists.txt to be in the output."
-            }
+            },
+            {
+				"name": "Citations",
+				"type": "staticlist",
+				"ref": "citations",
+				"dev-comment": "",
+				"children": [{
+					"name": "citations",
+					"type": "staticfile",
+					"options": {
+					    "path": "doc/paper/README.md"
+				    }
+				}]
+			}
         ]
     },
     {
@@ -278,6 +291,13 @@
                         "type": "staticfile",
                         "options": {
                             "path": "doc/TESTING.md"
+                        }
+                    },
+                    {
+                        "name": "Testing of Tutorials",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "tests/shell/shell_recorder/tutorial_wrapper/README.md"
                         }
                     },
                     {
