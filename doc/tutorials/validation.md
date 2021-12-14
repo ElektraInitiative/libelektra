@@ -160,6 +160,13 @@ kdb set user:/tests/spec/test "not a number"
 # RET     5
 ```
 
+However, if we add a key that adheres to the validation rules, it will work:
+
+```sh
+kdb set user:/tests/spec/test 42
+#> Create a new key user:/tests/spec/test with string "42"
+```
+
 Although this is better than defining metadata in the same place as the data
 itself, we can still do better.
 The reason for that is that one of the aims of Elektra is to remove the trouble
