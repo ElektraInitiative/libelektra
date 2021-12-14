@@ -87,5 +87,5 @@ invocations. Contract `KeySet`s only contain `Key`s below
 
 ## Notes
 
-- Issue [#2764](https://issue.libelektra.org/2764)
+- Issue [#2764](https://issues.libelektra.org/2764)
 - Implemented in #3651
