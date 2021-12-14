@@ -4,8 +4,8 @@
 
 There are ambiguous cases where the same return value can refer to multiple problems:
 
--  name modifications which can be either invalid name or locking the key name
--  getting values of (non-)binary keys
+- name modifications which can be either invalid name or locking the key name
+- getting values of (non-)binary keys
 
 ## Constraints
 

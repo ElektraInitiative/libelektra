@@ -19,7 +19,7 @@ get rid of it after 1.0.
 
 To not disturb main features such as:
 
-- 
+-
 
 ## Assumptions
 
@@ -32,6 +32,7 @@ Binary data is not a core feature, if needed the plugin system can also work wit
 ## Decision
 
 Remove/Refactor/Rename obsolete/not needed methods:
+
 - keyClear
 - keyGetRef
 - keyRewindMeta
