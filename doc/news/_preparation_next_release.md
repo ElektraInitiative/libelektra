@@ -148,7 +148,7 @@ _(Michael Tucek)_
 
 ## Documentation
 
-- <<TODO>>
+- Integrate missing pages to website _(Ivaylo Ivanov)_
 - Improved compilation documentation _(Ivaylo Ivanov)_
 - Start making Elektra [reuse](https://reuse.software) compliant. _(Markus Raab)_
 - Fix Links in [README.md](/README.md) and small clarifications. _(Markus Raab)_
