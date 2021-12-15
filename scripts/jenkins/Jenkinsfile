@@ -478,7 +478,7 @@ def dockerInit() {
 }
 
 /* Generate basic check stages
- * 
+ *
  * Runs basic checks that do not to build the code
  */
 def generateBasicCheckStages() {
@@ -492,6 +492,9 @@ def generateBasicCheckStages() {
 
   // Check if release notes have been updated
   tasks << buildCheckReleaseNotes()
+
+  // Check for reuse compliancy
+  tasks << buildCheckReuseCompliant()
 
   // Check formatting of c and CMake files
   tasks << buildFormatChecks()
@@ -832,6 +835,19 @@ def buildCheckReleaseNotes() {
     maybeStage(stageName, !isMaster()) {
       withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "scripts/build/run_check_release_notes"
+        deleteDir()
+      }
+    }
+  }]
+}
+
+/* Stage checking if for reuse compliancy */
+def buildCheckReuseCompliant() {
+  def stageName = "check-reuse-compliant"
+  return [(stageName): {
+    maybeStage(stageName, !isMaster()) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
+        sh "reuse lint"
         deleteDir()
       }
     }

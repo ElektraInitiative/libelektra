@@ -180,6 +180,33 @@ sudo kdb umount /tests/csv
 
 ```
 
+## Array metakey
+
+```sh
+kdb mount config.csv user:/tests/csvstorage csvstorage
+
+kdb set user:/tests/csvstorage/test test
+
+printf 'one,two,three\nfour,five,six\n' > `kdb file user:/tests/csvstorage`
+
+kdb ls user:/tests/csvstorage
+#> user:/tests/csvstorage/#0
+#> user:/tests/csvstorage/#0/#0
+#> user:/tests/csvstorage/#0/#1
+#> user:/tests/csvstorage/#0/#2
+#> user:/tests/csvstorage/#1
+#> user:/tests/csvstorage/#1/#0
+#> user:/tests/csvstorage/#1/#1
+#> user:/tests/csvstorage/#1/#2
+
+kdb meta-get user:/tests/csvstorage/#0 array
+#> #2
+
+kdb rm -r user:/tests/csvstorage
+
+kdb umount user:/tests/csvstorage
+```
+
 ## Limitations
 
 - Does not work on file streams (e.g. `kdb import` without file)

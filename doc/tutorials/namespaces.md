@@ -56,7 +56,7 @@ Every key in Elektra belongs to one of these namespaces:
 All namespaces save their keys in a _separate hierarchical structure_ from the other namespaces.
 
 But when we set the keys **/a** and **/b/c** before we didn't provide a namespace.
-So I hear you asking if every key has to belong to a namespace, where are the keys?
+So I hear you asking, "if every key has to belong to a namespace, where are the keys?"
 They are in the _user_ namespace, as you can verify with:
 
 ```sh
@@ -89,8 +89,8 @@ kdb get -v /b/c
 Here you see how Elektra searches all namespaces for matching keys in this order:
 **spec**, **proc**, **dir**, **user** and finally **system**
 
-If a key is found in a namespace, it masks the key in all subsequent namespaces, which is the reason why the system namespace isn't searched. Finally the virtual key **/b/c** gets resolved to the real key **user:/b/c**.
-Because of the way a key without a namespace is retrieved, we call keys, that start with '**/**' **cascading keys**.
+If a key is found in a namespace, it masks the key in all subsequent namespaces, which is the reason why the system namespace isn't searched. Finally, the virtual key **/b/c** gets resolved to the real key **user:/b/c**.
+Because of the way a key without a namespace is retrieved, we call keys, that start with '**/**', **cascading keys**.
 You can find out more about cascading lookups in the [cascading tutorial](cascading.md).
 
 Having namespaces enables both admins and users to set specific parts of the application's configuration, as you will see in the following example.

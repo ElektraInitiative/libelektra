@@ -760,7 +760,7 @@ bool elektraKeyNameValidate (const char * name, bool isComplete)
 		const char * colon = strchr (name, ':');
 		if (colon != NULL)
 		{
-			if (elektraReadNamespace (name, colon - name - 1) == KEY_NS_NONE)
+			if (elektraReadNamespace (name, colon - name) == KEY_NS_NONE)
 			{
 				ELEKTRA_LOG_DEBUG ("Illegal namespace '%.*s': %s", (int) (colon - name - 1), name, name);
 				return 0;
