@@ -61,6 +61,7 @@ section here.
 
 ## In Discussion
 
+- [simplify API](simplify_api.md)
 - [keyString() return value](key_string_return_value.md)
 - [Global Plugins](global_plugins.md) (@mpranj)
 - [Error Semantics](error_semantics.md) (API)
