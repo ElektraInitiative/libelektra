@@ -10,41 +10,43 @@ brew update
 brew config
 # Unlink parallel package, because of conflict with moreutils
 brew unlink parallel || printf >&2 'Unlinking parallel failed.`\n'
-brew install augeas \
-	antlr \
-	antlr4-cpp-runtime \
-	bison \
-	clang-format \
-	dbus \
-	discount \
-	doxygen \
-	flex \
-	glib \
-	gpgme \
-	gradle \
-	graphviz \
-	libev \
-	libgcrypt \
-	libgit2 \
-	libuv \
-	lua \
-	moreutils \
-	ninja \
-	npm \
-	openssl \
-	pkg-config \
-	qt \
-	shfmt \
-	swig \
-	tree \
-	xerces-c \
-	yajl \
-	yaml-cpp \
-	zeromq
+brew bundle --file=- <<-EOS
+brew "antlr"
+brew "antlr4-cpp-runtime"
+brew "bison"
+brew "clang-format"
+brew "dbus"
+brew "discount"
+brew "doxygen"
+brew "flex"
+brew "glib"
+brew "gpgme"
+brew "gradle"
+brew "graphviz"
+brew "libev"
+brew "libgcrypt"
+brew "libgit2"
+brew "libuv"
+brew "lua"
+brew "moreutils"
+brew "ninja"
+brew "npm"
+brew "openssl"
+brew "pkg-config"
+brew "qt"
+brew "shfmt"
+brew "swig"
+brew "tree"
+brew "xerces-c"
+brew "yajl"
+brew "yaml-cpp"
+brew "zeromq"
+
 if [ "$CC" = 'clang' ]; then
 	brew install --cask oclint
 	brew install --cask oclint
 fi
+
 brew install --cask adoptopenjdk
 # Try to install `checkbashisms` (The file server that hosts the package is unfortunately quite unreliable.)
 brew install checkbashisms || printf >&2 'Warning: Unable to install `checkbashims`\n'

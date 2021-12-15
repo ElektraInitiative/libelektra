@@ -87,6 +87,7 @@ jobs:
           ~/Library/Caches/Homebrew
           ~/github_brew_cache_entries.txt
         key: macos-cache-${{ hashFiles('scripts/mac_setup.sh') }}
+        restore-keys: macos-
     - name: Brew cache hit
       if: steps.dependency-cache.outputs.cache-hit == 'true'
       run: |
