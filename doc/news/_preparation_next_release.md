@@ -208,6 +208,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 - Added some improvements to the core api documentation _(@muskater)_
+- Add screenshots with hints to CLion PR tutorial _(@JakobWonisch)_
 
 ## Tests
 

@@ -316,15 +316,32 @@ repository.
 
 This step is most easily done using a browser. Open the web page of the
 Git repository of libelektra (https://github.com/ElektraInitiative/libelektra)
-and log in to your account if you have not already done so. Navigate to "Pull
-requests", there you can find a green button called "New pull request". By
+and log in to your account if you have not already done so.
+
+![Step 1 - Login](/doc/images/pr_step_01.png)
+
+Navigate to "Pull
+requests", there you can find a green button called "New pull request".
+
+![Step 2 - Navigate to pull requests](/doc/images/pr_step_02.png)
+![Step 3 - New pull request](/doc/images/pr_step_03.png)
+
+By
 clicking it
 ([shortcut](https://github.com/ElektraInitiative/libelektra/compare)), you
 can now create a pull request referencing your forked repository and the
 branch,the modified code resides in. Click on "compare across forks" so that
-you can find and select your branch. Choose "<username>/libelektra" as the
+you can find and select your branch.
+
+![Step 4 - Compare branch](/doc/images/pr_step_04.png)
+
+Choose "<username>/libelektra" as the
 head repository and "testbranch" as the compare-branch. Now the green button
-"Create pull requests" should be enabled. By clicking it you can define the
+"Create pull requests" should be enabled.
+
+![Step 5 - Pick branch, create PR](/doc/images/pr_step_05.png)
+
+By clicking it you can define the
 title of your pull request and write a description of the work you have done.
 Please read the template in this form and include the information stated there
 if possible. Finally, by clicking "Create pull request" you've successfully
