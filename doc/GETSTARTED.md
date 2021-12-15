@@ -2,26 +2,26 @@
 
 ## Skill requirements
 
-  - Operating system
+- Operating system
 
-    We recommend a Unix-based operating system to run Elektra (Linux, BSD, macOS) but it's also possible to use Windows which is supported but not yet fully tested.
+  We recommend a Unix-based operating system to run Elektra (Linux, BSD, macOS) but it's also possible to use Windows which is supported but not yet fully tested.
 
-  - Using command-line interface and commands
+- Using command-line interface and commands
 
-    The easiest way to compile, install and use Elektra is by using the terminal. We will introduce the basic commands which you will need to run Elektra for the very first time.
+  The easiest way to compile, install and use Elektra is by using the terminal. We will introduce the basic commands which you will need to run Elektra for the very first time.
 
-  - Basic knowledge about git
+- Basic knowledge about git
 
-    Don't panic! [GIT](https://git-scm.com/) is a distributed version control system to track changes of the source code in a project. We will use a single GIT command to get
-    the source code of Elektra.
+  Don't panic! [GIT](https://git-scm.com/) is a distributed version control system to track changes of the source code in a project. We will use a single GIT command to get
+  the source code of Elektra.
 
-  - Basic knowledge about make/cmake
+- Basic knowledge about make/cmake
 
-    [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code. If you are not used to these tools, it's not a problem, we will introduce them to you in later sections.
+  [make](https://www.gnu.org/software/make/) or [cmake](https://cmake.org/) are used to generate an executable program from the code. If you are not used to these tools, it's not a problem, we will introduce them to you in later sections.
 
-  - We also need your skill set to improve Elektra
+- We also need your skill set to improve Elektra
 
-    You can contribute to Elektra to improve the source code, website, documentation, translation etc.
+  You can contribute to Elektra to improve the source code, website, documentation, translation etc.
 
 ## Software requirements
 
@@ -82,7 +82,18 @@
   kdb run_nokdbtests
   ```
 
+## Docker
+
+  In order to ease the above process, we also provide [up-to-date docker images](https://hub.docker.com/r/elektra/elektra) which you can use to try docker without having to install and run docker on your local machine.
+
+  More detailed tutorials on running specific taks or tools:
+- [General Docker readme](../../scripts/docker/README.md)
+- [Testing](run_all_tests_with_docker.md)
+- [WebUI](install-webui.md##-Getting-Started-(docker))
+- [Developing in python](python-kdb.md###-Debian-buster)
+
 ## Hello World!
 
   Start with your very first Elektra application in C and follow these steps:
   [Hello World!](/doc/tutorials/hello-elektra.md)
+
