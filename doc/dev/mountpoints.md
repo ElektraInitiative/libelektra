@@ -134,10 +134,9 @@ system:/elektra/mountpoints/\/hosts/plugins/#1/config/set/#4/flags
 system:/elektra/mountpoints/\/hosts/plugins/#2/name (="hosts")
 system:/elektra/mountpoints/\/hosts/plugins/#3/name (="sync")
 system:/elektra/mountpoints/\/hosts/plugins/#4/name (="network")
-system:/elektra/mountpoints/\/hosts/plugins/#5/name (="other_backend")
 
 # Define backend plugin
-system:/elektra/mountpoints/\/hosts/backend (="#5")
+system:/elektra/mountpoints/\/hosts/plugins/backend/name (="other_backend")
 
 # Configuration for backend plugin
 system:/elektra/mountpoints/\/hosts/path (="myhosts")
@@ -161,10 +160,9 @@ The plugin `other_backend` may also impose its own restrictions on plugins confi
 For example, it may define that such plugins must not generate, remove or modify keys and provide a different position for such plugins.
 
 ```
-system:/elektra/mountpoints/\/hosts/plugins/#0/name (="db_backend")
-system:/elektra/mountpoints/\/hosts/plugins/#1/name (="network")
+system:/elektra/mountpoints/\/hosts/plugins/network/name (="network")
 
-system:/elektra/mountpoints/\/hosts/backend (="#0")
+system:/elektra/mountpoints/\/hosts/plugins/backend/name (="db_backend")
 
 system:/elektra/mountpoints/\/hosts/db/driver (="postgres")
 system:/elektra/mountpoints/\/hosts/db/server (="127.0.0.1")
@@ -172,7 +170,7 @@ system:/elektra/mountpoints/\/hosts/db/port (="5432")
 system:/elektra/mountpoints/\/hosts/db/user (="admin")
 system:/elektra/mountpoints/\/hosts/db/password (="supersecret")
 
-system:/elektra/mountpoints/\/hosts/phases/set/prestorage/#0 (="#1")
+system:/elektra/mountpoints/\/hosts/phases/set/prestorage/#0 (="network")
 ```
 
 This example shows an entirely different type of backend.
@@ -185,10 +183,9 @@ Which phases can be used and how the must be configured of course depends on `db
 One might also imagine there could be a (probably quite complicated) part of the mountpoint definition that defines how the relational tables of the database are mapped into the KDB.
 
 ```
-system:/elektra/mountpoints/\/hosts/plugins/#0/name (="http_backend")
-system:/elektra/mountpoints/\/hosts/plugins/#1/name (="yajl")
+system:/elektra/mountpoints/\/hosts/plugins/yajl/name (="yajl")
 
-system:/elektra/mountpoints/\/hosts/backend (="#0")
+system:/elektra/mountpoints/\/hosts/plugins/backend/name (="http_backend")
 
 system:/elektra/mountpoints/\/hosts/url (="https://api.ipify.org/?format=JSON")
 
