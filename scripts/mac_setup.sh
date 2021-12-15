@@ -41,6 +41,7 @@ brew "xerces-c"
 brew "yajl"
 brew "yaml-cpp"
 brew "zeromq"
+EOS
 
 if [ "$CC" = 'clang' ]; then
 	brew install --cask oclint
