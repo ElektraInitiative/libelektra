@@ -1,6 +1,6 @@
 # Get Started
 
-- Skill requirements
+## Skill requirements
 
   - Operating system
 
@@ -23,7 +23,7 @@
 
     You can contribute to Elektra to improve the source code, website, documentation, translation etc.
 
-- Software requirements
+## Software requirements
 
   We need to install some basic tools to run Elektra: cmake, git and essential build tools (make, gcc, and some standard Unix tools; alternatively [ninja](https://ninja-build.org/) and [clang](https://clang.llvm.org/index.html) are also supported but not described here). Depending on your Linux distribution use the following commands to install these tools:
 
@@ -43,7 +43,7 @@
   brew install cmake git
   ```
 
-- Installation
+## Installation
 
   If you meet all the software requirements you can get the source code of Elektra by using this command:
 
@@ -82,7 +82,7 @@
   kdb run_nokdbtests
   ```
 
-- Hello World!
+## Hello World!
 
   Start with your very first Elektra application in C and follow these steps:
   [Hello World!](/doc/tutorials/hello-elektra.md)
