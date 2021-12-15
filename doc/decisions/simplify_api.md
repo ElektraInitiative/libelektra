@@ -31,13 +31,28 @@ Binary data is not a core feature, if needed the plugin system can also work wit
 
 ## Decision
 
-Remove/Refactor/Rename obsolete/not needed methods:
+Remove:
 
 - keyClear
 - keyGetRef
 - keyRewindMeta
 - keyNextMeta
 - keyCurrentMeta
+- keyCompare
+- keyCompareMeta
+
+Make private:
+
+- elektraStrCaseCmp;
+- elektraStrCmp;
+- elektraStrDup;
+- elektraStrLen;
+- elektraStrNCaseCmp;
+- elektraStrNCmp;
+- elektraVFormat;
+
+Unclear:
+
 - keyCmp
 - keyNeedSync
 - keyIsBelow
