@@ -94,6 +94,5 @@
 
 ## Hello World!
 
-  Start with your very first Elektra application in C and follow these steps:
-  [Hello World!](/doc/tutorials/hello-elektra.md)
-
+Start with your very first Elektra application in C and follow these steps:
+[Hello World!](/doc/tutorials/hello-elektra.md)
