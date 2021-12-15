@@ -64,6 +64,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Determine pre-existing brew packages
+      if: steps.dependency-cache.outputs.cache-hit != 'true'
+      run: |
+        echo 'EXISTING_CELLAR<<EOF' >> $GITHUB_ENV
+        ls -1 /usr/local/Cellar >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
     - uses: actions/setup-python@v2
       with:
         python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
@@ -71,14 +77,6 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: 2.7 # Not needed with a .ruby-version file
-
-    - name: Determine pre-existing brew packages
-      if: steps.dependency-cache.outputs.cache-hit != 'true'
-      run: |
-        echo 'EXISTING_CELLAR<<EOF' >> $GITHUB_ENV
-        ls -1 /usr/local/Cellar >> $GITHUB_ENV
-        echo 'EOF' >> $GITHUB_ENV
-
     - name: Cache dependencies
       id: dependency-cache
       uses: actions/cache@v2
@@ -89,19 +87,16 @@ jobs:
           ~/Library/Caches/Homebrew
           ~/github_brew_cache_entries.txt
         key: macos-cache-${{ hashFiles('scripts/mac_setup.sh') }}
-  
     - name: Brew cache hit
       if: steps.dependency-cache.outputs.cache-hit == 'true'
       run: |
         while read pkg; do
           brew link --force "$pkg" # `--force` for keg-only packages
         done < ~/github_brew_cache_entries.txt
-
     - name: Install Dependencies
       run: |
         chmod +x ./scripts/mac_setup.sh
         ./scripts/mac_setup.sh
-
     - name: Setup Build Environment
       run: |
         # Install Ruby gems
@@ -123,7 +118,6 @@ jobs:
         export JAVA_HOME=$(/usr/libexec/java_home -v 16)
         echo "JAVA_HOME=$JAVA_HOME" >> $GITHUB_ENV
         echo "$JAVA_HOME/bin" >> $GITHUB_PATH
-
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
       # access regardless of the host operating system
@@ -161,18 +155,15 @@ jobs:
         printf '—— CMake Config ——\n'
         for option in "${CMAKE_OPT[@]}"; do printf '%s\n' "$option"; done
         cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE ${CMAKE_OPT[@]}
-
     - name: Build
       working-directory: ${{runner.workspace}}/libelektra/build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build .
-
     - name: Install
       working-directory: ${{runner.workspace}}/libelektra/build
       shell: bash
       run: output="$(cmake --build . --target install 2>&1)" || printf '%s' "$output"
-
     - name: Test
       working-directory: ${{runner.workspace}}/libelektra/build
       shell: bash
@@ -185,8 +176,7 @@ jobs:
           cmake --build . --target run_all
           kdb run_all
         fi
-
-    - name: Remove pre-existing brew packages for caching
+    - name: Remove pre-existing brew packages
       if: steps.dependency-cache.outputs.cache-hit != 'true'
       run: |
         cd /usr/local/Cellar
