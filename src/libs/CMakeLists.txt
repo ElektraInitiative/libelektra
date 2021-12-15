@@ -14,7 +14,9 @@ set (
 	notification
 	highlevel
 	merge
-	opts)
+	opts
+	mount
+	placement)
 
 # The subdirectory for LibElektra must be the last entry!
 list (APPEND SUBDIRS elektra)

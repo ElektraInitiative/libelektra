@@ -408,7 +408,7 @@ endfunction ()
 #   like LINK_ELEKTRA but only applies to plugin tests
 # ~~~
 function (add_plugin PLUGIN_SHORT_NAME)
-	# TODO (kodebach): validate that plugin name doesn't contain / or start with #, possibly more
+	# TODO (kodebach): validate that plugin name doesn't contain '/', ' ' or start with '#', possibly more
 	set (
 		MULTI_VALUE_KEYWORDS
 		SOURCES
