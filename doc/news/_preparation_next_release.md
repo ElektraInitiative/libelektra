@@ -199,6 +199,7 @@ _(Michael Tucek)_
 - Update and improve the CLion tutorial (doc/tutorials/contributing-clion.md), add screenshots _(@flo91)_
 - Improve documentation for storage plugins _(@lawli3t)_
 - Add list of sources mentioning or linking to Elektra _(@JakobWonisch)_
+- Linked to the installation instruction of the webui in its README file. _(@muskater)_ _(@lawli3t)_ _(Aydan Ghazani @4ydan)_
 
 ## Tests
 
