@@ -6,7 +6,7 @@ accesses the API that [`webd`](../webd/) provides.
 
 ## Installation and Usage
 
-You can find a comprehensive tutorial on how to install and use the webui [here.](doc/tutorials/install-webui.md)
+You can find a comprehensive tutorial on how to install and use the webui [here.](/doc/tutorials/install-webui.md)
 
 ## Features
 
