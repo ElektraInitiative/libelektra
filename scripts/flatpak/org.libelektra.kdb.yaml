@@ -1,0 +1,22 @@
+app-id: org.libelektra.kdb
+runtime: org.freedesktop.Platform
+runtime-version: '21.08'
+sdk: org.freedesktop.Sdk
+command: /app/libelektra/bin/kdb
+finish-args:
+  - --filesystem=host
+build-options:
+  build-args:
+    - --share=network
+modules:
+  - name: libelektra
+    buildsystem: simple
+    build-commands:
+      - mkdir build
+      - cd build && cmake .. -DCMAKE_INSTALL_PREFIX=/app/libelektra
+      - cmake --build build -- -j5
+      - cd build && make install
+    sources:
+      - type: git
+        url: https://github.com/ElektraInitiative/libelektra.git
+        tag: 0.9.8

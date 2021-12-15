@@ -220,7 +220,7 @@ _(Michael Tucek)_
 
 ## Packaging
 
-- <<TODO>>
+- add flatpak package _(Ivaylo Ivanov)_
 - <<TODO>>
 - <<TODO>>
 
