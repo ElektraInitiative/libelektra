@@ -97,7 +97,7 @@ int add_string (Key * check)
 }
 int add_comment (Key * check)
 {
-	return keySetMeta (check, "comment", "comment");
+	return keySetMeta (check, "comment/#0", "comment");
 }
 int has_a (Key * check)
 {

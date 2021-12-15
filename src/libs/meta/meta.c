@@ -93,7 +93,7 @@ const char * keyComment (const Key * key)
 	const char * comment;
 
 	if (!key) return 0;
-	comment = keyValue (keyGetMeta (key, "comment"));
+	comment = keyValue (keyGetMeta (key, "comment/#0"));
 
 	if (!comment)
 	{
@@ -134,7 +134,7 @@ ssize_t keyGetCommentSize (const Key * key)
 	ssize_t size;
 	if (!key) return -1;
 
-	size = keyGetValueSize (keyGetMeta (key, "comment"));
+	size = keyGetValueSize (keyGetMeta (key, "comment/#0"));
 
 	if (!size || size == -1)
 	{
@@ -180,8 +180,8 @@ ssize_t keyGetComment (const Key * key, char * returnedComment, size_t maxSize)
 	if (!returnedComment) return -1;
 	if (maxSize > SSIZE_MAX) return -1;
 
-	comment = keyValue (keyGetMeta (key, "comment"));
-	commentSize = keyGetValueSize (keyGetMeta (key, "comment"));
+	comment = keyValue (keyGetMeta (key, "comment/#0"));
+	commentSize = keyGetValueSize (keyGetMeta (key, "comment/#0"));
 
 	if (!comment)
 	{
@@ -216,11 +216,11 @@ ssize_t keySetComment (Key * key, const char * newComment)
 	if (!key) return -1;
 	if (!newComment || *newComment == 0)
 	{
-		keySetMeta (key, "comment", 0);
+		keySetMeta (key, "comment/#0", 0);
 		return 1;
 	}
 
-	return keySetMeta (key, "comment", newComment);
+	return keySetMeta (key, "comment/#0", newComment);
 }
 
 /**

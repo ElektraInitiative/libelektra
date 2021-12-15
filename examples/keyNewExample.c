@@ -25,19 +25,19 @@ int main (void)
 	ksAppendKey (ks, keyNew ("user:/tmp/ex1", KEY_VALUE, "some data", /* with a simple value */
 				 KEY_END));				  /* end of args */
 
-	ksAppendKey (ks, keyNew ("user:/tmp/ex4", KEY_BINARY, KEY_META, "comment", "value is truncated", KEY_SIZE, 7, KEY_VALUE,
+	ksAppendKey (ks, keyNew ("user:/tmp/ex4", KEY_BINARY, KEY_META, "comment/#0", "value is truncated", KEY_SIZE, 7, KEY_VALUE,
 				 "some data", /* value that will be truncated to 7 bytes */
 				 KEY_END));   /* end of args */
 
 	ksAppendKey (ks, keyNew ("user:/tmp/ex5", KEY_VALUE, "some data", /* value  */
-				 KEY_META, "comment", "some comment",	  /* a comment */
+				 KEY_META, "comment/#0", "some comment",	  /* a comment */
 				 KEY_END));				  /* end of args */
 
 	ksAppendKey (ks, keyNew ("user:/env/alias/ls", /* a key we know we have */
 				 KEY_END));	       /* do nothing more */
 
 	ksAppendKey (ks, keyNew ("user:/env/alias/ls",		     /* same key, to compare in output */
-				 KEY_META, "comment", "new comment", /* set new comment */
+				 KEY_META, "comment/#0", "new comment", /* set new comment */
 				 KEY_END));			     /* end of args */
 
 	key = keyNew ("user:/test//", KEY_END);

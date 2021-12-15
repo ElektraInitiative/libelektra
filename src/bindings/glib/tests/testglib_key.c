@@ -80,7 +80,7 @@ static GElektraKey * g_bkey = NULL;
 
 static void create_global_keys (void)
 {
-	g_key = gelektra_key_new ("user:/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_META, "comment", "mycomment", GELEKTRA_KEY_META,
+	g_key = gelektra_key_new ("user:/key", GELEKTRA_KEY_VALUE, "value", GELEKTRA_KEY_META, "comment/#0", "mycomment", GELEKTRA_KEY_META,
 				  "by", "manuel", GELEKTRA_KEY_END);
 	succeed_if (g_key != NULL, "unable to create key");
 	succeed_if (gelektra_key_isvalid (g_key), "key should be valid");

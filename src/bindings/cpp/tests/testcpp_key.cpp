@@ -210,8 +210,8 @@ TEST (key, keynew)
 	succeed_if (memcmp (&getBack[0], array, sizeof (array)) == 0, "could not get correct value with keyGetBinary");
 	succeed_if (key8.getBaseName () == "there", "wrong base name");
 
-	Key key9 ("system:/valid/.inactive", KEY_META, "comment", "inactive key", KEY_END);
-	succeed_if (key9.getMeta<std::string> ("comment") == "inactive key", "comment failed");
+	Key key9 ("system:/valid/.inactive", KEY_META, "comment/#0", "inactive key", KEY_END);
+	succeed_if (key9.getMeta<std::string> ("comment/#0") == "inactive key", "comment failed");
 	succeed_if (key9.getBaseName () == ".inactive", "wrong base name");
 
 	std::string name = "system:/valid/name";
@@ -324,8 +324,8 @@ TEST (key, value)
 	succeed_if (test.getString () == "myoth", "could not get same string");
 	succeed_if (test.getBinarySize () == 6, "value size not correct");
 
-	test.setMeta<std::string> ("comment", "mycomment");
-	succeed_if (test.getMeta<std::string> ("comment") == "mycomment", "could not get same comment");
+	test.setMeta<std::string> ("comment/#0", "mycomment");
+	succeed_if (test.getMeta<std::string> ("comment/#0") == "mycomment", "could not get same comment");
 }
 
 TEST (key, exceptions)
