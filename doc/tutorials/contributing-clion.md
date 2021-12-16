@@ -29,17 +29,22 @@ of your own repositories with a hint of its origin.
 To develop for libelektra, we now have to "download" your copy of its
 original repository. In git this process is called "cloning". CLion has
 built-in Git support which we will use for this tutorial. Once you have
-opened CLion click on:
+opened CLion click on the button _Get from VCS_ in the welcome-window.
 
-_Check out from Version Control_ --> _Git_
+![Get from VCS button](/doc/images/clion/vcs_button.png)
 
-and paste the URL of your forked libelektra-repository inside the
-_URL_ field. Then choose the directory you want to store your project in.
-To be also able to directly push changes back to your repository, we'll
-also configure CLion to be able to use your GitHub account. Click on the
-"Log in to GitHub" button and enter your GitHub credentials and confirm.
-The last step here is to click "Clone" to download the project and open
-it in CLion.
+Now you should log in to your GitHub account from the IDE.
+Click an _GitHub_ on the left and then on _Log In via GitHub..._.
+A browser window should open where you can enter your GitHub credentials.
+After successful authentication, the browser window closes and the GitHub
+information is available within CLion.
+
+A list of repositories should be displayed.
+Select the entry _libelektra_ to use your forked repository.
+At the bottom of the window, you can select a folder where you want to store
+your local copy and then click the button _Clone_.
+
+![Import from VCS](/doc/images/clion/vcs_import.png)
 
 Alternatively you can also clone your repository using the command line.
 Open a terminal and navigate to the folder you want to save the source code into
@@ -53,9 +58,11 @@ With the project now locally available we can start developing.
 
 ## Setting Up the Project
 
-To import all of the project's configuration, open CMakeLists.txt inside the
-project's root directory and click on "Load CMake project" which will appear
-on the top right corner of the source view.
+To import all of the projects configuration, right-click on the file
+_CMakeList.txt_ in the root directory of the repository and select _
+Load CMake Project_, then click on _Trust Project_.
+
+![Load CMake Project](/doc/images/clion/cmake_load.png)
 
 If you've cloned the project using a terminal. start CLion and once you see the
 main menu, click "Open" and select the CMakeLists.txt file inside the project's
@@ -96,14 +103,23 @@ builds to enable further logging and checks:
 -DENABLE_LOGGER=ON
 ```
 
+The final configuration should look like this:
+
+![Edit CMake Profile](/doc/images/clion/cmake_edit_profile.png)
+
 To increase the build speed you can also change the "Build option" to e.g.
 
 ```sh
--j 8
+-j 33
 ```
 
-which, in this case, starts 8 build jobs in parallel. For optimal performance this
+which, in this case, starts 33 build jobs in parallel. For optimal performance this
 value should represent the number of available cores of your CPU + few extra jobs.
+
+Take care to enter the parameter in the correct format, prefixed with "--" as shown here:
+
+![Set build jobs](/doc/images/clion/cmake_edit_profile_build_option.png)
+
 
 It remains to be noted that CLion maintains all CMake profiles in parallel. If some
 CMake file changes, CLion executes `cmake` for each profile which can put a lot of
@@ -122,28 +138,28 @@ Make sure the selected "Scheme" is "Project".
 Usually the folders you have to work in to add functionality or documentation are
 as follows:
 
-- doc<br/>
+- __doc__<br/>
   This folder contains mainly all documentation of the project, including
   almost all pages of the [homepage](https://www.libelektra.org) of this
   project. One important note is, that all Markdown-pages can also be used
   for testing using
   [Markdown to Shell Recorder](https://github.com/ElektraInitiative/libelektra/tree/master/tests/shell/shell_recorder/tutorial_wrapper)
   (you can find an example on how to do this [here](/doc/help/kdb-get.md)).
-- src<br/>
+- __src__<br/>
   Almost all functionality-code resides here.
-  - bindings<br/>
+  - __bindings__<br/>
     Here is all the code of available [Bindings](/src/bindings/README.md)
     of libelektra.
-  - plugins<br/>
+  - __plugins__<br/>
     You can find all developed [Plugins](/src/plugins/README.md) here. If
     you want to fix a bug for an existing plugin or add another one, this is
     the directory you have to work in. For further information on how to
     develop your own plugin, please visit [this](/doc/tutorials/plugins.md)
     tutorial.
-  - tools<br/>
+  - __tools__<br/>
     In this folder the source of all tools for interacting with Elektra's
     global key database, e.g. _kdb_, can be found.
-- tests<br/>
+- __tests__<br/>
   Here you can find all sorts of tests (excluding tests created with the
   _Markdown to Shell Recorder_-tool).
 
