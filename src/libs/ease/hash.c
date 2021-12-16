@@ -80,9 +80,12 @@ kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Ke
 			continue;
 		}
 
-		// Feed key name into sha_256_write() without NULL terminator (hence -1).
-		// This makes it easier to compare expected results with other sha256 tools.
-		sha_256_write (&sha_256, keyName (currentKey), keyGetNameSize (currentKey) - 1);
+		/**
+		 * Include NULL teminator in this and all following key/value strings, to avoid the following bug:
+		 * https://github.com/ElektraInitiative/libelektra/issues/4110
+		 */
+
+		sha_256_write (&sha_256, keyName (currentKey), keyGetNameSize (currentKey));
 		// Note: The value of the key itself is not relevant / part of specification. Only the key's name + its metadata!
 
 		KeySet * currentMetaKeys = keyMeta (currentKey);
@@ -90,8 +93,8 @@ kdb_boolean_t calculateSpecificationToken (char hash_string[65], KeySet * ks, Ke
 		for (elektraCursor metaIt = 0; metaIt < ksGetSize (currentMetaKeys); metaIt++)
 		{
 			Key * currentMetaKey = ksAtCursor (currentMetaKeys, metaIt);
-			sha_256_write (&sha_256, keyName (currentMetaKey), keyGetNameSize (currentMetaKey) - 1);
-			sha_256_write (&sha_256, keyString (currentMetaKey), keyGetValueSize (currentMetaKey) - 1);
+			sha_256_write (&sha_256, keyName (currentMetaKey), keyGetNameSize (currentMetaKey));
+			sha_256_write (&sha_256, keyString (currentMetaKey), keyGetValueSize (currentMetaKey));
 		}
 	}
 

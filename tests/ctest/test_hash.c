@@ -23,7 +23,7 @@ static void test_keySet (void)
 
 	calculateSpecificationToken (hash_string, ks, parentKey);
 
-	const char * expected = "495c901c07beb0aedd636a4d20390f503cb5a4f5af2f69d32995804059867403";
+	const char * expected = "fac198709454d05176c4599290050c7a4240f265ae87304cf5d5ec3a074bb293";
 	succeed_if_fmt (strcmp (hash_string, expected) == 0, "Calculated token %s did not match expected result %s.", hash_string,
 			expected);
 
@@ -65,6 +65,34 @@ static void test_onlyKeysBelowParentKey (void)
 	ksDel (ksWithKeysFromTwoApps);
 }
 
+/**
+ * Test whether streaming API is aware of character order.
+ */
+static void test_hashesMetadata (void)
+{
+	char hash_string_1[65];
+	char hash_string_2[65];
+	KeySet *ks1, *ks2;
+	Key *key1, *key2;
+
+	key1 = keyNew ("/sw/application/myapp/#0/current", KEY_META, "aa", "bb", KEY_END);
+	key2 = keyNew ("/sw/application/myapp/#0/current", KEY_META, "a", "abb", KEY_END);
+
+	ks1 = ksNew (1, key1, KS_END);
+	ks2 = ksNew (1, key2, KS_END);
+
+	succeed_if (calculateSpecificationToken (hash_string_1, ks1, key1), "Could not calculate specification token");
+	succeed_if (calculateSpecificationToken (hash_string_2, ks2, key2), "Could not calculate specification token");
+
+	succeed_if (strcmp (hash_string_1, hash_string_2) != 0,
+		    "Specification Tokens of Keys with different Meta KeySets should be different");
+
+	keyDel (key1);
+	keyDel (key1);
+	ksDel (ks1);
+	ksDel (ks2);
+}
+
 int main (int argc, char ** argv)
 {
 	printf ("HASH    TESTS\n");
@@ -74,6 +102,7 @@ int main (int argc, char ** argv)
 
 	test_keySet ();
 	test_onlyKeysBelowParentKey ();
+	test_hashesMetadata ();
 
 	printf ("\ntest_hash RESULTS: %d test(s) done. %d error(s).\n", nbTest, nbError);
 
