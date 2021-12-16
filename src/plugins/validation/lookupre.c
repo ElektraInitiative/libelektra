@@ -25,7 +25,7 @@
  *         @p KEY_SWITCH_OWNER, @p KEY_SWITCH_COMMENT switches ORed to
  *         indicate @p where the @p regex matched.
  *
- * @see ksLookupByName(), ksLookupByString(), keyCompare() for other types of
+ * @see ksLookupByName(), ksLookupByString() for other types of
  * 	lookups.
  * @see kdbGetByName()
  *
