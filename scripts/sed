@@ -26,7 +26,7 @@ s/([Ss])ummarise/\1ummarize/g
 s/([Ss])ynchronisation/\1ynchronization/g
 s/([Ss])ynchronised/\1ynchronized/g
 s/\<([Uu]tili)s/\1z/g
-s/^([Pp])rogramm(e)?(s)?$/\1rogram\3/g
+s/\<([Pp])rogramm(e)?(s)?\>/\1rogram\3/g
 
 # ==========
 # = Brands =
@@ -93,9 +93,9 @@ s/\<[^-]symlink/symbolic link/g
 s/\<([Mm])iddle[- ][Ww]are/\1iddleware/g
 
 # plural
-s/\<^([Ff])iles?[- ]?([Ss])ystem(s)?$\>/\1ile \2ystem\3/g
-s/\<^([Tt])ypes?[- ]?([Ss])ystem(s)?$\>/\1ype \2ystem\3/g
-s/\<^([Tt])ypes?[- ]?([Cc])hecker(s)?$\>/\1ype \2hecker\3/g
+s/\<([Ff])iles?([- ]?[Ss])ystem(s)?\>/\1ile\2ystem\3/g
+s/\<([Tt])ypes?([- ]?[Ss])ystem(s)?\>/\1ype\2ystem\3/g
+s/\<([Tt])ypes?([- ]?[Cc])hecker(s)?\>/\1ype\2hecker\3/g
 
 s/\<([Tt])ypecheck((s|ing)?)\>/\1ype check\2/g
 s/\<([Ii])nformations\>/\1nformation/g
