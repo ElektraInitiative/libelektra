@@ -1,0 +1,2 @@
+# Whitelist for the filename-checker
+./.idea/fileTemplates/includes/C File Header.h

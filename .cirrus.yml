@@ -284,6 +284,42 @@ task:
 task:
   matrix:
 
+    - name: 📄 Check
+      container:
+        cpu: 2
+        memory: 4G
+        dockerfile: scripts/docker/cirrus/arch/Dockerfile
+
+  clone_script: |
+    if [ -z "$CIRRUS_PR" ]; then
+      git clone --branch=$CIRRUS_BRANCH https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git \
+                $CIRRUS_WORKING_DIR
+      git reset --hard $CIRRUS_CHANGE_IN_REPO
+    else
+      git clone https://x-access-token:${CIRRUS_REPO_CLONE_TOKEN}@github.com/${CIRRUS_REPO_FULL_NAME}.git $CIRRUS_WORKING_DIR
+      git fetch origin pull/$CIRRUS_PR/head:pull/$CIRRUS_PR
+      git config user.email "nobody@example.com"
+      git config user.name "nobody"
+      git merge --no-commit --no-ff $CIRRUS_CHANGE_IN_REPO
+    fi
+
+  script:
+    - *generate
+    - scripts/dev/filename-checker 2> bad_file_names.txt > /dev/null
+
+  tests_script:
+    - |
+      if test -s bad_file_names.txt; then
+        printf >&2 '—————————————\n'
+        cat >&2 bad_file_names.txt
+        printf >&2 '—————————————\n'
+        false
+      fi
+
+
+task:
+  matrix:
+
     - name: 📚 Check
       container:
           cpu: 6
