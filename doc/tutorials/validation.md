@@ -157,7 +157,7 @@ If we try setting the key again, we will get an error:
 kdb set user:/tests/spec/test "not a number"
 # STDERR: .*Validation Syntactic.*Not a number.*
 # ERROR:  C03100
-# RET     5
+# RET: 5
 ```
 
 However, if we add a key that adheres to the validation rules, it will work:
@@ -180,7 +180,7 @@ _schema_ of our configuration and therefore should be stored in the spec namespa
 
 ```sh
 # Undo modifications
-kdb rm -r spec:/tests/spec/test
+kdb rm -r spec:/tests/spec
 kdb rm -r user:/tests/spec || kdb rm -r system:/tests/spec
 ```
 
