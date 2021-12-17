@@ -72,7 +72,7 @@ If you want to receive one specific value you can run for example
 kdb get system:/tests/passwd/root/gecos
 ```
 
-You can also export it as whole in any format you like, for example json
+You can also export it as whole in any format you like, for example JSON
 
 ```sh
 kdb export system:/tests/passwd/root json
