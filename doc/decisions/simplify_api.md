@@ -40,6 +40,14 @@ Remove:
 - keyCurrentMeta
 - keyCompare
 - keyCompareMeta
+- keyCopyAllMeta
+- keyCopyMeta
+- keyGetBaseName;
+- keyGetBaseNameSize;
+- keyGetBinary;
+- keyGetMeta;
+- keyGetName;
+- keyGetNameSize;
 
 Make private:
 
