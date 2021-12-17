@@ -55,7 +55,7 @@ only using the public header file `<kdb.h>`. The functions `keyDel()`,
 `ksDel()` and `kdbClose()` free the resources after use. Using the C++
 binding deallocation is done automatically.
 
-## Meta Data
+## Metadata
 
 Read [here](metadata.md).
 

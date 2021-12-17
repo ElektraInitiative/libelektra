@@ -181,6 +181,8 @@ _(Michael Tucek)_
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 - Added debian buster tutorial to python bindings tutorial _(@4ydan)_
 - Fixed some typos in the "namespaces.md" documentation _(@muskater)_
+- Fix an error and some overmatching problems in scripts/sed and fix errors in documentation
+  (by running the scripts/dev/fix-spelling script) _(Florian Lindner @flo91)_
 
 ## Tests
 
