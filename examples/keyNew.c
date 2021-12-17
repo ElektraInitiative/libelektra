@@ -77,7 +77,7 @@ keyDel(k);
 
 //! [With Meta]
 Key *k=keyNew("user:/tmp/ex3",
-	KEY_META, "comment", "a comment",  // with a comment
+	KEY_META, "comment/#0", "a comment",  // with a comment
 	KEY_META, "owner", "root",         // and an owner
 	KEY_META, "special", "yes",        // and any other metadata
 	KEY_END);                  // end of args
@@ -103,7 +103,7 @@ Key *k=keyNew("user:/tmp/ex4",
 	KEY_BINARY,			// key type
 	KEY_SIZE, 7,			// assume binary length 7
 	KEY_VALUE, "some data",		// value that will be truncated in 7 bytes
-	KEY_COMMENT, "value is truncated",
+	KEY_META, "comment/#0", "value is truncated",
 	KEY_END);			// end of args
 //! [With Everything]
 printf ("%.7s\n", (char*)keyValue(k));

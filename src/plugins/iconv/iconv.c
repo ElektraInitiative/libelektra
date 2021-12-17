@@ -187,7 +187,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keySetString (cur, convertedData);
 			elektraFree (convertedData);
 		}
-		const Key * meta = keyGetMeta (cur, "comment");
+		const Key * meta = keyGetMeta (cur, "comment/#0");
 		if (meta)
 		{
 			/* String or similar type of value */
@@ -203,7 +203,7 @@ int elektraIconvGet (Plugin * handle, KeySet * returned, Key * parentKey)
 				elektraFree (convertedData);
 				return -1;
 			}
-			keySetMeta (cur, "comment", convertedData);
+			keySetMeta (cur, "comment/#0", convertedData);
 			elektraFree (convertedData);
 		}
 	}
@@ -240,7 +240,7 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 			keySetString (cur, convertedData);
 			elektraFree (convertedData);
 		}
-		const Key * meta = keyGetMeta (cur, "comment");
+		const Key * meta = keyGetMeta (cur, "comment/#0");
 		if (meta)
 		{
 			/* String or similar type of value */
@@ -257,7 +257,7 @@ int elektraIconvSet (Plugin * handle, KeySet * returned, Key * parentKey)
 				elektraFree (convertedData);
 				return -1;
 			}
-			keySetMeta (cur, "comment", convertedData);
+			keySetMeta (cur, "comment/#0", convertedData);
 			elektraFree (convertedData);
 		}
 	}

@@ -43,7 +43,7 @@ int main (void)
 		// do something with the key
 		const char * key_name = keyName (result);
 		const char * key_value = keyString (result);
-		const char * key_comment = keyString (keyGetMeta (result, "comment"));
+		const char * key_comment = keyString (keyGetMeta (result, "comment/#0"));
 		printf ("key: %s value: %s comment: %s\n", key_name, key_value, key_comment);
 	}
 

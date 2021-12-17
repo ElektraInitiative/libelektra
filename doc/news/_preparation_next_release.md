@@ -63,15 +63,21 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - Add `array` meta key to the parentKey of imported Keys _(@muskater)_ _(@4ydan)_ _(@lawli3t)_
 
-### <<Plugin3>>
+### specload
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Change and move `keyCompareMeta (const Key * k1, const Key * k2)` from `src/libs/elektra/keytest.c`
+  to `src/plugins/specload/specload.c` and integrate functionality of keyCompare (const Key _ key1, const Key _ key2)
+  into `isChangeAllowed (Key * oldKey, Key * newKey)`, because that is the only place where it was used. _(@flo91)_
 
 ### uname
 
 - Minor improvement of source code readability in uname.c _(@lawli3t)_
+
+### <<Plugin6>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Libraries
 
@@ -79,7 +85,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
+- Remove the deprecated flags `KEY_NAME` and `KEY_COMMENT` (closes issue #3152) _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 

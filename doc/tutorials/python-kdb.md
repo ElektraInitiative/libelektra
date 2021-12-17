@@ -238,7 +238,7 @@ with kdb.KDB() as k:
     key1 = kdb.Key("user:/key1", kdb.KEY_VALUE, "some_value")
     key1.setMeta("foo",     "bar")
     key1.setMeta("owner",   "manuel")
-    key1.setMeta("comment", "this is my example key")
+    key1.setMeta("comment/#0", "this is my example key")
     for meta in key1.getMeta():
         print("  key1.{0} = \"{1}\"".format(meta.name, meta.value))
 ```

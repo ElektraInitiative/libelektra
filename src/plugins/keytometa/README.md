@@ -148,7 +148,7 @@ by adding the following to the Augeas plugin contract.
 // ...
 keyNew ("system:/elektra/modules/augeas/config/needs/glob/get/#1",
     KEY_VALUE, "*#comment*",
-    KEY_META, "convert/metaname", "comment",
+    KEY_META, "convert/metaname", "comment/#0",
     KEY_META, "convert/append", "next",
     KEY_END),
 keyNew ("system:/elektra/modules/augeas/config/needs/glob/get/#1/flags",
