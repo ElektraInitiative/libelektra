@@ -21,8 +21,8 @@ Libelektra is hosted on GitHub. You can find its repository here:
 
 To be able to make pull requests, you need a copy of this repository inside
 your GitHub account. You can find a tutorial about how to do this
-[here](https://help.github.com/en/articles/fork-a-repo) (remember to sign in to your account first). After this, you should see this copy in the list
-of your own repositories with a hint of its origin.
+[here](https://help.github.com/en/articles/fork-a-repo) (remember to sign in to your account first).
+After this, you should see this copy in the list of your own repositories with a hint of its origin.
 
 ## Getting the Code
 
@@ -34,7 +34,7 @@ opened CLion click on the button _Get from VCS_ in the welcome-window.
 ![Get from VCS button](/doc/images/clion/vcs_button.png)
 
 Now you should log in to your GitHub account from the IDE.
-Click an _GitHub_ on the left and then on _Log In via GitHub..._.
+Click on _GitHub_ on the left and then on _Log In via GitHub..._.
 A browser window should open where you can enter your GitHub credentials.
 After successful authentication, the browser window closes and the GitHub
 information is available within CLion.
@@ -51,26 +51,29 @@ Open a terminal and navigate to the folder you want to save the source code into
 and type:
 
 ```sh
-git clone https://github.com/ElektraInitiative/libelektra.git
+git clone https://github.com/<yourGitHubUserName>/libelektra.git
 ```
 
 With the project now locally available we can start developing.
 
 ## Setting Up the Project
 
-To import all of the projects configuration, right-click on the file
+To import all the project configurations, right-click on the file
 _CMakeList.txt_ in the root directory of the repository and select _
 Load CMake Project_, then click on _Trust Project_.
 
+If the entry is not visible in the context menu, you can try to repair
+the IDE via _File_ --> _Repair IDE..._
+
 ![Load CMake Project](/doc/images/clion/cmake_load.png)
 
-If you've cloned the project using a terminal. start CLion and once you see the
-main menu, click "Open" and select the CMakeLists.txt file inside the project's
+If you've cloned the project using a terminal, start CLion and once you see the
+main menu, click _Open_ and select the _CMakeLists.txt_ file inside the project's
 root directory. This will import the project accordingly and populate you
 run configuration with some predefined values. In rare occurrences this won't
 happen. If that is the case for you, simply restart CLion using:
 
-_File_ --> _Invalidate Caches / Restart..._ --> _Invalidate and Restart_
+_File_ --> _Invalidate Caches..._
 
 Now after all processes of CLion have finished, the project should be set up
 and the run configuration should be populated with entries.
@@ -86,9 +89,10 @@ There you can edit your CMake profiles. To get rid of the root requirement we'll
 add the following CMake options to our "Debug" profile:
 
 ```sh
+-DKDB_DB_HOME="~/.config/kdb/[xyz]/home"
 -DKDB_DB_SYSTEM="~/.config/kdb/[xyz]/system"
 -DKDB_DB_SPEC="~/.config/kdb/[xyz]/spec"
--DKDB_DB_USER=".config/kdb/[xyz]/user"
+-DKDB_DB_USER="~/.config/kdb/[xyz]/user"
 -DCMAKE_INSTALL_PREFIX=install
 ```
 
@@ -99,15 +103,29 @@ debugging purposes we also recommend adding the following CMake options for debu
 builds to enable further logging and checks:
 
 ```sh
--DENABLE_DEBUG=ON
--DENABLE_LOGGER=ON
+-DENABLE_DEBUG="ON"
+-DENABLE_LOGGER="ON"
+```
+
+The following options can be added to build additional bindings, tools and plugins:
+
+```sh
+-DBINDINGS="ALL;-DEPRECATED"
+-DPLUGINS="ALL;-DEPRECATED"
+-DTOOLS="ALL"
+```
+
+Another interesting option is to treat all warnings as errors:
+
+```sh
+-DCOMMON_FLAGS="-Werror"
 ```
 
 The final configuration should look like this:
 
 ![Edit CMake Profile](/doc/images/clion/cmake_edit_profile.png)
 
-To increase the build speed you can also change the "Build option" to e.g.
+To increase the build speed you can also change the _Build options_ to e.g.
 
 ```sh
 -j 33
@@ -120,7 +138,6 @@ Take care to enter the parameter in the correct format, prefixed with "--" as sh
 
 ![Set build jobs](/doc/images/clion/cmake_edit_profile_build_option.png)
 
-
 It remains to be noted that CLion maintains all CMake profiles in parallel. If some
 CMake file changes, CLion executes `cmake` for each profile which can put a lot of
 strain on your system.
@@ -131,49 +148,58 @@ the settings here:
 
 _File_ --> _Settings..._ --> _Editor_ --> _Code Style_
 
-Make sure the selected "Scheme" is "Project".
+Make sure the selected _Scheme_ is _Project_.
 
 ## Development
 
 Usually the folders you have to work in to add functionality or documentation are
 as follows:
 
-- __doc__<br/>
+- **doc**<br/>
   This folder contains mainly all documentation of the project, including
   almost all pages of the [homepage](https://www.libelektra.org) of this
   project. One important note is, that all Markdown-pages can also be used
   for testing using
   [Markdown to Shell Recorder](https://github.com/ElektraInitiative/libelektra/tree/master/tests/shell/shell_recorder/tutorial_wrapper)
   (you can find an example on how to do this [here](/doc/help/kdb-get.md)).
-- __src__<br/>
+- **src**<br/>
   Almost all functionality-code resides here.
-  - __bindings__<br/>
+  - **bindings**<br/>
     Here is all the code of available [Bindings](/src/bindings/README.md)
     of libelektra.
-  - __plugins__<br/>
+  - **plugins**<br/>
     You can find all developed [Plugins](/src/plugins/README.md) here. If
     you want to fix a bug for an existing plugin or add another one, this is
     the directory you have to work in. For further information on how to
     develop your own plugin, please visit [this](/doc/tutorials/plugins.md)
     tutorial.
-  - __tools__<br/>
+  - **tools**<br/>
     In this folder the source of all tools for interacting with Elektra's
     global key database, e.g. _kdb_, can be found.
-- __tests__<br/>
+- **tests**<br/>
   Here you can find all sorts of tests (excluding tests created with the
   _Markdown to Shell Recorder_-tool).
 
 ## Testing
 
-The most thorough way to test your changes is to run all tests. Therefore
-navigate to your run-configurations (Run -> Edit Configurations...) and look
-for the entry `run_all`. There, `run_all` should be selected as `Executable`,
-`all` as `Target`. Now you can execute this run configuration which will run
-all enabled tests. Alternatively you can also run all tests using the terminal
-by executing `make run_all` inside your build folder (e.g. /cmake-build-debug).
+The most thorough way to test your changes is to run all tests.
+Therefore, navigate to your run-configurations (_Run_ --> _Edit Configurations..._)
+and look for the entry _CTest Application_ --> _All CTest_.
+The configuration should look like this:
+
+![CTest configuration](/doc/images/clion/ctest_config.png)
+
+You can easily run the tests by clicking on the icon right to the selected
+configuration:
+
+[!CTest run](/doc/images/clion/ctest_run.png)
+
+Now you can execute this run configuration, which will run all enabled tests.
+Alternatively you can also run all tests using the terminal by executing `make run_all`
+inside your build folder (e.g. /cmake-build-debug).
 
 You can also run other specific tests by setting `Executable` to
-any of the `testmod_*` or `testkdb_*`targets. Additionally all tests using
+any of the `testmod_*` or `testkdb_*`targets. Additionally, all tests using
 _Google Test_ (e.g. tests/kdb/\*) can be run directly using CLion by opening
 their source code and clicking on the green icon next to the class name.
 
@@ -186,11 +212,18 @@ _Program arguments_. That's it, now you can just test this part of _kdb_.
 
 For further information please read [this](/doc/TESTING.md).
 
+Another option to easily run all tests is via Docker.
+A tutorial about how to do this and with further information
+is available at [this](/doc/tutorials/run_all_tests_with_docker.md).
+
+This is also recommended before creating a pull-request.
+You get feedback promptly and reduce load on the CI build servers.
+
 ## Commiting Your Changes
 
 Once you are satisfied with your changes, you have to commit them to your
-forked repository. We'll use the terminal for working with git. By
-convention, such commits shouldn't be too large, otherwise it will become
+forked repository.
+By convention, such commits shouldn't be too large, otherwise it will become
 difficult to revert some small changes if they are not working as intended.
 If you use the terminal for your Git operations, to be able to commit code
 to your repository, you have to configure your local Git installation to
@@ -198,14 +231,16 @@ use your GitHub credentials. You can find information about how to do this
 [here](https://help.github.com/en/articles/set-up-git). After you've set up
 your Git configuration, you can continue with uploading your changes.
 
-By default, you are in the "master" branch of your repository. First, you
-should never directly work on the master branch, since only working code is
+By default, you are in the _master_ branch of your repository. First, you
+should never directly work on the _master_ branch, since only working code is
 expected to be there. This means, we now create a branch in our repository
 where our code changes will be published into. On the bottom right of your
-CLion window you can find the button "Git: <branchname>". Click it and
-select "+ New Branch". Type in the name of your new branch (e.g.
-"testbranch") and keep "Checkout branch" checked to automatically switch to
+CLion window you can find the button _Git: <branchname>_. Click it and
+select _+ New Branch_. Type in the name of your new branch (e.g.
+"testbranch") and keep _Checkout branch_ checked to automatically switch to
 it as your working branch.
+
+![git branch](/doc/images/clion/git_create_branch.png)
 
 Alternatively open a terminal, navigate to the root directory of your local
 code and type:
@@ -215,17 +250,23 @@ git branch testbranch
 git checkout testbranch
 ```
 
-After you have changed some files it is time to publish them to your
-repository. To do that, open:
+After you have changed some files, it is time to publish them to your
+repository. To do that, select:
 
-_VCS_ --> _Commit..._
+_Git_ --> _Commit..._
 
 In the dialog you have opened you can now select the files you want to
-include in your commit. The first line should have the following syntax:
+include in your commit.
+When you double-click on a file, you can view the changes that are
+going to be committed.
+Make sure to write a meaningful commit message.
+The first line should have the following syntax:
 
 ```sh
 module: short statement
 ```
+
+![git commit](/doc/images/clion/git_commit.png)
 
 If you fixed a bug in `kdb cp` the first line of your commit message could
 be `KDB: Fixed cp not copying value`. Your commit message should also
@@ -233,16 +274,23 @@ include a reference to the issue you have fixed so that the issue can be
 closed automatically once your code change gets included to the official
 repository (e.g. `Closes #1234`). Before committing your changes please
 make sure that "Reformat code" and "Rearrange code" are disabled in the
-commit dialog. Otherwise Clions formatter might produce files that don't
-adhere to our formatting guidelines. If you installed the
-`pre-commit-check-formatting` pre-commit-hook from the `scripts` directory.
-Ensure that "Run Git hooks" is enabled in the commit dialog. Finally you
-can commit your changes by clicking the "Commit" button and navigate to:
+commit dialog. Otherwise, Clions formatter might produce files that don't
+adhere to our formatting guidelines.
 
-_VCS_ --> _Git_ --> _Push_
+![git settings](/doc/images/clion/git_settings.png)
 
-To do that in one step, you can also click on the arrow next to the
-"Commit" button and directly choose "Commit and Push...".
+If you installed the `pre-commit-check-formatting` pre-commit-hook from the
+`scripts` directory ensure that _Run Git hooks_ is enabled in the commit dialog.
+
+Alternatively, you can run the formatting and fix-spelling scripts inside Docker.
+Further information about this option can be found at [this](/doc/tutorials/run_reformatting_script_with_docker.md)
+
+Finally you can commit your changes by clicking the _Commit_ button and navigate to:
+
+_Git_ --> _Push_
+
+To do that in one step, you can also click on the button _Commit and Push..._
+next to the _Commit_ button.
 
 Using the terminal you first have to add all files you've changed and also
 want in your commit to the _stage_. Suppose we've changed how `kdb cp` works,
@@ -254,7 +302,7 @@ git add ./src/tools/kdb/cp.cpp
 ```
 
 Now we've staged our modified file for our commit. The final step is to
-actually commit it to your online repository. Therefore type:
+actually commit it to your online repository. Therefore, type:
 
 ```sh
 git commit -m "<commit message>"
@@ -280,10 +328,10 @@ head repository and "testbranch" as the compare-branch. Now the green button
 "Create pull requests" should be enabled. By clicking it you can define the
 title of your pull request and write a description of the work you have done.
 Please read the template in this form and include the information stated there
-if possible. Finally by clicking "Create pull request" you've successfully
+if possible. Finally, by clicking "Create pull request" you've successfully
 created a pull request to merge your changes into the official repository! Now
 maintainers of libelektra will review your code and, if everything is fine,
-merge your changes into the official repository. Otherwise they'll comment on
+merge your changes into the official repository. Otherwise, they'll comment on
 this pull request if further changes are needed. To include additional changes
 in this pull request, just commit new code changes to the same repository and
 branch you've referenced for this pull request, they will be added
@@ -299,7 +347,8 @@ link for further information.
 
 In case you fail to run Elektra with the message like this one
 `Reason: of module: libelektra-resolver.so, because: libelektra-resolver.so: cannot open shared object file: No such file or directory`
-you can solve it by defining the LD_LIBRARY_PATH variable directly in CLion. Click on the debug configurations dropdown in the upper right corner and choose 'Edit Configurations...'.
+you can solve it by defining the LD_LIBRARY_PATH variable directly in CLion.
+Click on the debug configurations dropdown in the upper right corner and choose 'Edit Configurations...'.
 Then find 'Environmental Variables' field and add the following:
 LD_LIBRARY_PATH=PATH_TO_YOUR_LIB_DIRECTORY
 
@@ -307,7 +356,8 @@ Example:
 
 LD_LIBRARY_PATH=/home/username/TU/libelektra/cmake-build-debug/lib
 
-If you want to run built `kdb` outside of CLion, the recommended way is to run this script from your build directory. The script resides in you original directory with project sources.
+If you want to run built `kdb` outside of CLion, the recommended way is to run this script from your build directory.
+The script resides in you original directory with project sources.
 
 Example:
 
