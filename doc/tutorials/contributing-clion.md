@@ -59,13 +59,13 @@ With the project now locally available we can start developing.
 ## Setting Up the Project
 
 To import all the project configurations, right-click on the file
-_CMakeList.txt_ in the root directory of the repository and select _
-Load CMake Project_, then click on _Trust Project_.
+_CMakeList.txt_ in the root directory of the repository and select
+_Load CMake Project_, then click on _Trust Project_.
+
+![Load CMake Project](/doc/images/clion/cmake_load.png)
 
 If the entry is not visible in the context menu, you can try to repair
 the IDE via _File_ --> _Repair IDE..._
-
-![Load CMake Project](/doc/images/clion/cmake_load.png)
 
 If you've cloned the project using a terminal, start CLion and once you see the
 main menu, click _Open_ and select the _CMakeLists.txt_ file inside the project's
@@ -192,7 +192,7 @@ The configuration should look like this:
 You can easily run the tests by clicking on the icon right to the selected
 configuration:
 
-[!CTest run](/doc/images/clion/ctest_run.png)
+![CTest run](/doc/images/clion/ctest_run.png)
 
 Now you can execute this run configuration, which will run all enabled tests.
 Alternatively you can also run all tests using the terminal by executing `make run_all`
@@ -214,12 +214,11 @@ For further information please read [this](/doc/TESTING.md).
 
 Another option to easily run all tests is via Docker.
 A tutorial about how to do this and with further information
-is available at [this](/doc/tutorials/run_all_tests_with_docker.md).
-
+is available [here](/doc/tutorials/run_all_tests_with_docker.md).
 This is also recommended before creating a pull-request.
 You get feedback promptly and reduce load on the CI build servers.
 
-## Commiting Your Changes
+## Committing Your Changes
 
 Once you are satisfied with your changes, you have to commit them to your
 forked repository.
@@ -273,7 +272,7 @@ be `KDB: Fixed cp not copying value`. Your commit message should also
 include a reference to the issue you have fixed so that the issue can be
 closed automatically once your code change gets included to the official
 repository (e.g. `Closes #1234`). Before committing your changes please
-make sure that "Reformat code" and "Rearrange code" are disabled in the
+make sure that _Reformat code_ and _Rearrange code_ are disabled in the
 commit dialog. Otherwise, Clions formatter might produce files that don't
 adhere to our formatting guidelines.
 
@@ -283,7 +282,7 @@ If you installed the `pre-commit-check-formatting` pre-commit-hook from the
 `scripts` directory ensure that _Run Git hooks_ is enabled in the commit dialog.
 
 Alternatively, you can run the formatting and fix-spelling scripts inside Docker.
-Further information about this option can be found at [this](/doc/tutorials/run_reformatting_script_with_docker.md)
+Further information about this option can be found [here](/doc/tutorials/run_reformatting_script_with_docker.md).
 
 Finally you can commit your changes by clicking the _Commit_ button and navigate to:
 
