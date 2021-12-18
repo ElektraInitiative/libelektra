@@ -24,7 +24,8 @@ binary values are a rarely used feature
 - make keys binary per default
 - all current types are not binary, so type = string is the way to indicate a string doesn't
   - contain null bytes
-  - is not null
+  - is not null (not only indicator of structure without value)
+- remove binary functionality from keyNew keyVNew keyIsBinary keyIsString keyValue keyGetValueSize keyString keyGetString keySetString keyGetBinary keySetBinary
 
 ## Rationale
 

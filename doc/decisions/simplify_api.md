@@ -48,6 +48,8 @@ Remove:
 - keyGetMeta;
 - keyGetName;
 - keyGetNameSize;
+- ksCopyInternal
+- ksHead
 
 Make private:
 
@@ -58,10 +60,14 @@ Make private:
 - elektraStrNCaseCmp;
 - elektraStrNCmp;
 - elektraVFormat;
+- ksDeepDup
+- ksGetAlloc
+- ksInit
 
 Unclear:
 
 - keyCmp
+- ksPop
 - keyNeedSync
 - keyIsBelow
 - keyIsBelowOrSame
@@ -79,7 +85,6 @@ Unclear:
 - keySetBinary
 - ksClear
 - ksCut
-- ksPop
 - ksHead
 - ksTail
 - ksLookupByName
