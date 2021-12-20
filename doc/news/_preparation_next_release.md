@@ -153,6 +153,7 @@ _(Michael Tucek)_
 - Updated `reformat-c` script to use clang-format version 13. _(Mihael Pranjić)_
 - <<TODO>>
 - Fix bug where the PATH environment variable would get overwritten in some of the Docker images. Reduce image size _(Ivaylo Ivanov)_
+- Allow JSON to be also written as json. _(@muskater)_
 
 ## Documentation
 

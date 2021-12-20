@@ -65,7 +65,7 @@ s:\<Key/value:Key-value:g
 
 s/[^#"]\<data-?type/data type/g
 
-s/([^\./`-])[Jj]son/\1JSON/
+s/([^\./`-])[J]son/\1JSON/
 
 s/\<([Mm])etaspecification/\1eta-specification/g
 s/\<([Mm])etamodel/\1eta-model/g
