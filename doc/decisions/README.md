@@ -59,17 +59,27 @@ section here.
 - [Capabilities](capabilities.md) (@markus2330)
 - [Remove elektraMalloc et al.](remove_elektra_malloc.md)
 
+## Left-overs
+
+- elektra*-prefix functions?
+
+## Work needed
+
+- Replace all internal iterators
+- Binary
+- keyName rename
+
 ## In Discussion
 
 - [simplify API](simplify_api.md)
 - [Binary](binary.md)
+- [Store the escaped and/or unescaped key name](store_name.md)
 - [keyString() return value](key_string_return_value.md)
 - [Global Plugins](global_plugins.md) (@mpranj)
 - [Error Semantics](error_semantics.md) (API)
 - [Error Handling](error_handling.md)
 - [Functions copying into buffer](functions_with_buffers.md)
 - [Escaped Name](escaped_name.md) merge with:
-- [Store the escaped and/or unescaped key name](store_name.md)
 - [Spec Expressiveness](spec_expressiveness.md)
 - [Metadata in Spec Namespace](spec_metadata.md)
 

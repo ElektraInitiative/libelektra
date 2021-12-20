@@ -13,7 +13,7 @@ binary
 
 ## Assumptions
 
-binary values are a rarely used feature
+byte-array values are a rarely used feature in configuration settings
 
 ## Considered Alternatives
 
@@ -21,15 +21,19 @@ binary values are a rarely used feature
 
 ## Decision
 
-- make keys binary per default
+- make keys with untyped value per default (no assumption about type, i.e., byte-array)
 - all current types are not binary, so type = string is the way to indicate a string doesn't
   - contain null bytes
   - is not null (not only indicator of structure without value)
 - remove binary functionality from keyNew keyVNew keyIsBinary keyIsString keyValue keyGetValueSize keyString keyGetString keySetString keyGetBinary keySetBinary
+- keySetRaw -> keySetValue
 
 ## Rationale
 
 ## Implications
+
+- metadata can also be binary
+- binary types would be possible (e.g. nullable-string)
 
 ## Related Decisions
 

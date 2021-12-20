@@ -33,23 +33,24 @@ Binary data is not a core feature, if needed the plugin system can also work wit
 
 Remove:
 
-- keyClear
-- keyGetRef
+- keyGetMeta (@kodebach)
+- keySetMeta (@kodebach)
 - keyRewindMeta
 - keyNextMeta
 - keyCurrentMeta
-- keyCompare
-- keyCompareMeta
 - keyCopyAllMeta
 - keyCopyMeta
-- keyGetBaseName;
-- keyGetBaseNameSize;
-- keyGetBinary;
-- keyGetMeta;
-- keyGetName;
-- keyGetNameSize;
-- ksCopyInternal
+- keyGetBaseName
+- keyGetBaseNameSize
+- keyGetBinary (*buffers.md)
+- keyGetName
+- keyGetNameSize
 - ksHead
+- ksTail
+- ksCopyInternal
+- keyClear (clarification with keyCopy needed)
+- keyCompare (done)
+- keyCompareMeta (done)
 
 Make private:
 
@@ -63,6 +64,7 @@ Make private:
 - ksDeepDup
 - ksGetAlloc
 - ksInit
+- keyGetRef
 
 Unclear:
 
@@ -72,22 +74,16 @@ Unclear:
 - keyIsBelow
 - keyIsBelowOrSame
 - keyIsDirectlyBelow
-- keyIsBinary
-- keyIsString
-- keyName
-- keyGetBaseNameSize
+- keyIsBinary (binary issue)
+- keyIsString (binary issue)
+- keyName (
 - keyGetBaseName
-- keyValue
-- keyString
 - keyGetString
 - keySetString
 - keyGetBinary
 - keySetBinary
 - ksClear
 - ksCut
-- ksHead
-- ksTail
-- ksLookupByName
 
 ## Rationale
 
