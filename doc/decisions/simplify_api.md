@@ -42,7 +42,7 @@ Remove:
 - keyCopyMeta
 - keyGetBaseName
 - keyGetBaseNameSize
-- keyGetBinary (*buffers.md)
+- keyGetBinary (\*buffers.md)
 - keyGetName
 - keyGetNameSize
 - ksHead

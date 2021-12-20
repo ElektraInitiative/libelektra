@@ -61,7 +61,7 @@ section here.
 
 ## Left-overs
 
-- elektra*-prefix functions?
+- elektra\*-prefix functions?
 
 ## Work needed
 
