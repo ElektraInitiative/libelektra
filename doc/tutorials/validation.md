@@ -182,6 +182,7 @@ _schema_ of our configuration and therefore should be stored in the spec namespa
 # Undo modifications
 kdb rm -r spec:/tests/spec
 kdb rm -r user:/tests/spec || kdb rm -r system:/tests/spec
+kdb umount /tests/spec
 ```
 
 ### Specfiles
