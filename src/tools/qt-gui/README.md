@@ -23,8 +23,19 @@ Optional dependencies are (are automatically deactivated if dependencies are not
 - `Qt5Svg` for SVG icon themes (`sudo apt-get install libqt5svg5-dev`)
 - `Qt5DBus` so that `qt-gui` will be notified on changes.
 
-I was able to install the correct dependencies on my system, running Kubuntu 14.10 using the command:
-`sudo apt-get install qt5-default qml-module-qtquick-controls qml-module-qtquick-dialogs qml-module-qtquick-layouts qml-module-qtgraphicaleffects libdrm-dev libmarkdown2-dev libqt5svg5-dev`
+On Ubuntu you can install the dependencies with
+
+```
+sudo apt-get install \
+    qt5-default \
+    qml-module-qtquick-controls \
+    qml-module-qtquick-dialogs \
+    qml-module-qtquick-layouts \
+    qml-module-qtgraphicaleffects \
+    libdrm-dev \
+    libmarkdown2-dev \
+    libqt5svg5-dev
+```
 
 ### Change Notification
 
@@ -65,3 +76,30 @@ The following command will launch the Qt-GUI:
 ```sh
 kdb qt-gui
 ```
+
+After that a window will open that looks something like that:
+
+![empty GUI](src/tools/qt-gui/images/Qt-GUI-1.png)
+
+You can mount a backend by going to _Database_ --> _Mount Backend..._
+
+![mount backend](src/tools/qt-gui/images/Qt-GUI-2.png)
+
+This will open the mounting wizard where you can add a path:
+
+![mounting wizard](src/tools/qt-gui/images/Qt-GUI-3.png)
+
+Next you can browse through the available backends and read their documentation.
+
+![mounting documentation](src/tools/qt-gui/images/Qt-GUI-4.png)
+
+After you are done reading the documentation you can close the window again.
+
+If you want to add a new key to the database you can choose a namespace in the left panel then click on Edit --> New --> Key. This will open a new window that looks like this:
+
+![key wizard](src/tools/qt-gui/images/Qt-GUI-5.png)
+
+After entering the key information, you can view it in the list view. Just click on the namespace you chose and select the key.
+
+![key view](src/tools/qt-gui/images/Qt-GUI-6.png)
+

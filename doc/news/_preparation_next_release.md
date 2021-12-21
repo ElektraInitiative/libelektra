@@ -202,6 +202,7 @@ _(Michael Tucek)_
 - Linked to the installation instruction of the webui in its README file. _(@muskater)_ _(@lawli3t)_ _(Aydan Ghazani @4ydan)_
 - Linked to the installation instruction of the webui in its README file and added references to Docker in the get-startde-guide. _(@muskater)_ _(@lawli3t)_ _(Aydan Ghazani @4ydan)_
 - Linked to the installation instruction of the webui in its README file and added references to Docker in the get-started-guide. _(@muskater)_ _(@lawli3t)_ _(Aydan Ghazani @4ydan)_
+- Added screenshots and a quick walk through in the Qt-GUI README. _(@muskater)_ _(@lawli3t)_ _(Aydan Ghazani @4ydan)_
 
 ## Tests
 
