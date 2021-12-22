@@ -20,7 +20,7 @@ This command writes into the `/etc` directory and as such it requires root permi
 kdb set user:/tests/x foo
 #>
 #> Create a new key user:/tests/x with string "foo"
- 
+
 sudo kdb mount a.ini /a
 sudo kdb mount
 #> a.ini on /a with name /a
@@ -29,20 +29,20 @@ sudo kdb mount
 #> none on system:/info/elektra/desktop with name system:/info/elektra/desktop
 #> /usr/local/share/doc/elektra/METADATA.ini on system:/info/elektra/metadata/#0 with name system:/info/elektra/metadata/#0
 #> none on system:/info/elektra/uname with name system:/info/elektra/uname
- 
+
 sudo kdb backup
 #> kdb restore 1500000000
- 
+
 kdb get user:/tests/x
 #> Did not find key
- 
+
 kdb mount
- 
+
 kdb restore 1500000000
- 
+
 kdb get user:/tests/x
 #> foo
- 
+
 kdb mount
 #> a.ini on /a with name /a
 #> none on system:/info/elektra/constants with name system:/info/elektra/constants
