@@ -47,6 +47,7 @@ static bool readConfig (KeySet * conf, char ** directFilePtr, char ** appPtr, ch
 static bool loadSpec (KeySet * returned, const char * directFile, const char * app, char * argv[], Key * parentKey,
 		      ElektraInvokeHandle * quickDump);
 static int isChangeAllowed (Key * oldKey, Key * newKey);
+int keyCompareMeta (const Key * k1, const Key * k2);
 static KeySet * calculateMetaDiff (Key * oldKey, Key * newKey);
 
 static inline void freeArgv (char ** argv)
@@ -560,27 +561,34 @@ int isChangeAllowed (Key * oldKey, Key * newKey)
 {
 	if (oldKey == newKey)
 	{
-		// same key (pointer)
+		/* same key (pointer) */
 		return 0;
 	}
 
-	elektraKeyFlags changes = keyCompare (oldKey, newKey);
-	if (changes == 0)
+	if (oldKey && newKey)
 	{
-		// equal keys
-		return 0;
-	}
+		/* no null key is present */
 
-	if (changes != KEY_NULL && changes != KEY_META)
-	{
-		// only metadata changes allowed
-		return -1;
-	}
+		if (strcmp (keyName (oldKey), keyName (newKey)) != 0)
+		{
+			/* different names */
+			return -2;
+		}
 
-	if ((changes & KEY_NAME) != 0)
-	{
-		// different key names
-		return -2;
+		ssize_t oldKeyValueSize = keyGetValueSize (oldKey);
+		ssize_t newKeyValueSize = keyGetValueSize (newKey);
+
+		if (oldKeyValueSize != newKeyValueSize || memcmp (keyValue (oldKey), keyValue (newKey), oldKeyValueSize) != 0)
+		{
+			/* different values */
+			return -1;
+		}
+
+		if (keyCompareMeta (oldKey, newKey) == 0)
+		{
+			/* equal names, values and metadata --> consider keys as equal */
+			return 0;
+		}
 	}
 
 	if (oldKey == NULL)
@@ -660,6 +668,42 @@ int isChangeAllowed (Key * oldKey, Key * newKey)
 	ksDel (metaDiff);
 
 	return size == 0 ? 1 : -1;
+}
+
+/**
+ * @brief Compares metadata of two keys
+ *
+ * @retval -1 if there is a difference
+ * @retval 0 if metadata is identical
+ */
+int keyCompareMeta (const Key * k1, const Key * k2)
+{
+	const Key * meta1;
+
+	Key * key1 = (Key *) k1;
+	Key * key2 = (Key *) k2;
+
+	keyRewindMeta (key1);
+	keyRewindMeta (key2);
+	while ((meta1 = keyNextMeta (key1)) != 0)
+	{
+		const Key * meta2 = keyNextMeta (key2);
+		if (!meta2)
+		{
+			return -1;
+		}
+
+		if (strcmp (keyName (meta1), keyName (meta2))) return -1;
+		if (strcmp (keyString (meta1), keyString (meta2))) return -1;
+	}
+
+	if (keyNextMeta (key2))
+	{
+		return -1;
+	}
+
+	// TODO: rewind metadata to previous position
+	return 0;
 }
 
 /**

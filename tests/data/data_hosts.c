@@ -17,7 +17,7 @@ ksNew( 28 ,
 	, KEY_END),
 	keyNew ("user:/tests/hosts/ip6-allhosts"
 		, KEY_VALUE, "ff02::3"
-		, KEY_COMMENT, "All hosts for ipv6"
+		, KEY_META, "comment/#0", "All hosts for ipv6"
 	, KEY_END),
 	keyNew ("user:/tests/hosts/ip6-allnodes"
 		, KEY_VALUE, "ff02::1"
@@ -45,7 +45,7 @@ ksNew( 28 ,
 	, KEY_END),
 	keyNew ("user:/tests/hosts/markusbyte"
 		, KEY_VALUE, "192.168.0.3"
-		, KEY_COMMENT, "This is my home"
+		, KEY_META, "comment/#0", "This is my home"
 	, KEY_END),
 	keyNew ("user:/tests/hosts/mobilebyte.sil.at"
 		, KEY_VALUE, "192.168.0.4"

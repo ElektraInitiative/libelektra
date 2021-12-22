@@ -57,7 +57,7 @@ its core. In Elektra a [contract](/doc/CONTRACT.ini) specifies the
 obligations between plugins.
 
 Sometimes, it is even useful to have multiple file systems at
-the same mount point, so called `stacked` file systems. They allow
+the same mount point, so-called `stacked` file systems. They allow
 you to combine features of different file systems. For example,
 [eCryptfs](https://wiki.archlinux.org/index.php/ECryptfs) allows you
 to encrypt directories or files. In Elektra, stacking plugins is a core

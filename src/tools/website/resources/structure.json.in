@@ -106,7 +106,7 @@
 					"path": "doc/COMPILE.md"
 				  }
 				 }],
-              
+
                 "dev-comment": ""
             },
 			{
@@ -119,7 +119,7 @@
 					"options": {
 					"path": "doc/INSTALL.md"
 				  }
-                
+
                 }],
                 "dev-comment": ""
             },
@@ -195,7 +195,20 @@
                     "blacklist": ["CMakeLists.txt"]
                 },
                 "dev-comment": "We don't want the CMakeLists.txt to be in the output."
-            }
+            },
+            {
+				"name": "Citations",
+				"type": "staticlist",
+				"ref": "citations",
+				"dev-comment": "",
+				"children": [{
+					"name": "citations",
+					"type": "staticfile",
+					"options": {
+					    "path": "doc/paper/README.md"
+				    }
+				}]
+			}
         ]
     },
     {
@@ -246,6 +259,20 @@
                         }
                     },
                     {
+                        "name": "GIT",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/GIT.md"
+                        }
+                    },
+                    {
+                        "name": "Release Procedure",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/todo/RELEASE.md"
+                        }
+                    },
+                    {
                         "name": "Security",
                         "type": "staticfile",
                         "options": {
@@ -264,6 +291,13 @@
                         "type": "staticfile",
                         "options": {
                             "path": "doc/TESTING.md"
+                        }
+                    },
+                    {
+                        "name": "Testing of Tutorials",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "tests/shell/shell_recorder/tutorial_wrapper/README.md"
                         }
                     },
                     {
@@ -369,10 +403,18 @@
             },
             {
                 "name": "Build Server Docu",
-                "type": "staticref",
-                "options": {
-                    "path": "doc/BUILDSERVER.md"
-                }
+                "type": "staticlist",
+                "ref": "buildserverdoc",
+                "dev-comment": "We need to use an own section to be able to display the buildserver file.",
+                "children": [
+                    {
+                        "name": "Build Server Docu",
+                        "type": "staticfile",
+                        "options": {
+                            "path": "doc/BUILDSERVER.md"
+                        }
+                    }
+                ]
             },
             {
                 "name": "Authors",

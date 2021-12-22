@@ -99,6 +99,24 @@ static void test_keyNewSpecial (void)
 	keyDel (k);
 }
 
+static void test_keyNewWrongName (void)
+{
+	printf ("Test key creation with wrong names\n");
+	Key * k = keyNew ("systemx:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+	k = keyNew ("usx:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+	k = keyNew ("usxx:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+	k = keyNew ("abc:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+	k = keyNew ("use:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+	k = keyNew ("spexc:/hello", KEY_END);
+	succeed_if (k == NULL, "key with wrong name could be created");
+}
+
+
 static void test_keyNewSystem (void)
 {
 	Key * key;
@@ -1403,7 +1421,7 @@ static void test_keyDup (void)
 	printf ("Test key duplication\n");
 
 	// Create test key
-	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_END);
+	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_META, "comment/#0", "mycomment", KEY_END);
 
 
 	// Dup the key
@@ -1451,7 +1469,7 @@ static void test_keyCopy (void)
 	printf ("Test key copy\n");
 
 	// Create test key
-	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_COMMENT, "mycomment", KEY_END);
+	orig = keyNew ("user:/foo/bar", KEY_BINARY, KEY_SIZE, 6, KEY_VALUE, "foobar", KEY_META, "comment/#0", "mycomment", KEY_END);
 
 
 	// Copy the key
@@ -2643,6 +2661,7 @@ int main (int argc, char ** argv)
 	test_keyDirectBelow ();
 
 	test_keyNewSpecial ();
+	test_keyNewWrongName ();
 	test_keyNewSystem ();
 	test_keyNewUser ();
 	test_keyReference ();

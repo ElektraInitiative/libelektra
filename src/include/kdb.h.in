@@ -46,10 +46,8 @@ extern "C" {
 #endif
 
 enum {
-	KEY_NAME=1,
 	KEY_VALUE=1<<1,
 	KEY_FLAGS=3,
-	KEY_COMMENT=1<<3,
 	KEY_BINARY=1<<4,
 	KEY_SIZE=1<<11,
 	KEY_FUNC=1<<12,

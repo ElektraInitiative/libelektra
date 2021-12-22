@@ -38,7 +38,7 @@ ksNew (30,
 		keyNew ("system:/elektra/modules/augeas/config/needs", KEY_END),
 		keyNew ("system:/elektra/modules/augeas/config/needs/glob/get/#1",
 			KEY_VALUE, "*#comment*",
-			KEY_META, "convert/metaname", "comment", /* comment keys are converted to comments */
+			KEY_META, "convert/metaname", "comment/#0", /* comment keys are converted to comments */
 			KEY_META, "convert/append", "next", /* usually comments belong to the following key */
 			KEY_META, "convert/append/samelevel", "1", /* if the configuration has nested structures, comments should stay in the same hierarchy */
 			KEY_END),

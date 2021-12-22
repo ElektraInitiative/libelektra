@@ -85,7 +85,7 @@ In Elektra, multiple plugins form a backend. If every plugin would do
 whatever it likes to do, there would be chaos and backends would be
 unpredictable.
 
-To avoid this situation, plugins export a so called _contract_. In this
+To avoid this situation, plugins export a so-called _contract_. In this
 contract the plugin states how nicely it will behave and what other
 plugins can depend on.
 

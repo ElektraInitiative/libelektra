@@ -493,6 +493,12 @@ def generateBasicCheckStages() {
   // Check if release notes have been updated
   tasks << buildCheckReleaseNotes()
 
+  // Check if all file names comply with the file name convention
+  tasks << buildCheckFileNames()
+
+  // Check for reuse compliancy
+  tasks << buildCheckReuseCompliant()
+
   // Check formatting of c and CMake files
   tasks << buildFormatChecks()
 
@@ -832,6 +838,32 @@ def buildCheckReleaseNotes() {
     maybeStage(stageName, !isMaster()) {
       withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
         sh "scripts/build/run_check_release_notes"
+        deleteDir()
+      }
+    }
+  }]
+}
+
+/* Stage checking if release notes have been updated */
+def buildCheckFileNames() {
+  def stageName = "check-file-names"
+  return [(stageName): {
+    maybeStage(stageName, !isMaster()) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
+        sh "scripts/dev/filename-checker"
+        deleteDir()
+      }
+    }
+  }]
+}
+
+/* Stage checking if for reuse compliancy */
+def buildCheckReuseCompliant() {
+  def stageName = "check-reuse-compliant"
+  return [(stageName): {
+    maybeStage(stageName, !isMaster()) {
+      withDockerEnv(DOCKER_IMAGES.bullseye, [DockerOpts.MOUNT_MIRROR]) {
+        sh "reuse lint"
         deleteDir()
       }
     }

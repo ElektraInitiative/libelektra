@@ -26,7 +26,7 @@ The package is called `libelektra5-experimental`.
 
 - `info`
 
-  adds additional informations about the file as metadata to the parent key.
+  adds additional information about the file as metadata to the parent key.
 
   - `info/size` filesize
   - `info/ctime` time of last status change

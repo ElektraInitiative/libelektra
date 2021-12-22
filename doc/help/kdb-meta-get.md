@@ -24,7 +24,7 @@ This command will return the following values as an exit status:<br>
 - 1:
   Key not found. (Invalid `path`)
 - 2:
-  Meta key not found. (Invalid `metaname`).
+  Metakey not found. (Invalid `metaname`).
 
 ## OPTIONS
 

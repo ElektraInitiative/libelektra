@@ -156,9 +156,9 @@ class KdbKeyTestCases < Test::Unit::TestCase
 
       assert k.is_valid?
 
-      k.set_meta "comment", "hello"
-      assert_equal "hello", k.get_meta("comment")
-      assert_equal "hello", k["comment"]
+      k.set_meta "comment/#0", "hello"
+      assert_equal "hello", k.get_meta("comment/#0")
+      assert_equal "hello", k["comment/#0"]
 
       k["owner"] = "me"
       assert_equal "me", k.get_meta("owner")

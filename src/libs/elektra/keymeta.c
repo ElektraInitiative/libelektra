@@ -316,7 +316,8 @@ int keyCopyMeta (Key * dest, const Key * source, const char * metaName)
 		if (dest->meta)
 		{
 			Key * r;
-			r = ksLookup (dest->meta, ret, KDB_O_POP);
+			Key * target = (Key *) keyGetMeta (dest, metaName);
+			r = ksLookup (dest->meta, target, KDB_O_POP);
 			if (r)
 			{
 				/*It was already there, so lets drop that one*/

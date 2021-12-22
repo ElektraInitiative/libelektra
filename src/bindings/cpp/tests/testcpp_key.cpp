@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+
 TEST (key, null)
 {
 	Key key0 (static_cast<ckdb::Key *> (nullptr));
@@ -209,8 +210,8 @@ TEST (key, keynew)
 	succeed_if (memcmp (&getBack[0], array, sizeof (array)) == 0, "could not get correct value with keyGetBinary");
 	succeed_if (key8.getBaseName () == "there", "wrong base name");
 
-	Key key9 ("system:/valid/.inactive", KEY_COMMENT, "inactive key", KEY_END);
-	succeed_if (key9.getMeta<std::string> ("comment") == "inactive key", "comment failed");
+	Key key9 ("system:/valid/.inactive", KEY_META, "comment/#0", "inactive key", KEY_END);
+	succeed_if (key9.getMeta<std::string> ("comment/#0") == "inactive key", "comment failed");
 	succeed_if (key9.getBaseName () == ".inactive", "wrong base name");
 
 	std::string name = "system:/valid/name";
@@ -323,8 +324,8 @@ TEST (key, value)
 	succeed_if (test.getString () == "myoth", "could not get same string");
 	succeed_if (test.getBinarySize () == 6, "value size not correct");
 
-	test.setMeta<std::string> ("comment", "mycomment");
-	succeed_if (test.getMeta<std::string> ("comment") == "mycomment", "could not get same comment");
+	test.setMeta<std::string> ("comment/#0", "mycomment");
+	succeed_if (test.getMeta<std::string> ("comment/#0") == "mycomment", "could not get same comment");
 }
 
 TEST (key, exceptions)
@@ -337,7 +338,7 @@ TEST (key, exceptions)
 	}
 	catch (kdb::KeyInvalidName const &)
 	{
-		succeed_if (test.getName () == "/", "name not unchanged");
+		succeed_if (test.getName () == "/", "name not unchanged after trying to set invalid name to key");
 	}
 
 	test.setName ("user:/name");
@@ -349,8 +350,23 @@ TEST (key, exceptions)
 	}
 	catch (kdb::KeyInvalidName const &)
 	{
-		succeed_if (test.getName () == "user:/name", "name not unchanged");
+		succeed_if (test.getName () == "user:/name", "name not unchanged after trying to set invalid name to key");
 	}
+
+	try
+	{
+		test.addName ("no");
+	}
+	catch (kdb::KeyInvalidName const &)
+	{
+		succeed_if (test.getName () == "user:/name", "name not unchanged after trying to add invalid name to key");
+	}
+
+	Key test1;
+	EXPECT_THROW (test1.setBaseName ("no"), KeyInvalidName); // null keys should throw this when setBaseName is called
+
+	Key test2;
+	EXPECT_THROW (test2.delBaseName (), KeyInvalidName); // null keys should throw this when delBaseName is called
 }
 
 TEST (key, name)
@@ -689,4 +705,83 @@ TEST (key, move)
 	std::unique_ptr<C> c1 (new C);
 	std::unique_ptr<C> c2 (std::move (c1));
 	std::unique_ptr<C> c3 = std::move (c1);
+}
+
+/* check the wrappers for underlying c-functions with a nullptr as key
+ * exceptions are thrown if the underlying c-functions return error codes (-1 or NULL) */
+TEST (key, cErrorsNull)
+{
+	Key x = nullptr;
+	EXPECT_THROW (x.addName ("test"), KeyInvalidName);
+	EXPECT_THROW (x.setName ("test"), KeyInvalidName);
+	EXPECT_THROW (x.addBaseName ("test"), KeyInvalidName);
+	EXPECT_THROW (x.setBaseName ("test"), KeyInvalidName);
+	EXPECT_THROW (x.delBaseName (), KeyInvalidName);
+	EXPECT_THROW (x.setMeta ("metaKey", "metaValue"), KeyException);
+	EXPECT_THROW (x.delMeta ("metaKey"), KeyException);
+	EXPECT_THROW (x.rewindMeta (), KeyException);
+
+	EXPECT_THROW (x.set (""), KeyException);
+	EXPECT_THROW (x.copy (nullptr), KeyException);
+	EXPECT_THROW (x.setCallback (nullptr), KeyException);
+	EXPECT_THROW (x.setString (nullptr), KeyException);
+	EXPECT_THROW (x.getString (), KeyException);
+	EXPECT_THROW (x.getReferenceCounter (), KeyException);
+
+	EXPECT_THROW (x--, KeyException);
+
+	/* TODO: Currently not implemented, because otherwise a Key-object
+	 * would not be settable to a nullptr which breaks some existing tests */
+	/* EXPECT_THROW (x++, KeyException); */
+
+	EXPECT_THROW (x.clear (), KeyException);
+}
+
+/* check the wrappers for underlying c-functions with a normal key
+ * exceptions are thrown if the underlying c-functions return error codes (-1 or NULL) */
+TEST (key, cErrorsParameters)
+{
+	Key k ("user:/key", KEY_VALUE, "testkey", KEY_END);
+	KeySet ks;
+
+	/* invalid name */
+	EXPECT_THROW (k.addName ("\\"), KeyInvalidName);
+	EXPECT_THROW (k.setName ("\\"), KeyInvalidName);
+
+	EXPECT_NO_THROW (k.addBaseName ("\\"));
+	EXPECT_NO_THROW (k.setBaseName ("\\"));
+	EXPECT_NO_THROW (k.delBaseName ());
+	EXPECT_NO_THROW (k.setMeta ("metaKey", "metaValue"));
+	EXPECT_TRUE (k.hasMeta ("metaKey"));
+	EXPECT_NO_THROW (k.delMeta ("metaKey"));
+	EXPECT_FALSE (k.hasMeta ("metaKey"));
+	EXPECT_NO_THROW (k.rewindMeta ());
+
+	EXPECT_EQ (k.getString (), "testkey");
+	EXPECT_NO_THROW (k.set ("\\"));
+	EXPECT_NO_THROW (k.copy (k));
+
+	Key k1;
+	EXPECT_NE (k, k1);
+	EXPECT_NO_THROW (k.copy (k1));
+	EXPECT_EQ (k, k1);
+
+	EXPECT_NO_THROW (k.setCallback (nullptr));
+	EXPECT_NO_THROW (k.setString ("\\"));
+	EXPECT_EQ (k.getString (), "\\");
+	EXPECT_EQ (k.getReferenceCounter (), 1);
+	EXPECT_NO_THROW (k--);
+	EXPECT_EQ (k.getReferenceCounter (), 0);
+	EXPECT_NO_THROW (k.clear ());
+}
+
+/* tests for binary keys and functions operating on them or returning them */
+TEST (key, binary)
+{
+	Key x = nullptr;
+	Key b ("user:/keyBinary", KEY_VALUE, "", KEY_END);
+	b.setBinary (nullptr, 0);
+
+	EXPECT_THROW (x.getBinary (), KeyException);
+	EXPECT_EQ (b.getString (), "");
 }

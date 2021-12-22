@@ -59,15 +59,25 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 - <<TODO>>
 - <<TODO>>
 
-### <<Plugin3>>
+### csvstorage
 
-- <<TODO>>
-- <<TODO>>
-- <<TODO>>
+- Add `array` meta key to the parentKey of imported Keys _(@muskater)_ _(@4ydan)_ _(@lawli3t)_
+
+### specload
+
+- Change and move `keyCompareMeta (const Key * k1, const Key * k2)` from `src/libs/elektra/keytest.c`
+  to `src/plugins/specload/specload.c` and integrate functionality of keyCompare (const Key _ key1, const Key _ key2)
+  into `isChangeAllowed (Key * oldKey, Key * newKey)`, because that is the only place where it was used. _(@flo91)_
 
 ### uname
 
 - Minor improvement of source code readability in uname.c _(@lawli3t)_
+
+### <<Plugin6>>
+
+- <<TODO>>
+- <<TODO>>
+- <<TODO>>
 
 ## Libraries
 
@@ -75,7 +85,7 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 
 ### Compatibility
 
-- <<TODO>>
+- Remove the deprecated flags `KEY_NAME` and `KEY_COMMENT` (closes issue #3152) _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 
@@ -91,6 +101,11 @@ The text below summarizes updates to the [C (and C++)-based libraries](https://w
 - Both the reference count for `Key` and for `KeySet` now use `uint16_t` to reduce memory usage. `Key` previously used `size_t`. _(Klemens Böswirth)_
 - Reorder `Key` and `KeySet` struct members to aviod padding and make space for a new `uint16_t` member, reserved for future use. _(Mihael Pranjić)_
 - Improve `keyReplacePrefix` by using new `keyCopy` function instead of manually copying the name of the `Key` _(@lawli3t)_
+- Added else error to core for elektraGetCheckUpdateNeeded _(Aydan Ghazani @4ydan)_
+- Include NULL terminators in hashing to avoid collisions _(@lawli3t)_
+
+- Fix check for valid namespace in keyname creation _(@JakobWonisch)_
+- Fix `keyCopyMeta` not deleting non existant keys in destination (see #3981) _(@JakobWonisch)_
 
 ### <<Library1>>
 
@@ -141,7 +156,7 @@ _(Michael Tucek)_
 
 ## Documentation
 
-- <<TODO>>
+- Integrate missing pages to website _(Ivaylo Ivanov)_
 - Improved compilation documentation _(Ivaylo Ivanov)_
 - Start making Elektra [reuse](https://reuse.software) compliant. _(Markus Raab)_
 - Fix Links in [README.md](/README.md) and small clarifications. _(Markus Raab)_
@@ -158,22 +173,37 @@ _(Michael Tucek)_
 - Add debugging tutorial. _(Tobias Schubert @qwepoizt)_
 - Improve wording and formatting of DESIGN.md _(@lawli3t)_
 - Correct various typing-, spelling- and grammar-errors in the .md-files in the directory doc and its subdirectories. _(Florian Lindner @flo91)_
+- Added documentation for decision meeting from 15.07.2021 _(@lawli3t)_
 - <<TODO>>
+- explained in the docker test tutorial how to run the container with podman instead of docker. _(@muskater)_
+- Add a new example on how to use keyCopy. _(@muskater)_
 - <<TODO>>
+- Added verification to the "Arrays" tutorial _(Ivaylo Ivanov)_
+- Remove deprecated `type=int` from `.ini` files _(Ivaylo Ivanov)_
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 - Added debian buster tutorial to python bindings tutorial _(@4ydan)_
 - made the debian tutorial a bit more precise and removed sudo command _(@4ydan)_
+- Fixed some typos in the "namespaces.md" documentation _(@muskater)_
+- Fix an error and some overmatching problems in scripts/sed and fix errors in documentation
+  (by running the scripts/dev/fix-spelling script) _(Florian Lindner @flo91)_
+- Added some improvements to the core api documentation _(@muskater)_
 
 ## Tests
 
 - disable Rust from buster _(Markus Raab)_
 - <<TODO>>
 - Cleanup tests/linkchecker.whitelist and fix off-by-1 bug of the counter in the scripts/link-checker script (increase counter before printf) _(Florian Lindner @flo91)_
-- add tests the env binding _(Ivaylo Ivanov)_
+- add tests for the intercept/env binding _(Ivaylo Ivanov)_
 - add and improve checks in scripts/sed _(Florian Lindner @flo91)_
+- change the cpp Key-class (key.hpp) to check the return values of the called c-functions
+  and throw exceptions if values that indicate an error are returned + add tests that
+  check for this exceptions _(Florian Lindner @flo91)_
 - <<TODO>>
 - <<TODO>>
 - Added more test cases for the keyCopy function _(@muskater)_
+- add exception tests for key C++ bindings _(Ivaylo Ivanov)_
+- Added a shell script and a task that checks whether the filenames of newly added files are compliant with the convention. It is executed by the cirrus CI as well as the Jenkins CI _(@muskater)_
+- Add a new shellrecoder test to doc/tutorials/merge.md _(Florian Lindner @flo91)_
 
 ## Packaging
 
@@ -223,6 +253,10 @@ plugins, bindings and tools are always up to date. Furthermore, we changed:
 - <<TODO>>
 - Remove links to Travis CI and replace them with Github Actions (with badge). _(Mihael Pranjić)_
 - <<TODO>>
+
+## Other
+
+- Make Elektra [reuse](https://reuse.software) reuse compliant _(Ivaylo Ivanov)_
 
 ## Outlook
 
