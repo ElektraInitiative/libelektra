@@ -128,7 +128,7 @@ _(Michael Tucek)_
 
 ### Python Binding
 
-- 3 new examples for using keysets in python. _(@4ydan)_
+- Added examples for append, extend and remove keysets in python. _(@4ydan)_
 
 ## Tools
 
