@@ -162,7 +162,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - Fix some typos in the "Getting Started" page _(Ivaylo Ivanov)_
 - Added debian buster tutorial to python bindings tutorial _(@4ydan)_
-- made the debian tutorial a bit more precise and removed sudo command_(@4ydan)_
+- made the debian tutorial a bit more precise and removed sudo command _(@4ydan)_
 
 ## Tests
 
