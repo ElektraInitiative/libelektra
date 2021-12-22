@@ -102,4 +102,3 @@ If you want to add a new key to the database you can choose a namespace in the l
 After entering the key information, you can view it in the list view. Just click on the namespace you chose and select the key.
 
 ![key view](src/tools/qt-gui/images/Qt-GUI-6.png)
-
