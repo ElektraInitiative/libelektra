@@ -101,8 +101,8 @@
 - [Sync Flag](elektra-sync-flag.md):
   Marks keys that were changed and need to be written out to disc.
 
-- [Null Keys, Null Values](elektra-values.md):
-  The absence of keys or values.
+- Null Value:
+  The absence of a value, i.e. `keyValue (key) == NULL`.
 
 - **pop**:
   used in `ksPop()` and @ref KDB_O_POP means to remove
