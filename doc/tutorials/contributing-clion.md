@@ -93,7 +93,7 @@ add the following CMake options to our "Debug" profile:
 -DKDB_DB_SYSTEM="~/.config/kdb/[xyz]/system"
 -DKDB_DB_SPEC="~/.config/kdb/[xyz]/spec"
 -DKDB_DB_USER="~/.config/kdb/[xyz]/user"
--DCMAKE_INSTALL_PREFIX=install
+-DCMAKE_INSTALL_PREFIX="install"
 ```
 
 where "[xyz]" can be replaced by any unique identifier so that different profiles
@@ -128,10 +128,10 @@ The final configuration should look like this:
 To increase the build speed you can also change the _Build options_ to e.g.
 
 ```sh
--j 33
+-j 12
 ```
 
-which, in this case, starts 33 build jobs in parallel. For optimal performance this
+which, in this case, starts 12 build jobs in parallel. For optimal performance this
 value should represent the number of available cores of your CPU + few extra jobs.
 
 Take care to enter the parameter in the correct format, prefixed with "--" as shown here:
