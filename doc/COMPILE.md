@@ -622,6 +622,9 @@ $ flatpak-builder .flatpak-app scripts/flatpak/org.libelektra.kdb.yaml  --force-
 
 # try running the kdb binary
 $ flatpak run org.libelektra.kdb
+
+# add an alias to your shell
+$ echo 'alias kdb="flatpak run org.libelektra.kdb"' >> ~/.bashrc && source ~/.bashrc
 ```
 
 ## Maintainer's Guide
