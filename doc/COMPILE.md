@@ -615,7 +615,7 @@ It is also possible to build a Flatpak package containing Elektra:
 $ apt install flatpak flatpak-builder
 
 # download the runtime and sdk
-$ flatpak install flathub org.freedesktop.Platform//21.08 org.freedesktop.Sdk//21.08
+$ flatpak install flathub org.kde.Platform//5.15 org.kde.Sdk//5.15
 
 # build and install the package for the current user
 $ flatpak-builder .flatpak-app scripts/flatpak/org.libelektra.kdb.yaml  --force-clean --user --install
