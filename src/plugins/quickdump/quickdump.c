@@ -174,9 +174,10 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 	nameBuffer.string[parentSize] = '\0';	 // set new null terminator
 	nameBuffer.offset = parentSize;		 // set offset to null terminator
 
-	char c;
-	while ((c = fgetc (file)) != EOF)
+	int fc;
+	while ((fc = fgetc (file)) != EOF)
 	{
+		char c = fc;
 		ungetc (c, file);
 
 		if (!readStringIntoBuffer (file, &nameBuffer, parentKey))
@@ -188,8 +189,8 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		char type = fgetc (file);
-		if (type == EOF)
+		int ftype = fgetc (file);
+		if (ftype == EOF)
 		{
 			elektraFree (nameBuffer.string);
 			elektraFree (metaNameBuffer.string);
@@ -199,6 +200,7 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
+		char type = ftype;
 		Key * k;
 
 		switch (type)
@@ -258,15 +260,16 @@ int elektraQuickdumpGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned, Key 
 			return ELEKTRA_PLUGIN_STATUS_ERROR;
 		}
 
-		while ((c = fgetc (file)) != 0)
+		while ((fc = fgetc (file)) != 0)
 		{
-			if (c == EOF)
+			if (fc == EOF)
 			{
 				keyDel (k);
 				fclose (file);
 				ELEKTRA_SET_VALIDATION_SYNTACTIC_ERROR (parentKey, "Missing key end");
 				return ELEKTRA_PLUGIN_STATUS_ERROR;
 			}
+			c = fc;
 
 			switch (c)
 			{

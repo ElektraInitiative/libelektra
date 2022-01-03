@@ -73,6 +73,10 @@ The following section lists news about the [plugins](https://www.libelektra.org/
 
 - Minor improvement of source code readability in uname.c _(@lawli3t)_
 
+### quickdump
+
+- Fixed an issue with type-limits on ARM32 (see issue #4217). _(Klemens Böswirth @kodebach)_
+
 ### <<Plugin6>>
 
 - <<TODO>>
