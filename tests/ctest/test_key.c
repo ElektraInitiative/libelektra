@@ -228,6 +228,29 @@ static void test_keyNameUnescape (void)
 	}
 }
 
+static void test_keyCompare (void)
+{
+	printf ("test keyCompare\n");
+	Key * key1 = keyNew ("/", KEY_END);
+	Key * key2 = keyNew ("/", KEY_END);
+
+	succeed_if (keyCompare (key1, key2) == 0, "the keys don't differ of course");
+
+	keySetName (key1, "user:/myname");
+	succeed_if_same_string (keyName (key1), "user:/myname");
+	succeed_if (keyCompare (key1, key2) == KEY_NAME, "the keys should differ in name");
+	keySetName (key2, "user:/myname");
+	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in name");
+
+	keySetString (key1, "myvalue");
+	succeed_if (keyCompare (key1, key2) == KEY_VALUE, "the keys should differ in value");
+	keySetString (key2, "myvalue");
+	succeed_if (keyCompare (key1, key2) == 0, "the keys should not differ in value");
+
+	keyDel (key1);
+	keyDel (key2);
+}
+
 static void test_keyNewExtensions (void)
 {
 	printf ("test keyNewExtensions\n");
