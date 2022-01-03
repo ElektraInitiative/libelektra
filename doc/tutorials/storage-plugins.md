@@ -242,7 +242,7 @@ sudo kdb umount /tests/hosts
 
 ## Ordering of Elements
 
-If your plugin also has the ability to store configuration options in a certain order, then this is also support by Elektra. Keys can have the meta Key `order`, which indicates in which order lines should be written back to the configuration file. Inversely, when reading from configuration files, plugins should add the `order` meta Key to the respective KDB entries.
+If your plugin also has the ability to store configuration options in a certain order, then this is also supported by Elektra. Keys can have the metakey `order`, which indicates in which order lines should be written back to the configuration file. Inversely, when reading from configuration files, plugins should add the `order` metakey to the respective KDB entries.
 
 This behavior can be illustrated via the usage of the `hosts` plugin, which honors this convention:
 
@@ -298,7 +298,7 @@ kdb rm -r /tests/hosts
 sudo kdb umount /tests/hosts
 ```
 
-As you can see by setting the order meta Key in the respective KDB entries, we can manipulate the order in which entries get written to the hosts file. Also when importing from the initial hosts file, the plugin stores the correct order in the meta KeySet.
+As you can see by setting the order metakey in the respective KDB entries, we can manipulate the order in which entries get written to the hosts file. Also when importing from the initial hosts file, the plugin stores the correct order in the meta KeySet.
 
 <!--
 TODO: Add section about relative keys (See also: https://issues.libelektra.org/51)
