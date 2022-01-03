@@ -210,7 +210,7 @@ sudo kdb umount user:/tests/storage
 ## Storing Comments
 
 Most markup languages provide the possibility of adding comments.
-Elektra can store those comments in its meta-data as well.
+Elektra can store those comments in its metadata as well.
 This can be achieved by setting the meta Keys `comment/#` for
 the respective configuration Key. Also the `hosts` plugin stores
 the comments of the file in the respective Elektra configuration Key:
