@@ -38,6 +38,12 @@ modules:
       - cd build && cmake .. -DTOOLS=ALL -DCMAKE_INSTALL_PREFIX=/app
       - cmake --build build -- -j5
       - cd build && make install
+      # Icon file fix
+      - mv /app/share/icons/hicolor/scalable/apps/elektra.svg /app/share/icons/hicolor/scalable/apps/org.libelektra.kdb.svg
+      # Desktop entry fixes
+      - mv /app/share/applications/org.libelektra.elektra-qt-editor.desktop /app/share/applications/org.libelektra.kdb.desktop
+      - sed -i -e 's/Categories=.*/Categories=System;X-Configuration;/g' /app/share/applications/org.libelektra.kdb.desktop
+      - sed -i -e 's/Icon=.*/Icon=org.libelektra.kdb/g' /app/share/applications/org.libelektra.kdb.desktop
     sources:
       - type: git
         url: https://github.com/ElektraInitiative/libelektra.git
