@@ -63,12 +63,12 @@ because Elektra does not provide a string library. The function
 const void *keyValue(const Key *key);
 ```
 
-returns a string. You are not allowed to change the returned string.
+returns a value. You are not allowed to change the returned value.
 The life time is bound to the `Key`.
 The function
 
 ```c
-ssize_t keyGetValueSize(const Key *key);
+ssize_t keyValueSize(const Key *key);
 ```
 
 gives the length of the value in bytes.

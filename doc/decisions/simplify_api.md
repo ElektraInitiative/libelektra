@@ -52,6 +52,12 @@ Remove:
 - keyCompare (done)
 - keyCompareMeta (done)
 
+Rename:
+
+- keyGetValueSize -> keyValueSize
+- keyGetBaseNameSize -> keyBaseNameSize
+- keyGetNameSize -> keyNameSize
+
 Make private:
 
 - elektraStrCaseCmp;
@@ -84,6 +90,7 @@ Unclear:
 - keySetBinary
 - ksClear
 - ksCut
+- keyGetUnescapedNameSize
 
 ## Rationale
 

@@ -42,6 +42,8 @@ section here.
 - [Holes and Non-leaf values](holes.md)
 - [Multiple File Backends](multiple_file_backends.md)
 - [Ensure](ensure.md) (@kodebach)
+- [Null](null.md)
+- [Memory Layout](memory_layout.md)
 
 ## Mostly Implemented
 
@@ -71,7 +73,8 @@ section here.
 
 ## In Discussion
 
-- [simplify API](simplify_api.md)
+- [Key Name](key_name.md)
+- [Simplify API](simplify_api.md)
 - [Binary](binary.md)
 - [Store the escaped and/or unescaped key name](store_name.md)
 - [keyString() return value](key_string_return_value.md)
