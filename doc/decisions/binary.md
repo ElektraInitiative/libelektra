@@ -6,6 +6,7 @@ binary
 
 - is the only metadata that allows more values (instead of making the validation stricter)
 - is the only API that modifies metadata
+- creates some inconsistencies in the API (e.g. `KEY_FLAG_RO_VALUE` is linked to `KEY_FLAG_RO_META`)
 
 ## Constraints
 
