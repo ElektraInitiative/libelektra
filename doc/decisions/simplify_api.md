@@ -103,6 +103,7 @@ Unclear:
 ## Notes
 
 ¹ the 124 symbols are (as found by @kodebach):
+
 - 6 for the KDB stuff
 - 6 for the plugin system
 - 48 for Key
