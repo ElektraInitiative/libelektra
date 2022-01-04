@@ -51,6 +51,12 @@ Remove:
 - keyClear (clarification with keyCopy needed)
 - keyCompare (done)
 - keyCompareMeta (done)
+- keyIsBinary ([Binary](binary.md))
+- keyIsString ([Binary](binary.md))
+- keyGetString ([Binary](binary.md))
+- keySetString ([Binary](binary.md))
+- keyGetBinary ([Binary](binary.md))
+- keySetBinary ([Binary](binary.md))
 
 Rename:
 
@@ -80,14 +86,8 @@ Unclear:
 - keyIsBelow
 - keyIsBelowOrSame
 - keyIsDirectlyBelow
-- keyIsBinary (binary issue)
-- keyIsString (binary issue)
-- keyName (
+- keyName
 - keyGetBaseName
-- keyGetString
-- keySetString
-- keyGetBinary
-- keySetBinary
 - ksClear
 - ksCut
 - keyGetUnescapedNameSize
@@ -97,5 +97,7 @@ Unclear:
 ## Implications
 
 ## Related Decisions
+
+- [Binary](binary.md)
 
 ## Notes
