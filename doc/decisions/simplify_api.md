@@ -2,7 +2,7 @@
 
 ## Problem
 
-According to src/libs/elektra/symbols.map the public core API has 124 functions, which
+According to src/libs/elektra/symbols.map the public core API has 124 symbols¹, which
 is arguable too much for a key-value API which has as highest goal simplicity.
 
 In particular following areas have many functions and are not simple:
@@ -57,6 +57,7 @@ Remove:
 - keySetString ([Binary](binary.md))
 - keyGetBinary ([Binary](binary.md))
 - keySetBinary ([Binary](binary.md))
+- ksCut (maybe later introduce ksFindHierarchy, ksRemoveRange, ksCopyRange)
 
 Rename:
 
@@ -89,7 +90,6 @@ Unclear:
 - keyName
 - keyGetBaseName
 - ksClear
-- ksCut
 - keyGetUnescapedNameSize
 
 ## Rationale
@@ -101,3 +101,11 @@ Unclear:
 - [Binary](binary.md)
 
 ## Notes
+
+¹ the 124 symbols are (as found by @kodebach):
+- 6 for the KDB stuff
+- 6 for the plugin system
+- 48 for Key
+- 31 for KeySet
+- 15 other helper functions
+- The other 18 symbols are the public constants for the error API.
