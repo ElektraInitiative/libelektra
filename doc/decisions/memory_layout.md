@@ -15,7 +15,7 @@
 
 ## Decision
 
-Have versioning and memory layout checks of cache files written by `mmapstorage`.
+Have versioning and memory layout checks¹ of cache files written by `mmapstorage`.
 The cache files get discarded if these checks fail.
 
 ## Rationale
@@ -30,3 +30,6 @@ See Implications.
 ## Related Decisions
 
 ## Notes
+
+¹ A `KeySet` with known content gets written and mmapstorage checks if this
+`KeySet` was restored correctly.
