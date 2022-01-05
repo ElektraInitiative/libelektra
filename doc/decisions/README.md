@@ -16,7 +16,6 @@ section here.
 
 - [Unit Testing](unit_testing.md)
 - [Script Testing](script_testing.md)
-- [Library Split](library_split.md)
 - [Bootstrap](bootstrap.md)
 - [Empty Files](empty_files.md)
 - [CMake Plugins](cmake_plugins.md)
@@ -30,12 +29,11 @@ section here.
 - [High-level API Help Message](highlevel_help_message.md)
 - [Global KeySet](global_keyset.md)
 - [Rest API Documentation](rest_api_documentation.md)
-- [Ingroup Removal](ingroup_removal.md)
 - [Commit Function](commit_function.md)
-- [Error Message Format](error_message_format.md)
-- [Default Values](default_values.md)
 - [Error codes](error_codes.md)
+- [Error Message Format](error_message_format.md)
 - [Error code implementation](error_code_implementation.md)
+- [Default Values](default_values.md)
 - [Semantics for Name](semantics_name.md)
 - [Base Name](base_name.md)
 - [Lookup every key](lookup_every_key.md)
@@ -44,6 +42,8 @@ section here.
 - [Ensure](ensure.md) (@kodebach)
 - [Null](null.md)
 - [Memory Layout](memory_layout.md)
+- [Make elektraMalloc et al. private](remove_elektra_malloc.md)
+- [Remove functions copying into buffer](functions_with_buffers.md)
 
 ## Mostly Implemented
 
