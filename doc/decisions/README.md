@@ -42,8 +42,6 @@ section here.
 - [Ensure](ensure.md) (@kodebach)
 - [Null](null.md)
 - [Memory Layout](memory_layout.md)
-- [Make elektraMalloc et al. private](remove_elektra_malloc.md)
-- [Remove functions copying into buffer](functions_with_buffers.md)
 
 ## Mostly Implemented
 
@@ -59,7 +57,7 @@ section here.
 ## Decided
 
 - [Capabilities](capabilities.md) (@markus2330)
-- [Remove elektraMalloc et al.](remove_elektra_malloc.md)
+- [Make elektraMalloc et al. private](elektra_malloc.md)
 
 ## Left-overs
 
@@ -81,7 +79,7 @@ section here.
 - [Global Plugins](global_plugins.md) (@mpranj)
 - [Error Semantics](error_semantics.md) (API)
 - [Error Handling](error_handling.md)
-- [Functions copying into buffer](functions_with_buffers.md)
+- [Remove functions copying into buffer](functions_with_buffers.md)
 - [Escaped Name](escaped_name.md) merge with:
 - [Spec Expressiveness](spec_expressiveness.md)
 - [Metadata in Spec Namespace](spec_metadata.md)
