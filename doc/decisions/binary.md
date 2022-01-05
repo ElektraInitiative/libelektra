@@ -26,6 +26,7 @@ byte-array values are a rarely used feature in configuration settings
 - all current types are not binary, so type = string is the way to indicate a string doesn't
   - contain null bytes
   - is not null (not only indicator of structure without value)
+  - uses some well-defined but unspecified text encoding (i.e. not necessarily ASCII or UTF-8)
 - remove binary functionality from keyNew keyVNew keyIsBinary keyIsString keyValue keyGetValueSize keyString keyGetString keySetString keyGetBinary keySetBinary
 - keySetRaw -> keySetValue
 
