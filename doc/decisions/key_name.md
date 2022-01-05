@@ -2,9 +2,9 @@
 
 ## Problem
 
-Often a Key _ argument is used when you just need a key name.
-This is because with a Key _ we know the name is valid and we get an unescaped name.
-Using a Key \* here makes the API a bit confusing.
+Often a `Key` argument is used when you just need a key name.
+This is because with a `Key` we know the name is valid and we get an unescaped name.
+Using a `Key` here makes the API a bit confusing.
 
 There could be a richer API for manipulating key names without relying on the escaped name (e.g. concatenating two full key names).
 With the current situation, all these functions would need to be part of the API for a key. Adding such functions to the key API is certainly not minimal.
@@ -21,9 +21,11 @@ With the current situation, all these functions would need to be part of the API
 
 ## Decision
 
-A minimal `Key` only consists of a key name (value and meta data are null pointers).
+Continue keeping 3 classes: `Key`, `KeySet` and `KDB`.
 
 ## Rationale
+
+- A minimal `Key` ideally only consists of a key name and the goal is to keep `Key` small, so introducing `KeyName` would go the wrong direction.
 
 ## Implications
 
