@@ -192,6 +192,7 @@ _(Michael Tucek)_
 - Fix an error and some overmatching problems in scripts/sed and fix errors in documentation
   (by running the scripts/dev/fix-spelling script) _(Florian Lindner @flo91)_
 - Added some improvements to the core api documentation _(@muskater)_
+- Update and improve the CLion tutorial (doc/tutorials/contributing-clion.md), add screenshots _(@flo91)_
 
 ## Tests
 
