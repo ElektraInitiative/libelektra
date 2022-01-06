@@ -57,7 +57,6 @@ section here.
 
 ## In Progress
 
-
 - [Iterators](iterators.md)
 - Replace all internal iterators
 - Binary
