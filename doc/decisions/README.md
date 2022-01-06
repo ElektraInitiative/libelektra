@@ -48,10 +48,6 @@ section here.
 - [Array for Warnings](warning_array.md)
 - [Array](array.md)
 - [Boolean](boolean.md)
-
-## Implementation Started
-
-- [Iterators](iterators.md)
 - [Reference Counting](reference_counting.md)
 
 ## Decided
@@ -59,20 +55,17 @@ section here.
 - [Capabilities](capabilities.md) (@markus2330)
 - [Make elektraMalloc et al. private](elektra_malloc.md)
 
-## Left-overs
+## In Progress
 
-- elektra\*-prefix functions?
 
-## Work needed
-
+- [Iterators](iterators.md)
 - Replace all internal iterators
 - Binary
 - keyName rename
+- [Simplify API](simplify_api.md) (@lawli3t will make proposal of new API)
 
 ## In Discussion
 
-- [Key Name](key_name.md)
-- [Simplify API](simplify_api.md)
 - [Binary](binary.md)
 - [Store the escaped and/or unescaped key name](store_name.md)
 - [keyString() return value](key_string_return_value.md)
@@ -83,6 +76,13 @@ section here.
 - [Escaped Name](escaped_name.md) merge with:
 - [Spec Expressiveness](spec_expressiveness.md)
 - [Metadata in Spec Namespace](spec_metadata.md)
+- [Elektra Prefix](elektra_prefix.md)
+- [Library Split](library_split.md)
+
+## Drafts
+
+- [Library Directory Structure](library_directory_structure.md)
+- [Header File Structure](header_file_structure.md)
 
 ## Delayed
 
@@ -91,6 +91,7 @@ section here.
 
 ## Rejected
 
+- [Key Name as separate class](separate_key_name.md)
 - [CMake spec](cmake_spec.md)
 - [Null Pointer Checks](null_pointer_checks.md)
 - [Elektra Web Publish Subscribe](elektra_web_pubsub.md)
