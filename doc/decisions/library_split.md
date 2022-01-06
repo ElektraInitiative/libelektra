@@ -7,10 +7,14 @@ Only libelektra-core is supposed to access private data but this contradicts the
 
 ## Constraints
 
-## Assumptions
-
 - The [C99 standard, section 5.2.4.1](http://www.open-std.org/jtc1/sc22/wg14/) gives following limit:
   4095 external identifiers in one translation unit
+- Some parts of Elektra, like `mmapstorage` need access to private data structure.
+- Elektra does not support several different struct definitions of Key/KeySet.
+  Alternative implementations that want to coexist (e.g. `mmapstorage` should still work)
+  must use the same struct definitions of Key/KeySet.
+
+## Assumptions
 
 ## Considered Alternatives
 
