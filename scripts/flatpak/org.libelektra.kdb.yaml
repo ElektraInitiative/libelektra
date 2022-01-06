@@ -4,8 +4,10 @@ runtime-version: '5.15'
 sdk: org.kde.Sdk
 command: /app/bin/kdb
 finish-args:
+  # allow X11 and wayland for running the GUI
   - --socket=wayland
   - --socket=x11
+  # allow host filesystem for actually saving key-value pairs
   - --filesystem=host
   - --env=LUA_CPATH="/app/lib/lua/5.2/?.so;"
 build-options:
@@ -21,13 +23,9 @@ modules:
     cleanup:
       - '*'
     build-commands:
-      - ./configure.sh --prefix .
+      - ./configure.sh --prefix /app
       - make
       - make install
-      - mkdir -p /app/lib /app/bin /app/include
-      - cp -a bin/* /app/bin
-      - cp -a lib/* /app/lib
-      - cp -a include/* /app/include
 
   - name: libelektra
     buildsystem: simple
@@ -38,13 +36,18 @@ modules:
       - cd build && cmake .. -DTOOLS=ALL -DCMAKE_INSTALL_PREFIX=/app
       - cmake --build build -- -j5
       - cd build && make install
-      # Icon file fix
-      - mv /app/share/icons/hicolor/scalable/apps/elektra.svg /app/share/icons/hicolor/scalable/apps/org.libelektra.kdb.svg
-      # Desktop entry fixes
-      - mv /app/share/applications/org.libelektra.elektra-qt-editor.desktop /app/share/applications/org.libelektra.kdb.desktop
-      - sed -i -e 's/Categories=.*/Categories=System;X-Configuration;/g' /app/share/applications/org.libelektra.kdb.desktop
-      - sed -i -e 's/Icon=.*/Icon=org.libelektra.kdb/g' /app/share/applications/org.libelektra.kdb.desktop
+      # Icon, desktop entry, metadata
+      - cp org.libelektra.kdb.svg /app/share/icons/hicolor/scalable/apps/
+      - cp org.libelektra.kdb.desktop /app/share/applications/
+      - mkdir /app/share/metainfo
+      - cp org.libelektra.kdb.appdata.xml /app/share/metainfo/
     sources:
       - type: git
         url: https://github.com/ElektraInitiative/libelektra.git
         tag: 0.9.8
+      - type: file
+        path: org.libelektra.kdb.desktop
+      - type: file
+        path: org.libelektra.kdb.svg
+      - type: file
+        path: org.libelektra.kdb.appdata.xml
