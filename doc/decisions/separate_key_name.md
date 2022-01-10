@@ -13,8 +13,6 @@ With the current situation, all these functions would need to be part of the API
 
 ## Assumptions
 
-- the key name is actually, in every implementation, a plain string
-
 ## Considered Alternatives
 
 - add separate `struct KeyName`
@@ -29,7 +27,9 @@ Continue keeping 3 classes: `Key`, `KeySet` and `KDB`.
 
 ## Implications
 
-Thus operations working on key names, directly use `Key` as argument.
+- Thus, operations working on key names, directly use `Key` as argument.
+- The key name is actually, in every implementation, a plain string.
+  This is also required, because implementations must use the same memory layout.
 
 ## Related Decisions
 

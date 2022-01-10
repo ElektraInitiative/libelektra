@@ -12,6 +12,9 @@ Some names, such as kdbOpen, keyNew are so generic that other libraries might al
 
 ## Assumptions
 
+- Most modern C99 compilers use a much larger number of significant characters for identifiers.
+  We assume that at least 255 characters are supported.
+
 ## Considered Alternatives
 
 - leave it as is
@@ -29,6 +32,7 @@ Rename all functions to start with elektra.
 
 - Changes in basically every application and tool, but this is automated
   with a refactoring tool @kodebach writes.
+- It is not guaranteed that the code can be compiled with every C99 compiler, because we will not always be below the 31 character limit (e.g. ELEKTRA_ERROR_VALIDATION_SYNTACTIC).
 
 ## Related Decisions
 

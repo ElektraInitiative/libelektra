@@ -41,7 +41,6 @@ Remove:
 - keyCopyAllMeta
 - keyCopyMeta
 - keyGetBaseName
-- keyGetBaseNameSize
 - keyGetBinary (\*buffers.md)
 - keyGetName
 - keyGetNameSize
@@ -58,12 +57,44 @@ Remove:
 - keyGetBinary ([Binary](binary.md))
 - keySetBinary ([Binary](binary.md))
 - ksCut (maybe later introduce ksFindHierarchy, ksRemoveRange, ksCopyRange)
+- ksPop (replaced by `ksRemove (ks, ksGetSize (ks) - 1)`)
+- keyIsBelow (merged with keyIsBelowOrSame and keyIsDirectlyBelow, see below)
+- keyIsBelowOrSame (merged into keyIsBelow, see below)
+- keyIsDirectlyBelow (merged into keyIsBelow, see below)
 
 Rename:
 
 - keyGetValueSize -> keyValueSize
 - keyGetBaseNameSize -> keyBaseNameSize
-- keyGetNameSize -> keyNameSize
+- keyName -> keyEscapedName ([Escaped Name](escaped_name.md))
+- keyGetNameSize -> keyEscapedNameSize
+- keyGetUnescapedNameSize -> keyNameSize
+- elektraKsPopAtCursor -> ksRemove (also need to make public)
+- keyCmp -> keyCompareName
+
+Merge:
+
+- keyIsBelow: merge with keyIsBelowOrSame, keyIsDirectlyBelow
+  ```c
+  /**
+   * Checks if @p other is below @p base.
+   *
+   * **Note**
+   *   This function treats cascading key names similar to `ksLookup`.
+   *   For example, /foo is treated as equal to user:/foo, system:/foo, etc.
+   *
+   * @retval 0 @p base and @p other have the same name
+   * @retval 1 @p other is directly below @p base
+   * @retval > 1 @p other is below @p base (but not directly)
+   * @retval < 0 otherwise, i.e. @p other is above @p base,
+   *             the keys do not have a common parent, or
+   *             (at least) one of @p other and @p base is NULL
+   */
+  int keyIsBelow (const Key * base, const Key * other);
+  ```
+  - Replacement for old keyIsBelow: `keyIsBelow > 0`
+  - Replacement for keyIsBelowOrSame: `keyIsBelow >= 0`
+  - Replacement for keyIsDirectlyBelow: `keyIsBelow == 1`
 
 Make private:
 
@@ -74,23 +105,23 @@ Make private:
 - elektraStrNCaseCmp;
 - elektraStrNCmp;
 - elektraVFormat;
+- elektraFormat;
+
+Move to `libelektra-operations` (actual name TBD):
+
 - ksDeepDup
 - ksGetAlloc
 - ksInit
 - keyGetRef
+- keyNeedSync
 
 Unclear:
 
-- keyCmp
-- ksPop
-- keyNeedSync
-- keyIsBelow
-- keyIsBelowOrSame
-- keyIsDirectlyBelow
-- keyName
-- keyGetBaseName
-- ksClear
-- keyGetUnescapedNameSize
+- ksClear: move to `libelektra-operations` or keep in `libelektra-core`?
+
+Change internals:
+
+- keyGetBaseNameSize: store base name size in `struct _Key` to optimize keyBaseName
 
 ## Rationale
 
