@@ -606,45 +606,6 @@ running cmake like to enable debug symbol.
 For Gentoo it's recommended to emerge sys-apps/lsb-release to name the package
 right even thou not required.
 
-### With Flatpak (Beta)
-
-It is also possible to build a Flatpak package containing Elektra:
-
-```bash
-# install flatpak and flatpak-builder, using the package manager of your distro
-$ apt install flatpak flatpak-builder
-
-# some distributions may require the package elfutils as well
-$ apt install elfutils
-
-# add the flathub remote
-$ flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-# download the runtime and sdk
-$ flatpak install flathub org.kde.Platform//5.15 org.kde.Sdk//5.15
-
-# change to the path where you cloned libelektra
-$ cd /path/to/elektra/source
-
-# build and install the package for the current user
-$ flatpak-builder .flatpak-app scripts/flatpak/org.libelektra.kdb.yaml  --force-clean --user --install
-
-# try running the kdb binary
-# elektra is given permissions to modify the host filesystem
-# for more info check scripts/flatpak/org.libelektra.kdb.yaml
-$ flatpak run org.libelektra.kdb help
-
-# try running the Qt GUI through the cli
-# there should also be a desktop entry available
-$ flatpak run org.libelektra.kdb qt-gui
-
-# add an alias to your shell
-$ echo 'alias kdb="flatpak run org.libelektra.kdb"' >> ~/.bashrc && source ~/.bashrc
-
-# you can then run kdb directly
-$ kdb help
-```
-
 ## Maintainer's Guide
 
 ### Multiarch
