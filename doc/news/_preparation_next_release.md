@@ -138,7 +138,7 @@ you up to date with the multi-language support provided by Elektra.
 ### Java binding
 
 - Integrated the `HelloElektra` example as gradel sub-project to allow it to directly depend on the current binding. _(Michael Tucek)_
-- Updated Gradle to 7.3. _(Mihael Pranjić @mpranj)_
+- Updated Gradle to 7.3.3. _(Mihael Pranjić @mpranj)_
 
 ### FUSE Binding
 

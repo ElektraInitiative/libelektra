@@ -119,7 +119,7 @@ RUN useradd \
     jenkins
 
 # download and install gradle
-RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.3-bin.zip && unzip gradle-7.3-bin.zip && rm gradle-7.3-bin.zip && mv gradle-7.3 /opt/gradle
+RUN cd /tmp && wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip && unzip gradle-7.3.3-bin.zip && rm gradle-7.3.3-bin.zip && mv gradle-7.3.3 /opt/gradle
 ENV PATH "${PATH}:/opt/gradle/bin"
 
 USER ${JENKINS_USERID}
