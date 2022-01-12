@@ -80,6 +80,7 @@ section here.
 
 ## Drafts
 
+- [Notifications](notifications.md)
 - [Library Directory Structure](library_directory_structure.md)
 - [Header File Structure](header_file_structure.md)
 

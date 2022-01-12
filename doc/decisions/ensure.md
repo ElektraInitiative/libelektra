@@ -84,6 +84,7 @@ invocations. Contract `KeySet`s only contain `Key`s below
 ## Related Decisions
 
 - [Global Plugins](global_plugins.md)
+- [Notifications](notifications.md)
 
 ## Notes
 
