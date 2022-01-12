@@ -22,7 +22,7 @@ public:
 
 	virtual std::string getShortOptions () override
 	{
-		return "fc";
+		return "c";
 	}
 
 	virtual std::string getSynopsis () override
@@ -37,11 +37,10 @@ public:
 
 	virtual std::string getLongHelpText () override
 	{
-		return "If no arguments are given checks on key database\n"
-		       "are done instead. Use -f to also do a write test\n"
-		       "(might change configuration files!)\n"
+		return "If no arguments are given, checks on the key database\n"
+		       "are done instead.\n"
 		       "\n"
-		       "If a plugin name is given, checks will only be done with given plugin.\n"
+		       "If a plugin name is given, checks will only be done with the given plugin.\n"
 		       "Use -c to pass options to the plugin.\n"
 		       "\n"
 		       "Please report any output caused by official plugins to https://www.libelektra.org\n";

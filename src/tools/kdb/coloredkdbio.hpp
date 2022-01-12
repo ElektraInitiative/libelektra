@@ -76,26 +76,41 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 		// TODO: use C++ binding version of keyMeta
 		KeySet meta (ckdb::ksDup (ckdb::keyMeta (error.getKey ())));
 		Key parent ("meta:/warnings", KEY_END);
-		auto warnings = meta.cut (parent);
-
-		int nr = warnings.size ();
-		if (nr == 0)
+		KeySet warnings = meta.cut (parent);
+		if (warnings.size () == 0)
 		{
 			return os;
 		}
 
-		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Sorry, " << nr + 1 << " warning"
-		   << (!nr ? " was" : "s were") << " issued ;(" << getErrorColor (ANSI_COLOR::RESET) << std::endl;
+		// get number of warning
+		Key keyMetaWarnings = warnings.lookup ("meta:/warnings");
+		int cntWarnings = 0;
+		if (!keyMetaWarnings.isNull () && keyMetaWarnings.isValid ())
+		{
+			std::string strWarningCount = keyMetaWarnings.getString ();
 
+			// skip leading '#' and '_' characters
+			size_t i;
+			for (i = 0; i < strWarningCount.length () && (strWarningCount[i] == '#' || strWarningCount[i] == '_'); i++)
+				;
+			strWarningCount = strWarningCount.substr (i);
+			cntWarnings = std::stoi (strWarningCount) + 1;
+		}
+
+		os << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::MAGENTA) << " Sorry, " << cntWarnings << " warning"
+		   << ((cntWarnings == 1) ? " was" : "s were") << " issued ;(" << getErrorColor (ANSI_COLOR::RESET) << std::endl;
+
+		cntWarnings = 0;
 		for (auto it = warnings.begin () + 1; it != warnings.end (); ++it)
 		{
 			auto name = it->getName ();
 			if (it->isDirectBelow (parent))
 			{
-				os << "\tSorry, module " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::BLUE)
-				   << warnings.get<std::string> (name + "/module") << getErrorColor (ANSI_COLOR::RESET)
-				   << " issued the warning " << getErrorColor (ANSI_COLOR::BOLD) << getErrorColor (ANSI_COLOR::RED)
-				   << warnings.get<std::string> (name + "/number") << getErrorColor (ANSI_COLOR::RESET) << ":" << std::endl;
+				os << ' ' << ++cntWarnings << ": Module " << getErrorColor (ANSI_COLOR::BOLD)
+				   << getErrorColor (ANSI_COLOR::BLUE) << warnings.get<std::string> (name + "/module")
+				   << getErrorColor (ANSI_COLOR::RESET) << " issued the warning " << getErrorColor (ANSI_COLOR::BOLD)
+				   << getErrorColor (ANSI_COLOR::RED) << warnings.get<std::string> (name + "/number")
+				   << getErrorColor (ANSI_COLOR::RESET) << ":" << std::endl;
 				os << "\t" << warnings.get<std::string> (name + "/description") << ": "
 				   << warnings.get<std::string> (name + "/reason") << std::endl;
 				if (printVerbose)

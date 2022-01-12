@@ -13,7 +13,7 @@
  *
  * To add an option there are 5 steps.
  * Beware not to introduce options which already have
- * an meaning in one of the utilities.
+ * a meaning in one of the utilities.
  * Please always append the options in alphabetical order
  * with capitals later.
  */

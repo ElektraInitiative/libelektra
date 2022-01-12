@@ -520,6 +520,10 @@ int elektraRangeGet (Plugin * handle ELEKTRA_UNUSED, KeySet * returned ELEKTRA_U
 	Key * cur;
 	while ((cur = ksNext (returned)) != NULL)
 	{
+		/* skip parent namespaces that differ from the key namespace,
+		 * otherwise every warning would get issued multiple times */
+		if (keyGetNamespace (parentKey) != keyGetNamespace (cur)) continue;
+
 		const Key * meta = keyGetMeta (cur, "check/range");
 		if (meta)
 		{

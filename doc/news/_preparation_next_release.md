@@ -150,7 +150,7 @@ _(Michael Tucek)_
 
 ## Tools
 
-- <<TODO>>
+- Implement `kdb validate <key>`, collect warnings and errors while kdb.get() and kdb.set(), see #3674 _(@flo91)_, _(@JakobWonisch)_
 - <<TODO>>
 - <<TODO>>
 
