@@ -22,7 +22,8 @@ Some names, such as kdbOpen, keyNew are so generic that other libraries might al
 
 ## Decision
 
-Rename all functions to start with elektra.
+- Ensure all functions start with `elektra`.
+- Ensure all macros and constants start with `ELEKTRA_`.
 
 ## Rationale
 
@@ -32,7 +33,9 @@ Rename all functions to start with elektra.
 
 - Changes in basically every application and tool, but this is automated
   with a refactoring tool @kodebach writes.
-- It is not guaranteed that the code can be compiled with every C99 compiler, because we will not always be below the 31 character limit (e.g. ELEKTRA_ERROR_VALIDATION_SYNTACTIC).
+- To be 100% C99 compatible we cannot introduce identifiers which the same 31 character prefix (e.g. `ELEKTRA_WARNING_VALIDATION_SYTACTIC_LEXER` and `ELEKTRA_WARNING_VALIDATION_SYTACTIC_PARSER` would be a problem).
+  Otherwise, it is not guaranteed that the code can be compiled with every C99 compiler.
+  However, since most modern compilers will not actually have this limitation, we could ignore the 31 character prefix issue, if it becomes inconvienent.
 
 ## Related Decisions
 

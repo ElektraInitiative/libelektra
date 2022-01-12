@@ -72,11 +72,12 @@ However, because `#include` works (mostly) like a literal copy-paste, deciding b
 
 - Put all headers into one directory and use the same relative layout as will be installed. Then use `""`:
 
-  This makes for an inconvenient development experience. It is also pretty hard to achieve for plugins and private headers would clutter the include directory.
+  This makes for an inconvenient development experience. It is also pretty hard to achieve for plugins and private headers would clutter the include-directory.
 
 ## Decision
 
-- Utilize CMake to make the following rules work.
+The rules for including headers are:
+
 - Including another header from the current directory is done with:
   ```c
   #include "header.h"
@@ -87,19 +88,33 @@ However, because `#include` works (mostly) like a literal copy-paste, deciding b
   ```
 - Including a header from another library within the Elektra codebase, is done with:
   ```c
-  #include "../otherlib/header.h"
+  #include <elektra/otherlib/header.h>
   ```
-- Including Elektra library headers from a plugin, is done with:
+  > **Note:** Only installed headers may be included this way. Including non-installed headers from another library breaks modularization.
+- Including Elektra library headers from a plugin/tool, is done with:
   ```c
   #include <elektra/thelib/header.h>
   ```
-  In other words, plugins are treated as external and must use the same rules an application would also use.
-- Only including system headers and headers from external third-party libraries is done with:
+  In other words, plugins/tools are treated as external and must use the same rules that apply to a client application.
+- Including system headers and headers from external third-party libraries is done with:
   ```c
-  #include <external.h>
+  #include <stdlib.h>
+  #include <dbus/dbus.h>
+  // etc.
   ```
 
+To facilitate these rules we will utilize CMake.
+Specifically, we will set up the `build/include` directory to mirror the installed layout of header files.
+This makes the `#include <>`s work correctly.
+We will enforce that `#include ""` cannot go from one library/plugin/tool to another.
+
 ## Rationale
+
+- With the new [Library Directory Structure](library_directory_structure.md) using relative imports is more convenient.
+  Since we no longer have everything in one folder, the required paths with `<>` would be longer and all have an unnecessary prefix.
+  As a side effect the difference between `""` and `<>` also documents which headers are part of the same library and which are not.
+- When using `<>` the given paths must match the way the headers will be installed, relative to the include-root (e.g. `/usr/include`).
+  But with `""`, we just need to set up CMake correctly to preserve the relative file layout of our header files.
 
 See also considered alternatives.
 

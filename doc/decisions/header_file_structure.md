@@ -51,7 +51,7 @@ The big problem is kdbprivate.h. It has two main problems:
 
       Symbols belonging to this category should not appear in a public section of the `symbols.map` file.
 
-  ## Considered Alternatives
+## Considered Alternatives
 
 ## Decision
 
@@ -83,6 +83,8 @@ Moving symbols between (non-private) headers is always a breaking change.
 
 Plugins do not declare their API via header files.
 Their headers are never installed and can be named anyway the developer wants.
+
+As seen above, all headers will be installed into a subfolder of `<include-root>/elektra`, where `<include-root>` is e.g. `/usr/include`.
 
 ## Rationale
 
