@@ -26,6 +26,11 @@ If applications also want to receive notifications is up to the contract.
 
 ## Implications
 
+The decision which transport mechanism, e.g. dbus or zeromq, must be
+chosen per computer  node or container. Within one Elektra setup,
+they cannot be intermixed (unlike config file formats, where many
+different formats can be mixed).
+
 ## Related Decisions
 
 - [Global Plugins](global_plugins.md)
