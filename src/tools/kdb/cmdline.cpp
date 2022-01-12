@@ -230,12 +230,6 @@ Cmdline::Cmdline (int argc, char ** argv, Command * command)
 		long_options.push_back (o);
 		helpText += "-2 --second              Suppress the second column.\n";
 	}
-	if (acceptedOptions.find ('3') != string::npos)
-	{
-		option o = { "third", no_argument, nullptr, '3' };
-		long_options.push_back (o);
-		helpText += "-3 --third               Suppress the third column.\n";
-	}
 	optionPos = acceptedOptions.find ('c');
 	if (optionPos != string::npos)
 	{
