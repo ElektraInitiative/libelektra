@@ -1198,7 +1198,7 @@ def generateArtifactStages() {
     this.&updateDebianChangelog
   )
   tasks << buildPackage(
-    "buildPackage/fedora/33",
+    "buildPackage/fedora/34",
     DOCKER_IMAGES.fedora_34,
     "fedora-34-unstable",
     "fedora-34-unstable",
@@ -1208,7 +1208,7 @@ def generateArtifactStages() {
     true
   )
   tasks << buildPackage(
-    "buildPackage/fedora/34",
+    "buildPackage/fedora/35",
     DOCKER_IMAGES.fedora_35,
     "fedora-35-unstable",
     "fedora-35-unstable",
