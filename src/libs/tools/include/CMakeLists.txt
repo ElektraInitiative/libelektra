@@ -5,6 +5,13 @@ install (
 	DESTINATION include/${TARGET_INCLUDE_FOLDER}
 	COMPONENT libelektra-dev)
 
+file (GLOB ERROR_HDR_FILES errors/*.hpp)
+
+install (
+	FILES ${ERROR_HDR_FILES}
+	DESTINATION include/${TARGET_INCLUDE_FOLDER}/errors
+	COMPONENT libelektra-dev)
+
 file (GLOB HELPER_HDR_FILES helper/*.hpp)
 
 install (
