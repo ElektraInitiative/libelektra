@@ -1,17 +1,17 @@
 
+#include <kdbprivate.h>
 #include "errors/errbase.hpp"
-//#include "kdbprivate.h"
 
 namespace kdb
 {
-
 namespace tools
 {
-
-ErrBase::ErrBase (const std::string & code, const std::string & description, const std::string & module,
-		  const std::string & file, /*kdb::long_t*/ long line)
+namespace errors
 {
-	setData(code, description, module, file, line);
+ErrBase::ErrBase (const std::string & code, const std::string & description, const std::string & module, const std::string & file,
+		  kdb::long_t line)
+{
+	setData (code, description, module, file, line);
 }
 
 ErrBase::ErrBase (kdb::Key & errKey)
@@ -19,59 +19,72 @@ ErrBase::ErrBase (kdb::Key & errKey)
 	setData (errKey);
 }
 
+ErrBase::ErrBase (ElektraError * err)
+{
+	this->err = err;
+}
+
+
+void ErrBase::setData (ElektraError * _err)
+{
+	this->err = _err;
+}
+
 void ErrBase::setData (kdb::Key & errKey)
 {
 	if (err)
 	{
-		err = nullptr;
-		//elektraErrorReset (&err);
+		elektraErrorReset (&err);
 	}
-	err = nullptr; //elektraErrorFromKey (errKey.getKey());
+	err = elektraErrorFromKey (errKey.getKey ());
 }
 
 
-void ErrBase::setData (const std::string & code, const std::string & description, const std::string & module, const std::string & file, /*kdb::long_t*/ long line)
+void ErrBase::setData (const std::string & code, const std::string & description, const std::string & module, const std::string & file,
+		       kdb::long_t line)
 {
 	if (err)
 	{
-		err = nullptr;
-		//elektraErrorReset (&err);
+		elektraErrorReset (&err);
 	}
 	// strings get duplicated by elektraErrorCreate
-	err = nullptr; //elektraErrorCreate (code.c_str(), description.c_str(), module.c_str(), file.c_str(), line);
+	err = elektraErrorCreate (code.c_str (), description.c_str (), module.c_str (), file.c_str (), line);
 }
 
 /* getters */
 std::string ErrBase::errorCode ()
 {
-	return ""; //elektraErrorCode(err);
+	elektraErrorReset (&err);
+	return elektraErrorCode (err);
 }
 
 std::string ErrBase::description ()
 {
-	return ""; //elektraErrorDescription(err);
+	return elektraErrorDescription (err);
 }
 
-/* TODO: maybe implement functions C (currently in highlevel-API (elektra_error.c)
+/* TODO: maybe implement getter functions in C (currently in highlevel-API (elektra_error.c))
  * and call them like for code and description */
 std::string ErrBase::module ()
 {
-	return ""; //err->module;
+	return err->module;
 }
 
 std::string ErrBase::file ()
 {
-	return ""; //err->file;
+	return err->file;
 }
 
-/*kdb::long_t*/ long ErrBase::line ()
+kdb::long_t ErrBase::line ()
 {
-	return 0; //err->line;
+	return err->line;
 }
 
-/*ElektraError*/char* ErrBase::internalError () {
-	return nullptr; //err;
+kdb::boolean_t ErrBase::isNull ()
+{
+	return (err == nullptr);
 }
 
+} // namespace errors
 } // namespace tools
 } // namespace kdb

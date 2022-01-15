@@ -106,6 +106,16 @@ libelektra_0.9 {
 	elektraFindReference;
 	elektraFindReferenceArrayElement;
 	elektraHelpKey;
+
+	# elektra/error.h;
+	# added for C++ error api;
+    elektraErrorCode;
+    elektraErrorFromKey;
+    elektraErrorAddWarning;
+    elektraErrorCreate;
+    elektraErrorPureWarning;
+    elektraErrorAddWarning;
+
 };
 
 libelektraprivate_1.0 {

@@ -1,23 +1,29 @@
+
+#include <kdberrors.h>
 #include "errors/warning.hpp"
-//#include "kdberrors.h"
+
 
 namespace kdb
 {
 
 namespace tools
 {
-
-void Warning::setSemanticValidationWarning (const std::string & description, const std::string & module,
-					    const std::string & file, /*kdb::long_t*/long line)
+namespace errors
 {
-	//setData(ELEKTRA_WARNING_VALIDATION_SEMANTIC, description, module, file, line);
+
+void Warning::setSemanticValidationWarning (const std::string & description, const std::string & module, const std::string & file,
+					    kdb::long_t line)
+{
+	setData(ELEKTRA_WARNING_VALIDATION_SEMANTIC, description, module, file, line);
 }
 
-void Warning::setSyntacticValidationWarning (const std::string & description, const std::string & module,
-					     const std::string & file, /*kdb::long_t*/long line)
+void Warning::setSyntacticValidationWarning (const std::string & description, const std::string & module, const std::string & file,
+					     kdb::long_t line)
 {
-	//setData(ELEKTRA_WARNING_VALIDATION_SYNTACTIC, description, module, file, line);
+	setData(ELEKTRA_WARNING_VALIDATION_SYNTACTIC, description, module, file, line);
 }
 
+
+} // namespace errors
 } // namespace tools
 } // namespace kdb

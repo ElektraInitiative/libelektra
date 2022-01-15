@@ -1,67 +1,93 @@
 
 
-//#include "kdbprivate.h"
-//#include "kdberrors.h"
-#include <errors/error.hpp>
+#include <kdbprivate.h>
+#include <kdberrors.h>
+#include "errors/error.hpp"
 
 namespace kdb
 {
 namespace tools
 {
-
+namespace errors
+{
 
 
 Error::~Error ()
 {
 	if (err)
 	{
-		err = nullptr;
-		//elektraErrorReset (&err);
+		elektraErrorReset (&err);
 	}
 }
 
 
-void Error::addWarning (std::string code, std::string description, std::string module, std::string file, /*kdb::long_t*/long line)
+void Error::addWarning (const std::string & code, const std::string & description, const std::string & module,
+			const std::string & file, kdb::long_t line)
 {
-	Warning w {std::move(code), std::move(description), std::move(module), std::move(file), line};
+	Warning w { code, description, module, file, line };
 	addWarning (w);
 }
 
-void Error::addWarning (/*ElektraError*/char* warning)
+void Error::addWarning (ElektraError * warning)
 {
-	if(!err) {
+	if (!err)
+	{
 		// create a dummy error key for only storing warnings
-		//err = ;//elektraErrorPureWarning();
+		setData (elektraErrorPureWarning ());
 	}
-	//elektraErrorAddWarning (err, warning);
+	elektraErrorAddWarning (err, warning);
 }
 
 void Error::addWarning (Warning & warning)
 {
-	addWarning (warning.internalError());
+	addWarning (warning.err);
 }
 
 /* getters */
-/*kdb::long_t*/long Error::warningCount ()
+kdb::long_t Error::warningCount ()
 {
-	return 0; //err->warningCount;
+	return err->warningCount;
 }
 
 
-
-void Error::setSemanticValidationError (const std::string & description, const std::string & module,
-					const std::string & file, /*kdb::long_t*/long line)
+void Error::setSemanticValidationError (const std::string & description, const std::string & module, const std::string & file,
+					kdb::long_t line)
 {
-	//setData(ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, module, file, line);
+	setData (ELEKTRA_ERROR_VALIDATION_SEMANTIC, description, module, file, line);
 }
 
-void Error::setSyntacticValidationError (const std::string & description, const std::string & module,
-					 const std::string & file, /*kdb::long_t*/long line)
+void Error::setSyntacticValidationError (const std::string & description, const std::string & module, const std::string & file,
+					 kdb::long_t line)
 {
-	//setData(ELEKTRA_ERROR_VALIDATION_SYNTACTIC, description, module, file, line);
+	setData (ELEKTRA_ERROR_VALIDATION_SYNTACTIC, description, module, file, line);
+}
+
+/* Extract Warning from Error object
+ * Caution: No deep copy of the underlying ElektraError* err is created!
+ * The memory for it must be freed by the destructor of this Error object!
+ * The returned Warning must not be used after the Error object it originated from was destructed!
+ * This method can be used for conveniently iterating over the Warnings of an Error */
+Warning Error::getWarning(kdb::long_t index)
+{
+	return (err->warningCount>index) ? (Warning (err->warnings[index])) : Warning ();
+}
+
+/* Copy a Warning from an Error Object, a deep copy of the underlying ElektraError *err is made.
+ * Can be used for adding it to another Error object, the memory for the Warning
+ * than gets freed by the Destructor of the other Error. */
+Warning Error::copyWarning(kdb::long_t index)
+{
+	if (err->warningCount > index)
+	{
+		return { err->code, err->description, err->module, err->file, err->line };
+	}
+	else
+	{
+		return {};
+	}
 }
 
 
-
+} // namespace errors
 } // namespace tools
 } // namespace kdb

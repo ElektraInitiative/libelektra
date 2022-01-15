@@ -82,7 +82,7 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 			return os;
 		}
 
-		// get number of warning
+		// get number of warnings
 		Key keyMetaWarnings = warnings.lookup ("meta:/warnings");
 		int cntWarnings = 0;
 		if (!keyMetaWarnings.isNull () && keyMetaWarnings.isValid ())
