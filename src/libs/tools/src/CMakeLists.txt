@@ -23,7 +23,7 @@ set (__symbols_file "${CMAKE_CURRENT_SOURCE_DIR}/libelektratools-symbols.map")
 if (BUILD_SHARED)
 	add_library (elektratools SHARED ${SOURCES})
 
-	target_link_libraries (elektratools elektra-core elektra-kdb elektra-plugin elektra-ease elektra-meta elektra-highlevel)
+	target_link_libraries (elektratools elektra-core elektra-kdb elektra-plugin elektra-ease elektra-meta)
 
 	set_target_properties (
 		elektratools

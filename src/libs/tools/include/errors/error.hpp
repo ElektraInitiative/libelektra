@@ -1,9 +1,8 @@
 #ifndef ELEKTRA_ERROR_HPP
 #define ELEKTRA_ERROR_HPP
 
-#include <iterator>
-#include <cstddef>
-#include <errors/warning.hpp>
+#include <vector>
+#include "errors/warning.hpp"
 
 namespace kdb
 {
@@ -13,41 +12,30 @@ namespace tools
 namespace errors
 {
 
-class Error : public ErrBase
+class Error : public BaseNotification
 {
 public:
-	Error () : ErrBase{}
-	{
-	}
-	Error (const std::string & code, const std::string & description, const std::string & module, const std::string & file,
-	       kdb::long_t line)
-	: ErrBase{ code, description, module, file, line }
-	{
-	}
-	explicit Error (kdb::Key & errorKey) : ErrBase{ errorKey }
-	{
-	}
-	explicit Error (ElektraError *err) : ErrBase { err } {}
-	~Error () override;
 
-	void addWarning (const std::string& code, const std::string& description, const std::string& module, const std::string& file,
-			 kdb::long_t line);
-	void addWarning (Warning & warning);
-	void addWarning (ElektraError * warning);
+	/* inherit constructors */
+	using BaseNotification::BaseNotification;
+
+	/* An Error can contain 0 to n warnings */
+	void addWarning (Warning *warning);
 
 	/* getters */
 	kdb::long_t warningCount ();
-	Warning getWarning(kdb::long_t index);
-	Warning copyWarning(kdb::long_t index);
+
+	/* iterator functionality */
+	std::vector<Warning*>::iterator begin() { return warnings.begin(); }
+	std::vector<Warning*>::iterator end() { return warnings.end(); }
+	std::vector<Warning*>::const_iterator begin() const { return warnings.begin(); }
+	std::vector<Warning*>::const_iterator end() const { return warnings.begin(); }
+	std::vector<Warning*>::const_iterator cbegin() const { return warnings.cbegin(); }
+	std::vector<Warning*>::const_iterator cend() const { return warnings.cend(); }
 
 
-	/* special types of errors and warnings */
-	void setSemanticValidationError (const std::string & description, const std::string & module, const std::string & file,
-					 kdb::long_t line);
-	void setSyntacticValidationError (const std::string & description, const std::string & module, const std::string & file,
-					  kdb::long_t line);
-
-
+private:
+	std::vector<Warning*> warnings;
 };
 } // namespace errors
 } // namespace tools

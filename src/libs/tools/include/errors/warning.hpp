@@ -2,35 +2,22 @@
 #ifndef ELEKTRA_WARNING_HPP
 #define ELEKTRA_WARNING_HPP
 
-#include "errors/errbase.hpp"
+#include "baseNotification.hpp"
 
 namespace kdb
 {
-
-
 namespace tools
 {
-
 namespace errors
 {
 
-class Warning : public ErrBase
+/* The warning class currently has no extra parts compared to the BaseNotification class,
+ * it's used for distiguishing Warnings and Errors by their type and allow to only add Warnings to Errors. */
+class Warning : public BaseNotification
 {
 public:
-	Warning (const std::string & code, const std::string & description, const std::string & module, const std::string & file,
-		 kdb::long_t line)
-	: ErrBase { code, description, module, file, line }
-	{
-	}
-	Warning () = default;
-	explicit Warning (ElektraError *err) : ErrBase { err } {}
-	~Warning () override = default;
-	void setSemanticValidationWarning (const std::string & description, const std::string & module, const std::string & file,
-					   kdb::long_t line);
-	void setSyntacticValidationWarning (const std::string & description, const std::string & module, const std::string & file,
-					    kdb::long_t line);
-private:
-	friend class Error; // Error has access to ElektraError *err (internal errors) of warnings
+	/* inherit constructors */
+	using BaseNotification::BaseNotification;
 };
 
 } // namespace errors
