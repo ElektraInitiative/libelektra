@@ -23,6 +23,7 @@ void BaseNotification::setData (const std::string & reason, const std::string & 
 	this->m_line = line;
 }
 
+/* String representation */
 std::ostream& BaseNotification::toString (std::ostream & outputStream) const
 {
 	return outputStream << "Code: " << code()
@@ -39,22 +40,41 @@ std::ostream& operator <<(std::ostream& outputStream, const BaseNotification& eb
 	return outputStream;
 }
 
-bool operator== (const BaseNotification& lhs, const BaseNotification& rhs)
+/* Comparison */
+bool BaseNotification::compare(const BaseNotification& other ELEKTRA_UNUSED) const
 {
-	return lhs.code() == rhs.code()
-	       && lhs.description() == rhs.description()
-	       && lhs.m_reason == rhs.m_reason
-	       && lhs.m_module == rhs.m_module
-	       && lhs.m_file == rhs.m_file
-	       && lhs.m_line == rhs.m_line;
+	/* Can be overloaded by subclasses to check additional constraints.
+	 * At least the types of the two objects that get compared should be checked for equality! */
+	return true;
 }
 
-/* getters */
+bool BaseNotification::operator== (const BaseNotification& other) const
+{
+	return code() == other.code()
+	       && description() == other.description()
+	       && reason() == other.reason()
+	       && module() == other.module()
+	       && file() == other.file()
+	       && line() == other.line()
+	       && this->compare(other);
+}
+
+bool BaseNotification::operator!= (const BaseNotification& other) const
+{
+	return !(*this == other);
+}
+
+/* setters */
 std::string& BaseNotification::reason() { return m_reason; }
 std::string& BaseNotification::module() { return m_module; }
 std::string& BaseNotification::file() { return m_file; }
 kdb::long_t& BaseNotification::line() { return m_line; }
 
+/* getters */
+const std::string & BaseNotification::reason () const { return m_reason; }
+const std::string & BaseNotification::module () const { return m_module; }
+const std::string & BaseNotification::file () const { return m_file; }
+const kdb::long_t & BaseNotification::line () const { return m_line; }
 
 } // namespace errors
 } // namespace tools

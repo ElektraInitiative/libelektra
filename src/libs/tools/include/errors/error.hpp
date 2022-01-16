@@ -18,9 +18,10 @@ public:
 
 	/* inherit constructors */
 	using BaseNotification::BaseNotification;
+	~Error();
 
 	/* An Error can contain 0 to n warnings */
-	void addWarning (Warning *warning);
+	void addWarning (Warning & warning);
 
 	/* getters */
 	kdb::long_t warningCount ();
@@ -33,9 +34,14 @@ public:
 	std::vector<Warning*>::const_iterator cbegin() const { return warnings.cbegin(); }
 	std::vector<Warning*>::const_iterator cend() const { return warnings.cend(); }
 
+	/* get warning by index */
+	Warning& operator[](int index);
 
 private:
 	std::vector<Warning*> warnings;
+
+protected:
+	bool compare(const BaseNotification& other) const override;
 };
 } // namespace errors
 } // namespace tools

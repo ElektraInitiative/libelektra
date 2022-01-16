@@ -224,8 +224,8 @@ TEST (Error, ErrWarn)
 	kdb::tools::errors::ConflictingStateWarning csW ("cswReason", "cswModule", "cswFile", 101);
 	kdb::tools::errors::InterfaceWarning ifW ("ifwReason", "ifwModule", "ifwFile", 102);
 
-	pmE.addWarning (&csW);
-	pmE.addWarning (&ifW);
+	pmE.addWarning (csW);
+	pmE.addWarning (ifW);
 
 	ASSERT_EQ (pmE.warningCount(), 2);
 
@@ -238,4 +238,53 @@ TEST (Error, ErrWarn)
 		else
 			ASSERT_EQ (*w, ifW);
 	}
+}
+
+TEST (Error, Equality)
+{
+	std::cout << std::endl << "TEST EQUALITY OF WARNINGS AND ERRORS" << std::endl;
+
+	kdb::tools::errors::InstallationWarning installationWarning ("Reason", "Module", "File", 42);
+	kdb::tools::errors::InstallationWarning installationWarning2 ("Reason", "Module", "File", 42);
+	kdb::tools::errors::InterfaceWarning interfaceWarning ("Reason", "Module", "File", 42);
+	kdb::tools::errors::InstallationError installationError ("Reason", "Module", "File", 42);
+
+	ASSERT_EQ (installationWarning, installationWarning);
+	ASSERT_EQ (installationWarning, installationWarning2);
+	ASSERT_EQ (installationError, installationError);
+	ASSERT_NE (installationWarning, interfaceWarning);
+	ASSERT_NE (installationWarning, installationError);
+	ASSERT_NE (installationError, installationWarning);
+
+	kdb::tools::errors::InstallationError installationError1 ("Reason", "Module", "File", 42);
+	kdb::tools::errors::ResourceError resourceError ("Reason", "Module", "File", 42);
+
+	ASSERT_NE (installationError, resourceError);
+	ASSERT_EQ (installationError, installationError1);
+
+	installationError.addWarning (installationWarning);
+	installationError.addWarning (installationWarning2);
+	installationError.addWarning (interfaceWarning);
+	ASSERT_NE (installationError, installationError1);
+
+	installationError1.addWarning (interfaceWarning);
+	installationError1.addWarning (installationWarning);
+	ASSERT_NE (installationError, installationError1);
+
+	installationError1.addWarning (installationWarning2);
+	/* Should be equal because same ordering of warnings is not necessary for equality */
+	ASSERT_EQ (installationError, installationError1);
+
+	resourceError.addWarning (installationWarning);
+	resourceError.addWarning (installationWarning2);
+	resourceError.addWarning (interfaceWarning);
+	ASSERT_NE (installationError, resourceError);
+
+	/* currently the Warning gets copied when it is added to the Error */
+	ASSERT_EQ (installationError[2].file(), installationError1[0].file());
+	installationError[2].file() = "changed file in warning";
+	ASSERT_NE (installationError[2].file(), installationError1[0].file());
+
+
+
 }

@@ -21,11 +21,15 @@ public:
 	/* setters */
 	void setData (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line);
 
-	/* get references (for getting and setting member values) */
+	/* get references (for setting and getting member values) */
 	std::string & reason();
 	std::string & module();
 	std::string & file();
 	kdb::long_t & line();
+	const std::string & reason () const;
+	const std::string & module () const;
+	const std::string & file () const;
+	const kdb::long_t & line () const;
 
 	/* fixed values per Class, taken from C-makro definitions in /src/include/kdberrors.h */
 	virtual std::string code() const = 0;
@@ -34,7 +38,8 @@ public:
 	/* string representation */
 	friend std::ostream& operator<< (std::ostream& outputStream, const BaseNotification& eb);
 	/* compare */
-	friend bool operator== (const BaseNotification& lhs, const BaseNotification& rhs);
+	bool operator== (const BaseNotification& other) const;
+	bool operator!= (const BaseNotification& other) const;
 
 protected:
 	BaseNotification () = default;
@@ -42,6 +47,9 @@ protected:
 
 	/* Can be overwritten by subclasses to change the text representation */
 	std::ostream& toString (std::ostream& outputStream) const;
+
+	/* for supporting polymorphism in comparisons */
+	virtual bool compare(const BaseNotification& other) const;
 
 private:
 	std::string m_reason;

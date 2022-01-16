@@ -18,6 +18,13 @@ class Warning : public BaseNotification
 public:
 	/* inherit constructors */
 	using BaseNotification::BaseNotification;
+	virtual Warning* clone() const = 0;
+
+	/* needed for freeing the elements of the Warning-container in Error-class */
+	virtual ~Warning () = default;
+
+protected:
+	bool compare(const BaseNotification& other) const override;
 };
 
 } // namespace errors
