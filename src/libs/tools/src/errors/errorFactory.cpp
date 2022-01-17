@@ -38,16 +38,6 @@ Error* ErrorFactory::create(const std::string & type, const std::string & reason
 }
 
 
-/**
- * @brief Create an error from a given key
- *
- * Reads meta-keys of given key to find error and warnings meta-keys. If no error exists a PureWarningError is created that contains the
- * key's warnings.
- *
- * @param key the key that has the error and warnings
- *
- * @return the error with warnings
- */
 /* TODO: Test method */
 Error * ErrorFactory::fromKey (kdb::Key key)
 {

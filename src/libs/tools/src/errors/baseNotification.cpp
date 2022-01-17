@@ -45,31 +45,12 @@ std::ostream& operator <<(std::ostream& outputStream, const BaseNotification& eb
 	eb.toString (outputStream);
 	return outputStream;
 }
-/**
- * @brief Compare to another notification object
- *
- * Is used in operator==.
- * Can be overloaded by subclasses to check additional constraints.
- * At least the types of the two objects that get compared should be checked for equality!
- *
- * @param other the notification to compare to
- *
- * @return true if objects are equal
- */
+
 bool BaseNotification::compare(const BaseNotification& other ELEKTRA_UNUSED) const
 {
 	return true;
 }
 
-/**
- * @brief Compare fields of notification objects
- *
- * Also incorporates the compare method to enable subclasses to add constraints to the comparison.
- *
- * @param other the notification to compare
- *
- * @return true if objects are equal
- */
 bool BaseNotification::operator== (const BaseNotification& other) const
 {
 	return code() == other.code()

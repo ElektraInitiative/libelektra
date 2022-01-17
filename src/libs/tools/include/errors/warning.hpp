@@ -24,6 +24,17 @@ public:
 	virtual ~Warning () = default;
 
 protected:
+
+	/**
+	 * @brief Compare warnings
+	 *
+	 * The comparison of data fields is done by operator== in the BaseNotification class.
+	 * This function compares the type of BaseNotification in addition to the notification fields.
+	 *
+	 * @param other the notification to compare to
+	 *
+	 * @return true if objects are equal
+	 */
 	bool compare(const BaseNotification& other) const override;
 };
 

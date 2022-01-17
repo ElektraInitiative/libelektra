@@ -20,7 +20,16 @@ public:
 	using BaseNotification::BaseNotification;
 	virtual ~Error();
 
-	/* An Error can contain 0 to n warnings */
+	/**
+	 * @brief Add a warning to an error
+	 *
+	 * The warning is copied to make it independent from the source object. This way the same warning added to two different errors can be
+	 * changed independently.
+	 *
+	 * An Error can contain 0 to n warnings.
+	 *
+	 * @param warning the warning to add
+	 */
 	void addWarning (Warning & warning);
 
 	/* getters */
@@ -41,6 +50,17 @@ private:
 	std::vector<Warning*> warnings;
 
 protected:
+
+	/**
+	 * @brief Compare errors
+	 *
+	 * The comparison of data fields is done by operator== in the BaseNotification class.
+	 * This function compares an errors warnings in addition to the notification fields.
+	 *
+	 * @param other the notification to compare to
+	 *
+	 * @return true if objects are equal
+	 */
 	bool compare(const BaseNotification& other) const override;
 };
 } // namespace errors

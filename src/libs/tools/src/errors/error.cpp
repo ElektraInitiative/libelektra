@@ -11,14 +11,6 @@ namespace errors
 {
 
 
-/**
- * @brief Add a warning to an error
- *
- * The warning is copied to make it independent from the source object. This way the same warning added to two different errors can be
- * changed independently.
- *
- * @param warning the warning to add
- */
 void Error::addWarning (Warning & warning)
 {
 	/* TODO: Decide if we should create copies or store the original warnings */
@@ -45,17 +37,6 @@ Warning& Error::operator[](int index)
 
 }
 
-
-/**
- * @brief Compare errors
- *
- * The comparison of data fields is done by operator== in the BaseNotification class.
- * This function compares an errors warnings in addition to the notification fields.
- *
- * @param other the notification to compare to
- *
- * @return true if objects are equal
- */
 bool Error::compare(const BaseNotification& other) const
 {
 	/* comparison of data fields is done by operator== in BaseNotification class */

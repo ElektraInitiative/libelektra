@@ -23,7 +23,16 @@ public:
 	static Error * create (const std::string & type, const std::string & reason, const std::string & module,
 			       const std::string & file, const std::string & mountPoint, const std::string & configFile, kdb::long_t line);
 
-	/* Creates an Error object including Warnings as provided by the given key. */
+	/**
+	 * @brief Create an error from a given key
+	 *
+	 * Reads meta-keys of given key to find error and warnings meta-keys. If no error exists a PureWarningError is created that contains the
+	 * key's warnings.
+	 *
+	 * @param key the key that has the error and warnings
+	 *
+	 * @return the error with warnings
+	 */
 	static Error * fromKey(kdb::Key key);
 
 	/* checks if a code and description fit together */

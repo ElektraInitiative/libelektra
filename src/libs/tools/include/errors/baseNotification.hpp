@@ -47,6 +47,16 @@ public:
 	/* string representation */
 	friend std::ostream& operator<< (std::ostream& outputStream, const BaseNotification& eb);
 	/* compare */
+
+	/**
+	 * @brief Compare fields of notification objects
+	 *
+	 * Also incorporates the compare method to enable subclasses to add constraints to the comparison.
+	 *
+	 * @param other the notification to compare
+	 *
+	 * @return true if objects are equal
+	 */
 	bool operator== (const BaseNotification& other) const;
 	bool operator!= (const BaseNotification& other) const;
 
@@ -56,7 +66,17 @@ protected:
 	/* Can be overwritten by subclasses to change the text representation */
 	std::ostream& toString (std::ostream& outputStream) const;
 
-	/* for supporting polymorphism in comparisons */
+	/**
+	 * @brief Compare to another notification object
+	 *
+	 * Is used in operator==.
+	 * Can be overloaded by subclasses to check additional constraints.
+	 * At least the types of the two objects that get compared should be checked for equality!
+	 *
+	 * @param other the notification to compare to
+	 *
+	 * @return true if objects are equal
+	 */
 	virtual bool compare(const BaseNotification& other) const;
 
 private:
