@@ -308,43 +308,25 @@ To check if an existing set of keys can be read and written with the current val
 
 ```sh
 # mount test config file and set a value
-sudo kdb mount test.ini user:/tests/validate range dump
+sudo kdb mount testvalidate.ini /tests/validate range dump
 kdb set user:/tests/validate/x 10
 
 # add range check to value
-kdb meta-set user:/tests/validate/x check/range "1-10"
+kdb meta-set spec:/tests/validate/x check/range "1-10"
 
 # check if validate passes
-kdb validate user:/tests/validate
+kdb validate /tests/validate
 
-# get actual path to mounted file
-CONFIG_FILE=$(kdb file user:/tests/validate)
-echo $CONFIG_FILE
-
-# unmount to change to invalid configuration
-sudo kdb umount user:/tests/validate
-
-# overwrite config with invalid config
-sudo truncate -s 0 $CONFIG_FILE
-# force add range check that that makes value invalid
-sudo echo 'kdbOpen 2' >> $CONFIG_FILE
-sudo echo '$key string 1 2' >> $CONFIG_FILE
-sudo echo 'x' >> $CONFIG_FILE
-sudo echo '51' >> $CONFIG_FILE
-sudo echo '$meta 11 4' >> $CONFIG_FILE
-sudo echo 'check/range' >> $CONFIG_FILE
-sudo echo '1-50' >> $CONFIG_FILE
-
-# mount again
-sudo kdb mount test.ini user:/tests/validate range dump
+# change allowed range
+kdb meta-set -f spec:/tests/validate/x check/range "1-5"
 
 # validation fails now
-kdb validate user:/tests/validate
+kdb validate /tests/validate
 # RET:1
 
 # clean up
-kdb rm -r user:/tests/validate
-sudo kdb umount user:/tests/validate
+kdb rm -r /tests/validate
+sudo kdb umount /tests/validate
 
 $end
 
