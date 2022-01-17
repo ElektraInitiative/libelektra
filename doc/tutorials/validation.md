@@ -301,3 +301,51 @@ rm $(kdb get system:/tests/userbackup)
 kdb rm system:/tests/specbackup
 kdb rm system:/tests/userbackup
 ```
+
+## Validate Existing Keys
+
+To check if an existing set of keys can be read and written with the current validation rules `kdb validate` should be used. Validate will read the values of all keys under the point defined as argument in the command line, sets the key value to something different, then back to the original and finally writes that original value back to the key database. All loaded [validation plugins](/src/plugins/README.md) are now used to validate the values of keys with the necessary meta-keys (see above).
+
+```sh
+# mount test config file and set a value
+sudo kdb mount test.ini user:/tests/validate range dump
+kdb set user:/tests/validate/x 10
+
+# add range check to value
+kdb meta-set user:/tests/validate/x check/range "1-10"
+
+# check if validate passes
+kdb validate user:/tests/validate
+
+# get actual path to mounted file
+CONFIG_FILE=$(kdb file user:/tests/validate)
+echo $CONFIG_FILE
+
+# unmount to change to invalid configuration
+sudo kdb umount user:/tests/validate
+
+# overwrite config with invalid config
+sudo truncate -s 0 $CONFIG_FILE
+# force add range check that that makes value invalid
+sudo echo 'kdbOpen 2' >> $CONFIG_FILE
+sudo echo '$key string 1 2' >> $CONFIG_FILE
+sudo echo 'x' >> $CONFIG_FILE
+sudo echo '51' >> $CONFIG_FILE
+sudo echo '$meta 11 4' >> $CONFIG_FILE
+sudo echo 'check/range' >> $CONFIG_FILE
+sudo echo '1-50' >> $CONFIG_FILE
+
+# mount again
+sudo kdb mount test.ini user:/tests/validate range dump
+
+# validation fails now
+kdb validate user:/tests/validate
+# RET:1
+
+# clean up
+kdb rm -r user:/tests/validate
+sudo kdb umount user:/tests/validate
+
+$end
+
+```
