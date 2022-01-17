@@ -1,4 +1,5 @@
 
+#include <kdberrors.h> // for code and description constants
 #include <errors/errorTypes.hpp>
 
 namespace kdb
@@ -7,6 +8,16 @@ namespace tools
 {
 namespace errors
 {
+
+std::string PureWarningError::code() const { return ""; }
+std::string PureWarningError::description() const { return "Warnings"; }
+bool PureWarningError::compare(const BaseNotification& other) const
+{
+	if(!(dynamic_cast<const PureWarningError *> (&other)))
+		return false;
+	else
+		return Error::compare (other);
+}
 
 std::string ResourceError::code() const { return ELEKTRA_ERROR_RESOURCE; }
 std::string ResourceError::description() const { return ELEKTRA_ERROR_RESOURCE_NAME; }

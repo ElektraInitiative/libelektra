@@ -11,14 +11,26 @@ namespace tools
 namespace errors
 {
 
-/* This file contains all concrete classes for the different Errors, based on the constants defined in /src/include/kdberrors.h */
+/* Not an error by itself, but a container for multiple warnings */
+class PureWarningError : public Error
+{
+public:
+	PureWarningError ()
+	: Error { "No error, only warnings.", "", "", "", "", 0} {}
 
+	std::string code() const override;
+	std::string description() const override;
+
+private:
+	bool compare(const BaseNotification& other) const final;
+};
+
+
+/* Concrete classes for the different Errors, based on the constants defined in /src/include/kdberrors.h */
 class ResourceError : public Error
 {
 public:
-	ResourceError (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-		: Error { reason, module, file, line} {}
-
+	using Error::Error;
 	std::string code() const override;
 	std::string description() const override;
 private:
@@ -28,10 +40,8 @@ private:
 class OutOfMemoryError : public Error
 {
 public:
-	OutOfMemoryError (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Error { reason, module, file, line} {}
-
-		std::string code() const override;
+	using Error::Error;
+	std::string code() const override;
 	std::string description() const override;
 private:
 	bool compare(const BaseNotification& other) const final;
@@ -40,9 +50,7 @@ private:
 class InstallationError : public Error
 {
 public:
-	InstallationError (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Error { reason, module, file, line} {}
-
+	using Error::Error;
 	std::string code() const override;
 	std::string description() const override;
 private:
@@ -53,9 +61,7 @@ private:
 class InternalError: public Error
 {
 public:
-	InternalError (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Error { reason, module, file, line} {}
-
+	using Error::Error;
 	std::string code() const override;
 	std::string description() const override;
 private:
@@ -65,9 +71,7 @@ private:
 class InterfaceError : public Error
 {
 public:
-	InterfaceError (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Error { reason, module, file, line} {}
-
+	using Error::Error;
 	std::string code() const override;
 	std::string description() const override;
 private:
@@ -77,9 +81,7 @@ private:
 class PluginMisbehaviorError : public Error
 {
 public:
-	PluginMisbehaviorError (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Error { reason, module, file, line} {}
-
+	using Error::Error;
 	std::string code() const override;
 	std::string description() const override;
 private:
@@ -89,9 +91,7 @@ private:
 class ConflictingStateError : public Error
 {
 public:
-	ConflictingStateError (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Error { reason, module, file, line} {}
-
+	using Error::Error;
 	std::string code() const override;
 	std::string description() const override;
 private:
@@ -101,9 +101,7 @@ private:
 class ValidationSyntacticError : public Error
 {
 public:
-	ValidationSyntacticError (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Error { reason, module, file, line} {}
-
+	using Error::Error;
 	std::string code() const override;
 	std::string description() const override;
 private:
@@ -113,9 +111,7 @@ private:
 class ValidationSemanticError : public Error
 {
 public:
-	ValidationSemanticError (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Error { reason, module, file, line} {}
-
+	using Error::Error;
 	std::string code() const override;
 	std::string description() const override;
 private:

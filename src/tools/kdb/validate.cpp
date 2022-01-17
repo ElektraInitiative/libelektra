@@ -11,7 +11,7 @@
 #include <cmdline.hpp>
 #include <kdb.hpp>
 #include <kdbio.hpp>
-
+#include <errors/errorFactory.hpp>
 #include <iostream>
 
 using namespace std;
@@ -46,10 +46,10 @@ int ValidateCommand::execute (Cmdline const & cl)
 	kdb.get (ksUnfiltered, root);
 
 	stringstream streamWarnings;
-	printWarnings (streamWarnings, root, cl.verbose, cl.debug);
+	//printWarnings (streamWarnings, root, cl.verbose, cl.debug);
 
 	string strWarnings = streamWarnings.str ();
-	if (strWarnings.empty ())
+	if (strWarnings.empty ()) //TODO: currently not working (always as with -f) because of disabled printWarnings above
 	{
 		cout << getFormattedSuccessString ("No warnings were issued! :)") << endl;
 	}
@@ -65,11 +65,8 @@ int ValidateCommand::execute (Cmdline const & cl)
 					"despite warnings during getting them...")
 			     << endl;
 
-
-			root = cl.createKey (0); // use a fresh root key for kdb.set, so that no warnings from kdb.get remain
-						 // cout << "Now no warnings should be printed: " << endl;
-			// printWarnings (cerr, root, cl.verbose, cl.debug);
-			// return 0;
+			// TODO: Check how to handle, printWarnings consumed the warnings
+			//root = cl.createKey (0);
 		}
 		else
 		{
@@ -82,13 +79,9 @@ int ValidateCommand::execute (Cmdline const & cl)
 		}
 	}
 
-
-	// cout << "size of all keys in mount point: " << ksUnfiltered.size () << endl;
 	KeySet ksPart (ksUnfiltered.cut (root));
-	// cout << "size of requested keys: " << ksPart.size () << endl;
 
 	/* iterate over the result keys */
-	// cout << "Iterating over keys:" << endl;
 	for (Key curKey : ksPart)
 	{
 		/* do lookup (needed for resolving cascading keys) */
@@ -96,15 +89,8 @@ int ValidateCommand::execute (Cmdline const & cl)
 
 		if (lookupKey.isBinary ()) continue; // only validate string keys
 
-		// cout << "1. curKey name: " << lookupKey.getName() << ", value: " << lookupKey.getString()
-		//      << ", sync: " << lookupKey.needSync() << endl;
-
 		/* change value (to enable sync flag */
 		lookupKey.setString (lookupKey.getString () + "^");
-
-
-		// cout << "2. curKey name: " << lookupKey.getName() << ", value: " << lookupKey.getString()
-		//      << ", sync: " << lookupKey.needSync() << endl;
 
 		/* change value back to original */
 		std::string tmpStr = lookupKey.getString ();
@@ -112,15 +98,26 @@ int ValidateCommand::execute (Cmdline const & cl)
 		/* remove last char that was added in the previous step */
 		tmpStr.pop_back ();
 		lookupKey.setString (tmpStr);
-
-		// cout << "3. curKey name: " << lookupKey.getName() << ", value: " << lookupKey.getString()
-		//      << ", sync: " << lookupKey.needSync() << endl;
 	}
+
 	/* write back values */
-	kdb.set (ksPart, root);
+	try
+	{
+		kdb.set (ksPart, root);
+	}catch (KDBException & k) {
+		/* TODO: remove test code & refactor to use new c++ classes for whole function (instead of printWarnigns and printError) */
+		std::cout << std::endl << "################" << std::endl << "TEST NEW C++ CLASS:" << std::endl;
+		tools::errors::Error *err = tools::errors::ErrorFactory::fromKey (root);
+		std::cout << *err << std::endl << "INCLUDED WARNINGS: " << std::endl;
+		for (tools::errors::Warning *w : *err)
+			std::cout << *w << std::endl << "---------------" << std::endl;
+		delete err;
+		std::cout << "err deleted!" << std::endl << "################" << std::endl << std::endl;
+	}
 
 	printWarnings (streamWarnings, root, cl.verbose, cl.debug);
 	printError (cerr, root, cl.verbose, cl.debug);
+
 	kdb.close ();
 	return 0;
 }

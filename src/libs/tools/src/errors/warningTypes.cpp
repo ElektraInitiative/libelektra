@@ -1,5 +1,5 @@
 
-
+#include <kdberrors.h> // for code and description constants
 #include <errors/warningTypes.hpp>
 
 namespace kdb

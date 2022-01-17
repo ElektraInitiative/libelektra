@@ -18,7 +18,7 @@ public:
 
 	/* inherit constructors */
 	using BaseNotification::BaseNotification;
-	~Error();
+	virtual ~Error();
 
 	/* An Error can contain 0 to n warnings */
 	void addWarning (Warning & warning);

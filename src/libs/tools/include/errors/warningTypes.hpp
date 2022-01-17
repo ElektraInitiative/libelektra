@@ -16,8 +16,7 @@ namespace errors
 class ResourceWarning : public Warning
 {
 public:
-	ResourceWarning (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-		: Warning { reason, module, file, line} {}
+	using Warning::Warning;
 
 	std::string code() const override;
 	std::string description() const override;
@@ -29,8 +28,7 @@ private:
 class OutOfMemoryWarning : public Warning
 {
 public:
-	OutOfMemoryWarning (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Warning { reason, module, file, line} {}
+	using Warning::Warning;
 
 	std::string code() const override;
 	std::string description() const override;
@@ -42,8 +40,7 @@ private:
 class InstallationWarning : public Warning
 {
 public:
-	InstallationWarning (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Warning { reason, module, file, line} {}
+	using Warning::Warning;
 
 	std::string code() const override;
 	std::string description() const override;
@@ -55,8 +52,7 @@ private:
 class InternalWarning : public Warning
 {
 public:
-	InternalWarning (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Warning { reason, module, file, line} {}
+	using Warning::Warning;
 
 	std::string code() const override;
 	std::string description() const override;
@@ -68,8 +64,7 @@ private:
 class InterfaceWarning : public Warning
 {
 public:
-	InterfaceWarning (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Warning { reason, module, file, line} {}
+	using Warning::Warning;
 
 	std::string code() const override;
 	std::string description() const override;
@@ -81,8 +76,7 @@ private:
 class PluginMisbehaviorWarning : public Warning
 {
 public:
-	PluginMisbehaviorWarning (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Warning { reason, module, file, line} {}
+	using Warning::Warning;
 
 	std::string code() const override;
 	std::string description() const override;
@@ -94,8 +88,7 @@ private:
 class ConflictingStateWarning : public Warning
 {
 public:
-	ConflictingStateWarning (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Warning { reason, module, file, line} {}
+	using Warning::Warning;
 
 	std::string code() const override;
 	std::string description() const override;
@@ -107,8 +100,7 @@ private:
 class ValidationSyntacticWarning : public Warning
 {
 public:
-	ValidationSyntacticWarning (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Warning { reason, module, file, line} {}
+	using Warning::Warning;
 
 	std::string code() const override;
 	std::string description() const override;
@@ -120,8 +112,7 @@ private:
 class ValidationSemanticWarning : public Warning
 {
 public:
-	ValidationSemanticWarning (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line)
-	: Warning { reason, module, file, line} {}
+	using Warning::Warning;
 
 	std::string code() const override;
 	std::string description() const override;

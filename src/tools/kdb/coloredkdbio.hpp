@@ -103,9 +103,11 @@ inline std::ostream & printWarnings (std::ostream & os, kdb::Key const & error, 
 		cntWarnings = 0;
 		for (auto it = warnings.begin () + 1; it != warnings.end (); ++it)
 		{
-			auto name = it->getName ();
+
 			if (it->isDirectBelow (parent))
 			{
+				auto name = it->getName ();
+
 				os << ' ' << ++cntWarnings << ": Module " << getErrorColor (ANSI_COLOR::BOLD)
 				   << getErrorColor (ANSI_COLOR::BLUE) << warnings.get<std::string> (name + "/module")
 				   << getErrorColor (ANSI_COLOR::RESET) << " issued the warning " << getErrorColor (ANSI_COLOR::BOLD)

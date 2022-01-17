@@ -4,7 +4,7 @@
 #include <string>
 #include <key.hpp>
 #include <utility>
-#include <kdberrors.h> // for kdb-types, code and description constants
+#include <kdbtypes.h> // for kdb-types, code and description constants
 
 namespace kdb
 {
@@ -18,17 +18,26 @@ namespace errors
 class BaseNotification
 {
 public:
+	/* constructor */
+	BaseNotification (std::string  reason, std::string  module, std::string  file, std::string mountPoint,
+			  std::string configFile, kdb::long_t line);
+
 	/* setters */
-	void setData (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line);
+	void setData (const std::string & reason, const std::string & module, const std::string & file,
+		      const std::string & mountPoint, const std::string & configFile, kdb::long_t line);
 
 	/* get references (for setting and getting member values) */
 	std::string & reason();
 	std::string & module();
 	std::string & file();
+	std::string & mountPoint();
+	std::string & configFile();
 	kdb::long_t & line();
 	const std::string & reason () const;
 	const std::string & module () const;
 	const std::string & file () const;
+	const std::string & mountPoint () const;
+	const std::string & configFile () const;
 	const kdb::long_t & line () const;
 
 	/* fixed values per Class, taken from C-makro definitions in /src/include/kdberrors.h */
@@ -43,7 +52,6 @@ public:
 
 protected:
 	BaseNotification () = default;
-	BaseNotification (const std::string & reason, const std::string & module, const std::string & file, kdb::long_t line);
 
 	/* Can be overwritten by subclasses to change the text representation */
 	std::ostream& toString (std::ostream& outputStream) const;
@@ -55,6 +63,8 @@ private:
 	std::string m_reason;
 	std::string m_module;
 	std::string m_file;
+	std::string m_mountPoint;
+	std::string m_configFile;
 	kdb::long_t m_line = 0;
 };
 
