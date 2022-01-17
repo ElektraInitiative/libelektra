@@ -4,7 +4,7 @@
 #include <string>
 #include <key.hpp>
 #include <utility>
-#include <kdbtypes.h> // for kdb-types, code and description constants
+#include <kdbtypes.h>
 
 namespace kdb
 {
