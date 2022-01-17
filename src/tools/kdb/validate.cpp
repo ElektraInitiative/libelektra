@@ -18,6 +18,18 @@ using namespace std;
 using namespace kdb;
 
 
+/**
+ * @brief Validate key database subtree
+ *
+ * Validate the part of the database that is rooted by the key given in the first argument.
+ * This is done by reading all key values, writing a different value, rewriting the original value and then re-setting the values
+ * in the key database. All loaded validation plugins are hereby triggered and their warnings are returned.
+ *
+ * @param cl the command line
+ *
+ * @return 0 if no warnings or errors were found and validation was therefore successful
+ * @return 1 if some warnings and errors occurred and validation therefore failed
+ */
 int ValidateCommand::execute (Cmdline const & cl)
 {
 	int argc = cl.arguments.size ();
