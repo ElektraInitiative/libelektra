@@ -1,0 +1,39 @@
+# kdb-validate(1) - Validate key values
+
+## SYNOPSIS
+
+`kdb validate`
+
+## DESCRIPTION
+
+Validate the values of keys below a given name using the loaded validation plugins (eg. range or validation) by reading all values, making them dirty by changing to another value, changing back to original and then writing that back to the key database.
+
+This command is useful for validating configuration files against
+their specifications.
+
+For keys to be validated, they must contain the 'check'-metakeys
+and the respective plugins for validation must be loaded
+for the backend that was used while mounting.
+If a validation is done while using 'kdb set'
+the same validation is also done by 'kdb validate'
+
+Use -f to do a write test even if the previous read
+from the key database has issued warnings.
+
+## OPTIONS
+
+- `-d`,`--debug`:
+  Give debug information or ask debug questions (in interactive mode).
+- `-f`, `--force`:
+  Force the action to be done.
+- `-H`, `--help`:
+  Show the man page.
+- `-p <name>`, `--profile <name>`:
+  Use a different profile for kdb configuration.
+- `-v`, `--verbose`:
+  Explain what is happening.
+- `-V`, `--version`:
+  Print version info.
+- `-C <when>`, `--color <when>`:
+  Print `never/auto(default)/always` colored output.
+
