@@ -184,6 +184,7 @@ _(Michael Tucek)_
 - <<TODO>>
 - explained in the docker test tutorial how to run the container with podman instead of docker. _(@muskater)_
 - Add a new example on how to use keyCopy. _(@muskater)_
+- Fix small error in the "Get Started" guide: the build and test command used a wrong directory and would not work if they were copy and pasted. _(@muskater)_
 - <<TODO>>
 - Added verification to the "Arrays" tutorial _(Ivaylo Ivanov)_
 - Remove deprecated `type=int` from `.ini` files _(Ivaylo Ivanov)_
